@@ -1,0 +1,1 @@
+#version 330in vec2 texCoords;out vec4 outColor;uniform float iGlobalTime;uniform vec2 iResolution;void main(){outColor = vec4(texCoords,0.0,1.0);}

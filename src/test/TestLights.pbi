@@ -1,0 +1,180 @@
+XIncludeFile "../core/Application.pbi"
+
+; XIncludeFile "FTGL.pbi"
+
+
+UseModule Math
+UseModule Time
+UseModule OpenGL
+UseModule GLFW
+UseModule OpenGLExt
+
+EnableExplicit
+
+Global WIDTH = 1280
+Global HEIGHT = 720
+
+Global vwidth
+Global vheight
+
+Global *app.Application::Application_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global NewList *lights.Light::Light_t()
+Global *ground.Polymesh::Polymesh_t
+Global NewList *bunnies.Polymesh::Polymesh_t()
+
+Global *s_wireframe.Program::Program_t
+Global *s_polymesh.Program::Program_t
+Global *s_gbuffer.Program::Program_t
+Global *s_defered.Program::Program_t
+Global shader.l
+
+Global *default.LayerDefault::LayerDefault_t
+Global *gbuffer.LayerGBuffer::LayerGBuffer_t
+Global *defered.LayerDefered::LayerDefered_t
+Global *shadowmap.LayerShadowMap::LayerShadowMap_t
+
+
+Global *ftgl_drawer.FTGL::FTGL_Drawer
+
+Global offset.m4f32
+Matrix4::SetIdentity(@offset)
+
+Global a.v3f32
+Global b.v3f32
+Global c.v3f32
+Global m.m4f32
+Global q.q4f32
+Global s.v3f32
+
+Global nb_lights = 12
+ 
+; Draw
+;--------------------------------------------
+Procedure Update()
+  Scene::Update(Scene::*current_scene)  
+;   LayerDefault::Draw(*default,*app\context)
+  LayerGBuffer::Draw(*gbuffer,*app\context)
+  LayerDefered::Draw(*defered,*app\context)
+  CompilerIf Not #USE_GLFW
+    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+  CompilerEndIf
+  
+ EndProcedure
+ 
+
+ Globals::Init()
+ Log::Init()
+ FTGL::Init()
+ Scene::*current_scene = Scene::New()
+; Main
+;--------------------------------------------
+ If Time::Init()
+   
+   *app = Application::New("Test Lights",WIDTH,HEIGHT)
+                           
+   CompilerIf Not #USE_GLFW
+   *viewport = ViewportUI::New(*app\manager\main,"Viewport 3D")
+   *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+   *app\context\width = GadgetWidth(*viewport\gadgetID)
+    *app\context\height = GadgetHeight(*viewport\gadgetID)
+    *viewport\camera = *app\camera
+    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+  CompilerEndIf
+  
+  Define i
+  
+  Define *model.Model::Model_t = Model::New("Model")
+  
+  ; Lights
+  ;----------------------------------------------------
+  Define i
+  For i=0 To nb_lights
+    AddElement(*lights())
+    *lights() = Light::New("Light"+Str(i+1),Light::#Light_Point)
+    Vector3::Set(*lights()\pos,Random(20)-10,4,Random(20)-10)
+    Vector3::Set(*lights()\color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+    Object3D::AddChild(*model,*lights())
+  Next
+;   
+  
+  ; Shaders
+  ;-----------------------------------------------------
+  *s_wireframe = *app\context\shaders("wireframe")
+  *s_polymesh = *app\context\shaders("polymesh")
+  *s_gbuffer = *app\context\shaders("gbuffer")
+  *s_defered = *app\context\shaders("defered")
+  
+  shader = *s_gbuffer\pgm
+  glUseProgram(shader)
+
+  ; Meshes
+  ;-----------------------------------------------------
+  Define pos.v3f32, rot.q4f32
+
+  Define *t.Transform::Transform_t
+  Define color.c4f32
+  Quaternion::SetFromEulerAngles(@rot,40,0,0)
+  Define x,y,z
+  For x = 0 To 9
+    For y = 0 To 9
+      For z = 0 To 9
+        Color::Set(@color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
+        AddElement(*bunnies())
+        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+        *t = *bunnies()\localT
+        Vector3::Set(@color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
+        PolymeshGeometry::SetColors(*bunnies()\geom,@color)
+        Transform::SetTranslationFromXYZValues(*t,x*2-10,y*2+1.5,z*2-10)
+        Transform::SetRotationFromQuaternion(*t,@rot)
+        Object3D::SetLocalTransform(*bunnies(),*t)
+;         Matrix4::SetFromQuaternion(*bunnies()\matrix,@rot)
+;         Matrix4::SetTranslation(*bunnies()\matrix,@pos)
+        
+        
+        ;Polymesh::Setup(*bunnies(),*s_gbuffer)
+        Object3D::AddChild(*model,*bunnies())
+      Next
+    Next
+  Next
+  
+  *ground = Polymesh::New("Ground",Shape::#SHAPE_GRID)
+;   Shape::RandomizeColors(*ground\shape,@color,0.1)
+  ;Polymesh::Setup(*ground,*s_polymesh)
+  Object3D::AddChild(*model,*ground)
+  
+  Scene::AddModel(Scene::*current_scene,*model)
+  
+  Scene::Setup(Scene::*current_scene,*app\context)
+  
+  ; Defualt Layer
+  ;-----------------------------------------------------
+  *default = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+  LayerDefault::Setup(*default)
+  
+  ; Geometry Buffer Layer
+  ;-----------------------------------------------------
+  *gbuffer = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
+  LayerGBuffer::Setup(*gbuffer)
+  
+  ; ShadowMap Layer
+  ;------------------------------------------------------
+  *shadowmap = LayerShadowMap::New(1024,1024,*app\context,CArray::GetPtr(Scene::*current_scene\lights,0))
+  LayerShadowMap::Setup(*shadowmap)
+  
+  ; Deferred Layer
+  ;-----------------------------------------------------
+  *defered = LayerDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,#Null,*app\camera)
+  LayerDefered::Setup(*defered)
+ 
+  
+  Application::Loop(*app,@Update())
+  
+EndIf
+
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 161
+; FirstLine = 98
+; Folding = -
+; EnableXP
+; Constant = #USE_GLFW=0

@@ -1,0 +1,141 @@
+﻿XIncludeFile "../core/Array.pbi"
+XIncludeFile "Types.pbi"
+XIncludeFile "../objects/Object3D.pbi"
+
+;====================================================================================
+; GRAPH MODULE IMPLEMENTATION
+;====================================================================================
+Module Graph
+  Procedure ResolveGetReference(*port.NodePort::NodePort_t)
+    
+    Protected *node.Node::Node_t = *port\node
+    Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+  
+    Protected refname.s = NodePort::AcquireReferenceData(*port)
+
+    Protected fields.i = CountString(refname, ".")+1
+    Protected base.s = StringField(refname, 1,".")
+    ;*node\label = refname
+    Protected *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
+    If base ="Self" Or base ="This"
+      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(StringField(refname, 2,"."))
+      If *attribute
+        *output\currenttype = *attribute\datatype
+        *output\currentcontext = *attribute\datacontext
+        *output\currentstructure = *attribute\datastructure
+        NodePort::Init(*output)
+        *output\value = *attribute\data
+      EndIf
+      
+    EndIf
+    
+  EndProcedure  
+  
+  Procedure ResolveSetReference(*port.NodePort::NodePort_t)
+    
+
+    
+    Protected *node.Node::Node_t = *port\node
+    Protected refname.s = NodePort::AcquireReferenceData(*ref)
+    Debug "[SetDataNode] Reference Name : "+refname
+    
+    If refname
+      Protected fields.i = CountString(refname, ".")+1
+      Protected base.s = StringField(refname, 1,".")
+      
+      If base ="Self" Or base ="This"
+        Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+        Protected *input.NodePort::NodePort_t
+        Protected name.s = StringField(refname, 2,".")
+        If FindMapElement(*obj\m_attributes(),name)
+          
+          Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(name)
+          *input = Node::GetPortByName(*node,"Data")
+  
+          NodePort::InitFromReference(*input,*attribute)
+          *node\state = Graph::#Node_StateOK
+          *node\errorstr = ""
+        ; If Attribute NOT Exist Create It
+;         Else
+;           *input = Node::GetPortByName(*node,"Data")
+;           If *input\connected
+;             MessageRequester("SetDataNode","Create New Attribute ---> "+name  )
+;             With *input\source
+;               Protected *datas.CArray::CArrayT
+;               Select \datatype
+;                 Case Attribute::#ATTR_TYPE_BOOL
+;                   *datas = CArray::newCArrayBool()
+;                 Case Attribute::#ATTR_TYPE_LONG
+;                   *datas = CArray::newCArrayLong()
+;                 Case Attribute::#ATTR_TYPE_INTEGER
+;                   *datas = CArray::newCArrayInt()
+;                 Case Attribute::#ATTR_TYPE_FLOAT
+;                   *datas = CArray::newCArrayFloat()
+;                 Case Attribute::#ATTR_TYPE_VECTOR2
+;                   *datas = CArray::newCArrayV2F32()
+;                 Case Attribute::#ATTR_TYPE_VECTOR3
+;                   *datas = CArray::newCArrayV3F32()
+;                 Case Attribute::#ATTR_TYPE_QUATERNION
+;                   *datas = CArray::newCArrayQ4F32()
+;                 Case Attribute::#ATTR_TYPE_MATRIX3
+;                   *datas = CArray::newCArrayM3F32()
+;                 Case Attribute::#ATTR_TYPE_MATRIX4
+;                   *datas = CArray::newCArrayM4F32()
+;               EndSelect
+;               
+;               *node\attribute = Attribute::New(name,\datatype,\datastructure,\datacontext,*datas,#False,#True)
+;               Object3D::AddAttribute(*obj,*node\attribute)
+;               *node\state = Graph::#Node_StateOK
+;               *node\errorstr = ""
+;             EndWith
+            
+;           EndIf
+          
+          
+        EndIf
+        
+;         Debug "Search Attribute Named : "+StringField(refname, 2,".")+" ---> "+Str(*node\attribute)
+      EndIf
+    Else
+      *node\state = Graph::#Node_StateError
+      *node\errorstr = "[ERROR] Input Empty"
+;       *node\attribute = #Null
+    EndIf
+    
+  EndProcedure
+  
+  ;------------------------------
+  ; Switch Context
+  ;------------------------------
+  Procedure SwitchContext(ID)
+    Select ID
+      Case Graph::#Graph_Context_Compositing
+        MessageRequester("GRAPH SWITCH CONTEXT","COMPOSITING")
+       
+     Case Graph::#Graph_Context_Hierarchy
+       MessageRequester("GRAPH SWITCH CONTEXT","HIERARCHY")
+       
+     Case Graph::#Graph_Context_Modeling
+       MessageRequester("GRAPH SWITCH CONTEXT","MODELING")
+       
+     Case Graph::#Graph_Context_Operator
+       MessageRequester("GRAPH SWITCH CONTEXT","OPERATOR")
+       
+     Case Graph::#Graph_Context_Shader
+       MessageRequester("GRAPH SWITCH CONTEXT","SHADER")
+       
+     Case Graph::#Graph_Context_Simulation
+       MessageRequester("GRAPH SWITCH CONTEXT","SIMULATION")
+       
+    EndSelect
+    
+    
+  EndProcedure
+
+EndModule
+
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 28
+; Folding = -
+; EnableUnicode
+; EnableXP
