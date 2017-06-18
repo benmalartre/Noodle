@@ -177,7 +177,7 @@ Module LayerShadowSimple
     glUniform1f(glGetUniformLocation(shader,"y_pixel_offset"),1/*layer\shadowmap\height)
     
     ;---[ Draw ]---------------------------------------
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader)
+    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
     
     GLCheckError("ShadowSimple Bind Polymesh Draw")
 ; ;   ;   ;---[ Instance Cloud ]---------------------------------------
@@ -279,8 +279,8 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 150
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 179
+; FirstLine = 175
 ; Folding = --
 ; EnableXP

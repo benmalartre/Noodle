@@ -77,7 +77,7 @@ DeclareModule CArray
   EndStructure
   
   Declare GetPtr(*array.CArrayT,index.i)
-  Declare GetValue(*array.CArrayT,index.i)
+  Declare GetValue(*array.CArrayT, index.i)
   Declare.b GetValueB(*array.CArrayT,index.i)
   Declare.c GetValueC(*array.CArrayT,index.i)
   Declare.i GetValueI(*array.CArrayT,index.i)
@@ -85,13 +85,13 @@ DeclareModule CArray
   Declare.f GetValueF(*array.CArrayT,index.i)
   Declare.i GetValuePtr(*array.CArrayT,index.i)
   Declare.s GetValueStr(*array.CArrayT,index.i)
-  Declare SetValue(*array.CArrayT,index.i,*value)
+  Declare SetValue(*array.CArrayT, index.i, *value)
   Declare SetValueB(*array.CArrayT,index.i,value.b)
   Declare SetValueC(*array.CArrayT,index.i,value.c)
   Declare SetValueI(*array.CArrayT,index.i,value.i)
   Declare SetValueL(*array.CArrayT,index.i,value.l)
   Declare SetValueF(*array.CArrayT,index.i,value.f)
-  Declare SetValuePtr(*array.CArrayT,index.i,value.f)
+  Declare SetValuePtr(*array.CArrayT,index.i,*value)
   Declare SetValueStr(*array.CArrayT,index.i,value.s)
   Declare Append(*array.CArrayT,*value)
   Declare AppendB(*array.CArrayT,value.b)
@@ -103,6 +103,7 @@ DeclareModule CArray
   Declare AppendStr(*array.CArrayT,value.s)
   Declare AppendArray(*array.CArrayT,*other.CArrayT)
   Declare AppendUnique(*array.CArrayT,*unique)
+  Declare AppendUniqueStr(*array.CArrayT,unique.s)
   Declare GetCount(*array.CArrayT)
   Declare SetCount(*array.CArrayT,count.i)
   Declare GetItemSize(*array.CArrayT)
@@ -230,7 +231,7 @@ Module CArray
   Procedure GetValuePtr(*array.CArrayT,index.i)
     If index>=0 And index<*array\itemCount
        offset.i = index* *array\itemSize
-        ProcedureReturn PeekI(*Array\data+offset)
+       ProcedureReturn PeekI(*Array\data+offset)
     EndIf
   EndProcedure
   
@@ -314,11 +315,10 @@ Module CArray
   ;----------------------------------------------------------------
   ; SetValuePtr
   ;----------------------------------------------------------------
-  Procedure SetValuePtr(*array.CArrayT,index.i,value.f)
+  Procedure SetValuePtr(*array.CArrayT,index.i,*value)
     If index>=0 And index<*array\itemCount
       offset.i = index* *array\itemSize
-      PokeI(*array\data+offset,value)
-;       CopyMemory(@value,*array\data+offset,*array\itemSize)
+      PokeI(*array\data+offset,*value)
     EndIf
   EndProcedure
   
@@ -445,11 +445,12 @@ Module CArray
     EndIf
     
     PokeI(*array\data+nb* *array\itemSize,*item)
+    ;CopyMemory(*item, *array\data+nb* *array\itemSize, *array\itemSize)
     *array\itemCount + 1
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; AppendPtr
+  ; AppendStr
   ;----------------------------------------------------------------
   Procedure AppendStr(*array.CArrayT,item.s)
     Protected nb = *array\itemCount
@@ -475,7 +476,17 @@ Module CArray
     Protected nba = *array\itemCount
     Protected nbo = *other\itemCount
     
-    If *array\itemSize = *other\itemSize
+    If *array\type = #ARRAY_STR
+      Protected *saa.CArrayStr = *array
+      Protected *sao.CArrayStr = *other
+      
+      LastElement(*saa\Str())
+      ForEach *sao\Str()
+        AddElement(*saa\Str())
+        *saa\Str() = *sao\Str()
+      Next
+     
+    ElseIf *Array\itemSize = *other\itemSize
       If *array\data = #Null
         *array\data = AllocateMemory(nbo* *array\itemSize)
       Else
@@ -486,24 +497,13 @@ Module CArray
       *array\itemCount + nbo
     EndIf
     
-    If *array\type = #ARRAY_STR
-      Protected *saa.CArrayStr = *array
-      Protected *sao.CArrayStr = *other
-      
-      LastElement(*saa\Str())
-      ForEach *sao\Str()
-        AddElement(*saa\Str())
-        *saa\Str() = *sao\Str()
-      Next
-      
-      
-    EndIf
+    
     
     
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; AppendArray
+  ; AppendUnique
   ;----------------------------------------------------------------
   Procedure AppendUnique(*array.CArrayT,*unique)
     Protected nbi = *array\itemCount
@@ -512,31 +512,59 @@ Module CArray
     If *array\type < #ARRAY_V2F32
       Select *array\type
         Case #ARRAY_BOOL
-          AppendB(*array,*unique)
+          AppendB(*array,PeekB(*unique))
+          
         Case #ARRAY_CHAR
-          AppendC(*array,*unique)
-        Case #ARRAY_INT
-           AppendI(*array,*unique)
-        Case #ARRAY_LONG
-           AppendL(*array,*unique)
-        Case #ARRAY_FLOAT
-           AppendF(*array,*unique)
-         Case #ARRAY_PTR
-
-           For i = 0 To nbi-1
-            If *unique = PeekI(CArray::GetValue(*array,i))
+          For i = 0 To nbi-1
+            If PeekC(*unique) = CArray::GetValueC(*array,i)
               ; Item Already in Array
               ProcedureReturn 
             EndIf
           Next
-           AppendI(*array,*unique)
+          AppendC(*array,PeekC(*unique))
+          
+        Case #ARRAY_INT
+           For i = 0 To nbi-1
+            If PeekI(*unique) = CArray::GetValueI(*array,i)
+              ; Item Already in Array
+              ProcedureReturn 
+            EndIf
+          Next
+          AppendI(*array,PeekI(*unique))
+          
+        Case #ARRAY_LONG
+           For i = 0 To nbi-1
+            If PeekL(*unique) = CArray::GetValueL(*array,i)
+              ; Item Already in Array
+              ProcedureReturn 
+            EndIf
+          Next
+          AppendL(*array,PeekL(*unique))
+          
+        Case #ARRAY_FLOAT
+           For i = 0 To nbi-1
+            If PeekF(*unique) = CArray::GetValueF(*array,i)
+              ; Item Already in Array
+              ProcedureReturn 
+            EndIf
+          Next
+          AppendF(*array,PeekF(*unique))
+          
+        Case #ARRAY_PTR
+          For i = 0 To nbi-1
+            If *unique = CArray::GetValuePtr(*array,i)
+              ; Item Already in Array
+              ProcedureReturn 
+            EndIf
+          Next
+          AppendPtr(*array,*unique)
       EndSelect
       
       
     Else
         
       For i = 0 To nbi-1
-        If *unique = CArray::GetValue(*array,i)
+        If *unique = CArray::GetValueI(*array,i)
           ; Item Already in Array
           ProcedureReturn 
         EndIf
@@ -546,6 +574,24 @@ Module CArray
     EndIf
     
     
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; AppendUniqueSTr
+  ;----------------------------------------------------------------
+  Procedure AppendUniqueStr(*array.CArrayT,unique.s)
+    If Not *array\type = #ARRAY_STR : ProcedureReturn : EndIf
+    
+    Protected nbi = *array\itemCount
+    Protected i
+
+    For i = 0 To nbi-1
+      If unique = CArray::GetValueStr(*array,i)
+        ; Item Already in Array
+        ProcedureReturn 
+      EndIf
+    Next
+    AppendStr(*array,unique)   
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -602,13 +648,57 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure Find(*array.CArrayT,*value,*ID)
     Protected i
-
-    For i=0 To GetCount(*array)-1
-      If GetValue(*array,i) = *value
-        PokeI(*ID,i)
-        Break
-      EndIf
-    Next
+    If *array\type < #ARRAY_PTR
+      Select *array\type
+        Case #ARRAY_BOOL
+          For i=0 To GetCount(*array)-1
+            If GetValueB(*array,i) = PeekB(*value)
+              PokeI(*ID,i)
+              Break
+            EndIf
+          Next
+          
+        Case #ARRAY_CHAR
+          For i=0 To GetCount(*array)-1
+            If GetValueC(*array,i) = PeekC(*value)
+              PokeI(*ID,i)
+              Break
+            EndIf
+          Next
+          
+        Case #ARRAY_LONG
+          For i=0 To GetCount(*array)-1
+            If GetValueL(*array,i) = PeekL(*value)
+              PokeI(*ID,i)
+              Break
+            EndIf
+          Next
+          
+        Case #ARRAY_INT
+          For i=0 To GetCount(*array)-1
+            If GetValueI(*array,i) = PeekI(*value)
+              PokeI(*ID,i)
+              Break
+            EndIf
+          Next
+          
+        Case #ARRAY_FLOAT
+          For i=0 To GetCount(*array)-1
+            If GetValueF(*array,i) = PeekF(*value)
+              PokeI(*ID,i)
+              Break
+            EndIf
+          Next
+      EndSelect
+    Else
+      For i=0 To GetCount(*array)-1
+        If GetValuePtr(*array,i) = *value
+          PokeI(*ID,i)
+          Break
+        EndIf
+      Next
+    EndIf
+    
     
   EndProcedure
   
@@ -617,9 +707,39 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure Remove(*array.CArrayT,ID)
     Protected i
-    For i=ID To GetCount(*array)-2
-      SetValue(*array,i,GetValue(*array,i+1))
-    Next
+    If *array\type < #ARRAY_PTR
+      Select *array\type
+        Case #ARRAY_BOOL
+          For i=ID To GetCount(*array)-2
+            SetValueB(*array,i,GetValueB(*array,i+1))
+          Next
+          
+        Case #ARRAY_CHAR
+          For i=ID To GetCount(*array)-2
+            SetValueC(*array,i,GetValueC(*array,i+1))
+          Next
+          
+        Case #ARRAY_LONG
+          For i=ID To GetCount(*array)-2
+            SetValueL(*array,i,GetValueL(*array,i+1))
+          Next
+          
+        Case #ARRAY_INT
+          For i=ID To GetCount(*array)-2
+            SetValueI(*array,i,GetValueI(*array,i+1))
+          Next
+          
+        Case #ARRAY_FLOAT
+          For i=ID To GetCount(*array)-2
+            SetValueF(*array,i,GetValueF(*array,i+1))
+          Next
+      EndSelect
+      
+    Else
+      For i=ID To GetCount(*array)-2
+        SetValuePtr(*array,i,GetValuePtr(*array,i+1))
+      Next
+    EndIf  
     SetCount(*array,GetCount(*array)-1)
   EndProcedure
   
@@ -814,7 +934,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 772
-; FirstLine = 765
+; CursorPosition = 93
+; FirstLine = 80
 ; Folding = ---------
 ; EnableXP

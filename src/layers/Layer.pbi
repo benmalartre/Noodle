@@ -90,7 +90,7 @@ DeclareModule Layer
   Declare WriteImage(*layer.Layer_t,path.s,format)
   Declare WriteFramebuffer(*layer.Layer_t,path.s,format.i)
   
-  Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
  
   
@@ -374,14 +374,17 @@ Module Layer
   ;---------------------------------------------------
   ; Draw Polymeshes
   ;---------------------------------------------------
-  Procedure DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Procedure DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
     Protected i
     Protected obj.Object3D::IObject3D
     Protected *obj.Object3D::Object3D_t
+    Protected *mesh.Polymesh::Polymesh_t
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
       If *obj\type & Object3D::#Object3D_Polymesh
+        *mesh = *obj
+        *mesh\wireframe = wireframe
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
         obj\Draw()
@@ -448,7 +451,7 @@ Module Layer
   ;GLCheckError("Uniforms")  
   glUniform1i(glGetUniformLocation(shader,"tex"),0)
   
-  DrawPolymeshes(*layer,Scene::*current_scene\objects,shader)
+  DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
 
 
   
@@ -605,9 +608,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 211
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 453
+; FirstLine = 423
 ; Folding = ----
 ; EnableXP

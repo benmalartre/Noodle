@@ -23,6 +23,10 @@ DeclareModule Polymesh
     depth.f
     u.i
     v.i
+    wireframe.b
+    vao2.i
+    vbo2.i
+    eab2.i
   EndStructure
   
   Interface IPolymesh Extends Object3D::IObject3D
@@ -167,7 +171,7 @@ Module Polymesh
     ; POSITIONS
     ;-------------------------------------------------------------
     For i=0 To nbv-1
-      *v = CArray::GetValue(*geom\a_positions,PeekL(CArray::GetValue(*geom\a_triangleindices,i)))
+      *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
       CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,*flatdata)
@@ -184,7 +188,7 @@ Module Polymesh
   ;-----------------------------------------------------
   Procedure BuildGLData(*p.Polymesh_t)
     
-    ;---[ Get Underlying Geometry ]--------------------
+    ;Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     Protected nbv = *geom\nbsamples
     If nbv <3 : ProcedureReturn : EndIf
@@ -210,7 +214,7 @@ Module Polymesh
     ; POSITIONS
     ;-------------------------------------------------------------
     For i=0 To nbv-1
-      *v = CArray::GetValue(*geom\a_positions,PeekL(CArray::GetValue(*geom\a_triangleindices,i)))
+      *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
       CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,*flatdata)
@@ -254,18 +258,49 @@ Module Polymesh
     ; Attribute Color 3
     glEnableVertexAttribArray(4)
     glVertexAttribPointer(4,4,#GL_FLOAT,#GL_FALSE,0,4*size_p)
-    
-    Protected shader.i
-    If *p\shader : shader = *p\shader\pgm : EndIf
-    
-    glBindAttribLocation(shader, 0, "position")
-    glBindAttribLocation(shader, 1, "normal")
-    glBindAttribLocation(shader, 2, "tangent")
-    glBindAttribLocation(shader, 3, "uvws")
-    glBindAttribLocation(shader, 4, "color");
 
   EndProcedure
+  
+  ;-----------------------------------------------------
+  ; Buil Edges GL Data 
+  ;-----------------------------------------------------
+  Procedure BuildGLEdgeData(*p.Polymesh_t)
     
+    ;Get Underlying Geometry
+    Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
+    
+    ; Create or ReUse Vertex Array Object
+    If Not *p\vao2
+      glGenVertexArrays(1,@*p\vao2)
+    EndIf
+    glBindVertexArray(*p\vao2)
+    
+    ; Create or ReUse Vertex Buffer Object
+    If Not *p\vbo2
+      glGenBuffers(1,@*p\vbo2)
+    EndIf
+    glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+    
+    ; Push Position Datas to GPU
+    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
+    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+    
+    ; Attibute Position 0
+    glEnableVertexAttribArray(0)
+    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    
+    ; Create or ReUse Edge Elements Buffer
+    If Not *p\eab2
+      glGenBuffers(1,@*p\eab2)
+    EndIf 
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab2)
+    
+    ; Push Element Datas to GPU
+    size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
+
+  EndProcedure
+   
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*p.Polymesh_t,*pgm.Program::Program_t)
@@ -296,14 +331,6 @@ Module Polymesh
     EndIf
     glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
     
-;     ; Create or ReUse Edge Elements Buffer
-;     If Not *p\eab
-;       glGenBuffers(1,@*p\eab)
-;     EndIf 
-;     Define l.l
-;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
-;     glBufferData(#GL_ELEMENT_ARRAY_BUFFER,*geom\nbedges * 2 * CArray::GetItemSize(*geom\a_edgeindices),CArray::GetPtr(*geom\a_edgeindices,0),#GL_STATIC_DRAW)
-    
     ; Fill Buffer
     BuildGLData(*p)
   GLCheckError("Build GL DATAS")
@@ -324,12 +351,19 @@ Module Polymesh
         ;MessageRequester("Error Setup Shader Program for Polymesh",PeekS(*pLinkInfoLog))
       EndIf
     EndIf
-    
+
+;     ; Create or ReUse Edge Elements Buffer
+;     If Not *p\eab
+;       glGenBuffers(1,@*p\eab)
+;     EndIf 
+; 
+;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
 
     ; Unbind
     glBindVertexArray(0)
-   
-    GLCheckError("Setup Mesh OpenGL Done")
+    
+    BuildGLEdgeData(*p)
+    
     *p\initialized = #True
     *p\dirty = Object3D::#DIRTY_STATE_CLEAN
   EndProcedure
@@ -340,11 +374,9 @@ Module Polymesh
   ;{
   Procedure Clean(*p.Polymesh_t)
 
-      If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf
-
-      If *p\vbo: glDeleteBuffers(1,@*p\vbo) : EndIf
-
-      If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
+    If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf 
+    If *p\vbo: glDeleteBuffers(1,@*p\vbo) : EndIf
+    If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
 
   EndProcedure
   ;}
@@ -402,9 +434,22 @@ Module Polymesh
       
       glEnd()
     CompilerElse
-      glBindVertexArray(*p\vao)
+      
+      If *p\wireframe
+        glBindVertexArray(*p\vao2)
+        glPointSize(4)
+        glDrawArrays(#GL_POINTS, 0, *geom\nbpoints)
   ;     glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-      glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+        glDrawElements(#GL_LINES,*geom\nbedges*2,#GL_UNSIGNED_INT,0)
+        
+        GLCheckError("DRAW MESH WIREFRAME")
+      Else
+        glBindVertexArray(*p\vao)
+;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+        GLCheckError("DRAW MESH SHADED")
+      EndIf
+      
       
       glBindVertexArray(0)
     CompilerEndIf
@@ -451,7 +496,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 304
-; FirstLine = 291
-; Folding = ---
+; CursorPosition = 445
+; FirstLine = 421
+; Folding = ----
 ; EnableXP

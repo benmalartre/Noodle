@@ -66,14 +66,6 @@ Module GLContext
     FreeMemory(*ctx)
   EndProcedure
   
-  Procedure TestContext()
-    Protected major.i, minor.i
-    glGetIntegerv(#GL_MAJOR_VERSION, @major)
-    glGetIntegerv(#GL_MINOR_VERSION, @minor)
-      ;Protected version.s = PeekS(glGetString(#GL_SHADING_LANGUAGE_VERSION))
-    MessageRequester("BEFORE LOAD EXTENSIONS ", "Major "+Str(major)+", Minor "+Str(minor))
-  EndProcedure
-  
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
@@ -149,11 +141,6 @@ Module GLContext
      
     EndIf
     
-     Protected major.i, minor.i
-    glGetIntegerv(#GL_MAJOR_VERSION, @major)
-    glGetIntegerv(#GL_MINOR_VERSION, @minor)
-      ;Protected version.s = PeekS(glGetString(#GL_SHADING_LANGUAGE_VERSION))
-    MessageRequester("BEFORE LOAD EXTENSIONS ", "Major "+Str(major)+", Minor "+Str(minor))
     GLLoadExtensions()
 
     ; Build Shaders
@@ -164,9 +151,6 @@ Module GLContext
       *Me\shaders(shadernames(i)) = *shader
      Debug i
    Next
-   glGetIntegerv(#GL_MAJOR_VERSION, @major)
-    glGetIntegerv(#GL_MINOR_VERSION, @minor)
-    MessageRequester("AFTER BUILD SHADERS ", "Major "+Str(major)+", Minor "+Str(minor))
    
     ; Build Font Writer
     GLCheckError("Before Creating FTGL")
@@ -184,6 +168,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 156
+; FirstLine = 135
 ; Folding = -
 ; EnableUnicode
 ; EnableXP

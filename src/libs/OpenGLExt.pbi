@@ -75,13 +75,6 @@ DeclareModule OpenGLExt
           EndIf
         EndMacro
         
-;         Global macosx_gl_lib = OpenLibrary(#PB_Any,"/System/Library/Frameworks/OpenGL.framework/OpenGL")
-;         
-;         Macro setGLEXT(var, extname)
-;           var = GetFunction(macosx_gl_lib,extname)
-;         EndMacro
-
-        
     CompilerEndSelect
   CompilerEndIf
   
@@ -947,18 +940,11 @@ Module OpenGLExt
         CompilerEndIf
         
         GL_EXTENSIONS_LOADED = #True
-        
-        CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-          ;CloseLibrary(macosx_gl_lib)
-        CompilerEndIf
-        Debug " GLLoadExtensions ---> "+Str(GL_EXTENSIONS_LOADED)
+
     EndIf
     
   EndProcedure
-  
-  
-  
-  
+
   ; PrototypeC           glDrawArrays                         ( mode.GLenum, first.GLint, count.GLsizei )
   ; PrototypeC           glDrawElements                       ( mode.GLenum, count.GLsizei, type.GLenum, *indices )
   ; PrototypeC           glGetPointerv                        ( pname.GLenum, *params )
@@ -1497,8 +1483,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 946
-; FirstLine = 935
-; Folding = -------
+; CursorPosition = 71
+; FirstLine = 61
+; Folding = ------
 ; EnableUnicode
 ; EnableXP

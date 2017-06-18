@@ -12974,7 +12974,7 @@ Module Shape
     Vector3::Set(@n,0,0,0)
     
     For i=0 To CArray::GetCount(*Me\normals)-1
-      *n = CArray::GetPtr(*Me\normals,i)
+      *n = CArray::GetValue(*Me\normals,i)
       Vector3::Set(*n,0,0,0)
     Next
     
@@ -12982,9 +12982,9 @@ Module Shape
     ; First Triangle Normals
     Define l.l
     For i=0 To *Me\nbt-1
-      a = PeekL(CArray::GetValue(*Me\indices,i*3+2))
-      b = PeekL(CArray::GetValue(*Me\indices,i*3+1))
-      c = PeekL(CArray::GetValue(*Me\indices,i*3))
+      a = CArray::GetValueL(*Me\indices,i*3+2)
+      b = CArray::GetValueL(*Me\indices,i*3+1)
+      c = CArray::GetValueL(*Me\indices,i*3)
       
       *a = CArray::GetValue(*Me\positions,a)
       *b = CArray::GetValue(*Me\positions,b)
@@ -13368,7 +13368,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 13026
-; FirstLine = 13023
+; CursorPosition = 12986
+; FirstLine = 12967
 ; Folding = ---
 ; EnableXP

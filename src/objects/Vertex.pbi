@@ -9,7 +9,7 @@ XIncludeFile "Geometry.pbi"
 DeclareModule Vertex
   UseModule Geometry
   UseModule Math
-  Declare New()
+  Declare New(index.i)
   Declare Delete(*v.Vertex_t)
   Declare ComputeNormal(*v.Vertex_t)
   Declare SetPosition(*v.Vertex_t,*p.v3f32)
@@ -47,11 +47,13 @@ Module Vertex
   ;  Constructor
   ;---------------------------------------------
   ;{
-  Procedure.i New()
+  Procedure.i New(index.i)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Vertex_t = AllocateMemory(SizeOf(Vertex_t))
     InitializeStructure(*Me,Vertex_t)
     
+    *Me\id = index
+    *Me\visited = #False
     ; ----[ Initialize ]--------------------------------------------------------
     *Me\samples = CArray::newCArrayPtr()
     *Me\edges = CArray::newCArrayPtr()
@@ -192,8 +194,8 @@ Module Vertex
   
 EndModule
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 11
+; FirstLine = 4
 ; Folding = ---
 ; EnableXP

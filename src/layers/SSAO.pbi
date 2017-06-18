@@ -117,8 +117,8 @@ Module LayerSSAO
     CArray::SetCount(*layer\noise,ns)
   
     For i=0 To ns-1
-      Vector3::Set(CArray::GetPtr(*layer\noise,i),Random(100)*0.02-1,Random(100)*0.02-1,0)
-      Vector3::NormalizeInPlace(CArray::GetPtr(*layer\noise,i))
+      Vector3::Set(CArray::GetValue(*layer\noise,i),Random(100)*0.02-1,Random(100)*0.02-1,0)
+      Vector3::NormalizeInPlace(CArray::GetValue(*layer\noise,i))
     Next i
     
     If Not *layer\noise_tex
@@ -238,7 +238,7 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 216
-; FirstLine = 204
+; CursorPosition = 120
+; FirstLine = 97
 ; Folding = --
 ; EnableXP

@@ -132,6 +132,8 @@ DeclareModule Geometry
   ;{
   Structure Edge_t
     id.i
+    p1id.i
+    p2id.i
     position.v3f32
     normal.v3f32
     *neighbors.CArray::CArrayPtr
@@ -168,6 +170,7 @@ DeclareModule Geometry
     id.i
     position.v3f32
     normal.v3f32
+    *samples.CArray::CArrayPtr
     *neighbors.CArray::CArrayPtr
     *vertices.CArray::CArrayPtr
     *edges.CArray::CArrayPtr
@@ -214,12 +217,11 @@ DeclareModule Geometry
     *topo.Topology_t
     *base.Topology_t
     
-;     *a_vertices.CArray::CArrayPtr
-;     *a_edges.CArray::CArrayPtr
-;     *a_polygons.CArray::CArrayPtr
-;     *a_samples.CArray::CArrayPtr
-;     
-   ; t.i
+    *a_vertices.CArray::CArrayPtr
+    *a_edges.CArray::CArrayPtr
+    *a_polygons.CArray::CArrayPtr
+    *a_samples.CArray::CArrayPtr
+
   EndStructure
   ;}
   
@@ -322,9 +324,8 @@ Module Geometry
   EndProcedure
   
 EndModule
-
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 238
-; FirstLine = 201
+; CursorPosition = 172
+; FirstLine = 165
 ; Folding = ---
 ; EnableXP

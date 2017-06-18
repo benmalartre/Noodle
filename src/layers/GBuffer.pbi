@@ -141,7 +141,7 @@ Module LayerGBuffer
     glEnable(#GL_DEPTH_TEST)
     Define p.v3f32
     
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader)
+    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
     
     
     ; Draw Instance Clouds
@@ -350,7 +350,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 344
-; FirstLine = 317
+; CursorPosition = 143
+; FirstLine = 129
 ; Folding = --
 ; EnableXP

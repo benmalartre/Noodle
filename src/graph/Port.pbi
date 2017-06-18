@@ -531,7 +531,7 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_FLOAT
         CArray::SetValueF(*port\value,0,PeekF(*value))
       Default
-        CArray::SetValue(*port\value,0,*value)
+        CArray::SetValuePtr(*port\value,0,*value)
     EndSelect
     
     
@@ -618,7 +618,7 @@ Module NodePort
         Protected *vVal.CArray::CArrayV3F32 = *port\value
         Protected v.v3f32
         
-        Vector3::SetFromOther(@v,CArray::GetValue(*vVal,0))
+        Vector3::SetFromOther(@v,CArray::GetValuePtr(*vVal,0))
         
         Protected *vCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected f.f = *vCtrl\value_n
@@ -632,14 +632,14 @@ Module NodePort
             Vector3::Set(@v,v\x,v\y,f)
         EndSelect
         
-        CArray::SetValue(*vVal,0,@v)
+        CArray::SetValuePtr(*vVal,0,@v)
         ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
       Case Attribute::#ATTR_TYPE_Quaternion
         Protected *qVal.CArray::CArrayQ4F32 = *port\value
         Protected q.q4f32
         
-        Vector3::SetFromOther(@q,CArray::GetValue(*qVal,0))
+        Vector3::SetFromOther(@q,CArray::GetValuePtr(*qVal,0))
         
         Protected *qCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         f.f = *qCtrl\value_n
@@ -655,7 +655,7 @@ Module NodePort
             Quaternion::Set(@q,q\x,q\y,q\z,Radian(f))
         EndSelect
         
-        CArray::SetValue(*qVal,0,@q)
+        CArray::SetValuePtr(*qVal,0,@q)
         
       Case Attribute::#ATTR_TYPE_STRING
         
@@ -718,7 +718,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 313
-; FirstLine = 313
+; CursorPosition = 657
+; FirstLine = 673
 ; Folding = ----
 ; EnableXP

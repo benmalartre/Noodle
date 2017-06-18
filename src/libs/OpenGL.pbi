@@ -2,20 +2,21 @@
 ; OpenGL Module Declaration
 ; ============================================================================
 DeclareModule OpenGL
-  #GLFW_GETPROCADDRESS_DEBUG = 0
+  ;-----------------------------------------
+  ; Constants
+  ;-----------------------------------------
+  CompilerIf Not Defined(USE_LEGACY_OPENGL,#PB_Constant)
+    #USE_LEGACY_OPENGL = #False
+  CompilerEndIf
+  
   Global GL_EXTENSIONS_LOADED = #False
   CompilerIf Not Defined(USE_GLFW,#PB_Constant)
     #USE_GLFW = #False
+  CompilerElse
+    CompilerIf Not Defined(GLFW_GETPROCADDRESS_DEBUG, #PB_Constant)
+      #GLFW_GETPROCADDRESS_DEBUG = 0
+    CompilerEndIf
   CompilerEndIf
-  
-  #USE_LEGACY_OPENGL = #False
-;   CompilerIf Not Defined(USE_LEGACY_OPENGL,#PB_Constant)
-;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #Use_GLFW
-;       #USE_LEGACY_OPENGL = #False
-;     CompilerElse
-;       #USE_LEGACY_OPENGL = #False
-;     CompilerEndIf
-;   CompilerEndIf
   
   ;-----------------------------------------
   ; Get GLFW String Output
@@ -1596,7 +1597,7 @@ DeclareModule OpenGL
       i
     EndMacro;}
   CompilerEndIf
-  
+
 EndDeclareModule
 
 Module OpenGL
@@ -1605,7 +1606,7 @@ EndModule
 
 ; 
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 10
+; CursorPosition = 17
 ; Folding = ------------------
 ; EnableUnicode
 ; EnableXP

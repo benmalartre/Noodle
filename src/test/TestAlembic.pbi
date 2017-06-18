@@ -54,8 +54,8 @@ Procedure Draw(*app.Application::Application_t)
   
   ;Model::Update(*model)
   LayerDefault::Draw(*layer,*app\context)
-  LayerGBUffer::Draw(*gbuffer,*app\context)
-  LayerSSAO::Draw(*ssao,*app\context)
+;   LayerGBUffer::Draw(*gbuffer,*app\context)
+;   LayerSSAO::Draw(*ssao,*app\context)
 ;   glUseProgram(*pgm\pgm)
 ;   Define.m4f32 model,view,proj
 ;   Matrix4::SetIdentity(@model)
@@ -156,7 +156,7 @@ If Time::Init()
     *model = Model::New("FUCK")
     For i=0 To 0:
       Define *r5.Model::Model_t = Alembic::LoadABCArchive(path)
-      ; Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_TEAPOT)
+      ;Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_CUBE)
 ;       Define *geom.Geometry::PolymeshGeometry_t = *r5\geom
 ;       numVertices + *geom\nbpoints
       Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*r5)
@@ -194,19 +194,23 @@ If Time::Init()
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   GLCheckError("Before Creating FrameBuffer")
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  Debug "DEFAULT LAYER CREATED"
   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
+  Debug "GBUFFER LAYER CREATED"
   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
+  Debug "SSAO LAYER CREATED"
 
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
   Scene::AddModel(Scene::*current_scene,*model)
+  Debug "MODEL ADDED TO SCENE"
   Scene::Setup(Scene::*current_scene,*app\context)
-  Debug "Setup Model Done!!!"
+  Debug "SCENE SETUP DONE"
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 197
-; FirstLine = 173
+; CursorPosition = 158
+; FirstLine = 152
 ; Folding = -
 ; EnableThread
 ; EnableXP

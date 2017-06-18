@@ -88,50 +88,65 @@ Module LayerDefault
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.LayerDefault_t,*ctx.GLContext::GLContext_t)
-  GLCheckError("Entering Layer Default Draw")
-  glDisable(#GL_CULL_FACE)
-  glFrontFace(#GL_CW)
-  
-;   If *layer\image
-;     glActiveTexture(#GL_TEXTURE0)
-;     glBindTexture(#GL_TEXTURE_2D,*layer\image)
-;     GLCheckError("Bind Texture")
-;   EndIf
-;   
-
-  Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
-  Framebuffer::BindOutput(*buffer)
-  
-  ;   Clear(*layer)
-  glClearColor(0.66,0.66,0.66,1.0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glCheckError("Clear")
-  glEnable(#GL_DEPTH_TEST)
-  
-  glViewport(0,0,*layer\width,*layer\height)
-  
-  ; Find Up View Point
-  ;-----------------------------------------------
-  Protected *view.m4f32,*proj.m4f32,view.m4f32
-  *view = Layer::GetViewMatrix(*layer)
-  *proj = Layer::GetProjectionMatrix(*layer)
-  
-  ;Draw Polymeshes 
-  ;-----------------------------------------------
-  Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
-  Protected shader.GLuint =  *shader\pgm
-  glUseProgram(shader)
+    GLCheckError("Entering Layer Default Draw")
+    glDisable(#GL_CULL_FACE)
+    glFrontFace(#GL_CW)
     
-;   GLCheckError("Use Program")
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  ;   If *layer\image
+  ;     glActiveTexture(#GL_TEXTURE0)
+  ;     glBindTexture(#GL_TEXTURE_2D,*layer\image)
+  ;     GLCheckError("Bind Texture")
+  ;   EndIf
+  ;   
   
-  glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-  ;GLCheckError("Uniforms")  
-  glUniform1i(glGetUniformLocation(shader,"tex"),0)
-  
-  Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader)
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
+    Framebuffer::BindOutput(*buffer)
+    
+    ;   Clear(*layer)
+    glClearColor(0.66,0.66,0.66,1.0)
+    glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+    glCheckError("Clear")
+    glEnable(#GL_DEPTH_TEST)
+    
+    glViewport(0,0,*layer\width,*layer\height)
+    
+    ; Find Up View Point
+    ;-----------------------------------------------
+    Protected *view.m4f32,*proj.m4f32,view.m4f32
+    *view = Layer::GetViewMatrix(*layer)
+    *proj = Layer::GetProjectionMatrix(*layer)
+    
+;     ;Draw Shaded Polymeshes 
+;     ;-----------------------------------------------
+    Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
+    Protected shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+      
+  ;   GLCheckError("Use Program")
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    
+    glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
+    ;GLCheckError("Uniforms")  
+    glUniform1i(glGetUniformLocation(shader,"tex"),0)
+    
+    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
+    
+    ;Draw Wireframe Polymeshes 
+    ;-----------------------------------------------
+    *shader = *ctx\shaders("wireframe")
+    shader =  *shader\pgm
+    glUseProgram(shader)
+;       
+    ;   GLCheckError("Use Program")
+    glUniform4f(glGetUniformLocation(shader,"color"), 0.0, 1.0, 0.0, 1.0)
+    Protected m.m4f32
+    Matrix4::SetIdentity(@m)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
+    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
 
 ; 
 ;   
@@ -227,7 +242,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 87
+; CursorPosition = 148
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

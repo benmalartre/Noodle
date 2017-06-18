@@ -502,6 +502,7 @@ Module Application
   ; Main Loop
   ;------------------------------
   Procedure Loop(*app.Application_t,*callback.PDRAWFN)
+    Debug "START MAIN LOOP"
     Define event
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
@@ -533,9 +534,9 @@ Module Application
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 210
-; FirstLine = 206
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 504
+; FirstLine = 499
 ; Folding = ----
 ; EnableUnicode
 ; EnableXP

@@ -50,6 +50,7 @@ Module ViewportUI
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     InitializeStructure(*Me,ViewportUI_t)
     *Me\name = name
+    *Me\type = Globals::#VIEW_TIMELINE
     Object::INI(ViewportUI)
     
     Protected x = *parent\x
@@ -58,22 +59,12 @@ Module ViewportUI
     Protected h = *parent\height
     
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    
-    
+
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       ; ---[ Allocate Pixel Format Object ]---------------------------------
       Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
       ; ---[ Set Pixel Format Attributes ]----------------------------------
       Define pfa.NSOpenGLPixelFormatAttribute
-      ;\v[0] = #NSOpenGLPFAColorSize  
-;       With pfa
-;         \v[0] = #NSOpenGLPFANoRecovery         : \v[1] = 24
-;         \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-;         \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-;         \v[6] = #NSOpenGLPFADoubleBuffer
-;         \v[7] = #NSOpenGLPFAAcceleratedCompute ; I also want OpenCL available
-;         \v[8] = #Null
-;       EndWith
       With pfa
         \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
         \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
@@ -83,45 +74,37 @@ Module ViewportUI
         \v[8] = #NSOpenGLPFANoRecovery
         \v[9] = #Null
       EndWith
+
       ; ---[ Choose Pixel Format ]------------------------------------------
       CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
       ; ---[ Allocate OpenGL Context ]--------------------------------------
       Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
       ; ---[ Create OpenGL Context ]----------------------------------------
       CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-      GLCheckError("INIT OPENGL!")
       ; ---[ Set Current Context ]------------------------------------------
       CocoaMessage( 0, ctx, "makeCurrentContext" )
-      GLCheckError("MAKE CURRENt CONTEXT!")
-      
-      glClearColor(0,1,0,1)
-      glClear(#GL_COLOR_BUFFER_BIT)
       ; ---[ Swap Buffers ]-------------------------------------------------
       CocoaMessage( 0, ctx, "flushBuffer" )
+      
       *Me\applecontext = ctx
       GLLoadExtensions()
-      GLCheckError("Load Extensions!")
-      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
+      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
+      
       ; ---[ Associate Context With OpenGLGadget NSView ]-------------------
       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
-      GLCheckError("Bind Context")
     CompilerElse
       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-      GLCheckError("Create OpenGL Gadget!")
       GLLoadExtensions()
-      GLCheckError("Load Extensions!")
     CompilerEndIf
     
-    
-
     *Me\width = w
     *Me\height = h
    
     CloseGadgetList()
     
     View::SetContent(*parent,*Me)
-    GLCheckError("Created Viewport UI")
+
     ProcedureReturn *Me
   EndProcedure
   
@@ -415,7 +398,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 123
-; FirstLine = 99
+; CursorPosition = 52
+; FirstLine = 34
 ; Folding = ---
 ; EnableXP
