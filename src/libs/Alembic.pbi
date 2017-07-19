@@ -1140,7 +1140,7 @@ Module AlembicObject
 
       Alembic::ABC_UpdatePolymeshTopoSample(*o\ptr,*infos,*mesh_sample)
 
-       PolymeshGeometry::RecomputeTriangle(*geom)
+       PolymeshGeometry::RecomputeTriangles(*geom)
        
        
        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
@@ -1678,9 +1678,9 @@ Module AlembicObject
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 329
-; FirstLine = 322
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 1142
+; FirstLine = 1138
 ; Folding = -----------
 ; EnableXP
 ; Executable = bin/Alembic.app

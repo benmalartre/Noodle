@@ -9,101 +9,177 @@ XIncludeFile "../objects/Object3D.pbi"
 ; ============================================================================
 Module Tree
   ;-----------------------------------------------------------------------------
-  ; Get Branch Context
+  ; Recurse Node
   ;-----------------------------------------------------------------------------
-  Procedure GetBranchContext(*Me.Tree_t,*current.Node::Node_t)
+  Procedure RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
     If Not *current : ProcedureReturn : EndIf
+    Debug "RECURSE NODES : BRANCH = "+Str(*branch)
+    Protected *child.Node::Node_t
     
-    ForEach *current\outputs()
+    If *current\class\name = "ExecuteNode"
+      LastElement(*current\inputs())
+      If filter_dirty
+        Repeat
+          If *current\inputs()\connected
+            *child = *current\inputs()\source\node
+            If Node::IsDirty(*child)
+              AddElement(*branch\filter_nodes())
+              *branch\filter_nodes() = *child
+              RecurseNodes(*branch, *child, filterDirty)
+            EndIf
+          EndIf
+        Until Not PreviousElement(*current\inputs())
+      Else
+        Repeat
+           If *current\inputs()\connected
+             *child = *current\inputs()\source\node
+            AddElement(*branch\nodes())
+            *branch\nodes() = *child
+            RecurseNodes(*branch, *child, filterDirty)
+          EndIf
+        Until Not PreviousElement(*current\inputs())
+      EndIf
       
+    Else
+      If filter_dirty
+        ForEach *current\inputs()
+          If *current\inputs()\connected
+            *child = *current\inputs()\source\node
+            If Node::IsDirty(*child):
+              AddElement(*branch\filter_nodes())
+              *branch\filter_nodes() = *current\inputs()\source\node
+              RecurseNodes(*branch, *current\inputs()\source\node, filterDirty)
+            EndIf
+          EndIf
+        Next
+      Else
+        ForEach *current\inputs()
+          If *current\inputs()\connected
+            *child = *current\inputs()\source\node
+            AddElement(*branch\nodes())
+            *branch\nodes() = *current\inputs()\source\node
+            RecurseNodes(*branch, *current\inputs()\source\node, filterDirty)
+          EndIf
+        Next
+      EndIf
+    EndIf
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Clear All Branches
+  ;-----------------------------------------------------------------------------
+  Procedure ClearAllBranches(*Me.Tree_t) 
+    ForEach *Me\all_branches()
+      ClearStructure(*Me\all_branches(), Branch_t)
+      FreeMemory(*Me\all_branches())
+    Next
+    
+    ClearList(*Me\all_branches())
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Get All Branches
+  ;-----------------------------------------------------------------------------
+  Procedure GetAllBranches(*Me.Tree_t)    
+    Protected *current.Node::Node_t
+    Protected *branch.Branch_t
+    ClearAllBranches(*Me)
+    ForEach *Me\root\inputs()
+      If *Me\root\inputs()\connected
+        *current = *Me\root\inputs()\source\node
+        *branch = AllocateMemory(SizeOf(Branch_t))
+        InitializeStructure(*branch, Branch_t)
+        
+        AddElement(*Me\all_branches())
+        *Me\all_branches() = *branch
+        AddElement(*Me\all_branches()\nodes())
+        *Me\all_branches()\nodes() = *current
+        RecurseNodes(*branch,*current, #False)
+      EndIf
     Next
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
-  ; Recurse Node
+  ; Get Branch State
   ;-----------------------------------------------------------------------------
-  Procedure RecurseNodes(*Me.Tree_t,*current.Node::Node_t)
-    If Not *current : ProcedureReturn : EndIf
-    
-    Protected *child.Node::Node_t
-    
-    If *current\class\name = "ExecuteNode"
-      LastElement(*current\inputs())
-      Repeat
-         If *current\inputs()\connected
-          *child = *current\inputs()\source\node
-          AddElement(*Me\nodes())
-          *Me\nodes() = *current\inputs()\source\node
-          ;CArray::AppendPtr(*Me\nodes,*current\inputs()\source\node)
-          RecurseNodes(*Me,*current\inputs()\source\node)
-        EndIf
-      Until Not PreviousElement(*current\inputs())
-      
-    Else
-      
-      ForEach *current\inputs()
-        If *current\inputs()\connected
-          *child = *current\inputs()\source\node
-          AddElement(*Me\nodes())
-          *Me\nodes() = *current\inputs()\source\node
-          ;CArray::AppendPtr(*Me\nodes,*current\inputs()\source\node)
-          RecurseNodes(*Me,*current\inputs()\source\node)
-        EndIf
-      Next
-    EndIf
-    
+  Procedure GetBranchState(*branch.Branch_t)    
+    Protected *current.Node::Node_t
+    LastElement(*branch\nodes())
+    Repeat
+      *current = *branch\nodes()
+      Node::UpdateAffects(*current)
+    Until Not PreviousElement(*branch\nodes())
+   
   EndProcedure
   
   ;-----------------------------------------------------------------------------
-  ; Evaluate Port
+  ; Update Branch State
   ;-----------------------------------------------------------------------------
-  Procedure EvaluatePort(*Me.Tree_t,*port.NodePort::NodePort_t)
-    ;recurse to leaf node
-    If *port\class\name = "CompoundPortNode"
-      Protected *c.CompoundNodePort::CompoundNodePort_t = *port
-      *port = *c\port
-      MessageRequester("Evaluate Port","CompoundNodePort")
-    EndIf
-    
-    If Not *port\connected Or *port\connexion = #Null : ProcedureReturn(void) : EndIf
-    
-    If *Me\dirty = #True
-  ;     CArray::SetCount(*Me\nodes,0)
-  ;     CArray::AppendPtr(*Me\nodes,*port\source\node)
-      ClearList(*Me\nodes())
-      AddElement(*Me\nodes())
-      *Me\nodes() = *port\source\node
-    
-      RecurseNodes(*Me,*port\source\node)
-      Protected *current.Node::Node_t
-      Protected current.Node::INode
-      ;Protected i = CArray::GetCount(*Me\nodes)-1
-      LastElement(*Me\nodes())
-    EndIf
-    
-    Repeat 
-     
-      *current = *Me\nodes();CArray::GetValuePtr(*Me\nodes,i)
-      
-      If *current
-        current = *current
-        current\Evaluate()
+  Procedure UpdateBranchState(*branch.Branch_t)
+    Protected *current.Node::Node_t
+    LastElement(*branch\nodes())
+    Repeat
+      *current = *branch\nodes()
+      If *current\class\name = "GetDataNode"
+        ForEach *current\inputs()
+          Protected func.Node::PGETDATAPROVIDERATTRIBUTE = GetRuntimeInteger("GetDataNode::GetNodeAttribute()")
+          Protected *attribute.Attribute::Attribute_t = func(*current)
+          If *attribute And *attribute\dirty = #True
+            *current\inputs()\dirty = #True
+          EndIf
+        Next
+        Node::UpdateDirty(*current)
+      ElseIf *current\class\name = "SetDataNode"
+        *current\outputs()\dirty = #True
+      Else
+        Node::UpdateDirty(*current)
       EndIf
-      
-      i-1
-    Until Not PreviousElement(*Me\nodes())
+      ;Node::UpdateDirty(*current)
+    Until Not PreviousElement(*branch\nodes())
   EndProcedure
-
+  
+  
   ;-----------------------------------------------------------------------------
-  ; Update
+  ; Evaluate Branch
+  ;-----------------------------------------------------------------------------
+  Procedure EvaluateBranch(*branch.Branch_t)    
+    Protected *current.Node::Node_t
+    Protected current.Node::INode
+    ClearList(*branch\filter_nodes())
+    
+    LastElement(*branch\nodes())
+    Repeat 
+      *current = *branch\nodes()
+      
+      If *current And Node::IsDirty(*current)
+        AddElement(*branch\filter_nodes())
+        *branch\filter_nodes() = *current
+      EndIf
+    Until Not PreviousElement(*branch\nodes())
+    
+    ForEach *branch\filter_nodes()
+      current = *branch\filter_nodes()
+      current\Evaluate()
+    Next
+    
+    *branch\dirty = #False
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Evaluate
   ;-----------------------------------------------------------------------------
   Procedure Evaluate(*Me.Tree_t)
-    If *Me\current:Node::Update(*Me\current):EndIf
-    
-    ForEach *Me\root\inputs()
-      EvaluatePort(*Me,*Me\root\inputs())
-      ID+1
+    If *Me\dirty
+      GetAllBranches(*Me)
+      ForEach *Me\all_branches()
+        GetBranchState(*Me\all_branches()) 
+      Next
+      *Me\dirty = #False
+    EndIf
+    ForEach *Me\all_branches()
+      UpdateBranchState(*Me\all_branches())
+      EvaluateBranch(*Me\all_branches())
     Next
   EndProcedure
   
@@ -127,7 +203,6 @@ Module Tree
     ProcedureReturn *node
     
   EndProcedure
-
 
   ;----------------------------------------------------------------------------------------
   ; Remove Node
@@ -172,6 +247,7 @@ Module Tree
     Protected *node.Node::Node_t
     Graph::ExtractListElement(*Me\current\nodes(),*node)
     Node::Delete(*node)
+    *Me\dirty = #True
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -211,7 +287,7 @@ Module Tree
     *connexion\start\connected = #True
     LastElement(*parent\connexions())
     Graph::AttachListElement(*parent\connexions(),*connexion)
-    
+    *Me\dirty = #True
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -264,11 +340,12 @@ Module Tree
         *Me\current\connexions()\end\value = #Null
         Graph::ExtractListElement(*Me\current\connexions(),*connexion)
         FreeMemory(*connexion)
+        *Me\dirty = #True
       EndIf
       
     Next
     
-  
+    
   EndProcedure
   ;}
 
@@ -283,6 +360,7 @@ Module Tree
       *node = *Me\root\nodes()
       If *node\selected And Not *node\type = "TreeNode"
         RemoveNode(*Me,id)
+        
       EndIf
       id + 1
       
@@ -473,9 +551,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 29
-; FirstLine = 22
-; Folding = ----
+; CursorPosition = 137
+; FirstLine = 117
+; Folding = -----
 ; EnableUnicode
 ; EnableThread
 ; EnableXP

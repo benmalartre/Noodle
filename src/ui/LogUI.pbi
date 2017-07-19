@@ -146,6 +146,8 @@ EndProcedure
         EndSelect
         
         
+      Case #PB_Event_Repaint
+        Write(*Me)
     EndSelect
     
   EndProcedure
@@ -168,8 +170,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 10
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 149
+; FirstLine = 122
 ; Folding = --
 ; EnableUnicode
 ; EnableXP

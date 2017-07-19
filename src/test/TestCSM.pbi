@@ -38,6 +38,7 @@ Global *gbuffer.LayerGBuffer::LayerGBuffer_t
 Global *defered.LayerDefered::LayerDefered_t
 Global *defshadows.LayerShadowDefered::LayerShadowDefered_t
 Global *ssao.LayerSSAO::LayerSSAO_t
+Global *csm.LayerCascadedShadowMap::LayerCascadedShadowMap_t
 
 Global shader.l
 Global *s_wireframe.Program::Program_t
@@ -69,7 +70,8 @@ Procedure Draw(*app.Application::Application_t)
 ;   Vector3::Echo(*light\pos,"LIGHT POSITION")
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  LayerCascadedShadowMap::Draw(*csm, *app\context)
+;   LayerDefault::Draw(*layer, *app\context)
 ;   LayerShadowMap::Draw(*shadows, *app\context)
 ;   LayerGBuffer::Draw(*gbuffer,*app\context)
   ;LayerDefered::Draw(*defered,*app\context)
@@ -88,9 +90,7 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
- 
 
- 
  Define useJoystick.b = #False
  width = 800
  height = 600
@@ -120,6 +120,7 @@ Procedure Draw(*app.Application::Application_t)
   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
   *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
   *defshadows = LayerShadowDefered::New(800,600,*app\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
+  *csm = LayerCascadedShadowMap::New(1024,1024,*app\context,*app\camera,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
   Global *root.Model::Model_t = Model::New("Model")
   
   ; FTGL Drawer
@@ -143,7 +144,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Vector3::Echo(*pos,"Location Position")
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,64,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,1,7)
   
   Define pos.v3f32,scl.v3f32
   Vector3::Set(@pos,0,-5,0)
@@ -219,8 +220,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 201
-; FirstLine = 186
+; CursorPosition = 146
+; FirstLine = 130
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

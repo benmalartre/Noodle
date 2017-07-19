@@ -186,13 +186,13 @@ DeclareModule Math
   EndStructure
   
   ; ----------------------------------------------------------------------------
-  ;  v3f32 Structure
+  ;  v4f32 Structure
   ; --------------------------------------------------------------------------
   Structure v4f32
-    w.f
     x.f
     y.f
     z.f
+    w.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -277,6 +277,8 @@ DeclareModule Vector2
   Declare SetLength(*v.v2f32,l.f)
   Declare Multiply(*o.v2f32,*a.v2f32,*b.v2f32)
   Declare Echo(*v.v2f32,name.s="")
+  Declare.s AsString(*v.v2f32)
+  Declare FromString(*v.v2f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -310,7 +312,9 @@ DeclareModule Vector3
   Declare MulByMatrix4InPlace(*v.v3f32,*m.m4f32)
   Declare MulByQuaternion(*out.v3f32,*in.v3f32,*q.q4f32)
 	Declare MulByQuaternionInPlace(*v.v3f32,*q.q4f32)
-  Declare Echo(*v.v3f32,name.s="")
+	Declare Echo(*v.v3f32,name.s="")
+	Declare.s AsString(*v.v3f32)
+	Declare FromString(*v.v3f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -318,11 +322,13 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Vector4
   UseModule Math
-  Declare Set(*v.v4f32,w.f,x.f=0,y.f=0,z.f=0)
+  Declare Set(*v.v4f32,x.f=0,y.f=0,z.f=0,w.f=1.0)
   Declare SetFromOther(*v.v4f32,*o.v4f32)
   Declare MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
   Declare MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
   Declare Echo(*v.v4f32,name.s="")
+  Declare.s AsString(*v.v4f32)
+  Declare FromString(*v.v4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -357,6 +363,8 @@ DeclareModule Quaternion
   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
   Declare Echo(*q.q4f32,prefix.s ="")
+  Declare.s AsString(*q.q4f32)
+  Declare FromString(*q.q4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -374,6 +382,8 @@ DeclareModule Color
   Declare Randomize(*c.c4f32)
   Declare RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
   Declare Echo(*c.c4f32,prefix.s ="")
+  Declare.s AsString(*c.c4f32)
+  Declare FromString(*c.c4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -390,6 +400,8 @@ DeclareModule Matrix3
   Declare MulByMatrix3(*m.m3f32,*f.m3f32,*s.m3f32)
   Declare GetQuaternion(*m.m3f32,*q.q4f32,transpose.b=#False)
   Declare Echo(*m.m3f32)
+  Declare.s AsString(*m.m3f32)
+  Declare FromString(*m.m3f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -421,6 +433,8 @@ DeclareModule Matrix4
   Declare GetViewMatrix(*io.m4f32,*pos.v3f32,*lookat.v3f32,*up.v3f32)
   Declare GetQuaternion(*m.m4f32,*q.q4f32)
   Declare Echo(*m.m4f32,name.s="")
+  Declare.s AsString(*m.m4f32)
+  Declare FromString(*m.m4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -490,6 +504,22 @@ Module Vector2
   Procedure Echo(*v.v2f32,name.s="")
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+")"
   EndProcedure
+  
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*v.v2f32)
+    ProcedureReturn StrF(*v\x)+","+StrF(*v\y)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*v.v2f32, s.s)
+    If CountString(s,",")=1
+      *v\x = ValF(StringField(s,1,","))
+      *v\y = ValF(StringField(s,2,","))
+    EndIf
+  EndProcedure
+
 
   ; Set
   ;----------------------------------------------------
@@ -672,6 +702,22 @@ Module Vector3
   ;----------------------------------------------------
   Procedure Echo(*v.v3f32,name.s="")
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+")"
+  EndProcedure
+  
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*v.v3f32)
+    ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*v.v3f32, s.s)
+    If CountString(s,",")=2
+      *v\x = ValF(StringField(s,1,","))
+      *v\y = ValF(StringField(s,2,","))
+      *v\z = ValF(StringField(s,3,","))
+    EndIf
   EndProcedure
 
   ; Set
@@ -999,7 +1045,7 @@ Module Vector4
   ;-----------------------------------------
   ; Set
   ;-----------------------------------------
-  Procedure Set(*v.v4f32,w.f,x.f=0,y.f=0,z.f=0)
+  Procedure Set(*v.v4f32,x.f=0,y.f=0,z.f=0,w.f=1.0)
     *v\w = w
     *v\x = x
     *v\y = y
@@ -1021,16 +1067,17 @@ Module Vector4
   ;-----------------------------------------
   Procedure MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
     Protected x.f,y.f,z.f,w.f
+
     If Not transpose
-      x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *v\w * *m\v[3]
-      y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *v\w * *m\v[7]
-      z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *v\w * *m\v[11]
-      w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *v\w * *m\v[15]
+      x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
+      y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
+      z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
+      w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
     Else
-      x = *o\x * *m\v[0] + *o\y * *m\v[4] + *o\z * *m\v[8] + *v\w * *m\v[12]
-      y = *o\x * *m\v[1] + *o\y * *m\v[5] + *o\z * *m\v[9] + *v\w * *m\v[13]
-      z = *o\x * *m\v[2] + *o\y * *m\v[6] + *o\z * *m\v[10] + *v\w * *m\v[14]
-      w = *o\x * *m\v[3] + *o\y * *m\v[7] + *o\z * *m\v[11] + *v\w * *m\v[15]
+      x = *o\x * *m\v[0] + *o\y * *m\v[4] + *o\z * *m\v[8] + *o\w * *m\v[12]
+      y = *o\x * *m\v[1] + *o\y * *m\v[5] + *o\z * *m\v[9] + *o\w * *m\v[13]
+      z = *o\x * *m\v[2] + *o\y * *m\v[6] + *o\z * *m\v[10] + *o\w * *m\v[14]
+      w = *o\x * *m\v[3] + *o\y * *m\v[7] + *o\z * *m\v[11] + *o\w * *m\v[15]
     EndIf
   
     *v\x = x
@@ -1066,8 +1113,24 @@ Module Vector4
   ; Echo
   ;-----------------------------------------
   Procedure Echo(*v.v4f32,prefix.s="")
-        Debug prefix+"("+StrF(*v\w,3)+","+StrF(*v\x,3)+","+StrF(*v\y,3)+","+StrF(*v\z,3)+")"
-
+    Debug prefix+"("+StrF(*v\x,3)+","+StrF(*v\y,3)+","+StrF(*v\z,3)+","+StrF(*v\w,3)+")"
+  EndProcedure
+      
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*v.v4f32)
+    ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+","+StrF(*v\w)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*v.v4f32, s.s)
+    If CountString(s,",")=3
+      *v\x = ValF(StringField(s,1,","))
+      *v\y = ValF(StringField(s,2,","))
+      *v\z = ValF(StringField(s,3,","))
+      *v\w = ValF(StringField(s,4,","))
+    EndIf
   EndProcedure
   
 EndModule
@@ -1422,6 +1485,23 @@ Module Quaternion
   Procedure Echo(*q.q4f32,prefix.s ="")
     Debug prefix+"("+StrF(*q\x,3)+","+StrF(*q\y,3)+","+StrF(*q\z,3)+","+StrF(*q\w,3)+")"
   EndProcedure
+  
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*q.q4f32)
+    ProcedureReturn StrF(*q\w)+","+StrF(*q\x)+","+StrF(*q\y)+","+StrF(*q\z)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*q.q4f32, s.s)
+    If CountString(s,",")=3
+      *q\w = ValF(StringField(s,1,","))
+      *q\x = ValF(StringField(s,2,","))
+      *q\y = ValF(StringField(s,3,","))
+      *q\z = ValF(StringField(s,4,","))
+    EndIf
+  EndProcedure
 
 ; ;-----------------------------------------
 ; ; Draw
@@ -1532,8 +1612,27 @@ Module Color
     *c\a = 1.0
   EndProcedure
   
+  ; Echo
+  ;----------------------------------------------------
   Procedure Echo(*c.c4f32,prefix.s ="")
     Debug "[Color] : "+StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
+  EndProcedure
+  
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*c.c4f32)
+    ProcedureReturn StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*c.c4f32, s.s)
+    If CountString(s,",")=3
+      *c\r = ValF(StringField(s,1,","))
+      *c\g = ValF(StringField(s,2,","))
+      *c\b = ValF(StringField(s,3,","))
+      *c\a = ValF(StringField(s,4,","))
+    EndIf
   EndProcedure
   
 EndModule
@@ -1557,6 +1656,25 @@ Module Matrix3
       EndIf
     Next i
     Debug l
+  EndProcedure
+  
+  ; AsString
+  ;----------------------------------------------------
+  Procedure.s AsString(*m.m3f32)
+    Protected s.s
+    Protected i
+    For i=0 To 7 : s+StrF(*m\v[i])+"," : Next
+    s + StrF(*m\v[8])
+    ProcedureReturn s
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*m.m3f32, s.s)
+    If CountString(s,",")=8
+      Protected i
+      For i=0 To 8 : *m\v[i] = ValF(StringField(s,i+1,",")) : Next
+    EndIf
   EndProcedure
   
   ; Set
@@ -1765,6 +1883,29 @@ Module Matrix4
       EndIf
     Next i
     Debug l
+  EndProcedure
+  
+  ; As String
+  ;--------------------------------------------------
+  Procedure.s AsString(*m.m4f32)
+    Protected s.s
+    Protected i
+    For i=0 To 14 : s+StrF(*m\v[i])+"," : Next
+    s+StrF(*m\v[15])
+    ProcedureReturn s
+  EndProcedure
+  
+  ; From String
+  ;--------------------------------------------------
+  Procedure FromString(*m.m4f32, s.s)
+    If CountString(s,",") <> 15
+      SetIdentity(*m)
+    Else
+      Protected i
+      For i=0 To 15
+        *m\v[i] = ValF(StringField(s,i+1,","))
+      Next i
+    EndIf
   EndProcedure
 
   ; Set
@@ -2356,8 +2497,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1068
-; FirstLine = 1047
-; Folding = ------------------v---------
+; CursorPosition = 194
+; FirstLine = 166
+; Folding = ------------------------------
 ; EnableUnicode
 ; EnableXP

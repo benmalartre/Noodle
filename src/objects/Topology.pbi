@@ -74,8 +74,6 @@ Module Topology
       CArray::Copy(*topo\vertices,*vertices)
       CArray::Copy(*topo\faces,*faces)
     EndIf
-    
-   
   EndProcedure
   ;}
   
@@ -385,9 +383,8 @@ Module Topology
   
 EndModule
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 174
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 75
+; FirstLine = 62
 ; Folding = -----
 ; EnableXP

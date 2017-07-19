@@ -136,21 +136,23 @@ DeclareModule NodePort
     currentstructure.i
     
     constant.b
+    dirty.b
     
     ; Reference
     refchanged.b
     reference.s
     daisyreference.s
     
-    ;Connexion
+    ;Connexions
     *source.NodePort_t
     List *targets.NodePort_t()
+    List *affects.NodePort_t()
     *connexion;.Connexion_t
     
-    *node       ;Parent Node
+    ;Parent Node
+    *node       
     *value
-    
-    
+
     color.q
     percx.i
     percy.i
@@ -307,6 +309,7 @@ DeclareModule Node
     errorstr.s
     leaf.b
     isroot.b
+    dirty.b
   
     ;ports
     List *inputs.NodePort::NodePort_t()
@@ -353,7 +356,7 @@ DeclareModule Node
   
     ; ---[ Init Node ]----------------------------------------------------------
     Init(*Me)
-    
+
   EndMacro
   
   Macro DAT(cls)
@@ -376,6 +379,8 @@ DeclareModule Node
     FreeMemory(*node)
   
   EndMacro
+  
+  Prototype PGETDATAPROVIDERATTRIBUTE(*node.Node::Node_t)
   
   ;---------------------------------------------------------------------------
   ; Functions Declaration
@@ -405,6 +410,13 @@ DeclareModule Node
   Declare AddOutputPort(*n.Node_t,name.s,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
   Declare Inspect(*n.Node_t)
   Declare OnMessage(id.i,*up)
+  Declare IsDirty(*n.Node_t)
+  Declare UpdateDirty(*n.Node_t)
+  Declare PortAffect(*n.Node_t, sourceName.s, targetNames.s)
+  Declare PortAffect2(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
+  Declare UpdateAffects(*n.Node_t)
+  Declare SetClean(*n.Node_t)
+  
   Global CLASS.Class::Class_t
   
   DataSection
@@ -461,23 +473,24 @@ EndDeclareModule
 ; ============================================================================
 DeclareModule Tree
   Structure Branch_t
-    List nodes.Node::Node_t()
+    dirty.b
+    List *nodes.Node::Node_t()
+    List *filter_nodes.Node::Node_t()
   EndStructure
    
   Structure Tree_t Extends Node::Node_t
-    
-    ; ---[ State ]-------------------------------------------
-    dirty.i
-    
     ; ---[ Objects ]-----------------------------------------
     *root.Node::Node_t
     *current.Node::Node_t       ; Currently inspected node
     
-  ;   ; ---[ Lists ]-------------------------------------------
-    List *a_nodes.Node::Node_t()
-    List *a_connexions.Connexion::Connexion_t()
+    ; ---[ Lists ]-------------------------------------------
+    List *all_nodes.Node::Node_t()
+    List *filtered_nodes.Node::Node_t()
+    List *all_connexions.Connexion::Connexion_t()
     List *data_providers.Node::Node_t()
     List *data_modifiers.Node::Node_t()
+    List *all_branches.Branch_t()
+    List *filtered_branches.Branch_t()
     
     ; ---[ current evaluate dbranch nodes ]------------------
     List *evaluation.NodePort::NodePort_t()
@@ -490,8 +503,8 @@ DeclareModule Tree
   ; ----------------------------------------------------------------------------
   Declare New(*obj,name.s="Tree",context.i=Graph::#Graph_Context_Operator)
   Declare Delete(*tree.Tree_t)
-  Declare RecurseNodes(*Me.Tree_t,*current.Node::Node_t)
-  Declare EvaluatePort(*Me.Tree_t,*port.NodePort::NodePort_t)
+  Declare RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
+  Declare EvaluateBranch(*branch.Branch_t)
   Declare Evaluate(*Me.Tree_t)
   Declare AddNode(*Me.Tree_t,name.s,x.i,y.i,w.i,h.i,c.i)  
   Declare RemoveNode(*Me.Tree_t,*other.Node::Node_t)
@@ -506,6 +519,7 @@ DeclareModule Tree
   Declare GetDataProviders(*current.Node::Node_t,List *gets.Node::Node_t())
   Declare GetAllDataModifiers(*tree.Tree::Tree_t)
   Declare GetDataModifiers(*current.Node::Node_t,List *sets.Node::Node_t())
+ 
   DataSection
     TreeVT:
     Data.i @Evaluate()
@@ -562,8 +576,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 191
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 382
+; FirstLine = 357
 ; Folding = ---
 ; EnableXP

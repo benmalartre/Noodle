@@ -19,7 +19,7 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 
 Procedure Draw(*app.Application::Application_t)
-
+  ViewportUI::SetContext(*viewport)
   glUseProgram(*s_simple\pgm)
   Define.m4f32 model,view,proj
   Matrix4::SetIdentity(@model)
@@ -56,9 +56,7 @@ Procedure Draw(*app.Application::Application_t)
   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
   glDisable(#GL_DEPTH_TEST)
   
-  If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  EndIf
+  ViewportUI::FlipBuffer(*viewport)
   
 EndProcedure
     
@@ -97,9 +95,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 23
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 21
+; FirstLine = 13
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

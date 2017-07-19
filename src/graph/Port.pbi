@@ -140,7 +140,6 @@ Module NodePort
   ; Init
   ;-----------------------------------------------------------------------------
   Procedure Init(*port.NodePort_t)
-
   ;   Select *port\currentstructure
     Select *port\currenttype
       Case Attribute::#ATTR_TYPE_UNDEFINED
@@ -150,22 +149,22 @@ Module NodePort
         Protected *bVal.CArray::CArrayBool = CArray::newCArrayBool()
         CArray::AppendB(*bVal,#False)
         *port\value = *bVal
-        
+
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected *fVal.CArray::CArrayFloat = CArray::newCArrayFloat()
         CArray::AppendF(*fVal,0)
         *port\value = *fVal
-        
+
       Case Attribute::#ATTR_TYPE_LONG
         Protected *lVal.CArray::CArrayLong = CArray::newCArrayLong()
         CArray::AppendL(*lVal,0)
         *port\value = *lVal
-        
+
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *iVal.CArray::CArrayInt = CArray::newCArrayInt()
         CArray::AppendI(*iVal,0)
         *port\value = *iVal
-        
+
       Case Attribute::#ATTR_TYPE_VECTOR2
   ;       Protected vVal2.CArrayV2F32 = newCArrayV2F32()
   ;       Protected v2.v2f32
@@ -180,7 +179,6 @@ Module NodePort
         Vector3::Set(@v3,0,0,0)
         CArray::Append(*vVal3,v3)
         *port\value = *vVal3
-  
         
       Case Attribute::#ATTR_TYPE_VECTOR4
         Protected *vVal4.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
@@ -195,8 +193,6 @@ Module NodePort
         Quaternion::SetIdentity(@q4)
         CArray::Append(*qVal4,q4)
         *port\value = *qVal4
-  
-  
         
       Case Attribute::#ATTR_TYPE_MATRIX3
         Protected *mVal3.CArray::CArrayM3F32 = CArray::newCArrayM3F32()
@@ -204,7 +200,7 @@ Module NodePort
         Matrix3::SetIdentity(@m3)
         CArray::Append(*mVal3,m3)
         *port\value = *mVal3
-  
+        
       Case Attribute::#ATTR_TYPE_MATRIX4
 
         Protected *mVal4.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
@@ -212,22 +208,18 @@ Module NodePort
         Matrix4::SetIdentity(@m4)
         CArray::Append(*mVal4,m4)
         *port\value = *mVal4
-  
         
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *cVal.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
         Protected c.c4f32
         Color::Set(@c,0,0,0,1)
         CArray::Append(*cVal,c)
-  
         *port\value = *cVal
-       
         
       Case Attribute::#ATTR_TYPE_STRING
         Protected *sVal.CArray::CArrayStr = CARray::newCArrayStr()
         Protected s.s = ""
         CArray::AppendStr(*sVal,s)
-        
         *port\value = *sVal
         
       Case Attribute::#ATTR_TYPE_REFERENCE
@@ -238,27 +230,23 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_LOCATION
         *port\value = CArray::newCArrayPtr()
         
-        
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *data.CArray::CArrayPtr = CArray::newCArrayPtr()
         ;       *data\Append(newCAttributePolymeshTopology())
         Protected *topo.Geometry::Topology_t = Topology::New()
         CArray::AppendPtr(*data,*topo)
-
         *port\value = *data
         
       Case Attribute::#ATTR_TYPE_LOCATION
         *data.CArray::CArrayPtr = CArray::newCArrayPtr()
         ;Protected *loc.Location::Location_t = Location::New()
         CArray::AppendPtr(*data,#Null)
-
         *port\value = *data
         
       Case Attribute::#ATTR_TYPE_GEOMETRY
         *data.CArray::CArrayPtr = CArray::newCArrayPtr()
         ;       *data\Append(newCAttributePolymeshTopology())
         CArray::AppendPtr(*data,#Null)
-
         *port\value = *data
         
       Case Attribute::#ATTR_TYPE_3DOBJECT
@@ -278,6 +266,10 @@ Module NodePort
         Debug "Faileddto Init Graph Node Port "+*port\name
         *port\value = #Null
     EndSelect
+    
+    If *port\io = #False
+      *port\dirty = #True
+    EndIf
     
     GetColor(*port)
   EndProcedure
@@ -328,6 +320,7 @@ Module NodePort
           Debug *port\name+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT CONNECTED!!!"
           *data = *port\value
           If Not *data : Init(*port) : *data = *port\value: EndIf
+          *port\dirty = #False
         EndIf
         
       Case Attribute::#ATTR_STRUCT_SINGLE
@@ -343,6 +336,7 @@ Module NodePort
           *data = *port\value
           If Not *data : Init(*port) : *data = *port\value: EndIf
           Debug "Data  = "+Str(*data) 
+          *port\dirty = #False
         EndIf
         
       Case Attribute::#ATTR_STRUCT_ANY
@@ -568,13 +562,15 @@ Module NodePort
     Protected *sig.Signal::Signal_t = *up
     Protected *c.Control::Control_t = *sig\snd_inst
     Protected *port.NodePort::NodePort_t = *sig\rcv_inst
+    Protected *node.Node::Node_t = *port\node
     Select *port\currenttype
       Case Attribute::#ATTR_TYPE_REFERENCE
 ;         Protected ctrl.Control::IControlEdit = *c
         *port\reference = ControlEdit::GetValue(*c)
         *port\refchanged = #True
+        *port\dirty = #True
         Debug "New REFERENCE Value : "+*port\reference
-        Protected *node.Node::Node_t = *port\node
+        
 
 ;         If *node\type = "GetDataNode"
 ;           ResolveGetReference(*node)
@@ -595,6 +591,7 @@ Module NodePort
         Protected *bCtrl.ControlCheck::ControlCheck_t = *c
         Protected *bVal.CArray::CArrayBool = *port\value
         CArray::SetValueB(*bVal,0,ControlCheck::GetValue(*bCtrl))
+        *port\dirty = #True
         ;bVal\SetValue(0,bCtrl\GetValue())
 ;         Debug "New BOOL Value : "+Str(bVal\GetValue(0))
         
@@ -602,6 +599,7 @@ Module NodePort
         Protected *iCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected *iVal.CArray::CArrayInt = *port\value
         CArray::SetValueI(*iVal,0,*iCtrl\value_n)
+        *port\dirty = #True
 ;         Debug "New LONG Value : "+Str(iVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_FLOAT
@@ -611,7 +609,7 @@ Module NodePort
         Debug "Recieved FLOAT port "+StrF(fv)
         Protected *fVal.CArray::CArrayFloat = *port\value
         CArray::SetValueF(*fVal,0,fv);*fCtrl\value_n)
-        
+        *port\dirty = #True
 ;         Debug "New FLOAT Value : "+StrF(fVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_VECTOR3
@@ -633,6 +631,7 @@ Module NodePort
         EndSelect
         
         CArray::SetValuePtr(*vVal,0,@v)
+        *port\dirty = #True
         ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
       Case Attribute::#ATTR_TYPE_Quaternion
@@ -656,6 +655,7 @@ Module NodePort
         EndSelect
         
         CArray::SetValuePtr(*qVal,0,@q)
+        *port\dirty = #True
         
       Case Attribute::#ATTR_TYPE_STRING
         
@@ -665,6 +665,7 @@ Module NodePort
         
         CArray::SetValueStr(*sVal,0,s)
         MessageRequester("Port String On Message",CArray::GetValueStr(*sVal,0))
+        *port\dirty = #True
         ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
        Case Attribute::#ATTR_TYPE_COLOR
@@ -718,7 +719,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 657
-; FirstLine = 673
+; CursorPosition = 611
+; FirstLine = 593
 ; Folding = ----
 ; EnableXP

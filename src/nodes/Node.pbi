@@ -2,6 +2,7 @@
 DeclareModule Node
   Structure Node_t
     *VT
+    dirty.b
     List *nodes.Node_t()
   EndStructure
   
@@ -12,6 +13,7 @@ DeclareModule Node
   Declare New()
   Declare Delete(*node.Node_t)
   Declare Update(*node.Node_t)
+  Declare IsDirty(*node.Node_t)
 EndDeclareModule
 
 Module Node
@@ -32,7 +34,8 @@ Module Node
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 32
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 15
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

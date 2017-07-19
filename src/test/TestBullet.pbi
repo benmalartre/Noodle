@@ -277,11 +277,10 @@ Color::Set(@color,1.0,0.5,0.4)
   ProcedureReturn Scene::*current_scene
 EndProcedure
 
-
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  
+  ViewportUI::SetContext(*viewport)
   If EventType() = #PB_EventType_KeyDown
     If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
       BulletWorld::hlpReset(Bullet::*bullet_world)
@@ -295,15 +294,15 @@ Procedure Draw(*app.Application::Application_t)
 ;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
   
  default_layer\Draw  (*app\context)
-;   gbuffer\Draw(*app\context  )
-;   shadowmap\Draw(*app\context)
-;   
-; ;   *shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
-; 
+  gbuffer\Draw(*app\context  )
+  shadowmap\Draw(*app\context)
+  
+  ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
+
 ;   defered\Draw(*app\context)
-;   *bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
-;   bitmap\Draw(*app\context)
-;   ssao\Draw(*app\context)
+  ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
+  ;bitmap\Draw(*app\context)
+  ;ssao\Draw(*app\context)
   glDisable(#GL_DEPTH_TEST)
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
@@ -315,9 +314,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   glDisable(#GL_BLEND)
   
-  CompilerIf Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  CompilerEndIf
+  ViewportUI::FlipBuffer(*viewport)
   
 ;   Polymesh::Draw(*teapot)
 ; ;   Polymesh::Draw(*ground)
@@ -423,13 +420,13 @@ Scene::Setup(Scene::*current_scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 24
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 278
+; FirstLine = 268
 ; Folding = -
 ; EnableUnicode
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0

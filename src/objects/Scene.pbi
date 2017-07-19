@@ -85,54 +85,53 @@ DeclareModule Scene
   Global CLASS.Class::Class_t
 EndDeclareModule
 
-; ----------------------------------------------------------------------------
-;  CScene Instance
-; ----------------------------------------------------------------------------
+; ============================================================================
+;  Scene Module Implementation
+; ============================================================================
 Module Scene
-  ; ---[ Singleton Object ]----------------------------
   
-  ;}
-  
-  
-  ; ============================================================================
-  ;  HELPERS ( CScene )
-  ; ============================================================================
+  ;--------------------------------------------------
+  ; Resolve Unique Name
+  ;--------------------------------------------------
   Procedure ResolveUniqueName(*s.Scene::Scene_t,*o.Object3D::Object3D_t)
-  
+    Debug "Resolve Unique Name Called:"
     Protected found = #False
     Protected i = 0
-    Protected s.s = ""
+    Protected name.s = *o\name
   
     While Not found
-  ;     If *o\model <> #Null
-  ;       *o\fullname = *o\model\GetName()+"."+*o\name+s
-  ;     Else
-        *o\fullname = *o\name+s
-  ;     EndIf
+      If *o\model <> #Null
+        *o\fullname = *o\model\name+"."+name
+      Else
+        *o\fullname = name
+      EndIf
       
       If FindMapElement(*s\m_objects(),*o\fullname)
         i+1
-        s = Str(i)
+        name = *o\name+Str(i)
       Else
         AddMapElement(*s\m_objects(), *o\fullname ,#PB_Map_ElementCheck)
         
         *s\m_objects() = *o
-        *o\name = *o\name+s
+        *o\name = name
         found = #True
       EndIf  
+      Debug "Current Full Name : "+*o\fullname
     Wend
   EndProcedure
   
+  ;--------------------------------------------------
+  ; Delete Unique Name
+  ;--------------------------------------------------
   Procedure DeleteUniqueName(*s.Scene::Scene_t,*o.Object3D::Object3D_t)
     If FindMapElement(*s\m_objects(),*o\fullname)
       DeleteMapElement(*s\m_objects(),*o\fullname)
     EndIf
   EndProcedure
   
-  ; ============================================================================
-  ;  IMPLEMENTATION ( CScene )
-  ; ============================================================================
-  ;{
+  ;--------------------------------------------------
+  ; Select Object
+  ;--------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Protected nbs = CArray::GetCount(*Me\selection)
     Protected s
@@ -148,13 +147,16 @@ Module Scene
     ;Handle::SetTarget(*Me\handle,*obj)
   EndProcedure
   
+  ;--------------------------------------------------
+  ; Add Object To Selection
+  ;--------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
     CArray::AppendPtr(*Me\selection,*obj)  
   EndProcedure
   
-  ;-----------------------------------------------------------------
+  ;--------------------------------------------------
   ; Add Object To Scene Graph
-  ;-----------------------------------------------------------------------
+  ;--------------------------------------------------
   Procedure AddObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
     ResolveUniqueName(*scn,*obj)
     *scn\nbobjects  + 1
@@ -180,9 +182,9 @@ Module Scene
   
   EndProcedure
   
-  ;-----------------------------------------------------------------
+  ;--------------------------------------------------
   ; Remove Object To Scene Graph
-  ;-----------------------------------------------------------------------
+  ;--------------------------------------------------
   Procedure RemoveObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
 
     Select *obj\type
@@ -244,9 +246,13 @@ Module Scene
     If *model = #Null Or *Me = #Null
       ProcedureReturn
     EndIf
-    
+
     AddChild(*Me,*model)
-    
+    datas.s
+    ForEach *me\root\children()
+      datas + *Me\root\children()\name
+    Next
+   
   EndProcedure
   
   Procedure AddChild(*Me.Scene_t,*obj.Object3D::Object3d_t)
@@ -272,10 +278,7 @@ Module Scene
     *Me\dirty = #True
     *Me\dirtycount+1
   EndProcedure
-  
-  
-  
-  
+
   ;-----------------------------------------------------------------
   ; Delete Object Children(recursive)
   ;-----------------------------------------------------------------------
@@ -294,9 +297,7 @@ Module Scene
       Next
    EndIf
    RemoveObject(*Me,*obj)
-   o\Delete()
-    
-    
+   o\Delete()  
   EndProcedure
   
   ;-----------------------------------------------------------------
@@ -330,17 +331,15 @@ Module Scene
     Protected old.Object3D::IObject3D = *obj\parent
     Object3D::RemoveChild(*obj\parent,*obj)
     Object3D::AddChild(*parent,*obj)
-
-    
   EndProcedure
   
   Procedure CutObject(*obj.Object3D::Object3D_t)
     
   EndProcedure
   
-  ;-----------------------------------------------------------------
-  ; Setup Objects in GL Context
-  ;-----------------------------------------------------------------------
+  ;--------------------------------------------------
+  ; Setup Children
+  ;--------------------------------------------------  
   Procedure SetupChildren(*scn.Scene_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
     Protected j
     Protected child.Object3D::IObject3D
@@ -747,9 +746,9 @@ Module Scene
 
     Protected *model.Model::Model_t
     Protected i
-    For i=0 To CArray::GetCount(*Me\models)-1
-      *model = CArray::GetValue(*Me\models,i)
-      Model::Delete(*model)
+    Debug "SCene Num Models : "+Str(CArray::GetCount(*Me\models))
+    ForEach *Me\root\children()
+      Debug *me\root\children()\fullname
     Next
     
     Root::Delete(*Me\root)
@@ -765,6 +764,7 @@ Module Scene
     ClearStructure(*Me,Scene_t)
     FreeMemory( *Me )
     
+    Scene::*current_scene = #Null
     PostEvent(Globals::#EVENT_GRAPH_CHANGED)
   EndProcedure
   
@@ -800,12 +800,12 @@ Module Scene
     Protected *camera.Camera::Camera_t = Camera::New("Camera",Camera::#Camera_Perspective)
     
     *Me\camera = *camera
-    CArray::AppendUnique(*Me\cameras,*camera)
+    CArray::AppendPtr(*Me\cameras,*camera)
     Object3D::AddChild(*Me\root,*camera)
     
     ; ---[ Create Light ]--------------------------------------------------------
     Protected *light.Light::Light_t = Light::New("Light",Light::#Light_Infinite)
-    CArray::AppendUnique(*Me\lights,*light)
+    CArray::AppendPtr(*Me\lights,*light)
     Object3D::AddChild(*Me\root,*light)
     
     ; ---[ Create Handle ]-------------------------------------------------------
@@ -968,9 +968,9 @@ Module Scene
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 69
-; FirstLine = 941
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 806
+; FirstLine = 785
 ; Folding = --------
 ; EnableUnicode
 ; EnableThread

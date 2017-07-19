@@ -800,7 +800,6 @@ Module OpenGLExt
           setGLEXT( glVertexAttribPointer,      "glVertexAttribPointer" )
           
           CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And #USE_LEGACY_OPENGL
-            MessageRequester("FUCK","USE LEGACY OPENGL")
             setGLEXT( glBindVertexArray,          "glBindVertexArrayAPPLE")
             setGLEXT( glDeleteVertexArrays,       "glDeleteVertexArraysAPPLE")
             setGLEXT( glGenVertexArrays,          "glGenVertexArraysAPPLE")
@@ -1483,8 +1482,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 61
+; CursorPosition = 801
+; FirstLine = 798
 ; Folding = ------
 ; EnableUnicode
 ; EnableXP

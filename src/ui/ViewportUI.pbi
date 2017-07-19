@@ -27,6 +27,8 @@ DeclareModule ViewportUI
   Declare Init(*ui.ViewportUI_t)
   Declare Event(*ui.ViewportUI_t,event.i)
   Declare Term(*ui.ViewportUI_t)
+  Declare SetContext(*ui.ViewportUI_t)
+  Declare FlipBuffer(*ui.ViewportUI_t)
   
   DataSection 
     ViewportUIVT: 
@@ -61,9 +63,9 @@ Module ViewportUI
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
 
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      ; ---[ Allocate Pixel Format Object ]---------------------------------
+      ; Allocate Pixel Format Object
       Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-      ; ---[ Set Pixel Format Attributes ]----------------------------------
+      ; Set Pixel Format Attributes
       Define pfa.NSOpenGLPixelFormatAttribute
       With pfa
         \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
@@ -75,23 +77,23 @@ Module ViewportUI
         \v[9] = #Null
       EndWith
 
-      ; ---[ Choose Pixel Format ]------------------------------------------
+      ; Choose Pixel Format
       CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-      ; ---[ Allocate OpenGL Context ]--------------------------------------
+      ; Allocate OpenGL Context
       Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-      ; ---[ Create OpenGL Context ]----------------------------------------
+      ; Create OpenGL Context
       CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-      ; ---[ Set Current Context ]------------------------------------------
+      ; Set Current Context
       CocoaMessage( 0, ctx, "makeCurrentContext" )
-      ; ---[ Swap Buffers ]-------------------------------------------------
+      ; Swap Buffers
       CocoaMessage( 0, ctx, "flushBuffer" )
-      
-      *Me\applecontext = ctx
+      ; Load Extensions
       GLLoadExtensions()
+      ; Associate Context With OpenGLGadget NSView
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
-      
-      ; ---[ Associate Context With OpenGLGadget NSView ]-------------------
       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
+      *Me\applecontext = ctx
+      
     CompilerElse
       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
@@ -396,9 +398,35 @@ Module ViewportUI
     
   EndProcedure
   
+  ;-------------------------------------------------------
+  ; Set Context
+  ;-------------------------------------------------------
+  Procedure SetContext(*v.ViewportUI_t)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      CocoaMessage( 0, *v\applecontext, "makeCurrentContext" )
+    CompilerElse
+      SetGadgetAttribute(*v\gadgetID, #PB_OpenGL_SetContext, #True)
+    CompilerEndIf
+  EndProcedure
+  
+  ;-------------------------------------------------------
+  ; Flip Buffer
+  ;-------------------------------------------------------
+  Procedure FlipBuffer(*v.ViewportUI_t)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      CocoaMessage( 0, *v\applecontext, "flushBuffer" )
+    CompilerElse
+      If Not #USE_GLFW
+        SetGadgetAttribute(*v\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+      EndIf
+    CompilerEndIf
+  EndProcedure
+  
+  
+  
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 34
+; CursorPosition = 238
+; FirstLine = 226
 ; Folding = ---
 ; EnableXP

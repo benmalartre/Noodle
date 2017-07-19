@@ -28,6 +28,7 @@ DeclareModule GetDataNode
   Declare Terminate(*node.GetDataNode_t)
   
   Declare ResolveReference(*node.GetDataNode_t)
+  Declare GetNodeAttribute(*node.GetDataNode_t)
   
   ; ============================================================================
   ;  ADMINISTRATION
@@ -68,6 +69,7 @@ Module GetDataNode
         *output\currentstructure = *node\attribute\datastructure
         NodePort::Init(*output)
         *output\value = *node\attribute\data
+        *output\dirty = #True
       EndIf
       
     Else
@@ -80,6 +82,8 @@ Module GetDataNode
           *output\currentstructure = *node\attribute\datastructure
           NodePort::Init(*output)
           *output\value = *node\attribute\data
+          *output\dirty = #True
+          MessageRequester("GET DATA NODE", "RESOLVE REFERENCE CALLED")
         EndIf
       Else
         MessageRequester("GetDataNode","Fail to Find Attribute"+base+StringField(refname, 2,"."))
@@ -96,7 +100,10 @@ Module GetDataNode
   Procedure Init(*node.GetDataNode_t)
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Data",Attribute::#ATTR_TYPE_POLYMORPH)
-    Node::AddOutputPort(*node,"OutName",Attribute::#ATTR_TYPE_REFERENCE)
+    Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_REFERENCE)
+    
+    Node::PortAffect(*node, "Reference", "Data")
+    Node::PortAffect(*node, "Reference", "Output")
     *node\label = "Get Data"
     ResolveReference(*node)
   EndProcedure
@@ -110,7 +117,7 @@ Module GetDataNode
     If Not *node\attribute :Debug "[GetDataNode] Cannot resolve Reference" : ProcedureReturn : EndIf
     
     FirstElement(*node\outputs())
-    Protected *output.NodePort::NodePort_t = *node\outputs();Node::GetPortByName(*node,"Data")
+    Protected *output.NodePort::NodePort_t = *node\outputs()
     
     If *output\value = #Null
       *output\currenttype = *node\attribute\datatype
@@ -135,6 +142,9 @@ Module GetDataNode
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
         *fOut = *output\value
         *fIn = *node\attribute\data
+        If CArray::GetCount(*fIn)
+          CArray::Copy(*fOut,*fIn)
+        EndIf
       Case Attribute::#ATTR_TYPE_COLOR
         Protected color.c4f32
         Protected *cIn.CArray::CArrayC4F32,*cOut.CArray::CArrayC4F32
@@ -180,7 +190,6 @@ Module GetDataNode
         Protected *tIn.CArray::CArrayPtr,*tOut.CArray::CArrayPtr
         *tOut = *output\value
         *tIn = *node\attribute\data
-        MessageRequester("Topology",Str(*tIn))
         If CArray::GetCount(*tIn)
           ;vOut\SetCount(vIn\GetCount())
           CArray::Copy(*tOut,*tIn)
@@ -190,9 +199,9 @@ Module GetDataNode
         
         
     EndSelect
-
-  ;   *output = LastElement(*node\outputs())
-  ;   *output\reference = *node\inputs()\reference
+    ForEach *node\outputs()
+      *node\outputs()\dirty = #False
+    Next
     
   EndProcedure
   
@@ -214,7 +223,9 @@ Module GetDataNode
     If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
   EndProcedure
   
-  
+  Runtime Procedure GetNodeAttribute(*node.GetDataNode_t)
+    ProcedureReturn *node\attribute
+  EndProcedure
   
   
   ; ============================================================================
@@ -242,9 +253,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 114
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 171
+; FirstLine = 159
 ; Folding = --
 ; EnableUnicode
 ; EnableThread

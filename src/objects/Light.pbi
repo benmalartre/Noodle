@@ -808,6 +808,7 @@ Module Light
     Vector3::SetFromOther(*t\t\pos,*Me\pos)
     
     Transform::SetMatrixFromSRT(*t\m,*t\t\scl,*t\t\rot,*t\t\pos)
+    ;Object3D::UpdateTransform(*Me,#Null)
     ;Protected Me.CCamera = *Me
     ;Me\SetLocalTransform(*t)
   EndProcedure
@@ -988,9 +989,9 @@ Module Light
     *Me\lookat\z = 0
     Select *Me\lighttype
       Case #Light_Infinite
-        *Me\pos\x = 15  
-        *Me\pos\y = 40
-        *Me\pos\z = 15
+        *Me\pos\x = 1
+        *Me\pos\y = 4
+        *Me\pos\z = 0.5
         *Me\up\x = 0
         *Me\up\y = 0
         *Me\up\z = 1
@@ -1010,19 +1011,18 @@ Module Light
         *Me\up\y = 1
         *Me\up\z = 0
     EndSelect
-    
-        
+   
     *Me\fov = 90
     *Me\aspect = 1
-    *Me\nearplane = 1
-    *Me\farplane = 20000
+    *Me\nearplane = 0.1
+    *Me\farplane = 10000
     *Me\wireframe_r = 1
     *Me\wireframe_g = 0.66
     *Me\wireframe_b = 0.33
       
-    *Me\widthplane = 60
-    *Me\heightplane = 60
-    *Me\depthplane = 45
+    *Me\widthplane = 6
+    *Me\heightplane = 6
+    *Me\depthplane = 6
     
     LookAt(*Me)
     GetSphericalCoordinates(*Me)
@@ -1068,8 +1068,8 @@ Module Light
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Light )
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 980
-; FirstLine = 232
-; Folding = daA+-
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 1016
+; FirstLine = 276
+; Folding = d7A--
 ; EnableXP

@@ -9,7 +9,7 @@ XIncludeFile "Geometry.pbi"
 DeclareModule Polygon
   UseModule Geometry
   UseModule Math
-  Declare New(*mesh.Geometry::PolymeshGeometry_t, *indices.CArray::CArrayLong)
+  Declare New(*mesh.Geometry::PolymeshGeometry_t, *indices.CArray::CArrayLong, index.i)
   Declare Delete(*v.Polygon_t)
   Declare ComputeNormal(*v.Polygon_t)
   Declare SetPosition(*v.Polygon_t,*p.v3f32)
@@ -44,13 +44,13 @@ Module Polygon
   ;  Constructor
   ;---------------------------------------------
   ;{
-  Procedure New(*mesh.Geometry::PolymeshGeometry_t, *indices.CArray::CArrayLong)
+  Procedure New(*mesh.Geometry::PolymeshGeometry_t, *indices.CArray::CArrayLong, index.i)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Polygon_t = AllocateMemory(SizeOf(Polygon_t))
     InitializeStructure(*Me,Polygon_t)
     
     ; ----[ Initialize ]--------------------------------------------------------
-    *Me\geometry = *mesh
+    *Me\id = index
     *Me\samples = CArray::newCArrayPtr()
     *Me\neighbors = CArray::newCArrayPtr()
     *Me\vertices = CArray::newCArrayPtr()
@@ -164,10 +164,9 @@ Module Polygon
  
   
 EndModule
-
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 49
+; CursorPosition = 52
+; FirstLine = 28
 ; Folding = ---
 ; EnableUnicode
 ; EnableXP

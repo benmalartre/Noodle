@@ -357,6 +357,9 @@ Module Connexion
       *p\name = newname
       *p\datatype = *last\datatype
       *p\currenttype = *last\currenttype
+      ForEach *node\outputs()
+        Node::PortAffect2(*node, *p, *node\outputs())
+      Next
       
       NodePort::Update(*p,*last\currenttype,*last\currentcontext,*last\currentstructure)
   
@@ -424,9 +427,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 42
-; Folding = ---
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 360
+; FirstLine = 356
+; Folding = ----
 ; EnableXP

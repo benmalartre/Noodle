@@ -1,4 +1,4 @@
-#USE_GLFW = #False
+;#USE_GLFW = #False
 XIncludeFile "../core/Application.pbi"
 
 EnableExplicit
@@ -125,7 +125,9 @@ Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
   
-  
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+    CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
+  CompilerEndIf
     If EventGadget() = *viewport\gadgetID
     Select EventType()
       Case #PB_EventType_KeyDown
@@ -157,7 +159,7 @@ Procedure Update(*app.Application::Application_t)
   glDisable(#GL_BLEND)
   
 
-  SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+  ViewportUI::FlipBuffer(*viewport)
   
   
 EndProcedure
@@ -166,9 +168,9 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 144
-; FirstLine = 120
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 161
+; FirstLine = 136
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

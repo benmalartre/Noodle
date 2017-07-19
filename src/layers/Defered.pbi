@@ -164,6 +164,7 @@ Module LayerDefered
       shader = *ctx\shaders("defered")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
+      Framebuffer::BindInput(*layer\shadowmap,ArraySize(*layer\gbuffer\tbos()))
       Framebuffer::BindOutput(*layer\buffer)
       glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
       
@@ -171,8 +172,17 @@ Module LayerDefered
       glUniform1i(glGetUniformLocation(shader,"position_map"),0)
       glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
       glUniform1i(glGetUniformLocation(shader,"color_map"),2)
-      glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
+      glUniform1i(glGetUniformLocation(shader,"shadow_map"),3)
       glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
+      
+      Protected sunColor.v3f32
+      Protected sunDirection.v3f32
+      Protected sunIntensity.f = 1.0
+      Vector3::Set(@sunColor, 1,0.9,0.75)
+      Vector3::Set(@sunDirection, 0.45,1, 0.66)
+      glUniform3fv(glGetUniformLocation(shader,"sun.direction"), 1, @sunDirection)
+      glUniform3fv(glGetUniformLocation(shader,"sun.color"), 1, @sunColor)
+      glUniform1f(glGetUniformLocation(shader,"sun.intensity"), @sunIntensity)
       
       Protected i
       For i=0 To CArray::GetCount(Scene::*current_scene\lights)-1
@@ -200,17 +210,7 @@ Module LayerDefered
       glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\buffer\frame_id);
       glReadBuffer(#GL_COLOR_ATTACHMENT0)
       glBlitFramebuffer(0, 0, *layer\buffer\width,*layer\buffer\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_LINEAR);
-      
-      
-    ;   glEnable(#GL_BLEND)
-    ;   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-    ;   glDisable(#GL_DEPTH_TEST)
-    ;   FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-    ;   Define ss.f = 0.85/vwidth
-    ;   Define ratio.f = vwidth / vheight
-    ;   FTGL::Draw(*ftgl_drawer,"SSAO wip",-0.9,0.9,ss,ss*ratio)
-    ;   FTGL::Draw(*ftgl_drawer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
-    ;   glDisable(#GL_BLEND)
+     
       glEnable(#GL_DEPTH_TEST)
 
     
@@ -254,9 +254,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 233
-; FirstLine = 181
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 167
+; FirstLine = 141
 ; Folding = --
 ; EnableXP

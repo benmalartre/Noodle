@@ -55,6 +55,9 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+    CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
+  CompilerEndIf
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -106,9 +109,13 @@ Procedure Draw(*app.Application::Application_t)
   
   glDisable(#GL_BLEND)
   
- If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  EndIf
+ CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+    CocoaMessage( 0, *viewport\applecontext, "flushBuffer" )
+  CompilerElse
+    If Not #USE_GLFW
+      SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+    EndIf
+  CompilerEndIf
 
  EndProcedure
 
@@ -225,8 +232,8 @@ Procedure Draw(*app.Application::Application_t)
   CompilerEndIf
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 121
+; CursorPosition = 117
+; FirstLine = 99
 ; Folding = -
 ; EnableXP
 ; Executable = Test

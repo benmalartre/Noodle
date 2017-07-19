@@ -130,6 +130,8 @@ Module LayerShadowMap
   glBindAttribLocation(shader, 0, "position")
 	glUseProgram(shader)
 	
+	Vector3::Echo(*light\pos,"LIGHT POSITION")
+	Matrix4::Echo(*view, "LIGHT VIEW")
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
   
@@ -147,9 +149,10 @@ Module LayerShadowMap
   	;--------------------------------------------------------
   	shader.GLuint = *ctx\shaders("shadowmapic")\pgm
   	glUseProgram(shader)
-    glFrontFace(#GL_CCW)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*light\view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*light\projection)
+  	glFrontFace(#GL_CCW)
+  	
+  	glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*light\view)
+  	glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*light\projection)
     glUniform1f(glGetUniformLocation(shader,"nearplane"),*light\nearplane)
     glUniform1f(glGetUniformLocation(shader,"farplane"),*light\farplane)
    
@@ -220,7 +223,7 @@ Module LayerShadowMap
   Class::DEF(LayerShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 139
+; CursorPosition = 207
+; FirstLine = 83
 ; Folding = --
 ; EnableXP

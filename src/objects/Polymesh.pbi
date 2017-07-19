@@ -41,6 +41,8 @@ DeclareModule Polymesh
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
   Declare TestClass(*Me.Polymesh_t)
   Declare OnMessage(id.i, *up)
+  Declare SetDirtyState(*Me.Polymesh_t, state.i)
+  Declare SetClean(*Me.Polymesh_t)
   DataSection 
     PolymeshVT: 
     Data.i @Delete()
@@ -144,22 +146,66 @@ Module Polymesh
   EndProcedure
   
   ;-----------------------------------------------------
+  ; Set Dirty State
+  ;-----------------------------------------------------
+  Procedure SetDirtyState(*Me.Polymesh_t, state)
+    If state = Object3D::#DIRTY_STATE_TOPOLOGY
+      *Me\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
+      Object3D::SetAttributeDirty(*Me,"Geometry")
+      Object3D::SetAttributeDirty(*Me,"NbVertices")
+      Object3D::SetAttributeDirty(*Me,"NbEdges")
+      Object3D::SetAttributeDirty(*Me,"NbPolygons")
+      Object3D::SetAttributeDirty(*Me,"NbTriangles")
+      Object3D::SetAttributeDirty(*Me,"NbSamples")
+      Object3D::SetAttributeDirty(*Me,"NbIndices")
+      Object3D::SetAttributeDirty(*Me,"FaceCount")
+      Object3D::SetAttributeDirty(*Me,"FaceIndices")
+      Object3D::SetAttributeDirty(*Me,"PointPosition")
+      Object3D::SetAttributeDirty(*Me,"PointNormal")
+      Object3D::SetAttributeDirty(*Me,"PointVelocity")
+      Object3D::SetAttributeDirty(*Me,"Normals")
+      Object3D::SetAttributeDirty(*Me,"UVWs")
+      Object3D::SetAttributeDirty(*Me,"Colors")
+      Object3D::SetAttributeDirty(*Me,"Topology")
+    ElseIf state = Object3D::#DIRTY_STATE_DEFORM
+      If *me\dirty = Object3D::#DIRTY_STATE_CLEAN
+        *Me\dirty = Object3D::#DIRTY_STATE_DEFORM
+        Object3D::SetAttributeDirty(*Me,"PointPosition")
+        Object3D::SetAttributeDirty(*Me,"PointNormal")
+        Object3D::SetAttributeDirty(*Me,"PointVelocity")
+        Object3D::SetAttributeDirty(*Me,"Normals")
+      EndIf
+      
+    EndIf
+  EndProcedure
+  
+  ;-----------------------------------------------------
+  ; Set Clean
+  ;-----------------------------------------------------
+  Procedure SetClean(*Me.Polymesh_t)
+    *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
+    ForEach *Me\m_attributes()
+      *Me\m_attributes()\dirty = #False
+    Next
+  EndProcedure
+  
+  ;-----------------------------------------------------
   ; Update GL Data (position & normals)
   ;-----------------------------------------------------
   Procedure UpdateGLData(*p.Polymesh_t)
     
      ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-    Protected nbv = *geom\nbsamples
-    If nbv <3 : ProcedureReturn : EndIf
+    Protected nbs = *geom\nbsamples
+    If nbs <3 : ProcedureReturn : EndIf
     
     Protected GLfloat_s.GLfloat
     
     ; Get Polymesh Datas
     Protected s3 = SizeOf(GLfloat_s) * 3
     Protected s4 = SizeOf(GLfloat_s) * 4
-    Protected size_p.i = nbv * s3
-    Protected size_c.i = nbv * s4
+    Protected size_p.i = nbs * s3
+    Protected size_c.i = nbs * s4
     Protected size_t.i = 4*size_p + size_c
     
     ; Allocate Memory
@@ -170,10 +216,18 @@ Module Polymesh
 
     ; POSITIONS
     ;-------------------------------------------------------------
-    For i=0 To nbv-1
-      *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
+    Protected size_v = CArray::GetItemSize(*geom\a_positions)
+    Protected size_i = CArray::GetItemSize(*geom\a_triangleindices)
+    Protected id.l
+    For i=0 To nbs-1
+      id = PeekL(*geom\a_triangleindices\data+(i*size_i))
+      *v = *geom\a_positions\data + size_v*id
       CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
+;     For i=0 To nbs-1
+;       *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
+;       CopyMemory(*v,*flatdata+i*s3,s3)
+;     Next i
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,*flatdata)
     FreeMemory(*flatdata)
     
@@ -190,16 +244,16 @@ Module Polymesh
     
     ;Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-    Protected nbv = *geom\nbsamples
-    If nbv <3 : ProcedureReturn : EndIf
+    Protected nbs = *geom\nbsamples
+    If nbs <3 : ProcedureReturn : EndIf
     
     Protected GLfloat_s.GLfloat
     
     ; Get Polymesh Datas
     Protected s3 = SizeOf(GLfloat_s) * 3
     Protected s4 = SizeOf(GLfloat_s) * 4
-    Protected size_p.i = nbv * s3
-    Protected size_c.i = nbv * s4
+    Protected size_p.i = nbs * s3
+    Protected size_c.i = nbs * s4
     Protected size_t.i = 4*size_p + size_c
     
     ; Allocate Memory
@@ -211,14 +265,37 @@ Module Polymesh
     ; Push Buffer to GPU
     glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_STATIC_DRAW)
     
+;     Protected startT1.d = Time::Get()
     ; POSITIONS
     ;-------------------------------------------------------------
-    For i=0 To nbv-1
-      *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
+    Protected size_v = CArray::GetItemSize(*geom\a_positions)
+    Protected size_i = CArray::GetItemSize(*geom\a_triangleindices)
+    Protected id.l
+    For i=0 To nbs-1
+      id = PeekL(*geom\a_triangleindices\data+(i*size_i))
+      *v = *geom\a_positions\data + size_v*id
       CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
+
+;     FreeMemory(*flatdata)
+;     Protected endT1.d = Time::get()
+;     
+;     Protected startT2.d = Time::Get()
+;     ; POSITIONS
+;     ;-------------------------------------------------------------
+;     For i=0 To nbs-1
+;       *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
+;       CopyMemory(*v,*flatdata+i*s3,s3)
+;     Next i
+;     
+;     Protected endT2.d = Time::get()
+    
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,*flatdata)
     FreeMemory(*flatdata)
+    
+;     Protected delta1.d = endT1-startT1
+;     Protected delta2.d = endT2-startT2
+;     MessageRequester("Time Difference",StrF(delta1)+Chr(10)+StrF(delta2))
     
     ; NORMALS
     ;-------------------------------------------------------------
@@ -304,7 +381,7 @@ Module Polymesh
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*p.Polymesh_t,*pgm.Program::Program_t)
-
+    
     If Not *p : ProcedureReturn : EndIf
     
     If *pgm : *p\shader = *pgm : EndIf
@@ -312,13 +389,12 @@ Module Polymesh
     ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     
-    Protected nbv = CArray::GetCount(*geom\a_triangleindices)
-    If nbv <3 : ProcedureReturn : EndIf
+    Protected nbs = CArray::GetCount(*geom\a_triangleindices)
+    If nbs <3 : ProcedureReturn : EndIf
    
     ; Setup Static Kinematic STate
-    ;ResetStaticKinematicState(*p)
-    
-    GLCheckError("Setup Mesh OpenGL Start")
+    ;ResetStaticKinematicState(*p)nbs
+
     ; Create or ReUse Vertex Array Object
     If Not *p\vao
       glGenVertexArrays(1,@*p\vao)
@@ -333,7 +409,6 @@ Module Polymesh
     
     ; Fill Buffer
     BuildGLData(*p)
-  GLCheckError("Build GL DATAS")
     
     If *p\shader
       glLinkProgram(*p\shader\pgm);
@@ -365,7 +440,7 @@ Module Polymesh
     BuildGLEdgeData(*p)
     
     *p\initialized = #True
-    *p\dirty = Object3D::#DIRTY_STATE_CLEAN
+    SetClean(*p)
   EndProcedure
   
   ;-----------------------------------------------------
@@ -395,7 +470,6 @@ Module Polymesh
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
       p\Setup(*p\shader)
-
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
         PolymeshGeometry::RecomputeNormals(*p\geom,1.0)
@@ -404,7 +478,7 @@ Module Polymesh
         UpdateGLData(*p)
         glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
-        *p\dirty = Object3D::#DIRTY_STATE_CLEAN
+        SetClean(*p)
       EndIf
     EndIf
    glCheckError("Update Polymesh")
@@ -449,8 +523,6 @@ Module Polymesh
         glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
         GLCheckError("DRAW MESH SHADED")
       EndIf
-      
-      
       glBindVertexArray(0)
     CompilerEndIf
     
@@ -496,7 +568,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 445
-; FirstLine = 421
+; CursorPosition = 373
+; FirstLine = 345
 ; Folding = ----
 ; EnableXP

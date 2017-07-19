@@ -52,6 +52,7 @@ DeclareModule Framebuffer
   Declare AttachRender(*Me.Framebuffer_t,name.s,iformat.GLenum)
   Declare AttachTexture(*Me.Framebuffer_t,name.s,iformat.GLenum,filter.GLenum,wrap.GLenum=#GL_REPEAT)
   Declare AttachShadowMap(*Me.Framebuffer_t)
+  Declare AttachCascadedShadowMap(*Me.Framebuffer_t, num_cascades.i)
   Declare Unbind(*Me.Framebuffer_t)
   Declare BindInput(*Me.Framebuffer_t,offset.i=0)
   Declare BindInputByID(*Me.Framebuffer_t,id.i,offset.i=0)
@@ -252,9 +253,10 @@ Module Framebuffer
     glBindFramebuffer(#GL_FRAMEBUFFER,*Me\frame_id)
 
     ;Create the depth buffer
-    Protected tex_id.GLuint
-    glGenTextures(1,@tex_id)
-    glBindTexture(#GL_TEXTURE_2D,tex_id)  
+    ReDim *Me\tbos(1)
+    Protected *tbo.TextureBuffer_t = *Me\tbos(0)
+    glGenTextures(1,@*tbo\textureID)
+    glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)  
   ;   glTexImage2D(#GL_TEXTURE_2D, 0, #GL_DEPTH_COMPONENT32, *Me\width, *Me\height, 0, #GL_DEPTH_COMPONENT, #GL_FLOAT, #Null);
     glTexImage2D(#GL_TEXTURE_2D, 0,#GL_DEPTH_COMPONENT, *Me\width, *Me\height, 0,#GL_DEPTH_COMPONENT, #GL_UNSIGNED_INT, 0);
 
@@ -268,35 +270,68 @@ Module Framebuffer
 ;     glTexParameteri(#GL_TEXTURE_2D,#
     
    
-    glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_TEXTURE_2D, tex_id, 0);
+    glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_TEXTURE_2D, *tbo\textureID, 0);
 
     ;Disable writes To the color buffer
     glDrawBuffer(#GL_NONE)
   
     ;Disable reads from the color buffer
     glReadBuffer(#GL_NONE)
-    
-    
-    ReDim *Me\tbos(1)
-    
-    Protected *tbo.TextureBuffer_t = *Me\tbos(0)
-    *tbo\textureID = tex_id
+   
     *tbo\attachment = #GL_NONE
   
     *tbo\format = #GL_DEPTH_COMPONENT
     *tbo\type = #GL_UNSIGNED_INT
     *tbo\filter = #GL_NEAREST
     
-;     ReDim *Me\attachments(1)
-;     *Me\attachments(0) = #GL_NONE
-;   
     CheckStatus(*Me)
     
     glBindFramebuffer(#GL_FRAMEBUFFER,0)
     
   EndProcedure
 
+  ;------------------------------------------------------------------
+  ; Attach CascadedShadowMap Textures
+  ;------------------------------------------------------------------
+  Procedure AttachCascadedShadowMap(*Me.Framebuffer_t, num_cascades.i)  
+   
+    ;Create the depth buffer
+    ReDim *Me\tbos(num_cascades)
+    ReDim *Me\attachments(num_cascades)
+    Protected *tbo.TextureBuffer_t
+    Protected i
+    For i = 0 To num_cascades-1
+      *tbo = *Me\tbos(i)
+      glGenTextures(1,@*tbo\textureID)
+      glBindTexture(#GL_TEXTURE_2D, *tbo\textureID);
+      glTexImage2D(#GL_TEXTURE_2D, 0, #GL_DEPTH_COMPONENT32, *Me\width, *Me\height, 0, #GL_DEPTH_COMPONENT, #GL_FLOAT, #Null)
+      glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_LINEAR)
+      glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_LINEAR)
+      glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_COMPARE_MODE, #GL_NONE)
+      glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_EDGE)
+      glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_EDGE)
+      
+      ;glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_TEXTURE_2D, *tbo\textureID, 0);
+      
+      *tbo\attachment = #GL_NONE
+  
+      *tbo\format = #GL_DEPTH_COMPONENT
+      *tbo\type = #GL_UNSIGNED_INT
+      *tbo\filter = #GL_NEAREST
+      *Me\attachments(i) = #GL_NONE
+    Next
+    
+    glBindFramebuffer(#GL_FRAMEBUFFER,*Me\frame_id)
+    glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_TEXTURE_2D, *Me\tbos(0)\textureID, 0)
 
+    ;Disable writes To the color buffer
+    glDrawBuffer(#GL_NONE)
+    glReadBuffer(#GL_NONE)
+
+    CheckStatus(*Me)
+    
+    glBindFramebuffer(#GL_FRAMEBUFFER,0)
+  EndProcedure
 
   ; Resize Frame Buffer // Not Working
   ;----------------------------------------------------------
@@ -374,10 +409,10 @@ Module Framebuffer
    
     If nbt=1
       glDrawBuffer(*me\attachments(0))
-      GLCheckError("Can't Bind Draw Buffer"+ Str(*me\attachments(0)))
+      GLCheckError("Can't Bind Unique Draw Buffer"+ Str(*me\attachments(0)))
     Else
       glDrawBuffers(nbt,*Me\attachments())
-      GLCheckError("Can't Bind Draw Buffers "+ Str(*me\attachments()))
+      GLCheckError("Can't Bind Multiple Draw Buffers "+ Str(*me\attachments()))
     EndIf
   
   EndProcedure
@@ -555,8 +590,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 336
-; FirstLine = 332
+; CursorPosition = 414
+; FirstLine = 400
 ; Folding = ----
 ; EnableUnicode
 ; EnableXP

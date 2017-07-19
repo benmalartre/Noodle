@@ -24,7 +24,6 @@ DeclareModule Layer
   Structure Layer_t Extends Object3D::Object3D_t
     *pov.Object3D::Object3D_t
     *viewport.Viewport_t
-;     *tree.GraphTree::GraphTree_t
     *buffer.Framebuffer::Framebuffer_t
     *quad.ScreenQuad::ScreenQuad_t
     width.i
@@ -188,28 +187,26 @@ Module Layer
   ; Get View Matrix
   ;---------------------------------------------------
   Procedure GetViewMatrix(*layer.Layer_t)
-    Define.m4f32 *view,*proj
-  If *layer\pov\type = Object3D::#Object3D_Camera
-    Protected *camera.Camera::Camera_t = *layer\pov
-    ProcedureReturn *camera\view
-  ElseIf *layer\pov\type = Object3D::#Object3D_Light
-    Protected *light.Light::Light_t = *layer\pov
-    ProcedureReturn *light\view
-  EndIf
+    If *layer\pov\type = Object3D::#Object3D_Camera
+      Protected *camera.Camera::Camera_t = *layer\pov
+      ProcedureReturn *camera\view
+    ElseIf *layer\pov\type = Object3D::#Object3D_Light
+      Protected *light.Light::Light_t = *layer\pov
+      ProcedureReturn *light\view
+    EndIf
   EndProcedure
   
   ;---------------------------------------------------
-  ; Get Prohjection Matrix
+  ; Get Projection Matrix
   ;---------------------------------------------------
   Procedure GetProjectionMatrix(*layer.Layer_t)
-    Define.m4f32 *view,*proj
-  If *layer\pov\type = Object3D::#Object3D_Camera
-    Protected *camera.Camera::Camera_t = *layer\pov
-    ProcedureReturn *camera\projection
-  ElseIf *layer\pov\type = Object3D::#Object3D_Light
-    Protected *light.Light::Light_t = *layer\pov
-    ProcedureReturn *light\projection
-  EndIf
+    If *layer\pov\type = Object3D::#Object3D_Camera
+      Protected *camera.Camera::Camera_t = *layer\pov
+      ProcedureReturn *camera\projection
+    ElseIf *layer\pov\type = Object3D::#Object3D_Light
+      Protected *light.Light::Light_t = *layer\pov
+      ProcedureReturn *light\projection
+    EndIf
   EndProcedure
   
   ;---------------------------------------------------
@@ -609,7 +606,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 453
-; FirstLine = 423
+; CursorPosition = 199
+; FirstLine = 178
 ; Folding = ----
 ; EnableXP

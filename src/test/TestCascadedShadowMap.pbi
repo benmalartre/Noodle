@@ -1,21 +1,11 @@
 ﻿
 
-XIncludeFile "OpenGL.pbi"
-XIncludeFile "GLFW.pbi"
-XIncludeFile "OpenGLExt.pbi"
-XIncludeFile "Shapes.pbi"
-XIncludeFile "CubeMap.pbi"
-XIncludeFile "Array.pbi"
-XIncludeFile "Camera.pbi"
-XIncludeFile "Shader.pbi"
-XIncludeFile "Framebuffer.pbi"
-XIncludeFile "Math.pbi"
-XIncludeFile "Time.pbi"
-XIncludeFile "KDTree.pbi"
-XIncludeFile "Polymesh.pbi"
-XIncludeFile "FTGL.pbi"
-XIncludeFile "Application.pbi"
-XIncludeFile "ViewportUI.pbi"
+XIncludeFile "../core/Application.pbi"
+XIncludeFile "../libs/FTGL.pbi"
+XIncludeFile "../opengl/Framebuffer.pbi"
+XIncludeFile"../objects/Polymesh.pbi"
+XIncludeFile"../objects/Scene.pbi"
+XIncludeFile "../ui/ViewportUI.pbi"
 
 
 UseModule Math
@@ -67,6 +57,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  ViewportUI::SetContext(*viewport)
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -111,9 +102,7 @@ Procedure Draw(*app.Application::Application_t)
 ; 
 ;   glDisable(#GL_BLEND)
   
-  If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  EndIf
+  ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
  
@@ -128,7 +117,7 @@ Procedure Draw(*app.Application::Application_t)
    Log::Init()
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
-    *viewport = ViewportUI::New("ViewportUI",0,0,width,height)
+    *viewport = ViewportUI::New(*app\manager\main, "Viewport")
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
@@ -169,10 +158,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 29
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 119
+; FirstLine = 115
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

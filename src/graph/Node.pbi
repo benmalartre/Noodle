@@ -752,6 +752,14 @@ Module Node
   Procedure RemoveInputPort(*n.Node_t,id.i)
     If ListSize(*n\inputs())>1:
       SelectElement(*n\inputs(),id)
+      ; Remove from Affects
+      ForEach *n\outputs()
+        ForEach *n\outputs()\affects()
+          If *n\outputs()\affects() = *n\inputs()
+            DeleteElement(*n\outputs()\affects())
+          EndIf
+        Next
+      Next
       DeleteElement(*n\inputs())
     EndIf
   EndProcedure
@@ -774,15 +782,83 @@ Module Node
     GetSize(*n)
     ProcedureReturn *p
   EndProcedure
-
+  
+  ;------------------------------------
+  ; Is Node Dirty
+  ;------------------------------------
+  Procedure IsDirty(*n.Node_t)
+    ForEach(*n\outputs())
+      If *n\outputs()\dirty
+        ProcedureReturn #True
+      EndIf
+    Next
+  EndProcedure
+  
+  ;------------------------------------
+  ; Update Dirty
+  ;------------------------------------
+  Procedure UpdateDirty(*n.Node_t)
+    ForEach(*n\inputs())
+      If *n\inputs()\connected
+        If *n\inputs()\source\dirty
+          *n\inputs()\dirty = #True
+        EndIf
+      EndIf
+    Next
+    UpdateAffects(*n)
+    ForEach(*n\inputs())
+      *n\inputs()\dirty = #False
+    Next
+    
+  EndProcedure
+  
+  ;------------------------------------
+  ; Port Affect
+  ;------------------------------------
+  Procedure PortAffect(*n.Node_t, sourceName.s, targetName.s)
+    Protected *source.NodePort::NodePort_t = GetPortByName(*n, sourceName)
+    Protected *target.NodePort::NodePort_t = GetPortByName(*n, targetName)
+    AddElement(*target\affects())
+    *target\affects() = *source
+  EndProcedure
+  
+  ;------------------------------------
+  ; Port Affect
+  ;------------------------------------
+  Procedure PortAffect2(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
+    AddElement(*target\affects())
+    *target\affects() = *source
+  EndProcedure
+  
+  ;------------------------------------
+  ; Update Affects
+  ;------------------------------------
+  Procedure UpdateAffects(*n.Node_t)
+    ForEach *n\outputs()
+      ForEach *n\outputs()\affects()
+        If *n\outputs()\affects()\dirty : *n\outputs()\dirty = #True : EndIf
+      Next
+    Next
+    ForEach *n\inputs()
+      *n\inputs()\dirty = #False
+    Next
+    
+  EndProcedure
+  
+  ;------------------------------------
+  ; Set Clean
+  ;------------------------------------
+  Procedure SetClean(*n.Node_t)
+    ForEach *n\inputs() : *n\inputs()\dirty = #False : Next
+    ForEach *n\outputs() : *n\outputs()\dirty = #False : Next
+  EndProcedure
+  
   ;----------------------------------------------
   ; Inspect Node
   ;----------------------------------------------
   Procedure Inspect(*n.Node_t)
     Debug "Hohoho what a funny joke"
   EndProcedure
-  
- 
 
   Class::DEF(Node)
 EndModule
@@ -790,11 +866,10 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.42 LTS (Windows - x64)
-; CursorPosition = 402
-; FirstLine = 354
-; Folding = -----
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 802
+; FirstLine = 795
+; Folding = ------
 ; EnableUnicode
 ; EnableThread
 ; EnableXP

@@ -119,7 +119,7 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
-  
+  ViewportUI::SetContext(*viewport)
   
     If EventGadget() = *viewport\gadgetID
     Select EventType()
@@ -148,19 +148,20 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
   glDisable(#GL_BLEND)
   
+  CompilerIf Not #USE_GLFW
+    ViewportUI::FlipBuffer(*viewport)
+  CompilerEndIf
+  
 
-  SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  
-  
 EndProcedure
 
 
 Define e.i
-
+Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 107
-; FirstLine = 90
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 133
+; FirstLine = 127
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

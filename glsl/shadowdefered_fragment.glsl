@@ -11,6 +11,7 @@ uniform sampler2D shadow_map;
 uniform vec3 camera_position;
 uniform mat4 light_view;
 uniform mat4 light_proj;
+uniform mat4 view_rotation_matrix;
 uniform mat4 view;
 
 const float bias2 = 0.001;
@@ -53,31 +54,12 @@ return mat4(m[0].xyzw,
 void main( void )
 {
     // Read the data from the textures
-    vec4 color = texture2D( color_map, texCoords );
+    vec4 color = texture( color_map, texCoords );
 	if(color.a == 0.0) discard;
 	
-    vec4 position = texture2D( position_map, texCoords );
-    vec4 normal = texture2D( normal_map, texCoords);
-
-	
-	mat4 rot = extractRotationMatrix(view);
-	
-    mat4 inv_light_view = inverse(light_view);
-    vec3 light = inv_light_view[3].xyz;
-    vec3 light_dir = normalize(light - position.xyz);
-	light_dir = (rot * vec4(light_dir,1.0)).xyz;
-		
-    normal = normalize(normal);
-
-	
+    vec4 position = texture( position_map, texCoords );
     vec3 eye_dir = position.xyz - camera_position;
-    vec3 reflected_eye_vector = normalize(reflect(vec4(eye_dir,1.0), normal)).xyz;
-	
 
-    float d =0.25;
-	if(dot(normal,vec4(light_dir,1.0))>0.0) d = 0.95;
-	outColor = vec4(d,d,d,1.0);
-	
 	vec3 shadow_coords = getShadowCoords(eye_dir);
 	float s = 0.0;
 	
@@ -89,8 +71,8 @@ void main( void )
 				s += lookup(shadow_coords,vec2(x,y));
 		
 	s /= 16.0 ;
-	*/
-	/*
+	
+	
 	float x,y;
 	for (y = -30.5 ; y <=30.5 ; y+=10.0)
 		for (x = -30.5 ; x <=30.5 ; x+=10.0)
@@ -98,7 +80,7 @@ void main( void )
 	
 	s /= 64.0 ;
 	*/
-
+	
 	// use modulo to vary the sample pattern
 	vec2 o = mod(floor(shadow_coords.xy), 2.0);
 
@@ -109,13 +91,14 @@ void main( void )
 	s *= 0.25 ;
 	
 	s = max(s,0.25);
-
+	
 	outColor = vec4(s,s,s,1.0);
 	//outColor = texture(shadow_map,texCoords);
-	
+	/*
     float diffuse_light = 0.25;
 	if(max(dot(normal,vec4(light_dir,1.0)),0)>0.0) diffuse_light = 1.0;
 	outColor = color *vec4(diffuse_light)*s ;
+    */
 	//outColor = vec4(s);
 	/*
     float ambient_light = 0.1;
@@ -123,4 +106,3 @@ void main( void )
     outColor = (diffuse_light + ambient_light ) * image + pow(max(dot(light_dir,reflected_eye_vector),0.0), 100) * 1.5 * shadow;
 	*/
 }
-; 

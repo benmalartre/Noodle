@@ -42,6 +42,7 @@ XIncludeFile "../layers/Defered.pbi"
 XIncludeFile "../layers/ShadowMap.pbi"
 XIncludeFile "../layers/ShadowSimple.pbi"
 XIncludeFile "../layers/ShadowDefered.pbi"
+XIncludeFile "../layers/CascadedShadowMap.pbi"
 XIncludeFile "../layers/Toon.pbi"
 XIncludeFile "../layers/SSAO.pbi"
 XIncludeFile "../layers/Blur.pbi"
@@ -502,7 +503,6 @@ Module Application
   ; Main Loop
   ;------------------------------
   Procedure Loop(*app.Application_t,*callback.PDRAWFN)
-    Debug "START MAIN LOOP"
     Define event
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
@@ -510,7 +510,6 @@ Module Application
         glfwPollEvents()
         glfwMakeContextCurrent(*app\window)
         *callback(*app)
-      
         glfwSwapBuffers(*app\window)
        
       Wend
@@ -518,7 +517,6 @@ Module Application
       Repeat
         event = WaitWindowEvent(1000/60)
         If event = Globals::#EVENT_TREE_CREATED
-          MessageRequester("Application","Event Tree Created Recieved!!!")
           Protected *graph = ViewManager::*view_manager\uis("Graph")
           Protected *tree = EventData()
           If *graph
@@ -535,8 +533,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 504
-; FirstLine = 499
+; CursorPosition = 44
+; FirstLine = 14
 ; Folding = ----
 ; EnableUnicode
 ; EnableXP

@@ -57,6 +57,8 @@ Module MultiplyByScalarNode
     Node::AddInputPort(*node,"Scalar",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",datatype)
     
+    Node::PortAffect(*node, "Input", "Result")
+    Node::PortAffect(*node, "Scalar", "Result")
     *node\label = "MultiplyByScalar"
   EndProcedure
   
@@ -167,13 +169,15 @@ Module MultiplyByScalarNode
         
         
       Case Attribute::#ATTR_TYPE_UNDEFINED
-        Debug *output\name + "DataType UNDEFIEND"
+        Debug *output\name + "DataType UNDEFINED"
         
       Case Attribute::#ATTR_TYPE_POLYMORPH
         Debug *output\name + "DataType POLYMORPH"
-         Default
+      Default
         Debug *output\name + ": DataType OTHER"
     EndSelect
+    
+    *output\dirty = #False
   
   EndProcedure
   
@@ -213,10 +217,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 46
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 60
+; FirstLine = 32
 ; Folding = --
 ; EnableXP

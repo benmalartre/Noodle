@@ -55,6 +55,9 @@ Module AddNode
     Node::AddOutputPort(*node,"Result",datatype)
     
     *node\label = "Add"
+    
+    Node::PortAffect(*node, "Value1", "Result")
+    Node::PortAffect(*node, "Value2", "Result")
   EndProcedure
   
   Procedure Evaluate(*node.AddNode_t)
@@ -63,11 +66,6 @@ Module AddNode
     Protected *input.NodePort::NodePort_t
     If *output\value = #Null
       NodePort::Init(*output)
-    EndIf
-    
-    If *output\value = #Null
-      Debug "Cannot Init Port For Add Node"
-      ProcedureReturn 
     EndIf
     
     Protected i.i
@@ -179,7 +177,11 @@ Module AddNode
          Default
         Debug *output\name + ": DataType OTHER"
     EndSelect
-  
+    
+    ForEach *node\outputs()
+      *node\outputs()\dirty = #False
+    Next
+    
   EndProcedure
 
   Procedure Terminate(*node.AddNode_t)
@@ -189,7 +191,10 @@ Module AddNode
   Procedure Delete(*node.AddNode_t)
     Node::DEL(AddNode)
   EndProcedure
-
+  
+  Procedure PortAffects(*node.AddNode_t)
+    
+  EndProcedure
   
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -216,11 +221,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 105
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 183
+; FirstLine = 161
 ; Folding = --
 ; EnableUnicode
 ; EnableThread

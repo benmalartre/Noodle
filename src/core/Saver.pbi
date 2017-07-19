@@ -36,6 +36,7 @@ DeclareModule Saver
     root.i              ; XML Root Node
     
     compounds_counter.i
+    numSaved3DObject.i
     
     Map *m_nodes.Node::Node_t()
     Map *m_compounds.CompoundNode::CompoundNode_t()
@@ -340,6 +341,7 @@ UseModule Math
     ForEach *stack\levels()
       Select *stack\levels()\class\name
         Case "Tree"
+          Debug "Save Tree"
           Protected *t.Stack::StackLevel_t = *stack\levels()
 ;           op = CreateXMLNode(stack,*gt\name)
           SaveTree(*saver,stack,*t)
@@ -382,22 +384,24 @@ UseModule Math
     Protected *mem = AllocateMemory(size_t*1.5)
     Protected local = CreateXMLNode(kine,"transform")
     SetXMLAttribute(local,"Name","Local Transform")
-    Base64Encoder(*m,size_t,*mem,size_t*1.5)
-    SetXMLAttribute(local,"Value",PeekS(*mem,size_t*1.5))
+    Protected value.s = Matrix4::AsString(*m)
+    SetXMLAttribute(local,"Value", value)
+    ;Base64Encoder(*m,size_t,*mem,size_t*1.5)
+    ;SetXMLAttribute(local,"Value",PeekS(*mem,size_t*1.5))
     
-    *t = *obj\globalT
-    *m = *t\m
-    Protected glob = CreateXMLNode(kine,"transform")
-    SetXMLAttribute(glob,"Name","Global Transform")
-    Base64Encoder(*m,size_t,*mem,size_t*1.5)
-    SetXMLAttribute(glob,"Value",PeekS(*mem,size_t*1.5))
+;     *t = *obj\globalT
+;     *m = *t\m
+;     Protected glob = CreateXMLNode(kine,"transform")
+;     SetXMLAttribute(glob,"Name","Global Transform")
+;     Base64Encoder(*m,size_t,*mem,size_t*1.5)
+;     SetXMLAttribute(glob,"Value",PeekS(*mem,size_t*1.5))
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Save 3D Object
   ;----------------------------------------------------------------------------
   Procedure Save3DObject(*saver.Saver_t,parent.i,*item.Object3D::Object3D_t)
-    Protected object = CreateXMLNode(parent,*item\name)
+    Protected object = CreateXMLNode(parent,*item\name,-1)
     Select *item\type
       Case Object3D::#Object3D_Camera
         SetXMLAttribute(object,"Type","Camera")
@@ -424,55 +428,55 @@ UseModule Math
     EndSelect
     
     
-  ;   Select *item\type
-  ;     Case #RAA_3DObject_Camera
-  ;     Case #RAA_3DObject_Curve
-  ;     Case #RAA_3DObject_Grid
-  ;     Case #RAA_3DObject_Layer
-  ;     Case #RAA_3DObject_Light
-  ;     Case #RAA_3DObject_Model
-  ;     Case #RAA_3DObject_Null
-  ;     Case #RAA_3DObject_PointCloud
-  ;       Protected *cloud.CPointCloud = *item
-  ;       Protected *geo.CPointCloudGeometry_t = *cloud\GetGeometry()
-  ;       Protected geometrynode = CreateXMLNode(object,"Geometry")
-  ;       
-  ;       ; Geometry definition
-  ;       SetXMLAttribute(geometrynode,"NbPoints",Str(*geo\a_positions\GetCount()))
-  ; 
-  ;       
-  ;     Case #RAA_3DObject_Polymesh
-  ; 
-  ;       Protected *mesh.CPolymesh = *item
-  ;       Protected *geom.CPolymeshGeometry_t = *mesh\GetGeometry()
-  ;       Protected geom = CreateXMLNode(object,"Geometry")
-  ;       
-  ;       ; Geometry definition
-  ;       SetXMLAttribute(geom,"NbVertices",Str(*geom\topo\vertices\GetCount()))
-  ;       SetXMLAttribute(geom,"NbIndices",Str(*geom\topo\faces\GetCount()))
-  ;       
-  ;       ; Vertices
-  ;       Protected size_t = *geom\topo\vertices\GetCount()* *geom\topo\vertices\GetItemSize()
-  ;       Protected *mem = AllocateMemory(size_t*1.5)
-  ;       Base64Encoder(*geom\topo\vertices\GetPtr(0),size_t,*mem,size_t*1.5)
-  ;       SetXMLAttribute(geom,"Vertices",PeekS(*mem,size_t*1.5))
-  ;       
-  ;       ; Indices
-  ;       size_t = *geom\topo\faces\GetCount() * *geom\topo\faces\GetItemSize()
-  ;       *mem = ReAllocateMemory(*mem,size_t*1.5)
-  ;       Base64Encoder(*geom\topo\faces\GetPtr(0),size_t,*mem,size_t*1.5)
-  ;       SetXMLAttribute(geom,"Indices",PeekS(*mem,size_t*1.5))
-  ;       
-  ;       FreeMemory(*mem)
-  ;   EndSelect
-  ;   
+    Select *item\type
+      Case Object3D::#Object3D_Camera
+      Case Object3D::#Object3D_Curve
+      Case Object3D::#Object3D_Grid
+      Case Object3D::#Object3D_Layer
+      Case Object3D::#Object3D_Light
+      Case Object3D::#Object3D_Model
+      Case Object3D::#Object3D_Null
+      Case Object3D::#Object3D_PointCloud
+        Protected *cloud.PointCloud::PointCloud_t = *item
+        Protected *geo.Geometry::PointCloudGeometry_t = *cloud\geom
+        Protected geometrynode = CreateXMLNode(object,"Geometry")
+        
+        ; Geometry definition
+        SetXMLAttribute(geometrynode,"NbPoints",Str(CArray::GetCount(*geo\a_positions)))
+  
+        
+      Case Object3D::#Object3D_Polymesh
+        Protected *mesh.Polymesh::Polymesh_t = *item
+        Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+        Protected geom = CreateXMLNode(object,"Geometry")
+        
+        ; Geometry definition
+        SetXMLAttribute(geom,"NbVertices",Str(CArray::GetCount(*geom\topo\vertices)))
+        SetXMLAttribute(geom,"NbIndices",Str(CArray::GetCount(*geom\topo\faces)))
+        
+        ; Vertices
+        Protected size_t = CArray::GetCount(*geom\topo\vertices) * CArray::GetItemSize(*geom\topo\vertices)
+        Protected *mem = AllocateMemory(size_t*1.5)
+        Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t,*mem,size_t*1.5)
+        SetXMLAttribute(geom,"Vertices",PeekS(*mem,size_t*1.5))
+        
+        ; Indices
+        size_t = CArray::GetCount(*geom\topo\faces)* CArray::GetItemSize(*geom\topo\faces)
+        *mem = ReAllocateMemory(*mem,size_t*1.5)
+        Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t,*mem,size_t*1.5)
+        SetXMLAttribute(geom,"Indices",PeekS(*mem,size_t*1.5))
+        
+        FreeMemory(*mem)
+    EndSelect
+    
     SaveTransform(object,*item)
     
-    If MapSize(*item\m_attributes())
-      SaveAttributes(*saver,object,*item)
-    EndIf
+;     If MapSize(*item\m_attributes())
+;       SaveAttributes(*saver,object,*item)
+;     EndIf
     
     SaveStack(*saver,object,*item)
+    *saver\numSaved3DObject +1
     
     ; Recursive Save
     ;-------------------------------------------------------------
@@ -506,14 +510,14 @@ UseModule Math
           *o = CArray::GetValuePtr(*scene\objects,i)
           Save3DObject(*saver,*saver\root,*o)
         Next
-        
+        MessageRequester("SAVER", "NUM SAVED 3D OBJECTS : "+Str(*saver\numSaved3DObject))
         FormatXML(*saver\xml,#PB_XML_LinuxNewline|#PB_XML_ReFormat|#PB_XML_ReIndent)
         ;Save the xml tree into a xml file
-        MessageRequester("Save XML ",*saver\path)
+        ;MessageRequester("Save XML ",*saver\path)
         SaveXML(*saver\xml, *saver\path)
         
-        Protected s.s = ComposeXML(*saver\xml)
-        MessageRequester("Save Tree",s)
+;         Protected s.s = ComposeXML(*saver\xml)
+;         MessageRequester("Save Tree",s)
   
       Default
         MessageRequester("Raabit","Save File Failed..."+*obj\class\name)
@@ -536,6 +540,7 @@ UseModule Math
     Protected *saver.Saver_t = AllocateMemory(SizeOf(Saver_t))
     InitializeStructure(*saver,Saver_t)
     *saver\obj = *obj
+    *saver\numSaved3DObject = 0
     If Not path = ""
       *saver\path = path
     Else
@@ -556,11 +561,9 @@ UseModule Math
   
   Class::DEF(Saver)
 EndModule
-
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 338
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 386
+; FirstLine = 375
 ; Folding = ----
 ; EnableUnicode
 ; EnableXP

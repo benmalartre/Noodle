@@ -111,7 +111,7 @@ Module Camera
         *Me\fov = 66
         *Me\aspect = 1.33
         *Me\nearplane = 0.1
-        *Me\farplane = 5000000
+        *Me\farplane = 10000
         
         LookAt(*Me)
         UpdateProjection(*Me)
@@ -130,7 +130,7 @@ Module Camera
       *Me\fov = 33
       *Me\aspect = 1.33
       *Me\nearplane = 0.1
-      *Me\farplane = 1000000
+      *Me\farplane = 100000
 
       LookAt(*Me)
       UpdateProjection(*Me)
@@ -430,7 +430,7 @@ Module Camera
         
       Case #PB_EventType_MouseWheel
         delta = GetGadgetAttribute(gadget,#PB_OpenGL_WheelDelta)
-        Dolly(*Me,delta*100,delta*100,width,height)
+        Dolly(*Me,delta*10,delta*10,width,height)
     EndSelect
    
     
@@ -456,9 +456,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 370
-; FirstLine = 360
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 113
+; FirstLine = 97
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

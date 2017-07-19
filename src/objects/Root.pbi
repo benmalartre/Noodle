@@ -83,14 +83,13 @@ Module Root
   ;{
   ; ---[ _Free ]----------------------------------------------------------------
   Procedure Delete( *Me.Root_t )
-    MessageRequester("Root","Delete Called")
-    Protected Me.Object3D::IObject3D
+    Protected child.Object3D::IObject3D
     ; ---[ Delete Childrens ]---------------------------------------------------
     ForEach *Me\children()
-      Debug *Me\children()\name
-      Debug *Me\children()\class\name
-      Me = *Me\children()
-      Me\Delete()
+      Debug "CHILD NAME : "+*Me\children()\name
+      Debug "CHILD CLASS : "+*Me\children()\class\name
+      child = *Me\children()
+      child\Delete()
     Next
   
     ; ---[ Deallocate Memory ]--------------------------------------------------
@@ -148,9 +147,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 36
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 89
+; FirstLine = 78
 ; Folding = --
 ; EnableUnicode
 ; EnableThread

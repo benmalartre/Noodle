@@ -65,6 +65,7 @@ DeclareModule GraphUI
     connect.b
     redraw.b           ; Should Canvas be Redrawn
     depth.i            ; Current Depth inside the tree
+    keydown.i          ; Previous Key Down
     
     ; ---[ Top Menu ]---------------------------------------------
     *menu.ControlMenu::ControlMenu_t 
@@ -290,7 +291,7 @@ Module GraphUI
         ResizeGadget(*Me\gadgetID,200,0,width-200,height)
         ResizeGadget(*Me\menu\GadgetID,0,0,168,25)
         ResizeGadget (*Me\prop\gadgetID,168,0,32,25)
-        ;Resize(*Me)
+        CanvasEvent(*Me,#PB_Event_SizeWindow)
         ControlMenu::Event(*Me\menu,#PB_Event_SizeWindow)
        
         NodeExplorer::Event(*Me\explorer,#PB_Event_SizeWindow,#Null)
@@ -1278,19 +1279,13 @@ Module GraphUI
     *Me\mousex = x
     *Me\mousey = y
     
-   ;OViewGraphNode_Evaluate(*Me\root)
-    
     ;Return value(push the command stack)
     out_value = -1
     
     If Not *Me\tree : DrawEmpty(*Me): ProcedureReturn : EndIf
     
     Select eventID
-      
-
       Case #PB_Event_Gadget
-        
-        
         Select EventType()
             ; Drop Event
             ;------------------------------
@@ -1305,11 +1300,11 @@ Module GraphUI
                Define mode = Node::Pick(*Me\focus,x,y,#False)
                If mode = Graph::#Graph_Selection_Node
                  ;Inspect Current Node
-                InspectNode(*Me,*Me\focus)
-                *Me\down = #False
-              ElseIf mode = Graph::#Graph_Selection_Port
+                 InspectNode(*Me,*Me\focus)
+                   *Me\down = #False
+               ElseIf mode = Graph::#Graph_Selection_Port
                 ;ChangePortName(*Me,x,y)
-              EndIf
+               EndIf
               
             EndIf
   
@@ -1335,8 +1330,7 @@ Module GraphUI
             
             ;Left Button Down Event
             ;------------------------------
-          Case #PB_EventType_LeftButtonDown 
-            *Me\down = #True
+          Case #PB_EventType_LeftButtonDown             
             If *Me\pan
               ;Do nothing
               ProcedureReturn
@@ -1440,7 +1434,7 @@ Module GraphUI
           PopUpMenu(*Me)
           If *Me\focus
               
-            EndIf
+          EndIf
             
           ;Right Button Up Event
           ;------------------------------ 
@@ -1459,13 +1453,10 @@ Module GraphUI
           ;Key Down Event
           ;------------------------------
           Case #PB_EventType_KeyDown  
-            If *Me\pan
-              *Me\pan = #False
-              SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)
-            Else
-              
+            If *Me\keydown : ProcedureReturn : EndIf
              Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
                Case #PB_Shortcut_Space
+                 *me\keydown = #PB_Shortcut_Space
                  If *me\pan :ProcedureReturn : EndIf
                  ; Pan
                  SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
@@ -1474,27 +1465,33 @@ Module GraphUI
                  *Me\pan = #True
                  
                Case #PB_Shortcut_A
+                 *me\keydown = #PB_Shortcut_A
                  FrameAll(*Me)
                Case #PB_Shortcut_R
+                 *me\keydown = #PB_Shortcut_R
                  Reset(*Me)
                Case #PB_Shortcut_F
+                 *me\keydown = #PB_Shortcut_F
                  FrameSelected(*Me)
                Case #PB_Shortcut_Delete
+                 *me\keydown = #PB_Shortcut_Delete
                  DeleteSelected(*Me)
                Case #PB_Shortcut_Return
-                If *Me\focus : GraphUI::InspectNode(*Me,*Me\focus) : EndIf
+                 *me\keydown = #PB_Shortcut_Return
+                 If *Me\focus : GraphUI::InspectNode(*Me,*Me\focus) : EndIf
             EndSelect
-          EndIf
-          
-            
-;            Case #PB_EventType_KeyUp
-;              Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
-;                Case #PB_Shortcut_Space
-;                  SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)          
-;                  *Me\pan = #False
-;              EndSelect
-             
-          ;Mouse Move
+        
+        ; Key Up
+        ;------------------------------
+        Case #PB_EventType_KeyUp
+          *Me\keydown = #False
+           Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
+             Case #PB_Shortcut_Space
+               SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)          
+               *Me\pan = #False
+           EndSelect
+           
+          ; Mouse Move
           ;------------------------------
           Case #PB_EventType_MouseMove ;Move
             If *Me\connect = #True
@@ -1527,7 +1524,7 @@ Module GraphUI
             ElseIf *Me\pan = #True
               *Me\posx = x-*Me\offsetx
               *Me\posy = y-*Me\offsety
-              ;*Me\redraw = #True
+              *Me\redraw = #True
             ElseIf *Me\drag = #True
               Protected i
               For i=0 To CArray::GetCount(*Me\a_selected)-1
@@ -1571,12 +1568,10 @@ Module GraphUI
   
       Case #PB_Event_SizeWindow
         ;Resize(*Me)
-       
         *Me\redraw = #True
     EndSelect
     
-  ;   *Me\zoom = Min(Max(1,*ev_datas\width/2 + *ev_datas\height/2)/100,200)
-    *Me\redraw = #True
+    ;*Me\zoom = Min(Max(1,*ev_datas\width/2 + *ev_datas\height/2)/100,200)
     If *Me\redraw
       NodeInfos(*Me)
     EndIf
@@ -1683,8 +1678,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 292
-; FirstLine = 284
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 1481
+; FirstLine = 1450
 ; Folding = --------
 ; EnableXP

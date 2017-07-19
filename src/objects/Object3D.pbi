@@ -29,15 +29,14 @@ DeclareModule Object3D
     #Object3D_Root          = 512
     #Object3D_Layer         = 1024
   EndEnumeration
-  
-
-  
 
   #DIRTY_STATE_CLEAN = 0
   #DIRTY_STATE_TRANSFORM = 1
   #DIRTY_STATE_DEFORM = 2
-  #DIRTY_STATE_TOPOLOGY = 4
-
+  #DIRTY_STATE_UVW = 4
+  #DIRTY_STATE_COLOR = 8
+  #DIRTY_STATE_TOPOLOGY = 16
+  
   Structure Object3D_t Extends Object::Object_t
     
     uniqueID.i
@@ -146,7 +145,9 @@ DeclareModule Object3D
   Declare AddAttribute(*obj.Object3D_t,*attribute.Attribute::Attribute_t)
   Declare DeleteAttribute(*obj.Object3D_t,name.s)
   Declare DeleteAllAttributes(*obj.Object3D_t)
-  Declare.b CheckAttributeExist(*obj.Object3D_t,atttrname.s)
+  Declare.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
+  Declare SetAttributeDirty(*obj.Object3D_t, attrname.s)
+  Declare SetAttributeClean(*obj.Object3D_t, attrname.s)
   Declare SetShader(*obj.Object3D_t,*shader.Program::Program_t)
   ;   Declare SetVisibility(visible.b)
   Declare EncodeID(*color.v3f32,id.i)
@@ -224,6 +225,7 @@ Module Object3D
   ; Add Child 
   ;--------------------------------------------------------------
   Procedure AddChild(*parent.Object3D_t,*child.Object3D_t)
+    Debug "ADD CHILD : "+*child\name
     If *child\parent
       ForEach *child\parent\children()
         If *child\parent\children() = *child
@@ -233,6 +235,7 @@ Module Object3D
       Next
     EndIf
     *child\parent = *parent
+    Debug "PARENT : "+*parent\name
     
     If *parent\type = Object3D::#Object3D_Model
       *child\model = *parent
@@ -370,10 +373,7 @@ Module Object3D
   ; Get Attribute
   ;-----------------------------------------------
   Procedure GetAttribute(*obj.Object3D_t,name.s)
-    Debug *obj\name
-    Debug name
     If Not *obj\m_attributes(name)
-      Debug "C3DObject : Can't find Attribute "+name
       ProcedureReturn #Null
     Else
       ProcedureReturn *obj\m_attributes(name)
@@ -437,13 +437,31 @@ Module Object3D
   ;-----------------------------------------------
   ; Check Attribute Exists
   ;-----------------------------------------------
-  Procedure.b CheckAttributeExist(*obj.Object3D_t,atttrname.s)
-    If *obj\m_attributes(atttrname)
+  Procedure.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
+    If *obj\m_attributes(attrname)
       ProcedureReturn #True
     Else
       ProcedureReturn #False
     EndIf
     
+  EndProcedure
+  
+  ;-----------------------------------------------
+  ; Set Attribute Dirty
+  ;-----------------------------------------------
+  Procedure SetAttributeDirty(*obj.Object3D_t,attrname.s)
+    If *obj\m_attributes(attrname)
+      *obj\m_attributes(attrname)\dirty = #True
+    EndIf
+  EndProcedure
+  
+  ;-----------------------------------------------
+  ; Set Attribute Clean
+  ;-----------------------------------------------
+  Procedure SetAttributeClean(*obj.Object3D_t,attrname.s)
+    If *obj\m_attributes(attrname)
+      *obj\m_attributes(attrname)\dirty = #False
+    EndIf
   EndProcedure
   
   ;-----------------------------------------------
@@ -518,8 +536,8 @@ Module Object3D
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 315
-; FirstLine = 299
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 237
+; FirstLine = 222
 ; Folding = ------
 ; EnableXP

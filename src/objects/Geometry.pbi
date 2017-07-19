@@ -10,7 +10,6 @@ DeclareModule Geometry
     #GEOMETRY_1D
     #GEOMETRY_2D
     #GEOMETRY_3D
-    #GEOMETRY_4D
   EndEnumeration
   
   UseModule Math
@@ -99,6 +98,7 @@ DeclareModule Geometry
   ;{
   Structure Sample_t
     id.i
+    *position.v3f32
     *normal.v3f32
     *uvs.v2f32
     *uvws.v3f32
@@ -122,7 +122,6 @@ DeclareModule Geometry
     *polygons.CArray::CArrayPtr
     *triangles.CArray::CArrayPtr
     *samples.CArray::CArrayPtr
-    *geometry    ; pointer to geometry
   EndStructure
   ;}
   
@@ -132,14 +131,11 @@ DeclareModule Geometry
   ;{
   Structure Edge_t
     id.i
-    p1id.i
-    p2id.i
     position.v3f32
     normal.v3f32
     *neighbors.CArray::CArrayPtr
     *vertices.CArray::CArrayPtr
     *polygons.CArray::CArrayPtr
-    *geometry     ; pointer to geometry
   EndStructure
   ;}
   
@@ -152,12 +148,8 @@ DeclareModule Geometry
     *v1.Vertex_t
     *v2.Vertex_t
     *v3.Vertex_t
-    *e1.Edge_t
-    *e2.Edge_t
-    *e3.Edge_t
     normal.v3f32
     position.v3f32
-    *geometry    ; pointer to geometry
   EndStructure
   ;}
   ;}
@@ -174,7 +166,6 @@ DeclareModule Geometry
     *neighbors.CArray::CArrayPtr
     *vertices.CArray::CArrayPtr
     *edges.CArray::CArrayPtr
-    *geometry    ; pointer to geometry
   EndStructure
   ;}
   ;}
@@ -186,6 +177,7 @@ DeclareModule Geometry
   Structure Topology_t
     *vertices.CArray::CArrayV3F32
     *faces.CArray::CArrayLong
+    dirty.i
   EndStructure
   ;}
   
@@ -207,11 +199,14 @@ DeclareModule Geometry
     *a_normals.CArray::CArrayV3F32
     *a_tangents.CArray::CArrayV3F32
     *a_pointnormals.CArray::CArrayV3F32
+    *a_polygonnormals.CArray::CArrayV3F32
     *a_uvws.CArray::CArrayV3F32
     *a_colors.CArray::CArrayC4F32
     *a_faceindices.CArray::CArrayLong
     *a_facecount.CArray::CArrayLong
     *a_triangleindices.CArray::CArrayLong
+    *a_vertexpolygoncount.CArray::CArrayLong
+    *a_vertexpolygonindices.CArray::CArrayLong
     *a_edgeindices.CArray::CArrayLong
 
     *topo.Topology_t
@@ -325,7 +320,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 172
-; FirstLine = 165
+; CursorPosition = 201
+; FirstLine = 183
 ; Folding = ---
 ; EnableXP

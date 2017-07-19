@@ -289,9 +289,7 @@ Module PropertyUI
           EndSelect
         EndIf
         
-      EndWith
-      
-          
+      EndWith    
     Next
     
     ControlProperty::AppendStop(*p)
@@ -302,7 +300,6 @@ Module PropertyUI
   ;  Setup
   ; ----------------------------------------
   Procedure Setup(*Me.PropertyUI_t,*object.Object::Object_t)
-    MessageRequester("PropertyUI" ,"Property UI SETUP"+*object\class\name)
     OpenGadgetList(*Me\container)
     Protected cName.s = *object\class\name
     If Right(cName,4) = "Node"
@@ -319,9 +316,9 @@ Module PropertyUI
 
 
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 210
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 287
+; FirstLine = 284
 ; Folding = ---
 ; EnableUnicode
 ; EnableXP

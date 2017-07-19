@@ -12,6 +12,7 @@ DeclareModule Loader
     xml.i               ; XML Object
     current.i           ; Current XML Node
     root.i              ; XML Root Node
+    numLoaded3DObject.i
   EndStructure
   
   Global Dim extensions.s(3)
@@ -37,24 +38,31 @@ Module Loader
   ; Load Transform
   ;---------------------------------------------------------------
   Procedure LoadTransform(node.i,*obj.Object3D::Object3D_t)
-    Protected kine.i = ChildXMLNode(node,1)
+    Protected kinematics.i = ChildXMLNode(node,2)
     Protected *t.Transform::Transform_t = *obj\localT
-    Protected lm.s = GetXMLAttribute(kine,"LocalTransform")
-    Protected bufferLength.i = Len(lm)+2
-    Protected *mem = AllocateMemory(bufferLength)
-    PokeS(*mem,lm,bufferLength)
-    Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
+    Protected *m.Math::m4f32 = *t\m
+    Protected localTransform.i = ChildXMLNode(kinematics, 1)
+    value.s = GetXMLAttribute(localTransform,"Value")
+    MessageRequester("LOADER","MATRIX : "+value)
+    Matrix4::FromString(*m, value)
+;     Protected bufferLength.i = Len(lm)+2
+;     Protected *mem = AllocateMemory(bufferLength)
+;     PokeS(*mem,lm,bufferLength)
+;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
     Transform::UpdateSRTFromMatrix(*t)
+    Object3D::SetLocalTransform(*obj,*t)
+    Object3D::UpdateTransform(*obj,#Null)
+    
   
      
-    *t = *obj\globalT
-    Protected gm.s = GetXMLAttribute(kine,"GlobalTransform")
-    bufferLength.i = Len(gm)+2
-    *mem = ReAllocateMemory(*mem,bufferLength)
-    PokeS(*mem,gm,bufferLength)
-    Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
-    FreeMemory(*mem)
-    Transform::UpdateSRTFromMatrix(*t)
+;     *t = *obj\globalT
+;     Protected gm.s = GetXMLAttribute(kine,"GlobalTransform")
+;     bufferLength.i = Len(gm)+2
+;     *mem = ReAllocateMemory(*mem,bufferLength)
+;     PokeS(*mem,gm,bufferLength)
+;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
+;     FreeMemory(*mem)
+;     Transform::UpdateSRTFromMatrix(*t)
   EndProcedure
   
   Procedure GetVector3FromString(string.s,*v.v3f32)
@@ -105,16 +113,50 @@ Module Loader
   EndProcedure
   
   ;---------------------------------------------------------------
+  ; Load Polymesh
+  ;---------------------------------------------------------------
+  Procedure LoadPolymesh(*Me.Loader_t,node.i,*mesh.Polymesh::Polymesh_t)
+    Protected i
+    Protected child.i
+    Protected datas.s
+    Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+    Protected *topo.Geometry::Topology_t = *geom\base
+    Protected nbpoints
+    Protected nbindices
+    datas + GetXMLNodeName(node)+Chr(10)
+    For i=1 To XMLChildCount(node)
+      child = ChildXMLNode(node,i)
+      ExamineXMLAttributes(child)
+      While NextXMLAttribute(child)
+        If XMLAttributeName(child) = "NbVertices"
+          nbpoints = Val(XMLAttributeValue(child))
+          CArray::SetCount(*topo\vertices, nbpoints)
+        ElseIf XMLAttributeName(child) = "NbIndices"
+          nbindices = Val(XMLAttributeValue(child))
+          CArray::SetCount(*topo\faces, nbindices)
+        ElseIf XMLAttributeName(child) = "Vertices"
+          str.s = XMLAttributeValue(child)
+          bufferLength.i = StringByteLength(str)
+          Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\vertices,0),nbpoints* CArray::GetItemSize(*topo\vertices))
+        ElseIf XMLAttributeName(child) = "Indices"
+          str.s = XMLAttributeValue(child)
+          bufferLength.i = StringByteLength(str)
+          Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\faces,0),nbindices* CArray::GetItemSize(*topo\faces))
+        EndIf
+      Wend
+    Next
+  EndProcedure
+  
+    
+  ;---------------------------------------------------------------
   ; Load Attributes
   ;---------------------------------------------------------------
   Procedure LoadAttributes(*Me.Loader_t,node.i,*obj.Object3D::Object3D_t)
-    
-    Debug "Load Attribute for "+*obj\name
   
     If *obj = #Null : ProcedureReturn : EndIf
     
     Protected i=0,j=0
-    Protected attrs =ChildXMLNode(node,2)
+    Protected attrs =ChildXMLNode(node,3)
     Protected attr
     Protected nbFields
     Protected str.s
@@ -131,7 +173,6 @@ Module Loader
     For i=1 To XMLChildCount(attrs)
       attr.i = ChildXMLNode(attrs,i)
       attrName = GetXMLNodeName(attr)
-      Debug "Load Attribute "+attrName
       ExamineXMLAttributes(attr)
       While NextXMLAttribute(attr)
         Select XMLAttributeName(attr)
@@ -229,9 +270,9 @@ Module Loader
                 Default
                   Protected *v3f32Array.CArray::CArrayV3f32 = *attr\data
                   CArray::SetCount(*v3f32Array,datasize)
-                  Protected sV3F32.s = GetXMLNodeText(attr)
-                  bufferLength.i = StringByteLength(sV3F32)
-                  Base64Decoder(@sV3F32,bufferLength,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
+                  str.s = GetXMLNodeText(attr)
+                  bufferLength.i = StringByteLength(str)
+                  Base64Decoder(@str,bufferLength,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
 
               EndSelect
               
@@ -370,55 +411,33 @@ Module Loader
         LoadAttributes(*Me,node,*cloud)
         *cloud\dirty = #True
         *parent = cloud
+        *Me\numLoaded3DObject +1
       ;------------------------------------------------------
       ; Polymesh
       ;------------------------------------------------------
       Case "Polymesh"
-
+        Debug "THIS IS A POLYMESH..."
         name.s = GetXMLNodeName(node)
         Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_NONE)
         Object3D::AddChild(*parent,*mesh)
-        Scene::AddObject(*scene,*mesh)
+        Scene::AddChild(*scene,*mesh)
         Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
         *object = *mesh
-        LoadAttributes(*Me,node,*mesh)
-  
-        Protected *topo.Geometry::Topology_t = Topology::New()
-        CArray::SetCount(*topo\vertices,CArray::GetCount(*geom\a_positions))
-
-        If CArray::GetCount(*geom\a_positions)
-          
-          
-          CArray::Copy(*topo\vertices,*geom\a_positions)
-          Protected k,l,nb
-          
-          Protected offset.i
-          For k=0 To CArray::GetCount(*geom\a_facecount)-1
-            nb = CArray::GetValueL(*geom\a_facecount,k)
-            For l=0 To nb-1
-              CArray::AppendL(*topo\faces,CArray::GetValueL(*geom\a_faceindices,offset+l))
-            Next
-            CArray::AppendL(*topo\faces,-2)
-
-            offset + nb
-          Next
-          
-          PolymeshGeometry::Set2(*geom,*topo)
-          Topology::Delete(*topo)
-          Object3D::Freeze(*mesh)
-;           Transform::UpdateSRTFromMatrix(*mesh\globalT)
-;           Object3D::UpdateTransform(*mesh,#Null)
-          *mesh\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
-        EndIf
+        ;PolymeshGeometry::BunnyTopology(*geom\base)
+        LoadPolymesh(*Me,node,*mesh)
+        
         *parent = *mesh
-  
+        *Me\numLoaded3DObject +1
     EndSelect
     
   ;   ; Load Transform
-    If *object<> #Null:LoadTransform(node,*object):EndIf
+    If *object<> #Null
+      LoadTransform(node,*object)
+      ;   ; Load Attributes
+      ;   LoadAttributes(*Me,node,*object)
+    EndIf
 
-  ;   ; Load Attributes
-  ;   LoadAttributes(*Me,node,*object)
+ 
     
     If XMLChildCount(node)
       Protected child
@@ -435,25 +454,21 @@ Module Loader
   ; Load
   ;------------------------------------------------------------------
   Procedure Load(*Me.Loader_t)
-    If Scene::*current_scene:Scene::Delete(Scene::*current_scene):EndIf
+    If Scene::*current_scene : Scene::Delete(Scene::*current_scene) : EndIf
     
     Scene::*current_scene = Scene::New("Clone")
     Protected root.i = ChildXMLNode(RootXMLNode(*Me\xml))
     Protected name.s = GetXMLNodeName(root)
-    Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>XML Scene Name : "+name
-    Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>XML Root Node Nb Children : "+Str(XMLChildCount(root))
     Protected o
     Protected n
     For o=1 To XMLChildCount(root)
-      Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Children Name : "+GetXMLNodeName(ChildXMLNode(root,o))
       n = ChildXMLNode(root,o)
-      MessageRequester("Loader","Load Object "+Str(o))
       Load3DObject(*Me,n,Scene::*current_scene,Scene::*current_scene\root)
     Next
     
+    MessageRequester("LOADER","NUM LOADED 3D OBEJCTS : "+Str(*Me\numLoaded3DObject))
     
-    
-    ProcedureReturn scene
+    ProcedureReturn Scene::*current_scene
   EndProcedure
   ;------------------------------------------------------------------
   ; Destuctor
@@ -470,6 +485,7 @@ Module Loader
   Procedure.i New(path.s="")
     Protected *Me.Loader_t = AllocateMemory(SizeOf(Loader_t))
     *Me\path = path
+    *Me\numLoaded3DObject = 0
     Protected file.s = OpenFileRequester("Raabit Load Scene",path,extensions(1),-1)
     If file
       *Me\xml = LoadXML(#PB_Any,file)
@@ -481,10 +497,9 @@ Module Loader
   
   Class::DEF(Loader)
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 343
-; FirstLine = 332
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 44
+; FirstLine = 26
 ; Folding = ---
 ; EnableUnicode
 ; EnableXP

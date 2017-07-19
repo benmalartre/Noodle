@@ -52,9 +52,6 @@ EndDeclareModule
 Module SetDataNode
   UseModule Math
   Procedure ResolveReference(*node.SetDataNode_t)
-    MessageRequester("SetDataNode","Resolve Reference Called")
-    
-    
     Protected *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
     Protected refname.s = NodePort::AcquireReferenceData(*ref)
     
@@ -182,6 +179,9 @@ Module SetDataNode
     Node::AddInputPort(*node,"Data",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Execute",Attribute::#ATTR_TYPE_EXECUTE)
+    
+    Node::PortAffect(*node, "Data", "Execute")
+    Node::PortAffect(*node, "Reference", "Execute")
     *node\label = "Set Data"
     ResolveReference(*node)
   EndProcedure
@@ -248,9 +248,7 @@ Module SetDataNode
        
             If *obj\type = Object3D::#Object3D_Polymesh
               *mesh = *obj
-              If Not *mesh\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
-                *mesh\dirty = Object3D::#DIRTY_STATE_DEFORM
-              EndIf
+              Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
               
             EndIf
             
@@ -314,13 +312,14 @@ Module SetDataNode
             
             If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
               Protected *geom.Geometry::PolymeshGeometry_t = *parent\geom
-               
-              PolymeshGeometry::Set2(*geom,*iTopo)
-
-              *mesh = *parent
-              *mesh\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
-              
-;               Polymesh::Setup(*mesh,#Null)
+               ;If *iTopo\dirty
+                 PolymeshGeometry::Set2(*geom,*iTopo)
+                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
+                 *iTopo\dirty = #False
+;                Else
+;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+;                EndIf
               Log::Message("[SetDataNode] Update Polymesh Topology")
             Else
               Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
@@ -332,7 +331,7 @@ Module SetDataNode
       
           
     EndIf
-    Debug "-------> End Evaluate [SetDataNode]"
+    *node\outputs()\dirty = #False
   EndProcedure
 
   Procedure Terminate(*node.SetDataNode_t)
@@ -370,8 +369,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 188
-; FirstLine = 178
+; CursorPosition = 53
+; FirstLine = 51
 ; Folding = --
 ; EnableUnicode
 ; EnableThread

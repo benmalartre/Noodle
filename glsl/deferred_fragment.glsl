@@ -5,7 +5,7 @@ in vec2 texCoords;
 uniform sampler2D position_map;
 uniform sampler2D normal_map;
 uniform sampler2D color_map;
-uniform sampler2D ssao_map;
+uniform sampler2D shadow_map;
 
 struct Light {
     vec3 position;
@@ -31,6 +31,7 @@ return mat4(m[0].xyzw,
 void main()
 {      
  
+    	/*
     // Retrieve data from gbuffer
     vec3 fragPos = texture(position_map, texCoords).rgb;
     vec3 normal = texture(normal_map, texCoords).rgb;
@@ -68,6 +69,9 @@ void main()
         lighting += diffuse + specular;
     }    
     outColor = vec4(lighting, 1.0);
-
+         */
+    
+    //outColor = texture(shadow_map, texCoords);
+    outColor = vec4(1.0,0.0,0.0,1.0);
 
 }

@@ -75,17 +75,18 @@ Module PrimitiveMeshNode
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
     *node\label = "Primitive Mesh"
     Reset(*node)
+    
+    Node::PortAffect(*node, "Shape", "Topology")
+    Node::PortAffect(*node, "U", "Topology")
+    Node::PortAffect(*node, "V", "Topology")
+    Node::PortAffect(*node, "W", "Topology")
+    Node::PortAffect(*node, "Radius", "Topology")
   EndProcedure
   
   Procedure Evaluate(*node.PrimitiveMeshNode_t)
-    
-    Protected time.f = raa_time_currentframe
     FirstElement(*node\inputs())
-    Debug "[PrimitiveMeshNode] Begin Evaluate"
     Protected *shapeData.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
     Protected shape.i = CArray::GetValueI(*shapeData,0)
-    
-    Debug "[PrimitiveMeshNode] Curent Selected Shape : "+Str(shape)
     
     Protected *parent.Object3D::Object3D_t = *node\parent3dobject
     If Not *parent Or *parent\type <>Object3D::#Object3D_Polymesh
@@ -122,7 +123,6 @@ Module PrimitiveMeshNode
     Protected *oVal.CArray::CArrayPtr = *output\value
     ;   Protected *topo.CAttributePolymeshTopology_t = oVal\GetValue(0)
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
-
     Select shape
         ; Box Shape
       Case 0
@@ -144,8 +144,12 @@ Module PrimitiveMeshNode
         ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
         PolymeshGeometry::TorusTopology(*topo)
     EndSelect
-
-    Debug "-----------> PrimitiveMeshNode End Evaluate"
+    ForEach *node\outputs()
+      *node\outputs()\dirty = #False
+    Next
+    
+    
+    ;MessageRequester("PRIMITIVE MESH NODE", "EAVALUATE CALLED >>> "+Str(CArray::GetCount(*topo\vertices)))
   EndProcedure
   
   Procedure Terminate(*node.PrimitiveMeshNode_t)
@@ -155,7 +159,6 @@ Module PrimitiveMeshNode
   Procedure Delete(*node.PrimitiveMeshNode_t)
     FreeMemory(*node)
   EndProcedure
-  
   
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -182,10 +185,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 107
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 125
+; FirstLine = 125
 ; Folding = --
 ; EnableXP

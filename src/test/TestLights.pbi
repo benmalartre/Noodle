@@ -11,8 +11,8 @@ UseModule OpenGLExt
 
 EnableExplicit
 
-Global WIDTH = 1280
-Global HEIGHT = 720
+Global WIDTH = 720
+Global HEIGHT = 576
 
 Global vwidth
 Global vheight
@@ -48,18 +48,25 @@ Global q.q4f32
 Global s.v3f32
 
 Global nb_lights = 12
+Global numTriangles = 0
  
 ; Draw
 ;--------------------------------------------
 Procedure Update()
+  ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)  
-;   LayerDefault::Draw(*default,*app\context)
+  ;LayerDefault::Draw(*default,*app\context)
   LayerGBuffer::Draw(*gbuffer,*app\context)
   LayerDefered::Draw(*defered,*app\context)
-  CompilerIf Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  CompilerEndIf
   
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/*app\width
+  Define ratio.f = *app\width / *app\height
+  FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"NUM LIGHTS : "+Str(numTriangles),-0.9,0.7,ss,ss*ratio)
+  
+  ViewportUI::FlipBuffer(*viewport)
  EndProcedure
  
 
@@ -115,14 +122,17 @@ Procedure Update()
   Define *t.Transform::Transform_t
   Define color.c4f32
   Quaternion::SetFromEulerAngles(@rot,40,0,0)
+  Define *mesh.Geometry::PolymeshGeometry_t
   Define x,y,z
   For x = 0 To 9
-    For y = 0 To 9
+    For y = 0 To 4
       For z = 0 To 9
         Color::Set(@color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
         AddElement(*bunnies())
         *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
         *t = *bunnies()\localT
+        *mesh = *bunnies()\geom
+        numTriangles + *mesh\nbtriangles
         Vector3::Set(@color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
         PolymeshGeometry::SetColors(*bunnies()\geom,@color)
         Transform::SetTranslationFromXYZValues(*t,x*2-10,y*2+1.5,z*2-10)
@@ -171,10 +181,9 @@ Procedure Update()
   Application::Loop(*app,@Update())
   
 EndIf
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 98
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 127
+; FirstLine = 124
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

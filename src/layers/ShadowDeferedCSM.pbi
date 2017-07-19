@@ -1,37 +1,37 @@
 ; ============================================================================
-;  OpenGL Defered Rendering Layer Module Declaration
+;  OpenGL Defered CSM Rendering Layer Module Declaration
 ; ============================================================================
 XIncludeFile "Layer.pbi"
 XIncludeFile "ShadowMap.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
-DeclareModule LayerShadowDefered
+DeclareModule LayerShadowDeferedCSM
   UseModule OpenGL
   UseModule Math
   ;------------------------------------------------------------------
   ; STRUCTURE
   ;------------------------------------------------------------------
-  Structure LayerShadowDefered_t Extends Layer::Layer_t
+  Structure LayerShadowDeferedCSM_t Extends Layer::Layer_t
     *gbuffer.Framebuffer::Framebuffer_t
-    *shadowmap.Framebuffer::Framebuffer_t
+    *shadowmaps.Framebuffer::Framebuffer_t
   
   EndStructure
   
   ;------------------------------------------------------------------
   ; INTERFACE
   ;------------------------------------------------------------------
-  Interface ILayerShadowDefered Extends Layer::ILayer
+  Interface ILayerShadowDeferedCSM Extends Layer::ILayer
   EndInterface
   
-  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-  Declare Delete(*layer.LayerShadowDefered_t)
-  Declare Setup(*layer.LayerShadowDefered_t)
-  Declare Update(*layer.LayerShadowDefered_t)
-  Declare Clean(*layer.LayerShadowDefered_t)
-  Declare Pick(*layer.LayerShadowDefered_t)
-  Declare Draw(*layer.LayerShadowDefered_t,*ctx.GLContext::GLContext_t)
+  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmaps.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
+  Declare Delete(*layer.LayerShadowDeferedCSM_t)
+  Declare Setup(*layer.LayerShadowDeferedCSM_t)
+  Declare Update(*layer.LayerShadowDeferedCSM_t)
+  Declare Clean(*layer.LayerShadowDeferedCSM_t)
+  Declare Pick(*layer.LayerShadowDeferedCSM_t)
+  Declare Draw(*layer.LayerShadowDeferedCSM_t,*ctx.GLContext::GLContext_t)
   
   DataSection 
-    LayerShadowDeferedVT:  
+    LayerShadowDeferedCSMVT:  
     Layer::DAT()
   EndDataSection
   
@@ -39,9 +39,9 @@ DeclareModule LayerShadowDefered
 EndDeclareModule
 
 ; ============================================================================
-;  OpenGL Defered Rendering Layer Module Declaration
+;  OpenGL Defered Shadow CSM Rendering Layer Module Declaration
 ; ============================================================================
-Module LayerShadowDefered
+Module LayerShadowDeferedCSM
   UseModule OpenGL
   UseModule OpenGLExt
   
@@ -52,7 +52,7 @@ Module LayerShadowDefered
   ;------------------------------------
   ; Setup
   ;------------------------------------
-  Procedure Setup(*layer.LayerShadowDefered_t)
+  Procedure Setup(*layer.LayerShadowDeferedCSM_t)
 
     
   EndProcedure
@@ -60,28 +60,28 @@ Module LayerShadowDefered
   ;------------------------------------
   ; Update
   ;------------------------------------
-  Procedure Update(*layer.LayerShadowDefered_t)
+  Procedure Update(*layer.LayerShadowDeferedCSM_t)
     
   EndProcedure
   
   ;------------------------------------
   ; Update
   ;------------------------------------
-  Procedure Clean(*layer.LayerShadowDefered_t)
+  Procedure Clean(*layer.LayerShadowDeferedCSM_t)
     
   EndProcedure
   
   ;------------------------------------
   ; Update
   ;------------------------------------
-  Procedure Pick(*layer.LayerShadowDefered_t)
+  Procedure Pick(*layer.LayerShadowDeferedCSM_t)
     
   EndProcedure
   
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerShadowDefered_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerShadowDeferedCSM_t,*ctx.GLContext::GLContext_t)
     
     
     
@@ -92,7 +92,7 @@ Module LayerShadowDefered
   
     
     glViewport(0,0,*layer\width,*layer\height)
-      shader = *ctx\shaders("shadowdefered")\pgm
+      shader = *ctx\shaders("shadowdeferedCSM")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
       Framebuffer::BindInputByID(*layer\shadowmap,0,4)
@@ -178,7 +178,7 @@ Module LayerShadowDefered
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerShadowDefered_t)
+  Procedure Delete(*layer.LayerShadowDeferedCSM_t)
     FreeMemory(*layer)
   EndProcedure
   
@@ -186,9 +186,9 @@ Module LayerShadowDefered
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerShadowDefered_t = AllocateMemory(SizeOf(LayerShadowDefered_t))
-    InitializeStructure(*Me,LayerShadowDefered_t)
-    Object::INI( LayerShadowDefered )
+    Protected *Me.LayerShadowDeferedCSM_t = AllocateMemory(SizeOf(LayerShadowDeferedCSM_t))
+    InitializeStructure(*Me,LayerShadowDeferedCSM_t)
+    Object::INI( LayerShadowDeferedCSM )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\width = width
     *Me\height = height
@@ -213,10 +213,10 @@ Module LayerShadowDefered
     ProcedureReturn *Me
   EndProcedure
   
-  Class::DEF(LayerShadowDefered)
+  Class::DEF(LayerShadowDeferedCSM)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 130
-; FirstLine = 120
+; CursorPosition = 94
+; FirstLine = 114
 ; Folding = --
 ; EnableXP

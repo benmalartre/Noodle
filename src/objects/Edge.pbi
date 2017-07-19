@@ -38,22 +38,20 @@ Module Edge
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Edge_t = AllocateMemory(SizeOf(Edge_t))
     InitializeStructure(*Me,Edge_t)
-    
-    *Me\geometry = *mesh
-    *Me\p1id = p1id
-    *Me\p2id = p2id
     *Me\neighbors = CArray::newCArrayPtr()
     *Me\vertices = CArray::newCArrayPtr()
     *Me\polygons = CArray::newCArrayPtr()
     *Me\id = index
-  
+    
+    CArray::SetCount(*Me\vertices, 2)
+    CArray::SetValuePtr(*Me\vertices, 0, CArray::GetValuePtr(*mesh\a_vertices, p1id))
+    CArray::SetValuePtr(*Me\vertices, 1, CArray::GetValuePtr(*mesh\a_vertices, p2id))
     ProcedureReturn *Me
   EndProcedure
 EndModule
-
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 17
+; CursorPosition = 40
+; FirstLine = 16
 ; Folding = -
 ; EnableUnicode
 ; EnableXP

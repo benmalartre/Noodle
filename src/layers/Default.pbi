@@ -92,6 +92,8 @@ Module LayerDefault
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
     
+    
+    
   ;   If *layer\image
   ;     glActiveTexture(#GL_TEXTURE0)
   ;     glBindTexture(#GL_TEXTURE_2D,*layer\image)
@@ -116,8 +118,8 @@ Module LayerDefault
     *view = Layer::GetViewMatrix(*layer)
     *proj = Layer::GetProjectionMatrix(*layer)
     
-;     ;Draw Shaded Polymeshes 
-;     ;-----------------------------------------------
+    ;Draw Shaded Polymeshes 
+    ;-----------------------------------------------
     Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
     Protected shader.GLuint =  *shader\pgm
     glUseProgram(shader)
@@ -125,6 +127,7 @@ Module LayerDefault
   ;   GLCheckError("Use Program")
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
     
     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
@@ -133,27 +136,27 @@ Module LayerDefault
     
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
     
-    ;Draw Wireframe Polymeshes 
-    ;-----------------------------------------------
-    *shader = *ctx\shaders("wireframe")
-    shader =  *shader\pgm
-    glUseProgram(shader)
-;       
-    ;   GLCheckError("Use Program")
-    glUniform4f(glGetUniformLocation(shader,"color"), 0.0, 1.0, 0.0, 1.0)
-    Protected m.m4f32
-    Matrix4::SetIdentity(@m)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
+;     ;Draw Wireframe Polymeshes 
+;     ;-----------------------------------------------
+;     *shader = *ctx\shaders("wireframe")
+;     shader =  *shader\pgm
+;     glUseProgram(shader)
+; ;       
+;     ;   GLCheckError("Use Program")
+;     glUniform4f(glGetUniformLocation(shader,"color"), 0.0, 1.0, 0.0, 1.0)
+;     Protected m.m4f32
+;     Matrix4::SetIdentity(@m)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
+;     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
 
 ; 
-;   
-;     ; Draw Instance Clouds 
-;     ;-----------------------------------------------
-;   
-;     ;Model::Update(*model)
+  
+    ; Draw Instance Clouds 
+    ;-----------------------------------------------
+  
+    ;Model::Update(*model)
 ;   Protected *pgm.Program::Program_t = *ctx\shaders("instances")
 ;   glUseProgram(*pgm\pgm)
 ;   Define.m4f32 model,view,proj
@@ -174,9 +177,9 @@ Module LayerDefault
 ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
 ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
 ;   
-;   ;   PointCloud::Draw(*cloud)
-;   ;   Model::Update(*model)
-;   Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
+  ;   PointCloud::Draw(*cloud)
+  ;   Model::Update(*model)
+  ;Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
 ;   Model::Draw(*model)
   glCheckError("Draw Mesh")
   
@@ -228,6 +231,7 @@ Module LayerDefault
     *Me\context = *ctx
     *Me\pov = *pov
     *Me\buffer = Framebuffer::New("Default",width,height)
+    
     Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     Framebuffer::AttachRender( *Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
     
@@ -242,7 +246,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 148
-; FirstLine = 119
+; CursorPosition = 233
+; FirstLine = 213
 ; Folding = --
 ; EnableXP

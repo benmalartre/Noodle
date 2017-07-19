@@ -46,12 +46,7 @@ Procedure Draw(*app.Application::Application_t)
   Time::currentframe + 1
   If Time::currentframe>100 : Time::currentframe = 1:EndIf
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
-  CompilerEndIf
-  
-    
-  
+  ViewportUI::SetContext(*viewport)
   ;Model::Update(*model)
   LayerDefault::Draw(*layer,*app\context)
 ;   LayerGBUffer::Draw(*gbuffer,*app\context)
@@ -104,13 +99,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\applecontext, "flushBuffer" )
-  CompilerElse
-    If Not #USE_GLFW
-      SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-    EndIf
-  CompilerEndIf
+  ViewportUI::FlipBuffer(*viewport)
   
 EndProcedure
     
@@ -155,8 +144,8 @@ If Time::Init()
     Define i
     *model = Model::New("FUCK")
     For i=0 To 0:
-      Define *r5.Model::Model_t = Alembic::LoadABCArchive(path)
-      ;Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_CUBE)
+      ;Define *r5.Model::Model_t = Alembic::LoadABCArchive(path)
+      Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
 ;       Define *geom.Geometry::PolymeshGeometry_t = *r5\geom
 ;       numVertices + *geom\nbpoints
       Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*r5)
@@ -173,7 +162,6 @@ If Time::Init()
     *model = Alembic::LoadABCArchive(path)
   CompilerEndIf
   
-  MessageRequester("USE LEGACY OPENGL : ",Str(#USE_LEGACY_OPENGL))
   Define maxNumVertices.GLint
   ;glGetIntegerv(#GL_MAX_ELEMENTS_VERTICES, @maxNumVertices)
   ;MessageRequester("MAXIMUM NUM VERTICES : ",Str(maxNumVertices))
@@ -192,25 +180,20 @@ If Time::Init()
 ;   Next
   
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
-  GLCheckError("Before Creating FrameBuffer")
+
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  Debug "DEFAULT LAYER CREATED"
   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
-  Debug "GBUFFER LAYER CREATED"
   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
-  Debug "SSAO LAYER CREATED"
 
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
   Scene::AddModel(Scene::*current_scene,*model)
-  Debug "MODEL ADDED TO SCENE"
   Scene::Setup(Scene::*current_scene,*app\context)
-  Debug "SCENE SETUP DONE"
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 158
-; FirstLine = 152
+; CursorPosition = 147
+; FirstLine = 133
 ; Folding = -
 ; EnableThread
 ; EnableXP

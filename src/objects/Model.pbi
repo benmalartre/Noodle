@@ -35,21 +35,26 @@ Module Model
   
   Procedure New(name.s)
     Protected *Me.Model_t = AllocateMemory(SizeOf(Model_t))
+    ; ---[ Initialize Structure ]------------------------------------------------
     InitializeStructure(*Me,Model_t)
 
     Object::INI(Model)
     
+    ; ---[ Init Members ]-------------------------------------------------------
     *Me\name = name
     *Me\type = Object3D::#Object3D_Model
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
+    
+    Object3D::Object3D_ATTR()
+   
     ProcedureReturn *Me
   EndProcedure
   
-  Procedure Delete(*model.Model_t)
-    ClearStructure(*Me,Model_t)
+  Procedure Delete(*Me.Model_t)
+    ClearStructure(*Me, Model_t)
     FreeMemory(*Me)
   EndProcedure
   
@@ -114,8 +119,8 @@ Module Model
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Model )
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 40
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

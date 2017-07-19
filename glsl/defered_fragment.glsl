@@ -5,10 +5,10 @@ in vec2 texCoords;
 uniform sampler2D position_map;
 uniform sampler2D normal_map;
 uniform sampler2D color_map;
-uniform sampler2D ssao_map;
+uniform sampler2D shadow_map;
 
 struct Sun{
-    vec3 dir;
+    vec3 direction;
     float intensity;
     vec3 color;
     
@@ -44,20 +44,20 @@ void main()
     vec3 normal = texture(normal_map, texCoords).rgb;
     vec3 diffuse = texture(color_map, texCoords).rgb;
     float specular = texture(color_map, texCoords).a;
-	float ao = texture(ssao_map, texCoords).r;
+    float ao = 1.0;//texture(ssao_map, texCoords).r;
 	
 	vec3 viewPos = view[3].xyz;
 	
     // Then calculate lighting as usual
-	vec3 ambient = vec3(0.1 * ao);
+	vec3 ambient = vec3(0.333 * ao);
     vec3 lighting  = ambient; // hard-coded ambient component
 	mat4 rot = extractRotationMatrix(view);
-	//normal = (rot * vec4(normal,0.0)).xyz;
+	normal = (rot * vec4(normal,0.0)).xyz;
     vec3 viewDir  = normalize(-position); // Viewpos is (0.0.0)
-    vec3 sunDir = sun.dir;
+    vec3 sunDir = sun.direction;
     sunDir = (rot * vec4(sunDir,1.0)).xyz;
     lighting = max(dot(normal,sunDir),0.0) * sun.color;
-    /*
+	/*
     for(int i = 0; i < nb_lights; ++i)
     {
         // Diffuse
@@ -78,7 +78,9 @@ void main()
         //specular *= attenuation;
         lighting += diffuse;// + specular;
     }    
-	*/
+
     outColor = vec4(lighting, 1.0);
+     */
+    outColor = vec4(lighting,1.0) * texture(color_map, texCoords);
 
 }

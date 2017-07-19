@@ -111,6 +111,8 @@ DeclareModule CArray
   Declare Delete(*array.CArrayT)
   Declare Find(*array,*value,*ID)
   Declare Remove(*array,ID)
+  Declare Echo(*array.CArrayT, label.s="")
+  Declare Alert(*array.CArrayT, label.s="")
   
   Declare newCArrayBool()
   Declare newCArrayChar()
@@ -256,7 +258,7 @@ Module CArray
       CopyMemory(*value,*array\data+offset,*array\itemSize)
     EndIf
   EndProcedure
-  
+ 
   ;----------------------------------------------------------------
   ; SetValueB
   ;----------------------------------------------------------------
@@ -744,6 +746,123 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; Get As String
+  ;----------------------------------------------------------------
+  Procedure.s GetAsString(*array.CArrayT, label.s="")
+    Protected datas.s
+    If Not label = ""
+      datas +"------------- ARRAY -------------"+Chr(10)
+    Else
+      datas +"------------- "+label+" -------------"+Chr(10)
+    EndIf
+    Protected i
+    Select *array\type
+      Case #ARRAY_BOOL
+        datas+"TYPE: BOOL"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        For i=0 To *array\itemCount-1
+          datas+Str(GetValueB(*array, i))+","
+        Next
+      Case #ARRAY_CHAR
+        datas+"TYPE: CHAR"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        For i=0 To *array\itemCount-1
+          datas+Str(GetValueC(*array,i))+","
+        Next
+      Case #ARRAY_INT
+        datas+"TYPE: INT"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        For i=0 To *array\itemCount-1
+          datas+Str(GetValueI(*array,i))+","
+        Next
+      Case #ARRAY_LONG
+        datas+"TYPE: LONG"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        For i=0 To *array\itemCount-1
+          datas+Str(GetValueL(*array,i))+","
+        Next
+      Case #ARRAY_FLOAT
+        datas+"TYPE: FLOAT"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        For i=0 To *array\itemCount-1
+          datas+StrF(GetValueF(*array,i))+","
+        Next
+      Case #ARRAY_V2F32
+        datas+"TYPE: VECTOR_2"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *v2.Math::v2f32
+        For i=0 To *array\itemCount-1
+          *v = GetValue(*array, i)
+          datas+"("+StrF(*v2\x)+","+StrF(*v2\y)+")"+Chr(10)
+        Next
+      Case #ARRAY_V3F32
+        datas+"TYPE: VECTOR_3"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *v3.Math::v3f32
+        For i=0 To *array\itemCount-1
+          *v3 = GetValue(*array, i)
+          datas+"("+StrF(*v3\x)+","+StrF(*v3\y)+","+StrF(*v3\z)+")"+Chr(10)
+        Next
+      Case #ARRAY_C4F32
+        datas+"TYPE: COLOR"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *c4.Math::c4f32
+        For i=0 To *array\itemCount-1
+          *c4 = GetValue(*array, i)
+          datas+"("+StrF(*c4\r)+","+StrF(*c4\g)+","+StrF(*c4\b)+","+StrF(*c4\a)+")"+Chr(10)
+        Next
+      Case #ARRAY_C4U8
+        datas+"TYPE: C4U8"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *c4u.Math::c4u8
+        For i=0 To *array\itemCount-1
+          *c4u = GetValue(*array, i)
+          datas+"("+Str(*c4u\r)+","+Str(*c4u\g)+","+Str(*c4u\b)+","+Str(*c4u\a)+")"+Chr(10)
+        Next
+      Case #ARRAY_M3F32
+        datas+"TYPE: MATRIX_3"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *m3.Math::m3f32
+        For i=0 To *array\itemCount-1
+          *m3 = GetValue(*array, i)
+          datas+"("+StrF(*m3\v[0])+","+StrF(*m3\v[1])+","+StrF(*m3\v[2])+
+                 StrF(*m3\v[3])+","+StrF(*m3\v[4])+","+StrF(*m3\v[4])+
+                 StrF(*m3\v[5])+","+StrF(*m3\v[6])+","+StrF(*m3\v[7])+")"+Chr(10)
+        Next
+      Case #ARRAY_M4F32
+        datas+"TYPE: MATRIX_4"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+      Case #ARRAY_Q4F32
+        datas+"TYPE: QUATERNION"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+      Case #ARRAY_TRF32
+        datas+"TYPE: TRANSFORM"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+      Case #ARRAY_STR
+        datas+"TYPE: STRING"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+      Case #ARRAY_PTR
+    EndSelect
+    datas + "---------------------------------------------"
+    ProcedureReturn datas
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; Echo
+  ;----------------------------------------------------------------
+  Procedure Echo(*array.CArrayT, label.s="")
+    Debug GetAsString(*array, label)
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; Alert
+  ;----------------------------------------------------------------
+  Procedure Alert(*array.CArrayT, label.s="")
+    MessageRequester("DATAS : "+label, GetAsString(*array, label))
+  EndProcedure
+  
+  
+  ;----------------------------------------------------------------
   ; CArrayBool
   ;----------------------------------------------------------------
   Procedure newCArrayBool()
@@ -934,7 +1053,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 80
-; Folding = ---------
+; CursorPosition = 859
+; FirstLine = 849
+; Folding = ----------
 ; EnableXP

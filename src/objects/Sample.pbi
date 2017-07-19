@@ -40,7 +40,7 @@ Module Sample
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 37
+; CursorPosition = 32
 ; FirstLine = 7
 ; Folding = -
 ; EnableUnicode

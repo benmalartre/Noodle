@@ -335,7 +335,6 @@ Module ControlTimeline
       ;  Timer
       ; ------------------------------------------------------------------------
       Case #PB_Event_Timer
-        Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Timeline Event Timer !!!"
         ; ...[ Update & Check Dirty ]...........................................
         OnTimer(*Me)
         ; ...[ Redraw Timeline ]...............................................
@@ -879,9 +878,11 @@ Module ControlTimeline
   Procedure SetStartRange( *Me.ControlTimeline_t, frame.i)
     If frame > Time::endframe
       Time::startrange = Time::endframe-1
+      
     Else
       Time::startrange= frame
     EndIf
+    Time::startloop = Time::startrange
   EndProcedure
   
   ; ---[ Set End Frame ]--------------------------------------------------------
@@ -891,6 +892,7 @@ Module ControlTimeline
     Else
       Time::endrange = frame
     EndIf  
+    Time::endloop = Time::endrange
   EndProcedure
   
   ; ---[ Set Current Frame ]----------------------------------------------------
@@ -946,7 +948,6 @@ Module ControlTimeline
   
   ; ---[ On Message ]----------------------------------------------------
   Procedure OnMessage( id.i, *up)
-    MessageRequester("TIMELINE","Timeline  On Message!!!")
     Protected *sig.Signal::Signal_t = *up
     Protected *c.ControlNumber::ControlNumber_t = *sig\snd_inst
     Protected *t.ControlTimeline::ControlTimeline_t = *c\parent
@@ -1103,8 +1104,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 141
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 884
+; FirstLine = 865
 ; Folding = ------
 ; EnableXP

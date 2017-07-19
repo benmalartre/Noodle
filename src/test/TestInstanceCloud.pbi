@@ -80,6 +80,7 @@ EndProcedure
 ; Draw  
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  ViewportUI::SetContext(*viewport)
   ;Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*default,*app\context)
   
@@ -94,9 +95,7 @@ Procedure Draw(*app.Application::Application_t)
 
   glDisable(#GL_BLEND)
   
-  If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  EndIf
+  ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
  
@@ -198,7 +197,7 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(@ps,-10,0,0)
   Vector3::Set(@pe,10,0,0)
   *ground = CreateGround()
-  PointCloudGeometry::PointsOnSphere(*cloud\geom)
+  ;PointCloudGeometry::PointsOnSphere(*cloud\geom)
   Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,666)
@@ -251,9 +250,9 @@ Procedure Draw(*app.Application::Application_t)
       Until e = #PB_Event_CloseWindow
     CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 106
-; FirstLine = 85
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 199
+; FirstLine = 195
 ; Folding = -
 ; EnableUnicode
 ; EnableXP

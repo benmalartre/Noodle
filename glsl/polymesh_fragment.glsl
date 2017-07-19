@@ -45,7 +45,7 @@ void main()
 		
 		vec4 t = texture(tex,vertex_uvws.xz);//*d;
 		if((t.x+t.y+t.z)/3>0.5)a=0.0;
-		vec3 color = vertex_color.xyz*d;
+		vec3 color = vec3(d);//vertex_color.xyz*d;
 		outColor = vec4(color,a);
 
 	}

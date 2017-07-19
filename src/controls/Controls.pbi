@@ -47,6 +47,7 @@ Module Controls
   EndProcedure
   
   Procedure SetTheme(theme.i)
+    UIColor::SetTheme(theme)
     ControlDivot::SetTheme(theme)
     ControlNumber::SetTheme(theme)
     ControlCheck::SetTheme(theme)
@@ -54,12 +55,12 @@ Module Controls
     ControlButton::SetTheme(theme)
     ControlIcon::SetTheme(theme)
     ControlCombo::SetTheme(theme)
-;     ControlExplorer::SetTheme(theme)
+    ;ControlExplorer::SetTheme(theme)
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 56
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 49
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

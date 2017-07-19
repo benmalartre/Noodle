@@ -258,7 +258,7 @@ Module CreatePolymeshCmd
     If *parent=#Null
       *selected.Object3D::Object3D_t =CArray::GetValuePtr(Scene::*current_scene\selection,0)
       If *selected
-        MessageRequester("CreatePolymeshCmd","Parent Selected "+*selected\name)
+        MessageRequester("CreatePolymeshCmd","Parent Selected "+*selected\class\name)
         *parent = *selected
       Else
         *parent = Scene::*current_scene\root
@@ -318,8 +318,8 @@ Module CreatePolymeshCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 285
-; FirstLine = 272
+; CursorPosition = 260
+; FirstLine = 238
 ; Folding = ------
 ; EnableUnicode
 ; EnableXP

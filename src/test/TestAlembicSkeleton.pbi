@@ -42,7 +42,7 @@ Procedure Draw(*app.Application::Application_t)
   layer\Draw(*app\context)
 
   If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+    ViewportUI::FlipBuffers(*viewport)
   EndIf
   
 EndProcedure
@@ -68,6 +68,7 @@ If Time::Init()
     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
+    ViewportUI::SetContext(*viewport)
   EndIf
   
   Debug "Camera :: "+Str(*app\camera)
@@ -137,8 +138,8 @@ If Time::Init()
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 87
-; FirstLine = 66
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 44
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

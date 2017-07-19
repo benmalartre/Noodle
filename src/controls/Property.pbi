@@ -1359,7 +1359,6 @@ Module ControlProperty
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i Event( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
     Protected *c.Control::IControl = *Me\children(*Me\current)
-    Debug ">>>>>>>>>>>>>>> CONTROL PROPERTY RECIEBVED EVENT <<<<<<<<<<<<<<<<<<"
     ; ---[ Local Variables ]----------------------------------------------------
     Protected  ev_data.Control::EventTypeDatas_t
     Protected *son.Control::Control_t
@@ -1724,8 +1723,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 365
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 1361
+; FirstLine = 1338
 ; Folding = f-0-4-
 ; EnableXP
