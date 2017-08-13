@@ -40,6 +40,8 @@ Global *defshadows.LayerShadowDefered::LayerShadowDefered_t
 Global *ssao.LayerSSAO::LayerSSAO_t
 Global *csm.LayerCascadedShadowMap::LayerCascadedShadowMap_t
 
+Global Dim *frustrums.Polymesh::Polymesh_t(3)
+
 Global shader.l
 Global *s_wireframe.Program::Program_t
 Global *s_polymesh.Program::Program_t
@@ -61,6 +63,41 @@ Procedure Resize(window,gadget)
 ;   glViewport(0,0,width,height)
 EndProcedure
 
+; Set Bounding Box
+;--------------------------------------------
+Procedure SetBoundingBox(*frustrum.Polymesh::Polymesh_t, *infos.LayerCascadedShadowMap::OrthographicProjectionInfo_t)
+  Debug "SET FRUSTRUM CALLED"
+  Protected *geom.Geometry::PolymeshGeometry_t = *frustrum\geom
+  Protected *v.v3f32
+  Protected *positions.CArray::CArrayV3F32 = *geom\a_positions
+  *v = CArray::GetValue(*positions,0)
+  Vector3::Set(*v,*infos\right, *infos\top,*infos\far)
+  CArray::SetValue(*positions,0,*v)
+  *v = CArray::GetValue(*positions,1)
+  Vector3::Set(*v,*infos\right, *infos\top,*infos\near)
+  CArray::SetValue(*positions,1,*v)
+  *v = CArray::GetValue(*positions,2)
+  Vector3::Set(*v,*infos\left, *infos\top,*infos\near)
+  CArray::SetValue(*positions,2,*v)
+  *v = CArray::GetValue(*positions,3)
+  Vector3::Set(*v,*infos\left, *infos\top,*infos\far)
+  CArray::SetValue(*positions,3,*v)
+  *v = CArray::GetValue(*positions,4)
+  Vector3::Set(*v,*infos\right, *infos\bottom,*infos\far)
+  CArray::SetValue(*positions,4,*v)
+  *v = CArray::GetValue(*positions,5)
+  Vector3::Set(*v,*infos\right, *infos\bottom,*infos\near)
+  CArray::SetValue(*positions,5,*v)
+  *v = CArray::GetValue(*positions,6)
+  Vector3::Set(*v,*infos\left, *infos\bottom,*infos\near)
+  CArray::SetValue(*positions,6,*v)
+  *v = CArray::GetValue(*positions,7)
+  Vector3::Set(*v,*infos\left, *infos\bottom,*infos\far)
+  CArray::SetValue(*positions,7,*v)
+  Polymesh::SetDirtyState(*frustrum, Object3D::#DIRTY_STATE_DEFORM)
+EndProcedure
+
+
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
@@ -69,9 +106,14 @@ Procedure Draw(*app.Application::Application_t)
 ;   Light::Update(*light)
 ;   Vector3::Echo(*light\pos,"LIGHT POSITION")
   ViewportUI::SetContext(*viewport)
-  Scene::Update(Scene::*current_scene)
+  
   LayerCascadedShadowMap::Draw(*csm, *app\context)
-;   LayerDefault::Draw(*layer, *app\context)
+  Define i
+  For i=0 To 2
+    SetBoundingBox(*frustrums(i), *csm\cascadeProjections(i))
+  Next
+  Scene::Update(Scene::*current_scene)
+  LayerDefault::Draw(*layer, *app\context)
 ;   LayerShadowMap::Draw(*shadows, *app\context)
 ;   LayerGBuffer::Draw(*gbuffer,*app\context)
   ;LayerDefered::Draw(*defered,*app\context)
@@ -143,6 +185,13 @@ Procedure Draw(*app.Application::Application_t)
 ;   Define *pos.v3f32 = Location::GetPosition(*loc)
 ;   Vector3::Echo(*pos,"Location Position")
   
+  Define i
+  For i=0 To ArraySize(*frustrums())-1
+    *frustrums(i) = Polymesh::New("Frustrum"+Str(i+1),Shape::#SHAPE_CUBE)
+    *frustrums(i)\wireframe = #True
+    Object3D::AddChild(*root,*frustrums(i))
+  Next
+  
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
   Sampler::SamplePolymesh(*ground\geom,*samples,1,7)
   
@@ -155,62 +204,6 @@ Procedure Draw(*app.Application::Application_t)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
-;   Polymesh::Setup(*torus,*s_polymesh)
-;   Polymesh::Setup(*teapot,*s_polymesh)
-;   Polymesh::Setup(*ground,*s_polymesh)
-;   Polymesh::Setup(*bunny,*s_polymesh)
-; Polymesh::Draw(*ground)
-;   Polymesh::Draw(*bunny)
-  
-  Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
-  Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
-  
-  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
-  Define *gtopo.Geometry::Topology_t = *ggeom\topo
-  Define i
-      
-  Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
-  CArray::AppendPtr(*topos,*ggeom\topo)
-  Define m.m4f32
-  Define v.v3f32
-  Vector3::Set(@v,0,1,0)
-  Matrix4::SetIdentity(@m)
-  Matrix4::SetTranslation(@m,@v)
-  Topology::Transform(*bgeom\topo, @m)
-  CArray::AppendPtr(*topos,*bgeom\topo) 
-  
-  Topology::MergeArray(*mgeom\topo,*topos)
-  
-  Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
-  Define m.m4f32
-  Define pos.v3f32
-  
-  Vector3::Set(@pos,0,7,0)
-  Matrix4::SetIdentity(@m)
-  Matrix4::SetTranslation(@m,@pos)
-  CArray::Append(*matrices,@m)
-  
-  Vector3::Set(@pos,2,7,4)
-  Matrix4::SetIdentity(@m)
-  
-  Define *loc.Geometry::Location_t
-  Define *pos.v3f32
-  For i=0 To CArray::GetCount(*samples)-1
-    *loc = CArray::GetValuePtr(*samples,i)
-    *pos = Location::GetPosition(*loc)
-   Vector3::Set(*pos,*pos\x,7,i*10)
-  Matrix4::SetTranslation(@m,*pos)
-  CArray::Append(*matrices,@m)
- Next
-  
-
-  Topology::TransformArray(*mgeom\topo,*matrices,*outtopo)
-  Topology::MergeArray(*mgeom\topo,*outtopo)
-  PolymeshGeometry::Set2(*mgeom,*mgeom\topo)
-  Object3D::Freeze(*merged)
-  Object3D::AddChild(*root,*merged)
   
 ;   Object3D::AddChild(*root,*ground)
 ;   Object3D::AddChild(*root,*bunny)
@@ -220,8 +213,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 146
-; FirstLine = 130
+; CursorPosition = 95
+; FirstLine = 67
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

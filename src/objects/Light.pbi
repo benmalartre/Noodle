@@ -1069,7 +1069,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1016
-; FirstLine = 276
+; CursorPosition = 991
+; FirstLine = 251
 ; Folding = d7A--
 ; EnableXP

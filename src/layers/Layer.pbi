@@ -92,7 +92,7 @@ DeclareModule Layer
   Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
  
-  
+  Declare GetImage(*layer.Layer::Layer_t, path.s)
    ; ============================================================================
   ;  MACROS ( Layer )
   ; ============================================================================
@@ -597,6 +597,31 @@ Module Layer
 ; ;     *layer\buffer\BlitTo(0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
   EndProcedure
   
+  ;------------------------------------------------------------------
+  ; Get Image
+  ;------------------------------------------------------------------
+  Procedure GetImage(*layer.Layer::Layer_t, path.s)
+    Protected x,y
+    Protected l.l
+    Protected *mem = AllocateMemory(*layer\width * *layer\height * SizeOf(l))
+    
+    OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH_COMPONENT,#GL_UNSIGNED_INT,*mem)
+    
+    StartDrawing(ImageOutput(*layer\image))
+    Protected row_size = *layer\width
+    Protected color.l
+    For y=0 To *layer\height-1
+      For x=0 To *layer\width-1
+        color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
+        Plot(x,y,color)
+      Next x
+    Next y
+    
+    StopDrawing()
+    FreeMemory(*mem)
+    SaveImage(*layer\image,path)
+  EndProcedure
+  
   Procedure Delete()
     
   EndProcedure
@@ -606,7 +631,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 199
-; FirstLine = 178
+; CursorPosition = 385
+; FirstLine = 370
 ; Folding = ----
 ; EnableXP

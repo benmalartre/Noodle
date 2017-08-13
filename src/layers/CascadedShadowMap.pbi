@@ -17,7 +17,7 @@ DeclareModule LayerCascadedShadowMap
   ;------------------------------------------------------------------
   ; STRUCTURE
   ;------------------------------------------------------------------
-  Structure OrthographicProjectionInfo
+  Structure OrthographicProjectionInfo_t
     left.f
     right.f
     bottom.f
@@ -28,9 +28,10 @@ DeclareModule LayerCascadedShadowMap
   
   Structure LayerCascadedShadowMap_t Extends Layer::Layer_t
     farplane.f
+    cullfrontface.b
     *light.Light::Light_t
     Array cascadeEnds.f(0)
-    Array cascadeProjections.OrthographicProjectionInfo(0)
+    Array cascadeProjections.OrthographicProjectionInfo_t(0)
   EndStructure
   
   ;------------------------------------------------------------------
@@ -213,12 +214,13 @@ Module LayerCascadedShadowMap
       ;in order To move it into light space.
       ;We then use a series of min/max functions 
       ;in order To find the size of the bounding box of the cascade in light space.
-      *layer\cascadeProjections(i)\right = maxX
       *layer\cascadeProjections(i)\left = minX
+      *layer\cascadeProjections(i)\right = maxX
       *layer\cascadeProjections(i)\bottom = minY
       *layer\cascadeProjections(i)\top = maxY
-      *layer\cascadeProjections(i)\far = maxZ
       *layer\cascadeProjections(i)\near = minZ
+      *layer\cascadeProjections(i)\far = maxZ
+      
 
     Next
   EndProcedure
@@ -236,7 +238,6 @@ Module LayerCascadedShadowMap
       glUniform1f(glGetUniformLocation(shader,"cascades_end[" + Str(i) + "]"), vClip\z)
     Next
   EndProcedure
-  
   
   ;------------------------------------
   ; Draw
@@ -259,9 +260,18 @@ Module LayerCascadedShadowMap
     GLCheckError("[CSM] Use Program")
     Framebuffer::BindOutput(*layer\buffer)
     GLCheckError("[CSM] Bind Framebuffer")
+    
+    glEnable(#GL_DEPTH_TEST)
+    If *layer\cullfrontface
+      glEnable(#GL_CULL_FACE)
+      glCullFace(#GL_FRONT)
+      glFrontFace(#GL_CW)
+    EndIf
+  
     Protected i
     Protected projection.m4f32
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*light\view)
+  
     GLCheckError("[CSM] Set View Matrix")
     For i=0 To #NUM_CASCADES-1
       ;Bind And clear the current cascade
@@ -269,14 +279,36 @@ Module LayerCascadedShadowMap
       GLCheckError("[CSM] Bind for writing")
       glClear(#GL_DEPTH_BUFFER_BIT)
       With *layer\cascadeProjections(i) 
+        Debug "Light Projection:("+Str(\left)+","+Str(\right)+","+Str(\bottom)+","+Str(\top)+","+Str(\near)+","+Str(\far)+")"
         Matrix4::GetOrthoMatrix(@projection,\left,\right,\bottom,\top,\near,\far)
       EndWith
-      
+      Matrix4::Echo(@projection, "Ortho "+Str(i))
       glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@projection)
       GLCheckError("[CSM] Set Projection Matrix")
       Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
       GLCheckError("[CSM] Draw Polymeshes")
     Next
+    
+    If *layer\cullfrontface
+      glDisable(#GL_CULL_FACE)
+      glDisable(#GL_DEPTH_TEST)
+      glFrontFace(#GL_CCW)
+    EndIf
+    
+
+    glColorMask(#GL_TRUE, #GL_TRUE, #GL_TRUE, #GL_TRUE);
+    
+;     glActiveTexture(#GL_TEXTURE0)
+;     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,0))
+;     Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm1.png")
+;      glActiveTexture(#GL_TEXTURE1)
+;     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,1))
+;     Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm2.png")
+;      glActiveTexture(#GL_TEXTURE2)
+;     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,2))
+;     Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm3.png")
+    
+    
       
   EndProcedure
   
@@ -301,11 +333,15 @@ Module LayerCascadedShadowMap
     *Me\pov = *camera
     *Me\light = *light
     *Me\buffer = Framebuffer::New("CSMShadowMap",width,height)
-    *Me\farplane = 1000
-    Framebuffer::AttachCascadedShadowMap(*me\buffer, #NUM_CASCADES)
+    *Me\farplane = 100
+    *Me\image = CreateImage(#PB_Any,*Me\width,*Me\height)
     *Me\mask = #GL_DEPTH_BUFFER_BIT
+    *Me\cullfrontface = #True
+    
     ReDim *Me\cascadeEnds(#NUM_CASCADES+1)
     ReDim *Me\cascadeProjections(#NUM_CASCADES)
+    
+    Framebuffer::AttachCascadedShadowMap(*me\buffer, #NUM_CASCADES)
 
     Setup(*Me)
    
@@ -315,7 +351,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 270
-; FirstLine = 254
+; CursorPosition = 33
+; FirstLine = 30
 ; Folding = ---
 ; EnableXP

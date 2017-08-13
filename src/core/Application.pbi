@@ -23,6 +23,7 @@ XIncludeFile "../opengl/CubeMap.pbi"
 
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
+XIncludeFile "../objects/Drawer.pbi"
 XIncludeFile "../objects/Null.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
@@ -533,8 +534,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 14
+; CursorPosition = 25
+; FirstLine = 9
 ; Folding = ----
 ; EnableUnicode
 ; EnableXP

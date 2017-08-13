@@ -44,30 +44,6 @@ EndDeclareModule
 Module LayerShadowMap
   UseModule OpenGL
   UseModule OpenGLExt
-  ;------------------------------------------------------------------
-  ; HELPERS
-  ;------------------------------------------------------------------
-  Procedure GetImage(*layer.LayerShadowMap_t)
-    Protected x,y
-    Protected l.l
-    Protected *mem = AllocateMemory(*layer\width * *layer\height * SizeOf(l))
-    
-    OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH_COMPONENT,#GL_UNSIGNED_INT,*mem)
-    
-    StartDrawing(ImageOutput(*layer\image))
-    Protected row_size = *layer\width
-    Protected color.l
-    For y=0 To *layer\height-1
-      For x=0 To *layer\width-1
-        color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
-        Plot(x,y,color)
-      Next x
-    Next y
-    
-    StopDrawing()
-    FreeMemory(*mem)
-    SaveImage(*layer\image,"D:\Projects\RnD\PureBasic\Noodle\textures\shadowmap.png")
-  EndProcedure
   
   ;------------------------------------
   ; Setup
@@ -223,7 +199,7 @@ Module LayerShadowMap
   Class::DEF(LayerShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 207
-; FirstLine = 83
+; CursorPosition = 46
+; FirstLine = 42
 ; Folding = --
 ; EnableXP

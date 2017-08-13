@@ -134,7 +134,7 @@ Module LayerDefault
     ;GLCheckError("Uniforms")  
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
+    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
     
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
@@ -246,7 +246,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 233
-; FirstLine = 213
+; CursorPosition = 136
+; FirstLine = 125
 ; Folding = --
 ; EnableXP

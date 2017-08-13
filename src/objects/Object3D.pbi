@@ -16,18 +16,19 @@ DeclareModule Object3D
   UseModule Math
   UseModule OpenGL
   Enumeration
-    #Object3D_None          = 0
-    #Object3D_Camera        = 1
-    #Object3D_Light         = 2
-    #Object3D_Null          = 4
-    #Object3D_Polymesh      = 8
-    #Object3D_Curve         = 16
-    #Object3D_PointCloud    = 32
-    #Object3D_InstanceCloud = 64
-    #Object3D_Grid          = 128
-    #Object3D_Model         = 256
-    #Object3D_Root          = 512
-    #Object3D_Layer         = 1024
+    #Object3D_None
+    #Object3D_Camera
+    #Object3D_Light
+    #Object3D_Null
+    #Object3D_Polymesh
+    #Object3D_Curve
+    #Object3D_PointCloud
+    #Object3D_InstanceCloud
+    #Object3D_Grid
+    #Object3D_Model
+    #Object3D_Root
+    #Object3D_Layer
+    #Object3D_Drawer
   EndEnumeration
 
   #DIRTY_STATE_CLEAN = 0
@@ -537,7 +538,7 @@ Module Object3D
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 237
-; FirstLine = 222
+; CursorPosition = 27
+; FirstLine = 8
 ; Folding = ------
 ; EnableXP

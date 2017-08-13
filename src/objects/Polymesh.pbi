@@ -377,6 +377,17 @@ Module Polymesh
     glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
 
   EndProcedure
+  
+  ;-----------------------------------------------------
+  ; Update GL Edge Data (position)
+  ;-----------------------------------------------------
+  Procedure UpdateGLEdgeData(*p.Polymesh_t)
+    Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
+    ; Push Position Datas to GPU
+    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
+    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+  EndProcedure
+  
    
   ; Setup
   ;----------------------------------------------------
@@ -462,10 +473,10 @@ Module Polymesh
   ;{
   Procedure Update(*p.Polymesh_t)
     
-    If *p\stack
-      PolymeshGeometry::Reset(*p\geom)
-      Stack::Update(*p\stack)
-    EndIf
+;     If *p\stack
+;       PolymeshGeometry::Reset(*p\geom)
+;       Stack::Update(*p\stack)
+;     EndIf
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
@@ -476,6 +487,9 @@ Module Polymesh
         glBindVertexArray(*p\vao)
         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
         UpdateGLData(*p)
+        glBindVertexArray(*p\vao2)
+        glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+        UpdateGLEdgeData(*p)
         glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         SetClean(*p)
@@ -568,7 +582,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 373
-; FirstLine = 345
+; CursorPosition = 490
+; FirstLine = 478
 ; Folding = ----
 ; EnableXP
