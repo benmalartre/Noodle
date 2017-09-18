@@ -158,10 +158,7 @@ DeclareModule Object3D
 EndDeclareModule
 
 
-
-
 Module Object3D
-  
   ; Is A
   ;--------------------------------------------------------------
   Procedure.b IsA(*obj.Object3D_t,type.i)
@@ -538,7 +535,7 @@ Module Object3D
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 27
-; FirstLine = 8
+; CursorPosition = 160
+; FirstLine = 138
 ; Folding = ------
 ; EnableXP

@@ -162,6 +162,8 @@ Module Scene
     *scn\nbobjects  + 1
     *obj\uniqueID = Random(Math::#U32_MAX)
     Select *obj\type
+      Case Object3D::#Object3D_Drawer
+        CArray::AppendUnique(*scn\helpers,*obj)
       Case Object3D::#Object3D_Null
         CArray::AppendUnique(*scn\helpers,*obj)
       Case Object3D::#Object3D_Model
@@ -357,6 +359,8 @@ Module Scene
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
             child\Setup(*ctx\shaders("wireframe"))
+          Case Object3D::#Object3D_Drawer
+            child\Setup(*ctx\shaders("wireframe"))
           
       EndSelect
       
@@ -386,6 +390,8 @@ Module Scene
           Case Object3D::#Object3D_Null
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
+            child\Setup(*ctx\shaders("wireframe"))
+          Case Object3D::#Object3D_Drawer
             child\Setup(*ctx\shaders("wireframe"))
           
       EndSelect
@@ -969,8 +975,8 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 806
-; FirstLine = 785
+; CursorPosition = 394
+; FirstLine = 366
 ; Folding = --------
 ; EnableUnicode
 ; EnableThread

@@ -136,6 +136,13 @@ Module LayerDefault
     
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
     
+    *shader.Program::Program_t = *ctx\shaders("wireframe")
+    shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
+    
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
 ;     *shader = *ctx\shaders("wireframe")
@@ -246,7 +253,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 136
-; FirstLine = 125
+; CursorPosition = 143
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

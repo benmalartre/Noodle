@@ -89,6 +89,7 @@ DeclareModule Layer
   Declare WriteImage(*layer.Layer_t,path.s,format)
   Declare WriteFramebuffer(*layer.Layer_t,path.s,format.i)
   
+  Declare DrawDrawers(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader.i)
   Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
  
@@ -369,6 +370,23 @@ Module Layer
   EndProcedure
   
   ;---------------------------------------------------
+  ; Draw Drawers
+  ;---------------------------------------------------
+  Procedure DrawDrawers(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr, shader.i)
+    Protected i
+    Protected *obj.Object3D::Object3D_t
+    
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type & Object3D::#Object3D_Drawer
+        Debug *obj\class\name
+        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        Drawer::Draw(*obj)
+      EndIf
+    Next
+  EndProcedure
+  
+  ;---------------------------------------------------
   ; Draw Polymeshes
   ;---------------------------------------------------
   Procedure DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
@@ -631,7 +649,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 385
-; FirstLine = 370
-; Folding = ----
+; CursorPosition = 378
+; FirstLine = 371
+; Folding = -----
 ; EnableXP

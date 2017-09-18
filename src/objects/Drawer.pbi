@@ -65,19 +65,19 @@ DeclareModule Drawer
   EndStructure
   
   Structure Drawer_t Extends Object3D::Object3D_t
-    List *items.Item_t()
-    
     ; uniforms
     u_model.GLint
     u_proj.GLint
     u_view.GLint
     u_color.GLint
+    
+    List *items.Item_t()
 
   EndStructure
   
   Interface IDrawer Extends Object3D::IObject3D
   EndInterface
-  
+
   Declare New( name.s = "Drawer")
   Declare NewPoint(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
   Declare NewLine(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
@@ -93,6 +93,8 @@ DeclareModule Drawer
   Declare DeleteLoop(*Me.Loop_t)
   Declare DeleteBox(*Me.Box_t)
   Declare DeleteMatrix(*Me.Matrix_t)
+  Declare SetColor(*Me.Item_t, *color.c4f32)
+  Declare SetSize(*Me.Item_t, size.f)
   Declare Flush(*Me.Drawer_t)
   Declare Setup(*Me.Drawer_t,*shader.Program::Program_t)
   Declare Update(*Me.Drawer_t)
@@ -108,8 +110,7 @@ DeclareModule Drawer
     Data.i @Draw()
   EndDataSection 
   
-  Global CLASS.Class::Class_T
-  
+  Global CLASS.Class::Class_T  
 EndDeclareModule
 
 Module Drawer
@@ -148,7 +149,7 @@ Module Drawer
     *Me\shader = *pgm
     
     *Me\u_model = glGetUniformLocation(*pgm\pgm,"model")
-;     *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
+    *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
     *Me\u_proj = glGetUniformLocation(*pgm\pgm,"projection")
     *Me\u_view = glGetUniformLocation(*pgm\pgm,"view")
 ;     Protected msg.s
@@ -176,7 +177,7 @@ Module Drawer
     Protected shader.i
     ; ---[ Assign Shader ]---------------------------
     If *shader 
-      *Me\shader = *shader
+      SetShader(*Me, *shader)
       shader = *Me\shader\pgm
       *Me\u_model = glGetUniformLocation(*Me,"model")
     EndIf
@@ -194,7 +195,7 @@ Module Drawer
       If Not *item\vbo
         glGenBuffers(1,@*item\vbo)
       EndIf
-      glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+      glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
       
       Protected s.GLfloat
       Protected length.i
@@ -204,12 +205,11 @@ Module Drawer
       length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
       glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_STATIC_DRAW)
       ;Case #ITEM_LINE
-          
       
       glEnableVertexAttribArray(0)
       glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     Next
-      
+    
     *Me\initialized = #True
   EndProcedure
   
@@ -222,7 +222,6 @@ Module Drawer
       If *Me\items()\vbo : glDeleteBuffers(1,@*Me\items()\vbo) : EndIf
       If *Me\items()\eab : glDeleteBuffers(1,@*Me\items()\eab) : EndIf
     Next
-    
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -236,18 +235,34 @@ Module Drawer
   ; Flush
   ;---------------------------------------------------------------------------- 
   Procedure Flush(*Me.Drawer_t)
-    
+    ForEach *Me\items()
+      Select *Me\items()\type
+        Case #ITEM_POINT
+          DeletePoint(*Me\items())
+        Case #ITEM_LINE
+          DeleteLine(*Me\items())
+        Case #ITEM_LOOP
+          DeleteLoop(*Me\items())
+        Case #ITEM_BOX
+          DeleteBox(*Me\items())
+        Case #ITEM_MATRIX
+          DeleteMatrix(*Me\items())
+        Case #ITEM_COMPOUND
+          Debug "NOT IMPLAMENTED"
+      EndSelect
+    Next
+    ClearList(*Me\items())
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Draw
   ;---------------------------------------------------------------------------- 
   Procedure DrawPoint(*Me.Point_t)
-    glDrawArrays(#GL_POINT,0,CArray::GetCount(*Me\positions))
+    glDrawArrays(#GL_POINTS,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   Procedure DrawLine(*Me.Line_t)
-    glDrawArrays(#GL_LINE,0,CArray::GetCount(*Me\positions))
+    glDrawArrays(#GL_LINES,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   Procedure DrawLoop(*Me.Loop_t)
@@ -273,17 +288,15 @@ Module Drawer
   Procedure Draw(*Me.Drawer_t)
     ; ---[ Sanity Check ]--------------------------
     If Not *Me : ProcedureReturn : EndIf
-  
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected base.i, i
    
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
     ForEach *Me\items()
       With *me\items()
-        glBindVertexArray(*Me\items()\vao)
+        glBindVertexArray(\vao)
         ; Set Color
-        glUniform3f(*Me\u_color,\color\r,\color\g,\color\b)
-        
+        glUniform4f(*Me\u_color,\color\r,\color\g,\color\b, 1.0)
         Select \type
           Case #ITEM_POINT
             DrawPoint(*Me\items())
@@ -384,20 +397,18 @@ Module Drawer
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  ; ---[ Stack ]----------------------------------------------------------------
+  ; ---[ New ]------------------------------------------------------------------
   Procedure.i New( name.s = "Drawer")
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.Drawer_t = AllocateMemory( SizeOf(Drawer_t) )
-;     *Me\VT = ?DrawerVT
-;     *Me\classname = "Drawer"
-    Object::INI(Drawer)
     ; ---[ Initialize Structure ]------------------------------------------------
     InitializeStructure(*Me,Drawer_t)
+    Object::INI(Drawer)
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Object3D::#Object3D_Drawer
-    *Me\name     = name
+    *Me\type = Object3D::#Object3D_Drawer
+    *Me\name = name
   
     *Me\wireframe_r = Random(255)/255;
     *Me\wireframe_g = Random(255)/255;
@@ -410,7 +421,7 @@ Module Drawer
     ;*Me\bbox      = newCBox()
     
     Object3D::Object3D_ATTR()
-  
+    
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn *Me 
     
@@ -537,7 +548,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 238
-; FirstLine = 215
+; CursorPosition = 299
+; FirstLine = 361
 ; Folding = ------
 ; EnableXP

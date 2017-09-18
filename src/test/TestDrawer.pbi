@@ -41,6 +41,8 @@ Global *ssao.LayerSSAO::LayerSSAO_t
 Global *csm.LayerCascadedShadowMap::LayerCascadedShadowMap_t
 
 Global Dim *frustrums.Polymesh::Polymesh_t(3)
+
+Global *drawer.Drawer::Drawer_t
 Global Dim *items.Drawer::Item_t(3)
 
 Global shader.l
@@ -198,6 +200,23 @@ Procedure Draw(*app.Application::Application_t)
     Object3D::AddChild(*root,*frustrums(i))
   Next
   
+  *drawer = Drawer::New("Drawer")
+  Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  CArray::SetCount(*positions, 12)
+  Define j
+  For i=0 To ArraySize(*items())-1
+    For j=0 To CArray::GetCount(*positions)-1
+      Vector3::Set(@position, i, j, 0)
+      CArray::SetValue(*positions, j, @position)
+    Next
+    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    *items(i) = Drawer::NewPoint(*drawer, *positions)
+    Drawer::SetColor(*items(i),  @color)
+    Drawer::SetSize(*items(i), 6)
+  Next
+  
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
   Sampler::SamplePolymesh(*ground\geom,*samples,1,7)
   
@@ -213,14 +232,15 @@ Procedure Draw(*app.Application::Application_t)
   
 ;   Object3D::AddChild(*root,*ground)
 ;   Object3D::AddChild(*root,*bunny)
-   Scene::AddModel(Scene::*current_scene,*root)
+  Scene::AddModel(Scene::*current_scene,*root)
+  Scene::AddChild(Scene::*current_scene, *drawer)
    Scene::Setup(Scene::*current_scene,*app\context)
    
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 176
+; CursorPosition = 236
+; FirstLine = 86
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

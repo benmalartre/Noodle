@@ -65,8 +65,6 @@ Module Polymesh
   Procedure New(name.s,shape.i)
     Protected *Me.Polymesh_t = AllocateMemory(SizeOf(Polymesh_t))
     InitializeStructure(*Me,Polymesh_t)
-;     *Me\VT = ?PolymeshVT
-;     *Me\classname = "POLYMESH"
     Object::INI(Polymesh)
     
     *Me\name = name
@@ -571,18 +569,13 @@ Module Polymesh
   EndProcedure
   
   Class::DEF( Polymesh )
-  
-  
 
-  
-  
 EndModule
 
   
     
     
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 490
-; FirstLine = 478
+; CursorPosition = 84
 ; Folding = ----
 ; EnableXP
