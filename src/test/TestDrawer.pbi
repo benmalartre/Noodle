@@ -56,6 +56,7 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 Global *ftgl_drawer.FTGL::FTGL_Drawer
+Global *positions.CArray::CArrayV3F32
 
 ; Resize
 ;--------------------------------------------
@@ -104,6 +105,24 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  Drawer::Flush(*drawer)
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  CArray::SetCount(*positions, 64)
+  Define i, j
+  Define nbItems = 64
+  Define *item.Drawer::Item_t
+  For i=0 To nbItems-1
+    For j=0 To CArray::GetCount(*positions)-1
+      Vector3::Set(@position, i*4, j, (Random(10)-5)/10)
+      CArray::SetValue(*positions, j, @position)
+    Next
+    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    *item = Drawer::NewStrip(*drawer, *positions)
+    Drawer::SetColor(*item,  @color)
+    Drawer::SetSize(*item, 6)
+  Next
+  
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
 ;   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
 ;   Light::Update(*light)
@@ -111,10 +130,10 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   
   LayerCascadedShadowMap::Draw(*csm, *app\context)
-  Define i
-  For i=0 To 2
-    SetBoundingBox(*frustrums(i), *csm\cascadeProjections(i))
-  Next
+;   Define i
+;   For i=0 To 2
+;     SetBoundingBox(*frustrums(i), *csm\cascadeProjections(i))
+;   Next
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
 ;   LayerShadowMap::Draw(*shadows, *app\context)
@@ -156,8 +175,8 @@ Procedure Draw(*app.Application::Application_t)
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
-  Global *cam2.Camera::Camera_t = Camera::New("Camera2", Camera::#Camera_Perspective)
-  *viewport\camera = *cam2
+;   Global *cam2.Camera::Camera_t = Camera::New("Camera2", Camera::#Camera_Perspective)
+;   *viewport\camera = *cam2
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
@@ -171,7 +190,7 @@ Procedure Draw(*app.Application::Application_t)
   *csm = LayerCascadedShadowMap::New(1024,1024,*app\context,*app\camera,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
   Global *root.Model::Model_t = Model::New("Model")
   
-  Layer::SetPOV(*layer, *cam2)
+  ;Layer::SetPOV(*layer, *cam2)
   ; FTGL Drawer
   ;-----------------------------------------------------
   
@@ -194,25 +213,25 @@ Procedure Draw(*app.Application::Application_t)
   
   
   Define i
-  For i=0 To ArraySize(*frustrums())-1
-    *frustrums(i) = Polymesh::New("Frustrum"+Str(i+1),Shape::#SHAPE_CUBE)
-    *frustrums(i)\wireframe = #True
-    Object3D::AddChild(*root,*frustrums(i))
-  Next
+;   For i=0 To ArraySize(*frustrums())-1
+;     *frustrums(i) = Polymesh::New("Frustrum"+Str(i+1),Shape::#SHAPE_CUBE)
+;     *frustrums(i)\wireframe = #True
+;     Object3D::AddChild(*root,*frustrums(i))
+;   Next
   
   *drawer = Drawer::New("Drawer")
-  Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  *positions = CArray::newCArrayV3F32()
   Define position.Math::v3f32
   Define color.Math::c4f32
   CArray::SetCount(*positions, 12)
   Define j
   For i=0 To ArraySize(*items())-1
     For j=0 To CArray::GetCount(*positions)-1
-      Vector3::Set(@position, i, j, 0)
+      Vector3::Set(@position, i, j, (Random(10)-5)/10)
       CArray::SetValue(*positions, j, @position)
     Next
     Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
-    *items(i) = Drawer::NewPoint(*drawer, *positions)
+    *items(i) = Drawer::NewStrip(*drawer, *positions)
     Drawer::SetColor(*items(i),  @color)
     Drawer::SetSize(*items(i), 6)
   Next
@@ -230,8 +249,8 @@ Procedure Draw(*app.Application::Application_t)
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
   
-;   Object3D::AddChild(*root,*ground)
-;   Object3D::AddChild(*root,*bunny)
+  Object3D::AddChild(*root,*ground)
+  Object3D::AddChild(*root,*bunny)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::AddChild(Scene::*current_scene, *drawer)
    Scene::Setup(Scene::*current_scene,*app\context)
@@ -239,8 +258,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 86
+; CursorPosition = 192
+; FirstLine = 188
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

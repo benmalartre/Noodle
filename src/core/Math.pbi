@@ -435,6 +435,8 @@ DeclareModule Matrix4
   Declare Echo(*m.m4f32,name.s="")
   Declare.s AsString(*m.m4f32)
   Declare FromString(*m.m4f32, s.s)
+  Declare TranslationMatrix(*m.m4f32, *pos.v3f32)
+  Declare DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
 EndDeclareModule
 
 ;====================================================================
@@ -2290,7 +2292,40 @@ Module Matrix4
     *q\z = qz
     *q\w = qw
   EndProcedure
-
+  
+  ;-------------------------------------------
+  ; Get Translation Matrix
+  ;-------------------------------------------
+  Procedure TranslationMatrix(*m.m4f32, *pos.v3f32)
+    SetIdentity(*m)
+    *m\v[12] = *pos\x
+    *m\v[13] = *pos\y
+    *m\v[14] = *pos\z
+  EndProcedure
+  
+  ;-------------------------------------------
+  ; Get Direction Matrix
+  ;-------------------------------------------
+  Procedure DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
+    Protected N.v3f32
+    Vector3::Normalize(@N, *target)
+    Protected U.v3f32
+    Vector3::Normalize(@U, *up)
+    Vector3::Cross(@U, @U, @N)
+    Protected V.v3f32
+    Vector3::Cross(@V, @N, @U)
+    
+    *m\v[0] = U\x : *m\v[1] = U\y : *m\v[2] = U\z  : *m\v[3] = 0
+    *m\v[4] = V\x : *m\v[5] = V\y : *m\v[6] = V\z  : *m\v[7] = 0
+    *m\v[8] = N\x : *m\v[9] = N\y : *m\v[10] = N\z : *m\v[11] = 0
+    *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
+    
+;     *m\v[0] = U\x : *m\v[1] = V\y : *m\v[2] = N\z  : *m\v[3] = 0
+;     *m\v[4] = U\x : *m\v[5] = V\y : *m\v[6] = N\z  : *m\v[7] = 0
+;     *m\v[8] = U\x : *m\v[9] = V\y : *m\v[10] = N\z : *m\v[11] = 0
+;     *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
+    
+  EndProcedure
 EndModule
 
 
@@ -2497,8 +2532,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 194
-; FirstLine = 166
+; CursorPosition = 2325
+; FirstLine = 2294
 ; Folding = ------------------------------
 ; EnableUnicode
 ; EnableXP

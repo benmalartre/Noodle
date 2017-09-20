@@ -7,7 +7,9 @@ XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
 XIncludeFile "PolymeshGeometry.pbi"
 
-
+;==============================================================================
+; Drawer Module Declaration
+;==============================================================================
 DeclareModule Drawer
   UseModule OpenGL
   UseModule OpenGLExt
@@ -81,7 +83,7 @@ DeclareModule Drawer
   Declare New( name.s = "Drawer")
   Declare NewPoint(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
   Declare NewLine(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
+  Declare NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
   Declare NewBox(*Me.Drawer_t, *m.m4f32)
   Declare NewSphere(*Me.Drawer_t, *m.m4f32)
@@ -113,13 +115,16 @@ DeclareModule Drawer
   Global CLASS.Class::Class_T  
 EndDeclareModule
 
+;==============================================================================
+; Drawer Module Implementation
+;==============================================================================
 Module Drawer
   UseModule OpenGL
   UseModule OpenGLExt
 
-  ; ============================================================================
-  ;  IMPLEMENTATION ( CDrawer )
-  ; ============================================================================
+  ;----------------------------------------------------------------------------
+  ;  Echo ( Debug )
+  ;----------------------------------------------------------------------------
   Procedure Echo(*Me.Drawer_t)
   
   EndProcedure
@@ -228,7 +233,29 @@ Module Drawer
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Update(*Me.Drawer_t)
-  
+    Protected *item.Item_t
+    ForEach *Me\items()
+      *item = *me\items()
+      ;Create Or ReUse Vertex Array Object
+      If Not *item\vao
+        glGenVertexArrays(1,@*item\vao)
+      EndIf
+      glBindVertexArray(*item\vao)
+      
+      ; Create or ReUse Vertex Buffer Object
+      If Not *item\vbo
+        glGenBuffers(1,@*item\vbo)
+      EndIf
+      glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
+      
+      Protected s.GLfloat
+      Protected length.i
+      length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
+      glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_STATIC_DRAW)
+      
+      glEnableVertexAttribArray(0)
+      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    Next
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -239,6 +266,8 @@ Module Drawer
       Select *Me\items()\type
         Case #ITEM_POINT
           DeletePoint(*Me\items())
+        Case #ITEM_STRIP
+          DeleteStrip(*Me\items())
         Case #ITEM_LINE
           DeleteLine(*Me\items())
         Case #ITEM_LOOP
@@ -248,7 +277,7 @@ Module Drawer
         Case #ITEM_MATRIX
           DeleteMatrix(*Me\items())
         Case #ITEM_COMPOUND
-          Debug "NOT IMPLAMENTED"
+          Debug "NOT IMPLEMENTED"
       EndSelect
     Next
     ClearList(*Me\items())
@@ -257,14 +286,17 @@ Module Drawer
   ;----------------------------------------------------------------------------
   ; Draw
   ;---------------------------------------------------------------------------- 
+  ; ---[ Draw Point Item ]-----------------------------------------------------
   Procedure DrawPoint(*Me.Point_t)
     glDrawArrays(#GL_POINTS,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
+  ; ---[ Draw Line Item ]------------------------------------------------------
   Procedure DrawLine(*Me.Line_t)
     glDrawArrays(#GL_LINES,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
+  ; ---[ Draw Loop Item ]------------------------------------------------------
   Procedure DrawLoop(*Me.Loop_t)
     Protected i.i, cnt.i, base.i
     base = 0
@@ -275,6 +307,7 @@ Module Drawer
     Next
   EndProcedure
   
+  ; ---[ Draw Strip Item ]-----------------------------------------------------
   Procedure DrawStrip(*Me.Strip_t)
     Protected i.i, cnt.i, base.i
     base = 0
@@ -285,8 +318,8 @@ Module Drawer
     Next
   EndProcedure
   
+  ; ---[ Draw Item ]-----------------------------------------------------------
   Procedure Draw(*Me.Drawer_t)
-    ; ---[ Sanity Check ]--------------------------
     If Not *Me : ProcedureReturn : EndIf
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected base.i, i
@@ -320,54 +353,68 @@ Module Drawer
    
   EndProcedure
   
-  ; ============================================================================
-  ;  DESTRUCTOR
-  ; ============================================================================
-  ; ---[ Delete Point Item ]----------------------------------------------------
+  ;----------------------------------------------------------------------------
+  ;  Delete
+  ;----------------------------------------------------------------------------
+  ; ---[ Delete GL Item ]------------------------------------------------------
+  Procedure DeleteItem(*Me.Item_t)
+    If *Me\vao : glDeleteVertexArrays(1, @*Me\vao) : EndIf
+    If *Me\vbo : glDeleteBuffers(1,  @*Me\vbo) : EndIf
+    If *me\eab : glDeleteBuffers(1,@*Me\eab) : EndIf
+  EndProcedure
+  
+  ; ---[ Delete Point Item ]---------------------------------------------------
   Procedure DeletePoint(*Me.Point_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Line Item ]-----------------------------------------------------
+  ; ---[ Delete Line Item ]----------------------------------------------------
   Procedure DeleteLine(*Me.Point_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Strip Item ]----------------------------------------------------
+  ; ---[ Delete Strip Item ]---------------------------------------------------
   Procedure DeleteStrip(*Me.Strip_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     CArray::Delete(*Me\indices)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Loop Item ]-----------------------------------------------------
+  ; ---[ Delete Loop Item ]----------------------------------------------------
   Procedure DeleteLoop(*Me.Loop_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     CArray::Delete(*Me\indices)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Box Item ]------------------------------------------------------
+  ; ---[ Delete Box Item ]-----------------------------------------------------
   Procedure DeleteBox(*Me.Box_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Sphere Item ]---------------------------------------------------
+  ; ---[ Delete Sphere Item ]--------------------------------------------------
   Procedure DeleteSphere(*Me.Sphere_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Matrix Item ]---------------------------------------------------
+  ; ---[ Delete Matrix Item ]--------------------------------------------------
   Procedure DeleteMatrix(*Me.Matrix_t)
+    DeleteItem(*Me)
     CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
-  ; ---[ Delete Drawer Item ]---------------------------------------------------
+  ; ---[ Delete Drawer Item ]--------------------------------------------------
   Procedure Delete( *Me.Drawer_t )
     ForEach *Me\items()
       Select *Me\items()\type
@@ -392,21 +439,17 @@ Module Drawer
     FreeMemory( *Me )
   EndProcedure
   
-  
- 
-  ; ============================================================================
-  ;  CONSTRUCTOR
-  ; ============================================================================
-  ; ---[ New ]------------------------------------------------------------------
+  ;----------------------------------------------------------------------------
+  ; New
+  ;----------------------------------------------------------------------------
   Procedure.i New( name.s = "Drawer")
-    
-    ; ---[ Allocate Object Memory ]---------------------------------------------
+    ; Allocate Object Memory
     Protected *Me.Drawer_t = AllocateMemory( SizeOf(Drawer_t) )
-    ; ---[ Initialize Structure ]------------------------------------------------
+    ; Initialize Structure
     InitializeStructure(*Me,Drawer_t)
     Object::INI(Drawer)
     
-    ; ---[ Init Members ]-------------------------------------------------------
+    ; Init Members
     *Me\type = Object3D::#Object3D_Drawer
     *Me\name = name
   
@@ -422,12 +465,12 @@ Module Drawer
     
     Object3D::Object3D_ATTR()
     
-    ; ---[ Return Initialized Object ]------------------------------------------
+    ; Return Initialized Object
     ProcedureReturn *Me 
     
   EndProcedure
   
-  ; ---[ New Point Item ]-------------------------------------------------------
+  ; ---[ New Point Item ]------------------------------------------------------
   Procedure NewPoint(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
@@ -439,7 +482,7 @@ Module Drawer
     ProcedureReturn *point
   EndProcedure
   
-  ; ---[ New Line Item ]--------------------------------------------------------
+  ; ---[ New Line Item ]-------------------------------------------------------
   Procedure NewLine(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
@@ -451,21 +494,26 @@ Module Drawer
     ProcedureReturn *line
   EndProcedure
   
-  ; ---[ New Strip Item ]--------------------------------------------------------
-  Procedure NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
+  ; ---[ New Strip Item ]------------------------------------------------------
+  Procedure NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *strip.Strip_t = AllocateMemory(SizeOf(Strip_t))
     InitializeStructure(*strip, Strip_t)
     *strip\type = #ITEM_STRIP
     *strip\positions = CArray::newCArrayV3F32()
     *strip\indices = CArray::newCArrayLong()
     CArray::Copy(*strip\positions, *positions)
-    CArray::Copy(*strip\indices, *indices)
+    If Not *indices = #Null
+      CArray::Copy(*strip\indices, *indices)
+    Else
+      CArray::AppendL(*strip\indices, CArray::GetCount(*strip\positions))
+    EndIf
+    
     AddElement(*Me\items())
     *Me\items() = *strip
     ProcedureReturn *strip
   EndProcedure
   
-  ; ---[ New Loop Item ]--------------------------------------------------------
+  ; ---[ New Loop Item ]-------------------------------------------------------
   Procedure NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
     Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
     InitializeStructure(*loop, Loop_t)
@@ -479,7 +527,7 @@ Module Drawer
     ProcedureReturn *loop
   EndProcedure
   
-  ; ---[ New Box Item ]----------------------------------------------------------
+  ; ---[ New Box Item ]--------------------------------------------------------
   Procedure NewBox(*Me.Drawer_t, *m.Math::m4f32)
     Protected *box.Box_t = AllocateMemory(SizeOf(Box_t))
     InitializeStructure(*box, Box_t)
@@ -499,7 +547,7 @@ Module Drawer
     ProcedureReturn *box
   EndProcedure
   
-  ; ---[ New Sphere Item ]----------------------------------------------------------
+  ; ---[ New Sphere Item ]-----------------------------------------------------
   Procedure NewSphere(*Me.Drawer_t, *m.Math::m4f32)
     Protected *sphere.Sphere_t = AllocateMemory(SizeOf(Sphere_t))
     InitializeStructure(*sphere, Sphere_t)
@@ -519,7 +567,7 @@ Module Drawer
     ProcedureReturn *sphere
   EndProcedure
   
-  ; ---[ New Matrix Item ]----------------------------------------------------------
+  ; ---[ New Matrix Item ]-----------------------------------------------------
   Procedure NewMatrix(*Me.Drawer_t, *m.Math::m4f32)
     Protected *matrix.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
     InitializeStructure(*matrix, Matrix_t)
@@ -539,16 +587,16 @@ Module Drawer
     ProcedureReturn *matrix
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
+  ; ---[ Reflection ]----------------------------------------------------------
   Class::DEF( Drawer )
   
 EndModule
 
-; ============================================================================
-;  EOF
-; ============================================================================
+;==============================================================================
+; EOF
+;==============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 299
-; FirstLine = 361
+; CursorPosition = 269
+; FirstLine = 259
 ; Folding = ------
 ; EnableXP

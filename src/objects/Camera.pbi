@@ -63,6 +63,7 @@ DeclareModule Camera
   Declare GetSphericalCoordinates(*Me.Camera_t)
   Declare Event(*Me.Camera_t,gadget.i)
   Declare Resize(*Me.Camera_t,window.i,gadget)
+  Declare GetViewTransform(*Me.Camera_t, *m.m4f32)
   
   DataSection 
     CameraVT: 
@@ -101,7 +102,7 @@ Module Camera
       Case #Camera_Perspective
         *Me\lookat\x = 0
         *Me\lookat\y = 0
-        *Me\lookat\z = 0
+        *Me\lookat\z = 1
         *Me\pos\x = 5
         *Me\pos\y = 8
         *Me\pos\z = 8
@@ -120,7 +121,7 @@ Module Camera
     Case #Camera_Orthographic
       *Me\lookat\x = 0
       *Me\lookat\y = 0
-      *Me\lookat\z = 0
+      *Me\lookat\z = 1
       *Me\pos\x = 5
       *Me\pos\y = 8
       *Me\pos\z = 8
@@ -449,6 +450,21 @@ Module Camera
     UpdateProjection(*camera)
   EndProcedure
   
+  ;--------------------------------------------
+  ; Get View Transform
+  ;--------------------------------------------
+  Procedure GetViewTransform(*camera.Camera_t, *m.m4f32)
+    Protected tm.m4f32, rm.m4f32
+    Protected inv_pos.v3f32
+    Vector3::Set(@inv_pos, -*camera\pos\x, -*camera\pos\y, -*camera\pos\z)
+    Matrix4::TranslationMatrix(@tm, @inv_pos)
+    Matrix4::Echo(@tm, "Translation Matrix")
+    Matrix4::DirectionMatrix(@rm, *camera\lookat, *camera\up)
+    Matrix4::Echo(@rm, "Direction Matrix")
+    Matrix4::Multiply(*m, @rm, @tm)
+  EndProcedure
+  
+  
   Class::DEF( Camera )
   
  EndModule
@@ -457,8 +473,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 107
+; CursorPosition = 123
+; FirstLine = 104
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier
