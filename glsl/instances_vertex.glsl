@@ -30,7 +30,8 @@ mat4 directionFromTwoVectors(vec3 dir,vec3 up){
 				norm.y,up.y,-dir.y,0.0,
 				norm.z,up.z,-dir.z,0.0,
 				0.0,0.0,0.0,1.0);
-	*/
+     */	
+	
 				
 }
 uniform int selected; 
@@ -41,12 +42,13 @@ uniform mat4 projection;
 layout(location=0) in vec3 s_pos;
 layout(location=1) in vec3 s_norm;
 layout(location=2) in vec3 s_uvws;
-layout(location=3) in vec3 position;
-layout(location=4) in vec3 normal;
-layout(location=5) in vec3 tangent;
-layout(location=6) in vec4 color;
-layout(location=7) in vec3 scale;
-layout(location=8) in float size;
+layout(location=3) in vec3 s_color;
+layout(location=4) in vec3 position;
+layout(location=5) in vec3 normal;
+layout(location=6) in vec3 tangent;
+layout(location=7) in vec4 color;
+layout(location=8) in vec3 scale;
+layout(location=9) in float size;
 
 out vec3 inColor;
 out vec3 inUVWs;

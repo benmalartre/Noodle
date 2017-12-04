@@ -115,7 +115,7 @@ DeclareModule ControlExplorer
   Declare Delete(*Me.ControlExplorer_t)
   ;   Declare Draw(*Me.ExplorerUI_t)
   Declare Init()
-  Declare Event(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term()
   Declare Clear(*Me.ControlExplorer_t)
 
@@ -123,7 +123,7 @@ DeclareModule ControlExplorer
   DataSection 
     ExplorerVT: 
     ControlIconVT:
-    Data.i @Event() ; mandatory override
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete(); mandatory override
     
     VIExplorer_Model_Icon:
@@ -179,7 +179,7 @@ DeclareModule ControlExplorer
   Declare Add3DObject(*Me.ControlExplorer_t,*parent.ControlExplorerItem_t,*obj.Object3D::Object3D_t,depth.i)  
 ;   Declare IsInList(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
-  Declare Event(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
   
   
   Global CLASS.Class::Class_t
@@ -967,10 +967,13 @@ Module ControlExplorer
   ;----------------------------------------
   ;  Event
   ;---------------------------------------------------
-  Procedure Event(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Procedure OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
     ;   GetItems(*e)
-
-    If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    CompilerIf #PB_Compiler_Version < 560
+        If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
+      CompilerElse
+        If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    CompilerEndIf
       *e\sizX = *ev_data\width
       *e\sizY = *ev_data\height
       Resize(*e)
@@ -1164,9 +1167,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 630
-; FirstLine = 562
-; Folding = fxXev0
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 975
+; FirstLine = 870
+; Folding = fxXef8
 ; EnableXP

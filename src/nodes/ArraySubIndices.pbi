@@ -59,6 +59,7 @@ Module ArraySubIndicesNode
   Procedure Init(*node.ArraySubIndicesNode_t)
     Node::AddInputPort(*node,"Count",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_INTEGER)
+    Node::PortAffect(*node, "Count", "Result")
     
     ;Update Label
     *node\label = "Build Index Array"
@@ -118,9 +119,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 15
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 61
+; FirstLine = 44
 ; Folding = --
 ; EnableXP

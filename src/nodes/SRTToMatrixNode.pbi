@@ -53,6 +53,10 @@ Module SRTToMatrixNode
     Node::AddInputPort(*node,"T",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Matrix",Attribute::#ATTR_TYPE_MATRIX4)
     
+    Node::PortAffect(*node, "S", "Matrix")
+    Node::PortAffect(*node, "R", "Matrix")
+    Node::PortAffect(*node, "T", "Matrix")
+    
     FirstElement(*node\inputs())
     Protected scl.v3f32
     Vector3::Set(@scl,1,1,1)
@@ -153,9 +157,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 72
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 57
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

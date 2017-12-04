@@ -29,7 +29,7 @@
 XIncludeFile "OpenGL.pbi"
 
 DeclareModule GLFW
-  UseModule OpenGL
+  ;UseModule OpenGL
 
   ; /*************************************************************************
   ;  * GLFW version 
@@ -714,7 +714,7 @@ Module GLFW
     glfwWindowHint(#GLFW_GREEN_BITS,*mode\GreenBits)
     
     ;glfwWindowHint(GLFW_SAMPLES, 4);
-    If Not #USE_LEGACY_OPENGL
+    If Not OpenGL::#USE_LEGACY_OPENGL
       glfwWindowHint(#GLFW_CONTEXT_VERSION_MAJOR, 3)
       glfwWindowHint(#GLFW_CONTEXT_VERSION_MINOR, 3)
       glfwWindowHint(#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
@@ -755,7 +755,7 @@ Module GLFW
 
     Protected *monitor.GLFWmonitor  = glfwGetPrimaryMonitor()
     Protected title.s = name +" - "
-    If Not #USE_LEGACY_OPENGL
+    If Not OpenGL::#USE_LEGACY_OPENGL
       glfwWindowHint(#GLFW_CONTEXT_VERSION_MAJOR, 3)
       glfwWindowHint(#GLFW_CONTEXT_VERSION_MINOR, 3)
       glfwWindowHint(#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
@@ -787,9 +787,9 @@ Module GLFW
   EndProcedure
   ;}
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 758
-; FirstLine = 755
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 757
+; FirstLine = 753
 ; Folding = -----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -173,7 +173,7 @@ Module Application
   
   
   Procedure SizeWindowCallback()
-      ViewManager::Event(*running\manager,#PB_Event_SizeWindow)
+      ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
   EndProcedure
   
   ; Constructor
@@ -229,7 +229,6 @@ Module Application
     CompilerEndIf  
     
     *app\camera = Camera::New("Camera",Camera::#Camera_Perspective)
-    
     ProcedureReturn *app
   EndProcedure
   
@@ -525,7 +524,7 @@ Module Application
           EndIf  
         EndIf
         
-        ViewManager::Event(*app\manager,event)
+        ViewManager::OnEvent(*app\manager,event)
         *callback(*app)
         
       Until event = #PB_Event_CloseWindow
@@ -533,10 +532,10 @@ Module Application
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 25
-; FirstLine = 9
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 230
+; FirstLine = 189
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
 ; SubSystem = OpenGL
+; EnableUnicode

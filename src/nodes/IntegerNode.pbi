@@ -45,6 +45,7 @@ Module IntegerNode
   Procedure Init(*node.IntegerNode_t)
     Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_INTEGER)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_INTEGER)
+    Node::PortAffect(*node, "Value", "Result")
     *node\label = "0"
   EndProcedure
   
@@ -101,11 +102,10 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 28
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 47
+; FirstLine = 16
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

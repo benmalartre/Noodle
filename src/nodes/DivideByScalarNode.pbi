@@ -57,6 +57,9 @@ Module DivideByScalarNode
     Node::AddInputPort(*node,"Scalar",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",datatype)
     
+    Node::PortAffect(*node, "Input", "Result")
+    Node::PortAffect(*node, "Scalar", "Result")
+    
     *node\label = "DivideByScalar"
   EndProcedure
   
@@ -214,9 +217,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 24
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 60
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

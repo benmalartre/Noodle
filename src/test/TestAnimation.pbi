@@ -57,7 +57,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Delay(250)
   
   If Not #USE_GLFW
-    ViewportUI::FlipBuffers(*viewport)
+    ViewportUI::FlipBuffer(*viewport)
   EndIf
   
 EndProcedure
@@ -148,9 +148,9 @@ Scene::AddModel(Scene::*current_scene,*model)
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 59
-; FirstLine = 40
+; FirstLine = 33
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

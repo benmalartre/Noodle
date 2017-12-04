@@ -115,7 +115,7 @@ DeclareModule ControlCombo
   ; ----------------------------------------------------------------------------
   Declare New(*object.Object::Object_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
   Declare Delete(*Me.ControlCombo_t)
-  Declare Event( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   Declare SetTheme( theme.i )
   Declare.b Init()
@@ -128,7 +128,7 @@ DeclareModule ControlCombo
   ;{
   DataSection
     ControlComboVT:
-    Data.i @Event() ; mandatory override
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete() ; mandatory override
 
     ; Images
@@ -241,7 +241,7 @@ Module ControlCombo
   ; ============================================================================
   ;{
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure Event( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
     ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
@@ -261,7 +261,11 @@ Module ControlCombo
       ; ------------------------------------------------------------------------
       ;    Resize
       ; ------------------------------------------------------------------------
-      Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version < 560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         ; ...[ Reset Height ]...................................................
@@ -625,8 +629,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 314
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 267
+; FirstLine = 239
 ; Folding = ---
 ; EnableXP

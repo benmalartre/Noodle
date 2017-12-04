@@ -95,7 +95,7 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
 *app\context = GLContext::New(0,#False,*viewport\gadgetID)
 *viewport\camera = *app\camera
-ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
@@ -159,9 +159,9 @@ EndProcedure
 Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 133
-; FirstLine = 127
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 128
+; FirstLine = 107
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

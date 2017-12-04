@@ -52,6 +52,7 @@ Module NormalizeNode
     Node::AddInputPort(*node,"Input",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_VECTOR3)
     
+    Node::PortAffect(*node, "Input", "Output")
     *node\label = "Normalize"
   EndProcedure
   
@@ -109,9 +110,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 30
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 54
+; FirstLine = 31
 ; Folding = --
 ; EnableXP

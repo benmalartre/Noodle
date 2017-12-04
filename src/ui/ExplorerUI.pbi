@@ -26,7 +26,7 @@ DeclareModule ExplorerUI
   Declare Delete(*Me.ExplorerUI_t)
   ;   Declare Draw(*Me.ExplorerUI_t)
   Declare Init()
-  Declare Event(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term()
   Declare Clear(*Me.ExplorerUI_t)
   Declare Setup(*Me.ExplorerUI_t)
@@ -34,7 +34,7 @@ DeclareModule ExplorerUI
   DataSection 
     ExplorerUIVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -43,7 +43,7 @@ DeclareModule ExplorerUI
   ; ----------------------------------------------------------------------------
   ;  FORWARD DECLARATION
   ; ----------------------------------------------------------------------------
-  Declare Event(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare ConnectSignalsSlots(*Me.ExplorerUI_t)
 
 
@@ -109,30 +109,33 @@ Module ExplorerUI
       
   EndProcedure 
   
-;----------------------------------------
-  ;  Event
+  ;----------------------------------------
+  ;  OnEvent
   ;---------------------------------------------------
-  Procedure Event(*e.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Procedure OnEvent(*e.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
     ;   GetItems(*e)
     
     If event = Globals::#EVENT_GRAPH_CHANGED
       ControlExplorer::Fill(*e\explorer,Scene::*current_scene) 
     EndIf
     
-    If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
-  
+    CompilerIf #PB_Compiler_Version < 560
+      If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    CompilerElse
+      If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    CompilerEndIf
       ;If *ev_data = #Null : ProcedureReturn #Null : EndIf
       If *e\top
         Resize(*e)
         Define ev_datas.Control::EventTypeDatas_t
         ev_datas\width = *e\width
         ev_datas\height = *e\height
-        ControlExplorer::Event(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
+        ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
 
       EndIf
     
     ElseIf event = #PB_Event_Gadget
-      ControlExplorer::Event(*e\explorer,event,#Null)
+      ControlExplorer::OnEvent(*e\explorer,event,#Null)
       If EventType() = #PB_EventType_MouseWheel
         UI::Scroll(*e,#True)
       EndIf
@@ -181,8 +184,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 86
-; FirstLine = 61
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 128
+; FirstLine = 148
 ; Folding = ---
 ; EnableXP

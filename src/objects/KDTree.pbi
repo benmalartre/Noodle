@@ -658,8 +658,8 @@ EndModule
 ; ; KDTree::GetBoundingBox(*tree,,@min,@max)
 
   
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 33
+; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; CursorPosition = 313
+; FirstLine = 289
 ; Folding = ----
 ; EnableXP

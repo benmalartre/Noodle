@@ -57,6 +57,11 @@ Module PerlinNode
     Node::AddInputPort(*node,"Complexity",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_VECTOR3)
     
+    ForEach *node\inputs()
+      Node::PortAffect(*node, *node\inputs()\name, "Output")
+    Next
+    
+    
     *node\label = "Perlin"
   EndProcedure
   
@@ -153,9 +158,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 74
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 62
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

@@ -51,6 +51,15 @@ EndDeclareModule
 ; ============================================================================
 Module AlembicIPointCloudNode
   UseModule Math
+  Procedure PortAffects(*node.AlembicIPointCloudNode_t)
+    ForEach(*node\outputs())
+      Node::PortAffect(*node, "File", *node\outputs()\name)
+      Node::PortAffect(*node, "Identifier", *node\outputs()\name)
+      Node::PortAffect(*node, "Time", *node\outputs()\name)
+    Next
+  EndProcedure
+  
+  
   Procedure Init(*node.AlembicIPointCloudNode_t)
 
     Node::AddInputPort(*node,"File",Attribute::#ATTR_TYPE_STRING,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
@@ -63,6 +72,8 @@ Module AlembicIPointCloudNode
     Node::AddOutputPort(*node,"Orientation",Attribute::#ATTR_TYPE_QUATERNION)
     Node::AddOutputPort(*node,"Scale",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Color",Attribute::#ATTR_TYPE_COLOR)
+    
+    PortAffects(*node)
 
 
     *node\label = "AlembicIPointCloud"
@@ -198,8 +209,8 @@ Module AlembicIPointCloudNode
 
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 40
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 53
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

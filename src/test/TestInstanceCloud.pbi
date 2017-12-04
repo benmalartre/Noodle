@@ -65,7 +65,7 @@ Procedure CreateGround()
   
   For i=0 To *geom\nbpoints-1
     *p = CArray::GetValue(*geom\a_positions,i)
-    Vector3::Set(*p,*p\x,Random(10)-5,*p\z)
+    Vector3::Set(*p,*p\x,Random(100)-50,*p\z)
   Next
   
   *ground\dirty = Object3D::#DIRTY_STATE_DEFORM
@@ -75,6 +75,24 @@ Procedure CreateGround()
   ProcedureReturn *ground
 EndProcedure
 
+Procedure InstanceGrid(*cloud.InstanceCloud::InstanceCloud_t, nx.i, nz.i)
+  Protected *geom.Geometry::PointCloudGeometry_t = *cloud\geom
+  *geom\nbpoints = nx * nz
+  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  CArray::SetCount(*positions, *geom\nbpoints)
+  Protected x,z
+  Protected *p.v3f32
+  Protected incrx.f, incrz.f
+  For x=0 To nx-1
+    For z=0 To nz-1
+      *p = CArray::GetValue(*positions, x*nz + z)
+      Vector3::Set(*p,x*incrx,0,z*incrz)
+    Next
+  Next
+  
+  PointCloudGeometry::AddPoints(*geom, *positions)
+  CArray::Delete(*positions)
+EndProcedure
 
 
 ; Draw  
@@ -118,7 +136,7 @@ Procedure Draw(*app.Application::Application_t)
     *viewport\camera = *app\camera
     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport ,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport ,#PB_Event_SizeWindow)
   EndIf
   
   Define glVersion.s = PeekS(glGetString(#GL_VERSION),-1,#PB_Ascii)
@@ -150,80 +168,86 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_NONE,100)
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
-    *abc = Alembic::LoadABCArchive(path)
-  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-    Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Monkeys.abc","Alembic (*.abc)|*.abc",0)
-    *abc = Alembic::LoadABCArchive(path)
-  CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-    Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Monkeys.abc","Alembic (*.abc)|*.abc",0)
-    *abc = Alembic::LoadABCArchive(path)
-  CompilerElse
-    *abc = Model::New("Empty")
-  CompilerEndIf
-  
-  Scene::AddModel(Scene::*current_scene,*abc)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_SPHERE,1024)
+  Debug CArray::GetCount(*cloud\shape\positions)
+  Debug CArray::GetCount(*cloud\shape\indices)
+;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
+;     *abc = Alembic::LoadABCArchive(path)
+;   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;     Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Monkeys.abc","Alembic (*.abc)|*.abc",0)
+;     *abc = Alembic::LoadABCArchive(path)
+;   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+;     Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Monkeys.abc","Alembic (*.abc)|*.abc",0)
+;     *abc = Alembic::LoadABCArchive(path)
+;   CompilerElse
+;     *abc = Model::New("Empty")
+;   CompilerEndIf
+;   
+;   Scene::AddModel(Scene::*current_scene,*abc)
   
 
   
-  ForEach *abc\children()
-    If *abc\children()\type = Object3D::#Object3D_Polymesh
-      *mesh = *abc\children()
-      PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-      Break
-    EndIf
-  Next
-  
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
-   ;PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  Define *T.Transform::Transform_t = *mesh\localT
-  Define pos.v3f32
-
-  Vector3::Set(@pos,0,2,0)
-  Matrix4::SetTranslation(*mesh\matrix,@pos)
-  Vector3::Set(@pos,4,4,4)
-  Matrix4::SetScale(*mesh\matrix,@pos)
-  ;Polymesh::Setup(*bunnies(),*s_gbuffer)
- 
-        ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
-        
-        
-  Scene::AddChild(Scene::*current_scene,*mesh)
+;   ForEach *abc\children()
+;     If *abc\children()\type = Object3D::#Object3D_Polymesh
+;       *mesh = *abc\children()
+;       PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
+;       Break
+;     EndIf
+;   Next
+;   
+;   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
+;   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
+  ;PointCloudGeometry::PointsOnGrid(*cloud\geom,24,24)
+  Define startP.v3f32, endP.v3f32
+  Vector3::Set(@startP, -10,0,0)
+  Vector3::Set(@endP, 10,0,0)
+  ;PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
+;   Define *T.Transform::Transform_t = *mesh\localT
+;   Define pos.v3f32
+; 
+;   Vector3::Set(@pos,0,2,0)
+;   Matrix4::SetTranslation(*mesh\matrix,@pos)
+;   Vector3::Set(@pos,4,4,4)
+;   Matrix4::SetScale(*mesh\matrix,@pos)
+;   ;Polymesh::Setup(*bunnies(),*s_gbuffer)
+;  
+;         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
+;         
+;         
+;   Scene::AddChild(Scene::*current_scene,*mesh)
   
   
   Define ps.v3f32, pe.v3f32
   Vector3::Set(@ps,-10,0,0)
   Vector3::Set(@pe,10,0,0)
   *ground = CreateGround()
-  ;PointCloudGeometry::PointsOnSphere(*cloud\geom)
-  Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
-  Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,666)
+  PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define i
-  Define s.v3f32
-  Vector3::Set(@s,3,3,3)
-  Define *l.Geometry::Location_t
-  For i=0 To *cgeom\nbpoints-1
-    *l = CArray::GetValuePtr(*locs,i)
-    CArray::SetValue(*cgeom\a_positions,i,*l\p)
-    CArray::SetValue(*cgeom\a_normals,i,*l\n)
-    CArray::SetValue(*cgeom\a_scale,i,@s)
-    CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
-  Next
-  
-  
+;   Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
+;   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
+;   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
+;   
+;   Define i
+;   Define s.v3f32
+;   Vector3::Set(@s,13,13,13)
+;   Define *l.Geometry::Location_t
+;   For i=0 To *cgeom\nbpoints-1
+;     *l = CArray::GetValuePtr(*locs,i)
+;     CArray::SetValue(*cgeom\a_positions,i,*l\p)
+;     CArray::SetValue(*cgeom\a_normals,i,*l\n)
+;     CArray::SetValue(*cgeom\a_scale,i,@s)
+;     CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
+;   Next
+;     
   PointCloudGeometry::RandomizeColor(*cloud\geom)
-  InstanceCloud::Setup(*cloud,*app\context\shaders("gbufferic"))
+  InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
   
-  Define *geom.Geometry::PointCloudGeometry_t = *cloud\geom
   
-  *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
-
-  glActiveTexture(#GL_TEXTURE0)
-  glBindTexture(#GL_TEXTURE_2D,*texture\tex)
+;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
+; 
+;   glActiveTexture(#GL_TEXTURE0)
+;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
   
 
   Scene::AddChild(Scene::*current_scene,*cloud)
@@ -244,18 +268,18 @@ Procedure Draw(*app.Application::Application_t)
     CompilerElse
       Repeat
         e = WaitWindowEvent(1000/60)
-        ViewManager::Event(*app\manager,e)
+        ViewManager::OnEvent(*app\manager,e)
         Draw(*app)
   
       Until e = #PB_Event_CloseWindow
     CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 199
-; FirstLine = 195
+; FirstLine = 170
 ; Folding = -
-; EnableUnicode
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

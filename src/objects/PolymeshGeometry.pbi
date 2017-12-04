@@ -2229,18 +2229,18 @@ Module PolymeshGeometry
 ;     CArray::Copy(*shape\indices,*Me\a_triangleindices)
 ;     CArray::Copy(*shape\uvws,*Me\a_uvws)
 ;     CArray::Copy(*Shape\colors,*Me\a_colors)
-
-    *shape\nbp = *me\nbtriangles*3
+    
+    *shape\nbp = *Me\nbtriangles*3
     *shape\nbt = *Me\nbtriangles
     CArray::SetCount(*shape\positions,*shape\nbp)
-
+    
     Define i
     Define *v.v3f32
     For i=0 To *shape\nbp-1
       *v = CArray::GetValue(*Me\a_positions,CArray::GetValueL(*Me\a_triangleindices,i))
       CArray::SetValue(*shape\positions,i,*v)
     Next
-    
+
     CArray::Copy(*shape\normals,*Me\a_normals)
     CArray::Copy(*shape\uvws,*Me\a_uvws)
     CArray::Copy(*shape\indices,*Me\a_triangleindices)
@@ -2253,8 +2253,6 @@ Module PolymeshGeometry
       Vector3::Set(@c,*c\r,*c\g,*c\b)
       CArray::SetValue(*shape\colors,i,@c)
     Next
-    
-    
   EndProcedure
   
     
@@ -2330,8 +2328,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 449
-; FirstLine = 424
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 2233
+; FirstLine = 2133
 ; Folding = ---4Hw--9-
 ; EnableXP

@@ -17,7 +17,7 @@ DeclareModule Texture
   Structure Texture_t
     src.s
     img.i
-    tex.GLuint
+    tex.l
     width.i
     height.i
     depth.i
@@ -37,7 +37,6 @@ EndDeclareModule
 ;============================================================================================
 Module Texture
   
-  UseModule OpenGL
   UseModule OpenGLExt
 
   ; Constructors
@@ -125,11 +124,11 @@ Module Texture
   Procedure Load(imageID,flipY.b=#True)
     If imageID <> #Null
       
-      CompilerIf #USE_LEGACY_OPENGL
+      CompilerIf OpenGL::#USE_LEGACY_OPENGL
         glEnable(#GL_TEXTURE_2D)
       CompilerEndIf
       
-      Protected out.GLuint
+      Protected out.l
       glGenTextures(1,@out)
       GLCheckError("Gen FTGL Texture")   
       glBindTexture(#GL_TEXTURE_2D,out)
@@ -220,9 +219,8 @@ Module Texture
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 139
-; FirstLine = 122
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 15
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

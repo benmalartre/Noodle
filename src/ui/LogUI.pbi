@@ -15,13 +15,13 @@ DeclareModule LogUI
   Declare Delete(*Me.LogUI_t)
 ;   Declare Draw(*Me.LogUI_t)
   Declare Init(*Me.LogUI_t)
-  Declare Event(*Me.LogUI_t,event.i)
+  Declare OnEvent(*Me.LogUI_t,event.i)
   Declare Term(*Me.LogUI_t)
   
   DataSection 
     LogUIVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
 EndDeclareModule
@@ -113,7 +113,7 @@ EndProcedure
   
   ; Event
   ;-------------------------------
-  Procedure Event(*Me.LogUI_t,event.i)
+  Procedure OnEvent(*Me.LogUI_t,event.i)
 
     Select event
       Case Globals::#EVENT_COMMAND_CALLED
@@ -170,9 +170,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 149
-; FirstLine = 122
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 115
+; FirstLine = 97
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

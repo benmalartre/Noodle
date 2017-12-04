@@ -52,6 +52,9 @@ Module Vector3ToFloatNode
     Node::AddOutputPort(*node,"Y",odata)
     Node::AddOutputPort(*node,"Z",odata)
     
+    Node::PortAffect(*node, "Pos", "X")
+    Node::PortAffect(*node, "Pos", "Y")
+    Node::PortAffect(*node, "Pos", "Z")
     
     *node\label = "Vector3ToFloat"
   EndProcedure
@@ -120,9 +123,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 38
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 56
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

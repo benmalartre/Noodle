@@ -224,12 +224,9 @@ DeclareModule Connexion
     b.v2f32
     c.v2f32
     d.v2f32
-    linear.b
-    accuracy.f
-    method.i
     color.i
     connected.b
-    antialiased.b
+    samples.f
     dotted.b
     *start.NodePort::NodePort_t
     *end.NodePort::NodePort_t
@@ -237,6 +234,10 @@ DeclareModule Connexion
   
   #Graph_Bezier_DashedLines = #False
   #Graph_Bezier_Thickness = 2
+  Global GRAPH_CONNEXION_LINEAR.b = #False
+  Global GRAPH_CONNEXION_ACCURACY.f = 0.04
+  Global GRAPH_CONNEXION_METHOD.i
+  Global GRAPH_CONNEXION_ANTIALIASED.b = #False
   
   Macro DrawLine(x1,y1,x2,y2,color,antialiased)
     Select antialiased
@@ -576,8 +577,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 382
-; FirstLine = 357
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 228
+; FirstLine = 208
 ; Folding = ---
 ; EnableXP

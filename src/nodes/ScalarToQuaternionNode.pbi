@@ -51,6 +51,12 @@ Module ScalarToQuaternionNode
     Node::AddInputPort(*node,"Z",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddInputPort(*node,"W",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_QUATERNION)
+    
+    Node::PortAffect(*node, "X", "Result")
+    Node::PortAffect(*node, "Y", "Result")
+    Node::PortAffect(*node, "Z", "Result")
+    Node::PortAffect(*node, "W", "Result")
+    
     Quaternion::SetIdentity(*node\q)
     ;Update Label
     *node\label = "(0,0,0,1)"
@@ -117,9 +123,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 36
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 57
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

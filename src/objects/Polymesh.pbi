@@ -436,12 +436,12 @@ Module Polymesh
       EndIf
     EndIf
 
-;     ; Create or ReUse Edge Elements Buffer
-;     If Not *p\eab
-;       glGenBuffers(1,@*p\eab)
-;     EndIf 
-; 
-;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
+    ; Create or ReUse Edge Elements Buffer
+    If Not *p\eab
+      glGenBuffers(1,@*p\eab)
+    EndIf 
+
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
 
     ; Unbind
     glBindVertexArray(0)
@@ -506,37 +506,22 @@ Module Polymesh
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And #USE_LEGACY_OPENGL
-      glBegin(#GL_TRIANGLES)
-      Define.v3f32 *a,*b,*c
-      For i = 0 To *geom\nbtriangles-1
-        *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3))
-        *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
-        *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
-        glVertex3f(*a\x, *a\y, *a\z)
-        glVertex3f(*b\x, *b\y, *b\z)
-        glVertex3f(*c\x, *c\y, *c\z)
-      Next
-      
-      glEnd()
-    CompilerElse
-      
-      If *p\wireframe
-        glBindVertexArray(*p\vao2)
-        glPointSize(4)
-        glDrawArrays(#GL_POINTS, 0, *geom\nbpoints)
-  ;     glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-        glDrawElements(#GL_LINES,*geom\nbedges*2,#GL_UNSIGNED_INT,0)
-        
-        GLCheckError("DRAW MESH WIREFRAME")
-      Else
-        glBindVertexArray(*p\vao)
-;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
-        GLCheckError("DRAW MESH SHADED")
-      EndIf
-      glBindVertexArray(0)
-    CompilerEndIf
+;     If *p\wireframe
+;       glBindVertexArray(*p\vao2)
+;       glPointSize(4)
+;       glDrawArrays(#GL_POINTS, 0, *geom\nbpoints)
+;       GLCheckError("DRAW MESH POINTS")
+; ;     glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+;       glDrawElements(#GL_LINES,*geom\nbedges*2,#GL_UNSIGNED_INT,0)
+;       
+;       GLCheckError("DRAW MESH WIREFRAME")
+;     Else
+      glBindVertexArray(*p\vao)
+      ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+      glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+      GLCheckError("[Polymesh] Draw mesh Called")
+;     EndIf
+    glBindVertexArray(0)
     
   EndProcedure
   ;}
@@ -575,7 +560,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 84
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 521
+; FirstLine = 502
 ; Folding = ----
 ; EnableXP

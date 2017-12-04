@@ -36,10 +36,11 @@ Module Connexion
   ; Init
   ;---------------------------------------------------
   Procedure Init(*c.Connexion_t,color.i)
-    *c\accuracy = 0.04
-    *c\linear = #False
-    *c\antialiased = #False
-    *c\method = 0
+;     *c\accuracy = 0.04
+;     *c\linear = #False
+;     *c\antialiased = #False
+;     *c\method = 0
+    
     *c\color = color
     ProcedureReturn *c
   EndProcedure
@@ -156,7 +157,7 @@ Module Connexion
      ; USE VECTOR DRAWING
      ;-------------------------------------------------------------------------------------
     CompilerElse
-      If *c\linear
+      If GRAPH_CONNEXION_LINEAR
        MovePathCursor(*c\a\x,*c\a\y)
        AddPathLine(*c\b\x,*c\b\y)
        AddPathLine(*c\c\x,*c\c\y)
@@ -190,22 +191,22 @@ Module Connexion
     Protected b.i = *c\d\y - *c\a\y
     Protected l.f = Sqr(a*a+b*b)
     Maximum(l,0.01)
-    *c\accuracy = 1/l * 5
+    *c\samples = 1/l * 5
     
   EndProcedure
    
   ;---------------------------------------------------
   ; Set Linear
   ;---------------------------------------------------
-  Procedure SetLinear(*c.Connexion_t,v.b)
-    *c\linear = v
+  Procedure SetLinear(v.b)
+    GRAPH_CONNEXION_LINEAR = v
   EndProcedure
    
   ;---------------------------------------------------
   ; Set Antialiazed
   ;---------------------------------------------------
-  Procedure SetAntialiased(*c.Connexion_t,v.b)
-    *c\antialiased = v  
+  Procedure SetAntialiased(v.b)
+    GRAPH_CONNEXION_ANTIALIASED = v  
   EndProcedure
 
   
@@ -248,10 +249,10 @@ Module Connexion
   
     Protected a.i = *c\a\x - *c\d\x
     Protected b.i = *c\a\y - *c\d\y
-    Protected l.f = Sqr((a*a)+(b*b))
+    Protected l.f = Sqr(a*a+b*b)
     
     Maximum(l,0.01)
-    *c\accuracy = 1/l*10
+    *c\samples = 1/l*10
   EndProcedure
 
   ;---------------------------------------------------
@@ -427,8 +428,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 360
-; FirstLine = 356
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 251
+; FirstLine = 238
 ; Folding = ----
 ; EnableXP

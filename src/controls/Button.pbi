@@ -227,7 +227,7 @@ DeclareModule ControlButton
   
   Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
   Declare Delete(*Me.ControlButton_t)
-  Declare Event( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare ONEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   Declare.b Init()
   Declare.b Term()
@@ -239,7 +239,7 @@ DeclareModule ControlButton
   ;{
     DataSection
     ControlButtonVT:
-    Data.i @Event() ; mandatory override
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
   
     ; Images
@@ -425,7 +425,7 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ OnEvent ]--------------------------------------------------------------
-Procedure.i Event( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   ; ---[ Retrieve Interface ]-------------------------------------------------
   Protected Me.Control::IControl = *Me
@@ -445,7 +445,11 @@ Procedure.i Event( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDa
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_Resize
+    CompilerIf #PB_Compiler_Version < 560
+      Case Control::#PB_EventType_Resize
+    CompilerElse
+      Case #PB_EventType_Resize
+    CompilerEndIf
       ; ...[ Sanity Check ]...................................................
       If Not *ev_data : ProcedureReturn : EndIf
       
@@ -1075,8 +1079,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 394
-; FirstLine = 351
-; Folding = --f--
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 451
+; FirstLine = 443
+; Folding = ---+-
 ; EnableXP

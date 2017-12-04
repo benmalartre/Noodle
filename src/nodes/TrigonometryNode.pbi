@@ -57,6 +57,9 @@ Module TrigonometryNode
     Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_FLOAT)
     
+    Node::PortAffect(*node, "Operation", "Result")
+    Node::PortAffect(*node, "Value", "Result")
+    
     *node\label = "Sin"
   EndProcedure
   
@@ -150,9 +153,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 77
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 60
+; FirstLine = 33
 ; Folding = --
 ; EnableXP

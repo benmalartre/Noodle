@@ -15,7 +15,10 @@ DeclareModule Control
     #PB_EventType_Hide
     #PB_EventType_Enable
     #PB_EventType_Disable
-    #PB_EventType_Resize
+    CompilerIf #PB_Compiler_Version < 560
+      #PB_EventType_Resize
+    CompilerEndIf
+    
     #PB_EventType_Attribute
   EndEnumeration
   ; ---[ Gadget Types ]--------------------
@@ -72,7 +75,7 @@ DeclareModule Control
   ; ----------------------------------------------------------------------------
   ; ---[ Overided in Extension Classes ]-----------------------
   Interface IControl
-    Event( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
+    OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
   EndInterface
   
@@ -142,7 +145,7 @@ Module Control
   Procedure.i Enable( *Me.Control_t )
     Protected Me.IControl = *Me
     ; ---[ Send Event ]---------------------------------------------------------
-    If Not Me\Event( #PB_EventType_Enable )
+    If Not Me\OnEvent( #PB_EventType_Enable )
       ; ...[ Enable Gadget ]....................................................
       DisableGadget( *Me\gadgetID, 0 )
       ; ...[ Update Status ]....................................................
@@ -157,7 +160,7 @@ Module Control
   Procedure.i Disable( *Me.Control_t )
     Protected Me.IControl = *Me
     ; ---[ Send Event ]---------------------------------------------------------
-    If Not Me\Event( #PB_EventType_Disable )
+    If Not Me\OnEvent( #PB_EventType_Disable )
       ; ...[ Disable Gadget ]...................................................
       DisableGadget( *Me\gadgetID, 1 )
       ; ...[ Update Status ]....................................................
@@ -185,7 +188,7 @@ Module Control
     
 
     ; ---[ Send Event ]---------------------------------------------------------
-    If Not Me\Event( #PB_EventType_Resize, @ev_datas )
+    If Not Me\OnEvent( #PB_EventType_Resize, @ev_datas )
       ; ...[ Update Status ]....................................................
       If #PB_Ignore <> x      : *Me\posX = x      : EndIf
       If #PB_Ignore <> y      : *Me\posY = y      : EndIf
@@ -202,7 +205,7 @@ Module Control
     Protected Me.IControl = *Me
     
     ; ---[ Send Event ]---------------------------------------------------------
-    If Not Me\Event( #PB_EventType_Attribute )
+    If Not Me\OnEvent( #PB_EventType_Attribute )
       ; TODO : Update attribute
     EndIf
     
@@ -217,7 +220,7 @@ Module Control
     If *Me\parent
       Protected *obj.IControl = *Me\parent
       ; ...[ Ask Parent To Redraw Me ]..........................................
-      *obj\Event( #PB_EventType_DrawChild, *Me )
+      *obj\OnEvent( #PB_EventType_DrawChild, *Me )
     EndIf
     
   EndProcedure
@@ -228,7 +231,7 @@ Module Control
     If *Me\parent
       Protected *obj.IControl = *Me\parent
       ; ...[ Tell Parent I'm Now Focused ]......................................
-      *obj\Event( #PB_EventType_ChildFocused, *Me )
+      *obj\OnEvent( #PB_EventType_ChildFocused, *Me )
     EndIf
     
   EndProcedure
@@ -239,7 +242,7 @@ Module Control
     If *Me\parent
       Protected *obj.IControl = *Me\parent
       ; ...[ Tell Parent I'm Not In Focus Anymore ].............................
-      *obj\Event( #PB_EventType_ChildDeFocused, *Me )
+      *obj\OnEvent( #PB_EventType_ChildDeFocused, *Me )
     EndIf
     
   EndProcedure
@@ -250,7 +253,7 @@ Module Control
     If *Me\parent
       Protected *obj.IControl = *Me\parent
       ; ...[ Ask Parent To Set Cursor For Me ]..................................
-      *obj\Event( #PB_EventType_ChildCursor, cursor_id )
+      *obj\OnEvent( #PB_EventType_ChildCursor, cursor_id )
     EndIf
     
   EndProcedure
@@ -261,10 +264,9 @@ Module Control
 ;   EndProcedure
 
 EndModule
-
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 39
-; Folding = D9-
-; EnableUnicode
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 255
+; FirstLine = 203
+; Folding = H5--
 ; EnableXP
+; EnableUnicode

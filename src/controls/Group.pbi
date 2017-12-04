@@ -33,7 +33,7 @@ DeclareModule ControlGroup
   
   Declare New( *object.Object::Object_t,name.s, label.s,canvasID=-1, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
-  Declare Event(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
+  Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
   Declare.s GetLabel( *Me.ControlGroup_t )
@@ -45,7 +45,7 @@ DeclareModule ControlGroup
   Declare GetImageID( *Me.ControlGroup_t)
   DataSection 
     ControlGroupVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection
   
@@ -299,7 +299,7 @@ Procedure hlpDraw( *Me.ControlGroup_t )
     ev_data\xoff = *Me\posX+*son\posX
     ev_data\yoff = *Me\posY+*son\posY
     
-    son\Event( Control::#PB_EventType_Draw, @ev_data )
+    son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
   Next
   
   ;raaDrawImage(ImageID(*Me\imageID),*Me\posX,*Me\posY)
@@ -330,12 +330,12 @@ Procedure Pick(*Me.ControlGroup_t)
       Pick(*child)
       Protected child.Control::IControl = *child
 
-      child\Event(#PB_EventType_MouseEnter,#Null)
+      child\OnEvent(#PB_EventType_MouseEnter,#Null)
 
     Else
       *Me\overchild = *Me\children(ID)
       If *Me\overchild
-        *Me\overchild\Event(#PB_EventType_MouseEnter)
+        *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
       EndIf
       
     EndIf
@@ -388,14 +388,14 @@ Procedure hlpNextItem( *Me.ControlGroup_t )
     Protected idx = Point(*focuschild\posX+1,*focuschild\posY+1) - 1
     StopDrawing()
     If *Me\focuschild
-      *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+      *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
       ; ---[ Local Variables ]----------------------------------------------------
       Protected iBound.i = *Me\chilcount - 1
       Protected n.i = (idx+1)%iBound
       Protected ev_data.Control::EventTypeDatas_t 
       *Me\focuschild = *Me\children(n)
-      *Me\focuschild\Event(#PB_EventType_Focus,@ev_data)
-      ;*Me\focuschild\Event( #PB_EventType_Focus, #Null);*ev_data )
+      *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
+      ;*Me\focuschild\OnEvent( #PB_EventType_Focus, #Null);*ev_data )
     EndIf
     
 EndProcedure
@@ -404,7 +404,7 @@ EndProcedure
 ;  OVERRIDE ( CControl )
 ; ============================================================================
 ; ---[ OnEvent ]--------------------------------------------------------------
-Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Protected i=0
   Protected *ctrl.Control::Control_t 
   For i=0 To *Me\chilcount -1
@@ -422,7 +422,11 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-  Case Control::#PB_EventType_Resize
+  CompilerIf #PB_Compiler_Version < 560
+      Case Control::#PB_EventType_Resize
+    CompilerElse
+      Case #PB_EventType_Resize
+    CompilerEndIf
       ; ...[ Update & Check Dirty ]...........................................
      hlpResize( *Me, *ev_data.Control::EventTypeDatas_t )
 
@@ -440,7 +444,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       StartDrawing(CanvasOutput(*Me\gadgetID))
       DrawingMode(#PB_2DDrawing_AlphaBlend)
       Box( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY, UIColor::COLOR_MAIN_BG )
-      son\Event( Control::#PB_EventType_Draw, @ev_data )
+      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
       StopDrawing()
         
     ; ------------------------------------------------------------------------
@@ -478,7 +482,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
     Case #PB_EventType_LostFocus
       If *Me\focuschild
         Define focuschild.Control::IControl = *Me\focuschild
-        focuschild\Event( #PB_EventType_LostFocus, #Null )
+        focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         *Me\focuschild = #Null
       EndIf
       
@@ -498,7 +502,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       
       If idx < 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
         Define overchild.Control::IControl = *Me\overchild
-        overchild\Event(#PB_EventType_MouseLeave)
+        overchild\OnEvent(#PB_EventType_MouseLeave)
         *Me\overchild = #Null
         SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
       ElseIf idx >= 0 And idx <*Me\chilcount
@@ -506,10 +510,10 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         If ( ctl <> *Me\overchild ) And  Not *Me\down
           If *Me\overchild <> #Null
             Define overchild.Control::IControl = *Me\overchild
-            overchild\Event(#PB_EventType_MouseLeave)
+            overchild\OnEvent(#PB_EventType_MouseLeave)
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
           EndIf
-          ctl\Event(#PB_EventType_MouseEnter)
+          ctl\OnEvent(#PB_EventType_MouseEnter)
           If Not *Me\down
             *Me\overchild = ctl
           EndIf
@@ -518,7 +522,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
           ev_data\x    = xm - *overchild\posX + *Me\posX
           ev_data\y    = ym - *overchild\posY + *Me\posY
           Define overchild.Control::IControl = *Me\overchild
-          overchild\Event(#PB_EventType_MouseMove,@ev_data)
+          overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
         EndIf
       ElseIf *Me\overchild
         Define *overchild.Control::Control_t = *Me\overchild
@@ -526,7 +530,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         ev_data\y    = ym - *overchild\posY
         ev_data\yoff = 50
         Define overchild.Control::IControl = *Me\overchild
-        overchild\Event(#PB_EventType_MouseMove,@ev_data)
+        overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -536,15 +540,15 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       *Me\down = #True
       If *Me\overchild
         If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-          *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
         Define *overchild.Control::Control_t = *Me\overchild
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_LeftButtonDown,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
       ElseIf *Me\focuschild
         Define focuschild.Control::IControl = *Me\focuschild
-        *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -555,7 +559,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
          Define *overchild.Control::Control_t = *Me\overchild
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_LeftButtonUp,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
       EndIf
       *Me\down = #False
       
@@ -567,7 +571,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         Define *overchild.Control::Control_t = *Me\overchild
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_LeftDoubleClick,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -578,13 +582,13 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       If *Me\overchild
         Define *overchild.Control::Control_t = *Me\overchild
         If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-          *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_RightButtonDown,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
       ElseIf *Me\focuschild
-        *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -595,7 +599,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         Define *overchild.Control::Control_t = *Me\overchild
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_RightButtonUp,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
       EndIf
       *Me\down = #False
     
@@ -607,7 +611,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         Define *overchild.Control::Control_t = *Me\overchild
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\Event(#PB_EventType_RightButtonUp,@ev_data)
+        *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -619,7 +623,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         ; ...[ Retrieve Character ]...........................................
         ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
         ; ...[ Send Character To Focused Child ]..............................
-        *Me\focuschild\Event(#PB_EventType_Input,@ev_data)
+        *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -633,7 +637,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
         ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
         
         ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\Event(#PB_EventType_KeyDown,@ev_data)
+        *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -643,7 +647,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
         ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\Event(Globals::#SHORTCUT_COPY,#Null)
+        *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -653,7 +657,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
         ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\Event(Globals::#SHORTCUT_CUT,#Null)
+        *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -663,7 +667,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
         ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\Event(Globals::#SHORTCUT_PASTE,#Null)
+        *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -673,7 +677,7 @@ Procedure.i Event( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDat
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
         ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\Event(Globals::#SHORTCUT_UNDO,#Null)
+        *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
       EndIf
       
 ;       ; ------------------------------------------------------------------------
@@ -950,8 +954,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 238
-; FirstLine = 225
-; Folding = f-f+
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 504
+; FirstLine = 501
+; Folding = ---9
 ; EnableXP

@@ -51,6 +51,9 @@ Module MultiplyNode
     Node::AddInputPort(*node,"Value2",datatype)
     Node::AddOutputPort(*node,"Result",datatype)
     
+    Node::PortAffect(*node, "Value1", "Result")
+    Node::PortAffect(*node, "Value2", "Result")
+    
     *node\label = "Multiply"
   EndProcedure
   
@@ -201,7 +204,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 54
+; FirstLine = 25
 ; Folding = --
 ; EnableXP

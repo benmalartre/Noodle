@@ -25,7 +25,7 @@ DeclareModule ViewportUI
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*ui.ViewportUI_t)
   Declare Init(*ui.ViewportUI_t)
-  Declare Event(*ui.ViewportUI_t,event.i)
+  Declare OnEvent(*ui.ViewportUI_t,event.i)
   Declare Term(*ui.ViewportUI_t)
   Declare SetContext(*ui.ViewportUI_t)
   Declare FlipBuffer(*ui.ViewportUI_t)
@@ -33,7 +33,7 @@ DeclareModule ViewportUI
   DataSection 
     ViewportUIVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -128,7 +128,7 @@ Module ViewportUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*ui.ViewportUI_t,event.i)
+  Procedure OnEvent(*ui.ViewportUI_t,event.i)
 ;     SetGadgetAttribute(*ui\gadgetID,#PB_OpenGL_SetContext,#True)
 ;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
 ;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -155,7 +155,7 @@ Module ViewportUI
         
       Case #PB_Event_Gadget
         If EventGadget() = *ui\gadgetID
-          If *ui\camera : Camera::Event(*ui\camera,*ui\gadgetID) : EndIf
+          If *ui\camera : Camera::OnEvent(*ui\camera,*ui\gadgetID) : EndIf
         EndIf
 
     EndSelect
@@ -425,8 +425,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 238
-; FirstLine = 226
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 157
+; FirstLine = 153
 ; Folding = ---
 ; EnableXP

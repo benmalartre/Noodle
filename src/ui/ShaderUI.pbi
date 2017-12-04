@@ -26,13 +26,13 @@ DeclareModule ShaderUI
   Declare New(*parent.View::View_t,name.s,*shader.Shader::Shader_t)
   Declare Delete(*ui.ShaderUI_t)
   Declare Init(*ui.ShaderUI_t)
-  Declare Event(*ui.ShaderUI_t,event.i)
+  Declare OnEvent(*ui.ShaderUI_t,event.i)
   Declare Term(*ui.ShaderUI_t)
   Declare SetContent(*ui.ShaderUI_t,*shader.Shader::Shader_t)
   DataSection 
     DummyVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -110,7 +110,7 @@ Module ShaderUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*ui.ShaderUI_t,event.i)
+  Procedure OnEvent(*ui.ShaderUI_t,event.i)
     Protected path.s
     Protected file.i
     Protected str.s
@@ -234,8 +234,8 @@ Module ShaderUI
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 4
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 112
+; FirstLine = 99
 ; Folding = --
 ; EnableXP

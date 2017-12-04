@@ -173,7 +173,7 @@ Procedure Draw(*app.Application::Application_t)
      
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
 ;   Global *cam2.Camera::Camera_t = Camera::New("Camera2", Camera::#Camera_Perspective)
 ;   *viewport\camera = *cam2
@@ -257,13 +257,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 192
-; FirstLine = 188
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 174
+; FirstLine = 171
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

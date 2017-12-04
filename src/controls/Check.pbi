@@ -70,7 +70,7 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
   Declare Delete(*Me.ControlCheck_t)
-  Declare Event( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetTheme( theme.i)
   Declare SetValue( *Me.ControlCheck_t, value.i )
   Declare GetValue( *Me.ControlCheck_t)
@@ -82,7 +82,7 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   DataSection 
     ControlCheckVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
     ; Images
     ; (Light)
@@ -199,8 +199,7 @@ Module ControlCheck
   ; ============================================================================
   ;{
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-    Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Control Check On Event!!!"
+  Procedure.i OnEvent( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
     
@@ -219,7 +218,12 @@ Module ControlCheck
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version <560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+      
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -534,7 +538,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 221
+; FirstLine = 216
 ; Folding = ----
 ; EnableXP

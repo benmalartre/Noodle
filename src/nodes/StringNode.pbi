@@ -49,6 +49,7 @@ Module StringNode
   Procedure Init(*node.StringNode_t)
     Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_STRING,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_STRING,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
+    Node::PortAffect(*node, "Value", "Result")
   EndProcedure
   
   ;------------------------------
@@ -110,9 +111,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 19
-; FirstLine = 9
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 26
 ; Folding = --
 ; EnableXP

@@ -76,6 +76,12 @@ Module ExtrusionNode
     Node::AddInputPort(*node,"W",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddInputPort(*node,"Radius",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
+    
+    Node::PortAffect(*node, "Shape", "Topology")
+    Node::PortAffect(*node, "U", "Topology")
+    Node::PortAffect(*node, "V", "Topology")
+    Node::PortAffect(*node, "W", "Topology")
+    Node::PortAffect(*node, "Radius", "Topology")
     *node\label = "Primitive Mesh"
     Reset(*node)
   EndProcedure
@@ -186,9 +192,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 35
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 83
+; FirstLine = 54
 ; Folding = --
 ; EnableXP

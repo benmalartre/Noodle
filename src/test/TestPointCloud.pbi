@@ -225,15 +225,15 @@ Procedure Draw(*app.Application::Application_t)
   CompilerElse
     Repeat
       e = WaitWindowEvent(1000/60)
-      ViewManager::Event(*app\manager,e)
+      ViewManager::OnEvent(*app\manager,e)
       Draw(*app)
 
     Until e = #PB_Event_CloseWindow
   CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 117
-; FirstLine = 99
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 227
+; FirstLine = 200
 ; Folding = -
 ; EnableXP
 ; Executable = Test

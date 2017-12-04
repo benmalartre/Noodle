@@ -64,7 +64,7 @@ DeclareModule NodeExplorer
   Declare Draw(*explorer.NodeExplorer_t)
   Declare DrawPicture(*explorer.NodeExplorer_t)
   Declare DrawPickImage(*explorer.NodeExplorer_t)
-  Declare Event(*explorer.NodeExplorer_t,eventID.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*explorer.NodeExplorer_t,eventID.i,*ev_data.Control::EventTypeDatas_t)
   Declare Pick(*explorer.NodeExplorer_t)
   Declare Drag(*explorer.NodeExplorer_t)
   Declare GetScrollArea(*Me.NodeExplorer_t)
@@ -363,10 +363,9 @@ EndProcedure
   EndProcedure
 
   ; ----------------------------------------------------------------------------
-  ;  Event
+  ;  OnEvent
   ; ----------------------------------------------------------------------------
-  Procedure Event(*explorer.NodeExplorer_t,eventID.i,*ev_data.Control::EventTypeDatas_t)
-  Debug "############################# EXPLORER EVENT ###############################################"
+  Procedure OnEvent(*explorer.NodeExplorer_t,eventID.i,*ev_data.Control::EventTypeDatas_t)
     Select eventID 
       Case #PB_Event_SizeWindow
         If *ev_data<>#Null
@@ -456,10 +455,10 @@ EndProcedure
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 190
-; FirstLine = 162
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 368
+; FirstLine = 362
 ; Folding = ---
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

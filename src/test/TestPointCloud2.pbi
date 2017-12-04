@@ -53,13 +53,15 @@ EndProcedure
 
 Scene::*current_scene = Scene::New()
 Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#SHAPE_CUBE,0)
+Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
 Define ps.v3f32, pe.v3f32
   Vector3::Set(@ps,-10,0,0)
   Vector3::Set(@pe,10,0,0)
-  PointCloudGeometry::PointsOnSphere(*obj\geom)
+  PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@ps,@pe)
   PointCloudGeometry::RandomizeColor(*obj\geom)
-;   InstanceCloud::Setup(*obj,*s_pointcloud)
+;InstanceCloud::Setup(*obj,*s_pointcloud)
   
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
 ; 
@@ -99,7 +101,7 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
 *app\context = GLContext::New(0,#False,*viewport\gadgetID)
 *viewport\camera = *app\camera
-ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
@@ -124,19 +126,16 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
-  
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
     CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
   CompilerEndIf
-    If EventGadget() = *viewport\gadgetID
+  If EventGadget() = *viewport\gadgetID
     Select EventType()
       Case #PB_EventType_KeyDown
         Protected key = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key)
         If key = #PB_Shortcut_Space
+          Tree::Evaluate(*tree)
           Scene::Update(Scene::*current_scene)
-;           Tree::Evaluate(*tree)
-;           Scene::Setup(Scene::*current_scene,*app\context)
-;           Scene::Update(Scene::*current_scene)
         EndIf
     EndSelect
   EndIf
@@ -168,9 +167,9 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 161
-; FirstLine = 136
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 136
+; FirstLine = 123
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

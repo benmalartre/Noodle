@@ -192,10 +192,6 @@ Module AddNode
     Node::DEL(AddNode)
   EndProcedure
   
-  Procedure PortAffects(*node.AddNode_t)
-    
-  EndProcedure
-  
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
@@ -221,10 +217,10 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 183
-; FirstLine = 161
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 192
+; FirstLine = 44
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

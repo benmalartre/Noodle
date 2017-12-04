@@ -71,7 +71,7 @@ If Time::Init()
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
   Matrix4::SetIdentity(@model)
@@ -95,13 +95,13 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 21
-; FirstLine = 13
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 63
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

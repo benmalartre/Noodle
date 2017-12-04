@@ -54,6 +54,10 @@ Module SubtractNode
     Node::AddInputPort(*node,"New(Value2)...",Attribute::#ATTR_TYPE_NEW)
     Node::AddOutputPort(*node,"Result",datatype)
     
+    ForEach *node\inputs()
+      Node::PortAffect(*node, *node\inputs()\name, "Result")
+    Next
+    
     *node\label = "Subtract"
   EndProcedure
   
@@ -217,11 +221,10 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 24
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 46
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

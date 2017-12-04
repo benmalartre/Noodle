@@ -63,6 +63,10 @@ Module BuildArrayNode
     Node::AddInputPort(*node,"New(Value1)...",Attribute::#ATTR_TYPE_NEW)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_POLYMORPH)
     
+    ForEach *node\inputs()
+      Node::PortAffect(*node, *node\inputs()\name, "Result")
+    Next
+    
     ;Update Label
     *node\label = "Build Array"
   EndProcedure
@@ -217,11 +221,10 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 93
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 67
+; FirstLine = 40
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

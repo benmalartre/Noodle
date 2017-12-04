@@ -17,14 +17,14 @@ DeclareModule DummyUI
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*ui.DummyUI_t)
   Declare Init(*ui.DummyUI_t)
-  Declare Event(*ui.DummyUI_t,event.i)
+  Declare OnEvent(*ui.DummyUI_t,event.i)
   Declare Term(*ui.DummyUI_t)
   Declare Draw(*ui.DummyUI_t)
   
   DataSection 
     DummyVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -119,7 +119,7 @@ Module DummyUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*ui.DummyUI_t,event.i)
+  Procedure OnEvent(*ui.DummyUI_t,event.i)
     
    
     Select event
@@ -158,8 +158,8 @@ Module DummyUI
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 142
-; FirstLine = 119
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 117
 ; Folding = --
 ; EnableXP

@@ -72,7 +72,7 @@ DeclareModule View
   Declare GetActive(*view,x.i,y.i)
   Declare Split(*view,options.i=0,perc.i=50)
   Declare Resize(*view,x.i,y.i,width.i,height.i)
-  Declare Event(*view,event.i)
+  Declare OnEvent(*view,event.i)
   Declare EventSplitter(*view.View_t,border.i)
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   
@@ -107,7 +107,7 @@ DeclareModule ViewManager
   
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
   Declare Delete(*manager.ViewManager_t)
-  Declare Event(*manager.ViewManager_t,event.i)
+  Declare OnEvent(*manager.ViewManager_t,event.i)
 ;   Declare UpdateMap(*manager.ViewManager_t)
 EndDeclareModule
 
@@ -439,7 +439,7 @@ Module View
           EndIf
     
         Until drag = #False
-        ViewManager::Event(*manager,#PB_Event_SizeWindow)
+        ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
       ;EndIf
         
      ;ViewManager::Event(*manager,#PB_Event_SizeWindow)
@@ -599,7 +599,7 @@ Module View
   ;-----------------------------------------------------------------------------------
   ; View Event
   ;-----------------------------------------------------------------------------------
-  Procedure Event(*Me.View_t,event.i)
+  Procedure OnEvent(*Me.View_t,event.i)
 
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     
@@ -614,15 +614,15 @@ Module View
       If event = #PB_Event_SizeWindow
         Resize(*Me,0,0,WindowWidth(*Me\parentID),WindowHeight(*Me\parentID))  
       ElseIf event = #PB_Event_Timer
-        Event(*Me\left,#PB_Event_Timer)
-        Event(*Me\right,#PB_Event_Timer)
+        OnEvent(*Me\left,#PB_Event_Timer)
+        OnEvent(*Me\right,#PB_Event_Timer)
       ElseIf event = #PB_Event_Repaint
-        Event(*Me\left,#PB_Event_Repaint)
-        Event(*Me\right,#PB_Event_Repaint)
+        OnEvent(*Me\left,#PB_Event_Repaint)
+        OnEvent(*Me\right,#PB_Event_Repaint)
       Else
-        Event(*Me\left,#PB_Event_Repaint)
-        Event(*Me\right,event)
-        Event(*Me\left,event)
+        OnEvent(*Me\left,#PB_Event_Repaint)
+        OnEvent(*Me\right,event)
+        OnEvent(*Me\left,event)
       EndIf
       
     EndIf
@@ -708,7 +708,7 @@ Module ViewManager
 ;       ev_data\width = w
 ;       ev_data\height = h
       View::Resize(*manager\main,0,0,w,h)
-      View::Event(*manager\main,#PB_Event_SizeWindow)
+      View::OnEvent(*manager\main,#PB_Event_SizeWindow)
   EndProcedure
     
     
@@ -721,7 +721,7 @@ Module ViewManager
         If *manager\active And *manager\active <> *view
           *manager\active\active = #False
           *manager\active\dirty = #True
-          View::Event(*manager\active,#PB_EventType_LostFocus)
+          View::OnEvent(*manager\active,#PB_EventType_LostFocus)
         EndIf
         *manager\active = *view
       EndIf
@@ -778,7 +778,7 @@ Module ViewManager
   ;----------------------------------------------------------------------------------
   ; Event
   ;----------------------------------------------------------------------------------
-  Procedure Event(*manager.ViewManager_t,event.i)
+  Procedure OnEvent(*manager.ViewManager_t,event.i)
      
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
@@ -791,21 +791,21 @@ Module ViewManager
         
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
-        View::Event(*manager\main,#PB_Event_Timer)
+        View::OnEvent(*manager\main,#PB_Event_Timer)
       
       Case Globals::#EVENT_BUTTON_PRESSED
         Debug "Button Pressed ---> "+PeekS(EventData())
         
       Case Globals::#EVENT_COMMAND_CALLED
-        View::Event(*manager\main,Globals::#EVENT_COMMAND_CALLED)
+        View::OnEvent(*manager\main,Globals::#EVENT_COMMAND_CALLED)
       Case Globals::#EVENT_PARAMETER_CHANGED
-        View::Event(*manager\main,Globals::#EVENT_PARAMETER_CHANGED)
+        View::OnEvent(*manager\main,Globals::#EVENT_PARAMETER_CHANGED)
         Scene::Update(Scene::*current_scene)
       Case Globals::#EVENT_GRAPH_CHANGED
-        View::Event(*manager\main,Globals::#EVENT_GRAPH_CHANGED)
+        View::OnEvent(*manager\main,Globals::#EVENT_GRAPH_CHANGED)
          Scene::Update(Scene::*current_scene)
       Case #PB_Event_Repaint
-        View::Event(*manager\main,#PB_Event_Repaint)
+        View::OnEvent(*manager\main,#PB_Event_Repaint)
       Case #PB_Event_Timer
 ;         Select EventTimer()
 ;           Case #RAA_TIMELINE_TIMER
@@ -826,7 +826,7 @@ Module ViewManager
             MessageRequester("View Manager","Redo Called")
             Commands::Redo(Commands::*manager)
           Default
-            View::Event(*manager\active,#PB_Event_Menu)
+            View::OnEvent(*manager\active,#PB_Event_Menu)
             
         EndSelect
         
@@ -857,7 +857,7 @@ Module ViewManager
           
           Else
             View::ClearBorderEvent(*manager\active)
-            View::Event(*manager\active,event)
+            View::OnEvent(*manager\active,event)
           EndIf
         Else
           Debug "No Active View!!!"
@@ -915,8 +915,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 702
-; FirstLine = 688
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 859
+; FirstLine = 855
 ; Folding = ------
 ; EnableXP

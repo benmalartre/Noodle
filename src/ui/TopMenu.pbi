@@ -19,7 +19,7 @@ DeclareModule TopMenuUI
   Declare New(*parent.View::View_t,name.s="TopMenuUI")
   Declare Delete(*ui.TopMenuUI_t)
   Declare Init(*ui.TopMenuUI_t)
-  Declare Event(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term(*ui.TopMenuUI_t)
   Declare Draw(*ui.TopMenuUI_t)
   
@@ -27,7 +27,7 @@ DeclareModule TopMenuUI
   DataSection 
     TopMenuUIVT: 
       Data.i @Init()
-      Data.i @Event()
+      Data.i @OnEvent()
       Data.i @Term()
   
   EndDataSection 
@@ -107,19 +107,30 @@ Module TopMenuUI
   ;---------------------------------------------------
   ; Send Events
   ;---------------------------------------------------
-  Procedure Event(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-
-    If event =  Control::#PB_EventType_Resize
-      Protected *top.View::View_t = *Me\top
-      *Me\x = *top\x
-      *Me\y = *top\y
-      *Me\width = *top\width
-      *Me\height = *top\height
-      ControlMenu::Event(*me\menu,Control::#PB_EventType_Resize)
+  Procedure OnEvent(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+    
+    CompilerIf #PB_Compiler_Version < 560
+      If event =  Control::#PB_EventType_Resize
+        Protected *top.View::View_t = *Me\top
+        *Me\x = *top\x
+        *Me\y = *top\y
+        *Me\width = *top\width
+        *Me\height = *top\height
+        ControlMenu::OnEvent(*me\menu,Control::#PB_EventType_Resize)
+    CompilerElse
+      If event =  #PB_EventType_Resize
+        Protected *top.View::View_t = *Me\top
+        *Me\x = *top\x
+        *Me\y = *top\y
+        *Me\width = *top\width
+        *Me\height = *top\height
+        ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
+    CompilerEndIf
+      
     ElseIf event = #PB_Event_Gadget
       
       If EventGadget() = *Me\menu\GadgetID
-        ControlMenu::Event(*me\menu,EventType())
+        ControlMenu::OnEvent(*me\menu,EventType())
       EndIf
     EndIf
    
@@ -263,8 +274,8 @@ Module TopMenuUI
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 214
-; FirstLine = 187
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 126
+; FirstLine = 108
 ; Folding = ---
 ; EnableXP

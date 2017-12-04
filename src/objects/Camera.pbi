@@ -61,7 +61,7 @@ DeclareModule Camera
   Declare Dolly(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
   Declare Orbit(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
   Declare GetSphericalCoordinates(*Me.Camera_t)
-  Declare Event(*Me.Camera_t,gadget.i)
+  Declare OnEvent(*Me.Camera_t,gadget.i)
   Declare Resize(*Me.Camera_t,window.i,gadget)
   Declare GetViewTransform(*Me.Camera_t, *m.m4f32)
   
@@ -196,7 +196,8 @@ Module Camera
   ;----------------------------------------------------------------------------
   Procedure LookAt(*Me.Camera_t)
     Protected dir.v3f32
-   
+    Protected scl.v3f32
+    
     Protected t.Transform::Transform_t
     
     Vector3::Set(@scl,1,1,1)
@@ -355,9 +356,9 @@ Module Camera
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; Camera Event
+  ; Camera MouseEvent
   ;----------------------------------------------------------------
-  Procedure Event(*Me.Camera_t,gadget)
+  Procedure OnEvent(*Me.Camera_t,gadget)
     
      Define deltax.d, deltay.d
      Define width, height
@@ -472,9 +473,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 123
-; FirstLine = 104
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 199
+; FirstLine = 191
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

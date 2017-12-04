@@ -52,6 +52,9 @@ Module AddPointNode
     Node::AddInputPort(*node,"Points",Attribute::#ATTR_TYPE_VECTOR3|Attribute::#ATTR_TYPE_LOCATION)
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Data",Attribute::#ATTR_TYPE_EXECUTE)
+    
+    Node::PortAffect(*node, "Points", "Data")
+    Node::PortAffect(*node, "Reference", "Data")
     *node\label = "Add Point"
     
     Protected *obj.Object3D::Object3D_t = *node\parent3dobject
@@ -81,7 +84,6 @@ Module AddPointNode
         If CArray::GetCount(*in_data)
           PointCloudGeometry::AddPoints(*node\geom,*in_data)
           *obj = *node\parent3dobject
-              
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
         EndIf
       ElseIf *inP\currenttype = Attribute::#ATTR_TYPE_LOCATION
@@ -145,8 +147,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 77
-; FirstLine = 78
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 56
+; FirstLine = 33
 ; Folding = --
 ; EnableXP

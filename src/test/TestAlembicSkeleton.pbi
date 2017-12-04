@@ -42,9 +42,8 @@ Procedure Draw(*app.Application::Application_t)
   layer\Draw(*app\context)
 
   If Not #USE_GLFW
-    ViewportUI::FlipBuffers(*viewport)
+    ViewportUI::FlipBuffer( *viewport )
   EndIf
-  
 EndProcedure
     
 Define model.m4f32
@@ -81,6 +80,7 @@ If Time::Init()
   layer = *layer
   *pgm = *app\context\shaders("instances")
   
+  *model = Model::New("Model")
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     *model = Alembic::LoadABCArchive("../../abc/MonkeySkeleton.abc");
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
@@ -93,16 +93,16 @@ If Time::Init()
   
   
  
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Define img = LoadImage(#PB_Any,"../../textures/earth.jpg")
-  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-    Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
-  CompilerElse
-    Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
-  CompilerEndIf
-  
-  texture = Utils::GL_LoadImage(img)
-  Scene::Setup(Scene::*current_scene,*app\context)
+;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+;     Define img = LoadImage(#PB_Any,"../../textures/earth.jpg")
+;   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
+;     Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
+;   CompilerElse
+;     Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
+;   CompilerEndIf
+;   
+;   texture = Utils::GL_LoadImage(img)
+;   Scene::Setup(Scene::*current_scene,*app\context)
 ;   Global *skeleton.Skeleton::Skeleton_t = Skeleton::New()
 ; Global *model.Model::Model_t = Model::New("Character")
 ; Object3D::AddChild(*model,*skeleton\cloud)
@@ -131,15 +131,15 @@ If Time::Init()
 
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
-   Scene::*current_scene = Scene::New()
-  Scene::AddModel(Scene::*current_scene,*model)
+;    Scene::*current_scene = Scene::New()
+;   Scene::AddModel(Scene::*current_scene,*model)
   Scene::Setup(Scene::*current_scene,*app\context)
   
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 36
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 107
+; FirstLine = 10
 ; Folding = -
 ; EnableXP

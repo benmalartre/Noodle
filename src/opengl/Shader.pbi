@@ -7,7 +7,6 @@ XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../core/Log.pbi"
 
 DeclareModule Shader
-  UseModule OpenGL
   UseModule GLFW
   
   Enumeration 
@@ -24,14 +23,14 @@ DeclareModule Shader
   
   ;Global GLSL_PATH.s = "D:\Projects\PureBasic\Modules\glsl\"
   If FileSize("../../glsl120")=-2
-    If #USE_LEGACY_OPENGL
+    If OpenGL::#USE_LEGACY_OPENGL
       Global GLSL_PATH.s = "../../glsl120/"
     Else
       Global GLSL_PATH.s = "../../glsl/"
     EndIf
   
   Else
-    If #USE_LEGACY_OPENGL
+    If OpenGL::#USE_LEGACY_OPENGL
       Global GLSL_PATH.s = "glsl120/"
     Else
       Global GLSL_PATH.s = "glsl/"
@@ -41,7 +40,7 @@ DeclareModule Shader
   Declare New(type.i,str.s)
   Declare Delete(*shader.Shader_t)
   Declare.s DeCodeUnicodeShader(unicode.s)
-  Declare OutputCompileLog(shader.GLuint)
+  Declare OutputCompileLog(shader.l)
   Declare Create(*code,type.i,name.s)
   Declare.s LoadFile(filename.s)
 EndDeclareModule
@@ -50,13 +49,12 @@ EndDeclareModule
 ; Program Module Declararion
 ;============================================================================================
 DeclareModule Program
-  UseModule OpenGL
   Structure Program_t
     *vert.Shader::Shader_t
     *geom.Shader::Shader_t
     *frag.Shader::Shader_t
     
-    pgm.GLuint
+    pgm.l
   EndStructure
   
   Declare New(name.s,s_vert.s="",s_frag.s="")
@@ -72,7 +70,6 @@ EndDeclareModule
 ; Shader Module Implementation
 ;============================================================================================
 Module Shader
-  UseModule OpenGL
   UseModule OpenGLExt
   
   ;-------------------------------------------
@@ -117,7 +114,7 @@ Module Shader
   ;-------------------------------------
   ; Output Compile Log
   ;-------------------------------------
-  Procedure OutputCompileLog(shader.GLuint)
+  Procedure OutputCompileLog(shader.l)
     Protected buffer = AllocateMemory(512)
     glGetShaderInfoLog(shader,512,#Null,buffer)
   
@@ -135,7 +132,7 @@ Module Shader
   ;-------------------------------------
   Procedure Create(*code,type.i,name.s)
     GLCheckError("Before Creating Shader")
-    Protected shader.GLuint = glCreateShader(type)
+    Protected shader.l = glCreateShader(type)
     GLCheckError("Create Shader : ")
     glShaderSource(shader,1,@*code,#Null)
     GLCheckError("Source Shader : ")
@@ -143,7 +140,7 @@ Module Shader
     GLCheckError("Compile Shader : ")
     
     Protected status.i
-    glGetShaderiv(shader,#GL_COMPILE_STATUS,@status)
+    glGetShaderiv(shader,OpenGL::#GL_COMPILE_STATUS,@status)
     GLCheckError("Get Shader IV : ")
     If status = #True
       Debug "[GLSLCreateShader] Success Compiling Shader ---> "+name
@@ -190,7 +187,6 @@ EndModule
 ; Program Module Implementation
 ;============================================================================================
 Module Program
-  UseModule OpenGL
   UseModule OpenGLExt
   
   ;-------------------------------------------
@@ -199,8 +195,8 @@ Module Program
   Procedure New(name.s,s_vert.s="",s_frag.s="")
     
     Protected *pgm.Program_t = AllocateMemory(SizeOf(Program_t))
-    *pgm\vert = Shader::New(#GL_VERTEX_SHADER,s_vert)
-    *pgm\frag = Shader::New(#GL_FRAGMENT_SHADER,s_frag)
+    *pgm\vert = Shader::New(OpenGL::#GL_VERTEX_SHADER,s_vert)
+    *pgm\frag = Shader::New(OpenGL::#GL_FRAGMENT_SHADER,s_frag)
     *pgm\pgm = Create(*pgm\vert \s, *pgm\frag\s, #True)
     ProcedureReturn *pgm
   EndProcedure
@@ -224,13 +220,13 @@ Module Program
   
   Procedure Create(vertex.s, fragment.s, deb.b)
     Protected code.s
-    Protected vert.GLuint, frag.GLuint
+    Protected vert.l, frag.l
 
-    vert = Shader::Create(@vertex,#GL_VERTEX_SHADER,"Vertex Shader")
-    frag = Shader::Create(@fragment,#GL_FRAGMENT_SHADER,"Fragment Shader")
+    vert = Shader::Create(@vertex,OpenGL::#GL_VERTEX_SHADER,"Vertex Shader")
+    frag = Shader::Create(@fragment,OpenGL::#GL_FRAGMENT_SHADER,"Fragment Shader")
     
     GLCheckError("Create Shaders : ")
-    Protected program.GLuint = glCreateProgram()
+    Protected program.l = glCreateProgram()
     GLCheckError("Create Program : ")
   
     glAttachShader(program,vert)
@@ -265,9 +261,9 @@ Module Program
 ;     glDeleteShader(frag)
    
     Protected *mem = AllocateMemory(1024)
-    Protected l.GLsizei
+    Protected l.i
     glGetProgramInfoLog(program,1024,@l,*mem)
-    Log::Message(GLGETSTRINGOUTPUT(*mem))
+    Log::Message(OpenGL::GLGETSTRINGOUTPUT(*mem))
     FreeMemory(*mem)
     
      ProcedureReturn program
@@ -275,14 +271,14 @@ Module Program
   
   Procedure Create2(vertex.s,geometry.s, fragment.s, deb.b)
     Protected code.s
-    Protected vert.GLuint, geom.GLuint, frag.GLuint
+    Protected vert.l, geom.l, frag.l
   
-    vert = Shader::Create(@vertex,#GL_VERTEX_SHADER,"vertex_shader")
-    geom = Shader::Create(@geometry,#GL_GEOMETRY_SHADER,"geometry_shader")
-    frag = Shader::Create(@fragment,#GL_FRAGMENT_SHADER,"fragment_shader")
+    vert = Shader::Create(@vertex,OpenGL::#GL_VERTEX_SHADER,"vertex_shader")
+    geom = Shader::Create(@geometry,OpenGL::#GL_GEOMETRY_SHADER,"geometry_shader")
+    frag = Shader::Create(@fragment,OpenGL::#GL_FRAGMENT_SHADER,"fragment_shader")
     
     GLCheckError("Create Shaders : ")
-    Protected program.GLuint = glCreateProgram()
+    Protected program.l = glCreateProgram()
     GLCheckError("Create Program : ")
   
     glAttachShader(program,vert)
@@ -313,9 +309,9 @@ Module Program
     Define code.s
     Defineerr.b
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_vertex.glsl")
-    *pgm\vert = Shader::Create(@code,#GL_VERTEX_SHADER,name+"_vertex")
+    *pgm\vert = Shader::Create(@code,OpenGL::#GL_VERTEX_SHADER,name+"_vertex")
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_fragment.glsl")    
-    *pgm\frag = Shader::Create(@code,#GL_FRAGMENT_SHADER,name+"_fragment")
+    *pgm\frag = Shader::Create(@code,OpenGL::#GL_FRAGMENT_SHADER,name+"_fragment")
     
     err = GLCheckError("Create Shaders : ")
     *pgm\pgm = glCreateProgram()
@@ -344,9 +340,9 @@ Module Program
     
     If err
       Define *mem = AllocateMemory(1024)
-      Define l.GLsizei
+      Define l.i
       glGetProgramInfoLog(*pgm\pgm,1024,@l,*mem)
-      Log::Message(GLGETSTRINGOUTPUT(*mem))
+      Log::Message(OpenGL::GLGETSTRINGOUTPUT(*mem))
       FreeMemory(*mem)
     EndIf
     
@@ -355,8 +351,8 @@ Module Program
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 329
-; FirstLine = 324
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 344
+; FirstLine = 320
 ; Folding = ----
 ; EnableXP

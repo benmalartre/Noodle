@@ -107,7 +107,7 @@ Module LayerDefault
     ;   Clear(*layer)
     glClearColor(0.66,0.66,0.66,1.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-    glCheckError("Clear")
+    glCheckError("[LayerDefault] Clear")
     glEnable(#GL_DEPTH_TEST)
     
     glViewport(0,0,*layer\width,*layer\height)
@@ -135,13 +135,16 @@ Module LayerDefault
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
+    GLCheckError("[LayerDefault] Draw Polymeshes")
     
-    *shader.Program::Program_t = *ctx\shaders("wireframe")
-    shader.GLuint =  *shader\pgm
-    glUseProgram(shader)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-    Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
+    ;Draw Drawer Objects
+    ;-----------------------------------------------
+;     *shader.Program::Program_t = *ctx\shaders("wireframe")
+;     shader.GLuint =  *shader\pgm
+;     glUseProgram(shader)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+;     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
     
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
@@ -164,31 +167,33 @@ Module LayerDefault
     ;-----------------------------------------------
   
     ;Model::Update(*model)
-;   Protected *pgm.Program::Program_t = *ctx\shaders("instances")
-;   glUseProgram(*pgm\pgm)
-;   Define.m4f32 model,view,proj
-;   Matrix4::SetIdentity(@model)
-;  
-; ;   glDepthMask(#GL_TRUE);
-;   glEnable(#GL_DEPTH_TEST)
-;   
+    Protected *pgm.Program::Program_t = *ctx\shaders("instances")
+    glUseProgram(*pgm\pgm)
+    Define.m4f32 model,view,proj
+    Matrix4::SetIdentity(@model)
+ 
+;   glDepthMask(#GL_TRUE);
+  glEnable(#GL_DEPTH_TEST)
+  
 ;   glEnable(#GL_TEXTURE_2D)
 ;   glBindTexture(#GL_TEXTURE_2D,texture)
 ;   glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
 ;   
+  
 ;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
+  
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
 ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
 ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
-;   
+  
+  Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
   ;   PointCloud::Draw(*cloud)
   ;   Model::Update(*model)
   ;Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
 ;   Model::Draw(*model)
-  glCheckError("Draw Mesh")
+  glCheckError("Draw Instance Cloud")
   
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
@@ -252,8 +257,8 @@ Module LayerDefault
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 119
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 188
+; FirstLine = 159
 ; Folding = --
 ; EnableXP

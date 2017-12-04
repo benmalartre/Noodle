@@ -59,6 +59,15 @@ EndDeclareModule
 ; ============================================================================
 Module AlembicIPolymeshTopoNode
   UseModule Math
+  
+  Procedure PortAffects(*node.AlembicIPolymeshTopoNode_t)
+    ForEach(*node\outputs())
+      Node::PortAffect(*node, "File", *node\outputs()\name)
+      Node::PortAffect(*node, "Identifier", *node\outputs()\name)
+      Node::PortAffect(*node, "Time", *node\outputs()\name)
+    Next
+  EndProcedure
+  
   Procedure Init(*node.AlembicIPolymeshTopoNode_t)
 
     Node::AddInputPort(*node,"File",Attribute::#ATTR_TYPE_STRING,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
@@ -71,6 +80,8 @@ Module AlembicIPolymeshTopoNode
     Node::AddOutputPort(*node,"Tangents",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"UVWs",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Colors",Attribute::#ATTR_TYPE_COLOR)
+    
+    PortAffects(*node)
     
     *node\positions = CArray::newCArrayV3F32()
     *node\velocities = CArray::newCArrayV3F32()
@@ -250,8 +261,8 @@ Module AlembicIPolymeshTopoNode
 
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 105
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

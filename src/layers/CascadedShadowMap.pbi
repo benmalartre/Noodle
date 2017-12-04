@@ -145,16 +145,16 @@ Module LayerCascadedShadowMap
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected view.m4f32
     
-    Camera::GetViewTransform(*camera, @view)
-    ;Matrix4::GetViewMatrix(@view, *camera\pos, *camera\lookat, *camera\up)
+    ;Camera::GetViewTransform(*camera, @view)
+    Matrix4::GetViewMatrix(@view, *camera\pos, *camera\lookat, *camera\up)
     Protected invview.m4f32
     Matrix4::Inverse(@invview, @view)
     
     ;Get the light space tranform
     Protected *light.Light::Light_t = *layer\light
     Protected lightM.m4f32
-    Camera::GetViewTransform(*light, @lightM)
-    ;Matrix4::GetViewMatrix(@lightM, *light\pos, *light\lookat, *light\up)
+    ;Camera::GetViewTransform(*light, @lightM)
+    Matrix4::GetViewMatrix(@lightM, *light\pos, *light\lookat, *light\up)
     
     Protected ar.f = *layer\height / *layer\width
     Protected tanHalfHFOV.f = Tan(Radian(*camera\fov / 2))
@@ -354,7 +354,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 311
-; FirstLine = 288
+; CursorPosition = 148
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP

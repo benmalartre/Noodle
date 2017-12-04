@@ -1052,8 +1052,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 859
-; FirstLine = 849
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 614
+; FirstLine = 605
 ; Folding = ----------
 ; EnableXP

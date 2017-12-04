@@ -60,7 +60,7 @@ DeclareModule ControlProperty
   
   Declare New( *object.Object::Object_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
   Declare Delete(*ctrl.ControlProperty_t)
-  Declare Event( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
+  Declare OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
   Declare AppendStop( *Me.ControlProperty_t )
@@ -84,7 +84,7 @@ DeclareModule ControlProperty
   
   DataSection 
     ControlPropertyVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection
 EndDeclareModule
@@ -286,7 +286,12 @@ Module ControlProperty
         ev_data\y = *son\posY
         ev_data\width = *Me\sizX
         ev_data\height = #PB_Ignore
-        Son\Event(Control::#PB_EventType_Resize,@ev_data)
+        CompilerIf #PB_Compiler_Version < 560
+          Son\OnEvent(Control::#PB_EventType_Resize,@ev_data)
+        CompilerElse
+          Son\OnEvent(#PB_EventType_Resize,@ev_data)
+        CompilerEndIf
+        
       EndIf
     Next
   
@@ -305,7 +310,7 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure hlpNextItem( *Me.ControlGroup::ControlGroup_t )
     ; ---[ Unfocus Current Item ]-----------------------------------------------
-    *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+    *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
     
     ; ---[ Local Variables ]----------------------------------------------------
     Protected iBound.i = *Me\chilcount - 1
@@ -313,7 +318,7 @@ Module ControlProperty
     
     Protected ev_data.Control::EventTypeDatas_t 
     *Me\focuschild = *Me\children(n)
-    *Me\focuschild\Event(#PB_EventType_Focus,@ev_data)
+    *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
     ;*Me\focuschild\Event( #PB_EventType_Focus, #Null);*ev_data )
   EndProcedure
 
@@ -378,7 +383,7 @@ Module ControlProperty
     xm = Math::Min( Math::Max( xm, 0 ), iw - 1 )
     ym = Math::Min( Math::Max( ym, 0 ), ih - 1 )
     
-     ; ---[ First get gadget under mouse ]---------------------------------------
+     ; First get gadget under mouse
     StartDrawing( ImageOutput(*Me\imageID) )
     *Me\pickID = Point(xm,ym)-1;Red(Point(xm,ym)) - 1
     StopDrawing()
@@ -388,7 +393,7 @@ Module ControlProperty
       Protected overchild.Control::IControl = *overchild
       If overchild <>*Me\overchild
         *Me\overchild = overchild
-        *Me\overchild\Event(#PB_EventType_MouseEnter)
+        *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
       EndIf
       
       If *overchild\type = Control::#PB_GadgetType_Group
@@ -462,7 +467,7 @@ Module ControlProperty
     
     ; ---[ Drawing Start ]------------------------------------------------------
     StartDrawing( CanvasOutput(*Me\gadgetID) )
-    Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
+    Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, RGB(255,0,0));UIColor::COLORA_MAIN_BG )
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     
     ; ---[ Sanity Check ]-------------------------------------------------------
@@ -482,7 +487,7 @@ Module ControlProperty
       ev_data\xoff = *son\posX
       ev_data\yoff = *son\posY
   
-      son\Event( Control::#PB_EventType_Draw, @ev_data )
+      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
     Next
   
   ;   ; ---[ Border ]-------------------------------------------------------------
@@ -1330,7 +1335,7 @@ Module ControlProperty
     Protected i
     For i=0 To *Me\chilcount-1
       *son = *Me\children(i)
-      *son\Event(ev_type,#Null)
+      *son\OnEvent(ev_type,#Null)
     Next i
     
   ;   ForEach *Me\groups()
@@ -1357,7 +1362,7 @@ Module ControlProperty
   ;  OVERRIDE ( Control::IControl )
   ; ============================================================================
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
+  Procedure.i OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
     Protected *c.Control::IControl = *Me\children(*Me\current)
     ; ---[ Local Variables ]----------------------------------------------------
     Protected  ev_data.Control::EventTypeDatas_t
@@ -1375,7 +1380,12 @@ Module ControlProperty
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version < 560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+      
       
         ; ...[ Update & Check Dirty ]...........................................
         If #True = hlpResize( *Me, *ev_data.Control::EventTypeDatas_t )
@@ -1396,7 +1406,7 @@ Module ControlProperty
         ev_data\yoff    = *son\posY
         StartDrawing( CanvasOutput(*Me\gadgetID) )
         Box( *son\posX, *son\posY, *son\sizX, *son\sizY, UIColor::COLOR_MAIN_BG )
-        son\Event( Control::#PB_EventType_Draw, @ev_data )
+        son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
         StopDrawing()
   
       ; ------------------------------------------------------------------------
@@ -1427,7 +1437,7 @@ Module ControlProperty
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LostFocus
         If *Me\focuschild
-          *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           *Me\focuschild = #Null
         EndIf
         
@@ -1447,21 +1457,21 @@ Module ControlProperty
           Protected ev_datas.Control::EventTypeDatas_t
           ev_datas\x = *overchild\posX
           ev_datas\y = *overchild\posY
-          *Me\overchild\Event(#PB_EventType_MouseMove)
+          *Me\overchild\OnEvent(#PB_EventType_MouseMove)
         Else
           If *Me\pickID <= 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
-            *Me\overchild\Event(#PB_EventType_MouseLeave)
+            *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
             *Me\overchild = #Null
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
           ElseIf *Me\pickID > 0 And *Me\pickID < *Me\chilcount
             Protected ctl.Control::IControl = *Me\children( *Me\pickID )
             If ( ctl <> *Me\overchild ) And  Not *Me\down
               If *Me\overchild <> #Null
-                *Me\overchild\Event(#PB_EventType_MouseLeave)
+                *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
                 SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
               EndIf
     
-              ctl\Event(#PB_EventType_MouseEnter)
+              ctl\OnEvent(#PB_EventType_MouseEnter)
               If Not *Me\down
                 *Me\overchild = ctl
               EndIf
@@ -1469,13 +1479,13 @@ Module ControlProperty
               *overchild.Control::Control_t = *Me\overchild
               ev_data\x    = xm - *overchild\posX
               ev_data\y    = ym - *overchild\posY
-              *Me\overchild\Event(#PB_EventType_MouseMove,@ev_data)
+              *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
             EndIf
           ElseIf *Me\overchild
             *overchild.Control::Control_t = *Me\overchild
             ev_data\x    = xm - *overchild\posX
             ev_data\y    = ym - *overchild\posY
-            *Me\overchild\Event(#PB_EventType_MouseMove,@ev_data)
+            *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
           EndIf
         EndIf
         
@@ -1487,15 +1497,15 @@ Module ControlProperty
       
         If *Me\overchild
           If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-            *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
           *overchild.Control::Control_t = *Me\overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_LeftButtonDown,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
   
         ElseIf *Me\focuschild
-          *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1503,12 +1513,10 @@ Module ControlProperty
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonUp
         *overchild.Control::Control_t = *Me\overchild
-      If *overchild
+        If *overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_LeftButtonUp,@ev_data)
-        Else
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Left Button Up NO OVERCHILD!!!"
+          *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
         EndIf
       
         *Me\down = #False
@@ -1521,7 +1529,7 @@ Module ControlProperty
         If *Me\overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_LeftDoubleClick,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
           *Me\focuschild = *Me\overchild
         EndIf
         
@@ -1533,13 +1541,13 @@ Module ControlProperty
         *overchild.Control::Control_t = *Me\overchild
         If *Me\overchild
           If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-            *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_RightButtonDown,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
         ElseIf *Me\focuschild
-          *Me\focuschild\Event( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1551,7 +1559,7 @@ Module ControlProperty
           *overchild.Control::Control_t = *Me\overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_RightButtonUp,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
         EndIf
         *Me\down = #False
       
@@ -1563,7 +1571,7 @@ Module ControlProperty
           *overchild.Control::Control_t = *Me\overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\Event(#PB_EventType_RightButtonUp,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1575,7 +1583,7 @@ Module ControlProperty
           ; ...[ Retrieve Character ]...........................................
           ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
           ; ...[ Send Character To Focused Child ]..............................
-          *Me\focuschild\Event(#PB_EventType_Input,@ev_data)
+          *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1589,7 +1597,7 @@ Module ControlProperty
           ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
           
           ; ...[ Send Key To Focused Child ]....................................
-          *Me\focuschild\Event(#PB_EventType_KeyDown,@ev_data)
+          *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1599,7 +1607,7 @@ Module ControlProperty
         ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
           ; ...[ Send Key To Focused Child ]....................................
-          *Me\focuschild\Event(Globals::#SHORTCUT_COPY,#Null)
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1609,7 +1617,7 @@ Module ControlProperty
         ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
           ; ...[ Send Key To Focused Child ]....................................
-          *Me\focuschild\Event(Globals::#SHORTCUT_CUT,#Null)
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1619,7 +1627,7 @@ Module ControlProperty
         ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
           ; ...[ Send Key To Focused Child ]....................................
-          *Me\focuschild\Event(Globals::#SHORTCUT_PASTE,#Null)
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1629,7 +1637,7 @@ Module ControlProperty
         ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
           ; ...[ Send Key To Focused Child ]....................................
-          *Me\focuschild\Event(Globals::#SHORTCUT_UNDO,#Null)
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
         EndIf
         
   ;       ; ------------------------------------------------------------------------
@@ -1723,8 +1731,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1361
-; FirstLine = 1338
-; Folding = f-0-4-
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 469
+; FirstLine = 453
+; Folding = -+8-v-
 ; EnableXP

@@ -397,7 +397,7 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type & Object3D::#Object3D_Polymesh
+      If *obj\type = Object3D::#Object3D_Polymesh
         *mesh = *obj
         *mesh\wireframe = wireframe
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
@@ -418,7 +418,7 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type & Object3D::#Object3D_InstanceCloud
+      If *obj\type = Object3D::#Object3D_InstanceCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
         obj\Draw()
@@ -457,18 +457,18 @@ Module Layer
   Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
   Protected shader.GLuint =  *shader\pgm
   glUseProgram(shader)
-;   GLCheckError("Use Program")
+  GLCheckError("[LayerDefault]  Use Program")
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-  
+  GLCheckError("[LayerDefault] Set Matrices")
   glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-  ;GLCheckError("Uniforms")  
+  GLCheckError("[LayerDefault] Uniforms")  
   glUniform1i(glGetUniformLocation(shader,"tex"),0)
   
   DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
 
-
+  GLCheckError("[LayerDefault] Draw Polymeshes")
   
     ; Draw Instance Clouds 
     ;-----------------------------------------------
@@ -498,7 +498,7 @@ Module Layer
   ;   Model::Update(*model)
   DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
 ;   Model::Draw(*model)
-  glCheckError("Draw Mesh")
+  glCheckError("Draw Instance Cloud")
 ;   glDepthMask(#GL_FALSE);
   
 ;   ;Framebuffer::BlitTo(*buffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
@@ -648,8 +648,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 378
-; FirstLine = 371
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 403
+; FirstLine = 398
 ; Folding = -----
 ; EnableXP

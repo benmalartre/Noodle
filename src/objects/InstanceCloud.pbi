@@ -55,8 +55,6 @@ Module InstanceCloud
   Procedure New(name.s,shape.i=Shape::#SHAPE_CUBE,nbp.i = 1)
     Protected *Me.InstanceCloud_t = AllocateMemory(SizeOf(InstanceCloud_t))
     InitializeStructure(*Me,InstanceCloud_t)
-;     *Me\VT = ?InstanceCloudVT
-;     *Me\classname = "INSTANCECLOUD"
     Object::INI(InstanceCloud)
     *Me\name = name
     *Me\geom = PointCloudGeometry::New(*Me,nbp)
@@ -124,44 +122,8 @@ Module InstanceCloud
     If Not size_s : ProcedureReturn : EndIf
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-    
-;     Protected *flatdatas = AllocateMemory(size_s *4)
-;     Protected i
-;     Protected offset.i = 0
-;     Protected f.f
-;     Protected so = SizeOf(f)*3
 
-;     ; Position
-;     For i=0 To CArray::GetCount(*shape\indices)-1
-;       CopyMemory(CArray::GetPtr(*shape\positions,CArray::GetValueL(*shape\indices,i)),*flatdatas+offset,so)
-;       offset+so
-;     Next
-;    
-;     ; Normal
-;     ;offset = 0
-;     Protected n.v3f32
-;     Vector3::Set(@n,0,1,0)
-;     For i=0 To CArray::GetCount(*shape\indices)-1
-;       CopyMemory(CArray::GetPtr(*shape\normals,CArray::GetValueL(*shape\indices,i)),*flatdatas+offset,so)
-;       offset+so
-;     Next
-; 
-;     
-;     ; UVWs
-;     ;offset = 0
-;     For i=0 To CArray::GetCount(*shape\indices)-1
-;       CopyMemory(CArray::GetPtr(*shape\uvws,CArray::GetValueL(*shape\indices,i)),*flatdatas+offset,so)
-;       offset+so
-;     Next
-;     
-;     ; Color
-;     For i=0 To CArray::GetCount(*shape\indices)-1
-;       CopyMemory(CArray::GetPtr(*shape\colors,CArray::GetValueL(*shape\indices,i)),*flatdatas+offset,so)
-;       offset+so
-;     Next
-    
     ;     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s*4,*flatdatas)
-    
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s,CArray::GetPtr(*shape\positions,0))
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
@@ -183,7 +145,7 @@ Module InstanceCloud
     Protected size_t.i = *geom\nbpoints * SizeOf(s_glfloat)
     Protected size_s.i = GetShapeDataSize(*Me)
 
-    ;---[ Vertex Array Object ]-------------
+    ; Vertex Array Object
     If Not *Me\vao
       glGenVertexArrays(1,@*Me\vao)
     EndIf
@@ -283,7 +245,7 @@ Module InstanceCloud
     
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-    ;---[ Update Geometry ]----------------------------
+    ; Update Geometry
     PointCloudGeometry::Update(*Me)
  
     ;If Not *p\initialized : ProcedureReturn #Null : EndIf
@@ -347,23 +309,17 @@ Module InstanceCloud
   ; Update
   ;----------------------------------------------------
   Procedure Clean(*Me.InstanceCloud_t)
-    Debug "Clean Instance Cloud"
-    
-    
-    
+
   EndProcedure
   
   
   ; Draw
   ;----------------------------------------------------
   Procedure Draw(*Me.InstanceCloud_t)
-   If *Me\initialized And *Me\visible
+    If *Me\initialized And *Me\visible
     glBindVertexArray(*Me\vao)
-
-    glEnable(#GL_POINT_SMOOTH)
-    
     Protected id.v3f32
-    glPointSize(12 )
+    glPointSize(12)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
 ;     Protected msg.s
@@ -390,16 +346,17 @@ Module InstanceCloud
 
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
+  ; Reflection
+  ;----------------------------------------------------
   Class::DEF( InstanceCloud )
 EndModule
 
   
     
     
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 380
-; FirstLine = 370
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 327
+; FirstLine = 322
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

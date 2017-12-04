@@ -25,12 +25,12 @@ DeclareModule ControlDummy
   ; ----------------------------------------------------------------------------
   Declare New(*object.Object::Object_t, windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
   Declare Delete(*Me.ControlDummy_t)
-  Declare Event( *Me.ControlDummy_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlDummy_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare Draw( *Me.ControlDummy_t)
 
   DataSection
     ControlDummyVT:
-    Data.i @Event() ; mandatory override
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete(); mandatory override 
   EndDataSection
   
@@ -58,7 +58,7 @@ Module ControlDummy
   ; ============================================================================
   ;{
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlDummy_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlDummy_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
     ; ---[ Local Variables ]----------------------------------------------------
     Protected Me.IControlDummy = *Me
@@ -259,8 +259,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 246
-; FirstLine = 186
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = --
 ; EnableXP

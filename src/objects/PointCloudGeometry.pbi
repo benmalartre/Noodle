@@ -11,7 +11,8 @@ DeclareModule PointCloudGeometry
   Declare Delete(*geom.PointCloudGeometry_t)
   Declare Init(*geom.PointCloudGeometry_t)
   Declare Update(*geom.PointCloudGeometry_t)
-  Declare PointsOnSphere(*geom.PointCloudGeometry_t)
+  Declare PointsOnSphere(*geom.PointCloudGeometry_t, radius.f)
+  Declare PointsOnGrid(*geom.PointCloudGeometry_t, nx.i, nz.i)
   Declare PointsOnLine(*geom.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
   Declare RandomizeColor(*geom.PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
   Declare AddPoints(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32 )
@@ -99,7 +100,7 @@ Module PointCloudGeometry
   
   ; Points  On Sphere
   ;-----------------------------------------------------------
-  Procedure PointsOnSphere(*geom.PointCloudGeometry_t)
+  Procedure PointsOnSphere(*geom.PointCloudGeometry_t, radius.f)
     
     CArray::SetCount(*geom\a_positions,*geom\nbpoints)
     CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
@@ -129,7 +130,7 @@ Module PointCloudGeometry
       
       Vector3::Set(@v,x,y,z)
       Vector3::NormalizeInPlace(@v)
-      Vector3::ScaleInPlace(@v,3)
+      Vector3::ScaleInPlace(@v,radius)
       
       CArray::SetValue(*geom\a_positions,i,@v)
 
@@ -160,8 +161,72 @@ Module PointCloudGeometry
 
   EndProcedure
   
+  ; Point On Grid
+   ;-----------------------------------------------------------
+  Procedure PointsOnGrid(*geom.PointCloudGeometry_t, nx.i, nz.i)
+    
+    *geom\nbpoints = nx * nz
+    CArray::SetCount(*geom\a_positions,*geom\nbpoints)
+    CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
+    CArray::SetCount(*geom\a_normals,*geom\nbpoints)
+    CArray::SetCount(*geom\a_tangents,*geom\nbpoints)
+    CArray::SetCount(*geom\a_color,*geom\nbpoints)
+    CArray::SetCount(*geom\a_scale,*geom\nbpoints)
+    CArray::SetCount(*geom\a_size,*geom\nbpoints)
+    CArray::SetCount(*geom\a_indices,*geom\nbpoints)
+    CArray::SetCount(*geom\a_uvws,*geom\nbpoints)
+    
+    Protected i
+    Protected v.v3f32
+    Protected c.c4f32
+    Protected s.v3f32
+    Protected t.v3f32
+    Protected incrx.f = 1.0
+    Protected incrz.f = 1.0
+    
+    Vector3::Set(@s,1,1,1)
+    
+    Define.f r,g,b
+    Protected x, z
+    i=0
+    
+    For x=0 To nx-1
+      For z=0 To nz-1
+        ; position
+        Vector3::Set(@v,x*incrx,0,z*incrz)
+        CArray::SetValue(*geom\a_positions,i,@v)
+        
+       ; Set Normals
+        Vector3::Set(@v, 0,1,0)
+        CArray::SetValue(*geom\a_normals,i,@v)
+        
+        ; Set Tangents
+        Vector3::Set(@t,1,0,0)
+        CArray::SetValue(*geom\a_tangents,i,@t)
   
-  ; Points  On Sphere
+        ; Set Color
+        r = (120+Random(50))/255
+        g = (20+Random(5))/255
+        b = (10+Random(4))/255
+        Color::Set(@c,r,g,b,1.0)
+        CArray::SetValue(*geom\a_color,i,@c)
+  
+        ; Set Scale
+        Vector3::Set(@s,1,1,1)
+        CArray::SetValue(*geom\a_scale,i,@s)
+        
+        ; Set Size
+        CArray::SetValueF(*geom\a_size,i,1)
+        
+        ; increment counter
+        i + 1
+      Next
+    Next
+
+  EndProcedure
+  
+  
+  ; Points  On Line
   ;-----------------------------------------------------------
   Procedure PointsOnLine(*geom.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
     
@@ -251,7 +316,8 @@ Module PointCloudGeometry
   ;----------------------------------------------
   Procedure AddPoints(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32 )
     Protected i
-  
+    Debug "Add Point Called"
+    Debug "Num Points : "+Str(CArray::GetCount(*pos))
     Protected nbp.i = CArray::GetCount(*pos)
     Protected v.v3f32
     Protected c.v3f32
@@ -322,8 +388,8 @@ Module PointCloudGeometry
 
 
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 161
-; FirstLine = 132
-; Folding = --
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 319
+; FirstLine = 312
+; Folding = ---
 ; EnableXP

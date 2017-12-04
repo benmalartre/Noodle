@@ -407,8 +407,9 @@ Module Attribute
             Protected *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
             If size_t>0
-              out_string = Space(size_t*1.4)
-              Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
+              ;out_string = Space(size_t*1.4)
+              ;Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
+              out_string = Base64Encoder(CArray::GetPtr(*baseArray,0),size_t)
             EndIf
            
         EndIf
@@ -419,8 +420,9 @@ Module Attribute
           *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
           If size_t>0
-            out_string = Space(size_t*1.4)
-            Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
+            ;out_string = Space(size_t*1.4)
+            ;Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
+            out_string = Base64Encoder(CArray::GetPtr(*baseArray,0),size_t)
           EndIf
         Else
         
@@ -580,8 +582,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 569
-; FirstLine = 547
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 424
+; FirstLine = 403
 ; Folding = ---
 ; EnableXP

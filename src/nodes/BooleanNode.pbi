@@ -50,6 +50,8 @@ Module BooleanNode
     Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_BOOL)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_BOOL)
     
+    Node::PortAffect(*node, "Value", "Result")
+    
     ;Update Label
     *node\label = "False"
     
@@ -110,11 +112,10 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 37
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 52
+; FirstLine = 34
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

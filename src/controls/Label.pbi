@@ -32,14 +32,14 @@ DeclareModule ControlLabel
   ; ----------------------------------------------------------------------------
   Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
   Declare Delete(*Me.ControlLabel_t)
-  Declare Event( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   ; ----------------------------------------------------------------------------
   ;  Datas 
   ; ----------------------------------------------------------------------------
   DataSection 
     ControlLabelVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection
   
@@ -126,7 +126,7 @@ Module ControlLabel
   ; ============================================================================
 
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
     ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
@@ -146,7 +146,12 @@ Module ControlLabel
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version < 560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+      
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -356,7 +361,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 151
+; FirstLine = 144
 ; Folding = --
 ; EnableXP

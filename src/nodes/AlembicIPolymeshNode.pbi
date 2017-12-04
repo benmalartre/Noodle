@@ -54,6 +54,10 @@ Module AlembicIPolymeshNode
     Node::AddInputPort(*node,"Identifier",Attribute::#ATTR_TYPE_STRING,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddInputPort(*node,"Time",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddOutputPort(*node,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3)
+    
+    Node::PortAffect(*node, "File", "PointPosition")
+    Node::PortAffect(*node, "Identifer", "PointPosition")
+    Node::PortAffect(*node, "Time", "PointPosition")
    
     
     *node\label = "AlembicIPolymesh"
@@ -190,8 +194,8 @@ Module AlembicIPolymeshNode
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 94
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 59
+; FirstLine = 42
 ; Folding = --
 ; EnableXP

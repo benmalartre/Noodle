@@ -15,7 +15,7 @@ DeclareModule PropertyUI
   Declare Delete(*Me.PropertyUI_t)
   ;   Declare Draw(*Me.PropertyUI_t)
   Declare Init(*Me.PropertyUI_t)
-  Declare Event(*Me.PropertyUI_t,event.i)
+  Declare OnEvent(*Me.PropertyUI_t,event.i)
   Declare Term(*Me.PropertyUI_t)
   Declare Clear(*Me.PropertyUI_t)
   Declare SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
@@ -25,7 +25,7 @@ DeclareModule PropertyUI
   DataSection 
     PropertyUIVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Term()
 
   EndDataSection 
@@ -82,7 +82,7 @@ Module PropertyUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*Me.PropertyUI_t,event.i)
+  Procedure OnEvent(*Me.PropertyUI_t,event.i)
 
     Protected ev_datas.Control::EventTypeDatas_t
     ev_datas\x = mx
@@ -95,12 +95,16 @@ Module PropertyUI
         ev_datas\y = 0
         ev_datas\width = *top\width
         ev_datas\height = *top\height
-        ControlProperty::Event(*Me\prop,Control::#PB_EventType_Resize,@ev_datas)
+        CompilerIf #PB_Compiler_Version < 560
+          ControlProperty::OnEvent(*Me\prop,Control::#PB_EventType_Resize,@ev_datas)
+        CompilerElse
+          ControlProperty::OnEvent(*Me\prop,#PB_EventType_Resize,@ev_datas)
+        CompilerEndIf
       Case #PB_Event_Gadget
         Debug " ooooooooo PropertyUI Event oooooooooooooo"
-        ControlProperty::Event(*Me\prop,EventType(),@ev_datas)
+        ControlProperty::OnEvent(*Me\prop,EventType(),@ev_datas)
       Case #PB_Event_Menu
-        ControlProperty::Event(*Me\prop,EventMenu(),#Null)
+        ControlProperty::OnEvent(*Me\prop,EventMenu(),#Null)
 
         
         
@@ -316,9 +320,9 @@ Module PropertyUI
 
 
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 287
-; FirstLine = 284
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 100
+; FirstLine = 93
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

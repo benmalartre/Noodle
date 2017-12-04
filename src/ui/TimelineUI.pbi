@@ -19,7 +19,7 @@ DeclareModule TimelineUI
   Declare New(*parent.View::View_t,name.s="TimelineUI")
   Declare Delete(*ui.TimelineUI_t)
   Declare Init(*ui.TimelineUI_t)
-  Declare Event(*ui.TimelineUI_t,event.i)
+  Declare OnEvent(*ui.TimelineUI_t,event.i)
   Declare Term(*ui.TimelineUI_t)
   Declare Draw(*ui.TimelineUI_t)
   
@@ -28,7 +28,7 @@ DeclareModule TimelineUI
   DataSection 
     TimelineUIVT: 
       Data.i @Init()
-      Data.i @Event()
+      Data.i @OnEvent()
       Data.i @Term()
   
   EndDataSection 
@@ -71,7 +71,7 @@ Module TimelineUI
     *Me\timeline = ControlTimeline::New(#Null,*m\window,0,0,*Me\width,*Me\height)
     CloseGadgetList()
     
-    Event(*Me,#PB_Event_SizeWindow)
+    OnEvent(*Me,#PB_Event_SizeWindow)
     
   
     ProcedureReturn *Me
@@ -99,10 +99,14 @@ Module TimelineUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*Me.TimelineUI_t,event.i)
+  Procedure OnEvent(*Me.TimelineUI_t,event.i)
     Protected Me.ITimelineUI = *Me
-  
-    If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    
+    CompilerIf #PB_Compiler_Version < 560
+      If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
+    CompilerElse
+      If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow  
+    CompilerEndIf
       Protected ev_data.Control::EventTypeDatas_t
       Protected *top.View::View_t = *Me\top
       *Me\x = *top\x
@@ -114,11 +118,11 @@ Module TimelineUI
       ev_data\width = *Me\width
       ev_data\height = *Me\height
       ResizeGadget(*Me\timeline\gadgetID,0,0,*Me\width,*Me\height)
-      ControlTimeline::Event(*Me\timeline,#PB_Event_SizeWindow,@ev_data)
+      ControlTimeline::OnEvent(*Me\timeline,#PB_Event_SizeWindow,@ev_data)
     ElseIf event = #PB_Event_Timer
-      ControlTimeline::Event(*Me\timeline,#PB_Event_Timer,#Null)
+      ControlTimeline::OnEvent(*Me\timeline,#PB_Event_Timer,#Null)
     Else
-      ControlTimeline::Event(*Me\timeline,EventType(),#Null)
+      ControlTimeline::OnEvent(*Me\timeline,EventType(),#Null)
     EndIf
    
     ;Redraw Timeline
@@ -143,9 +147,8 @@ EndModule
 
 
 
-
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 115
-; FirstLine = 101
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 124
+; FirstLine = 106
 ; Folding = --
 ; EnableXP

@@ -974,10 +974,10 @@ Module Scene
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 394
-; FirstLine = 366
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 388
+; FirstLine = 384
 ; Folding = --------
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

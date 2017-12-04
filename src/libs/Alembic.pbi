@@ -295,9 +295,9 @@ DeclareModule Alembic
   Structure ABC_Attribute_Sample_Infos
     nbitems.i
   	time.f
-  	type.ABCPropertyType
+    type.ABCPropertyType
   	traits.ABCDataTraits
-  	name.c[32]
+    name.c[32]
   EndStructure
 
   Structure ABC_Attribute_Sample
@@ -913,10 +913,9 @@ Module AlembicObject
         *o\sample = AllocateMemory(SizeOf(Alembic::ABC_PointCloud_Sample))
         InitializeStructure(*o\sample,Alembic::ABC_PointCloud_Sample)
         *o\infos = AllocateMemory(SizeOf(Alembic::ABC_PointCloud_Sample_Infos))
-        Alembic::ABC_GetPointCloudSampleDescription(*o\ptr,1,*o\infos)
+        Alembic::ABC_GetPointCloudSampleDescription(*o\ptr,1,*o\infos)        
         
         Protected *infos.Alembic::ABC_PointCloud_Sample_Infos = *o\infos
-
         *o\initialized = #False
     EndSelect
   EndProcedure
@@ -1256,8 +1255,7 @@ Module AlembicObject
       struct = Attribute::#ATTR_STRUCT_ARRAY
     EndIf
     
-    Protected name.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos))
-    
+    Protected name.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos),-1, #PB_Ascii)
     Select *infos\traits
       Case Alembic::#ABC_DataTraits_Bool
         *data = CArray::newCArrayBool()
@@ -1298,6 +1296,7 @@ Module AlembicObject
     EndSelect
     
     If *attribute
+      Debug "Add Atribute ; "+*Me\obj\name+" >>> "+*attribute\name
       Object3D::AddAttribute(*Me\obj,*attribute)
     EndIf
     
@@ -1311,7 +1310,8 @@ Module AlembicObject
   ; Get Properties
   ;---------------------------------------------------------
    Procedure GetProperties(*Me.AlembicObject_t)
-    Protected i
+     Protected i
+     ClearList(*Me\props())
 
     For i=0 To Alembic::ABC_GetNumProperties(*Me\ptr)-1
      AddElement(*Me\props())
@@ -1331,15 +1331,20 @@ Module AlembicObject
     
     ForEach *Me\props()   
       Alembic::ABC_GetAttributeSampleDescription(*Me\props(),0,*infos)
-      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos))
+      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos),-1,#PB_UTF8)
      t+n+Chr(10)+" : "+Str(*infos\nbitems)+" items "+Chr(10)
-     
+     Debug t
      *attr = CreateAttributeFromProperty(*Me,*infos)
      AddElement(*Me\attributes())
      *Me\attributes() = *attr
      
-     CArray::SetCount(*attr \data,*infos\nbitems)
+     Debug "Nb Items : "+Str(*infos\nbitems)
+     CArray::SetCount(*attr\data,*infos\nbitems)
      *sample\datas = CArray::GetPtr(*attr\data,0)
+     Debug "Prop : "+Str(*Me\props())
+     Debug "Infos : "+Str(*infos)
+     Debug "Sample : "+Str(*sample)
+     Debug Alembic::ABC_GetAttributeSample
      Alembic::ABC_GetAttributeSample(*Me\props(),*infos,*sample)
     
      
@@ -1398,7 +1403,7 @@ Module AlembicObject
     ForEach *Me\props() 
       
       Alembic::ABC_GetAttributeSampleDescription(*Me\props(),frame,@infos)
-      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos))
+      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(*infos),-1,#PB_UTF8)
       If n = name 
         
        SelectElement(*Me\attributes(),x)
@@ -1431,7 +1436,7 @@ Module AlembicObject
     
     ForEach *Me\props()   
       Alembic::ABC_GetAttributeSampleDescription(*Me\props(),frame,@infos)
-      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(@infos))
+      Protected n.s = PeekS(Alembic::ABC_GetAttributeSampleName(@infos),-1,#PB_UTF8)
 
       SelectElement(*Me\attributes(),x)
       *attr = *Me\attributes()
@@ -1613,7 +1618,7 @@ Module AlembicObject
       *o\obj = *cloud
       *o\initialized = #False
       Protected *cloud_geom.Geometry::PointCloudGeometry_t = *cloud\geom
-      LogProperties(*o)
+      ;LogProperties(*o)
       GetProperties(*o)
 
 ;       *cloud_geom\PointOnSphere()
@@ -1649,7 +1654,7 @@ Module AlembicObject
     *Me\obj = #Null
     *Me\ptr = Alembic::ABC_GetObjectFromArchiveByID(*archive,id)
     
-    *Me\name = PeekS(Alembic::ABC_GetObjectName(*Me\ptr),-1,#PB_Ascii)
+    *Me\name = PeekS(Alembic::ABC_GetObjectName(*Me\ptr),-1,#PB_UTF8)
     If Alembic::ABC_ObjectIsXForm(*Me\ptr) 
       Debug "[Alembic] : Object is a XFORM..."
       *Me\type = Alembic::#ABC_OBJECT_XFORM
@@ -1678,9 +1683,9 @@ Module AlembicObject
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1142
-; FirstLine = 1138
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 1614
+; FirstLine = 1609
 ; Folding = -----------
 ; EnableXP
 ; Executable = bin/Alembic.app

@@ -95,7 +95,7 @@ DeclareModule GraphUI
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*ui.GraphUI_t)
   Declare Init(*ui.GraphUI_t)
-  Declare Event(*ui.GraphUI_t,event.i)
+  Declare OnEvent(*ui.GraphUI_t,event.i)
   Declare Term(*ui.GraphUI_t)
   
   Declare Resize(*Me.GraphUI_t)
@@ -131,7 +131,7 @@ DeclareModule GraphUI
   DataSection 
     GraphUIVT: 
     Data.i @Init()
-    Data.i @Event()
+    Data.i @ONEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -224,9 +224,9 @@ Module GraphUI
     Debug "ViewportUI Init Called!!!"
   EndProcedure
   
-  ; Event
+  ; OnEvent
   ;-------------------------------
-  Procedure Event(*Me.GraphUI_t,event.i)
+  Procedure OnEvent(*Me.GraphUI_t,event.i)
     Protected Me.IGraphUI = *Me
     
     Select event
@@ -292,28 +292,28 @@ Module GraphUI
         ResizeGadget(*Me\menu\GadgetID,0,0,168,25)
         ResizeGadget (*Me\prop\gadgetID,168,0,32,25)
         CanvasEvent(*Me,#PB_Event_SizeWindow)
-        ControlMenu::Event(*Me\menu,#PB_Event_SizeWindow)
+        ControlMenu::OnEvent(*Me\menu,#PB_Event_SizeWindow)
        
-        NodeExplorer::Event(*Me\explorer,#PB_Event_SizeWindow,#Null)
+        NodeExplorer::OnEvent(*Me\explorer,#PB_Event_SizeWindow,#Null)
         NodeExplorer::DrawPickImage(*Me\explorer)
         
         NodeExplorer::Draw(*Me\explorer)
-        ControlProperty::Event(*Me\prop,#PB_Event_SizeWindow,#Null)
+        ControlProperty::OnEvent(*Me\prop,#PB_Event_SizeWindow,#Null)
         
       Case #PB_Event_Gadget
         Select EventGadget()
           
           Case *Me\explorer\gadgetID
-           NodeExplorer::Event(*Me\explorer,#PB_Event_Gadget,#Null)
+           NodeExplorer::OnEvent(*Me\explorer,#PB_Event_Gadget,#Null)
            
           Case *Me\gadgetID
             GraphUI::CanvasEvent(*Me,#PB_Event_Gadget)
           Case *Me\menu\GadgetID
-            ControlMenu::Event(*me\menu,EventType())
+            ControlMenu::OnEvent(*me\menu,EventType())
             ControlMenu::Draw(*me\menu)
             
           Case *Me\prop\gadgetID
-           ControlProperty::Event(*Me\prop,EventType(),#Null)
+           ControlProperty::OnEvent(*Me\prop,EventType(),#Null)
         EndSelect
         
       Case #PB_Event_GadgetDrop
@@ -1678,8 +1678,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1481
-; FirstLine = 1450
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 296
+; FirstLine = 292
 ; Folding = --------
 ; EnableXP

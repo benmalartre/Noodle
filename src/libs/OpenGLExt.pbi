@@ -1,7 +1,7 @@
 ﻿XIncludeFile "OpenGL.pbi"
 XIncludeFile "GLFW.pbi"
 DeclareModule OpenGLExt
-  UseModule OpenGL
+  ;UseModule OpenGL
   UseModule GLFW
   ; ; ============================================================================
   ; ;  OpenGL Extensions Prototypes
@@ -234,11 +234,11 @@ DeclareModule OpenGLExt
     Prototype PFNGLVERTEXATTRIB4UIVPROC ( index.i, *v )
     Prototype PFNGLVERTEXATTRIB4USVPROC ( index.i, *v)
     Prototype PFNGLVERTEXATTRIBPOINTERPROC ( index.i, size.i, type.l, normalized.b, stride.i, *pointer )
-    Prototype PFNGLBINDVERTEXARRAYSPROC(array_.GLuint)
-    Prototype PFNGLDELETEVERTEXARRAYSPROC( n.GLsizei, *arrays )
-    Prototype PFNGLGENVERTEXARRAYSPROC( n.GLsizei,array_.GLuint)             
-    Prototype PFNGLISVERTEXARRAYPROC( array_.GLuint )
-    Prototype PFNGLDRAWARRAYSPROC(mode.GLenum,firts.GLint,count.GLsizei)
+    Prototype PFNGLBINDVERTEXARRAYSPROC(array_.i)
+    Prototype PFNGLDELETEVERTEXARRAYSPROC( n.i, *arrays )
+    Prototype PFNGLGENVERTEXARRAYSPROC( n.i,array_.i)             
+    Prototype PFNGLISVERTEXARRAYPROC( array_.i )
+    Prototype PFNGLDRAWARRAYSPROC(mode.i,firts.i,count.i)
       
     
   CompilerEndIf
@@ -328,7 +328,7 @@ DeclareModule OpenGLExt
     
   ;- OpenGL 3.2
   CompilerIf #ENABLEGL3_2
-    Prototype PFNGLTEXIMAGE2DMULTISAMPLE(  target.GLenum,samples.GLsizei ,internalformat.GLenum,width.GLsizei,height.GLsizei,fixedsamplelocations.GLboolean);
+    Prototype PFNGLTEXIMAGE2DMULTISAMPLE(  target.i,samples.i ,internalformat.i,width.i,height.i,fixedsamplelocations.b)
     Prototype PFNGLGETINTEGER64I_VPROC ( target.l, index.i, *data_ )
     Prototype PFNGLGETBUFFERPARAMETERI64VPROC ( target.l, pname.l, *params )
     Prototype PFNGLFRAMEBUFFERTEXTUREPROC ( target.l, attachment.l, texture.i, level.i )
@@ -799,7 +799,7 @@ Module OpenGLExt
           setGLEXT( glVertexAttrib4usv,         "glVertexAttrib4usv" )
           setGLEXT( glVertexAttribPointer,      "glVertexAttribPointer" )
           
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And #USE_LEGACY_OPENGL
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And OpenGL::#USE_LEGACY_OPENGL
             setGLEXT( glBindVertexArray,          "glBindVertexArrayAPPLE")
             setGLEXT( glDeleteVertexArrays,       "glDeleteVertexArraysAPPLE")
             setGLEXT( glGenVertexArrays,          "glGenVertexArraysAPPLE")
@@ -1444,14 +1444,14 @@ Module OpenGLExt
   ; Log Graphic Hardware
   ;----------------------------
   Procedure GLDebugHardware()
-    Debug "OpenGL Vendor: "    +#TAB$+#TAB$+   GLGETSTRINGOUTPUT(glGetString( #GL_VENDOR ) )
-    Debug "OpenGL Renderer: "  +#TAB$+         GLGETSTRINGOUTPUT(glGetString( #GL_RENDERER ))
-    Debug "OpenGL Version: "   +#TAB$+         GLGETSTRINGOUTPUT(glGetString( #GL_VERSION ) )
-    Debug "OpenGL Shader: "    +#TAB$+#TAB$+   GLGETSTRINGOUTPUT(glGetString( #GL_SHADING_LANGUAGE_VERSION) )
+    Debug "OpenGL Vendor: "    +#TAB$+#TAB$+   OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_VENDOR ) )
+    Debug "OpenGL Renderer: "  +#TAB$+         OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_RENDERER ))
+    Debug "OpenGL Version: "   +#TAB$+         OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_VERSION ) )
+   ; Debug "OpenGL Shader: "    +#TAB$+#TAB$+   GLGETSTRINGOUTPUT(glGetString( #GL_SHADING_LANGUAGE_VERSION) )
   EndProcedure
   
   Procedure GLCheckError(message.s)
-    Protected err = glGetError()
+    Protected err = OpenGL::glGetError()
     If err
       While err <> #GL_NO_ERROR
         Protected error.s
@@ -1464,11 +1464,11 @@ Module OpenGLExt
             error = " ---> INVALID VALUE"
           Case #GL_OUT_OF_MEMORY
             error = " ---> OUT OF MEMORY"
-          Case #GL_INVALID_FRAMEBUFFER_OPERATION
-            error = " ---> INVALID FRAMEBUFFER OPERATION"
+          ;Case #GL_INVALID_FRAMEBUFFER_OPERATION
+          ;  error = " ---> INVALID FRAMEBUFFER OPERATION"
         EndSelect  
         Debug "[OpenGL Error] "+message+error
-        err = glGetError()
+        err = OpenGL::glGetError()
       Wend  
       ProcedureReturn #True
     Else
@@ -1481,9 +1481,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 801
-; FirstLine = 798
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 1470
+; FirstLine = 1450
 ; Folding = ------
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

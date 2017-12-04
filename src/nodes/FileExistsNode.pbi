@@ -53,6 +53,8 @@ Module FileExistsNode
   Procedure Init(*node.FileExistsNode_t)
     Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"FileName",Attribute::#ATTR_TYPE_STRING)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Exists",Attribute::#ATTR_TYPE_BOOL)
+    
+    Node::PortAffect(*node, "FileName", "Exists")
     *node\label = "File Exists"
   EndProcedure
   
@@ -115,11 +117,10 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 41
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 56
+; FirstLine = 46
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

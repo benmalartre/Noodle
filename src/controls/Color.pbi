@@ -35,14 +35,14 @@ DeclareModule ControlColor
   Declare New(name.s,x.i,y.i,w.i,h.i)
   Declare Delete(*Me.ControlColor_t)
   Declare Init(*Me.ControlColor_t)
-  Declare Event(*Me.ControlColor_t,event.i)
+  Declare OnEvent(*Me.ControlColor_t,event.i)
   Declare Term(*Me.ControlColor_t)
   Declare Draw(*Me.ControlColor_t)
   Declare Update(*Me.ControlColor_t)
   
   DataSection 
     ControlColorVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection 
   
@@ -79,7 +79,7 @@ Module ControlColor
     *Me\r_dirty = #True
     Update(*Me)
     Draw(*Me)
-    Event(*Me,#PB_Event_SizeWindow)
+    OnEvent(*Me,#PB_Event_SizeWindow)
     CloseGadgetList()
     ProcedureReturn *Me
   EndProcedure
@@ -209,7 +209,7 @@ Module ControlColor
   
   ; Event
   ;-------------------------------
-  Procedure Event(*Me.ControlColor_t,event.i)
+  Procedure OnEvent(*Me.ControlColor_t,event.i)
     Debug "ControlColor Event Called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     Draw(*Me)
     Select event
@@ -251,10 +251,9 @@ EndModule
 ;   e = WaitWindowEvent()
 ;   ControlColor::Event(*colorUI,e)
 ; Until e = #PB_Event_CloseWindow
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 168
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 81
+; FirstLine = 77
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

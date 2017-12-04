@@ -60,6 +60,8 @@ Module BuildArrayFromConstantNode
     Node::AddInputPort(*node,"Constant",datatype)
     Node::AddInputPort(*node,"Count",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddOutputPort(*node,"Result",datatype)
+    Node::PortAffect(*node, "Constant", "Result")
+    Node::PortAffect(*node, "Count", "Result")
     
     ;Update Label
     *node\label = "Build Array From Constant"
@@ -136,10 +138,10 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 58
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 63
+; FirstLine = 43
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

@@ -152,7 +152,7 @@ DeclareModule ControlNumber
   
   Declare New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlNumber_t)
-  Declare Event( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlNumber_t, value.s )
   Declare.s GetValue( *Me.ControlNumber_t )
   Declare SetTheme( theme.i )
@@ -174,7 +174,7 @@ DeclareModule ControlNumber
   ; ----------------------------------------------------------------------------
   DataSection 
     ControlNumberVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
     
     ; Images
@@ -594,7 +594,7 @@ Module ControlNumber
 ; ============================================================================
 ;{
 ; ---[ OnEvent ]--------------------------------------------------------------
-Procedure.i Event( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
 
 
   ; ---[ Dispatch Event ]-----------------------------------------------------
@@ -615,7 +615,11 @@ Procedure.i Event( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDa
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_Resize
+    CompilerIf #PB_Compiler_Version < 560
+      Case Control::#PB_EventType_Resize
+    CompilerElse
+      Case #PB_EventType_Resize
+    CompilerEndIf
       ; ---[ Sanity Check ]---------------------------------------------------
       If Not *ev_data : ProcedureReturn : EndIf
       
@@ -1568,8 +1572,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 1501
-; FirstLine = 1473
-; Folding = -----
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 621
+; FirstLine = 613
+; Folding = ------
 ; EnableXP

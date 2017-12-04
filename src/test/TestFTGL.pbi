@@ -25,11 +25,8 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Hello everybody,",-1,0.9,sx,sx)
   FTGL::Draw(*app\context\writer,"This is Font Drawing in OpenGL",-1,0.75,sx,sx)
   FTGL::Draw(*app\context\writer,"Using FreeType C Library",-1,0.6,sx,sx)
-
-  CompilerIf Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  CompilerEndIf
   
+  ViewportUI::FlipBuffer(*viewport)
   
 EndProcedure
     
@@ -46,7 +43,7 @@ If Time::Init()
     *viewport = ViewportUI::New(*app\manager\main,"Viewport3D")
     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
     *viewport\camera = *app\camera
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
   Debug "Camera :: "+Str(*app\camera)
@@ -72,11 +69,12 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 41
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 28
+; FirstLine = 14
 ; Folding = -
-; EnableUnicode
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=1
+; EnableUnicode

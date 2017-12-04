@@ -52,9 +52,12 @@ Module IfNode
   
   Procedure Init(*node.IfNode_t)
     Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"Condition",Attribute::#ATTR_TYPE_BOOL)
-    Protected *iftrue.NodePort::NodePort_t = Node::AddInputPort(*node,"If True",Attribute::#ATTR_TYPE_POLYMORPH)
-    Protected *iffalse.NodePort::NodePort_t = Node::AddInputPort(*node,"If False",Attribute::#ATTR_TYPE_POLYMORPH)
+    Protected *iftrue.NodePort::NodePort_t = Node::AddInputPort(*node,"IfTrue",Attribute::#ATTR_TYPE_POLYMORPH)
+    Protected *iffalse.NodePort::NodePort_t = Node::AddInputPort(*node,"IfFalse",Attribute::#ATTR_TYPE_POLYMORPH)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_POLYMORPH)
+    Node::PortAffect(*node, "Condition", "Output")
+    Node::PortAffect(*node, "IfTrue", "Output")
+    Node::PortAffect(*node, "IfFalse", "Output")
     *node\label = "If"
   EndProcedure
   
@@ -68,7 +71,6 @@ Module IfNode
     
     
     Protected *bIn.CArray::CArrayBool = NodePort::AcquireInputData(*if)
-    Debug "If Node Evaluate ---> Boolean Array Input Size : "+Str(CArray::GetCount(*bIn))
     Protected *output.NodePort::NodePort_t = *node\Outputs()
     
     
@@ -162,11 +164,10 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 50
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 61
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

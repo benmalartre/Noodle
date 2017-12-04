@@ -80,7 +80,7 @@ DeclareModule ControlDivot
   ; ----------------------------------------------------------------------------
   Declare New( *object.Object::Object_t,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlDivot_t)
-  Declare Event( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlDivot_t, value.i )
   Declare GetValue( *Me.ControlDivot_t)
   Declare SetTheme( theme.i )
@@ -92,7 +92,7 @@ DeclareModule ControlDivot
   ; ----------------------------------------------------------------------------
   DataSection 
     ControlDivotVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
     
     VIControlDivot_light_over: 
@@ -226,7 +226,7 @@ Module ControlDivot
   ;}
 
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
@@ -243,7 +243,12 @@ Module ControlDivot
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version <560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+        
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -532,7 +537,8 @@ Module ControlDivot
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlDivot )
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 248
+; FirstLine = 244
 ; Folding = ---
 ; EnableXP

@@ -50,10 +50,15 @@ Module RandomNode
   Procedure Init(*node.RandomNode_t)
     Protected datatype.i = Attribute::#ATTR_TYPE_FLOAT|Attribute::#ATTR_TYPE_INTEGER|Attribute::#ATTR_TYPE_VECTOR2|Attribute::#ATTR_TYPE_VECTOR3
     Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"Time Varying",Attribute::#ATTR_TYPE_BOOL)
-    Node::AddInputPort(*node,"Mean Value",datatype)
+    Node::AddInputPort(*node,"TimeVarying",Attribute::#ATTR_TYPE_BOOL)
+    Node::AddInputPort(*node,"MeanValue",datatype)
     Node::AddInputPort(*node,"Variance",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",datatype)
+    
+    Node::PortAffect(*node, "Seed", "result")
+    Node::PortAffect(*node, "TimeVarying", "result")
+    Node::PortAffect(*node, "MeanValue", "result")
+    Node::PortAffect(*node, "Variance", "result")
     
     *node\label = "Random"
   EndProcedure
@@ -236,9 +241,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 64
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 60
 ; FirstLine = 35
 ; Folding = --
 ; EnableXP

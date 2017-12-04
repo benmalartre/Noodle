@@ -53,6 +53,10 @@ Module SampleGeometryNode
     Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddOutputPort(*node,"Points",Attribute::#ATTR_TYPE_LOCATION)
     
+    Node::PortAffect(*node, "Geometry", "Points")
+    Node::PortAffect(*node, "Mode", "Points")
+    Node::PortAffect(*node, "Rate", "Points")
+    Node::PortAffect(*node, "Seed", "Points")
     *node\label = "SampleGeometry"
   EndProcedure
   
@@ -123,8 +127,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 76
-; FirstLine = 53
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

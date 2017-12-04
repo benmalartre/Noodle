@@ -85,7 +85,7 @@ DeclareModule ControlIcon
   ; ----------------------------------------------------------------------------
   Declare New( *object.Object::Object_t,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
   Declare Delete(*Me.ControlIcon_t)
-  Declare Event( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   Declare.b Init()
   Declare.b Term()
@@ -107,7 +107,7 @@ DeclareModule ControlIcon
   
   DataSection
     ControlIconVT:
-    Data.i @Event() ; mandatory override
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete(); mandatory override
    
     ; Images
@@ -291,7 +291,7 @@ Module ControlIcon
   ; ============================================================================
   ;{
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i Event( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
   
@@ -312,7 +312,11 @@ Module ControlIcon
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      Case Control::#PB_EventType_Resize
+      CompilerIf #PB_Compiler_Version < 560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         ; ...[ Update Topology ]................................................
@@ -621,8 +625,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 377
-; FirstLine = 327
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 318
+; FirstLine = 289
 ; Folding = ----
 ; EnableXP

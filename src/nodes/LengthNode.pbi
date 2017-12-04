@@ -52,6 +52,8 @@ Module LengthNode
     Node::AddInputPort(*node,"Vector",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Length",Attribute::#ATTR_TYPE_FLOAT)
     
+    Node::PortAffect(*node, "Vector", "Length")
+    
     *node\label = "Length"
   EndProcedure
   
@@ -109,10 +111,10 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 54
+; FirstLine = 35
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

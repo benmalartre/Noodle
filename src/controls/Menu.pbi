@@ -111,7 +111,7 @@ DeclareModule ControlMenu
   Declare Pick(*menu.ControlMenu_t)
   Declare Draw(*menu.ControlMenu_t)
   Declare DrawPickImage(*menu.ControlMenu_t)
-  Declare Event(*menu.ControlMenu_t,eventID.i)
+  Declare OnEvent(*menu.ControlMenu_t,eventID.i)
   
   
 EndDeclareModule
@@ -620,9 +620,13 @@ Module ControlMenu
   ; ----------------------------------------------------------------------------
   ;  Event
   ; ----------------------------------------------------------------------------
-  Procedure Event(*menu.ControlMenu_t,eventID.i)
-    
-    If eventID = #PB_Event_SizeWindow Or eventID = Control::#PB_EventType_Resize
+  Procedure OnEvent(*menu.ControlMenu_t,eventID.i)
+    CompilerIf #PB_Compiler_Version < 560
+      If eventID = #PB_Event_SizeWindow Or eventID = Control::#PB_EventType_Resize
+    CompilerElse
+      If eventID = #PB_Event_SizeWindow Or eventID = #PB_EventType_Resize
+    CompilerEndIf
+      
       *menu\dirty = #True
       Draw(*menu)
     Else
@@ -687,10 +691,10 @@ Module ControlMenu
 EndModule
 
   
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 226
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 627
+; FirstLine = 593
 ; Folding = -Qt---
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode
