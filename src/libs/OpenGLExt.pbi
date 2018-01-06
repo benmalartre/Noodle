@@ -1,7 +1,7 @@
 ﻿XIncludeFile "OpenGL.pbi"
 XIncludeFile "GLFW.pbi"
 DeclareModule OpenGLExt
-  ;UseModule OpenGL
+  UseModule OpenGL
   UseModule GLFW
   ; ; ============================================================================
   ; ;  OpenGL Extensions Prototypes
@@ -28,7 +28,6 @@ DeclareModule OpenGLExt
   ; CompilerIf Not Defined(RAA_USE_GLFW,#PB_Constant)
   ;   #RAA_USE_GLFW = #False
   ; CompilerEndIf
- 
  
   CompilerIf #USE_GLFW
     CompilerIf #GLFW_GETPROCADDRESS_DEBUG
@@ -1482,8 +1481,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1470
-; FirstLine = 1450
+; CursorPosition = 3
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

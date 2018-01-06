@@ -209,7 +209,7 @@ Module Camera
     
     Transform::SetMatrixFromSRT(t\m,t\t\scl,t\t\rot,t\t\pos)
     Matrix4::SetFromOther(*Me\matrix,t\m)
-    Matrix4::GetViewMatrix(*Me\view,*Me\pos,*Me\lookat,*Me\up)
+    Matrix4::Get(*Me\view,*Me\pos,*Me\lookat,*Me\up)
   EndProcedure
 
   ;----------------------------------------------------------------------------
@@ -269,17 +269,10 @@ Module Camera
   Procedure Dolly(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
     Protected delta.f
     delta = deltay/height
-;    
+  
     Protected interpolated.v3f32
     Vector3::LinearInterpolate(@interpolated,*Me\pos,*Me\lookat,delta)
     Vector3::Set(*Me\pos,interpolated\x,interpolated\y,interpolated\z)
-    
-;     Protected offset.v3f32
-;     Vector3::Sub(@offset,*Me\lookat,*Me\pos)
-;     Vector3::NormalizeInPlace(@offset)
-;     Vector3::ScaleInPlace(@offset,delta*100)
-;     Vector3::AddInPlace(*Me\pos,@offset)
-;     Vector3::AddInPlace(*Me\lookat,@offset)
     
     ;Update Camera Transform
     LookAt(*Me)
@@ -474,8 +467,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 199
-; FirstLine = 191
+; CursorPosition = 271
+; FirstLine = 255
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

@@ -1,19 +1,4 @@
-﻿
-
-XIncludeFile "OpenGL.pbi"
-XIncludeFile "GLFW.pbi"
-XIncludeFile "OpenGLExt.pbi"
-XIncludeFile "Shapes.pbi"
-XIncludeFile "Array.pbi"
-XIncludeFile "Camera.pbi"
-XIncludeFile "Shader.pbi"
-XIncludeFile "Framebuffer.pbi"
-XIncludeFile "Math.pbi"
-XIncludeFile "Time.pbi"
-XIncludeFile "KDTree.pbi"
-XIncludeFile "Polymesh.pbi"
-; XIncludeFile "FTGL.pbi"
-
+﻿XIncludeFile "../core/Application.pbi"
 
 UseModule Math
 UseModule Time
@@ -66,9 +51,7 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 9
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; EnableThread
 ; EnableXP
 ; Executable = /Volumes/STORE N GO/TestGLFW.app

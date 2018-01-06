@@ -314,19 +314,19 @@ Module Polymesh
     
     glBufferSubData(#GL_ARRAY_BUFFER,4*size_p,size_c,CArray::GetPtr(*geom\a_colors,0))
     
-    ; Attibute Position 0
+    ; Attribute Position 0
     glEnableVertexAttribArray(0)
     glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     
-    ;Attibute Normal 1
+    ; Attribute Normal 1
     glEnableVertexAttribArray(1)
     glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,size_p)
     
-    ;Attibute Tangent 2
+    ; Attribute Tangent 2
     glEnableVertexAttribArray(2)
     glVertexAttribPointer(2,3,#GL_FLOAT,#GL_FALSE,0,2*size_p)
     
-    ;Attibute UVWs 2
+    ; Attribute UVWs 2
     glEnableVertexAttribArray(3)
     glVertexAttribPointer(3,3,#GL_FLOAT,#GL_FALSE,0,3*size_p)
     
@@ -561,7 +561,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 521
-; FirstLine = 502
+; CursorPosition = 328
+; FirstLine = 306
 ; Folding = ----
 ; EnableXP

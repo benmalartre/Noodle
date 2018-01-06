@@ -241,9 +241,7 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 216
-; FirstLine = 192
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode
