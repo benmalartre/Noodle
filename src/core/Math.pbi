@@ -925,10 +925,6 @@ Module Vector3
     *v\x = *o\x * *m\v[0] + *o\y * *m\v[3] + *o\z * *m\v[6]
     *v\y = *o\x * *m\v[1] + *o\y * *m\v[4] + *o\z * *m\v[7] 
     *v\z = *o\x * *m\v[2] + *o\y * *m\v[5] + *o\z * *m\v[8]
-    
-    *v\x = x
-    *v\y = y
-    *v\z = z
 
   EndProcedure
   
@@ -2532,8 +2528,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1271
-; FirstLine = 1268
+; CursorPosition = 926
+; FirstLine = 918
 ; Folding = ------------------------------
 ; EnableXP
 ; EnableUnicode

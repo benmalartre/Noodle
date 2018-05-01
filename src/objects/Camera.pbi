@@ -209,7 +209,7 @@ Module Camera
     
     Transform::SetMatrixFromSRT(t\m,t\t\scl,t\t\rot,t\t\pos)
     Matrix4::SetFromOther(*Me\matrix,t\m)
-    Matrix4::Get(*Me\view,*Me\pos,*Me\lookat,*Me\up)
+    Matrix4::GetViewMatrix(*Me\view,*Me\pos,*Me\lookat,*Me\up)
   EndProcedure
 
   ;----------------------------------------------------------------------------
@@ -467,8 +467,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 271
-; FirstLine = 255
+; CursorPosition = 211
+; FirstLine = 207
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

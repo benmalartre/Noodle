@@ -1,4 +1,4 @@
-#USE_GLFW = #False
+;#USE_GLFW = #False
 XIncludeFile "../core/Application.pbi"
 Procedure ErrorHandler()
   MessageRequester("OnError test", "The following error happened: " + ErrorMessage()+Chr(10)+ErrorLine()+Chr(10)+ErrorFile())
@@ -160,8 +160,6 @@ Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 128
-; FirstLine = 107
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe
