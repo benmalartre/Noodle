@@ -188,19 +188,20 @@ Module Application
       glfwInit()
       ;*app\window = glfwCreateFullScreenWindow()
       *app\window = glfwCreateWindowedWindow(width,height,"GLFW3.1")
-      *app\context = GLContext::New(0,#True,*app\window)
       
       glfwMakeContextCurrent(*app\window)
       glfwSetWindowUserPointer(*app\window, *app)  
       glfwGetWindowSize(*app\window,@w,@h)
       *app\width = w
       *app\height = h
+      *app\context = GLContext::New(width,height,#True, *app\window)
+      GLContext::Setup(*app\context)
       *app\context\width = w
       *app\context\height = h
       *app\idle = #True
      
       RegisterCallbacks(*app)
-      GLLoadExtensions()
+ 
     CompilerElse
       *app\manager = ViewManager::New(name,0,0,width,height,options)
       *app\window = *app\manager\window
@@ -533,8 +534,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 230
-; FirstLine = 189
+; CursorPosition = 187
+; FirstLine = 177
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

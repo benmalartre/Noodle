@@ -24,9 +24,9 @@ DeclareModule Polymesh
     u.i
     v.i
     wireframe.b
-    vao2.i
-    vbo2.i
-    eab2.i
+;     vao2.i
+;     vbo2.i
+;     eab2.i
   EndStructure
   
   Interface IPolymesh Extends Object3D::IObject3D
@@ -344,35 +344,36 @@ Module Polymesh
     ;Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     
-    ; Create or ReUse Vertex Array Object
-    If Not *p\vao2
-      glGenVertexArrays(1,@*p\vao2)
-    EndIf
-    glBindVertexArray(*p\vao2)
+;     ; Create or ReUse Vertex Array Object
+;     If Not *p\vao2
+;       glGenVertexArrays(1,@*p\vao2)
+;     EndIf
+;     glBindVertexArray(*p\vao2)
+;     
+;     ; Create or ReUse Vertex Buffer Object
+;     If Not *p\vbo2
+;       glGenBuffers(1,@*p\vbo2)
+;     EndIf
+;     glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+;     
+;     ; Push Position Datas to GPU
+;     Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
+;     glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+;     
+;     ; Attibute Position 0
+;     glEnableVertexAttribArray(0)
+;     glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     
-    ; Create or ReUse Vertex Buffer Object
-    If Not *p\vbo2
-      glGenBuffers(1,@*p\vbo2)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+;     ; Create or ReUse Edge Elements Buffer
+;     If Not *p\eab2
+;       glGenBuffers(1,@*p\eab2)
+;     EndIf 
+;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab2)
+;     
+;     ; Push Element Datas to GPU
+;     size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
+;     glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
     
-    ; Push Position Datas to GPU
-    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
-    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
-    
-    ; Attibute Position 0
-    glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-    
-    ; Create or ReUse Edge Elements Buffer
-    If Not *p\eab2
-      glGenBuffers(1,@*p\eab2)
-    EndIf 
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab2)
-    
-    ; Push Element Datas to GPU
-    size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
 
   EndProcedure
   
@@ -437,16 +438,16 @@ Module Polymesh
     EndIf
 
     ; Create or ReUse Edge Elements Buffer
-    If Not *p\eab
-      glGenBuffers(1,@*p\eab)
-    EndIf 
-
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
+;     If Not *p\eab
+;       glGenBuffers(1,@*p\eab)
+;     EndIf 
+; 
+;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
 
     ; Unbind
     glBindVertexArray(0)
     
-    BuildGLEdgeData(*p)
+    ;BuildGLEdgeData(*p)
     
     *p\initialized = #True
     SetClean(*p)
@@ -460,7 +461,7 @@ Module Polymesh
 
     If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf 
     If *p\vbo: glDeleteBuffers(1,@*p\vbo) : EndIf
-    If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
+;     If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
 
   EndProcedure
   ;}
@@ -485,9 +486,9 @@ Module Polymesh
         glBindVertexArray(*p\vao)
         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
         UpdateGLData(*p)
-        glBindVertexArray(*p\vao2)
-        glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
-        UpdateGLEdgeData(*p)
+;         glBindVertexArray(*p\vao2)
+;         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+;         UpdateGLEdgeData(*p)
         glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         SetClean(*p)
@@ -561,7 +562,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 328
-; FirstLine = 306
+; CursorPosition = 490
+; FirstLine = 484
 ; Folding = ----
 ; EnableXP

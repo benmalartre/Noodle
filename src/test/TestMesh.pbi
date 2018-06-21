@@ -105,11 +105,11 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+     *app\context = *viewport\context
      
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
@@ -218,13 +218,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 201
-; FirstLine = 186
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 111
+; FirstLine = 107
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

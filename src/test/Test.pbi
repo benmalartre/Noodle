@@ -39,7 +39,6 @@ Procedure Draw(*app.Application::Application_t)
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"offset"),1,#GL_FALSE,@model)
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"model"),1,#GL_FALSE,@model)
   
-  Matrix4::Echo(*app\camera\view,"Camera View Matrix")
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"view"),1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"projection"),1,#GL_FALSE,*app\camera\projection)
   glUniform3f(glGetUniformLocation(*s_simple\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
@@ -67,8 +66,9 @@ If Time::Init()
   Log::Init()
   *app = Application::New("Test",800,600)
 
-   If Not #USE_GLFW
+  If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *app\context = *viewport\context
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -96,8 +96,8 @@ If Time::Init()
   Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 63
+; CursorPosition = 41
+; FirstLine = 35
 ; Folding = -
 ; EnableThread
 ; EnableXP

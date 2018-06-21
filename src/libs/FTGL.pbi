@@ -344,7 +344,11 @@ Module FTGL
   ;-------------------------------------------------------------------------------------
   Procedure New()
     Protected *drawer.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
-    *drawer\atlas = *ftgl_atlas
+    If *ftgl_atlas
+      *drawer\atlas = *ftgl_atlas
+    Else
+      *drawer\atlas = FT_CreateFontAtlas(FONT_FILE_NAME,32)
+    EndIf
 
     *drawer\color\r = 1
     *drawer\color\a = 1
@@ -372,9 +376,9 @@ Module FTGL
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 310
-; FirstLine = 283
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 350
+; FirstLine = 322
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -99,7 +99,10 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
-  ViewportUI::FlipBuffer(*viewport)
+  If Not #USE_GLFW
+    ViewportUI::FlipBuffer(*viewport)
+  EndIf
+  
   
 EndProcedure
     
@@ -112,47 +115,37 @@ If Time::Init()
   Alembic::Init()
   FTGL::Init()
   Define f.f
-
+  
   *app = Application::New("Test",800,600)
   
   Scene::*current_scene = Scene::New()
   If Not #USE_GLFW
-    
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-    GLCheckError("After Creating Viewport")
+     *app\context = *viewport\context
+     
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
-    CompilerEndIf
-    GLCheckError("Before Creating GLContext")
-    *app\context = GLContext::New(0,#False,*viewport\gadgetID)
-    GLCheckError("After Creating GLContext")
-  EndIf
-  
-  Debug "Camera :: "+Str(*app\camera)
-  
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  EndIf  
   Matrix4::SetIdentity(@model)
-    
-  
 
   *pgm = *app\context\shaders("polymesh")
   GLCheckError("Before Creating Polymeshes")
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
+    Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/PureBasic/Noodle/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
     Define i
     *model = Model::New("FUCK")
     For i=0 To 0:
-      ;Define *r5.Model::Model_t = Alembic::LoadABCArchive(path)
-      Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
+      Define *abc.Model::Model_t = Alembic::LoadABCArchive(path)
+;       Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
 ;       Define *geom.Geometry::PolymeshGeometry_t = *r5\geom
 ;       numVertices + *geom\nbpoints
-      Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*r5)
+      Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*abc)
       Transform::SetTranslationFromXYZValues(*T, i*3,0,0)
-      Object3D::SetLocalTransform(*r5, *T)
-      Object3D::UpdateTransform(*r5,*model\globalT)
-      Object3D::AddChild(*model,*r5)
+      Object3D::SetLocalTransform(*abc, *T)
+      Object3D::UpdateTransform(*abc,*model\globalT)
+      Object3D::AddChild(*model,*abc)
     Next
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
     Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Elephant.abc","Alembic (*.abc)|*.abc",0)
@@ -189,11 +182,12 @@ If Time::Init()
 ;   PointCloud::Setup(*cloud,*pgm)
   Scene::AddModel(Scene::*current_scene,*model)
   Scene::Setup(Scene::*current_scene,*app\context)
- Application::Loop(*app,@Draw())
+  Application::Loop(*app,@Draw())
+  Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 147
-; FirstLine = 133
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 118
+; FirstLine = 105
 ; Folding = -
 ; EnableThread
 ; EnableXP

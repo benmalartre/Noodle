@@ -916,7 +916,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 859
-; FirstLine = 855
+; CursorPosition = 801
+; FirstLine = 776
 ; Folding = ------
 ; EnableXP

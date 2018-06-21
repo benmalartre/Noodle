@@ -250,6 +250,7 @@ DeclareModule OpenGLExt
     Prototype PFNGLUNIFORMMATRIX4X2FVPROC ( location.i, count.i, transpose.b, *value )
     Prototype PFNGLUNIFORMMATRIX3X4FVPROC ( location.i, count.i, transpose.b, *value )
     Prototype PFNGLUNIFORMMATRIX4X3FVPROC ( location.i, count.i, transpose.b, *value )
+    Prototype PFNGLDISABLECLIENTSTATEPROC ( enum.i )
   CompilerEndIf
     
   ;- OpenGL 3.0
@@ -519,6 +520,7 @@ DeclareModule OpenGLExt
   Global glUniformMatrix4x2fv.PFNGLUNIFORMMATRIX4X2FVPROC
   Global glUniformMatrix3x4fv.PFNGLUNIFORMMATRIX3X4FVPROC
   Global glUniformMatrix4x3fv.PFNGLUNIFORMMATRIX4X3FVPROC
+  Global glDisableClientState.PFNGLDISABLECLIENTSTATEPROC
   
   ;- OpenGL 3.0
   Global glColorMaski.PFNGLCOLORMASKIPROC
@@ -822,6 +824,7 @@ Module OpenGLExt
           setGLEXT( glUniformMatrix4x2fv,      "glUniformMatrix4x2fv" )
           setGLEXT( glUniformMatrix3x4fv,      "glUniformMatrix3x4fv" )
           setGLEXT( glUniformMatrix4x3fv,      "glUniformMatrix4x3fv" )
+          setGLEXT( glDisableClientState,      "glDisableClientState" )
         CompilerEndIf
         
         ;- OpenGL 3.0
@@ -1481,7 +1484,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 3
+; CursorPosition = 521
+; FirstLine = 518
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

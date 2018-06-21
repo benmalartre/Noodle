@@ -3,27 +3,23 @@
 EnableExplicit
 
 Alembic::Init()
-Global *manager = Alembic::*abc_manager
+Global *manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
 
 Global window = OpenWindow(#PB_Any,0,0,800,600,"Alembic Archive")
-Global explorer = TreeGadget(#PB_Any,0,0,800,600)
+Global load = ButtonGadget(#PB_Any,0,0,800,25, "Choose Alembic File")
+Global explorer = TreeGadget(#PB_Any,0,25,800,575)
 
 Procedure.i LogABCArchive(path.s)
   If FileSize(path)>0 And GetExtensionPart(path) = "abc"
     
     If Alembic::*abc_manager<>#Null
       Protected *abc_manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
-      MessageRequester("Alembic Lanager",Str(*abc_manager\manager))
       Global *abc_archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(*abc_manager,path)
       Global startframe = Alembic::ABC_GetStartFrame(*abc_archive\archive)
       Global endframe = Alembic::ABC_GetEndFrame(*abc_archive\archive)
       Global numsamples = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
       Global numsamples2 = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,1)
-      MessageRequester("NumSamples" ,Str(numsamples)+","+Str(numsamples2))
-      Debug "[Alembic] Nb Objects in Archive : "+Str(AlembicArchive::GetNbObjects(*abc_archive))
-      Define id = 1
       ; CreateObject List
-      
       Protected i,j
       Protected *abc_obj.AlembicObject::AlembicObject_t
       Protected *abc_par.AlembicObject::AlembicObject_t = #Null
@@ -33,8 +29,9 @@ Procedure.i LogABCArchive(path.s)
       Protected pName.s
       Protected infos.Alembic::ABC_Attribute_Sample_Infos
       
+      MessageRequester("Num Objects", Str(AlembicArchive::GetNbObjects(*abc_archive)))
+            
       For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
-        Debug "Alembic Object ID "+Str(i)
         *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
         ;Alembic::ABC_InitObject(*abc_obj\ptr,*abc_obj\type)
         
@@ -47,7 +44,7 @@ Procedure.i LogABCArchive(path.s)
           For j=0 To nbp-1
             Protected *mem = Alembic::ABC_GetPropertyName(*abc_obj\ptr,j)
             If *mem
-              pName = PeekS(*mem)
+              pName = PeekS(*mem, #PB_Ascii)
               Debug pName
               *prop = Alembic::ABC_GetProperty(*abc_obj\ptr,j)
               If *prop
@@ -98,7 +95,7 @@ Procedure.i LogABCArchive(path.s)
     Else
       Debug "[Alembic] : Invalid Manager"
     EndIf
-;     ProcedureReturn *model
+    ProcedureReturn *abc_archive
   Else
     Debug "[Alembic Archive] : Invalid File"
     ProcedureReturn #Null
@@ -106,14 +103,37 @@ Procedure.i LogABCArchive(path.s)
   
 EndProcedure
 
-Define path.s = OpenFileRequester("Alembic Archive","","Alembic (*.abc)|*.abc",0)
-LogABCArchive(path)
-
+Define quit.b = #False
+Define ev.i
 Repeat
-Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 37
+  ev = WaitWindowEvent()
+  If ev = #PB_Event_CloseWindow
+    quit = #True
+  ElseIf ev = #PB_Event_Gadget
+    If EventGadget() = load And EventType() = #PB_EventType_LeftClick 
+      ClearGadgetItems(explorer)
+      Define path.s = OpenFileRequester("Alembic Archive","","Alembic (*.abc)|*.abc",0)
+      Define *archive.AlembicArchive::AlembicArchive_t = LogABCArchive(path)
+  
+      If *archive <> #Null
+        Debug AlembicManager::GetNumOpenArchives(*manager)
+        AlembicManager::CloseArchive(*manager, *archive)
+      EndIf
+    EndIf
+    
+  EndIf
+  
+  
+Until quit = #True
+
+Alembic::Terminate()
+
+  
+
+
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 31
+; FirstLine = 27
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -141,7 +141,7 @@ Module InstanceCloud
      GetShapeDataSize(*Me)
     ; Get Point Cloud Datas
     Protected s_glfloat.GLfloat
-    Protected s_glint.GLint
+    Protected s_gluint.GLuint
     Protected size_t.i = *geom\nbpoints * SizeOf(s_glfloat)
     Protected size_s.i = GetShapeDataSize(*Me)
 
@@ -159,7 +159,6 @@ Module InstanceCloud
     
 
     ; Push Buffer to GPU
-    ;glBufferData(#GL_ARRAY_BUFFER,size_t*10,*geom\a_floats\GetPtr(),#GL_STREAM_DRAW)
     glBufferData(#GL_ARRAY_BUFFER,size_s*4+size_t*17,#Null,#GL_DYNAMIC_DRAW)
     GetShapeArrayDatas(*Me,size_s)
     glBufferSubData(#GL_ARRAY_BUFFER,size_s*4,size_t*3,CArray::GetPtr(*geom\a_positions,0))
@@ -169,11 +168,13 @@ Module InstanceCloud
     glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*13,size_t*3,CArray::GetPtr(*geom\a_scale,0))
     glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*16,size_t,CArray::GetPtr(*geom\a_size,0))
     
-     
-  ;   ; Create Element Array Buffer
-  ;   glGenBuffers(1,@*p\eabs(*ctx\ID))
-  ;   glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eabs(*ctx\ID))
-  ;   glBufferData(#GL_ELEMENT_ARRAY_BUFFER,*p\shape\GetNbIndices()*SizeOf(s_glint),*p\shape\GetIndices(),#GL_DYNAMIC_DRAW)
+    ; Create Element Array Buffer
+    glGenBuffers(1,@*Me\eab)
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
+                 CArray::GetCount(*Me\shape\indices)* SizeOf(s_gluint),
+                 CArray::GetPtr(*Me\shape\indices,0),
+                 #GL_DYNAMIC_DRAW)
     
     ; Shape Datas
     glEnableVertexAttribArray(0)
@@ -294,9 +295,9 @@ Module InstanceCloud
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
         glBindVertexArray(*Me\vao)
-        glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+        ;glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
         BuildGLData(*Me)
-        glBindBuffer(#GL_ARRAY_BUFFER,0)
+        ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
       EndIf
@@ -330,11 +331,13 @@ Module InstanceCloud
 ;       
 ;       msg + StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\y)+","+Chr(10)
 ;     Next
-;     
-;     MessageRequester("FRAMEWORK",msg)
     
-    ;glDrawElementsInstanced(	#GL_TRIANGLES,*Me\shape\nbt*3,#GL_UNSIGNED_INT,CArray::GetPtr(*Me\shape\indices,0),*geom\nbpoints);
-    glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
+    ;glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,0)
+    ;glDisableClientState(#GL_ELEMENT_ARRAY_BUFFER)
+    ;glDrawElementsInstanced(	#GL_TRIANGLES,*Me\shape\nbt*3,#GL_UNSIGNED_INT,CArray::GetPtr(*Me\shape\indices, 0),*geom\nbpoints)
+    
+    glDrawElementsInstanced(#GL_TRIANGLES,CArray::GetCount(*Me\shape\indices),#GL_UNSIGNED_INT,0,*geom\nbpoints)
+    ;glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
     glBindVertexArray(0)
     
   EndIf
@@ -355,8 +358,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 327
-; FirstLine = 322
+; CursorPosition = 174
+; FirstLine = 158
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

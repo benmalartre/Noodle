@@ -133,11 +133,12 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Instances",width,height)
    If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *app\context = *viewport\context
+     
     *viewport\camera = *app\camera
-    *app\context = GLContext::New(0,#False,*viewport\gadgetID)
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::OnEvent(*viewport ,#PB_Event_SizeWindow)
-  EndIf
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  EndIf  
   
   Define glVersion.s = PeekS(glGetString(#GL_VERSION),-1,#PB_Ascii)
   MessageRequester("OpenGL Version",glVersion)
@@ -168,7 +169,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_SPHERE,1024)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_SPHERE,64)
   Debug CArray::GetCount(*cloud\shape\positions)
   Debug CArray::GetCount(*cloud\shape\indices)
 ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -275,8 +276,8 @@ Procedure Draw(*app.Application::Application_t)
     CompilerEndIf
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 199
-; FirstLine = 170
+; CursorPosition = 171
+; FirstLine = 243
 ; Folding = -
 ; EnableXP
 ; Executable = Test

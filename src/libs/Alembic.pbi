@@ -278,14 +278,14 @@ DeclareModule Alembic
 
 
   Structure ABC_Skeleton_Sample
-  	*id;
-  	*position;
-  	*orientation;
-  	*scale;
-  	*staticposition;
-  	*staticorientation;
-  	*staticscale;
-  	*color;
+  	*id
+  	*position
+  	*orientation
+  	*scale
+  	*staticposition
+  	*staticorientation
+  	*staticscale
+  	*color
   EndStructure
 
   
@@ -301,7 +301,7 @@ DeclareModule Alembic
   EndStructure
 
   Structure ABC_Attribute_Sample
-  	*datas;
+  	*datas
   EndStructure
   
   
@@ -396,7 +396,6 @@ DeclareModule Alembic
   PrototypeC ABCGETSKELETONSAMPLEDESCRIPTION(*object,frame.f,*infos.ABC_Skeleton_Sample_Infos)
   PrototypeC ABCUPDATESKELETONSAMPLE(*object,*infos.ABC_Skeleton_Sample_Infos,*iosample.ABC_Skeleton_Sample) 
   PrototypeC ABCGETENVELOPE(*object,*iosample.ABC_Envelope_Sample)
-  PrototypeC ABCOBJECTISPROPERTY(*object)
   
   PrototypeC ABCTESTSTRING(input.p-utf8)
   PrototypeC ABCGETFLOATSIZE()
@@ -426,7 +425,6 @@ DeclareModule Alembic
     Global ABC_HasProperty.ABCHASPROPERTY = GetFunction(alembic_lib,"ABC_HasProperty")
     Global ABC_GetInterpretation.ABCGETINTERPRETATION = GetFunction(alembic_lib,"ABC_GetInterpretation")
     Global ABC_ObjectIsXForm.ABCOBJECTISXFORM = GetFunction(alembic_lib,"ABC_ObjectIsXForm")
-    Global ABC_ObjectIsProperty.ABCOBJECTISPROPERTY = GetFunction(alembic_lib,"ABC_ObjectIsProperty")
     Global ABC_TestXForm.ABCTESTXFORM = GetFunction(alembic_lib,"ABC_TestXForm")
     Global ABC_GetXFormSample.ABCGETXFORMSAMPLE = GetFunction(alembic_lib,"ABC_GetXFormSample")
     Global ABC_ObjectIsPolymesh.ABCOBJECTISPOLYMESH = GetFunction(alembic_lib,"ABC_ObjectIsPolymesh")
@@ -456,8 +454,6 @@ DeclareModule Alembic
     MessageRequester("Alembic Error","Can't Find Alembic C Library!!")
   EndIf
   
-  Declare.s ABCGetStringFromTCHAR(*tchar)
-  Declare ABCDebugString(*tchar)
   Declare Init()
   Declare Terminate()
   Declare LoadABCArchive(path.s)
@@ -500,7 +496,7 @@ DeclareModule AlembicObject
   Declare ApplyProperty2(*Me.AlembicObject_t,name.s,*arr.CArray::CArrayT)
   Declare LogProperties(*Me.AlembicObject_t)
 EndDeclareModule
-;}
+
 
 ; ============================================================================
 ;  Alembic Archive Module Declaration
@@ -554,17 +550,7 @@ EndDeclareModule
 ; ============================================================================
 ;  Alembic Module Implementation
 ; ============================================================================
-Module Alembic
-  Procedure.s ABCGetStringFromTCHAR(*tchar)
-    Protected lStr.s = PeekS(*tchar,-1,#PB_UTF8)  
-    ProcedureReturn lStr
-  EndProcedure
-  
-  Procedure ABCDebugString(*tchar)
-    Protected log.s = ABCGetStringFromTCHAR(*tchar)
-    Debug log
-  EndProcedure 
-  
+Module Alembic  
   Procedure Init()
    *abc_manager = AlembicManager::New()
   EndProcedure
@@ -592,7 +578,6 @@ Module Alembic
         Protected *abc_par.AlembicObject::AlembicObject_t = #Null
         Protected *child.Object3D::Object3D_t
         For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
-          Debug "Alembic Object ID "+Str(i)
           *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
           If *abc_obj <> #Null
             AlembicObject::Init(*abc_obj,*abc_par)
@@ -654,7 +639,7 @@ Module AlembicManager
     
     
     If Not found
-      
+      Debug "Open Archive : "+ path
       *archive = AlembicArchive::New()
       *archive\path = path
       *archive\archive = ABC_OpenArchive(*m\manager,path)
@@ -669,7 +654,7 @@ Module AlembicManager
 ;       ReDim *m\archives.AlembicArchive::AlembicArchive_t(cnt)
 ;       *m\archives(cnt-1) = *archive
       
-
+        MessageRequester("NUM OBJECTS : ", Str(AlembicArchive::GetNbObjects(*archive)))
       For i=0 To AlembicArchive::GetNbObjects(*archive)-1
         AlembicArchive::CreateObjectByID(*archive,i)
       Next i
@@ -683,17 +668,10 @@ Module AlembicManager
   ; Close Archive
   ;---------------------------------------------------------
   Procedure CloseArchive(*m.AlembicManager_t,*a.AlembicArchive::AlembicArchive_t)
-    If nbo>0
-      Protected i
-      For i=0 To nbo-1
-        If FindMapElement(*m\archives(),*a\path)
-          DeleteMapElement(*m\archives(),*a\path)
-          Break
-        EndIf
-      Next
+    If FindMapElement(*m\archives(),*a\path)
+      DeleteMapElement(*m\archives(),*a\path)
     EndIf
-    
-    ABC_CloseArchive(*m\manager,*a\archive)
+    Debug "CLOSED : "+Str(ABC_CloseArchive(*m\manager,*a\archive))
     ClearStructure(*a,AlembicArchive::AlembicArchive_t)
     FreeMemory(*a)
   
@@ -704,7 +682,7 @@ Module AlembicManager
   ; Get Num Open Archives
   ;---------------------------------------------------------
   Procedure.i GetNumOpenArchives(*m.AlembicManager_t)
-    
+    ProcedureReturn ABC_GetNumOpenArchives(*m\manager)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -739,7 +717,6 @@ Module AlembicManager
   ; Destuctor
   ;------------------------------------------------------------------
   Procedure Delete(*m.AlembicManager_t)
-    ;glDelete
     If *m And *m\manager
       ABC_DeleteArchiveManager(*m\manager)
       ClearStructure(*m,AlembicManager_t)
@@ -750,13 +727,11 @@ Module AlembicManager
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  ;{
   Procedure.i New()
     Protected *Me.AlembicManager_t = AllocateMemory(SizeOf(AlembicManager_t))
     InitializeStructure(*Me,AlembicManager_t)
     *Me\manager = ABC_CreateArchiveManager()
     *Me\nbopen = ABC_GetNumOpenArchives(*Me\manager)
-    
     ProcedureReturn *Me
   EndProcedure
 EndModule
@@ -764,7 +739,6 @@ EndModule
 ; ============================================================================
 ;  Alembic Archive Module Implementation
 ; ============================================================================
-
 Module AlembicArchive
   UseModule Alembic
   ;---------------------------------------------------------
@@ -772,10 +746,14 @@ Module AlembicArchive
   ;---------------------------------------------------------
   Procedure CreateObjectByID(*archive.AlembicArchive_t,id.i)
     Protected *obj.AlembicObject::AlembicObject_t = AlembicObject::New(*archive\archive,id)
-    
+        
     *archive\objects(id)=*obj
-    Protected name.s = PeekS(ABC_GetObjectName(*obj\ptr),-1,#PB_Ascii)
-    *archive\m_objects(name) = id
+    If *obj\ptr
+      Protected name.s = PeekS(ABC_GetObjectName(*obj\ptr),-1,#PB_Ascii)
+      Debug name
+      *archive\m_objects(name) = id
+    EndIf
+    
     ProcedureReturn *obj
   EndProcedure
   
@@ -1292,7 +1270,7 @@ Module AlembicObject
         *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_MATRIX4,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
         
       Default
-        MessageRequester("[Alembic]","Create Attribute From Property Failed!"+Chr(10)+*infos\name+" Traits Unsupported!!")
+        MessageRequester("[Alembic]","Create Attribute From Property Failed!"+Chr(10)+name+" Traits Unsupported!!")
     EndSelect
     
     If *attribute
@@ -1612,7 +1590,7 @@ Module AlembicObject
      CreateSample(*o)
      
      Protected *cloudinfos.Alembic::ABC_PointCloud_Sample_Infos = *o\infos
-      Protected *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New(*o\name,Shape::#SHAPE_CUBE,*cloudinfos\nbpoints)
+     Protected *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New(*o\name,Shape::#SHAPE_CUBE,*cloudinfos\nbpoints)
 ;       *node.AlembicNode::AlembicNode_t = AlembicNode::New(*cloud,*o)
 ;       Stack::AddNode(*cloud\stack,*node)
       *o\obj = *cloud
@@ -1653,40 +1631,38 @@ Module AlembicObject
     
     *Me\obj = #Null
     *Me\ptr = Alembic::ABC_GetObjectFromArchiveByID(*archive,id)
-    
-    *Me\name = PeekS(Alembic::ABC_GetObjectName(*Me\ptr),-1,#PB_UTF8)
-    If Alembic::ABC_ObjectIsXForm(*Me\ptr) 
-      Debug "[Alembic] : Object is a XFORM..."
-      *Me\type = Alembic::#ABC_OBJECT_XFORM
-      *Me\sample = #Null
-      
-    ElseIf Alembic::ABC_ObjectIsPolymesh(*Me\ptr)
-      Debug "[Alembic] : Object is a POLYMESH..."
-      *Me\type = Alembic::#ABC_OBJECT_POLYMESH
-      *Me\sample = #Null
-      
-    ElseIf Alembic::ABC_ObjectIsPointCloud(*Me\ptr)
-      Debug "[Alembic] : Object is a POINTCLOUD..."
-      *Me\type = Alembic::#ABC_OBJECT_POINTCLOUD
-      *Me\sample = #Null
-  
-    ElseIf Alembic::ABC_ObjectIsProperty(*Me\ptr)
-      Debug "[Alembi] : Object is a PROPERTY..."
-      
-    Else
-      Debug "[Alembic] : Object is Unknown..."
-      *Me\type = Alembic::#ABC_OBJECT_UNKNOWN
-      *Me\sample = #Null
+    If *Me\ptr
+      *Me\name = PeekS(Alembic::ABC_GetObjectName(*Me\ptr),-1,#PB_UTF8)
+      If Alembic::ABC_ObjectIsXForm(*Me\ptr) 
+        *Me\type = Alembic::#ABC_OBJECT_XFORM
+        *Me\sample = #Null
+        
+      ElseIf Alembic::ABC_ObjectIsPolymesh(*Me\ptr)
+        *Me\type = Alembic::#ABC_OBJECT_POLYMESH
+        *Me\sample = #Null
+        
+  ;     ElseIf Alembic::ABC_ObjectIsSubD(*Me\ptr)
+  ;       Debug "[Alembic] : Object is a SUBD..."
+  ;       *Me\type = Alembic::#ABC_OBJECT_SUBD
+  ;       *Me\sample = #Null
+        
+      ElseIf Alembic::ABC_ObjectIsPointCloud(*Me\ptr)
+        *Me\type = Alembic::#ABC_OBJECT_POINTCLOUD
+        *Me\sample = #Null
+        
+      Else
+        *Me\type = Alembic::#ABC_OBJECT_UNKNOWN
+        *Me\sample = #Null
+      EndIf
     EndIf
-    
     
     ProcedureReturn *Me
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1614
-; FirstLine = 1609
-; Folding = -----------
+; CursorPosition = 1592
+; FirstLine = 1570
+; Folding = ----------
 ; EnableXP
 ; Executable = bin/Alembic.app
 ; Debugger = Standalone

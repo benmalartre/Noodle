@@ -169,7 +169,8 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+     *app\context = *viewport\context
+     
      
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
@@ -258,8 +259,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 174
-; FirstLine = 171
+; CursorPosition = 170
+; FirstLine = 157
 ; Folding = -
 ; EnableThread
 ; EnableXP

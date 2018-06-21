@@ -34,20 +34,17 @@ DeclareModule GLContext
   Structure GLContext_t
     *window.GLFWwindow      ;main window holding gl context shared by all other gl windows
     *writer.FTGL::FTGL_Drawer
-    *applecontext
     width.d
     height.d
-    gadgetID.i
     useGLFW.b
     ID.i
     shader.GLuint
     
     Map *shaders.Program::Program_t()
-    
-    
   EndStructure
   
-  Declare New(ID.i,useGLFW.b=#False,gadgetID.i=0)
+  Declare New(width.i, height.i, useGLFW.b=#False, *window.GLFW::GLFWwindow=#Null)
+  Declare Setup(*Me.GLContext_t)
   Declare Delete(*Me.GLContext_t)
 EndDeclareModule
 
@@ -72,20 +69,21 @@ Module GLContext
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(ID.i,useGLFW.b=#False,gadgetID.i=0)
-    
+  Procedure.i New(width.i, height.i, useGLFW.b=#False, *window.GLFW::GLFWwindow=#Null)
+    MessageRequester("NEW GL CONTEXT", "USE GLFW : "+Str(useGLFW))
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
     
     *Me\useGLFW = useGLFW
-    *Me\gadgetID = gadgetID
-    *Me\ID = ID
+    *Me\width = width
+    *Me\height = height
+    *Me\ID = 0
     
     If useGLFW
   ;     glfwDebugVersion()
-      If gadgetID
-        *Me\window = gadgetID
+      If *window
+        *Me\window = *window
         GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
       Else
         Protected *monitor.GLFW::GLFWmonitor  = GLFW::glfwGetPrimaryMonitor()
@@ -132,18 +130,20 @@ Module GLContext
         ; Connect Backward
         GLFW::glfwSetWindowUserPointer(*Me\window,*Me)
         GLFW::glfwMakeContextCurrent(*Me\window)
-         GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
+        GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
       EndIf
   
     Else
-      *Me\width = GadgetWidth(*Me\gadgetID)
-      *Me\height = GadgetHeight(*Me\gadgetID)
       *Me\window = #Null
-
-      ;SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-     
     EndIf
     
+    ProcedureReturn *Me
+  EndProcedure
+  
+  ;---------------------------------------------
+  ;  Load Extensions and Build Shaders
+  ;---------------------------------------------
+  Procedure Setup(*Me.GLContext_t)
     GLLoadExtensions()
 
     ; Build Shaders
@@ -159,8 +159,9 @@ Module GLContext
     GLCheckError("Before Creating FTGL")
     *Me\writer = FTGL::New()
     GLCheckError("After Creating FTGL")
-    ProcedureReturn *Me
+    
   EndProcedure
+  
   
 EndModule
 
@@ -170,9 +171,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 138
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 72
+; FirstLine = 67
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

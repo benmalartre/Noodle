@@ -93,7 +93,7 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
-*app\context = GLContext::New(0,#False,*viewport\gadgetID)
+*app\context = *viewport\context
 *viewport\camera = *app\camera
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
@@ -160,6 +160,8 @@ Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 95
+; FirstLine = 72
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

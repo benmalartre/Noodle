@@ -20,7 +20,6 @@ DeclareModule OpenGL
   CompilerIf Not Defined(USE_GLFW,#PB_Constant)
     #USE_GLFW = #False
   CompilerElse
-    MessageRequester("hé","h")
     #GLFW_GETPROCADDRESS_DEBUG = 0
   CompilerEndIf
   
@@ -1611,7 +1610,8 @@ EndDeclareModule
 Module OpenGL
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 23
+; CursorPosition = 22
+; FirstLine = 18
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

@@ -16,7 +16,6 @@ DeclareModule ViewportUI
   Structure ViewportUI_t Extends UI_t
     *camera.Camera::Camera_t
     *context.GLContext::GLContext_t
-    *applecontext
   EndStructure
   
   Interface IViewportUI Extends IUI
@@ -61,6 +60,7 @@ Module ViewportUI
     Protected h = *parent\height
     
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
+    *Me\context = GLContext::New(w,h,#False)
 
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       ; Allocate Pixel Format Object
@@ -92,7 +92,7 @@ Module ViewportUI
       ; Associate Context With OpenGLGadget NSView
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
-      *Me\applecontext = ctx
+      *Me\context\ID = ctx
       
     CompilerElse
       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
@@ -105,6 +105,7 @@ Module ViewportUI
    
     CloseGadgetList()
     
+    GLContext::Setup(*Me\context)
     View::SetContent(*parent,*Me)
 
     ProcedureReturn *Me
@@ -402,10 +403,12 @@ Module ViewportUI
   ; Set Context
   ;-------------------------------------------------------
   Procedure SetContext(*v.ViewportUI_t)
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      CocoaMessage( 0, *v\applecontext, "makeCurrentContext" )
-    CompilerElse
-      SetGadgetAttribute(*v\gadgetID, #PB_OpenGL_SetContext, #True)
+    CompilerIf Not #USE_GLFW
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+        CocoaMessage( 0, *v\context\ID, "makeCurrentContext" )
+      CompilerElse
+        SetGadgetAttribute(*v\gadgetID, #PB_OpenGL_SetContext, #True)
+      CompilerEndIf
     CompilerEndIf
   EndProcedure
   
@@ -413,20 +416,22 @@ Module ViewportUI
   ; Flip Buffer
   ;-------------------------------------------------------
   Procedure FlipBuffer(*v.ViewportUI_t)
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      CocoaMessage( 0, *v\applecontext, "flushBuffer" )
-    CompilerElse
-      If Not #USE_GLFW
-        SetGadgetAttribute(*v\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-      EndIf
-    CompilerEndIf
+    CompilerIf Not #USE_GLFW
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+        CocoaMessage( 0, *v\context\ID, "flushBuffer" )
+      CompilerElse
+        If Not #USE_GLFW
+          SetGadgetAttribute(*v\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+        EndIf
+      CompilerEndIf
+     CompilerEndIf
   EndProcedure
   
   
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 157
-; FirstLine = 153
-; Folding = ---
+; CursorPosition = 426
+; FirstLine = 394
+; Folding = ----
 ; EnableXP

@@ -127,7 +127,7 @@ Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\applecontext, "makeCurrentContext" )
+    CocoaMessage( 0, *viewport\context\ID, "makeCurrentContext" )
   CompilerEndIf
   If EventGadget() = *viewport\gadgetID
     Select EventType()
@@ -168,8 +168,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 136
-; FirstLine = 123
+; CursorPosition = 129
+; FirstLine = 125
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe
