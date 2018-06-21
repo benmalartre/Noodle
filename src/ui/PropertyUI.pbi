@@ -101,13 +101,9 @@ Module PropertyUI
           ControlProperty::OnEvent(*Me\prop,#PB_EventType_Resize,@ev_datas)
         CompilerEndIf
       Case #PB_Event_Gadget
-        Debug " ooooooooo PropertyUI Event oooooooooooooo"
         ControlProperty::OnEvent(*Me\prop,EventType(),@ev_datas)
       Case #PB_Event_Menu
         ControlProperty::OnEvent(*Me\prop,EventMenu(),#Null)
-
-        
-        
     EndSelect
     
   EndProcedure
@@ -167,7 +163,6 @@ Module PropertyUI
   EndProcedure
  
   ;  Setup From 3D Object
-  ; need to port 3D Object to graph  Node for unified editing
   ; ----------------------------------------
   Procedure SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
@@ -177,53 +172,37 @@ Module PropertyUI
     ControlProperty::AppendStart(*p)
   
     Protected v.Math::v3f32
-   Protected msg.s
     Protected *attr.Attribute::Attribute_t
     Define i
     ForEach *object\m_attributes()
       *attr = *object\m_attributes()
-      msg+*attr\name+" : ReadOnly "+Str(*attr\readonly)+", Constant "+Str(*attr\constant)+Chr(10)
       If Not *attr\readonly And *attr\constant
         Select *attr\datatype
           Case Attribute::#ATTR_TYPE_BOOL
-            msg.s + ">>> Add BOOl Control"+Chr(10)
             ControlProperty::AddBoolControl(*p,*attr\name,*attr\name,#False,*attr)
           Case Attribute::#ATTR_TYPE_INTEGER
-            msg.s + ">>> Add INT Control"+Chr(10)
             ControlProperty::AddIntegerControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_FLOAT
-            msg.s + ">>> Add FLOAT Control"+Chr(10)
             ControlProperty::AddFloatControl(*p,*attr\name,*attr\name,0,*attr)
-  ;         Case Attribute::#ATTR_TYPE_VECTOR2
-  ;           Protected v2.v2f32
-  ;           ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,@v2,*attr)
+          Case Attribute::#ATTR_TYPE_VECTOR2
+            Protected v2.v2f32
+            ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,@v2,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR3
-            msg.s + ">>> Add VECTOR3 Control"+Chr(10)
             Protected v3.v3f32
             ControlProperty::AddVector3Control(*p,*attr\name,*attr\name,@v3,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR4
-            msg.s + ">>> Add VECTOR4 Control"+Chr(10)
             Protected c4.c4f32
             ControlProperty::AddColorControl(*p,*attr\name,*attr\name,@c4,*attr)
           Case Attribute::#ATTR_TYPE_QUATERNION
-            msg.s + ">>> Add QUATERNION Control"+Chr(10)
             Protected q.q4f32
             ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,@q,*attr)
           Case Attribute::#ATTR_TYPE_MATRIX4
-            
-            msg.s + ">>> Add MATRIX4 Control"+Chr(10)
             Protected m.m4f32
             Matrix4::SetIdentity(@m)
-            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,@m,*attr)
-            
+            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,@m,*attr) 
         EndSelect
       EndIf
-      
     Next
-    
-    MessageRequester("PropertyUI"+*object\name,msg)
-  
-  ;   *Me\prop\EndGroup()
     
     ControlProperty::AppendStop(*p)
   
@@ -234,9 +213,8 @@ Module PropertyUI
   Procedure SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
-    Clear(*Me);
+    Clear(*Me)
   
-    
     Protected *p.ControlProperty::ControlProperty_t = *Me\prop  
     *p\label = *node\type
     
@@ -245,50 +223,49 @@ Module PropertyUI
    
     Protected *attr.Attribute::Attribute_t
     Define i
-    ; ---[ Add Input Ports ]----------------------------------------------------
+    ; Add Input Ports 
     ForEach *node\inputs()
       With *node\inputs()
         
         If Not \connected
           Select \currenttype
             Case Attribute::#ATTR_TYPE_BOOL
-              Protected *bVal.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *bVal.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_FLOAT
-              Protected *fVal.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *fVal.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddFloatControl(*p,\name,\name,CArray::GetValueF(*fVal,0),*node\inputs())
-    
               
             Case Attribute::#ATTR_TYPE_INTEGER
-              Protected *iVal.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *iVal.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddIntegerControl(*p,\name,\name,CArray::GetValueI(*iVal,0),*node\inputs())
               
-  ;           Case Attribute::#ATTR_TYPE_VECTOR2
-  ;             Protected vVal2.CArrayV2F32 = NodePort::AcquireInputData(*node\inputs());\value
-  ;             ControlProperty::AddVector2Control(\name,\name,vVal2\GetValue(0),*node\inputs())
+            Case Attribute::#ATTR_TYPE_VECTOR2
+              Protected *vVal2.CArray::CArrayV2F32 = NodePort::AcquireInputData(*node\inputs())
+              ControlProperty::AddVector2Control(*p,\name,\name,CArray::GetValue(*vVal2,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_VECTOR3
-              Protected *vVal3.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *vVal3.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddVector3Control(*p,\name,\name,CArray::GetValue(*vVal3,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_VECTOR4
-              Protected *vVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *vVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*vVal4,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_QUATERNION
-              Protected *qVal4.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *qVal4.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddQuaternionControl(*p,\name,\name,CArray::GetValue(*qVal4,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_COLOR
-              Protected *cVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs());\value
+              Protected *cVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_REFERENCE
               ControlProperty::AddReferenceControl(*p,\name,\reference,*node\inputs())
               
             Case Attribute::#ATTR_TYPE_STRING
-              Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs());\value
+              Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddStringControl(*p,\name,CArray::GetValueStr(*sVal,0),*node\inputs())
           EndSelect
         EndIf
@@ -315,14 +292,11 @@ Module PropertyUI
     EndIf
     CloseGadgetList()
   EndProcedure
-
-
-
-
+  
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 100
-; FirstLine = 93
+; CursorPosition = 232
+; FirstLine = 116
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

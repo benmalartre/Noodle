@@ -300,47 +300,31 @@ Module Application
   ;---------------------------------------------------------
   Procedure OnMouseMove(*window.GLFWwindow,x.d,y.d)
     Protected *app.Application_t = glfwGetWindowUserPointer(*window)
-    Debug "______________________________________________________"
-    Debug "On Mouse Move :("+Str(x)+","+Str(y)+")"
-    Debug "Mouse Position :("+Str(*app\mouseX)+","+Str(*app\mouseY)+")"
     
     If *app\down
-  
      Protected *c.Camera::Camera_t = *app\camera
      
      Protected deltax.d = x-*app\mouseX
      Protected deltay.d = y-*app\mouseY
      Protected w.i,h.i
      glfwGetWindowSize(*window,@w,@h)
-     Debug "Size ("+Str(w)+","+Str(h)+")"
-     Debug "Delta ("+Str(deltax)+","+Str(deltay)+")"
      If *app\idle
        ; Camera Events
         Select *app\idle
           Case #TOOL_PAN
-            Debug ">>>>>>>>>>>>>>>>>>>>>>> PAN"
-              Camera::Pan(*c,deltax,deltay,w,h)
+            Camera::Pan(*c,deltax,deltay,w,h)
     
-            Case #TOOL_DOLLY
-              Debug ">>>>>>>>>>>>>>>>>>>>>>> DOLLY"
-              Camera::Dolly(*c,deltax,deltay,w,h)
+          Case #TOOL_DOLLY
+            Camera::Dolly(*c,deltax,deltay,w,h)
               
-            Case #TOOL_ORBIT
-              Debug ">>>>>>>>>>>>>>>>>>>>>>> ORBIT"
+          Case #TOOL_ORBIT
             Camera::Orbit(*c,deltax,deltay,w,h)
-    
         EndSelect
-       
       EndIf
     EndIf
-  
-  ;   v\DrawCursor()
-    
+      
    *app\mouseX = x
    *app\mouseY = y
-    
-  
-    
   EndProcedure
   
   ; On Position Window
@@ -353,7 +337,6 @@ Module Application
   ; Mouse Button Event
   ;---------------------------------------------------------
   Procedure OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
-    Debug "GLFW Mouse Button Called ---------------------------------> :)"
     Protected *app.Application_t = glfwGetWindowUserPointer(*window)
 
     Select action
@@ -534,8 +517,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 187
-; FirstLine = 177
+; CursorPosition = 335
+; FirstLine = 312
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

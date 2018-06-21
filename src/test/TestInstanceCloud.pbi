@@ -169,7 +169,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_SPHERE,64)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_BUNNY,256)
   Debug CArray::GetCount(*cloud\shape\positions)
   Debug CArray::GetCount(*cloud\shape\indices)
 ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -277,7 +277,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 171
-; FirstLine = 243
+; FirstLine = 162
 ; Folding = -
 ; EnableXP
 ; Executable = Test

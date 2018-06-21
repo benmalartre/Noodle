@@ -784,11 +784,8 @@ Module ViewManager
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
     If *manager = #Null Or event = -1: ProcedureReturn: EndIf
-    
-  
-        
+
     Select event
-        
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
         View::OnEvent(*manager\main,#PB_Event_Timer)
@@ -916,7 +913,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 801
-; FirstLine = 776
+; CursorPosition = 799
+; FirstLine = 777
 ; Folding = ------
 ; EnableXP

@@ -32,9 +32,6 @@ Module Graph
   EndProcedure  
   
   Procedure ResolveSetReference(*port.NodePort::NodePort_t)
-    
-
-    
     Protected *node.Node::Node_t = *port\node
     Protected refname.s = NodePort::AcquireReferenceData(*ref)
     Debug "[SetDataNode] Reference Name : "+refname
@@ -133,9 +130,8 @@ Module Graph
   EndProcedure
 
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 28
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 33
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

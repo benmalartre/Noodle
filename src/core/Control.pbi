@@ -265,8 +265,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 255
-; FirstLine = 203
+; CursorPosition = 102
+; FirstLine = 202
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

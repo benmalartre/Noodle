@@ -165,7 +165,7 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("TestMesh",width,height)
+   *app = Application::New("TestDrawer",width,height)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
@@ -259,7 +259,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 170
+; CursorPosition = 167
 ; FirstLine = 157
 ; Folding = -
 ; EnableThread

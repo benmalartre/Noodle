@@ -104,7 +104,9 @@ DeclareModule Globals
     #TOOL_MAX
   EndEnumeration
   
-;   #USE_VECTOR_DRAWING = #False
+  ; ----------------------------------------------------------------------------
+  ; Vector Drawing
+  ; ----------------------------------------------------------------------------
   CompilerIf Not Defined(USE_VECTOR_DRAWING,#PB_Constant)
     CompilerIf #PB_Compiler_Version<540
       #USE_VECTOR_DRAWING = #False
@@ -242,6 +244,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 106
+; FirstLine = 176
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

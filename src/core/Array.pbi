@@ -73,7 +73,7 @@ DeclareModule CArray
   EndStructure
   
   Structure CArrayStr Extends CArrayT
-    List str.s()
+    List _str.s()
   EndStructure
   
   Declare GetPtr(*array.CArrayT,index.i)
@@ -244,8 +244,8 @@ Module CArray
     If index>=0 And index<*array\itemCount
       offset.i = index* *array\itemSize
       Protected *sa.CArrayStr = *array
-      SelectElement(*sa\Str(),index)
-      ProcedureReturn *sa\Str()
+      SelectElement(*sa\_str(),index)
+      ProcedureReturn *sa\_str()
     EndIf
   EndProcedure
   
@@ -331,10 +331,8 @@ Module CArray
     If index>=0 And index<*array\itemCount
       offset.i = index* *array\itemSize
       Protected *sa.CArrayStr = *array
-      SelectElement(*sa\Str(),index)
-      *sa\Str() = value
-      PokeI(*array\data+offset,@*sa\Str())
-;       CopyMemory(@value,*array\data+offset,*array\itemSize)
+      SelectElement(*sa\_str(),index)
+      *sa\_str() = value
     EndIf
   EndProcedure
   
@@ -464,9 +462,9 @@ Module CArray
     EndIf
     
     Protected *sa.CArrayStr = *array
-    AddElement(*sa\Str())
-    *sa\Str() = item
-    PokeI(*array\data+nb* *array\itemSize,@*sa\Str())
+    AddElement(*sa\_str())
+    *sa\_str() = item
+    PokeI(*array\data+nb* *array\itemSize,@*sa\_str())
     *array\itemCount + 1
   EndProcedure
   
@@ -478,17 +476,7 @@ Module CArray
     Protected nba = *array\itemCount
     Protected nbo = *other\itemCount
     
-    If *array\type = #ARRAY_STR
-      Protected *saa.CArrayStr = *array
-      Protected *sao.CArrayStr = *other
-      
-      LastElement(*saa\Str())
-      ForEach *sao\Str()
-        AddElement(*saa\Str())
-        *saa\Str() = *sao\Str()
-      Next
-     
-    ElseIf *Array\itemSize = *other\itemSize
+    If *array\itemSize = *other\itemSize
       If *array\data = #Null
         *array\data = AllocateMemory(nbo* *array\itemSize)
       Else
@@ -497,11 +485,18 @@ Module CArray
       
       CopyMemory(*other\data,*array\data+nba* *array\itemSize,nbo * *array\itemSize)
       *array\itemCount + nbo
+      
+      If *array\type = #ARRAY_STR
+        Protected *saa.CArrayStr = *array
+        Protected *sao.CArrayStr = *other
+        
+        LastElement(*saa\_str())
+        ForEach *sao\_str()
+          AddElement(*saa\_str())
+          *saa\_str() = *sao\_str()
+        Next
+      EndIf
     EndIf
-    
-    
-    
-    
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -627,22 +622,18 @@ Module CArray
     If *array\type = #Array_STR
       Protected i
       Protected *sa.CArrayStr = *array
-      If count>ListSize(*sa\Str())
-        For i=0 To count-ListSize(*sa\Str())-1
-          AddElement(*sa\Str())
+      Protected size.i = ListSize(*sa\_str())
+      If count>size
+        For i=0 To count-size-1
+          AddElement(*sa\_str())
         Next
       Else
-        LastElement(*sa\Str())
-        For i=0 To ListSize(*sa\Str())-count-1
-          DeleteElement(*sa\Str())
-        Next
-        
+        LastElement(*sa\_str())
+        For i=0 To size-count-1
+          DeleteElement(*sa\_str())
+        Next   
       EndIf
-      
-      
     EndIf
-    
-    
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1053,7 +1044,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 614
-; FirstLine = 605
+; CursorPosition = 480
+; FirstLine = 470
 ; Folding = ----------
 ; EnableXP

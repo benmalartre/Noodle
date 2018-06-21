@@ -171,6 +171,7 @@ Module Tree
   ; Evaluate
   ;-----------------------------------------------------------------------------
   Procedure Evaluate(*Me.Tree_t)
+    Debug "### EVALUATE GRAPH >>> DIRTY ? "+Str(*Me\dirty)
     If *Me\dirty
       GetAllBranches(*Me)
       Debug "Num Branches : "+Str(ListSize(*Me\all_branches()))
@@ -553,7 +554,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 161
+; CursorPosition = 173
 ; FirstLine = 157
 ; Folding = -----
 ; EnableThread

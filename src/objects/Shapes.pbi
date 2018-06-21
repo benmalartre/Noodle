@@ -13072,7 +13072,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_sphere_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_sphere_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_sphere_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13086,7 +13086,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_grid_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_grid_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_grid_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13100,7 +13100,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_cube_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_cube_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_cube_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13114,7 +13114,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_disc_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_disc_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_disc_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13128,7 +13128,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_grid_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_grid_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_grid_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         *Me\positions\data = ?shape_cylinder_positions
         *Me\indices\data = ?shape_cylinder_indices
         RecomputeNormals(*Me,1.0)
@@ -13144,7 +13144,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_null_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_null_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_null_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
 
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
@@ -13172,7 +13172,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_torus_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_torus_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_torus_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color,0.1)
@@ -13187,7 +13187,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_bunny_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_bunny_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_bunny_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13201,7 +13201,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_teapot_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_teapot_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_teapot_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         RandomizeColors(*Me,@color)
         SetUVWs(*Me)
@@ -13215,7 +13215,7 @@ Module Shape
         CArray::SetCount(*Me\indices,*Me\nbt*3)
         
         CopyMemory(?shape_tomatoship_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
-        CopyMemory(?shape_tomatoship_indices, *Me\indices\data, *Me\nbp*CArray::GetItemSize(*Me\indices))
+        CopyMemory(?shape_tomatoship_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
         SetColor(*Me,@color)
         SetUVWs(*Me)
@@ -13370,7 +13370,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 13102
-; FirstLine = 13079
+; CursorPosition = 13217
+; FirstLine = 13214
 ; Folding = ---
 ; EnableXP

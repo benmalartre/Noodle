@@ -119,25 +119,29 @@ Next
 
 Debug "====================== ARRAY STRING =============================="
 Define *array7.CArrayStr = CArray::newCArrayStr()
-CArray::SetCount(*array7,5)
+CArray::SetCount(*array7,7)
 Define x
-For x=0 To 4
+For x=0 To CArray::GetCount(*array7)
   ;CArray::SetValueI(*array4,x,*mesh)
 CArray::SetValueStr(*array7,x,"Hello World")
 Next
 
-Define *array8.CArrayStr = CArray::newCArrayStr()
-CArray::SetCount(*array8,6)
-For x=0 To 5
+CArray::SetCount(*array7,5)
+For x=0 To CArray::GetCount(*array7)
   ;CArray::SetValueI(*array4,x,*mesh)
-CArray::SetValueStr(*array8,x,"Fuck You")
+CArray::SetValueStr(*array7,x,"Fuck You")
 Next
 
-
+Define *array8.CArrayStr = CArray::newCArrayStr()
+CArray::SetCount(*array8,3)
+Define x
+For x=0 To CArray::GetCount(*array8)
+CArray::SetValueStr(*array8,x,"Suck Me")
+Next
 CArray::AppendArray(*array7,*array8)
 
 For x=0 To CArray::GetCount(*array7)-1
-  Debug "Boolean ID "+Str(x)+" : "+CArray::GetValueStr(*array7,x)
+  Debug "String ID "+Str(x)+" : "+CArray::GetValueStr(*array7,x)
   
 Next
 ;
@@ -156,9 +160,8 @@ Next
 ;   Debug f
 ;   
 ; Next
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 78
-; EnableUnicode
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 139
+; FirstLine = 113
 ; EnableXP
+; EnableUnicode

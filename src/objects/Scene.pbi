@@ -89,12 +89,10 @@ EndDeclareModule
 ;  Scene Module Implementation
 ; ============================================================================
 Module Scene
-  
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Resolve Unique Name
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure ResolveUniqueName(*s.Scene::Scene_t,*o.Object3D::Object3D_t)
-    Debug "Resolve Unique Name Called:"
     Protected found = #False
     Protected i = 0
     Protected name.s = *o\name
@@ -116,22 +114,21 @@ Module Scene
         *o\name = name
         found = #True
       EndIf  
-      Debug "Current Full Name : "+*o\fullname
     Wend
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Delete Unique Name
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure DeleteUniqueName(*s.Scene::Scene_t,*o.Object3D::Object3D_t)
     If FindMapElement(*s\m_objects(),*o\fullname)
       DeleteMapElement(*s\m_objects(),*o\fullname)
     EndIf
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Select Object
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Protected nbs = CArray::GetCount(*Me\selection)
     Protected s
@@ -147,16 +144,16 @@ Module Scene
     ;Handle::SetTarget(*Me\handle,*obj)
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Add Object To Selection
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
     CArray::AppendPtr(*Me\selection,*obj)  
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Add Object To Scene Graph
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure AddObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
     ResolveUniqueName(*scn,*obj)
     *scn\nbobjects  + 1
@@ -184,9 +181,9 @@ Module Scene
   
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Remove Object To Scene Graph
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure RemoveObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
 
     Select *obj\type
@@ -210,9 +207,9 @@ Module Scene
   
   EndProcedure
   
-  ;-------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Add Object
-  ;-----------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure AddObjectChildren(*Me.Scene_t,*obj.Object3D::Object3D_t)
   
     ; Add Object Children to scene graph
@@ -241,9 +238,10 @@ Module Scene
     Next
     AddObject(*Me,*obj)
   EndProcedure
-  
-  
-  
+ 
+  ;---------------------------------------------------------------------------
+  ; Add Model
+  ;---------------------------------------------------------------------------
   Procedure AddModel(*Me.Scene_t,*model.Model::Model_t)
     If *model = #Null Or *Me = #Null
       ProcedureReturn
@@ -257,6 +255,9 @@ Module Scene
    
   EndProcedure
   
+  ;---------------------------------------------------------------------------
+  ; Add Child
+  ;---------------------------------------------------------------------------
   Procedure AddChild(*Me.Scene_t,*obj.Object3D::Object3d_t)
     If *obj = #Null Or *Me = #Null
       ProcedureReturn
@@ -281,9 +282,9 @@ Module Scene
     *Me\dirtycount+1
   EndProcedure
 
-  ;-----------------------------------------------------------------
-  ; Delete Object Children(recursive)
-  ;-----------------------------------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Delete Object Children (Recursive)
+  ;---------------------------------------------------------------------------
   Procedure DeleteObjectChildren(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Protected c
     Protected o.Object3D::IObject3D = *obj
@@ -302,9 +303,9 @@ Module Scene
    o\Delete()  
   EndProcedure
   
-  ;-----------------------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Delete Object
-  ;-----------------------------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure DeleteObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
     If Not *Me Or Not *obj : ProcedureReturn : EndIf
     
@@ -326,7 +327,9 @@ Module Scene
     
   EndProcedure
   
-  
+  ;---------------------------------------------------------------------------
+  ; Parent Object
+  ;---------------------------------------------------------------------------
   Procedure ParentObject(*obj.Object3D::Object3D_t,*parent.Object3D::Object3D_t)
     Protected obj.Object3D::IObject3D = *obj
     Protected parent.Object3D::IObject3D = *parent
@@ -335,13 +338,16 @@ Module Scene
     Object3D::AddChild(*parent,*obj)
   EndProcedure
   
+  ;---------------------------------------------------------------------------
+  ; Cut Object
+  ;---------------------------------------------------------------------------
   Procedure CutObject(*obj.Object3D::Object3D_t)
     
   EndProcedure
   
-  ;--------------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Setup Children
-  ;--------------------------------------------------  
+  ;---------------------------------------------------------------------------
   Procedure SetupChildren(*scn.Scene_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
     Protected j
     Protected child.Object3D::IObject3D
@@ -361,16 +367,15 @@ Module Scene
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Drawer
             child\Setup(*ctx\shaders("wireframe"))
-          
-      EndSelect
-      
+        EndSelect
       EndIf
       SetupChildren(*scn,child,*ctx)
-      
     Next
-  
   EndProcedure
   
+  ;---------------------------------------------------------------------------
+  ; SetupObject
+  ;---------------------------------------------------------------------------
   Procedure Setup(*scn.Scene_t,*ctx.GLContext::GLContext_t)
     Protected i,j
     Protected *root.Root::Root_t = *scn\root
@@ -393,7 +398,6 @@ Module Scene
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Drawer
             child\Setup(*ctx\shaders("wireframe"))
-          
       EndSelect
       EndIf
       
@@ -404,9 +408,9 @@ Module Scene
     ;OHandle::Setup(*scn\handle,*ctx)
   EndProcedure
   
-  ;-----------------------------------------------------------------
-  ; Clean Objects in GL Context
-  ;-----------------------------------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Clean Children in OpenGL Context
+  ;---------------------------------------------------------------------------
   Procedure CleanChildren(*obj.Object3D::Object3D_t)
     Protected i,j
     Protected child.Object3D::IObject3D
@@ -424,6 +428,9 @@ Module Scene
     
   EndProcedure
   
+  ;---------------------------------------------------------------------------
+  ; Clean Object in OpenGL Context
+  ;---------------------------------------------------------------------------
   Procedure CleanObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
   
     Protected i
@@ -440,6 +447,9 @@ Module Scene
   
   EndProcedure
   
+  ;---------------------------------------------------------------------------
+  ; Clean Scene in OpenGL Context
+  ;---------------------------------------------------------------------------
   Procedure Clean(*scn.Scene_t)
   
     Protected i,j
@@ -457,9 +467,10 @@ Module Scene
     Next i
   
   EndProcedure
-  ;-----------------------------------------------
-  ; Update Children
-  ;-----------------------------------------------
+  
+  ;---------------------------------------------------------------------------
+  ; Update Children in OpenGL Context
+  ;---------------------------------------------------------------------------
   Procedure UpdateChildren(*obj.Object3D::Object3D_t)
 
     Protected i
@@ -482,22 +493,14 @@ Module Scene
     Next
     
   EndProcedure
-  ;-----------------------------------------------
-  ; Update Scene
-  ;-----------------------------------------------
-  ;{
+  
+  ;---------------------------------------------------------------------------
+  ; Clean Scene in OpenGL Context
+  ;---------------------------------------------------------------------------
   Procedure Update(*scn.Scene_t)
     If Not *scn : ProcedureReturn : EndIf
-;    If *scn\dirty
+    If *scn\dirty
       Protected i
-;       If *ctx
-;         If *ctx \useGLFW
-;           glfwMakeContextCurrent(*ctx\window)
-;         Else
-;            SetGadgetAttribute(*ctx\gadgetID,#PB_OpenGL_SetContext,#True) 
-;         EndIf
-;       EndIf
-      
       Protected *root.Object3D::Object3D_t = *scn\root
       Protected child.Object3D::IObject3D
       Protected *c.Object3D::Object3D_t
@@ -514,24 +517,19 @@ Module Scene
       Next
       
       *scn\dirty = #False
-;    EndIf
-    
+    EndIf
   EndProcedure
-  ;}
   
-  ;-----------------------------------------------
-  ; Nb 3DObjects
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
+  ; Get Num 3D Objects
+  ;---------------------------------------------------------------------------
   Procedure GetNbObjects(*scn.Scene_t)
     ProcedureReturn CArray::GetCount(*scn\objects)
   EndProcedure
-  ;}
   
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Get Object By Name
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
   Procedure GetObjectByName(*scn.Scene_t,name.s)
     Protected i
     Protected *o.Object3D::Object3D_t
@@ -544,100 +542,88 @@ Module Scene
     Next
     ProcedureReturn #Null
   EndProcedure
-  ;}
   
-  ;-----------------------------------------------
-  ; Nb Polygons
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
+  ; Get Num Polygons In Scene
+  ;---------------------------------------------------------------------------
   Procedure GetNbPolygons(*scn.Scene_t)
-    ;If *scn\dirty
-      *scn\nbpolygons=0
-      Protected i
-      Protected *o.Object3D::Object3D_t
-      Protected *m.Polymesh::Polymesh_t
-      Protected *geom.Geometry::PolymeshGeometry_t
-      For i=0 To CArray::GetCount(*scn\objects)-1
-        *o = CArray::GetValue(*scn\objects,i)
-        If *o\type = Object3D::#Object3D_Polymesh
-          *m = *o
-          *geom = *m\geom
-          *scn\nbpolygons + *geom\nbpolygons
-        EndIf
-      Next
-    ;EndIf
+    *scn\nbpolygons=0
+    Protected i
+    Protected *o.Object3D::Object3D_t
+    Protected *m.Polymesh::Polymesh_t
+    Protected *geom.Geometry::PolymeshGeometry_t
+    For i=0 To CArray::GetCount(*scn\objects)-1
+      *o = CArray::GetValue(*scn\objects,i)
+      If *o\type = Object3D::#Object3D_Polymesh
+        *m = *o
+        *geom = *m\geom
+        *scn\nbpolygons + *geom\nbpolygons
+      EndIf
+    Next
     
     ProcedureReturn *scn\nbpolygons
   EndProcedure
-  ;}
   
-  ;-----------------------------------------------
-  ; Nb Triangles
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
+  ; Get Num Triangles In Scene
+  ;---------------------------------------------------------------------------
   Procedure GetNbTriangles(*scn.Scene_t)
-    ;If *scn\dirty
-      *scn\nbtriangles=0
-      Protected i
-      Protected *o.Object3D::Object3D_t
-      Protected *m.Polymesh::Polymesh_t
-      Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
-      For i=0 To CArray::GetCount(*scn\objects)-1
-        *o = CArray::GetValue(*scn\objects,i)
-        If *o\type = Object3D::#Object3D_Polymesh
-          *m = *o
-           *geom = *m\geom
-          *scn\nbtriangles + *geom\nbtriangles
-        EndIf
-      Next
-    ;EndIf
+    *scn\nbtriangles=0
+    Protected i
+    Protected *o.Object3D::Object3D_t
+    Protected *m.Polymesh::Polymesh_t
+    Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
+    For i=0 To CArray::GetCount(*scn\objects)-1
+      *o = CArray::GetValue(*scn\objects,i)
+      If *o\type = Object3D::#Object3D_Polymesh
+        *m = *o
+         *geom = *m\geom
+        *scn\nbtriangles + *geom\nbtriangles
+      EndIf
+    Next
     
     ProcedureReturn *scn\nbtriangles
   EndProcedure
-  ;}
-  ;-----------------------------------------------
+
+  ;---------------------------------------------------------------------------
   ; Get Active Camera
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
   Procedure GetActiveCamera(*scn.Scene_t)
     If Not *scn\camera
       *scn\camera = CArray::GetValue(*scn\cameras,0)
     EndIf
     ProcedureReturn *scn\camera
   EndProcedure
-  ;}
   
-  ;-----------------------------------------------
-  ; Get Root
-  ;-----------------------------------------------
-  ;{
+  ;---------------------------------------------------------------------------
+  ; Get Scene Root
+  ;---------------------------------------------------------------------------
   Procedure GetRoot(*scn.Scene_t)
     ProcedureReturn *scn\root
   EndProcedure
   
-  ;-----------------------------------------------
-  ; Save
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Save Scene
+  ;---------------------------------------------------------------------------
   Procedure Save(*scn.Scene_t)
     Debug "------------------------ SAVE SCENE ------------------------------"
     Debug *scn
     Debug CArray::GetCount(*scn\models)
     Debug CArray::GetCount(*scn\lights)
     
-;     *scn\sig_onchanged\Trigger(#RAA_SIGNAL_TYPE_PING, #Null)
     Debug "Scene Save Called"
   EndProcedure
   
-  ;-----------------------------------------------
-  ; SaveAs
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Save SCene As
+  ;---------------------------------------------------------------------------
   Procedure SaveAs(*scn.Scene_t, filename.s)
     Debug "Scene Save As Called"
   EndProcedure
   
-  ;-----------------------------------------------
-  ; Select By ID 
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Select By ID
+  ;---------------------------------------------------------------------------
   Procedure SelectByID(*scn.Scene_t,id.l)
     Protected i
     Protected *object.Object3D::Object3D_t
@@ -664,27 +650,26 @@ Module Scene
     ProcedureReturn *out
   EndProcedure
   
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Get Camera
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure GetCamera(*Me.Scene_t)
     ProcedureReturn *Me\camera  
   EndProcedure
   
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Get Main Light
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure GetMainLight(*Me.Scene_t)
     ; Main Light is always the first one in Scene Light Array
     ; Should be infinite aka the sun
-    ;---------------------------------------------
     Protected *main.Light::Light_t = CArray::GetValuePtr(*Me\lights,0)
     ProcedureReturn *main
   EndProcedure
   
-  ;-----------------------------------------------
-  ; Get Secondary LightreadShadowMap(eye_dir,
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
+  ; Get Secondary Light
+  ;---------------------------------------------------------------------------
   Procedure GetSecondaryLight(*Me.Scene_t,id.i)
     If id>0 And id <CArray::GetCount(*Me\lights)
       ProcedureReturn CArray::GetValuePtr(*Me\lights,id)
@@ -692,25 +677,22 @@ Module Scene
     
   EndProcedure
   
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Get Nb Lights(main + secondaries)
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure GetNbLights(*Me.Scene_t)
     ProcedureReturn CArray::GetCount(*Me\lights)
   EndProcedure
   
-
-  
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   ; Draw
-  ;-----------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure Draw(*scn.Scene_t,*shader.Program::Program_t,filter.i=-1)
    
     Protected i
     Protected obj.Object3D::IObject3D
     Protected *obj.Object3D::Object3D_t
     For i=0 To CArray::GetCount(*scn\objects)-1
-      
       *obj = CArray::GetValuePtr(*scn\objects,i)
       If filter
         If *obj\type & filter
@@ -721,13 +703,9 @@ Module Scene
       Else
         obj\Draw()
       EndIf
-      
-      
     Next
     
-    
     For i=0 To CArray::GetCount(*scn\helpers)-1
-      
       *obj = CArray::GetValuePtr(*scn\helpers,i)
       If filter
         If *obj\type & filter
@@ -738,21 +716,15 @@ Module Scene
       Else
         obj\Draw()
       EndIf
-      
-      
     Next
   EndProcedure
   
-  ;_____________________________________________________________________________
+  ;---------------------------------------------------------------------------
   ;  Destructor
-  ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-  ;{
-  ; ---[ _Free ]----------------------------------------------------------------
+  ;---------------------------------------------------------------------------
   Procedure Delete( *Me.Scene_t )
-
     Protected *model.Model::Model_t
     Protected i
-    Debug "SCene Num Models : "+Str(CArray::GetCount(*Me\models))
     ForEach *Me\root\children()
       Debug *me\root\children()\fullname
     Next
@@ -766,7 +738,7 @@ Module Scene
     CArray::Delete(*Me\selection)
     
  
-  ; ---[ Deallocate Memory ]--------------------------------------------------
+    ; Deallocate Memory
     ClearStructure(*Me,Scene_t)
     FreeMemory( *Me )
     
@@ -774,23 +746,21 @@ Module Scene
     PostEvent(Globals::#EVENT_GRAPH_CHANGED)
   EndProcedure
   
-  ; ============================================================================
+  ;---------------------------------------------------------------------------
   ;  CONSTRUCTORS
-  ; ============================================================================
+  ;---------------------------------------------------------------------------
   Procedure.i New( name.s = "ActiveScene")
     
-    ; ---[ Allocate Object Memory ]---------------------------------------------
+    ; Allocate Object Memory
     Protected *Me.Scene_t = AllocateMemory( SizeOf(Scene_t) )
     Scene::*current_scene = *Me
     *Me\filename = name
-    ;*Me\classname = "SCENE"
     Object::INI(Scene)
-    ; ---[ Init CObject Base Class ]--------------------------------------------
     InitializeStructure(*Me,Scene_t)
     
     Protected Me.IScene = *Me
     
-    ; ---[ Create Containers ]--------------------------------------------------
+    ; Create Containers
     *Me\models = CArray::newCArrayPtr()
     *Me\objects = CArray::newCArrayPtr()
     *Me\cameras = CArray::newCArrayPtr()
@@ -798,186 +768,36 @@ Module Scene
     *Me\selection = CArray::newCArrayPtr()
     *Me\helpers = CArray::newCArrayPtr()
 
-    
-    ; ---[ Create Root ]---------------------------------------------------------
+    ; Create Root
     *Me\root = Root::New("SceneRoot")
     
-    ; ---[ Create Camera ]-------------------------------------------------------
+    ; Create Camera
     Protected *camera.Camera::Camera_t = Camera::New("Camera",Camera::#Camera_Perspective)
     
     *Me\camera = *camera
     CArray::AppendPtr(*Me\cameras,*camera)
     Object3D::AddChild(*Me\root,*camera)
     
-    ; ---[ Create Light ]--------------------------------------------------------
+    ; Create Light
     Protected *light.Light::Light_t = Light::New("Light",Light::#Light_Infinite)
     CArray::AppendPtr(*Me\lights,*light)
     Object3D::AddChild(*Me\root,*light)
     
-    ; ---[ Create Handle ]-------------------------------------------------------
-    ;*Me\handle = newCHandle()
-    
-    ; ---[ Initialize Slot ]-----------------------------------------------------
-    ;*Me\sig_onchanged = newCSlot( *Me )
-    
-    ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
-    
   EndProcedure
-
-  ; ============================================================================
-  ;  EOF
-  ; ============================================================================
   
-  
-;   Procedure CreateRandomNull()
-;     Protected *null.CNull = newCNull("Null")
-;   
-;     Protected q.q4f32
-;     Define *t.CTransform = *null\GetLocalTransform()
-;     Quaternion_SetFromAxisAngleValues(@q,0,1,0,Random(360))
-;     *t\SetRotationFromQuaternion(@q)
-;     *t\SetTranslationFromXYZValues(Random(10)-5,Random(10)-5,Random(10)-5)
-;     *t\SetScaleFromXYZValues(2,2,2)
-;     
-;     *null\SetGlobalTransform(*t)
-;     ProcedureReturn *null
-;   EndProcedure
-;   
-;   
-;   Procedure CreateChildNull(*parent.CNull)
-;     Protected *null.CNull = newCNull("Null")
-;     
-;     Protected q.q4f32
-;     Define *t.CTransform = *null\GetLocalTransform()
-;     Quaternion_SetFromAxisAngleValues(@q,0,1,0,Random(360))
-;     *t\SetRotationFromQuaternion(@q)
-;     *t\SetTranslationFromXYZValues(Random(10)-5,Random(10)-5,Random(10)-5)
-;     Protected s.f = Random(100)*0.01
-;     *t\SetScaleFromXYZValues(s,s,s)
-;     
-;     *null\SetGlobalTransform(*t)
-;     *parent\AddChild(*null)
-;     
-;     ProcedureReturn *null
-;   EndProcedure
-;   
-;   Procedure CreateRandomCube()
-;     Protected *cube.CPolymesh = newCPolymesh("Cube",#RAA_SHAPE_CUBE)
-;    
-;     Define *t.CTransform = *cube\GetGlobalTransform()
-;     Protected q.q4f32
-;     Quaternion_SetFromAxisAngleValues(@q,0,1,0,Random(360))
-;     Protected *q.q4f32 = *t\GetQuaternion()
-;     Quaternion_Set(*q,q\x,q\y,q\z,q\w)
-;      *t\SetScaleFromXYZValues(Random(255)/255+0.5,Random(255)/255+0.5,Random(255)/255+0.5)
-;     Quaternion_SetFromAxisAngleValues(*q,0,1,0,Random(360))
-;     *t\SetRotationFromQuaternion(*q)
-;     *t\SetTranslationFromXYZValues(Random(10),Random(10),Random(10))
-;     ;*t\SetTranslationFromXYZValues(Random(10)-5,Random(10)-5,Random(10)-5)
-;    
-;   
-;     
-;     *cube\SetGlobalTransform(*t)
-;     
-;     ProcedureReturn *cube
-;   EndProcedure
-;   
-;   Procedure CreateChildCube(*parent.CPolymesh)
-;     Protected *child.CPolymesh = newCPolymesh("Cube")
-;     OPolymeshGeometry_Cube(*child\GetGeometry(),1,1,1,1)
-;     
-;     Protected q.q4f32 
-;     Define *t.CTransform = *child\GetLocalTransform()
-;     
-;     Protected p.v3f32
-;     Vector3_Set(@p,1,0,0)
-;     
-;     Quaternion_SetFromAxisAngleValues(@q,0,1,0,Random(360))
-;     Vector3_MulByQuaternionInPlace(@p,@q)
-;     
-;     *t\SetTranslation(@p)
-;     *child\SetGlobalTransform(*t)
-;   ;   *t\SetTranslationFromXYZValues(0,0,0)
-;     *t\SetScaleFromXYZValues(0.1,0.1,0.1)
-;   ;   
-;   ;   *child\SetGlobalTransform(*t)
-;     *parent\AddChild(*child)
-;   
-;     ProcedureReturn *child
-;   EndProcedure
-;   
-  
-;   Procedure TestInverseMatrix(*model.CModel)
-;     Define.CPolymesh *c1,*c2,*c3
-;     *c1 = CreateRandomCube()
-;     *c2 = CreateRandomCube()
-;     *c3 = CreateRandomCube()
-;     
-;     Define.CTransform_t *t1,*t2,*t3
-;     *t1 = *c1\GetGlobalTransform()
-;     *t2 = *c2\GetGlobalTransform()
-;     *t3 = *c3\GetGlobalTransform()
-;     
-;     Define.m4f32_b m1,m2
-;     Matrix4_Inverse(@m1,*t1\m)
-;     *t2\m = m1
-;     *c2\SetGlobalTransform(*t2)
-;     Matrix4_Inverse(@m2,@m1)
-;     *t3\m = m2
-;     *c3\SetGlobalTransform(*t3)
-;     
-;     *model\AddChild(*c1)
-;     *model\AddChild(*c2)
-;     *model\AddChild(*c3)
-;     
-;   EndProcedure
-;   
-  ; 
-  ; Procedure BulletCross(*scene.Scene_t,*t.CTransform)
-  ;   Define *cross.btCollisionShape = BTNewCompoundShape()
-  ;   Define *trunk.btCollisionShape = BTNewBoxShape(1,20,1)
-  ;   Define *arm.btCollisionShape = BTNewBoxShape(8,1,1)
-  ;   Protected p.v3f32
-  ;   Protected q.q4f32
-  ;   Vector3_Set(@p,0,20,0)
-  ;   Quaternion_SetFromAxisAngleValues(@q,0,1,0,0)
-  ;   BTAddChildShape(*cross,*trunk,@p,@q)
-  ;   
-  ;   Vector3_Set(@p,0,14.5,0)
-  ;   Quaternion_SetFromAxisAngleValues(@q,0,1,0,0)
-  ;   BTAddChildShape(*cross,*arm,@p,@q)
-  ;   
-  ;   ;Protected *null.CNull = newCNull("Root")
-  ;   Protected *m1.CPolymesh = newCPolymesh()
-  ;   
-  ;   Protected *mesh.CPolymesh = newCPolymesh("Cross",#RAA_SHAPE_CUBE,1.0)
-  ;   
-  ;   Protected *body.btRigidBody = BTCreateRigidBody(*mesh,1.0,*cross)
-  ;   BTAddRigidBody(*raa_bullet_world,*body)
-  ; EndProcedure
-    
-;   ; ----------------------------------------------------------------------------
-;   ;  Add Null At Position
-;   ; ----------------------------------------------------------------------------
-;   ;{
-;   Procedure AddNullAtPos(*scene.Scene,*pos.v3f32)
-;     Protected *null.Null::Null = Null::New()
-;     Protected *t.Transform::Transform_t = *null\
-;     *t\SetTranslationFromXYZValues(*pos\x,*pos\y,*pos\z)
-;     *t\SetScaleFromXYZValues(22,22,22)
-;     *null\SetGlobalTransform(*t)
-;     *scene\AddChild(*null)
-;     ProcedureReturn *null
-;   EndProcedure
-  
-  ; ---[ Reflection ]-----------------------------------------------------------
+  ;---------------------------------------------------------------------------
+  ;  REFLECTION
+  ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
+; ============================================================================
+;  EOF
+; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 388
-; FirstLine = 384
-; Folding = --------
+; CursorPosition = 69
+; FirstLine = 58
+; Folding = -------
 ; EnableThread
 ; EnableXP
 ; EnableUnicode

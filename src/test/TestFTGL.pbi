@@ -41,7 +41,7 @@ If Time::Init()
   Scene::*current_scene = *scene
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"Viewport3D")
-    *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+    *app\context = *viewport\context
     *viewport\camera = *app\camera
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -70,8 +70,8 @@ If Time::Init()
   Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 14
+; CursorPosition = 43
+; FirstLine = 16
 ; Folding = -
 ; EnableXP
 ; Executable = Test

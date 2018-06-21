@@ -69,6 +69,7 @@ DeclareModule ControlProperty
   Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
   Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
   Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*obj.Object::Object_t)
+  Declare AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
   Declare AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*obj.Object::Object_t)
   Declare AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*obj.Object::Object_t)
   Declare AddMatrix4Control(*Me.ControlProperty_t,name.s,label.s,*value.m4f32,*obj.Object::Object_t)
@@ -326,7 +327,6 @@ Module ControlProperty
   ;  Clear
   ; ----------------------------------------------------------------------------
   Procedure Clear( *Me.ControlProperty_t )
-    Debug "Clear Begin ---------------------------------------------------------------------"
     Protected i
     Protected *ctl.Control::IControl
     Protected *c.Control::Control_t
@@ -343,7 +343,6 @@ Module ControlProperty
       For i=0 To *Me\chilcount-1
         *ctl = *Me\children(i)
         *c = *ctl
-        Debug "Delete child Control "+*c\name
         If *ctl<>#Null : *ctl\Delete() : EndIf
       Next
       ReDim *Me\children(0)
@@ -387,7 +386,6 @@ Module ControlProperty
     StartDrawing( ImageOutput(*Me\imageID) )
     *Me\pickID = Point(xm,ym)-1;Red(Point(xm,ym)) - 1
     StopDrawing()
-    Debug *Me\pickID
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
       Protected *overchild.Control::Control_t = *Me\children(*Me\pickID)
       Protected overchild.Control::IControl = *overchild
@@ -821,13 +819,70 @@ Module ControlProperty
 ; 
 ;   ProcedureReturn(#True)
 ; EndProcedure
-
+  
   ;--------------------------------------------------------------------
-  ; ---[ Add Vector3 Control  ]------------------------------------------
+  ; Add Vector2 Control
+  ;--------------------------------------------------------------------
+  Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
+    ; Sanity Check
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.ControlProperty::IControlProperty = *Me
+    Protected Ctl.Control::IControl
+    Protected *xCtl.Control::Control_t
+    Protected *yCtl.Control::Control_t
+    *Me\dx = 0
+    *Me\dy + 10
+    Protected w= *Me\sizX/3
+    
+    ; Create Group
+    Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
+    Protected width = GadgetWidth(*Me\gadgetID)/2
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*obj, name, name,*Me\gadgetID, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+    ControlGroup::AppendStart(*group)
+    ControlGroup::RowStart(*group)
+  
+    ; Add X Parameter
+    ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
+    *xCtl = ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
+    ControlGroup::Append(*group, *xCtl )
+    
+    ; Add Y Parameter
+    ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+    ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
+    *yCtl = ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
+    ControlGroup::Append(*group, *yCtl )
+    
+    ; Terminate Group
+    ControlGroup::RowEnd(*group)
+    ControlGroup::AppendStop(*group)
+  
+    ; Add Group to PPG
+    If ListSize(*Me\groups()) And *Me\groups()
+      ControlGroup::Append(*Me\groups(),*group)
+  
+    Else
+      Append(*Me,*group)
+    EndIf
+    
+    ; Connect Signals
+    If *obj
+      Object::SignalConnect(*obj,*xCtl\slot,0)
+      Object::SignalConnect(*obj,*yCtl\slot,1)
+    EndIf
+    
+    ; Offset for Next Control
+    *Me\dy + *group\sizY
+  
+    ProcedureReturn(#True)
+  EndProcedure
+  
+  ;--------------------------------------------------------------------
+  ; Add Vector3 Control
   ;--------------------------------------------------------------------
   Procedure AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*obj.Object::Object_t)
     ; Sanity Check
-    ;------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -837,53 +892,45 @@ Module ControlProperty
     Protected *zCtl.Control::Control_t
     *Me\dx = 0
     *Me\dy + 10
+    Protected w = *Me\sizX/4
+    
     ; Create Group
-    ;------------------------------
     Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
     Protected width = GadgetWidth(*Me\gadgetID)/3
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*obj, name, name,*Me\gadgetID, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
-    
-    ; Add X,Y,Z parameters
-    ;------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
   
-    Protected w= *Me\sizX/4
-    ;X
+    ; Add X Parameter
     ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
     ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
     *xCtl = ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
     ControlGroup::Append(*group, *xCtl )
     
-    ;Y
+    ; Add Y Parameter
     ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
     ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
     *yCtl = ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *yCtl )
     
-    ;Z
+    ; Add Z Parameter
     ControlGroup::Append(*group, ControlDivot::New(*obj,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
     ControlGroup::Append(*group, ControlLabel::New(*obj,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
     *zCtl = ControlNumber::New(*obj,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *zCtl)
-  
+    
+    ; Terminate Group
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
   
     ; Add Group to PPG
-    ;---------------------------------
-    ; ---[ Add Parameter ]--------------------------------------------
     If ListSize(*Me\groups()) And *Me\groups()
       ControlGroup::Append(*Me\groups(),*group)
-  
     Else
       Append(*Me,*group)
     EndIf
-    
-    
+
     ; Connect Signals
-    ;---------------------------------
-    ; ---[ Connect Signal ]-------------------------------------------
     If *obj
       Object::SignalConnect(*obj,*xCtl\slot,0)
       Object::SignalConnect(*obj,*yCtl\slot,1)
@@ -891,14 +938,13 @@ Module ControlProperty
     EndIf
     
     ; Offset for Next Control
-    ;---------------------------------
     *Me\dy + *group\sizY
   
     ProcedureReturn(#True)
   EndProcedure
 
 ; ;--------------------------------------------------------------------
-; ; ---[ Add Vector4 Control  ]------------------------------------------
+; ;  Add Vector4 Control
 ; ;--------------------------------------------------------------------
 ; Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*obj.Object::Object_t)
 ;   ; Sanity Check
@@ -1732,7 +1778,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 469
-; FirstLine = 453
-; Folding = -+8-v-
+; CursorPosition = 71
+; FirstLine = 47
+; Folding = -+8-f-
 ; EnableXP
