@@ -57,8 +57,8 @@ Module MultiplyByScalarNode
     Node::AddInputPort(*node,"Scalar",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",datatype)
     
-    Node::PortAffect(*node, "Input", "Result")
-    Node::PortAffect(*node, "Scalar", "Result")
+    Node::PortAffectByName(*node, "Input", "Result")
+    Node::PortAffectByName(*node, "Scalar", "Result")
     *node\label = "MultiplyByScalar"
   EndProcedure
   
@@ -216,9 +216,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 60
-; FirstLine = 32
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

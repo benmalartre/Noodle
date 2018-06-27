@@ -102,8 +102,8 @@ Module GetDataNode
     Node::AddOutputPort(*node,"Data",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_REFERENCE)
     
-    Node::PortAffect(*node, "Reference", "Data")
-    Node::PortAffect(*node, "Reference", "Output")
+    Node::PortAffectByName(*node, "Reference", "Data")
+    Node::PortAffectByName(*node, "Reference", "Output")
     *node\label = "Get Data"
     ResolveReference(*node)
   EndProcedure
@@ -253,10 +253,10 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 171
-; FirstLine = 159
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 105
+; FirstLine = 100
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

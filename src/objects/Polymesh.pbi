@@ -472,10 +472,10 @@ Module Polymesh
   ;{
   Procedure Update(*p.Polymesh_t)
     
-;     If *p\stack
-;       PolymeshGeometry::Reset(*p\geom)
-;       Stack::Update(*p\stack)
-;     EndIf
+    If *p\stack
+      PolymeshGeometry::Reset(*p\geom)
+      Stack::Update(*p\stack)
+    EndIf
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
@@ -562,7 +562,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 490
-; FirstLine = 484
+; CursorPosition = 477
+; FirstLine = 466
 ; Folding = ----
 ; EnableXP

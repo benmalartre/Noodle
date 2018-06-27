@@ -53,8 +53,8 @@ Module AddPointNode
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Data",Attribute::#ATTR_TYPE_EXECUTE)
     
-    Node::PortAffect(*node, "Points", "Data")
-    Node::PortAffect(*node, "Reference", "Data")
+    Node::PortAffectByName(*node, "Points", "Data")
+    Node::PortAffectByName(*node, "Reference", "Data")
     *node\label = "Add Point"
     
     Protected *obj.Object3D::Object3D_t = *node\parent3dobject
@@ -149,6 +149,6 @@ EndModule
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 56
-; FirstLine = 33
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

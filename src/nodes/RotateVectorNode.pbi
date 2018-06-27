@@ -53,8 +53,8 @@ Module RotateVectorNode
     Node::AddInputPort(*node,"Rotation",Attribute::#ATTR_TYPE_QUATERNION)
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_VECTOR3)
     
-    Node::PortAffect(*node, "Input", "Output")
-    Node::PortAffect(*node, "Rotation", "Output")
+    Node::PortAffectByName(*node, "Input", "Output")
+    Node::PortAffectByName(*node, "Rotation", "Output")
     
     *node\label = "RotateVector"
   EndProcedure
@@ -128,9 +128,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 56
-; FirstLine = 45
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

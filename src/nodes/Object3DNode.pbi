@@ -52,7 +52,7 @@ Module Object3DNode
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_3DOBJECT)
     
     ForEach *node\inputs()
-      Node::PortAffect(*node, *node\inputs()\name, "Output")
+      Node::PortAffectByName(*node, *node\inputs()\name, "Output")
     Next
     
     *node\label = "3DObject"
@@ -96,9 +96,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 32
+; CursorPosition = 54
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

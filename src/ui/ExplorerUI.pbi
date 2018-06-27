@@ -162,7 +162,7 @@ Module ExplorerUI
     Object::INI(ExplorerUI)
     
     *Me\container = ContainerGadget(#PB_Any,*view\x,*view\y,*view\width,*view\height)
-    
+    *Me\name = name
     *Me\width = *view\width
     *Me\height = *view\height
     *Me\scrollx = 0
@@ -185,7 +185,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 128
-; FirstLine = 148
+; CursorPosition = 164
+; FirstLine = 152
 ; Folding = ---
 ; EnableXP

@@ -52,8 +52,8 @@ Module MergeTopoNode
     Node::AddInputPort(*node,"Topo1",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddInputPort(*node,"Topo2",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
-    Node::PortAffect(*node, "Topo1", "Topology")
-    Node::PortAffect(*node, "Topo2", "Topology")
+    Node::PortAffectByName(*node, "Topo1", "Topology")
+    Node::PortAffectByName(*node, "Topo2", "Topology")
     *node\label = "Merge Topo"
   EndProcedure
   
@@ -108,9 +108,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 55
-; FirstLine = 31
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

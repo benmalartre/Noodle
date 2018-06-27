@@ -76,11 +76,11 @@ Module PrimitiveMeshNode
     *node\label = "Primitive Mesh"
     Reset(*node)
     
-    Node::PortAffect(*node, "Shape", "Topology")
-    Node::PortAffect(*node, "U", "Topology")
-    Node::PortAffect(*node, "V", "Topology")
-    Node::PortAffect(*node, "W", "Topology")
-    Node::PortAffect(*node, "Radius", "Topology")
+    Node::PortAffectByName(*node, "Shape", "Topology")
+    Node::PortAffectByName(*node, "U", "Topology")
+    Node::PortAffectByName(*node, "V", "Topology")
+    Node::PortAffectByName(*node, "W", "Topology")
+    Node::PortAffectByName(*node, "Radius", "Topology")
   EndProcedure
   
   Procedure Evaluate(*node.PrimitiveMeshNode_t)
@@ -185,8 +185,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 125
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 82
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

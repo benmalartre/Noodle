@@ -56,7 +56,7 @@ Module Vector3Node
     
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_VECTOR3)
     
-    Node::PortAffect(*node, "Value", "Result")
+    Node::PortAffectByName(*node, "Value", "Result")
     
   EndProcedure
   
@@ -113,10 +113,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 58
-; FirstLine = 44
+; FirstLine = 54
 ; Folding = --
 ; EnableThread
 ; EnableXP

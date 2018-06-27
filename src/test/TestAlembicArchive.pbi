@@ -28,6 +28,9 @@ Procedure.i LogABCArchive(path.s)
 
       Protected pName.s
       Protected infos.Alembic::ABC_Attribute_Sample_Infos
+
+      
+      MessageRequester("ARCHIVE", "START : "+Str(startframe)+", END : "+Str(endframe))
       
       MessageRequester("Num Objects", Str(AlembicArchive::GetNbObjects(*abc_archive)))
             
@@ -130,10 +133,9 @@ Alembic::Terminate()
 
   
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 27
+; CursorPosition = 32
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

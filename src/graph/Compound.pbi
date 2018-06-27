@@ -17,7 +17,6 @@ Module CompoundNode
     *Me\parent = *parent
     *Me\label = "CompoundNode"
     *Me\name = "CompoundNode"
-    ;*Me\parent3dobject = *parent\parent3dobject
     *Me\type = "CompoundNode"
     *Me\posx = x
     *Me\posy = y
@@ -267,9 +266,9 @@ Module CompoundNode
   Class::DEF(CompoundNode)
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 166
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 62
+; FirstLine = 59
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

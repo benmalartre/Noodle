@@ -79,7 +79,7 @@ AddPushTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
 
-Define *app.Application::Application_t = Application::New("Graph UI",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
+Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
 
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
@@ -100,13 +100,12 @@ ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
-Global *graph.UI::IUI = GraphUI::New(*bottom\left,"GraphUI")
+Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
-Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
+Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 ;View::SetContent(*s1\right,*graph)
 GraphUI::SetContent(*graph,*tree)
-
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 
 
@@ -160,8 +159,8 @@ Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 95
-; FirstLine = 72
+; CursorPosition = 107
+; FirstLine = 90
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

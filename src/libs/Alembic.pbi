@@ -360,8 +360,8 @@ DeclareModule Alembic
   PrototypeC ABCGETOBJECTHEADER(*object)
   PrototypeC ABCINITOBJECT(*object,ABCPropertyType)
   
-  PrototypeC.d ABCGETSTARTFRAME(*archive)
-  PrototypeC.d ABCGETENDFRAME(*archive)
+  PrototypeC.f ABCGETSTARTFRAME(*archive, fps.i=24)
+  PrototypeC.f ABCGETENDFRAME(*archive, fps.i=24)
   
   PrototypeC ABCGETPROPERTY(*object,ID.i)
   PrototypeC ABCGETNUMPROPERTIES(*object)
@@ -1660,8 +1660,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1592
-; FirstLine = 1570
+; CursorPosition = 363
+; FirstLine = 359
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin/Alembic.app

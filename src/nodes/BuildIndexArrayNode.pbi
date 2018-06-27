@@ -58,7 +58,7 @@ Module BuildIndexArrayNode
   Procedure Init(*node.BuildIndexArrayNode_t)
     Node::AddInputPort(*node,"Count",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_INTEGER)
-    Node::PortAffect(*node, "Count", "Result")
+    Node::PortAffectByName(*node, "Count", "Result")
     ;Update Label
     *node\label = "Build Index Array"
   EndProcedure
@@ -115,10 +115,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 53
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = --
 ; EnableThread
 ; EnableXP

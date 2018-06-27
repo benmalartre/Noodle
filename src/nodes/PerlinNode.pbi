@@ -58,7 +58,7 @@ Module PerlinNode
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_VECTOR3)
     
     ForEach *node\inputs()
-      Node::PortAffect(*node, *node\inputs()\name, "Output")
+      Node::PortAffectByName(*node, *node\inputs()\name, "Output")
     Next
     
     
@@ -157,9 +157,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 62
-; FirstLine = 35
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = --
 ; EnableXP

@@ -28,8 +28,9 @@ EndDeclareModule
 Module Topology
   UseModule Geometry
   
+  ;----------------------------------------------------------------------------
   ; Destuctor
-  ;------------------------------------------------------------------
+  ;----------------------------------------------------------------------------
   Procedure Delete(*Me.Topology_t)
     CArray::Delete(*Me\vertices)
     CArray::Delete(*Me\faces)
@@ -38,11 +39,11 @@ Module Topology
   EndProcedure
   
   
-  
+  ;----------------------------------------------------------------------------
   ;  Constructor
-  ;---------------------------------------------
+  ;----------------------------------------------------------------------------
   Procedure.i New(*other.Topology_t = #Null)
-    ; ---[ Allocate Memory ]----------------------------------------------------
+    ; Allocate Memory
     Protected *Me.Topology_t = AllocateMemory(SizeOf(Topology_t))
     InitializeStructure(*Me,Topology_t)
     If *other = #Null
@@ -50,10 +51,8 @@ Module Topology
       *Me\faces = CArray::newCArrayLong()
     Else
       *Me\vertices = CArray::newCArrayV3F32()
-;       CArray::SetCount(*Me\vertices,CArray::GetCount(*other\vertices))
       CArray::Copy(*Me\vertices,*other\vertices)
       *Me\faces = CArray::newCArrayLong()
-;       CArray::SetCount(*Me\faces,Carray::GetCount(*other\faces))
       CArray::Copy(*Me\faces,*other\faces)
     EndIf
     
@@ -63,7 +62,6 @@ Module Topology
   ; ----------------------------------------------------------------------------
   ;  Set
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Set(*topo.Topology_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong)
     If CArray::GetCount(*vertices)>0
       Protected size_t.i
@@ -75,31 +73,25 @@ Module Topology
       CArray::Copy(*topo\faces,*faces)
     EndIf
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Clear
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Clear(*topo.Topology_t)
     CArray::SetCount(*topo\vertices,0)
     CArray::SetCount(*topo\faces,0)
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Copy
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Copy(*topo.Topology_t,*other.Topology_t)
     Set(*topo.Topology_t,*other\vertices,*other\faces)
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Transform
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Transform(*topo.Topology_t,*m.m4f32)
     Protected p.v3f32
     Protected i
@@ -109,14 +101,11 @@ Module Topology
       CArray::SetValue(*topo\vertices,i,p)
     Next
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Transform Array
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure TransformArray(*topo.Topology_t,*matrices.CArray::CArrayM4F32,*topo_array.CArray::CArrayPtr)
-    
     Protected *t.Topology_t
     Protected *m.m4f32
     Protected i
@@ -125,15 +114,12 @@ Module Topology
       Transform(*t,CArray::GetValue(*matrices,i))
       CArray::AppendPtr(*topo_array,*t)
     Next i
-    
   EndProcedure
-  ;}
   
   
   ;---------------------------------------------------------
   ; Merge
   ;---------------------------------------------------------
-  ;{
   Procedure Merge(*o.Topology_t,*t1.Topology_t,*t2.Topology_t)
     Protected f1 = CArray::GetCount(*t1\faces)
     Protected f2 = CArray::GetCount(*t2\faces)
@@ -159,16 +145,12 @@ Module Topology
       Else
         CArray::SetValueL(*o\faces,i+f1,-2)
       EndIf
-      
     Next
-   
   EndProcedure
-  ;}
   
   ;---------------------------------------------------------
   ; Merge In Place
   ;---------------------------------------------------------
-  ;{
   Procedure MergeInPlace(*t.Topology_t,*o.Topology_t)
     Protected f1 = CArray::GetCount(*t\faces)
     Protected f2 = CArray::GetCount(*o\faces)
@@ -196,15 +178,11 @@ Module Topology
     Else
       CArray::Copy(*t\faces,*o\faces)
     EndIf
-    
-    
   EndProcedure
-  ;}
   
   ;---------------------------------------------------------
   ; Merge Array
   ;---------------------------------------------------------
-  ;{
   Procedure MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
 
     Protected nbt = CArray::GetCount(*topos)
@@ -247,21 +225,15 @@ Module Topology
           Else
             CArray::SetValueL(*o\faces,i+f_offsets(t),-2)
           EndIf
-          
         Next
-        
       EndIf
- 
-  
     Next
   
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Extrusion
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Extrusion(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,closed.b)
     If CArray::GetCount(*points)<2 Or CArray::GetCount(*section)<2: ProcedureReturn : EndIf
     
@@ -338,7 +310,6 @@ Module Topology
   ; ----------------------------------------------------------------------------
   ;  Cap
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure Cap(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,ID.i=0,reusepoints.b=#True,flip.b=#False)
     If reusepoints
       Protected *m.m4f32 = CArray::GetValue(*points,ID)
@@ -369,22 +340,14 @@ Module Topology
         Next
         
       EndIf
-      
-
     Else
       
     EndIf
     
   EndProcedure
-  
- 
- 
-  
-  
 EndModule
-
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 75
-; FirstLine = 62
-; Folding = -----
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 346
+; FirstLine = 314
+; Folding = ---
 ; EnableXP

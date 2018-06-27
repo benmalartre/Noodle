@@ -1,9 +1,3 @@
-; ============================================================================
-;  raafal.gui.controls.property.pb
-; ============================================================================
-;  2013/06/07 | Ben Malartre
-;  - creation
-; ============================================================================
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "Divot.pbi"
@@ -13,6 +7,10 @@ XIncludeFile "Edit.pbi"
 XIncludeFile "Number.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
+
+;========================================================================================
+; Property Module Declaration
+;========================================================================================
 DeclareModule ControlProperty
   UseModule Math
   #HEAD_HEIGHT = 15
@@ -23,10 +21,9 @@ DeclareModule ControlProperty
   EndEnumeration
   
   ; ----------------------------------------------------------------------------
-  ;  Object ( ControlProperty_t )
+  ;  Structure
   ; ----------------------------------------------------------------------------
   Structure ControlProperty_t Extends Control::Control_t
-    ; ControlProperty::IControlProperty
     pickID.i
     imageID   .i
     label     .s
@@ -465,7 +462,7 @@ Module ControlProperty
     
     ; ---[ Drawing Start ]------------------------------------------------------
     StartDrawing( CanvasOutput(*Me\gadgetID) )
-    Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, RGB(255,0,0));UIColor::COLORA_MAIN_BG )
+    Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     
     ; ---[ Sanity Check ]-------------------------------------------------------
@@ -592,25 +589,32 @@ Module ControlProperty
     EndIf
     
   EndProcedure
-  ; ---[ RowStart ]-------------------------------------------------------------
+  
+  ;-----------------------------------------------------------------------------
+  ; RowStart
+  ;-----------------------------------------------------------------------------
   Procedure RowStart( *Me.ControlProperty_t )
     
-    ; ---[ Check Row Status ]---------------------------------------------------
+    ; Check Row Status
     If *Me\row : ProcedureReturn( void ) : EndIf
     
-    ; ---[ Update Status ]------------------------------------------------------
+    ; Update Status
     *Me\row = #True
     
   EndProcedure
-  ; ---[ RowEnd ]---------------------------------------------------------------
+  
+  ;-----------------------------------------------------------------------------
+  ; RowEnd
+  ;-----------------------------------------------------------------------------
   Procedure RowEnd( *Me.ControlProperty_t )
     
-    ; ---[ Check Row Status ]---------------------------------------------------
+    ; Check Row Status
     If Not *Me\row : ProcedureReturn( void ) : EndIf
-    ; ---[ Update Current Child ]-----------------------------------------------
+    
+    ; Update Current Child
     If *Me\chilcount>0 : *Me\rowflags( *Me\chilcount - 1 ) = #False : EndIf
     
-    ; ---[ Update Status ]------------------------------------------------------
+    ; Update Status
     *Me\row = #False
     
   EndProcedure
@@ -638,10 +642,11 @@ Module ControlProperty
 ;     StopDrawing()
 ;   EndProcedure
   
-  ; ---[ Add Bool Control ]-----------------------------------------------
-  ;----------------------------------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Add Bool Control
+  ;-----------------------------------------------------------------------------
   Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.IControlProperty = *Me
@@ -650,7 +655,7 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
     Protected *Ctl.Control::Control_t
     
-    ; ---[ Add Parameter ]--------------------------------------------
+    ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
       ControlGroup::RowStart(*Me\groups())
       ControlGroup::Append(*Me\groups(),ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -669,7 +674,7 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
     
-    ; ---[ Connect Signal ]-------------------------------------------
+    ; Connect Signal
     If *obj
       Protected *class.Class::Class_t = *obj\class
       Object::SignalConnect(*obj,*Ctl\slot,0)
@@ -681,10 +686,11 @@ Module ControlProperty
   
   EndProcedure
   
-  ; ---[ Add Long To Group ]-----------------------------------------------
-  ;----------------------------------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Add Long Control
+  ;-----------------------------------------------------------------------------
   Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; Sanity Check
     If Not*Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -692,7 +698,7 @@ Module ControlProperty
     *Me\dx = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    ; ---[ Add Parameter ]--------------------------------------------
+    ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -710,13 +716,12 @@ Module ControlProperty
     EndIf
     
     
-  ;   ; ---[ Connect Signal ]-------------------------------------------
+    ; Connect Signal
     If *obj
       Object::SignalConnect(*obj,*Ctl\slot,0)
     EndIf
     
     ; Offset for Next Control
-    ;---------------------------------
     *Me\dy + 22
     
     ProcedureReturn(#True)
@@ -724,10 +729,11 @@ Module ControlProperty
     
   EndProcedure
   
-  ; ---[ Add Float To Group ]-----------------------------------------------
-  ;----------------------------------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Add Float Control 
+  ;-----------------------------------------------------------------------------
   Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*obj.Object::Object_t)
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -735,7 +741,7 @@ Module ControlProperty
     *Me\dx = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-     ; ---[ Add Parameter ]--------------------------------------------
+    ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -753,76 +759,20 @@ Module ControlProperty
     EndIf
     
     
-    ; ---[ Connect Signal ]-------------------------------------------
+    ; Connect Signal
     If *obj
        Object::SignalConnect(*obj,*Ctl\slot,0)
     EndIf
     
     ; Offset for Next Control
-    ;---------------------------------
     *Me\dy + 22
     
     ProcedureReturn(#True)
   EndProcedure
   
-  
-; ;--------------------------------------------------------------------
-; ; ---[ Add Vector2 Control  ]------------------------------------------
-; ;--------------------------------------------------------------------
-; Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
-;   ; Sanity Check
-;   ;------------------------------
-;   CHECK_PTR1_BOO(*Me)
-;   
-;   Protected Me.ControlProperty::IControlProperty = *Me
-;   Protected Ctl.Control::IControl
-;   *Me\dx = 5
-;   ; Create Group
-;   ;------------------------------
-;   Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
-;   Protected width = GadgetWidth(*Me\gadgetID)/3
-;   Define group.Control::IControlGroup = newControl::IControlGroup( name, name,*Me\gadgetID, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
-;   
-;   ; Add X,Y parameters
-;   ;------------------------------
-;   ControlGroup::AppendStart(*Me)
-;   ControlGroup::RowStart(*Me)
-;   
-;   ;X
-;   ControlGroup::Append(*group, newControl::IControlDivot("XDivot",#RAA_DIVOT_ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-;   ControlGroup::Append(*group, newControl::IControlLabel("XLabel","X",#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-;   Ctl = ControlGroup::Append(*group, newControl::IControlNumber("XNumber",*value\x,#RAA_CTL_NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-;   If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),0) : EndIf
-;   
-;   ;Y
-;   ControlGroup::Append(*group, newControl::IControlDivot("YDivot",#RAA_DIVOT_ANIM_NONE,0,*Me\dx+width,*Me\dy+2,18,18 ))
-;   ControlGroup::Append(*group, newControl::IControlLabel("YLabel","Y",#False,0,*Me\dx+width+20,*Me\dy,(width-20)*0.25,21 ))
-;   Ctl = ControlGroup::Append(*group, newControl::IControlNumber("YNumber",*value\y,#RAA_CTL_NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-;   If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),1) : EndIf
-;   
-;   ControlGroup::RowEnd(*group)
-;   ControlGroup::AppendStop(*group)
-;   
-;   ; Add Group to PPG
-;   ;---------------------------------
-;   ; ---[ Add Parameter ]--------------------------------------------
-;   If ListSize(*Me\groups()) And *Me\groups()
-;    *Me\groups()\Append(group)
-;   Else
-;     Append(*Me,group)
-;   EndIf
-;   
-;   
-;   ; Offset for Next Control
-;   ;---------------------------------
-;   *Me\dy + group\GetHeight()
-; 
-;   ProcedureReturn(#True)
-; EndProcedure
-  
-  ;--------------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   ; Add Vector2 Control
-  ;--------------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
@@ -878,9 +828,9 @@ Module ControlProperty
     ProcedureReturn(#True)
   EndProcedure
   
-  ;--------------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   ; Add Vector3 Control
-  ;--------------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
@@ -1008,9 +958,10 @@ Module ControlProperty
 ; 
 ;   ProcedureReturn(#True)
 ; EndProcedure
-
-  ; ---[ Add Quaternion Control  ]------------------------------------------
-  ;--------------------------------------------------------------------
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Quaternion Control
+  ;-----------------------------------------------------------------------------
   Procedure AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*obj.Object::Object_t)
     ; Sanity Check
     ;------------------------------
@@ -1624,11 +1575,11 @@ Module ControlProperty
       ;  Input
       ; ------------------------------------------------------------------------
     Case #PB_EventType_Input
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
+        ; Do We Have A Focused Child
         If *Me\focuschild
-          ; ...[ Retrieve Character ]...........................................
+          ; Retrieve Character
           ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
-          ; ...[ Send Character To Focused Child ]..............................
+          ; Send Character To Focused Child
           *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
         EndIf
         
@@ -1636,13 +1587,13 @@ Module ControlProperty
       ;  KeyDown
       ; ------------------------------------------------------------------------
       Case #PB_EventType_KeyDown
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
+        ; Do We Have A Focused Child
         If *Me\focuschild
-          ; ...[ Retrieve Key ].................................................
+          ; Retrieve Key 
           ev_data\key   = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key      )
           ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
           
-          ; ...[ Send Key To Focused Child ]....................................
+          ; Send Key To Focused Child
           *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
         EndIf
         
@@ -1650,9 +1601,10 @@ Module ControlProperty
       ;  SHORTCUT_COPY
       ; ------------------------------------------------------------------------
       Case Globals::#SHORTCUT_COPY
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
+        ; Do We Have A Focused Child
         If *Me\focuschild
-          ; ...[ Send Key To Focused Child ]....................................
+          MessageRequester("COPY", "Copy")
+          ; Send Key To Focused Child
           *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
         EndIf
         
@@ -1731,22 +1683,19 @@ Module ControlProperty
   ; ============================================================================
   Procedure.i New( *object.Object::Object_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
     
-    ; ---[ Allocate Object Memory ]---------------------------------------------
+    ; Allocate Object Memory
     Protected *Me.ControlProperty_t = AllocateMemory( SizeOf(ControlProperty_t) )
     
-;     *Me\VT = ?ControlPropertyVT
-;     *Me\classname = "CONTROLPROPERTY"
     Object::INI(ControlProperty)
     *Me\object = *object
     
-    ; ---[ Init Members ]-------------------------------------------------------
+    ; Init Members
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
     *Me\gadgetID   = CanvasGadget(#PB_Any,0,0,width,height,#PB_Canvas_Keyboard)
     *Me\imageID    = CreateImage(#PB_Any,width,height)
     *Me\pickID     = CreateImage(#PB_Any,width,height)
-;     *Me\head       = CanvasGadget(#PB_Any,0,0,width,#HEAD_HEIGHT,#PB_Canvas_Keyboard)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
   
     *Me\posX       = x
@@ -1757,12 +1706,12 @@ Module ControlProperty
     *Me\visible    = #True
     *Me\enable     = #True
   
-    ; ---[ Init Structure ]-----------------------------------------------------
+    ; Init Structure
     InitializeStructure( *Me, ControlProperty_t ) ; List
     
     DrawEmpty(*Me)
    
-    ; ---[ Return Initialized Object ]------------------------------------------
+    ; Return Initialized Object
     ProcedureReturn( *Me )
     
   EndProcedure
@@ -1778,7 +1727,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 71
-; FirstLine = 47
-; Folding = -+8-f-
+; CursorPosition = 1605
+; FirstLine = 1577
+; Folding = -+--f-
 ; EnableXP

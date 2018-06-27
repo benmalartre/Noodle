@@ -50,8 +50,8 @@ Module ModuloNode
     Node::AddInputPort(*node,"Modulo",datatype)
     Node::AddOutputPort(*node,"Result",datatype)
     
-    Node::PortAffect(*node, "Value", "Result")
-    Node::PortAffect(*node, "Modulo", "Result")
+    Node::PortAffectByName(*node, "Value", "Result")
+    Node::PortAffectByName(*node, "Modulo", "Result")
     
     *node\label = "Modulo"
   EndProcedure
@@ -154,9 +154,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 53
-; FirstLine = 28
+; FirstLine = 48
 ; Folding = --
 ; EnableXP

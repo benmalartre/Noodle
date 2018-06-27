@@ -47,8 +47,8 @@ Module TransformTopoNode
     Protected *Ts.NodePort::NodePort_t = Node::AddInputPort(*node,"Ts",Attribute::#ATTR_TYPE_MATRIX4)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_TOPOLOGY)
     
-    Node::PortAffect(*node, "Topo", "Result")
-    Node::PortAffect(*node, "Ts", "Result")
+    Node::PortAffectByName(*node, "Topo", "Result")
+    Node::PortAffectByName(*node, "Ts", "Result")
     *node\label = "Transform Topo"
   EndProcedure
   
@@ -122,9 +122,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 50
-; FirstLine = 26
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

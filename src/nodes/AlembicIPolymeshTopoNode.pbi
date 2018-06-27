@@ -62,9 +62,9 @@ Module AlembicIPolymeshTopoNode
   
   Procedure PortAffects(*node.AlembicIPolymeshTopoNode_t)
     ForEach(*node\outputs())
-      Node::PortAffect(*node, "File", *node\outputs()\name)
-      Node::PortAffect(*node, "Identifier", *node\outputs()\name)
-      Node::PortAffect(*node, "Time", *node\outputs()\name)
+      Node::PortAffectByName(*node, "File", *node\outputs()\name)
+      Node::PortAffectByName(*node, "Identifier", *node\outputs()\name)
+      Node::PortAffectByName(*node, "Time", *node\outputs()\name)
     Next
   EndProcedure
   
@@ -262,7 +262,7 @@ Module AlembicIPolymeshTopoNode
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 55
+; CursorPosition = 66
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

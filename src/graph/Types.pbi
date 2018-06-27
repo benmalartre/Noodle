@@ -293,7 +293,6 @@ DeclareModule Node
     viewy.i
     viewwidth.i
     viewheight.i
-    z.i
     
     ;color
     red.i
@@ -391,16 +390,16 @@ DeclareModule Node
   Declare Update(*node.Node_t)
   Declare.s GetName(*n.Node_t)
   Declare GetSize(*n.Node_t)
-  Declare Draw(*n.Node_t)
-  Declare ViewPosition(*n.Node_t,z.i,x.i,y.i)
+  Declare Draw(*n.Node_t, zoom.f)
+  Declare ViewPosition(*n.Node_t,zoom.f,x.i,y.i)
   Declare ViewSize(*n.Node_t,z.i)
   Declare.b IsLeaf(*n.Node_t)
   Declare SetColor(*n.Node_t,r.i,g.i,b.i)
-  Declare Drag(*n.Node_t,x.i,y.i,zoom.i)
-  Declare.i IsUnderMouse(*n.Node_t,x.l,y.l)
+  Declare Drag(*n.Node_t,x.i,y.i,zoom.f)
+  Declare.i IsUnderMouse(*n.Node_t,x.l,y.l, zoom.f)
   Declare.b InsideNode(*node.Node_t,*parent.Node_t)
-  Declare.i Pick(*n.Node_t,x.l,y.l,connect.b=#False)
-  Declare.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i)
+  Declare.i Pick(*n.Node_t,x.l,y.l,zoom.f,connect.b=#False)
+  Declare.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i, zoom.f)
   Declare.i GetPortByID(*n.Node_t,id.i)
   Declare.i GetPortByName(*n.Node_t,name.s)
   Declare.i SetInputPortID(*n.Node_t,*p.NodePort::NodePort_t,id.i = -1)
@@ -413,8 +412,8 @@ DeclareModule Node
   Declare OnMessage(id.i,*up)
   Declare IsDirty(*n.Node_t)
   Declare UpdateDirty(*n.Node_t)
-  Declare PortAffect(*n.Node_t, sourceName.s, targetNames.s)
-  Declare PortAffect2(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
+  Declare PortAffectByName(*n.Node_t, sourceName.s, targetNames.s)
+  Declare PortAffectByPort(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
   Declare UpdateAffects(*n.Node_t)
   Declare SetClean(*n.Node_t)
   
@@ -578,7 +577,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 228
-; FirstLine = 208
+; CursorPosition = 294
+; FirstLine = 283
 ; Folding = ---
 ; EnableXP

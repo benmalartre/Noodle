@@ -55,9 +55,9 @@ Module IfNode
     Protected *iftrue.NodePort::NodePort_t = Node::AddInputPort(*node,"IfTrue",Attribute::#ATTR_TYPE_POLYMORPH)
     Protected *iffalse.NodePort::NodePort_t = Node::AddInputPort(*node,"IfFalse",Attribute::#ATTR_TYPE_POLYMORPH)
     Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_POLYMORPH)
-    Node::PortAffect(*node, "Condition", "Output")
-    Node::PortAffect(*node, "IfTrue", "Output")
-    Node::PortAffect(*node, "IfFalse", "Output")
+    Node::PortAffectByName(*node, "Condition", "Output")
+    Node::PortAffectByName(*node, "IfTrue", "Output")
+    Node::PortAffectByName(*node, "IfFalse", "Output")
     *node\label = "If"
   EndProcedure
   
@@ -163,10 +163,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 61
+; CursorPosition = 59
+; FirstLine = 53
 ; Folding = --
 ; EnableThread
 ; EnableXP

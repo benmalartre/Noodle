@@ -56,8 +56,9 @@ Module PropertyUI
     *Me\width = w
     *Me\height = h
     
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h);ScrollAreaGadget(#PB_Any,x,y,w,h,w,h)
-;     SetGadgetColor(*Me\container,#PB_Gadget_BackColor,RGB(Red(Globals::COLOR_MAIN_BG),Green(Globals::COLOR_MAIN_BG),Blue(Globals::COLOR_MAIN_BG)))
+    ;*Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h)
+    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
+    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, Globals::RGBA2RGB(UIColor::COLOR_MAIN_BG))
     *Me\prop = ControlProperty::New(*obj,name,name,0,0,w,h)
 
     CloseGadgetList()
@@ -295,8 +296,8 @@ Module PropertyUI
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 232
-; FirstLine = 116
+; CursorPosition = 60
+; FirstLine = 56
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

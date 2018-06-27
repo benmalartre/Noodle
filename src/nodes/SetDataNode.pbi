@@ -180,8 +180,8 @@ Module SetDataNode
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Execute",Attribute::#ATTR_TYPE_EXECUTE)
     
-    Node::PortAffect(*node, "Data", "Execute")
-    Node::PortAffect(*node, "Reference", "Execute")
+    Node::PortAffectByName(*node, "Data", "Execute")
+    Node::PortAffectByName(*node, "Reference", "Execute")
     *node\label = "Set Data"
     ResolveReference(*node)
   EndProcedure
@@ -369,8 +369,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 187
+; CursorPosition = 183
+; FirstLine = 178
 ; Folding = --
 ; EnableThread
 ; EnableXP

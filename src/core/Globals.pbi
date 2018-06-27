@@ -244,8 +244,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 106
-; FirstLine = 176
+; CursorPosition = 109
+; FirstLine = 106
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

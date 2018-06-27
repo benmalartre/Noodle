@@ -328,11 +328,11 @@ Module View
           mx = *view\width*perc/100
         EndIf
         
-        *view\left = New(*view\x,*view\y,mx-hs,*view\height,*view,#True,"Left",#True)
+        *view\left = New(*view\x,*view\y,mx-hs,*view\height,*view,#True,*view\name+"_L",#True)
         SetSplitter(*view\left,*view\lsplitter,*view,*view\tsplitter,*view\bsplitter)
         *view\left\content = *content
         *view\left\parentID = *view\parentID
-        *view\right = New(*view\x+ mx+hs,*view\y,*view\width-mx-hs,*view\height,*view,#True,"Right",#False)
+        *view\right = New(*view\x+ mx+hs,*view\y,*view\width-mx-hs,*view\height,*view,#True,*view\name+"_R",#False)
         SetSplitter(*view\right,*view,*view\rsplitter,*view\tsplitter,*view\bsplitter)
         *view\right\parentID = *view\parentID
         
@@ -354,11 +354,11 @@ Module View
           my = *view\height*perc/100
         EndIf
 
-        *view\left = New(*view\x,*view\y,*view\width,my-hs,*view,#False,"Left",#True)
+        *view\left = New(*view\x,*view\y,*view\width,my-hs,*view,#False,*view\name+"_L",#True)
         SetSplitter(*view\left,*view\lsplitter,*view\rsplitter,*view\tsplitter,*view)
         *view\left\content = *content
         *view\left\parentID = *view\parentID
-        *view\right = New(*view\x,*view\y+ my+hs,*view\width,*view\height-my-hs,*view,#False,"Right",#False)
+        *view\right = New(*view\x,*view\y+ my+hs,*view\width,*view\height-my-hs,*view,#False,*view\name+"_R",#False)
         SetSplitter(*view\right,*view\lsplitter,*view\rsplitter,*view,*view\bsplitter)
         *view\right\parentID = *view\parentID
 
@@ -605,7 +605,6 @@ Module View
     
     If *Me\leaf
       If *Me\content <> #Null
-        
         Protected *content.UI::IUI = *Me\content
         *content\Event(event)
       EndIf
@@ -784,6 +783,11 @@ Module ViewManager
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
     If *manager = #Null Or event = -1: ProcedureReturn: EndIf
+    
+    Protected mx = WindowMouseX(*manager\window)
+    Protected my = WindowMouseY(*manager\window)
+        
+    GetActiveView(*manager,mx,my)
 
     Select event
       Case #PB_Event_Timer
@@ -816,6 +820,15 @@ Module ViewManager
 ;         
       Case #PB_Event_Menu
         Select EventMenu()
+;           Case Globals::#SHORTCUT_COPY
+;             Debug "View Manager : SHORTCUT COPY"
+;             View::OnEvent(*manager\active,#PB_Event_Menu)
+;           Case Globals::#SHORTCUT_CUT
+;             Debug "View Manager : SHORTCUT CUT"
+;             View::OnEvent(*manager\active,#PB_Event_Menu)
+;           Case Globals::#SHORTCUT_PASTE
+;             Debug "View Manager : SHORTCUT PASTE"
+;             View::OnEvent(*manager\active,#PB_Event_Menu)
           Case Globals::#SHORTCUT_UNDO
             MessageRequester("View Manager","Undo Called")
             Commands::Undo(Commands::*manager)
@@ -838,13 +851,7 @@ Module ViewManager
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
-      Default
-
-        Protected mx = WindowMouseX(*manager\window)
-        Protected my = WindowMouseY(*manager\window)
-        
-        GetActiveView(*manager,mx,my)
-        
+      Default        
         If *manager\active
           Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
           
@@ -913,7 +920,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 799
-; FirstLine = 777
+; CursorPosition = 830
+; FirstLine = 806
 ; Folding = ------
 ; EnableXP

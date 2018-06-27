@@ -61,9 +61,9 @@ Module AlembicIPolymeshTopoSimpleNode
     Node::AddInputPort(*node,"Time",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
     
-    Node::PortAffect(*node, "File", "Topology")
-    Node::PortAffect(*node, "Identifer", "Topology")
-    Node::PortAffect(*node, "Time", "Topology")
+    Node::PortAffectByName(*node, "File", "Topology")
+    Node::PortAffectByName(*node, "Identifer", "Topology")
+    Node::PortAffectByName(*node, "Time", "Topology")
    
     *node\positions = CArray::newCArrayV3F32()
     *node\indices = CArray::newCArrayLong()
@@ -196,7 +196,7 @@ Module AlembicIPolymeshTopoSimpleNode
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 65
-; FirstLine = 38
+; FirstLine = 59
 ; Folding = --
 ; EnableThread
 ; EnableXP

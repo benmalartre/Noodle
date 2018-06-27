@@ -49,7 +49,7 @@ Module QuaternionNode
     Node::AddInputPort(*node,"Input",Attribute::#ATTR_TYPE_QUATERNION)
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_QUATERNION)
     
-    Node::PortAffect(*node, "Input", "Output")
+    Node::PortAffectByName(*node, "Input", "Output")
     Quaternion::SetIdentity(*node\q)
     ;Update Label
     *node\label = "Quaternion"
@@ -102,9 +102,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 51
-; FirstLine = 31
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

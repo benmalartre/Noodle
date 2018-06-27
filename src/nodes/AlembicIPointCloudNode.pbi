@@ -53,9 +53,9 @@ Module AlembicIPointCloudNode
   UseModule Math
   Procedure PortAffects(*node.AlembicIPointCloudNode_t)
     ForEach(*node\outputs())
-      Node::PortAffect(*node, "File", *node\outputs()\name)
-      Node::PortAffect(*node, "Identifier", *node\outputs()\name)
-      Node::PortAffect(*node, "Time", *node\outputs()\name)
+      Node::PortAffectByName(*node, "File", *node\outputs()\name)
+      Node::PortAffectByName(*node, "Identifier", *node\outputs()\name)
+      Node::PortAffectByName(*node, "Time", *node\outputs()\name)
     Next
   EndProcedure
   
@@ -210,7 +210,7 @@ Module AlembicIPointCloudNode
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 49
+; CursorPosition = 57
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

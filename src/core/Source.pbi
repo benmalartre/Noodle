@@ -19,8 +19,8 @@ DeclareModule Source
   Structure Source_t
     path.s
     type.i
-    startframe.i
-    endframe.i
+    startframe.f
+    endframe.f
   EndStructure
  
 EndDeclareModule
@@ -102,9 +102,9 @@ Module Sound
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 42
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 22
+; FirstLine = 5
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -49,7 +49,7 @@ Module FloatNode
   Procedure Init(*node.FloatNode_t)
    Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_CTXT_ANY,Attribute::#ATTR_STRUCT_SINGLE)
    Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_CTXT_ANY,Attribute::#ATTR_STRUCT_SINGLE)
-   Node::PortAffect(*noe, "Value", "Result")
+   Node::PortAffectByName(*node, "Value", "Result")
    
  EndProcedure
   
@@ -112,10 +112,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 51
-; FirstLine = 35
+; FirstLine = 47
 ; Folding = --
 ; EnableThread
 ; EnableXP

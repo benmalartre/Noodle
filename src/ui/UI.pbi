@@ -28,7 +28,7 @@ DeclareModule UI
     type.i
     dirty.b
     down.b
-    zoom.i
+    zoom.f
     gadgetID.i
     
     imageID.i
@@ -139,8 +139,8 @@ EndProcedure
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 46
-; FirstLine = 30
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 30
+; FirstLine = 17
 ; Folding = -
 ; EnableXP

@@ -168,18 +168,15 @@ Module Animation
     
       If Alembic::*abc_manager<>#Null
         Protected *abc_manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
-        MessageRequester("Alembic Manager",Str(*abc_manager\manager))
         Protected *abc_archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(*abc_manager,path)
         
-        MessageRequester("[Alembic] Nb Objects in Archive : ",Str(AlembicArchive::GetNbObjects(*abc_archive))) 
         Protected *obj.AlembicObject::AlembicObject_t = AlembicArchive::GetObjectByName(*abc_archive,identifier)
         AlembicObject::Init(*obj,#Null)
         
         *animation\startframe = Alembic::ABC_GetStartFrame(*abc_archive\archive)
         *animation\endframe = Alembic::ABC_GetEndFrame(*abc_archive\archive)
         
-        MessageRequester("Alembic StartFrame : ",Str(*animation\startframe))
-        MessageRequester("Alembic EndFrame : ",Str(*animation\endframe ))
+        MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
 
         Protected sample.Alembic::ABC_Skeleton_Sample
         Protected infos.Alembic::ABC_Skeleton_Sample_Infos
@@ -193,7 +190,9 @@ Module Animation
         Protected *Ts.CArray::CArrayTRF32 = CArray::newCArrayTRF32()
         
         Protected i,j
-              
+        
+        Debug "OBJECT : "+Str( *obj\ptr )
+        
         Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,0,@infos)
         *animation\nbitems = infos\nbpoints
         MessageRequester("Skeleton NB Bones : ",Str(*animation\nbitems));         If Not *animation\skeleton\initialized
@@ -398,6 +397,8 @@ Module Animation
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 194
+; FirstLine = 171
 ; Folding = --
 ; EnableXP

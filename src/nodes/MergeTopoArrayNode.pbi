@@ -51,7 +51,7 @@ Module MergeTopoArrayNode
   Procedure Init(*node.MergeTopoArrayNode_t)
     Node::AddInputPort(*node,"Array",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_ARRAY)
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
-    Node::PortAffect(*node, "Array", "Topology")
+    Node::PortAffectByName(*node, "Array", "Topology")
     *node\label = "Merge Topo Array"
   EndProcedure
   
@@ -110,9 +110,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 53
-; FirstLine = 36
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

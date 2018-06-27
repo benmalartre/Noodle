@@ -46,7 +46,7 @@ Module TimeNode
     Node::AddInputPort(*node,"Global",Attribute::#ATTR_TYPE_BOOL,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddOutputPort(*node,"Time",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     
-    Node::PortAffect(*node, "Global", "Time")
+    Node::PortAffectByName(*node, "Global", "Time")
     *node\label = "Time"
   EndProcedure
   
@@ -101,9 +101,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 48
-; FirstLine = 25
+; FirstLine = 44
 ; Folding = --
 ; EnableXP

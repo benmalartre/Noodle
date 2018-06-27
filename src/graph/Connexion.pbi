@@ -92,7 +92,7 @@ Module Connexion
     ; USE DEFAULT DRAWING
     ;-------------------------------------------------------------------------------------
     CompilerIf Not Globals::#USE_VECTOR_DRAWING
-      If *c\linear
+      If GRAPH_CONNEXION_LINEAR
         ;Draw linear connexion
         FrontColor(*c\color)
         LineXY(*c\a\x,*c\a\y,*c\b\x,*c\b\y,*c\color)
@@ -120,17 +120,17 @@ Module Connexion
             If u.f>0
               If dotted
                 If i%2=0
-                  DrawLine(x,y,xlast,ylast,*c\color,*c\antialiased)
+                  DrawLine(x,y,xlast,ylast,*c\color,GRAPH_CONNEXION_ANTIALIASED)
                 EndIf
                 
               Else
                 
-                DrawLine(x,y,xlast,ylast,*c\color,*c\antialiased)
+                DrawLine(x,y,xlast,ylast,*c\color,GRAPH_CONNEXION_ANTIALIASED)
               EndIf
               
             EndIf
             
-            u+*c\accuracy
+            u+GRAPH_CONNEXION_ACCURACY
             
             If u>1.0 And endpoint=0
               endpoint=1
@@ -359,7 +359,7 @@ Module Connexion
       *p\datatype = *last\datatype
       *p\currenttype = *last\currenttype
       ForEach *node\outputs()
-        Node::PortAffect2(*node, *p, *node\outputs())
+        Node::PortAffectByPort(*node, *p, *node\outputs())
       Next
       
       NodePort::Update(*p,*last\currenttype,*last\currentcontext,*last\currentstructure)
@@ -429,7 +429,7 @@ Module Connexion
 
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 251
-; FirstLine = 238
+; CursorPosition = 360
+; FirstLine = 357
 ; Folding = ----
 ; EnableXP

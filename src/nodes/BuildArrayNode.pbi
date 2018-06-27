@@ -64,7 +64,7 @@ Module BuildArrayNode
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_POLYMORPH)
     
     ForEach *node\inputs()
-      Node::PortAffect(*node, *node\inputs()\name, "Result")
+      Node::PortAffectByName(*node, *node\inputs()\name, "Result")
     Next
     
     ;Update Label
@@ -220,10 +220,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 40
+; CursorPosition = 66
+; FirstLine = 62
 ; Folding = --
 ; EnableThread
 ; EnableXP

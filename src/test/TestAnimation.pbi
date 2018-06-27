@@ -1,24 +1,5 @@
-﻿XIncludeFile "../core/Array.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Time.pbi"
-XIncludeFile "../core/Attribute.pbi"
+﻿
 XIncludeFile "../core/Application.pbi"
-
-XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/GLFW.pbi"
-XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../libs/Alembic.pbi"
-
-XIncludeFile "../opengl/Shader.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
-
-XIncludeFile "../objects/Shapes.pbi"
-XIncludeFile "../objects/KDTree.pbi"
-XIncludeFile "../objects/PointCloud.pbi"
-XIncludeFile "../objects/InstanceCloud.pbi"
-XIncludeFile "../objects/Polymesh.pbi"
-XIncludeFile "../objects/Skeleton.pbi"
 
 UseModule Math
 UseModule Time
@@ -80,7 +61,7 @@ If Time::Init()
   
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-    *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+    *app\context = *viewport\context
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
   EndIf
@@ -149,8 +130,8 @@ Scene::AddModel(Scene::*current_scene,*model)
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 33
+; CursorPosition = 63
+; FirstLine = 38
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -50,8 +50,8 @@ Module AxisANgleToRotationNode
     Node::AddInputPort(*node,"Angle",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Rotation",Attribute::#ATTR_TYPE_QUATERNION)
     
-    Node::PortAffect(*node, "Axis", "Rotation")
-    Node::PortAffect(*node, "Angle", "Rotation")
+    Node::PortAffectByName(*node, "Axis", "Rotation")
+    Node::PortAffectByName(*node, "Angle", "Rotation")
     Quaternion::SetIdentity(*node\q)
     ;Update Label
     *node\label = "AxisAngleToRotation"
@@ -125,9 +125,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 53
-; FirstLine = 32
+; FirstLine = 48
 ; Folding = --
 ; EnableXP

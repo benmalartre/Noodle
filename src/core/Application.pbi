@@ -211,15 +211,15 @@ Module Application
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
       
       
-;     BindEvent(#PB_Event_SizeWindow,@SizeWindow_Callback,*app\manager\window)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
+      ;     BindEvent(#PB_Event_SizeWindow,@SizeWindow_Callback,*app\manager\window)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
 ;     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Return,Globals::#SHORTCUT_ENTER)
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Delete,Globals::#SHORTCUT_DELETE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Control|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
 ;     #SHORTCUT_NEXT
 ;     #SHORTCUT_PREVIOUS
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
@@ -517,8 +517,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 335
-; FirstLine = 312
+; CursorPosition = 221
+; FirstLine = 202
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

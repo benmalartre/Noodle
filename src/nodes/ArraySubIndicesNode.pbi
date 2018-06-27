@@ -60,7 +60,7 @@ Module ArraySubIndicesNode
     Node::AddInputPort(*node,"Count",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_INTEGER)
     
-    Node::PortAffect(*node, "Count", "Result")
+    Node::PortAffectByName(*node, "Count", "Result")
     
     ;Update Label
     *node\label = "Build Index Array"
@@ -119,9 +119,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 62
-; FirstLine = 53
+; FirstLine = 58
 ; Folding = --
 ; EnableXP
