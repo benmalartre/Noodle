@@ -1,7 +1,6 @@
-﻿XIncludeFile "../core/Array.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Time.pbi"
+﻿
 XIncludeFile "../core/Application.pbi"
+
 
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/GLFW.pbi"
@@ -185,13 +184,12 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 118
-; FirstLine = 105
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 20
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin/Alembic.app
+; Executable = bin\Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

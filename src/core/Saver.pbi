@@ -457,18 +457,27 @@ UseModule Math
         Protected datas.s
         ; Vertices
         Protected size_t = CArray::GetCount(*geom\topo\vertices) * CArray::GetItemSize(*geom\topo\vertices)
-        ;Protected *mem = AllocateMemory(size_t*1.5)
-        ;Protected Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t,*mem,size_t*1.5)
-        ;SetXMLAttribute(geom,"Vertices",PeekS(*mem,size_t*1.5))
-        datas = Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t)
+        CompilerIf #PB_Compiler_Version < 540
+          Protected *mem = AllocateMemory(size_t*1.5)
+          Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t,*mem,size_t*1.5)
+          SetXMLAttribute(geom,"Vertices",PeekS(*mem,size_t*1.5))
+        CompilerElse
+          datas = Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t)
+        CompilerEndIf
+        
+        
         SetXMLAttribute(geom,"Vertices",datas)
         
         ; Indices
         size_t = CArray::GetCount(*geom\topo\faces)* CArray::GetItemSize(*geom\topo\faces)
-        ;*mem = ReAllocateMemory(*mem,size_t*1.5)
-        ;Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t,*mem,size_t*1.5)
-        ;SetXMLAttribute(geom,"Indices",PeekS(*mem,size_t*1.5))
-        datas = Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t)
+        CompilerIf #PB_Compiler_Version < 540
+          *mem = ReAllocateMemory(*mem,size_t*1.5)
+          Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t,*mem,size_t*1.5)
+          SetXMLAttribute(geom,"Indices",PeekS(*mem,size_t*1.5))
+        CompilerElse
+          datas = Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t)
+        CompilerEndIf
+        
         SetXMLAttribute(geom,"Indices",datas)
         
         FreeMemory(*mem)
@@ -566,9 +575,9 @@ UseModule Math
   
   Class::DEF(Saver)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 470
-; FirstLine = 466
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 484
+; FirstLine = 448
 ; Folding = ----
-; EnableXP
 ; EnableUnicode
+; EnableXP

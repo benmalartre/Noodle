@@ -137,13 +137,19 @@ Module Loader
         ElseIf XMLAttributeName(child) = "Vertices"
           str.s = XMLAttributeValue(child)
           bufferLength.i = StringByteLength(str)
-          ;Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\vertices,0),nbpoints* CArray::GetItemSize(*topo\vertices))
-          Base64Decoder(str,CArray::GetPtr(*topo\vertices,0),nbpoints* CArray::GetItemSize(*topo\vertices))
+          CompilerIf #PB_Compiler_Version < 540
+            Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\vertices,0),nbpoints* CArray::GetItemSize(*topo\vertices))
+          CompilerElse
+            Base64Decoder(str,CArray::GetPtr(*topo\vertices,0),nbpoints* CArray::GetItemSize(*topo\vertices))
+          CompilerEndIf
         ElseIf XMLAttributeName(child) = "Indices"
           str.s = XMLAttributeValue(child)
           bufferLength.i = StringByteLength(str)
-          ;Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\faces,0),nbindices* CArray::GetItemSize(*topo\faces))
-          Base64Decoder(str,CArray::GetPtr(*topo\faces,0),nbindices* CArray::GetItemSize(*topo\faces))
+          CompilerIf #PB_Compiler_Version < 540
+            Base64Decoder(@str,bufferLength,CArray::GetPtr(*topo\faces,0),nbindices* CArray::GetItemSize(*topo\faces))
+          CompilerElse
+            Base64Decoder(str,CArray::GetPtr(*topo\faces,0),nbindices* CArray::GetItemSize(*topo\faces))
+          CompilerEndIf
         EndIf
       Wend
     Next
@@ -212,8 +218,12 @@ Module Loader
                     CArray::SetCount(*bArray,datasize)
                     Protected sBoo.s = GetXMLNodeText(attr)
                     bufferLength.i = StringByteLength(sBoo)
-                    ;Base64Decoder(@sBoo,bufferLength,CArray::GetPtr(*bArray,0),datasize* CArray::GetItemSize(*bArray))
-                    Base64Decoder(sBoo,CArray::GetPtr(*bArray,0),datasize* CArray::GetItemSize(*bArray))
+                    CompilerIf #PB_Compiler_Version < 540
+                      Base64Decoder(@sBoo,bufferLength,CArray::GetPtr(*bArray,0),datasize* CArray::GetItemSize(*bArray))
+                    CompilerElse
+                      Base64Decoder(sBoo,CArray::GetPtr(*bArray,0),datasize* CArray::GetItemSize(*bArray))
+                    CompilerEndIf
+                    
                 EndSelect
                 
             ; Integer
@@ -228,8 +238,12 @@ Module Loader
                   Protected sLong.s = GetXMLNodeText(attr)
                   Debug sLong
                   bufferLength.i = StringByteLength(sLong)
-                  ;Base64Decoder(@sLong,bufferLength,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
-                  Base64Decoder(sLong,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sLong,bufferLength,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  CompilerElse
+                    Base64Decoder(sLong,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  CompilerEndIf
               EndSelect
               
             ; Integer
@@ -244,8 +258,11 @@ Module Loader
                   Protected sInt.s = GetXMLNodeText(attr)
                   Debug sInt
                   bufferLength.i = StringByteLength(sInt)
-                  ;Base64Decoder(@sInt,bufferLength,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
-                  Base64Decoder(sInt,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sInt,bufferLength,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerElse
+                    Base64Decoder(sInt,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerEndIf
               EndSelect
               
             ; Float
@@ -259,8 +276,11 @@ Module Loader
                   CArray::SetCount(*f32Array,datasize)
                   Protected sF32.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(sF32)
-                  ;Base64Decoder(@sF32,bufferLength,CArray::GetPtr(*f32Array,0),datasize* CArray::GetItemSize(*f32Array))
-                  Base64Decoder(sF32,CArray::GetPtr(*f32Array,0),datasize* CArray::GetItemSize(*f32Array))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sF32,bufferLength,CArray::GetPtr(*f32Array,0),datasize* CArray::GetItemSize(*f32Array))
+                  CompilerElse
+                    Base64Decoder(sF32,CArray::GetPtr(*f32Array,0),datasize* CArray::GetItemSize(*f32Array))
+                  CompilerEndIf
               EndSelect
               
             ; Vector3
@@ -277,8 +297,11 @@ Module Loader
                   CArray::SetCount(*v3f32Array,datasize)
                   str.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(str)
-                  ;Base64Decoder(@str,bufferLength,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
-                  Base64Decoder(str,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@str,bufferLength,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
+                  CompilerElse
+                    Base64Decoder(str,CArray::GetPtr(*v3f32Array,0),datasize* CArray::GetItemSize(*v3f32Array))
+                  CompilerEndIf
               EndSelect
               
             ; Quaternion
@@ -295,8 +318,11 @@ Module Loader
                   CArray::SetCount(*qArray,datasize)
                   Protected qF32.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(qF32)
-                  ;Base64Decoder(@qF32,bufferLength,CArray::GetPtr(*qArray,0),datasize* CArray::GetItemSize(*qArray))
-                  Base64Decoder(qF32,CArray::GetPtr(*qArray,0),datasize* CArray::GetItemSize(*qArray))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@qF32,bufferLength,CArray::GetPtr(*qArray,0),datasize* CArray::GetItemSize(*qArray))
+                  CompilerElse
+                    Base64Decoder(qF32,CArray::GetPtr(*qArray,0),datasize* CArray::GetItemSize(*qArray))
+                  CompilerEndIf
               EndSelect 
             ; Matrix4
             ;-----------------------------------------------
@@ -312,8 +338,11 @@ Module Loader
                   CArray::SetCount(*m4Array,datasize)
                   Protected m4F32.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(m4F32)
-                  ;Base64Decoder(@m4F32,bufferLength,CArray::GetPtr(*m4Array,0),datasize* CArray::GetItemSize(*m4Array))
-                  Base64Decoder(m4F32,CArray::GetPtr(*m4Array,0),datasize* CArray::GetItemSize(*m4Array))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@m4F32,bufferLength,CArray::GetPtr(*m4Array,0),datasize* CArray::GetItemSize(*m4Array))
+                  CompilerElse
+                    Base64Decoder(m4F32,CArray::GetPtr(*m4Array,0),datasize* CArray::GetItemSize(*m4Array))
+                  CompilerEndIf
               EndSelect
           EndSelect
           
@@ -345,8 +374,11 @@ Module Loader
                   sLong.s = GetXMLNodeText(attr)
                   Debug sLong
                   bufferLength.i = StringByteLength(sLong)
-                  ;Base64Decoder(@sLong,bufferLength,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
-                 Base64Decoder(sLong,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sLong,bufferLength,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  CompilerElse
+                    Base64Decoder(sLong,CArray::GetPtr(*lArray,0),datasize* CArray::GetItemSize(*lArray))
+                  CompilerEndIf
               EndSelect
 
               
@@ -359,8 +391,11 @@ Module Loader
                   CArray::SetCount(*iArray,datasize)
                   sInt.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(sInt)
-                  ;Base64Decoder(@sInt,bufferLength,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
-                  Base64Decoder(sInt,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sInt,bufferLength,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerElse
+                    Base64Decoder(sInt,CArray::GetPtr(*iArray,0),datasize* CArray::GetItemSize(*iArray))
+                  CompilerEndIf
               EndSelect
               
             ; Float
@@ -372,8 +407,11 @@ Module Loader
                   CArray::SetCount(*fArray,datasize)
                   sFloat.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(sFloat)
-                  ;Base64Decoder(@sFloat,bufferLength,CArray::GetPtr(*fArray,0),datasize* CArray::GetItemSize(*fArray))
-                  Base64Decoder(sFloat,CArray::GetPtr(*fArray,0),datasize* CArray::GetItemSize(*fArray))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@sFloat,bufferLength,CArray::GetPtr(*fArray,0),datasize* CArray::GetItemSize(*fArray))
+                  CompilerElse
+                    Base64Decoder(sFloat,CArray::GetPtr(*fArray,0),datasize* CArray::GetItemSize(*fArray))
+                  CompilerEndIf
               EndSelect
               
             ; Vector3
@@ -386,8 +424,11 @@ Module Loader
                   CArray::SetCount(*v3F32Array,datasize)
                   v3F32.s = GetXMLNodeText(attr)
                   bufferLength.i = StringByteLength(v3F32)
-                  ;Base64Decoder(@v3F32,bufferLength,CArray::GetPtr(*v3F32Array,0),datasize* CArray::GetItemSize(*v3F32Array))
-                  Base64Decoder(v3F32,CArray::GetPtr(*v3F32Array,0),datasize* CArray::GetItemSize(*v3F32Array))
+                  CompilerIf #PB_Compiler_Version < 540
+                    Base64Decoder(@v3F32,bufferLength,CArray::GetPtr(*v3F32Array,0),datasize* CArray::GetItemSize(*v3F32Array))
+                  CompilerElse
+                    Base64Decoder(v3F32,CArray::GetPtr(*v3F32Array,0),datasize* CArray::GetItemSize(*v3F32Array))
+                  CompilerEndIf
               EndSelect
               
 
@@ -505,9 +546,9 @@ Module Loader
   
   Class::DEF(Loader)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 389
-; FirstLine = 366
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 425
+; FirstLine = 372
 ; Folding = ---
-; EnableXP
 ; EnableUnicode
+; EnableXP

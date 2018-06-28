@@ -27,7 +27,7 @@ Module ControlPopupMenu
 Procedure hlpDraw( *Me.ControlPopUpMenu_t, xoff.i = 0, yoff.i = 0 )
 
   ; ---[ Check Visible ]------------------------------------------------------
-  If Not *Me\visible : ret( void ) : EndIf
+  If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
   Protected tc.i = RAA_COLORA_LABEL
@@ -597,8 +597,8 @@ EndProcedure
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 168
+; CursorPosition = 29
+; FirstLine = 25
 ; Folding = ------
 ; EnableUnicode
 ; EnableThread

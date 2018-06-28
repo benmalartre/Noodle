@@ -644,8 +644,8 @@ Module AlembicManager
       *archive\path = path
       *archive\archive = ABC_OpenArchive(*m\manager,path)
       *archive\nbobjects = ABC_GetNumObjectsInArchive(*archive\archive)
-      *archive\startframe = ABC_GetStartFrame(*archive\archive)
-      *archive\endframe = ABC_GetEndFrame(*archive\archive)
+;       *archive\startframe = ABC_GetStartFrame(*archive\archive)
+;       *archive\endframe = ABC_GetEndFrame(*archive\archive)
       
       Dim *archive\objects.AlembicObject::AlembicObject_t(*archive\nbobjects)
       AddMapElement(*m\archives(),*archive\path)
@@ -1659,10 +1659,10 @@ Module AlembicObject
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 363
-; FirstLine = 359
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 647
+; FirstLine = 643
 ; Folding = ----------
 ; EnableXP
-; Executable = bin/Alembic.app
+; Executable = bin\Alembic.app
 ; Debugger = Standalone

@@ -2,9 +2,12 @@
 XIncludeFile "UI.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../libs/Bullet.pbi"
-XIncludeFile "../bullet/World.pbi"
-XIncludeFile "../bullet/RigidBody.pbi"
+CompilerIf #USE_BULLET
+  XIncludeFile "../libs/Bullet.pbi"
+  XIncludeFile "../bullet/World.pbi"
+  XIncludeFile "../bullet/RigidBody.pbi"
+CompilerEndIf
+
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "View.pbi"
 
@@ -254,9 +257,10 @@ Module ViewportUI
   
   
   
-  ; ;------------------------------------------------------------------
-  ; ; Ray Pick
-  ; ;------------------------------------------------------------------
+  CompilerIf #USE_BULLET
+  ; ------------------------------------------------------------------
+  ;  Ray Pick
+  ; ------------------------------------------------------------------
   Procedure RayPick2(*v.ViewportUI_t)
     Debug "------------------------------------       RAY PICK     -------------------------------------------------"
     Define.d mx,my
@@ -336,6 +340,7 @@ Module ViewportUI
     
     
   EndProcedure
+  CompilerEndIf
   
   ;-------------------------------------------------------
   ; Unproject
@@ -430,8 +435,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 426
-; FirstLine = 394
-; Folding = ----
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 342
+; FirstLine = 268
+; Folding = ---
 ; EnableXP

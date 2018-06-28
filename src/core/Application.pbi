@@ -70,11 +70,10 @@ XIncludeFile "../controls/Group.pbi"
 XIncludeFile "../controls/Controls.pbi"
 XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
-; XIncludeFile "../controls/PopupMenu.pbi"
+;XIncludeFile "../controls/PopupMenu.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
 XIncludeFile "../commands/Graph.pbi"
-
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
@@ -516,10 +515,10 @@ Module Application
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 221
-; FirstLine = 202
-; Folding = ----
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 84
+; Folding = ---
+; EnableUnicode
 ; EnableXP
 ; SubSystem = OpenGL
-; EnableUnicode
