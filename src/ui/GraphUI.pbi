@@ -1294,15 +1294,18 @@ Module GraphUI
             Protected ox.i = dx * *Me\zoom
             Protected oy.i = dy * *Me\zoom
         
-            Protected wheel.i = -Sign(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta))*3
+            Protected wheel.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
             *Me\zoom + wheel*0.01
             Clamp(*Me\zoom,0.01,2.5)
+            If *Me\zoom > 0.01 And *Me\zoom < 2.5
             
-            Protected nx.i = dx * *Me\zoom
-            Protected ny.i = dy * *Me\zoom
-           
-            *Me\posx + (ox - nx) / *Me\zoom
-            *Me\posy + (oy - ny) / *Me\zoom
+              Protected nx.i = dx * *Me\zoom
+              Protected ny.i = dy * *Me\zoom
+             
+              *Me\posx + (ox - nx) / *Me\zoom
+              *Me\posy + (oy - ny) / *Me\zoom
+            EndIf
+            
 
             *Me\redraw = #True
 
@@ -1645,8 +1648,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 803
-; FirstLine = 780
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 1296
+; FirstLine = 1286
 ; Folding = --------
 ; EnableXP

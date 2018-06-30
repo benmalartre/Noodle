@@ -36,6 +36,7 @@ DeclareModule Control
     #PB_GadgetType_Color
     #PB_GadgetType_ShaderCode
     #PB_GadgetType_Explore
+    #PB_GadgetType_Head
   EndEnumeration
   
   Structure EventTypeDatas_t
@@ -264,9 +265,8 @@ Module Control
 ;   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 102
-; FirstLine = 202
-; Folding = H5--
-; EnableXP
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 38
+; Folding = H5-
 ; EnableUnicode
+; EnableXP

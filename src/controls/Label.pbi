@@ -95,8 +95,6 @@ Module ControlLabel
       lalen = Len(label)
       label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
     Else
-      ;raaSetPen     ( $FF000000, 1 )
-      ;raaSetPenStyle( #PenStyleCustom, @PenStyle(), 2 )
       LineXY     ( TextWidth(label)+5.0 + xoff, ty + 10, *Me\sizX-1 + xoff, ty + 10, UIColor::COLOR_LINE_DIMMED )
     EndIf
     
@@ -361,8 +359,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 151
-; FirstLine = 144
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 115
+; FirstLine = 73
 ; Folding = --
 ; EnableXP

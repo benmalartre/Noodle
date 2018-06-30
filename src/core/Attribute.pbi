@@ -407,7 +407,7 @@ Module Attribute
             Protected *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
             If size_t>0
-              CompilerIf #PB_Compiler_Version < 540
+              CompilerIf #PB_Compiler_Version < 560
                 out_string = Space(size_t*1.4)
                 Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
               CompilerElse
@@ -424,7 +424,7 @@ Module Attribute
           *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
             If size_t>0
-              CompilerIf #PB_Compiler_Version < 540
+              CompilerIf #PB_Compiler_Version < 560
                 out_string = Space(size_t*1.4)
                 Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
               CompilerElse
@@ -591,7 +591,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 409
-; FirstLine = 409
+; CursorPosition = 426
+; FirstLine = 422
 ; Folding = ---
 ; EnableXP

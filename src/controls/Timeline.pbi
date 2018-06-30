@@ -1014,8 +1014,6 @@ Module ControlTimeline
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
     
-;     *Me\VT = ?ControlTimelineVT
-;     *Me\classname = "CONTROLTIMELINE"
     Object::INI(ControlTimeline)
     *Me\object = *object
     
@@ -1108,8 +1106,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 456
-; FirstLine = 448
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 1100
+; FirstLine = 974
 ; Folding = ------
 ; EnableXP

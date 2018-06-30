@@ -551,11 +551,12 @@ Module ControlMenu
     If *menu\dirty
       StartDrawing(CanvasOutput(*menu\gadgetID))
       DrawingFont(FontID(Globals::#font_menu))
-      ;raaSetFont(RAA_FONT_HEADER)
+      
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
       
       Box(0,0,*menu\width,*menu\height,UIColor::COLORA_MAIN_BG)
       Protected x,y, a
-      DrawingMode(#PB_2DDrawing_Default)
+      
       x = #MenuItemSpacing
       y = #MenuItemSpacing/2
       
@@ -691,10 +692,10 @@ Module ControlMenu
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 627
-; FirstLine = 593
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 555
+; FirstLine = 511
 ; Folding = -Qt---
+; EnableUnicode
 ; EnableThread
 ; EnableXP
-; EnableUnicode

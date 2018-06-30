@@ -7,13 +7,14 @@ XIncludeFile "Edit.pbi"
 XIncludeFile "Number.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
+XIncludeFile "Head.pbi"
 
 ;========================================================================================
 ; Property Module Declaration
 ;========================================================================================
 DeclareModule ControlProperty
   UseModule Math
-  #HEAD_HEIGHT = 15
+  #HEAD_HEIGHT = 24
   
   Enumeration 
     #PROPERTY_FLAT
@@ -24,12 +25,14 @@ DeclareModule ControlProperty
   ;  Structure
   ; ----------------------------------------------------------------------------
   Structure ControlProperty_t Extends Control::Control_t
-    pickID.i
+    expanded  .b
+    pickID    .i
     imageID   .i
     label     .s
     append    .i
     row       .i
     down      .i
+    *head.ControlHead::ControlHead_t
     overchild .Control::IControl
     focuschild.Control::IControl
     Array *children .Control::Control_t(10)
@@ -39,8 +42,6 @@ DeclareModule ControlProperty
     current   .i
     closed    .b
     decoration.i
-    
-    head.i
     lock.Control::IControl
     refresh.Control::IControl
     
@@ -63,6 +64,7 @@ DeclareModule ControlProperty
   Declare AppendStop( *Me.ControlProperty_t )
   Declare RowStart( *Me.ControlProperty_t )
   Declare RowEnd( *Me.ControlProperty_t )
+  Declare AddHead( *Me.ControlProperty_t)
   Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
   Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
   Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*obj.Object::Object_t)
@@ -79,6 +81,8 @@ DeclareModule ControlProperty
   Declare Refresh( *Me.ControlProperty_t)
   Declare EventWithFilter(*Me.ControlProperty_t,filter.i,ev_type.i)
   Declare Clear( *Me.ControlProperty_t )
+  Declare.i GetWidth(*Me.ControlProperty_t)
+  Declare.i GetHeight(*Me.ControlProperty_t)
   
   DataSection 
     ControlPropertyVT: 
@@ -93,216 +97,7 @@ EndDeclareModule
 Module ControlProperty
   UseModule Math
 
-  ; ----------------------------------------------------------------------------
-  ;  hlpResize
-  ; ----------------------------------------------------------------------------
-  Procedure.i hlpResize( *Me.ControlProperty_t, *ev_data.Control::EventTypeDatas_t )
-    ; If ControlGroup::#Autosize_H:
-    ;   Set this Group (client) width to the max width of children width
-    ; Else
-    ;   Force children width to the (client) width of this Group
-    ;
-    ; If ControlGroup::#Autosize_V:
-    ;   Set this Group (client) height to encompass the last child
-    ; Else
-    ;   NOP
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
-    If *Me\chilcount < 1 : ProcedureReturn( void ) : EndIf
-    
-    ; ---[ Local Variables ]----------------------------------------------------
-    Protected dirty   .i = #False
-    Protected dirtyPos.i = #False
-    Protected i       .i = 0
-    Protected j       .i = 0
-    Protected iBound  .i = *Me\chilcount - 1
-    Protected curV    .i = 0
-    Protected curH    .i = #HEAD_HEIGHT
-    Protected maxV    .i = 0
-    Protected inRow   .i = #False
-    Protected son     .Control::IControl
-    Protected *son    .Control::Control_t
-    Protected lablen.i = Len(*Me\label)
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Size Me ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
-    If *ev_data
-      
-      ; ---[ Position ]---------------------------------------------------------
-      ; ...[ X ]................................................................
-      If ( *ev_data\x <> #PB_Ignore ) And ( *ev_data\x <> *Me\posX )
-        dirtyPos = #True
-        *Me\posX = *ev_data\x
-      EndIf
-      ; ...[ Y ]................................................................
-      If ( *ev_data\y <> #PB_Ignore ) And ( *ev_data\y <> *Me\posY )
-        dirtyPos = #True
-        *Me\posY = *ev_data\y
-      EndIf
-      
-      ; ---[ Size ]-------------------------------------------------------------
-      ; ...[ Width ]............................................................
-      If ( *ev_data\width <> #PB_Ignore ) And ( *ev_data\width <> *Me\sizX )
-        dirty = #True
-        *Me\sizX = *ev_data\width
-      EndIf
-      
-    EndIf
-    
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Auto Stacking ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Stack Children ]-----------------------------------------------------
-    If *Me\options &  ControlGroup::#Autostack
-      ; ...[ Adjust Start Y Depending On Label Presence ].......................
-      If lablen : curV = 20 : Else : curV = 14 : EndIf
-      ; ...[ Reset Current X Position ].........................................
-      curH = 10
-      ; ...[ Reset Row Max Height ].............................................
-      maxV = 0
-      ; ...[ Stack Each Child Under Previous One ]..............................
-      For i=0 To iBound
-        *son  = *Me\children(i)
-        son = *son
-  ;       If Son\GetType() = #PB_GadgetType_Group
-  ;         Son\Event(#PB_EventType_Resize,@ev_data)
-  ;         Continue  
-  ;       EndIf
-        
-        Control::Resize(*son,curH, curV, #PB_Ignore, #PB_Ignore )
-        ; ...[ Check Row ]......................................................
-        If *Me\rowflags(i)
-          curH + *son\sizX + 5
-          If maxV < *son\sizY : maxV = *son\sizY: EndIf
-        Else
-          curH = 10
-          If maxV < *son\sizY : maxV = *son\sizY : EndIf
-          curV + maxV + 5
-          maxV = 0
-        EndIf
-      Next
-      dirty = #True
-    EndIf
-    
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Horizontal Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-  
-    ; ---[ Size Gorup ]---------------------------------------------------------
-    ;If #True
-    If *Me\options & ControlGroup::#Autosize_H
-      ; ...[ Reset Values ].....................................................
-      maxV = 0 : curV = 0
-      ; ...[ Look For Children Max Width ]......................................
-      For i=0 To iBound
-        *son = *Me\children(i)
-        son = *son
-        curV = *son\posX + *son\sizX
-        If curV > maxV : maxV = curV : EndIf
-      Next
-      ; ...[ Update Group Width ]...............................................
-      If maxV <> *Me\sizX : *Me\sizX = maxV + 10 : dirty = #True : EndIf
-      
-    ; ---[ Size Children ]------------------------------------------------------
-    Else
-      ; ...[ Reset Values ].....................................................
-      curV = *Me\sizX - 20
-      curH = curV
-      maxV = 0
-      ; ...[ Loop Over Children ]...............................................
-      For i=0 To iBound
-        If *Me\rowflags(i) And Not inRow
-          curH = 0
-          For j=i To iBound
-            curH + 1
-            If Not *Me\rowflags(j) : Break : EndIf
-          Next
-          curH = ( curV - 5*(curH-1) )/curH
-          
-          maxV + 1
-          inRow = #True
-          Control::Resize(*Me\children(i), #PB_Ignore, #PB_Ignore, curH, #PB_Ignore )
-        ElseIf inRow
-          Select *Me\children(i)\type
-            Case Control::#PB_GadgetType_Label
-              Control::Resize(*Me\children(i), 50, #PB_Ignore, 3*curV/10-50, #PB_Ignore )
-            Case Control::#PB_GadgetType_Divot
-              Control::Resize(*Me\children(i), 10, #PB_Ignore, curV/10, #PB_Ignore )
-            Default
-              Control::Resize(*Me\children(i), 3*curV/10, #PB_Ignore, 7*curV/10, #PB_Ignore )
-          EndSelect
-;           Control::Resize(*Me\children(i), 10 + maxV*( curH + 5 ), #PB_Ignore, curH, #PB_Ignore )
-          maxV + 1
-          If Not *Me\rowflags(i)
-            inRow = #False
-            curH  = curV
-            maxV = 0
-          EndIf
-        Else
-          ;Control::Resize(*Me\children(i), #PB_Ignore, #PB_Ignore, curH, #PB_Ignore )
-        EndIf
-      Next
-      dirty = #True
-    EndIf
-  
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Vertical Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Size Parent ]--------------------------------------------------------
-    If *Me\options & ControlGroup::#Autosize_V
-      ; ...[ Reset Max Value ]..................................................
-      maxV = 0
-      ; ...[ Look For Children Max Height ].....................................
-      For i=0 To iBound
-        *son  = *Me\children(i)
-        curV = *son\posY + *son\sizY
-        If curV > maxV : maxV = curV : EndIf
-      Next
-      ; ...[ Update Group Height ]..............................................
-      If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
-    EndIf
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Nested Objects ]같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같    
-    ; ---[ Resize Nested Groups ]-----------------------------------------------
-    For i=0 To iBound
-      *son = *Me\children(i)
-      If Not *son : Continue : EndIf
-      son = *son
-      If *son\type = Control::#PB_GadgetType_Group
-        Protected ev_data.Control::EventTypeDatas_t
-        ev_data\x = *son\posX
-        ev_data\y = *son\posY
-        ev_data\width = *Me\sizX
-        ev_data\height = #PB_Ignore
-        CompilerIf #PB_Compiler_Version < 560
-          Son\OnEvent(Control::#PB_EventType_Resize,@ev_data)
-        CompilerElse
-          Son\OnEvent(#PB_EventType_Resize,@ev_data)
-        CompilerEndIf
-        
-      EndIf
-    Next
-  
-    ; ---[ Check Need Redraw ]--------------------------------------------------
-    ;ResizeGadget( *Me\head,*Me\posX,*Me\posY,*Me\sizX,#HEAD_HEIGHT)
-    ResizeGadget( *Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY )
-    ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
-  
-    ; ---[ Return Redraw Flag ]-------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  
+
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
   ; ----------------------------------------------------------------------------
@@ -381,7 +176,7 @@ Module ControlProperty
     
      ; First get gadget under mouse
     StartDrawing( ImageOutput(*Me\imageID) )
-    *Me\pickID = Point(xm,ym)-1;Red(Point(xm,ym)) - 1
+    *Me\pickID = Point(xm,ym)-1
     StopDrawing()
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
       Protected *overchild.Control::Control_t = *Me\children(*Me\pickID)
@@ -410,98 +205,105 @@ Module ControlProperty
   
     Protected  son  .Control::IControl
     Protected *son  .Control::Control_t
-  
-    ; ---[ Draw ]---------------------------------------------------------------
-    StartDrawing( ImageOutput(*Me\imageID) )
-    DrawingMode(#PB_2DDrawing_Default)
     
-    Box( 0, 0, *Me\sizX, *Me\sizY, RGB($00,$00,$00) )
-    
-    NewList *ctrls.ControlGroup::IControlGroup()
-    
-   
-    For i=0 To iBound
-  
-      *son = *Me\children(i)
-      If *son\type = Control::#PB_GadgetType_Group  
-        AddElement(*ctrls())
-        *ctrls() = *son
-        Box( *son\posX, *son\posY, *son\sizX, *son\sizY,i+1)
-      Else
-        ;Box( *Me\posX+*son\posX, *Me\posY+*son\posY, *son\sizX, *son\sizY,i+1)
-        Box(*son\posX,*son\posY,*son\sizX,*son\sizY,i+1)
-      EndIf
+    If *Me\chilcount
+      If *Me\expanded
+        ; ---[ Draw ]---------------------------------------------------------------
+        StartDrawing( ImageOutput(*Me\imageID) )
+        DrawingMode(#PB_2DDrawing_Default)
+        
+        Box( 0, 0, *Me\sizX, *Me\sizY, RGB($00,$00,$00) )
+        
+        For i=0 To iBound
       
-    Next
-    StopDrawing()
-    
-  ;   Protected *grp.Control::IControlGroup
-  ;   ForEach *ctrls() : *grp = *ctrls()\DrawPickImage() : Next
-  
-    FreeList(*ctrls())
+          *son = *Me\children(i)
+          If *son\type = Control::#PB_GadgetType_Group  
+            Box( *son\posX, *son\posY, *son\sizX, *son\sizY,i+1)
+          Else
+            Box(*son\posX,*son\posY,*son\sizX,*son\sizY,i+1)
+          EndIf
+          
+        Next
+        StopDrawing()
+        
+      Else
+        ; ---[ Draw ]---------------------------------------------------------------
+        StartDrawing( ImageOutput(*Me\imageID) )
+        DrawingMode(#PB_2DDrawing_Default)
+        
+        Box( 0, 0, *Me\sizX, *Me\sizY, RGB($00,$00,$00) )
+        *son = *Me\children(0)
+        Box(*son\posX,*son\posY,*son\sizX,*son\sizY,1)
+        StopDrawing()
+
+      EndIf
+    EndIf
     
    
   EndProcedure
-
+  
+  Procedure.i DrawTitle( *Me.ControlProperty_t)
+    
+  EndProcedure
+  
+    
   ; ----------------------------------------------------------------------------
   ;  Draw
   ; ----------------------------------------------------------------------------
-;   Declare DrawHead(*Me.ControlProperty_t)
-  
   Procedure.i Draw( *Me.ControlProperty_t)
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
     Protected curW .i
-    
-    
+   
     ; ---[ Tag Picking Surface ]------------------------------------------------
     DrawPickImage( *Me)
-;     ; ---[ Draw Title Bar ]------------------------------------------------------
-;     DrawHead(*Me)
     
-    ; ---[ Drawing Start ]------------------------------------------------------
-    StartDrawing( CanvasOutput(*Me\gadgetID) )
-    Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    If *Me\chilcount
+      ; ---[ Local Variables ]----------------------------------------------------
+      Protected i     .i = 0
+      Protected iBound.i = *Me\chilcount - 1
+      Protected  son  .Control::IControl
+      Protected *son  .Control::Control_t
+      Protected ev_data.Control::EventTypeDatas_t
+        
+      If *Me\expanded
+        ; ---[ Drawing Start ]------------------------------------------------------
+        StartDrawing( CanvasOutput(*Me\gadgetID) )
+        Box( 0, 0, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
+        DrawingMode(#PB_2DDrawing_AlphaBlend)
+
+        ; ---[ Redraw Children ]----------------------------------------------------
+        For i=0 To iBound
+           son = *Me\children(i)
+          *son = son
+          ev_data\xoff = *son\posX
+          ev_data\yoff = *son\posY
+      
+          son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+        Next
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
-    If *Me\chilcount < 1 : StopDrawing() : ProcedureReturn : EndIf
+        ; ---[ Drawing End ]--------------------------------------------------------
+        StopDrawing()
+      Else
+        ; ---[ Drawing Start ]------------------------------------------------------
+        StartDrawing( CanvasOutput(*Me\gadgetID) )
+        Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
+        DrawingMode(#PB_2DDrawing_AlphaBlend)
+        
+        ; ---[ Redraw Head ]----------------------------------------------------
+        son = *Me\children(0)
+        *son = son
+        ev_data\xoff = *son\posX
+        ev_data\yoff = *son\posY
+      
+        son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
     
-    ; ---[ Local Variables ]----------------------------------------------------
-    Protected i     .i = 0
-    Protected iBound.i = *Me\chilcount - 1
-    Protected  son  .Control::IControl
-    Protected *son  .Control::Control_t
-    
-    ; ---[ Redraw Children ]----------------------------------------------------
-    Protected ev_data.Control::EventTypeDatas_t
-    For i=0 To iBound
-       son = *Me\children(i)
-      *son = son
-      ev_data\xoff = *son\posX
-      ev_data\yoff = *son\posY
-  
-      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-    Next
-  
-  ;   ; ---[ Border ]-------------------------------------------------------------
-  ;   DrawingMode(#PB_2DDrawing_Outlined)
-  ;   RoundBox(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,5,5,Globals::COLOR_GROUP_FRAME)
-  ;   
-  ;   ; ---[ Label ]--------------------------------------------------------------
-  ;   Protected labelWidth.i = TextWidth(*Me\label)
-  ;   DrawingMode(#PB_2DDrawing_Default)
-  ;   Box(*Me\posX+20,*Me\posY,labelWidth+10,20,RAA_COLOR_MAIN_BG)
-  ;   DrawingMode(#PB_2DDrawing_Transparent)
-  ;   DrawText(*Me\posX+25,*Me\posY,*Me\label)
-     
-;     DrawImage(ImageID(*Me\imageID),0,0)
-    ; ---[ Drawing End ]--------------------------------------------------------
-    StopDrawing()
-    
-    
-    
+        ; ---[ Drawing End ]--------------------------------------------------------
+        StopDrawing()
+      EndIf
+    EndIf
+
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -513,12 +315,7 @@ Module ControlProperty
     
     StartDrawing( CanvasOutput(*Me\gadgetID) )
     Box( 0, 0, w,h, UIColor::COLOR_MAIN_BG )
-    DrawingMode(#PB_2DDrawing_Outlined)
-    RoundBox(5,5,w-10,h-10,4,4,UIColor::COLOR_LABEL)
-    DrawingMode(#PB_2DDrawing_Transparent)
-    DrawText(50,h/2,"Nothing Selected",UIColor::COLOR_LABEL)
     StopDrawing()
-    
     
   EndProcedure
   
@@ -583,11 +380,13 @@ Module ControlProperty
     ; ---[ Update Status ]------------------------------------------------------
     *Me\append = #False
     
-    ; ---[ Update Control And Children ]----------------------------------------
-    If #True = hlpResize( *Me, #Null )
-      Draw( *Me )
-    EndIf
+    ; ---[ Recompute Size ]-----------------------------------------------------
+    *Me\sizY = *Me\dy
+    ResizeGadget(*Me\gadgetID,#PB_Ignore,#PB_Ignore,#PB_Ignore,*Me\sizY)
     
+    ; ---[ Update Control And Children ]----------------------------------------
+    Draw( *Me )
+
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -636,7 +435,7 @@ Module ControlProperty
 ;       DrawingMode( #PB_2DDrawing_Default )
 ;       Box( 12, 0, TextWidth(*Me\label)+6, 12, Globals::COLOR_MAIN_BG )
 ;       DrawingMode( #PB_2DDrawing_Transparent )
-;       DrawingFont(FontID(Globals::#FONT_HEADER))
+;       DrawingFont(FontID(Globals::#FONT_HEADHEADER))
 ;       DrawText( 15,  0, *Me\label, Globals::COLOR_GROUP_LABEL )
 ;     
 ;     StopDrawing()
@@ -1149,8 +948,6 @@ Module ControlProperty
     
     ; Add Group to PPG
     ;---------------------------------
-;      AddElement(*Me\groups())
-;     *Me\groups() = *group
     Append(*Me,*group)
     
     ; Offset for Next Control
@@ -1187,8 +984,6 @@ Module ControlProperty
     
     ; Add Group to PPG
     ;---------------------------------
-;      AddElement(*Me\groups())
-;     *Me\groups() = *group
     Append(*Me,*group)
     
     ; Connect Signal
@@ -1296,6 +1091,64 @@ Module ControlProperty
     ProcedureReturn(#Null)
   EndProcedure
   
+  ; ---[ Add Head Control  ]------------------------------------------
+  ;--------------------------------------------------------------------
+  Procedure AddHead( *Me.ControlProperty_t)
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.ControlProperty::IControlProperty = *Me
+    Protected *head.ControlHead::ControlHead_t
+    
+    Protected width = GadgetWidth(*Me\gadgetID)-10
+    
+    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    *head = ControlHead::New(*Me,*Me\name+"_Head",options,*Me\dx,*Me\dy+2,width,18) 
+    Append(*Me,*head)
+    
+    
+    ; Offset for Next Control
+    ;---------------------------------
+    *Me\dy +#HEAD_HEIGHT
+    *Me\head = *head
+    
+    ProcedureReturn(#True)
+  EndProcedure
+  
+  ; ---[ Get Width ]-----------------------------------------------
+  ;---------------------------------------
+  Procedure GetWidth( *Me.ControlProperty_t)
+    
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me : ProcedureReturn : EndIf
+    
+    ProcedureReturn(*Me\sizX)
+  EndProcedure
+  
+  ; ---[ Get Height ]-----------------------------------------------
+  ;---------------------------------------
+  Procedure GetHeight( *Me.ControlProperty_t)
+    
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected *son.Control::Control_t
+    *Me\sizY = 0
+    If *Me\expanded
+      For i=0 To *Me\chilcount-1
+      
+        *son = *Me\children(i)
+        If (*son\posY+*son\sizY) > height
+          *Me\sizY = *son\posY+*son\sizY
+        EndIf
+      Next
+    Else
+      *Me\sizY = ControlHead::#HEAD_HEIGHT
+    EndIf
+    
+    ProcedureReturn *Me\sizY
+  EndProcedure
+
   
   ; ---[ On Init ]-----------------------------------------------
   ;---------------------------------------
@@ -1307,7 +1160,6 @@ Module ControlProperty
     ; ---[ Add Parameter ]--------------------------------------------
     
     ; ---[ Draw Pick Image ]------------------------------------------
-    hlpResize(*Me,#Null)
     DrawPickImage(*Me)
     Draw(*Me)
     
@@ -1340,15 +1192,36 @@ Module ControlProperty
   ;     If filter = *Me\groups()\GetGadgetID() : *Me\groups()\Event( ev_type ) : EndIf
   ;   Next
   EndProcedure
+  
 
+  ; ----------------------------------------------------------------------------
+  ;  ON MESSAGE
+  ; ----------------------------------------------------------------------------
+  Procedure OnMessage( id.i, *up)
+    Protected *sig.Signal::Signal_t = *up
+
+  EndProcedure
 
   ; ---[ Free ]-----------------------------------------------------------------
   ;----------------------------------------
   Procedure Delete( *Me.ControlProperty_t )
-    
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
+    Protected c
+    Protected ictl.Control::IControl
+    For c=0 To *Me\chilcount-1
+      ictl = *Me\children(c)
+      ictl\Delete()
+    Next
+    FreeGadget(*Me\gadgetID)
+    If IsImage(*Me\imageID) 
+      FreeImage(*Me\imageID)
+    EndIf
+    If IsImage(*Me\pickID)
+      FreeImage(*Me\pickID)
+    EndIf
     
+    ClearStructure(*Me, ControlProperty_t)
     ; ---[ Deallocate Memory ]--------------------------------------------------
     FreeMemory( *Me )
     
@@ -1382,21 +1255,28 @@ Module ControlProperty
       CompilerElse
         Case #PB_EventType_Resize
       CompilerEndIf
-      
-      
-        ; ...[ Update & Check Dirty ]...........................................
-        If #True = hlpResize( *Me, *ev_data.Control::EventTypeDatas_t )
-          ; ...[ Redraw Control ]...............................................
-          Draw( *Me )
-        EndIf
+     
+        *Me\posX = *ev_data\x
+        *Me\posY = *ev_data\y
+        *Me\sizX = *ev_data\width
+        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*ev_data\width,#PB_Ignore)
+        Define c
+        For c=0 To *Me\chilcount-1
+          son = *Me\children(c)
+          son\OnEvent(#PB_Event_SizeWindow, *ev_data)
+        Next
+        
+        Draw( *Me )
+        DrawPickImage(*Me)
         
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
+      
         
       ; ------------------------------------------------------------------------
       ;  DrawChild
       ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_DrawChild
+      Case Control::#PB_EventType_DrawChild
         *son.Control::Control_t = *ev_data
         son.Control::IControl    = *son
         ev_data\xoff    = *son\posX
@@ -1456,7 +1336,7 @@ Module ControlProperty
           ev_datas\y = *overchild\posY
           *Me\overchild\OnEvent(#PB_EventType_MouseMove)
         Else
-          If *Me\pickID <= 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
+          If *Me\pickID < 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
             *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
             *Me\overchild = #Null
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
@@ -1693,7 +1573,7 @@ Module ControlProperty
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
-    *Me\gadgetID   = CanvasGadget(#PB_Any,0,0,width,height,#PB_Canvas_Keyboard)
+    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard)
     *Me\imageID    = CreateImage(#PB_Any,width,height)
     *Me\pickID     = CreateImage(#PB_Any,width,height)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
@@ -1705,6 +1585,8 @@ Module ControlProperty
     *Me\label      = label
     *Me\visible    = #True
     *Me\enable     = #True
+    *Me\head       = #Null
+    *Me\expanded   = #True
   
     ; Init Structure
     InitializeStructure( *Me, ControlProperty_t ) ; List
@@ -1726,8 +1608,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1605
-; FirstLine = 1577
-; Folding = -+--f-
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 272
+; FirstLine = 245
+; Folding = -------
 ; EnableXP

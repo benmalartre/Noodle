@@ -413,9 +413,7 @@ Module ControlExplorer
     ;Expended button
     If Not *item\isleaf
       DrawingMode(#PB_2DDrawing_Default)
-      RoundBox(x-shiftx+2,*Me\ioffsety+7,3,3,1,1,UIColor::COLOR_MAIN_BG)
-      DrawingMode(#PB_2DDrawing_Outlined)
-      RoundBox(x-shiftx+2,*Me\ioffsety+7,3,3,1,1,UIColor::COLOR_GROUP_FRAME)
+      Box(x-shiftx+2,*Me\ioffsety+7,3,3,UIColor::COLOR_MAIN_BG)
       If *item\expended
         Line(x-shiftx+4,*Me\ioffsety+10,3,1,UIColor::COLOR_GROUP_FRAME)
       Else
@@ -427,7 +425,6 @@ Module ControlExplorer
     
     ;  Draw Icon
     DrawingMode(#PB_2DDrawing_AlphaBlend)
-  
     Select *item\type  
         
       Case #TYPE_3DOBJECT
@@ -487,60 +484,49 @@ Module ControlExplorer
       Case #TYPE_ATTRIBUTE
 
         Protected *a.Attribute::Attribute_t = *item\object
+        tc  =RGBA(255,0,0,255)
         Select *a\datatype
           Case Attribute::#ATTR_TYPE_BOOL
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            RoundBox(x+2,*Me\ioffsety+6,9,9,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
           Case Attribute::#ATTR_TYPE_FLOAT
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
-            RoundBox(x+2,*Me\ioffsety+6,9,9,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
           Case Attribute::#ATTR_TYPE_VECTOR3
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
-            RoundBox(x+2,*Me\ioffsety+6,9,9,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
           Case Attribute::#ATTR_TYPE_MATRIX4
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            RoundBox(x+2,*Me\ioffsety+6,8,8,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
           Case Attribute::#ATTR_TYPE_COLOR
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            RoundBox(x+2,*Me\ioffsety+6,8,8,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
           Case Attribute::#ATTR_TYPE_TOPOLOGY
   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            RoundBox(x+2,*Me\ioffsety+6,8,8,2,2,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,255))
+            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,255))
             DrawingMode(#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
             
           Default 
   ;           Box(x+1,*Me\ioffsety+5,8,8,RGBA(0,0,0,255))
-            RoundBox(x+2,*Me\ioffsety+6,8,8,2,2,RGBA(255,255,255,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
+            Circle(x+2,*Me\ioffsety+6,4,RGBA(255,255,255,255))
+            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
         EndSelect
         
-        ; fake volume
-        DrawingMode(#PB_2DDrawing_Gradient|#PB_2DDrawing_AlphaBlend)
-        GradientColor(1,RGBA(0,0,0,100))
-        GradientColor(0.5,RGBA(150,150,150,0))
-        GradientColor(0,RGBA(255,255,255,60))
-        LinearGradient(x+2,*Me\ioffsety+6,x+2,*Me\ioffsety+6+9)
-        RoundBox(x+2,*Me\ioffsety+6,9,9,2,2)
-        
-          ; outline
-;         DrawingMode(#PB_2DDrawing_Outlined)
-;         FrontColor(UIColor::COLOR_GROUP_LABEL)
-;         RoundBox(x+2,*Me\ioffsety+6,9,9,2,2)
-        
+      
     EndSelect
     
     *Me\ioffsety + #LINEHEIGHT
@@ -1167,8 +1153,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 975
-; FirstLine = 870
-; Folding = fxXef8
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 486
+; FirstLine = 409
+; Folding = fxXef-
 ; EnableXP

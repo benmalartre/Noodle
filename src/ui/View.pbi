@@ -191,20 +191,10 @@ Module View
       Protected *ui.UI::UI_t = *view\content
       Protected ui.UI::IUI = *ui
       If *ui
-        
         ResizeGadget(*ui\container,x,y,width,height)  
         ui\Event(#PB_Event_SizeWindow)
       EndIf
-      
-;       Protected *content.View_t = *view\content
-;       Protected ev_data.EventTypeDatas_t
-;       ev_data\x = x
-;       ev_data\y = y
-;       ev_data\width = width
-;       ev_data\height = height
-;       If *content
-;         *content\Event(#PB_Event_SizeWindow,@ev_data)
-;       EndIf
+     
     Else
       Protected hs = ViewManager::#VIEW_BORDER_SENSIBILITY/2
       If *view\fixed
@@ -919,8 +909,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 830
-; FirstLine = 806
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 200
+; FirstLine = 175
 ; Folding = ------
 ; EnableXP

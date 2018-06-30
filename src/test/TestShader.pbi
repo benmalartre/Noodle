@@ -1,20 +1,5 @@
 
-XIncludeFile "OpenGL.pbi"
-XIncludeFile "GLFW.pbi"
-XIncludeFile "OpenGLExt.pbi"
-XIncludeFile "Shapes.pbi"
-XIncludeFile "Array.pbi"
-XIncludeFile "Camera.pbi"
-XIncludeFile "Light.pbi"
-XIncludeFile "ScreenQuad.pbi"
-XIncludeFile "Shader.pbi"
-XIncludeFile "Framebuffer.pbi"
-XIncludeFile "Math.pbi"
-XIncludeFile "Time.pbi"
-XIncludeFile "KDTree.pbi"
-XIncludeFile "Mesh.pbi"
-XIncludeFile "FTGL.pbi"
-XIncludeFile "Application.pbi"
+XIncludeFile "../core/Application.pbi"
 
 
 UseModule Math
@@ -26,7 +11,6 @@ UseModule OpenGLExt
 EnableExplicit
 
 Global framecount.l
-Global fps.l
 Global lasttime.l
 
 Global WIDTH = 1280
@@ -86,7 +70,7 @@ If Time::Init()
 
   
   *quad = ScreenQuad::New()
-  ScreenQuad::Setup(*quad)
+  ScreenQuad::Setup(*quad,*s_shader)
   
   ; Buffer
   ;-----------------------------------------------------
@@ -95,15 +79,15 @@ If Time::Init()
   Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
   
   
-  Application::Loop(*app,@Draw())
+  ;Application::Loop(*app,@Draw())
 
 EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 26
+; CursorPosition = 36
+; FirstLine = 11
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=1

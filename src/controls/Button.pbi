@@ -516,7 +516,6 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
           ; TODO : >>> TRIGGER ACTION <<<
           PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
           Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
-          Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
         EndIf
       EndIf
       
@@ -589,8 +588,6 @@ Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
   
-;   *Me\VT = ?ControlButtonVT
-;   *Me\classname = "CONTROLBUTTON"
   Object::INI(ControlButton)
   
   *Me\object = *object
@@ -1079,8 +1076,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 451
-; FirstLine = 443
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 518
+; FirstLine = 514
 ; Folding = ---+-
 ; EnableXP

@@ -340,9 +340,6 @@ DeclareModule Alembic
     CompilerEndSelect
   EndIf
   
-
-  
-  
   PrototypeC ABCCREATEARCHIVEMANAGER()
   PrototypeC.l ABCDELETEARCHIVEMANAGER(*manager)
   PrototypeC.l ABCGETNUMOPENARCHIVES(*manager)
@@ -1660,8 +1657,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 647
-; FirstLine = 643
+; CursorPosition = 340
+; FirstLine = 322
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

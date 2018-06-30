@@ -64,7 +64,7 @@ Define *s1.View::View_t = View::Split(*m\main,0,50)
 Define *s2.View::View_t = View::Split(*s1\left,#PB_Splitter_Vertical)
 Define *s3.View::View_t = View::Split(*s1\right,#PB_Splitter_SecondFixed,80)
 
-ViewManager::Event(*m,#PB_Event_SizeWindow)
+ViewManager::OnEvent(*m,#PB_Event_SizeWindow)
 Define *viewport.UI::IUI = ViewportUI::New(*s2\left,"ViewportUI")
 Define *shaders.UI::IUI = ShaderUI::New(*s2\right,"ShaderUI",#Null)
 Define *graph.UI::IUI = GraphUI::New(*s3\left,"GraphUI")
@@ -189,10 +189,10 @@ Repeat
 ;   
 ;   glDisable(#GL_DEPTH_TEST)
   
-  ViewManager::Event(*m,e)
+  ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 11
+; CursorPosition = 191
+; FirstLine = 117
 ; EnableXP
 ; Executable = glslsandbox.exe

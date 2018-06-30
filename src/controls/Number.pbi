@@ -1338,7 +1338,6 @@ EndProcedure
 ; ============================================================================
 ;{
 Procedure SetTheme( theme.i )
-  MessageRequester("NUMBER","SET THEME : "+Str(theme))
   Select theme
       
     ; ---[ Light ]------------------------------------------------------------
@@ -1369,7 +1368,6 @@ Procedure SetTheme( theme.i )
 
     ; ---[ Dark ]-------------------------------------------------------------
     Case Globals::#GUI_THEME_DARK
-      MessageRequester("NUMBER","SET DARK THEME")
       ; ...[ Disabled ].......................................................
       s_gui_controls_number_disabled_l  = s_gui_controls_dark_number_disabled_l
       s_gui_controls_number_disabled_c  = s_gui_controls_dark_number_disabled_c
@@ -1572,8 +1570,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 621
-; FirstLine = 613
-; Folding = ------
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 1370
+; FirstLine = 1336
+; Folding = -----
 ; EnableXP

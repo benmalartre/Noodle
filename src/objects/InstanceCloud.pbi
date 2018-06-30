@@ -335,9 +335,12 @@ Module InstanceCloud
     ;glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,0)
     ;glDisableClientState(#GL_ELEMENT_ARRAY_BUFFER)
     ;glDrawElementsInstanced(	#GL_TRIANGLES,*Me\shape\nbt*3,#GL_UNSIGNED_INT,CArray::GetPtr(*Me\shape\indices, 0),*geom\nbpoints)
+    If *Me\shape\indexed
+      glDrawElementsInstanced(#GL_TRIANGLES,CArray::GetCount(*Me\shape\indices),#GL_UNSIGNED_INT,0,*geom\nbpoints)
+    Else
+      glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
+    EndIf
     
-    glDrawElementsInstanced(#GL_TRIANGLES,CArray::GetCount(*Me\shape\indices),#GL_UNSIGNED_INT,0,*geom\nbpoints)
-    ;glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
     glBindVertexArray(0)
     
   EndIf
@@ -357,9 +360,9 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 334
-; FirstLine = 324
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 342
+; FirstLine = 283
 ; Folding = ---
-; EnableXP
 ; EnableUnicode
+; EnableXP

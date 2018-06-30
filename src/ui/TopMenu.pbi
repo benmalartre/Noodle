@@ -125,6 +125,7 @@ Module TopMenuUI
         *Me\width = *top\width
         *Me\height = *top\height
         ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
+        ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
     CompilerEndIf
       
     ElseIf event = #PB_Event_Gadget
@@ -274,8 +275,8 @@ Module TopMenuUI
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 108
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 58
+; FirstLine = 135
 ; Folding = ---
 ; EnableXP

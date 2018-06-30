@@ -50,11 +50,10 @@ Define *ui5.UI::UI_t = GraphUI::New(*bottom\left,"Bottom")
 Define *timeline.TimelineUI::TimelineUI_t = TimelineUI::New(*bottom\right,"Timeline")
 
 *default = LayerDefault::New(1200,600,*viewport\context,Scene::*current_scene\camera)
-*app\context = GLContext::New(0,#False,*viewport\gadgetID)
+*app\context = *viewport\context
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 46
-; FirstLine = 24
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 52
 ; Folding = -
 ; EnableUnicode
 ; EnableXP

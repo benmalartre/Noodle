@@ -70,6 +70,7 @@ XIncludeFile "../controls/Group.pbi"
 XIncludeFile "../controls/Controls.pbi"
 XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
+XIncludeFile "../controls/Head.pbi"
 ;XIncludeFile "../controls/PopupMenu.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
@@ -516,8 +517,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 84
+; CursorPosition = 72
+; FirstLine = 36
 ; Folding = ---
 ; EnableUnicode
 ; EnableXP

@@ -40,6 +40,7 @@ DeclareModule Shape
   Structure Shape_t
     nbp.i
     nbt.i
+    indexed.b
     *positions.CArray::CArrayV3F32
     *normals.CArray::CArrayV3F32
     *uvws.CArray::CArrayV3F32
@@ -13340,6 +13341,7 @@ Module Shape
     Protected *Me.Shape_t = AllocateMemory(SizeOf(Shape_t))
     *Me\nbp = 0
     *Me\nbt = 0
+    *Me\indexed = #True
     *Me\positions = CArray::newCArrayV3F32()
     *Me\normals = CArray::newCArrayV3F32()
     *Me\uvws = CArray::newCArrayV3F32()
@@ -13369,8 +13371,8 @@ Module Shape
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 13217
-; FirstLine = 13214
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 13343
+; FirstLine = 13296
 ; Folding = ---
 ; EnableXP

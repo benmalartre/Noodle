@@ -2253,6 +2253,7 @@ Module PolymeshGeometry
       Vector3::Set(@c,*c\r,*c\g,*c\b)
       CArray::SetValue(*shape\colors,i,@c)
     Next
+    *shape\indexed = #False
   EndProcedure
   
     
@@ -2328,8 +2329,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 2233
-; FirstLine = 2133
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 2255
+; FirstLine = 2107
 ; Folding = ---4Hw--9-
 ; EnableXP
