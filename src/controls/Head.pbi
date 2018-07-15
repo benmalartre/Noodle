@@ -9,7 +9,7 @@ DeclareModule ControlHead
   ;  GLOBALS
   ; ============================================================================
   ;{
-  #HEAD_HEIGHT = 16 
+  #HEAD_HEIGHT = 18
    
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlHead_t )
@@ -135,10 +135,11 @@ Module ControlHead
         If Not *ev_data : ProcedureReturn : EndIf
         
         ; ...[ Cancel Width & Height Resize ]...................................
-        *Me\sizX = 18 : *Me\sizY = 18
-        ; ...[ Update Status ]..................................................
-        If #PB_Ignore <> *ev_data\x     : *Me\posX = *ev_data\x     : EndIf
-        If #PB_Ignore <> *ev_data\y     : *Me\posY = *ev_data\y     : EndIf
+        *Me\sizX = *ev_data\width
+        *Me\sizY = #HEAD_HEIGHT
+        *Me\posX = 0
+        *Me\posY = 0
+
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -357,7 +358,7 @@ Module ControlHead
 
 EndModule
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 320
-; FirstLine = 282
+; CursorPosition = 137
+; FirstLine = 78
 ; Folding = ---
 ; EnableXP

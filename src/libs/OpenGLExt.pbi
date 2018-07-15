@@ -58,6 +58,7 @@ DeclareModule OpenGLExt
       CompilerCase #PB_OS_Windows
         ImportC "opengl32.lib"
           wglGetProcAddress(s.p-ascii) As "wglGetProcAddress"
+
         EndImport 
         
         Macro setGLEXT(var, extname)
@@ -1483,9 +1484,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 521
-; FirstLine = 518
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 24
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

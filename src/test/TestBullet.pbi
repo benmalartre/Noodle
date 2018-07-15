@@ -364,7 +364,7 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+     *app\context = *viewport\context
     *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
@@ -420,13 +420,13 @@ Scene::Setup(Scene::*current_scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 278
-; FirstLine = 268
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 366
+; FirstLine = 346
 ; Folding = -
 ; EnableUnicode
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0

@@ -1138,7 +1138,7 @@ Module ControlProperty
       For i=0 To *Me\chilcount-1
       
         *son = *Me\children(i)
-        If (*son\posY+*son\sizY) > height
+        If (*son\posY+*son\sizY) > *Me\sizY
           *Me\sizY = *son\posY+*son\sizY
         EndIf
       Next
@@ -1202,8 +1202,9 @@ Module ControlProperty
 
   EndProcedure
 
-  ; ---[ Free ]-----------------------------------------------------------------
-  ;----------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;  DESTRUCTOR
+  ; ----------------------------------------------------------------------------
   Procedure Delete( *Me.ControlProperty_t )
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -1226,7 +1227,18 @@ Module ControlProperty
     FreeMemory( *Me )
     
   EndProcedure
-
+  
+  ; ----------------------------------------------------------------------------
+  ;  Get Num Control In Row
+  ; ----------------------------------------------------------------------------
+  Procedure GetNumControlInRow(*Me.ControlProperty_t, base.i)
+    Protected index = base
+    While *Me\rowflags(index)
+      index+1
+    Wend
+    ProcedureReturn index - base
+  EndProcedure
+  
 
   ; ============================================================================
   ;  OVERRIDE ( Control::IControl )
@@ -1255,16 +1267,62 @@ Module ControlProperty
       CompilerElse
         Case #PB_EventType_Resize
       CompilerEndIf
-     
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
         *Me\sizX = *ev_data\width
         ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*ev_data\width,#PB_Ignore)
         Define c
-        For c=0 To *Me\chilcount-1
+        ev_data\x = 0
+        ev_data\y = 0
+        ev_data\width = *ev_data\width
+        ev_data\height = #PB_Ignore
+        
+        Protected nbc_row.i
+        Protected idr.i = 0
+        For c=0 To *Me\chilcount - 1
           son = *Me\children(c)
-          son\OnEvent(#PB_Event_SizeWindow, *ev_data)
+          *son = son
+          If *Me\rowflags(c) 
+            nbc_row = GetNumControlInRow(*Me, c)
+            idr = 0
+            While *Me\rowflags(c)
+              ev_data\width = *ev_data\width / nbc_row
+              ev_data\x    = *ev_data\x + ev_data\width * idr
+              ev_data\y    = *son\posY
+              son\OnEvent(#PB_EventType_Resize, @ev_data)
+              c + 1
+              idr + 1
+            Wend
+          Else
+            ev_data\width = *ev_data\width
+            ev_data\x    = *son\posX
+            ev_data\y    = *son\posY
+            son\OnEvent(#PB_EventType_Resize, @ev_data)
+          EndIf
         Next
+        
+;         CompilerIf #PB_Compiler_Version <550
+;           For c=0 To *Me\chilcount-1
+;             son = *Me\children(c)
+;             *son = son
+;             If *son\type = Control::#PB_GadgetType_Group
+;               ev_data\x    = *son\posX
+;               ev_data\y    = *son\posY
+;               son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+;             EndIf
+;           Next
+;         CompilerElse
+;           For c=0 To *Me\chilcount-1
+;             son = *Me\children(c)
+;             *son = son
+;             If *son\type = Control::#PB_GadgetType_Group
+;               ev_data\x    = *son\posX
+;               ev_data\y    = *son\posY
+;               son\OnEvent(#PB_EventType_Resize, @ev_data)
+;             EndIf
+;             
+;           Next
+;         CompilerEndIf
         
         Draw( *Me )
         DrawPickImage(*Me)
@@ -1608,8 +1666,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 272
-; FirstLine = 245
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1219
+; FirstLine = 1199
 ; Folding = -------
 ; EnableXP

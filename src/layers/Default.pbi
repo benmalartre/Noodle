@@ -92,14 +92,6 @@ Module LayerDefault
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
     
-    
-    
-  ;   If *layer\image
-  ;     glActiveTexture(#GL_TEXTURE0)
-  ;     glBindTexture(#GL_TEXTURE_2D,*layer\image)
-  ;     GLCheckError("Bind Texture")
-  ;   EndIf
-  ;   
   
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::BindOutput(*buffer)
@@ -139,12 +131,12 @@ Module LayerDefault
     
     ;Draw Drawer Objects
     ;-----------------------------------------------
-;     *shader.Program::Program_t = *ctx\shaders("wireframe")
-;     shader.GLuint =  *shader\pgm
-;     glUseProgram(shader)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-;     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
+    *shader.Program::Program_t = *ctx\shaders("wireframe")
+    shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
     
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
@@ -161,7 +153,7 @@ Module LayerDefault
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
 ;     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
 
-; 
+
   
     ; Draw Instance Clouds 
     ;-----------------------------------------------
@@ -257,8 +249,8 @@ Module LayerDefault
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 188
-; FirstLine = 159
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 138
+; FirstLine = 103
 ; Folding = --
 ; EnableXP

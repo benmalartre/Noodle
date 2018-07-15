@@ -190,11 +190,6 @@ Module LayerDefered
         Light::PassToShader(*light,shader,i)
       Next
       
-;       Define i = 0
-;       ForEach *lights()
-;         Light::PassToShader(*lights(),shader,i)
-;         i+1
-;       Next
       glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
     ;       glUniform3fv(glGetUniformLocation(shader, "viewPos"),1, *camera\pos)
       *layer\quad\pgm = *ctx\shaders("defered")
@@ -254,8 +249,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 167
-; FirstLine = 141
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 198
+; FirstLine = 175
 ; Folding = --
 ; EnableXP

@@ -199,7 +199,6 @@ Module ControlTimeline
        If *son <> #Null
         ev_data\xoff = *son\posX
         ev_data\yoff = *son\posY
-        Debug  *son\name + ","+*son\class\name
         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
        EndIf
      Next
@@ -1107,7 +1106,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 1100
-; FirstLine = 974
+; CursorPosition = 201
+; FirstLine = 186
 ; Folding = ------
 ; EnableXP

@@ -697,7 +697,7 @@ Module ViewManager
 ;       ev_data\width = w
 ;       ev_data\height = h
       View::Resize(*manager\main,0,0,w,h)
-      View::OnEvent(*manager\main,#PB_Event_SizeWindow)
+      ;View::OnEvent(*manager\main,#PB_Event_SizeWindow)
   EndProcedure
     
     
@@ -910,7 +910,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 200
+; CursorPosition = 179
 ; FirstLine = 175
 ; Folding = ------
 ; EnableXP

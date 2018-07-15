@@ -173,6 +173,7 @@ Module Drawer
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Setup(*Me.Drawer_t,*shader.Program::Program_t)
+    
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -202,14 +203,11 @@ Module Drawer
       EndIf
       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
       
+      ; Fill Buffer Data
       Protected s.GLfloat
       Protected length.i
-      ;Select *item\type
-      ;Case #ITEM_POINT
-      ; Fill Buffer Data
       length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
-      glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_STATIC_DRAW)
-      ;Case #ITEM_LINE
+      glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_DYNAMIC_DRAW)
       
       glEnableVertexAttribArray(0)
       glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
@@ -233,7 +231,11 @@ Module Drawer
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Update(*Me.Drawer_t)
+    Debug "UPDATE GL DRAWER...."
     Protected *item.Item_t
+    Protected s.GLfloat
+    Protected length.i
+    
     ForEach *Me\items()
       *item = *me\items()
       ;Create Or ReUse Vertex Array Object
@@ -247,11 +249,9 @@ Module Drawer
         glGenBuffers(1,@*item\vbo)
       EndIf
       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
-      
-      Protected s.GLfloat
-      Protected length.i
+
       length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
-      glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_STATIC_DRAW)
+      glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_DYNAMIC_DRAW)
       
       glEnableVertexAttribArray(0)
       glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
@@ -288,6 +288,7 @@ Module Drawer
   ;---------------------------------------------------------------------------- 
   ; ---[ Draw Point Item ]-----------------------------------------------------
   Procedure DrawPoint(*Me.Point_t)
+    glPointSize(*Me\size)
     glDrawArrays(#GL_POINTS,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
@@ -318,6 +319,13 @@ Module Drawer
     Next
   EndProcedure
   
+  ; ---[ Draw Box Item ]-----------------------------------------------------
+  Procedure DrawBox(*Me.Box_t)
+;     glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+;     glDrawElements(#GL_TRIANGLES,48,#GL_UNSIGNED_INT,Shape::GetFaces(Shape::#SHAPE_CUBE))
+    glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
+  EndProcedure
+  
   ; ---[ Draw Item ]-----------------------------------------------------------
   Procedure Draw(*Me.Drawer_t)
     If Not *Me : ProcedureReturn : EndIf
@@ -326,7 +334,7 @@ Module Drawer
    
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
     ForEach *Me\items()
-      With *me\items()
+      With *Me\items()
         glBindVertexArray(\vao)
         ; Set Color
         glUniform4f(*Me\u_color,\color\r,\color\g,\color\b, 1.0)
@@ -339,6 +347,8 @@ Module Drawer
             DrawLoop(*me\items())
           Case #ITEM_STRIP
             DrawStrip(*Me\items())
+          Case #ITEM_BOX
+            DrawBox(*Me\items())
         EndSelect
       EndWith
     Next
@@ -595,8 +605,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 269
-; FirstLine = 259
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 325
+; FirstLine = 304
 ; Folding = ------
 ; EnableXP

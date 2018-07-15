@@ -78,7 +78,7 @@ Module PropertyUI
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Destrcutor
+  ;  Destructor
   ; ----------------------------------------------------------------------------
   Procedure Delete(*Me.PropertyUI_t)
     ForEach *Me\props()
@@ -113,16 +113,15 @@ Module PropertyUI
           ev_datas\y = 0
           ev_datas\width = *top\width
           ev_datas\height = #PB_Ignore
-          
+
           If ListSize(*Me\props())
             ForEach *Me\props()
-              CompilerIf #PB_Compiler_Version <560
+              CompilerIf #PB_Compiler_Version <550
                 ControlProperty::OnEvent(*Me\props(),Control::#PB_EventType_Resize,@ev_datas)
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               CompilerEndIf
-              
-              ev_datas\y+*Me\props()\sizY
+              ev_datas\y = ev_datas\y + *Me\props()\sizY
             Next
           EndIf
 
@@ -474,9 +473,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 97
-; Folding = ---
-; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 115
+; FirstLine = 114
+; Folding = ----
 ; EnableXP
+; EnableUnicode

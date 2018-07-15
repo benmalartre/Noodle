@@ -130,7 +130,7 @@ Module Shader
   ;-------------------------------------
   ; Create GLSL Shader
   ;-------------------------------------
-  Procedure Create(*code,type.i,name.s)
+  Procedure Create(*code,type.i,name.s) 
     GLCheckError("Before Creating Shader")
     Protected shader.l = glCreateShader(type)
     GLCheckError("Create Shader : ")
@@ -351,8 +351,8 @@ Module Program
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 344
-; FirstLine = 320
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 132
+; FirstLine = 120
 ; Folding = ----
 ; EnableXP

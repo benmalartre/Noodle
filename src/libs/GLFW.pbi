@@ -756,8 +756,8 @@ Module GLFW
     Protected *monitor.GLFWmonitor  = glfwGetPrimaryMonitor()
     Protected title.s = name +" - "
     If Not OpenGL::#USE_LEGACY_OPENGL
-      glfwWindowHint(#GLFW_CONTEXT_VERSION_MAJOR, 3)
-      glfwWindowHint(#GLFW_CONTEXT_VERSION_MINOR, 3)
+      glfwWindowHint(#GLFW_CONTEXT_VERSION_MAJOR, 4)
+      glfwWindowHint(#GLFW_CONTEXT_VERSION_MINOR, 5)
       glfwWindowHint(#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
       glfwWindowHint(#GLFW_OPENGL_PROFILE, #GLFW_OPENGL_CORE_PROFILE)
       glfwWindowHint(#GLFW_STENCIL_BITS, 8)
@@ -787,9 +787,9 @@ Module GLFW
   EndProcedure
   ;}
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 439
-; FirstLine = 755
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 769
+; FirstLine = 730
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

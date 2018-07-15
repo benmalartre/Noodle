@@ -326,6 +326,7 @@ If Time::Init()
    CompilerIf Not #USE_GLFW
      Define *view.View::View_t = View::Split(*app\manager\main,#PB_Splitter_Vertical,75)
      *viewport = ViewportUI::New(*view\left,"ViewportUI")
+     *app\context = *viewport\context
      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
      
     *viewport\camera = *app\camera
@@ -495,8 +496,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 311
-; FirstLine = 255
+; CursorPosition = 328
+; FirstLine = 279
 ; Folding = -
 ; EnableXP
 ; Executable = ssao.exe
