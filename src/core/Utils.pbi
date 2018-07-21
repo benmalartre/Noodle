@@ -19,6 +19,7 @@ DeclareModule Utils
   Declare GL_LoadImage(imageID,flipY.b=#True,wrap_s=#GL_CLAMP,wrap_t=#GL_CLAMP,min_f=#GL_NEAREST,mag_f=#GL_NEAREST)
   Declare GL_WriteImage(path.s,width.i,height.i)
   Declare TransformPositionArray(*io.CArray::CArrayV3F32,*points.CArray::CArrayV3F32,*m.m4f32)
+  Declare TransformPositionArrayInPlace(*points.CArray::CArrayV3F32,*m.m4f32)
   Declare BuildCircleSection(*io.CArray::CArrayV3F32, nbp.i = 12, radius.f = 1.0,start_angle.f = 0.0,end_angle.f = 360.0)
   Declare BuildMatrixArray(*io.CArray::CArrayM4F32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,*up.v3f32)
   Declare RotateVector(*v.v3f32,*q.q4f32,*io.v3f32)
@@ -211,6 +212,17 @@ Module Utils
     For i=0 To nb-1
       Vector3::MulByMatrix4(@v,CArray::GetValue(*points,i),*m)
       CArray::SetValue(*io,i,@v)
+    Next
+  EndProcedure
+  
+  ;  Transform Position Array In Place
+  ; ----------------------------------------------------------------------------
+  Procedure TransformPositionArrayInPlace(*points.CArray::CArrayV3F32,*m.m4f32)
+    Protected i
+    Protected nb = CArray::GetCount(*points)
+
+    For i=0 To nb-1
+      Vector3::MulByMatrix4InPlace(CArray::GetValue(*points,i),*m)
     Next
   EndProcedure
 
@@ -537,8 +549,8 @@ Module Utils
 
 
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 535
-; FirstLine = 506
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 222
+; FirstLine = 202
 ; Folding = ---
 ; EnableXP

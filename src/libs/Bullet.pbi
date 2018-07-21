@@ -219,10 +219,7 @@ DeclareModule Bullet
     #WORLD_COLLISION
     #WORLD_DYNAMICS
   EndEnumeration
-  
-  
-  
-  
+
   Structure BTWorld_t Extends Object::Object_t
     *world.btDynamicsWorld
   ;   *statics.CArrayPtr()
@@ -247,14 +244,12 @@ DeclareModule Bullet
     ;___________________________________________________________________________
     ;  Windows
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ;MessageRequester("Bullet",RAAFAL_LIB_INCLUDE_PATH+"bullet.lib")
-    ImportC "..\..\libs\x64\windows\bullet.lib" : EndImport
-    ImportC "..\..\libs\x64\windows\BulletCollision.lib" : EndImport
-    ImportC "..\..\libs\x64\windows\BulletDynamics.lib" :EndImport
+    ImportC "..\..\libs\x64\windows\BulletCAPI.lib" : EndImport
+    ImportC "..\..\libs\x64\windows\BulletDynamics.lib" : EndImport
     ImportC "..\..\libs\x64\windows\BulletSoftBody.lib"  : EndImport
+    ImportC "..\..\libs\x64\windows\BulletCollision.lib" : EndImport
     ImportC "..\..\libs\x64\windows\LinearMath.lib" : EndImport
-    ImportC "..\..\libs\x64\windows\bullet.lib"
-    
+    ImportC "..\..\libs\x64\windows\BulletCAPI.lib"
           
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
     ;___________________________________________________________________________
@@ -270,9 +265,9 @@ DeclareModule Bullet
     ImportC "../../libs/x64/linux/bullet.a"
       
   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-     ;___________________________________________________________________________
+    ;___________________________________________________________________________
     ;  MacOSX
-    ;¯¯¯¯¯¯¯¯¯
+    ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     ImportC "../../libs/x64/macosx/bullet.a" : EndImport
     ImportC "../../libs/x64/macosx/libBulletDynamics.a":EndImport
     ImportC "../../libs/x64/macosx/libBulletSoftBody.a": EndImport
@@ -283,9 +278,7 @@ DeclareModule Bullet
       
       
   CompilerEndIf
-        
-  
-  
+
       BTTestWorld(useMCLPSolver.b)
       BTTestXForm(*T.btXform)
       ;Create And Delete a Bullet SDK
@@ -307,7 +300,7 @@ DeclareModule Bullet
   		
   		
   		; Dynamics World
-  		BTCreateDynamicsWorld(*physicsSdk.btPhysicsSdk,useMCLPSolver.b=#False); return a btDynamicsWorld Object
+  		BTCreateDynamicsWorld.l(*physicsSdk.btPhysicsSdk,useMCLPSolver.b=#False); return a btDynamicsWorld Object
   		BTDeleteDynamicsWorld(*world.btDynamicsWorld)
   		
   		BTCreateSoftRigidDynamicsWorld(*physicsSdk.btPhysicsSdk); return a btSoftRigidDynamicsWorld Object
@@ -363,8 +356,9 @@ DeclareModule Bullet
       BTNewGearConstraint(*bodyA.btRigidBody,*bodyB.btRigidBody, *axisA.btVector3,*axisB.btVector3,ratio.f)
       BTNewPoint2PointConstraint(*bodyA.btRigidBody,*bodyB.btRigidBody, *pivotA.btVector3,*pivotB.btVector3)
       BTNewSliderConstraint(*bodyA.btRigidBody,*bodyB.btRigidBody,*frameA.trf32,*frameB.trf32,useReferenceFrameA.b)
+      BTNewConeTwistConstraint(*bodyA.btRigidBody,*bodyB.btRigidBody,*frameA.trf32,*frameB.trf32)
+      BTSetConeTwistCosntraintLimits(*constraint.btConstraint, swingSpan1.f, swingSpan2.f, twistSpan.f, biasFactor.f=0.3, relaxationFactor.f=1.0)
 	    BTNewGeneric6DofConstraint(*bodyA.btRigidBody,*bodyB.btRigidBody,*frameA.trf32,*frameB.trf32,usereferenceframeA.b)
-	
       BTSetGeneric6DofConstraintLimit(*constraint.btConstraint,axis.i, lo.btReal, hi.btReal);
 	    BTSetGeneric6DofConstraintLinearLowerLimit(*constraint.btConstraint,*limit.v3f32);
 	    BTSetGeneric6DofConstraintLinearUpperLimit(*constraint.btConstraint,*limit.v3f32);
@@ -488,7 +482,6 @@ Module Bullet
 ; *bullet_world = BTCreateDynamicsWorld(*bullet_sdk)
 ;     *bullet_world = BTTestWorld(#True)
 
-
     
     Debug "Bullet_World --> "+Str(*bullet_world)
 ;     Debug "SDK_Bullet_World --> "+Str(BTGetDynamicsWorld(*bullet_sdk))
@@ -499,7 +492,6 @@ Module Bullet
     Protected gravity.v3f32
     Vector3::Set(@gravity,0,-10,0)
     BTSetGravity(*bullet_world,@gravity)
-   Debug "Bullet Num Collision Objects -------------------------------------------------------> "+Str(BTTest(*raa_bullet_sdk))
     
     ; ---[ OK ]-----------------------------------------------------------------
     ProcedureReturn #True
@@ -522,8 +514,8 @@ Module Bullet
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 263
-; FirstLine = 248
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 302
+; FirstLine = 271
 ; Folding = ---
 ; EnableXP

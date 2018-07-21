@@ -261,85 +261,23 @@ DeclareModule Shape
   ;-----------------------------------------------------------------------------
   ; Axis
   ;-----------------------------------------------------------------------------
-  #AXIS_NUM_TRIANGLES =24
-  #AXIS_NUM_VERTICES =18
-  #AXIS_NUM_INDICES =72
-  #AXIS_NUM_EDGES =27
+  #AXIS_NUM_TRIANGLES =0
+  #AXIS_NUM_VERTICES =4
+  #AXIS_NUM_INDICES =0
+  #AXIS_NUM_EDGES =3
   DataSection
   	shape_axis_positions:
-  	Data.GLfloat -3.02326941282e-17,0.01,0.0
-  	Data.GLfloat 0.00866025403784,-0.005,-0.5
-  	Data.GLfloat 0.0,0.01,-1.22464679915e-18
-  	Data.GLfloat 0.5,0.01,-1.22464679915e-18
-  	Data.GLfloat 0.0,-0.005,0.00866025403784
-  	Data.GLfloat 0.5,-0.005,0.00866025403784
-  	Data.GLfloat 0.0,-0.005,-0.00866025403784
-  	Data.GLfloat 0.5,-0.005,-0.00866025403784
-  	Data.GLfloat 0.00866025403784,-0.005,0.0
-  	Data.GLfloat -0.00866025403784,-0.005,-0.5
-  	Data.GLfloat -0.01,0.0,-1.22464679915e-18
-  	Data.GLfloat -0.01,0.5,-1.22464679915e-18
-  	Data.GLfloat 0.005,0.0,0.00866025403784
-  	Data.GLfloat 0.005,0.5,0.00866025403784
-  	Data.GLfloat 0.005,0.0,-0.00866025403784
-  	Data.GLfloat 0.005,0.5,-0.00866025403784
-  	Data.GLfloat 3.09996458292e-17,0.01,-0.5
-  	Data.GLfloat -0.00866025403784,-0.005,0.0
+  	Data.GLfloat 0.0,0.0,0.0
+  	Data.GLfloat 1.0,0.0,0.0
+  	Data.GLfloat 0.0,1.0,0.0
+  	Data.GLfloat 0.0,0.0,1.0
   
   	shape_axis_indices:
-  	Data.GLuint 2,6,4
-  	Data.GLuint 2,4,5
-  	Data.GLuint 2,5,3
-  	Data.GLuint 5,7,3
-  	Data.GLuint 14,10,11
-  	Data.GLuint 14,11,15
-  	Data.GLuint 4,6,7
-  	Data.GLuint 4,7,5
-  	Data.GLuint 8,17,9
-  	Data.GLuint 8,9,1
-  	Data.GLuint 0,8,1
-  	Data.GLuint 0,1,16
-  	Data.GLuint 6,2,3
-  	Data.GLuint 6,3,7
-  	Data.GLuint 8,0,17
-  	Data.GLuint 10,14,12
-  	Data.GLuint 10,12,13
-  	Data.GLuint 10,13,11
-  	Data.GLuint 13,15,11
-  	Data.GLuint 17,0,16
-  	Data.GLuint 17,16,9
-  	Data.GLuint 12,14,15
-  	Data.GLuint 12,15,13
-  	Data.GLuint 16,1,9
   
   	shape_axis_edges:
-  	Data.GLuint 2,4
-  	Data.GLuint 11,15
-  	Data.GLuint 10,14
-  	Data.GLuint 4,5
-  	Data.GLuint 5,3
-  	Data.GLuint 3,2
-  	Data.GLuint 17,8
-  	Data.GLuint 17,0
-  	Data.GLuint 6,4
-  	Data.GLuint 9,1
-  	Data.GLuint 6,7
-  	Data.GLuint 7,5
-  	Data.GLuint 17,9
-  	Data.GLuint 2,6
-  	Data.GLuint 3,7
-  	Data.GLuint 12,10
-  	Data.GLuint 12,14
-  	Data.GLuint 16,0
-  	Data.GLuint 12,13
-  	Data.GLuint 13,11
-  	Data.GLuint 11,10
-  	Data.GLuint 16,9
-  	Data.GLuint 8,0
-  	Data.GLuint 1,16
-  	Data.GLuint 8,1
-  	Data.GLuint 14,15
-  	Data.GLuint 15,13
+  	Data.GLuint 0,1
+  	Data.GLuint 0,2
+  	Data.GLuint 0,3
   
   EndDataSection
   
@@ -13425,7 +13363,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13382
-; FirstLine = 13367
+; CursorPosition = 276
+; FirstLine = 235
 ; Folding = ---
 ; EnableXP

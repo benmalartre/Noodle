@@ -270,6 +270,8 @@ DeclareModule Vector2
   Declare Sub(*v.v2f32,*a.v2f32,*b.v2f32)
   Declare Scale(*v.v2f32,*o.v2f32,mult.f=1.0)
   Declare ScaleInPlace(*v.v2f32,mult.f=1.0)
+  Declare Invert(*o.v2f32, *v.v2f32)
+  Declare InvertInPlace(*v.v2f32)
   Declare LinearInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,blend.f=0.0)
   Declare BezierInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,u.f)
   Declare HermiteInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,mu.f,tension.f,bias.f)
@@ -299,6 +301,8 @@ DeclareModule Vector3
   Declare Sub(*v.v3f32,*a.v3f32,*b.v3f32)
   Declare Scale(*v.v3f32,*o.v3f32,mult.f=1.0)
   Declare ScaleInPlace(*v.v3f32,mult.f=1.0)
+  Declare Invert(*o.v3f32, *v.v3f32)
+  Declare InvertInPlace(*v.v3f32)
   Declare LinearInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,blend.f=0.0)
   Declare BezierInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,u.f)
   Declare HermiteInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,mu.f,tension.f,bias.f)
@@ -626,6 +630,18 @@ Module Vector2
     *v\x * mult
     *v\y * mult
   EndProcedure
+  
+  ; Invert
+  ;-----------------------------------------------------
+  Procedure Invert(*v.v2f32,*o.v2f32)
+    If *o\x <> 0.0 : *v\x = 1.0 / *o\x : Else : *v\x = 0.0 : EndIf
+    If *o\y <> 0.0 : *v\y = 1.0 / *o\y : Else : *v\y = 0.0 : EndIf
+  EndProcedure
+  
+  Procedure InvertInPlace(*v.v2f32)
+    If *v\x <> 0.0 : *v\x = 1.0 / *v\x : EndIf
+    If *v\y <> 0.0 : *v\y = 1.0 / *v\y : EndIf
+  EndProcedure
 
   ; Linear Interpolate
   ;-----------------------------------------------------
@@ -834,6 +850,20 @@ Module Vector3
     *v\x * mult
     *v\y * mult
     *v\z * mult
+  EndProcedure
+  
+  ; Invert
+  ;-----------------------------------------------------
+  Procedure Invert(*v.v3f32,*o.v3f32)
+    If *o\x <> 0.0 : *v\x = 1.0 / *o\x : Else : *v\x = 0.0 : EndIf
+    If *o\y <> 0.0 : *v\y = 1.0 / *o\y : Else : *v\y = 0.0 : EndIf
+    If *o\z <> 0.0 : *v\z = 1.0 / *o\z : Else : *v\z = 0.0 : EndIf
+  EndProcedure
+  
+  Procedure InvertInPlace(*v.v3f32)
+    If *v\x <> 0.0 : *v\x = 1.0 / *v\x : EndIf
+    If *v\y <> 0.0 : *v\y = 1.0 / *v\y : EndIf
+    If *v\z <> 0.0 : *v\z = 1.0 / *v\z : EndIf
   EndProcedure
 
   ; Linear Interpolate
@@ -1715,17 +1745,31 @@ Module Matrix3
   ; Set From Two Vectors
   ;---------------------------------------
   Procedure SetFromTwoVectors(*m.m3f32,*dir.v3f32,*up.v3f32)
-    Define.v3f32 forward,side,up
-    Vector3::Normalize(@forward,*dir)
-    Vector3::Normalize(@up,*up)
+    Protected N.v3f32
+    Vector3::Normalize(@N, *dir)
+    Protected U.v3f32
+    Vector3::Cross(@U, *up, @N)
+    Vector3::NormalizeInPlace(@U)
+    Protected V.v3f32
+    Vector3::Cross(@V, @N, @U)
+    Vector3::NormalizeInPlace(@V)
     
-    Vector3::Cross(@side,@forward,@up)
-    Vector3::Cross(@up,@side,@forward)
+    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z
+    *m\v[3] = N\x : *m\v[4] = N\y : *m\v[5] = N\z
+    *m\v[6] = U\x : *m\v[7] = U\y : *m\v[8] = U\z
     
-    Vector3::NormalizeInPlace(@side)
-    Vector3::NormalizeInPlace(@up)
-    
-    Set(*m,side\x,side\y,side\z,up\x,up\y,up\z,-forward\x,-forward\y,-forward\z)
+;     Define.v3f32 forward,side,up
+;     Vector3::Normalize(@forward,*dir)
+;     Vector3::Normalize(@up,*up)
+;     
+;     Vector3::Cross(@side,@forward,@up)
+;     Vector3::Cross(@up,@side,@forward)
+;     
+;     Vector3::NormalizeInPlace(@side)
+;     Vector3::NormalizeInPlace(@up)
+;     
+;     ;Set(*m,side\x,side\y,side\z,up\x,up\y,up\z,-forward\x,-forward\y,-forward\z)
+;     Set(*m, up\x,up\y,up\z,forward\x,forward\y,forward\z,side\x,side\y,side\z)
   EndProcedure
   
   ; Set From Quaternion
@@ -2306,14 +2350,15 @@ Module Matrix4
     Protected N.v3f32
     Vector3::Normalize(@N, *target)
     Protected U.v3f32
-    Vector3::Normalize(@U, *up)
-    Vector3::Cross(@U, @U, @N)
+    Vector3::Cross(@U, *up, @N)
+    Vector3::NormalizeInPlace(@U)
     Protected V.v3f32
     Vector3::Cross(@V, @N, @U)
+    Vector3::NormalizeInPlace(@V)
     
-    *m\v[0] = U\x : *m\v[1] = U\y : *m\v[2] = U\z  : *m\v[3] = 0
-    *m\v[4] = V\x : *m\v[5] = V\y : *m\v[6] = V\z  : *m\v[7] = 0
-    *m\v[8] = N\x : *m\v[9] = N\y : *m\v[10] = N\z : *m\v[11] = 0
+    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z  : *m\v[3] = 0
+    *m\v[4] = N\x : *m\v[5] = N\y : *m\v[6] = N\z  : *m\v[7] = 0
+    *m\v[8] = U\x : *m\v[9] = U\y : *m\v[10] = U\z : *m\v[11] = 0
     *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
     
 ;     *m\v[0] = U\x : *m\v[1] = V\y : *m\v[2] = N\z  : *m\v[3] = 0
@@ -2528,8 +2573,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1430
-; FirstLine = 426
-; Folding = ------------------------------
+; CursorPosition = 1758
+; FirstLine = 1742
+; Folding = -------------------------------
 ; EnableXP
 ; EnableUnicode

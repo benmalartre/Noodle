@@ -326,6 +326,33 @@ Module Drawer
     glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
   EndProcedure
   
+  ; ---[ Draw Sphere Item ]--------------------------------------------------
+  Procedure DrawSphere(*Me.Matrix_t, *pgm)
+    glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"model"),1,#GL_FALSE,*Me\m)
+    glLineWidth(2)
+    Protected *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
+    Protected offset.i = 8
+    Protected u_color = glGetUniformLocation(*pgm,"color")
+    glUniform4f(u_color,*Me\color\r, *Me\color\g, *Me\color\b, *Me\color\a)
+    glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+  EndProcedure
+  
+  ; ---[ Draw Matrix Item ]--------------------------------------------------
+  Procedure DrawMatrix(*Me.Matrix_t, *pgm)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"model"),1,#GL_FALSE,*Me\m)
+    glLineWidth(2)
+    Protected *indices = Shape::GetEdges(Shape::#SHAPE_AXIS)
+    Protected offset.i = 8
+    Protected u_color = glGetUniformLocation(*pgm,"color")
+    glUniform4f(u_color,1.0,0.0,0.0,1.0)
+    glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices)
+    glUniform4f(u_color,0.0,1.0,0.0,1.0)
+    glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + offset)
+    glUniform4f(u_color,0.0,0.0,1.0,1.0)
+    glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + 2 * offset)
+  EndProcedure
+  
   ; ---[ Draw Item ]-----------------------------------------------------------
   Procedure Draw(*Me.Drawer_t)
     If Not *Me : ProcedureReturn : EndIf
@@ -349,6 +376,10 @@ Module Drawer
             DrawStrip(*Me\items())
           Case #ITEM_BOX
             DrawBox(*Me\items())
+          Case #ITEM_SPHERE
+            DrawSphere(*Me\items(), *Me\shader\pgm)
+          Case #ITEM_MATRIX
+            DrawMatrix(*Me\items(), *Me\shader\pgm)
         EndSelect
       EndWith
     Next
@@ -587,11 +618,6 @@ Module Drawer
     CArray::SetCount(*matrix\positions, Shape::#AXIS_NUM_VERTICES)
     CopyMemory(Shape::?shape_axis_positions, CArray::GetPtr(*matrix\positions, 0), Shape::#AXIS_NUM_VERTICES * CArray::GetItemSize(*matrix\positions))
     
-    ; Transform vertex positions
-    Protected i
-    For i=0 To Shape::#AXIS_NUM_VERTICES-1
-      Vector3::MulByMatrix4InPlace(CArray::GetValue(*matrix\positions, i),*matrix\m)
-    Next
     AddElement(*Me\items())
     *Me\items() = *matrix
     ProcedureReturn *matrix
@@ -606,7 +632,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 325
-; FirstLine = 304
-; Folding = ------
+; CursorPosition = 337
+; FirstLine = 333
+; Folding = -------
 ; EnableXP

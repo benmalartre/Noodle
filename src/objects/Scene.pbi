@@ -358,6 +358,7 @@ Module Scene
           Case Object3D::#Object3D_Polymesh
             child\Setup(*ctx\shaders("polymesh"))
           Case Object3D::#Object3D_PointCloud
+            MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
           Case Object3D::#Object3D_InstanceCloud
             child\Setup(*ctx\shaders("instances"))
@@ -389,6 +390,7 @@ Module Scene
           Case Object3D::#Object3D_Polymesh
             child\Setup(*ctx\shaders("polymesh"))
           Case Object3D::#Object3D_PointCloud
+            MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
           Case Object3D::#Object3D_InstanceCloud
             child\Setup(*ctx\shaders("instances"))
@@ -794,9 +796,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 58
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 386
+; FirstLine = 345
 ; Folding = -------
 ; EnableThread
 ; EnableXP

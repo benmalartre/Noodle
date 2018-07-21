@@ -116,18 +116,15 @@ Module LayerDefault
     Protected shader.GLuint =  *shader\pgm
     glUseProgram(shader)
       
-  ;   GLCheckError("Use Program")
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
     
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
     
     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-    ;GLCheckError("Uniforms")  
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
-    GLCheckError("[LayerDefault] Draw Polymeshes")
     
     ;Draw Drawer Objects
     ;-----------------------------------------------
@@ -153,18 +150,28 @@ Module LayerDefault
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
 ;     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
 
-
-  
-    ; Draw Instance Clouds 
-    ;-----------------------------------------------
-  
-    ;Model::Update(*model)
-    Protected *pgm.Program::Program_t = *ctx\shaders("instances")
+    ; Draw Point Clouds 
+    ;----------------------------------------------
+    Protected *pgm.Program::Program_t = *ctx\shaders("cloud")
     glUseProgram(*pgm\pgm)
     Define.m4f32 model,view,proj
     Matrix4::SetIdentity(@model)
  
-;   glDepthMask(#GL_TRUE);
+  glEnable(#GL_DEPTH_TEST)
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
+  
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+  
+  Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+  
+    ; Draw Instance Clouds 
+    ;-----------------------------------------------
+    *pgm.Program::Program_t = *ctx\shaders("instances")
+    glUseProgram(*pgm\pgm)
+    
+    Matrix4::SetIdentity(@model)
+ 
   glEnable(#GL_DEPTH_TEST)
   
 ;   glEnable(#GL_TEXTURE_2D)
@@ -250,7 +257,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 103
+; CursorPosition = 178
+; FirstLine = 155
 ; Folding = --
 ; EnableXP

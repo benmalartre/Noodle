@@ -50,6 +50,24 @@ Procedure Resize(window,gadget)
   glViewport(0,0,width,height)
 EndProcedure
 
+Procedure RandomSpheres(numItems.i,y.f=0)
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  Protected *item.Drawer::Item_t
+  Protected m.m4f32
+  Protected p.v3f32
+  Define i,j
+  For i=0 To numItems-1
+    Vector3::Set(@p,i, y, (Random(10)-5)/10)
+    Matrix4::SetIdentity(@m)
+    Matrix4::SetTranslation(@m,@p)
+
+    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    *item = Drawer::NewSphere(*drawer, @m)
+    Drawer::SetColor(*item,  @color)
+  Next
+EndProcedure
+
 Procedure RandomCubes(numItems.i,y.f=0)
   Define position.Math::v3f32
   Define color.Math::c4f32
@@ -111,7 +129,8 @@ Procedure Draw(*app.Application::Application_t)
   
   ViewportUI::SetContext(*viewport)
   Drawer::Flush(*drawer)
-  RandomCubes(Random(64,16), Random(10)-5)
+  RandomSpheres(Random(64,16), Random(10)-5)
+;   RandomCubes(Random(64,16), Random(10)-5)
 ;   RandomStrips(32)
 ;   RandomPoints(Random(256, 64))
   Scene::*current_scene\dirty= #True
@@ -183,9 +202,9 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 84
-; Folding = -
+; CursorPosition = 131
+; FirstLine = 98
+; Folding = --
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

@@ -51,15 +51,12 @@ Module PointCloud
     Protected *Me.PointCloud_t = AllocateMemory(SizeOf(PointCloud_t))
     InitializeStructure(*Me,PointCloud_t)
     *Me\name = name
-
-    ;*Me\shape = Shape::New(shape)
-;     *Me\classname = "POINTCLOUD"
-;     *Me\VT = ?PointCloudVT
+    *Me\type = Object3D::#Object3D_PointCloud
     Object::INI(PointCloud)
     *Me\geom = PointCloudGeometry::New(*Me,shape)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\pointsize = 12
+    *Me\pointsize = 2
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
@@ -212,7 +209,7 @@ Module PointCloud
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*p.PointCloud_t,*pgm.Program::Program_t)
-    
+    MessageRequester("SETUP POINT CLOUD", "SHADER ---> "+Str(*pgm))
     *p\shader = *pgm
 
     ;---[ Get Underlying Geometry ]--------------------
@@ -352,8 +349,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 285
-; FirstLine = 278
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 58
+; FirstLine = 13
 ; Folding = ---
 ; EnableXP

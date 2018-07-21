@@ -1,4 +1,7 @@
-﻿
+﻿XIncludeFile "../core/Globals.pbi"
+XIncludeFile "../core/Slot.pbi"
+XIncludeFile "../core/Object.pbi"
+XIncludeFile "../libs/Bullet.pbi"
 
 
 XIncludeFile "../core/Application.pbi"
@@ -36,6 +39,7 @@ Global *s_wireframe.Program::Program_t
 Global *s_polymesh.Program::Program_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
+Global *drawer.Drawer::Drawer_t
 Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
@@ -53,6 +57,49 @@ Procedure Resize(window,gadget)
 ;   glViewport(0,0,width,height)
 EndProcedure
 
+;-----------------------------------------------
+; Create Curved Ground Data
+;-----------------------------------------------
+Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
+  
+  Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
+  Protected *mesh.Geometry::PolymeshGeometry_t = *ground\geom
+  Object3D::SetShader(*ground,*shader)
+  
+  Protected i
+  Protected pos.v3f32
+  Protected *p.v3f32
+  
+  For i=0 To CArray::GetCount(*mesh\a_positions)-1
+   
+    *p = CArray::GetValue(*mesh\a_positions,i)
+    Vector3::Set(@pos,*p\x*10,(Random(20)-10)*0.1,*p\z*10)
+    CArray::SetValue(*mesh\a_positions,i,pos)
+  Next
+  
+
+  *ground\deformdirty = #True
+  PolymeshGeometry::SetColors(*mesh)
+  PolymeshGeometry::RecomputeNormals(*mesh,1.0)
+  
+  Object3D::Freeze(*ground)
+  
+  Scene::AddChild(Scene::*current_scene,*ground)
+  
+  Protected *t.Transform::Transform_t = *ground\localT
+  Transform::SetTranslationFromXYZValues(*t,0,-2,0)
+  Transform::SetScaleFromXYZValues(*t,1,1,1)
+  Transform::UpdateMatrixFromSRT(*t)
+  
+  Object3D::SetGlobalTransform(*ground,*t)
+  Object3D::UpdateTransform(*ground,#Null)
+    
+  BulletRigidBody::BTCreateRigidBodyFrom3DObject(*ground,Bullet::#TRIANGLEMESH_SHAPE,0,Bullet::*bullet_world)
+  Protected *body.Bullet::btRigidBody = *ground\rigidbody
+  Bullet::BTSetAngularFactorF(*body,0.5)
+  Bullet::BTSetFriction(*body,100)
+EndProcedure
+
 
 Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program_t, *start.v3f32, *end.v3f32, mass.f)
   Protected pos.v3f32
@@ -67,7 +114,7 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   Vector3::Sub(@delta, *end, *start)
   l = Vector3::Length(@delta)
   Quaternion::LookAt(@rot, @delta, @upv)
-  Vector3::Set(@scl, 1, 1, l)
+  Vector3::Set(@scl, 1, l, 1)
   
   ; add bone
   Protected *bone.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_CUBE)
@@ -100,6 +147,58 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   ProcedureReturn *bone
 EndProcedure
 
+; ---------------------------------------------------------------
+; Draw Pivot
+; ---------------------------------------------------------------
+Procedure DrawPivot(*A.Object3D::Object3D_t, *drawer.Drawer::Drawer_t)
+  Protected axis.v3f32
+  
+  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  CArray::SetCount(*positions, 2)
+  Protected *p.v3f32 = CArray::GetPtr(*positions, 1)
+  Vector3::SetFromOther(CArray::GetPtr(*positions, 0), *A\globalT\t\pos)
+  Vector3::Set(*p,1,0,0)
+  Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
+  
+  
+  Protected color.c4f32
+  Color::Set(@color, 1,0,0,1)
+  
+  Protected *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  Drawer::SetColor(*axis, @color)
+  
+  Vector3::Set(*p,0,1,0)
+  Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
+  Color::Set(@color, 0,1,0,1)
+  *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  Drawer::SetColor(*axis, @color)
+  
+  Vector3::Set(*p,0,0,1)
+  Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
+  Color::Set(@color, 0,0,1,1)
+  *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  Drawer::SetColor(*axis, @color)
+  
+EndProcedure
+
+Procedure AddConstraint(*A.Object3D::Object3D_t, *B.Object3D::Object3D_t, *drawer.Drawer::Drawer_t)
+  Protected pivot1.v3f32
+  Protected pivot2.v3f32
+  Protected axis1.v3f32
+  Protected axis2.v3f32
+  
+  Vector3::Set(@axis1,0,12,0)
+  Vector3::Set(@axis2,12,12,0)
+  
+  DrawPivot(*A, *drawer)
+  
+  Protected *hinge.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*A, *B, @pivot1, @pivot2, @axis1, @axis2)
+  Bullet::BTAddConstraint(Bullet::*bullet_world,*hinge\cns,#True)
+  ProcedureReturn *hinge
+  
+EndProcedure
+
+
 
 Procedure BulletScene(*s.Program::Program_t)
   
@@ -113,6 +212,9 @@ Procedure BulletScene(*s.Program::Program_t)
   Protected ep.q4f32
   
   Protected x,y,z
+  
+  ; add ground
+  BTCreateCurvedGroundData(*s)
   
   ; add bicep
   Vector3::Set(@sp, 0,0,0)
@@ -128,6 +230,10 @@ Procedure BulletScene(*s.Program::Program_t)
   Vector3::Set(@sp, 5,0,-0.5)
   Vector3::Set(@ep, 8,0,0)
   *hand = AddBone(*root, "Hand_Bone", *s, @sp, @ep, 1.0)
+  
+  ; add constraints
+  AddConstraint(*bicep, *forearm, *drawer)
+  AddConstraint(*forearm, *hand, *drawer)
   
   Scene::AddModel(Scene::*current_scene,*root)
   ProcedureReturn Scene::*current_scene
@@ -232,6 +338,7 @@ Procedure Draw(*app.Application::Application_t)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
   
+  *drawer = Drawer::New()
   BulletScene(*app\context\shaders("polymesh"))
   
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
@@ -273,6 +380,7 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   Polymesh::Setup(*teapot,*s_polymesh)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*bunny,*s_polymesh)
+  Scene::AddChild(Scene::*current_scene, *drawer)
 Scene::Setup(Scene::*current_scene,*app\context)
   
   
@@ -281,9 +389,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 63
-; Folding = -
+; CursorPosition = 150
+; FirstLine = 208
+; Folding = --
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

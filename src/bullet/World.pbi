@@ -71,13 +71,8 @@ Module BulletWorld
   ; Update ALL Rigid Bodies
   ;-----------------------------------------------
   Procedure hlpUpdate(*world.Bullet::btDynamicsWorld,time_step.f=0.1)
-    Debug "########### World : "+Str(*world)
-    Debug "---------------------- BULLET UPDATE ------------------------------"
-;     Debug "Soft Body Solver : "+Str(Bullet::BTCheckSoftBodySolver(Bullet::*bullet_sdk))
-    Debug "Raa_Bullet_SDK : "+Str(Bullet::*bullet_sdk)
-  
+   
     Bullet::BTStepSimulation(*world,time_step)
-    Debug "-------------------------------------------------------------------"
     Protected i
     Protected nbb = Bullet::BTGetNumCollideObjects(*world)
   
@@ -240,11 +235,12 @@ Module BulletWorld
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.BTWorld_t = AllocateMemory( SizeOf(BTWorld_t) )
     
+    ; ---[ Initialize Structure ]------------------------------------------------
+    InitializeStructure(*Me,BTWorld_t)
+    
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\world = Bullet::BTCreateDynamicsWorld(Bullet::*bullet_sdk)
     MessageRequester("Bullet","Created Dynamics World")
-    ; ---[ Initialize Structure ]------------------------------------------------
-    InitializeStructure(*Me,BTWorld_t)
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -255,8 +251,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 99
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 83
 ; Folding = --
 ; EnableXP
