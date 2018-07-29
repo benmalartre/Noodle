@@ -48,6 +48,13 @@ Global T.f
 
 Global default_layer.Layer::ILayer
 
+Structure BTCharacter_t
+  *pelvis.Object3D::Object3D_t
+  *spine.Object3D::Object3D_t
+  *torso.Object3D::Object3D_t
+EndStructure
+
+
 ; Resize
 ;--------------------------------------------
 Procedure Resize(window,gadget)
@@ -200,7 +207,7 @@ EndProcedure
 
 
 
-Procedure BulletScene(*s.Program::Program_t)
+Procedure BulletCharacter(*s.Program::Program_t)
   
   Scene::*current_scene = Scene::New("Test Arm")
   Protected scene.Scene::IScene = Scene::*current_scene
@@ -339,7 +346,7 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(@model)
   
   *drawer = Drawer::New()
-  BulletScene(*app\context\shaders("polymesh"))
+  BulletCharacter(*app\context\shaders("polymesh"))
   
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
@@ -389,8 +396,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 208
+; CursorPosition = 348
+; FirstLine = 338
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -1,4 +1,5 @@
-﻿DeclareModule AnimX
+﻿XIncludeFile "../core/Array.pbi"
+DeclareModule AnimX
   ; Span Interpolation Method
   ; Defines span interpolation method determined by the tangents of boundary keys
   Enumeration
@@ -61,7 +62,7 @@
   EndEnumeration
   
   ; Infinity Type
-  Enumeration 
+  Enumeration
     #IT_Pre         ; Pre-infinity
     #IT_Post        ; Post-infinity
   EndEnumeration
@@ -69,8 +70,7 @@
   #KEYFRAME_SIZE = 64
   
   ; Tangent
-  ; Single in- Or out- tangent of a key
-  Structure Tangent_t
+  Structure Tangent_t Align #PB_Structure_AlignC
     type.l
     x.f
     y.f
@@ -78,7 +78,7 @@
   
   ; Quaternion
   ; Double Precision
-  Structure Quaternion_t
+  Structure Quaternion_t Align #PB_Structure_AlignC
     x.d
     y.d
     z.d
@@ -86,395 +86,127 @@
   EndStructure
   
   ; KeyTimeValue
-  Structure KeyTimeValue_t
+  Structure KeyTimeValue_t Align #PB_Structure_AlignC
     time.d
     value.d
   EndStructure
   
+  Interface IKeyframe
+    spanInterpolationMethod.l()
+    curveInterpolationMethod.l(isWeighted.b)
+  EndInterface
+  
   ; Keyframe
-  Structure Keyframe_t Extends KeyTimeValue_t
-    index.i
+  Structure Keyframe_t Extends KeyTimeValue_t Align #PB_Structure_AlignC
+    index.l
     tanIn.Tangent_t
     tanOut.Tangent_t
     quaternionW.d
     linearInterpolation.b
   EndStructure
-  
+
+  ; Curve
   Interface ICurve
     keyframeAtIndex.b(index.i, *key.Keyframe_t)
     keyframe.b(time.d, *key.Keyframe_t)
     first.b(*key.Keyframe_t)
     last.b(*key.Keyframe_t)
-    preInfinityType.i()
-    postInfinityType.i()
+    preInfinityType.l()
+    postInfinityType.l()
     isWeighted.b()
-    keyframeCount()
-    isStatic()
+    keyframeCount.l()
+    isStatic.b()
+    destructor()
+    setNumKeys(numKeys.i)
+    getNumKeys()
+    setKeys(*keys.Keyframe_t)
+    getKeys()
+    setPreInfinityType(type.l)
+    setPostInfinityType(type.l)
   EndInterface
   
-  ; Curve
-  Structure Curve_t
-    vt.ICurve
-    numKeys.i
-    *keys
-  EndStructure
+  Declare Init()
+  Declare Term()
   
+  ; prototypes
+  PrototypeC PFNNEWCURVE()
+  PrototypeC PFNDELETECURVE(crv.ICurve)
+  PrototypeC.d PFNEVALUATECURVE(time.d,crv.ICurve)
+  PrototypeC.d PFNEVALUATECURVESEGMENT(spanInterpolationMethod.l,
+                                       curveInterpolationMethod.l,
+                                       time.d,
+                                       startX.d, startY.d,
+                                       x1.d, y1.d,
+                                       x2.d, y2.d,
+                                       endX.d, endY.d)
   
-  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    ;___________________________________________________________________________
-    ;  Windows
-    ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ImportC "..\..\libs\x64\windows\PBAnimX.lib"
-      
-    CompilerEndIf
-    
-   newCurve()
-   deleteCurve(*curve.Curve_t)
-   evaluateCurve.d(time.d,*curve.Curve_t)
-   
-  EndImport
+  PrototypeC.b PFNEVALUATEQUATERNIONINFINITY(time.d,
+                                             firstTime.d, *firstValue.Quaternion_t,
+                                             lastTime.d, *lastValue.Quaternion_t,
+                                             preInfinityType.l,
+                                             postInfinityType.l,
+                                             *qOffset.Quaternion_t,
+                                             *qStart.Quaternion_t,
+                                             inverse.b)
   
-  Declare AddKey(*crv.Curve_t, *key.Keyframe_t)
-  Declare DeleteKey(*crv.Curve_t, index.i)
+  PrototypeC.d PFNEVALUATEINFINITY(time.d, *curve, infinity.l)
   
-  Declare GetKeyframeSpanInterpolationMethod(*keyframe.Keyframe_t)
-  Declare GetKeyframeCurveInterpolationMethod(*keyframe.Keyframe_t, isWeighted.b)
+  PrototypeC.i PFNEVALUATEQUATERNION(time.d,
+                                     interpolationMethod.l,
+                                     spanInterpolationMethod.l,
+                                     startTime.d, *startValue.Quaternion_t,
+                                     endTime.d, *endValue.Quaternion_t,
+                                     tangentType.l,
+                                     *prevVlaue.Quaternion_t,
+                                     *nextValue.Quaternion_t)
   
+  PrototypeC.i PFNEVALUATEQUATERNIONCURVE(time.d,
+                                         pcx.ICurve,
+                                         pcy.ICurve,
+                                         pcz.ICurve,
+                                         interpolationMethod.l)
+  
+  PrototypeC PFNAUTOTANGENT(calculateInTangent.b,
+                            *key.KeyTimeValue_t,
+                            *prevKey.KeyTimeValue_t,
+                            *nextKey.KeyTimeValue_t,
+                            curveInterpolationMethod.l,
+                            *tanx, *tanY)
+
+  ; functions 
+  Global newCurve.PFNNEWCURVE
+  Global deleteCurve.PFNDELETECURVE
+  Global evaluateCurve.PFNEVALUATECURVE
+  Global evaluateCurveSegment.PFNEVALUATECURVESEGMENT
+  Global evaluateQuaternionInfinity.PFNEVALUATEQUATERNIONINFINITY
+  Global evaluateInfinity.PFNEVALUATEINFINITY
+  Global evaluateQuaternion.PFNEVALUATEQUATERNION
+  Global evaluateQuaternionCurve.PFNEVALUATEQUATERNIONCURVE
+  Global autoTangent.PFNAUTOTANGENT
+ 
 EndDeclareModule
 
 Module AnimX
-  
-  Procedure GetKeyframeSpanInterpolationMethod(*keyframe.Keyframe_t)
-    If *keyframe\linearInterpolation
-      ProcedureReturn #SI_Linear
-    EndIf
-    If *keyframe\tanOut\type = #TT_Step
-      ProcedureReturn #SI_Step
-    EndIf
-    If *keyframe\tanOut\type = #TT_StepNext
-      ProcedureReturn #SI_StepNext
-    EndIf
-    ProcedureReturn #SI_Bezier
+  ; initilize (open library and load functions)
+  Procedure Init()
+    Global xanim_dll = OpenLibrary(#PB_Any, "E:\Projects\RnD\Noodle\libs\x64\windows\AnimX.dll")
+    newCurve = GetFunction(xanim_dll, "newCurve")
+    deleteCurve = GetFunction(xanim_dll, "deleteCurve")
+    evaluateCurve = GetFunction(xanim_dll, "evaluateCurve")
+    evaluateCurveSegment = GetFunction(xanim_dll, "evaluateCurveSegment")
+    evaluateInfinity = GetFunction(xanim_dll, "evaluateInfinity")
+    evaluateQuaternionInfinity = GetFunction(xanim_dll, "evaluateQuaternionInfinity")
   EndProcedure
   
-  Procedure GetKeyframeCurveInterpolationMethod(*keyframe.Keyframe_t, isWeighted.b)
-    Protected method.i
-    If isWeighted
-      method = #CI_Bezier
-    Else
-      method = #CI_Hermite
+  ; terminate (close library)
+  Procedure Term()
+    If IsLibrary(xanim_dll)
+      CloseLibrary(xanim_dll)
     EndIf
-    
-    Select *keyframe\tanOut\type
-      Case #TT_Sine
-        method = #CI_Sine
-      Case #TT_Parabolic
-        method = #CI_Parabolic
-      Case #TT_Log
-        method = #CI_TangentLog
-    EndSelect
-    ProcedureReturn method
   EndProcedure
-  
-  Procedure AddKey(*crv.Curve_t, *key.Keyframe_t)
-    If *crv\keys 
-      *crv\keys = ReAllocateMemory(*crv\keys, (*crv\numKeys + 1) * #KEYFRAME_SIZE, #PB_Memory_NoClear)
-      CopyMemory(*key, *crv\keys + *crv\numKeys * #KEYFRAME_SIZE, #KEYFRAME_SIZE)
-    Else
-      *crv\keys = AllocateMemory(#KEYFRAME_SIZE)
-      CopyMemory(*key, *crv\keys , #KEYFRAME_SIZE)
-    EndIf
-    *crv\numKeys + 1 
-  EndProcedure
-      
-  Procedure DeleteKey(*crv.Curve_t, index.i)
-    
-  EndProcedure
-  
 EndModule
-
-; test
-Define *crv.AnimX::Curve_t = AnimX::newCurve()
-Define icrv.AnimX::ICurve = *crv
-
-Define key.AnimX::Keyframe_t
-Define i
-Define width = 800
-Define height = 600
-For i=0 To width*0.01
-  key\index = i
-  key\time = i*100
-  key\value = Random(height)
-  key\linearInterpolation = #False
-  key\tanIn\type = AnimX::#TT_Fast
-  key\tanIn\x = 0
-  key\tanIn\y = 0
-  key\tanOut\type = AnimX::#TT_Slow
-  key\tanOut\x = 0
-  key\tanOut\y = 0
-  AnimX::AddKey(*crv, @key)
-Next
-
-Define window.i = OpenWindow(#PB_Any, 0, 0, width, height, "AnimX")
-Define canvas.i = CanvasGadget(#PB_Any,0,0,width, height)
-
-StartVectorDrawing(CanvasVectorOutput(canvas))  
-Define x.d = 0
-Define y.d = AnimX::evaluateCurve(x, *crv)
-Define stepx.d = 1
-
-MovePathCursor(x, y)
-x+stepx
-
-While x < width
-  y = AnimX::evaluateCurve(x, *crv)
-  AddPathLine(x, y, #PB_Path_Default)
-  x + stepx
-Wend
-
-VectorSourceColor(RGBA(120, 120, 120, 255))
-StrokePath(2)
-
-Define i
-For i=0 To icrv\keyframeCount()-1
-  If icrv\keyframeAtIndex(i, @key)
-    AddPathCircle(key\time, key\value,6)
-  EndIf
-Next
-
-VectorSourceColor(RGBA(255, 120, 120, 255))
-StrokePath(1)
-
-StopVectorDrawing()
-
-
-Repeat
-  Until WaitWindowEvent() = #PB_Event_CloseWindow
-AnimX::deleteCurve(*crv)
-
- 
-
-; namespace adsk
-; {
-; #ifdef MAYA_64BIT_TIME_PRECISION
-;     typedef double seconds;
-; #else
-;     typedef float  seconds;
-; #endif
-
-; 
-;     /*!
-;         Adapter abstract class For a curve.
-; 
-;         Instance of a derived class of this adapter serves As an accessor For various basic
-;         curve information like its key frames Or infinity types. This is To avoid introducing a new
-;         curve type the clients would have To convert their Data To before invoking this library.
-; 
-;         The assumption about the curves are:
-;         - keys are stored sequentially, With indexes between [0 .. keyframeCount()-1]
-;         - each key has a broken in/out tangents
-;     */
-;     class ICurve
-;     {
-;     public:
-;         /*!
-;             Returns a key at a particular index, If valid. False otherwise.
-;         */
-;         virtual bool keyframeAtIndex(int index, Keyframe &key) const = 0;
-; 
-;         /*!
-;             Returns closest key at Or after the specified time, Or the last key If time is
-;             beyond the End of the curve.
-;         */
-;         virtual bool keyframe(double time, Keyframe &key) const = 0;
-; 
-;         /*!
-;             Returns the first key.
-;         */
-;         virtual bool first(Keyframe &key) const = 0;
-; 
-;         /*!
-;             Returns the last key
-;         */
-;         virtual bool last(Keyframe &key) const = 0;
-; 
-;         /*!
-;             Returns the pre infinity type.
-;         */
-;         virtual InfinityType preInfinityType() const = 0;
-; 
-;         /*!
-;             Returns the post infinity type.
-;         */
-;         virtual InfinityType postInfinityType() const = 0;
-; 
-;         /*!
-;             Returns whether a curve has weighted tangents.
-;         */
-;         virtual bool isWeighted() const = 0;
-; 
-;         /*!
-;             Returns the total number of key frames.
-;         */
-;         virtual unsigned int keyframeCount() const = 0;
-; 
-;         /*!
-;             Returns whether a curve is Static (has a constant value).
-;         */
-;         virtual bool isStatic() const = 0;
-;     };
-; 
-; 
-; 
-;     /*!
-;         Evaluate a single curve.
-; 
-;         \param[in] time Time at which To evaluate the curve.
-;         \param[in] curve Curve accessor To operate on.
-; 
-;         \return
-;         Evaluated double value of a curve.
-;     */
-;     DLL_EXPORT double evaluateCurve(
-;         double time,
-;         const ICurve &curve);
-; 
-;     /*!
-;         Evaluate an individual curve segment.
-; 
-;         \param[in] interpolationMethod How should the segment be interpolated
-;         \param[in] curveInterpolatorMethod If span method is Bezier, choose desired evaluation model
-;         \param[in] time Time To evaluate segment at (startX <= time <= endX)
-;         \param[in] startX Time of the first key
-;         \param[in] startY Value of the first key
-;         \param[in] x1 Coordinate X of first control point
-;         \param[in] y1 Coordinate Y of first control point
-;         \param[in] x2 Coordinate X of second control point
-;         \param[in] y2 Coordinate Y of second control point
-;         \param[in] endX Time of the second key
-;         \param[in] endY Value of the second key
-; 
-;         \return
-;         Evaluated double value of a segment.
-;     */
-;     DLL_EXPORT double evaluateCurveSegment(
-;         SpanInterpolationMethod interpolationMethod,
-;         CurveInterpolatorMethod curveInterpolatorMethod,
-;         double time,
-;         double startX, double startY,
-;         double x1, double y1,
-;         double x2, double y2,
-;         double endX, double endY);
-; 
-;     /*!
-;         Evaluate rotation infinities using quaternion interpolation.
-; 
-;         \param[in] time Time To evaluate rotation curve's infinity (time <= first OR time >= last)
-;         \param[in] firstTime Time of the first key in the curve
-;         \param[in] firstValue Quaternion value of the first key
-;         \param[in] lastTime Time of the last key in the curve
-;         \param[in] lastValue Quaternion value of the last key       
-;         \param[in] preInfinityType Pre-infinity type of the curve
-;         \param[in] postInfinityType Post-infinity type of the curve
-;         \param[out] qOffset The rotation offset To add To the final quaternion evaluation
-;         \param[out] qStart First keyed rotation of the sequence, used in final quaternion evaluation To offset back To identity quaternion
-;         \param[out] inverse Depending on the infinity Case, should the quaternion evaluation be inversed
-; 
-;         \return
-;         Boolean whether the resolved value needs post-processing. See more in evaluateQuaternionCurve() implementation
-;     */
-;     DLL_EXPORT bool evaluateQuaternionInfinity(
-;         double &time,
-;         double firstTime, Quaternion firstValue,
-;         double lastTime, Quaternion lastValue,
-;         InfinityType preInfinityType,
-;         InfinityType postInfinityType,
-;         Quaternion &qOffset,
-;         Quaternion &qStart,
-;         bool &inverse);
-; 
-;     /*!
-;         Evaluate infinities of a single curve.
-; 
-;         \param[in] time Time To evaluate infinity at
-;         \param[in] curve Curve accessor To operate on
-;         \param[in] infinity Evaluating pre Or post infinity
-; 
-;         \return
-;         Evaluated double value of the infinity.
-;     */
-;     DLL_EXPORT double evaluateInfinity(
-;         double time,
-;         const ICurve &curve,
-;         Infinity infinity);
-; 
-;     /*!
-;         Evaluate an individual rotation curve segment using quaternion interpolation.
-; 
-;         \param[in] time Time To evaluation rotation at
-;         \param[in] interpolationMethod Rotation interpolation method
-;         \param[in] spanInterpolationMethod Interpolation mode of the segment
-;         \param[in] startTime Time of the key at/before given time
-;         \param[in] startValue Quaternion value of the start key
-;         \param[in] endTime Time of the key after given time
-;         \param[in] endValue Quaternion value of the End key
-;         \param[in] tangentType Out-tangent type of the start key        
-;         \param[in] prevValue Quaternion value of the prev key
-;         \param[in] nextValue Quaternion value of the Next key                       
-; 
-;         \return
-;         Evaluated quaternion value of a rotation segment.
-;     */
-;     DLL_EXPORT Quaternion evaluateQuaternion(
-;         seconds time,
-;         CurveRotationInterpolationMethod interpolationMethod,
-;         SpanInterpolationMethod spanInterpolationMethod,
-;         seconds startTime, Quaternion startValue,
-;         seconds endTime, Quaternion endValue,
-;         TangentType tangentType,
-;         Quaternion prevValue,
-;         Quaternion nextValue);
-; 
-;     /*!
-;         Evaluate rotation curves using quaternion interpolation.
-; 
-;         \param[in] time Time To evaluate at
-;         \param[in] pcX Curve accessor For rotation X
-;         \param[in] pcY Curve accessor For rotation Y
-;         \param[in] pcZ Curve accessor For rotation Z
-;         \param[in] interpolationMethod Rotation interpolation method
-; 
-;         \return
-;         Evaluated quaternion value of a rotation curve.
-;     */
-;     DLL_EXPORT Quaternion evaluateQuaternionCurve(
-;         double time,
-;         const ICurve &pcX, const ICurve &pcY, const ICurve &pcZ,
-;         CurveRotationInterpolationMethod interpolationMethod);
-; 
-;     /*!
-;         Compute tangent values For a key With Auto tangent type.
-; 
-;         \param[in] calculateInTangent True when calculating "in" tangent. False If "out"
-;         \param[in] key Key tangent of we are calculating
-;         \param[in] prevKey Previous key, If present
-;         \param[in] nextKey Next key, If present
-;         \param[in] tanX Output tangent X value
-;         \param[in] tanY Output tangent Y value
-;     */
-;     DLL_EXPORT void autoTangent(
-;         bool calculateInTangent, 
-;         KeyTimeValue key, 
-;         KeyTimeValue *prevKey, 
-;         KeyTimeValue *nextKey, 
-;         CurveInterpolatorMethod curveInterpolationMethod,
-;         seconds &tanX,
-;         seconds &tanY);
-; }
-; 
-; #endif
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 201
-; Folding = --
+; CursorPosition = 124
+; FirstLine = 96
+; Folding = -
 ; EnableXP

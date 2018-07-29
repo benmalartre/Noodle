@@ -271,11 +271,11 @@ Define window = OpenWindow(#PB_Any, 0,0, #WIDTH,#HEIGHT, "FUNCKY WINDOW")
 Define view.FNView_t
 FNViewInit(@view,#WIDTH,#HEIGHT)
 
-; FNViewAddFuncString(@view, "Sin(#X)+2*#T")
-; FNViewAddFuncString(@view, "Sin(#X-#T)")
-; FNViewAddFuncString(@view, "Cos(#X+#T)")
-; FNViewAddFuncString(@view, "Tan(#X+#T)")
-; FNViewAddFuncString(@view, "ATan(#X*#T)")
+FNViewAddFuncString(@view, "Sin(#X)+2*#T")
+FNViewAddFuncString(@view, "Sin(#X-#T)")
+FNViewAddFuncString(@view, "Cos(#X+#T)")
+FNViewAddFuncString(@view, "Tan(#X+#T)")
+FNViewAddFuncString(@view, "ATan(#X*#T)")
 FNViewAddFuncString(@view, "Pow(#X, 2)")
 FNViewCompute(@view)
 
@@ -336,7 +336,7 @@ Until event = #PB_Event_CloseWindow
 ;  ... % did Not converge
 ; End
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 120
+; CursorPosition = 277
+; FirstLine = 249
 ; Folding = ---
 ; EnableXP
