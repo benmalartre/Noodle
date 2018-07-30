@@ -13,8 +13,8 @@ DeclareModule AnimCurve
   Declare New()
   Declare Delete(*crv.Curve_t)
   Declare AddKeys(*crv.Curve_t)
-  Declare DrawKey(*key.AnimX::Keyframe_t,x.d, y.d)
-  Declare DrawCurve(*crv.Curve_t, x.d, y.d, width.d, height.d)
+  Declare DrawKey(*key.AnimX::Keyframe_t,x.d, y.d, zoom.d)
+  Declare DrawCurve(*crv.Curve_t, x.d, y.d, width.d, height.d, zoomx.d, zoomy.d)
 EndDeclareModule
 
 ; ==============================================================================
@@ -48,16 +48,16 @@ Module AnimCurve
     For i = 0 To numKeys - 1
       *key = *crv\keys(i)
       *key\index = i
-      *key\time = i*50
-      *key\value = Random(600)
+      *key\time = i*10
+      *key\value = (Random(100)-50)
       *key\quaternionW = 1.0
       *key\tanIn\type = AnimX::#TT_Smooth
-      *key\tanIn\x = 25
+      *key\tanIn\x = 50
       *key\tanIn\y = 0
       *key\tanOut\type = AnimX::#TT_Smooth
-      *key\tanOut\x  = 25
+      *key\tanOut\x  = 50
       *key\tanOut\y = 0
-      *key\linearInterpolation = Bool(Random(100)>50)
+      *key\linearInterpolation = #False;Bool(Random(100)>50)
     Next
     *crv\crv\setNumKeys(numKeys)
     *crv\crv\setKeys(*crv\keys())
@@ -68,49 +68,41 @@ Module AnimCurve
     
   EndProcedure
   
-  Procedure DrawKey(*key.AnimX::Keyframe_t,x.d, y.d)
+  Procedure DrawKey(*key.AnimX::Keyframe_t,x.d, y.d, z.d)
     
     If *key\linearInterpolation
-      AddPathCircle(*key\time - x, *key\value - y,2)
-      VectorSourceColor(RGBA(120, 255, 120, 255))
-      StrokePath(3)
+      Circle((*key\time - x)*z, (*key\value - y)*z,3, RGB(200,100,100))
     Else
-      AddPathCircle(*key\time - x, *key\value - y,2)
-      VectorSourceColor(RGBA(255, 120, 120, 255))
-      StrokePath(3)
-      AddPathCircle(*key\time - *key\tanIn\x - x, *key\value - *key\tanIn\y - y,1)
-      VectorSourceColor(RGBA(255, 200, 200, 255))
-      StrokePath(2)
-      AddPathCircle(*key\time + *key\tanOut\x - x, *key\value + *key\tanOut\y - y,1)
-      VectorSourceColor(RGBA(255, 200, 200, 255))
-      StrokePath(2)
+      Circle((*key\time - x)*z, (*key\value - y)*z,3, RGB(100,200,100))
+      Circle(*key\time - *key\tanIn\x - x, *key\value - *key\tanIn\y - y,2, RGB(250,150,0))
+      Circle(*key\time + *key\tanOut\x - x, *key\value + *key\tanOut\y - y,2, RGB(250,150,0))
     EndIf
     
   EndProcedure
   
-  Procedure DrawCurve(*crv.Curve_t, x.d, y.d, width.d, height.d)
-    Protected dx.d, dy.d
-    Protected i
-    dx = x
-    dy = AnimX::evaluateCurve(x, *crv\crv)
-    MovePathCursor(dx-x, dy-y)
-    For i=0 To width Step 12
-      dy = AnimX::evaluateCurve(dx, *crv\crv)
-      AddPathLine(dx-x, dy-y, #PB_Path_Default)
-      dx+12
-    Next
-    VectorSourceColor(RGBA(*crv\color[0], *crv\color[1], *crv\color[2], 255))
-    StrokePath(2)
-    
-    For i=0 To ArraySize(*crv\keys())-1
-      DrawKey(*crv\keys(i), x, y)
-    Next
+  Procedure DrawCurve(*crv.Curve_t, ox.d, oy.d, width.d, height.d, zoomx.d, zoomy.d)
+    Protected stepx.d = 1 / (zoomx * 0.01)
+    Protected stepy.d = 1 / (zoomy * 0.01)
+    Protected cx.d,cy.d,lx.d,ly.d
+    Protected dx.i, dy.i
+    cx = ox
+    cy = AnimX::evaluateCurve(cx, *crv\crv)
+    lx = cx * (zoomx/100)
+    ly = cy * (zoomy/100)
+    dx=0
+    While cx < width + ox
+      cx + stepx
+      cy = AnimX::evaluateCurve(cx, *crv\crv)
+      LineXY(lx - ox,ly - oy,cx - ox,cy - oy,RGB(*crv\color[0], *crv\color[1],*crv\color[2]))
+      lx = cx* (zoomx/100)
+      ly = cy* (zoomx/100)
+    Wend
     
   EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 52
+; CursorPosition = 97
+; FirstLine = 44
 ; Folding = --
 ; EnableXP
