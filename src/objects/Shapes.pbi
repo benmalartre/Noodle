@@ -261,10 +261,10 @@ DeclareModule Shape
   ;-----------------------------------------------------------------------------
   ; Axis
   ;-----------------------------------------------------------------------------
-  #AXIS_NUM_TRIANGLES =0
-  #AXIS_NUM_VERTICES =4
-  #AXIS_NUM_INDICES =0
-  #AXIS_NUM_EDGES =3
+  #AXIS_NUM_TRIANGLES = 0
+  #AXIS_NUM_VERTICES = 4
+  #AXIS_NUM_INDICES = 6
+  #AXIS_NUM_EDGES = 3
   DataSection
   	shape_axis_positions:
   	Data.GLfloat 0.0,0.0,0.0
@@ -273,6 +273,9 @@ DeclareModule Shape
   	Data.GLfloat 0.0,0.0,1.0
   
   	shape_axis_indices:
+  	Data.GLuint 0, 1
+  	Data.GLuint 0, 2
+  	Data.GLuint 0, 3
   
   	shape_axis_edges:
   	Data.GLuint 0,1
@@ -12996,13 +12999,13 @@ Module Shape
         CArray::SetCount(*Me\positions,*Me\nbp)
         CArray::SetCount(*Me\normals,*Me\nbp)
         CArray::SetCount(*Me\colors,*Me\nbp)
-        CArray::SetCount(*Me\indices,*Me\nbt*3)
+        ;CArray::SetCount(*Me\indices,*Me\nbt*3)
         
-        *Me\positions\data = ?shape_axis_positions
-        *Me\indices\data  = ?shape_axis_indices
-        RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
-        SetUVWs(*Me)
+        CopyMemory(?shape_axis_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
+;         CopyMemory(?shape_axis_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
+;         RecomputeNormals(*Me,1.0)
+;         RandomizeColors(*Me,@color)
+;         SetUVWs(*Me)
         
       Case  #SHAPE_SPHERE
         *Me\nbp = #SPHERE_NUM_VERTICES
@@ -13363,7 +13366,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 276
-; FirstLine = 235
+; CursorPosition = 12976
+; FirstLine = 12972
 ; Folding = ---
 ; EnableXP

@@ -117,9 +117,35 @@ DeclareModule Handle
   	Data.GLuint 6,7
   
   EndDataSection
-
-
   
+  Declare Clean(*h.Handle_t)
+  Declare Update(*h.Handle_t)
+  Declare Pick(*h.Handle_t,*ray.Geometry::Ray_t)
+  Declare ScaleHandle(*m.Handle_t)
+  Declare TransformHandle(*m.Handle_t)
+  Declare TranslateHandle(*m.Handle_t)
+  Declare RotateHandle(*m.Handle_t)
+  Declare DirectedHandle(*m.Handle_t)
+  Declare Resize(*m.Handle_t,*camera.Camera::Camera_t)
+  Declare SetupHandle(*m.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
+  Declare Setup(*h.Handle_t,*ctx.GLContext::GLContext_t)
+  Declare DrawAxis(*m.Handle_t,r.f,g.f,b.f)
+  Declare Draw( *m.Handle_t,*ctx.GLContext::GLContext_t) 
+  Declare Translate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Scale(*m.Handle_t,deltax.i,deltay.i)
+  Declare Rotate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Transform(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Directed(*m.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
+  Declare InitTransform(*h.Handle_t,*t.Transform::Transform_t)
+  Declare SetTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
+  Declare AddTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
+  Declare SetActiveTool(*h.Handle_t,tool.i)
+  Declare SetActiveAxis(*h.Handle_t,axis.i)
+  Declare SetVisible(*h.Handle_t,visible.b=#True)
+  Declare GetTarget(*h.Handle_t)
+  Declare Delete(*m.Handle_t)
+  Declare.i New()
+
   Global CLASS.Class::Class_t
 
 EndDeclareModule
@@ -163,7 +189,6 @@ Module Handle
   Procedure ScaleHandle(*m.Handle_t)
     ;Clear(*m.Handle_t)
     Protected i
-    
     With *m\scale_handle
       Protected nbp = 8+2
       Protected nbi = 36+2
@@ -187,20 +212,19 @@ Module Handle
       CArray::SetValue(\positions,@p,0)
       Vector3::Set(@p,3,0,0)
       CArray::SetValue(\positions,@p,1)
-
-      
+ 
       ; Handle Head
       Protected v.v3f32
       
       Protected *datas = ?shape_cube_positions
- 
-      Protected base.i = 2*size_p
-      For i=0 To \nbp-3
+      Protected size_p.i = 12
+      For i=0 To nbp-3
         Vector3::Set(@v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
+        Vector3::Echo(@v, "BEFORE")
         Vector3::MulByMatrix4InPlace(@v,@offset)
+        Vector3::Echo(@v, "AFTER")
         CArray::SetValue(\positions,i+2,@v)
       Next i
-      
       
       ; Set Triangle Indices Array
       CArray::SetValueL(\indices,0,0)
@@ -212,12 +236,11 @@ Module Handle
         CArray::SetValueL(\indices,i+2,oldID+2)
       Next i
       
-      ; Push Buffer to GPU
-      Protected size_t = \nbp*12
-  
+      
+      \nbp = CArray::GetCount(\positions)
+      \nbt = (CArray::GetCount(\indices)-2)/3
+    
     EndWith
-    
-    
     
     *m\tool = Globals::#Tool_Scale
     
@@ -256,6 +279,7 @@ Module Handle
     *m\tool = Globals::#Tool_Transform
     
   EndProcedure
+ 
   
   ;-----------------------------------------------------------------------------
   ; Translate Handle
@@ -300,8 +324,11 @@ Module Handle
         EndIf
         CArray::SetValueL(\indices,i*3+4,1)
       Next i
-      
+      \nbp = CArray::GetCount(\positions)
+      \nbt = CArray::GetCount(\indices)-2*3
     EndWith
+    
+    
     
     *m\tool = Globals::#Tool_Translate
     
@@ -368,7 +395,9 @@ Module Handle
         EndIf
   
       Next i
-  
+      
+      \nbp = CArray::GetCount(\positions)
+      \nbt = CArray::GetCount(\indices)-2
       
     EndWith
   
@@ -420,6 +449,7 @@ Module Handle
     *m\scl = *m\distance*Radian(*camera\fov)
   EndProcedure
   
+  
   ;-----------------------------------------------------------------------------
   ; Setup Handle
   ;-----------------------------------------------------------------------------
@@ -462,7 +492,7 @@ Module Handle
     Protected GLfloat_s.GLfloat
    
     Protected size_t =*shape\nbp*SizeOf(GLfloat_s)*3
-    
+
     ; Push Buffer to GPU
     glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*shape\positions,0),#GL_DYNAMIC_DRAW)
     
@@ -476,7 +506,7 @@ Module Handle
     *m\u_color.GLint = glGetUniformLocation(*m\shader\pgm,"color")
     *m\u_model.GLint = glGetUniformLocation(*m\shader\pgm,"model")
     *m\u_offset.GLint = glGetUniformLocation(*m\shader\pgm,"offset")
-    
+        
     glBindVertexArray(0)
     glUseProgram(0)
   EndProcedure
@@ -500,12 +530,12 @@ Module Handle
   ; Draw Axis
   ;-----------------------------------------------------------------------------
   Procedure DrawAxis(*m.Handle_t,r.f,g.f,b.f)
+    
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
-  
+    
     Select *m\tool
       Case Globals::#TOOL_TRANSLATE
-  
         *shape = *m\translate_handle
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
@@ -519,8 +549,7 @@ Module Handle
         *shape = *m\scale_handle
         glPointSize(3)
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
-        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
-  
+        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))  
     EndSelect  
   EndProcedure
   
@@ -543,7 +572,7 @@ Module Handle
         glBindVertexArray(*m\directed_vao)
     EndSelect
     
-        
+    
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
     glEnable(#GL_POINT_SMOOTH)
@@ -551,6 +580,7 @@ Module Handle
     glDisable(#GL_CULL_FACE)
     Protected pos.v3f32
     Protected d.f = *m\distance/20
+    
     Transform::SetScaleFromXYZValues(*m\display,d,d,d)
     Transform::UpdateMatrixFromSRT(*m\display)
 
@@ -559,11 +589,10 @@ Module Handle
     Protected quat.q4f32
   
     glUniformMatrix4fv(*m\u_model,1,#GL_FALSE,*m\display\m)
-      
-    
+
     If *m\tool = Globals::#TOOL_TRANSFORM
-      
-      glUniform3f(*m\u_color,0,1,0)
+      Matrix4::SetIdentity(@offset)
+      glUniform4f(*m\u_color,0,1,0,1)
       glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
       glPointSize(5)
       glDrawArrays(#GL_POINTS,0,1)
@@ -617,45 +646,44 @@ Module Handle
       
       Transform::UpdateMatrixFromSRT(*m\transform)
 
-      glUniform3f(*m\u_color,0,1,0)
+      glUniform4f(*m\u_color,0,1,0,1)
       glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,*m\transform\m)
-      glUniform3f(*m\u_color,0.66,0.66,0.66)
+      glUniform4f(*m\u_color,0.66,0.66,0.66,1)
       glDrawArrays(#GL_LINES,0,2)
       glPointSize(10)
       
       ; Draw Foot Point
       If *m\foot_selected
-        glUniform3f(*m\u_color,1,0.33,0.33)
+        glUniform4f(*m\u_color,1,0.33,0.33,1)
       Else
-        glUniform3f(*m\u_color,1,1,0.33)
+        glUniform4f(*m\u_color,1,1,0.33,1)
       EndIf
       glDrawArrays(#GL_POINTS,0,1)
       
       ; Draw Head Point
       If *m\head_selected
-        glUniform3f(*m\u_color,1,0.33,0.33)
+        glUniform4f(*m\u_color,1,0.33,0.33,1)
       Else
-        glUniform3f(*m\u_color,1,1,0.33)
+        glUniform4f(*m\u_color,1,1,0.33,1)
       EndIf
       glDrawArrays(#GL_POINTS,1,1)
       
     Else
       ; X Axis
       If *m\active_axis = #Handle_Active_X Or *m\active_axis = #Handle_Active_XY Or *m\active_axis = #Handle_Active_XZ Or *m\active_axis = #Handle_Active_All
-        glUniform3f(*m\u_color,1,1,0.33)
+        glUniform4f(*m\u_color,1,1,0.33,1)
       Else
-        glUniform3f(*m\u_color,1,0.33,0.33)
+        glUniform4f(*m\u_color,1,0.33,0.33,1)
       EndIf
       Matrix4::SetIdentity(@offset)
       glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
       DrawAxis(*m,1,0,0)
       
       ; Y Axis
-      
       If *m\active_axis = #Handle_Active_Y Or *m\active_axis = #Handle_Active_XY Or *m\active_axis = #Handle_Active_YZ Or *m\active_axis = #Handle_Active_All
-        glUniform3f(*m\u_color,1,1,0.33)
+        glUniform4f(*m\u_color,1,1,0.33,1)
       Else
-        glUniform3f(*m\u_color,0.33,1,0.33)
+        glUniform4f(*m\u_color,0.33,1,0.33,1)
       EndIf
       
       Quaternion::SetFromAxisAngleValues(@quat,0,0,-1,Radian(90))
@@ -665,9 +693,9 @@ Module Handle
       
       ; Z Axis
       If *m\active_axis = #Handle_Active_Z Or *m\active_axis = #Handle_Active_XZ Or *m\active_axis = #Handle_Active_YZ Or *m\active_axis = #Handle_Active_All
-        glUniform3f(*m\u_color,1,1,0.33)
+        glUniform4f(*m\u_color,1,1,0.33,1)
       Else
-        glUniform3f(*m\u_color,0.33,0.33,1)
+        glUniform4f(*m\u_color,0.33,0.33,1,1)
       EndIf
       
       Quaternion::SetFromAxisAngleValues(@quat,0,1,0,Radian(90))
@@ -682,8 +710,9 @@ Module Handle
     
     glBindVertexArray(0)
   ;   glUseProgram(0)
-    
+   
   EndProcedure
+ 
   
   ;-----------------------------------------------------------------------------
   ; Translate
@@ -906,7 +935,6 @@ Module Handle
     ;InitMultipleTransform(*h)
   EndProcedure
   
-  
   ;-----------------------------------------------------------------------------
   ; Set Active Tool
   ;-----------------------------------------------------------------------------
@@ -936,7 +964,6 @@ Module Handle
   ;-----------------------------------------------------------------------------
   Procedure SetActiveAxis(*h.Handle_t,axis.i)
     *h\active_axis = axis
-    
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -952,6 +979,7 @@ Module Handle
   Procedure GetTarget(*h.Handle_t)
     ProcedureReturn *h\target 
   EndProcedure
+  
   ;-----------------------------------------------------------------------------
   ; Destuctor
   ;-----------------------------------------------------------------------------
@@ -961,7 +989,6 @@ Module Handle
     ClearStructure(*m,Handle_t)
     FreeMemory(*m)
   EndProcedure
-  
   
   ;---------------------------------------------
   ;  Constructor
@@ -1006,8 +1033,8 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 44
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 551
+; FirstLine = 526
 ; Folding = -----
 ; EnableXP
