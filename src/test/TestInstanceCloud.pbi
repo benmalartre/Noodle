@@ -42,7 +42,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 Global *texture.Texture::Texture_t
 
 ; Resize
@@ -106,10 +105,10 @@ Procedure Draw(*app.Application::Application_t)
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
 
   glDisable(#GL_BLEND)
   
@@ -145,7 +144,6 @@ Procedure Draw(*app.Application::Application_t)
   
   ; FTGL Drawer
   ;-----------------------------------------------------
-  *ftgl_drawer = FTGL::New()
 
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
@@ -275,9 +273,9 @@ Procedure Draw(*app.Application::Application_t)
       Until e = #PB_Event_CloseWindow
     CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 171
-; FirstLine = 162
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 111
+; FirstLine = 107
 ; Folding = -
 ; EnableXP
 ; Executable = Test

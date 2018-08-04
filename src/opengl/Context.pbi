@@ -78,6 +78,7 @@ Module GLContext
     *Me\width = width
     *Me\height = height
     *Me\ID = 0
+    *Me\writer = #Null
     
     If useGLFW
       If *window
@@ -150,21 +151,18 @@ Module GLContext
   ;---------------------------------------------
   Procedure Setup(*Me.GLContext_t)
     GLLoadExtensions()
-
+    
     ; Build Shaders
     Protected i
     Protected *shader.Program::Program_t
     For i=0 To ArraySize(shadernames())-1
       *shader = Program::NewFromName(shadernames(i))
       *Me\shaders(shadernames(i)) = *shader
-     Debug i
-   Next
-   
-    ; Build Font Writer
-    GLCheckError("Before Creating FTGL")
-    *Me\writer = FTGL::New()
-    GLCheckError("After Creating FTGL")
+    Next
     
+    ; Build Font Writer
+    *Me\writer = FTGL::New()
+
   EndProcedure
   
   
@@ -176,9 +174,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 129
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 164
+; FirstLine = 117
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

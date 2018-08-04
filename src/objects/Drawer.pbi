@@ -29,6 +29,7 @@ DeclareModule Drawer
   Structure Item_t
     type.i
     *positions.CArray::CArrayV3F32
+    *colors.CArray::CArrayC4F32
     color.Math::c4f32
     size.f
     vao.i
@@ -72,7 +73,7 @@ DeclareModule Drawer
     u_proj.GLint
     u_view.GLint
     u_color.GLint
-    
+    overlay.b
     List *items.Item_t()
 
   EndStructure
@@ -81,10 +82,12 @@ DeclareModule Drawer
   EndInterface
 
   Declare New( name.s = "Drawer")
-  Declare NewPoint(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewLine(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare NewPoint(*Me.Drawer_t, *position.v3f32)
+  Declare NewPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare NewLine(*Me.Drawer_t, *start.v3f32, *end.v3f32)
+  Declare NewLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
   Declare NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-  Declare NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
+  Declare NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare NewBox(*Me.Drawer_t, *m.m4f32)
   Declare NewSphere(*Me.Drawer_t, *m.m4f32)
   Declare NewMatrix(*Me.Drawer_t, *m.m4f32)
@@ -181,11 +184,12 @@ Module Drawer
     
     Object3D::ResetStaticKinematicState(*Me)
     Protected shader.i
+    Protected length.i
     ; ---[ Assign Shader ]---------------------------
     If *shader 
       SetShader(*Me, *shader)
       shader = *Me\shader\pgm
-      *Me\u_model = glGetUniformLocation(*Me,"model")
+      *Me\u_model = glGetUniformLocation(shader,"model")
     EndIf
     
     Protected *item.Item_t
@@ -204,8 +208,6 @@ Module Drawer
       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
       
       ; Fill Buffer Data
-      Protected s.GLfloat
-      Protected length.i
       length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
       glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_DYNAMIC_DRAW)
       
@@ -231,11 +233,10 @@ Module Drawer
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Update(*Me.Drawer_t)
-    Debug "UPDATE GL DRAWER...."
     Protected *item.Item_t
     Protected s.GLfloat
     Protected length.i
-    
+       
     ForEach *Me\items()
       *item = *me\items()
       ;Create Or ReUse Vertex Array Object
@@ -358,7 +359,12 @@ Module Drawer
     If Not *Me : ProcedureReturn : EndIf
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected base.i, i
-   
+    If *Me\overlay
+      glDisable(#GL_DEPTH_TEST)
+    Else
+      glEnable(#GL_DEPTH_TEST)
+    EndIf
+    
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
     ForEach *Me\items()
       With *Me\items()
@@ -512,7 +518,22 @@ Module Drawer
   EndProcedure
   
   ; ---[ New Point Item ]------------------------------------------------------
-  Procedure NewPoint(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Procedure NewPoint(*Me.Drawer_t, *position.v3f32)
+    Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
+    InitializeStructure(*point, Point_t)
+    *point\type = #ITEM_POINT
+    *point\positions = CArray::newCArrayV3F32()
+    CArray::SetCount(*point\positions, 1)
+    CArray::SetValue(*point\positions, 0, *position)
+    AddElement(*Me\items())
+    *Me\items() = *point
+    *Me\dirty = #True
+    
+    ProcedureReturn *point
+  EndProcedure
+  
+  ; ---[ New Points Item ]------------------------------------------------------
+  Procedure NewPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
@@ -520,11 +541,28 @@ Module Drawer
     CArray::Copy(*point\positions, *positions)
     AddElement(*Me\items())
     *Me\items() = *point
+    *Me\dirty = #True
     ProcedureReturn *point
   EndProcedure
   
+  
   ; ---[ New Line Item ]-------------------------------------------------------
-  Procedure NewLine(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Procedure NewLine(*Me.Drawer_t, *start.v3f32, *end.v3f32)
+    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    InitializeStructure(*line, Line_t)
+    *line\type = #ITEM_LINE
+    *line\positions = CArray::newCArrayV3F32()
+    CArray::SetCount(*line\positions, 2)
+    CArray::SetValue(*line\positions, 0, *start)
+    CArray::SetValue(*line\positions, 1, *end)
+    AddElement(*Me\items())
+    *Me\items() = *line
+    *Me\dirty = #True
+    ProcedureReturn *line
+  EndProcedure
+  
+  ; ---[ New Lines Item ]-------------------------------------------------------
+  Procedure NewLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
@@ -532,6 +570,7 @@ Module Drawer
     CArray::Copy(*line\positions, *positions)
     AddElement(*Me\items())
     *Me\items() = *line
+    *Me\dirty = #True
     ProcedureReturn *line
   EndProcedure
   
@@ -551,20 +590,26 @@ Module Drawer
     
     AddElement(*Me\items())
     *Me\items() = *strip
+    *Me\dirty = #True
     ProcedureReturn *strip
   EndProcedure
   
   ; ---[ New Loop Item ]-------------------------------------------------------
-  Procedure NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong)
+  Procedure NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
     InitializeStructure(*loop, Loop_t)
     *loop\type = #ITEM_LOOP
     *loop\positions = CArray::newCArrayV3F32()
     *loop\indices = CArray::newCArrayLong()
     CArray::Copy(*loop\positions, *positions)
-    CArray::Copy(*loop\indices, *indices)
+    If Not *indices = #Null
+      CArray::Copy(*loop\indices, *indices)
+    Else
+      CArray::AppendL(*loop\indices, CArray::GetCount(*loop\positions))
+    EndIf
     AddElement(*Me\items())
     *Me\items() = *loop
+    *Me\dirty = #True
     ProcedureReturn *loop
   EndProcedure
   
@@ -585,6 +630,7 @@ Module Drawer
     Next
     AddElement(*Me\items())
     *Me\items() = *box
+    *Me\dirty = #True
     ProcedureReturn *box
   EndProcedure
   
@@ -605,6 +651,7 @@ Module Drawer
     Next
     AddElement(*Me\items())
     *Me\items() = *sphere
+    *Me\dirty = #True
     ProcedureReturn *sphere
   EndProcedure
   
@@ -620,6 +667,7 @@ Module Drawer
     
     AddElement(*Me\items())
     *Me\items() = *matrix
+    *Me\dirty = #True
     ProcedureReturn *matrix
   EndProcedure
   
@@ -632,7 +680,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 337
-; FirstLine = 333
+; CursorPosition = 246
+; FirstLine = 207
 ; Folding = -------
 ; EnableXP

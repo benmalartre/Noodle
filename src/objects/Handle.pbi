@@ -44,11 +44,14 @@ DeclareModule Handle
     *head_sphere.Geometry::Sphere_t
     *foot_sphere.Geometry::Sphere_t
     
+    *ray.Geometry::Ray_t
+    
     scale_vao.GLuint
     rotate_vao.GLuint
     translate_vao.GLuint
     transform_vao.GLuint
     directed_vao.GLuint
+    cursor_vao.GLuint
     
     *scale_handle.Shape::Shape_t
     *rotate_handle.Shape::Shape_t
@@ -117,6 +120,12 @@ DeclareModule Handle
   	Data.GLuint 3,7
   	Data.GLuint 7,5
   	Data.GLuint 6,7
+  	
+  	shape_cursor_positions:
+  	Data.GLfloat -1,0,0
+  	Data.GLfloat 1,0,0
+  	Data.GLfloat 0,-1,0
+  	Data.GLfloat 0,1,0
   
   EndDataSection
   
@@ -528,14 +537,24 @@ Module Handle
   ; Setup
   ;-----------------------------------------------------------------------------
   Procedure Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
-
+    glUseProgram(*ctx\shaders("wireframe")\pgm)
     ;Setup GL
     SetupHandle(*Me,Globals::#TOOL_SCALE,*ctx)
     SetupHandle(*Me,Globals::#TOOL_ROTATE,*ctx)
     SetupHandle(*Me,Globals::#TOOL_TRANSLATE,*ctx)
     SetupHandle(*Me,Globals::#TOOL_TRANSFORM,*ctx)
     SetupHandle(*Me,Globals::#TOOL_DIRECTED,*ctx)
-  
+    
+    ; cursor
+    *Me\cursor_vao = glGenVertexArrays(1, @*Me\cursor_vao)
+    glBindVertexArray(*Me\cursor_vao)
+    Protected vbo.GLint
+    glGenBuffers(1, @vbo)
+    glBindBuffer(#GL_ARRAY_BUFFER, vbo)
+    
+    ; Push Buffer to GPU
+    glBufferData(#GL_ARRAY_BUFFER,48,?shape_cursor_positions,#GL_DYNAMIC_DRAW)
+    
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -718,6 +737,50 @@ Module Handle
     Matrix4::SetIdentity(@offset)
     glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
     glDisable(#GL_BLEND)
+    
+    ; Debug Ray Visualy
+    If *Me\ray
+      Protected X.m4f32
+      Protected P.v3f32
+      Protected S.v3f32
+      Vector3::Set(@S, 0.05,0.05,0.05)
+      Matrix4::SetIdentity(@X)
+      Vector3::Add(@P, *Me\ray\origin, *Me\ray\direction)
+      Matrix4::SetScale(@X, @S)
+      Matrix4::SetTranslation(@X, @P)
+      glBindVertexArray(*Me\cursor_vao)
+      glPointSize(6)
+      glUniform4f(*Me\u_color,1,1,1,1)
+      glUniformMatrix4fv(*Me\u_model,1,#False,@X)
+      glDrawArrays(#GL_POINTS,0,4)
+;         Protected X.m4f32
+;         Protected P.v3f32
+;         Protected S.v3f32
+;       Protected plane.Geometry::Plane_t
+;       Vector3::Set(plane\normal, 0, 1, 0)
+;       plane\distance = 0
+;       
+;       Protected distance.f, frontFacing.b
+;       If Ray::PlaneIntersection(*Me\ray, @plane, @distance, @frontFacing)
+;         Debug "PLANE INTERSECTION"
+;         
+;         glBindVertexArray(*Me\cursor_vao)
+;         glPointSize(6)
+;         Protected X.m4f32
+;         Protected P.v3f32
+;         Protected S.v3f32
+;         
+;         Vector3::Scale(@P, *Me\ray\direction, distance)
+;         Vector3::AddInPlace(@P, *Me\ray\origin)
+;         Vector3::Set(@S, 0.05,0.05,0.05)
+;         Matrix4::SetIdentity(@X)
+;         Matrix4::SetScale(@X, @S)
+;         Matrix4::SetTranslation(@X,@P)
+;         glUniformMatrix4fv(*Me\u_model,1,#False,@X)
+;         glDrawArrays(#GL_POINTS,0,4)
+;       EndIf
+      
+    EndIf
     
     glBindVertexArray(0)
    
@@ -1010,7 +1073,30 @@ Module Handle
   ; Pick Translate
   ;-----------------------------------------------------------------------------
   Procedure PickTranslate(*Me.Handle_t, *ray.Geometry::ray_t)
-    Debug "PICK TRANSLATE RAY : "+Vector3::ToString(*ray\origin)+" ---> "+Vector3::ToString(*ray\direction)
+    *Me\ray = *ray
+    Protected enterDistance.f, exitDistance.f
+    Protected axis.Geometry::Cylinder_t
+    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
+    Vector3::Set(axis\p_axis, 1,0,0)
+    axis\p_radius = 0.01
+    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
+      Debug "X AXIS INTERSECTION !!!"
+    EndIf
+    
+    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
+    Vector3::Set(axis\p_axis, 0,1,0)
+    axis\p_radius = 0.01
+    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
+      Debug "Y AXIS INTERSECTION !!!"
+    EndIf
+    
+    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
+    Vector3::Set(axis\p_axis,0,0,1)
+    axis\p_radius = 0.01
+    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
+      Debug "Z AXIS INTERSECTION !!!"
+    EndIf
+    
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1138,6 +1224,8 @@ Module Handle
     *Me\directed_handle = Shape::New(Shape::#Shape_axis)
     DirectedHandle(*Me)
     
+    
+    
 ;     *Me\head_sphere = Sphere::New(@pos,0.5)
 ;     *Me\foot_sphere = Sphere::New(@pos,0.5)
 
@@ -1151,7 +1239,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1012
-; FirstLine = 1008
+; CursorPosition = 550
+; FirstLine = 534
 ; Folding = ------
 ; EnableXP

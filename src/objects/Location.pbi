@@ -31,12 +31,11 @@ Module Location
     Define.v3f32 x
   
     Protected *geom.Geometry::PolymeshGeometry_t = *Me\geometry
-    Debug "Geometry : "+Str(*geom)+", TID : "+Str(*Me\tid)
     Protected a,b,c
 
-    a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
+    a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
     b = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+1)
-    c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
+    c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
     
     *a = CArray::GetValue(*geom\a_positions,a)
     *b = CArray::GetValue(*geom\a_positions,b)
@@ -44,13 +43,13 @@ Module Location
     
     ; Position : P= wA + uB + vC
     Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(@x,*a,*Me\u)
+    Vector3::Scale(@x,*a, *Me\u)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*b,*Me\v)
+    Vector3::Scale(@x,*b, *Me\v)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*c,*Me\w)
+    Vector3::Scale(@x,*c, *Me\w)
     Vector3::AddInPlace(*Me\p,@x)
-    
+
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
   
     ProcedureReturn *Me\p
@@ -235,8 +234,8 @@ Module Location
  
 
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 30
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 24
 ; Folding = ---
 ; EnableXP

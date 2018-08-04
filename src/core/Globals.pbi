@@ -58,8 +58,7 @@ DeclareModule Globals
     #VIEW_PROPERTY
     #VIEW_TIMELINE
     #VIEW_GRAPH
-    #VIEW_3DVIEWPORT
-    #VIEW_VIEW3D
+    #VIEW_VIEWPORT
     #VIEW_TOPMENU
     #VIEW_EDITOR
   EndEnumeration
@@ -248,8 +247,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 83
+; CursorPosition = 60
+; FirstLine = 38
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

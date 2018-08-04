@@ -56,7 +56,7 @@ DeclareModule Geometry
   ;{
   Structure Cylinder_t
     p_position.v3f32
-    p_rotation.q4f32
+    p_axis.v3f32
     p_radius.f
     p_height.f
   EndStructure
@@ -90,10 +90,8 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Plane_t
-    origin.v3f32
     normal.v3f32
-    tangent.v3f32
-    binormal.v3f32
+    distance.f
   EndStructure
   ;}
   
@@ -326,7 +324,8 @@ DeclareModule Geometry
   EndStructure
   
   Declare GetParentObject3D(*Me.Geometry_t)
-  
+  Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
+  Declare ConstructPlaneFromPositionAndNormal(*Me.Plane_t, *position.v3f32, *normal.v3f32)
 EndDeclareModule
 
 
@@ -341,9 +340,24 @@ Module Geometry
     ProcedureReturn *Me\parent
   EndProcedure
   
+  Procedure ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
+    Protected e1.v3f32
+    Protected e2.v3f32
+    Vector3::Sub(@e1,*b,*a)
+    Vector3::Sub(@e2,*c,*a)
+    Vector3::Cross(*Me\normal, @e1, @e2)
+    Vector3::NormalizeInPlace(*Me\normal)
+    *Me\distance = Vector3::Dot(*Me\normal, *a)
+  EndProcedure
+  
+  Procedure ConstructPlaneFromPositionAndNormal(*Me.Plane_t, *position.v3f32, *normal.v3f32)
+    Vector3::Normalize(*Me\normal, *normal)
+    *Me\distance = Vector3::Dot(*Me\normal, *position)
+  EndProcedure
+  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 30
+; CursorPosition = 344
+; FirstLine = 299
 ; Folding = ----
 ; EnableXP

@@ -140,7 +140,7 @@ DeclareModule Object3D
   Declare GetGlobalTransform(*Me.Object3D_t)
   Declare SetGlobalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
   Declare SetStaticTransform(*Me.Object3D_t,*t.Transform::Transform_t)
-  Declare UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t)
+  Declare UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t=#Null)
   Declare UpdateLocalTransform(*obj.Object3D::Object3D_t)
   Declare GetAttribute(*obj.Object3D_t,name.s)
   Declare AddAttribute(*obj.Object3D_t,*attribute.Attribute::Attribute_t)
@@ -327,15 +327,16 @@ Module Object3D
   ;-----------------------------------------------
   ; Update Transform
   ;-----------------------------------------------
-  Procedure UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t)
+  Procedure UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t=#Null)
     Protected *local.Transform::Transform_t = *obj\localT
     If *pt = #Null
       If *obj\parent
         *pt = *obj\parent\globalT
       Else
+        Matrix4::SetFromOther(*obj\globalT\m,*obj\localT\m)
+        Transform::UpdateSRTFromMatrix(*obj\globalT)
         ProcedureReturn
       EndIf
-      
     EndIf
     
     ; Multiply by Global Matrix of Parent Object
@@ -534,8 +535,8 @@ Module Object3D
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 160
-; FirstLine = 138
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 142
+; FirstLine = 107
 ; Folding = ------
 ; EnableXP

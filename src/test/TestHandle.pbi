@@ -49,7 +49,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 Global *handle.Handle::Handle_t
 
 ; Resize
@@ -87,26 +86,25 @@ Procedure Draw(*app.Application::Application_t)
 ;   glClearColor(0,0,0,0)
 ;   glClear(#GL_DEPTH_BUFFER_BIT|#GL_COLOR_BUFFER_BIT)
 ;   glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   
   Select *app\tool
     Case Globals::#TOOL_TRANSLATE
-      FTGL::Draw(*ftgl_drawer,"Active Tool : Translate",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"Active Tool : Translate",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_ROTATE
-      FTGL::Draw(*ftgl_drawer,"Active Tool : Rotate",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"Active Tool : Rotate",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_SCALE
-      FTGL::Draw(*ftgl_drawer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_CAMERA
-      FTGL::Draw(*ftgl_drawer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
   EndSelect
   
 
-  glDisable(#GL_BLEND)
+  FTGL::EndDraw(*app\context\writer)
   
 
 ;   Handle::Draw(*handle, *app\context)
@@ -130,7 +128,6 @@ Procedure Draw(*app.Application::Application_t)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
      *app\context = *viewport\context
-     
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -149,9 +146,7 @@ Procedure Draw(*app.Application::Application_t)
   
   ; FTGL Drawer
   ;-----------------------------------------------------
-  
-  *ftgl_drawer = FTGL::New()
-  
+    
   *s_wireframe = *app\context\shaders("wireframe")
   *s_polymesh = *app\context\shaders("polymesh")
   *s_simple = *app\context\shaders("simple")
@@ -170,7 +165,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 130
+; FirstLine = 90
 ; Folding = -
 ; EnableThread
 ; EnableXP

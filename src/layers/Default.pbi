@@ -157,13 +157,13 @@ Module LayerDefault
     Define.m4f32 model,view,proj
     Matrix4::SetIdentity(@model)
  
-  glEnable(#GL_DEPTH_TEST)
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-  
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
-  
-  Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+    glEnable(#GL_DEPTH_TEST)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
+    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    
+    Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
   
     ; Draw Instance Clouds 
     ;-----------------------------------------------
@@ -173,26 +173,38 @@ Module LayerDefault
     Matrix4::SetIdentity(@model)
  
   glEnable(#GL_DEPTH_TEST)
-  
-;   glEnable(#GL_TEXTURE_2D)
-;   glBindTexture(#GL_TEXTURE_2D,texture)
-;   glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
-;   
-  
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-  
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
-;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
-  
-  Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
-  ;   PointCloud::Draw(*cloud)
-  ;   Model::Update(*model)
-  ;Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
-;   Model::Draw(*model)
-  glCheckError("Draw Instance Cloud")
+    
+  ;   glEnable(#GL_TEXTURE_2D)
+  ;   glBindTexture(#GL_TEXTURE_2D,texture)
+  ;   glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
+  ;   
+    
+  ;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
+    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+  ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+  ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
+    
+    Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+    ;   PointCloud::Draw(*cloud)
+    ;   Model::Update(*model)
+    ;Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
+  ;   Model::Draw(*model)
+    glCheckError("Draw Instance Cloud")
+    
+    ; Draw Nulls
+    ;----------------------------------------------
+    *pgm = *ctx\shaders("wireframe")
+    glUseProgram(*pgm\pgm)
+    Matrix4::SetIdentity(@model)
+ 
+    glDisable(#GL_DEPTH_TEST)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
+    Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
   
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
@@ -257,7 +269,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 178
-; FirstLine = 155
+; CursorPosition = 205
+; FirstLine = 179
 ; Folding = --
 ; EnableXP

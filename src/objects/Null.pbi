@@ -131,7 +131,6 @@ Module Null
     
     
     ; ---[ Uniforms ]--------------------------------
-    
     Protected hSize.f = *Me\size/2
     Protected pos.v3f32
     Protected theta.f 
@@ -144,17 +143,18 @@ Module Null
         CArray::SetCount(*positions,6)
         *Me\nbp = 6
         
-        CArray::SetValue(*positions,0,@pos)
         Vector3::Set(@pos,-hSize,0,0)
-        CArray::SetValue(*positions,1,pos)
-        Vector3::Set(@pos,-0,hSize,0)
-        CArray::SetValue(*positions,2,pos)
+        CArray::SetValue(*positions,0,@pos)
+        Vector3::Set(@pos,hSize,0,0)
+        CArray::SetValue(*positions,1,@pos)
         Vector3::Set(@pos,0,-hSize,0)
-        CArray::SetValue(*positions,3,pos)
+        CArray::SetValue(*positions,2,@pos)
+        Vector3::Set(@pos,0,hSize,0)
+        CArray::SetValue(*positions,3,@pos)
         Vector3::Set(@pos,0,0,hSize)
-        CArray::SetValue(*positions,4,pos)
+        CArray::SetValue(*positions,4,@pos)
         Vector3::Set(@pos,0,0,-hSize)
-        CArray::SetValue(*positions,5,pos)
+        CArray::SetValue(*positions,5,@pos)
         
       Case #Icon_Disc
         CArray::SetCount(*positions,22)
@@ -369,7 +369,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 328
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 141
+; FirstLine = 120
 ; Folding = ---
 ; EnableXP

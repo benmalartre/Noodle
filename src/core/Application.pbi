@@ -33,6 +33,7 @@ XIncludeFile "../objects/Scene.pbi"
 XIncludeFile "../objects/Handle.pbi"
 XIncludeFile "../objects/Selection.pbi"
 XIncludeFile "../objects/Sampler.pbi"
+XIncludeFile "../objects/Ray.pbi"
 
 XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
@@ -565,7 +566,7 @@ Module Application
       Wend
     CompilerElse
       Repeat
-        event = WaitWindowEvent(1000/60)
+        event = WaitWindowEvent(250)
         ; filter Windows events
         If event = 512  Or event = 160:  Continue : EndIf
         
@@ -599,8 +600,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 581
-; FirstLine = 541
+; CursorPosition = 568
+; FirstLine = 542
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

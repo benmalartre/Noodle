@@ -53,7 +53,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 
 ; Resize
 ;--------------------------------------------
@@ -123,10 +122,10 @@ Procedure Draw(*app.Application::Application_t)
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
 
   glDisable(#GL_BLEND)
   
@@ -171,10 +170,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Layer::SetPOV(*layer, *cam2)
   ; FTGL Drawer
-  ;-----------------------------------------------------
-  
-  *ftgl_drawer = FTGL::New()
-  
+  ;-----------------------------------------------------  
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
@@ -218,13 +214,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 176
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 175
+; FirstLine = 157
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

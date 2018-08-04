@@ -71,6 +71,9 @@ DeclareModule Math
   
   #F32_DEG2RAD  =  0.0174533              ; pi/180
   #F32_RAD2DEG  = 57.2957795              ; 180/pi
+  
+  #MIN_VECTOR_LENGTH = 1e-10
+  #MIN_ORTHO_TOLERANCE = 1e-6
 
   ; ----------------------------------------------------------------------------
   ;  Maximum Macro
@@ -248,8 +251,9 @@ DeclareModule Math
     scl.v3f32
   EndStructure
   
-  Declare.d Max(a.d,b.d)
-  Declare.d Min(a.d,b.d)
+  Declare.f Max(a.f,b.f)
+  Declare.f Min(a.f,b.f)
+  Declare.b IsClose(value.f, root.f, tolerance.f)
 EndDeclareModule
 
 ;====================================================================
@@ -376,7 +380,58 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Color
   UseModule Math
-
+  
+  DataSection
+    COLOR_RED:
+    Data.f 1,0,0,1
+    COLOR_GREEN:
+    Data.f 0,1,0,1
+    COLOR_BLUE:
+    Data.f 0,0,1,1
+    COLOR_YELLOW:
+    Data.f 1,1,0,1
+    COLOR_PURPLE:
+    Data.f 0,1,1,1
+    COLOR_MAGENTA:
+    Data.f 1,0,1,1
+    COLOR_BLACK:
+    Data.f 0,0,0,1
+    COLOR_WHITE:
+    Data.f 1,1,1,1
+  EndDataSection
+  
+  Macro _RED()
+    Color::?COLOR_RED
+  EndMacro
+  
+  Macro _GREEN()
+    Color::?COLOR_GREEN
+  EndMacro
+  
+  Macro _BLUE()
+    Color::?COLOR_BLUE
+  EndMacro
+  
+  Macro _YELLOW()
+    Color::?COLOR_YELLOW
+  EndMacro
+  
+  Macro _PURPLE()
+    Color::?COLOR_PURPLE
+  EndMacro
+  
+  Macro _MAGENTA()
+    Color::?COLOR_MAGENTA
+  EndMacro
+  
+  Macro _WHITE()
+    Color::?COLOR_WHITE
+  EndMacro
+  
+  Macro _BLACK()
+    Color::?COLOR_BLACK
+  EndMacro
+  
   Declare AddInplace(*c1.c4f32,*c2.c4f32)
   Declare Add(*io.c4f32,*a.c4f32,*b.c4f32)
   Declare Set(*io.c4f32,r.f=0,g.f=0,b.f=0,a.f=1)
@@ -479,7 +534,7 @@ EndDeclareModule
 ; MathType Module Implementation(Empty)
 ;====================================================================
 Module Math
-  Procedure.d Max(a.d,b.d)
+  Procedure.f Max(a.f,b.f)
     If a<b
       ProcedureReturn b
     Else
@@ -488,7 +543,7 @@ Module Math
     
   EndProcedure
   
-   Procedure.d Min(a.d,b.d)
+   Procedure.f Min(a.f,b.f)
     If a<b
       ProcedureReturn a
     Else
@@ -496,6 +551,15 @@ Module Math
     EndIf
     
   EndProcedure
+  
+  Procedure.b IsClose(value.f, root.f, tolerance.f)
+    If Abs(value - root) < tolerance 
+      ProcedureReturn #True
+    Else
+      ProcedureReturn #False
+    EndIf
+  EndProcedure
+  
   
 EndModule
 
@@ -1096,17 +1160,17 @@ Module Vector4
   Procedure MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
     Protected x.f,y.f,z.f,w.f
 
-    If Not transpose
-      x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
-      y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
-      z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
-      w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
-    Else
+;     If Not transpose
+;       x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
+;       y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
+;       z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
+;       w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
+;     Else
       x = *o\x * *m\v[0] + *o\y * *m\v[4] + *o\z * *m\v[8] + *o\w * *m\v[12]
       y = *o\x * *m\v[1] + *o\y * *m\v[5] + *o\z * *m\v[9] + *o\w * *m\v[13]
       z = *o\x * *m\v[2] + *o\y * *m\v[6] + *o\z * *m\v[10] + *o\w * *m\v[14]
       w = *o\x * *m\v[3] + *o\y * *m\v[7] + *o\z * *m\v[11] + *o\w * *m\v[15]
-    EndIf
+;     EndIf
   
     *v\x = x
     *v\y = y
@@ -1119,17 +1183,17 @@ Module Vector4
   ;-----------------------------------------
   Procedure MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
     Protected x.f,y.f,z.f,w.f
-    If Not transpose
-      x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *v\w * *m\v[3]
-      y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *v\w * *m\v[7]
-      z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *v\w * *m\v[11]
-      w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *v\w * *m\v[15]
-    Else
+;     If Not transpose
+;       x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *v\w * *m\v[3]
+;       y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *v\w * *m\v[7]
+;       z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *v\w * *m\v[11]
+;       w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *v\w * *m\v[15]
+;     Else
       x = *v\x * *m\v[0] + *v\y * *m\v[4] + *v\z * *m\v[8] + *v\w * *m\v[12]
       y = *v\x * *m\v[1] + *v\y * *m\v[5] + *v\z * *m\v[9] + *v\w * *m\v[13]
       z = *v\x * *m\v[2] + *v\y * *m\v[6] + *v\z * *m\v[10] + *v\w * *m\v[14]
       w = *v\x * *m\v[3] + *v\y * *m\v[7] + *v\z * *m\v[11] + *v\w * *m\v[15]
-    EndIf
+;     EndIf
   
     *v\x = x
     *v\y = y
@@ -2573,8 +2637,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1931
-; FirstLine = 1873
-; Folding = -------------------------------
+; CursorPosition = 1043
+; FirstLine = 1140
+; Folding = --------------------------------
 ; EnableXP
 ; EnableUnicode

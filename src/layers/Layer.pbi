@@ -93,6 +93,7 @@ DeclareModule Layer
   Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
  
   Declare GetImage(*layer.Layer::Layer_t, path.s)
    ; ============================================================================
@@ -379,8 +380,7 @@ Module Layer
     
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type & Object3D::#Object3D_Drawer
-        Debug *obj\class\name
+      If *obj\type & Object3D::#Object3D_Drawer        
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         Drawer::Draw(*obj)
       EndIf
@@ -444,6 +444,25 @@ Module Layer
       EndIf
     Next
   EndProcedure
+  
+  ;---------------------------------------------------
+  ; Draw Nulls
+  ;---------------------------------------------------
+  Procedure DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    Protected i
+    Protected obj.Object3D::IObject3D
+    Protected *obj.Object3D::Object3D_t
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = Object3D::#Object3D_Null
+        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        glUniform4f(glGetUniformLocation(shader,"color"),*obj\wireframe_r, *obj\wireframe_g, *obj\wireframe_b, 1.0)
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+  EndProcedure
+  
   
   
   ;---------------------------------------------------
@@ -668,7 +687,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 446
-; FirstLine = 426
+; CursorPosition = 384
+; FirstLine = 372
 ; Folding = -----
 ; EnableXP

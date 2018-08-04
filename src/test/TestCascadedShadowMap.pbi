@@ -43,7 +43,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 
 ; Resize
 ;--------------------------------------------
@@ -134,7 +133,6 @@ Procedure Draw(*app.Application::Application_t)
   ; FTGL Drawer
   ;-----------------------------------------------------
   FTGL::Init()
-  *ftgl_drawer = FTGL::New()
   
   *s_wireframe = Program::NewFromName("simple")
   *s_polymesh = Program::NewFromName("polymesh")
@@ -158,9 +156,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 119
-; FirstLine = 115
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 100
+; FirstLine = 96
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

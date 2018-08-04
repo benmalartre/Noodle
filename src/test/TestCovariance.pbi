@@ -31,7 +31,6 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 
 ; -----------------------------------------------------------------------------------------
@@ -74,10 +73,10 @@ Procedure Draw(*app.Application::Application_t)
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
 
   glDisable(#GL_BLEND)
   
@@ -245,9 +244,7 @@ FTGL::Init()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
-  
-  *ftgl_drawer = FTGL::New()
-  
+    
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
@@ -289,7 +286,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 220
+; CursorPosition = 248
+; FirstLine = 228
 ; Folding = -
 ; EnableXP

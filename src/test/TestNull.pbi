@@ -37,7 +37,7 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
+Global *layer.LayerDefault::layerDefault_t
 
 ; Resize
 ;--------------------------------------------
@@ -93,58 +93,42 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+;   Framebuffer::BindOutput(*buffer)
+;   glClearColor(0.25,0.25,0.25,1.0)
+;   glViewport(0, 0, *viewport\width,*viewport\height)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   glEnable(#GL_DEPTH_TEST)
   
-  Framebuffer::BindOutput(*buffer)
-  glClearColor(0.25,0.25,0.25,1.0)
-  glViewport(0, 0, *buffer\width,*buffer\height)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glEnable(#GL_DEPTH_TEST)
-  
-  glUseProgram(shader)
-  Matrix4::SetIdentity(@offset)
-  Framebuffer::BindOutput(*buffer)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@model)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@offset)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*app\camera\projection)
-  glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-  glUniform3f(glGetUniformLocation(shader,"lightPosition"),0.0,10.0,2.0)
 
  Scene::Update(Scene::*current_scene)
-;   Polymesh::Draw(*torus)
-;   Polymesh::Draw(*teapot)
-  Scene::Draw(Scene::*current_scene,*s_wireframe,-1)
-;   Polymesh::Draw(*null)
-;   Polymesh::Draw(*cube)
+;   Scene::Draw(Scene::*current_scene,*app\context\shaders("wireframe"),-1)
   
-  
-  glDisable(#GL_DEPTH_TEST)
-  
-  glViewport(0,0,width,height)
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-  
-  glDisable(#GL_DEPTH_TEST)
-  
-  
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  FTGL::Draw(*app\context\writer,"Null Testing",-0.9,0.9,ss,ss*ratio)
-
-  glDisable(#GL_BLEND)
-  
-  If Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  EndIf
-
+;   Protected *buffer.Framebuffer::Framebuffer_t = *viewport\layer\buffer
+;   
+;   glDisable(#GL_DEPTH_TEST)
+;   
+;   glViewport(0,0,width,height)
+;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
+;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
+;   
+;   glDisable(#GL_DEPTH_TEST)
+;   
+;   
+;   glEnable(#GL_BLEND)
+;   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
+;   glDisable(#GL_DEPTH_TEST)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   FTGL::Draw(*app\context\writer,"Null Testing",-0.9,0.9,ss,ss*ratio)
+; 
+;   glDisable(#GL_BLEND)
+  ViewportUI::Draw(*viewport, *app\context)
+  ViewportUI::FlipBuffer(*viewport)
  EndProcedure
  
 
@@ -159,51 +143,33 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("TestMesh",width,height)
+   *app = Application::New("Test Null",width,height)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+     *layer = LayerDefault::New(width, height, *app\context, *app\camera)
+     *viewport\camera = *app\camera
+     ViewportUI::AddLayer(*viewport, *layer)
+     View::SetContent(*app\manager\main,*viewport)
+      ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
-  Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
-  
-  Debug "Size "+Str(*app\width)+","+Str(*app\height)
-  *buffer = Framebuffer::New("Color",*app\width,*app\height)
-  Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
-  Framebuffer::AttachTexture(*buffer,"normal",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
-  Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
+
   Scene::*current_scene = Scene::New()
   Global *root.Model::Model_t = Model::New("Model")
-  
-  ; FTGL Drawer
-  ;-----------------------------------------------------
-  
-  *s_wireframe = *app\context\shaders("simple")
-  
-  shader = *s_wireframe\pgm
-  
-;   *null = Null::New("Null1")
-  AddGridNull(*root,*s_wireframe,10,10,10,20,20,20)
+ 
+  AddGridNull(*root,*app\context\shaders("wireframe"),10,10,10,20,20,20)
+  Scene::AddModel(Scene::*current_scene, *root)
   
   Define pos.v3f32,scl.v3f32
   Vector3::Set(@pos,0,-1,0)
   Vector3::Set(@scl,100,1,100)
-;   Matrix4::SetScale(*null\matrix,@scl)
-;   Matrix4::SetTranslation(*null\matrix,@pos)
-
-  
-;   Object3D::AddChild(*root,*null)
-   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 127
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 86
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

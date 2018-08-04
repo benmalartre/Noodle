@@ -38,7 +38,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 
 ; Resize
@@ -137,15 +136,13 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
-
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-
+  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
   glDisable(#GL_BLEND)
   
   ViewportUI::FlipBuffer(*viewport)
@@ -172,6 +169,8 @@ Procedure Draw(*app.Application::Application_t)
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+ 
+  
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
@@ -179,22 +178,20 @@ Procedure Draw(*app.Application::Application_t)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
-  
-  *ftgl_drawer = FTGL::New()
-  
+    
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
   shader = *s_polymesh\pgm
-
-  Define *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
-  Object3D::SetShader(*ground,*s_polymesh)
+; 
+;   Define *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
+;   Object3D::SetShader(*ground,*s_polymesh)
  
   Define i
   
   *drawer = Drawer::New("Drawer")
   
-  Object3D::AddChild(*root,*ground)
+;   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root, *drawer)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
@@ -202,8 +199,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 98
+; CursorPosition = 167
+; FirstLine = 133
 ; Folding = --
 ; EnableThread
 ; EnableXP

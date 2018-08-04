@@ -48,7 +48,7 @@ DeclareModule ViewportUI
   Declare AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
-  Declare GetRay(*Me.ViewportUI_t)
+  Declare GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
   ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
   
   DataSection 
@@ -74,7 +74,7 @@ Module ViewportUI
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     InitializeStructure(*Me,ViewportUI_t)
     *Me\name = name
-    *Me\type = Globals::#VIEW_TIMELINE
+    *Me\type = Globals::#VIEW_VIEWPORT
     Object::INI(ViewportUI)
     
     Protected x = *parent\x
@@ -82,6 +82,8 @@ Module ViewportUI
     Protected w = *parent\width
     Protected h = *parent\height
     
+    *Me\width = w
+    *Me\height = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\context = GLContext::New(w,h,#False)
 
@@ -110,8 +112,6 @@ Module ViewportUI
       CocoaMessage( 0, ctx, "makeCurrentContext" )
       ; Swap Buffers
       CocoaMessage( 0, ctx, "flushBuffer" )
-      ; Load Extensions
-      GLLoadExtensions()
       ; Associate Context With OpenGLGadget NSView
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
@@ -120,20 +120,18 @@ Module ViewportUI
     CompilerElse
       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-      GLLoadExtensions()
+
     CompilerEndIf
     
-    *Me\width = w
-    *Me\height = h
-   
     CloseGadgetList()
-    
+
     GLContext::Setup(*Me\context)
+    
     *Me\handle = Handle::New()
     Handle::Setup(*Me\handle, *Me\context)
+  
     View::SetContent(*parent,*Me)
     
-
     ProcedureReturn *Me
   EndProcedure
   
@@ -167,8 +165,8 @@ Module ViewportUI
     Select event
       Case #PB_Event_SizeWindow
         Protected *top.View::View_t = *Me\top
-        width.i = *top\width
-        height.i = *top\height
+        width = *top\width
+        height = *top\height
         
         *Me\width = width
         *Me\height = height
@@ -188,17 +186,17 @@ Module ViewportUI
         If EventGadget() = *Me\gadgetID
           Protected deltax.d, deltay.d
           Protected modifiers.i
-          mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
-          my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
+          *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
+          *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
           width = GadgetWidth(*Me\gadgetID)
           height = GadgetHeight(*Me\gadgetID)
-          GetRay(*Me)
+          GetRay(*Me, *Me\ray)
      
           Select EventType()
             Case #PB_EventType_MouseMove
               If *Me\down
-                deltax = mx-*Me\oldX
-                deltay = my-*Me\oldY 
+                deltax = *Me\mx-*Me\oldX
+                deltay = *Me\my-*Me\oldY 
                 modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
               
                 If modifiers & #PB_OpenGL_Alt
@@ -216,8 +214,8 @@ Module ViewportUI
                   EndSelect
                 EndIf
                 
-                *Me\oldX = mx
-                *Me\oldY = my
+                *Me\oldX = *Me\mx
+                *Me\oldY = *Me\my
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
@@ -239,8 +237,8 @@ Module ViewportUI
 ;               
               *Me\lmb_p = #True
               *Me\down = #True
-              *Me\oldX = mx
-              *Me\oldY = my
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
             
             Case #PB_EventType_LeftButtonUp
               *Me\lmb_p = #False
@@ -249,8 +247,8 @@ Module ViewportUI
             Case #PB_EventType_MiddleButtonDown
               *Me\mmb_p = #True
               *Me\down = #True
-              *Me\oldX = mx
-              *Me\oldY = my
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
         
             Case #PB_EventType_MiddleButtonUp
               *Me\mmb_p = #False
@@ -259,8 +257,8 @@ Module ViewportUI
             Case #PB_EventType_RightButtonDown
               *Me\rmb_p = #True
               *Me\down = #True
-              *Me\oldX = mx
-              *Me\oldY = my
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
               
             Case #PB_EventType_RightButtonUp
               *Me\rmb_p = #False
@@ -329,6 +327,7 @@ Module ViewportUI
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
+
     Protected ilayer.Layer::ILayer = *Me\layer
     ilayer\Draw(*ctx)
     If *Me\tool
@@ -338,8 +337,8 @@ Module ViewportUI
       Matrix4::SetIdentity(@identity)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@identity)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, Layer::GetViewMatrix(*Me\layer))
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, Layer::GetProjectionMatrix(*Me\layer))
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
       
       Handle::Draw( *Me\handle,*ctx) 
     EndIf
@@ -425,54 +424,44 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; View To World
   ;------------------------------------------------------------------
-  Procedure ViewToRay(*v.ViewportUI_t,mx.d,my.d,*ray_dir.v3f32)
-    Define.d mx,my
-    ;glfwGetCursorPos(*v\window,@mx,@my)
-    mx = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    my = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseY)
-    
-    Define.f x = (2*mx)/*v\width - 1
-    Define.f y = 1- (2*my)/*v\height
-    Define.f z = 1
-    
+  Procedure ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.v3f32)
+    ; 3d normalized device coordinates
+    Define x.f = (2 * mx) / *Me\width - 1
+    Define y.f = 1 - (2 * my) / *Me\height
+    Define z.f = 1
     Define ray_nds.v3f32
-    Vector3::Set(@ray_nds,x,y,z)
-    Define ray_clip.v4f32
-    Vector4::Set(@ray_clip,ray_nds\x,ray_nds\y,-1,1)
+    Vector3::Set(@ray_nds, x, y, z)
     
+    ; 4d Homogeneous Clip Coordinates
+    Define ray_clip.v4f32
+    Vector4::Set(@ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
+    
+    ; 4d Eye (Camera) Coordinates
     Define inv_proj.m4f32
-    Matrix4::Inverse(@inv_proj,*v\camera\projection)
+    Matrix4::Inverse(@inv_proj,*Me\camera\projection)
     Define ray_eye.v4f32
     Vector4::MulByMatrix4(@ray_eye,@ray_clip,@inv_proj,#False)
     ray_eye\z = -1
     ray_eye\w = 0
     
+    ; 4d World Coordinates
     Define inv_view.m4f32
     Define ray_world.v4f32
-    Matrix4::Inverse(@inv_view,*v\camera\view)
+    Matrix4::Inverse(@inv_view,*Me\camera\view)
     Vector4::MulByMatrix4(@ray_world,@ray_eye,@inv_view,#False)
     
     Vector3::Set(*ray_dir,ray_world\x,ray_world\y,ray_world\z)
     Vector3::NormalizeInPlace(*ray_dir)
-   
-  
+
   EndProcedure
   
   ; ------------------------------------------------------------------
   ;  Get Ray
   ; ------------------------------------------------------------------
-  Procedure GetRay(*Me.ViewportUI_t)
-    Define.d mx,my
-  
-    mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
-    my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
+  Procedure GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
     Protected direction.v3f32
-  
-    ViewToRay(*Me,mx,my,@direction)
-    
-    Vector3::ScaleInPlace(@direction,*Me\camera\farplane)
-    Vector3::AddInPlace(@direction,*Me\camera\pos)
-    Ray::Set(*Me\ray, *Me\camera\pos, @direction)
+    ViewToRay(*Me,*Me\mx,*Me\my,@direction)
+    Ray::Set(*ray, *Me\camera\pos, @direction)
   EndProcedure
   
   
@@ -654,7 +643,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 482
-; FirstLine = 459
+; CursorPosition = 198
+; FirstLine = 166
 ; Folding = -----
 ; EnableXP

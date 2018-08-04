@@ -121,6 +121,8 @@ DeclareModule FTGL
   Declare Delete(*drawer.FTGL_Drawer)
   Declare SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
   Declare SetColor(*drawer.FTGL_Drawer,r.f,g.f,b.f,a.f)
+  Declare BeginDraw(*drawer.FTGL_Drawer)
+  Declare EndDraw(*drawer.FTGL_Drawer)
   Declare Draw(*drawer.FTGL_Drawer,text.s,x.f,y.f,sx.f,sy.f)
   Declare SetupTexture(*drawer.FTGL_Drawer)
   Declare.s GetVertexShader()
@@ -230,14 +232,6 @@ Module FTGL
     
     Protected size_t = (Len(text))*6*SizeOf(FTGL_Point)
     Define *mem = AllocateMemory(size_t)
-    glBindVertexArray(*drawer\vao)
-    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
-    glUseProgram(*drawer\shader\pgm)
-    glUniform4fv(glGetUniformLocation(*drawer\shader\pgm,"color"),1,*drawer\color)
-    glActiveTexture(#GL_TEXTURE0)
-    glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
-    glUniform1i(glGetUniformLocation(*drawer\shader\pgm,"tex"),0)
-    glDisable(#GL_CULL_FACE)
     
     Protected atlas_width = *drawer\atlas\width
     Protected atlas_height = *drawer\atlas\height
@@ -269,13 +263,9 @@ Module FTGL
       
     Next a
     
-    glEnable(#GL_BLEND)
-    glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-    glDisable(#GL_DEPTH_TEST)
+    
     glBufferData(#GL_ARRAY_BUFFER,size_t,*mem,#GL_DYNAMIC_DRAW)
     glDrawArrays(#GL_TRIANGLES,0,Len(text)*6)
-    glDisable(#GL_BLEND)
-    glUseProgram(0)
     
     FreeMemory(*mem)
   EndProcedure
@@ -292,7 +282,6 @@ Module FTGL
     GLCheckError("Enable Texture")
     
     glActiveTexture(#GL_TEXTURE0)
-    GLCheckError("Activate Texture 0")
     Protected w = *drawer\atlas\width
     Protected h = *drawer\atlas\height
     
@@ -307,9 +296,7 @@ Module FTGL
       Next
     Next
     StopDrawing()
-    GLCheckError("Texture Drawn")
     *drawer\tex = Texture::Load( img,#False)
-    GLCheckError("Texture Loaded")
 
 ;   	glGenTextures(1,@*drawer\tex)
 ;   	glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
@@ -324,6 +311,35 @@ Module FTGL
 ;   	glPixelStorei(#GL_UNPACK_ALIGNMENT,1)
 ;   	glTexImage2D(#GL_TEXTURE_2D,0,#GL_ALPHA,w,h,0,#GL_ALPHA,#GL_UNSIGNED_BYTE,FT_GetAtlasBuffer(*drawer\atlas))
   EndProcedure
+  
+  ;-------------------------------------------------------------------------------------
+  ; Begin Draw
+  ;-------------------------------------------------------------------------------------
+  Procedure BeginDraw(*drawer.FTGL_Drawer)
+    glUseProgram(*drawer\shader\pgm)
+    glEnable(#GL_BLEND)
+    glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
+    glDisable(#GL_DEPTH_TEST)
+    
+    glBindVertexArray(*drawer\vao)
+    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
+    glUseProgram(*drawer\shader\pgm)
+    glUniform4fv(glGetUniformLocation(*drawer\shader\pgm,"color"),1,*drawer\color)
+    glActiveTexture(#GL_TEXTURE0)
+    glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
+    glUniform1i(glGetUniformLocation(*drawer\shader\pgm,"tex"),0)
+    glDisable(#GL_CULL_FACE)
+  EndProcedure
+  
+  ;-------------------------------------------------------------------------------------
+  ; End Draw
+  ;-------------------------------------------------------------------------------------
+  Procedure EndDraw(*drawer.FTGL_Drawer)
+    glDisable(#GL_BLEND)
+    glEnable(#GL_DEPTH_TEST)  
+    glUseProgram(0)
+  EndProcedure
+  
   
   
   
@@ -352,33 +368,26 @@ Module FTGL
 
     *drawer\color\r = 1
     *drawer\color\a = 1
-    GLCheckError("Start Create FGTL")
     glGenVertexArrays(1,@*drawer\vao)
     glBindVertexArray(*drawer\vao)
-    GLCheckError("Create VAO")
     glGenBuffers(1,@*drawer\vbo)
     glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
-    GLCheckError("Create VBO")
     Protected vert.s = GetVertexShader()
     Protected frag.s = GetFragmentShader()
     
     *drawer\shader = Program::New("FTGL",vert, frag)
-    GLCheckError("Create Shader")
+    glUseProgram(*drawer\shader\pgm)
     SetupTexture(*drawer)
-    GLCheckError("Setup Texture")
     Protected attr_coord.GLuint = glGetAttribLocation(*drawer\shader\pgm,"coord")
     glEnableVertexAttribArray(attr_coord)
-    GLCheckError("Enable Attribute")
-    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
     glVertexAttribPointer(attr_coord,4,#GL_FLOAT,#GL_FALSE,0,#Null)
-    GLCheckError("Bind Buffer")
     
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 350
-; FirstLine = 322
-; Folding = ---
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 382
+; FirstLine = 328
+; Folding = ----
 ; EnableXP
 ; EnableUnicode

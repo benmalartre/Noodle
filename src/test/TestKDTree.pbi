@@ -452,11 +452,11 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 378
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 232
+; FirstLine = 223
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
 ; Executable = kdtree.exe
 ; Debugger = Standalone
+; EnableUnicode
