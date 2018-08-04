@@ -279,7 +279,7 @@ DeclareModule Vector2
   Declare SetLength(*v.v2f32,l.f)
   Declare Multiply(*o.v2f32,*a.v2f32,*b.v2f32)
   Declare Echo(*v.v2f32,name.s="")
-  Declare.s AsString(*v.v2f32)
+  Declare.s ToString(*v.v2f32)
   Declare FromString(*v.v2f32, s.s)
 EndDeclareModule
 
@@ -317,7 +317,7 @@ DeclareModule Vector3
   Declare MulByQuaternion(*out.v3f32,*in.v3f32,*q.q4f32)
 	Declare MulByQuaternionInPlace(*v.v3f32,*q.q4f32)
 	Declare Echo(*v.v3f32,name.s="")
-	Declare.s AsString(*v.v3f32)
+	Declare.s ToString(*v.v3f32)
 	Declare FromString(*v.v3f32, s.s)
 EndDeclareModule
 
@@ -331,7 +331,7 @@ DeclareModule Vector4
   Declare MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
   Declare MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
   Declare Echo(*v.v4f32,name.s="")
-  Declare.s AsString(*v.v4f32)
+  Declare.s ToString(*v.v4f32)
   Declare FromString(*v.v4f32, s.s)
 EndDeclareModule
 
@@ -367,7 +367,7 @@ DeclareModule Quaternion
   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
   Declare Echo(*q.q4f32,prefix.s ="")
-  Declare.s AsString(*q.q4f32)
+  Declare.s ToString(*q.q4f32)
   Declare FromString(*q.q4f32, s.s)
 EndDeclareModule
 
@@ -386,7 +386,7 @@ DeclareModule Color
   Declare Randomize(*c.c4f32)
   Declare RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
   Declare Echo(*c.c4f32,prefix.s ="")
-  Declare.s AsString(*c.c4f32)
+  Declare.s ToString(*c.c4f32)
   Declare FromString(*c.c4f32, s.s)
 EndDeclareModule
 
@@ -404,7 +404,7 @@ DeclareModule Matrix3
   Declare MulByMatrix3(*m.m3f32,*f.m3f32,*s.m3f32)
   Declare GetQuaternion(*m.m3f32,*q.q4f32,transpose.b=#False)
   Declare Echo(*m.m3f32)
-  Declare.s AsString(*m.m3f32)
+  Declare.s ToString(*m.m3f32)
   Declare FromString(*m.m3f32, s.s)
 EndDeclareModule
 
@@ -437,7 +437,7 @@ DeclareModule Matrix4
   Declare GetViewMatrix(*io.m4f32,*pos.v3f32,*lookat.v3f32,*up.v3f32)
   Declare GetQuaternion(*m.m4f32,*q.q4f32)
   Declare Echo(*m.m4f32,name.s="")
-  Declare.s AsString(*m.m4f32)
+  Declare.s ToString(*m.m4f32)
   Declare FromString(*m.m4f32, s.s)
   Declare TranslationMatrix(*m.m4f32, *pos.v3f32)
   Declare DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
@@ -511,9 +511,9 @@ Module Vector2
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v2f32)
+  Procedure.s ToString(*v.v2f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)
   EndProcedure
   
@@ -722,9 +722,9 @@ Module Vector3
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v3f32)
+  Procedure.s ToString(*v.v3f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)
   EndProcedure
   
@@ -1144,9 +1144,9 @@ Module Vector4
     Debug prefix+"("+StrF(*v\x,3)+","+StrF(*v\y,3)+","+StrF(*v\z,3)+","+StrF(*v\w,3)+")"
   EndProcedure
       
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v4f32)
+  Procedure.s ToString(*v.v4f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+","+StrF(*v\w)
   EndProcedure
   
@@ -1514,9 +1514,9 @@ Module Quaternion
     Debug prefix+"("+StrF(*q\x,3)+","+StrF(*q\y,3)+","+StrF(*q\z,3)+","+StrF(*q\w,3)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*q.q4f32)
+  Procedure.s ToString(*q.q4f32)
     ProcedureReturn StrF(*q\w)+","+StrF(*q\x)+","+StrF(*q\y)+","+StrF(*q\z)
   EndProcedure
   
@@ -1646,9 +1646,9 @@ Module Color
     Debug "[Color] : "+StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*c.c4f32)
+  Procedure.s ToString(*c.c4f32)
     ProcedureReturn StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
   EndProcedure
   
@@ -1686,9 +1686,9 @@ Module Matrix3
     Debug l
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*m.m3f32)
+  Procedure.s ToString(*m.m3f32)
     Protected s.s
     Protected i
     For i=0 To 7 : s+StrF(*m\v[i])+"," : Next
@@ -1929,7 +1929,7 @@ Module Matrix4
   
   ; As String
   ;--------------------------------------------------
-  Procedure.s AsString(*m.m4f32)
+  Procedure.s ToString(*m.m4f32)
     Protected s.s
     Protected i
     For i=0 To 14 : s+StrF(*m\v[i])+"," : Next
@@ -2573,8 +2573,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1758
-; FirstLine = 1742
+; CursorPosition = 1931
+; FirstLine = 1873
 ; Folding = -------------------------------
 ; EnableXP
 ; EnableUnicode

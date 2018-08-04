@@ -1,5 +1,6 @@
 ﻿
 
+EnableExplicit
 
 XIncludeFile "../core/Application.pbi"
 XIncludeFile "../libs/FTGL.pbi"
@@ -13,8 +14,6 @@ UseModule Time
 UseModule OpenGL
 UseModule GLFW
 UseModule OpenGLExt
-
-EnableExplicit
 
 Global down.b
 Global lmb_p.b
@@ -65,45 +64,57 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  
+; ;    Handle::SetActiveTool(*handle, *app\tool)
+; ;    Handle::InitTransform(*handle, *torus\globalT)
+; ;    Handle::Resize(*handle,*app\camera)
+; ;    Handle::Setup(*handle, *app\context)
+; ;    Handle::Update(*handle)
+; ;    
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-;   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
-;   Light::Update(*light)
-;   Vector3::Echo(*light\pos,"LIGHT POSITION")
+  Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
+  Light::Update(*light)
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
-;   LayerDefault::Draw(*layer, *app\context)
+  
+  ViewportUI::Draw(*viewport, *app\context)
+  ;LayerDefault::Draw(*layer, *app\context)
 ;   LayerShadowMap::Draw(*shadows, *app\context)
 ;   LayerGBuffer::Draw(*gbuffer,*app\context)
   ;LayerDefered::Draw(*defered,*app\context)
 ;   LayerShadowDefered::Draw(*defshadows, *app\context)
   
-  glClearColor(0,0,0,0)
-  glClear(#GL_DEPTH_BUFFER_BIT|#GL_COLOR_BUFFER_BIT)
-  glEnable(#GL_BLEND)
+;   glClearColor(0,0,0,0)
+;   glClear(#GL_DEPTH_BUFFER_BIT|#GL_COLOR_BUFFER_BIT)
+;   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
   FTGL::SetColor(*ftgl_drawer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*ftgl_drawer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  
+  Select *app\tool
+    Case Globals::#TOOL_TRANSLATE
+      FTGL::Draw(*ftgl_drawer,"Active Tool : Translate",-0.9,0.8,ss,ss*ratio)
+    Case Globals::#TOOL_ROTATE
+      FTGL::Draw(*ftgl_drawer,"Active Tool : Rotate",-0.9,0.8,ss,ss*ratio)
+    Case Globals::#TOOL_SCALE
+      FTGL::Draw(*ftgl_drawer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
+    Case Globals::#TOOL_CAMERA
+      FTGL::Draw(*ftgl_drawer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
+  EndSelect
+  
 
   glDisable(#GL_BLEND)
   
-  glUseProgram(*s_wireframe\pgm)
-  Protected identity.m4f32
-  Matrix4::SetIdentity(@identity)
-  
-  glUniformMatrix4fv(glGetUniformLocation(*s_wireframe\pgm,"model"),1,#GL_FALSE,@identity)
-  glUniformMatrix4fv(glGetUniformLocation(*s_wireframe\pgm,"view"),1,#GL_FALSE, Layer::GetViewMatrix(*layer))
-  glUniformMatrix4fv(glGetUniformLocation(*s_wireframe\pgm,"projection"),1,#GL_FALSE, Layer::GetProjectionMatrix(*layer))
 
-  Handle::Draw(*handle, *app\context)
+;   Handle::Draw(*handle, *app\context)
   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
  
 
- 
  Define useJoystick.b = #False
  width = 800
  height = 600
@@ -129,10 +140,11 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene = Scene::New()
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  *shadows = LayerShadowMap::New(800,800,*app\context,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
-  *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
-  *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
-  *defshadows = LayerShadowDefered::New(800,600,*app\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
+  ViewportUI::AddLayer(*viewport, *layer)
+;   *shadows = LayerShadowMap::New(800,800,*app\context,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
+;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
+;   *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
+;   *defshadows = LayerShadowDefered::New(800,600,*app\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
   Global *root.Model::Model_t = Model::New("Model")
   
   ; FTGL Drawer
@@ -149,29 +161,16 @@ Procedure Draw(*app.Application::Application_t)
   Global *model.Model::Model_t = Model::New("Model")
   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
   Object3D::SetShader(*torus,*s_polymesh)
-  
-  *handle = Handle::New()
-  Object3D::SetShader(*handle, *s_wireframe)
-  
-  Handle::SetTarget(*handle, *torus)
-  Handle::SetActiveTool(*handle, Globals::#TOOL_TRANSLATE)
-
   Object3D::AddChild(*model,*torus)
-  Scene::AddObject(Scene::*current_scene,*handle)
   Scene::AddModel(Scene::*current_scene,*model)
-   Scene::Setup(Scene::*current_scene,*app\context)
-   
-   Handle::SetActiveTool(*handle, Globals::#TOOL_ROTATE)
-   Handle::InitTransform(*handle, *torus\globalT)
-   Handle::Resize(*handle,*app\camera)
-   Handle::Setup(*handle, *app\context)
-   Handle::Update(*handle)
-   
+  Scene::Setup(Scene::*current_scene,*app\context)
+  
+;   Scene::SelectObject(Scene::*current_scene, *torus)
+  ViewportUI::SetHandleTarget(*viewport, *torus)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 112
+; CursorPosition = 3
 ; Folding = -
 ; EnableThread
 ; EnableXP

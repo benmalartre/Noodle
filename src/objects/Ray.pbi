@@ -11,6 +11,7 @@ DeclareModule Ray
   Declare InverseDirection(*ray.Geometry::Ray_t)
   Declare SetPosition(*ray.Geometry::Ray_t,*pos.v3f32)
   Declare BoxIntersection(*ray.Geometry::Ray_t, *box.Geometry::Box_t)
+  Declare CylinderIntersection(*ray.Geometry::Ray_t, *cylinder.Geometry::Cylinder_t)
   Declare.f SphereIntersection(*ray.Geometry::Ray_t, *sphere.Geometry::Sphere_t)
   Declare.f TriangleIntersection(*ray.Geometry::Ray_t, *a.v3f32, *b.v3f32, *c.v3f32,*uvw.v3f32,*t)
 EndDeclareModule
@@ -319,9 +320,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 14
-; FirstLine = 37
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 13
+; FirstLine = 9
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

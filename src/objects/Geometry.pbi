@@ -50,6 +50,29 @@ DeclareModule Geometry
   EndStructure
   ;}
   
+  ; ----------------------------------------------------------------------------
+  ; Cylinder Instance
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Cylinder_t
+    p_position.v3f32
+    p_rotation.q4f32
+    p_radius.f
+    p_height.f
+  EndStructure
+  ;}
+  
+  ; ----------------------------------------------------------------------------
+  ; Capsule Instance
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Capsule_t
+    *cylinder.Cylinder_t
+    *head.Sphere_t
+    *tail.Sphere_t
+  EndStructure
+  ;}
+  
   ; 
   ; Ray Instance
   ; ----------------------------------------------------------------------------
@@ -320,7 +343,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 18
-; Folding = ---
+; CursorPosition = 71
+; FirstLine = 30
+; Folding = ----
 ; EnableXP

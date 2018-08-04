@@ -24,7 +24,7 @@ DeclareModule Handle
 
 
   ; ----------------------------------------------------------------------------
-  ;  CCursor Instance
+  ; Structure
   ; ----------------------------------------------------------------------------
   Structure Handle_t Extends Object3D::Object3D_t
 
@@ -32,6 +32,8 @@ DeclareModule Handle
     tool.i                          ; Active Handle Tool
     posX.i                          ; Window Position X
     posY.i                          ; Window Position Y
+    oldX.i                          ; Last Window Position X
+    oldY.i                          ; Last Window Position Y
     transform.Transform::Transform_t; REAL SRT
     display.Transform::Transform_t  ; Display SRT
     active_axis.i
@@ -68,7 +70,7 @@ DeclareModule Handle
     
   EndStructure
   
-   ;-----------------------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   ; Cube
   ;-----------------------------------------------------------------------------
   #CUBE_NUM_TRIANGLES =12
@@ -118,66 +120,77 @@ DeclareModule Handle
   
   EndDataSection
   
-  Declare Clean(*h.Handle_t)
-  Declare Update(*h.Handle_t)
-  Declare Pick(*h.Handle_t,*ray.Geometry::Ray_t)
-  Declare ScaleHandle(*m.Handle_t)
-  Declare TransformHandle(*m.Handle_t)
-  Declare TranslateHandle(*m.Handle_t)
-  Declare RotateHandle(*m.Handle_t)
-  Declare DirectedHandle(*m.Handle_t)
-  Declare Resize(*m.Handle_t,*camera.Camera::Camera_t)
-  Declare SetupHandle(*m.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
-  Declare Setup(*h.Handle_t,*ctx.GLContext::GLContext_t)
-  Declare DrawAxis(*m.Handle_t,r.f,g.f,b.f)
-  Declare Draw( *m.Handle_t,*ctx.GLContext::GLContext_t) 
-  Declare Translate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
-  Declare Scale(*m.Handle_t,deltax.i,deltay.i)
-  Declare Rotate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
-  Declare Transform(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
-  Declare Directed(*m.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
-  Declare InitTransform(*h.Handle_t,*t.Transform::Transform_t)
-  Declare SetTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
-  Declare AddTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
-  Declare SetActiveTool(*h.Handle_t,tool.i)
-  Declare SetActiveAxis(*h.Handle_t,axis.i)
-  Declare SetVisible(*h.Handle_t,visible.b=#True)
-  Declare GetTarget(*h.Handle_t)
-  Declare Delete(*m.Handle_t)
+  Declare Clean(*Me.Handle_t)
+  Declare Update(*Me.Handle_t)
+  Declare Pick(*Me.Handle_t,*ray.Geometry::Ray_t)
+  Declare ScaleHandle(*Me.Handle_t)
+  Declare TransformHandle(*Me.Handle_t)
+  Declare TranslateHandle(*Me.Handle_t)
+  Declare RotateHandle(*Me.Handle_t)
+  Declare DirectedHandle(*Me.Handle_t)
+  Declare PickTranslate(*Me.Handle_t, *ray.Geometry::Ray_t)
+  Declare Resize(*Me.Handle_t,*camera.Camera::Camera_t)
+  Declare SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
+  Declare Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
+  Declare DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
+  Declare Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
+  Declare Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Scale(*Me.Handle_t,deltax.i,deltay.i)
+  Declare Rotate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Transform(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Directed(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
+  Declare InitTransform(*Me.Handle_t,*t.Transform::Transform_t)
+  Declare SetTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
+  Declare AddTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
+  Declare SetTargets(*Me.Handle_t,*objs)
+  Declare SetActiveTool(*Me.Handle_t,tool.i)
+  Declare SetActiveAxis(*Me.Handle_t,axis.i)
+  Declare SetVisible(*Me.Handle_t,visible.b=#True)
+  Declare GetTarget(*Me.Handle_t)
+  Declare OnEvent(*Me.Handle_t, gadget)
+  Declare Delete(*Me.Handle_t)
   Declare.i New()
 
   Global CLASS.Class::Class_t
 
 EndDeclareModule
 
+; ============================================================================
+;  Handle Module Implementation
+; ============================================================================
 Module Handle
   UseModule Math
   UseModule OpenGL
   UseModule OpenGLExt
-  ;=============================================================================
-  ;  IMPLEMENTATION
-  ;=============================================================================
   
-  Procedure Clean(*h.Handle_t)
-    If *h\shape\positions<> #Null
-      FreeMemory(*h\shape\positions)
+  ;-----------------------------------------------------------------------------
+  ; Clean
+  ;-----------------------------------------------------------------------------
+  Procedure Clean(*Me.Handle_t)
+    If *Me\shape\positions<> #Null
+      FreeMemory(*Me\shape\positions)
     EndIf
-    If *h\shape\indices<> #Null
-      FreeMemory(*h\shape\indices)
+    If *Me\shape\indices<> #Null
+      FreeMemory(*Me\shape\indices)
     EndIf
   
   EndProcedure
   
-  Procedure Update(*h.Handle_t)
+  ;-----------------------------------------------------------------------------
+  ; Update
+  ;-----------------------------------------------------------------------------
+  Procedure Update(*Me.Handle_t)
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Pick
   ;-----------------------------------------------------------------------------
-  Procedure Pick(*h.Handle_t,*ray.Geometry::Ray_t)
-    Select *h\tool
-;       Case Globals::#TOOL_TRANSLATE
+  Procedure Pick(*Me.Handle_t,*ray.Geometry::Ray_t)
+    Debug "PICK HANDLE..."
+    Select *Me\tool
+      Case Globals::#TOOL_TRANSLATE
+        PickTranslate(*Me, *ray)
         
     EndSelect
     
@@ -186,10 +199,10 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Scale Handle
   ;-----------------------------------------------------------------------------
-  Procedure ScaleHandle(*m.Handle_t)
-    ;Clear(*m.Handle_t)
+  Procedure ScaleHandle(*Me.Handle_t)
+    ;Clear(*Me.Handle_t)
     Protected i
-    With *m\scale_handle
+    With *Me\scale_handle
       Protected nbp = 8+2
       Protected nbi = 36+2
       Protected GLfloat_s.GLfloat
@@ -242,18 +255,18 @@ Module Handle
     
     EndWith
     
-    *m\tool = Globals::#Tool_Scale
+    *Me\tool = Globals::#Tool_Scale
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Transform Handle
   ;-----------------------------------------------------------------------------
-  Procedure TransformHandle(*m.Handle_t)
-    ;Clear(*m.Handle_t)
+  Procedure TransformHandle(*Me.Handle_t)
+    ;Clear(*Me.Handle_t)
     Protected i
     
-    With *m\transform_handle
+    With *Me\transform_handle
       Protected nbp = 3
       Protected nbi = 3
       Protected GLfloat_s.GLfloat
@@ -276,7 +289,7 @@ Module Handle
   
       
     EndWith
-    *m\tool = Globals::#Tool_Transform
+    *Me\tool = Globals::#Tool_Transform
     
   EndProcedure
  
@@ -284,12 +297,12 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Translate Handle
   ;-----------------------------------------------------------------------------
-  Procedure TranslateHandle(*m.Handle_t)
+  Procedure TranslateHandle(*Me.Handle_t)
   
     Protected i
     Protected div = 12
     
-    With *m\translate_handle
+    With *Me\translate_handle
       Protected nbp = 3 + div
       Protected nbi = div*3+2
       Protected GLfloat_s.GLfloat
@@ -330,17 +343,17 @@ Module Handle
     
     
     
-    *m\tool = Globals::#Tool_Translate
+    *Me\tool = Globals::#Tool_Translate
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Rotate Handle
   ;-----------------------------------------------------------------------------
-  Procedure RotateHandle(*m.Handle_t)
+  Procedure RotateHandle(*Me.Handle_t)
     Protected i
     Protected div = 20
-    With *m\rotate_handle
+    With *Me\rotate_handle
      Protected nbp = 2 + 2*div
       Protected nbi = div*3*2+2
       Protected GLfloat_s.GLfloat
@@ -401,17 +414,17 @@ Module Handle
       
     EndWith
   
-    *m\tool = Globals::#Tool_Rotate
+    *Me\tool = Globals::#Tool_Rotate
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Directed Handle(Cameras, Lights
   ;-----------------------------------------------------------------------------
-  Procedure DirectedHandle(*m.Handle_t)
+  Procedure DirectedHandle(*Me.Handle_t)
   
   
-    With *m\directed_handle
+    With *Me\directed_handle
       Protected nbp = 2
       Protected nbi = 2
       Protected GLfloat_s.GLfloat
@@ -433,55 +446,55 @@ Module Handle
     EndWith
    
     
-    *m\tool = Globals::#TOOL_DIRECTED
+    *Me\tool = Globals::#TOOL_DIRECTED
     
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Resize
   ;-----------------------------------------------------------------------------
-  Procedure Resize(*m.Handle_t,*camera.Camera::Camera_t)
+  Procedure Resize(*Me.Handle_t,*camera.Camera::Camera_t)
     
     Protected delta.v3f32
-    Protected *handle_pos.v3f32 = *m\transform\t\pos  
+    Protected *handle_pos.v3f32 = *Me\transform\t\pos  
     Vector3::Sub(@delta,*camera\pos,*handle_pos)
-    *m\distance = Vector3::Length(@delta)
-    *m\scl = *m\distance*Radian(*camera\fov)
+    *Me\distance = Vector3::Length(@delta)
+    *Me\scl = *Me\distance*Radian(*camera\fov)
   EndProcedure
   
   
   ;-----------------------------------------------------------------------------
   ; Setup Handle
   ;-----------------------------------------------------------------------------
-  Procedure SetupHandle(*m.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
-    *m\shader = *ctx\shaders("wireframe")
-    glUseProgram(*m\shader\pgm)
+  Procedure SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
+    *Me\shader = *ctx\shaders("wireframe")
+    glUseProgram(*Me\shader\pgm)
     Protected *shape.Shape::Shape_t = #Null
     Select tool
       Case Globals::#TOOL_SCALE
-        glGenVertexArrays(1,@*m\scale_vao)
-        glBindVertexArray(*m\scale_vao)
-        *shape = *m\scale_handle
+        glGenVertexArrays(1,@*Me\scale_vao)
+        glBindVertexArray(*Me\scale_vao)
+        *shape = *Me\scale_handle
       Case Globals::#TOOL_ROTATE
-        glGenVertexArrays(1,@*m\rotate_vao)
-        glBindVertexArray(*m\rotate_vao)
-        *shape = *m\rotate_handle
+        glGenVertexArrays(1,@*Me\rotate_vao)
+        glBindVertexArray(*Me\rotate_vao)
+        *shape = *Me\rotate_handle
       Case Globals::#TOOL_TRANSLATE
-        glGenVertexArrays(1,@*m\translate_vao)
-        glBindVertexArray(*m\translate_vao)
-        *shape = *m\translate_handle
+        glGenVertexArrays(1,@*Me\translate_vao)
+        glBindVertexArray(*Me\translate_vao)
+        *shape = *Me\translate_handle
       Case Globals::#TOOL_TRANSFORM
-        glGenVertexArrays(1,@*m\transform_vao)
-        glBindVertexArray(*m\transform_vao)
-        *shape = *m\transform_handle
+        glGenVertexArrays(1,@*Me\transform_vao)
+        glBindVertexArray(*Me\transform_vao)
+        *shape = *Me\transform_handle
       Case Globals::#TOOL_DIRECTED
-        glGenVertexArrays(1,@*m\directed_vao)
-        glBindVertexArray(*m\directed_vao)
-        *shape = *m\directed_handle
+        glGenVertexArrays(1,@*Me\directed_vao)
+        glBindVertexArray(*Me\directed_vao)
+        *shape = *Me\directed_handle
       Default
-        glGenVertexArrays(1,@*m\transform_vao)
-        glBindVertexArray(*m\transform_vao)
-        *shape = *m\transform_handle
+        glGenVertexArrays(1,@*Me\transform_vao)
+        glBindVertexArray(*Me\transform_vao)
+        *shape = *Me\transform_handle
     EndSelect
     
     
@@ -501,11 +514,11 @@ Module Handle
     glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     
     ; Uniform Attributes
-    *m\u_view.GLint = glGetUniformLocation(*m\shader\pgm,"view")
-    *m\u_proj.GLint = glGetUniformLocation(*m\shader\pgm,"projection")
-    *m\u_color.GLint = glGetUniformLocation(*m\shader\pgm,"color")
-    *m\u_model.GLint = glGetUniformLocation(*m\shader\pgm,"model")
-    *m\u_offset.GLint = glGetUniformLocation(*m\shader\pgm,"offset")
+    *Me\u_view.GLint = glGetUniformLocation(*Me\shader\pgm,"view")
+    *Me\u_proj.GLint = glGetUniformLocation(*Me\shader\pgm,"projection")
+    *Me\u_color.GLint = glGetUniformLocation(*Me\shader\pgm,"color")
+    *Me\u_model.GLint = glGetUniformLocation(*Me\shader\pgm,"model")
+    *Me\u_offset.GLint = glGetUniformLocation(*Me\shader\pgm,"offset")
         
     glBindVertexArray(0)
     glUseProgram(0)
@@ -514,39 +527,38 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Setup
   ;-----------------------------------------------------------------------------
-  Procedure Setup(*h.Handle_t,*ctx.GLContext::GLContext_t)
-  
-    
+  Procedure Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
+
     ;Setup GL
-    SetupHandle(*h,Globals::#TOOL_SCALE,*ctx)
-    SetupHandle(*h,Globals::#TOOL_ROTATE,*ctx)
-    SetupHandle(*h,Globals::#TOOL_TRANSLATE,*ctx)
-    SetupHandle(*h,Globals::#TOOL_TRANSFORM,*ctx)
-    SetupHandle(*h,Globals::#TOOL_DIRECTED,*ctx)
+    SetupHandle(*Me,Globals::#TOOL_SCALE,*ctx)
+    SetupHandle(*Me,Globals::#TOOL_ROTATE,*ctx)
+    SetupHandle(*Me,Globals::#TOOL_TRANSLATE,*ctx)
+    SetupHandle(*Me,Globals::#TOOL_TRANSFORM,*ctx)
+    SetupHandle(*Me,Globals::#TOOL_DIRECTED,*ctx)
   
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Draw Axis
   ;-----------------------------------------------------------------------------
-  Procedure DrawAxis(*m.Handle_t,r.f,g.f,b.f)
+  Procedure DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
     
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
     
-    Select *m\tool
+    Select *Me\tool
       Case Globals::#TOOL_TRANSLATE
-        *shape = *m\translate_handle
+        *shape = *Me\translate_handle
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
       Case Globals::#TOOL_ROTATE
-        *shape = *m\rotate_handle
+        *shape = *Me\rotate_handle
         glDrawArrays(#GL_LINE_LOOP,2,20)
         glDrawArrays(#GL_LINE_LOOP,22,20)
-        glUniform4f(*m\u_color,r,g,b,0.5)
+        glUniform4f(*Me\u_color,r,g,b,0.5)
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices),#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
       Case Globals::#TOOL_SCALE
-        *shape = *m\scale_handle
+        *shape = *Me\scale_handle
         glPointSize(3)
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))  
@@ -556,22 +568,21 @@ Module Handle
   ;------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------
-  Procedure Draw( *m.Handle_t,*ctx.GLContext::GLContext_t) 
-    If Not *m\target : ProcedureReturn : EndIf
+  Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
+    If Not *Me\target : ProcedureReturn : EndIf
     
-    Select *m\tool
+    Select *Me\tool
       Case Globals::#TOOL_SCALE
-        glBindVertexArray(*m\scale_vao)
+        glBindVertexArray(*Me\scale_vao)
       Case Globals::#TOOL_ROTATE
-        glBindVertexArray(*m\rotate_vao)
+        glBindVertexArray(*Me\rotate_vao)
       Case Globals::#TOOL_TRANSLATE
-        glBindVertexArray(*m\translate_vao)
+        glBindVertexArray(*Me\translate_vao)
       Case Globals::#TOOL_TRANSFORM
-        glBindVertexArray(*m\transform_vao)
+        glBindVertexArray(*Me\transform_vao)
       Case Globals::#TOOL_DIRECTED
-        glBindVertexArray(*m\directed_vao)
+        glBindVertexArray(*Me\directed_vao)
     EndSelect
-    
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
@@ -579,21 +590,21 @@ Module Handle
   
     glDisable(#GL_CULL_FACE)
     Protected pos.v3f32
-    Protected d.f = *m\distance/20
+    Protected d.f = *Me\distance/20
     
-    Transform::SetScaleFromXYZValues(*m\display,d,d,d)
-    Transform::UpdateMatrixFromSRT(*m\display)
+    Transform::SetScaleFromXYZValues(*Me\display,d,d,d)
+    Transform::UpdateMatrixFromSRT(*Me\display)
 
     
     Protected offset.m4f32
     Protected quat.q4f32
   
-    glUniformMatrix4fv(*m\u_model,1,#GL_FALSE,*m\display\m)
+    glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*Me\display\m)
 
-    If *m\tool = Globals::#TOOL_TRANSFORM
+    If *Me\tool = Globals::#TOOL_TRANSFORM
       Matrix4::SetIdentity(@offset)
-      glUniform4f(*m\u_color,0,1,0,1)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
+      glUniform4f(*Me\u_color,0,1,0,1)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       glPointSize(5)
       glDrawArrays(#GL_POINTS,0,1)
       glPointSize(10)
@@ -602,11 +613,11 @@ Module Handle
       glDrawArrays(#GL_POINTS,2,1)
       glDrawArrays(#GL_LINE_STRIP,0,3)
        
-    ElseIf *m\tool = Globals::#TOOL_DIRECTED
+    ElseIf *Me\tool = Globals::#TOOL_DIRECTED
       
       Matrix4::SetIdentity(@offset)
-      glUniformMatrix4fv(*m\u_model,1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
+      glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,@offset)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
        Protected *pos.v3f32
        Protected *lookat.v3f32
        Protected *up.v3f32
@@ -614,16 +625,16 @@ Module Handle
        Protected scl.v3f32
        Protected *view.m4f32
   
-       Select *m\target\type
+       Select *Me\target\type
          Case Object3D::#Object3D_Camera
-           Protected *camera.Camera::Camera_t = *m\target
+           Protected *camera.Camera::Camera_t = *Me\target
            *pos = *camera\pos
            *lookat = *camera\lookat
            *up = *camera\up
            *view = *camera\globalT\m
            
          Case Object3D::#Object3D_Light
-           Protected *light.Light::Light_t = *m\target
+           Protected *light.Light::Light_t = *Me\target
            *pos = *light\pos
            *lookat = *light\lookat
            *up = *light\up
@@ -640,76 +651,75 @@ Module Handle
   
       Vector3::Set(@scl,l,l,l)
       Quaternion::LookAt(@quat,@dir,*up)
-      Transform::SetTranslationFromXYZValues(*m\transform,*pos\x,*pos\y,*pos\z)
-      Transform::SetRotationFromQuaternion(*m\transform,@quat)
-      Transform::SetScaleFromXYZValues(*m\transform,scl\x,scl\y,scl\z)
+      Transform::SetTranslationFromXYZValues(*Me\transform,*pos\x,*pos\y,*pos\z)
+      Transform::SetRotationFromQuaternion(*Me\transform,@quat)
+      Transform::SetScaleFromXYZValues(*Me\transform,scl\x,scl\y,scl\z)
       
-      Transform::UpdateMatrixFromSRT(*m\transform)
+      Transform::UpdateMatrixFromSRT(*Me\transform)
 
-      glUniform4f(*m\u_color,0,1,0,1)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,*m\transform\m)
-      glUniform4f(*m\u_color,0.66,0.66,0.66,1)
+      glUniform4f(*Me\u_color,0,1,0,1)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,*Me\transform\m)
+      glUniform4f(*Me\u_color,0.66,0.66,0.66,1)
       glDrawArrays(#GL_LINES,0,2)
       glPointSize(10)
       
       ; Draw Foot Point
-      If *m\foot_selected
-        glUniform4f(*m\u_color,1,0.33,0.33,1)
+      If *Me\foot_selected
+        glUniform4f(*Me\u_color,1,0.33,0.33,1)
       Else
-        glUniform4f(*m\u_color,1,1,0.33,1)
+        glUniform4f(*Me\u_color,1,1,0.33,1)
       EndIf
       glDrawArrays(#GL_POINTS,0,1)
       
       ; Draw Head Point
-      If *m\head_selected
-        glUniform4f(*m\u_color,1,0.33,0.33,1)
+      If *Me\head_selected
+        glUniform4f(*Me\u_color,1,0.33,0.33,1)
       Else
-        glUniform4f(*m\u_color,1,1,0.33,1)
+        glUniform4f(*Me\u_color,1,1,0.33,1)
       EndIf
       glDrawArrays(#GL_POINTS,1,1)
       
     Else
       ; X Axis
-      If *m\active_axis = #Handle_Active_X Or *m\active_axis = #Handle_Active_XY Or *m\active_axis = #Handle_Active_XZ Or *m\active_axis = #Handle_Active_All
-        glUniform4f(*m\u_color,1,1,0.33,1)
+      If *Me\active_axis = #Handle_Active_X Or *Me\active_axis = #Handle_Active_XY Or *Me\active_axis = #Handle_Active_XZ Or *Me\active_axis = #Handle_Active_All
+        glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
-        glUniform4f(*m\u_color,1,0.33,0.33,1)
+        glUniform4f(*Me\u_color,1,0.33,0.33,1)
       EndIf
       Matrix4::SetIdentity(@offset)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
-      DrawAxis(*m,1,0,0)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
+      DrawAxis(*Me,1,0,0)
       
       ; Y Axis
-      If *m\active_axis = #Handle_Active_Y Or *m\active_axis = #Handle_Active_XY Or *m\active_axis = #Handle_Active_YZ Or *m\active_axis = #Handle_Active_All
-        glUniform4f(*m\u_color,1,1,0.33,1)
+      If *Me\active_axis = #Handle_Active_Y Or *Me\active_axis = #Handle_Active_XY Or *Me\active_axis = #Handle_Active_YZ Or *Me\active_axis = #Handle_Active_All
+        glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
-        glUniform4f(*m\u_color,0.33,1,0.33,1)
+        glUniform4f(*Me\u_color,0.33,1,0.33,1)
       EndIf
       
       Quaternion::SetFromAxisAngleValues(@quat,0,0,-1,Radian(90))
       Matrix4::SetFromQuaternion(@offset,@quat)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
-      DrawAxis(*m,0.33,1,0.33)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
+      DrawAxis(*Me,0.33,1,0.33)
       
       ; Z Axis
-      If *m\active_axis = #Handle_Active_Z Or *m\active_axis = #Handle_Active_XZ Or *m\active_axis = #Handle_Active_YZ Or *m\active_axis = #Handle_Active_All
-        glUniform4f(*m\u_color,1,1,0.33,1)
+      If *Me\active_axis = #Handle_Active_Z Or *Me\active_axis = #Handle_Active_XZ Or *Me\active_axis = #Handle_Active_YZ Or *Me\active_axis = #Handle_Active_All
+        glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
-        glUniform4f(*m\u_color,0.33,0.33,1,1)
+        glUniform4f(*Me\u_color,0.33,0.33,1,1)
       EndIf
       
       Quaternion::SetFromAxisAngleValues(@quat,0,1,0,Radian(90))
       Matrix4::SetFromQuaternion(@offset,@quat)
-      glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
-      DrawAxis(*m,0,0,1)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
+      DrawAxis(*Me,0,0,1)
     
     EndIf
     Matrix4::SetIdentity(@offset)
-    glUniformMatrix4fv(*m\u_offset,1,#GL_FALSE,@offset)
+    glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
     glDisable(#GL_BLEND)
     
     glBindVertexArray(0)
-  ;   glUseProgram(0)
    
   EndProcedure
  
@@ -717,55 +727,55 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Translate
   ;-----------------------------------------------------------------------------
-  Procedure Translate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Procedure Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   ;   Protected *t.CTransform = newCTransform()
-    Protected delta.f = (deltax+deltay)/width * *m\scl
-    Select *m\active_axis
+    Protected delta.f = (deltax+deltay)/width * *Me\scl
+    Select *Me\active_axis
       Case #Handle_Active_X
-         Protected x.f = *m\transform\t\pos\x
+         Protected x.f = *Me\transform\t\pos\x
         x+ delta
-        *m\transform\t\pos\x = x
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        *m\display\t\pos\x = x
-        Transform::UpdateMatrixFromSRT(*m\display)
+        *Me\transform\t\pos\x = x
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        *Me\display\t\pos\x = x
+        Transform::UpdateMatrixFromSRT(*Me\display)
         
       Case #Handle_Active_Y
-        Protected y.f = *m\transform\t\pos\y
+        Protected y.f = *Me\transform\t\pos\y
         y- delta
-       *m\transform\t\pos\y = y
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        *m\display\t\pos\y = y
-        Transform::UpdateMatrixFromSRT(*m\display)
+       *Me\transform\t\pos\y = y
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        *Me\display\t\pos\y = y
+        Transform::UpdateMatrixFromSRT(*Me\display)
       Case #Handle_Active_Z
-        Protected z.f = *m\transform\t\pos\z
+        Protected z.f = *Me\transform\t\pos\z
         z- delta
-        *m\transform\t\pos\z = z
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        *m\display\t\pos\z = z
-        Transform::UpdateMatrixFromSRT(*m\display)
+        *Me\transform\t\pos\z = z
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        *Me\display\t\pos\z = z
+        Transform::UpdateMatrixFromSRT(*Me\display)
     EndSelect
     
-    If *m\target <> #Null
+    If *Me\target <> #Null
       Protected pos.v3f32 
-      If *m\target\type = Object3D::#Object3D_Light
-        Protected *light.Light::Light_t = *m\target
+      If *Me\target\type = Object3D::#Object3D_Light
+        Protected *light.Light::Light_t = *Me\target
   
-        Vector3::SetFromOther(*light\pos,*m\transform\t\pos)
+        Vector3::SetFromOther(*light\pos,*Me\transform\t\pos)
         Light::LookAt(*light)
-      ElseIf *m\target\type = Object3D::#Object3D_Camera
-        Protected *camera.Camera::Camera_t = *m\target
+      ElseIf *Me\target\type = Object3D::#Object3D_Camera
+        Protected *camera.Camera::Camera_t = *Me\target
   
-        Vector3::SetFromOther(*camera\pos,*m\transform\t\pos)
+        Vector3::SetFromOther(*camera\pos,*Me\transform\t\pos)
         Camera::LookAt(*camera)
       Else
-        Protected *parent.Object3D::Object3D_t = *m\target\parent
+        Protected *parent.Object3D::Object3D_t = *Me\target\parent
         Protected *t.Transform::Transform_t = *parent\globalT
         Protected mat.m4f32
         Matrix4::Inverse(@mat,*t\m)
      
-        Vector3::MulByMatrix4(@pos,*m\transform\t\pos,@mat)
-        Transform::SetTranslationFromXYZValues(*m\target\localT,pos\x,pos\y,pos\z)
-        Transform::UpdateMatrixFromSRT(*m\target\localT)
+        Vector3::MulByMatrix4(@pos,*Me\transform\t\pos,@mat)
+        Transform::SetTranslationFromXYZValues(*Me\target\localT,pos\x,pos\y,pos\z)
+        Transform::UpdateMatrixFromSRT(*Me\target\localT)
       EndIf
   
     Else
@@ -777,57 +787,57 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Scale
   ;-----------------------------------------------------------------------------
-  Procedure Scale(*m.Handle_t,deltax.i,deltay.i)
-    Protected *s.v3f32= *m\transform\t\scl
+  Procedure Scale(*Me.Handle_t,deltax.i,deltay.i)
+    Protected *s.v3f32= *Me\transform\t\scl
     Protected s2.v3f32
     Protected delta.f = Radian((deltax+deltay)/2)
     
-    Select *m\active_axis
+    Select *Me\active_axis
       Case #Handle_Active_X
         Vector3::Set(@s2,*s\x+delta,*s\y,*s\z)
-        Transform::SetScaleFromXYZValues(*m\transform,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetScaleFromXYZValues(*m\display,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\display)
 
       Case #Handle_Active_Y
         Vector3::Set(@s2,*s\x,*s\y+delta,*s\z)
-        Transform::SetScaleFromXYZValues(*m\transform,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetScaleFromXYZValues(*m\display,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\display)
       Case #Handle_Active_Z
         Vector3::Set(@s2,*s\x,*s\y,*s\z+delta)
-        Transform::SetScaleFromXYZValues(*m\transform,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetScaleFromXYZValues(*m\display,s2\x,s2\y,s2\z)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
+        Transform::UpdateMatrixFromSRT(*Me\display)
     EndSelect
     
-    If *m\target <> #Null
-      Protected *scl.v3f32 = *m\transform\t\scl
-      Transform::SetScaleFromXYZValues(*m\target\localT,*scl\x,*scl\y,*scl\z)
-      Transform::UpdateMatrixFromSRT(*m\target\localT)
+    If *Me\target <> #Null
+      Protected *scl.v3f32 = *Me\transform\t\scl
+      Transform::SetScaleFromXYZValues(*Me\target\localT,*scl\x,*scl\y,*scl\z)
+      Transform::UpdateMatrixFromSRT(*Me\target\localT)
 
-      Protected *parent.Object3D::Object3D_t = *m\target\parent
+      Protected *parent.Object3D::Object3D_t = *Me\target\parent
       Protected *t.Transform::Transform_t = *parent\globalT
       Protected mat.m4f32
       Matrix4::Inverse(@mat,*t\m)
       Protected scl.v3f32
    
-      Vector3::MulByMatrix4(@scl,*m\transform\t\scl,@mat)
-      Transform::SetScaleFromXYZValues(*m\target\localT,scl\x,scl\y,scl\z)
-      Transform::UpdateMatrixFromSRT(*m\target\localT)
-      *m\target\dirty = #True
+      Vector3::MulByMatrix4(@scl,*Me\transform\t\scl,@mat)
+      Transform::SetScaleFromXYZValues(*Me\target\localT,scl\x,scl\y,scl\z)
+      Transform::UpdateMatrixFromSRT(*Me\target\localT)
+      *Me\target\dirty = #True
     EndIf
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Rotate
   ;-----------------------------------------------------------------------------
-  Procedure Rotate(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Procedure Rotate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   
-    Protected *q.q4f32= *m\transform\t\rot
+    Protected *q.q4f32= *Me\transform\t\rot
     Protected q2.q4f32,q3.q4f32
     
     Protected out.q4f32
@@ -835,124 +845,140 @@ Module Handle
     Protected o.m4f32
     Protected axis.v3f32
     
-    Select *m\active_axis
+    Select *Me\active_axis
       Case #Handle_Active_X
         Quaternion::SetFromAxisAngleValues(@q2,1,0,0,Radian((deltax+deltay)/2))
         Quaternion::Multiply(@q3,*q,@q2)
-        Transform::SetRotationFromQuaternion(*m\transform,@q3)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetRotationFromQuaternion(*m\display,@q3)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetRotationFromQuaternion(*Me\transform,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetRotationFromQuaternion(*Me\display,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\display)
        
       Case #Handle_Active_Y
        Quaternion::SetFromAxisAngleValues(@q2,0,1,0,Radian((deltax+deltay)/2))
         Quaternion::Multiply(@q3,*q,@q2)
-        Transform::SetRotationFromQuaternion(*m\transform,@q3)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetRotationFromQuaternion(*m\display,@q3)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetRotationFromQuaternion(*Me\transform,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetRotationFromQuaternion(*Me\display,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\display)
         
       Case #Handle_Active_Z
         Quaternion::SetFromAxisAngleValues(@q2,0,0,1,Radian((deltax+deltay)/2))
         Quaternion::Multiply(@q3,*q,@q2)
-        Transform::SetRotationFromQuaternion(*m\transform,@q3)
-        Transform::UpdateMatrixFromSRT(*m\transform)
-        Transform::SetRotationFromQuaternion(*m\display,@q3)
-        Transform::UpdateMatrixFromSRT(*m\display)
+        Transform::SetRotationFromQuaternion(*Me\transform,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\transform)
+        Transform::SetRotationFromQuaternion(*Me\display,@q3)
+        Transform::UpdateMatrixFromSRT(*Me\display)
         
     EndSelect
     
-   If *m\target <> #Null
-      Protected *parent.Object3D::Object3D_t = *m\target\parent
+   If *Me\target <> #Null
+      Protected *parent.Object3D::Object3D_t = *Me\target\parent
       Protected *t.Transform::Transform_t = *parent\globalT
       Protected mat.m4f32
       Matrix4::Inverse(@mat,*t\m)
       Protected q.q4f32
-      Transform::SetRotationFromQuaternion(*m\target\localT,*m\transform\t\rot)
-      Transform::UpdateMatrixFromSRT(*m\target\localT)
-      *m\target\dirty = #True
+      Transform::SetRotationFromQuaternion(*Me\target\localT,*Me\transform\t\rot)
+      Transform::UpdateMatrixFromSRT(*Me\target\localT)
+      *Me\target\dirty = #True
     EndIf
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Transform
   ;-----------------------------------------------------------------------------
-  Procedure Transform(*m.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Procedure Transform(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Directed
   ;-----------------------------------------------------------------------------
-  Procedure Directed(*m.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
-    If Ray::SphereIntersection(*ray,*m\foot_sphere) <> -1
-      *m\foot_selected = #True
+  Procedure Directed(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
+    If Ray::SphereIntersection(*ray,*Me\foot_sphere) <> -1
+      *Me\foot_selected = #True
     Else
-      *m\foot_selected = #False
+      *Me\foot_selected = #False
     EndIf
-    If Ray::SphereIntersection(*ray,*m\head_sphere) <> -1
-      *m\head_selected = #True
+    If Ray::SphereIntersection(*ray,*Me\head_sphere) <> -1
+      *Me\head_selected = #True
     Else
-      *m\head_selected = #False
+      *Me\head_selected = #False
     EndIf
     
   EndProcedure
   ;-----------------------------------------------------------------------------
   ; Init Transform
   ;-----------------------------------------------------------------------------
-  Procedure InitTransform(*h.Handle_t,*t.Transform::Transform_t)
-  
+  Procedure InitTransform(*Me.Handle_t,*t.Transform::Transform_t)
     Transform::UpdateSRTFromMatrix(*t)
-    Transform::SetRotationFromQuaternion(*h\transform,*t\t\rot)
-    Transform::SetTranslation(*h\transform,*t\t\pos)
-    Transform::SetScale(*h\transform,*t\t\scl)
+    Transform::SetRotationFromQuaternion(*Me\transform,*t\t\rot)
+    Transform::SetTranslation(*Me\transform,*t\t\pos)
+    Transform::SetScale(*Me\transform,*t\t\scl)
     
-    Transform::SetRotationFromQuaternion(*h\display,*t\t\rot)
-    Transform::SetTranslation(*h\display,*t\t\pos)
-    Transform::SetScaleFromXYZValues(*h\display,1,1,1)
+    Transform::SetRotationFromQuaternion(*Me\display,*t\t\rot)
+    Transform::SetTranslation(*Me\display,*t\t\pos)
+    Transform::SetScaleFromXYZValues(*Me\display,1,1,1)
     
-    Transform::UpdateMatrixFromSRT(*h\transform)
-    Transform::UpdateMatrixFromSRT(*h\display)
+    Transform::UpdateMatrixFromSRT(*Me\transform)
+    Transform::UpdateMatrixFromSRT(*Me\display)
 
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Set Target
   ;-----------------------------------------------------------------------------
-  Procedure SetTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
+  Procedure SetTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
 
     Debug "---------------- Handle Set Target ----------------------------"
     Debug "Target : "+*obj\name
-    *h\target = *obj  
-    InitTransform(*h,*obj\globalT)
+    *Me\target = *obj  
+    Debug *obj\name
+    Debug *obj\globalT
+    InitTransform(*Me,*obj\globalT)
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Set Targets
+  ;-----------------------------------------------------------------------------
+  Procedure SetTargets(*Me.Handle_t,*objs)
+; 
+;     Debug "---------------- Handle Set Targets ----------------------------"
+;     Debug "Target : "+*obj\name
+;     *Me\target = *obj  
+;     Debug *obj\name
+;     Debug *obj\globalT
+;     InitTransform(*h,*obj\globalT)
+    Debug "MULTIPLE TARGET NOT IMPLEMENTED!!!"
+    *Me\target = #Null
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Add target
   ;-----------------------------------------------------------------------------
-  Procedure AddTarget(*h.Handle_t,*obj.Object3D::Object3D_t)
-    CArray::AppendPtr(*h\targets,*obj)
-;     *h\targets\Append(*obj)
+  Procedure AddTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
+    CArray::AppendPtr(*Me\targets,*obj)
+;     *Me\targets\Append(*obj)
     ;InitMultipleTransform(*h)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Set Active Tool
   ;-----------------------------------------------------------------------------
-  Procedure SetActiveTool(*h.Handle_t,tool.i)
+  Procedure SetActiveTool(*Me.Handle_t,tool.i)
   
-    *h\tool = tool
-    Select *h\tool
+    *Me\tool = tool
+    Select *Me\tool
       Case Globals::#TOOL_DIRECTED
-        If *h\target
-          Select *h\target\type
+        If *Me\target
+          Select *Me\target\type
             Case Object3D::#Object3D_Camera
-              Protected *camera.Camera::Camera_t = *h\target
-              Vector3::SetFromOther(*h\foot_sphere\p_center,*camera\pos)
-              Vector3::SetFromOther(*h\head_sphere\p_center,*camera\lookat)
+              Protected *camera.Camera::Camera_t = *Me\target
+              Vector3::SetFromOther(*Me\foot_sphere\p_center,*camera\pos)
+              Vector3::SetFromOther(*Me\head_sphere\p_center,*camera\lookat)
             Case Object3D::#Object3D_Light
-              Protected *light.Light::Light_t = *h\target
-              Vector3::SetFromOther(*h\foot_sphere\p_center,*light\pos)
-              Vector3::SetFromOther(*h\head_sphere\p_center,*light\lookat)
+              Protected *light.Light::Light_t = *Me\target
+              Vector3::SetFromOther(*Me\foot_sphere\p_center,*light\pos)
+              Vector3::SetFromOther(*Me\head_sphere\p_center,*light\lookat)
           EndSelect
         EndIf
     EndSelect
@@ -962,30 +988,122 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Set Active Axis
   ;-----------------------------------------------------------------------------
-  Procedure SetActiveAxis(*h.Handle_t,axis.i)
-    *h\active_axis = axis
+  Procedure SetActiveAxis(*Me.Handle_t,axis.i)
+    *Me\active_axis = axis
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Set Visible
   ;-----------------------------------------------------------------------------
-  Procedure SetVisible(*h.Handle_t,visible.b=#True)
-    *h\visible = visible  
+  Procedure SetVisible(*Me.Handle_t,visible.b=#True)
+    *Me\visible = visible  
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Get Target
   ;-----------------------------------------------------------------------------
-  Procedure GetTarget(*h.Handle_t)
-    ProcedureReturn *h\target 
+  Procedure GetTarget(*Me.Handle_t)
+    ProcedureReturn *Me\target 
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Pick Translate
+  ;-----------------------------------------------------------------------------
+  Procedure PickTranslate(*Me.Handle_t, *ray.Geometry::ray_t)
+    Debug "PICK TRANSLATE RAY : "+Vector3::ToString(*ray\origin)+" ---> "+Vector3::ToString(*ray\direction)
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; OnEvent
+  ;----------------------------------------------------------------
+  Procedure OnEvent(*Me.Handle_t,gadget)
+    
+     Define deltax.d, deltay.d
+     Define width, height
+     Define modifiers.i
+     mx = GetGadgetAttribute(gadget,#PB_OpenGL_MouseX)
+     my = GetGadgetAttribute(gadget,#PB_OpenGL_MouseY)
+     width = GadgetWidth(gadget)
+     height = GadgetHeight(gadget)
+     
+     ProcedureReturn #False
+;      
+;      Select EventType()
+;       Case #PB_EventType_MouseMove
+;         
+;         If *Me\down
+;           deltax = mx-*Me\oldX
+;           deltay = my-*Me\oldY 
+;           If *Me\lmb_p
+;             Pan(*Me,deltax,deltay,width,height)
+;           ElseIf *Me\mmb_p
+;             Dolly(*Me,deltax,deltay,width,height)
+;           ElseIf *Me\rmb_p
+;             Orbit(*Me,deltax,deltay,width,height)
+;           EndIf
+;         EndIf
+;         
+;         *Me\oldX = mx
+;         *Me\oldY = my
+;         
+;       Case #PB_EventType_LeftButtonDown
+;         modifiers = GetGadgetAttribute(gadget,#PB_OpenGL_Modifiers)
+;         If modifiers = #PB_OpenGL_Alt
+;           *Me\rmb_p = #True
+;         ElseIf modifiers = #PB_OpenGL_Control
+;           *Me\mmb_p = #True
+;         Else
+;           *Me\lmb_p = #True
+;         EndIf    
+; 
+;         *Me\down = #True
+;         *Me\oldX = mx
+;         *Me\oldY = my
+;       
+;       Case #PB_EventType_LeftButtonUp
+;         *Me\lmb_p = #False
+;         *Me\mmb_p = #False
+;         *Me\rmb_p = #False 
+;         *Me\down = #False
+;     
+;       Case #PB_EventType_MiddleButtonDown
+;         *Me\lmb_p = #False
+;         *Me\rmb_p = #False
+;         *Me\mmb_p = #True
+;         *Me\down = #True
+;         *Me\oldX = mx
+;         *Me\oldY = my
+;         
+;       Case #PB_EventType_MiddleButtonUp
+;         *Me\mmb_p = #False
+;         *Me\down = #False
+;         
+;       Case #PB_EventType_RightButtonDown
+;         *Me\lmb_p = #False
+;         *Me\mmb_p = #False
+;         *Me\rmb_p = #True
+;         *Me\down = #True
+;         *Me\oldX = mx
+;         *Me\oldY = my
+;         
+;       Case #PB_EventType_RightButtonUp
+;         *Me\rmb_p = #False
+;         *Me\down = #False
+;         
+;       Case #PB_EventType_MouseWheel
+;         delta = GetGadgetAttribute(gadget,#PB_OpenGL_WheelDelta)
+;         Dolly(*Me,delta*10,delta*10,width,height)
+;     EndSelect
+;    
+    
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Destuctor
   ;-----------------------------------------------------------------------------
-  Procedure Delete(*m.Handle_t)
-    CArray::SetCount(*m\targets,0)
-    CArray::Delete(*m\targets)
+  Procedure Delete(*Me.Handle_t)
+    CArray::SetCount(*Me\targets,0)
+    CArray::Delete(*Me\targets)
     ClearStructure(*m,Handle_t)
     FreeMemory(*m)
   EndProcedure
@@ -1026,7 +1144,6 @@ Module Handle
     *Me\target = #Null
     
     TranslateHandle(*Me)
-     
     ProcedureReturn *Me
   EndProcedure
   
@@ -1034,7 +1151,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 551
-; FirstLine = 526
-; Folding = -----
+; CursorPosition = 1012
+; FirstLine = 1008
+; Folding = ------
 ; EnableXP

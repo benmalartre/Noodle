@@ -101,6 +101,9 @@ CompilerEndIf
 XIncludeFile "Saver.pbi"
 XIncludeFile "Loader.pbi"
 
+; ============================================================================
+;  Application Module Declaration
+; ============================================================================
 DeclareModule Application
   UseModule GLFW
 
@@ -110,10 +113,11 @@ DeclareModule Application
     *window.GLFWwindow
     *manager.ViewManager::ViewManager_t
     *context.GLContext::GLContext_t
+    *camera.Camera::Camera_t
     width.i
     height.i
-    *camera.Camera::Camera_t
     idle.i
+    tool.i
     down.b
     mouseX.d
     mouseY.d
@@ -160,24 +164,30 @@ DeclareModule Application
   Declare OnCursorEnter(*window.GLFWwindow,entered.i)
   Declare OnScroll(*window.GLFWwindow,x.d,y.d)
   Declare.f GetFPS(*app.Application_t)
-  Prototype PDRAWFN(*app)
+  Prototype PFNDRAWFN(*app)
   
   Global *running.Application::Application_t
 
 EndDeclareModule
 
+; ============================================================================
+;  Application Module Implementation
+; ============================================================================
 Module Application
   UseModule OpenGL
   UseModule GLFW
   UseModule OpenGLExt
   
-  
+  ;-----------------------------------------------------------------------------
+  ; Size Window Callback
+  ;-----------------------------------------------------------------------------
   Procedure SizeWindowCallback()
       ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
   EndProcedure
   
+  ;-----------------------------------------------------------------------------
   ; Constructor
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
     Protected *app.Application_t = AllocateMemory(SizeOf(Application_t))
     InitializeStructure(*app,Application_t)
@@ -217,6 +227,10 @@ Module Application
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_C, Globals::#SHORTCUT_CAMERA)
 ;     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Return,Globals::#SHORTCUT_ENTER)
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Delete,Globals::#SHORTCUT_DELETE)
     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
@@ -233,8 +247,9 @@ Module Application
     ProcedureReturn *app
   EndProcedure
   
+  ;-----------------------------------------------------------------------------
   ; Delete
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure Delete(*app.Application_t)
     Protected i
     CompilerIf #USE_GLFW
@@ -248,29 +263,29 @@ Module Application
     FreeMemory(*app)
   EndProcedure
   
-  ; Key Changed
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Key Changed Callback (GLFW)
+  ;-----------------------------------------------------------------------------
   Procedure OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
-  Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
   
-  If action = #GLFW_PRESS
-    Select key
-      Case #GLFW_KEY_ESCAPE
-        glfwSetWindowShouldClose(*window,#True)
+    If action = #GLFW_PRESS
+      Select key
+        Case #GLFW_KEY_ESCAPE
+          glfwSetWindowShouldClose(*window,#True)
+          
+        Case #GLFW_KEY_S
+          *app\idle =  #True
         
-      Case #GLFW_KEY_S
-        *app\idle =  #True
-      
-      Case #GLFW_KEY_LEFT
-        
-      Case #GLFW_KEY_RIGHT
-        
-      Case #GLFW_KEY_UP
-        
-      Case #GLFW_KEY_DOWN
-      
-      
-    EndSelect
+        Case #GLFW_KEY_LEFT
+          
+        Case #GLFW_KEY_RIGHT
+          
+        Case #GLFW_KEY_UP
+          
+        Case #GLFW_KEY_DOWN
+
+      EndSelect
     ;   Else
     ;     *s\tool = #RAA_Tool_Select
     ;   EndIf
@@ -295,9 +310,9 @@ Module Application
     
   EndProcedure
   
-  ;---------------------------------------------------------
-  ; Mouse Move Event
-  ;---------------------------------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Mouse Move Callback (GLFW)
+  ;-----------------------------------------------------------------------------
   Procedure OnMouseMove(*window.GLFWwindow,x.d,y.d)
     Protected *app.Application_t = glfwGetWindowUserPointer(*window)
     
@@ -327,15 +342,16 @@ Module Application
    *app\mouseY = y
   EndProcedure
   
-  ; On Position Window
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Position Window Callback (GLFW)
+  ;-----------------------------------------------------------------------------
    Procedure OnPositionWindow(*w.GLFWwindow,x.i,y.i)
 
    EndProcedure
    
-   ;---------------------------------------------------------
-  ; Mouse Button Event
-  ;---------------------------------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Mouse Button Callback (GLFW)
+  ;-----------------------------------------------------------------------------
   Procedure OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
     Protected *app.Application_t = glfwGetWindowUserPointer(*window)
 
@@ -395,8 +411,9 @@ Module Application
         
   EndProcedure
   
-  ; Resize Window
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Resize Window Callback (GLFW)
+  ;-----------------------------------------------------------------------------
    Procedure OnResizeWindow(*w.GLFWwindow,width.i,height.i)
 ;     glfwMakeContextCurrent(*w)
 ;     glfwSetWindowSize(*w,width,height)
@@ -418,9 +435,9 @@ Module Application
   
    EndProcedure
    
-   ;------------------------------------------------------------
-    ; Cursor Scroll
-    ;------------------------------------------------------------
+    ;-----------------------------------------------------------------------------
+    ; Cursor Scroll Callback (GLFW)
+    ;-----------------------------------------------------------------------------
     Procedure OnScroll(*window.GLFWwindow,x.d,y.d)
       Protected *app.Application_t = glfwGetWindowUserPointer(*window)
       Protected *c.Camera::Camera_t = *app\camera
@@ -436,9 +453,9 @@ Module Application
       
     EndProcedure
     
-    ;------------------------------------------------------------
-    ; Cursor ENter Callback
-    ;------------------------------------------------------------
+    ;-----------------------------------------------------------------------------
+    ; Cursor Enter Callback (GLFW)
+    ;-----------------------------------------------------------------------------
     Procedure OnCursorEnter(*window.GLFWwindow,entered.i)
 ;       Protected *siewport.CScreen_t = glfwGetWindowUserPointer(*window)
 ;       If entered
@@ -454,9 +471,9 @@ Module Application
     EndProcedure
  
 
-  
-  ; Register Callbacks
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Register Callbacks (GLFW)
+  ;-----------------------------------------------------------------------------
   Procedure RegisterCallbacks(*Me.Application_t)
     ;Register Callbacks
     glfwSetKeyCallback(*Me\window,@OnKeyChanged())
@@ -468,8 +485,9 @@ Module Application
     glfwSetScrollCallback(*Me\window,@OnScroll())
   EndProcedure
   
-  ; Register Callbacks
-  ;------------------------------
+  ;-----------------------------------------------------------------------------
+  ; Get FPS
+  ;-----------------------------------------------------------------------------
   Procedure.f GetFPS(*app.Application_t)
 
    *app\framecount +1
@@ -483,10 +501,58 @@ Module Application
     EndIf  
     ProcedureReturn *app\fps
   EndProcedure
-
+  
+  ;-----------------------------------------------------------------------------
+  ; Echo Event Type (PureBasic)
+  ;-----------------------------------------------------------------------------
+  Procedure EchoEventType(event)
+    Select event
+      Case #PB_Event_Menu
+        Debug "Event Menu"
+      Case #PB_Event_Gadget
+        Debug "Event Gadget"
+      Case #PB_Event_SysTray
+        Debug "Event SysTray"
+      Case #PB_Event_Timer
+        Debug "Event Timer"
+      Case #PB_Event_CloseWindow
+        Debug "Event Close Window"
+      Case #PB_Event_Repaint
+        Debug "Tout ou partie du contenu de la fenêtre a été détruit et doit être reconstitué "
+      Case #PB_Event_SizeWindow
+        Debug "La fenêtre a été redimensionnée " 
+      Case #PB_Event_MoveWindow
+        Debug "La fenêtre a été déplacée"
+      Case #PB_Event_MinimizeWindow
+        Debug "La fenêtre a été minimisée"
+      Case #PB_Event_MaximizeWindow
+        Debug "La fenêtre a été maximisée"
+      Case #PB_Event_RestoreWindow 
+        Debug "La fenêtre a été restaurée à sa taille normale"
+      Case #PB_Event_ActivateWindow 
+        Debug "La fenêtre a été activée (gain du focus)"
+      Case #PB_Event_DeactivateWindow
+        Debug "La fenêtre a été désactivée (perte du focus)"
+      Case #PB_Event_LeftDoubleClick 
+        Debug "Un double clic gauche de la souris s'est produit sur la fenêtre"
+      Case #PB_Event_LeftClick  
+        Debug "Un clic gauche de la souris s'est produit sur la fenêtre"
+      Case #PB_Event_RightClick 
+        Debug "Un clic droit de la souris s'est produit sur la fenêtre. Cela peut être utile pour afficher un menu contextuel"
+      Case #PB_Event_WindowDrop   
+        Debug "Une opération Glisser & Déposer s'est terminée sur une fenêtre (Voir remarque ci-dessous)"
+      Case #PB_Event_GadgetDrop 
+        Debug "Une opération Glisser & Déposer s'est terminée sur un gadget (Voir remarque ci-dessous)"
+      Default 
+        Debug "UNSUPPORTED EVENT"
+  EndSelect
+  
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
   ; Main Loop
-  ;------------------------------
-  Procedure Loop(*app.Application_t,*callback.PDRAWFN)
+  ;-----------------------------------------------------------------------------
+  Procedure Loop(*app.Application_t,*callback.PFNDRAWFN)
     Define event
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
@@ -500,15 +566,31 @@ Module Application
     CompilerElse
       Repeat
         event = WaitWindowEvent(1000/60)
+        ; filter Windows events
+        If event = 512  Or event = 160:  Continue : EndIf
+        
         If event = Globals::#EVENT_TREE_CREATED
           Protected *graph = ViewManager::*view_manager\uis("Graph")
           Protected *tree = EventData()
           If *graph
             GraphUI::SetContent(*graph,*tree)
-          EndIf  
+          EndIf   
+        ElseIf event = #PB_Event_Menu
+          Select EventMenu()
+            Case Globals::#SHORTCUT_TRANSLATE
+              *app\tool = Globals::#TOOL_TRANSLATE
+            Case Globals::#SHORTCUT_ROTATE
+              *app\tool = Globals::#TOOL_ROTATE
+            Case Globals::#SHORTCUT_SCALE
+              *app\tool = Globals::#TOOL_SCALE
+            Case Globals::#SHORTCUT_CAMERA
+              *app\tool = Globals::#TOOL_CAMERA
+            Default 
+              *app\tool = Globals::#TOOL_MAX
+          EndSelect
         EndIf
         
-        ViewManager::OnEvent(*app\manager,event)
+        If event : ViewManager::OnEvent(*app\manager,event) : EndIf
         *callback(*app)
         
       Until event = #PB_Event_CloseWindow
@@ -516,10 +598,10 @@ Module Application
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 36
-; Folding = ---
-; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 581
+; FirstLine = 541
+; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL
+; EnableUnicode

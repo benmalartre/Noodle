@@ -384,7 +384,7 @@ UseModule Math
     Protected *mem = AllocateMemory(size_t*1.5)
     Protected local = CreateXMLNode(kine,"transform")
     SetXMLAttribute(local,"Name","Local Transform")
-    Protected value.s = Matrix4::AsString(*m)
+    Protected value.s = Matrix4::ToString(*m)
     SetXMLAttribute(local,"Value", value)
     ;Base64Encoder(*m,size_t,*mem,size_t*1.5)
     ;SetXMLAttribute(local,"Value",PeekS(*mem,size_t*1.5))
@@ -575,9 +575,9 @@ UseModule Math
   
   Class::DEF(Saver)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 507
-; FirstLine = 480
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 386
+; FirstLine = 382
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

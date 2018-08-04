@@ -17,6 +17,11 @@ DeclareModule Globals
     #SHORTCUT_PREVIOUS
     #SHORTCUT_QUIT
     #SHORTCUT_TAB
+    #SHORTCUT_SCALE
+    #SHORTCUT_ROTATE
+    #SHORTCUT_TRANSLATE
+    #SHORTCUT_CAMERA
+    #SHORTCUT_SELECT
   EndEnumeration
   
   Enumeration #PB_Event_FirstCustomValue
@@ -92,7 +97,6 @@ DeclareModule Globals
     #TOOL_ZOOM
     #TOOL_DRAW
     #TOOL_PAINT
-    
     #TOOL_SCALE
     #TOOL_ROTATE
     #TOOL_TRANSLATE
@@ -243,9 +247,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 106
-; Folding = ---
-; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 83
+; Folding = ----
 ; EnableXP
+; EnableUnicode
