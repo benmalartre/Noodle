@@ -299,7 +299,7 @@ Procedure Draw(*app.Application::Application_t)
   
   ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
 
-;   defered\Draw(*app\context)
+  defered\Draw(*app\context)
   ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
   ;bitmap\Draw(*app\context)
   ;ssao\Draw(*app\context)
@@ -420,13 +420,13 @@ Scene::Setup(Scene::*current_scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 366
-; FirstLine = 346
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 301
+; FirstLine = 280
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

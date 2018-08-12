@@ -105,9 +105,6 @@ DeclareModule UIColor
   ;}
   
   
-  ;}
-  
-  
   
   ; ============================================================================
   ;  GLOBALS
@@ -255,8 +252,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 18
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 105
 ; Folding = --
 ; EnableXP

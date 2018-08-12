@@ -1,7 +1,7 @@
 XIncludeFile "../core/Source.pbi"
 XIncludeFile"../core/Pose.pbi"
 XIncludeFile "../objects/Skeleton.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 
 DeclareModule Animation
@@ -166,15 +166,15 @@ Module Animation
     MessageRequester("ANIMATION","LOAD")
     If FileSize(path)>0 And GetExtensionPart(path) = "abc"
     
-      If Alembic::*abc_manager<>#Null
-        Protected *abc_manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
-        Protected *abc_archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(*abc_manager,path)
+      If Alembic::abc_manager<>#Null
+        Protected abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
+        Protected abc_archive.Alembic::IArchive = abc_manager\OpenArchive(path)
         
-        Protected *obj.AlembicObject::AlembicObject_t = AlembicArchive::GetObjectByName(*abc_archive,identifier)
-        AlembicObject::Init(*obj,#Null)
+        Protected *obj.AlembicIObject::AlembicIObject_t = abc_archive\GetObjectByName(identifier)
+        AlembicIObject::Init(*obj,#Null)
         
-        *animation\startframe = Alembic::ABC_GetStartFrame(*abc_archive\archive)
-        *animation\endframe = Alembic::ABC_GetEndFrame(*abc_archive\archive)
+        *animation\startframe = abc_archive\GetStartTime()
+        *animation\endframe = abc_archive\GetEndTime()
         
         MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
 
@@ -191,126 +191,126 @@ Module Animation
         
         Protected i,j
         
-        Debug "OBJECT : "+Str( *obj\ptr )
+        Debug "OBJECT : "+Str( *obj\iObj )
         
-        Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,0,@infos)
-        *animation\nbitems = infos\nbpoints
-        MessageRequester("Skeleton NB Bones : ",Str(*animation\nbitems));         If Not *animation\skeleton\initialized
-          CArray::SetCount(*pos,infos\nbpoints)
-          sample\position = *pos\data
-          
-          CArray::SetCount(*scl,infos\nbpoints)
-          sample\scale = *scl\data
-          CArray::SetCount(*rot,infos\nbpoints)
-          sample\orientation = *rot\data
-          Alembic::ABC_UpdateSkeletonSample(*obj\ptr,@infos,@sample)
-          AlembicObject::UpdateProperties(*obj,0)
-          
-          Protected *static_scl.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-          Protected *static_rot.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
-          Protected *static_pos.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-          
-          CArray::SetCount(*static_scl,*animation\nbitems)
-          CArray::SetCount(*static_rot,*animation\nbitems)
-          CArray::SetCount(*static_pos,*animation\nbitems)
-          CArray::SetCount(*col,*animation\nbitems)
-          
-          AlembicObject::ApplyProperty2(*obj,"StaticScale",*static_scl)
-          AlembicObject::ApplyProperty2(*obj,"StaticOrientation",*static_rot)
-          AlembicObject::ApplyProperty2(*obj,"StaticPosition",*static_pos)
-;           AlembicObject::ApplyProperty2(*obj,"Color",*col)
-          
-          Protected *bone.Bone::Bone_t
-          Protected *T2.Transform::Transform_t
-          Protected q.q4f32
-          Protected p.v3f32
-          Quaternion::SetIdentity(@q)
-          For i=0 To infos\nbpoints-1
-            *bone = Bone::New("Bone"+Str(i),i,CArray::GetValue(*static_pos,i),CArray::GetValue(*static_rot,i),CArray::GetValue(*static_scl,i))
-;             *n.Polymesh::Polymesh_t = Polymesh::New("Cube"+Str(i),Shape::#SHAPE_CUBE)
-;             Scene::AddChild(Scene::*current_scene,*n)
-;             *T2 = *n\localT
-;             Transform::SetScale(*T2,CArray::GetValue(*static_scl,i))
-;             Transform::SetRotationFromQuaternion(*T2,CArray::GetValue(*static_rot,i))
-;             Vector3::Set(@p,Random(10),Random(10),Random(10))
-;             Transform::SetTranslation(*T2,CArray::GetValue(*static_pos,i))
-;             Object3D::SetLocalTransform(*n,*T2)
-            
-            Skeleton::AddBone(*animation\skeleton,*bone)
-          Next
-          
-          CArray::Delete(*static_scl)
-          CArray::Delete(*static_rot)
-          CArray::Delete(*static_pos)
+;         Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,0,@infos)
+;         *animation\nbitems = infos\nbpoints
+;         MessageRequester("Skeleton NB Bones : ",Str(*animation\nbitems));         If Not *animation\skeleton\initialized
+;           CArray::SetCount(*pos,infos\nbpoints)
+;           sample\position = *pos\data
 ;           
-;         EndIf
+;           CArray::SetCount(*scl,infos\nbpoints)
+;           sample\scale = *scl\data
+;           CArray::SetCount(*rot,infos\nbpoints)
+;           sample\orientation = *rot\data
+;           Alembic::ABC_UpdateSkeletonSample(*obj\ptr,@infos,@sample)
+;           AlembicObject::UpdateProperties(*obj,0)
+;           
+;           Protected *static_scl.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+;           Protected *static_rot.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
+;           Protected *static_pos.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+;           
+;           CArray::SetCount(*static_scl,*animation\nbitems)
+;           CArray::SetCount(*static_rot,*animation\nbitems)
+;           CArray::SetCount(*static_pos,*animation\nbitems)
+;           CArray::SetCount(*col,*animation\nbitems)
+;           
+;           AlembicObject::ApplyProperty2(*obj,"StaticScale",*static_scl)
+;           AlembicObject::ApplyProperty2(*obj,"StaticOrientation",*static_rot)
+;           AlembicObject::ApplyProperty2(*obj,"StaticPosition",*static_pos)
+; ;           AlembicObject::ApplyProperty2(*obj,"Color",*col)
+;           
+;           Protected *bone.Bone::Bone_t
+;           Protected *T2.Transform::Transform_t
+;           Protected q.q4f32
+;           Protected p.v3f32
+;           Quaternion::SetIdentity(@q)
+;           For i=0 To infos\nbpoints-1
+;             *bone = Bone::New("Bone"+Str(i),i,CArray::GetValue(*static_pos,i),CArray::GetValue(*static_rot,i),CArray::GetValue(*static_scl,i))
+; ;             *n.Polymesh::Polymesh_t = Polymesh::New("Cube"+Str(i),Shape::#SHAPE_CUBE)
+; ;             Scene::AddChild(Scene::*current_scene,*n)
+; ;             *T2 = *n\localT
+; ;             Transform::SetScale(*T2,CArray::GetValue(*static_scl,i))
+; ;             Transform::SetRotationFromQuaternion(*T2,CArray::GetValue(*static_rot,i))
+; ;             Vector3::Set(@p,Random(10),Random(10),Random(10))
+; ;             Transform::SetTranslation(*T2,CArray::GetValue(*static_pos,i))
+; ;             Object3D::SetLocalTransform(*n,*T2)
+;             
+;             Skeleton::AddBone(*animation\skeleton,*bone)
+;           Next
+;           
+;           CArray::Delete(*static_scl)
+;           CArray::Delete(*static_rot)
+;           CArray::Delete(*static_pos)
+; ;           
+; ;         EndIf
+; ;         
+;         *animation\numsamples = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,1)
+;         MessageRequester("Num Samples ",Str(*animation\numsamples))
 ;         
-        *animation\numsamples = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,1)
-        MessageRequester("Num Samples ",Str(*animation\numsamples))
-        
-        Protected *s.v3f32
-        Protected *r.q4f32
-        Protected *t.v3f32
-        Protected *tra.trf32
-        
-        Protected values.s
-        For i=0 To *animation\numsamples-1
-          Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,i,@infos)
-          CArray::SetCount(*ids,infos\nbpoints)
-          sample\id = CArray::GetPtr(*ids,0)
-          CArray::SetCount(*pos,infos\nbpoints)
-          sample\position = CArray::GetPtr(*pos,0)
-          CArray::SetCount(*scl,infos\nbpoints)
-          sample\scale = CArray::GetPtr(*scl,0)
-          CArray::SetCount(*rot,infos\nbpoints)
-          sample\orientation = CArray::GetPtr(*rot,0)
-          
-          ;Alembic::ABC_UpdatePointCloudSample(*obj\ptr,*infos,*sample)
-          Alembic::ABC_UpdateSkeletonSample(*obj\ptr,@infos,@sample)
-      
-          CArray::SetCount(*Ts,infos\nbpoints)
-          Debug "============================================================"
-          For j=0 To infos\nbpoints-1
-            *s = CArray::GetValue(*scl,j)
-            *r = CArray::GetValue(*rot,j)
-            *t = CArray::GetValue(*pos,j)
-            *tra = CArray::GetValue(*Ts,j)
-            Vector3::SetFromOther(*tra\scl,*s)
-            Quaternion::SetFromOther(*tra\rot,*r)
-            ;Quaternion::SetIdentity(*tra\rot)
-            Vector3::SetFromOther(*tra\pos,*t)
-
-          Next
-          
-          Protected *pose.Pose::Pose_t = Pose::New(*Ts)
-          AddPose(*animation,*pose)
-          
-;           Protected *t.trf32
-          Protected ID = 0
-          Debug "--------------------------------------------------------------------"
-          ForEach *pose\Ts()
-            ;Vector3::Echo(*pose\Ts()\t\pos ,"Position ID "+ID)
-            Quaternion::Echo(*pose\Ts()\t\rot ,"Orientation ID "+ID)
-            ID+1
-          Next
+;         Protected *s.v3f32
+;         Protected *r.q4f32
+;         Protected *t.v3f32
+;         Protected *tra.trf32
+;         
+;         Protected values.s
+;         For i=0 To *animation\numsamples-1
+;           Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,i,@infos)
+;           CArray::SetCount(*ids,infos\nbpoints)
+;           sample\id = CArray::GetPtr(*ids,0)
+;           CArray::SetCount(*pos,infos\nbpoints)
+;           sample\position = CArray::GetPtr(*pos,0)
+;           CArray::SetCount(*scl,infos\nbpoints)
+;           sample\scale = CArray::GetPtr(*scl,0)
+;           CArray::SetCount(*rot,infos\nbpoints)
+;           sample\orientation = CArray::GetPtr(*rot,0)
 ;           
-         
-          
-        Next
-        
-        MessageRequester("Values",values)
-        
-        
-         
-        
-        AlembicManager::CloseArchive(*abc_manager,*abc_archive)
-        MessageRequester("Animation","Archive Succesfully Closed!!!")
-        
-        CArray::Delete(*scl)
-        CArray::Delete(*rot)
-        CArray::Delete(*pos)
-        CArray::Delete(*col)
-        CArray::Delete(*Ts)
+;           ;Alembic::ABC_UpdatePointCloudSample(*obj\ptr,*infos,*sample)
+;           Alembic::ABC_UpdateSkeletonSample(*obj\ptr,@infos,@sample)
+;       
+;           CArray::SetCount(*Ts,infos\nbpoints)
+;           Debug "============================================================"
+;           For j=0 To infos\nbpoints-1
+;             *s = CArray::GetValue(*scl,j)
+;             *r = CArray::GetValue(*rot,j)
+;             *t = CArray::GetValue(*pos,j)
+;             *tra = CArray::GetValue(*Ts,j)
+;             Vector3::SetFromOther(*tra\scl,*s)
+;             Quaternion::SetFromOther(*tra\rot,*r)
+;             ;Quaternion::SetIdentity(*tra\rot)
+;             Vector3::SetFromOther(*tra\pos,*t)
+; 
+;           Next
+;           
+;           Protected *pose.Pose::Pose_t = Pose::New(*Ts)
+;           AddPose(*animation,*pose)
+;           
+; ;           Protected *t.trf32
+;           Protected ID = 0
+;           Debug "--------------------------------------------------------------------"
+;           ForEach *pose\Ts()
+;             ;Vector3::Echo(*pose\Ts()\t\pos ,"Position ID "+ID)
+;             Quaternion::Echo(*pose\Ts()\t\rot ,"Orientation ID "+ID)
+;             ID+1
+;           Next
+; ;           
+;          
+;           
+;         Next
+;         
+;         MessageRequester("Values",values)
+;         
+;         
+;          
+;         
+;         AlembicManager::CloseArchive(*abc_manager,*abc_archive)
+;         MessageRequester("Animation","Archive Succesfully Closed!!!")
+;         
+;         CArray::Delete(*scl)
+;         CArray::Delete(*rot)
+;         CArray::Delete(*pos)
+;         CArray::Delete(*col)
+;         CArray::Delete(*Ts)
 
   ;       Define id = 1
   ;       ; CreateObject List
@@ -397,8 +397,8 @@ Module Animation
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 194
-; FirstLine = 171
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 312
+; FirstLine = 338
 ; Folding = --
 ; EnableXP

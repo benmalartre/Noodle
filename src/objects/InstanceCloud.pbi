@@ -1,10 +1,10 @@
 ﻿XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
+XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
-XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Geometry.pbi"
 XIncludeFile "PointCloudGeometry.pbi"
 
@@ -360,9 +360,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 283
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

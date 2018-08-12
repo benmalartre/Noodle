@@ -1,5 +1,4 @@
 
-XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../core/Time.pbi"
 
 ;============================================================================================
@@ -15,10 +14,15 @@ DeclareModule Stack
     #STACK_POSTSIMULATION
   EndEnumeration
   
+  Interface StackNode
+    Evaluate()
+    Delete()
+  EndInterface
+  
   Structure StackLevel_t Extends Object::Object_t 
     name.s
     color.i
-    List *nodes.Node::Node_t()
+    List nodes.StackNode()
   EndStructure
   
   Structure Stack_t Extends Object::Object_t 
@@ -31,7 +35,7 @@ DeclareModule Stack
   Declare DeleteLevel(*stack.Stack_t,*level.StackLevel_t)
   Declare Update(*stack.Stack_t)
   Declare UpdateLevel(*level.StackLevel_t)
-  Declare AddNode(*stack.Stack_t,*node.Node::Node_t,level.i)
+  Declare AddNode(*stack.Stack_t,node.StackNode,level.i)
   Declare Clear(*stack.Stack_t)
   Declare ClearLevel(*level.StackLevel_t)
   
@@ -66,7 +70,7 @@ Module Stack
   ; Delete Level
   ;------------------------------------------------------------------------------------------
   Procedure DeleteLevel(*stack.Stack_t,*level.StackLevel_t)
-    Protected node.Node::Inode
+    Protected node.StackNode
     ForEach *level\nodes()
       node = *level\nodes()
       node\Delete()
@@ -81,13 +85,10 @@ Module Stack
   ; Update Level
   ;------------------------------------------------------------------------------------------
   Procedure UpdateLevel(*level.StackLevel_t)
-    Protected inode.Node::INode
-    Protected *node.Node::Node_t
+    Protected node.StackNode
     ForEach *level\nodes()
-      *node = *level\nodes()
-      inode = *node
-
-      inode\Evaluate()
+      node = *level\nodes()
+      node\Evaluate()
     Next
   EndProcedure
   
@@ -95,12 +96,10 @@ Module Stack
   ; Clear Level
   ;------------------------------------------------------------------------------------------
   Procedure ClearLevel(*level.StackLevel_t)
-    Protected inode.Node::INode
-    Protected *node.Node::Node_t
+    Protected node.StackNode
     ForEach *level\nodes()
-      *node = *level\nodes()
-      inode = *node
-      inode\Delete()
+      node = *level\nodes()
+      node\Delete()
     Next
   EndProcedure
   
@@ -146,15 +145,15 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   ; Add Node
   ;------------------------------------------------------------------------------------------
-  Procedure AddNode(*stack.Stack_t,*node.Node::Node_t,level.i)
+  Procedure AddNode(*stack.Stack_t,node.StackNode,level.i)
     SelectElement(*stack\levels(),level)
     Protected *level.StackLevel_t = *stack\levels()
     
     AddElement(*level\nodes())
-    *level\nodes() = *node
+    *level\nodes() = node
   EndProcedure
   
-  Procedure MoveUp(*stack.Stack_t,*node.Node::Node_t)
+  Procedure MoveUp(*stack.Stack_t,node.StackNode)
     
   EndProcedure
   
@@ -173,8 +172,8 @@ Module Stack
 EndModule
 
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 99
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 155
+; FirstLine = 113
 ; Folding = ---
 ; EnableXP

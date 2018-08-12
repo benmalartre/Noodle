@@ -1,8 +1,7 @@
 ﻿XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Math.pbi"
-XIncludeFile "Types.pbi"
 XIncludeFile "../objects/Object3D.pbi"
-
+XIncludeFile "Types.pbi"
 
 ; ============================================================================
 ; GRAPH TREE MODULE IMPLEMENTATION
@@ -13,7 +12,6 @@ Module Tree
   ;-----------------------------------------------------------------------------
   Procedure RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
     If Not *current : ProcedureReturn : EndIf
-    Debug "RECURSE NODES : BRANCH = "+Str(*branch)
     Protected *child.Node::Node_t
     
     If *current\class\name = "ExecuteNode"
@@ -553,9 +551,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 173
-; FirstLine = 157
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 18
 ; Folding = -----
 ; EnableThread
 ; EnableXP

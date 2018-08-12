@@ -265,8 +265,8 @@ DeclareModule Vector2
   Declare SetFromOther(*v.v2f32,*o.v2f32)
   Declare.f LengthSquared(*v.v2f32)
   Declare.f Length(*v.v2f32)
-  Declare Normalize(*v.v2f32,*o.v2f32)
-  Declare NormalizeInPlace(*v.v2f32)
+  Declare.f Normalize(*v.v2f32,*o.v2f32)
+  Declare.f NormalizeInPlace(*v.v2f32)
   Declare.f GetAngle(*v.v2f32,*o.v2f32)
   Declare Add(*v.v2f32,*a.v2f32,*b.v2f32)
   Declare AddInPlace(*v.v2f32,*o.v2f32)
@@ -296,8 +296,8 @@ DeclareModule Vector3
   Declare SetFromOther(*v.v3f32,*o.v3f32)
   Declare.f LengthSquared(*v.v3f32)
   Declare.f Length(*v.v3f32)
-  Declare Normalize(*v.v3f32,*o.v3f32)
-  Declare NormalizeInPlace(*v.v3f32)
+  Declare.f Normalize(*v.v3f32,*o.v3f32)
+  Declare.f NormalizeInPlace(*v.v3f32)
   Declare.f GetAngle(*v.v3f32,*o.v3f32)
   Declare Add(*v.v3f32,*a.v3f32,*b.v3f32)
   Declare AddInPlace(*v.v3f32,*o.v3f32)
@@ -617,7 +617,7 @@ Module Vector2
 
   ; Normalize
   ;----------------------------------------
-  Procedure Normalize(*v.v2f32,*o.v2f32)
+  Procedure.f Normalize(*v.v2f32,*o.v2f32)
     Protected l.f = Length(*o)
     ;Avoid error dividing by zero
     If l = 0 : l =1.0 :EndIf
@@ -625,11 +625,12 @@ Module Vector2
     Protected div.f = 1/l
     *v\x = *o\x * div
     *v\y = *o\y * div
+    ProcedureReturn l
    EndProcedure
    
    ; Normalize In Place
   ;----------------------------------------
-  Procedure NormalizeInPlace(*v.v2f32)
+  Procedure.f NormalizeInPlace(*v.v2f32)
     Protected l.f = Length(*v)
     
     ;Avoid error dividing by zero
@@ -638,6 +639,7 @@ Module Vector2
     Protected div.f = 1/l
     *v\x * div
     *v\y * div
+    ProcedureReturn l
   EndProcedure
 
   ; Get Angle
@@ -830,7 +832,7 @@ Module Vector3
 
   ; Normalize
   ;----------------------------------------
-  Procedure Normalize(*v.v3f32,*o.v3f32)
+  Procedure.f Normalize(*v.v3f32,*o.v3f32)
     Protected l.f = Length(*o)
     ;Avoid error dividing by zero
     If l = 0 : l =1.0 :EndIf
@@ -839,11 +841,12 @@ Module Vector3
     *v\x = *o\x * div
     *v\y = *o\y * div
     *v\z = *o\z * div
+    ProcedureReturn l
    EndProcedure
    
    ; Normalize In Place
   ;----------------------------------------
-  Procedure NormalizeInPlace(*v.v3f32)
+  Procedure.f NormalizeInPlace(*v.v3f32)
     Protected l.f = Length(*v)
     
     ;Avoid error dividing by zero
@@ -853,6 +856,7 @@ Module Vector3
     *v\x * div
     *v\y * div
     *v\z * div
+    ProcedureReturn l
   EndProcedure
 
   ; Get Angle
@@ -2637,8 +2641,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1043
-; FirstLine = 1140
+; CursorPosition = 299
+; FirstLine = 285
 ; Folding = --------------------------------
 ; EnableXP
 ; EnableUnicode

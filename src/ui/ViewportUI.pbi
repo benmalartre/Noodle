@@ -162,9 +162,12 @@ Module ViewportUI
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
     
     Protected width.i, height.i
+    Protected *top.View::View_t = *Me\top
+    Protected *manager.ViewManager::ViewManager_t = *top\manager
+    
     Select event
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *Me\top
+        
         width = *top\width
         height = *top\height
         
@@ -174,14 +177,13 @@ Module ViewportUI
         *Me\y = *top\y
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
-        Handle::Resize(*Me\handle, *Me\camera)
         
 
         If *Me\context  
           *Me\context\width = *Me\width
           *Me\context\height = *Me\height
         EndIf
-        
+        If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
       Case #PB_Event_Gadget
         If EventGadget() = *Me\gadgetID
           Protected deltax.d, deltay.d
@@ -190,9 +192,20 @@ Module ViewportUI
           *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
           width = GadgetWidth(*Me\gadgetID)
           height = GadgetHeight(*Me\gadgetID)
-          GetRay(*Me, *Me\ray)
-     
+
           Select EventType()
+            Case #PB_EventType_Focus
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
+                      
+            Case #PB_EventType_LostFocus
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
+                      
             Case #PB_EventType_MouseMove
               If *Me\down
                 deltax = *Me\mx-*Me\oldX
@@ -202,15 +215,18 @@ Module ViewportUI
                 If modifiers & #PB_OpenGL_Alt
                   If *Me\lmb_p
                     Camera::Orbit(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                   ElseIf *Me\mmb_p
                     Camera::Pan(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                   ElseIf *Me\rmb_p
                     Camera::Dolly(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                   EndIf
                 Else
                   Select *Me\tool
                     Case Globals::#TOOL_TRANSLATE
-                      Debug "TRANSLATE FUCKING EVENET..."
+                      Handle::Translate(*Me\handle, deltax, deltay, width, height)
                   EndSelect
                 EndIf
                 
@@ -219,6 +235,7 @@ Module ViewportUI
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
+                    GetRay(*Me, *Me\ray)
                     Handle::PickTranslate(*Me\handle, *Me\ray)
                 EndSelect
                 
@@ -643,7 +660,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 166
+; CursorPosition = 329
+; FirstLine = 289
 ; Folding = -----
 ; EnableXP

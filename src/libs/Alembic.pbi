@@ -19,6 +19,8 @@ XIncludeFile "../objects/InstanceCloud.pbi"
 ;  Alembic Module Declaration
 ; ============================================================================
 DeclareModule Alembic
+  Global.b ALEMBIC_WITH_HDF5
+  Global.s ALEMBIC_VERSION
   Macro ABCGeometricType : l : EndMacro
   Enumeration
     #ABC_OBJECT_UNKNOWN = 0
@@ -340,14 +342,18 @@ DeclareModule Alembic
     CompilerEndSelect
   EndIf
   
+  PrototypeC.b ABCHASHDF5SUPPORT()
+  PrototypeC ABCVERSION()
   PrototypeC ABCCREATEARCHIVEMANAGER()
   PrototypeC.l ABCDELETEARCHIVEMANAGER(*manager)
   PrototypeC.l ABCGETNUMOPENARCHIVES(*manager)
   PrototypeC ABCOPENARCHIVE(*manager,filename.p-utf8)
   PrototypeC ABCCLOSEARCHIVE(*manager,*archive)
+  PrototypeC.b ABCARCHIVEVALID(*archive)
+  PrototypeC ABCARCHIVEFORMAT(*archive)
   PrototypeC ABCGETNUMOBJECTSINARCHIVE(*archive)
   PrototypeC.l ABCGETNUMTIMESAMPLINGINARCHIVE(*archive)
-  PrototypeC ABC_GETMAXNUMSAMPLESFORTIMESAMPLINGINDEX(*archive,index.l)
+  PrototypeC ABCGETMAXNUMSAMPLESFORTIMESAMPLINGINDEX(*archive,index.l)
   PrototypeC ABCGETINFOSFROMARCHIVE(*archive)
   PrototypeC ABCGETOBJECTFROMARCHIVEBYID(*archive,id.l)
   PrototypeC ABCGETOBJECTFROMARCHIVEBYNAME(*archive,id.p-utf8)
@@ -366,7 +372,6 @@ DeclareModule Alembic
   PrototypeC ABCHASPROPERTY(*object,name.p-utf8)
   PrototypeC ABCGETINTERPRETATION(*object,ID.i)
   ;PrototypeC ABCGETPROPERTYBYNAME(*object,name.p-utf8)
-  
   
   PrototypeC ABCGETATTRIBUTESAMPLEDESCRIPTION(*prop,frame.f,*infos.ABC_Attribute_Sample_Infos)
   PrototypeC ABCGETATTRIBUTESAMPLE(*prop,*infos.ABC_Attribute_Sample_Infos,*iosample.ABC_Attribute_Sample)
@@ -394,19 +399,24 @@ DeclareModule Alembic
   PrototypeC ABCUPDATESKELETONSAMPLE(*object,*infos.ABC_Skeleton_Sample_Infos,*iosample.ABC_Skeleton_Sample) 
   PrototypeC ABCGETENVELOPE(*object,*iosample.ABC_Envelope_Sample)
   
-  PrototypeC ABCTESTSTRING(input.p-utf8)
+;   PrototypeC ABCTESTSTRING(input.p-utf8)
   PrototypeC ABCGETFLOATSIZE()
   
   If alembic_lib
+    Global ABC_Version.ABCVERSION = GetFunction(alembic_lib, "ABC_Version")
+    Global ABC_HasHDF5Support.ABCHASHDF5SUPPORT = GetFunction(alembic_lib, "ABC_HasHDF5Support")
+;     Global ABC_TestString.ABCTESTSTRING = GetFunction(alembic_lib, "ABC_TestString")
     Global ABC_CreateArchiveManager.ABCCREATEARCHIVEMANAGER = GetFunction(alembic_lib,"ABC_CreateArchiveManager")
     Global ABC_DeleteArchiveManager.ABCDELETEARCHIVEMANAGER = GetFunction(alembic_lib,"ABC_DeleteArchiveManager")
     Global ABC_GetNumOpenArchives.ABCGETNUMOPENARCHIVES = GetFunction(alembic_lib,"ABC_GetNumOpenArchives")
     Global ABC_GetInfosFromArchive.ABCGETINFOSFROMARCHIVE = GetFunction(alembic_lib,"ABC_GetInfosFromArchive")
     Global ABC_OpenArchive.ABCOPENARCHIVE = GetFunction(alembic_lib,"ABC_OpenArchive")
     Global ABC_CloseArchive.ABCCLOSEARCHIVE = GetFunction(alembic_lib,"ABC_CloseArchive")
+    Global ABC_ArchiveValid.ABCARCHIVEVALID = GetFunction(alembic_lib, "ABC_ArchiveValid")
+    Global ABC_ArchiveFormat.ABCARCHIVEFORMAT = GetFunction(alembic_lib, "ABC_ArchiveFormat")
     Global ABC_GetNumObjectsInArchive.ABCGETNUMOBJECTSINARCHIVE = GetFunction(alembic_lib,"ABC_GetNumObjectsInArchive")
     Global ABC_GetNumTimeSamplingInArchive.ABCGETNUMTIMESAMPLINGINARCHIVE = GetFunction(alembic_lib,"ABC_GetNumTimeSamplingInArchive")
-    Global ABC_GetMaxNumSamplesForTimeSamplingIndex.ABC_GETMAXNUMSAMPLESFORTIMESAMPLINGINDEX = GetFunction(alembic_lib,"ABC_GetMaxNumSamplesForTimeSamplingIndex")
+    Global ABC_GetMaxNumSamplesForTimeSamplingIndex.ABCGETMAXNUMSAMPLESFORTIMESAMPLINGINDEX = GetFunction(alembic_lib,"ABC_GetMaxNumSamplesForTimeSamplingIndex")
     Global ABC_GetObjectFromArchiveByID.ABCGETOBJECTFROMARCHIVEBYID = GetFunction(alembic_lib,"ABC_GetObjectFromArchiveByID")
     Global ABC_GetObjectFromArchiveByName.ABCGETOBJECTFROMARCHIVEBYNAME = GetFunction(alembic_lib,"ABC_GetObjectFromArchiveByName")
     Global ABC_GetStartFrame.ABCGETSTARTFRAME = GetFunction(alembic_lib,"ABC_GetStartFrame")
@@ -445,7 +455,6 @@ DeclareModule Alembic
     Global ABC_GetGeometryScope.ABCGETGEOMETRYSCOPE = GetFunction(alembic_lib,"ABC_GetGeometryScope")
     Global ABC_SetGeometryScope.ABCSETGEOMETRYSCOPE = GetFunction(alembic_lib,"ABC_SetGeometryScope")
     
-    Global ABC_TestString.ABCTESTSTRING = GetFunction(alembic_lib,"ABC_TestString")
     Global ABC_GetFloatSize.ABCGETFLOATSIZE = GetFunction(alembic_lib,"ABC_GetFloatSize")
   Else
     MessageRequester("Alembic Error","Can't Find Alembic C Library!!")
@@ -518,6 +527,8 @@ DeclareModule AlembicArchive
   Declare DeleteObjectByID(*Me.AlembicArchive_t,id.i)
   Declare DeleteObjectByName(*Me.AlembicArchive_t,name.s)
   Declare GetNbObjects(*Me.AlembicArchive_t,inspect.b=#False)
+  Declare IsValid(*Me.AlembicArchive_t)
+  Declare.s GetFormat(*Me.AlembicArchive_t)
 EndDeclareModule
 
 ; ============================================================================
@@ -549,7 +560,10 @@ EndDeclareModule
 ; ============================================================================
 Module Alembic  
   Procedure Init()
-   *abc_manager = AlembicManager::New()
+    ALEMBIC_WITH_HDF5 = ABC_HasHDF5Support()
+    ALEMBIC_VERSION = PeekS(ABC_Version(), -1, #PB_Ascii)
+
+    *abc_manager = AlembicManager::New()
   EndProcedure
   
   Procedure Terminate()
@@ -562,33 +576,33 @@ Module Alembic
       If *abc_manager<>#Null
         
         Protected *abc_archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(*abc_manager,path)
-        
-        Debug "[Alembic] Nb Objects in Archive : "+Str(AlembicArchive::GetNbObjects(*abc_archive))
-        Define id = 1
-        
+        Debug *abc_archive
         ; Create a new Model
         Protected *model.Model::Model_t = Model::New("Alembic")
-        
-        ;Create Objects contained in alembic file
-        Define i
-        Protected *abc_obj.AlembicObject::AlembicObject_t
-        Protected *abc_par.AlembicObject::AlembicObject_t = #Null
-        Protected *child.Object3D::Object3D_t
-        For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
-          *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
-          If *abc_obj <> #Null
-            AlembicObject::Init(*abc_obj,*abc_par)
-            If AlembicObject::Get3DObject(*abc_obj)<>#Null
-              *abc_par = #Null
-              *child = AlembicObject::Get3DObject(*abc_obj)
-              Object3D::AddChild(*model,*child)
-              
-            Else 
-              *abc_par = *abc_obj
+        If AlembicArchive::IsValid(*abc_archive)
+          Define id = 1
+          ;Create Objects contained in alembic file
+          Define i
+          Protected *abc_obj.AlembicObject::AlembicObject_t
+          Protected *abc_par.AlembicObject::AlembicObject_t = #Null
+          Protected *child.Object3D::Object3D_t
+          For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
+            *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
+            If *abc_obj <> #Null
+              AlembicObject::Init(*abc_obj,*abc_par)
+              If AlembicObject::Get3DObject(*abc_obj)<>#Null
+                *abc_par = #Null
+                *child = AlembicObject::Get3DObject(*abc_obj)
+                Object3D::AddChild(*model,*child)
+                
+              Else 
+                *abc_par = *abc_obj
+              EndIf
             EndIf
-          EndIf
-          
-        Next i
+            
+          Next i
+        EndIf
+        
       EndIf
       ProcedureReturn *model
     Else
@@ -615,10 +629,8 @@ Module AlembicManager
       MessageRequester( "[Alembic]"," Open Archive Failed : Invalid File !"+path)
       ProcedureReturn
     EndIf
-    
    ; ---[ Check Already Open TODO !! ]-----------------------
     Protected nbo = ABC_GetNumOpenArchives(*m\manager)
-    
     Protected found.b = #False
     Protected *archive.AlembicArchive::AlembicArchive_t 
     
@@ -636,25 +648,28 @@ Module AlembicManager
     
     
     If Not found
-      Debug "Open Archive : "+ path
       *archive = AlembicArchive::New()
       *archive\path = path
       *archive\archive = ABC_OpenArchive(*m\manager,path)
-      *archive\nbobjects = ABC_GetNumObjectsInArchive(*archive\archive)
-;       *archive\startframe = ABC_GetStartFrame(*archive\archive)
-;       *archive\endframe = ABC_GetEndFrame(*archive\archive)
+      If AlembicArchive::IsValid(*archive)
+        
+        *archive\nbobjects = ABC_GetNumObjectsInArchive(*archive\archive)
+        *archive\startframe = ABC_GetStartFrame(*archive\archive)
+        *archive\endframe = ABC_GetEndFrame(*archive\archive)
+        
+        Dim *archive\objects.AlembicObject::AlembicObject_t(*archive\nbobjects)
+        AddMapElement(*m\archives(),*archive\path)
+        *m\archives() = *archive
+  ;       Protected cnt = ArraySize(*m\archives())+1
+  ;       ReDim *m\archives.AlembicArchive::AlembicArchive_t(cnt)
+  ;       *m\archives(cnt-1) = *archive
+        
+          MessageRequester("Alembic ARchive", Str(AlembicArchive::GetNbObjects(*archive))+Chr(10)+Str(*archive\startframe)+Chr(10)+Str(*archive\endframe))
+        For i=0 To AlembicArchive::GetNbObjects(*archive)-1
+          AlembicArchive::CreateObjectByID(*archive,i)
+        Next i
+      EndIf
       
-      Dim *archive\objects.AlembicObject::AlembicObject_t(*archive\nbobjects)
-      AddMapElement(*m\archives(),*archive\path)
-      *m\archives() = *archive
-;       Protected cnt = ArraySize(*m\archives())+1
-;       ReDim *m\archives.AlembicArchive::AlembicArchive_t(cnt)
-;       *m\archives(cnt-1) = *archive
-      
-        MessageRequester("NUM OBJECTS : ", Str(AlembicArchive::GetNbObjects(*archive)))
-      For i=0 To AlembicArchive::GetNbObjects(*archive)-1
-        AlembicArchive::CreateObjectByID(*archive,i)
-      Next i
         
     EndIf
     
@@ -796,8 +811,21 @@ Module AlembicArchive
     EndIf
     ProcedureReturn  *archive\nbobjects
   EndProcedure
-
   
+  ;---------------------------------------------------------
+  ; Is Valid
+  ;---------------------------------------------------------
+  Procedure IsValid(*archive.AlembicArchive_t)
+    ProcedureReturn ABC_ArchiveValid(*archive\archive)
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Format
+  ;---------------------------------------------------------
+  Procedure.s GetFormat(*archive.AlembicArchive_t)
+    ProcedureReturn PeekS(ABC_ArchiveFormat(*archive\archive), -1,#PB_Ascii)
+  EndProcedure
+
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
@@ -814,7 +842,6 @@ Module AlembicArchive
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  ;{
   Procedure.i New()
     Protected *Me.AlembicArchive_t = AllocateMemory(SizeOf(AlembicArchive_t))
     InitializeStructure(*Me,AlembicArchive_t)
@@ -1657,8 +1684,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 340
-; FirstLine = 340
+; CursorPosition = 418
+; FirstLine = 360
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

@@ -171,19 +171,19 @@ Procedure DrawPivot(*A.Object3D::Object3D_t, *drawer.Drawer::Drawer_t)
   Protected color.c4f32
   Color::Set(@color, 1,0,0,1)
   
-  Protected *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  Protected *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,1,0)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
   Color::Set(@color, 0,1,0,1)
-  *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,0,1)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
   Color::Set(@color, 0,0,1,1)
-  *axis.Drawer::Item_t = Drawer::NewLine(*drawer, *positions)
+  *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
 EndProcedure
@@ -263,29 +263,15 @@ Procedure Draw(*app.Application::Application_t)
     EndSelect
   EndIf
   
- 
-;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
+  ViewportUI::Draw(*viewport, *app\context)
   
- default_layer\Draw  (*app\context)
-;   gbuffer\Draw(*app\context  )
-;   shadowmap\Draw(*app\context)
-;   
-  ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
-
-;   defered\Draw(*app\context)
-  ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
-  ;bitmap\Draw(*app\context)
-  ;ssao\Draw(*app\context)
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/*app\width
   Define ratio.f = *app\width / *app\height
   FTGL::Draw(*app\context\writer,"Bullet Demo",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+  FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
   
@@ -338,7 +324,7 @@ Procedure Draw(*app.Application::Application_t)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
+      *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -352,7 +338,7 @@ Procedure Draw(*app.Application::Application_t)
   
   ;Debug "Size "+Str(*app\width)+","+Str(*app\height)
   Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
-  LayerDefault::Setup(*default)
+  ViewportUI::AddLayer(*viewport, *default)
 ;   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ;   LayerGBuffer::Setup(*gbuffer)
@@ -396,8 +382,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 348
-; FirstLine = 338
+; CursorPosition = 266
+; FirstLine = 241
 ; Folding = --
 ; EnableThread
 ; EnableXP

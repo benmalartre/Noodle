@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../core/Commands.pbi"
 XIncludeFile "../graph/Node.pbi"
+XIncludeFile "../graph/Compound.pbi"
 XIncludeFile "../graph/Tree.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 
@@ -242,9 +243,8 @@ Module ImplodeNodesCmd
   EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 16
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2
 ; Folding = -----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

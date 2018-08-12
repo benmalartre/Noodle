@@ -258,7 +258,7 @@ Module Camera
   ;----------------------------------------------------------------------------
   Procedure Dolly(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
     Protected delta.f
-    delta = (deltay/height + deltax/width) * 0.5
+    delta = (deltay/height + deltax/width) * 2
   
     Protected interpolated.v3f32
     Vector3::LinearInterpolate(@interpolated,*Me\pos,*Me\lookat,delta)

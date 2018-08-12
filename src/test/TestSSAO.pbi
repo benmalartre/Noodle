@@ -72,7 +72,6 @@ Global noise_size.i = 16
 Global nb_lights.i = 7
 
 Global offset.m4f32
-Global i
 Global *p.v3f32
 Global scl.f
 
@@ -296,7 +295,7 @@ Procedure Draw(*app.Application::Application_t)
   glUniform1i(glGetUniformLocation(shader,"color_map"),2)
   glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
   glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
-  i = 0
+  Define i = 0
   ForEach *lights()
     Light::PassToShader(*lights(),shader,i)
     i+1
@@ -495,9 +494,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 328
-; FirstLine = 279
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 297
+; FirstLine = 278
 ; Folding = -
 ; EnableXP
 ; Executable = ssao.exe

@@ -49,7 +49,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 
 ; Resize
 ;--------------------------------------------
@@ -64,32 +63,22 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-;   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
-;   Light::Update(*light)
-;   Vector3::Echo(*light\pos,"LIGHT POSITION")
+
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
-;   LayerShadowMap::Draw(*shadows, *app\context)
-;   LayerGBuffer::Draw(*gbuffer,*app\context)
-  ;LayerDefered::Draw(*defered,*app\context)
-;   LayerShadowDefered::Draw(*defshadows, *app\context)
-  
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  ViewportUI::Draw(*viewport, *app\context)
+
+ 
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-
-  glDisable(#GL_BLEND)
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
- 
-
  
  Define useJoystick.b = #False
  width = 800
@@ -114,33 +103,19 @@ Procedure Draw(*app.Application::Application_t)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(@model)
   Scene::*current_scene = Scene::New()
-  Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  *shadows = LayerShadowMap::New(800,800,*app\context,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
-  *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
-  *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
-  *defshadows = LayerShadowDefered::New(800,600,*app\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
+  ViewportUI::AddLayer(*viewport, *layer)
+
   Global *root.Model::Model_t = Model::New("Model")
   
-  ; FTGL Drawer
-  ;-----------------------------------------------------
-  
-  *ftgl_drawer = FTGL::New()
   
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
   shader = *s_polymesh\pgm
 
-;   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
-;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
   *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
   Object3D::SetShader(*ground,*s_polymesh)
-  
-  
-  ;Define *loc.Geometry::Location_t = Location::New(*ground\geom,*ground\globalT,0,0.5,0.5)
-;   Define *pos.v3f32 = Location::GetPosition(*loc)
-;   Vector3::Echo(*pos,"Location Position")
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
   Sampler::SamplePolymesh(*ground\geom,*samples,6,7)
@@ -154,15 +129,6 @@ Procedure Draw(*app.Application::Application_t)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
-  
-  Define *handle.Handle::Handle_t = Handle::New()
-;   Scene::AddObject(Scene::*current_scene, *handle)
-;   Polymesh::Setup(*torus,*s_polymesh)
-;   Polymesh::Setup(*teapot,*s_polymesh)
-;   Polymesh::Setup(*ground,*s_polymesh)
-;   Polymesh::Setup(*bunny,*s_polymesh)
-; Polymesh::Draw(*ground)
-;   Polymesh::Draw(*bunny)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
@@ -222,8 +188,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 149
+; CursorPosition = 71
+; FirstLine = 62
 ; Folding = -
 ; EnableThread
 ; EnableXP

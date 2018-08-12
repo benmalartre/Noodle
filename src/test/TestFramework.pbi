@@ -95,10 +95,11 @@ CompilerIf #USE_BULLET
 CompilerEndIf
 
 CompilerIf #USE_ALEMBIC
-  XIncludeFile "../libs/Alembic.pbi"
+  XIncludeFile "../libs/Booze.pbi"
   XIncludeFile "../objects/Animation.pbi"
 CompilerEndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 24
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 97
+; FirstLine = 39
+; Folding = -
 ; EnableXP

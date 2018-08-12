@@ -1,7 +1,7 @@
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Nodes.pbi"
 XIncludeFile "../objects/3DObject.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 ; ==================================================================================================
 ; ADD NODE MODULE DECLARATION
@@ -64,7 +64,7 @@ Module AlembicNode
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 57
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

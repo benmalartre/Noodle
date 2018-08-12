@@ -1,7 +1,7 @@
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Nodes.pbi"
 XIncludeFile "../objects/Object3D.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 ; ==================================================================================================
 ; ALEMBICIPOINTS NODE MODULE DECLARATION
@@ -99,17 +99,18 @@ Module AlembicIPointCloudNode
     Protected *input.NodePort::NodePort_t
    
     
-    Protected *o.AlembicObject::AlembicObject_t = *node\abc
+    Protected *o.AlembicIObject::AlembicIObject_t = *node\abc
     
     ; Initialize Alembic Object
     ;---------------------------------------------------
     If Not *o Or Not *node\lastFile = file Or Not *node\lastID = identifier
       
       If FileSize(file)>0 And GetExtensionPart(file) = "abc"
-        Protected *archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(Alembic::*abc_manager,file)
-        *o = AlembicArchive::GetObjectByName(*archive,identifier)
-        AlembicObject::Init(*o,#Null)
-        AlembicObject::GetProperties(*o)
+        Protected manager.Alembic::IArchiveManager = Alembic::abc_manager
+        Protected archive.Alembic::IArchive = manager\OpenArchive(file)
+        *o = archive\GetObjectByName(identifier)
+        AlembicIObject::Init(*o,#Null)
+        AlembicIObject::GetProperties(*o)
         *node\abc = *o
         *node\lastFile = file
         *node\lastID = identifier
@@ -121,8 +122,8 @@ Module AlembicIPointCloudNode
       Protected *sample.Alembic::ABC_PointCloud_Sample = *o\sample
     
       Protected *infos.Alembic::ABC_PointCloud_Sample_Infos = *o\infos
-      
-      Alembic::ABC_GetPointCloudSampleDescription(*o\ptr,time,*infos)
+      Protected points.Alembic::IPoints = *o\iObj
+      points\GetSampleDescription(time,*infos)
       
       
 ;       CArray::SetCount(*cloud_geom\a_positions,*infos\nbpoints)
@@ -159,12 +160,12 @@ Module AlembicIPointCloudNode
       CArray::SetCount(*color,*infos\nbpoints)
       *sample\color = *color\data
       
-      update.i =  Alembic::ABC_UpdatePointCloudSample(*o\ptr,*infos,*sample)
+      update.i =  points\UpdateSample(*infos,*sample)
       
-      AlembicObject::UpdateProperties(*o,time/30)
-      AlembicObject::ApplyProperty2(*o,"Scale",*scale)
-      AlembicObject::ApplyProperty2(*o,"Orientation",*orientation)
-      AlembicObject::ApplyProperty2(*o,"Color",*color)
+      AlembicIObject::UpdateProperties(*o,time/30)
+      AlembicIObject::ApplyProperty2(*o,"Scale",*scale)
+      AlembicIObject::ApplyProperty2(*o,"Orientation",*orientation)
+      AlembicIObject::ApplyProperty2(*o,"Color",*color)
       
       *node\lastT = time
     Else
@@ -209,8 +210,8 @@ Module AlembicIPointCloudNode
 
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 167
+; FirstLine = 151
 ; Folding = --
 ; EnableXP

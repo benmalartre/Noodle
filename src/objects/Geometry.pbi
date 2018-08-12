@@ -35,8 +35,20 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Box_t
-    p_min.v3f32
-    p_max.v3f32
+    bmin.v3f32
+    bmax.v3f32
+  EndStructure
+  ;}
+  
+  ; ----------------------------------------------------------------------------
+  ; Line Instance
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Line_t
+    ; Parametric description:
+    ;  l(t) = _p0 + t * _length * _dir;
+    position.v3f32
+    direction.v3f32
   EndStructure
   ;}
   
@@ -45,8 +57,8 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Sphere_t
-    p_center.v3f32
-    p_radius.f
+    center.v3f32
+    radius.f
   EndStructure
   ;}
   
@@ -55,10 +67,10 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Cylinder_t
-    p_position.v3f32
-    p_axis.v3f32
-    p_radius.f
-    p_height.f
+    position.v3f32
+    axis.v3f32
+    radius.f
+    height.f
   EndStructure
   ;}
   
@@ -357,7 +369,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 344
-; FirstLine = 299
+; CursorPosition = 72
+; FirstLine = 96
 ; Folding = ----
 ; EnableXP

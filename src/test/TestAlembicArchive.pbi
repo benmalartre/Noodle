@@ -28,11 +28,6 @@ Procedure.i LogABCArchive(path.s)
 
       Protected pName.s
       Protected infos.Alembic::ABC_Attribute_Sample_Infos
-
-      
-      MessageRequester("ARCHIVE", "START : "+Str(startframe)+", END : "+Str(endframe))
-      
-      MessageRequester("Num Objects", Str(AlembicArchive::GetNbObjects(*abc_archive)))
             
       For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
         *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
@@ -47,14 +42,13 @@ Procedure.i LogABCArchive(path.s)
           For j=0 To nbp-1
             Protected *mem = Alembic::ABC_GetPropertyName(*abc_obj\ptr,j)
             If *mem
-              pName = PeekS(*mem, #PB_Ascii)
+              pName = PeekS(*mem, -1, #PB_UTF8)
               Debug pName
               *prop = Alembic::ABC_GetProperty(*abc_obj\ptr,j)
               If *prop
-                Debug "Prop : "+Str(*prop)
                 Alembic::ABC_GetAttributeSampleDescription(*prop,1,@infos)
-                Debug ">>> "+pName 
-                Debug "Name "+PeekS(@infos\name,-1,#PB_Ascii)
+                Debug "PROPERTY "+pName 
+                Debug "Name "+PeekS(@infos\name,-1,#PB_UTF8)
                 ;Alembic::ABC_GetAttributeValueAtIndex(*prop,1,0)
                 Debug "Nb Items : "+Str(infos\nbitems)
                 Debug "Type : "+Str(infos\type)
@@ -133,9 +127,8 @@ Alembic::Terminate()
 
   
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 7
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 29
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

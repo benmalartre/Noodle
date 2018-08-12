@@ -196,7 +196,6 @@ Module Handle
   ; Pick
   ;-----------------------------------------------------------------------------
   Procedure Pick(*Me.Handle_t,*ray.Geometry::Ray_t)
-    Debug "PICK HANDLE..."
     Select *Me\tool
       Case Globals::#TOOL_TRANSLATE
         PickTranslate(*Me, *ray)
@@ -463,12 +462,11 @@ Module Handle
   ; Resize
   ;-----------------------------------------------------------------------------
   Procedure Resize(*Me.Handle_t,*camera.Camera::Camera_t)
-    
     Protected delta.v3f32
     Protected *handle_pos.v3f32 = *Me\transform\t\pos  
     Vector3::Sub(@delta,*camera\pos,*handle_pos)
     *Me\distance = Vector3::Length(@delta)
-    *Me\scl = *Me\distance*Radian(*camera\fov)
+    *Me\scl = *Me\distance*Radian(*camera\fov*2)
   EndProcedure
   
   
@@ -743,7 +741,7 @@ Module Handle
       Protected X.m4f32
       Protected P.v3f32
       Protected S.v3f32
-      Vector3::Set(@S, 0.05,0.05,0.05)
+      Vector3::Set(@S, 0.01,0.01,0.01)
       Matrix4::SetIdentity(@X)
       Vector3::Add(@P, *Me\ray\origin, *Me\ray\direction)
       Matrix4::SetScale(@X, @S)
@@ -791,8 +789,7 @@ Module Handle
   ; Translate
   ;-----------------------------------------------------------------------------
   Procedure Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
-  ;   Protected *t.CTransform = newCTransform()
-    Protected delta.f = (deltax+deltay)/width * *Me\scl
+    Protected delta.f = (deltax/width +deltay/height) * *Me\scl * 0.5
     Select *Me\active_axis
       Case #Handle_Active_X
          Protected x.f = *Me\transform\t\pos\x
@@ -1036,12 +1033,12 @@ Module Handle
           Select *Me\target\type
             Case Object3D::#Object3D_Camera
               Protected *camera.Camera::Camera_t = *Me\target
-              Vector3::SetFromOther(*Me\foot_sphere\p_center,*camera\pos)
-              Vector3::SetFromOther(*Me\head_sphere\p_center,*camera\lookat)
+              Vector3::SetFromOther(*Me\foot_sphere\center,*camera\pos)
+              Vector3::SetFromOther(*Me\head_sphere\center,*camera\lookat)
             Case Object3D::#Object3D_Light
               Protected *light.Light::Light_t = *Me\target
-              Vector3::SetFromOther(*Me\foot_sphere\p_center,*light\pos)
-              Vector3::SetFromOther(*Me\head_sphere\p_center,*light\lookat)
+              Vector3::SetFromOther(*Me\foot_sphere\center,*light\pos)
+              Vector3::SetFromOther(*Me\head_sphere\center,*light\lookat)
           EndSelect
         EndIf
     EndSelect
@@ -1073,28 +1070,25 @@ Module Handle
   ; Pick Translate
   ;-----------------------------------------------------------------------------
   Procedure PickTranslate(*Me.Handle_t, *ray.Geometry::ray_t)
-    *Me\ray = *ray
     Protected enterDistance.f, exitDistance.f
-    Protected axis.Geometry::Cylinder_t
-    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
-    Vector3::Set(axis\p_axis, 1,0,0)
-    axis\p_radius = 0.01
-    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
-      Debug "X AXIS INTERSECTION !!!"
+    Protected cylinder.Geometry::Cylinder_t
+    Protected pos.v3f32
+    Vector3::SetFromOther(cylinder\position, *Me\globalT\t\pos)
+    Vector3::Set(cylinder\axis, 1,0,0)
+    cylinder\radius = 0.01
+    
+    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_X)
     EndIf
     
-    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
-    Vector3::Set(axis\p_axis, 0,1,0)
-    axis\p_radius = 0.01
-    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
-      Debug "Y AXIS INTERSECTION !!!"
+    Vector3::Set(cylinder\axis, 0,1,0)
+    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Y)
     EndIf
-    
-    Vector3::SetFromOther(axis\p_position, *Me\globalT\t\pos)
-    Vector3::Set(axis\p_axis,0,0,1)
-    axis\p_radius = 0.01
-    If Ray::CylinderIntersection(*ray, @axis, @enterDistance, @exitDistance)
-      Debug "Z AXIS INTERSECTION !!!"
+
+    Vector3::Set(cylinder\axis,0,0,1)
+    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Z)
     EndIf
     
   EndProcedure
@@ -1104,15 +1098,6 @@ Module Handle
   ;----------------------------------------------------------------
   Procedure OnEvent(*Me.Handle_t,gadget)
     
-     Define deltax.d, deltay.d
-     Define width, height
-     Define modifiers.i
-     mx = GetGadgetAttribute(gadget,#PB_OpenGL_MouseX)
-     my = GetGadgetAttribute(gadget,#PB_OpenGL_MouseY)
-     width = GadgetWidth(gadget)
-     height = GadgetHeight(gadget)
-     
-     ProcedureReturn #False
 ;      
 ;      Select EventType()
 ;       Case #PB_EventType_MouseMove
@@ -1239,7 +1224,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 550
-; FirstLine = 534
+; CursorPosition = 468
+; FirstLine = 459
 ; Folding = ------
 ; EnableXP

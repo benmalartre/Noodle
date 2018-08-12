@@ -3,13 +3,11 @@ XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Attribute.pbi"
 XIncludeFile "../core/Object.pbi"
 XIncludeFile "../core/Perlin2.pbi"
-
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Texture.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/PolymeshGeometry.pbi"
 XIncludeFile "../objects/Stack.pbi"
-
 
 
 DeclareModule Object3D
@@ -223,7 +221,6 @@ Module Object3D
   ; Add Child 
   ;--------------------------------------------------------------
   Procedure AddChild(*parent.Object3D_t,*child.Object3D_t)
-    Debug "ADD CHILD : "+*child\name
     If *child\parent
       ForEach *child\parent\children()
         If *child\parent\children() = *child
@@ -233,7 +230,6 @@ Module Object3D
       Next
     EndIf
     *child\parent = *parent
-    Debug "PARENT : "+*parent\name
     
     If *parent\type = Object3D::#Object3D_Model
       *child\model = *parent
@@ -391,16 +387,9 @@ Module Object3D
       Debug "C3DObject ["+*obj\name+"]: Attribute "+*attribute\name+" Already exists !! "
       ProcedureReturn #Null
     Else
-      ;*obj\attributes\Append(*attribute)
       Object3D::AttachMapElement(*obj\m_attributes(),*attribute\name,*attribute)
     EndIf
-    
-  ;   Debug "---------------------------------------------------------------------------------------"
-  ;   Debug "3DObject Add Attribute Called..."
-  ;   Debug "3DObject : "+*obj\name
-  ;   Debug "Nb Attributes : "+Str(*obj\attributes\GetCount()-1)
-  ;   Debug "---------------------------------------------------------------------------------------"
-    
+
   EndProcedure
   
   ;-----------------------------------------------
@@ -531,12 +520,10 @@ Module Object3D
     Next
     
   EndProcedure
- 
-  
-  
+
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 107
+; CursorPosition = 389
+; FirstLine = 377
 ; Folding = ------
 ; EnableXP

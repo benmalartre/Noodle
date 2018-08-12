@@ -1,4 +1,5 @@
 XIncludeFile "UI.pbi"
+XIncludeFile "../objects/Scene.pbi"
 
 ;============================================================
 ; View Module Declaration
@@ -909,8 +910,7 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 175
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2
 ; Folding = ------
 ; EnableXP

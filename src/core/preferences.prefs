@@ -1,0 +1,6 @@
+﻿
+[Libraries]
+Use Bullet = 0
+Use Alembic = 1
+[Scene]
+Default Light Position = 3,3,3

@@ -252,30 +252,13 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddChild(Scene::*current_scene,*cloud)
   Scene::Setup(Scene::*current_scene,*app\context)
   
-  Define e
-  CompilerIf #USE_GLFW
-    glfwMakeContextCurrent(*app\window)
-      While Not glfwWindowShouldClose(*app\window)
-        ;glfwWaitEvents()
-        glfwPollEvents()
-        
-        Draw(*app)
-      
-        glfwSwapBuffers(*app\window)
-       
-      Wend
-    CompilerElse
-      Repeat
-        e = WaitWindowEvent(1000/60)
-        ViewManager::OnEvent(*app\manager,e)
-        Draw(*app)
+  Application::Loop(*app,@Draw())
   
-      Until e = #PB_Event_CloseWindow
-    CompilerEndIf
+
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 107
+; CursorPosition = 256
+; FirstLine = 197
 ; Folding = -
 ; EnableXP
 ; Executable = Test

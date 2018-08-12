@@ -565,7 +565,7 @@ Module Attribute
   ;  CONSTRUCTORS
   ; ============================================================================
   ;{
-  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,read_only.b,constant.b,writable.b=#True)
+  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,read_only.b,constant.b,writable.b=#True)
     Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
     
     Object::INI(Attribute)
@@ -573,7 +573,7 @@ Module Attribute
     *Me\datatype = datatype
     *Me\datastructure = datastructure
     *Me\datacontext = datacontext
-    *Me\data = *data
+    *Me\data = *ptr
     *Me\name = name
     *Me\constant = constant
     *Me\readonly = read_only
@@ -590,8 +590,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 426
-; FirstLine = 422
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 569
+; FirstLine = 530
 ; Folding = ---
 ; EnableXP

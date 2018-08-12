@@ -95,7 +95,7 @@ CompilerIf #USE_BULLET
 CompilerEndIf
 
 CompilerIf #USE_ALEMBIC
-  XIncludeFile "../libs/Alembic.pbi"
+  XIncludeFile "../libs/Booze.pbi"
   XIncludeFile "../objects/Animation.pbi"
 CompilerEndIf
 
@@ -216,29 +216,18 @@ Module Application
     CompilerElse
       *app\manager = ViewManager::New(name,0,0,width,height,options)
       *app\window = *app\manager\window
-;       Protected *vp.ViewportUI::ViewportUI_t = ViewportUI::New("Viewport3D",0,0,width,height)
-;       *app\manager\main\content = *vp
+
       *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
       
-      
-      ;     BindEvent(#PB_Event_SizeWindow,@SizeWindow_Callback,*app\manager\window)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_C, Globals::#SHORTCUT_CAMERA)
-;     AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Return,Globals::#SHORTCUT_ENTER)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Delete,Globals::#SHORTCUT_DELETE)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
-;     #SHORTCUT_NEXT
-;     #SHORTCUT_PREVIOUS
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
-    AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
+      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
     
       *app\idle = #True
       
@@ -566,7 +555,7 @@ Module Application
       Wend
     CompilerElse
       Repeat
-        event = WaitWindowEvent(250)
+        event = WaitWindowEvent(1000/60)
         ; filter Windows events
         If event = 512  Or event = 160:  Continue : EndIf
         
@@ -600,8 +589,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 568
-; FirstLine = 542
+; CursorPosition = 97
+; FirstLine = 48
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

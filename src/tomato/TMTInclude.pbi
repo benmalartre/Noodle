@@ -8,8 +8,8 @@ XIncludeFile "../core/Utils.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
 XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 10
 ; EnableXP
