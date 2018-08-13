@@ -388,6 +388,7 @@ DeclareModule Alembic
     IsValid.b()
     GetInfos.l()
     AddObject.l(obj)
+    GetNumIdentifiers.i()
     GetNumObjects.i()
     GetIdentifier.l(index.i)
     GetIObj.l(index.i)
@@ -395,7 +396,7 @@ DeclareModule Alembic
     GetObjectByName.l(name.p-utf8)
     Get.l()
     IncrementUses.l()
-    DecrementUses.l()
+    DecrementUses.l()   
     NumUses.l()
     GetStartTime.d()
 	  GetEndTime.d()
@@ -578,8 +579,8 @@ Module Alembic
     If Not archive\NumUses()
       archive\Open(filename)
       Define identifier.s
-      Define numObjects = archive\GetNumObjects()
-      For i=0 To numObjects-1
+      Define numIdentifiers = archive\GetNumIdentifiers()
+      For i=0 To numIdentifiers-1
         identifier = PeekS(archive\GetIdentifier(i), -1, #PB_UTF8)
         If identifier <> "/"
           Define iObject.IObject = AddIObject(archive, i)
@@ -644,13 +645,13 @@ Module Alembic
   
   Procedure.i LoadABCArchive(path.s)
     If FileSize(path)>0 And GetExtensionPart(path) = "abc"
+      
       Protected manager.IArchiveManager = abc_manager
       If manager<>#Null
         Protected archive.IArchive = Alembic::OpenIArchive(path)
         ; Create a new Model
         Protected *model.Model::Model_t = Model::New("Alembic")
         If archive\IsValid()
-          If Not archive\NumUses(): archive\Open(path) : EndIf
           
           Define id = 1
           ;Create Objects contained in alembic file
@@ -660,21 +661,16 @@ Module Alembic
           Protected *child.Object3D::Object3D_t
           Protected identifier.s
           For i=0 To archive\GetNumObjects()-1
-            identifier = PeekS(archive\GetIdentifier(i), -1, #PB_UTF8)
-            Debug identifier
-            If identifier <> "/"
-              *abc_obj = AlembicIObject::New(archive\GetObject(j))
-              If *abc_obj <> #Null
-                AlembicIObject::Init(*abc_obj,*abc_par)
-                If AlembicIObject::Get3DObject(*abc_obj)<>#Null
-                  *abc_par = #Null
-                  *child = AlembicIObject::Get3DObject(*abc_obj)
-                  Object3D::AddChild(*model,*child)
-                Else 
-                  *abc_par = *abc_obj
-                EndIf
+            *abc_obj = AlembicIObject::New(archive\GetObject(i))
+            If *abc_obj <> #Null
+              AlembicIObject::Init(*abc_obj,*abc_par)
+              If AlembicIObject::Get3DObject(*abc_obj)<>#Null
+                *abc_par = #Null
+                *child = AlembicIObject::Get3DObject(*abc_obj)
+                Object3D::AddChild(*model,*child)
+              Else 
+                *abc_par = *abc_obj
               EndIf
-              j + 1
             EndIf
             
           Next i
@@ -1450,7 +1446,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 457
-; FirstLine = 428
+; CursorPosition = 653
+; FirstLine = 653
 ; Folding = --------
 ; EnableXP

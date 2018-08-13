@@ -44,7 +44,7 @@ Global numVertices
 Procedure Draw(*app.Application::Application_t)
   Time::currentframe + 1
   If Time::currentframe>100 : Time::currentframe = 1:EndIf
-  
+  Scene::Update(Scene::*current_scene)
   ViewportUI::SetContext(*viewport)
   ViewportUI::Draw(*viewport, *app\context)
   FTGL::BeginDraw(*app\context\writer)
@@ -57,9 +57,6 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
-
-  
-  
 EndProcedure
     
 Define model.m4f32
@@ -91,7 +88,7 @@ If Time::Init()
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/PureBasic/Noodle/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
     Define i
-    *model = Model::New("FUCK")
+    *model = Model::New("Alembic")
     For i=0 To 0:
       Define *abc.Model::Model_t = Alembic::LoadABCArchive(path)
 ;       Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
@@ -105,7 +102,21 @@ If Time::Init()
     Next
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
     Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Elephant.abc","Alembic (*.abc)|*.abc",0)
-    *model = Alembic::LoadABCArchive(path)
+    Define i
+    For i=0 To 12
+      *model = Alembic::LoadABCArchive(path)
+      Define *t.Transform::Transform_t = *model\localT
+      Define p.v3f32
+      Define q.v3f32
+      Vector3::Set(@p,Random(50)-25,Random(10),0)
+      Quaternion::Randomize(@q)
+      Transform::SetTranslation(*t, @p)
+      Transform::SetRotationFromQuaternion(*t, @q)
+      Object3D::SetlocalTransform(*model, *t)
+      Scene::AddModel(Scene::*current_scene,*model)
+      
+    Next
+    
   CompilerElse
     Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Elephant.abc","Alembic (*.abc)|*.abc",0)
     *model = Alembic::LoadABCArchive(path)
@@ -137,14 +148,14 @@ If Time::Init()
    ViewportUI::AddLayer(*viewport, *layer)
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
-  Scene::AddModel(Scene::*current_scene,*model)
+  
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 8
-; FirstLine = 4
+; CursorPosition = 113
+; FirstLine = 91
 ; Folding = -
 ; EnableThread
 ; EnableXP

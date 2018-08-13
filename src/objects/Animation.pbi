@@ -167,31 +167,48 @@ Module Animation
     If FileSize(path)>0 And GetExtensionPart(path) = "abc"
     
       If Alembic::abc_manager<>#Null
-        Protected abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
-        Protected abc_archive.Alembic::IArchive = abc_manager\OpenArchive(path)
-        
-        Protected *obj.AlembicIObject::AlembicIObject_t = abc_archive\GetObjectByName(identifier)
-        AlembicIObject::Init(*obj,#Null)
-        
-        *animation\startframe = abc_archive\GetStartTime()
-        *animation\endframe = abc_archive\GetEndTime()
-        
-        MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
-
-        Protected sample.Alembic::ABC_Skeleton_Sample
-        Protected infos.Alembic::ABC_Skeleton_Sample_Infos
-        
-        Protected *geom.Geometry::PointCloudGeometry_t = *obj\obj\geom
-        Protected *ids.CArray::CArrayInt = CArray::newCArrayInt()
-        Protected *scl.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-        Protected *rot.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
-        Protected *pos.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-        Protected *col.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
-        Protected *Ts.CArray::CArrayTRF32 = CArray::newCArrayTRF32()
-        
-        Protected i,j
-        
-        Debug "OBJECT : "+Str( *obj\iObj )
+        Protected archive.Alembic::IArchive = Alembic::OpenIArchive(path)
+        If archive\IsValid()
+          If Not archive\NumUses(): archive\Open(path) : EndIf
+          
+          Protected *model.Model::Model_t = Model::New("Alembic")
+          j=0
+          For i=0 To archive\GetNumObjects()-1
+            If PeekS(archive\GetIdentifier(i), -1, #PB_UTF8) = identifier
+              *abc_obj = AlembicIObject::New(archive\GetObject(j))
+              If *abc_obj <> #Null
+                AlembicIObject::Init(*abc_obj,#Null)
+                If AlembicIObject::Get3DObject(*abc_obj)<>#Null
+                  *child = AlembicIObject::Get3DObject(*abc_obj)
+                  Object3D::AddChild(*model,*child)
+                EndIf
+              EndIf
+              j + 1
+            EndIf
+            
+          Next i
+          
+         
+;           Protected *obj.AlembicIObject::AlembicIObject_t = AlembicIObject::New(archive\GetObject(1));ByName(identifier))
+;           AlembicIObject::Init(*obj,#Null)
+;           
+;           *animation\startframe = archive\GetStartTime()
+;           *animation\endframe = archive\GetEndTime()
+;           
+;           MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
+;   
+;           Protected sample.Alembic::ABC_Skeleton_Sample
+;           Protected infos.Alembic::ABC_Skeleton_Sample_Infos
+;           
+;           Protected *geom.Geometry::PointCloudGeometry_t = *obj\obj\geom
+;           Protected *ids.CArray::CArrayInt = CArray::newCArrayInt()
+;           Protected *scl.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+;           Protected *rot.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
+;           Protected *pos.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+;           Protected *col.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
+;           Protected *Ts.CArray::CArrayTRF32 = CArray::newCArrayTRF32()
+;           
+;           Debug "OBJECT : "+Str( *obj\iObj )
         
 ;         Alembic::ABC_GetSkeletonSampleDescription(*obj\ptr,0,@infos)
 ;         *animation\nbitems = infos\nbpoints
@@ -389,6 +406,8 @@ Module Animation
       Else
         MessageRequester( "[Animation] "," Invalid Alembic Manager")
       EndIf
+    EndIf
+    
   ;     ProcedureReturn *model
     Else
       MessageRequester( "[Animation] "," Invalid File")
@@ -398,7 +417,7 @@ Module Animation
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 312
-; FirstLine = 338
+; CursorPosition = 173
+; FirstLine = 161
 ; Folding = --
 ; EnableXP

@@ -370,6 +370,7 @@ DeclareModule Quaternion
   Declare LookAt(*q.q4f32,*dir.v3f32,*up.v3f32,transpose.b = #False)
   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
+  Declare Randomize(*q.q4f32)
   Declare Echo(*q.q4f32,prefix.s ="")
   Declare.s ToString(*q.q4f32)
   Declare FromString(*q.q4f32, s.s)
@@ -1541,6 +1542,17 @@ Module Quaternion
   EndProcedure
   
   ;-----------------------------------------
+  ; Randomize
+  ;-----------------------------------------
+  Procedure Randomize(*q.q4f32)
+    Protected x.f,y.f,z.f
+    x = Random(255)/255
+    y = Random(255)/255
+    z = Random(255)/255
+    Set(*q, Sqr(x*Cos(#F32_2_PI*z)), Sqr(1-x*Sin(#F32_2_PI*y)), Sqr(1-x*Cos(#F32_2_PI*y)), Sqr(x*Sin(#F32_2_PI*z)))
+  EndProcedure
+  
+  ;-----------------------------------------
   ; Slerp
   ;-----------------------------------------
   
@@ -2641,8 +2653,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 299
-; FirstLine = 285
-; Folding = --------------------------------
+; CursorPosition = 1551
+; FirstLine = 1535
+; Folding = ---------------------------------
 ; EnableXP
 ; EnableUnicode
