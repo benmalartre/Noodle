@@ -365,7 +365,7 @@ Module Scene
           Case Object3D::#Object3D_Null
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
             child\Setup(*ctx\shaders("wireframe"))
         EndSelect
@@ -397,7 +397,7 @@ Module Scene
           Case Object3D::#Object3D_Null
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
             child\Setup(*ctx\shaders("wireframe"))
       EndSelect
@@ -797,8 +797,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 152
+; CursorPosition = 399
+; FirstLine = 345
 ; Folding = -------
 ; EnableThread
 ; EnableXP

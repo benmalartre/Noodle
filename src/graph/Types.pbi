@@ -318,8 +318,9 @@ DeclareModule Node
     List *nodes.Node::Node_t()
     List *connexions.Connexion::Connexion_t()
     List *exposers.Connexion::Connexion_t()
+    
     ;current port
-    *port.CGraphNodePort 
+    *port.NodePort::NodePort_t
   EndStructure
   
   Global NODE_BORDER_WIDTH.i
@@ -576,7 +577,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 318
+; CursorPosition = 313
+; FirstLine = 292
 ; Folding = ---
 ; EnableXP

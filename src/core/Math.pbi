@@ -5,7 +5,6 @@ DeclareModule Math
   ; ----------------------------------------------------------------------------
   ;  Limits
   ; ----------------------------------------------------------------------------
-  
   #S8_MIN     = (-128)
   #S8_MAX     =   127
   #U8_MIN     =     0
@@ -74,6 +73,8 @@ DeclareModule Math
   
   #MIN_VECTOR_LENGTH = 1e-10
   #MIN_ORTHO_TOLERANCE = 1e-6
+  
+  #RAND_MAX = 2147483647                ; according to help for Random()
 
   ; ----------------------------------------------------------------------------
   ;  Maximum Macro
@@ -251,9 +252,18 @@ DeclareModule Math
     scl.v3f32
   EndStructure
   
+  ; ----------------------------------------------------------------------------
+  ;  Declare
+  ; --------------------------------------------------------------------------
   Declare.f Max(a.f,b.f)
   Declare.f Min(a.f,b.f)
   Declare.b IsClose(value.f, root.f, tolerance.f)
+  Declare.f Random_0_1()
+  Declare UniformPointOnCircle(*p.v2f32, radius.f=1.0)
+  Declare.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
+  Declare.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
+  Declare UniformPointOnSphere(*p.v3f32, radius.f=1.0)
+  Declare MapDiscPointToSphere(*dp.v2f32, *sp.v3f32)
 EndDeclareModule
 
 ;====================================================================
@@ -371,6 +381,9 @@ DeclareModule Quaternion
   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
   Declare Randomize(*q.q4f32)
+  Declare Randomize2(*q.q4f32)
+  Declare RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+  Declare RandomizeAroundPlane(*q.q4f32)
   Declare Echo(*q.q4f32,prefix.s ="")
   Declare.s ToString(*q.q4f32)
   Declare FromString(*q.q4f32, s.s)
@@ -433,6 +446,7 @@ DeclareModule Color
     Color::?COLOR_BLACK
   EndMacro
   
+  
   Declare AddInplace(*c1.c4f32,*c2.c4f32)
   Declare Add(*io.c4f32,*a.c4f32,*b.c4f32)
   Declare Set(*io.c4f32,r.f=0,g.f=0,b.f=0,a.f=1)
@@ -441,6 +455,7 @@ DeclareModule Color
   Declare NormalizeInPlace(*c.c4f32)
   Declare Randomize(*c.c4f32)
   Declare RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
+  Declare LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
   Declare Echo(*c.c4f32,prefix.s ="")
   Declare.s ToString(*c.c4f32)
   Declare FromString(*c.c4f32, s.s)
@@ -532,7 +547,7 @@ EndDeclareModule
 
 
 ;====================================================================
-; MathType Module Implementation(Empty)
+; Math Module Implementation
 ;====================================================================
 Module Math
   Procedure.f Max(a.f,b.f)
@@ -561,6 +576,67 @@ Module Math
     EndIf
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
+  ;  Random 0 to 1
+  ; ----------------------------------------------------------------------------
+  Procedure.f Random_0_1()
+    ProcedureReturn Random(#RAND_MAX)/#RAND_MAX
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Circle
+  ; ----------------------------------------------------------------------------
+  Procedure UniformPointOnCircle(*p.v2f32, radius.f=1.0)
+    Protected angle.f = Random_0_1() * #F32_2PI 
+    Vector2::Set(*p, Cos(angle) * radius, Sin(angle) * radius)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Disc (Rejection Method)
+  ; ----------------------------------------------------------------------------
+  Procedure.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
+    Protected d.f = 1.0
+    While d>=1.0
+      *p\x = 2.0*Random_0_1()-1.0
+      *p\y = 2.0*Random_0_1()-1.0
+      d = Pow(*p\x, 2) + Pow(*p\y, 2)
+    Wend
+    *p\x * radius
+    *p\y * radius
+    ProcedureReturn Vector2::Length(*p)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Disc (Polar Method)
+  ; ----------------------------------------------------------------------------
+  Procedure.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
+    Protected angle.f = Random_0_1() * #F32_2PI 
+    Protected r.f = Sqr(Random_0_1())
+    Vector2::Set(*p, Cos(angle) * radius * r, Sin(angle) * radius * r)
+    ProcedureReturn Vector2::Length(*p)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Sphere
+  ; ----------------------------------------------------------------------------
+  Procedure UniformPointOnSphere(*p.v3f32, radius.f=1.0)
+    *p\z = 1 - 2.0 * Random_0_1()
+    Protected t.f = #F32_2PI * Random_0_1()
+    Protected w.f = Sqr(1.0 - Pow(*p\z, 2))
+    *p\x = w * Cos(t)
+    *p\y = w * Sin(t)
+    Vector3::ScaleInPlace(*p, radius)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Map Disc Point To Sphere
+  ; ----------------------------------------------------------------------------
+  Procedure MapDiscPointToSphere(*dp.v2f32, *sp.v3f32)
+    Protected w.f = Pow(*dp\x,2) + Pow(*dp\y, 2)
+    Protected x.f = 2 * *dp\x * Sqr(1 - w)
+    Protected y.f = 2 * *dp\y * Sqr(1 - w)
+    Protected z.f = 1 - 2*w
+  EndProcedure
   
 EndModule
 
@@ -1520,6 +1596,7 @@ Module Quaternion
     Set(@t,*q\x,*q\y,*q\z,*q\w)
     Add(*q,@t,*o)
   EndProcedure
+  
 
 
   ;-----------------------------------------
@@ -1549,8 +1626,42 @@ Module Quaternion
     x = Random(255)/255
     y = Random(255)/255
     z = Random(255)/255
-    Set(*q, Sqr(x*Cos(#F32_2_PI*z)), Sqr(1-x*Sin(#F32_2_PI*y)), Sqr(1-x*Cos(#F32_2_PI*y)), Sqr(x*Sin(#F32_2_PI*z)))
+    Set(*q, Sqr(x*Cos(#F32_2PI*z)), Sqr(1-x*Sin(#F32_2PI*y)), Sqr(1-x*Cos(#F32_2PI*y)), Sqr(x*Sin(#F32_2PI*z)))
   EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize 2 
+  ;-----------------------------------------
+  Procedure Randomize2(*q.q4f32)
+    Define.v2f32 p0,p1
+    Define d1.f = UniformPointOnDisc(@p1) + #F32_EPS
+    Define s1.f = 1/Sqr(d1)
+    Define d0 = UniformPointOnDisc(@p0);  // or positive in 'x' since -Q & Q are equivalent
+    Define s0.f = Sqr(1.0-d0)
+    Define s.f  = s0*s1
+  
+    Set(*q, p0\y, s*p1\x, s*p1\y, p0\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Axis
+  ;-----------------------------------------
+  Procedure RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+    Protected p.v2f32
+    UniformPointOnCircle(@p)
+    Set(*q, p\y * *axis\x, p\y * *axis\y, p\y * *axis\z, p\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Plane
+  ;-----------------------------------------
+  Procedure RandomizeAroundPlane(*q.q4f32)
+    Protected p.v2f32
+    Protected d.f = UniformPointOnDisc2(@p)
+    Protected s.f = Sqr(d)
+    Set(*q, p\x, p\y, 0.0, s)
+  EndProcedure
+  
   
   ;-----------------------------------------
   ; Slerp
@@ -1718,6 +1829,16 @@ Module Color
     *c\g = v
     *c\b = v 
     *c\a = 1.0
+  EndProcedure
+  
+  
+  ; LinearInterpolate
+  ;----------------------------------------
+  Procedure LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
+    LINEAR_INTERPOLATE(*io\r, *c1\r, *c2\r, blend)
+    LINEAR_INTERPOLATE(*io\g, *c1\g, *c2\g, blend)
+    LINEAR_INTERPOLATE(*io\b, *c1\b, *c2\b, blend)
+    LINEAR_INTERPOLATE(*io\a, *c1\a, *c2\a, blend)
   EndProcedure
   
   ; Echo
@@ -2653,8 +2774,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1551
-; FirstLine = 1535
-; Folding = ---------------------------------
+; CursorPosition = 628
+; FirstLine = 624
+; Folding = ----------------------------------
 ; EnableXP
 ; EnableUnicode

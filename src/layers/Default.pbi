@@ -135,6 +135,15 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
     
+    ;Draw Curve Objects
+    ;-----------------------------------------------
+    *shader.Program::Program_t = *ctx\shaders("curve")
+    shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
+    
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
 ;     *shader = *ctx\shaders("wireframe")
@@ -164,7 +173,8 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
     
     Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
-  
+    
+    GLCheckError("DRAW POINTS")
     ; Draw Instance Clouds 
     ;-----------------------------------------------
     *pgm.Program::Program_t = *ctx\shaders("instances")
@@ -205,7 +215,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
-  
+    GLCheckError("DRAW NULLS")
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
   Protected basewidth = *layer\width
@@ -220,7 +230,7 @@ Module LayerDefault
   Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
   glDisable(#GL_DEPTH_TEST)
   glDisable(#GL_BLEND)
-  
+
 ;   Layer::WriteImage(*layer,"D:\Projects\RnD\PureBasic\Noodle\pictures\Test.png",#GL_RGBA)
   EndProcedure
   
@@ -269,7 +279,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 205
-; FirstLine = 179
+; CursorPosition = 145
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

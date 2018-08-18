@@ -55,13 +55,13 @@ DeclareModule Program
     *frag.Shader::Shader_t
     
     pgm.l
+    name.s
   EndStructure
   
-  Declare New(name.s,s_vert.s="",s_frag.s="")
+  Declare New(name.s,s_vert.s="",s_geom.s="",s_frag.s="")
   Declare NewFromName(name.s)
   Declare Delete(*pgm.Program_t)
-  Declare Create(vertex.s, fragment.s, deb.b)
-  Declare Create2(vertex.s, geometry.s,fragment.s, deb.b)
+  Declare Create(name.s, vertex.s, geometry.s, fragment.s, deb.b)
   Declare.l Build(*pgm.Program_t,name.s)
 EndDeclareModule
 
@@ -162,11 +162,7 @@ Module Shader
       Protected shader.s
       While Not Eof(0)
         shader + ReadString(0,#PB_Ascii)+Chr(10)
-          
       Wend
-      
-;       Protected length = FileSize(filename)
-;       Protected shader.s = ReadString(0,#PB_Ascii|#PB_File_IgnoreEOL,length)
       CloseFile(0) 
     Else
       ProcedureReturn ""
@@ -178,8 +174,6 @@ Module Shader
     
     ProcedureReturn shader
   EndProcedure
-  
-  
 
 EndModule
 
@@ -192,12 +186,14 @@ Module Program
   ;-------------------------------------------
   ; Constructor
   ;-------------------------------------------
-  Procedure New(name.s,s_vert.s="",s_frag.s="")
+  Procedure New(name.s,s_vert.s="",s_geom.s="",s_frag.s="")
     
     Protected *pgm.Program_t = AllocateMemory(SizeOf(Program_t))
+    *pgm\name = name
     *pgm\vert = Shader::New(OpenGL::#GL_VERTEX_SHADER,s_vert)
+    *pgm\geom = Shader::New(OpenGL::#GL_GEOMETRY_SHADER, s_geom)
     *pgm\frag = Shader::New(OpenGL::#GL_FRAGMENT_SHADER,s_frag)
-    *pgm\pgm = Create(*pgm\vert \s, *pgm\frag\s, #True)
+    *pgm\pgm = Create(name, *pgm\vert\s, *pgm\geom\s, *pgm\frag\s, #True)
     ProcedureReturn *pgm
   EndProcedure
   
@@ -217,13 +213,20 @@ Module Program
   ;--------------------------------------
   ; Create Simple GLSL program
   ;--------------------------------------
-  
-  Procedure Create(vertex.s, fragment.s, deb.b)
+  Procedure Create(name.s, vertex.s, geometry.s, fragment.s, deb.b)
     Protected code.s
-    Protected vert.l, frag.l
-
-    vert = Shader::Create(@vertex,OpenGL::#GL_VERTEX_SHADER,"Vertex Shader")
-    frag = Shader::Create(@fragment,OpenGL::#GL_FRAGMENT_SHADER,"Fragment Shader")
+    Protected vert.l, geom.l, frag.l
+    Protected hasGeometryShader.b
+    
+    vert = Shader::Create(@vertex,OpenGL::#GL_VERTEX_SHADER,UCase(name)+" Vertex Shader")
+    If geometry <> ""
+      hasGeometryShader = #True
+      geom = Shader::Create(@fragment,OpenGL::#GL_Geometry_SHADER,UCase(name)+" Geometry Shader")
+    Else
+      hasGeometryShader = #False
+    EndIf
+    
+    frag = Shader::Create(@fragment,OpenGL::#GL_FRAGMENT_SHADER,UCase(name)+" Fragment Shader")
     
     GLCheckError("Create Shaders : ")
     Protected program.l = glCreateProgram()
@@ -231,6 +234,12 @@ Module Program
   
     glAttachShader(program,vert)
     GLCheckError("Attach Vertex Shader ")
+    
+    If hasGeometryShader
+      glAttachShader(program,geom)
+      GLCheckError("Attach Geometry Shader ")
+    EndIf
+    
     
     glAttachShader(program,frag) 
     GLCheckError("Attach Fragment Shader ")
@@ -269,74 +278,49 @@ Module Program
      ProcedureReturn program
   EndProcedure
   
-  Procedure Create2(vertex.s,geometry.s, fragment.s, deb.b)
-    Protected code.s
-    Protected vert.l, geom.l, frag.l
-  
-    vert = Shader::Create(@vertex,OpenGL::#GL_VERTEX_SHADER,"vertex_shader")
-    geom = Shader::Create(@geometry,OpenGL::#GL_GEOMETRY_SHADER,"geometry_shader")
-    frag = Shader::Create(@fragment,OpenGL::#GL_FRAGMENT_SHADER,"fragment_shader")
-    
-    GLCheckError("Create Shaders : ")
-    Protected program.l = glCreateProgram()
-    GLCheckError("Create Program : ")
-  
-    glAttachShader(program,vert)
-    GLCheckError("Attach Vertex Shader ")
-    
-    glAttachShader(program,geom)
-    GLCheckError("Attach Geometry Shader ")
-    
-    glAttachShader(program,frag) 
-    GLCheckError("Attach Fragment Shader ")
-    
-  ;   Protected paramName.s = "outColor"
-  ;   glBindFragDataLocation(program,0,@paramName)
-  ;   GLCheckError("Bind Frag Data Location ")
-  ;   
-    glLinkProgram(program)
-    GLCheckError("Link Program : ")
-    
-    glUseProgram(program)
-    GLCheckError("Use Program : ")
-    
-    ProcedureReturn program
-  EndProcedure
-  
   Procedure.l Build(*pgm.Program_t,name.s)
-    Debug "----------------------------------------"
- 
+    Define uname.s = UCase(name)
     Define code.s
+    Define hasGeometryShader.b = #False
     Defineerr.b
+    *pgm\name = name
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_vertex.glsl")
     *pgm\vert = Shader::Create(@code,OpenGL::#GL_VERTEX_SHADER,name+"_vertex")
+    code = Shader::LoadFile(Shader::GLSL_PATH+name+"_geometry.glsl")
+    If code:
+      *pgm\geom = Shader::Create(@code, OpenGL::#GL_GEOMETRY_SHADER, name+"_geometry")
+      hasGeometryShader = #True
+    Else
+      hasGeometryShader = #False
+    EndIf
+    
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_fragment.glsl")    
     *pgm\frag = Shader::Create(@code,OpenGL::#GL_FRAGMENT_SHADER,name+"_fragment")
     
-    err = GLCheckError("Create Shaders : ")
+    err = GLCheckError("Create "+uname+" Shaders : ")
     *pgm\pgm = glCreateProgram()
-    err = GLCheckError("Create Program : ")
+    err = GLCheckError("Create "+uname+" Program : ")
   
     glAttachShader(*pgm\pgm,*pgm\vert)
-    err = GLCheckError("Attach Vertex Shader ")
+    err = GLCheckError("Attach "+uname+" Vertex Shader ")
+    
+    If hasGeometryShader
+      glAttachShader(*pgm\pgm,*pgm\geom)
+      err = GLCheckError("Attach "+uname+" Geometry Shader ")
+    EndIf
     
     glAttachShader(*pgm\pgm,*pgm\frag) 
-    err = GLCheckError("Attach Fragment Shader ")
+    err = GLCheckError("Attach "+uname+" Fragment Shader ")
+    
+    Debug *pgm\pgm
     
     glBindAttribLocation(*pgm\pgm,0,"position")
     
-;     glBindFragDataLocation(program,0,"position")
-;     GLCheckError("Bind Frag Data Location ")
-;     glBindFragDataLocation(program,1,"normal")
-;     GLCheckError("Bind Frag Data Location ")
-;     glBindFragDataLocation(program,2,"color")
-;     GLCheckError("Bind Frag Data Location ")
-    
     glLinkProgram(*pgm\pgm)
-    err = GLCheckError("Link Program : ")
+    err = GLCheckError("Link Program")
 
     glUseProgram(*pgm\pgm)
-    err = GLCheckError("Use Program : ")
+    err = GLCheckError("Use Program")
     
     If err
       Define *mem = AllocateMemory(1024)
@@ -352,6 +336,7 @@ Module Program
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 352
-; Folding = ----
+; CursorPosition = 306
+; FirstLine = 276
+; Folding = ---
 ; EnableXP

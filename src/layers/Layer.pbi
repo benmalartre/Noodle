@@ -94,6 +94,7 @@ DeclareModule Layer
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
  
   Declare GetImage(*layer.Layer::Layer_t, path.s)
    ; ============================================================================
@@ -380,7 +381,7 @@ Module Layer
     
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type & Object3D::#Object3D_Drawer        
+      If *obj\type = Object3D::#Object3D_Drawer        
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         Drawer::Draw(*obj)
       EndIf
@@ -443,6 +444,7 @@ Module Layer
         obj\Draw()
       EndIf
     Next
+    GLCheckError("[Layer] Draw Point Clouds")
   EndProcedure
   
   ;---------------------------------------------------
@@ -461,10 +463,29 @@ Module Layer
         obj\Draw()
       EndIf
     Next
+    GLCheckError("[Layer] Draw Nulls")
   EndProcedure
   
+  ;---------------------------------------------------
+  ; Draw Curves
+  ;---------------------------------------------------
+  Procedure DrawCurves(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    Protected i
+    Protected obj.Object3D::IObject3D
+    Protected *obj.Object3D::Object3D_t
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = Object3D::#Object3D_Curve
+;         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+;         GLCheckError("CURVE PROGRAM MODEL MATRIX")
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+    GLCheckError("[Layer] Draw Curves")
+  EndProcedure
   
-  
+
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
@@ -508,10 +529,8 @@ Module Layer
 
   GLCheckError("[LayerDefault] Draw Polymeshes")
   
-    ; Draw Instance Clouds 
-    ;-----------------------------------------------
-  
-    ;Model::Update(*model)
+  ; Draw Instance Clouds 
+  ;-----------------------------------------------
   Protected *pgm.Program::Program_t = *ctx\shaders("instances")
   glUseProgram(*pgm\pgm)
   Define.m4f32 model,view,proj
@@ -687,7 +706,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 384
-; FirstLine = 372
+; CursorPosition = 479
+; FirstLine = 467
 ; Folding = -----
 ; EnableXP

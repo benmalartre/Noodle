@@ -20,7 +20,6 @@ DeclareModule PolymeshGeometry
   ;Declare Init(*geom.PolymeshGeometry_t)
   Declare GetDualGraph(*geom.PolymeshGeometry_t)
   Declare ResetVisitedTags(*mesh.PolymeshGeometry_t)
-  Declare RecomputeBoundingBox(*mesh.PolymeshGeometry_t,*p_min.v3f32,*p_max.v3f32)
   Declare GetUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
   Declare GetUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
   Declare GetUVWSPerPolygons(*geom.PolymeshGeometry_t)
@@ -1040,12 +1039,6 @@ Module PolymeshGeometry
     ProcedureReturn *mesh\nbsamples
   EndProcedure
   
-  ;---------------------------------------------------------
-  ; Get Nb Vertices
-  ;---------------------------------------------------------
-  Procedure.i GetNbPoints(*mesh.PolymeshGeometry_t)
-    ProcedureReturn *mesh\nbpoints
-  EndProcedure
   
   ;---------------------------------------------------------
   ; Get Nb Edges
@@ -1151,30 +1144,6 @@ Module PolymeshGeometry
     
     ;OPolymeshGeometry_UpdateColors(*mesh)
   EndProcedure
-  
-  ;---------------------------------------------------------
-  ; Get Bounding Box
-  ;---------------------------------------------------------
-  Procedure RecomputeBoundingBox(*mesh.PolymeshGeometry_t,*p_min.v3f32,*p_max.v3f32)
-    Protected i
-    Protected *v.v3f32
-    Vector3::Set(*p_min,#F32_MAX,#F32_MAX,#F32_MAX)
-    Vector3::Set(*p_max,-#F32_MAX,-#F32_MAX,-#F32_MAX)
-  
-    For i=0 To *mesh\nbpoints-1
-      *v = CArray::GetValue(*mesh\a_positions,i)
-      ;Vector3_MulByMatrix4InPlace(*v,*srt)
-      If *v\x < *p_min\x : *p_min\x = *v\x : EndIf
-      If *v\y < *p_min\y : *p_min\y = *v\y : EndIf
-      If *v\z < *p_min\z : *p_min\z = *v\z : EndIf
-      
-      If *v\x > *p_max\x : *p_max\x = *v\x : EndIf
-      If *v\y > *p_max\y : *p_max\y = *v\y : EndIf
-      If *v\z > *p_max\z : *p_max\z = *v\z : EndIf
-    Next i
-    
-  EndProcedure
-  
 
   ;---------------------------------------------------------
   ; Topology Attribute
@@ -2329,8 +2298,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 2255
-; FirstLine = 2107
-; Folding = ---4Hw--9-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1040
+; FirstLine = 1014
+; Folding = ---4H5-P--
 ; EnableXP

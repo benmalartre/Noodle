@@ -25,6 +25,7 @@ XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
 XIncludeFile "../objects/Null.pbi"
+XIncludeFile "../objects/Curve.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
 XIncludeFile "../objects/InstanceCloud.pbi"
@@ -546,6 +547,7 @@ Module Application
     Define event
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
+        Debug "GLFW LOOP"
         ;glfwWaitEvents()
         glfwPollEvents()
         glfwMakeContextCurrent(*app\window)
@@ -589,8 +591,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 48
+; CursorPosition = 549
+; FirstLine = 530
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

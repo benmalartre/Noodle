@@ -375,7 +375,7 @@ Module FTGL
     Protected vert.s = GetVertexShader()
     Protected frag.s = GetFragmentShader()
     
-    *drawer\shader = Program::New("FTGL",vert, frag)
+    *drawer\shader = Program::New("FTGL",vert, "",frag)
     glUseProgram(*drawer\shader\pgm)
     SetupTexture(*drawer)
     Protected attr_coord.GLuint = glGetAttribLocation(*drawer\shader\pgm,"coord")
@@ -386,8 +386,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 382
-; FirstLine = 328
+; CursorPosition = 361
+; FirstLine = 326
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

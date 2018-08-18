@@ -17,8 +17,8 @@ DeclareModule Geometry
     nbpoints.i
     type.i
     *parent
+    *a_positions.CArray::CArrayV3F32
   EndStructure
-  
   
   Enumeration
     #Geometry_Polymesh
@@ -227,7 +227,6 @@ DeclareModule Geometry
     shapetype.i
     dirty.b
     
-    *a_positions.CArray::CArrayV3F32
     *a_velocities.CArray::CArrayV3F32
     *a_normals.CArray::CArrayV3F32
     *a_tangents.CArray::CArrayV3F32
@@ -258,7 +257,6 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   Structure PointCloudGeometry_t Extends Geometry_t
     incrementID.i
-    *a_positions.CArray::CArrayV3F32
     *a_velocities.CArray::CArrayV3F32
     *a_normals.CArray::CArrayV3F32
     *a_tangents.CArray::CArrayV3F32
@@ -273,11 +271,29 @@ DeclareModule Geometry
   ;  Curve Instance
   ; ----------------------------------------------------------------------------
   Structure CurveGeometry_t Extends Geometry_t
-    interpolation.i
-    closed.b
-    *a_positions.CArray::CArrayV3F32
-    *a_samples.CArray::CArrayV3F32
-
+    
+    *a_velocities.CArray::CArrayV3F32
+    *a_numVertices.CArray::CArrayLong
+    *a_numSamples.CArray::CArrayLong
+    *a_colors.CArray::CArrayV3F32
+    
+    nbsamples.i
+    curvetype.l
+    wrap.l
+    ubasis.l
+    vbasis.l
+    
+    *a_widths.CArray::CArrayFloat
+    *a_uvs.CArray::CArrayV2F32
+    *a_normals.CArray::CArrayV3F32
+    
+    
+    
+    ; optional
+    *a_weights.CArray::CArrayFloat
+    *a_orders.CArray::CArrayChar
+    *a_knots.CArray::CArrayFloat
+    
   EndStructure
   
   ; Location Instance
@@ -321,32 +337,42 @@ DeclareModule Geometry
     ;Array *grid.CArray::CArrayPtr()
   EndStructure
   
-  ; Folicle )
-  ; ----------------------------------------------------------------------------
-  Structure Folicle_t
-    radius.i              ;grid size
-    nbp.i
-    position.v3f32
-    normal.v3f32
-    orientation.q4f32
-    *strandposition.CArray::CArrayV3F32
-    *strandNormal.CArray::CArrayV3F32
-    *strandTangent.CArray::CArrayV3F32
-    *strandRadius.CArray::CArrayFloat
-  EndStructure
-  
+  Declare RecomputeBoundingBox(*geom.Geometry_t,*p_min.v3f32,*p_max.v3f32)
+  Declare GetNbPoints(*geom.Geometry_t)
   Declare GetParentObject3D(*Me.Geometry_t)
   Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
   Declare ConstructPlaneFromPositionAndNormal(*Me.Plane_t, *position.v3f32, *normal.v3f32)
 EndDeclareModule
 
 
-
-
 ;========================================================================================
 ; Geometry Module Implementation
 ;========================================================================================
 Module Geometry
+  Procedure RecomputeBoundingBox(*geom.Geometry_t,*p_min.v3f32,*p_max.v3f32)
+    Protected i
+    Protected *v.v3f32
+    Vector3::Set(*p_min,#F32_MAX,#F32_MAX,#F32_MAX)
+    Vector3::Set(*p_max,-#F32_MAX,-#F32_MAX,-#F32_MAX)
+  
+    For i=0 To *geom\nbpoints-1
+      *v = CArray::GetValue(*geom\a_positions,i)
+      ;Vector3_MulByMatrix4InPlace(*v,*srt)
+      If *v\x < *p_min\x : *p_min\x = *v\x : EndIf
+      If *v\y < *p_min\y : *p_min\y = *v\y : EndIf
+      If *v\z < *p_min\z : *p_min\z = *v\z : EndIf
+      
+      If *v\x > *p_max\x : *p_max\x = *v\x : EndIf
+      If *v\y > *p_max\y : *p_max\y = *v\y : EndIf
+      If *v\z > *p_max\z : *p_max\z = *v\z : EndIf
+    Next i
+    
+  EndProcedure
+  
+  Procedure GetNbPoints(*geom.Geometry_t)
+    ProcedureReturn CArray::GetCount(*geom\a_positions)
+  EndProcedure
+  
   
   Procedure GetParentObject3D(*Me.Geometry_t)
     ProcedureReturn *Me\parent
@@ -369,7 +395,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 96
+; CursorPosition = 276
+; FirstLine = 257
 ; Folding = ----
 ; EnableXP

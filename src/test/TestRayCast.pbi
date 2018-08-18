@@ -14,7 +14,6 @@ Structure TestRay_t
   end_pos.v3f32
   direction.v3f32
   ray.Geometry::Ray_t
-  intersection.Null::null_t
   location.Geometry::Location_t
   uvw.v3f32
   dist.f
@@ -31,10 +30,7 @@ Global *bunny.Polymesh::Polymesh_t
 Procedure newTestRay(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32)
   
   Protected *tr.TestRay_t = AllocateMemory(SizeOf(TestRay_t))
-  ; mesh
-  *tr\mesh = *mesh
   
-   ;Origin Null
   *tr\drawer = Drawer::New("Raycast Drawer")
   *tr\drawer\overlay = #True
   ; Ray
@@ -43,12 +39,8 @@ Procedure newTestRay(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32
   Vector3::Sub(*tr\direction,*end,*start)
   Vector3::NormalizeInPlace(*tr\direction)
   Ray::Set(*tr\ray, *tr\start_pos, *tr\direction)
-
-;   *tr\location\geometry 
-;   ; Location
-;   *tr\location = newCLocation(*mesh\geometry,*mesh\global)
   
-  ;Intersection Null
+  ; mesh
   *tr\mesh = *mesh
   *tr\mesh\wireframe_r = 0
   *tr\mesh\wireframe_g = 1
@@ -255,8 +247,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 71
+; CursorPosition = 43
+; FirstLine = 12
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

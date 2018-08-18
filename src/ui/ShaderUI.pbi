@@ -139,11 +139,10 @@ Module ShaderUI
             Select EventType()
               Case #PB_EventType_Change
                 *ui\shader\vert\s =  GetGadgetText(*ui\vertex)
-                MessageRequester("VERTEX CODE : ", *ui\shader\vert\s)
                 CompilerIf #PB_Compiler_Unicode
-                   *ui\shader\pgm = Program::Create(Shader::DeCodeUnicodeShader(*ui\shader\vert\s),Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
+                   *ui\shader\pgm = Program::Create("shader",Shader::DeCodeUnicodeShader(*ui\shader\vert\s),"",Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
                 CompilerElse
-                   *ui\shader\pgm = Program::Create(*ui\shader\vert\s,*ui\shader\frag\s,#True)
+                   *ui\shader\pgm = Program::Create("shader",*ui\shader\vert\s,"",*ui\shader\frag\s,#True)
                 CompilerEndIf
                
             EndSelect
@@ -154,9 +153,9 @@ Module ShaderUI
               Case #PB_EventType_Change
                 *ui\shader\frag\s = GetGadgetText(*ui\frag)
                 CompilerIf #PB_Compiler_Unicode
-                  *ui\shader\pgm = Program::Create(Shader::DeCodeUnicodeShader(*ui\shader\vert\s),Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
+                  *ui\shader\pgm = Program::Create("shader", Shader::DeCodeUnicodeShader(*ui\shader\vert\s),"",Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
                 CompilerElse
-                  *ui\shader\pgm = Program::Create(*ui\shader\vert\s,*ui\shader\frag\s,#True)
+                  *ui\shader\pgm = Program::Create("shader", *ui\shader\vert\s,"",*ui\shader\frag\s,#True)
                 CompilerEndIf
                 
             EndSelect
@@ -252,7 +251,7 @@ Module ShaderUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 212
-; FirstLine = 199
+; CursorPosition = 157
+; FirstLine = 111
 ; Folding = --
 ; EnableXP

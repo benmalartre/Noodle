@@ -1,6 +1,5 @@
-#USE_ALEMBIC = #True
-#USE_BULLET = #False
-#USE_GLFW = #True
+
+
 
 MessageRequester("Current Path", #PB_Compiler_FilePath)
 
@@ -206,11 +205,7 @@ Procedure UpdateWorld(*app.Application::Application_t)
   Model::Draw(*ship,*app\context)
   ;ship\Draw()
   
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::BeginDraw(*ftgl_drawer)
   If w>0
     Define ss.f = 0.85/w
     Define ratio.f = w / h
@@ -220,9 +215,8 @@ Procedure UpdateWorld(*app.Application::Application_t)
     FTGL::Draw(*ftgl_drawer,"User : "+UserName(),-0.9,0.85,ss,ss*ratio)
     FTGL::Draw(*ftgl_drawer,"FPS : "+StrF(*app\fps),-0.9,0.8,ss,ss*ratio)
   EndIf
-  
-  glDisable(#GL_BLEND)
-  
+  FTGL::EndDraw(*ftgl_drawer)
+
 EndProcedure
 
 
@@ -257,9 +251,11 @@ Model::Setup(*ship,*polymesh_pgm)
 ;Polymesh::Setup(*ship)
 *ftgl_drawer = FTGL::New()
 Application::Loop(*app,@UpdateWorld())
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 52
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 218
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW = 1
+; Constant = #USE_BULLET=0
+; Constant = #USE_ALEMBIC=1

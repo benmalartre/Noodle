@@ -7,7 +7,7 @@ DeclareModule GLContext
   UseModule OpenGL
   #MAX_GL_CONTEXT = 5
   Global counter = 0
-  Global Dim shadernames.s(22)
+  Global Dim shadernames.s(23)
   shadernames(0) = "selection"
   shadernames(1) = "simple"
   shadernames(2) = "wireframe"
@@ -30,6 +30,7 @@ DeclareModule GLContext
   shadernames(19) = "shadowCSMdefered"
   shadernames(20) = "simple2D"
   shadernames(21) = "bitmap"
+  shadernames(22) = "curve"
 
   Structure GLContext_t
     *window.GLFWwindow      ;main window holding gl context shared by all other gl windows
@@ -175,8 +176,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 117
+; CursorPosition = 165
+; FirstLine = 116
 ; Folding = --
 ; EnableXP
 ; EnableUnicode
