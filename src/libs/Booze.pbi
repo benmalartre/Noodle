@@ -651,7 +651,7 @@ Module Alembic
         Protected archive.IArchive = Alembic::OpenIArchive(path)
         ; Create a new Model
         Protected *model.Model::Model_t = Model::New("Alembic")
-        If archive\IsValid()
+         If archive\IsValid()
           
           Define id = 1
           ;Create Objects contained in alembic file
@@ -1446,7 +1446,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 653
-; FirstLine = 653
+; CursorPosition = 597
+; FirstLine = 581
 ; Folding = --------
 ; EnableXP

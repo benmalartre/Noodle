@@ -113,20 +113,20 @@ Module Ray
   ;---------------------------------------------------------
   Procedure.b BoxIntersection(*ray.Geometry::Ray_t, *box.Geometry::Box_t)
     Define.f tx1,tx2,ty1,ty2,tz1,tz2,tmin,tmax
-    tx1 = (*box\bmin\x - *ray\origin\x)* *ray\inv_direction\x
-    tx2 = (*box\bmax\x - *ray\origin\x)* *ray\inv_direction\x
+    tx1 = (*box\origin\x - *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
+    tx2 = (*box\origin\x + *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
    
     tmin = Min(tx1, tx2)
     tmax = Max(tx1, tx2)
    
-    ty1 = (*box\bmin\y - *ray\origin\y)* *ray\inv_direction\y
-    ty2 = (*box\bmax\y - *ray\origin\y)* *ray\inv_direction\y
+    ty1 = (*box\origin\y - *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
+    ty2 = (*box\origin\y + *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
    
     tmin = Max(tmin, Min(ty1, ty2))
     tmax = Min(tmax, Max(ty1, ty2))
     
-    tz1 = (*box\bmin\z - *ray\origin\z)* *ray\inv_direction\z
-    tz2 = (*box\bmax\z - *ray\origin\z)* *ray\inv_direction\z
+    tz1 = (*box\origin\z - *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
+    tz2 = (*box\origin\z + *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
    
     tmin = Max(tmin, Min(tz1, tz2))
     tmax = Min(tmax, Max(tz1, tz2))
@@ -307,7 +307,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 27
+; CursorPosition = 118
+; FirstLine = 93
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

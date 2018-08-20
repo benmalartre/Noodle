@@ -54,6 +54,8 @@ DeclareModule PolymeshGeometry
   Declare DiscTopology(*topo.Topology_t,radius.f,u.i=8)
   Declare SphereTopology(*topo.Topology_t,radius.f=1,lats.i=8,longs.i=8)
   Declare GridTopology(*topo.Topology_t,radius.f,u.i,v.i)
+  Declare InitSampling(*mesh.PolymeshGeometry_t)
+  Declare Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
 EndDeclareModule
 
 ;========================================================================================
@@ -278,7 +280,9 @@ Module PolymeshGeometry
     
     Define.v3f32 bmin,bmax
     If normalize
-      RecomputeBoundingBox(*geom,@bmin,@bmax)
+      Geometry::ComputeBoundingBox(*geom)
+      Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
+      Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
       ; Normalized UVs
       Define.v3f32 va,vb,vc,offset,scl,delta
       
@@ -620,7 +624,7 @@ Module PolymeshGeometry
   ;  Recompute Vertex Polygons
   ; ----------------------------------------------------------------------------
   Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
-
+    Debug "RECOMPUTE POLYGONS : "+Str(*mesh\nbpolygons)
     Protected i, j, k, nbv, base, total
     Protected Dim indices.s(*mesh\nbpoints)
     base=0
@@ -710,13 +714,13 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure Set2(*mesh.PolymeshGeometry_t,*topo.Topology_t)
     
-    ;   ;---[ Clear Old Memory (maybe ruse it??)]-----------------------
+    ; Clear Old Memory
     Clear(*mesh)
     
-    ;---[ ReAllocate Memory ]---------------------------------------
+    ; ReAllocate Memory
     Protected i
     Protected nbp = CArray::GetCount(*topo\vertices)
-;     CArray::SetCount(*mesh\a_vertices,0)
+
     CArray::SetCount(*mesh\a_positions,nbp)
     CArray::SetCount(*mesh\a_velocities,nbp)
     CArray::SetCount(*mesh\a_pointnormals,nbp)
@@ -774,7 +778,6 @@ Module PolymeshGeometry
         counter+1
       EndIf
     Next i
-    
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
     
     ; Copy Topo Data
@@ -801,7 +804,9 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Set
   ;---------------------------------------------------------
-  Procedure Set(*mesh.PolymeshGeometry_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayInt)
+  Procedure Set(*mesh.PolymeshGeometry_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong)
+    Debug "POLYMESH SET : "
+    CArray::Echo(*faces)
     ; Copy Topo Data
     Topology::Set(*mesh\topo,*vertices,*faces)
     ; Rebuild Geometry
@@ -835,7 +840,7 @@ Module PolymeshGeometry
   Procedure Reset(*geom.PolymeshGeometry_t)
     
     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
-      Set2(*geom,*geom\base)
+      ;Set2(*geom,*geom\base)
     Else
       SetPointsPosition(*geom,*geom\base\vertices)
       ;SetPointsNormal(*geom,*geom\base\normals)
@@ -1079,6 +1084,102 @@ Module PolymeshGeometry
     CArray::Copy(*io_norm,*mesh\a_normals)
     
   EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Triangle Area (given three edges length)
+  ;---------------------------------------------------------
+  Procedure.f TriangleArea(a.f, b.f, c.f)
+	  Protected p.f = (a + b + c) / 2.0
+	  ProcedureReturn Sqr(p*(p - a)*(p - b)*(p - c))
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Compute Polygon Areas
+  ;---------------------------------------------------------
+  Procedure ComputePolygonAreas(*mesh.PolymeshGeometry_t)
+
+    Protected nbv, nbt, last
+    Protected a, b, c, t = 0
+    Protected x, y, z=0
+    Protected area.f, tArea.f
+    *mesh\totalArea = 0.0
+    Protected ab.v3f32, ac.v3f32, bc.v3f32
+    CArray::SetCount(*mesh\a_triangleareas, *mesh\nbtriangles)
+    CArray::SetCount(*mesh\a_polygonareas, *mesh\nbpolygons)
+    
+  
+    ; Loop Per Polygon
+    ;------------------------------------
+    For x=0 To CArray::GetCount(*mesh\a_facecount)-1
+
+      ; Get Nb Vertices
+      nbv = CArray::GetValueL(*mesh\a_facecount,x)
+
+      ; Get Nb Triangles
+      nbt = nbv-2
+      ; Get Last Point
+      last = z+nbv-1
+      ;Reset Area
+      area = 0
+      ; Compute and Store Area
+      For y=0 To nbt-1
+        a = CArray::GetValueL(*mesh\a_faceindices,z+y)
+        b = CArray::GetValueL(*mesh\a_faceindices,z+y+1)
+        c = CArray::GetValueL(*mesh\a_faceindices,last)
+        
+        Vector3::Sub(@ab, CArray::GetValue(*mesh\a_positions, b), CArray::GetValue(*mesh\a_positions, a))
+        Vector3::Sub(@ac, CArray::GetValue(*mesh\a_positions, c), CArray::GetValue(*mesh\a_positions, a))
+        Vector3::Sub(@bc, CArray::GetValue(*mesh\a_positions, c), CArray::GetValue(*mesh\a_positions, b))
+        tArea = TriangleArea(Vector3::Length(@ab), Vector3::Length(@ac), Vector3::Length(@bc))
+        CArray::SetValueF(*mesh\a_triangleareas, t, tArea)
+        t + 1
+        area + tArea
+      Next y
+      *mesh\totalArea + area
+      CArray::SetValueF(*mesh\a_polygonareas, x, area)
+      z+nbv
+    Next x
+
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Init Sampling
+  ;---------------------------------------------------------
+  Procedure InitSampling(*mesh.PolymeshGeometry_t)
+    ComputePolygonAreas(*mesh)
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Init Sampling
+  ;---------------------------------------------------------
+  Procedure Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
+    Protected r.f
+    Protected loc.Geometry::Location_t
+    loc\geometry = *mesh
+    loc\t = *t
+    CArray::SetCount(*io, numSamples)
+    Protected i, j
+    For i=0 To numSamples - 1
+      r = Random_0_1() * *mesh\totalArea
+      For j=0 To *mesh\nbtriangles - 1
+        If r < CArray::GetValueF(*mesh\a_triangleareas, j)
+          loc\u=Random_0_1()
+          loc\v=Random_0_1()
+          If loc\u + loc\v > 1
+            loc\u = 1-loc\u
+            loc\v = 1-loc\v
+          EndIf
+          loc\w = 1-loc\u-loc\v
+          loc\tid = j
+          CArray::SetValue(*io, i, Location::GetPosition(@loc))
+          Break
+        Else
+          r - CArray::GetValueF(*mesh\a_triangleareas, j)
+        EndIf
+      Next
+    Next
+  EndProcedure
+  
   
   ;---------------------------------------------------------
   ; Visit Neighbors
@@ -2175,6 +2276,8 @@ Module PolymeshGeometry
     CArray::Delete(*Me\a_faceindices)
     CArray::Delete(*Me\a_vertexpolygoncount)
     CArray::Delete(*Me\a_vertexpolygonindices)
+    CArray::Delete(*Me\a_polygonareas)
+    CArray::Delete(*Me\a_triangleareas)
 ;     CArray::Delete(*Me\a_polygons)
 ;     CArray::Delete(*Me\a_edges)
 ;     CArray::Delete(*Me\a_vertices)
@@ -2253,6 +2356,8 @@ Module PolymeshGeometry
     *Me\a_colors = CArray::newCArrayC4F32()
     *Me\a_vertexpolygoncount = CArray::newCArrayLong()
     *Me\a_vertexpolygonindices = CArray::newCArrayLong()
+    *Me\a_polygonareas = CArray::newCArrayFloat()
+    *Me\a_triangleareas = CArray::newCArrayFloat()
     
   ;   *Me\base = newCPolymeshTopology()
     *Me\topo  = Topology::New()
@@ -2299,7 +2404,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1040
-; FirstLine = 1014
-; Folding = ---4H5-P--
+; CursorPosition = 842
+; FirstLine = 836
+; Folding = ---4H9--z--
 ; EnableXP

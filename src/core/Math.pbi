@@ -484,6 +484,18 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Matrix4
   UseModule Math
+  DataSection
+    M_IDENTITY:
+    Data.f 1.0,0.0,0.0,0.0
+    Data.f 0.0,1.0,0.0,0.0
+    Data.f 0.0,0.0,1.0,0.0
+    Data.f 0.0,0.0,0.0,1.0
+  EndDataSection
+  
+  Macro IDENTITY()
+    Matrix4::?M_IDENTITY
+  EndMacro
+  
   Declare Set(*m.m4f32,m00.f,m01.f,m02.f,m03.f,m10.f,m11.f,m12.f,m13.f,m20.f,m21.f,m22.f,m23.f,m30.f,m31.f,m32.f,m33.f)
   Declare SetZero(*m.m4f32)
   Declare SetIdentity(*m.m4f32)
@@ -2774,8 +2786,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 628
-; FirstLine = 624
+; CursorPosition = 497
+; FirstLine = 437
 ; Folding = ----------------------------------
 ; EnableXP
 ; EnableUnicode

@@ -193,7 +193,7 @@ Module CurveGeometry
 	EndProcedure
 	
 	;---------------------------------------------------------
-  ; Get Curve Length
+  ; Compute Curve Length
   ;---------------------------------------------------------
 	Procedure.f ComputeLength(*Me.CurveGeometry_t, index.i)
 	  If index <0 Or index >CArray::GetCount(*Me\a_numVertices)
@@ -209,7 +209,37 @@ Module CurveGeometry
 	EndProcedure
 	
 	;---------------------------------------------------------
-  ; Get Curve Samples
+  ; Compute Curve Normals
+  ;---------------------------------------------------------
+	Procedure ComputeNormals(*Me.CurveGeometry_t)
+	  Protected i, j, base=0
+	  Protected numVertices.i
+	  Protected nrm.v3f32
+	  Protected upv.v3f32
+	  Vector3::Set(@upv, 0,0,1)
+	  For i=0 To CArray::GetCount(*Me\a_numVertices)
+	    numVertices = CArray::GetValueL(*Me\a_numVertices, i)
+	    For j=0 To numVertices -1
+	      If j = 0
+          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, base+1), CArray::GetValue(*me\a_positions, base))
+        ElseIf j = numVertices - 2 Or *Me\nbpoints = j + base + 1
+          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, base + j), CArray::GetValue(*me\a_positions, base+j-1))
+        Else
+          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, j+base), CArray::GetValue(*me\a_positions, j+base-1))
+          Vector3::Sub(@t2, CArray::GetValue(*me\a_positions, j+base+1), CArray::GetValue(*me\a_positions, j+base))
+          Vector3::AddInPlace(@t1, @t2)
+          Vector3::ScaleInPlace(@t1, 0.5)
+        EndIf
+        Vector3::Cross(@norm, @t1, @upv)
+        Vector3::NormalizeInPlace(@norm)
+        CArray::SetValue(*Me\a_normals, j+base, @norm)
+      Next
+      base + numVertices
+    Next
+	EndProcedure
+	
+	;---------------------------------------------------------
+  ; Compute Curve Samples
   ;---------------------------------------------------------
 	Procedure.f ComputeSamples(*Me.CurveGeometry_t)
 	  Protected i
@@ -221,7 +251,7 @@ Module CurveGeometry
 	  CArray::SetCount(*Me\a_numSamples, numCurves)
 	  For i=0 To numCurves - 1
 	    numVertices = CArray::GetValueL(*Me\a_numVertices, i)
-	    numSamples = Random(10)+16
+	    numSamples = Random(10)+64
 	    
 	    CArray::SetValueL(*Me\a_numSamples, i, numSamples)
 	    base + numVertices
@@ -269,6 +299,14 @@ Module CurveGeometry
   Procedure GetCatmullTangent(*T.v3f32, *A.v3f32, *B.v3f32)
     Vector3::Sub(*T, *B, *A)
     Vector3::NormalizeInPlace(*T)
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Catmull Normal
+  ;---------------------------------------------------------
+  Procedure GetCatmullNormal(*N.v3f32, *A.v3f32, *B.v3f32, blend.f)
+    Vector3::LinearInterpolate(*N, *A, *B, blend)
+    Vector3::NormalizeInPlace(*N)
   EndProcedure
   
   
@@ -402,6 +440,45 @@ Module CurveGeometry
       offsetVertex + nbVertices
      Next
 
+   EndProcedure
+   
+   ;---------------------------------------------------------
+  ; Catmull Interpolate Normals
+  ;---------------------------------------------------------
+  Procedure CatmullInterpolateNormals(*Me.CurveGeometry_t, *normals.CArray::CArrayV3F32)
+    Protected index.i
+    Protected nbSamples.i
+    Protected nbVertices.i
+    Protected offsetSample.i = 0
+    Protected offsetVertex.i = 0
+    Protected gPos.f, fInc.f
+    Protected i, ip1
+    Protected u.f
+    
+    For index=0 To CArray::GetCount(*Me\a_numVertices) - 1
+      nbVertices = CArray::GetValueL(*Me\a_numVertices, index)
+      nbSamples = CArray::GetValueL(*Me\a_numSamples, index)
+      gPos = (nbVertices - 1) / (nbSamples-1)
+      fInc = gPos
+      
+          
+      For i=0 To nbSamples - 1
+        ip1 = Int(gPos) + offsetVertex
+        u = gPos - Round(gPos, #PB_Round_Down)
+        If ip1 <= offsetVertex
+          GetCatmullNormal(CArray::GetValue(*normals, offsetSample+i), CArray::GetValue(*Me\a_normals, offsetVertex), CArray::GetValue(*Me\a_normals, offsetVertex+1),u)
+        ElseIf ip1 >=  (offsetVertex + nbVertices - 2) 
+          GetCatmullNormal(CArray::GetValue(*normals, offsetSample+i), CArray::GetValue(*Me\a_normals, offsetVertex+ nbVertices - 2), CArray::GetValue(*Me\a_normals, offsetVertex+ nbVertices - 2),u)
+        Else
+          GetCatmullNormal(CArray::GetValue(*normals, offsetSample+i), CArray::GetValue(*Me\a_normals, ip1), CArray::GetValue(*Me\a_normals, ip+1),u)
+        EndIf
+        gPos + fInc
+      Next
+      
+      offsetSample + nbSamples
+      offsetVertex + nbVertices
+     Next
+
   EndProcedure
   
   ;---------------------------------------------------------
@@ -445,8 +522,6 @@ Module CurveGeometry
       offsetSample + nbSamples
       offsetVertex + nbVertices
     Next
-    
-
   EndProcedure
  
   ;---------------------------------------------------------
@@ -458,6 +533,8 @@ Module CurveGeometry
     CArray::SetCount(*Me\a_colors, *Me\nbpoints)
     CArray::SetCount(*Me\a_normals, *Me\nbpoints)
     CArray::SetCount(*Me\a_widths, *Me\nbpoints)
+    CArray::SetCount(*Me\a_numVertices, 1)
+    CArray::SetCount(*Me\a_numSamples, 1)
     Define i
     Define p.v3f32
     Define c.v3f32
@@ -469,14 +546,18 @@ Module CurveGeometry
     Vector3::Set(@n, 0,0,1)
     For i=0 To *Me\nbpoints-1
       Vector3::AddInPlace(@p, @offset)
-      p\x + Random_0_1()-0.5
+      p\x + (1 - 2 *Random_0_1()) * 10
+      p\y + (1 - 2 *Random_0_1()) * 10
+      p\z + (1 - 2 *Random_0_1()) * 10
       CArray::SetValue(*Me\a_positions, i, @p)
       Vector3::Set(@c, Random_0_1(), Random_0_1(), Random_0_1())
       CArray::SetValue(*Me\a_colors, i, @c)
       CArray::SetValue(*Me\a_normals, i, @n)
       CArray::SetValueF(*Me\a_widths, i, 0.1)
     Next
-    
+    CArray::SetValueL(*Me\a_numVertices, 0, *Me\nbpoints)
+    CArray::SetValueL(*Me\a_numSamples, 0, 64)
+    ComputeNormals(*Me)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -484,6 +565,7 @@ Module CurveGeometry
   ;---------------------------------------------------------
   Procedure RandomNCurves(*Me.CurveGeometry_t, N.i, numCVs.i)
     *Me\nbpoints = N * numCVs
+   
     CArray::SetCount(*Me\a_positions, *Me\nbpoints)
     CArray::SetCount(*Me\a_colors, *Me\nbpoints)
     CArray::SetCount(*Me\a_normals, *Me\nbpoints)
@@ -497,7 +579,9 @@ Module CurveGeometry
     Define w.f = 0.01
     Define offset.v3f32
     Define dec.f = 1.0 / (numCVs-1) * 0.1
-    
+    Define t1.v3f32, t2.v3f32
+    Define upv.v3f32
+    Vector3::Set(@upv, 1,0,0)
     Vector3::Set(@color, 1,0,0)
     Vector3::Set(@norm, 0,0,1)
     For i=0 To N-1
@@ -507,17 +591,21 @@ Module CurveGeometry
         p\x + (1 - 2 * Random_0_1())
         p\y + (1 - 2 * Random_0_1())
         p\z + (1 - 2 * Random_0_1())
+        
         CArray::SetValue(*Me\a_positions, j+base, @p)
         Vector3::Set(@color, Random_0_1(), Random_0_1(), Random_0_1())
         CArray::SetValue(*Me\a_colors, j+base, @color)
         CArray::SetValue(*Me\a_normals, j+base, @norm)
-        CArray::SetValueF(*Me\a_widths, j+base,j*dec)
+        CArray::SetValueF(*Me\a_widths, j+base, 0.1)
       Next
+
       CArray::SetValueL(*Me\a_numVertices, i, numCVs)
       Vector3::Set(@p, 0,0,0)
       
       base + numCVs
     Next
+    
+    ComputeNormals(*Me)
     
   EndProcedure
   
@@ -565,7 +653,8 @@ Module CurveGeometry
     *Me\a_uvs = CArray::newCArrayV2F32()
     *Me\a_normals = CArray::newCArrayV3F32()
     
-    RandomNCurves(*Me, 1024, 6)
+    RandomNCurves(*Me, 256, 6)
+    ;RandomOneCurve(*Me, 8)
     ComputeSamples(*Me)
     ProcedureReturn *Me
   EndProcedure
@@ -575,7 +664,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 498
-; FirstLine = 467
-; Folding = -----
+; CursorPosition = 218
+; FirstLine = 209
+; Folding = ------
 ; EnableXP

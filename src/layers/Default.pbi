@@ -144,6 +144,14 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
     Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
     
+    *shader.Program::Program_t = *ctx\shaders("wireframe")
+    shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
+
+    
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
 ;     *shader = *ctx\shaders("wireframe")
@@ -279,7 +287,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 119
+; CursorPosition = 151
+; FirstLine = 114
 ; Folding = --
 ; EnableXP

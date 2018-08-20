@@ -221,20 +221,21 @@ Module Curve
   ;-----------------------------------------------------
   ; Pick
   ;-----------------------------------------------------
-  Procedure Pick(*Me.Curve_t,*view.m4f32,*proj.m4f32)
+  Procedure Pick(*Me.Curve_t,*view.m4f32,*proj.m4f32, shader.i)
     
     Protected *t.Transform::Transform_t = *Me\globalT
     
     ;glBindVertexArray(*p\vao)
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"model"),1,#GL_FALSE,*t\m)
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*t\m)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
     
     ; Set Wireframe Color
-    ;glUniform3f(*p\m_color,*p\wireframe_r,*p\wireframe_g,*p\wireframe_b)
+    glUniform4f(glGetUniformLocation(shader,"color"),1,0,0,1)
     glPointSize(5)
     glDisable(#GL_POINT_SMOOTH)
-    glDrawArrays(#GL_LINE,0,Geometry::GetNbPoints(*Me\geom))
+    glDrawArrays(#GL_POINTS,0,Geometry::GetNbPoints(*Me\geom))
     
   EndProcedure
   
@@ -315,7 +316,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 93
+; CursorPosition = 229
+; FirstLine = 218
 ; Folding = ---
 ; EnableXP

@@ -76,7 +76,6 @@ Module Model
 ;       If *child\type = Object3D::#Object3D_PointCloud Or 
 ;       Debug "[Model] Setup "+*child\name+" ---> "+Str(*geom\nbpoints)
       child\Setup(*pgm)
-      Debug "[model] Done!!"
     Next
     
   EndProcedure
@@ -92,7 +91,6 @@ Module Model
       *geom = *child\geom
 ;       Debug "[Model] Update "+*child\name+" ---> "+Str(*geom\nbpoints)
       child\Update()
-      Debug "[model] Done!!"
     Next
     
   EndProcedure
@@ -119,8 +117,8 @@ Module Model
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Model )
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 36
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 58
 ; Folding = --
 ; EnableXP

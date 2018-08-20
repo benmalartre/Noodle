@@ -64,7 +64,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Mutafuckaz : "+Str(666),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Test Curves ",-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
@@ -118,8 +118,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 31
+; CursorPosition = 66
+; FirstLine = 37
 ; Folding = -
 ; EnableThread
 ; EnableXP

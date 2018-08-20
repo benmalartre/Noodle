@@ -6,42 +6,42 @@ XIncludeFile "../opengl/Shader.pbi"
 ;  Geometry Module Declaration
 ; ==============================================================================
 DeclareModule Geometry
+  UseModule Math
   Enumeration
     #GEOMETRY_1D
     #GEOMETRY_2D
     #GEOMETRY_3D
   EndEnumeration
-  
-  UseModule Math
-  Structure Geometry_t
-    nbpoints.i
-    type.i
-    *parent
-    *a_positions.CArray::CArrayV3F32
-  EndStructure
-  
+
   Enumeration
     #Geometry_Polymesh
     #Geometry_PointCloud
     #Geometry_Curve
   EndEnumeration
   
+  Enumeration
+    #LOCATION_1D
+    #LOCATION_2D
+    #LOCATION_3D
+  EndEnumeration
+  
+  
   ; ============================================================================
   ;  Structures
   ; ============================================================================
   ;{
   ; ----------------------------------------------------------------------------
-  ; Box Instance
+  ; Box
   ; ----------------------------------------------------------------------------
   ;{
   Structure Box_t
-    bmin.v3f32
-    bmax.v3f32
+    origin.v3f32
+    extend.v3f32
   EndStructure
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Line Instance
+  ; Line
   ; ----------------------------------------------------------------------------
   ;{
   Structure Line_t
@@ -53,7 +53,7 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Sphere Instance
+  ; Sphere
   ; ----------------------------------------------------------------------------
   ;{
   Structure Sphere_t
@@ -63,7 +63,7 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Cylinder Instance
+  ; Cylinder
   ; ----------------------------------------------------------------------------
   ;{
   Structure Cylinder_t
@@ -75,7 +75,7 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Capsule Instance
+  ; Capsule
   ; ----------------------------------------------------------------------------
   ;{
   Structure Capsule_t
@@ -85,8 +85,8 @@ DeclareModule Geometry
   EndStructure
   ;}
   
-  ; 
-  ; Ray Instance
+  ; ----------------------------------------------------------------------------
+  ; Ray
   ; ----------------------------------------------------------------------------
   ;{
   Structure Ray_t
@@ -98,7 +98,7 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Plane Instance
+  ; Plane
   ; ----------------------------------------------------------------------------
   ;{
   Structure Plane_t
@@ -108,13 +108,10 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; CShape Instance
+  ; Shape
   ; ----------------------------------------------------------------------------
   ;{
   Structure Shape_t
-  ;   type.i
-  ;   a_positions.CArrayV3F32
-  ;   a_indices.CArrayV3F32
     type.i
     *position
     *normals
@@ -126,7 +123,7 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
-  ; Sample Instance
+  ; Sample
   ; --------------------------------------------
   ;{
   Structure Sample_t
@@ -138,8 +135,9 @@ DeclareModule Geometry
     *color.v4f32
   EndStructure
   ;}
+  
   ; --------------------------------------------
-  ; Vertex Instance
+  ; Vertex
   ; --------------------------------------------
   ;{
   Structure Vertex_t
@@ -159,7 +157,7 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
-  ; Edge Instance
+  ; Edge
   ; --------------------------------------------
   ;{
   Structure Edge_t
@@ -173,7 +171,7 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
-  ; CTriangle Instance
+  ; Triangle
   ; --------------------------------------------
   ;{
   Structure Triangle_t
@@ -185,10 +183,9 @@ DeclareModule Geometry
     position.v3f32
   EndStructure
   ;}
-  ;}
   
   ; --------------------------------------------
-  ; Polygon Instance
+  ; Polygon
   ; --------------------------------------------
   ;{
   Structure Polygon_t
@@ -201,10 +198,9 @@ DeclareModule Geometry
     *edges.CArray::CArrayPtr
   EndStructure
   ;}
-  ;}
   
   ; --------------------------------------------
-  ; PolymeshTopology Instance
+  ; Polymesh Topology
   ; --------------------------------------------
   ;{
   Structure Topology_t
@@ -215,7 +211,20 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
-  ; CPolymesh Instance
+  ; Geometry Base
+  ; --------------------------------------------
+  ;{
+   Structure Geometry_t
+    bbox.Box_t
+    nbpoints.i
+    type.i
+    *parent
+    *a_positions.CArray::CArrayV3F32
+  EndStructure
+  ;}
+  
+  ; --------------------------------------------
+  ; Polymesh Geometry
   ; --------------------------------------------
   ;{
   Structure PolymeshGeometry_t Extends Geometry_t
@@ -226,6 +235,7 @@ DeclareModule Geometry
     nbindices.i
     shapetype.i
     dirty.b
+    totalArea.f
     
     *a_velocities.CArray::CArrayV3F32
     *a_normals.CArray::CArrayV3F32
@@ -240,7 +250,9 @@ DeclareModule Geometry
     *a_vertexpolygoncount.CArray::CArrayLong
     *a_vertexpolygonindices.CArray::CArrayLong
     *a_edgeindices.CArray::CArrayLong
-
+    *a_triangleareas.CArray::CArrayFloat
+    *a_polygonareas.CArray::CArrayFloat
+    
     *topo.Topology_t
     *base.Topology_t
     
@@ -253,7 +265,7 @@ DeclareModule Geometry
   ;}
   
   
-  ;  CPointCloud Instance
+  ;  PointCloud Geometry
   ; ----------------------------------------------------------------------------
   Structure PointCloudGeometry_t Extends Geometry_t
     incrementID.i
@@ -268,7 +280,7 @@ DeclareModule Geometry
    
   EndStructure
 
-  ;  Curve Instance
+  ;  Curve Geometry
   ; ----------------------------------------------------------------------------
   Structure CurveGeometry_t Extends Geometry_t
     
@@ -286,9 +298,7 @@ DeclareModule Geometry
     *a_widths.CArray::CArrayFloat
     *a_uvs.CArray::CArrayV2F32
     *a_normals.CArray::CArrayV3F32
-    
-    
-    
+
     ; optional
     *a_weights.CArray::CArrayFloat
     *a_orders.CArray::CArrayChar
@@ -296,9 +306,24 @@ DeclareModule Geometry
     
   EndStructure
   
-  ; Location Instance
+  ; Location
   ; --------------------------------------------
   Structure Location_t
+    tid.i
+    u.f
+    v.f
+    w.f
+    n.v3f32
+    p.v3f32
+    c.c4f32
+    *geometry.Geometry::Geometry_t
+    *t.Transform::Transform_t
+  EndStructure
+  
+  ; PointOnMesh
+  ; --------------------------------------------
+  Structure PointOnMesh_t
+    gid.i
     tid.i
     u.f
     v.f
@@ -309,35 +334,63 @@ DeclareModule Geometry
     *geometry.Geometry::PolymeshGeometry_t
     *t.Transform::Transform_t
   EndStructure
+  
+  ; PointOnCurve
+  ; --------------------------------------------
+  Structure PointOnCurve_t
+    cid.i
+    u.f
+    n.v3f32
+    p.v3f32
+    c.c4f32
+    *geometry.Geometry::CurveGeometry_t
+    *t.Transform::Transform_t
+  EndStructure
 
-  ;  Grid3D Instance
+  
+  ; Element
   ; ----------------------------------------------------------------------------
-  Structure Grid3DTriangle_t
-    *t.Triangle_t  ; original triangle
-    n.v3f32         ; triangle normal
-    en1.v3f32       ; edge 1 normal
-    en2.v3f32       ; edge 2 normal
-    en3.v3f32       ; edge 3 normal
+  Structure Element_t
+    gid.i   ; geometry index
+    eid.i   ; element index
+  EndStructure
+  
+  ; Cell
+  ; ----------------------------------------------------------------------------
+  Structure Cell_t
+    color.v3f32
+    hit.b
+    Array elements.i(0)
   EndStructure
   
   
-  ;  Class ( Grid3D )
+  ; Grid3D 
   ; ----------------------------------------------------------------------------
   Structure Grid3D_t
-    size.i              ;grid size
+    elemType.i
+    ; definition of the grid
+    resolution.i[3]
+    dimension.v3f32
+    bbox.Box_t
     
-    xstep.d             ;cell length in x direction
-    ystep.d             ;cell length in y direction
-    zstep.d             ;cell length in z direction
+    ; geometries
+    List *geometries.Geometry_t()
+    List elements.Element_t()
     
-    bbmin.v3f32           ; bounding box minimum
-    bbmax.v3f32           ; bounding box maximum
+    ; cells
+    numCells.i
+    Array *cells.Cell_t(0)
+
+    ; rays tested For intersection
+    numRays.i
+    Array rays.Ray_t(0)
     
-    Array rays.Ray_t(0)    ; rays tested For intersection
-    ;Array *grid.CArray::CArrayPtr()
+    ; dirty (need update)
+    dirty.b
+    
   EndStructure
   
-  Declare RecomputeBoundingBox(*geom.Geometry_t,*p_min.v3f32,*p_max.v3f32)
+  Declare ComputeBoundingBox(*geom.Geometry_t)
   Declare GetNbPoints(*geom.Geometry_t)
   Declare GetParentObject3D(*Me.Geometry_t)
   Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
@@ -349,23 +402,29 @@ EndDeclareModule
 ; Geometry Module Implementation
 ;========================================================================================
 Module Geometry
-  Procedure RecomputeBoundingBox(*geom.Geometry_t,*p_min.v3f32,*p_max.v3f32)
+  Procedure ComputeBoundingBox(*geom.Geometry_t)
     Protected i
     Protected *v.v3f32
-    Vector3::Set(*p_min,#F32_MAX,#F32_MAX,#F32_MAX)
-    Vector3::Set(*p_max,-#F32_MAX,-#F32_MAX,-#F32_MAX)
+    Protected bmin.v3f32, bmax.v3f32
+    Vector3::Set(@bmin,#F32_MAX,#F32_MAX,#F32_MAX)
+    Vector3::Set(@bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
   
     For i=0 To *geom\nbpoints-1
       *v = CArray::GetValue(*geom\a_positions,i)
+  
       ;Vector3_MulByMatrix4InPlace(*v,*srt)
-      If *v\x < *p_min\x : *p_min\x = *v\x : EndIf
-      If *v\y < *p_min\y : *p_min\y = *v\y : EndIf
-      If *v\z < *p_min\z : *p_min\z = *v\z : EndIf
+      If *v\x < bmin\x : bmin\x = *v\x : EndIf
+      If *v\y < bmin\y : bmin\y = *v\y : EndIf
+      If *v\z < bmin\z : bmin\z = *v\z : EndIf
       
-      If *v\x > *p_max\x : *p_max\x = *v\x : EndIf
-      If *v\y > *p_max\y : *p_max\y = *v\y : EndIf
-      If *v\z > *p_max\z : *p_max\z = *v\z : EndIf
+      If *v\x > bmax\x : bmax\x = *v\x : EndIf
+      If *v\y > bmax\y : bmax\y = *v\y : EndIf
+      If *v\z > bmax\z : bmax\z = *v\z : EndIf
     Next i
+    
+    Vector3::LinearInterpolate(*geom\bbox\origin, @bmin, @bmax, 0.5)
+    Vector3::Sub(*geom\bbox\extend, @bmax, @bmin)
+    Vector3::ScaleInPlace(*geom\bbox\extend, 0.5)
     
   EndProcedure
   
@@ -395,7 +454,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 276
-; FirstLine = 257
-; Folding = ----
+; CursorPosition = 409
+; FirstLine = 394
+; Folding = -----
 ; EnableXP

@@ -10,6 +10,7 @@ XIncludeFile "Pose.pbi"
 XIncludeFile "Image.pbi"
 
 
+
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/GLFW.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
@@ -35,6 +36,7 @@ XIncludeFile "../objects/Handle.pbi"
 XIncludeFile "../objects/Selection.pbi"
 XIncludeFile "../objects/Sampler.pbi"
 XIncludeFile "../objects/Ray.pbi"
+XIncludeFile "../objects/Poisson.pbi"
 
 XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
@@ -591,8 +593,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 549
-; FirstLine = 530
+; CursorPosition = 38
+; FirstLine = 6
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL
