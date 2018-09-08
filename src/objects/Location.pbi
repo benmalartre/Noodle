@@ -213,7 +213,6 @@ Module Location
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  ;{
   Procedure.i New(*geom.Geometry::Geometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Location_t = AllocateMemory(SizeOf(Location_t))
@@ -232,10 +231,9 @@ Module Location
     ProcedureReturn *Me
   EndProcedure
  
-
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 24
+; CursorPosition = 214
+; FirstLine = 17
 ; Folding = ---
 ; EnableXP

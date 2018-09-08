@@ -367,7 +367,7 @@ Module Scene
           Case Object3D::#Object3D_Curve
             child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("drawer"))
         EndSelect
       EndIf
       SetupChildren(*scn,child,*ctx)
@@ -390,7 +390,6 @@ Module Scene
           Case Object3D::#Object3D_Polymesh
             child\Setup(*ctx\shaders("polymesh"))
           Case Object3D::#Object3D_PointCloud
-            MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
           Case Object3D::#Object3D_InstanceCloud
             child\Setup(*ctx\shaders("instances"))
@@ -399,7 +398,7 @@ Module Scene
           Case Object3D::#Object3D_Curve
             child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("drawer"))
       EndSelect
       EndIf
       
@@ -797,8 +796,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 399
-; FirstLine = 345
+; CursorPosition = 369
+; FirstLine = 366
 ; Folding = -------
 ; EnableThread
 ; EnableXP

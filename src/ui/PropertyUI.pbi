@@ -25,6 +25,7 @@ DeclareModule PropertyUI
   Declare Clear(*Me.PropertyUI_t)
   Declare SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
   Declare SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
+  Declare AddProperty(*Me.PropertyUI_t, *prop.ControlProperty::COntrolProperty_t)
   Declare Setup(*Me.PropertyUI_t,*object.Object::Object_t)
   Declare CollapseProperty(*Me.PropertyUI_t, index.i)
   Declare ExpandProperty(*Me.PropertyUI_t, index.i)
@@ -100,18 +101,17 @@ Module PropertyUI
   ;  OnEvent
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)
-    
     If *Me
       Protected *top.View::View_t = *Me\top
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
+      ev_datas\width = *top\width
       Select event
         Case #PB_Event_SizeWindow
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
           ev_datas\x = 0
           ev_datas\y = 0
-          ev_datas\width = *top\width
           ev_datas\height = #PB_Ignore
 
           If ListSize(*Me\props())
@@ -146,42 +146,6 @@ Module PropertyUI
       
     EndIf
     
-    
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Test
-  ; ----------------------------------------------------------------------------
-  Procedure Test(*prop.ControlProperty::ControlProperty_t,*mesh.Polymesh::Polymesh_t)
-   
-    ControlProperty::AppendStart(*prop)
-    ControlProperty::AddBoolControl(*prop,"boolean","boolean",#False,*mesh)
-    ControlProperty::AddFloatControl(*prop,"float","float",#False,*mesh)
-    ControlProperty::AddIntegerControl(*prop,"integer","integer",#False,*mesh)
-    ControlProperty::AddReferenceControl(*prop,"reference1","ref1",*mesh)
-    ControlProperty::AddReferenceControl(*prop,"reference2","ref2",*mesh)
-    ControlProperty::AddReferenceControl(*prop,"reference3","ref3",*mesh)
-    *group = ControlProperty::AddGroup(*prop,"BUTTON")
-    
-    ControlGroup::Append(*group,ControlButton::New(*mesh,"button","button",#True,#PB_Button_Toggle))
-    ControlProperty::EndGroup(*prop)
-    
-    
-    
-    Define q.Math::q4f32
-    Quaternion::SetIdentity(@q)
-    ControlProperty::AddQuaternionControl(*prop,"quaternion","quat",@q,*mesh)
-    
-    *group = ControlProperty::AddGroup(*prop,"ICONS")
-    ControlGroup::RowStart(*group)
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Back",ControlIcon::#Icon_Back,0))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Stop",ControlIcon::#Icon_Stop,0))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Play",ControlIcon::#Icon_Play,#PB_Button_Toggle))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Loop",ControlIcon::#Icon_Loop,0))
-    ControlGroup::RowEnd(*group)
-    ControlProperty::EndGroup(*prop)
-        
-    ControlProperty::AppendStop(*prop)
   EndProcedure
 
   
@@ -221,11 +185,12 @@ Module PropertyUI
   Procedure Clear(*Me.PropertyUI_t)
     Protected i
     Protected *prop.ControlProperty::ControlProperty_t = *Me\prop
-    For i=0 To *prop\chilcount-1
-      Debug *prop\children(i)\name
-    Next
-    ControlProperty::Clear(*prop)
-  
+    If *prop
+      For i=0 To *prop\chilcount-1
+        Debug *prop\children(i)\name
+      Next
+      ControlProperty::Clear(*prop)
+    EndIf
   EndProcedure
  
   ; ----------------------------------------------------------------------------
@@ -275,7 +240,6 @@ Module PropertyUI
     Next
     
     ControlProperty::AppendStop(*p)
-  
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -285,7 +249,6 @@ Module PropertyUI
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
-    
     Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\width, *Me\height) 
     AddElement(*Me\props())
     *Me\props() = *p
@@ -357,6 +320,18 @@ Module PropertyUI
     Object::SignalConnect(*Me, *head\slot,0)
 
   EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Add Property
+  ; ----------------------------------------------------------------------------
+  Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
+    OpenGadgetList(*Me\container)
+    AddElement(*Me\props())
+    *Me\props() = *prop
+    *Me\prop = *prop
+    CloseGadgetList()
+  EndProcedure
+  
   
   
   ; ----------------------------------------------------------------------------
@@ -474,8 +449,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 114
+; CursorPosition = 113
+; FirstLine = 89
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

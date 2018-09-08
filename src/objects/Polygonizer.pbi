@@ -366,7 +366,7 @@ Module Polygonizer
           *p\p[0] = *box\origin\x - *box\extend\x  + x * cs\x
           *p\p[1] = *box\origin\y - *box\extend\y  + y * cs\y
           *p\p[2] = *box\origin\z - *box\extend\z  + z * cs\z
-          *p\d = *p\p[1] + Math::Random_0_1()*0.1 +Abs(Pow(*p\p[0], 3 ))
+          *p\d = *p\p[1]  + Sin(*p\p[0] * 3)*0.4 * Cos(*p\p[2]*3) * 0.75
         Next
       Next
     Next
@@ -713,6 +713,6 @@ EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 368
-; FirstLine = 364
+; FirstLine = 361
 ; Folding = --
 ; EnableXP

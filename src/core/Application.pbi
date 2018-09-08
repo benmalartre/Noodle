@@ -79,6 +79,7 @@ XIncludeFile "../controls/Head.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
 XIncludeFile "../commands/Graph.pbi"
+
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
@@ -89,6 +90,7 @@ XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
 XIncludeFile "../ui/TopMenu.pbi"
+XIncludeFile "../ui/ColorUI.pbi"
 
 CompilerIf #USE_BULLET
   XIncludeFile "../libs/Bullet.pbi"
@@ -593,8 +595,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 6
+; CursorPosition = 565
+; FirstLine = 535
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

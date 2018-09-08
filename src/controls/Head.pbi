@@ -304,7 +304,7 @@ Module ControlHead
     Protected *parent.Control::Control_t = *obj
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#PB_GadgetType_Head
+    *Me\type     = Control::#CONTROL_HEAD
     *Me\name     = name
     *Me\gadgetID = *parent\gadgetID
     *Me\parent   = *parent
@@ -357,8 +357,8 @@ Module ControlHead
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 78
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 306
+; FirstLine = 298
 ; Folding = ---
 ; EnableXP

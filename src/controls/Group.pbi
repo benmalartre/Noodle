@@ -311,14 +311,12 @@ EndProcedure
 ;  hlpPick
 ; ----------------------------------------------------------------------------
 Procedure Pick(*Me.ControlGroup_t)
-  Debug "Control Group Pick Called........................"
   Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
   Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
   
   xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
   ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
   
-   ; ---[ First get gadget under mouse ]---------------------------------------
   StartDrawing( ImageOutput(*Me\imageID) )
   Protected ID = Point(xm,ym) - 1
   StopDrawing()
@@ -326,7 +324,7 @@ Procedure Pick(*Me.ControlGroup_t)
   Protected *child.Control::Control_t
   If  ID >-1 And ID<*Me\chilcount
     *child = *Me\children(ID)
-    If *child\type = Control::#PB_GadgetType_Group
+    If *child\type = Control::#CONTROL_GROUP
       Pick(*child)
       Protected child.Control::IControl = *child
 
@@ -364,14 +362,11 @@ Procedure hlpDrawPickImage( *Me.ControlGroup_t )
       
     *son = *Me\children(i)
     son = *son
-    If *son\type = Control::#PB_GadgetType_Group
+    If *son\type = Control::#CONTROL_GROUP
       
     Else
       Box( *son\posX, *son\posY, *son\sizX, *son\sizY, i+1)
     EndIf
-    
-
-
    Next
    StopDrawing()
 EndProcedure
@@ -490,15 +485,12 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ;  MouseMove
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
-      Debug "Overchild ??? "+Str(*Me\overchild)
       Protected idx = *Me\pickID
       Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
       Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
 
       xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
       ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-
-      Debug "XM : "+Str(xm)+",YM : "+Str(ym)
       
       If idx < 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
         Define overchild.Control::IControl = *Me\overchild
@@ -536,20 +528,22 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     ;  LeftButtonDown
     ; ------------------------------------------------------------------------
-  Case #PB_EventType_LeftButtonDown
-      *Me\down = #True
-      If *Me\overchild
-        If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
+    Case #PB_EventType_LeftButtonDown
+        *Me\down = #True
+        If *Me\overchild
+          If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
+            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+          EndIf
+          Define *overchild.Control::Control_t = *Me\overchild
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
+          ev_data\xoff = *Me\posX
+          ev_data\yoff = *Me\posY
+          *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
+        ElseIf *Me\focuschild
+          Define focuschild.Control::IControl = *Me\focuschild
           *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
-        Define *overchild.Control::Control_t = *Me\overchild
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
-      ElseIf *Me\focuschild
-        Define focuschild.Control::IControl = *Me\focuschild
-        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-      EndIf
       
     ; ------------------------------------------------------------------------
     ;  LeftButtonUp
@@ -914,7 +908,7 @@ EndProcedure
     If width < 50 : width = 50 : EndIf
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = Control::#PB_GadgetType_Group
+    *Me\type       = Control::#CONTROL_GROUP
     *Me\name       = name
     If Not IsGadget(canvasID)
       *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
@@ -954,8 +948,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 57
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 541
+; FirstLine = 491
 ; Folding = ---9
 ; EnableXP

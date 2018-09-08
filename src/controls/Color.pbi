@@ -1,259 +1,378 @@
 ﻿XIncludeFile "../core/Globals.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/Control.pbi"
-; XIncludeFile "Command.pbi"
+XIncludeFile "../core/Arguments.pbi"
 
-; -----------------------------------------
-; ControlColor Module Declaration
-; -----------------------------------------
+; ==============================================================================
+;  CONTROL COLOR MODULE DECLARATION
+; ==============================================================================
 DeclareModule ControlColor
-  #FIXED_HEIGHT = 60
+  Enumeration
+    #ITEM_NONE
+    #ITEM_RED
+    #ITEM_GREEN
+    #ITEM_BLUE
+    #ITEM_COLOR
+    #ITEM_MODE
+  EndEnumeration
+  
+  ; ----------------------------------------------------------------------------
+  ;  Object ( ControlColor_t )
+  ; ----------------------------------------------------------------------------
   Structure ControlColor_t Extends Control::Control_t
-    container.i
-    red_txt.i
-    green_txt.i
-    blue_txt.i
-    red_input.i
-    green_input.i
-    blue_input.i
-    red_slider.i
-    green_slider.i
-    blue_slider.i
-    display_canvas.i
+    ; ControlColor
+    label.s
+    red.i
+    green.i
+    blue.i
     color.Math::c4f32
-    r_dirty.b
-    g_dirty.b
-    b_dirty.b
-    c_dirty.b
-    collapsed.b
+    over.b
+    down.b
+    item.i
   EndStructure
   
-  Interface IControlColor Extends Control::IControl
-  EndInterface
-
-  Declare New(name.s,x.i,y.i,w.i,h.i)
+  Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
-  Declare Init(*Me.ControlColor_t)
-  Declare OnEvent(*Me.ControlColor_t,event.i)
-  Declare Term(*Me.ControlColor_t)
-  Declare Draw(*Me.ControlColor_t)
-  Declare Update(*Me.ControlColor_t)
+  Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
-  DataSection 
-    ControlColorVT: 
-    Data.i @OnEvent()
+  ; ============================================================================
+  ;  VTABLE ( Object + Control + ControlColor )
+  ; ============================================================================
+  DataSection
+    ControlColorVT:
+    Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
-  EndDataSection 
+   
+  EndDataSection
+
   
+  Global CLASS.Class::Class_t
+
+
 EndDeclareModule
 
-; -----------------------------------------
-; ControlColor Module Implementation
-; -----------------------------------------
+; ==============================================================================
+;  IMPLEMENTATION ( Helpers )
+; ==============================================================================
 Module ControlColor
+  ; ----------------------------------------------------------------------------
+  ;  hlpDraw
+  ; ----------------------------------------------------------------------------
+  Procedure hlpDraw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
+  
+    ; ---[ Check Visible ]------------------------------------------------------
+    If Not *Me\visible : ProcedureReturn( void ) : EndIf
 
-  ; New
-  ;-------------------------------
-  Procedure New(name.s,x.i,y.i,w.i,h.i)
+    ; ---[ Label Color ]--------------------------------------------------------
+    Protected tc.i = UIColor::Color_LABEL
     
-    Protected tw = 50
-    Protected iw = 50
-    Protected pw = h
-    Protected *Me.ControlColor_t = AllocateMemory(SizeOf(ControlColor_t))
-    InitializeStructure(*Me,ControlColor_t)
-    *Me\name = name
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *Me\red_txt = TextGadget(#PB_Any,4,4,tw,h/3,"Red")
-    *Me\green_txt = TextGadget(#PB_Any,4,h/3+4,tw,h/3,"Green")
-    *Me\blue_txt = TextGadget(#PB_Any,4,2*h/3+4,tw,h/3,"Blue")
-    *Me\red_input = StringGadget(#PB_Any,tw,0,iw,h/3,"0.0",#PB_String_Numeric)
-    *Me\green_input = StringGadget(#PB_Any,tw,h/3,iw,h/3,"0.0",#PB_String_Numeric)
-    *Me\blue_input = StringGadget(#PB_Any,tw,2*h/3,iw,h/3,"0.0",#PB_String_Numeric)
-    *Me\red_slider = TrackBarGadget(#PB_Any,tw+iw,0,w-(tw+iw+pw),h/3,0,255)
-    *Me\green_slider = TrackBarGadget(#PB_Any,tw+iw,h/3,w-(tw+iw+pw),h/3,0,255)
-    *Me\blue_slider = TrackBarGadget(#PB_Any,tw+iw,2*h/3,w-(tw+iw+pw),h/3,0,255)
-    *Me\display_canvas = CanvasGadget(#PB_Any,w-pw,0,pw,h)
-    *Me\VT = ?ControlColorVT
+    ; ---[ Set Font ]-----------------------------------------------------------
+    DrawingFont(FontID(Globals::#FONT_LABEL ))
+    Protected tx = ( *Me\sizX - TextWidth ( *Me\label ) )/2 + xoff
+    Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+    tx = Math::Max( tx, 3 + xoff )
     
-    *Me\r_dirty = #True
-    Update(*Me)
-    Draw(*Me)
-    OnEvent(*Me,#PB_Event_SizeWindow)
-    CloseGadgetList()
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; Delete
-  ;-------------------------------
-  Procedure Delete(*Me.ControlColor_t)
-    FreeGadget(*Me\red_slider)
-    FreeGadget(*Me\green_slider)
-    FreeGadget(*Me\blue_slider)
-    FreeGadget(*Me\red_input)
-    FreeGadget(*Me\green_input)
-    FreeGadget(*Me\blue_input)
-    FreeGadget(*Me\red_txt)
-    FreeGadget(*Me\green_txt)
-    FreeGadget(*Me\blue_txt)
-    FreeGadget(*Me\display_canvas)
-    ClearStructure(*Me,ControlColor_t)
-    FreeMemory(*Me)
-  EndProcedure
-  
-  ; Update
-  ;-------------------------------
-  Procedure Update(*Me.ControlColor_t)
-    If *Me\c_dirty
-      ; Update RGB From COlor
-      Protected r = *Me\color\r*255
-      Protected g = *Me\color\g*255
-      Protected b = *Me\color\b*255
-      
-      SetGadgetState(*Me\red_slider,r)
-      SetGadgetState(*Me\green_slider,g)
-      SetGadgetState(*Me\blue_slider,b)
-      
-      SetGadgetText(*Me\red_input,Str(r))
-      SetGadgetText(*Me\green_input,Str(g))
-      SetGadgetText(*Me\blue_input,Str(b))
-      
-    Else
-      If *Me\r_dirty Or *Me\g_dirty Or *Me\b_dirty
-        r = GetGadgetState(*Me\red_slider)
-        g = GetGadgetState(*Me\green_slider)
-        b = GetGadgetState(*Me\blue_slider)
-     
-        Color::Set(*Me\color,r/255,g/255,b/255,1.0)
-      EndIf
-      
-    EndIf
+    Protected cw, ch
+    ch = (*Me\sizY - 10) / 3
+    cw = *Me\sizX - (3*ch+10)
     
-  EndProcedure
-  
-  ; Draw
-  ;-------------------------------
-  Procedure Resize(*Me.ControlColor_t)
-    Protected w = GadgetWidth(*Me\container)
-    Protected h = GadgetHeight(*Me\container)
-    If w<80 And Not *Me\collapsed
-      *Me\collapsed = #True
-      HideGadget(*Me\red_txt,#True)
-      HideGadget(*Me\green_txt,#True)
-      HideGadget(*Me\blue_txt,#True)
-      HideGadget(*Me\red_input,#True)
-      HideGadget(*Me\green_input,#True)
-      HideGadget(*Me\blue_input,#True)
-      HideGadget(*Me\red_slider,#True)
-      HideGadget(*Me\green_slider,#True)
-      HideGadget(*Me\blue_slider,#True)
-      
-    ElseIf w>=80 And *Me\collapsed
-      *Me\collapsed = #False
-      HideGadget(*Me\red_txt,#False)
-      HideGadget(*Me\green_txt,#False)
-      HideGadget(*Me\blue_txt,#False)
-      HideGadget(*Me\red_input,#False)
-      HideGadget(*Me\green_input,#False)
-      HideGadget(*Me\blue_input,#False)
-      HideGadget(*Me\red_slider,#False)
-      HideGadget(*Me\green_slider,#False)
-      HideGadget(*Me\blue_slider,#False)
-    EndIf
     
-  EndProcedure
-  
-  ; Draw
-  ;-------------------------------
-  Procedure Draw(*Me.ControlColor_t)
-    Protected w = GadgetWidth(*Me\container)
-    Protected h = GadgetHeight(*Me\container)
-    StartDrawing(CanvasOutput(*Me\display_canvas))
+    DrawingMode(#PB_2DDrawing_Gradient)      
+    FrontColor($0000FF)
+    BackColor($000000)
+    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)    
+    Box(5+xoff,5+yoff,cw,ch)
+    FrontColor($00FF00)
+    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
+    Box(5+xoff,5+ch+yoff,cw,ch)
+    FrontColor($FF0000)
+    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
+    Box(5+xoff,5+2*ch+yoff,cw,ch, RGB(0,0,255))
+    
+    ; draw slider
     DrawingMode(#PB_2DDrawing_Default)
-    Box(w-h,0,h,h,UIColor::COLOR_MAIN_BG)
-    Protected x,y
-    w = GadgetWidth(*Me\display_canvas)
-    h = GadgetHeight(*Me\display_canvas)
-    For x = 0 To w Step 4
-      For y=0 To h Step 4
-        Select (y/4)%2
-          Case 0 
-            Select (x/4)%2
-              Case 0
-                Box(x,y,4,4,RGB(100,100,100))
-              Case 1
-                Box(x,y,4,4,RGB(150,150,150))
-            EndSelect
-          Case 1
-            Select (x/4)%2
-              Case 0
-                Box(x,y,4,4,RGB(150,150,150))
-              Case 1
-                Box(x,y,4,4,RGB(100,100,100))
-            EndSelect
-        EndSelect
-        
-      Next
-      
-    Next
+    Protected white = RGB(255,255,255)
+    Protected offset_r.f = cw * *Me\color\r-1
+    Protected offset_g.f = cw * *Me\color\g-1
+    Protected offset_b.f = cw * *Me\color\b-1
     
-    ;Box(0,0,GadgetWidth(*Me\frames_canvas),GadgetHeight(*Me\frames_canvas),RGB(175,175,175))
-    StopDrawing()
+    Box(5+xoff + offset_r - 1, 5+yoff, 2 , ch, white)
+    Box(5+xoff + offset_g - 1, 5+ch+yoff, 2 , ch, white)
+    Box(5+xoff + offset_b - 1, 5+2*ch+yoff, 2 , ch, white)
+    
+    ; draw color
+    RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(*Me\red, *Me\green, *Me\blue))
+    DrawingMode(#PB_2DDrawing_Outlined)
+    RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(66,66,66))
+    
   EndProcedure
   
-  ; Init
-  ;-------------------------------
-  Procedure Init(*Me.ControlColor_t)
-    Debug "ControlColor Init Called!!!"
+  ; ----------------------------------------------------------------------------
+  ;  hlpPick
+  ; ----------------------------------------------------------------------------
+  Procedure hlpPick( *Me.ControlColor_t, mx.i = 0, my.i = 0 )
+    Debug " ### HlpPick "+*Me\name
+    Debug mx
+    Debug my
+    If Not *Me\visible : ProcedureReturn : EndIf
+    
+    If mx < 5 Or mx > *Me\sizX - 5 Or my<5 Or my> *Me\sizY-5
+      ProcedureReturn #ITEM_NONE
+    EndIf
+    
+    Protected cw, ch
+    ch = (*Me\sizY - 10) / 3
+    cw = *Me\sizX - (3*ch+10)
+    
+    If mx > *Me\sizX - 3*ch + 10
+      ProcedureReturn #ITEM_COLOR
+    Else
+      If my < 5+ch 
+        ProcedureReturn #ITEM_RED
+      ElseIf my < 5+2*ch
+        ProcedureReturn #ITEM_GREEN
+      ElseIf my <5+3*ch
+        ProcedureReturn #ITEM_BLUE
+      EndIf
+    EndIf
+    
+    ProcedureReturn #ITEM_NONE
+    
   EndProcedure
+
   
-  ; Event
-  ;-------------------------------
-  Procedure OnEvent(*Me.ControlColor_t,event.i)
-    Debug "ControlColor Event Called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    Draw(*Me)
-    Select event
-      Case #PB_Event_SizeWindow
-;         Protected ty = GadgetHeight(*Me\container)-25
-;         ResizeGadget(*Me\first_frame_btn,0,ty,25,20)
-;         ResizeGadget(*Me\play_btn,25,ty,25,20)
-;         ResizeGadget(*Me\stop_btn,50,ty,25,20)
-;         ResizeGadget(*Me\last_frame_btn,75,ty,25,20)
-;         ResizeGadget(*Me\loop_btn,100,ty,25,20)
-;         ;ResizeGadget(*Me\current_frame_txt,75,0,25,GadgetHeight(*Me\container))
-;         ResizeGadget(*Me\frames_canvas,0,0,GadgetWidth(*Me\container),GadgetHeight(*Me\container)-25)
-;         Draw(*Me)
-      Case #PB_Event_Gadget
-;         Protected g = EventGadget()
-;         Select g
-;           
-;           
-;         EndSelect
+  
+  ; ============================================================================
+  ;  OVERRIDE ( Control )
+  ; ============================================================================
+  ;{
+  ; ---[ OnEvent ]--------------------------------------------------------------
+  Procedure.i OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+
+    ; ---[ Retrieve Interface ]-------------------------------------------------
+    Protected Me.Control::IControl = *Me
+  
+    ; ---[ Dispatch Event ]-----------------------------------------------------
+    Select ev_code
         
+      ; ------------------------------------------------------------------------
+      ;  Draw
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_Draw
+        ; ...[ Draw Control ]...................................................
+        hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+        ; ...[ Processed ]......................................................
+        ProcedureReturn( #True )
+        
+      ; ------------------------------------------------------------------------
+      ;  Resize
+      ; ------------------------------------------------------------------------
+      CompilerIf #PB_Compiler_Version < 560
+        Case Control::#PB_EventType_Resize
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+        ; ...[ Sanity Check ]...................................................
+        If Not *ev_data : ProcedureReturn : EndIf
+        
+        ; ...[ Update Topology ]................................................
+        If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
+        If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
+        If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
+        If #PB_Ignore <> *ev_data\height : *Me\sizY = *ev_data\height : EndIf
+        ; ...[ Processed ]......................................................
+        ProcedureReturn( #True )
+        
+      ; ------------------------------------------------------------------------
+      ;  MouseEnter
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_MouseEnter
+        If *Me\visible And *Me\enable
+          *Me\over = #True
+          Control::Invalidate(*Me)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  MouseLeave
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_MouseLeave
+        If *Me\visible And *Me\enable
+          *Me\over = #False
+          Control::Invalidate(*Me)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  MouseMove
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_MouseMove
+        If *Me\visible And *Me\enable
+          If *Me\down
+            Select *Me\item
+              Case #ITEM_RED
+                Debug "RED ITEM"
+              Case #ITEM_GREEN
+                Debug "GREEN ITEM"
+              Case #ITEM_BLUE
+                Debug "BLUE ITEM"
+              Case #ITEM_COLOR
+                Debug "COLOR ITEM"
+              Case #ITEM_MODE
+                Debug "MODE ITEM"
+            EndSelect
+            
+          EndIf
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  LeftButtonDown
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonDown
+        If *Me\visible And *Me\enable And *Me\over
+          *Me\down = #True
+          Debug Str(*ev_data\x)+","+Str(*ev_data\y)+","+Str(*ev_data\xoff)+","+Str(*ev_data\yoff)
+          *Me\item = hlpPick(*Me, *ev_data\x - *ev_data\xoff, *ev_data\y - *ev_data\yoff)
+          Select *Me\item
+            Case #ITEM_NONE
+              Debug "PICK ITEM NODE"
+            Case #ITEM_COLOR
+              *Me\red = Random(255)
+              *Me\green = Random(255)
+              *Me\blue = Random(255)
+              Color::Set(*Me\color, *Me\red/255, *Me\green/255, *Me\blue/255, 1)
+              Debug "PICK ITEM COLOR"
+            Case #ITEM_RED
+              Debug "PICK ITEM RED"
+            Case #ITEM_GREEN
+              Debug "PICK ITEM GREEN"
+            Case #ITEM_BLUE
+              Debug "PICK ITEM BLUE"
+          EndSelect
+          
+          Control::Invalidate(*Me)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  LeftButtonUp
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonUp
+        If *Me\visible And *Me\enable
+          *Me\down = #False
+          If *Me\over And ( *Me\options & #PB_Button_Toggle )
+  ;           *Me\value*-1
+          EndIf
+          Control::Invalidate(*Me)
+          If *Me\over
+  ;           PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
+  ;           Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+          EndIf
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  Enable
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_Enable
+        If *Me\visible And Not *Me\enable
+          *Me\enable = #True
+          Control::Invalidate(*Me)
+        EndIf
+        ; ...[ Processed ]......................................................
+        ProcedureReturn( #True )
+  
+      ; ------------------------------------------------------------------------
+      ;  Disable
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_Disable
+        If *Me\visible And *Me\enable
+          *Me\enable = #False
+          Control::Invalidate(*Me)
+        EndIf
+        ; ...[ Processed ]......................................................
+        ProcedureReturn( #True )
+  
     EndSelect
     
+    ; ---[ Process Default ]----------------------------------------------------
+    ProcedureReturn( #False )
+    
+  EndProcedure
+  ;}
+
+
+  ; ============================================================================
+  ;  IMPLEMENTATION ( ControlColor )
+  ; ============================================================================
+  ;{
+  ; ---[ SetLabel ]-------------------------------------------------------------
+  Procedure SetLabel( *Me.ControlColor_t, value.s )
+    
+    ; ---[ Set String Value ]---------------------------------------------------
+    *Me\label = value
+    
+  EndProcedure
+  ; ---[ GetLabel ]-------------------------------------------------------------
+  Procedure.s GetLabel( *Me.ControlColor_t )
+    
+    ; ---[ Return String Value ]------------------------------------------------
+    ProcedureReturn( *Me\label )
+    
+  EndProcedure
+
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
+  Procedure Delete( *Me.ControlColor_t )
+    Object::TERM(ControlColor)
+    ; ---[ Deallocate Memory ]--------------------------------------------------
+    ClearStructure(*Me,ControlColor_t)
+    FreeMemory( *Me )
+    
   EndProcedure
   
-  ; Term
-  ;-------------------------------
-  Procedure Term(*Me.ControlColor_t)
-    Debug "ControlColor Term Called!!!"
+  
+  ; ============================================================================
+  ;  CONSTRUCTOR
+  ; ============================================================================
+  Procedure.i New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
+    
+    ; ---[ Allocate Object Memory ]---------------------------------------------
+    Protected *Me.ControlColor_t = AllocateMemory( SizeOf(ControlColor_t) )
+    
+    Object::INI(ControlColor)
+    
+    *Me\object = *object
+    
+    ; ---[ Init Members ]-------------------------------------------------------
+    *Me\type       = Control::#CONTROL_COLOR
+    *Me\name       = name
+    *Me\gadgetID   = #Null
+    *Me\posX       = x
+    *Me\posY       = y
+    *Me\sizX       = width
+    *Me\sizY       = height
+    *Me\visible    = #True
+    *Me\enable     = #True
+    *Me\options    = options
+    Color::SetFromOther(*Me\color, *color)
+    *Me\red        = *color\r * 255
+    *Me\green      = *color\g * 255
+    *Me\blue       = *color\b * 255
+    
+    If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
+    
+    ; ---[ Return Initialized Object ]------------------------------------------
+    ProcedureReturn( *Me )
+    
   EndProcedure
-  
-  
+
+  ; ---[ Reflection ]-----------------------------------------------------------
+  Class::DEF( ControlColor )
 EndModule
 
-; UseModule ControlColor
-; window = OpenWindow(#PB_Any,0,0,120,600,"Test ControlColor",#PB_Window_SizeGadget|#PB_Window_SystemMenu)
-; *colorUI.ControlColor_t = ControlColor::New("ControlColor",0,0,120,60)
-; Define e
-; Repeat
-;   e = WaitWindowEvent()
-;   ControlColor::Event(*colorUI,e)
-; Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 81
-; FirstLine = 77
-; Folding = --
+; ============================================================================
+;  EOF
+; ============================================================================
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 178
+; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -568,16 +568,17 @@ Procedure.s GetLabel( *Me.ControlButton_t )
   ProcedureReturn( *Me\label )
   
 EndProcedure
-; ---[ Free ]-----------------------------------------------------------------
+
+; ============================================================================
+;  DESTRUCTOR
+; ============================================================================
 Procedure Delete( *Me.ControlButton_t )
-  
+  Object::TERM(ControlButton)
   ; ---[ Deallocate Memory ]--------------------------------------------------
   ClearStructure(*Me,ControlButton_t)
   FreeMemory( *Me )
   
 EndProcedure
-;}
-
 
 
 ; ============================================================================
@@ -1076,8 +1077,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 518
-; FirstLine = 514
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 575
+; FirstLine = 556
 ; Folding = ---+-
 ; EnableXP

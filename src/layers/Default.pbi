@@ -128,7 +128,7 @@ Module LayerDefault
     
     ;Draw Drawer Objects
     ;-----------------------------------------------
-    *shader.Program::Program_t = *ctx\shaders("wireframe")
+    *shader.Program::Program_t = *ctx\shaders("drawer")
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
@@ -287,7 +287,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 114
+; CursorPosition = 130
+; FirstLine = 126
 ; Folding = --
 ; EnableXP

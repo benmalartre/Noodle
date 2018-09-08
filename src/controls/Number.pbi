@@ -1286,7 +1286,7 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type         = Control::#PB_GadgetType_Number
+  *Me\type         = Control::#CONTROL_NUMBER
   *Me\name         = name
   *Me\gadgetID     = #Null
   *Me\posX         = x
@@ -1570,8 +1570,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 1370
-; FirstLine = 1336
-; Folding = -----
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1288
+; FirstLine = 1284
+; Folding = ------
 ; EnableXP

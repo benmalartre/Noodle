@@ -12,6 +12,8 @@ FTGL::Init()
 Controls::Init()
 Commands::Init()
 UIColor::Init()
+Alembic::Init()
+
 
 Global WIDTH = 800
 Global HEIGHT = 600
@@ -20,40 +22,42 @@ Global *default.Layer::Layer_t
 Global *app.Application::Application_t
 
 Procedure Update()
-  Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*default,*app\context)
-  SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+  
+;   ViewportUI::SetContext(*viewport)
+;   Scene::Update(Scene::*current_scene)
+;   LayerDefault::Draw(*default,*app\context)
+;   ViewportUI::FlipBuffer(*viewport)
 EndProcedure
 
-*app = Application::New("Graph UI",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
+Procedure Callback()
+  MessageRequester("CALLBACK" , "CALL 911")  
+EndProcedure
+
+
+*app = Application::New("Test Property",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
+Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Scene::*current_scene = Scene::New()
 Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
 Scene::AddChild(Scene::*current_scene,*bunny)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
-Global *view.View::View_t = View::Split(*main,0,50)
-Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property", #Null)
+OpenGadgetList(*ui\container)
+; PropertyUI::Init(*ui)
+Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "test", "test",0,0,*main\width, *main\height)
 
-Global *middle.View::View_t = View::Split(*top\right,#PB_Splitter_Vertical,60)
-Global *center.View::View_t = View::Split(*middle\left,#PB_Splitter_Vertical,30)
-Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,60)
+ControlProperty::AppendStart(*prop)
+ControlProperty::AddColorControl(*prop, "color1", "color1",Color::_MAGENTA(),#Null)
+ControlProperty::AddColorControl(*prop, "color2", "color2",Color::_BLUE(),#Null)
+ControlProperty::AddColorControl(*prop, "color3", "color3",Color::_RED(),#Null)
+ControlProperty::AppendStop(*prop)
+CloseGadgetList()
 
-Define *ui1.UI::UI_t = DummyUI::New(*top\left,"Top")
-Define *ui2.UI::UI_t = DummyUI::New(*middle\right,"MiddleRight")
-;Define *ui3.UI::UI_t = DummyUI::New(*center\right,"CenterRight")
-Define *ui3.UI::Ui_t = ViewportUI::New(*center\right,"CenterRight")
-*viewport = *ui3
-Define *ui4.UI::UI_t = DummyUI::New(*center\left,"CenterLeft")
-;Define *ui5.UI::UI_t = DummyUI::New(*bottom\left,"Bottom")
-Define *ui5.UI::UI_t = GraphUI::New(*bottom\left,"Bottom")
-;Define *ui6.UI::UI_t = DummyUI::New(*bottom\right,"Timeline")
-Define *timeline.TimelineUI::TimelineUI_t = TimelineUI::New(*bottom\right,"Timeline")
+PropertyUI::AddProperty(*ui, *prop)
 
-*default = LayerDefault::New(1200,600,*viewport\context,Scene::*current_scene\camera)
-*app\context = *viewport\context
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 52
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 33
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -390,7 +390,7 @@ Module ControlCheck
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#PB_GadgetType_Check
+    *Me\type     = Control::#CONTROL_CHECK
     *Me\name     = name
     *Me\gadgetID = #Null
     *Me\posX     = x
@@ -539,8 +539,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 296
-; FirstLine = 293
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 392
+; FirstLine = 388
 ; Folding = ----
 ; EnableXP

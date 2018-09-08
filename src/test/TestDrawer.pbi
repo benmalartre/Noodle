@@ -129,9 +129,9 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Drawer::Flush(*drawer)
   RandomSpheres(Random(64,16), Random(10)-5)
-;   RandomCubes(Random(64,16), Random(10)-5)
-;   RandomStrips(32)
-;   RandomPoints(Random(256, 64))
+  RandomCubes(Random(64,16), Random(10)-5)
+  RandomStrips(32)
+  RandomPoints(Random(256, 64))
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
@@ -199,8 +199,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 133
+; CursorPosition = 133
+; FirstLine = 115
 ; Folding = --
 ; EnableThread
 ; EnableXP

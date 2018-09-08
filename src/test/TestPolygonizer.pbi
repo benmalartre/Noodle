@@ -50,15 +50,15 @@ Procedure DrawPolygonizer(*polygonizer.Polygonizer::Grid_t, ss.f, ratio.f)
   Protected world.v3f32
   Protected screen.v2f32
   
-  Protected *view.m4f32 = Layer::GetViewMatrix(*layer)
-  Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
-  Protected i
-  
-  For i=0 To numPoints -1
-    Vector3::Set(@world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
-    MapWorldPositionToScreenSpace(*view, *proj, *viewport\width, *viewport\height, @world, @screen)
-    FTGL::Draw(*app\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
-  Next
+;   Protected *view.m4f32 = Layer::GetViewMatrix(*layer)
+;   Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
+;   Protected i
+;   
+;   For i=0 To numPoints -1
+;     Vector3::Set(@world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
+;     MapWorldPositionToScreenSpace(*view, *proj, *viewport\width, *viewport\height, @world, @screen)
+;     FTGL::Draw(*app\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
+;   Next
   
 EndProcedure
 
@@ -79,7 +79,7 @@ Procedure Draw(*app.Application::Application_t)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-;   DrawPolygonizer(*polygonizer, ss, ratio)
+  DrawPolygonizer(*polygonizer, ss, ratio)
   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
@@ -124,7 +124,7 @@ FTGL::Init()
   
   Geometry::ComputeBoundingBox(*geom)
    
-  *polygonizer = Polygonizer::CreateGrid(*geom\bbox, 0.1)
+  *polygonizer = Polygonizer::CreateGrid(*geom\bbox, 0.05)
 
   Polygonizer::Polygonize(*polygonizer, *geom)
   
@@ -133,7 +133,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 38
+; CursorPosition = 126
+; FirstLine = 70
 ; Folding = -
 ; EnableXP

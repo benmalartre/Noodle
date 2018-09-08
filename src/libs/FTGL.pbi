@@ -84,6 +84,7 @@ DeclareModule FTGL
  
 
   Global *ftgl_atlas.FTGL_FontAtlas = 0
+  Global NewMap *atlases.FTGL_FontAtlas()
   
   ; ============================================================================
   ; IMPORTS
@@ -118,6 +119,8 @@ DeclareModule FTGL
   
   Declare Init()
   Declare New()
+  Declare AddAtlas(filename.s, size_px.i, name.s)
+  Declare RemoveAtlas(name.s)
   Declare Delete(*drawer.FTGL_Drawer)
   Declare SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
   Declare SetColor(*drawer.FTGL_Drawer,r.f,g.f,b.f,a.f)
@@ -138,7 +141,16 @@ Module FTGL
   ; ============================================================================
   Procedure Init()
     ; ---[ Global Atlas ]-------------------------------------------------------
-    *ftgl_atlas = FT_CreateFontAtlas(FONT_FILE_NAME,32)
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 8, "Arial8")
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 16, "Arial16")
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 32, "Arial32")
+    If FindMapElement(*atlases(), "Arial16")
+      *ftgl_atlas = *atlases()
+    EndIf
+    
+    ;FT_CreateFontAtlas(FONT_FILE_NAME,32)
+    
+    
 
   EndProcedure
   
@@ -340,8 +352,31 @@ Module FTGL
     glUseProgram(0)
   EndProcedure
   
+  ;-------------------------------------------------------------------------------------
+  ; Add Atlas 
+  ;-------------------------------------------------------------------------------------
+  Procedure AddAtlas(filename.s, size_px.i, name.s)
+    If Not FindMapElement(*atlases(), name)
+      If FileSize(filename) And size_px > 0
+        Protected *atlas = FT_CreateFontAtlas(filename,size_px)
+        AddMapElement(*atlases(), name)
+        *atlases() = *atlas
+        ProcedureReturn *atlas
+      EndIf
+    EndIf
+    ProcedureReturn #Null
+  EndProcedure
   
-  
+  ;-------------------------------------------------------------------------------------
+  ; Remove Atlas 
+  ;-------------------------------------------------------------------------------------
+  Procedure RemoveAtlas(name.s)
+    If FindMapElement(*atlases(), name)
+      Protected *atlas = *atlases()
+      FT_DeleteFontAtlas(*atlas)
+      DeleteMapElement(*atlases(), name)
+    EndIf
+  EndProcedure
   
   ;-------------------------------------------------------------------------------------
   ; Destructor
@@ -360,6 +395,7 @@ Module FTGL
   ;-------------------------------------------------------------------------------------
   Procedure New()
     Protected *drawer.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
+    InitializeStructure(*drawer, FTGL_Drawer)
     If *ftgl_atlas
       *drawer\atlas = *ftgl_atlas
     Else
@@ -386,8 +422,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 361
-; FirstLine = 326
+; CursorPosition = 150
+; FirstLine = 130
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

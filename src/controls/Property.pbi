@@ -84,6 +84,8 @@ DeclareModule ControlProperty
   Declare.i GetWidth(*Me.ControlProperty_t)
   Declare.i GetHeight(*Me.ControlProperty_t)
   
+  Declare Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
+  
   DataSection 
     ControlPropertyVT: 
     Data.i @OnEvent()
@@ -122,13 +124,6 @@ Module ControlProperty
     Protected i
     Protected *ctl.Control::IControl
     Protected *c.Control::Control_t
-      
-;     ForEach *Me\groups()
-;       MessageRequester("Clear Propetry Delete Group","Delete Group")
-;       *ctl = *Me\groups()
-;       *ctl\Delete()
-;     Next
-;     ClearList(*Me\groups())
     
     If ArraySize(*Me\children())>0
       
@@ -186,7 +181,7 @@ Module ControlProperty
         *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
       EndIf
       
-      If *overchild\type = Control::#PB_GadgetType_Group
+      If *overchild\type = Control::#CONTROL_GROUP
         ControlGroup::Pick(overchild)
       EndIf
     EndIf
@@ -217,7 +212,7 @@ Module ControlProperty
         For i=0 To iBound
       
           *son = *Me\children(i)
-          If *son\type = Control::#PB_GadgetType_Group  
+          If *son\type = Control::#CONTROL_GROUP
             Box( *son\posX, *son\posY, *son\sizX, *son\sizY,i+1)
           Else
             Box(*son\posX,*son\posY,*son\sizX,*son\sizY,i+1)
@@ -1020,7 +1015,8 @@ Module ControlProperty
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
     ;Append(*Me, newControl::IControlLabel(name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
-    ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
+    ;ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
+    ControlGroup::Append(*group, ControlColor::New(name+"_Color",name+"_Color",*value,*Me\dx,*Me\dy+2,(width-110),18))
   ;   *obj\SignalConnect(Ctl\SignalOnChanged(),0)
   ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Pick_Btn","Pick",#False,0,(width-60),*Me\dy,50,21))
   ;   *obj\SignalConnect(Ctl\SignalOnChanged(),1)
@@ -1233,7 +1229,9 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure GetNumControlInRow(*Me.ControlProperty_t, base.i)
     Protected index = base
-    While *Me\rowflags(index)
+    Protected search.b = #True
+    While search
+      If  Not *Me\rowflags(index) : search = #False : EndIf
       index+1
     Wend
     ProcedureReturn index - base
@@ -1255,7 +1253,6 @@ Module ControlProperty
     
     idx = Pick(*Me)
     
-  
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
         
@@ -1270,30 +1267,36 @@ Module ControlProperty
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
         *Me\sizX = *ev_data\width
-        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*ev_data\width,#PB_Ignore)
-        Define c
+        
+        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*Me\sizX,#PB_Ignore)
+ 
         ev_data\x = 0
         ev_data\y = 0
         ev_data\width = *ev_data\width
         ev_data\height = #PB_Ignore
-        
+
         Protected nbc_row.i
         Protected idr.i = 0
+        Protected wi.i
+        ; Resize Controls
         For c=0 To *Me\chilcount - 1
-          son = *Me\children(c)
-          *son = son
           If *Me\rowflags(c) 
             nbc_row = GetNumControlInRow(*Me, c)
-            idr = 0
-            While *Me\rowflags(c)
-              ev_data\width = *ev_data\width / nbc_row
-              ev_data\x    = *ev_data\x + ev_data\width * idr
+            walk = #True
+            wi = *Me\sizX / nbc_row
+            For d=0 To nbc_row -1
+              son = *Me\children(c+d)
+              *son = son
+              ev_data\width = wi
+              ev_data\x    = *Me\posX + wi * d
               ev_data\y    = *son\posY
               son\OnEvent(#PB_EventType_Resize, @ev_data)
-              c + 1
-              idr + 1
-            Wend
+              If Not *Me\rowflags(c) : walk = #False : EndIf
+            Next
+            c + nbc_row - 1
           Else
+            son = *Me\children(c)
+            *son = son
             ev_data\width = *ev_data\width
             ev_data\x    = *son\posX
             ev_data\y    = *son\posY
@@ -1301,36 +1304,26 @@ Module ControlProperty
           EndIf
         Next
         
-;         CompilerIf #PB_Compiler_Version <550
-;           For c=0 To *Me\chilcount-1
-;             son = *Me\children(c)
-;             *son = son
-;             If *son\type = Control::#PB_GadgetType_Group
-;               ev_data\x    = *son\posX
-;               ev_data\y    = *son\posY
-;               son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
-;             EndIf
-;           Next
-;         CompilerElse
-;           For c=0 To *Me\chilcount-1
-;             son = *Me\children(c)
-;             *son = son
-;             If *son\type = Control::#PB_GadgetType_Group
-;               ev_data\x    = *son\posX
-;               ev_data\y    = *son\posY
-;               son\OnEvent(#PB_EventType_Resize, @ev_data)
-;             EndIf
-;             
-;           Next
-;         CompilerEndIf
+        ; Resize Groups
+        For c=0 To *Me\chilcount-1
+          son = *Me\children(c)
+          *son = son
+          If *son\type = Control::#CONTROL_GROUP
+            ev_data\x    = *son\posX
+            ev_data\y    = *son\posY
+            CompilerIf #PB_Compiler_Version <550
+              son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+            CompilerElse
+              son\OnEvent(#PB_EventType_Resize, @ev_data)
+            CompilerEndIf
+          EndIf
+        Next
         
         Draw( *Me )
         DrawPickImage(*Me)
         
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
-      
-        
+          
       ; ------------------------------------------------------------------------
       ;  DrawChild
       ; ------------------------------------------------------------------------
@@ -1388,7 +1381,7 @@ Module ControlProperty
         ym = Min( Max( ym, 0 ), *Me\sizY - 1 )
         
         *overchild.Control::Control_t = *Me\overchild
-        If *overchild And *overchild\type = Control::#PB_GadgetType_Group
+        If *overchild And *overchild\type = Control::#CONTROL_GROUP
           Protected ev_datas.Control::EventTypeDatas_t
           ev_datas\x = *overchild\posX
           ev_datas\y = *overchild\posY
@@ -1430,18 +1423,20 @@ Module ControlProperty
     Case #PB_EventType_LeftButtonDown
       *Me\down = #True
       
-        If *Me\overchild
-          If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          EndIf
-          *overchild.Control::Control_t = *Me\overchild
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
-  
-        ElseIf *Me\focuschild
+      If *Me\overchild
+        If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
           *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
+        *overchild.Control::Control_t = *Me\overchild
+        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
+        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
+        ev_data\xoff = *overchild\posX
+        ev_data\yoff = *overchild\posY
+        *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
+
+      ElseIf *Me\focuschild
+        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+      EndIf
         
       ; ------------------------------------------------------------------------
       ;  LeftButtonUp
@@ -1614,6 +1609,41 @@ Module ControlProperty
     ProcedureReturn( #False )
     
   EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Test
+  ; ----------------------------------------------------------------------------
+  Procedure Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
+   
+    AppendStart(*prop)
+    AddBoolControl(*prop,"boolean","boolean",#False,*mesh)
+    AddFloatControl(*prop,"float","float",#False,*mesh)
+    AddIntegerControl(*prop,"integer","integer",#False,*mesh)
+    AddReferenceControl(*prop,"reference1","ref1",*mesh)
+    AddReferenceControl(*prop,"reference2","ref2",*mesh)
+    AddReferenceControl(*prop,"reference3","ref3",*mesh)
+    *group = AddGroup(*prop,"BUTTON")
+    
+    ControlGroup::Append(*group,ControlButton::New(*mesh,"button","button",#True,#PB_Button_Toggle))
+    EndGroup(*prop)
+    
+    
+    
+    Define q.Math::q4f32
+    Quaternion::SetIdentity(@q)
+    AddQuaternionControl(*prop,"quaternion","quat",@q,*mesh)
+    
+    *group = AddGroup(*prop,"ICONS")
+    ControlGroup::RowStart(*group)
+    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Back",ControlIcon::#Icon_Back,0))
+    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Stop",ControlIcon::#Icon_Stop,0))
+    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Play",ControlIcon::#Icon_Play,#PB_Button_Toggle))
+    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Loop",ControlIcon::#Icon_Loop,0))
+    ControlGroup::RowEnd(*group)
+    EndGroup(*prop)
+        
+    AppendStop(*prop)
+  EndProcedure
 
 
   ; ============================================================================
@@ -1667,7 +1697,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1219
-; FirstLine = 1199
+; CursorPosition = 1432
+; FirstLine = 1381
 ; Folding = -------
 ; EnableXP

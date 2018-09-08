@@ -507,6 +507,7 @@ Module Polymesh
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
+    *P\wireframe = #True
 ;     If *p\wireframe
 ;       glBindVertexArray(*p\vao2)
 ;       glPointSize(4)
@@ -519,6 +520,7 @@ Module Polymesh
 ;     Else
       glBindVertexArray(*p\vao)
       ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
 ;     EndIf
@@ -561,8 +563,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 477
-; FirstLine = 466
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 522
+; FirstLine = 504
 ; Folding = ----
 ; EnableXP

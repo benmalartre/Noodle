@@ -459,6 +459,7 @@ DeclareModule Color
   Declare Echo(*c.c4f32,prefix.s ="")
   Declare.s ToString(*c.c4f32)
   Declare FromString(*c.c4f32, s.s)
+  Declare MapRGB(*c.c4f32, r.f=1, g.f=1, b.f=1, a.f=1, x.f=0)
 EndDeclareModule
 
 ;====================================================================
@@ -1853,6 +1854,19 @@ Module Color
     LINEAR_INTERPOLATE(*io\a, *c1\a, *c2\a, blend)
   EndProcedure
   
+  Procedure MapRGB(*io.c4f32, r.f=1.0, g.f=1.0, b.f=1.0, a.f=1.0, x.f=0.0)
+    Protected alpha.f = Mod(x,1)/3.0
+    
+;     def RGB(minimum, maximum, value):
+;     minimum, maximum = float(minimum), float(maximum)
+;     ratio = 2 * (value-minimum) / (maximum - minimum)
+;     b = Int(max(0, 255*(1 - ratio)))
+;     r = Int(max(0, 255*(ratio - 1)))
+;     g = 255 - b - r
+;     Return r, g, b
+  EndProcedure
+  
+  
   ; Echo
   ;----------------------------------------------------
   Procedure Echo(*c.c4f32,prefix.s ="")
@@ -2786,8 +2800,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 497
-; FirstLine = 437
-; Folding = ----------------------------------
+; CursorPosition = 1870
+; FirstLine = 1850
+; Folding = -----------------------------------
 ; EnableXP
 ; EnableUnicode
