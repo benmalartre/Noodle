@@ -66,7 +66,7 @@ Module NodeSearch
           AddGadgetItem(*Me\tree,-1,Nodes::*graph_nodes()\name)
           AddElement(*Me\nodes())
           *Me\nodes() = Nodes::*graph_nodes()
-          h+ 15
+          h+15
           Debug Nodes::*graph_nodes()\name
           Debug Nodes::*graph_nodes()\label
           Debug Nodes::*graph_nodes()\category
@@ -90,6 +90,7 @@ Module NodeSearch
       
       *Me\str = s
       ResizeWindow(*Me\window,#PB_Ignore,#PB_Ignore,#PB_Ignore,h)
+      ResizeGadget(*Me\tree,0,30,WindowWidth(*Me\window, #PB_Window_InnerCoordinate), h-30)
     EndIf
   EndProcedure
     
@@ -157,9 +158,9 @@ Module NodeSearch
   
 EndModule
 
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 91
-; FirstLine = 100
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 45
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

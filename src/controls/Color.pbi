@@ -30,10 +30,14 @@ DeclareModule ControlColor
     item.i
   EndStructure
   
+  Interface IControlColor Extends Control::IControl
+    OnClick()
+  EndInterface
+  
   Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
   Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  
+  Declare OnClick(*Me.ControlColor_t)
   ; ============================================================================
   ;  VTABLE ( Object + Control + ControlColor )
   ; ============================================================================
@@ -41,7 +45,7 @@ DeclareModule ControlColor
     ControlColorVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
-   
+    Data.i @OnClick()
   EndDataSection
 
   
@@ -100,9 +104,14 @@ Module ControlColor
     Box(5+xoff + offset_b - 1, 5+2*ch+yoff, 2 , ch, white)
     
     ; draw color
+    If *Me\item = #ITEM_COLOR
+      RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(122,122,122))
+    Else
+       RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(0,0,0))
+    EndIf
+    
     RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(*Me\red, *Me\green, *Me\blue))
-    DrawingMode(#PB_2DDrawing_Outlined)
-    RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(66,66,66))
+   
     
   EndProcedure
   
@@ -204,6 +213,12 @@ Module ControlColor
       ;  MouseMove
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseMove
+        Debug "mOUSE MOVE"
+        Protected item = hlpPick(*Me, *ev_data\x - *ev_data\xoff, *ev_data\y - *ev_data\yoff)
+        If item <> *Me\item
+          *Me\item = item
+          Control::Invalidate(*Me)
+        EndIf
         If *Me\visible And *Me\enable
           If *Me\down
             Select *Me\item
@@ -295,6 +310,26 @@ Module ControlColor
     
   EndProcedure
   ;}
+  
+  Procedure OnMessage(type.i, *up)
+    Protected *sig.Signal::Signal_t = *up
+    Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
+    Protected fn.Class::CLASSMESSAGE = *sig\rcv_slot
+    
+    fn(type, *sig)
+    
+  EndProcedure
+  
+  
+  Procedure OnClick(*Me.ControlColor_t)
+    MessageRequester("COLOR", "ON CLICK")
+    *Me\red = Random(255)
+    *Me\green = Random(255)
+    *Me\blue = Random(255)
+    Color::Set(*Me\color, *Me\red / 255, *Me\green/255, *Me\blue / 255)
+    Control::Invalidate(*Me)
+  EndProcedure
+  
 
 
   ; ============================================================================
@@ -371,8 +406,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 178
+; CursorPosition = 314
+; FirstLine = 278
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

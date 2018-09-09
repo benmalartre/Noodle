@@ -17,8 +17,8 @@ DeclareModule GraphUI
   ;---------------------------------------------------------------------------
   ;  Global
   ;---------------------------------------------------------------------------
-  Global raa_graph_font_node
-  Global raa_graph_font_port
+  Global graph_font_node
+  Global graph_font_port
   
   ;---------------------------------------------------------------------------
   ;  INTERFACE
@@ -115,7 +115,7 @@ DeclareModule GraphUI
   DataSection 
     GraphUIVT: 
     Data.i @Init()
-    Data.i @ONEvent()
+    Data.i @OnEvent()
     Data.i @Term()
   EndDataSection 
   
@@ -230,7 +230,7 @@ Module GraphUI
             If *search\selected
 
               ; Add Node
-              Tree::AddNode(*Me\tree,*search\selected\name,0,0,100,50,RGB(120,120,140))
+              Tree::AddNode(*Me\tree,*search\selected\name,*Me\mousex - *Me\posx, *Me\mousey - *Me\posy,100,50,RGB(120,120,140))
               NodeInfos(*Me)
               *Me\redraw = #True
               *Me\tree\dirty = #True
@@ -892,7 +892,6 @@ Module GraphUI
         ;Draw visible nodes
         Protected v
         Protected *visible.Node::Node_t
-        ;raaSetPen(0,1)
         ForEach *Me\a_visible()
           *visible = *Me\a_visible()
           ;Draw nodes
@@ -948,7 +947,6 @@ Module GraphUI
         ;Draw visible nodes
         Protected v
         Protected *visible.Node::Node_t
-        ;raaSetPen(0,1)
         ForEach *Me\a_visible()
           *visible = *Me\a_visible()
           ;Draw nodes
@@ -1310,71 +1308,77 @@ Module GraphUI
             *Me\redraw = #True
 
           ;Left Button Down Event
-          Case #PB_EventType_LeftButtonDown             
-            If *Me\pan
-              ;Do nothing
+          Case #PB_EventType_LeftButtonDown      
+            Protected modifiers.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)  
+            If modifiers & #PB_Canvas_Alt
+              If *me\pan :ProcedureReturn : EndIf
+              ; Pan
+              SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
+              *Me\offsetx = *Me\mousex - *Me\posx
+              *Me\offsety = *Me\mousey - *Me\posy
+              *Me\pan = #True
               ProcedureReturn
-            Else
-              Define s.i = GetNodeUnderMouse(*Me,x,y)
-              If s = Graph::#Graph_Selection_Climb
-                If *Me\depth>0
-                  *Me\tree\current = *Me\tree\current\parent
-                  *Me\dirty = #True
-                  *Me\depth-1
-                EndIf
-              EndIf
+            EndIf
               
+            Define s.i = GetNodeUnderMouse(*Me,x,y)
+            If s = Graph::#Graph_Selection_Climb
               If *Me\depth>0
-                Protected *current.CompoundNode::CompoundNode_t = *Me\tree\current
+                *Me\tree\current = *Me\tree\current\parent
+                *Me\dirty = #True
+                *Me\depth-1
+              EndIf
+            EndIf
+            
+            If *Me\depth>0
+              Protected *current.CompoundNode::CompoundNode_t = *Me\tree\current
 ;                 CompoundNode::ViewPosition(*Me\tree\current,*Me\width,*Me\height,*current\iexpand,*current\oexpand)
-                Protected id=0
-                Protected selected = #False
-                ForEach *Me\tree\current\inputs()
-                  selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,x,y,*Me\zoom)
-                  If selected 
-                    If *Me\tree\current\inputs()\connected
-                      MessageRequester("GraphUI","Port Already Connected ---> Diconnect")
-                    Else
-                      StartConnecter(*Me,#True)
-                    EndIf
-                    
-                    Break
+              Protected id=0
+              Protected selected = #False
+              ForEach *Me\tree\current\inputs()
+                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,x,y,*Me\zoom)
+                If selected 
+                  If *Me\tree\current\inputs()\connected
+                    MessageRequester("GraphUI","Port Already Connected ---> Diconnect")
+                  Else
+                    StartConnecter(*Me,#True)
                   EndIf
                   
-                  id+1
-                  
-                Next
+                  Break
+                EndIf
                 
-              EndIf
+                id+1
+                
+              Next
               
-              If *Me\focus
-                Define mode.i = Node::Pick(*Me\focus,x,y,*Me\zoom,#False)
-                
-                Select mode
-                  Case Graph::#Graph_Selection_Dive
-                    ClearSelection(*Me)
-                    *Me\tree\current = *me\focus
-                    *Me\dirty = #True
-                    *Me\depth +1
-                   ; selection 
-                  Case Graph::#Graph_Selection_Node
-                    Selection(*Me,x,y,#False)
-                    *Me\drag = #True               
-                  ; Connexion 
-                  Case Graph::#Graph_Selection_Port
-                    
-                    StartConnecter(*Me,#False)
-                    
-                EndSelect
-              Else
-                ;Rectangle Selection  
-                *Me\rectx1 = x
-                *Me\recty1 = y
-                *Me\rectx2 = x
-                *Me\recty2 = y
-                *Me\pick = #True
-              EndIf 
             EndIf
+            
+            If *Me\focus
+              Define mode.i = Node::Pick(*Me\focus,x,y,*Me\zoom,#False)
+              
+              Select mode
+                Case Graph::#Graph_Selection_Dive
+                  ClearSelection(*Me)
+                  *Me\tree\current = *me\focus
+                  *Me\dirty = #True
+                  *Me\depth +1
+                 ; selection 
+                Case Graph::#Graph_Selection_Node
+                  Selection(*Me,x,y,#False)
+                  *Me\drag = #True               
+                ; Connexion 
+                Case Graph::#Graph_Selection_Port
+                  
+                  StartConnecter(*Me,#False)
+                  
+              EndSelect
+            Else
+              ;Rectangle Selection  
+              *Me\rectx1 = x
+              *Me\recty1 = y
+              *Me\rectx2 = x
+              *Me\recty2 = y
+              *Me\pick = #True
+            EndIf 
             
             *Me\redraw = #True
 
@@ -1429,14 +1433,14 @@ Module GraphUI
           Case #PB_EventType_KeyDown  
             If *Me\keydown : ProcedureReturn : EndIf
              Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
-               Case #PB_Shortcut_Space
-                 *me\keydown = #PB_Shortcut_Space
-                 If *me\pan :ProcedureReturn : EndIf
-                 ; Pan
-                 SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
-                 *Me\offsetx = *Me\mousex - *Me\posx
-                 *Me\offsety = *Me\mousey - *Me\posy
-                 *Me\pan = #True
+;                Case #PB_Shortcut_Space
+;                  *me\keydown = #PB_Shortcut_Space
+;                  If *me\pan :ProcedureReturn : EndIf
+;                  ; Pan
+;                  SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
+;                  *Me\offsetx = *Me\mousex - *Me\posx
+;                  *Me\offsety = *Me\mousey - *Me\posy
+;                  *Me\pan = #True
                Case #PB_Shortcut_A
                  *me\keydown = #PB_Shortcut_A
                  FrameAll(*Me)
@@ -1452,7 +1456,8 @@ Module GraphUI
                Case #PB_Shortcut_Return
                  *me\keydown = #PB_Shortcut_Return
                  If *Me\focus : GraphUI::InspectNode(*Me,*Me\focus) : EndIf
-            EndSelect
+             EndSelect
+             
         
           ; Key Up Event
           Case #PB_EventType_KeyUp
@@ -1648,8 +1653,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 1296
-; FirstLine = 1286
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 232
+; FirstLine = 205
 ; Folding = --------
 ; EnableXP

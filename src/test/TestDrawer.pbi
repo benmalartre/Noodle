@@ -115,7 +115,7 @@ Procedure RandomPoints(numItems.i)
       CArray::SetValue(*positions, j, @position)
     Next
     Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
-    *item = Drawer::NewPoint(*drawer, *positions)
+    *item = Drawer::NewPoints(*drawer, *positions)
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
   Next
@@ -128,10 +128,10 @@ Procedure Draw(*app.Application::Application_t)
   
   ViewportUI::SetContext(*viewport)
   Drawer::Flush(*drawer)
-  RandomSpheres(Random(64,16), Random(10)-5)
+;   RandomSpheres(Random(64,16), Random(10)-5)
   RandomCubes(Random(64,16), Random(10)-5)
   RandomStrips(32)
-  RandomPoints(Random(256, 64))
+;   RandomPoints(Random(256, 64))
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
@@ -199,8 +199,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 115
+; CursorPosition = 132
+; FirstLine = 95
 ; Folding = --
 ; EnableThread
 ; EnableXP

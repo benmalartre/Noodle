@@ -52,7 +52,6 @@ Module Slot
   
     ; ---[ Unlock List ]--------------------------------------------------------
     UnlockMutex( *Me\mux )
-    
   EndProcedure
   
   
@@ -159,8 +158,8 @@ Module Slot
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 85
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

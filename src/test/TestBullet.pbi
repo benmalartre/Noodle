@@ -256,7 +256,7 @@ Color::Set(@color,1.0,0.5,0.4)
 ;   
 ;   BTCreateRigidBodyFrom3DObject(*ground,#BULLET_TRIANGLEMESH_SHAPE,0.0)
   
-;   *raa_current_scene\handle\SetTarget(*ground)
+;   *current_scene\handle\SetTarget(*ground)
   
   
     ; ---[ Debugging Raycast ]---------------------------------------------------
@@ -421,8 +421,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 301
-; FirstLine = 280
+; CursorPosition = 258
+; FirstLine = 230
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -33,8 +33,7 @@ DeclareModule Class
     CompilerEndIf
     
     CLASS\dtor = @Delete()
-   
-    
+
   EndMacro
 
 EndDeclareModule
@@ -44,7 +43,6 @@ EndDeclareModule
 ;======================================================================
 Module Class
   Procedure ClassOnMessage()
-    ;Empty Class On Message
   EndProcedure
   
 EndModule
@@ -125,10 +123,9 @@ DeclareModule Object
   EndMacro
   
   Macro TERM( cls )
-    Slot::Delete(*Me)
+    Slot::Delete(*Me\slot)
   EndMacro
-  
-  
+
   Declare SignalConnect( *Me.Object_t, *sig.Slot::Slot_t, slot.i )  
   Declare SignalDisconnect( *Me.Object_t, *sig.Slot::Slot_t)  
 EndDeclareModule
@@ -154,8 +151,8 @@ Module Object
   EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 75
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 78
 ; Folding = ---
 ; EnableXP

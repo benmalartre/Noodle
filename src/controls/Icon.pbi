@@ -164,108 +164,30 @@ Module ControlIcon
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable 
-      ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+      ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_tl),            0 + xoff,            0 + yoff)
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_disabled_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,128,64))
+      ; ---[ Up ]---------------------------------------------------------------
       Else
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_tl),            0 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_disabled_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(128,255,64))
       EndIf
-      ; ...[ Disabled Text ]....................................................
-      ;tc = RAA_COLORA_LABEL_DISABLED
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+      ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_tl),            0 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_over_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-        ; ...[ Negate Text ]....................................................
-        ;tc = RAA_COLORA_LABEL_NEG
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(64,255,255))
+      ; ---[ Up ]---------------------------------------------------------------
       Else
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_tl),            0 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_over_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(64,255,32))
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
-      ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+      ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_tl),            0 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_down_normal_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-        ; ...[ Negate Text ]....................................................
-        ;tc = RAA_COLORA_LABEL_NEG
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,255,128))
+      ; ---[ Up ]---------------------------------------------------------------
       Else
-        ; ...[ Draw Corners ]...................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_tl),            0 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-        ; ...[ V Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-        ; ...[ H Centers ]......................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-        ; ...[ Center Area ]....................................................
-        DrawImage( ImageID(ControlButton::s_gui_controls_button_up_normal_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,64,64))
       EndIf
     EndIf
       
@@ -625,8 +547,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 318
-; FirstLine = 289
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 418
+; FirstLine = 399
 ; Folding = ----
 ; EnableXP

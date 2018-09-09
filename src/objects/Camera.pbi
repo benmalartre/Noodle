@@ -344,8 +344,7 @@ Module Camera
   Procedure OnEvent(*Me.Camera_t,gadget)
     
      Debug "Camera On Event !!!"
-   
-    
+
   EndProcedure
   
   ;--------------------------------------------
@@ -384,8 +383,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 260
-; FirstLine = 254
+; CursorPosition = 346
+; FirstLine = 323
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

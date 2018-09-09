@@ -195,12 +195,14 @@ Module ViewportUI
 
           Select EventType()
             Case #PB_EventType_Focus
+              Debug "############ VIEWPORT GET FOCUS"
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
                       
             Case #PB_EventType_LostFocus
+              Debug "############ VIEWPORT LOSE FOCUS"
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
@@ -660,7 +662,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 329
-; FirstLine = 289
+; CursorPosition = 304
+; FirstLine = 292
 ; Folding = -----
 ; EnableXP

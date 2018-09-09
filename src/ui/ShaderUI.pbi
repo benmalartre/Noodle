@@ -119,6 +119,7 @@ Module ShaderUI
     Protected window.i = EventWindow()
     Select event
       Case #PB_Event_SizeWindow
+        Debug "EVENT SIZE WINDOW"
         Protected x,y,w,h
         x = GadgetX(*ui\container)
         y = GadgetY(*ui\container)
@@ -251,7 +252,7 @@ Module ShaderUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 111
+; CursorPosition = 121
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

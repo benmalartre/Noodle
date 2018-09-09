@@ -1,10 +1,11 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
+InitScintilla()
 
 ; ==============================================================================
-;  CONTROL HEAD MODULE DECLARATION
+;  CONTROL Scintilla MODULE DECLARATION
 ; ==============================================================================
-DeclareModule ControlHead
+DeclareModule ControlScintilla
   ; ============================================================================
   ;  GLOBALS
   ; ============================================================================
@@ -12,9 +13,9 @@ DeclareModule ControlHead
   #HEAD_HEIGHT = 18
    
   ; ----------------------------------------------------------------------------
-  ;  Object ( ControlHead_t )
+  ;  Object ( ControlScintilla_t )
   ; ----------------------------------------------------------------------------
-  Structure ControlHead_t Extends Control::Control_t
+  Structure ControlScintilla_t Extends Control::Control_t
     over .i
     down.i
     value.i
@@ -23,17 +24,17 @@ DeclareModule ControlHead
   EndStructure
 
   ; ----------------------------------------------------------------------------
-  ;  Interface ( IControlHead )
+  ;  Interface ( IControlScintilla )
   ; ----------------------------------------------------------------------------
-  Interface IControlHead Extends Control::IControl
+  Interface IControlScintilla Extends Control::IControl
   EndInterface
   
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
-  Declare Delete(*Me.ControlHead_t)
-  Declare OnEvent( *Me.ControlHead_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare New( name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare Delete(*Me.ControlScintilla_t)
+  Declare OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetTheme( theme.i )
   Declare.b Init()
   Declare.b Term()
@@ -42,7 +43,7 @@ DeclareModule ControlHead
   ;  Datas 
   ; ----------------------------------------------------------------------------
   DataSection 
-    ControlHeadVT: 
+    ControlScintillaVT: 
     Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection
@@ -55,11 +56,11 @@ EndDeclareModule
 ; ==============================================================================
 ;  CONTROL HEAD MODULE IMPLEMENTATION
 ; ==============================================================================
-Module ControlHead
+Module ControlScintilla
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlHead_t, xoff.i = 0, yoff.i = 0 )
+  Procedure hlpDraw( *Me.ControlScintilla_t, xoff.i = 0, yoff.i = 0 )
 
     ; Check Visible
     If Not *Me\visible : ProcedureReturn : EndIf
@@ -108,7 +109,7 @@ Module ControlHead
   ;}
 
   ; ---[ OnEvent ]--------------------------------------------------------------
-  Procedure.i OnEvent( *Me.ControlHead_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
@@ -118,7 +119,7 @@ Module ControlHead
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlHead_t, *ev_data\xoff, *ev_data\yoff )
+        hlpDraw( *Me.ControlScintilla_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -261,7 +262,7 @@ Module ControlHead
   EndProcedure
 
   ; ---[ SetValue ]-------------------------------------------------------------
-  Procedure SetValue( *Me.ControlHead_t, value.i )
+  Procedure SetValue( *Me.ControlScintilla_t, value.i )
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If value = *Me\value
@@ -277,7 +278,7 @@ Module ControlHead
     
   EndProcedure
   ; ---[ GetValue ]-------------------------------------------------------------
-  Procedure.i GetValue( *Me.ControlHead_t )
+  Procedure.i GetValue( *Me.ControlScintilla_t )
     
     ; ---[ Return Value ]-------------------------------------------------------
     ProcedureReturn( *Me\value )
@@ -285,7 +286,7 @@ Module ControlHead
   EndProcedure
   
   ; ---[ Free ]-----------------------------------------------------------------
-  Procedure Delete( *Me.ControlHead_t )
+  Procedure Delete( *Me.ControlScintilla_t )
     ; ---[ Deallocate Memory ]--------------------------------------------------
     FreeMemory( *Me )
   EndProcedure
@@ -297,9 +298,9 @@ Module ControlHead
   Procedure.i New( *obj.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlHead_t = AllocateMemory( SizeOf(ControlHead_t) ) 
+    Protected *Me.ControlScintilla_t = AllocateMemory( SizeOf(ControlScintilla_t) ) 
     
-    Object::INI(ControlHead)
+    Object::INI(ControlScintilla)
     *Me\object = *obj
     Protected *parent.Control::Control_t = *obj
     
@@ -356,10 +357,10 @@ Module ControlHead
     
   EndProcedure
   
-  Class::DEF(ControlHead)
+  Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 194
+; CursorPosition = 27
+; FirstLine = 33
 ; Folding = ---
 ; EnableXP

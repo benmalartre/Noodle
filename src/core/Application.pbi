@@ -551,7 +551,6 @@ Module Application
     Define event
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
-        Debug "GLFW LOOP"
         ;glfwWaitEvents()
         glfwPollEvents()
         glfwMakeContextCurrent(*app\window)
@@ -595,8 +594,8 @@ Module Application
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 565
-; FirstLine = 535
+; CursorPosition = 552
+; FirstLine = 534
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

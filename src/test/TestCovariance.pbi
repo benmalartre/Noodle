@@ -143,10 +143,9 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     CArray::SetCount(*positions, 1)
     CArray::SetValue(*positions, 0, @centroid)
     Protected *point.Drawer::Point_t = Drawer::NewPoint(*drawer, *positions)
-    *point\size = 12
-    *point\color\r = 0
-    *point\color\g = 1
-    *point\color\b = 0
+    *point\size = 4
+    Drawer::SetColor(*point, Color::_RED())
+
     
     ; calc full 3x3 covariance matrix, excluding symmetries:
     Define xx.f = 0.0
@@ -214,6 +213,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
 ;     Transform::UpdateMatrixFromSRT(@t)
 
     Protected *matrix.Drawer::Matrix_t = Drawer::NewMatrix(*drawer, @m)
+    *matrix\size = 1
 
   EndIf
   
@@ -286,7 +286,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 228
+; CursorPosition = 215
+; FirstLine = 157
 ; Folding = -
 ; EnableXP

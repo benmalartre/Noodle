@@ -4,36 +4,25 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "UI.pbi"
 
 ;========================================================================================
-; PropertyUI Module Declaration
+; ScintillaUI Module Declaration
 ;========================================================================================
-DeclareModule PropertyUI
+DeclareModule ScintillaUI
   ; ----------------------------------------------------------------------------
   ;  Structure
   ; ----------------------------------------------------------------------------
-  Structure PropertyUI_t Extends UI::UI_t
-    *prop.ControlProperty::ControlProperty_t
-    List *props.ControlProperty::ControlProperty_t()
-    anchorX.i
-    anchorY.i
+  Structure ScintillaUI_t Extends UI::UI_t
+    
   EndStructure
   
-  Declare New(*parent.View::View_t,name.s,*obj.Object3D::Object3D_t)
-  Declare Delete(*Me.PropertyUI_t)
-  Declare Init(*Me.PropertyUI_t)
-  Declare OnEvent(*Me.PropertyUI_t,event.i)
-  Declare Term(*Me.PropertyUI_t)
-  Declare Clear(*Me.PropertyUI_t)
-  Declare SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
-  Declare SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
-  Declare AddProperty(*Me.PropertyUI_t, *prop.ControlProperty::COntrolProperty_t)
-  Declare Setup(*Me.PropertyUI_t,*object.Object::Object_t)
-  Declare CollapseProperty(*Me.PropertyUI_t, index.i)
-  Declare ExpandProperty(*Me.PropertyUI_t, index.i)
-  Declare DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
-  Declare DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+  Declare New(*parent.View::View_t,name.s)
+  Declare Delete(*Me.ScintillaUI_t)
+  Declare Init(*Me.ScintillaUI_t)
+  Declare OnEvent(*Me.ScintillaUI_t,event.i)
+  Declare Term(*Me.ScintillaUI_t)
+  Declare Clear(*Me.ScintillaUI_t)
   
   DataSection 
-    PropertyUIVT: 
+    ScintillaUIVT: 
     Data.i @Init()
     Data.i @OnEvent()
     Data.i @Term()
@@ -44,11 +33,10 @@ DeclareModule PropertyUI
 EndDeclareModule
 
 ;========================================================================================
-; PropertyUI Module Implementation
+; ScintillaUI Module Implementation
 ;========================================================================================
-Module PropertyUI
-  UseModule Math
-  
+Module ScintillaUI
+
   ; ----------------------------------------------------------------------------
   ;  Constructor
   ; ----------------------------------------------------------------------------
@@ -58,9 +46,9 @@ Module PropertyUI
     Protected w = *parent\width
     Protected h = *parent\height
    
-    Protected *Me.PropertyUI_t = AllocateMemory(SizeOf(PropertyUI_t))
-    InitializeStructure(*Me,PropertyUI_t)
-    Object::INI(PropertyUI)
+    Protected *Me.ScintillaUI_t = AllocateMemory(SizeOf(ScintillaUI_t))
+    InitializeStructure(*Me,ScintillaUI_t)
+    Object::INI(ScintillaUI)
     *Me\name = name
     *Me\x = x
     *Me\y = y
@@ -70,7 +58,7 @@ Module PropertyUI
     *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1)
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLORA_MAIN_BG)
     
-    *Me\prop = #Null
+    *Me\scintilla = ControlScintilla::New()
    
     CloseGadgetList()
     
@@ -81,26 +69,26 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Destructor
   ; ----------------------------------------------------------------------------
-  Procedure Delete(*Me.PropertyUI_t)
+  Procedure Delete(*Me.ScintillaUI_t)
     ForEach *Me\props()
       ControlProperty::Delete(*Me\props())
     Next
     
-    ClearStructure(*Me,PropertyUI_t)
+    ClearStructure(*Me,ScintillaUI_t)
     FreeMemory(*Me)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  Init
   ; ----------------------------------------------------------------------------
-  Procedure Init(*Me.PropertyUI_t)
+  Procedure Init(*Me.ScintillaUI_t)
     
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  OnEvent
   ; ----------------------------------------------------------------------------
-  Procedure OnEvent(*Me.PropertyUI_t,event.i)
+  Procedure OnEvent(*Me.ScintillaUI_t,event.i)
     If *Me
       Protected *top.View::View_t = *Me\top
       Protected ev_datas.Control::EventTypeDatas_t
@@ -152,7 +140,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Terminate
   ; ----------------------------------------------------------------------------
-  Procedure Term(*Me.PropertyUI_t)
+  Procedure Term(*Me.ScintillaUI_t)
     
   EndProcedure
   
@@ -161,7 +149,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   Procedure OnMessage( id.i, *up)
     Protected *sig.Signal::Signal_t = *up
-    Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
+    Protected *Me.ScintillaUI::ScintillaUI_t = *sig\rcv_inst
     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
     Protected *c.ControlProperty::ControlProperty_t = *h\parent
     Protected cmd.b = *sig\sigdata
@@ -182,7 +170,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Clear
   ; ----------------------------------------------------------------------------
-  Procedure Clear(*Me.PropertyUI_t)
+  Procedure Clear(*Me.ScintillaUI_t)
     Protected i
     Protected *prop.ControlProperty::ControlProperty_t = *Me\prop
     If *prop
@@ -196,7 +184,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Setup From 3D Object
   ; ----------------------------------------------------------------------------
-  Procedure SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
+  Procedure SetupFrom3DObject(*Me.ScintillaUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
     Clear(*Me)
     Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*Me, *object\name, *object\name, *object)
@@ -245,7 +233,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Setup From Node
   ; ----------------------------------------------------------------------------
-  Procedure SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
+  Procedure SetupFromNode(*Me.ScintillaUI_t,*node.Node::Node_t)
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
@@ -324,7 +312,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Add Property
   ; ----------------------------------------------------------------------------
-  Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
+  Procedure AddProperty(*Me.ScintillaUI_t,*prop.ControlProperty::ControlProperty_t)
     OpenGadgetList(*Me\container)
     AddElement(*Me\props())
     *Me\props() = *prop
@@ -338,7 +326,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Setup
   ; ----------------------------------------------------------------------------
-  Procedure Setup(*Me.PropertyUI_t,*object.Object::Object_t)
+  Procedure Setup(*Me.ScintillaUI_t,*object.Object::Object_t)
     OpenGadgetList(*Me\container)
     Protected cName.s = *object\class\name
     If Right(cName,4) = "Node"
@@ -354,7 +342,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Collapse Property
   ; ----------------------------------------------------------------------------
-  Procedure CollapseProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
+  Procedure CollapseProperty(*Me.ScintillaUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY = 0
     ForEach *Me\props()
@@ -383,7 +371,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Expand Property
   ; ----------------------------------------------------------------------------
-  Procedure ExpandProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
+  Procedure ExpandProperty(*Me.ScintillaUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY.i = 0
     ForEach *Me\props()
@@ -413,7 +401,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Delete Property
   ; ----------------------------------------------------------------------------
-  Procedure DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
+  Procedure DeleteProperty(*Me.ScintillaUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY.i = 0
     
@@ -443,15 +431,14 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Structure
   ; ----------------------------------------------------------------------------
-  Procedure DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+  Procedure DeletePropertyByIndex(*Me.ScintillaUI_t, index.i)
   EndProcedure
   
   ; ---[ Reflection ]-----------------------------------------------------------
-  Class::DEF( PropertyUI )
+  Class::DEF( ScintillaUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 303
+; CursorPosition = 60
+; FirstLine = 9
 ; Folding = ----
 ; EnableXP
-; EnableUnicode

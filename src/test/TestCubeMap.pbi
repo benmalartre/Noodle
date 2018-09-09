@@ -109,7 +109,7 @@ If Time::Init()
       glClearColor(0.5,0.5,0.5,1.0)
       glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
       
-      Camera::Event(*camera,gadget)
+      Camera::OnEvent(*camera,gadget)
       glDisable(#GL_DEPTH_TEST)
      CubeMap::Draw(*m,*camera)
      
@@ -157,8 +157,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 82
+; CursorPosition = 133
+; FirstLine = 75
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

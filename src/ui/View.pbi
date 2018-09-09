@@ -83,7 +83,7 @@ EndDeclareModule
 ; ViewManager Module Declaration
 ;============================================================
 DeclareModule ViewManager
-  #VIEW_BORDER_SENSIBILITY = 3
+  #VIEW_BORDER_SENSIBILITY = 4
   #VIEW_SPLITTER_DROP = 7
   
   Enumeration
@@ -409,31 +409,25 @@ Module View
       Protected sx,sy,sw, sh
       Protected mx = WindowMouseX(*manager\window)
       Protected my = WindowMouseY(*manager\window)
-        
-          
-      ;PostEvent(#PB_Event_Gadget,*manager\window,#Null,#PB_EventType_DragStart)
-      ;If DragPrivate(ViewManager::#VIEW_SPLITTER_DROP ,#PB_Drag_Move)
+       
 
-        Define e
-        Repeat 
-          e = WaitWindowEvent()
-          ; Get Mouse Position
-          mx = WindowMouseX(*manager\window)
-          my = WindowMouseY(*manager\window)
-          ; Resize Window Event
-          ;If EventType() = #PB_EventType_LeftButtonUp
-          
-          ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
-          If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
-            GetPercentage(*affected,mx,my)
-            drag = #False
-          EndIf
-    
-        Until drag = #False
-        ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
-      ;EndIf
+      Define e
+      Repeat 
+        e = WaitWindowEvent()
+        ; Get Mouse Position
+        mx = WindowMouseX(*manager\window)
+        my = WindowMouseY(*manager\window)
+        ; Resize Window Event
+        ;If EventType() = #PB_EventType_LeftButtonUp
         
-     ;ViewManager::Event(*manager,#PB_Event_SizeWindow)
+        ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
+        If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
+          GetPercentage(*affected,mx,my)
+          drag = #False
+        EndIf
+  
+      Until drag = #False
+      ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
     EndIf
     
   EndProcedure
@@ -719,7 +713,6 @@ Module ViewManager
       If *view\left : RecurseView(*manager,*view\left) : EndIf
       If *view\right : RecurseView(*manager,*view\right) : EndIf
     EndIf
-    
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -728,7 +721,7 @@ Module ViewManager
   Procedure.i GetActiveView(*manager.ViewManager_t,x.i,y.i)
     Protected *view.View::View_t = *manager\main
     View::GetActive(*view,x,y)
-    RecurseView(*manager,*manager\main)
+    ProcedureReturn RecurseView(*manager,*manager\main)
     
   EndProcedure
   
@@ -842,12 +835,13 @@ Module ViewManager
       Case #PB_Event_CloseWindow
         ProcedureReturn 
       Default        
-        If *manager\active
+        If *manager\active 
           Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
-          
+        
           If touch
             View::EventSplitter(*manager\active,touch)
             View::TouchBorderEvent(*manager\active,touch)
+            View::OnEvent(*manager\active,event)
           Else
             View::ClearBorderEvent(*manager\active)
             View::OnEvent(*manager\active,event)
@@ -879,7 +873,7 @@ Module ViewManager
     *Me\window = OpenWindow(#PB_Any, 0, 0, width, height, *Me\name, options)  
 ;     SetWindowColor(*Me\window,RGB(240,240,240))
     EnableWindowDrop(*Me\window,#PB_Drop_Private,#PB_Drag_Move,#VIEW_SPLITTER_DROP)
-    *Me\main = View::New(x.i,y.i,WindowWidth(*Me\window),WindowHeight(*Me\window),#Null,#False,"Raafal",#True)
+    *Me\main = View::New(x.i,y.i,WindowWidth(*Me\window),WindowHeight(*Me\window),#Null,#False,name,#True)
     *Me\main\manager = *Me
     *Me\main\parentID = *Me\window
     *Me\active = *Me\main
@@ -906,7 +900,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 600
-; FirstLine = 588
+; CursorPosition = 597
+; FirstLine = 573
 ; Folding = ------
 ; EnableXP

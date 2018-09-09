@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../core/Arguments.pbi"
 XIncludeFile "../core/Control.pbi"
 
+
 DeclareModule ControlSlider
   Structure ControlSlider_t Extends Control::Control_t
     
@@ -55,7 +56,7 @@ Module ControlSlider
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 30
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

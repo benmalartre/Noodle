@@ -170,7 +170,7 @@ Module Poisson
   
   Procedure SampleMesh(*Me.Poisson_t, *mesh.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
     PolymeshGeometry::InitSampling(*mesh)
-    PolymeshGeometry::Sample(*mesh, *t, 100000, *Me\positions)  
+    PolymeshGeometry::Sample(*mesh, *t, 100, *Me\positions)  
   EndProcedure
   
   
@@ -179,7 +179,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 113
+; CursorPosition = 171
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

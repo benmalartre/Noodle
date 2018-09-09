@@ -71,8 +71,8 @@ DeclareModule Drawer
     u_model.GLint
     u_proj.GLint
     u_view.GLint
-    u_color.GLint
-    u_colored.GLint
+;     u_color.GLint
+;     u_colored.GLint
     overlay.b
     List *items.Item_t()
 
@@ -162,8 +162,8 @@ Module Drawer
     *Me\shader = *pgm
     
     *Me\u_model = glGetUniformLocation(*pgm\pgm,"model")
-    *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
-    *Me\u_colored = glGetUniformLocation(*pgm\pgm, "colored")
+;     *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
+;     *Me\u_colored = glGetUniformLocation(*pgm\pgm, "colored")
     *Me\u_proj = glGetUniformLocation(*pgm\pgm,"projection")
     *Me\u_view = glGetUniformLocation(*pgm\pgm,"view")
   EndProcedure
@@ -190,6 +190,7 @@ Module Drawer
     EndIf
     
     Protected *item.Item_t
+    Debug "########## NUM ITEMS : "+Str(ListSize(*Me\items()))
     ForEach *Me\items()
       *item = *me\items()
       ;Create Or ReUse Vertex Array Object
@@ -207,6 +208,8 @@ Module Drawer
       ; Fill Buffer Data
       plength = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
       clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
+      Debug "POSITION SIZE : "+Str(plength)
+      Debug "COLRO SIZE : "+Str(clength)
       tlength = plength + clength
       glBufferData(#GL_ARRAY_BUFFER,tlength,#Null,#GL_DYNAMIC_DRAW)
       glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
@@ -236,44 +239,37 @@ Module Drawer
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Update(*Me.Drawer_t)
-;     Protected *item.Item_t
-;     Protected s.GLfloat
-;     Protected length.i, plength.i, clength.i
-;        
-;     ForEach *Me\items()
-;       *item = *me\items()
-;       ;Create Or ReUse Vertex Array Object
-;       If Not *item\vao
-;         glGenVertexArrays(1,@*item\vao)
-;       EndIf
-;       glBindVertexArray(*item\vao)
-;       
-;       ; Create or ReUse Vertex Buffer Object
-;       If Not *item\vbo
-;         glGenBuffers(1,@*item\vbo)
-;       EndIf
-;       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
-;       
-; ;       If *item\colored
-; ;         plength.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
-; ;         clength.i = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
-; ;         length = plength + clength
-; ;         glBufferData(#GL_ARRAY_BUFFER,length,#Null,#GL_DYNAMIC_DRAW)
-; ;         glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions, 0))
-; ;         glBufferSubData(#GL_ARRAY_BUFFER, pLength, clength, CArray::GetPtr(*item\colors, 0))
-; ;         glEnableVertexAttribArray(0)
-; ;         glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-; ;         glEnableVertexAttribArray(1)
-; ;         glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,plength)
-; ;       Else
-;         length.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
-;         glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*item\positions,0),#GL_DYNAMIC_DRAW)
-;         
-;         glEnableVertexAttribArray(0)
-;         glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-; ;       EndIf
-;       
-;     Next
+    Protected *item.Item_t
+    Protected s.GLfloat
+    Protected length.i, plength.i, clength.i
+       
+    ForEach *Me\items()
+      *item = *me\items()
+      ;Create Or ReUse Vertex Array Object
+      If Not *item\vao
+        glGenVertexArrays(1,@*item\vao)
+      EndIf
+      glBindVertexArray(*item\vao)
+      
+      ; Create or ReUse Vertex Buffer Object
+      If Not *item\vbo
+        glGenBuffers(1,@*item\vbo)
+      EndIf
+      glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
+      
+      plength.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
+      clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
+      length = plength + clength
+      glBufferData(#GL_ARRAY_BUFFER,length,#Null,#GL_DYNAMIC_DRAW)
+      glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
+      glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
+        
+      glEnableVertexAttribArray(0)
+      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      glEnableVertexAttribArray(1)
+      glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
+
+    Next
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -692,8 +688,10 @@ Module Drawer
     InitializeStructure(*sphere, Sphere_t)
     *sphere\type = #ITEM_SPHERE
     *sphere\positions = CArray::newCArrayV3F32()
+    *sphere\colors = CArray::newCArrayC4F32()
     Matrix4::SetFromOther(*sphere\m, *m)
     CArray::SetCount(*sphere\positions, Shape::#SPHERE_NUM_VERTICES)
+    CArray::SetCount(*sphere\colors, Shape::#SPHERE_NUM_VERTICES)
     CopyMemory(Shape::?shape_sphere_positions, CArray::GetPtr(*sphere\positions, 0), Shape::#SPHERE_NUM_VERTICES * CArray::GetItemSize(*sphere\positions))
     
     ; Transform vertex positions
@@ -732,7 +730,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 614
-; FirstLine = 590
+; CursorPosition = 690
+; FirstLine = 675
 ; Folding = -------
 ; EnableXP

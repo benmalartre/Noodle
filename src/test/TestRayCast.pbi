@@ -123,7 +123,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Protected frontFacing.b
   
   Protected *red_col.c4f32 = Color::_RED()
-  
+  Debug "GEOMETRY NUM TRIANGLE S : "+Str(*geom\nbtriangles)
   For i=0 To *geom\nbtriangles-1
     *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
     *b = Carray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
@@ -135,6 +135,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
     
     intersect.b = Ray::TriangleIntersection(*tr\ray,@a,@b,@c,@*tr\dist,*tr\uvw, @frontFacing)
     If intersect And *tr\dist<dist
+      Debug "INTERSECT TRIANGLE : "+Str(i)
       CArray::SetValue(*tri, 0, @a)
       CArray::SetValue(*tri, 1, @b)
       CArray::SetValue(*tri, 2, @c)
@@ -247,8 +248,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 12
+; CursorPosition = 142
+; FirstLine = 118
 ; Folding = --
 ; EnableXP
 ; EnableUnicode
