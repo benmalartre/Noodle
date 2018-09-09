@@ -150,7 +150,7 @@ DeclareModule Object3D
   Declare SetShader(*obj.Object3D_t,*shader.Program::Program_t)
   ;   Declare SetVisibility(visible.b)
   Declare EncodeID(*color.v3f32,id.i)
-  Declare DecodeID(x.GLubyte,y.GLubyte,z.GLubyte)
+  Declare DecodeID(r.GLubyte,g.GLubyte,b.GLubyte)
   Declare FindChildren(*obj.Object3D_t,name.s,type.i,*io_array.CArray::CArrayPtr,recurse.b)
     
 EndDeclareModule
@@ -456,17 +456,19 @@ Module Object3D
   ; Encode ID
   ;-----------------------------------------------
   Procedure EncodeID(*color.v3f32,id.i)
-    id = Random(65000)
-    *color\x = Red(id)*1/255
-    *color\y = Green(id)*1/255
-    *color\z = Blue(id)*1/255
+    Protected r = (id & $0000FF) >>  0
+    Protected g = (id & $00FF00) >>  8
+    Protected b = (id & $FF0000) >> 16
+    *color\x = r / 255
+    *color\y = g / 255
+    *color\z = b / 255
   EndProcedure
   
   ;-----------------------------------------------
   ; Encode ID
   ;-----------------------------------------------
   Procedure DecodeID(x.GLubyte,y.GLubyte,z.GLubyte)
-    ProcedureReturn RGB(x,y,z)
+    ProcedureReturn x + y * 256 + z * 256 * 256
   EndProcedure
   
   
@@ -523,7 +525,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 389
-; FirstLine = 377
+; CursorPosition = 470
+; FirstLine = 453
 ; Folding = ------
 ; EnableXP

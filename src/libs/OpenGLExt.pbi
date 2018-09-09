@@ -338,6 +338,7 @@ DeclareModule OpenGLExt
   ;- OpenGL 3.3
   CompilerIf #ENABLEGL3_2
     Prototype PFNGLVERTEXATTRIBDIVISORPROC (index.i, divisor.i)
+    Prototype PFNGLPOLYGONOFFSET(factor.GLfloat, units.GLfloat)
   CompilerEndIf
   
   ;- OpenGL Misc
@@ -600,6 +601,7 @@ DeclareModule OpenGLExt
   
   ;- OpenGL 3.3
   Global glVertexAttribDivisor.PFNGLVERTEXATTRIBDIVISORPROC
+  Global glPolygonOffset.PFNGLPOLYGONOFFSET
   
   ;- OpenGL Misc
   Global glIsRenderbuffer.PFNGLISRENDERBUFFERPROC
@@ -914,6 +916,7 @@ Module OpenGLExt
         ;- OpenGL 3.3
         CompilerIf #ENABLEGL3_2
           setGLEXT( glVertexAttribDivisor,    "glVertexAttribDivisor" )
+          setGLEXT( glPolygonOffset,          "glPolygonOffset" )
         CompilerEndIf
         
         ;- OpenGL Misc
@@ -1485,8 +1488,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 24
+; CursorPosition = 918
+; FirstLine = 903
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

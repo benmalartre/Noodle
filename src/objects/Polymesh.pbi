@@ -523,9 +523,17 @@ Module Polymesh
 ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
-;     EndIf
+      ;     EndIf
+      If *p\selected
+        Debug "### SELECTED"
+        glEnable (#GL_POLYGON_OFFSET_FILL)
+        glPolygonOffset (1.0, 1.0)
+        glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+
+        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+      EndIf
+      
     glBindVertexArray(0)
-    
   EndProcedure
   ;}
   
@@ -564,7 +572,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 522
-; FirstLine = 504
+; CursorPosition = 527
+; FirstLine = 518
 ; Folding = ----
 ; EnableXP
