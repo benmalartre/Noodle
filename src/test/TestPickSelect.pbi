@@ -78,7 +78,7 @@ Procedure Draw(*app.Application::Application_t)
   *select\mouseY = *viewport\height -*viewport\my
   LayerSelection::Draw(*select, *app\context)
   
-;   LayerDefault::Draw(*layer, *app\context)
+  LayerDefault::Draw(*layer, *app\context)
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -139,7 +139,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 80
-; FirstLine = 76
+; FirstLine = 64
 ; Folding = -
 ; EnableThread
 ; EnableXP

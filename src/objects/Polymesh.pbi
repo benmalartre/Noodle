@@ -518,17 +518,18 @@ Module Polymesh
 ;       
 ;       GLCheckError("DRAW MESH WIREFRAME")
 ;     Else
-      glBindVertexArray(*p\vao)
+    glBindVertexArray(*p\vao)
+      glDisable (#GL_POLYGON_OFFSET_FILL)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
       ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
 ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
       ;     EndIf
       If *p\selected
-        Debug "### SELECTED"
         glEnable (#GL_POLYGON_OFFSET_FILL)
-        glPolygonOffset (1.0, 1.0)
-        glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+        glPolygonOffset (24.0, 100.0)
+        glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
 
         glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       EndIf
@@ -572,7 +573,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 527
-; FirstLine = 518
+; CursorPosition = 530
+; FirstLine = 505
 ; Folding = ----
 ; EnableXP

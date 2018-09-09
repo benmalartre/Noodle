@@ -119,6 +119,7 @@ EndProcedure
 ; Draw
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
+  Debug "DRAW SELECTIOn LAYER"
   Protected layer.Layer::ILayer = *layer
 ;   layer\Update()
     ; ---[ Find Up View Point ]--------------------------
@@ -135,6 +136,8 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
   
   glUseProgram(*layer\shader\pgm)
+;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 0)
+;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 0)
   glUniformMatrix4fv(*layer\uViewMatrix,1,#GL_FALSE,*view)
   glUniformMatrix4fv(*layer\uProjectionMatrix,1,#GL_FALSE,*proj)
   glUniform3f(*layer\uUniqueID,0,0,0)
@@ -148,13 +151,19 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   glFlush()
   glFinish()
   
-   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
-
-  ; Read the pixel at the center of the screen.
+  glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
+  
+  glFlush()
+  glFinish()
+  
+  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+   ; Read the pixel at the center of the screen.
   glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
   Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
   
   If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
     Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
     Protected obj.Object3D::IObject3D = *obj
     glDisable(#GL_DEPTH_TEST)
@@ -167,11 +176,9 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
     *obj\selected = #True
     obj\Draw()
   EndIf
-  
-  glFlush()
-  glFinish()
-  Framebuffer::Unbind(*layer\buffer)
   Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  Framebuffer::Unbind(*layer\buffer)
+  
   
   
 
@@ -216,7 +223,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 138
+; CursorPosition = 139
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
