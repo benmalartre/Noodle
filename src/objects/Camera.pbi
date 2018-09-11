@@ -102,7 +102,7 @@ Module Camera
         *Me\fov = 66
         *Me\aspect = 1.33
         *Me\nearplane = 0.1
-        *Me\farplane = 10000
+        *Me\farplane = 100000
         
         LookAt(*Me)
         UpdateProjection(*Me)
@@ -262,7 +262,10 @@ Module Camera
   
     Protected interpolated.v3f32
     Vector3::LinearInterpolate(@interpolated,*Me\pos,*Me\lookat,delta)
+;     Protected diff.v3f32
+;     Vector3::Sub(@diff, @interpolate, *Me\pos)
     Vector3::Set(*Me\pos,interpolated\x,interpolated\y,interpolated\z)
+;     Vector3::AddInPlace(*Me\lookat, @diff)
     
     ;Update Camera Transform
     LookAt(*Me)
@@ -383,8 +386,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 346
-; FirstLine = 323
+; CursorPosition = 261
+; FirstLine = 254
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

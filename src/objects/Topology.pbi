@@ -46,13 +46,10 @@ Module Topology
     ; Allocate Memory
     Protected *Me.Topology_t = AllocateMemory(SizeOf(Topology_t))
     InitializeStructure(*Me,Topology_t)
-    If *other = #Null
-      *Me\vertices = CArray::newCArrayV3F32()
-      *Me\faces = CArray::newCArrayLong()
-    Else
-      *Me\vertices = CArray::newCArrayV3F32()
+    *Me\vertices = CArray::newCArrayV3F32()
+    *Me\faces = CArray::newCArrayLong()
+    If *other
       CArray::Copy(*Me\vertices,*other\vertices)
-      *Me\faces = CArray::newCArrayLong()
       CArray::Copy(*Me\faces,*other\faces)
     EndIf
     
@@ -133,13 +130,13 @@ Module Topology
     CArray::SetCount(*o\vertices,v1+v2)
     CArray::SetCount(*o\faces,f1+f2)
   
-    CopyMemory(CArray::GetPtr(*t1\vertices,0),CArray::GetPtr(*o\vertices,0),v1*SizeOf(v))
-    CopyMemory(CArray::GetPtr(*t2\vertices,0),CArray::GetPtr(*o\vertices,0)+v1*SizeOf(v),v2*SizeOf(v))
+    CopyMemory(*t1\vertices\data,*o\vertices\data,v1*SizeOf(v))
+    CopyMemory(*t2\vertices\data,*o\vertices\data+v1*SizeOf(v),v2*SizeOf(v))
     
-    CopyMemory(CArray::GetPtr(*t1\faces,0),CArray::GetPtr(*o\faces,0),f1*SizeOf(f))
+    CopyMemory(*t1\faces\data,CArray::GetPtr(*o\faces,0),f1*SizeOf(f))
     Protected x
     For i=0 To f2-1
-      x = PeekL(CArray::GetValue(*t2\faces,i))
+      x = CArray::GetValueL(*t2\faces,i)
       If x>-2
         CArray::SetValueL(*o\faces,i+f1,x+v1)
       Else
@@ -184,7 +181,6 @@ Module Topology
   ; Merge Array
   ;---------------------------------------------------------
   Procedure MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
-
     Protected nbt = CArray::GetCount(*topos)
 
     Protected Dim v_offsets(nbt)
@@ -213,22 +209,22 @@ Module Topology
     
     For t=0 To nbt-1
       *topo = CArray::GetValuePtr(*topos,t)
-      CopyMemory(CArray::GetPtr(*topo\vertices,0),CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
+      CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
 
       If t=0
-        CopyMemory(CArray::GetPtr(*topo\faces,0),CArray::GetPtr(*o\faces,f_offsets(t)),CArray::GetCount(*topo\faces)*SizeOf(f))
+        CopyMemory(*topo\faces\data,CArray::GetPtr(*o\faces,f_offsets(t)),CArray::GetCount(*topo\faces)*SizeOf(f))
       Else
         For i=0 To f_counts(t)-1
-          f = CArray::GetValueL(*topo\faces,i)
+          f = PeekL(*topo\faces\data + 4 * i)
           If f>-2
-            CArray::SetValueL(*o\faces,i+f_offsets(t),f+v_offsets(t))
+            PokeL(*o\faces\data + (i+f_offsets(t))*4, f+v_offsets(t))
           Else
-            CArray::SetValueL(*o\faces,i+f_offsets(t),-2)
+            PokeL(*o\faces\data+ (i+f_offsets(t))*4, -2)
           EndIf
         Next
       EndIf
     Next
-  
+
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -347,7 +343,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 60
+; CursorPosition = 226
+; FirstLine = 194
 ; Folding = ---
 ; EnableXP

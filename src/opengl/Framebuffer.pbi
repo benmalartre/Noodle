@@ -372,9 +372,11 @@ Module Framebuffer
   Procedure BindInput(*Me.Framebuffer_t,offset.i=0)
     Protected i
     Protected nb = ArraySize(*Me\tbos())
+    Debug "BIND "+*Me\name
     For i=0 To nb-1
-      glActiveTexture(#GL_TEXTURE0 + i +offset)
+      glActiveTexture(#GL_TEXTURE0 + (i+offset))
       glBindTexture(#GL_TEXTURE_2D,*Me\tbos(i)\textureID)
+      Debug "BIND : "+Str(i+offset)+" ---> "+Str(*Me\tbos(i)\textureID)
     Next i
   
   EndProcedure
@@ -589,9 +591,9 @@ EndProcedure
 
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 411
-; FirstLine = 393
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 378
+; FirstLine = 367
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

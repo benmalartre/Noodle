@@ -480,7 +480,7 @@ UseModule Math
         
         SetXMLAttribute(geom,"Indices",datas)
         
-        FreeMemory(*mem)
+        If *mem : FreeMemory(*mem) : EndIf
     EndSelect
     
     SaveTransform(object,*item)
@@ -576,8 +576,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 386
-; FirstLine = 382
+; CursorPosition = 484
+; FirstLine = 451
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

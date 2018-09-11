@@ -120,7 +120,7 @@ Procedure Draw(*app.Application::Application_t)
   *select = LayerSelection::New(800,600,*app\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
-  RandomBunnies(12, -2, *root)
+  RandomBunnies(2048, -2, *root)
     
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
@@ -138,8 +138,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 64
+; CursorPosition = 122
+; FirstLine = 85
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -49,10 +49,9 @@ Module Location
     Vector3::AddInPlace(*Me\p,@x)
     Vector3::Scale(@x,*c, *Me\w)
     Vector3::AddInPlace(*Me\p,@x)
-
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
-  
     ProcedureReturn *Me\p
+   
   EndProcedure
   
   ;---------------------------------------------------------
@@ -62,9 +61,9 @@ Module Location
   
     Define *geom.Geometry::PolymeshGeometry_t = *Me\geometry
     Define.v3f32 *a,*b,*c,ab,ac
-    Define a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
+    Define a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
     Define b = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+1)
-    Define c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
+    Define c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
     
     *a = CArray::GetValue(*geom\a_positions,a)
     *b = CArray::GetValue(*geom\a_positions,b)
@@ -233,7 +232,7 @@ Module Location
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 17
+; CursorPosition = 65
+; FirstLine = 55
 ; Folding = ---
 ; EnableXP

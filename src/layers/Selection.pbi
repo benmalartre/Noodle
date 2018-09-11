@@ -18,6 +18,7 @@ DeclareModule LayerSelection
     mouseX.i
     mouseY.i
     Array read_datas.GLubyte(4)
+    *overchild.Object3D::Object3D_t
   EndStructure
   
   ;---------------------------------------------------
@@ -160,8 +161,9 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
    ; Read the pixel at the center of the screen.
   glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
   Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
-  
+  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
   If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
+    
 ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
 ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
     Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
@@ -175,8 +177,19 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
     glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
     *obj\selected = #True
     obj\Draw()
+    If *obj <> *layer\overchild
+      If *layer\overchild : *layer\overchild\selected = #False : EndIf
+      *layer\overchild = *obj
+    EndIf
+  Else
+    If *layer\overchild
+      *layer\overchild\selected = #False
+      *layer\overchild = #Null
+    EndIf
+    
   EndIf
-  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  
+  
   Framebuffer::Unbind(*layer\buffer)
   
   
@@ -223,7 +236,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 122
+; CursorPosition = 163
+; FirstLine = 141
 ; Folding = --
 ; EnableXP

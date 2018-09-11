@@ -159,7 +159,7 @@ Module Slot
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 21
+; CursorPosition = 122
+; FirstLine = 106
 ; Folding = --
 ; EnableXP

@@ -543,10 +543,10 @@ Module PolymeshGeometry
   
     ; Loop per Polygons
     ;------------------------------------
-    For x=0 To CArray::GetCount(*mesh\a_facecount)-1
+    For x=0 To *mesh\a_facecount\itemCount-1
 
       ;Get Nb Vertices
-      nbv = CArray::GetValueL(*mesh\a_facecount,x)
+      nbv = PeekL(*mesh\a_facecount\data + x*4)
 
       ;Get Nb Triangles
       nbt = nbv-2
@@ -557,13 +557,13 @@ Module PolymeshGeometry
       ;Store Triangles Data
       ;-----------------------------------
       For y=0 To nbt-1
-        a = CArray::GetValueL(*mesh\a_faceindices,z+y)
-        b = CArray::GetValueL(*mesh\a_faceindices,z+y+1)
-        c = CArray::GetValueL(*mesh\a_faceindices,last)
+        a = PeekL(*mesh\a_faceindices\data + (z+y) * 4)
+        b = PeekL(*mesh\a_faceindices\data + (z+y+1) * 4)
+        c = PeekL(*mesh\a_faceindices\data + last * 4)
         
-        CArray::SetValueL(*mesh\a_triangleindices,cnt,a)
-        CArray::SetValueL(*mesh\a_triangleindices,cnt+1,b)
-        CArray::SetValueL(*mesh\a_triangleindices,cnt+2,c)
+        PokeL(*mesh\a_triangleindices\data + cnt * 4, a)
+        PokeL(*mesh\a_triangleindices\data + (cnt+1) * 4,b)
+        PokeL(*mesh\a_triangleindices\data + (cnt+2) * 4,c)
   
         cnt+3
   
@@ -571,10 +571,6 @@ Module PolymeshGeometry
       z+nbv
     Next x
     
-    RecomputeEdges(*mesh)
-    RecomputeVertexPolygons(*mesh)
-    ;GetDualGraph(*mesh)
-
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -586,6 +582,7 @@ Module PolymeshGeometry
     Protected edgeKey.s
     Protected edgeID.i = 0
     Protected i, a, b, base
+    
     base=0
     For i=0 To *mesh\nbpolygons-1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
@@ -598,12 +595,8 @@ Module PolymeshGeometry
         Else
           edgeKey = Str(a)+","+Str(b)
         EndIf
-        
-        If Not FindMapElement(uniqueEdges(), edgeKey)
-          AddMapElement(uniqueEdges(), edgeKey)
-          uniqueEdges() = edgeID
-          edgeID + 1
-        EndIf
+
+        AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
       Next j
       base+nbv
     Next i
@@ -618,13 +611,14 @@ Module PolymeshGeometry
       CArray::SetValueL(*mesh\a_edgeindices, i*2+1, Val(StringField(edgeKey,2,",")))
       i+1
     Next  
+    ClearMap(uniqueEdges())
+    FreeMap(uniqueEdges())
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  Recompute Vertex Polygons
   ; ----------------------------------------------------------------------------
   Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
-    Debug "RECOMPUTE POLYGONS : "+Str(*mesh\nbpolygons)
     Protected i, j, k, nbv, base, total
     Protected Dim indices.s(*mesh\nbpoints)
     base=0
@@ -716,6 +710,7 @@ Module PolymeshGeometry
     
     ; Clear Old Memory
     Clear(*mesh)
+    Topology::Copy(*mesh\topo, *topo)
     
     ; ReAllocate Memory
     Protected i
@@ -780,21 +775,19 @@ Module PolymeshGeometry
     Next i
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
     
-    ; Copy Topo Data
-  ;   copyAttributeTypePolymeshTopology(*mesh\topo,*topo)
+    ; Recompute Polymesh datas
     RecomputeTriangles(*mesh)
     RecomputeEdges(*mesh)
     RecomputeVertexPolygons(*mesh)
-    ;GetDualGraph(*mesh)
+;     ; GetDualGraph(*mesh)
     RecomputeNormals(*mesh,1)
-    GetTopology(*mesh)
-  
-    ;UVs
+
+    ; UVs
     GetUVWSFromPosition(*mesh,#True)
-    
-    ; Tangents
-    RecomputeTangents(*mesh)
-    
+;     
+;     ; Tangents
+;     RecomputeTangents(*mesh)
+;     
     ;Color
     Color::Set(@color,0.33,0.33,0.33,1.0);
     SetColors(*mesh,@color)
@@ -805,8 +798,7 @@ Module PolymeshGeometry
   ; Set
   ;---------------------------------------------------------
   Procedure Set(*mesh.PolymeshGeometry_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong)
-    Debug "POLYMESH SET : "
-    CArray::Echo(*faces)
+
     ; Copy Topo Data
     Topology::Set(*mesh\topo,*vertices,*faces)
     ; Rebuild Geometry
@@ -839,13 +831,13 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure Reset(*geom.PolymeshGeometry_t)
     
-    If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
-      ;Set2(*geom,*geom\base)
-    Else
-      SetPointsPosition(*geom,*geom\base\vertices)
-      ;SetPointsNormal(*geom,*geom\base\normals)
-      ;RecomputeNormals(*geom)
-    EndIf 
+;     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
+;       ;Set2(*geom,*geom\base)
+;     Else
+;       SetPointsPosition(*geom,*geom\base\vertices)
+;       ;SetPointsNormal(*geom,*geom\base\normals)
+;       ;RecomputeNormals(*geom)
+;     EndIf 
     
       
 
@@ -1250,7 +1242,7 @@ Module PolymeshGeometry
   ; Topology Attribute
   ;---------------------------------------------------------
   Procedure GetTopology(*geom.PolymeshGeometry_t)
-    Protected i,j,cnt,offset,nbv
+    Protected i,j,src_offset,dst_offset,nbv
     Protected *topo.Topology_t = *geom\topo
     Protected size_t.i
     Protected f.f
@@ -1262,19 +1254,15 @@ Module PolymeshGeometry
       Protected nbf = CArray::GetCount(*geom\a_faceindices) + CArray::GetCount(*geom\a_facecount)
   
       CArray::SetCount(*topo\faces,nbf)
-      cnt = 0
-      offset = 0
+      src_offset = 0
+      dts_offset = 0
       For i=0 To CArray::GetCount(*geom\a_facecount)-1
         nbv = CArray::GetValueL(*geom\a_facecount,i)
-        
-        For j=0 To nbv-1
-          ;PokeI(*topo\faces+offset,*geom\a_faceindices\GetValue(cnt))
-          CArray::SetValueL(*topo\faces,offset,CArray::GetValueL(*geom\a_faceindices,cnt))
-          offset +1
-          cnt +1
-        Next j
-        CArray::SetValueL(*topo\faces,offset,-2)
-        offset+1
+        CopyMemory(CArray::GetPtr(*geom\a_faceindices, src_offset), CArray::GetPtr(*topo\faces, dst_offset), nbv * CArray::GetItemSize(*topo\faces))
+        src_offset + nbv 
+        dst_offset + (nbv+1)
+        CArray::SetValueL(*topo\faces,dst_offset+nbv,-2)
+
       Next i
     EndIf
     
@@ -2404,7 +2392,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1147
-; FirstLine = 951
-; Folding = ---4H9--z--
+; CursorPosition = 614
+; FirstLine = 570
+; Folding = ---4H9--8--
 ; EnableXP

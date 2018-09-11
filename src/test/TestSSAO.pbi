@@ -64,7 +64,7 @@ Global *kernel.Carray::CArrayV3F32
 Global *noise.CArray::CArrayV3F32
 Global noise_tex.i
 Global occ_radius.f = 1.0
-Global occ_blur.b
+Global occ_blur.b = #False
 
 Global nbsamples = 32
 Global noise_size.i = 16
@@ -95,6 +95,8 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *prop.PropertyUI::PropertyUI_t
 
+Define i
+
 
 Procedure GetFPS()
  framecount +1
@@ -118,6 +120,9 @@ Procedure Draw(*app.Application::Application_t)
     glfwGetWindowSize(*app\window,@vwidth,@vheight)
     glfwGetCursorPos(*app\window,@mx,@my)
   CompilerElse
+    occ_blur = 2
+    occ_radius = 0.5
+    SetGadgetAttribute(*viewport\gadgetID, #PB_OpenGL_SetContext, #True)
     mx = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseX)
     my = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseY)
     vwidth = GadgetWidth(*viewport\gadgetID)
@@ -213,20 +218,20 @@ Procedure Draw(*app.Application::Application_t)
   Polymesh::Draw(*ground)
   
   
-;   Define bw = vwidth/5
-;   Define bh = vheight/5
+  Define bw = vwidth/5
+  Define bh = vheight/5
   
-;   Framebuffer::BlitTo(*gbuffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
-;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *gbuffer\frame_id);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,0, 0, vwidth,vheight,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-;   glDisable(#GL_DEPTH_TEST)
-;   glReadBuffer(#GL_COLOR_ATTACHMENT1)
-;   glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-2*bh, vwidth, vheight-bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT2)
-;   glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-3*bh, vwidth, vheight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  Framebuffer::BlitTo(*gbuffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
+  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *gbuffer\frame_id);
+  glReadBuffer(#GL_COLOR_ATTACHMENT0)
+  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,0, 0, vwidth,vheight,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
+  glDisable(#GL_DEPTH_TEST)
+  glReadBuffer(#GL_COLOR_ATTACHMENT1)
+  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-2*bh, vwidth, vheight-bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  glReadBuffer(#GL_COLOR_ATTACHMENT2)
+  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-3*bh, vwidth, vheight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
   
   ;2. Create SSAO texture
   glDisable(#GL_DEPTH_TEST)
@@ -242,17 +247,15 @@ Procedure Draw(*app.Application::Application_t)
   glBindTexture(#GL_TEXTURE_2D,noise_tex)
   glUniform1i(u_ssao_noise_map,2)
   glUniform1f(u_ssao_occ_radius,occ_radius)
-  glUniform1f(u_ssao_occ_power,7)
+  glUniform1i(u_ssao_occ_power,3)
   glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
 ;         For i=0 To nbsamples-1
 ;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
 ;         Next
-  
   glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
   glUniform1i(u_ssao_kernel_size,nbsamples)
   glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
-  
   ;       
   ScreenQuad::Draw(*quad)
   ;       
@@ -260,6 +263,7 @@ Procedure Draw(*app.Application::Application_t)
   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
   glReadBuffer(#GL_COLOR_ATTACHMENT0)
   glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  
   
   If occ_blur
     ;3. Blur SSAO texture To remove noise
@@ -275,6 +279,7 @@ Procedure Draw(*app.Application::Application_t)
     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
     glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+    Framebuffer::Unbind(*blur)
   EndIf
   
   ;4. Lighting
@@ -314,6 +319,7 @@ Procedure Draw(*app.Application::Application_t)
     SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
     
   CompilerEndIf
+ 
   
 EndProcedure
 
@@ -407,7 +413,7 @@ If Time::Init()
   Define color.v3f32
   Define x,y,z
   For x = 0 To 7
-    For y=0 To 3
+    For y=0 To 0
       For z=0 To 7
         AddElement(*bunnies())
         *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
@@ -495,8 +501,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 297
-; FirstLine = 278
+; CursorPosition = 288
+; FirstLine = 273
 ; Folding = -
 ; EnableXP
 ; Executable = ssao.exe

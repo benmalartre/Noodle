@@ -78,14 +78,14 @@ Module Sampler
       
       *loc\u = u
       *loc\v = v
+      *loc\w = 1 -(u+v)
       *loc\tid = tid
-      Vector3::SetFromOther(*loc\p,@sum)
-      
+      Vector3::SetFromOther(*loc\p,@sum)      
       
       *a = CArray::GetValue(*mesh\a_pointnormals,a)
       *b = CArray::GetValue(*mesh\a_pointnormals,b)
       *c = CArray::GetValue(*mesh\a_pointnormals,c)
-       Vector3::Set(@sum,0,0,0)
+      Vector3::Set(@sum,0,0,0)
       Vector3::Scale(@p,*a,u)
       Vector3::AddInPlace(@sum,@p)
       Vector3::Scale(@p, *b,v)
@@ -102,18 +102,14 @@ Module Sampler
       Color::Set(@color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
       ;*pc\a_color\SetValue(i,@color)
       Color::SetFromOther(*loc\c,@color)
-      
-      ; flipper tmp datas
-      Vector3::Set(@uvw,u,v,tid)
-      
-      
+
     Next
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 20
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 104
+; FirstLine = 55
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

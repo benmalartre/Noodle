@@ -152,6 +152,7 @@ Module Loader
           CompilerEndIf
         EndIf
       Wend
+      PolymeshGeometry::Set2(*geom, *topo)
     Next
   EndProcedure
   
@@ -546,9 +547,9 @@ Module Loader
   
   Class::DEF(Loader)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 426
-; FirstLine = 422
-; Folding = ---
-; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 154
+; FirstLine = 113
+; Folding = -----
 ; EnableXP
+; EnableUnicode

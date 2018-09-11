@@ -287,7 +287,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 126
+; CursorPosition = 126
+; FirstLine = 87
 ; Folding = --
 ; EnableXP

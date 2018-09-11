@@ -10,7 +10,7 @@ Global *app.Application::Application_t = Application::New("Noodle",800,600)
   
 Global *main.View::View_t = *app\manager\main
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*main,"ViewportUI")
-*app\context = GLContext::New(0,#False,*viewport\gadgetID)
+*app\context = *viewport\context
 
 ; Global *view.View::View_t = View::Split(*main,0,50)
 ; 
@@ -21,7 +21,7 @@ Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*main,"ViewportUI")
 
 *viewport\camera = *app\camera
 View::SetContent(*app\manager\main,*viewport)
-ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *layer.LayerDefault::LayerDefault_t = LayerDefault::New(*viewport\width,*viewport\height,*app\context,*app\camera)
 Global counter.i
@@ -33,7 +33,7 @@ Global T = 0
 
 Procedure AddChildren(*scn.Scene::Scene_t,*s.Program::Program_t)
   Debug ">>>>>>>>> Add Children "
-  Protected nb = 6;Random(10)+1
+  Protected nb = 32;Random(10)+1
   Protected i
   Protected *child.Object3D::Object3D_t
   Protected *t.Transform::Transform_t
@@ -43,7 +43,7 @@ Procedure AddChildren(*scn.Scene::Scene_t,*s.Program::Program_t)
   For i =0 To nb
     *child = Polymesh::New("Test",Shape::#SHAPE_BUNNY)
     *t = *child\localT
-    Vector3::Set(*t\t\pos,0,i/3,0)
+    Vector3::Set(*t\t\pos,Random(10)-5,i/3,Random(10)-5)
     *t\srtdirty = #True
     Object3D::SetLocalTransform(*child,*t)
     Matrix4::Echo(*scn\root\globalT\m,"Global Transform : ")
@@ -113,7 +113,12 @@ EndProcedure
 AddChildren(*scene,*app\context\shaders("polymesh"))
 UpdateChildren(*scene)
 
-Global filePath.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/xml/Test.scn"
+CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+  Global filePath.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/xml/Test.scn"
+CompilerElse
+  Global filepath.s = "E:\Projects\RnD\Noodle\xml\Test.scn"
+CompilerEndIf
+
 Global *saver.Saver::Saver_t = Saver::New(*scene, filePath)
 Saver::Save(*saver)
 
@@ -125,8 +130,8 @@ Scene::Setup(*scene,*app\context)
 ; Scene::Update(*scene)
 
 Application::Loop(*app,@Callback())
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 45
-; FirstLine = 31
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

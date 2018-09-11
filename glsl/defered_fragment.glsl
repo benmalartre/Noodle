@@ -38,7 +38,7 @@ return mat4(m[0].xyzw,
 
 void main()
 {      
-	
+	/*
     // Retrieve data from gbuffer
     vec3 position = texture(position_map, texCoords).rgb;
     vec3 normal = texture(normal_map, texCoords).rgb;
@@ -57,7 +57,7 @@ void main()
     vec3 sunDir = sun.direction;
     sunDir = (rot * vec4(sunDir,1.0)).xyz;
     lighting = max(dot(normal,sunDir),0.0) * sun.color;
-	/*
+	
     for(int i = 0; i < nb_lights; ++i)
     {
         // Diffuse
@@ -80,7 +80,9 @@ void main()
     }    
 
     outColor = vec4(lighting, 1.0);
-     */
+    
     outColor = vec4(lighting,1.0) * texture(color_map, texCoords);
+	*/
+	outColor = vec4(1,1,0,1);
 
 }
