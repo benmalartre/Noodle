@@ -585,11 +585,11 @@ Module View
   ; View Event
   ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
-
+    If Not event : ProcedureReturn : EndIf
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     
     If *Me\leaf
-      If *Me\content <> #Null
+      If *Me\content <> #Null And event = #PB_Event_Gadget
         Protected *content.UI::IUI = *Me\content
         *content\Event(event)
       EndIf
@@ -902,7 +902,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 770
-; FirstLine = 745
+; CursorPosition = 587
+; FirstLine = 582
 ; Folding = ------
 ; EnableXP

@@ -11,7 +11,10 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -117,13 +120,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 37
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 16
+; FirstLine = 9
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

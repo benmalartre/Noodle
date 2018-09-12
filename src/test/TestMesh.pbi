@@ -88,6 +88,8 @@ Procedure Draw(*app.Application::Application_t)
   
   Protected *t.Transform::Transform_t = *light\localT
   
+  View::OnEvent(*app\manager\main,Event())
+  
   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
   Object3D::SetLocalTransform(*light, *t)
@@ -96,16 +98,16 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   ViewportUI::Draw(*viewport, *app\context)
   
-  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
-  glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
+;   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
 
  
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 
@@ -158,64 +160,64 @@ Procedure Draw(*app.Application::Application_t)
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*bunny,*s_polymesh)
   
-;   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
-;   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
-;   
-;   Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
-;   Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
-;   Define *gtopo.Geometry::Topology_t = *ggeom\topo
-;   Define i
-;       
-;   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
-; ;   CArray::AppendPtr(*topos,*ggeom\topo)
-; ;   Define m.m4f32
-; ;   Define v.v3f32
-; ;   Vector3::Set(@v,0,1,0)
-; ;   Matrix4::SetIdentity(@m)
-; ;   Matrix4::SetTranslation(@m,@v)
-; ;   Topology::Transform(*bgeom\topo, @m)
-; ;   CArray::AppendPtr(*topos,*bgeom\topo) 
-; ;   
-; ;   Topology::MergeArray(*mgeom\topo,*topos)
-;   
-;   Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
-;   Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
+  Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
+  Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
+  
+  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
+  Define *gtopo.Geometry::Topology_t = *ggeom\topo
+  Define i
+      
+  Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
+;   CArray::AppendPtr(*topos,*ggeom\topo)
 ;   Define m.m4f32
-;   Define pos.v3f32
-;   
-; ;   Vector3::Set(@pos,0,7,0)
-; ;   Matrix4::SetIdentity(@m)
-; ;   Matrix4::SetTranslation(@m,@pos)
-; ;   CArray::Append(*matrices,@m)
-; ;   
-; ;   Vector3::Set(@pos,2,7,4)
+;   Define v.v3f32
+;   Vector3::Set(@v,0,1,0)
 ;   Matrix4::SetIdentity(@m)
+;   Matrix4::SetTranslation(@m,@v)
+;   Topology::Transform(*bgeom\topo, @m)
+;   CArray::AppendPtr(*topos,*bgeom\topo) 
 ;   
-;   Define *loc.Geometry::Location_t
-;   Define *pos.v3f32, *nrm.v3f32
-;   Define scl.v3f32
-;   Define size.f
-;   For i=0 To CArray::GetCount(*samples)-1
-;     *loc = CArray::GetValuePtr(*samples,i)
-;     *pos = Location::GetPosition(*loc)
-;     *nrm = Location::GetNormal(*loc)
-;     size = Random(70)/10
-;     Vector3::ScaleInPlace(*nrm, size)
-;     Vector3::AddInPlace(*pos, *nrm)
-;     Matrix4::SetIdentity(@m)
-;     Matrix4::SetTranslation(@m,*pos)
-;     
-;     Vector3::Set(@scl, size, size, size)
-;     Matrix4::SetScale(@m, @scl)
+;   Topology::MergeArray(*mgeom\topo,*topos)
+  
+  Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
+  Define m.m4f32
+  Define pos.v3f32
+  
+;   Vector3::Set(@pos,0,7,0)
+;   Matrix4::SetIdentity(@m)
+;   Matrix4::SetTranslation(@m,@pos)
 ;   CArray::Append(*matrices,@m)
-;  Next
 ;   
-;   Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
-;   Topology::TransformArray(*topo,*matrices,*outtopo)
-;   Topology::MergeArray(*topo,*outtopo)
-;   PolymeshGeometry::Set2(*mgeom,*topo)
-;   Object3D::Freeze(*merged)
-;   Object3D::AddChild(*root,*merged)
+;   Vector3::Set(@pos,2,7,4)
+  Matrix4::SetIdentity(@m)
+  
+  Define *loc.Geometry::Location_t
+  Define *pos.v3f32, *nrm.v3f32
+  Define scl.v3f32
+  Define size.f
+  For i=0 To CArray::GetCount(*samples)-1
+    *loc = CArray::GetValuePtr(*samples,i)
+    *pos = Location::GetPosition(*loc)
+    *nrm = Location::GetNormal(*loc)
+    size = Random(70)/10
+    Vector3::ScaleInPlace(*nrm, size)
+    Vector3::AddInPlace(*pos, *nrm)
+    Matrix4::SetIdentity(@m)
+    Matrix4::SetTranslation(@m,*pos)
+    
+    Vector3::Set(@scl, size, size, size)
+    Matrix4::SetScale(@m, @scl)
+  CArray::Append(*matrices,@m)
+ Next
+  
+  Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
+  Topology::TransformArray(*topo,*matrices,*outtopo)
+  Topology::MergeArray(*topo,*outtopo)
+  PolymeshGeometry::Set2(*mgeom,*topo)
+  Object3D::Freeze(*merged)
+  Object3D::AddChild(*root,*merged)
   
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root,*bunny)
@@ -225,8 +227,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 217
-; FirstLine = 159
+; CursorPosition = 98
+; FirstLine = 71
 ; Folding = -
 ; EnableThread
 ; EnableXP
