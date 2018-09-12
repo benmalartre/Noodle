@@ -160,7 +160,7 @@ Module ViewportUI
 ;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
 ;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-    
+    Debug "######################### Viewport Event ######################"
     Protected width.i, height.i
     Protected *top.View::View_t = *Me\top
     Protected *manager.ViewManager::ViewManager_t = *top\manager
@@ -209,6 +209,7 @@ Module ViewportUI
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
                       
             Case #PB_EventType_MouseMove
+              Debug "############ VIEWPORT MOUSE MOVE"
               If *Me\down
                 deltax = *Me\mx-*Me\oldX
                 deltay = *Me\my-*Me\oldY 
@@ -661,8 +662,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 304
-; FirstLine = 292
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 162
+; FirstLine = 137
 ; Folding = -----
 ; EnableXP

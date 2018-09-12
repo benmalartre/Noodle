@@ -1,5 +1,5 @@
 ﻿XIncludeFile("../libs/OpenGL.pbi")
-XIncludeFile("../libs/GLFW.pbi")
+; XIncludeFile("../libs/GLFW.pbi")
 XIncludeFile("../libs/OpenGLExt.pbi")
 ;====================================================================
 ; Framebuffer Module Declaration(Shared)
@@ -591,9 +591,8 @@ EndProcedure
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 378
-; FirstLine = 367
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 1
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

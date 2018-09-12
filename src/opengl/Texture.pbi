@@ -1,6 +1,6 @@
 ﻿
 XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/GLFW.pbi"
+; XIncludeFile "../libs/GLFW.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
 
 UseJPEGImageDecoder()
@@ -219,8 +219,8 @@ Module Texture
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 15
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

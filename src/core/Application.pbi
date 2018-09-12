@@ -12,7 +12,10 @@ XIncludeFile "Image.pbi"
 
 
 XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/GLFW.pbi"
+CompilerIf (#USE_GLFW = #True)
+  XIncludeFile "../libs/GLFW.pbi"
+CompilerEndIf
+
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../libs/FTGL.pbi"
 
@@ -111,7 +114,10 @@ XIncludeFile "Loader.pbi"
 ;  Application Module Declaration
 ; ============================================================================
 DeclareModule Application
+CompilerIf (#USE_GLFW = #True)
   UseModule GLFW
+CompilerEndIf
+  
 
   Structure Application_t
     name.s
@@ -160,8 +166,10 @@ DeclareModule Application
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
   Declare Delete(*app.Application_t)
-  Declare RegisterCallbacks(*app.Application_t)
   Declare Loop(*app.Application_t,*callback)
+  
+CompilerIf (#USE_GLFW = #True)
+  Declare RegisterCallbacks(*app.Application_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -169,6 +177,8 @@ DeclareModule Application
   Declare OnPositionWindow(*w.GLFWwindow,x.i,y.i)
   Declare OnCursorEnter(*window.GLFWwindow,entered.i)
   Declare OnScroll(*window.GLFWwindow,x.d,y.d)
+CompilerEndIf
+
   Declare.f GetFPS(*app.Application_t)
   Prototype PFNDRAWFN(*app)
   
@@ -181,7 +191,9 @@ EndDeclareModule
 ; ============================================================================
 Module Application
   UseModule OpenGL
+CompilerIf #USE_GLFW
   UseModule GLFW
+CompilerEndIf
   UseModule OpenGLExt
   
   ;-----------------------------------------------------------------------------
@@ -258,6 +270,7 @@ Module Application
     FreeMemory(*app)
   EndProcedure
   
+CompilerIf #USE_GLFW
   ;-----------------------------------------------------------------------------
   ; Key Changed Callback (GLFW)
   ;-----------------------------------------------------------------------------
@@ -480,6 +493,8 @@ Module Application
     glfwSetScrollCallback(*Me\window,@OnScroll())
   EndProcedure
   
+CompilerEndIf
+
   ;-----------------------------------------------------------------------------
   ; Get FPS
   ;-----------------------------------------------------------------------------
@@ -562,7 +577,13 @@ Module Application
       Repeat
         event = WaitWindowEvent(1000/60)
         ; filter Windows events
-        If event = 512  Or event = 160:  Continue : EndIf
+        CompilerSelect #PB_Compiler_OS 
+          CompilerCase #PB_OS_Windows
+            If event = 512  Or event = 160:  Continue : EndIf
+          CompilerCase #PB_OS_Linux
+            If event = 24 : Continue : EndIf
+        CompilerEndSelect
+        
         
         If event = Globals::#EVENT_TREE_CREATED
           Protected *graph = ViewManager::*view_manager\uis("Graph")
@@ -593,10 +614,10 @@ Module Application
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 552
-; FirstLine = 534
-; Folding = ----
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 562
+; FirstLine = 551
+; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL
 ; EnableUnicode

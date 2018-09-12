@@ -4,7 +4,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -500,10 +503,10 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 273
-; Folding = -
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 9
+; FirstLine = 2
+; Folding = --
 ; EnableXP
 ; Executable = ssao.exe
 ; Constant = #USE_GLFW=0

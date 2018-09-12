@@ -25,7 +25,7 @@ DeclareModule FTGL
   ; ============================================================================
   ; STRUCTURES
   ; ============================================================================
-  Structure FTGL_GlyphInfos
+  Structure FTGL_GlyphInfos Align #PB_Structure_AlignC
     ax.f;	 advance.x
     ay.f;	 advance.y
   
@@ -37,27 +37,27 @@ DeclareModule FTGL
   	tx.f;	x offset of glyph in texture coordinates
   EndStructure
   
-  Structure FTGL_FontAtlas
+  Structure FTGL_FontAtlas Align #PB_Structure_AlignC
     metadata.FTGL_GlyphInfos[256]
-    width.i
-    height.i
-    size_px.i
+    width.l
+    height.l
+    size_px.l
     
     *buffer
   EndStructure
   
-  Structure FTGL_Face
+  Structure FTGL_Face Align #PB_Structure_AlignC
     v.f[16]
   EndStructure
   
-  Structure FTGL_Color
+  Structure FTGL_Color Align #PB_Structure_AlignC
     r.f
     g.f
     b.f
     a.f
   EndStructure
   
-  Structure FTGL_Drawer
+  Structure FTGL_Drawer Align #PB_Structure_AlignC
     *atlas.FTGL_FontAtlas
     color.FTGL_Color
     vao.GLuint
@@ -66,7 +66,7 @@ DeclareModule FTGL
     *shader.Program::Program_t
   EndStructure
   
-  Structure FTGL_Point
+  Structure FTGL_Point Align #PB_Structure_AlignC
     x.f
     y.f
     s.f
@@ -82,7 +82,6 @@ DeclareModule FTGL
     FONT_FILE_NAME = "fontsArial/arial.ttf"
   EndIf
  
-
   Global *ftgl_atlas.FTGL_FontAtlas = 0
   Global NewMap *atlases.FTGL_FontAtlas()
   
@@ -147,11 +146,7 @@ Module FTGL
     If FindMapElement(*atlases(), "Arial16")
       *ftgl_atlas = *atlases()
     EndIf
-    
-    ;FT_CreateFontAtlas(FONT_FILE_NAME,32)
-    
-    
-
+   
   EndProcedure
   
   Procedure SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
@@ -421,9 +416,9 @@ Module FTGL
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 130
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 295
+; FirstLine = 262
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -1,8 +1,14 @@
 ﻿XIncludeFile "OpenGL.pbi"
-XIncludeFile "GLFW.pbi"
+CompilerIf (#USE_GLFW = #True)
+  MessageRequester("FUCKIN INCLUDE  GLFW", "GLFW")
+  XIncludeFile "../libs/GLFW.pbi"
+CompilerEndIf
 DeclareModule OpenGLExt
   UseModule OpenGL
-  UseModule GLFW
+  CompilerIf (#USE_GLFW = #True)
+    UseModule GLFW
+  CompilerEndIf
+  
   ; ; ============================================================================
   ; ;  OpenGL Extensions Prototypes
   ; ; ============================================================================
@@ -1487,9 +1493,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 918
-; FirstLine = 903
-; Folding = ------
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 10
+; Folding = -------
 ; EnableXP
 ; EnableUnicode

@@ -22,7 +22,10 @@ FTGL::Init()
 Controls::Init()
 Commands::Init()
 UIColor::Init()
-Alembic::Init()
+CompilerIf #USE_ALEMBIC
+  Alembic::Init()
+CompilerEndIf
+
 
 
 Procedure AddPushTree(*tree.Tree::Tree_t)
@@ -155,9 +158,8 @@ EndProcedure
 Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 96
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 27
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe
