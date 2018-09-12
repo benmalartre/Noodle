@@ -399,7 +399,7 @@ If Time::Init()
       EndIf
       
 ;       Camera::Event(*camera,mx,my,vwidth,vheight)
-        Camera::Event(*camera,gadget)
+        Camera::OnEvent(*camera,gadget)
 
        Matrix4::SetIdentity(@offset)
       OpenGLViewEvent(gadget,*camera,@query)
@@ -452,11 +452,11 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 251
-; FirstLine = 247
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 232
+; FirstLine = 223
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
 ; Executable = kdtree.exe
 ; Debugger = Standalone
+; EnableUnicode

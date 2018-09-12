@@ -256,7 +256,7 @@ Color::Set(@color,1.0,0.5,0.4)
 ;   
 ;   BTCreateRigidBodyFrom3DObject(*ground,#BULLET_TRIANGLEMESH_SHAPE,0.0)
   
-;   *raa_current_scene\handle\SetTarget(*ground)
+;   *current_scene\handle\SetTarget(*ground)
   
   
     ; ---[ Debugging Raycast ]---------------------------------------------------
@@ -299,7 +299,7 @@ Procedure Draw(*app.Application::Application_t)
   
   ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
 
-;   defered\Draw(*app\context)
+  defered\Draw(*app\context)
   ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
   ;bitmap\Draw(*app\context)
   ;ssao\Draw(*app\context)
@@ -364,7 +364,7 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+     *app\context = *viewport\context
     *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
@@ -420,13 +420,13 @@ Scene::Setup(Scene::*current_scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 278
-; FirstLine = 268
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 258
+; FirstLine = 230
 ; Folding = -
-; EnableUnicode
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
+; EnableUnicode

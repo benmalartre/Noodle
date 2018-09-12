@@ -64,32 +64,34 @@ Define *s1.View::View_t = View::Split(*m\main,#PB_Splitter_Vertical,66)
 ; Define *s2.View::View_t = View::Split(*s1\left)
 Define *s2.View::View_t = View::Split(*s1\right,0,60)
 Define *s3.View::View_t = View::Split(*s2\right,#PB_Splitter_SecondFixed,60)
-ViewManager::Event(*m,#PB_Event_SizeWindow)
-Define *viewport.UI::IUI = ViewportUI::New(*s1\left,"ViewportUI")
-
-Define *shaders.UI::IUI = ShaderUI::New(*s2\left,"Shader",#Null)
-View::SetContent(*s2\left,*shaders)
-Define *log.UI::IUI = LogUI::New(*s3\left,"LogUI")
-View::SetContent(*s3\left,*log)
-Define *timeline.UI::IUI = TimelineUI::New(*s3\right,"TimelineUI")
-View::SetContent(*s3\right,*timeline)
+ViewManager::OnEvent(*m,#PB_Event_SizeWindow)
+Define *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*s1\left,"ViewportUI")
+Define viewport.UI::IUI = *viewport
+*app\context = *viewport\context
+Define shaders.UI::IUI = ShaderUI::New(*s2\left,"Shader",#Null)
+View::SetContent(*s2\left,shaders)
+Define log.UI::IUI = LogUI::New(*s3\left,"LogUI")
+View::SetContent(*s3\left,log)
+Define timeline.UI::IUI = TimelineUI::New(*s3\right,"TimelineUI")
+View::SetContent(*s3\right,timeline)
 
 ; FTGL Drawer
 ;-----------------------------------------------------
 FTGL::Init()
-Global *ftgl_drawer = FTGL::New()
 
-*viewport\Init()
-*shaders\Init()
-*log\Init()
 
-CompilerIf #PB_Compiler_Unicode
-  Global *shader.Program::Program_t = Program::New("custom",Shader::DeCodeUnicodeShader(s_vert),Shader::DeCodeUnicodeShader(s_frag))
-  Global *shader2.Program::Program_t = Program::NewFromName("polymesh")
-CompilerElse
+viewport\Init()
+shaders\Init()
+log\Init()
+timeline\Init()
+
+; CompilerIf #PB_Compiler_Unicode
+;   Global *shader.Program::Program_t = Program::New("custom",Shader::DeCodeUnicodeShader(s_vert),Shader::DeCodeUnicodeShader(s_frag))
+;   Global *shader2.Program::Program_t = Program::NewFromName("polymesh")
+; CompilerElse
   Global *shader.Program::Program_t = Program::New("custom",s_vert,s_frag)
   Global *shader2.Program::Program_t = Program::NewFromName("polymesh")
-CompilerEndIf
+; CompilerEndIf
 
 
 
@@ -98,7 +100,7 @@ Define texture.i  =LoadImage(#PB_Any,"..\..\textures\moonbumpmap2.jpg")
 Define textureID = Utils::GL_LoadImage(texture,#False,#GL_REPEAT,#GL_REPEAT,#GL_LINEAR,#GL_LINEAR)
 Define texture2.i  =LoadImage(#PB_Any,"..\..\textures\earth.jpg")
 Define textureID2 = Utils::GL_LoadImage(texture2,#False,#GL_REPEAT,#GL_REPEAT)
-ShaderUI::SetContent(*shaders,*shader)
+ShaderUI::SetContent(shaders,*shader)
  
 Global *ship.Polymesh::Polymesh_t = Polymesh::New("Dhip",Shape::#SHAPE_TOMATO)
 Global *quad.ScreenQuad::ScreenQuad_t = ScreenQuad::New()
@@ -117,7 +119,7 @@ Define *vp.ViewportUI::ViewportUI_t = *viewport
 *vp\camera = *camera
 Define T.f
 Repeat
-  e  =WindowEvent()
+  e = WaitWindowEvent()
   T = Application::GetFPS(*app)
 ;   SetGadgetAttribute(*viewport
 ;   Framebuffer::BindOutput(*buffer)
@@ -163,18 +165,15 @@ Repeat
   
   ;Polymesh::Draw(*ship)
   
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/GadgetWidth(*vp\gadgetID)
   Define ratio.f = GadgetWidth(*vp\gadgetID) / GadgetHeight(*vp\gadgetID)
-  FTGL::Draw(*ftgl_drawer,"Date : "+FormatDate("%dd/%mm/%yyyy", Date()),-0.9,0.95,ss,ss*ratio)
-  FTGL::Draw(*ftgl_drawer,"Time : "+FormatDate("%hh:%ii:%ss", Date()),-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*ftgl_drawer,"User : "+UserName(),-0.9,0.85,ss,ss*ratio)
-  FTGL::Draw(*ftgl_drawer,"FPS : "+StrF(*app\fps),-0.9,0.8,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+  FTGL::Draw(*app\context\writer,"Date : "+FormatDate("%dd/%mm/%yyyy", Date()),-0.9,0.95,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Time : "+FormatDate("%hh:%ii:%ss", Date()),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"User : "+UserName(),-0.9,0.85,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"FPS : "+StrF(*app\fps),-0.9,0.8,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
   
   SetGadgetAttribute(*vp\gadgetID,#PB_OpenGL_FlipBuffers,#True)
 ;   Polymesh::Draw(*teapot)
@@ -194,10 +193,11 @@ Repeat
 ;   
 ;   glDisable(#GL_DEPTH_TEST)
   
-  ViewManager::Event(*m,e)
+  ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 24
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 74
+; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

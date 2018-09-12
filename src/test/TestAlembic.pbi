@@ -3,10 +3,13 @@ XIncludeFile "../core/Application.pbi"
 
 
 XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/GLFW.pbi"
+CompilerIf (#USE_GLFW = #True)
+  XIncludeFile "../libs/GLFW.pbi"
+CompilerEndIf
+
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
@@ -44,65 +47,19 @@ Global numVertices
 Procedure Draw(*app.Application::Application_t)
   Time::currentframe + 1
   If Time::currentframe>100 : Time::currentframe = 1:EndIf
-  
+  Scene::Update(Scene::*current_scene)
   ViewportUI::SetContext(*viewport)
-  ;Model::Update(*model)
-  LayerDefault::Draw(*layer,*app\context)
-;   LayerGBUffer::Draw(*gbuffer,*app\context)
-;   LayerSSAO::Draw(*ssao,*app\context)
-;   glUseProgram(*pgm\pgm)
-;   Define.m4f32 model,view,proj
-;   Matrix4::SetIdentity(@model)
-;   
-;   Framebuffer::BindOutput(*buffer)
-; 
-;   glCheckError("Bind FrameBuffer")
-;   glViewport(0, 0, *app\width,*app\height)
-;   glCheckError("Set Viewport")
-; 
-;   glDepthMask(#GL_TRUE);
-;   glClearColor(0.33,0.33,0.33,1.0)
-;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;   glCheckError("Clear")
-;   glEnable(#GL_DEPTH_TEST)
-;   
-;   glEnable(#GL_TEXTURE_2D)
-;   glBindTexture(#GL_TEXTURE_2D,texture)
-;   glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*app\camera\view)
-;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,*app\camera\projection)
-;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
-;   
-;   ;   PointCloud::Draw(*cloud)
-;   Model::Update(*model)
-;   Model::Draw(*model,*pgm)
-;   glCheckError("Draw Mesh")
-;   glDepthMask(#GL_FALSE);
-;   
-;   ;Framebuffer::BlitTo(*buffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
-;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-;   glDisable(#GL_DEPTH_TEST)
-  
+  ViewportUI::Draw(*viewport, *app\context)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/*app\width
   Define ratio.f = *app\width / *app\height
   FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
-  If Not #USE_GLFW
-    ViewportUI::FlipBuffer(*viewport)
-  EndIf
+  FTGL::EndDraw(*app\context\writer)
   
-  
+  ViewportUI::FlipBuffer(*viewport)
 EndProcedure
     
 Define model.m4f32
@@ -134,7 +91,7 @@ If Time::Init()
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/PureBasic/Noodle/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
     Define i
-    *model = Model::New("FUCK")
+    *model = Model::New("Alembic")
     For i=0 To 0:
       Define *abc.Model::Model_t = Alembic::LoadABCArchive(path)
 ;       Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
@@ -148,7 +105,21 @@ If Time::Init()
     Next
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
     Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Elephant.abc","Alembic (*.abc)|*.abc",0)
-    *model = Alembic::LoadABCArchive(path)
+    Define i
+    For i=0 To 12
+      *model = Alembic::LoadABCArchive(path)
+      Define *t.Transform::Transform_t = *model\localT
+      Define p.v3f32
+      Define q.v3f32
+      Vector3::Set(@p,Random(50)-25,Random(10),0)
+      Quaternion::Randomize(@q)
+      Transform::SetTranslation(*t, @p)
+      Transform::SetRotationFromQuaternion(*t, @q)
+      Object3D::SetlocalTransform(*model, *t)
+      Scene::AddModel(Scene::*current_scene,*model)
+      
+    Next
+    
   CompilerElse
     Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Elephant.abc","Alembic (*.abc)|*.abc",0)
     *model = Alembic::LoadABCArchive(path)
@@ -172,24 +143,26 @@ If Time::Init()
 ;   Next
   
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
-
+  
+ 
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
-
+   ViewportUI::AddLayer(*viewport, *layer)
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
-  Scene::AddModel(Scene::*current_scene,*model)
+  
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 20
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 8
+; FirstLine = 1
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin\Alembic.app
+; Executable = bin/Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

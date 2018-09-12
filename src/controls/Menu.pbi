@@ -305,26 +305,26 @@ Module ControlMenu
     
     Protected i
     StartDrawing(CanvasOutput(*menu\gadgetID))
-    DrawingMode(#PB_2DDrawing_Default)
-    Box(0,0,*menu\width,*menu\height,UIColor::COLOR_NUMBER_BG)
+    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    Box(0,0,*menu\width,*menu\height,UIColor::COLORA_NUMBER_BG)
 ;     DrawingMode(#PB_2DDrawing_Outlined)
 ;     RoundBox(0,0,*menu\width,*menu\height,3,3,UIColor::COLOR_GROUP_LABEL)
     DrawingFont(FontID(Globals::#FONT_SUBMENU))
-    DrawingMode(#PB_2DDrawing_Transparent)
+    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
     Protected a
     For a=0 To ArraySize(*menu\items())-1
       If *menu\items(a)\type = #MenuItemType_Separator
-        Line(10,a*#MenuItemHeight+0.5*#MenuItemHeight,*menu\width-20,0,UIColor::COLOR_TEXT)
+        Line(10,a*#MenuItemHeight+0.5*#MenuItemHeight,*menu\width-20,0,UIColor::COLORA_TEXT)
       Else
         
         If a = *menu\selected
-          DrawingMode(#PB_2DDrawing_Default)
-          RoundBox(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2,2,UIColor::COLOR_SELECTED_BG)
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLOR_SELECTED_FG)
+          DrawingMode(#PB_2DDrawing_AllChannels)
+          RoundBox(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2,2,UIColor::COLORA_SELECTED_BG)
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLORA_SELECTED_FG)
          ; DrawingMode(#PB_2DDrawing_Transparent)
         Else
-          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLOR_TEXT)
+          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLORA_TEXT)
         EndIf
       EndIf   
     
@@ -551,11 +551,12 @@ Module ControlMenu
     If *menu\dirty
       StartDrawing(CanvasOutput(*menu\gadgetID))
       DrawingFont(FontID(Globals::#font_menu))
-      ;raaSetFont(RAA_FONT_HEADER)
+      
+      DrawingMode(#PB_2DDrawing_AlphaBlend)
       
       Box(0,0,*menu\width,*menu\height,UIColor::COLORA_MAIN_BG)
       Protected x,y, a
-      DrawingMode(#PB_2DDrawing_Default)
+      
       x = #MenuItemSpacing
       y = #MenuItemSpacing/2
       
@@ -563,14 +564,14 @@ Module ControlMenu
         If *menu\inspected = *menu\submenus(a)
           Protected width.i = TextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
           RoundBox(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2,2,UIColor::COLORA_NUMBER_BG)
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawText( x,y,*menu\submenus(a)\name,UIColor::COLORA_NUMBER_FG)
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText( x,y,*menu\submenus(a)\name, UIColor::COLORA_LINE_DIMMED)
           DrawingMode(#PB_2DDrawing_Outlined)
           RoundBox(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2,2,UIColor::COLORA_LINE_DIMMED)
           DrawingMode(#PB_2DDrawing_Default)
         Else
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawText( x,y,*menu\submenus(a)\name,UIColor::COLORA_TEXT)
+          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+          DrawText( x,y,*menu\submenus(a)\name, UIColor::COLORA_TEXT)
         EndIf
         
         With *menu\submenus(a)
@@ -691,9 +692,9 @@ Module ControlMenu
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 627
-; FirstLine = 593
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 567
+; FirstLine = 520
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

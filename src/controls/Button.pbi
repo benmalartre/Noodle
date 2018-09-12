@@ -1,219 +1,12 @@
-XIncludeFile "../core/Globals.pbi"
+癤풶IncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
+XIncludeFile "../core/UIColor.pbi"
 
 ; ==============================================================================
 ;  CONTROL BUTTON MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlButton
-  
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  ; ---[ Button Up ]------------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_button_up_normal_tl .i
-  Global s_gui_controls_light_button_up_normal_tr .i
-  Global s_gui_controls_light_button_up_normal_bl .i
-  Global s_gui_controls_light_button_up_normal_br .i
-  Global s_gui_controls_light_button_up_normal_cl .i
-  Global s_gui_controls_light_button_up_normal_cr .i
-  Global s_gui_controls_light_button_up_normal_ct .i
-  Global s_gui_controls_light_button_up_normal_cb .i
-  Global s_gui_controls_light_button_up_normal_cc .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_button_up_over_tl .i
-  Global s_gui_controls_light_button_up_over_tr .i
-  Global s_gui_controls_light_button_up_over_bl .i
-  Global s_gui_controls_light_button_up_over_br .i
-  Global s_gui_controls_light_button_up_over_cl .i
-  Global s_gui_controls_light_button_up_over_cr .i
-  Global s_gui_controls_light_button_up_over_ct .i
-  Global s_gui_controls_light_button_up_over_cb .i
-  Global s_gui_controls_light_button_up_over_cc .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_light_button_up_disabled_tl .i
-  Global s_gui_controls_light_button_up_disabled_tr .i
-  Global s_gui_controls_light_button_up_disabled_bl .i
-  Global s_gui_controls_light_button_up_disabled_br .i
-  Global s_gui_controls_light_button_up_disabled_cl .i
-  Global s_gui_controls_light_button_up_disabled_cr .i
-  Global s_gui_controls_light_button_up_disabled_ct .i
-  Global s_gui_controls_light_button_up_disabled_cb .i
-  Global s_gui_controls_light_button_up_disabled_cc .i
-
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_button_down_normal_tl .i
-  Global s_gui_controls_light_button_down_normal_tr .i
-  Global s_gui_controls_light_button_down_normal_bl .i
-  Global s_gui_controls_light_button_down_normal_br .i
-  Global s_gui_controls_light_button_down_normal_cl .i
-  Global s_gui_controls_light_button_down_normal_cr .i
-  Global s_gui_controls_light_button_down_normal_ct .i
-  Global s_gui_controls_light_button_down_normal_cb .i
-  Global s_gui_controls_light_button_down_normal_cc .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_button_down_over_tl .i
-  Global s_gui_controls_light_button_down_over_tr .i
-  Global s_gui_controls_light_button_down_over_bl .i
-  Global s_gui_controls_light_button_down_over_br .i
-  Global s_gui_controls_light_button_down_over_cl .i
-  Global s_gui_controls_light_button_down_over_cr .i
-  Global s_gui_controls_light_button_down_over_ct .i
-  Global s_gui_controls_light_button_down_over_cb .i
-  Global s_gui_controls_light_button_down_over_cc .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_light_button_down_disabled_tl .i
-  Global s_gui_controls_light_button_down_disabled_tr .i
-  Global s_gui_controls_light_button_down_disabled_bl .i
-  Global s_gui_controls_light_button_down_disabled_br .i
-  Global s_gui_controls_light_button_down_disabled_cl .i
-  Global s_gui_controls_light_button_down_disabled_cr .i
-  Global s_gui_controls_light_button_down_disabled_ct .i
-  Global s_gui_controls_light_button_down_disabled_cb .i
-  Global s_gui_controls_light_button_down_disabled_cc .i
-
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  ; ---[ Button Up ]------------------------------------------------------------
-  ;{
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_button_up_normal_tl .i
-  Global s_gui_controls_dark_button_up_normal_tr .i
-  Global s_gui_controls_dark_button_up_normal_bl .i
-  Global s_gui_controls_dark_button_up_normal_br .i
-  Global s_gui_controls_dark_button_up_normal_cl .i
-  Global s_gui_controls_dark_button_up_normal_cr .i
-  Global s_gui_controls_dark_button_up_normal_ct .i
-  Global s_gui_controls_dark_button_up_normal_cb .i
-  Global s_gui_controls_dark_button_up_normal_cc .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_button_up_over_tl .i
-  Global s_gui_controls_dark_button_up_over_tr .i
-  Global s_gui_controls_dark_button_up_over_bl .i
-  Global s_gui_controls_dark_button_up_over_br .i
-  Global s_gui_controls_dark_button_up_over_cl .i
-  Global s_gui_controls_dark_button_up_over_cr .i
-  Global s_gui_controls_dark_button_up_over_ct .i
-  Global s_gui_controls_dark_button_up_over_cb .i
-  Global s_gui_controls_dark_button_up_over_cc .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_dark_button_up_disabled_tl .i
-  Global s_gui_controls_dark_button_up_disabled_tr .i
-  Global s_gui_controls_dark_button_up_disabled_bl .i
-  Global s_gui_controls_dark_button_up_disabled_br .i
-  Global s_gui_controls_dark_button_up_disabled_cl .i
-  Global s_gui_controls_dark_button_up_disabled_cr .i
-  Global s_gui_controls_dark_button_up_disabled_ct .i
-  Global s_gui_controls_dark_button_up_disabled_cb .i
-  Global s_gui_controls_dark_button_up_disabled_cc .i
-
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_button_down_normal_tl .i
-  Global s_gui_controls_dark_button_down_normal_tr .i
-  Global s_gui_controls_dark_button_down_normal_bl .i
-  Global s_gui_controls_dark_button_down_normal_br .i
-  Global s_gui_controls_dark_button_down_normal_cl .i
-  Global s_gui_controls_dark_button_down_normal_cr .i
-  Global s_gui_controls_dark_button_down_normal_ct .i
-  Global s_gui_controls_dark_button_down_normal_cb .i
-  Global s_gui_controls_dark_button_down_normal_cc .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_button_down_over_tl .i
-  Global s_gui_controls_dark_button_down_over_tr .i
-  Global s_gui_controls_dark_button_down_over_bl .i
-  Global s_gui_controls_dark_button_down_over_br .i
-  Global s_gui_controls_dark_button_down_over_cl .i
-  Global s_gui_controls_dark_button_down_over_cr .i
-  Global s_gui_controls_dark_button_down_over_ct .i
-  Global s_gui_controls_dark_button_down_over_cb .i
-  Global s_gui_controls_dark_button_down_over_cc .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_dark_button_down_disabled_tl .i
-  Global s_gui_controls_dark_button_down_disabled_tr .i
-  Global s_gui_controls_dark_button_down_disabled_bl .i
-  Global s_gui_controls_dark_button_down_disabled_br .i
-  Global s_gui_controls_dark_button_down_disabled_cl .i
-  Global s_gui_controls_dark_button_down_disabled_cr .i
-  Global s_gui_controls_dark_button_down_disabled_ct .i
-  Global s_gui_controls_dark_button_down_disabled_cb .i
-  Global s_gui_controls_dark_button_down_disabled_cc .i
-  
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ---[ Button Up ]------------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_button_up_normal_tl
-  Global s_gui_controls_button_up_normal_tr
-  Global s_gui_controls_button_up_normal_bl
-  Global s_gui_controls_button_up_normal_br
-  Global s_gui_controls_button_up_normal_cl
-  Global s_gui_controls_button_up_normal_cr
-  Global s_gui_controls_button_up_normal_ct
-  Global s_gui_controls_button_up_normal_cb
-  Global s_gui_controls_button_up_normal_cc
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_button_up_over_tl
-  Global s_gui_controls_button_up_over_tr
-  Global s_gui_controls_button_up_over_bl
-  Global s_gui_controls_button_up_over_br
-  Global s_gui_controls_button_up_over_cl
-  Global s_gui_controls_button_up_over_cr
-  Global s_gui_controls_button_up_over_ct
-  Global s_gui_controls_button_up_over_cb
-  Global s_gui_controls_button_up_over_cc
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_button_up_disabled_tl
-  Global s_gui_controls_button_up_disabled_tr
-  Global s_gui_controls_button_up_disabled_bl
-  Global s_gui_controls_button_up_disabled_br
-  Global s_gui_controls_button_up_disabled_cl
-  Global s_gui_controls_button_up_disabled_cr
-  Global s_gui_controls_button_up_disabled_ct
-  Global s_gui_controls_button_up_disabled_cb
-  Global s_gui_controls_button_up_disabled_cc
-
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_button_down_normal_tl
-  Global s_gui_controls_button_down_normal_tr
-  Global s_gui_controls_button_down_normal_bl
-  Global s_gui_controls_button_down_normal_br
-  Global s_gui_controls_button_down_normal_cl
-  Global s_gui_controls_button_down_normal_cr
-  Global s_gui_controls_button_down_normal_ct
-  Global s_gui_controls_button_down_normal_cb
-  Global s_gui_controls_button_down_normal_cc
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_button_down_over_tl
-  Global s_gui_controls_button_down_over_tr
-  Global s_gui_controls_button_down_over_bl
-  Global s_gui_controls_button_down_over_br
-  Global s_gui_controls_button_down_over_cl
-  Global s_gui_controls_button_down_over_cr
-  Global s_gui_controls_button_down_over_ct
-  Global s_gui_controls_button_down_over_cb
-  Global s_gui_controls_button_down_over_cc
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_button_down_disabled_tl
-  Global s_gui_controls_button_down_disabled_tr
-  Global s_gui_controls_button_down_disabled_bl
-  Global s_gui_controls_button_down_disabled_br
-  Global s_gui_controls_button_down_disabled_cl
-  Global s_gui_controls_button_down_disabled_cr
-  Global s_gui_controls_button_down_disabled_ct
-  Global s_gui_controls_button_down_disabled_cb
-  Global s_gui_controls_button_down_disabled_cc
-
-  
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlButton_t )
   ; ----------------------------------------------------------------------------
@@ -223,56 +16,29 @@ DeclareModule ControlButton
     label.s
     over.i
     down.i
+    color_enabled.i
+    color_disabled.i
+    color_over.i
+    color_pressed.i
+    *onleftclick_signal.Slot::Slot_t
+    *onleftdoubleclick_signal.Slot::Slot_t
   EndStructure
   
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
-  Declare Delete(*Me.ControlButton_t)
-  Declare ONEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  
-  Declare.b Init()
-  Declare.b Term()
+  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
+  Declare Init()
+  Declare Term()
   Declare SetTheme(theme.i)
+  Declare Delete(*Me.ControlButton_t)
+  Declare OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   ; ============================================================================
-  ;  VTABLE ( CObject + CControl + CControlButton )
+  ;  VTABLE ( Object + Control + ControlButton )
   ; ============================================================================
-  ;{
-    DataSection
+  DataSection
     ControlButtonVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
-  
-    ; Images
-    ; (Light)
-    VIControlButton_light_up_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.up.normal.png"
-    VIControlButton_light_up_over:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.up.over.png"
-    VIControlButton_light_up_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.up.disabled.png"
-    VIControlButton_light_down_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.down.normal.png"
-    VIControlButton_light_down_over:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.down.over.png"
-    VIControlButton_light_down_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_button/light.button.down.disabled.png"
-    
-    ; (Dark)
-    VIControlButton_dark_up_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.up.normal.png"
-    VIControlButton_dark_up_over:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.up.over.png"
-    VIControlButton_dark_up_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.up.disabled.png"
-    VIControlButton_dark_down_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.down.normal.png"
-    VIControlButton_dark_down_over:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.down.over.png"
-    VIControlButton_dark_down_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_button/dark.button.down.disabled.png"
-    
   EndDataSection
-  ;}
   
   Global CLASS.Class::Class_t
 
@@ -301,118 +67,31 @@ Procedure hlpDraw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
   Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
   tx = Math::Max( tx, 3 + xoff )
   
-  ; ---[ Reset Clipping ]-----------------------------------------------------
-;   raaResetClip()
-  
+  DrawingMode(#PB_2DDrawing_Default)
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    ; 같�[ Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    If *Me\value < 0
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_down_disabled_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-    ; 같�[ Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    Else
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_up_disabled_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-    EndIf
-    ; ...[ Disabled Text ]....................................................
+    Box(xoff, yoff, *Me\sizX, *Me\sizY, *Me\color_disabled)
     tc = UIColor::Color_LABEL_DISABLED
-  ; ---[ Check Over ]---------------------------------------------------------
-  ElseIf *Me\over
-    ; 같�[ Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    If *Me\down Or ( *Me\value < 0 )
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_down_over_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_over_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_over_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_over_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_over_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_down_over_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_over_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_down_over_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_down_over_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-      ; ...[ Negate Text ]....................................................
-      tc = UIColor::Color_LABEL_NEG
-    ; 같�[ Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    Else
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_up_over_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_over_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_over_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_over_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_over_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_up_over_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_over_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_up_over_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_up_over_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-    EndIf
-  ; ---[ Normal State ]-------------------------------------------------------
   Else
-    ; 같�[ Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    If *Me\value < 0
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_down_normal_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_normal_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_normal_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_down_normal_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_normal_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_down_normal_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_down_normal_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_down_normal_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_down_normal_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
-      ; ...[ Negate Text ]....................................................
-      tc = UIColor::Color_LABEL_NEG
-    ; 같�[ Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
+    ; ---[ Check Over ]---------------------------------------------------------
+    If *Me\over
+      If *Me\down Or  *Me\value < 0 
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, *Me\color_pressed)
+        tc = UIColor::Color_LABEL_NEG
+      Else
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_over)
+      EndIf
     Else
-      ; ...[ Draw Corners ]...................................................
-      DrawImage( ImageID(s_gui_controls_button_up_normal_tl),            0 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_normal_tr), *Me\sizX - 6 + xoff,            0 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_normal_bl),            0 + xoff, *Me\sizY - 6 + yoff )
-      DrawImage( ImageID(s_gui_controls_button_up_normal_br), *Me\sizX - 6 + xoff, *Me\sizY - 6 + yoff )
-      ; ...[ V Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_normal_cl),            0 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      DrawImage( ImageID(s_gui_controls_button_up_normal_cr), *Me\sizX - 6 + xoff,            6 + yoff,             6, *Me\sizY - 12 )
-      ; ...[ H Centers ]......................................................
-      DrawImage( ImageID(s_gui_controls_button_up_normal_ct),            6 + xoff,            0 + yoff, *Me\sizX - 12,             6 )
-      DrawImage( ImageID(s_gui_controls_button_up_normal_cb),            6 + xoff, *Me\sizY - 6 + yoff, *Me\sizX - 12,             6 )
-      ; ...[ Center Area ]....................................................
-      DrawImage( ImageID(s_gui_controls_button_up_normal_cc),            6 + xoff,            6 + yoff, *Me\sizX - 12, *Me\sizY - 12 )
+      If *Me\down
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_pressed)
+        tc = UIColor::Color_LABEL_NEG
+      Else
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_enabled)
+      EndIf
     EndIf
-  EndIf
-    
+  EndIf  
+
   ; ---[ Draw Label ]---------------------------------------------------------
-  ;   raaClipBoxHole( 3 + xoff, 3 + yoff, *Me\sizX-6, *Me\sizY-6 )
   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
   DrawText( tx, ty, *Me\label, tc )
   
@@ -465,6 +144,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     ;  MouseEnter
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseEnter
+      
       If *Me\visible And *Me\enable
         *Me\over = #True
         Control::Invalidate(*Me)
@@ -499,6 +179,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     Case #PB_EventType_LeftButtonDown
       If *Me\visible And *Me\enable And *Me\over
         *Me\down = #True
+        Slot::Trigger(*Me\onleftclick_signal, Signal::#SIGNAL_TYPE_PING, #Null)
         Control::Invalidate(*Me)
       EndIf
       
@@ -513,10 +194,8 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         EndIf
         Control::Invalidate(*Me)
         If *Me\over
-          ; TODO : >>> TRIGGER ACTION <<<
+          Slot::Trigger(*Me\onleftclick_signal,Signal::#SIGNAL_TYPE_PING,@*Me\value)
           PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
-          Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
         EndIf
       EndIf
       
@@ -552,7 +231,7 @@ EndProcedure
 
 
 ; ============================================================================
-;  IMPLEMENTATION ( CControlButton )
+;  IMPLEMENTATION ( ControlButton )
 ; ============================================================================
 ;{
 ; ---[ SetLabel ]-------------------------------------------------------------
@@ -569,28 +248,62 @@ Procedure.s GetLabel( *Me.ControlButton_t )
   ProcedureReturn( *Me\label )
   
 EndProcedure
-; ---[ Free ]-----------------------------------------------------------------
-Procedure Delete( *Me.ControlButton_t )
+
+; ============================================================================
+;  INIT
+; ============================================================================
+Procedure Init(  )
   
+EndProcedure
+
+; ============================================================================
+;  TERM
+; ============================================================================
+Procedure Term(  )
+
+EndProcedure
+
+Procedure SetTheme(theme.i)
+  
+EndProcedure
+
+Procedure InitializeColors(*Me.ControlButton_t, color.i)
+  Protected r.i  =Red(color)
+  Protected g.i = Green(color)
+  Protected b.i = Blue(color)
+  
+  Protected avg.i = (r+g+b)/3
+  
+  *Me\color_disabled = RGB((r+avg)/2, (g+avg)/2, (b+avg)/2)
+  *Me\color_enabled = color
+  *Me\color_over = RGB(r+avg/3, g+avg/3, b+avg/3)
+  *Me\color_pressed = RGB(r+avg/2, g+avg/2, b+avg/2)
+EndProcedure
+
+
+
+; ============================================================================
+;  DESTRUCTOR
+; ============================================================================
+Procedure Delete( *Me.ControlButton_t )
+  Slot::Delete(*Me\onleftclick_signal)
+  Slot::Delete(*Me\onleftdoubleclick_signal)
+  Object::TERM(ControlButton)
   ; ---[ Deallocate Memory ]--------------------------------------------------
   ClearStructure(*Me,ControlButton_t)
   FreeMemory( *Me )
   
 EndProcedure
-;}
-
 
 
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
+Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
   
-;   *Me\VT = ?ControlButtonVT
-;   *Me\classname = "CONTROLBUTTON"
   Object::INI(ControlButton)
   
   *Me\object = *object
@@ -607,6 +320,10 @@ Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 1
+  *Me\onleftclick_signal = Slot::New(*Me)
+  *Me\onleftdoubleclick_signal = Slot::New(*Me)
+  InitializeColors(*Me, color)
+
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
   
@@ -616,461 +333,6 @@ Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False
 EndProcedure
 
 
-
-; ============================================================================
-;  PROCEDURES
-; ============================================================================
-;{
-Procedure SetTheme( theme.i )
-  
-  Select theme
-      
-    ; ---[ Light ]------------------------------------------------------------
-    Case Globals::#GUI_THEME_LIGHT
-      ; 같�[ Button Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-      ;{
-      ; ...[ Normal ].........................................................
-      s_gui_controls_button_up_normal_tl = s_gui_controls_light_button_up_normal_tl
-      s_gui_controls_button_up_normal_tr = s_gui_controls_light_button_up_normal_tr
-      s_gui_controls_button_up_normal_bl = s_gui_controls_light_button_up_normal_bl
-      s_gui_controls_button_up_normal_br = s_gui_controls_light_button_up_normal_br
-      s_gui_controls_button_up_normal_cl = s_gui_controls_light_button_up_normal_cl
-      s_gui_controls_button_up_normal_cr = s_gui_controls_light_button_up_normal_cr
-      s_gui_controls_button_up_normal_ct = s_gui_controls_light_button_up_normal_ct
-      s_gui_controls_button_up_normal_cb = s_gui_controls_light_button_up_normal_cb
-      s_gui_controls_button_up_normal_cc = s_gui_controls_light_button_up_normal_cc
-      ; ...[ Over ]...........................................................
-      s_gui_controls_button_up_over_tl = s_gui_controls_light_button_up_over_tl
-      s_gui_controls_button_up_over_tr = s_gui_controls_light_button_up_over_tr
-      s_gui_controls_button_up_over_bl = s_gui_controls_light_button_up_over_bl
-      s_gui_controls_button_up_over_br = s_gui_controls_light_button_up_over_br
-      s_gui_controls_button_up_over_cl = s_gui_controls_light_button_up_over_cl
-      s_gui_controls_button_up_over_cr = s_gui_controls_light_button_up_over_cr
-      s_gui_controls_button_up_over_ct = s_gui_controls_light_button_up_over_ct
-      s_gui_controls_button_up_over_cb = s_gui_controls_light_button_up_over_cb
-      s_gui_controls_button_up_over_cc = s_gui_controls_light_button_up_over_cc
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_button_up_disabled_tl = s_gui_controls_light_button_up_disabled_tl
-      s_gui_controls_button_up_disabled_tr = s_gui_controls_light_button_up_disabled_tr
-      s_gui_controls_button_up_disabled_bl = s_gui_controls_light_button_up_disabled_bl
-      s_gui_controls_button_up_disabled_br = s_gui_controls_light_button_up_disabled_br
-      s_gui_controls_button_up_disabled_cl = s_gui_controls_light_button_up_disabled_cl
-      s_gui_controls_button_up_disabled_cr = s_gui_controls_light_button_up_disabled_cr
-      s_gui_controls_button_up_disabled_ct = s_gui_controls_light_button_up_disabled_ct
-      s_gui_controls_button_up_disabled_cb = s_gui_controls_light_button_up_disabled_cb
-      s_gui_controls_button_up_disabled_cc = s_gui_controls_light_button_up_disabled_cc
-      ;}
-      ; 같�[ Button Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같
-      ;{
-      ; ...[ Normal ].........................................................
-      s_gui_controls_button_down_normal_tl = s_gui_controls_light_button_down_normal_tl
-      s_gui_controls_button_down_normal_tr = s_gui_controls_light_button_down_normal_tr
-      s_gui_controls_button_down_normal_bl = s_gui_controls_light_button_down_normal_bl
-      s_gui_controls_button_down_normal_br = s_gui_controls_light_button_down_normal_br
-      s_gui_controls_button_down_normal_cl = s_gui_controls_light_button_down_normal_cl
-      s_gui_controls_button_down_normal_cr = s_gui_controls_light_button_down_normal_cr
-      s_gui_controls_button_down_normal_ct = s_gui_controls_light_button_down_normal_ct
-      s_gui_controls_button_down_normal_cb = s_gui_controls_light_button_down_normal_cb
-      s_gui_controls_button_down_normal_cc = s_gui_controls_light_button_down_normal_cc
-      ; ...[ Over ]...........................................................
-      s_gui_controls_button_down_over_tl = s_gui_controls_light_button_down_over_tl
-      s_gui_controls_button_down_over_tr = s_gui_controls_light_button_down_over_tr
-      s_gui_controls_button_down_over_bl = s_gui_controls_light_button_down_over_bl
-      s_gui_controls_button_down_over_br = s_gui_controls_light_button_down_over_br
-      s_gui_controls_button_down_over_cl = s_gui_controls_light_button_down_over_cl
-      s_gui_controls_button_down_over_cr = s_gui_controls_light_button_down_over_cr
-      s_gui_controls_button_down_over_ct = s_gui_controls_light_button_down_over_ct
-      s_gui_controls_button_down_over_cb = s_gui_controls_light_button_down_over_cb
-      s_gui_controls_button_down_over_cc = s_gui_controls_light_button_down_over_cc
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_button_down_disabled_tl = s_gui_controls_light_button_down_disabled_tl
-      s_gui_controls_button_down_disabled_tr = s_gui_controls_light_button_down_disabled_tr
-      s_gui_controls_button_down_disabled_bl = s_gui_controls_light_button_down_disabled_bl
-      s_gui_controls_button_down_disabled_br = s_gui_controls_light_button_down_disabled_br
-      s_gui_controls_button_down_disabled_cl = s_gui_controls_light_button_down_disabled_cl
-      s_gui_controls_button_down_disabled_cr = s_gui_controls_light_button_down_disabled_cr
-      s_gui_controls_button_down_disabled_ct = s_gui_controls_light_button_down_disabled_ct
-      s_gui_controls_button_down_disabled_cb = s_gui_controls_light_button_down_disabled_cb
-      s_gui_controls_button_down_disabled_cc = s_gui_controls_light_button_down_disabled_cc
-      ;}
-      
-    ; ---[ Dark ]-------------------------------------------------------------
-    Case Globals::#GUI_THEME_DARK
-      ; 같�[ Button Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-      ;{
-      ; ...[ Normal ].........................................................
-      s_gui_controls_button_up_normal_tl = s_gui_controls_dark_button_up_normal_tl
-      s_gui_controls_button_up_normal_tr = s_gui_controls_dark_button_up_normal_tr
-      s_gui_controls_button_up_normal_bl = s_gui_controls_dark_button_up_normal_bl
-      s_gui_controls_button_up_normal_br = s_gui_controls_dark_button_up_normal_br
-      s_gui_controls_button_up_normal_cl = s_gui_controls_dark_button_up_normal_cl
-      s_gui_controls_button_up_normal_cr = s_gui_controls_dark_button_up_normal_cr
-      s_gui_controls_button_up_normal_ct = s_gui_controls_dark_button_up_normal_ct
-      s_gui_controls_button_up_normal_cb = s_gui_controls_dark_button_up_normal_cb
-      s_gui_controls_button_up_normal_cc = s_gui_controls_dark_button_up_normal_cc
-      ; ...[ Over ]...........................................................
-      s_gui_controls_button_up_over_tl = s_gui_controls_dark_button_up_over_tl
-      s_gui_controls_button_up_over_tr = s_gui_controls_dark_button_up_over_tr
-      s_gui_controls_button_up_over_bl = s_gui_controls_dark_button_up_over_bl
-      s_gui_controls_button_up_over_br = s_gui_controls_dark_button_up_over_br
-      s_gui_controls_button_up_over_cl = s_gui_controls_dark_button_up_over_cl
-      s_gui_controls_button_up_over_cr = s_gui_controls_dark_button_up_over_cr
-      s_gui_controls_button_up_over_ct = s_gui_controls_dark_button_up_over_ct
-      s_gui_controls_button_up_over_cb = s_gui_controls_dark_button_up_over_cb
-      s_gui_controls_button_up_over_cc = s_gui_controls_dark_button_up_over_cc
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_button_up_disabled_tl = s_gui_controls_dark_button_up_disabled_tl
-      s_gui_controls_button_up_disabled_tr = s_gui_controls_dark_button_up_disabled_tr
-      s_gui_controls_button_up_disabled_bl = s_gui_controls_dark_button_up_disabled_bl
-      s_gui_controls_button_up_disabled_br = s_gui_controls_dark_button_up_disabled_br
-      s_gui_controls_button_up_disabled_cl = s_gui_controls_dark_button_up_disabled_cl
-      s_gui_controls_button_up_disabled_cr = s_gui_controls_dark_button_up_disabled_cr
-      s_gui_controls_button_up_disabled_ct = s_gui_controls_dark_button_up_disabled_ct
-      s_gui_controls_button_up_disabled_cb = s_gui_controls_dark_button_up_disabled_cb
-      s_gui_controls_button_up_disabled_cc = s_gui_controls_dark_button_up_disabled_cc
-      ;}
-      ; 같�[ Button Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같
-      ;{
-      ; ...[ Normal ].........................................................
-      s_gui_controls_button_down_normal_tl = s_gui_controls_dark_button_down_normal_tl
-      s_gui_controls_button_down_normal_tr = s_gui_controls_dark_button_down_normal_tr
-      s_gui_controls_button_down_normal_bl = s_gui_controls_dark_button_down_normal_bl
-      s_gui_controls_button_down_normal_br = s_gui_controls_dark_button_down_normal_br
-      s_gui_controls_button_down_normal_cl = s_gui_controls_dark_button_down_normal_cl
-      s_gui_controls_button_down_normal_cr = s_gui_controls_dark_button_down_normal_cr
-      s_gui_controls_button_down_normal_ct = s_gui_controls_dark_button_down_normal_ct
-      s_gui_controls_button_down_normal_cb = s_gui_controls_dark_button_down_normal_cb
-      s_gui_controls_button_down_normal_cc = s_gui_controls_dark_button_down_normal_cc
-      ; ...[ Over ]...........................................................
-      s_gui_controls_button_down_over_tl = s_gui_controls_dark_button_down_over_tl
-      s_gui_controls_button_down_over_tr = s_gui_controls_dark_button_down_over_tr
-      s_gui_controls_button_down_over_bl = s_gui_controls_dark_button_down_over_bl
-      s_gui_controls_button_down_over_br = s_gui_controls_dark_button_down_over_br
-      s_gui_controls_button_down_over_cl = s_gui_controls_dark_button_down_over_cl
-      s_gui_controls_button_down_over_cr = s_gui_controls_dark_button_down_over_cr
-      s_gui_controls_button_down_over_ct = s_gui_controls_dark_button_down_over_ct
-      s_gui_controls_button_down_over_cb = s_gui_controls_dark_button_down_over_cb
-      s_gui_controls_button_down_over_cc = s_gui_controls_dark_button_down_over_cc
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_button_down_disabled_tl = s_gui_controls_dark_button_down_disabled_tl
-      s_gui_controls_button_down_disabled_tr = s_gui_controls_dark_button_down_disabled_tr
-      s_gui_controls_button_down_disabled_bl = s_gui_controls_dark_button_down_disabled_bl
-      s_gui_controls_button_down_disabled_br = s_gui_controls_dark_button_down_disabled_br
-      s_gui_controls_button_down_disabled_cl = s_gui_controls_dark_button_down_disabled_cl
-      s_gui_controls_button_down_disabled_cr = s_gui_controls_dark_button_down_disabled_cr
-      s_gui_controls_button_down_disabled_ct = s_gui_controls_dark_button_down_disabled_ct
-      s_gui_controls_button_down_disabled_cb = s_gui_controls_dark_button_down_disabled_cb
-      s_gui_controls_button_down_disabled_cc = s_gui_controls_dark_button_down_disabled_cc
-      ;}
-      
-  EndSelect
-  
-EndProcedure
-;}
-
-
-
-  ; ----------------------------------------------------------------------------
-  ;  Init
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init( )
-  ;CHECK_INIT
-    
-    ; ---[ Local Variable ]-----------------------------------------------------
-    Protected img.i
-  
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  LIGHT
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    ; 같�[ Button Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_up_normal )
-    s_gui_controls_light_button_up_normal_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_up_normal_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_up_normal_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_up_normal_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_up_normal_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_up_normal_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_up_normal_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_up_normal_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_up_normal_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_up_over )
-    s_gui_controls_light_button_up_over_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_up_over_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_up_over_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_up_over_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_up_over_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_up_over_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_up_over_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_up_over_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_up_over_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_up_disabled )
-    s_gui_controls_light_button_up_disabled_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_up_disabled_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_up_disabled_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_up_disabled_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_up_disabled_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_up_disabled_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_up_disabled_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_up_disabled_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_up_disabled_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; 같�[ Button Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_down_normal )
-    s_gui_controls_light_button_down_normal_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_down_normal_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_down_normal_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_down_normal_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_down_normal_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_down_normal_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_down_normal_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_down_normal_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_down_normal_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_down_over )
-    s_gui_controls_light_button_down_over_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_down_over_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_down_over_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_down_over_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_down_over_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_down_over_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_down_over_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_down_over_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_down_over_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_light_down_disabled )
-    s_gui_controls_light_button_down_disabled_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_light_button_down_disabled_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_light_button_down_disabled_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_light_button_down_disabled_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_light_button_down_disabled_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_light_button_down_disabled_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_light_button_down_disabled_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_light_button_down_disabled_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_light_button_down_disabled_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ;}
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  DARK
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    ; 같�[ Button Up ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_up_normal )
-    s_gui_controls_dark_button_up_normal_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_up_normal_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_up_normal_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_up_normal_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_up_normal_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_up_normal_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_up_normal_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_up_normal_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_up_normal_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_up_over )
-    s_gui_controls_dark_button_up_over_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_up_over_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_up_over_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_up_over_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_up_over_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_up_over_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_up_over_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_up_over_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_up_over_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_up_disabled )
-    s_gui_controls_dark_button_up_disabled_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_up_disabled_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_up_disabled_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_up_disabled_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_up_disabled_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_up_disabled_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_up_disabled_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_up_disabled_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_up_disabled_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; 같�[ Button Down ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_down_normal )
-    s_gui_controls_dark_button_down_normal_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_down_normal_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_down_normal_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_down_normal_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_down_normal_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_down_normal_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_down_normal_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_down_normal_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_down_normal_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_down_over )
-    s_gui_controls_dark_button_down_over_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_down_over_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_down_over_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_down_over_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_down_over_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_down_over_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_down_over_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_down_over_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_down_over_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlButton_dark_down_disabled )
-    s_gui_controls_dark_button_down_disabled_tl = GrabImage( img, #PB_Any,   0,  0,  6, 6 )
-    s_gui_controls_dark_button_down_disabled_tr = GrabImage( img, #PB_Any, 165,  0,  6, 6 )
-    s_gui_controls_dark_button_down_disabled_bl = GrabImage( img, #PB_Any,   0, 15,  6, 6 )
-    s_gui_controls_dark_button_down_disabled_br = GrabImage( img, #PB_Any, 165, 15,  6, 6 )
-    s_gui_controls_dark_button_down_disabled_cl = GrabImage( img, #PB_Any,   0,  6,  6, 9 )
-    s_gui_controls_dark_button_down_disabled_cr = GrabImage( img, #PB_Any, 165,  6,  6, 9 )
-    s_gui_controls_dark_button_down_disabled_ct = GrabImage( img, #PB_Any,   6,  0, 16, 6 )
-    s_gui_controls_dark_button_down_disabled_cb = GrabImage( img, #PB_Any,   6, 15, 16, 6 )
-    s_gui_controls_dark_button_down_disabled_cc = GrabImage( img, #PB_Any,   6,  6, 16, 9 )
-    FreeImage( img )
-    ;}
-    SetTheme(Globals::#GUI_THEME_LIGHT)
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsButtonTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; 같�[ Free Images ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Dark ]...............................................................
-  
-    FreeImage( s_gui_controls_dark_button_down_disabled_cc )
-    FreeImage( s_gui_controls_dark_button_down_disabled_cb )
-    FreeImage( s_gui_controls_dark_button_down_disabled_ct )
-    FreeImage( s_gui_controls_dark_button_down_disabled_cr )
-    FreeImage( s_gui_controls_dark_button_down_disabled_cl )
-    FreeImage( s_gui_controls_dark_button_down_disabled_br )
-    FreeImage( s_gui_controls_dark_button_down_disabled_bl )
-    FreeImage( s_gui_controls_dark_button_down_disabled_tr )
-    FreeImage( s_gui_controls_dark_button_down_disabled_tl )
-    FreeImage( s_gui_controls_dark_button_down_over_cc )
-    FreeImage( s_gui_controls_dark_button_down_over_cb )
-    FreeImage( s_gui_controls_dark_button_down_over_ct )
-    FreeImage( s_gui_controls_dark_button_down_over_cr )
-    FreeImage( s_gui_controls_dark_button_down_over_cl )
-    FreeImage( s_gui_controls_dark_button_down_over_br )
-    FreeImage( s_gui_controls_dark_button_down_over_bl )
-    FreeImage( s_gui_controls_dark_button_down_over_tr )
-    FreeImage( s_gui_controls_dark_button_down_over_tl )
-    FreeImage( s_gui_controls_dark_button_down_normal_cc )
-    FreeImage( s_gui_controls_dark_button_down_normal_cb )
-    FreeImage( s_gui_controls_dark_button_down_normal_ct )
-    FreeImage( s_gui_controls_dark_button_down_normal_cr )
-    FreeImage( s_gui_controls_dark_button_down_normal_cl )
-    FreeImage( s_gui_controls_dark_button_down_normal_br )
-    FreeImage( s_gui_controls_dark_button_down_normal_bl )
-    FreeImage( s_gui_controls_dark_button_down_normal_tr )
-    FreeImage( s_gui_controls_dark_button_down_normal_tl )
-    FreeImage( s_gui_controls_dark_button_up_disabled_cc )
-    FreeImage( s_gui_controls_dark_button_up_disabled_cb )
-    FreeImage( s_gui_controls_dark_button_up_disabled_ct )
-    FreeImage( s_gui_controls_dark_button_up_disabled_cr )
-    FreeImage( s_gui_controls_dark_button_up_disabled_cl )
-    FreeImage( s_gui_controls_dark_button_up_disabled_br )
-    FreeImage( s_gui_controls_dark_button_up_disabled_bl )
-    FreeImage( s_gui_controls_dark_button_up_disabled_tr )
-    FreeImage( s_gui_controls_dark_button_up_disabled_tl )
-    FreeImage( s_gui_controls_dark_button_up_over_cc )
-    FreeImage( s_gui_controls_dark_button_up_over_cb )
-    FreeImage( s_gui_controls_dark_button_up_over_ct )
-    FreeImage( s_gui_controls_dark_button_up_over_cr )
-    FreeImage( s_gui_controls_dark_button_up_over_cl )
-    FreeImage( s_gui_controls_dark_button_up_over_br )
-    FreeImage( s_gui_controls_dark_button_up_over_bl )
-    FreeImage( s_gui_controls_dark_button_up_over_tr )
-    FreeImage( s_gui_controls_dark_button_up_over_tl )
-    FreeImage( s_gui_controls_dark_button_up_normal_cc )
-    FreeImage( s_gui_controls_dark_button_up_normal_cb )
-    FreeImage( s_gui_controls_dark_button_up_normal_ct )
-    FreeImage( s_gui_controls_dark_button_up_normal_cr )
-    FreeImage( s_gui_controls_dark_button_up_normal_cl )
-    FreeImage( s_gui_controls_dark_button_up_normal_br )
-    FreeImage( s_gui_controls_dark_button_up_normal_bl )
-    FreeImage( s_gui_controls_dark_button_up_normal_tr )
-    FreeImage( s_gui_controls_dark_button_up_normal_tl )
-  
-    ; ...[ Light ]..............................................................
-  
-    FreeImage( s_gui_controls_light_button_down_disabled_cc )
-    FreeImage( s_gui_controls_light_button_down_disabled_cb )
-    FreeImage( s_gui_controls_light_button_down_disabled_ct )
-    FreeImage( s_gui_controls_light_button_down_disabled_cr )
-    FreeImage( s_gui_controls_light_button_down_disabled_cl )
-    FreeImage( s_gui_controls_light_button_down_disabled_br )
-    FreeImage( s_gui_controls_light_button_down_disabled_bl )
-    FreeImage( s_gui_controls_light_button_down_disabled_tr )
-    FreeImage( s_gui_controls_light_button_down_disabled_tl )
-    FreeImage( s_gui_controls_light_button_down_over_cc )
-    FreeImage( s_gui_controls_light_button_down_over_cb )
-    FreeImage( s_gui_controls_light_button_down_over_ct )
-    FreeImage( s_gui_controls_light_button_down_over_cr )
-    FreeImage( s_gui_controls_light_button_down_over_cl )
-    FreeImage( s_gui_controls_light_button_down_over_br )
-    FreeImage( s_gui_controls_light_button_down_over_bl )
-    FreeImage( s_gui_controls_light_button_down_over_tr )
-    FreeImage( s_gui_controls_light_button_down_over_tl )
-    FreeImage( s_gui_controls_light_button_down_normal_cc )
-    FreeImage( s_gui_controls_light_button_down_normal_cb )
-    FreeImage( s_gui_controls_light_button_down_normal_ct )
-    FreeImage( s_gui_controls_light_button_down_normal_cr )
-    FreeImage( s_gui_controls_light_button_down_normal_cl )
-    FreeImage( s_gui_controls_light_button_down_normal_br )
-    FreeImage( s_gui_controls_light_button_down_normal_bl )
-    FreeImage( s_gui_controls_light_button_down_normal_tr )
-    FreeImage( s_gui_controls_light_button_down_normal_tl )
-    FreeImage( s_gui_controls_light_button_up_disabled_cc )
-    FreeImage( s_gui_controls_light_button_up_disabled_cb )
-    FreeImage( s_gui_controls_light_button_up_disabled_ct )
-    FreeImage( s_gui_controls_light_button_up_disabled_cr )
-    FreeImage( s_gui_controls_light_button_up_disabled_cl )
-    FreeImage( s_gui_controls_light_button_up_disabled_br )
-    FreeImage( s_gui_controls_light_button_up_disabled_bl )
-    FreeImage( s_gui_controls_light_button_up_disabled_tr )
-    FreeImage( s_gui_controls_light_button_up_disabled_tl )
-    FreeImage( s_gui_controls_light_button_up_over_cc )
-    FreeImage( s_gui_controls_light_button_up_over_cb )
-    FreeImage( s_gui_controls_light_button_up_over_ct )
-    FreeImage( s_gui_controls_light_button_up_over_cr )
-    FreeImage( s_gui_controls_light_button_up_over_cl )
-    FreeImage( s_gui_controls_light_button_up_over_br )
-    FreeImage( s_gui_controls_light_button_up_over_bl )
-    FreeImage( s_gui_controls_light_button_up_over_tr )
-    FreeImage( s_gui_controls_light_button_up_over_tl )
-    FreeImage( s_gui_controls_light_button_up_normal_cc )
-    FreeImage( s_gui_controls_light_button_up_normal_cb )
-    FreeImage( s_gui_controls_light_button_up_normal_ct )
-    FreeImage( s_gui_controls_light_button_up_normal_cr )
-    FreeImage( s_gui_controls_light_button_up_normal_cl )
-    FreeImage( s_gui_controls_light_button_up_normal_br )
-    FreeImage( s_gui_controls_light_button_up_normal_bl )
-    FreeImage( s_gui_controls_light_button_up_normal_tr )
-    FreeImage( s_gui_controls_light_button_up_normal_tl )
-  
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
   
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlButton )
@@ -1079,8 +341,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 451
-; FirstLine = 443
-; Folding = ---+-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 196
+; FirstLine = 173
+; Folding = ---
 ; EnableXP

@@ -10,9 +10,6 @@ Module Signal
     *Me\type      = Signal::#SIGNAL_TYPE_UNKNOWN
     *Me\sigdata   = #Null
     *Me\snd_inst  = *sender
-;     If *sender
-;       *Me\snd_class = *sender\classname
-;     EndIf
     *Me\rcv_inst  = #Null
     *Me\rcv_slot  = 0
   
@@ -23,6 +20,9 @@ Module Signal
 EndModule
 
 Module Slot
+  ; ----------------------------------------------------------------------------
+  ;  Connect
+  ; ----------------------------------------------------------------------------
   Procedure Connect( *Me.Slot_t, *rcv, slot.i )
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *rcv : ProcedureReturn : EndIf
@@ -33,7 +33,6 @@ Module Slot
     
     ; ---[ Check Reciever Class Has Class Message Procedure ]-------------------
     If #Null = *cls\cmsg
-
       ProcedureReturn #False
     EndIf
     
@@ -53,9 +52,12 @@ Module Slot
   
     ; ---[ Unlock List ]--------------------------------------------------------
     UnlockMutex( *Me\mux )
-    
   EndProcedure
-  ; ---[ Disconnect ]-----------------------------------------------------------
+  
+  
+  ; ----------------------------------------------------------------------------
+  ;  Disconnect
+  ; ----------------------------------------------------------------------------
   Procedure Disconnect( *Me.Slot_t, *rcv )
     
     ; ---[ Lock List ]----------------------------------------------------------
@@ -79,7 +81,10 @@ Module Slot
     UnlockMutex( *Me\mux )
     
   EndProcedure
-  ; ---[ Trigger ]--------------------------------------------------------------
+  
+  ; ----------------------------------------------------------------------------
+  ;  Trigger
+  ; ----------------------------------------------------------------------------
   Procedure Trigger( *Me.Slot_t, type.Signal::SIGNAL_TYPE, *sig_data )
     ; ---[ Lock List ]----------------------------------------------------------
     LockMutex( *Me\mux )
@@ -90,7 +95,7 @@ Module Slot
     
     ; ---[ Reset List ]---------------------------------------------------------
     ResetList(*Me\rcv())
-    
+
     ; ---[ Walk Through All Elements ]------------------------------------------
     While NextElement(*Me\rcv())
       Protected *t = *Me\rcv()\r_inst
@@ -105,13 +110,11 @@ Module Slot
     UnlockMutex( *Me\mux )
     
   EndProcedure
-  ;}
-  ;_____________________________________________________________________________
+
+  ; ============================================================================
   ;  Destructor
-  ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-  ;{
-  ; ---[ Release ]--------------------------------------------------------------
-  Procedure Release( *Me.Slot_t )
+  ; ============================================================================
+  Procedure Delete( *Me.Slot_t )
     If *Me = #Null 
       ProcedureReturn
     EndIf
@@ -153,24 +156,10 @@ Module Slot
     ProcedureReturn( *Me )
     
   EndProcedure
-  
-   ; ============================================================================
-  ;  Destructor
-  ; ============================================================================
-  ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i Delete( *Me.Slot_t )
-    
-    ; ---[ Clear STructure ]----------------------------------------------------
-    ClearStructure( *Me, Slot_t )
-    
-    ; ---[ Release Memory ]-------------------------------------------------------
-    FreeMemory(*Me)
-  
-  EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 23
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 106
 ; Folding = --
 ; EnableXP

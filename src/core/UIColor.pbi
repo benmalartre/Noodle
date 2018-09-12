@@ -17,8 +17,6 @@ DeclareModule UIColor
   ;  Light Colors
   ; ----------------------------------------------------------------------------
   ;{
-  ;Debug StrU( RGB($8B,$8B,$8B) )
-  ;Debug StrU( RGBA($8B,$8B,$8B,$FF) )
   ; ---[ RGB ]------------------------------------------------------------------
   #COLOR_LIGHT_MAIN_BG              = 10922155 ; RGB($AB,$A8,$A6)
   #COLOR_LIGHT_SECONDARY_BG         = 11185327 ; RGB($AF,$AC,$AA)
@@ -41,7 +39,7 @@ DeclareModule UIColor
   
   ; ---[ RGBA ]-----------------------------------------------------------------
   #COLORA_LIGHT_MAIN_BG             = 18446744073703696555 ; RGBA($AB,$A8,$A6,$FF)
-  #COLORA_LIGHT_SECONDARY_BG        = 18446744073704288175 ; Red
+  #COLORA_LIGHT_SECONDARY_BG        = 18446744073704288175 ; 
   #COLORA_LIGHT_LABEL               = 18446744073695932466 ; RGBA($32,$30,$30,$FF)
   #COLORA_LIGHT_LABEL_NEG           = 18446744073695932466 ; RGBA($32,$30,$30,$FF)
   #COLORA_LIGHT_LABEL_DISABLED      = 18446744073699420009 ; RGBA($69,$67,$65,$FF)
@@ -104,9 +102,6 @@ DeclareModule UIColor
   ;COLORA_DARK_NUMBER_FG           = 18446744073704551347 ; RGBA($B3,$B3,$B3,$FF)
   #COLORA_DARK_NUMBER_FG           = 18446744073695932466 ; RGBA($32,$30,$30,$FF)
   ;}
-  ;}
-  
-  
   ;}
   
   
@@ -257,8 +252,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 249
-; FirstLine = 183
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 105
 ; Folding = --
 ; EnableXP

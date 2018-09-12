@@ -44,7 +44,8 @@ DeclareModule Scene
     nbobjects.i
     
     Map *m_objects.Object3D::Object3D_t()
-    ;*sig_onchanged.CSlot
+    Map *m_uuids.Object3D::Object3D_t()
+
   EndStructure
   
   
@@ -72,6 +73,7 @@ DeclareModule Scene
   Declare GetObjectByName(*Me.Scene_t,name.s)
   Declare Save(*scn.Scene_t)
   Declare SaveAs(*scn.Scene_t, filename.s)
+  Declare GetUniqueID(*scn.Scene_t, *o.Object3D::Object3D_t)
   
   DataSection 
     SceneVT: 
@@ -89,6 +91,22 @@ EndDeclareModule
 ;  Scene Module Implementation
 ; ============================================================================
 Module Scene
+  
+  Procedure GetUniqueID(*s.Scene_t, *o.Object3D::Object3D_t)
+    Protected uuid.i = Random(1<<24)
+    If FindMapElement(*s\m_uuids(), Str(uuid))
+      GetUniqueID(*s, *o)
+    Else
+      
+      AddMapElement(*s\m_uuids(), Str(uuid))
+      *s\m_uuids() = *o
+      Protected v.v3f32
+      Object3D::EncodeID(@v, uuid)
+      Protected decoded = Object3D::DecodeID(v\x*255, v\y*255, v\z*255)
+      ProcedureReturn uuid
+    EndIf  
+  EndProcedure
+  
   ;---------------------------------------------------------------------------
   ; Resolve Unique Name
   ;---------------------------------------------------------------------------
@@ -157,7 +175,7 @@ Module Scene
   Procedure AddObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
     ResolveUniqueName(*scn,*obj)
     *scn\nbobjects  + 1
-    *obj\uniqueID = Random(Math::#U32_MAX)
+    *obj\uniqueID = GetUniqueID(*scn, *obj)
     Select *obj\type
       Case Object3D::#Object3D_Drawer
         CArray::AppendUnique(*scn\helpers,*obj)
@@ -358,15 +376,16 @@ Module Scene
           Case Object3D::#Object3D_Polymesh
             child\Setup(*ctx\shaders("polymesh"))
           Case Object3D::#Object3D_PointCloud
+            MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
           Case Object3D::#Object3D_InstanceCloud
             child\Setup(*ctx\shaders("instances"))
           Case Object3D::#Object3D_Null
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("drawer"))
         EndSelect
       EndIf
       SetupChildren(*scn,child,*ctx)
@@ -395,9 +414,9 @@ Module Scene
           Case Object3D::#Object3D_Null
             child\Setup(*ctx\shaders("wireframe"))
           Case Object3D::#Object3D_Curve
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("curve"))
           Case Object3D::#Object3D_Drawer
-            child\Setup(*ctx\shaders("wireframe"))
+            child\Setup(*ctx\shaders("drawer"))
       EndSelect
       EndIf
       
@@ -482,7 +501,6 @@ Module Scene
         child\Setup(#Null)
       EndIf
       
-      ;If *child\IsA(#RAA_3DObject_Camera) : Continue : EndIf
       *local = *obj\children()\localT
 
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
@@ -624,7 +642,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Select By ID
   ;---------------------------------------------------------------------------
-  Procedure SelectByID(*scn.Scene_t,id.l)
+  Procedure SelectByID(*scn.Scene_t,uuid.i)
     Protected i
     Protected *object.Object3D::Object3D_t
     Protected *out.Object3D::IObject3D = #Null
@@ -757,6 +775,7 @@ Module Scene
     *Me\filename = name
     Object::INI(Scene)
     InitializeStructure(*Me,Scene_t)
+
     
     Protected Me.IScene = *Me
     
@@ -794,9 +813,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 58
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 95
+; FirstLine = 91
 ; Folding = -------
 ; EnableThread
 ; EnableXP

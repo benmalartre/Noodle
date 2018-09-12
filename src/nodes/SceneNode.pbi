@@ -96,12 +96,10 @@ Procedure Setup( *node.SceneNode_t,*root.Root::Root_t )
   Protected *child.Object3D::Object3D_t
   x-200
   Protected nbc = ListSize(*root\children())
-  Debug "SceneRoot Nb Children : "+Str(nbc)
   y-(nbc/2)*100
   For i=0 To nbc-1
     SelectElement(*root\children(),i)
     *child = *root\children()
-    Debug "Add Child to Tree : "+*child\name
     RecurseBuildTree(*root\tree,*child,x,y)
   Next i
   
@@ -163,8 +161,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 27
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 102
+; FirstLine = 94
 ; Folding = ---
 ; EnableXP

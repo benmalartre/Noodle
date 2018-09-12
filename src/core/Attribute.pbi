@@ -407,7 +407,7 @@ Module Attribute
             Protected *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
             If size_t>0
-              CompilerIf #PB_Compiler_Version < 540
+              CompilerIf #PB_Compiler_Version < 560
                 out_string = Space(size_t*1.4)
                 Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
               CompilerElse
@@ -424,7 +424,7 @@ Module Attribute
           *baseArray.CArray::CArrayT = *attribute\data
             size_t = CArray::GetCount(*baseArray) * CArray::GetItemSize(*baseArray)
             If size_t>0
-              CompilerIf #PB_Compiler_Version < 540
+              CompilerIf #PB_Compiler_Version < 560
                 out_string = Space(size_t*1.4)
                 Base64Encoder(CArray::GetPtr(*baseArray,0),size_t,@out_string,size_t*1.4)
               CompilerElse
@@ -565,7 +565,7 @@ Module Attribute
   ;  CONSTRUCTORS
   ; ============================================================================
   ;{
-  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,read_only.b,constant.b,writable.b=#True)
+  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,read_only.b,constant.b,writable.b=#True)
     Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
     
     Object::INI(Attribute)
@@ -573,7 +573,7 @@ Module Attribute
     *Me\datatype = datatype
     *Me\datastructure = datastructure
     *Me\datacontext = datacontext
-    *Me\data = *data
+    *Me\data = *ptr
     *Me\name = name
     *Me\constant = constant
     *Me\readonly = read_only
@@ -590,8 +590,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 409
-; FirstLine = 409
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 569
+; FirstLine = 530
 ; Folding = ---
 ; EnableXP

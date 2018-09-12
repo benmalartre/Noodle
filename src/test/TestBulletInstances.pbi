@@ -300,7 +300,7 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
+     *app\context = *viewport\context
     *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
@@ -357,8 +357,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 102
+; CursorPosition = 302
+; FirstLine = 246
 ; Folding = -
 ; EnableUnicode
 ; EnableThread

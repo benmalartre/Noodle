@@ -31,6 +31,155 @@ Module Connexion
     FreeMemory(*c)  
   EndProcedure
   
+  ;---------------------------------------------------
+  ; Color Blending
+  ;---------------------------------------------------
+  Procedure.l ColorBlending(Color1.l, Color2.l, Blend.f)
+    Protected Red, Green, Blue, Red2, Green2, Blue2
+   
+    Red = Color1 & $FF
+    Green = Color1 >> 8 & $FF
+    Blue = Color1 >> 16
+    Red2 = Color2 & $FF
+    Green2 = Color2 >> 8 & $FF
+    Blue2 = Color2 >> 16
+   
+    Red = Red * Blend + Red2 * (1-Blend)
+    Green = Green * Blend + Green2 * (1-Blend)
+    Blue = Blue * Blend + Blue2 * (1-Blend)
+   
+    ProcedureReturn (Red | Green <<8 | Blue << 16)
+  EndProcedure
+  
+  ;---------------------------------------------------
+  ; NormalL
+  ;---------------------------------------------------
+  Procedure NormalL(X,Y, x3, y3, Color, Thickness = 1)
+    Protected Width = x3-X
+    Protected Hight = y3-Y
+    Protected SignX, SignY, n, nn, Thick.f, x2.f, y2.f, Color_Found.l, Application.f, Hypo.f
+   
+    If Width >= 0
+      SignX = 1
+    Else
+      SignX = -1
+      Width = - Width
+    EndIf
+    If Hight >= 0
+      SignY = 1
+    Else
+      SignY = -1
+      Hight = - Hight
+    EndIf 
+   
+   
+    Thick.f = Thickness / 2
+   
+    Hypo.f = Sqr(Width * Width + Hight * Hight)
+    Protected CosPhi.f = Width / Hypo
+    Protected SinPhi.f = -Sin(ACos(CosPhi))
+   
+   
+    For n = -Thickness To Width + Thickness
+      For nn = -Thickness To Hight + Thickness
+       
+  
+        x2 = n * CosPhi - nn * SinPhi
+        y2 = Abs(n * SinPhi + nn * CosPhi)
+       
+        If y2 <= Thick + 0.5
+          Application =  0.5 + Thick - y2
+          If Application > 1
+            Application = 1
+          EndIf
+          If x2 > -1 And x2 < Hypo + 1
+            If x2 < 0
+              Application * (1 + x2)
+            ElseIf x2 > Hypo
+              Application * (1 - x2 + Hypo)
+            EndIf
+          Else
+            Application = 0
+          EndIf
+          If Application > 0
+            If Application < 1
+              Color_Found = Point(X + n * SignX, Y + nn * SignY)
+              Plot(X + n * SignX, Y + nn * SignY, ColorBlending(Color, Color_Found, Application))
+            Else
+              Plot(X + n * SignX, Y + nn * SignY, Color)
+            EndIf
+          EndIf
+        EndIf     
+      Next
+    Next
+   
+  EndProcedure
+
+  ;---------------------------------------------------
+  ; ArrowL
+  ;---------------------------------------------------
+  Procedure ArrowL(x1.l, y1.l, x2.l, y2.l, Color.l,Thick.f, Llength.f, Angle.f)
+    If Llength = 0
+      Llength = 0.05*(Sqr((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)))
+    EndIf
+    Llength = Abs(Llength) : Angle = Abs(Angle*#PI/180.0)
+    NormalL(x1, y1,x2, y2,Color,Thick)
+    If (Llength > 0.0) And (Abs(x2 - x1) + Abs(y2 - y1) > Llength)
+      Protected x33.f = -1*Cos(Angle) * Llength
+      Protected y33.f =    Sin(Angle) * Llength
+      Protected x44.f = -1*Cos(Angle) * Llength
+      Protected y44.f = -1*Sin(Angle) * Llength
+     
+      Protected SAngle.f = ATan((y1 - y2)/(x2 - x1))
+      If (x2 < x1)
+        SAngle = SAngle + #PI
+      EndIf
+     
+      Protected x3 = Cos(SAngle)*x33 + Sin(SAngle)*y33
+      Protected y3 = Cos(SAngle)*y33 - Sin(SAngle)*x33
+      Protected x4 = Cos(SAngle)*x44 + Sin(SAngle)*y44
+      Protected y4 = Cos(SAngle)*y44 - Sin(SAngle)*x44   
+     
+      NormalL(x2, y2,x2+x3,y2+y3, Color,Thick)
+      NormalL(x2, y2,x2+x4,y2+y4, Color,Thick)
+      If Thick > 4
+        Circle(x2,y2,Thick/2,Color)
+        Circle(x1,y1,Thick/2,Color)
+      EndIf
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------
+  ; DashL
+  ;---------------------------------------------------
+  Procedure DashL(x1.i, y1.i, x2.i, y2.i, Color.i,Thick.f, Lstep.f)
+    Protected scale.f = (y2-y1)/(x2-x1)
+    Protected i
+   For i = 0 To 10
+      NormalL(x1,y1,x1+Lstep,y1+Lstep*scale,Color,Thick)
+      x1 = x1+Lstep + Lstep
+      y1 = y1+2*Lstep*scale
+   Next
+  EndProcedure
+  
+  ;---------------------------------------------------
+  ; DashDotL
+  ;---------------------------------------------------
+  Procedure DashDotL(x1.i, y1.i, x2.i, y2.i, Color.i,Thick.f,Lstep.f)
+    Protected scale.f = (y2-y1)/(x2-x1)
+    Protected i
+   For i = 0 To 10
+     NormalL(x1,y1,x1+Lstep,y1+Lstep*scale,Color, Thick)
+     If Thick = 1
+        Circle(x1+Lstep + Lstep/2,y1+1.5*Lstep*scale,Thick,Color)
+     Else
+       Circle(x1+Lstep + Lstep/2,y1+1.5*Lstep*scale,Thick/2,Color)
+     EndIf
+      x1 = x1+Lstep + Lstep
+      y1 = y1+2*Lstep*scale
+   Next
+  EndProcedure
+  
 
   ;---------------------------------------------------
   ; Init
@@ -428,8 +577,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 360
-; FirstLine = 357
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 180
+; FirstLine = 127
 ; Folding = ----
 ; EnableXP

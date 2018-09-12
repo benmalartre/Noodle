@@ -59,8 +59,7 @@ Module Controls
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 26
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 31
 ; Folding = -
 ; EnableXP

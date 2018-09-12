@@ -55,10 +55,10 @@ Module RandomNode
     Node::AddInputPort(*node,"Variance",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddOutputPort(*node,"Result",datatype)
     
-    Node::PortAffectByName(*node, "Seed", "result")
-    Node::PortAffectByName(*node, "TimeVarying", "result")
-    Node::PortAffectByName(*node, "MeanValue", "result")
-    Node::PortAffectByName(*node, "Variance", "result")
+    Node::PortAffectByName(*node, "Seed", "Result")
+    Node::PortAffectByName(*node, "TimeVarying", "Result")
+    Node::PortAffectByName(*node, "MeanValue", "Result")
+    Node::PortAffectByName(*node, "Variance", "Result")
     
     *node\label = "Random"
   EndProcedure
@@ -240,8 +240,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 60
-; FirstLine = 53
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

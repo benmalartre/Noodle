@@ -1,7 +1,7 @@
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Nodes.pbi"
 XIncludeFile "../objects/Object3D.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 ; ==================================================================================================
 ; ALEMBICIPOLYMESHTOPO NODE MODULE DECLARATION
@@ -114,16 +114,17 @@ Module AlembicIPolymeshTopoNode
     Protected *input.NodePort::NodePort_t
    
     
-    Protected *o.AlembicObject::AlembicObject_t = *node\abc
+    Protected *o.AlembicIObject::AlembicIObject_t = *node\abc
     
     ; Initialize Alembic Object
     ;---------------------------------------------------
     If Not *o Or Not *node\lastFile = file Or Not *node\lastID = identifier
       
       If FileSize(file)>0 And GetExtensionPart(file) = "abc"
-        Protected *archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(Alembic::*abc_manager,file)
-        *o = AlembicArchive::GetObjectByName(*archive,identifier)
-        AlembicObject::Init(*o,#Null)
+        Protected manager.Alembic::IArchiveManager = Alembic::abc_manager
+        Protected archive.Alembic::IArchive = manager\OpenArchive(file)
+        *o = archive\GetObjectByName(identifier)
+        AlembicIObject::Init(*o,#Null)
         *node\abc = *o
         *node\lastFile = file
         *node\lastID = identifier
@@ -133,8 +134,8 @@ Module AlembicIPolymeshTopoNode
     If *o And time <> *node\lastT
 
       Protected *infos.Alembic::ABC_Polymesh_Topo_Sample_Infos = *o\infos
-      
-      Alembic::ABC_GetPolymeshTopoSampleDescription(*o\ptr,time,*infos)
+      Protected mesh.Alembic::IPolymesh = *o\iObj
+      mesh\GetTopoSampleDescription(time,*infos)
     
       
       ; Resize Mesh Datas
@@ -156,7 +157,7 @@ Module AlembicIPolymeshTopoNode
       *node\sample\faceindices  = *node\indices\data
       *node\sample\facecount    = *node\facecount\data
       
-      Alembic::ABC_UpdatePolymeshTopoSample(*o\ptr,*infos,*node\sample)
+      mesh\UpdateTopoSample(*infos,*node\sample)
       
       ; Topology
       FirstElement(*node\outputs())
@@ -261,8 +262,8 @@ Module AlembicIPolymeshTopoNode
 
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 60
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 137
 ; Folding = --
 ; EnableXP

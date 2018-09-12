@@ -193,7 +193,7 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(@p_start,-1,0,0)
   Vector3::Set(@p_end,1,0,0)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@p_start,@p_end)
-  PointCloudGeometry::PointsOnSphere(*cloud\geom)
+  PointCloudGeometry::PointsOnSphere(*cloud\geom,5)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   PointCloud::Setup(*cloud,*s_pointcloud)
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom)
@@ -231,9 +231,9 @@ Procedure Draw(*app.Application::Application_t)
     Until e = #PB_Event_CloseWindow
   CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 112
-; FirstLine = 108
+; IDE Options = PureBasic 5.31 (Windows - x64)
+; CursorPosition = 195
+; FirstLine = 157
 ; Folding = -
 ; EnableXP
 ; Executable = Test

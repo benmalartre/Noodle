@@ -22,7 +22,10 @@ FTGL::Init()
 Controls::Init()
 Commands::Init()
 UIColor::Init()
-Alembic::Init()
+CompilerIf #USE_ALEMBIC
+  Alembic::Init()
+CompilerEndIf
+
 
 
 Procedure AddPushTree(*tree.Tree::Tree_t)
@@ -135,17 +138,14 @@ Procedure Update(*app.Application::Application_t)
   
   *layer\Draw( *app\context)
   
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Graph Tree",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+   FTGL::EndDraw(*app\context\writer)
   
   CompilerIf Not #USE_GLFW
     ViewportUI::FlipBuffer(*viewport)
@@ -158,9 +158,8 @@ EndProcedure
 Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 107
-; FirstLine = 90
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 27
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -26,6 +26,7 @@ DeclareModule Shape
     #SHAPE_NULL
     #SHAPE_ARROW
     #SHAPE_TORUS
+    #SHAPE_CAPSULE
     #SHAPE_BUNNY
     #SHAPE_TEAPOT
     #SHAPE_TOMATO
@@ -40,6 +41,7 @@ DeclareModule Shape
   Structure Shape_t
     nbp.i
     nbt.i
+    indexed.b
     *positions.CArray::CArrayV3F32
     *normals.CArray::CArrayV3F32
     *uvws.CArray::CArrayV3F32
@@ -57,119 +59,119 @@ DeclareModule Shape
   ; Point
   ;-----------------------------------------------------------------------------
   #POINT_NUM_TRIANGLES =30
-#POINT_NUM_VERTICES =36
-#POINT_NUM_INDICES =90
-#POINT_NUM_EDGES =36
-DataSection
-	shape_point_positions:
-	Data.GLfloat -5.30287619362e-17,0.866025403784,-0.5
-	Data.GLfloat -6.12323399574e-17,1.0,0.0
-	Data.GLfloat -3.06161699787e-17,0.5,-0.866025403784
-	Data.GLfloat -5.30287619362e-17,0.866025403784,0.5
-	Data.GLfloat 1.124819837e-32,-1.83697019872e-16,-1.0
-	Data.GLfloat -3.06161699787e-17,0.5,0.866025403784
-	Data.GLfloat 3.06161699787e-17,-0.5,-0.866025403784
-	Data.GLfloat -3.74939945665e-33,6.12323399574e-17,1.0
-	Data.GLfloat 5.30287619362e-17,-0.866025403784,-0.5
-	Data.GLfloat 3.06161699787e-17,-0.5,0.866025403784
-	Data.GLfloat 6.12323399574e-17,-1.0,5.66553889765e-16
-	Data.GLfloat 5.30287619362e-17,-0.866025403784,0.5
-	Data.GLfloat -0.866025403784,0.0,-0.5
-	Data.GLfloat -1.0,0.0,0.0
-	Data.GLfloat -0.5,0.0,-0.866025403784
-	Data.GLfloat -0.866025403784,0.0,0.5
-	Data.GLfloat 1.83697019872e-16,0.0,-1.0
-	Data.GLfloat -0.5,0.0,0.866025403784
-	Data.GLfloat 0.5,0.0,-0.866025403784
-	Data.GLfloat -6.12323399574e-17,0.0,1.0
-	Data.GLfloat 0.866025403784,0.0,-0.5
-	Data.GLfloat 0.5,0.0,0.866025403784
-	Data.GLfloat 1.0,0.0,5.66553889765e-16
-	Data.GLfloat 0.866025403784,0.0,0.5
-	Data.GLfloat -0.866025403784,-0.5,-3.06161699787e-17
-	Data.GLfloat -1.0,0.0,0.0
-	Data.GLfloat -0.5,-0.866025403784,-5.30287619362e-17
-	Data.GLfloat -0.866025403784,0.5,3.06161699787e-17
-	Data.GLfloat 1.83697019872e-16,-1.0,-6.12323399574e-17
-	Data.GLfloat -0.5,0.866025403784,5.30287619362e-17
-	Data.GLfloat 0.5,-0.866025403784,-5.30287619362e-17
-	Data.GLfloat -6.12323399574e-17,1.0,6.12323399574e-17
-	Data.GLfloat 0.866025403784,-0.5,-3.06161699787e-17
-	Data.GLfloat 0.5,0.866025403784,5.30287619362e-17
-	Data.GLfloat 1.0,5.66553889765e-16,3.46914203822e-32
-	Data.GLfloat 0.866025403784,0.5,3.06161699787e-17
-
-	shape_point_indices:
-	Data.GLuint 3,5,7
-	Data.GLuint 3,7,9
-	Data.GLuint 3,9,11
-	Data.GLuint 3,11,10
-	Data.GLuint 3,10,8
-	Data.GLuint 3,8,6
-	Data.GLuint 3,6,4
-	Data.GLuint 3,4,2
-	Data.GLuint 3,2,0
-	Data.GLuint 3,0,1
-	Data.GLuint 15,17,19
-	Data.GLuint 15,19,21
-	Data.GLuint 15,21,23
-	Data.GLuint 15,23,22
-	Data.GLuint 15,22,20
-	Data.GLuint 15,20,18
-	Data.GLuint 15,18,16
-	Data.GLuint 15,16,14
-	Data.GLuint 15,14,12
-	Data.GLuint 15,12,13
-	Data.GLuint 27,29,31
-	Data.GLuint 27,31,33
-	Data.GLuint 27,33,35
-	Data.GLuint 27,35,34
-	Data.GLuint 27,34,32
-	Data.GLuint 27,32,30
-	Data.GLuint 27,30,28
-	Data.GLuint 27,28,26
-	Data.GLuint 27,26,24
-	Data.GLuint 27,24,25
-
-	shape_point_edges:
-	Data.GLuint 0,1
-	Data.GLuint 1,3
-	Data.GLuint 2,0
-	Data.GLuint 4,2
-	Data.GLuint 3,5
-	Data.GLuint 6,4
-	Data.GLuint 8,6
-	Data.GLuint 5,7
-	Data.GLuint 10,8
-	Data.GLuint 11,10
-	Data.GLuint 7,9
-	Data.GLuint 9,11
-	Data.GLuint 12,13
-	Data.GLuint 13,15
-	Data.GLuint 14,12
-	Data.GLuint 16,14
-	Data.GLuint 15,17
-	Data.GLuint 18,16
-	Data.GLuint 20,18
-	Data.GLuint 17,19
-	Data.GLuint 22,20
-	Data.GLuint 23,22
-	Data.GLuint 19,21
-	Data.GLuint 21,23
-	Data.GLuint 24,25
-	Data.GLuint 25,27
-	Data.GLuint 26,24
-	Data.GLuint 28,26
-	Data.GLuint 27,29
-	Data.GLuint 30,28
-	Data.GLuint 32,30
-	Data.GLuint 29,31
-	Data.GLuint 34,32
-	Data.GLuint 35,34
-	Data.GLuint 31,33
-	Data.GLuint 33,35
-
-EndDataSection
+  #POINT_NUM_VERTICES =36
+  #POINT_NUM_INDICES =90
+  #POINT_NUM_EDGES =36
+  DataSection
+  	shape_point_positions:
+  	Data.GLfloat -5.30287619362e-17,0.866025403784,-0.5
+  	Data.GLfloat -6.12323399574e-17,1.0,0.0
+  	Data.GLfloat -3.06161699787e-17,0.5,-0.866025403784
+  	Data.GLfloat -5.30287619362e-17,0.866025403784,0.5
+  	Data.GLfloat 1.124819837e-32,-1.83697019872e-16,-1.0
+  	Data.GLfloat -3.06161699787e-17,0.5,0.866025403784
+  	Data.GLfloat 3.06161699787e-17,-0.5,-0.866025403784
+  	Data.GLfloat -3.74939945665e-33,6.12323399574e-17,1.0
+  	Data.GLfloat 5.30287619362e-17,-0.866025403784,-0.5
+  	Data.GLfloat 3.06161699787e-17,-0.5,0.866025403784
+  	Data.GLfloat 6.12323399574e-17,-1.0,5.66553889765e-16
+  	Data.GLfloat 5.30287619362e-17,-0.866025403784,0.5
+  	Data.GLfloat -0.866025403784,0.0,-0.5
+  	Data.GLfloat -1.0,0.0,0.0
+  	Data.GLfloat -0.5,0.0,-0.866025403784
+  	Data.GLfloat -0.866025403784,0.0,0.5
+  	Data.GLfloat 1.83697019872e-16,0.0,-1.0
+  	Data.GLfloat -0.5,0.0,0.866025403784
+  	Data.GLfloat 0.5,0.0,-0.866025403784
+  	Data.GLfloat -6.12323399574e-17,0.0,1.0
+  	Data.GLfloat 0.866025403784,0.0,-0.5
+  	Data.GLfloat 0.5,0.0,0.866025403784
+  	Data.GLfloat 1.0,0.0,5.66553889765e-16
+  	Data.GLfloat 0.866025403784,0.0,0.5
+  	Data.GLfloat -0.866025403784,-0.5,-3.06161699787e-17
+  	Data.GLfloat -1.0,0.0,0.0
+  	Data.GLfloat -0.5,-0.866025403784,-5.30287619362e-17
+  	Data.GLfloat -0.866025403784,0.5,3.06161699787e-17
+  	Data.GLfloat 1.83697019872e-16,-1.0,-6.12323399574e-17
+  	Data.GLfloat -0.5,0.866025403784,5.30287619362e-17
+  	Data.GLfloat 0.5,-0.866025403784,-5.30287619362e-17
+  	Data.GLfloat -6.12323399574e-17,1.0,6.12323399574e-17
+  	Data.GLfloat 0.866025403784,-0.5,-3.06161699787e-17
+  	Data.GLfloat 0.5,0.866025403784,5.30287619362e-17
+  	Data.GLfloat 1.0,5.66553889765e-16,3.46914203822e-32
+  	Data.GLfloat 0.866025403784,0.5,3.06161699787e-17
+  
+  	shape_point_indices:
+  	Data.GLuint 3,5,7
+  	Data.GLuint 3,7,9
+  	Data.GLuint 3,9,11
+  	Data.GLuint 3,11,10
+  	Data.GLuint 3,10,8
+  	Data.GLuint 3,8,6
+  	Data.GLuint 3,6,4
+  	Data.GLuint 3,4,2
+  	Data.GLuint 3,2,0
+  	Data.GLuint 3,0,1
+  	Data.GLuint 15,17,19
+  	Data.GLuint 15,19,21
+  	Data.GLuint 15,21,23
+  	Data.GLuint 15,23,22
+  	Data.GLuint 15,22,20
+  	Data.GLuint 15,20,18
+  	Data.GLuint 15,18,16
+  	Data.GLuint 15,16,14
+  	Data.GLuint 15,14,12
+  	Data.GLuint 15,12,13
+  	Data.GLuint 27,29,31
+  	Data.GLuint 27,31,33
+  	Data.GLuint 27,33,35
+  	Data.GLuint 27,35,34
+  	Data.GLuint 27,34,32
+  	Data.GLuint 27,32,30
+  	Data.GLuint 27,30,28
+  	Data.GLuint 27,28,26
+  	Data.GLuint 27,26,24
+  	Data.GLuint 27,24,25
+  
+  	shape_point_edges:
+  	Data.GLuint 0,1
+  	Data.GLuint 1,3
+  	Data.GLuint 2,0
+  	Data.GLuint 4,2
+  	Data.GLuint 3,5
+  	Data.GLuint 6,4
+  	Data.GLuint 8,6
+  	Data.GLuint 5,7
+  	Data.GLuint 10,8
+  	Data.GLuint 11,10
+  	Data.GLuint 7,9
+  	Data.GLuint 9,11
+  	Data.GLuint 12,13
+  	Data.GLuint 13,15
+  	Data.GLuint 14,12
+  	Data.GLuint 16,14
+  	Data.GLuint 15,17
+  	Data.GLuint 18,16
+  	Data.GLuint 20,18
+  	Data.GLuint 17,19
+  	Data.GLuint 22,20
+  	Data.GLuint 23,22
+  	Data.GLuint 19,21
+  	Data.GLuint 21,23
+  	Data.GLuint 24,25
+  	Data.GLuint 25,27
+  	Data.GLuint 26,24
+  	Data.GLuint 28,26
+  	Data.GLuint 27,29
+  	Data.GLuint 30,28
+  	Data.GLuint 32,30
+  	Data.GLuint 29,31
+  	Data.GLuint 34,32
+  	Data.GLuint 35,34
+  	Data.GLuint 31,33
+  	Data.GLuint 33,35
+  
+  EndDataSection
   
   ;-----------------------------------------------------------------------------
   ; Null
@@ -259,85 +261,26 @@ EndDataSection
   ;-----------------------------------------------------------------------------
   ; Axis
   ;-----------------------------------------------------------------------------
-  #AXIS_NUM_TRIANGLES =24
-  #AXIS_NUM_VERTICES =18
-  #AXIS_NUM_INDICES =72
-  #AXIS_NUM_EDGES =27
+  #AXIS_NUM_TRIANGLES = 0
+  #AXIS_NUM_VERTICES = 4
+  #AXIS_NUM_INDICES = 6
+  #AXIS_NUM_EDGES = 3
   DataSection
   	shape_axis_positions:
-  	Data.GLfloat -3.02326941282e-17,0.01,0.0
-  	Data.GLfloat 0.00866025403784,-0.005,-0.5
-  	Data.GLfloat 0.0,0.01,-1.22464679915e-18
-  	Data.GLfloat 0.5,0.01,-1.22464679915e-18
-  	Data.GLfloat 0.0,-0.005,0.00866025403784
-  	Data.GLfloat 0.5,-0.005,0.00866025403784
-  	Data.GLfloat 0.0,-0.005,-0.00866025403784
-  	Data.GLfloat 0.5,-0.005,-0.00866025403784
-  	Data.GLfloat 0.00866025403784,-0.005,0.0
-  	Data.GLfloat -0.00866025403784,-0.005,-0.5
-  	Data.GLfloat -0.01,0.0,-1.22464679915e-18
-  	Data.GLfloat -0.01,0.5,-1.22464679915e-18
-  	Data.GLfloat 0.005,0.0,0.00866025403784
-  	Data.GLfloat 0.005,0.5,0.00866025403784
-  	Data.GLfloat 0.005,0.0,-0.00866025403784
-  	Data.GLfloat 0.005,0.5,-0.00866025403784
-  	Data.GLfloat 3.09996458292e-17,0.01,-0.5
-  	Data.GLfloat -0.00866025403784,-0.005,0.0
+  	Data.GLfloat 0.0,0.0,0.0
+  	Data.GLfloat 1.0,0.0,0.0
+  	Data.GLfloat 0.0,1.0,0.0
+  	Data.GLfloat 0.0,0.0,1.0
   
   	shape_axis_indices:
-  	Data.GLuint 2,6,4
-  	Data.GLuint 2,4,5
-  	Data.GLuint 2,5,3
-  	Data.GLuint 5,7,3
-  	Data.GLuint 14,10,11
-  	Data.GLuint 14,11,15
-  	Data.GLuint 4,6,7
-  	Data.GLuint 4,7,5
-  	Data.GLuint 8,17,9
-  	Data.GLuint 8,9,1
-  	Data.GLuint 0,8,1
-  	Data.GLuint 0,1,16
-  	Data.GLuint 6,2,3
-  	Data.GLuint 6,3,7
-  	Data.GLuint 8,0,17
-  	Data.GLuint 10,14,12
-  	Data.GLuint 10,12,13
-  	Data.GLuint 10,13,11
-  	Data.GLuint 13,15,11
-  	Data.GLuint 17,0,16
-  	Data.GLuint 17,16,9
-  	Data.GLuint 12,14,15
-  	Data.GLuint 12,15,13
-  	Data.GLuint 16,1,9
+  	Data.GLuint 0, 1
+  	Data.GLuint 0, 2
+  	Data.GLuint 0, 3
   
   	shape_axis_edges:
-  	Data.GLuint 2,4
-  	Data.GLuint 11,15
-  	Data.GLuint 10,14
-  	Data.GLuint 4,5
-  	Data.GLuint 5,3
-  	Data.GLuint 3,2
-  	Data.GLuint 17,8
-  	Data.GLuint 17,0
-  	Data.GLuint 6,4
-  	Data.GLuint 9,1
-  	Data.GLuint 6,7
-  	Data.GLuint 7,5
-  	Data.GLuint 17,9
-  	Data.GLuint 2,6
-  	Data.GLuint 3,7
-  	Data.GLuint 12,10
-  	Data.GLuint 12,14
-  	Data.GLuint 16,0
-  	Data.GLuint 12,13
-  	Data.GLuint 13,11
-  	Data.GLuint 11,10
-  	Data.GLuint 16,9
-  	Data.GLuint 8,0
-  	Data.GLuint 1,16
-  	Data.GLuint 8,1
-  	Data.GLuint 14,15
-  	Data.GLuint 15,13
+  	Data.GLuint 0,1
+  	Data.GLuint 0,2
+  	Data.GLuint 0,3
   
   EndDataSection
   
@@ -12924,6 +12867,7 @@ EndDataSection
   Declare SetUVWs(*Me.Shape_t)
   Declare GetVertices(shape.i)
   Declare GetFaces(shape.i)
+  Declare GetEdges(shape.i)
 EndDeclareModule
 
 Module Shape
@@ -13055,13 +12999,13 @@ Module Shape
         CArray::SetCount(*Me\positions,*Me\nbp)
         CArray::SetCount(*Me\normals,*Me\nbp)
         CArray::SetCount(*Me\colors,*Me\nbp)
-        CArray::SetCount(*Me\indices,*Me\nbt*3)
+        ;CArray::SetCount(*Me\indices,*Me\nbt*3)
         
-        *Me\positions\data = ?shape_axis_positions
-        *Me\indices\data  = ?shape_axis_indices
-        RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
-        SetUVWs(*Me)
+        CopyMemory(?shape_axis_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
+;         CopyMemory(?shape_axis_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
+;         RecomputeNormals(*Me,1.0)
+;         RandomizeColors(*Me,@color)
+;         SetUVWs(*Me)
         
       Case  #SHAPE_SPHERE
         *Me\nbp = #SPHERE_NUM_VERTICES
@@ -13334,12 +13278,68 @@ Module Shape
   EndProcedure
   
   ; ----------------------------------------------------------------------------
+  ;  Get Edges
+  ; ----------------------------------------------------------------------------
+  Procedure GetEdges(shape.i)
+    Select shape
+      Case  #SHAPE_NONE 
+      Case  #SHAPE_AXIS
+        ProcedureReturn ?shape_axis_edges
+  
+      Case  #SHAPE_SPHERE
+        ProcedureReturn ?shape_sphere_edges
+  
+      Case  #SHAPE_GRID
+        ProcedureReturn ?shape_grid_edges
+  
+      Case  #SHAPE_CUBE
+        ProcedureReturn ?shape_cube_edges
+        
+      Case  #SHAPE_DISC
+        ProcedureReturn ?shape_disc_edges
+        
+      Case  #SHAPE_CYLINDER
+        ProcedureReturn ?shape_cylinder_edges
+        
+      Case  #SHAPE_NULL
+       ProcedureReturn ?shape_null_edges
+;       Case  #SHAPE_ARROW
+;          *Me\nbp = #ARROW_NUM_VERTICES
+;         *Me\nbt = #ARROW_NUM_TRIANGLES
+;         CArray::SetCount(*Me\positions,*Me\nbp)
+;         CArray::SetCount(*Me\normals,*Me\nbp)
+;         CArray::SetCount(*Me\colors,*Me\nbp)
+;         CArray::SetCount(*Me\indices,*Me\nbt*3)
+;         
+;         CopyMemory(?shape_axis_positions,*Me\positions,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\normals,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\colors,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_grid_indices,*Me\indices,#ARROW_NUM_TRIANGLES*3*#PB_Long )
+        
+;       Case  #SHAPE_TORUS
+;        ProcedureReturn ?shape_torus_edges
+;         
+;       Case  #SHAPE_BUNNY
+;        ProcedureReturn ?shape_bunny_edges
+;         
+      Case  #SHAPE_TEAPOT
+       ProcedureReturn ?shape_teapot_edges
+
+      Case  #SHAPE_TOMATO
+       ProcedureReturn ?shape_tomatoship_edges
+        
+      Case  #SHAPE_CUSTOM
+    EndSelect
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
   ;  New
   ; ----------------------------------------------------------------------------
   Procedure New(shape.i)
     Protected *Me.Shape_t = AllocateMemory(SizeOf(Shape_t))
     *Me\nbp = 0
     *Me\nbt = 0
+    *Me\indexed = #True
     *Me\positions = CArray::newCArrayV3F32()
     *Me\normals = CArray::newCArrayV3F32()
     *Me\uvws = CArray::newCArrayV3F32()
@@ -13361,16 +13361,12 @@ Module Shape
     CArray::Delete(*Me\colors)
     CArray::Delete(*Me\indices)  
   EndProcedure
-  
-  
-  
-  
-  
+
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 13217
-; FirstLine = 13214
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 12976
+; FirstLine = 12972
 ; Folding = ---
 ; EnableXP

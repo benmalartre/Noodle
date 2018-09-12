@@ -1,7 +1,7 @@
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Nodes.pbi"
 XIncludeFile "../objects/Object3D.pbi"
-XIncludeFile "../libs/Alembic.pbi"
+XIncludeFile "../libs/Booze.pbi"
 
 ; ==================================================================================================
 ; ADD NODE MODULE DECLARATION
@@ -83,12 +83,13 @@ Module AlembicIPolymeshNode
     Protected *input.NodePort::NodePort_t
    
     
-    Protected *o.AlembicObject::AlembicObject_t = *node\abc
+    Protected *o.AlembicIObject::AlembicIObject_t = *node\abc
     If Not *o
       If FileSize(file)>0 And GetExtensionPart(file) = "abc"
-        Protected *archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(Alembic::*abc_manager,file)
-        *o = AlembicArchive::GetObjectByName(*archive,identifier)
-        AlembicObject::Init(*o,#Null)
+        Protected manager.Alembic::IArchiveManager = Alembic::abc_manager
+        Protected archive.Alembic::IArchive = manager\OpenArchive(file)
+        *o = archive\GetObjectByName(identifier)
+        AlembicIObject::Init(*o,#Null)
       EndIf
     EndIf
     
@@ -96,8 +97,8 @@ Module AlembicIPolymeshNode
    
 
       Protected *infos.Alembic::ABC_Polymesh_Topo_Sample_Infos = *o\infos
-      
-      Alembic::ABC_GetPolymeshTopoSampleDescription(*o\ptr,time,*infos)
+      Protected mesh.Alembic::IPolymesh = *o\iObj
+      mesh\GetTopoSampleDescription(time,*infos)
      
       
 ;        
@@ -194,8 +195,8 @@ Module AlembicIPolymeshNode
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 59
-; FirstLine = 53
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 100
+; FirstLine = 108
 ; Folding = --
 ; EnableXP

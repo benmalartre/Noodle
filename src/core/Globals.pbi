@@ -17,6 +17,11 @@ DeclareModule Globals
     #SHORTCUT_PREVIOUS
     #SHORTCUT_QUIT
     #SHORTCUT_TAB
+    #SHORTCUT_SCALE
+    #SHORTCUT_ROTATE
+    #SHORTCUT_TRANSLATE
+    #SHORTCUT_CAMERA
+    #SHORTCUT_SELECT
   EndEnumeration
   
   Enumeration #PB_Event_FirstCustomValue
@@ -53,8 +58,7 @@ DeclareModule Globals
     #VIEW_PROPERTY
     #VIEW_TIMELINE
     #VIEW_GRAPH
-    #VIEW_3DVIEWPORT
-    #VIEW_VIEW3D
+    #VIEW_VIEWPORT
     #VIEW_TOPMENU
     #VIEW_EDITOR
   EndEnumeration
@@ -92,7 +96,6 @@ DeclareModule Globals
     #TOOL_ZOOM
     #TOOL_DRAW
     #TOOL_PAINT
-    
     #TOOL_SCALE
     #TOOL_ROTATE
     #TOOL_TRANSLATE
@@ -243,9 +246,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 109
-; FirstLine = 106
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 38
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

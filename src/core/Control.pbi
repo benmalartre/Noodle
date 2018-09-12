@@ -23,19 +23,20 @@ DeclareModule Control
   EndEnumeration
   ; ---[ Gadget Types ]--------------------
   Enumeration
-    #PB_GadgetType_Check = 128
-    #PB_GadgetType_Icon
-    #PB_GadgetType_Radio
-    #PB_GadgetType_Combo
-    #PB_GadgetType_Label
-    #PB_GadgetType_Divot
-    #PB_GadgetType_Edit
-    #PB_GadgetType_Number
-    #PB_GadgetType_Group
-    #PB_GadgetType_ColorWheel
-    #PB_GadgetType_Color
-    #PB_GadgetType_ShaderCode
-    #PB_GadgetType_Explore
+    #CONTROL_CHECK
+    #CONTROL_ICON
+    #CONTROL_RADIO
+    #CONTROL_COMBO
+    #CONTROL_LABEL
+    #CONTROL_DIVOT
+    #CONTROL_EDIT
+    #CONTROL_NUMBER
+    #CONTROL_GROUP
+    #CONTROL_COLORWHEEL
+    #CONTROL_COLOR
+    #CONTROL_SHADERCODE
+    #CONTROL_EXPLORER
+    #CONTROL_HEAD
   EndEnumeration
   
   Structure EventTypeDatas_t
@@ -264,9 +265,9 @@ Module Control
 ;   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 102
-; FirstLine = 202
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 70
+; FirstLine = 45
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

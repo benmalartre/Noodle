@@ -116,8 +116,10 @@ Module ShaderUI
     Protected str.s
     Protected nb.i
     Protected i.i
+    Protected window.i = EventWindow()
     Select event
       Case #PB_Event_SizeWindow
+        Debug "EVENT SIZE WINDOW"
         Protected x,y,w,h
         x = GadgetX(*ui\container)
         y = GadgetY(*ui\container)
@@ -134,14 +136,14 @@ Module ShaderUI
         Protected g = EventGadget()
         Select g
           Case *ui\vertex
-
+            
             Select EventType()
               Case #PB_EventType_Change
                 *ui\shader\vert\s =  GetGadgetText(*ui\vertex)
                 CompilerIf #PB_Compiler_Unicode
-                   *ui\shader\pgm = Program::Create(Shader::DeCodeUnicodeShader(*ui\shader\vert\s),Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
+                   *ui\shader\pgm = Program::Create("shader",Shader::DeCodeUnicodeShader(*ui\shader\vert\s),"",Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
                 CompilerElse
-                   *ui\shader\pgm = Program::Create(*ui\shader\vert\s,*ui\shader\frag\s,#True)
+                   *ui\shader\pgm = Program::Create("shader",*ui\shader\vert\s,"",*ui\shader\frag\s,#True)
                 CompilerEndIf
                
             EndSelect
@@ -152,9 +154,9 @@ Module ShaderUI
               Case #PB_EventType_Change
                 *ui\shader\frag\s = GetGadgetText(*ui\frag)
                 CompilerIf #PB_Compiler_Unicode
-                  *ui\shader\pgm = Program::Create(Shader::DeCodeUnicodeShader(*ui\shader\vert\s),Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
+                  *ui\shader\pgm = Program::Create("shader", Shader::DeCodeUnicodeShader(*ui\shader\vert\s),"",Shader::DeCodeUnicodeShader(*ui\shader\frag\s),#True)
                 CompilerElse
-                  *ui\shader\pgm = Program::Create(*ui\shader\vert\s,*ui\shader\frag\s,#True)
+                  *ui\shader\pgm = Program::Create("shader", *ui\shader\vert\s,"",*ui\shader\frag\s,#True)
                 CompilerEndIf
                 
             EndSelect
@@ -195,16 +197,31 @@ Module ShaderUI
             
           Case *ui\load_btn
             path = OpenFileRequester("Select Shader File","","*.glsl",0)
+            Define state = GetGadgetState(*ui\panel)
             If Not path = ""
-              file = ReadFile(#PB_Any,path) 
+              file = ReadFile(#PB_Any,path,#PB_Ascii) 
               str.s
               While Not Eof(file)
                 str + ReadString(file)+Chr(10)
               Wend  
               
-              *ui\shader\frag\s = str
-              *ui\shader\frag\path = path
-              SetGadgetText(*ui\frag,str)
+              Select state
+                  Case 0:
+                    *ui\shader\vert\s = str
+                    *ui\shader\vert\path = path
+                    SetGadgetText(*ui\vertex, str)
+                    PostEvent(#PB_Event_Gadget, window, *ui\vertex, #PB_EventType_Change)
+                  Case 1:
+                    *ui\shader\frag\s = str
+                    *ui\shader\frag\path = path
+                    SetGadgetText(*ui\frag, str)
+                    PostEvent(#PB_Event_Gadget, window, *ui\frag, #PB_EventType_Change)
+                  Case 2:
+                    *ui\shader\geom\s = str
+                    *ui\shader\geom\path = path
+                    ;SetGadgetText(*ui\shader\geom, str)  
+                EndSelect
+                
               CloseFile(file)
               
 ;               PostEvent(#PB_Event_Gadget,EventWindow(),*ui\frag,#PB_EventType_Change)
@@ -234,8 +251,8 @@ Module ShaderUI
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 112
-; FirstLine = 99
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 121
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

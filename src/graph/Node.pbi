@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../core/Globals.pbi"
+XIncludeFile "../core/UIColor.pbi"
 XIncludeFile "Types.pbi"
 
 ;====================================================================
@@ -9,22 +10,16 @@ Module Node
   ; ----------------------------------------------------------------------------
   ;  Constructor
   ; ----------------------------------------------------------------------------
-  ; ============================================================================
-  ; ---[ Heap ]-----------------------------------------------------------------
   Procedure.i New(*tree.Node::Node_t,name.s="",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     Protected *n.Node_t
-    
 
     Protected *desc.Nodes::NodeDescription_t = Nodes::*graph_nodes(name)
     If *desc
       *n = *desc\constructor(*tree,name,x,y,w,h,c)
     EndIf
     
-    
-
     ProcedureReturn(*n)
-        
-    
+
   EndProcedure
     
   ; ----------------------------------------------------------------------------
@@ -34,7 +29,6 @@ Module Node
     ; ---[ Deallocate Underlying Arrays ]------------------------------------
     FreeList(*Me\outputs())
     FreeList(*Me\inputs())
-    
     ; ---[ Deallocate Memory ]--------------------------------------------------
     FreeMemory( *Me )
   
@@ -85,6 +79,9 @@ Module Node
     Protected border = Graph::#Node_BorderUnselected
     
     CompilerIf Not Globals::#USE_VECTOR_DRAWING
+      ; -----------------------------------------------------------------------------------------------------
+      ; Pixel Drawing
+      ; -----------------------------------------------------------------------------------------------------
       If *n\selected
         border = Graph::#Node_BorderSelected
       EndIf 
@@ -262,6 +259,9 @@ Module Node
         DrawText(ex-Graph::#Node_EditButtonShiftX * zoom+Graph::#Node_EditButtonRadius * zoom,ey-Graph::#Node_EditButtonShiftY * zoom,"e",border)
       EndIf
     CompilerElse
+      ; -----------------------------------------------------------------------------------------------------
+      ; Vector Drawing
+      ; -----------------------------------------------------------------------------------------------------
       If *n\selected
         border = Graph::#Node_BorderSelected
       EndIf 
@@ -832,9 +832,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 367
-; FirstLine = 364
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 82
 ; Folding = ------
 ; EnableThread
 ; EnableXP

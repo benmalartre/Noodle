@@ -1474,8 +1474,8 @@ DeclareModule OpenGL
   glEnable                            ( cap.GLenum )
   glBegin                             ( cap.GLenum )
   glEnd                               ()
-  glFinish                            ( void )
-  glFlush                             ( void )
+  glFinish                            ( )
+  glFlush                             ( )
   glBlendFunc                         ( sfactor.GLenum, dfactor.GLenum )
   glLogicOp                           ( opcode.GLenum )
   glStencilFunc                       ( func.GLenum, ref.GLint, mask.GLuint )
@@ -1609,9 +1609,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 18
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1477
+; FirstLine = 1473
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

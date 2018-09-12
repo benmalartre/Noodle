@@ -74,6 +74,11 @@ DeclareModule ControlTimeline
   ;  Interface
   ; ----------------------------------------------------------------------------
   Interface IControlTimeline Extends Control::IControl
+    SetCurrentFrame(v.f)
+    SetStartFrame(v.f)
+    SetEndFrame(v.f)
+    SetStartRange(v.f)
+    SetEndRange(v.f)
   EndInterface
   
   ; ----------------------------------------------------------------------------
@@ -101,7 +106,12 @@ DeclareModule ControlTimeline
   DataSection
     ControlTimelineVT:
     Data.i @OnEvent() ; mandatory override
-    Data.i @Delete(); mandatory override 
+    Data.i @Delete()  ; mandatory override 
+    Data.i @SetCurrentFrame()
+    Data.i @SetStartFrame()
+    Data.i @SetEndFrame()
+    Data.i @SetStartRange()
+    Data.i @SetEndRange()
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -199,7 +209,6 @@ Module ControlTimeline
        If *son <> #Null
         ev_data\xoff = *son\posX
         ev_data\yoff = *son\posY
-        Debug  *son\name + ","+*son\class\name
         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
        EndIf
      Next
@@ -956,7 +965,7 @@ Module ControlTimeline
     Protected *c.ControlNumber::ControlNumber_t = *sig\snd_inst
     Protected *t.ControlTimeline::ControlTimeline_t = *c\parent
     Protected v.i = *c\value_n
-  
+
     Select *c\name
       Case "CurrentFrame"
         SetCurrentFrame(*t,v)
@@ -1014,8 +1023,6 @@ Module ControlTimeline
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
     
-;     *Me\VT = ?ControlTimelineVT
-;     *Me\classname = "CONTROLTIMELINE"
     Object::INI(ControlTimeline)
     *Me\object = *object
     
@@ -1078,18 +1085,17 @@ Module ControlTimeline
     Append(*Me,*Me\c_lastframe)
     Append(*Me,*Me\c_playloop)
     
+    Protected Me.ControlTimeline::IControlTimeline = *Me
     Protected *ctrl.Control::Control_t = *Me\c_currentframe
-    Object::SignalConnect(*Me,*ctrl\slot,0)
-    *ctrl.Control::Control_t = *Me\c_currentframe
-    Object::SignalConnect(*Me,*ctrl\slot,1)
+    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetCurrentFrame())
     *ctrl.Control::Control_t = *Me\c_startframe
-    Object::SignalConnect(*Me,*ctrl\slot,2)
+    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetStartFrame())
     *ctrl.Control::Control_t = *Me\c_endframe
-    Object::SignalConnect(*Me,*ctrl\slot,3)
+    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetEndFrame())
     *ctrl.Control::Control_t = *Me\c_startrange
-    Object::SignalConnect(*Me,*ctrl\slot,4)
+    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetStartRange())
      *ctrl.Control::Control_t = *Me\c_endrange
-    Object::SignalConnect(*Me,*ctrl\slot,5)
+    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetEndRange())
   
     ; ---[ Draw ]---------------------------------------------------------------
     hlpDrawPickingTags(*Me)
@@ -1108,8 +1114,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 456
-; FirstLine = 448
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 979
+; FirstLine = 949
 ; Folding = ------
 ; EnableXP

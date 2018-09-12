@@ -11,26 +11,45 @@ CompilerEndIf
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "View.pbi"
 
-; -----------------------------------------
+; ============================================================================
 ; ViewportUI Module Declaration
-; -----------------------------------------
+; ============================================================================
 DeclareModule ViewportUI
   UseModule UI
   Structure ViewportUI_t Extends UI_t
     *camera.Camera::Camera_t
     *context.GLContext::GLContext_t
+    *handle.Handle::Handle_t
+    ray.Geometry::Ray_t
+    *layer.Layer::Layer_t
+    List *layers.Layer::Layer_t()
+    mx.f
+    my.f
+    oldX.f
+    oldY.f
+    tool.i
+    
+    lmb_p.b
+    mmb_p.b
+    rmb_p.b
   EndStructure
   
   Interface IViewportUI Extends IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s)
-  Declare Delete(*ui.ViewportUI_t)
-  Declare Init(*ui.ViewportUI_t)
-  Declare OnEvent(*ui.ViewportUI_t,event.i)
-  Declare Term(*ui.ViewportUI_t)
-  Declare SetContext(*ui.ViewportUI_t)
-  Declare FlipBuffer(*ui.ViewportUI_t)
+  Declare Delete(*Me.ViewportUI_t)
+  Declare Init(*Me.ViewportUI_t)
+  Declare OnEvent(*Me.ViewportUI_t,event.i)
+  Declare Term(*Me.ViewportUI_t)
+  Declare SetContext(*Me.ViewportUI_t)
+  Declare FlipBuffer(*Me.ViewportUI_t)
+  Declare Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
+  Declare AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
+  Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
+  Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
+  Declare GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
+  ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
   
   DataSection 
     ViewportUIVT: 
@@ -41,20 +60,21 @@ DeclareModule ViewportUI
   
 EndDeclareModule
 
-; -----------------------------------------
+; ============================================================================
 ; ViewportUI Module Implementation
-; -----------------------------------------
+; ============================================================================
 Module ViewportUI
   UseModule OpenGL
   UseModule OpenGLExt
   UseModule Math
+  ;------------------------------------------------------------------
   ; New
-  ;-------------------------------
+  ;------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     InitializeStructure(*Me,ViewportUI_t)
     *Me\name = name
-    *Me\type = Globals::#VIEW_TIMELINE
+    *Me\type = Globals::#VIEW_VIEWPORT
     Object::INI(ViewportUI)
     
     Protected x = *parent\x
@@ -62,6 +82,8 @@ Module ViewportUI
     Protected w = *parent\width
     Protected h = *parent\height
     
+    *Me\width = w
+    *Me\height = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\context = GLContext::New(w,h,#False)
 
@@ -90,8 +112,6 @@ Module ViewportUI
       CocoaMessage( 0, ctx, "makeCurrentContext" )
       ; Swap Buffers
       CocoaMessage( 0, ctx, "flushBuffer" )
-      ; Load Extensions
-      GLLoadExtensions()
       ; Associate Context With OpenGLGadget NSView
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
@@ -100,22 +120,24 @@ Module ViewportUI
     CompilerElse
       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-      GLLoadExtensions()
+
     CompilerEndIf
     
-    *Me\width = w
-    *Me\height = h
-   
     CloseGadgetList()
-    
-    GLContext::Setup(*Me\context)
-    View::SetContent(*parent,*Me)
 
+    GLContext::Setup(*Me\context)
+    
+    *Me\handle = Handle::New()
+    Handle::Setup(*Me\handle, *Me\context)
+  
+    View::SetContent(*parent,*Me)
+    
     ProcedureReturn *Me
   EndProcedure
   
+  ;------------------------------------------------------------------
   ; Delete
-  ;-------------------------------
+  ;------------------------------------------------------------------
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
@@ -123,54 +145,222 @@ Module ViewportUI
     FreeMemory(*Me)
   EndProcedure
 
- 
+  ;------------------------------------------------------------------
   ; Init
-  ;-------------------------------
-  Procedure Init(*ui.ViewportUI_t)
+  ;------------------------------------------------------------------
+  Procedure Init(*Me.ViewportUI_t)
     Debug "ViewportUI Init Called!!!"
   EndProcedure
-  
+    
+  ;------------------------------------------------------------------
   ; Event
-  ;-------------------------------
-  Procedure OnEvent(*ui.ViewportUI_t,event.i)
-;     SetGadgetAttribute(*ui\gadgetID,#PB_OpenGL_SetContext,#True)
+  ;------------------------------------------------------------------
+  Procedure OnEvent(*Me.ViewportUI_t,event.i)
+;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
 ;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
 ;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;     SetGadgetAttribute(*ui\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-
+;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+    Debug "######################### Viewport Event ######################"
+    Debug "EVENT : "+Str(event)
+    Protected width.i, height.i
+    Protected *top.View::View_t = *Me\top
+    Protected *manager.ViewManager::ViewManager_t = *top\manager
+    
     Select event
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *ui\top
-        Protected width.i = *top\width
-        Protected height.i = *top\height
         
-        *ui\width = width
-        *ui\height = height
-        *ui\x = *top\x
-        *ui\y = *top\y
-        ResizeGadget(*ui\gadgetID,0,0,width,height)
-        ResizeGadget(*ui\container,*top\x,*top\y,width,height)
+        width = *top\width
+        height = *top\height
+        
+        *Me\width = width
+        *Me\height = height
+        *Me\x = *top\x
+        *Me\y = *top\y
+        ResizeGadget(*Me\gadgetID,0,0,width,height)
+        ResizeGadget(*Me\container,*top\x,*top\y,width,height)
         
 
-        If *ui\context  
-          *ui\context\width = *ui\width
-          *ui\context\height = *ui\height
+        If *Me\context  
+          *Me\context\width = *Me\width
+          *Me\context\height = *Me\height
+        EndIf
+        If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+      Case #PB_Event_Gadget
+        If EventGadget() = *Me\gadgetID
+          Protected deltax.d, deltay.d
+          Protected modifiers.i
+          *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
+          *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
+          width = GadgetWidth(*Me\gadgetID)
+          height = GadgetHeight(*Me\gadgetID)
+
+          Select EventType()
+            Case #PB_EventType_Focus
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+              AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
+                      
+            Case #PB_EventType_LostFocus
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
+              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
+                      
+            Case #PB_EventType_MouseMove
+              If *Me\down
+                deltax = *Me\mx-*Me\oldX
+                deltay = *Me\my-*Me\oldY 
+                modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
+              
+                If modifiers & #PB_OpenGL_Alt
+                  If *Me\lmb_p
+                    Camera::Orbit(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                  ElseIf *Me\mmb_p
+                    Camera::Pan(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                  ElseIf *Me\rmb_p
+                    Camera::Dolly(*Me\camera,deltax,deltay,width,height)
+                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                  EndIf
+                Else
+                  Select *Me\tool
+                    Case Globals::#TOOL_TRANSLATE
+                      Handle::Translate(*Me\handle, deltax, deltay, width, height)
+                  EndSelect
+                EndIf
+                
+                *Me\oldX = *Me\mx
+                *Me\oldY = *Me\my
+              Else
+                Select *Me\tool
+                  Case Globals::#TOOL_TRANSLATE
+                    GetRay(*Me, *Me\ray)
+                    Handle::PickTranslate(*Me\handle, *Me\ray)
+                EndSelect
+                
+              EndIf
+
+        
+            Case #PB_EventType_LeftButtonDown
+;               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
+;               If modifiers = #PB_OpenGL_Alt
+;                 *Me\rmb_p = #True
+;               ElseIf modifiers = #PB_OpenGL_Control
+;                 *Me\mmb_p = #True
+;               Else
+;                 *Me\lmb_p = #True
+;               EndIf  
+;               
+              *Me\lmb_p = #True
+              *Me\down = #True
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
+            
+            Case #PB_EventType_LeftButtonUp
+              *Me\lmb_p = #False
+              *Me\down = #False
+          
+            Case #PB_EventType_MiddleButtonDown
+              *Me\mmb_p = #True
+              *Me\down = #True
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
+        
+            Case #PB_EventType_MiddleButtonUp
+              *Me\mmb_p = #False
+              *Me\down = #False
+              
+            Case #PB_EventType_RightButtonDown
+              *Me\rmb_p = #True
+              *Me\down = #True
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
+              
+            Case #PB_EventType_RightButtonUp
+              *Me\rmb_p = #False
+              *Me\down = #False
+              
+            Case #PB_EventType_MouseWheel
+              delta = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_WheelDelta)
+;               Dolly(*Me,delta*10,delta*10,width,height)
+          EndSelect
+
         EndIf
         
-      Case #PB_Event_Gadget
-        If EventGadget() = *ui\gadgetID
-          If *ui\camera : Camera::OnEvent(*ui\camera,*ui\gadgetID) : EndIf
-        EndIf
+      Case #PB_Event_Menu
+        Select EventMenu()
+          Case Globals::#SHORTCUT_SCALE
+            Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_SCALE)
+            *Me\tool = Globals::#TOOL_SCALE
+          Case Globals::#SHORTCUT_ROTATE
+            Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+            *Me\tool = Globals::#TOOL_ROTATE
+          Case Globals::#SHORTCUT_TRANSLATE
+            Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+            *Me\tool = Globals::#TOOL_TRANSLATE
+          Case Globals::#SHORTCUT_CAMERA
+            Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_CAMERA)
+            *Me\tool = Globals::#TOOL_CAMERA
+          Case Globals::#SHORTCUT_SELECT
+            Handle::SetActiveTool(*Me\handle, 0)
+            *Me\tool = Globals::#TOOL_SELECT
+          EndSelect
 
     EndSelect
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Draw
+  ;------------------------------------------------------------------
+  Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
 
+    Protected ilayer.Layer::ILayer = *Me\layer
+    ilayer\Draw(*ctx)
+    If *Me\tool
+      Protected *wireframe.Program::Program_t = *ctx\shaders("wireframe")
+      glUseProgram(*wireframe\pgm)
+      Protected identity.m4f32
+      Matrix4::SetIdentity(@identity)
+
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@identity)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+      
+      Handle::Draw( *Me\handle,*ctx) 
+    EndIf
     
   EndProcedure
   
+  ;------------------------------------------------------------------
   ; Term
-  ;-------------------------------
-  Procedure Term(*ui.ViewportUI_t)
+  ;------------------------------------------------------------------
+  Procedure Term(*Me.ViewportUI_t)
     Debug "ViewportUI Term Called!!!"
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Add Layer
+  ;------------------------------------------------------------------
+  Procedure AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
+    AddElement(*Me\layers())
+    *Me\layers() = *layer
+    *Me\layer = *layer
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Set Handle Target
+  ;------------------------------------------------------------------
+  Procedure SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
+    Handle::SetTarget(*Me\handle, *target)
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Set Handle Targets
+  ;------------------------------------------------------------------
+  Procedure SetHandleTargets(*Me.ViewportUI_t, *targets)
+    Handle::SetTargets(*Me\handle, *targets)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -222,39 +412,45 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; View To World
   ;------------------------------------------------------------------
-  Procedure ViewToRay(*v.ViewportUI_t,mx.d,my.d,*ray_dir.v3f32)
-    Define.d mx,my
-    ;glfwGetCursorPos(*v\window,@mx,@my)
-    mx = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    my = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseY)
-    
-    Define.f x = (2*mx)/*v\width - 1
-    Define.f y = 1- (2*my)/*v\height
-    Define.f z = 1
-    
+  Procedure ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.v3f32)
+    ; 3d normalized device coordinates
+    Define x.f = (2 * mx) / *Me\width - 1
+    Define y.f = 1 - (2 * my) / *Me\height
+    Define z.f = 1
     Define ray_nds.v3f32
-    Vector3::Set(@ray_nds,x,y,z)
-    Define ray_clip.v4f32
-    Vector4::Set(@ray_clip,ray_nds\x,ray_nds\y,-1,1)
+    Vector3::Set(@ray_nds, x, y, z)
     
+    ; 4d Homogeneous Clip Coordinates
+    Define ray_clip.v4f32
+    Vector4::Set(@ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
+    
+    ; 4d Eye (Camera) Coordinates
     Define inv_proj.m4f32
-    Matrix4::Inverse(@inv_proj,*v\camera\projection)
+    Matrix4::Inverse(@inv_proj,*Me\camera\projection)
     Define ray_eye.v4f32
     Vector4::MulByMatrix4(@ray_eye,@ray_clip,@inv_proj,#False)
     ray_eye\z = -1
     ray_eye\w = 0
     
+    ; 4d World Coordinates
     Define inv_view.m4f32
     Define ray_world.v4f32
-    Matrix4::Inverse(@inv_view,*v\camera\view)
+    Matrix4::Inverse(@inv_view,*Me\camera\view)
     Vector4::MulByMatrix4(@ray_world,@ray_eye,@inv_view,#False)
     
     Vector3::Set(*ray_dir,ray_world\x,ray_world\y,ray_world\z)
     Vector3::NormalizeInPlace(*ray_dir)
-   
-  
+
   EndProcedure
   
+  ; ------------------------------------------------------------------
+  ;  Get Ray
+  ; ------------------------------------------------------------------
+  Procedure GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
+    Protected direction.v3f32
+    ViewToRay(*Me,*Me\mx,*Me\my,@direction)
+    Ray::Set(*ray, *Me\camera\pos, @direction)
+  EndProcedure
   
   
   CompilerIf #USE_BULLET
@@ -262,7 +458,6 @@ Module ViewportUI
   ;  Ray Pick
   ; ------------------------------------------------------------------
   Procedure RayPick2(*v.ViewportUI_t)
-    Debug "------------------------------------       RAY PICK     -------------------------------------------------"
     Define.d mx,my
   
     mx = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
@@ -435,8 +630,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 268
-; Folding = ---
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 355
+; FirstLine = 327
+; Folding = -----
 ; EnableXP

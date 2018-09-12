@@ -45,7 +45,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *ftgl_drawer.FTGL::FTGL_Drawer
 
 ; Resize
 ;--------------------------------------------
@@ -155,12 +154,12 @@ Procedure Update(*app.Application::Application_t)
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   Protected i
   ForEach *joystick\buttons()
-    FTGL::Draw(*ftgl_drawer,"Button: "+Str(i)+" Pressed : "+*joystick\buttons()\pressed,-0.9,0.9-(i*0.05),ss,ss*ratio)
+    FTGL::Draw(*app\context\writer,"Button: "+Str(i)+" Pressed : "+*joystick\buttons()\pressed,-0.9,0.9-(i*0.05),ss,ss*ratio)
     i+1
   Next
   glDisable(#GL_BLEND)
@@ -210,7 +209,6 @@ Procedure Update(*app.Application::Application_t)
   ; FTGL Drawer
   ;-----------------------------------------------------
   FTGL::Init()
-  *ftgl_drawer = FTGL::New()
   
   *s_wireframe = Program::NewFromName("simple")
   *s_polymesh = Program::NewFromName("polymesh")
@@ -242,11 +240,11 @@ Procedure Update(*app.Application::Application_t)
   Scene::Setup(Scene::*current_scene)
   Application::Loop(*app, @Update())
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 133
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 212
+; FirstLine = 183
 ; Folding = -
-; EnableUnicode
 ; EnableXP
 ; Executable = polymesh.exe
 ; Debugger = Standalone
+; EnableUnicode

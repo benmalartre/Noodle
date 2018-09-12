@@ -94,7 +94,7 @@ Object3D::AddChild(*model,*skeleton\cloud)
 *A = Animation::New(*skeleton)
 
 Define path.s = "../../abc/MonkeySkeleton.abc"
-Define identifier.s = "ICE_SkeletonShape"
+Define identifier.s = "/ICE_Skeleton/ICE_SkeletonShape"
 MessageRequester("Before Loading Skeleton","OK")
 Animation::Load(*A,path,identifier)
 MessageRequester("After Loading Skeleton","OK")
@@ -129,9 +129,9 @@ Scene::AddModel(Scene::*current_scene,*model)
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 38
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 96
+; FirstLine = 47
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

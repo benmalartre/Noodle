@@ -404,7 +404,7 @@ Module ControlCombo
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type        = Control::#PB_GadgetType_Combo
+    *Me\type        = Control::#CONTROL_COMBO
     *Me\name        = name
     *Me\gadgetID    = #Null
     *Me\posX        = x
@@ -629,8 +629,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 267
-; FirstLine = 239
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 406
+; FirstLine = 402
 ; Folding = ---
 ; EnableXP

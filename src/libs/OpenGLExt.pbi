@@ -1,8 +1,14 @@
 ﻿XIncludeFile "OpenGL.pbi"
-XIncludeFile "GLFW.pbi"
+CompilerIf (#USE_GLFW = #True)
+  MessageRequester("FUCKIN INCLUDE  GLFW", "GLFW")
+  XIncludeFile "../libs/GLFW.pbi"
+CompilerEndIf
 DeclareModule OpenGLExt
   UseModule OpenGL
-  UseModule GLFW
+  CompilerIf (#USE_GLFW = #True)
+    UseModule GLFW
+  CompilerEndIf
+  
   ; ; ============================================================================
   ; ;  OpenGL Extensions Prototypes
   ; ; ============================================================================
@@ -58,6 +64,7 @@ DeclareModule OpenGLExt
       CompilerCase #PB_OS_Windows
         ImportC "opengl32.lib"
           wglGetProcAddress(s.p-ascii) As "wglGetProcAddress"
+
         EndImport 
         
         Macro setGLEXT(var, extname)
@@ -337,6 +344,7 @@ DeclareModule OpenGLExt
   ;- OpenGL 3.3
   CompilerIf #ENABLEGL3_2
     Prototype PFNGLVERTEXATTRIBDIVISORPROC (index.i, divisor.i)
+    Prototype PFNGLPOLYGONOFFSET(factor.GLfloat, units.GLfloat)
   CompilerEndIf
   
   ;- OpenGL Misc
@@ -599,6 +607,7 @@ DeclareModule OpenGLExt
   
   ;- OpenGL 3.3
   Global glVertexAttribDivisor.PFNGLVERTEXATTRIBDIVISORPROC
+  Global glPolygonOffset.PFNGLPOLYGONOFFSET
   
   ;- OpenGL Misc
   Global glIsRenderbuffer.PFNGLISRENDERBUFFERPROC
@@ -913,6 +922,7 @@ Module OpenGLExt
         ;- OpenGL 3.3
         CompilerIf #ENABLEGL3_2
           setGLEXT( glVertexAttribDivisor,    "glVertexAttribDivisor" )
+          setGLEXT( glPolygonOffset,          "glPolygonOffset" )
         CompilerEndIf
         
         ;- OpenGL Misc
@@ -1483,9 +1493,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 521
-; FirstLine = 518
-; Folding = ------
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 10
+; Folding = -------
 ; EnableXP
 ; EnableUnicode

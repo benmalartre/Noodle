@@ -92,6 +92,9 @@ DeclareModule Layer
   Declare DrawDrawers(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader.i)
   Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+  Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
  
   Declare GetImage(*layer.Layer::Layer_t, path.s)
    ; ============================================================================
@@ -378,8 +381,7 @@ Module Layer
     
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type & Object3D::#Object3D_Drawer
-        Debug *obj\class\name
+      If *obj\type = Object3D::#Object3D_Drawer        
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         Drawer::Draw(*obj)
       EndIf
@@ -426,79 +428,126 @@ Module Layer
     Next
   EndProcedure
   
+  ;---------------------------------------------------
+  ; Draw Point Clouds
+  ;---------------------------------------------------
+  Procedure DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    Protected i
+    Protected obj.Object3D::IObject3D
+    Protected *obj.Object3D::Object3D_t
+    For i=0 To CArray::GetCount(*objects)-1
+      
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = Object3D::#Object3D_PointCloud
+        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+    GLCheckError("[Layer] Draw Point Clouds")
+  EndProcedure
   
+  ;---------------------------------------------------
+  ; Draw Nulls
+  ;---------------------------------------------------
+  Procedure DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    Protected i
+    Protected obj.Object3D::IObject3D
+    Protected *obj.Object3D::Object3D_t
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = Object3D::#Object3D_Null
+        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        glUniform4f(glGetUniformLocation(shader,"color"),*obj\wireframe_r, *obj\wireframe_g, *obj\wireframe_b, 1.0)
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+    GLCheckError("[Layer] Draw Nulls")
+  EndProcedure
+  
+  ;---------------------------------------------------
+  ; Draw Curves
+  ;---------------------------------------------------
+  Procedure DrawCurves(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    Protected i
+    Protected obj.Object3D::IObject3D
+    Protected *obj.Object3D::Object3D_t
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = Object3D::#Object3D_Curve
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+  EndProcedure
+  
+
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-
-    ;     Protected layer.ILayer = *layer
-    ; ;     layer\Update(*ctx)
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
+    Framebuffer::BindOutput(*buffer)
+    ;   Clear(*layer)
+    glClearColor(0.66,0.66,0.66,1.0)
+    glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+    glCheckError("Clear")
+    glEnable(#GL_DEPTH_TEST)
     
-
-  Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
-  Framebuffer::BindOutput(*buffer)
-  ;   Clear(*layer)
-  glClearColor(0.66,0.66,0.66,1.0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glCheckError("Clear")
-  glEnable(#GL_DEPTH_TEST)
+    glViewport(0,0,*layer\width,*layer\height)
+    
+    ; Find Up View Point
+    ;-----------------------------------------------
+    Protected *view.m4f32,*proj.m4f32,view.m4f32
+    *view = Layer::GetViewMatrix(*layer)
+    *proj = Layer::GetProjectionMatrix(*layer)
+    
+    ;Draw Polymeshes 
+    ;-----------------------------------------------
+    Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
+    Protected shader.GLuint =  *shader\pgm
+    glUseProgram(shader)
+    GLCheckError("[LayerDefault]  Use Program")
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    GLCheckError("[LayerDefault] Set Matrices")
+    glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
+    GLCheckError("[LayerDefault] Uniforms")  
+    glUniform1i(glGetUniformLocation(shader,"tex"),0)
+    
+    DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
   
-  glViewport(0,0,*layer\width,*layer\height)
-  
-  ; Find Up View Point
-  ;-----------------------------------------------
-  Protected *view.m4f32,*proj.m4f32,view.m4f32
-  *view = Layer::GetViewMatrix(*layer)
-  *proj = Layer::GetProjectionMatrix(*layer)
-  
-  ;Draw Polymeshes 
-  ;-----------------------------------------------
-  Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
-  Protected shader.GLuint =  *shader\pgm
-  glUseProgram(shader)
-  GLCheckError("[LayerDefault]  Use Program")
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-  GLCheckError("[LayerDefault] Set Matrices")
-  glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-  GLCheckError("[LayerDefault] Uniforms")  
-  glUniform1i(glGetUniformLocation(shader,"tex"),0)
-  
-  DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
-
-  GLCheckError("[LayerDefault] Draw Polymeshes")
-  
+    GLCheckError("[LayerDefault] Draw Polymeshes")
+    
     ; Draw Instance Clouds 
     ;-----------------------------------------------
-  
-    ;Model::Update(*model)
-  Protected *pgm.Program::Program_t = *ctx\shaders("instances")
-  glUseProgram(*pgm\pgm)
-  Define.m4f32 model,view,proj
-  Matrix4::SetIdentity(@model)
- 
-;   glDepthMask(#GL_TRUE);
-  glEnable(#GL_DEPTH_TEST)
-  
-  glEnable(#GL_TEXTURE_2D)
-  glBindTexture(#GL_TEXTURE_2D,texture)
-  glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
-  
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-  
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-  glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
-  glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-  glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
-  
-  ;   PointCloud::Draw(*cloud)
-  ;   Model::Update(*model)
-  DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
-;   Model::Draw(*model)
-  glCheckError("Draw Instance Cloud")
+    Protected *pgm.Program::Program_t = *ctx\shaders("instances")
+    glUseProgram(*pgm\pgm)
+    Define.m4f32 model,view,proj
+    Matrix4::SetIdentity(@model)
+   
+  ;   glDepthMask(#GL_TRUE);
+    glEnable(#GL_DEPTH_TEST)
+    
+    glEnable(#GL_TEXTURE_2D)
+    glBindTexture(#GL_TEXTURE_2D,texture)
+    glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
+    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
+    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+    glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
+    
+    ;   PointCloud::Draw(*cloud)
+    ;   Model::Update(*model)
+    DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+  ;   Model::Draw(*model)
+    glCheckError("Draw Instance Cloud")
 ;   glDepthMask(#GL_FALSE);
   
 ;   ;Framebuffer::BlitTo(*buffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
@@ -648,8 +697,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 403
-; FirstLine = 398
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 551
+; FirstLine = 524
 ; Folding = -----
 ; EnableXP

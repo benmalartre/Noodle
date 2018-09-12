@@ -31,10 +31,10 @@ DeclareModule ColorUI
   Interface IColorUI Extends IUI
   EndInterface
 
-  Declare New(name.s,x.i,y.i,w.i,h.i)
+  Declare New(*parent.View::View_t,name.s)
   Declare Delete(*ui.ColorUI_t)
   Declare Init(*ui.ColorUI_t)
-  Declare Event(*ui.ColorUI_t,event.i)
+  Declare OnEvent(*ui.ColorUI_t,event.i)
   Declare Term(*ui.ColorUI_t)
   Declare Draw(*ui.ColorUI_t)
   Declare Update(*ui.ColorUI_t)
@@ -42,7 +42,7 @@ DeclareModule ColorUI
   DataSection 
     ColorUIVT: 
       Data.i @Init()
-      Data.i @Event()
+      Data.i @OnEvent()
       Data.i @Term()
   EndDataSection 
   
@@ -55,8 +55,11 @@ Module ColorUI
 
   ; New
   ;-------------------------------
-  Procedure New(name.s,x.i,y.i,w.i,h.i)
-    
+  Procedure New(*parent.View::View_t,name.s)
+    Protected x = *parent\x
+    Protected y = *parent\y
+    Protected w = *parent\width
+    Protected h = *parent\height
     Protected tw = 50
     Protected iw = 50
     Protected pw = h
@@ -77,7 +80,7 @@ Module ColorUI
     *ui\red_slider = TrackBarGadget(#PB_Any,tw+iw,2*h/3,w-(tw+iw+pw),h/3,0,255)
     *ui\color_display = CanvasGadget(#PB_Any,w-pw,0,pw,h)
     *ui\VT = ?ColorUIVT
-    Event(*ui,#PB_Event_SizeWindow)
+    OnEvent(*ui,#PB_Event_SizeWindow)
     CloseGadgetList()
     ProcedureReturn *ui
   EndProcedure
@@ -163,7 +166,7 @@ Module ColorUI
   
   ; Event
   ;-------------------------------
-  Procedure Event(*ui.ColorUI_t,event.i)
+  Procedure OnEvent(*ui.ColorUI_t,event.i)
     Debug "ColorUI Event Called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     Draw(*ui)
     Select event
@@ -197,18 +200,18 @@ Module ColorUI
   
 EndModule
 
-UseModule ColorUI
-window = OpenWindow(#PB_Any,0,0,800,600,"Test ColorUI")
-*colorUI.ColorUI_t = ColorUI::New("ColorUI",0,0,800,60)
-Define e
-Repeat
-  e = WaitWindowEvent()
-  ColorUI::Event(*colorUI,e)
-Until e = #PB_Event_CloseWindow
+; UseModule ColorUI
+; window = OpenWindow(#PB_Any,0,0,800,600,"Test ColorUI")
+; *colorUI.ColorUI_t = ColorUI::New("ColorUI",0,0,800,60)
+; Define e
+; Repeat
+;   e = WaitWindowEvent()
+;   ColorUI::Event(*colorUI,e)
+; Until e = #PB_Event_CloseWindow
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 132
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 33
+; FirstLine = 29
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

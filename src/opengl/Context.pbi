@@ -7,7 +7,7 @@ DeclareModule GLContext
   UseModule OpenGL
   #MAX_GL_CONTEXT = 5
   Global counter = 0
-  Global Dim shadernames.s(22)
+  Global Dim shadernames.s(24)
   shadernames(0) = "selection"
   shadernames(1) = "simple"
   shadernames(2) = "wireframe"
@@ -30,6 +30,8 @@ DeclareModule GLContext
   shadernames(19) = "shadowCSMdefered"
   shadernames(20) = "simple2D"
   shadernames(21) = "bitmap"
+  shadernames(22) = "curve"
+  shadernames(23) = "drawer"
 
   Structure GLContext_t
     *window.GLFWwindow      ;main window holding gl context shared by all other gl windows
@@ -43,7 +45,7 @@ DeclareModule GLContext
     Map *shaders.Program::Program_t()
   EndStructure
   
-  Declare New(width.i, height.i, useGLFW.b=#False, *window.GLFW::GLFWwindow=#Null)
+  Declare New(width.i, height.i, useGLFW.b=#False, *window=#Null)
   Declare Setup(*Me.GLContext_t)
   Declare Delete(*Me.GLContext_t)
 EndDeclareModule
@@ -69,7 +71,7 @@ Module GLContext
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(width.i, height.i, useGLFW.b=#False, *window.GLFW::GLFWwindow=#Null)
+  Procedure.i New(width.i, height.i, useGLFW.b=#False, *window=#Null)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
@@ -78,51 +80,55 @@ Module GLContext
     *Me\width = width
     *Me\height = height
     *Me\ID = 0
+    *Me\writer = #Null
     
-    If useGLFW
-      If *window
-        *Me\window = *window
-        GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
-      Else
-        Protected *monitor.GLFW::GLFWmonitor  = GLFW::glfwGetPrimaryMonitor()
-        Protected *mode.GLFW::GLFWvidmode  = GLFW::glfwGetVideoMode(*monitor)
-        
-        GLFW::glfwWindowHint(GLFW::#GLFW_RED_BITS,*mode\RedBits)
-        GLFW::glfwWindowHint(GLFW::#GLFW_BLUE_BITS,*mode\BlueBits)
-        GLFW::glfwWindowHint(GLFW::#GLFW_GREEN_BITS,*mode\GreenBits)
-    
-        Protected title.s = "GLFW - "
-
-        If Not #USE_LEGACY_OPENGL
-          GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MAJOR, 3)
-          GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MINOR, 3)
-          GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
-          GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_PROFILE, GLFW::#GLFW_OPENGL_CORE_PROFILE)
-          GLFW::glfwWindowHint(GLFW::#GLFW_STENCIL_BITS, 8)
-          GLFW::glfwWindowHint(GLFW::#GLFW_SAMPLES, 4)
-          title + "CORE"
+    CompilerIf (#USE_GLFW = #True)
+      If useGLFW
+        If *window
+          *Me\window = *window
+          GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
         Else
-          title + "LEGACY"
-        EndIf
+          Protected *monitor.GLFW::GLFWmonitor  = GLFW::glfwGetPrimaryMonitor()
+          Protected *mode.GLFW::GLFWvidmode  = GLFW::glfwGetVideoMode(*monitor)
+          
+          GLFW::glfwWindowHint(GLFW::#GLFW_RED_BITS,*mode\RedBits)
+          GLFW::glfwWindowHint(GLFW::#GLFW_BLUE_BITS,*mode\BlueBits)
+          GLFW::glfwWindowHint(GLFW::#GLFW_GREEN_BITS,*mode\GreenBits)
       
-        *Me\window = GLFW::glfwCreateWindow(*mode\Width,*mode\Height,"GLFW",*monitor,#Null)
+          Protected title.s = "GLFW - "
   
+          If Not #USE_LEGACY_OPENGL
+            GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MAJOR, 3)
+            GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MINOR, 3)
+            GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
+            GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_PROFILE, GLFW::#GLFW_OPENGL_CORE_PROFILE)
+            GLFW::glfwWindowHint(GLFW::#GLFW_STENCIL_BITS, 8)
+            GLFW::glfwWindowHint(GLFW::#GLFW_SAMPLES, 4)
+            title + "CORE"
+          Else
+            title + "LEGACY"
+          EndIf
         
-        If Not *Me\window
-          Delete(*Me)
-          MessageRequester("Noodle", "Fail To Initialize GLFW OpenGL Context!!")
-          ProcedureReturn #False
+          *Me\window = GLFW::glfwCreateWindow(*mode\Width,*mode\Height,"GLFW",*monitor,#Null)
+    
+          
+          If Not *Me\window
+            Delete(*Me)
+            MessageRequester("Noodle", "Fail To Initialize GLFW OpenGL Context!!")
+            ProcedureReturn #False
+          EndIf
+        
+          ; Connect Backward
+          GLFW::glfwSetWindowUserPointer(*Me\window,*Me)
+          GLFW::glfwMakeContextCurrent(*Me\window)
+          GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
         EndIf
-      
-        ; Connect Backward
-        GLFW::glfwSetWindowUserPointer(*Me\window,*Me)
-        GLFW::glfwMakeContextCurrent(*Me\window)
-        GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
+    
+      Else
+        *Me\window = #Null
       EndIf
-  
-    Else
-      *Me\window = #Null
-    EndIf
+    CompilerEndIf
+    
     
     ProcedureReturn *Me
   EndProcedure
@@ -131,17 +137,20 @@ Module GLContext
   ;  Get OpenGL Version
   ;---------------------------------------------
   Procedure GetOpenGLVersion(*Me.GLContext_t)
-    If *Me\useGLFW
-      ;Print out OpenGL version:
-      Protected iOpenGLMajor.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_VERSION_MAJOR);
-      Protected iOpenGLMinor.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_VERSION_MINOR);
-      Protected iOpenGLRevision.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_REVISION)  ;
-      
-      Debug "Status: Using GLFW Version "+GLFW::glfwGetVersionString()
-      Debug "Status: Using OpenGL Version: "+Str(iOpenGLMajor)+","+Str(iOpenGLMinor)+", Revision : "+Str(iOpenGLRevision)
-    Else
-      ; TO BE IMPLEMENTED
-    EndIf
+    CompilerIf (#USE_GLFW = #True)
+      If *Me\useGLFW
+        ;Print out OpenGL version:
+        Protected iOpenGLMajor.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_VERSION_MAJOR);
+        Protected iOpenGLMinor.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_VERSION_MINOR);
+        Protected iOpenGLRevision.i = GLFW::glfwGetWindowAttrib(*Me\window, GLFW::#GLFW_CONTEXT_REVISION)  ;
+        
+        Debug "Status: Using GLFW Version "+GLFW::glfwGetVersionString()
+        Debug "Status: Using OpenGL Version: "+Str(iOpenGLMajor)+","+Str(iOpenGLMinor)+", Revision : "+Str(iOpenGLRevision)
+      Else
+        ; TO BE IMPLEMENTED
+      EndIf
+    CompilerEndIf
+    
   EndProcedure
   
 
@@ -150,21 +159,18 @@ Module GLContext
   ;---------------------------------------------
   Procedure Setup(*Me.GLContext_t)
     GLLoadExtensions()
-
+    
     ; Build Shaders
     Protected i
     Protected *shader.Program::Program_t
     For i=0 To ArraySize(shadernames())-1
       *shader = Program::NewFromName(shadernames(i))
       *Me\shaders(shadernames(i)) = *shader
-     Debug i
-   Next
-   
-    ; Build Font Writer
-    GLCheckError("Before Creating FTGL")
-    *Me\writer = FTGL::New()
-    GLCheckError("After Creating FTGL")
+    Next
     
+    ; Build Font Writer
+    *Me\writer = FTGL::New()
+
   EndProcedure
   
   
@@ -176,9 +182,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 145
-; FirstLine = 129
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 152
+; FirstLine = 123
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -17,16 +17,6 @@ DeclareModule Camera
   ; ----------------------------------------------------------------------------
   
   Structure Camera_t Extends Object3D::Object3D_t 
-    mx.f
-    my.f
-    oldX.f
-    oldY.f
-    
-    lmb_p.b
-    mmb_p.b
-    rmb_p.b
-    down.b
-    
     cameratype.i
     fov.f
     aspect.f
@@ -112,7 +102,7 @@ Module Camera
         *Me\fov = 66
         *Me\aspect = 1.33
         *Me\nearplane = 0.1
-        *Me\farplane = 10000
+        *Me\farplane = 100000
         
         LookAt(*Me)
         UpdateProjection(*Me)
@@ -268,11 +258,14 @@ Module Camera
   ;----------------------------------------------------------------------------
   Procedure Dolly(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
     Protected delta.f
-    delta = deltay/height
+    delta = (deltay/height + deltax/width) * 2
   
     Protected interpolated.v3f32
     Vector3::LinearInterpolate(@interpolated,*Me\pos,*Me\lookat,delta)
+;     Protected diff.v3f32
+;     Vector3::Sub(@diff, @interpolate, *Me\pos)
     Vector3::Set(*Me\pos,interpolated\x,interpolated\y,interpolated\z)
+;     Vector3::AddInPlace(*Me\lookat, @diff)
     
     ;Update Camera Transform
     LookAt(*Me)
@@ -353,82 +346,8 @@ Module Camera
   ;----------------------------------------------------------------
   Procedure OnEvent(*Me.Camera_t,gadget)
     
-     Define deltax.d, deltay.d
-     Define width, height
-     Define modifiers.i
-     mx = GetGadgetAttribute(gadget,#PB_OpenGL_MouseX)
-     my = GetGadgetAttribute(gadget,#PB_OpenGL_MouseY)
-     width = GadgetWidth(gadget)
-     height = GadgetHeight(gadget)
-     
-     Select EventType()
-      Case #PB_EventType_MouseMove
-        
-        If *Me\down
-          deltax = mx-*Me\oldX
-          deltay = my-*Me\oldY 
-          If *Me\lmb_p
-            Pan(*Me,deltax,deltay,width,height)
-          ElseIf *Me\mmb_p
-            Dolly(*Me,deltax,deltay,width,height)
-          ElseIf *Me\rmb_p
-            Orbit(*Me,deltax,deltay,width,height)
-          EndIf
-        EndIf
-        
-        *Me\oldX = mx
-        *Me\oldY = my
-        
-      Case #PB_EventType_LeftButtonDown
-        modifiers = GetGadgetAttribute(gadget,#PB_OpenGL_Modifiers)
-        If modifiers = #PB_OpenGL_Alt
-          *Me\rmb_p = #True
-        ElseIf modifiers = #PB_OpenGL_Control
-          *Me\mmb_p = #True
-        Else
-          *Me\lmb_p = #True
-        EndIf    
+     Debug "Camera On Event !!!"
 
-        *Me\down = #True
-        *Me\oldX = mx
-        *Me\oldY = my
-      
-      Case #PB_EventType_LeftButtonUp
-        *Me\lmb_p = #False
-        *Me\mmb_p = #False
-        *Me\rmb_p = #False 
-        *Me\down = #False
-    
-      Case #PB_EventType_MiddleButtonDown
-        *Me\lmb_p = #False
-        *Me\rmb_p = #False
-        *Me\mmb_p = #True
-        *Me\down = #True
-        *Me\oldX = mx
-        *Me\oldY = my
-        
-      Case #PB_EventType_MiddleButtonUp
-        *Me\mmb_p = #False
-        *Me\down = #False
-        
-      Case #PB_EventType_RightButtonDown
-        *Me\lmb_p = #False
-        *Me\mmb_p = #False
-        *Me\rmb_p = #True
-        *Me\down = #True
-        *Me\oldX = mx
-        *Me\oldY = my
-        
-      Case #PB_EventType_RightButtonUp
-        *Me\rmb_p = #False
-        *Me\down = #False
-        
-      Case #PB_EventType_MouseWheel
-        delta = GetGadgetAttribute(gadget,#PB_OpenGL_WheelDelta)
-        Dolly(*Me,delta*10,delta*10,width,height)
-    EndSelect
-   
-    
   EndProcedure
   
   ;--------------------------------------------
@@ -466,9 +385,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 211
-; FirstLine = 207
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 261
+; FirstLine = 254
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

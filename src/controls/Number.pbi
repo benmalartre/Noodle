@@ -9,108 +9,19 @@ DeclareModule ControlNumber
   ; ============================================================================
   ;  CONSTANTS
   ; ============================================================================
-  ;{
   ; ----------------------------------------------------------------------------
   ;  OPTIONS
   ; ----------------------------------------------------------------------------
-  ;{
   #NUMBER_SCALAR    = %0001
   #NUMBER_INTEGER   = %0010
   #NUMBER_PERCENT   = %0100
   #NUMBER_NOSLIDER  = %1000
-  ;}
-  ;}
-
-  
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  ;{
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_light_number_disabled_l.i
-  Global s_gui_controls_light_number_disabled_c.i
-  Global s_gui_controls_light_number_disabled_r.i
-  Global s_gui_controls_light_number_disabled_s.i
-  Global s_gui_controls_light_number_disabled_cl.i
-  Global s_gui_controls_light_number_disabled_cr.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_number_normal_l.i
-  Global s_gui_controls_light_number_normal_c.i
-  Global s_gui_controls_light_number_normal_r.i
-  Global s_gui_controls_light_number_normal_s.i
-  Global s_gui_controls_light_number_normal_cl.i
-  Global s_gui_controls_light_number_normal_cr.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_number_over_l.i
-  Global s_gui_controls_light_number_over_c.i
-  Global s_gui_controls_light_number_over_r.i
-  Global s_gui_controls_light_number_over_s.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_light_number_focused_l.i
-  Global s_gui_controls_light_number_focused_c.i
-  Global s_gui_controls_light_number_focused_r.i
-  ;}
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_dark_number_disabled_l.i
-  Global s_gui_controls_dark_number_disabled_c.i
-  Global s_gui_controls_dark_number_disabled_r.i
-  Global s_gui_controls_dark_number_disabled_s.i
-  Global s_gui_controls_dark_number_disabled_cl.i
-  Global s_gui_controls_dark_number_disabled_cr.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_number_normal_l.i
-  Global s_gui_controls_dark_number_normal_c.i
-  Global s_gui_controls_dark_number_normal_r.i
-  Global s_gui_controls_dark_number_normal_s.i
-  Global s_gui_controls_dark_number_normal_cl.i
-  Global s_gui_controls_dark_number_normal_cr.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_number_over_l.i
-  Global s_gui_controls_dark_number_over_c.i
-  Global s_gui_controls_dark_number_over_r.i
-  Global s_gui_controls_dark_number_over_s.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_dark_number_focused_l.i
-  Global s_gui_controls_dark_number_focused_c.i
-  Global s_gui_controls_dark_number_focused_r.i
-  ;}
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_number_disabled_l.i
-  Global s_gui_controls_number_disabled_c.i
-  Global s_gui_controls_number_disabled_r.i
-  Global s_gui_controls_number_disabled_s.i
-  Global s_gui_controls_number_disabled_cl.i
-  Global s_gui_controls_number_disabled_cr.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_number_normal_l.i
-  Global s_gui_controls_number_normal_c.i
-  Global s_gui_controls_number_normal_r.i
-  Global s_gui_controls_number_normal_s.i
-  Global s_gui_controls_number_normal_cl.i
-  Global s_gui_controls_number_normal_cr.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_number_over_l.i
-  Global s_gui_controls_number_over_c.i
-  Global s_gui_controls_number_over_r.i
-  Global s_gui_controls_number_over_s.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_number_focused_l.i
-  Global s_gui_controls_number_focused_c.i
-  Global s_gui_controls_number_focused_r.i
-  ;}
-  ;}
+ 
+  Global COLOR_BACK_ENABLE.i
+  Global COLOR_BACK_OVER.i
+  Global COLOR_BACK_FOCUSED.i
+  Global COLOR_BACK_DISABLE.i
+  Global COLOR_FRONT_ENABLE.i
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlNumber_t )
@@ -176,47 +87,7 @@ DeclareModule ControlNumber
     ControlNumberVT: 
     Data.i @OnEvent()
     Data.i @Delete()
-    
-    ; Images
-    ; (Light)
-    VIControlNumber_light_disabled_bg: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.disabled.bg.png"
-    VIControlNumber_light_disabled_cover: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.disabled.cover.png"
-    VIControlNumber_light_disabled_slider: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.disabled.slider.png"
-    VIControlNumber_light_focused: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.focused.png"
-    VIControlNumber_light_normal_bg: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.normal.bg.png"
-    VIControlNumber_light_normal_cover: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.normal.cover.png"
-    VIControlNumber_light_normal_slider: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.normal.slider.png"
-    VIControlNumber_light_over_bg: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.over.bg.png"
-    VIControlNumber_light_over_slider: 
-    IncludeBinary "../../rsc/skins/grey/control_number/light.number.over.slider.png"
-    
-    ; (Dark)
-    VIControlNumber_dark_disabled_bg:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.disabled.bg.png"
-    VIControlNumber_dark_disabled_cover:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.disabled.cover.png"
-    VIControlNumber_dark_disabled_slider:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.disabled.slider.png"
-    VIControlNumber_dark_focused: 
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.focused.png"
-    VIControlNumber_dark_normal_bg:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.normal.bg.png"
-    VIControlNumber_dark_normal_cover:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.normal.cover.png"
-    VIControlNumber_dark_normal_slider:
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.normal.slider.png"
-    VIControlNumber_dark_over_bg: 
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.over.bg.png"
-    VIControlNumber_dark_over_slider: 
-    IncludeBinary "../../rsc/skins/grey/control_number/dark.number.over.slider.png"
+   
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -420,7 +291,6 @@ Module ControlNumber
     ; ---[ Set Font ]-----------------------------------------------------------
     Protected tc.i = UIColor::COLOR_NUMBER_FG
     DrawingFont(FontID(Globals::#FONT_TEXT))
-  ;   raaSetFontEdit( raa_font_node )
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - TextHeight( *Me\value ) )/2 + yoff
     
@@ -503,37 +373,20 @@ Module ControlNumber
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
     ;   raaResetClip()
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    DrawingMode(#PB_2DDrawing_Default)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      DrawImage( ImageID(s_gui_controls_number_disabled_l ),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_disabled_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-      DrawImage( ImageID(s_gui_controls_number_disabled_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_disabled_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
-      DrawImage( ImageID(s_gui_controls_number_disabled_cl),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_disabled_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_DISABLE)
       ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLOR_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
-      DrawImage( ImageID(s_gui_controls_number_focused_l),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_focused_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-      DrawImage( ImageID(s_gui_controls_number_focused_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_FOCUSED)
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      DrawImage( ImageID(s_gui_controls_number_over_l   ),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_over_c   ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-      DrawImage( ImageID(s_gui_controls_number_over_r   ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_over_s   ),            2 + xoff, 1 + yoff, slider_w,      16 )
-      DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_OVER)
     Else
-      DrawImage( ImageID(s_gui_controls_number_normal_l ),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_normal_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-      DrawImage( ImageID(s_gui_controls_number_normal_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_normal_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
-      DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
-      DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_ENABLE)
     EndIf
     
     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
@@ -541,9 +394,9 @@ Module ControlNumber
     
     ; ---[ Handle Caret & Selection ]-------------------------------------------
     If *Me\focused
-      ; 같�[ Has Selection ]같같같같같같같같같같같같같같같같같같같같같같같같같같
+      ; ---[ Has Selection ]----------------------------------------------------
       If *Me\selected
-        ; ...[ Draw Regular Text + Selection ]..................................
+        ; ---[ Draw Regular Text + Selection ]----------------------------------
         CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
@@ -554,12 +407,12 @@ Module ControlNumber
         CompilerEndSelect
         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
         DrawText( tx + xoff, ty, dtext, UIColor::COLOR_SELECTED_FG )
-      ; 같�[ Just Caret ]같같같같같같같같같같같같같같같같같같같같같같같같같같같�  
+      ; ---[ Just Caret ]-------------------------------------------------------
       Else
-        ; ...[ Draw Value ].....................................................
+        ; ---[ Draw Value ]-----------------------------------------------------
         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
         DrawText( tx + xoff, ty, dtext, tc )
-        ; ...[ Draw Caret ].....................................................
+        ; ---[ Draw Caret ]-----------------------------------------------------
         If *Me\caret_switch > 0 Or Not *Me\timer_on
           CompilerSelect #PB_Compiler_OS
             CompilerCase #PB_OS_Windows
@@ -573,14 +426,14 @@ Module ControlNumber
       EndIf
     Else
       ; ---[ Draw Value ]-------------------------------------------------------
-      CompilerSelect #PB_Compiler_OS
-          CompilerCase #PB_OS_Windows
-            RoundBox( -3 + tx + xoff, ty,   tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-          CompilerCase #PB_OS_Linux
-            RoundBox( -3 + tx + xoff, ty+1, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-          CompilerCase #PB_OS_MacOS
-            RoundBox( -3 + tx + xoff, ty+2, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-        CompilerEndSelect
+;       CompilerSelect #PB_Compiler_OS
+;           CompilerCase #PB_OS_Windows
+;             RoundBox( -3 + tx + xoff, ty,   tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
+;           CompilerCase #PB_OS_Linux
+;             RoundBox( -3 + tx + xoff, ty+1, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
+;           CompilerCase #PB_OS_MacOS
+;             RoundBox( -3 + tx + xoff, ty+2, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
+;         CompilerEndSelect
         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
         DrawText( tx + xoff, ty, dtext, tc )
     EndIf
@@ -738,9 +591,12 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           Control::Invalidate(*Me)
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
-          Debug "Parameter Value : "+StrF(*Me\value_n)
+          ;If *Me\object
+            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
+            PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
+          ;EndIf
+          
+          
         EndIf
         ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -944,7 +800,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
           
-         
           Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
           PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
@@ -1268,6 +1123,21 @@ Procedure Delete( *Me.ControlNumber_t )
 EndProcedure
 ;}
 
+Procedure Init()
+  COLOR_BACK_ENABLE = RGB(128,128,128)
+  COLOR_BACK_OVER = RGB(164,164,164)
+  COLOR_BACK_FOCUSED = RGB(180,180,180)
+  COLOR_BACK_DISABLE = RGB(64,64,64)
+EndProcedure
+
+Procedure Term()
+EndProcedure
+
+Procedure SetTheme(theme.i)
+EndProcedure
+
+
+
 
 
 ; ============================================================================
@@ -1286,7 +1156,7 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type         = Control::#PB_GadgetType_Number
+  *Me\type         = Control::#CONTROL_NUMBER
   *Me\name         = name
   *Me\gadgetID     = #Null
   *Me\posX         = x
@@ -1332,237 +1202,6 @@ EndProcedure
 
 ;}
 
-
-; ============================================================================
-;  PROCEDURES
-; ============================================================================
-;{
-Procedure SetTheme( theme.i )
-  MessageRequester("NUMBER","SET THEME : "+Str(theme))
-  Select theme
-      
-    ; ---[ Light ]------------------------------------------------------------
-    Case Globals::#GUI_THEME_LIGHT
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_number_disabled_l  = s_gui_controls_light_number_disabled_l
-      s_gui_controls_number_disabled_c  = s_gui_controls_light_number_disabled_c
-      s_gui_controls_number_disabled_r  = s_gui_controls_light_number_disabled_r
-      s_gui_controls_number_disabled_s  = s_gui_controls_light_number_disabled_s
-      s_gui_controls_number_disabled_cl = s_gui_controls_light_number_disabled_cl
-      s_gui_controls_number_disabled_cr = s_gui_controls_light_number_disabled_cr
-      ; ...[ Normal ].........................................................
-      s_gui_controls_number_normal_l    = s_gui_controls_light_number_normal_l
-      s_gui_controls_number_normal_c    = s_gui_controls_light_number_normal_c
-      s_gui_controls_number_normal_r    = s_gui_controls_light_number_normal_r
-      s_gui_controls_number_normal_s    = s_gui_controls_light_number_normal_s
-      s_gui_controls_number_normal_cl   = s_gui_controls_light_number_normal_cl
-      s_gui_controls_number_normal_cr   = s_gui_controls_light_number_normal_cr
-      ; ...[ Over ]...........................................................
-      s_gui_controls_number_over_l      = s_gui_controls_light_number_over_l
-      s_gui_controls_number_over_c      = s_gui_controls_light_number_over_c
-      s_gui_controls_number_over_r      = s_gui_controls_light_number_over_r
-      s_gui_controls_number_over_s      = s_gui_controls_light_number_over_s
-      ; ...[ Focused ]........................................................
-      s_gui_controls_number_focused_l   = s_gui_controls_light_number_focused_l
-      s_gui_controls_number_focused_c   = s_gui_controls_light_number_focused_c
-      s_gui_controls_number_focused_r   = s_gui_controls_light_number_focused_r
-
-    ; ---[ Dark ]-------------------------------------------------------------
-    Case Globals::#GUI_THEME_DARK
-      MessageRequester("NUMBER","SET DARK THEME")
-      ; ...[ Disabled ].......................................................
-      s_gui_controls_number_disabled_l  = s_gui_controls_dark_number_disabled_l
-      s_gui_controls_number_disabled_c  = s_gui_controls_dark_number_disabled_c
-      s_gui_controls_number_disabled_r  = s_gui_controls_dark_number_disabled_r
-      s_gui_controls_number_disabled_s  = s_gui_controls_dark_number_disabled_s
-      s_gui_controls_number_disabled_cl = s_gui_controls_dark_number_disabled_cl
-      s_gui_controls_number_disabled_cr = s_gui_controls_dark_number_disabled_cr
-      ; ...[ Normal ].........................................................
-      s_gui_controls_number_normal_l    = s_gui_controls_dark_number_normal_l
-      s_gui_controls_number_normal_c    = s_gui_controls_dark_number_normal_c
-      s_gui_controls_number_normal_r    = s_gui_controls_dark_number_normal_r
-      s_gui_controls_number_normal_s    = s_gui_controls_dark_number_normal_s
-      s_gui_controls_number_normal_cl   = s_gui_controls_dark_number_normal_cl
-      s_gui_controls_number_normal_cr   = s_gui_controls_dark_number_normal_cr
-      ; ...[ Over ]...........................................................
-      s_gui_controls_number_over_l      = s_gui_controls_dark_number_over_l
-      s_gui_controls_number_over_c      = s_gui_controls_dark_number_over_c
-      s_gui_controls_number_over_r      = s_gui_controls_dark_number_over_r
-      s_gui_controls_number_over_s      = s_gui_controls_dark_number_over_s
-      ; ...[ Focused ]........................................................
-      s_gui_controls_number_focused_l   = s_gui_controls_dark_number_focused_l
-      s_gui_controls_number_focused_c   = s_gui_controls_dark_number_focused_c
-      s_gui_controls_number_focused_r   = s_gui_controls_dark_number_focused_r
-      
-  EndSelect
-  
-EndProcedure
-;}
-
-
-  ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsNumberInitOnce
-  ; ----------------------------------------------------------------------------
-  Procedure Init( )
-  ;CHECK_INIT
-  
-    ; ---[ Local Variable ]-----------------------------------------------------
-    Protected img.i
-    
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  LIGHT
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_disabled_bg )
-    s_gui_controls_light_number_disabled_l  = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_disabled_c  = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_light_number_disabled_r  = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_disabled_cover )
-    s_gui_controls_light_number_disabled_cl = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_disabled_cr = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_disabled_slider )
-    s_gui_controls_light_number_disabled_s  = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_normal_bg )
-    s_gui_controls_light_number_normal_l    = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_normal_c    = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_light_number_normal_r    = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_normal_cover )
-    s_gui_controls_light_number_normal_cl   = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_normal_cr   = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_normal_slider )
-    s_gui_controls_light_number_normal_s    = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_over_bg )
-    s_gui_controls_light_number_over_l      = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_over_c      = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_light_number_over_r      = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_over_slider )
-    s_gui_controls_light_number_over_s      = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Focused ]............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_light_focused )
-    s_gui_controls_light_number_focused_l   = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_light_number_focused_c   = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_light_number_focused_r   = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    ;}
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  DARK
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_disabled_bg )
-    s_gui_controls_dark_number_disabled_l  = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_disabled_c  = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_dark_number_disabled_r  = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_disabled_cover )
-    s_gui_controls_dark_number_disabled_cl = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_disabled_cr = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_disabled_slider )
-    s_gui_controls_dark_number_disabled_s  = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_normal_bg )
-    s_gui_controls_dark_number_normal_l    = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_normal_c    = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_dark_number_normal_r    = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_normal_cover )
-    s_gui_controls_dark_number_normal_cl   = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_normal_cr   = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_normal_slider )
-    s_gui_controls_dark_number_normal_s    = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_over_bg )
-    s_gui_controls_dark_number_over_l      = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_over_c      = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_dark_number_over_r      = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_over_slider )
-    s_gui_controls_dark_number_over_s      = GrabImage( img, #PB_Any,  16, 1, 16, 16 )
-    FreeImage( img )
-    ; ...[ Focused ]............................................................
-    img = CatchImage( #PB_Any, ?VIControlNumber_dark_focused )
-    s_gui_controls_dark_number_focused_l   = GrabImage( img, #PB_Any,   0, 0,  8, 18 )
-    s_gui_controls_dark_number_focused_c   = GrabImage( img, #PB_Any,  16, 0, 16, 18 )
-    s_gui_controls_dark_number_focused_r   = GrabImage( img, #PB_Any, 165, 0,  8, 18 )
-    FreeImage( img )
-    ;}
-    
-    SetTheme(Globals::#GUI_THEME_LIGHT)
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsNumberTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure Term( )
-  ;CHECK_INIT  
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; 같�[ Free Images ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Dark ]...............................................................
-    FreeImage( s_gui_controls_dark_number_focused_r   )
-    FreeImage( s_gui_controls_dark_number_focused_c   )
-    FreeImage( s_gui_controls_dark_number_focused_l   )
-    FreeImage( s_gui_controls_dark_number_over_s      )
-    FreeImage( s_gui_controls_dark_number_over_r      )
-    FreeImage( s_gui_controls_dark_number_over_c      )
-    FreeImage( s_gui_controls_dark_number_over_l      )
-    FreeImage( s_gui_controls_dark_number_normal_cr   )
-    FreeImage( s_gui_controls_dark_number_normal_cl   )
-    FreeImage( s_gui_controls_dark_number_normal_s    )
-    FreeImage( s_gui_controls_dark_number_normal_r    )
-    FreeImage( s_gui_controls_dark_number_normal_c    )
-    FreeImage( s_gui_controls_dark_number_normal_l    )
-    FreeImage( s_gui_controls_dark_number_disabled_cr )
-    FreeImage( s_gui_controls_dark_number_disabled_cl )
-    FreeImage( s_gui_controls_dark_number_disabled_s  )
-    FreeImage( s_gui_controls_dark_number_disabled_r  )
-    FreeImage( s_gui_controls_dark_number_disabled_c  )
-    FreeImage( s_gui_controls_dark_number_disabled_l  )
-  
-    ; ...[ Light ]..............................................................
-    FreeImage( s_gui_controls_light_number_focused_r   )
-    FreeImage( s_gui_controls_light_number_focused_c   )
-    FreeImage( s_gui_controls_light_number_focused_l   )
-    FreeImage( s_gui_controls_light_number_over_s      )
-    FreeImage( s_gui_controls_light_number_over_r      )
-    FreeImage( s_gui_controls_light_number_over_c      )
-    FreeImage( s_gui_controls_light_number_over_l      )
-    FreeImage( s_gui_controls_light_number_normal_cr   )
-    FreeImage( s_gui_controls_light_number_normal_cl   )
-    FreeImage( s_gui_controls_light_number_normal_s    )
-    FreeImage( s_gui_controls_light_number_normal_r    )
-    FreeImage( s_gui_controls_light_number_normal_c    )
-    FreeImage( s_gui_controls_light_number_normal_l    )
-    FreeImage( s_gui_controls_light_number_disabled_cr )
-    FreeImage( s_gui_controls_light_number_disabled_cl )
-    FreeImage( s_gui_controls_light_number_disabled_s  )
-    FreeImage( s_gui_controls_light_number_disabled_r  )
-    FreeImage( s_gui_controls_light_number_disabled_c  )
-    FreeImage( s_gui_controls_light_number_disabled_l  )
-  
-  
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-  EndProcedure
   
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlNumber )
@@ -1572,8 +1211,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 621
-; FirstLine = 613
-; Folding = ------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1128
+; FirstLine = 1100
+; Folding = ----
 ; EnableXP

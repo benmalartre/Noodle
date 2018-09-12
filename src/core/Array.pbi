@@ -104,6 +104,11 @@ DeclareModule CArray
   Declare AppendArray(*array.CArrayT,*other.CArrayT)
   Declare AppendUnique(*array.CArrayT,*unique)
   Declare AppendUniqueStr(*array.CArrayT,unique.s)
+  Declare Fill(*array.CArrayT, *value)
+  Declare FillC(*array.CArrayT, c.c)
+  Declare FillL(*array.CArrayT, l.l)
+  Declare FillI(*array.CArrayT, i.i)
+  Declare FillF(*array.CArrayT, f.f)
   Declare GetCount(*array.CArrayT)
   Declare SetCount(*array.CArrayT,count.i)
   Declare GetItemSize(*array.CArrayT)
@@ -592,6 +597,66 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; Fill
+  ;----------------------------------------------------------------
+  Procedure Fill(*array.CArrayT,*value)
+    If *array\type = #ARRAY_STR : ProcedureReturn : EndIf
+    
+    Protected i
+    For i = 0 To *array\itemCount-1
+      CopyMemory(*value, GetPtr(*array, i),GetItemSize(*array))
+    Next
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; FillC
+  ;----------------------------------------------------------------
+  Procedure FillC(*array.CArrayT,c.c)
+    If Not *Array\type = #ARRAY_CHAR : ProcedureReturn : EndIf
+    
+    Protected i
+    For i = 0 To *array\itemCount-1
+      PokeC(GetPtr(*array, i), c)
+    Next
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; FillL
+  ;----------------------------------------------------------------
+  Procedure FillL(*array.CArrayT,l.l)
+    If Not *Array\type = #ARRAY_LONG : ProcedureReturn : EndIf
+    
+    Protected i
+    For i = 0 To *array\itemCount-1
+      PokeL(GetPtr(*array, i), l)
+    Next
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; FillI
+  ;----------------------------------------------------------------
+  Procedure FillI(*array.CArrayT,i.i)
+    If Not *Array\type = #ARRAY_INT : ProcedureReturn : EndIf
+    
+    Protected j
+    For j = 0 To *array\itemCount-1
+      PokeI(GetPtr(*array, j), i)
+    Next
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; FillF
+  ;----------------------------------------------------------------
+  Procedure FillF(*array.CArrayT,f.f)
+    If Not *Array\type = #ARRAY_FLOAT : ProcedureReturn : EndIf
+    
+    Protected j
+    For j = 0 To *array\itemCount-1
+      PokeF(GetPtr(*array, j), f)
+    Next
+  EndProcedure
+  
+  ;----------------------------------------------------------------
   ; GetCount
   ;----------------------------------------------------------------
   Procedure GetCount(*array.CArrayT)
@@ -1043,8 +1108,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 480
-; FirstLine = 470
-; Folding = ----------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 110
+; FirstLine = 74
+; Folding = -----------
 ; EnableXP

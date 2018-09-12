@@ -3,13 +3,11 @@ XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Attribute.pbi"
 XIncludeFile "../core/Object.pbi"
 XIncludeFile "../core/Perlin2.pbi"
-
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Texture.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/PolymeshGeometry.pbi"
 XIncludeFile "../objects/Stack.pbi"
-
 
 
 DeclareModule Object3D
@@ -140,7 +138,7 @@ DeclareModule Object3D
   Declare GetGlobalTransform(*Me.Object3D_t)
   Declare SetGlobalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
   Declare SetStaticTransform(*Me.Object3D_t,*t.Transform::Transform_t)
-  Declare UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t)
+  Declare UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t=#Null)
   Declare UpdateLocalTransform(*obj.Object3D::Object3D_t)
   Declare GetAttribute(*obj.Object3D_t,name.s)
   Declare AddAttribute(*obj.Object3D_t,*attribute.Attribute::Attribute_t)
@@ -152,7 +150,7 @@ DeclareModule Object3D
   Declare SetShader(*obj.Object3D_t,*shader.Program::Program_t)
   ;   Declare SetVisibility(visible.b)
   Declare EncodeID(*color.v3f32,id.i)
-  Declare DecodeID(x.GLubyte,y.GLubyte,z.GLubyte)
+  Declare DecodeID(r.GLubyte,g.GLubyte,b.GLubyte)
   Declare FindChildren(*obj.Object3D_t,name.s,type.i,*io_array.CArray::CArrayPtr,recurse.b)
     
 EndDeclareModule
@@ -223,7 +221,6 @@ Module Object3D
   ; Add Child 
   ;--------------------------------------------------------------
   Procedure AddChild(*parent.Object3D_t,*child.Object3D_t)
-    Debug "ADD CHILD : "+*child\name
     If *child\parent
       ForEach *child\parent\children()
         If *child\parent\children() = *child
@@ -233,7 +230,6 @@ Module Object3D
       Next
     EndIf
     *child\parent = *parent
-    Debug "PARENT : "+*parent\name
     
     If *parent\type = Object3D::#Object3D_Model
       *child\model = *parent
@@ -327,15 +323,16 @@ Module Object3D
   ;-----------------------------------------------
   ; Update Transform
   ;-----------------------------------------------
-  Procedure UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t)
+  Procedure UpdateTransform(*obj.Object3D::Object3D_t,*pt.Transform::Transform_t=#Null)
     Protected *local.Transform::Transform_t = *obj\localT
     If *pt = #Null
       If *obj\parent
         *pt = *obj\parent\globalT
       Else
+        Matrix4::SetFromOther(*obj\globalT\m,*obj\localT\m)
+        Transform::UpdateSRTFromMatrix(*obj\globalT)
         ProcedureReturn
       EndIf
-      
     EndIf
     
     ; Multiply by Global Matrix of Parent Object
@@ -390,16 +387,9 @@ Module Object3D
       Debug "C3DObject ["+*obj\name+"]: Attribute "+*attribute\name+" Already exists !! "
       ProcedureReturn #Null
     Else
-      ;*obj\attributes\Append(*attribute)
       Object3D::AttachMapElement(*obj\m_attributes(),*attribute\name,*attribute)
     EndIf
-    
-  ;   Debug "---------------------------------------------------------------------------------------"
-  ;   Debug "3DObject Add Attribute Called..."
-  ;   Debug "3DObject : "+*obj\name
-  ;   Debug "Nb Attributes : "+Str(*obj\attributes\GetCount()-1)
-  ;   Debug "---------------------------------------------------------------------------------------"
-    
+
   EndProcedure
   
   ;-----------------------------------------------
@@ -466,17 +456,19 @@ Module Object3D
   ; Encode ID
   ;-----------------------------------------------
   Procedure EncodeID(*color.v3f32,id.i)
-    id = Random(65000)
-    *color\x = Red(id)*1/255
-    *color\y = Green(id)*1/255
-    *color\z = Blue(id)*1/255
+    Protected r = (id & $0000FF) >>  0
+    Protected g = (id & $00FF00) >>  8
+    Protected b = (id & $FF0000) >> 16
+    *color\x = r / 255
+    *color\y = g / 255
+    *color\z = b / 255
   EndProcedure
   
   ;-----------------------------------------------
   ; Encode ID
   ;-----------------------------------------------
   Procedure DecodeID(x.GLubyte,y.GLubyte,z.GLubyte)
-    ProcedureReturn RGB(x,y,z)
+    ProcedureReturn x + y * 256 + z * 256 * 256
   EndProcedure
   
   
@@ -530,12 +522,10 @@ Module Object3D
     Next
     
   EndProcedure
- 
-  
-  
+
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 160
-; FirstLine = 138
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 470
+; FirstLine = 453
 ; Folding = ------
 ; EnableXP

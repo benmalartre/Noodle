@@ -19,7 +19,6 @@ If Time::Init()
     ;glfwCreateWindow(800,600,"TestGLFW",#Null,#Null)
     glfwMakeContextCurrent(*window)
     GLLoadExtensions()
-;     Define *ftgl_drawer.FTGL::FTGL_Drawer = FTGL::New()
     Define w,h
     glfwGetWindowSize(*window,@w,@h)
   
@@ -51,10 +50,11 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 47
 ; EnableThread
 ; EnableXP
-; Executable = /Volumes/STORE N GO/TestGLFW.app
+; Executable = \Volumes\STORE N GO\TestGLFW.app
 ; DisableDebugger
 ; Debugger = Standalone
 ; EnablePurifier

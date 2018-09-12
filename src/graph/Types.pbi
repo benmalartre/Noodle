@@ -242,8 +242,7 @@ DeclareModule Connexion
   Macro DrawLine(x1,y1,x2,y2,color,antialiased)
     Select antialiased
       Case #True
-        ;NormalL(x1,y1,x2,y2,color,#Graph_Bezier_Thickness)
-        Box(x1,y1,x2,y2,color)
+        NormalL(x1,y1,x2,y2,color,#Graph_Bezier_Thickness)
       Case #False
         LineXY(x1,y1,x2,y2,color)
     EndSelect
@@ -319,8 +318,9 @@ DeclareModule Node
     List *nodes.Node::Node_t()
     List *connexions.Connexion::Connexion_t()
     List *exposers.Connexion::Connexion_t()
+    
     ;current port
-    *port.CGraphNodePort 
+    *port.NodePort::NodePort_t
   EndStructure
   
   Global NODE_BORDER_WIDTH.i
@@ -576,8 +576,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 294
-; FirstLine = 283
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 313
+; FirstLine = 292
 ; Folding = ---
 ; EnableXP

@@ -384,7 +384,7 @@ UseModule Math
     Protected *mem = AllocateMemory(size_t*1.5)
     Protected local = CreateXMLNode(kine,"transform")
     SetXMLAttribute(local,"Name","Local Transform")
-    Protected value.s = Matrix4::AsString(*m)
+    Protected value.s = Matrix4::ToString(*m)
     SetXMLAttribute(local,"Value", value)
     ;Base64Encoder(*m,size_t,*mem,size_t*1.5)
     ;SetXMLAttribute(local,"Value",PeekS(*mem,size_t*1.5))
@@ -457,7 +457,7 @@ UseModule Math
         Protected datas.s
         ; Vertices
         Protected size_t = CArray::GetCount(*geom\topo\vertices) * CArray::GetItemSize(*geom\topo\vertices)
-        CompilerIf #PB_Compiler_Version < 540
+        CompilerIf #PB_Compiler_Version < 560
           Protected *mem = AllocateMemory(size_t*1.5)
           Base64Encoder(CArray::GetPtr(*geom\topo\vertices,0),size_t,*mem,size_t*1.5)
           SetXMLAttribute(geom,"Vertices",PeekS(*mem,size_t*1.5))
@@ -470,7 +470,7 @@ UseModule Math
         
         ; Indices
         size_t = CArray::GetCount(*geom\topo\faces)* CArray::GetItemSize(*geom\topo\faces)
-        CompilerIf #PB_Compiler_Version < 540
+        CompilerIf #PB_Compiler_Version < 560
           *mem = ReAllocateMemory(*mem,size_t*1.5)
           Base64Encoder(CArray::GetPtr(*geom\topo\faces,0),size_t,*mem,size_t*1.5)
           SetXMLAttribute(geom,"Indices",PeekS(*mem,size_t*1.5))
@@ -480,7 +480,7 @@ UseModule Math
         
         SetXMLAttribute(geom,"Indices",datas)
         
-        FreeMemory(*mem)
+        If *mem : FreeMemory(*mem) : EndIf
     EndSelect
     
     SaveTransform(object,*item)
@@ -575,9 +575,9 @@ UseModule Math
   
   Class::DEF(Saver)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 484
-; FirstLine = 448
+; FirstLine = 451
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

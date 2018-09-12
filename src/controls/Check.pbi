@@ -294,6 +294,7 @@ Module ControlCheck
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
+            Debug "TRIGGER FROM CHECK"
             PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
             Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
 ;             Protected sig.CSlot = *Me\sig_onchanged
@@ -389,7 +390,7 @@ Module ControlCheck
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#PB_GadgetType_Check
+    *Me\type     = Control::#CONTROL_CHECK
     *Me\name     = name
     *Me\gadgetID = #Null
     *Me\posX     = x
@@ -538,8 +539,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 221
-; FirstLine = 216
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 392
+; FirstLine = 388
 ; Folding = ----
 ; EnableXP

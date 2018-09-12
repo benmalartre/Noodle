@@ -2,14 +2,23 @@
 ;  OpenGl Layer For 3D Picking Using GLSL Shaders
 ; ============================================================================
 XIncludeFile "Layer.pbi"
+XIncludeFile "../opengl/Context.pbi"
 
 DeclareModule LayerSelection
   UseModule Math
+  UseModule OpenGL
   ;---------------------------------------------------
   ; Structure
   ;---------------------------------------------------
   Structure LayerSelection_t Extends Layer::Layer_t
-   
+    uProjectionMatrix.i
+    uViewMatrix.i
+    uModelMatrix.i
+    uUniqueID.i
+    mouseX.i
+    mouseY.i
+    Array read_datas.GLubyte(4)
+    *overchild.Object3D::Object3D_t
   EndStructure
   
   ;---------------------------------------------------
@@ -38,11 +47,12 @@ Module LayerSelection
   UseModule OpenGL
   UseModule OpenGLExt
   
+  
+
 ;---------------------------------------------------------
 ; Pick Children Recursively
 ;---------------------------------------------------------
   Procedure DrawChildren(*layer.LayerSelection_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
-  Debug  " >>>>>>>>>>>>>> Selection Layer Draw Children Called<<<<<<<<<<<<<<<<<<<<<<<<<<<<<é"
   Protected id.v3f32
   Protected nbo = ListSize(*obj\children())
   Protected *child.Object3D::Object3D_t
@@ -50,23 +60,20 @@ Module LayerSelection
   Protected *t.Transform::Transform_t
   Protected i
   
-  Protected shader.i = *ctx\shaders("selection")\pgm
-
-  Protected uModelMatrix = glGetUniformLocation(shader,"model")
-  Protected uUniqueID = glGetUniformLocation(shader,"uniqueID")
+  
   ForEach *obj\children()
     *child = *obj\children()
     Object3D::EncodeID(@id,*child\uniqueID)
     If *child\type = Object3D::#Object3D_Polymesh
       *t = *child\globalT
-      glUniform3f(uUniqueID,id\x,id\y,id\z)
-      glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*t\m)
+      glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
+      glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
       child = *child
       child\Draw()
     ElseIf *child\type = Object3D::#Object3D_PointCloud
       *t = *child\globalT
-      glUniform3f(uUniqueID,id\x,id\y,id\z)
-      glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*t\m)
+      glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
+      glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
       child = *child
       child\Draw()
     EndIf 
@@ -82,7 +89,6 @@ EndProcedure
 ;---------------------------------------------------
 Procedure Update(*layer.LayerSelection_t,*view.m4f32,*proj.m4f32)
   
-
 EndProcedure
 
 
@@ -114,37 +120,75 @@ EndProcedure
 ; Draw
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
+  Debug "DRAW  LAYER"
   Protected layer.Layer::ILayer = *layer
-  layer\Update()
-  ;*layer\eye
-  Debug  " >>>>>>>>>>>>>> Selection Layer Draw  Called<<<<<<<<<<<<<<<<<<<<<<<<<<<<<é"
+;   layer\Update()
     ; ---[ Find Up View Point ]--------------------------
   Protected *view.m4f32 = Layer::GetViewMatrix(*layer)
   Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
-
+  
   ; ---[ Bind Framebuffer and Clean ]-------------------
   Framebuffer::BindOutput(*layer\buffer)
-  GLCheckError("Bind Framebuffer")
   glViewport(0,0,*layer\width,*layer\height)
-  GLCheckError("GL Viewport")
-  glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  Protected shader.GLuint =  *ctx\shaders("selection")\pgm
+  ;glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
+  glClearColor(0,0,0,0)
+  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
   
-  glUseProgram(shader)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-  glUniform3f(glGetUniformLocation(shader,"uniqueID"),1,0,0)
+  glUseProgram(*layer\shader\pgm)
+;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 0)
+;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 0)
+  glUniformMatrix4fv(*layer\uViewMatrix,1,#GL_FALSE,*view)
+  glUniformMatrix4fv(*layer\uProjectionMatrix,1,#GL_FALSE,*proj)
+  glUniform3f(*layer\uUniqueID,0,0,0)
   
   glEnable(#GL_DEPTH_TEST)
   glDisable(#GL_CULL_FACE)
-  ;glFrontFace(#GL_CW)
   
   ; Recursive Draw
   DrawChildren(*layer,Scene::*current_scene\root,*ctx)
-  glDisable(#GL_DEPTH_TEST)
-  Framebuffer::Unbind(*layer\buffer)
+  
+;   glFlush()
+;   glFinish()
+  
+  glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
+  
   Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+   ; Read the pixel at the center of the screen.
+  glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
+  Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
+  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
+    
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
+    Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
+    Protected obj.Object3D::IObject3D = *obj
+    glDisable(#GL_DEPTH_TEST)
+    glEnable(#GL_CULL_FACE)
+    glDisable(#GL_BLEND)
+
+    Define *t.Transform::Transform_t = *obj\globalT
+    glUniform3f(*layer\uUniqueID,1,1,1)
+    glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
+    *obj\selected = #True
+    obj\Draw()
+    If *obj <> *layer\overchild
+      If *layer\overchild : *layer\overchild\selected = #False : EndIf
+      *layer\overchild = *obj
+    EndIf
+  Else
+    If *layer\overchild
+      *layer\overchild\selected = #False
+      *layer\overchild = #Null
+    EndIf
+    
+  EndIf
+  
+  
+  Framebuffer::Unbind(*layer\buffer)
+  
+  
+  
 
 EndProcedure
 
@@ -169,6 +213,15 @@ Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object
   *Me\buffer = Framebuffer::New("Selection",width,height)
   Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA8,#GL_LINEAR)
   Framebuffer::AttachRender(*Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
+  
+    
+  *Me\shader = *ctx\shaders("selection")
+  Protected shader.i = *Me\shader\pgm
+  *Me\uViewMatrix = glGetUniformLocation(shader,"view")
+  *Me\uProjectionMatrix = glGetUniformLocation(shader,"projection")
+  *Me\uModelMatrix = glGetUniformLocation(shader,"model")
+  *Me\uUniqueID = glGetUniformLocation(shader,"uniqueID")
+  
   *Me\pov = *pov
   ProcedureReturn *Me
 EndProcedure
@@ -177,8 +230,13 @@ EndProcedure
 
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 66
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 184
+; FirstLine = 142
+; Folding = --
+; EnableXP
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 183
 ; Folding = --
 ; EnableXP

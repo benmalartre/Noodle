@@ -12,6 +12,7 @@ DeclareModule UI
     #UI_COLOR
     #UI_LOG
     #UI_TIMELINE
+    #UI_ANIMATION_EDITOR
   EndEnumeration
   
   Structure UI_t Extends Object::Object_t
@@ -139,8 +140,8 @@ EndProcedure
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 17
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 14
+; FirstLine = 62
 ; Folding = -
 ; EnableXP

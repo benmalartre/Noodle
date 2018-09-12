@@ -32,7 +32,6 @@ If Time::Init()
   
   *camera = Camera::New("Default",Camera::#Camera_Perspective)
   FTGL::Init()
-  Define *ftgl_drawer.FTGL::FTGL_Drawer = FTGL::New()
   
   Define *m.CubeMap::CubeMap_t = CubeMap::New("../../cube_maps/ldr/stpeters_cross.tif")
   CubeMap::Setup(*m)
@@ -79,11 +78,11 @@ If Time::Init()
       glEnable(#GL_BLEND)
       glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
       glDisable(#GL_DEPTH_TEST)
-      FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+      FTGL::SetColor(*app\context\writer,1,1,1,1)
       Define ss.f = 0.85/w
       Define ratio.f = w / h
-      FTGL::Draw(*ftgl_drawer,"SSAO wip",-0.9,0.9,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"SSAO wip",-0.9,0.9,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
 ;       FTGL::Draw(*ftgl_drawer,"FPS  : "+Str(fps),-0.9,0.8,ss,ss*ratio)
       glDisable(#GL_BLEND)
       glEnable(#GL_DEPTH_TEST)
@@ -110,7 +109,7 @@ If Time::Init()
       glClearColor(0.5,0.5,0.5,1.0)
       glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
       
-      Camera::Event(*camera,gadget)
+      Camera::OnEvent(*camera,gadget)
       glDisable(#GL_DEPTH_TEST)
      CubeMap::Draw(*m,*camera)
      
@@ -157,9 +156,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 36
-; FirstLine = 32
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 133
+; FirstLine = 75
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

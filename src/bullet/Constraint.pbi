@@ -44,6 +44,8 @@ DeclareModule BulletConstraint
   Declare NewPoint2Point(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
   Declare NewGear(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
   Declare NewSlider(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
+  Declare NewGeneric6Dof(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
+  Declare NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
   Declare Delete(*cns.BTConstraint_t)
 EndDeclareModule
 
@@ -134,6 +136,20 @@ Module BulletConstraint
     ProcedureReturn *Me
   EndProcedure
   
+  ; ConeTwist Constraint
+  ;-------------------------------------------------------------
+  Procedure NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
+    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    
+    *Me\objA  = *objA
+    *Me\objB = *objB
+    *Me\bodyA = *objA\rigidbody
+    *Me\bodyB = *objB\rigidbody
+    
+    *Me\cns = Bullet::BTNewConeTwistConstraint(*objA\rigidbody,*objB\rigidbody,*frameA,*frameB)
+
+    ProcedureReturn *Me
+  EndProcedure
   
   ; Constructor
   ;-------------------------------------------------------------
@@ -188,8 +204,8 @@ Module BulletConstraint
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 110
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 115
+; FirstLine = 102
+; Folding = ---
 ; EnableXP

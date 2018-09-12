@@ -25,7 +25,7 @@ DeclareModule FTGL
   ; ============================================================================
   ; STRUCTURES
   ; ============================================================================
-  Structure FTGL_GlyphInfos
+  Structure FTGL_GlyphInfos Align #PB_Structure_AlignC
     ax.f;	 advance.x
     ay.f;	 advance.y
   
@@ -37,7 +37,7 @@ DeclareModule FTGL
   	tx.f;	x offset of glyph in texture coordinates
   EndStructure
   
-  Structure FTGL_FontAtlas
+  Structure FTGL_FontAtlas Align #PB_Structure_AlignC
     metadata.FTGL_GlyphInfos[256]
     width.i
     height.i
@@ -46,18 +46,18 @@ DeclareModule FTGL
     *buffer
   EndStructure
   
-  Structure FTGL_Face
+  Structure FTGL_Face Align #PB_Structure_AlignC
     v.f[16]
   EndStructure
   
-  Structure FTGL_Color
+  Structure FTGL_Color Align #PB_Structure_AlignC
     r.f
     g.f
     b.f
     a.f
   EndStructure
   
-  Structure FTGL_Drawer
+  Structure FTGL_Drawer Align #PB_Structure_AlignC
     *atlas.FTGL_FontAtlas
     color.FTGL_Color
     vao.GLuint
@@ -66,7 +66,7 @@ DeclareModule FTGL
     *shader.Program::Program_t
   EndStructure
   
-  Structure FTGL_Point
+  Structure FTGL_Point Align #PB_Structure_AlignC
     x.f
     y.f
     s.f
@@ -81,9 +81,11 @@ DeclareModule FTGL
   If FileSize(FONT_FILE_NAME) = -1
     FONT_FILE_NAME = "fontsArial/arial.ttf"
   EndIf
+  
+  MessageRequester("FTGL", Str(FileSize(FONT_FILE_NAME)))
  
-
   Global *ftgl_atlas.FTGL_FontAtlas = 0
+  Global NewMap *atlases.FTGL_FontAtlas()
   
   ; ============================================================================
   ; IMPORTS
@@ -118,9 +120,13 @@ DeclareModule FTGL
   
   Declare Init()
   Declare New()
+  Declare AddAtlas(filename.s, size_px.i, name.s)
+  Declare RemoveAtlas(name.s)
   Declare Delete(*drawer.FTGL_Drawer)
   Declare SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
   Declare SetColor(*drawer.FTGL_Drawer,r.f,g.f,b.f,a.f)
+  Declare BeginDraw(*drawer.FTGL_Drawer)
+  Declare EndDraw(*drawer.FTGL_Drawer)
   Declare Draw(*drawer.FTGL_Drawer,text.s,x.f,y.f,sx.f,sy.f)
   Declare SetupTexture(*drawer.FTGL_Drawer)
   Declare.s GetVertexShader()
@@ -136,8 +142,13 @@ Module FTGL
   ; ============================================================================
   Procedure Init()
     ; ---[ Global Atlas ]-------------------------------------------------------
-    *ftgl_atlas = FT_CreateFontAtlas(FONT_FILE_NAME,32)
-
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 8, "Arial8")
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 16, "Arial16")
+    *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 32, "Arial32")
+    If FindMapElement(*atlases(), "Arial16")
+      *ftgl_atlas = *atlases()
+    EndIf
+   
   EndProcedure
   
   Procedure SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
@@ -230,14 +241,6 @@ Module FTGL
     
     Protected size_t = (Len(text))*6*SizeOf(FTGL_Point)
     Define *mem = AllocateMemory(size_t)
-    glBindVertexArray(*drawer\vao)
-    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
-    glUseProgram(*drawer\shader\pgm)
-    glUniform4fv(glGetUniformLocation(*drawer\shader\pgm,"color"),1,*drawer\color)
-    glActiveTexture(#GL_TEXTURE0)
-    glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
-    glUniform1i(glGetUniformLocation(*drawer\shader\pgm,"tex"),0)
-    glDisable(#GL_CULL_FACE)
     
     Protected atlas_width = *drawer\atlas\width
     Protected atlas_height = *drawer\atlas\height
@@ -269,13 +272,9 @@ Module FTGL
       
     Next a
     
-    glEnable(#GL_BLEND)
-    glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-    glDisable(#GL_DEPTH_TEST)
+    
     glBufferData(#GL_ARRAY_BUFFER,size_t,*mem,#GL_DYNAMIC_DRAW)
     glDrawArrays(#GL_TRIANGLES,0,Len(text)*6)
-    glDisable(#GL_BLEND)
-    glUseProgram(0)
     
     FreeMemory(*mem)
   EndProcedure
@@ -292,7 +291,6 @@ Module FTGL
     GLCheckError("Enable Texture")
     
     glActiveTexture(#GL_TEXTURE0)
-    GLCheckError("Activate Texture 0")
     Protected w = *drawer\atlas\width
     Protected h = *drawer\atlas\height
     
@@ -307,9 +305,7 @@ Module FTGL
       Next
     Next
     StopDrawing()
-    GLCheckError("Texture Drawn")
     *drawer\tex = Texture::Load( img,#False)
-    GLCheckError("Texture Loaded")
 
 ;   	glGenTextures(1,@*drawer\tex)
 ;   	glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
@@ -325,7 +321,59 @@ Module FTGL
 ;   	glTexImage2D(#GL_TEXTURE_2D,0,#GL_ALPHA,w,h,0,#GL_ALPHA,#GL_UNSIGNED_BYTE,FT_GetAtlasBuffer(*drawer\atlas))
   EndProcedure
   
+  ;-------------------------------------------------------------------------------------
+  ; Begin Draw
+  ;-------------------------------------------------------------------------------------
+  Procedure BeginDraw(*drawer.FTGL_Drawer)
+    glUseProgram(*drawer\shader\pgm)
+    glEnable(#GL_BLEND)
+    glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
+    glDisable(#GL_DEPTH_TEST)
+    
+    glBindVertexArray(*drawer\vao)
+    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
+    glUseProgram(*drawer\shader\pgm)
+    glUniform4fv(glGetUniformLocation(*drawer\shader\pgm,"color"),1,*drawer\color)
+    glActiveTexture(#GL_TEXTURE0)
+    glBindTexture(#GL_TEXTURE_2D,*drawer\tex)
+    glUniform1i(glGetUniformLocation(*drawer\shader\pgm,"tex"),0)
+    glDisable(#GL_CULL_FACE)
+  EndProcedure
   
+  ;-------------------------------------------------------------------------------------
+  ; End Draw
+  ;-------------------------------------------------------------------------------------
+  Procedure EndDraw(*drawer.FTGL_Drawer)
+    glDisable(#GL_BLEND)
+    glEnable(#GL_DEPTH_TEST)  
+    glUseProgram(0)
+  EndProcedure
+  
+  ;-------------------------------------------------------------------------------------
+  ; Add Atlas 
+  ;-------------------------------------------------------------------------------------
+  Procedure AddAtlas(filename.s, size_px.i, name.s)
+    If Not FindMapElement(*atlases(), name)
+      If FileSize(filename) And size_px > 0
+        Protected *atlas = FT_CreateFontAtlas(filename,size_px)
+        AddMapElement(*atlases(), name)
+        *atlases() = *atlas
+        ProcedureReturn *atlas
+      EndIf
+    EndIf
+    ProcedureReturn #Null
+  EndProcedure
+  
+  ;-------------------------------------------------------------------------------------
+  ; Remove Atlas 
+  ;-------------------------------------------------------------------------------------
+  Procedure RemoveAtlas(name.s)
+    If FindMapElement(*atlases(), name)
+      Protected *atlas = *atlases()
+      FT_DeleteFontAtlas(*atlas)
+      DeleteMapElement(*atlases(), name)
+    EndIf
+  EndProcedure
   
   ;-------------------------------------------------------------------------------------
   ; Destructor
@@ -344,6 +392,7 @@ Module FTGL
   ;-------------------------------------------------------------------------------------
   Procedure New()
     Protected *drawer.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
+    InitializeStructure(*drawer, FTGL_Drawer)
     If *ftgl_atlas
       *drawer\atlas = *ftgl_atlas
     Else
@@ -352,33 +401,26 @@ Module FTGL
 
     *drawer\color\r = 1
     *drawer\color\a = 1
-    GLCheckError("Start Create FGTL")
     glGenVertexArrays(1,@*drawer\vao)
     glBindVertexArray(*drawer\vao)
-    GLCheckError("Create VAO")
     glGenBuffers(1,@*drawer\vbo)
     glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
-    GLCheckError("Create VBO")
     Protected vert.s = GetVertexShader()
     Protected frag.s = GetFragmentShader()
     
-    *drawer\shader = Program::New("FTGL",vert, frag)
-    GLCheckError("Create Shader")
+    *drawer\shader = Program::New("FTGL",vert, "",frag)
+    glUseProgram(*drawer\shader\pgm)
     SetupTexture(*drawer)
-    GLCheckError("Setup Texture")
     Protected attr_coord.GLuint = glGetAttribLocation(*drawer\shader\pgm,"coord")
     glEnableVertexAttribArray(attr_coord)
-    GLCheckError("Enable Attribute")
-    glBindBuffer(#GL_ARRAY_BUFFER,*drawer\vbo)
     glVertexAttribPointer(attr_coord,4,#GL_FLOAT,#GL_FALSE,0,#Null)
-    GLCheckError("Bind Buffer")
     
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 350
-; FirstLine = 322
-; Folding = ---
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 17
+; Folding = ----
 ; EnableXP
 ; EnableUnicode

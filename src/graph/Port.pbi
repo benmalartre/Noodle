@@ -600,61 +600,49 @@ Module NodePort
         Protected *iVal.CArray::CArrayInt = *port\value
         CArray::SetValueI(*iVal,0,*iCtrl\value_n)
         *port\dirty = #True
-;         Debug "New LONG Value : "+Str(iVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_FLOAT
         
         Protected *fCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected fv.f = *fCtrl\value_n
-        Debug "Recieved FLOAT port "+StrF(fv)
         Protected *fVal.CArray::CArrayFloat = *port\value
         CArray::SetValueF(*fVal,0,fv);*fCtrl\value_n)
         *port\dirty = #True
-;         Debug "New FLOAT Value : "+StrF(fVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal.CArray::CArrayV3F32 = *port\value
-        Protected v.v3f32
-        
-        Vector3::SetFromOther(@v,CArray::GetValuePtr(*vVal,0))
+        Protected *v.v3f32 = CArray::GetValue(*vVal, 0)
         
         Protected *vCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected f.f = *vCtrl\value_n
         Select *sig\rcv_slot
           Case 0;X
-            Debug "X Parameter Vector Update..."
-            Vector3::Set(@v,f,v\y,v\z)
+            *v\x = f
           Case 1;Y
-            Vector3::Set(@v,v\x,f,v\z)
+            *v\y = f
           Case 2;Z
-            Vector3::Set(@v,v\x,v\y,f)
+            *v\z = f
         EndSelect
         
-        CArray::SetValuePtr(*vVal,0,@v)
         *port\dirty = #True
-        ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
       Case Attribute::#ATTR_TYPE_Quaternion
         Protected *qVal.CArray::CArrayQ4F32 = *port\value
-        Protected q.q4f32
-        
-        Vector3::SetFromOther(@q,CArray::GetValuePtr(*qVal,0))
+        Protected *q.q4f32 = CArray::GetValue(*qVal,0)
         
         Protected *qCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         f.f = *qCtrl\value_n
         Select *sig\rcv_slot
           Case 0;X
-            Debug "X Parameter Vector Update..."
-            Quaternion::Set(@q,f,q\y,q\z,q\w)
+            *q\x = f
           Case 1;Y
-            Quaternion::Set(@q,q\x,f,q\z,q\w)
+            *q\y = f
           Case 2;Z
-            Quaternion::Set(@q,q\x,q\y,f,q\w)
+            *q\z = f
           Case 3;Angle
-            Quaternion::Set(@q,q\x,q\y,q\z,Radian(f))
+            *q\w = Radian(f)
         EndSelect
-        
-        CArray::SetValuePtr(*qVal,0,@q)
+
         *port\dirty = #True
         
       Case Attribute::#ATTR_TYPE_STRING
@@ -718,8 +706,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 611
-; FirstLine = 593
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 636
+; FirstLine = 597
 ; Folding = ----
 ; EnableXP

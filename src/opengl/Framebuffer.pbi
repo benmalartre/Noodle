@@ -1,5 +1,5 @@
 ﻿XIncludeFile("../libs/OpenGL.pbi")
-XIncludeFile("../libs/GLFW.pbi")
+; XIncludeFile("../libs/GLFW.pbi")
 XIncludeFile("../libs/OpenGLExt.pbi")
 ;====================================================================
 ; Framebuffer Module Declaration(Shared)
@@ -372,9 +372,11 @@ Module Framebuffer
   Procedure BindInput(*Me.Framebuffer_t,offset.i=0)
     Protected i
     Protected nb = ArraySize(*Me\tbos())
+    Debug "BIND "+*Me\name
     For i=0 To nb-1
-      glActiveTexture(#GL_TEXTURE0 + i +offset)
+      glActiveTexture(#GL_TEXTURE0 + (i+offset))
       glBindTexture(#GL_TEXTURE_2D,*Me\tbos(i)\textureID)
+      Debug "BIND : "+Str(i+offset)+" ---> "+Str(*Me\tbos(i)\textureID)
     Next i
   
   EndProcedure
@@ -589,9 +591,8 @@ EndProcedure
 
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 414
-; FirstLine = 400
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 1
 ; Folding = ----
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

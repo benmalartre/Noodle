@@ -206,10 +206,10 @@ Module LoadSceneCmd
 EndModule
 ; Procedure OScene_Save_Do()
 ;  
-;   If *raa_current_scene
-;      MessageRequester("Raabit","Scene Save Called!!!")
-;     ;OScene_Save(*raa_current_scene)
-;     Protected *saver.CSaver = newCSaver(*raa_current_scene,"")
+;   If *current_scene
+;      MessageRequester("Noodle","Scene Save Called!!!")
+;     ;Scene_Save(*current_scene)
+;     Protected *saver.CSaver = newCSaver(*current_scene,"")
 ;     If *saver
 ;       OSaver_Save(*saver)
 ;       OSaver_Free(*saver)
@@ -317,9 +317,9 @@ Module CreatePolymeshCmd
     Commands::Do(Commands::*manager)
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 260
-; FirstLine = 238
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 211
+; FirstLine = 205
 ; Folding = ------
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

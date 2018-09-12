@@ -33,8 +33,7 @@ DeclareModule Class
     CompilerEndIf
     
     CLASS\dtor = @Delete()
-   
-    
+
   EndMacro
 
 EndDeclareModule
@@ -44,7 +43,6 @@ EndDeclareModule
 ;======================================================================
 Module Class
   Procedure ClassOnMessage()
-    Debug "Dummy Class On Message Called..."
   EndProcedure
   
 EndModule
@@ -101,6 +99,7 @@ DeclareModule Slot
   Declare New(*sender)
   Declare Delete(*slot.Slot_t)
   Declare Connect(*Me.Slot_t, *rcv, slot.i )
+  Declare Disconnect(*Me.Slot_t, *rcv )
   Declare Trigger( *Me.Slot_t, type.Signal::SIGNAL_TYPE, *sig_data )
 EndDeclareModule
 
@@ -121,11 +120,14 @@ DeclareModule Object
     *Me\VT = ?cls#VT
     *Me\class  = @CLASS
     *Me\slot = Slot::New(*Me)
-;     *Me\rfc    = 0
   EndMacro
   
-  
+  Macro TERM( cls )
+    Slot::Delete(*Me\slot)
+  EndMacro
+
   Declare SignalConnect( *Me.Object_t, *sig.Slot::Slot_t, slot.i )  
+  Declare SignalDisconnect( *Me.Object_t, *sig.Slot::Slot_t)  
 EndDeclareModule
 
 ;======================================================================
@@ -133,18 +135,24 @@ EndDeclareModule
 ;======================================================================
 Module Object
   Procedure SignalConnect( *Me.Object_t, *slot.Slot::Slot_t, slot.i )  
-  ; ---[ Sanity Check ]-------------------------------------------------------
-  If Not *Me Or Not *slot : ProcedureReturn :EndIf
-  Debug *Me\class\name
-  Debug *slot
-
-  ; ---[ Connect Me To Signal ]-----------------------------------------------
-  Slot::Connect(*slot,*Me, slot )
-EndProcedure
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me Or Not *slot : ProcedureReturn :EndIf
+  
+    ; ---[ Connect Me To Signal ]-----------------------------------------------
+    Slot::Connect(*slot,*Me, slot )
+  EndProcedure
+  
+  Procedure SignalDisconnect( *Me.Object_t, *slot.Slot::Slot_t)  
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me Or Not *slot : ProcedureReturn :EndIf
+  
+    ; ---[ Connect Me To Signal ]-----------------------------------------------
+    Slot::Disconnect(*slot,*Me )
+  EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 69
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 78
+; Folding = ---
 ; EnableXP

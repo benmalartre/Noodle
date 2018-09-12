@@ -507,6 +507,7 @@ Module Polymesh
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
+    *P\wireframe = #True
 ;     If *p\wireframe
 ;       glBindVertexArray(*p\vao2)
 ;       glPointSize(4)
@@ -518,12 +519,26 @@ Module Polymesh
 ;       GLCheckError("DRAW MESH WIREFRAME")
 ;     Else
       glBindVertexArray(*p\vao)
+      glDisable (#GL_POLYGON_OFFSET_FILL)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
       ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
-;     EndIf
+      ;     EndIf
+      ;If *p\selected
+          glEnable(#GL_BLEND)
+          glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
+        glEnable (#GL_POLYGON_OFFSET_LINE)
+        glPolygonOffset (4.0, 1.0)
+        glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+
+        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+        glDisable(#GL_BLEND)
+        glDisable (#GL_POLYGON_OFFSET_LINE)
+      ;EndIf
+      
     glBindVertexArray(0)
-    
   EndProcedure
   ;}
   
@@ -561,8 +576,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 477
-; FirstLine = 466
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 536
+; FirstLine = 501
 ; Folding = ----
 ; EnableXP

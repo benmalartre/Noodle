@@ -5,7 +5,6 @@ DeclareModule Math
   ; ----------------------------------------------------------------------------
   ;  Limits
   ; ----------------------------------------------------------------------------
-  
   #S8_MIN     = (-128)
   #S8_MAX     =   127
   #U8_MIN     =     0
@@ -71,6 +70,11 @@ DeclareModule Math
   
   #F32_DEG2RAD  =  0.0174533              ; pi/180
   #F32_RAD2DEG  = 57.2957795              ; 180/pi
+  
+  #MIN_VECTOR_LENGTH = 1e-10
+  #MIN_ORTHO_TOLERANCE = 1e-6
+  
+  #RAND_MAX = 2147483647                ; according to help for Random()
 
   ; ----------------------------------------------------------------------------
   ;  Maximum Macro
@@ -248,8 +252,18 @@ DeclareModule Math
     scl.v3f32
   EndStructure
   
-  Declare.d Max(a.d,b.d)
-  Declare.d Min(a.d,b.d)
+  ; ----------------------------------------------------------------------------
+  ;  Declare
+  ; --------------------------------------------------------------------------
+  Declare.f Max(a.f,b.f)
+  Declare.f Min(a.f,b.f)
+  Declare.b IsClose(value.f, root.f, tolerance.f)
+  Declare.f Random_0_1()
+  Declare UniformPointOnCircle(*p.v2f32, radius.f=1.0)
+  Declare.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
+  Declare.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
+  Declare UniformPointOnSphere(*p.v3f32, radius.f=1.0)
+  Declare MapDiscPointToSphere(*dp.v2f32, *sp.v3f32)
 EndDeclareModule
 
 ;====================================================================
@@ -261,8 +275,8 @@ DeclareModule Vector2
   Declare SetFromOther(*v.v2f32,*o.v2f32)
   Declare.f LengthSquared(*v.v2f32)
   Declare.f Length(*v.v2f32)
-  Declare Normalize(*v.v2f32,*o.v2f32)
-  Declare NormalizeInPlace(*v.v2f32)
+  Declare.f Normalize(*v.v2f32,*o.v2f32)
+  Declare.f NormalizeInPlace(*v.v2f32)
   Declare.f GetAngle(*v.v2f32,*o.v2f32)
   Declare Add(*v.v2f32,*a.v2f32,*b.v2f32)
   Declare AddInPlace(*v.v2f32,*o.v2f32)
@@ -270,6 +284,8 @@ DeclareModule Vector2
   Declare Sub(*v.v2f32,*a.v2f32,*b.v2f32)
   Declare Scale(*v.v2f32,*o.v2f32,mult.f=1.0)
   Declare ScaleInPlace(*v.v2f32,mult.f=1.0)
+  Declare Invert(*o.v2f32, *v.v2f32)
+  Declare InvertInPlace(*v.v2f32)
   Declare LinearInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,blend.f=0.0)
   Declare BezierInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,u.f)
   Declare HermiteInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,mu.f,tension.f,bias.f)
@@ -277,7 +293,7 @@ DeclareModule Vector2
   Declare SetLength(*v.v2f32,l.f)
   Declare Multiply(*o.v2f32,*a.v2f32,*b.v2f32)
   Declare Echo(*v.v2f32,name.s="")
-  Declare.s AsString(*v.v2f32)
+  Declare.s ToString(*v.v2f32)
   Declare FromString(*v.v2f32, s.s)
 EndDeclareModule
 
@@ -290,8 +306,8 @@ DeclareModule Vector3
   Declare SetFromOther(*v.v3f32,*o.v3f32)
   Declare.f LengthSquared(*v.v3f32)
   Declare.f Length(*v.v3f32)
-  Declare Normalize(*v.v3f32,*o.v3f32)
-  Declare NormalizeInPlace(*v.v3f32)
+  Declare.f Normalize(*v.v3f32,*o.v3f32)
+  Declare.f NormalizeInPlace(*v.v3f32)
   Declare.f GetAngle(*v.v3f32,*o.v3f32)
   Declare Add(*v.v3f32,*a.v3f32,*b.v3f32)
   Declare AddInPlace(*v.v3f32,*o.v3f32)
@@ -299,6 +315,8 @@ DeclareModule Vector3
   Declare Sub(*v.v3f32,*a.v3f32,*b.v3f32)
   Declare Scale(*v.v3f32,*o.v3f32,mult.f=1.0)
   Declare ScaleInPlace(*v.v3f32,mult.f=1.0)
+  Declare Invert(*o.v3f32, *v.v3f32)
+  Declare InvertInPlace(*v.v3f32)
   Declare LinearInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,blend.f=0.0)
   Declare BezierInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,u.f)
   Declare HermiteInterpolate(*v.v3f32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,mu.f,tension.f,bias.f)
@@ -313,7 +331,7 @@ DeclareModule Vector3
   Declare MulByQuaternion(*out.v3f32,*in.v3f32,*q.q4f32)
 	Declare MulByQuaternionInPlace(*v.v3f32,*q.q4f32)
 	Declare Echo(*v.v3f32,name.s="")
-	Declare.s AsString(*v.v3f32)
+	Declare.s ToString(*v.v3f32)
 	Declare FromString(*v.v3f32, s.s)
 EndDeclareModule
 
@@ -327,7 +345,7 @@ DeclareModule Vector4
   Declare MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
   Declare MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
   Declare Echo(*v.v4f32,name.s="")
-  Declare.s AsString(*v.v4f32)
+  Declare.s ToString(*v.v4f32)
   Declare FromString(*v.v4f32, s.s)
 EndDeclareModule
 
@@ -362,8 +380,12 @@ DeclareModule Quaternion
   Declare LookAt(*q.q4f32,*dir.v3f32,*up.v3f32,transpose.b = #False)
   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
+  Declare Randomize(*q.q4f32)
+  Declare Randomize2(*q.q4f32)
+  Declare RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+  Declare RandomizeAroundPlane(*q.q4f32)
   Declare Echo(*q.q4f32,prefix.s ="")
-  Declare.s AsString(*q.q4f32)
+  Declare.s ToString(*q.q4f32)
   Declare FromString(*q.q4f32, s.s)
 EndDeclareModule
 
@@ -372,7 +394,59 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Color
   UseModule Math
-
+  
+  DataSection
+    COLOR_RED:
+    Data.f 1,0,0,1
+    COLOR_GREEN:
+    Data.f 0,1,0,1
+    COLOR_BLUE:
+    Data.f 0,0,1,1
+    COLOR_YELLOW:
+    Data.f 1,1,0,1
+    COLOR_PURPLE:
+    Data.f 0,1,1,1
+    COLOR_MAGENTA:
+    Data.f 1,0,1,1
+    COLOR_BLACK:
+    Data.f 0,0,0,1
+    COLOR_WHITE:
+    Data.f 1,1,1,1
+  EndDataSection
+  
+  Macro _RED()
+    Color::?COLOR_RED
+  EndMacro
+  
+  Macro _GREEN()
+    Color::?COLOR_GREEN
+  EndMacro
+  
+  Macro _BLUE()
+    Color::?COLOR_BLUE
+  EndMacro
+  
+  Macro _YELLOW()
+    Color::?COLOR_YELLOW
+  EndMacro
+  
+  Macro _PURPLE()
+    Color::?COLOR_PURPLE
+  EndMacro
+  
+  Macro _MAGENTA()
+    Color::?COLOR_MAGENTA
+  EndMacro
+  
+  Macro _WHITE()
+    Color::?COLOR_WHITE
+  EndMacro
+  
+  Macro _BLACK()
+    Color::?COLOR_BLACK
+  EndMacro
+  
+  
   Declare AddInplace(*c1.c4f32,*c2.c4f32)
   Declare Add(*io.c4f32,*a.c4f32,*b.c4f32)
   Declare Set(*io.c4f32,r.f=0,g.f=0,b.f=0,a.f=1)
@@ -381,9 +455,11 @@ DeclareModule Color
   Declare NormalizeInPlace(*c.c4f32)
   Declare Randomize(*c.c4f32)
   Declare RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
+  Declare LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
   Declare Echo(*c.c4f32,prefix.s ="")
-  Declare.s AsString(*c.c4f32)
+  Declare.s ToString(*c.c4f32)
   Declare FromString(*c.c4f32, s.s)
+  Declare MapRGB(*c.c4f32, r.f=1, g.f=1, b.f=1, a.f=1, x.f=0)
 EndDeclareModule
 
 ;====================================================================
@@ -400,7 +476,7 @@ DeclareModule Matrix3
   Declare MulByMatrix3(*m.m3f32,*f.m3f32,*s.m3f32)
   Declare GetQuaternion(*m.m3f32,*q.q4f32,transpose.b=#False)
   Declare Echo(*m.m3f32)
-  Declare.s AsString(*m.m3f32)
+  Declare.s ToString(*m.m3f32)
   Declare FromString(*m.m3f32, s.s)
 EndDeclareModule
 
@@ -409,6 +485,18 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Matrix4
   UseModule Math
+  DataSection
+    M_IDENTITY:
+    Data.f 1.0,0.0,0.0,0.0
+    Data.f 0.0,1.0,0.0,0.0
+    Data.f 0.0,0.0,1.0,0.0
+    Data.f 0.0,0.0,0.0,1.0
+  EndDataSection
+  
+  Macro IDENTITY()
+    Matrix4::?M_IDENTITY
+  EndMacro
+  
   Declare Set(*m.m4f32,m00.f,m01.f,m02.f,m03.f,m10.f,m11.f,m12.f,m13.f,m20.f,m21.f,m22.f,m23.f,m30.f,m31.f,m32.f,m33.f)
   Declare SetZero(*m.m4f32)
   Declare SetIdentity(*m.m4f32)
@@ -433,7 +521,7 @@ DeclareModule Matrix4
   Declare GetViewMatrix(*io.m4f32,*pos.v3f32,*lookat.v3f32,*up.v3f32)
   Declare GetQuaternion(*m.m4f32,*q.q4f32)
   Declare Echo(*m.m4f32,name.s="")
-  Declare.s AsString(*m.m4f32)
+  Declare.s ToString(*m.m4f32)
   Declare FromString(*m.m4f32, s.s)
   Declare TranslationMatrix(*m.m4f32, *pos.v3f32)
   Declare DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
@@ -472,10 +560,10 @@ EndDeclareModule
 
 
 ;====================================================================
-; MathType Module Implementation(Empty)
+; Math Module Implementation
 ;====================================================================
 Module Math
-  Procedure.d Max(a.d,b.d)
+  Procedure.f Max(a.f,b.f)
     If a<b
       ProcedureReturn b
     Else
@@ -484,13 +572,83 @@ Module Math
     
   EndProcedure
   
-   Procedure.d Min(a.d,b.d)
+   Procedure.f Min(a.f,b.f)
     If a<b
       ProcedureReturn a
     Else
       ProcedureReturn b
     EndIf
     
+  EndProcedure
+  
+  Procedure.b IsClose(value.f, root.f, tolerance.f)
+    If Abs(value - root) < tolerance 
+      ProcedureReturn #True
+    Else
+      ProcedureReturn #False
+    EndIf
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Random 0 to 1
+  ; ----------------------------------------------------------------------------
+  Procedure.f Random_0_1()
+    ProcedureReturn Random(#RAND_MAX)/#RAND_MAX
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Circle
+  ; ----------------------------------------------------------------------------
+  Procedure UniformPointOnCircle(*p.v2f32, radius.f=1.0)
+    Protected angle.f = Random_0_1() * #F32_2PI 
+    Vector2::Set(*p, Cos(angle) * radius, Sin(angle) * radius)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Disc (Rejection Method)
+  ; ----------------------------------------------------------------------------
+  Procedure.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
+    Protected d.f = 1.0
+    While d>=1.0
+      *p\x = 2.0*Random_0_1()-1.0
+      *p\y = 2.0*Random_0_1()-1.0
+      d = Pow(*p\x, 2) + Pow(*p\y, 2)
+    Wend
+    *p\x * radius
+    *p\y * radius
+    ProcedureReturn Vector2::Length(*p)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Disc (Polar Method)
+  ; ----------------------------------------------------------------------------
+  Procedure.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
+    Protected angle.f = Random_0_1() * #F32_2PI 
+    Protected r.f = Sqr(Random_0_1())
+    Vector2::Set(*p, Cos(angle) * radius * r, Sin(angle) * radius * r)
+    ProcedureReturn Vector2::Length(*p)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Uniform Point On Sphere
+  ; ----------------------------------------------------------------------------
+  Procedure UniformPointOnSphere(*p.v3f32, radius.f=1.0)
+    *p\z = 1 - 2.0 * Random_0_1()
+    Protected t.f = #F32_2PI * Random_0_1()
+    Protected w.f = Sqr(1.0 - Pow(*p\z, 2))
+    *p\x = w * Cos(t)
+    *p\y = w * Sin(t)
+    Vector3::ScaleInPlace(*p, radius)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Map Disc Point To Sphere
+  ; ----------------------------------------------------------------------------
+  Procedure MapDiscPointToSphere(*dp.v2f32, *sp.v3f32)
+    Protected w.f = Pow(*dp\x,2) + Pow(*dp\y, 2)
+    Protected x.f = 2 * *dp\x * Sqr(1 - w)
+    Protected y.f = 2 * *dp\y * Sqr(1 - w)
+    Protected z.f = 1 - 2*w
   EndProcedure
   
 EndModule
@@ -507,9 +665,9 @@ Module Vector2
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v2f32)
+  Procedure.s ToString(*v.v2f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)
   EndProcedure
   
@@ -549,7 +707,7 @@ Module Vector2
 
   ; Normalize
   ;----------------------------------------
-  Procedure Normalize(*v.v2f32,*o.v2f32)
+  Procedure.f Normalize(*v.v2f32,*o.v2f32)
     Protected l.f = Length(*o)
     ;Avoid error dividing by zero
     If l = 0 : l =1.0 :EndIf
@@ -557,11 +715,12 @@ Module Vector2
     Protected div.f = 1/l
     *v\x = *o\x * div
     *v\y = *o\y * div
+    ProcedureReturn l
    EndProcedure
    
    ; Normalize In Place
   ;----------------------------------------
-  Procedure NormalizeInPlace(*v.v2f32)
+  Procedure.f NormalizeInPlace(*v.v2f32)
     Protected l.f = Length(*v)
     
     ;Avoid error dividing by zero
@@ -570,6 +729,7 @@ Module Vector2
     Protected div.f = 1/l
     *v\x * div
     *v\y * div
+    ProcedureReturn l
   EndProcedure
 
   ; Get Angle
@@ -625,6 +785,18 @@ Module Vector2
   Procedure ScaleInPlace(*v.v2f32,mult.f=1.0)
     *v\x * mult
     *v\y * mult
+  EndProcedure
+  
+  ; Invert
+  ;-----------------------------------------------------
+  Procedure Invert(*v.v2f32,*o.v2f32)
+    If *o\x <> 0.0 : *v\x = 1.0 / *o\x : Else : *v\x = 0.0 : EndIf
+    If *o\y <> 0.0 : *v\y = 1.0 / *o\y : Else : *v\y = 0.0 : EndIf
+  EndProcedure
+  
+  Procedure InvertInPlace(*v.v2f32)
+    If *v\x <> 0.0 : *v\x = 1.0 / *v\x : EndIf
+    If *v\y <> 0.0 : *v\y = 1.0 / *v\y : EndIf
   EndProcedure
 
   ; Linear Interpolate
@@ -706,9 +878,9 @@ Module Vector3
     Debug name +":("+StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v3f32)
+  Procedure.s ToString(*v.v3f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)
   EndProcedure
   
@@ -750,7 +922,7 @@ Module Vector3
 
   ; Normalize
   ;----------------------------------------
-  Procedure Normalize(*v.v3f32,*o.v3f32)
+  Procedure.f Normalize(*v.v3f32,*o.v3f32)
     Protected l.f = Length(*o)
     ;Avoid error dividing by zero
     If l = 0 : l =1.0 :EndIf
@@ -759,11 +931,12 @@ Module Vector3
     *v\x = *o\x * div
     *v\y = *o\y * div
     *v\z = *o\z * div
+    ProcedureReturn l
    EndProcedure
    
    ; Normalize In Place
   ;----------------------------------------
-  Procedure NormalizeInPlace(*v.v3f32)
+  Procedure.f NormalizeInPlace(*v.v3f32)
     Protected l.f = Length(*v)
     
     ;Avoid error dividing by zero
@@ -773,6 +946,7 @@ Module Vector3
     *v\x * div
     *v\y * div
     *v\z * div
+    ProcedureReturn l
   EndProcedure
 
   ; Get Angle
@@ -834,6 +1008,20 @@ Module Vector3
     *v\x * mult
     *v\y * mult
     *v\z * mult
+  EndProcedure
+  
+  ; Invert
+  ;-----------------------------------------------------
+  Procedure Invert(*v.v3f32,*o.v3f32)
+    If *o\x <> 0.0 : *v\x = 1.0 / *o\x : Else : *v\x = 0.0 : EndIf
+    If *o\y <> 0.0 : *v\y = 1.0 / *o\y : Else : *v\y = 0.0 : EndIf
+    If *o\z <> 0.0 : *v\z = 1.0 / *o\z : Else : *v\z = 0.0 : EndIf
+  EndProcedure
+  
+  Procedure InvertInPlace(*v.v3f32)
+    If *v\x <> 0.0 : *v\x = 1.0 / *v\x : EndIf
+    If *v\y <> 0.0 : *v\y = 1.0 / *v\y : EndIf
+    If *v\z <> 0.0 : *v\z = 1.0 / *v\z : EndIf
   EndProcedure
 
   ; Linear Interpolate
@@ -1066,17 +1254,17 @@ Module Vector4
   Procedure MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
     Protected x.f,y.f,z.f,w.f
 
-    If Not transpose
-      x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
-      y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
-      z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
-      w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
-    Else
+;     If Not transpose
+;       x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
+;       y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
+;       z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
+;       w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
+;     Else
       x = *o\x * *m\v[0] + *o\y * *m\v[4] + *o\z * *m\v[8] + *o\w * *m\v[12]
       y = *o\x * *m\v[1] + *o\y * *m\v[5] + *o\z * *m\v[9] + *o\w * *m\v[13]
       z = *o\x * *m\v[2] + *o\y * *m\v[6] + *o\z * *m\v[10] + *o\w * *m\v[14]
       w = *o\x * *m\v[3] + *o\y * *m\v[7] + *o\z * *m\v[11] + *o\w * *m\v[15]
-    EndIf
+;     EndIf
   
     *v\x = x
     *v\y = y
@@ -1089,17 +1277,17 @@ Module Vector4
   ;-----------------------------------------
   Procedure MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
     Protected x.f,y.f,z.f,w.f
-    If Not transpose
-      x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *v\w * *m\v[3]
-      y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *v\w * *m\v[7]
-      z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *v\w * *m\v[11]
-      w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *v\w * *m\v[15]
-    Else
+;     If Not transpose
+;       x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *v\w * *m\v[3]
+;       y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *v\w * *m\v[7]
+;       z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *v\w * *m\v[11]
+;       w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *v\w * *m\v[15]
+;     Else
       x = *v\x * *m\v[0] + *v\y * *m\v[4] + *v\z * *m\v[8] + *v\w * *m\v[12]
       y = *v\x * *m\v[1] + *v\y * *m\v[5] + *v\z * *m\v[9] + *v\w * *m\v[13]
       z = *v\x * *m\v[2] + *v\y * *m\v[6] + *v\z * *m\v[10] + *v\w * *m\v[14]
       w = *v\x * *m\v[3] + *v\y * *m\v[7] + *v\z * *m\v[11] + *v\w * *m\v[15]
-    EndIf
+;     EndIf
   
     *v\x = x
     *v\y = y
@@ -1114,9 +1302,9 @@ Module Vector4
     Debug prefix+"("+StrF(*v\x,3)+","+StrF(*v\y,3)+","+StrF(*v\z,3)+","+StrF(*v\w,3)+")"
   EndProcedure
       
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*v.v4f32)
+  Procedure.s ToString(*v.v4f32)
     ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+","+StrF(*v\w)
   EndProcedure
   
@@ -1421,6 +1609,7 @@ Module Quaternion
     Set(@t,*q\x,*q\y,*q\z,*q\w)
     Add(*q,@t,*o)
   EndProcedure
+  
 
 
   ;-----------------------------------------
@@ -1441,6 +1630,51 @@ Module Quaternion
     *out\z = (1-b) * *q1\z + b * *q2\z
     *out\w = (1-b) * *q1\w + b * *q2\w
   EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize
+  ;-----------------------------------------
+  Procedure Randomize(*q.q4f32)
+    Protected x.f,y.f,z.f
+    x = Random(255)/255
+    y = Random(255)/255
+    z = Random(255)/255
+    Set(*q, Sqr(x*Cos(#F32_2PI*z)), Sqr(1-x*Sin(#F32_2PI*y)), Sqr(1-x*Cos(#F32_2PI*y)), Sqr(x*Sin(#F32_2PI*z)))
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize 2 
+  ;-----------------------------------------
+  Procedure Randomize2(*q.q4f32)
+    Define.v2f32 p0,p1
+    Define d1.f = UniformPointOnDisc(@p1) + #F32_EPS
+    Define s1.f = 1/Sqr(d1)
+    Define d0 = UniformPointOnDisc(@p0);  // or positive in 'x' since -Q & Q are equivalent
+    Define s0.f = Sqr(1.0-d0)
+    Define s.f  = s0*s1
+  
+    Set(*q, p0\y, s*p1\x, s*p1\y, p0\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Axis
+  ;-----------------------------------------
+  Procedure RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+    Protected p.v2f32
+    UniformPointOnCircle(@p)
+    Set(*q, p\y * *axis\x, p\y * *axis\y, p\y * *axis\z, p\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Plane
+  ;-----------------------------------------
+  Procedure RandomizeAroundPlane(*q.q4f32)
+    Protected p.v2f32
+    Protected d.f = UniformPointOnDisc2(@p)
+    Protected s.f = Sqr(d)
+    Set(*q, p\x, p\y, 0.0, s)
+  EndProcedure
+  
   
   ;-----------------------------------------
   ; Slerp
@@ -1484,9 +1718,9 @@ Module Quaternion
     Debug prefix+"("+StrF(*q\x,3)+","+StrF(*q\y,3)+","+StrF(*q\z,3)+","+StrF(*q\w,3)+")"
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*q.q4f32)
+  Procedure.s ToString(*q.q4f32)
     ProcedureReturn StrF(*q\w)+","+StrF(*q\x)+","+StrF(*q\y)+","+StrF(*q\z)
   EndProcedure
   
@@ -1610,15 +1844,38 @@ Module Color
     *c\a = 1.0
   EndProcedure
   
+  
+  ; LinearInterpolate
+  ;----------------------------------------
+  Procedure LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
+    LINEAR_INTERPOLATE(*io\r, *c1\r, *c2\r, blend)
+    LINEAR_INTERPOLATE(*io\g, *c1\g, *c2\g, blend)
+    LINEAR_INTERPOLATE(*io\b, *c1\b, *c2\b, blend)
+    LINEAR_INTERPOLATE(*io\a, *c1\a, *c2\a, blend)
+  EndProcedure
+  
+  Procedure MapRGB(*io.c4f32, r.f=1.0, g.f=1.0, b.f=1.0, a.f=1.0, x.f=0.0)
+    Protected alpha.f = Mod(x,1)/3.0
+    
+;     def RGB(minimum, maximum, value):
+;     minimum, maximum = float(minimum), float(maximum)
+;     ratio = 2 * (value-minimum) / (maximum - minimum)
+;     b = Int(max(0, 255*(1 - ratio)))
+;     r = Int(max(0, 255*(ratio - 1)))
+;     g = 255 - b - r
+;     Return r, g, b
+  EndProcedure
+  
+  
   ; Echo
   ;----------------------------------------------------
   Procedure Echo(*c.c4f32,prefix.s ="")
     Debug "[Color] : "+StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*c.c4f32)
+  Procedure.s ToString(*c.c4f32)
     ProcedureReturn StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
   EndProcedure
   
@@ -1656,9 +1913,9 @@ Module Matrix3
     Debug l
   EndProcedure
   
-  ; AsString
+  ; ToString
   ;----------------------------------------------------
-  Procedure.s AsString(*m.m3f32)
+  Procedure.s ToString(*m.m3f32)
     Protected s.s
     Protected i
     For i=0 To 7 : s+StrF(*m\v[i])+"," : Next
@@ -1715,17 +1972,31 @@ Module Matrix3
   ; Set From Two Vectors
   ;---------------------------------------
   Procedure SetFromTwoVectors(*m.m3f32,*dir.v3f32,*up.v3f32)
-    Define.v3f32 forward,side,up
-    Vector3::Normalize(@forward,*dir)
-    Vector3::Normalize(@up,*up)
+    Protected N.v3f32
+    Vector3::Normalize(@N, *dir)
+    Protected U.v3f32
+    Vector3::Cross(@U, *up, @N)
+    Vector3::NormalizeInPlace(@U)
+    Protected V.v3f32
+    Vector3::Cross(@V, @N, @U)
+    Vector3::NormalizeInPlace(@V)
     
-    Vector3::Cross(@side,@forward,@up)
-    Vector3::Cross(@up,@side,@forward)
+    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z
+    *m\v[3] = N\x : *m\v[4] = N\y : *m\v[5] = N\z
+    *m\v[6] = U\x : *m\v[7] = U\y : *m\v[8] = U\z
     
-    Vector3::NormalizeInPlace(@side)
-    Vector3::NormalizeInPlace(@up)
-    
-    Set(*m,side\x,side\y,side\z,up\x,up\y,up\z,-forward\x,-forward\y,-forward\z)
+;     Define.v3f32 forward,side,up
+;     Vector3::Normalize(@forward,*dir)
+;     Vector3::Normalize(@up,*up)
+;     
+;     Vector3::Cross(@side,@forward,@up)
+;     Vector3::Cross(@up,@side,@forward)
+;     
+;     Vector3::NormalizeInPlace(@side)
+;     Vector3::NormalizeInPlace(@up)
+;     
+;     ;Set(*m,side\x,side\y,side\z,up\x,up\y,up\z,-forward\x,-forward\y,-forward\z)
+;     Set(*m, up\x,up\y,up\z,forward\x,forward\y,forward\z,side\x,side\y,side\z)
   EndProcedure
   
   ; Set From Quaternion
@@ -1885,7 +2156,7 @@ Module Matrix4
   
   ; As String
   ;--------------------------------------------------
-  Procedure.s AsString(*m.m4f32)
+  Procedure.s ToString(*m.m4f32)
     Protected s.s
     Protected i
     For i=0 To 14 : s+StrF(*m\v[i])+"," : Next
@@ -2306,14 +2577,15 @@ Module Matrix4
     Protected N.v3f32
     Vector3::Normalize(@N, *target)
     Protected U.v3f32
-    Vector3::Normalize(@U, *up)
-    Vector3::Cross(@U, @U, @N)
+    Vector3::Cross(@U, *up, @N)
+    Vector3::NormalizeInPlace(@U)
     Protected V.v3f32
     Vector3::Cross(@V, @N, @U)
+    Vector3::NormalizeInPlace(@V)
     
-    *m\v[0] = U\x : *m\v[1] = U\y : *m\v[2] = U\z  : *m\v[3] = 0
-    *m\v[4] = V\x : *m\v[5] = V\y : *m\v[6] = V\z  : *m\v[7] = 0
-    *m\v[8] = N\x : *m\v[9] = N\y : *m\v[10] = N\z : *m\v[11] = 0
+    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z  : *m\v[3] = 0
+    *m\v[4] = N\x : *m\v[5] = N\y : *m\v[6] = N\z  : *m\v[7] = 0
+    *m\v[8] = U\x : *m\v[9] = U\y : *m\v[10] = U\z : *m\v[11] = 0
     *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
     
 ;     *m\v[0] = U\x : *m\v[1] = V\y : *m\v[2] = N\z  : *m\v[3] = 0
@@ -2527,9 +2799,9 @@ EndModule
 ;====================================================================
 ; EOF
 ;====================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 546
-; FirstLine = 534
-; Folding = ------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1870
+; FirstLine = 1850
+; Folding = -----------------------------------
 ; EnableXP
 ; EnableUnicode

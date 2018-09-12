@@ -31,7 +31,6 @@ DeclareModule BulletRigidBody
 EndDeclareModule
 
 Module BulletRigidBody
-
   ;-----------------------------------------------------
   ; Setup 
   ;-----------------------------------------------------
@@ -42,8 +41,7 @@ Module BulletRigidBody
     ;---[ Get Underlying Shape ]--------------------
     Protected *shape.Bullet::btCollisionShape = *body\shape
     
-   
-    
+  
     Protected GLfloat_s.f
     Protected GLint_s.i
     Protected i.i
@@ -140,11 +138,11 @@ Module BulletRigidBody
   Procedure BTAddRigidBodyFromShape(*obj.Object3D::Object3D_t,*shape.Bullet::btCollisionShape,mass.f,*world.Bullet::btDynamicsWorld=#Null)
     If *shape
       Protected *body.Bullet::btRigidBody = Bullet::BTCreateRigidBody(*obj,mass,*shape)
-      Protected *t.Transform::Transform_t = *obj\globalT
+      Protected *t.Transform::Transform_t = *obj\localT
       
+      Bullet::BTSetScaling(*body,*t\t\scl)
       Bullet::BTSetOrientation(*body,*t\t\rot)
       Bullet::BTSetPosition(*body,*t\t\pos)
-      Bullet::BTSetScaling(*body,*t\t\scl)
       
       If *world = #Null : *world = Bullet::*bullet_world : EndIf
       Bullet::BTAddRigidBody(*world, *body)
@@ -209,7 +207,6 @@ Module BulletRigidBody
       Case Bullet::#BOX_SHAPE
         *shape = Bullet::BTNewBoxShape(0.5,0.5,0.5)
     
-        
       Case Bullet::#SPHERE_SHAPE
         *shape = Bullet::BTNewSphereShape(0.5)
       Case Bullet::#CYLINDER_SHAPE
@@ -361,8 +358,8 @@ Module BulletRigidBody
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 140
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 109
+; FirstLine = 96
 ; Folding = --
 ; EnableXP

@@ -1,4 +1,5 @@
 XIncludeFile "UI.pbi"
+XIncludeFile "../objects/Scene.pbi"
 
 ;============================================================
 ; View Module Declaration
@@ -82,7 +83,7 @@ EndDeclareModule
 ; ViewManager Module Declaration
 ;============================================================
 DeclareModule ViewManager
-  #VIEW_BORDER_SENSIBILITY = 3
+  #VIEW_BORDER_SENSIBILITY = 4
   #VIEW_SPLITTER_DROP = 7
   
   Enumeration
@@ -191,20 +192,10 @@ Module View
       Protected *ui.UI::UI_t = *view\content
       Protected ui.UI::IUI = *ui
       If *ui
-        
         ResizeGadget(*ui\container,x,y,width,height)  
         ui\Event(#PB_Event_SizeWindow)
       EndIf
-      
-;       Protected *content.View_t = *view\content
-;       Protected ev_data.EventTypeDatas_t
-;       ev_data\x = x
-;       ev_data\y = y
-;       ev_data\width = width
-;       ev_data\height = height
-;       If *content
-;         *content\Event(#PB_Event_SizeWindow,@ev_data)
-;       EndIf
+     
     Else
       Protected hs = ViewManager::#VIEW_BORDER_SENSIBILITY/2
       If *view\fixed
@@ -418,31 +409,25 @@ Module View
       Protected sx,sy,sw, sh
       Protected mx = WindowMouseX(*manager\window)
       Protected my = WindowMouseY(*manager\window)
-        
-          
-      ;PostEvent(#PB_Event_Gadget,*manager\window,#Null,#PB_EventType_DragStart)
-      ;If DragPrivate(ViewManager::#VIEW_SPLITTER_DROP ,#PB_Drag_Move)
+       
 
-        Define e
-        Repeat 
-          e = WaitWindowEvent()
-          ; Get Mouse Position
-          mx = WindowMouseX(*manager\window)
-          my = WindowMouseY(*manager\window)
-          ; Resize Window Event
-          ;If EventType() = #PB_EventType_LeftButtonUp
-          
-          ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
-          If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
-            GetPercentage(*affected,mx,my)
-            drag = #False
-          EndIf
-    
-        Until drag = #False
-        ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
-      ;EndIf
+      Define e
+      Repeat 
+        e = WaitWindowEvent()
+        ; Get Mouse Position
+        mx = WindowMouseX(*manager\window)
+        my = WindowMouseY(*manager\window)
+        ; Resize Window Event
+        ;If EventType() = #PB_EventType_LeftButtonUp
         
-     ;ViewManager::Event(*manager,#PB_Event_SizeWindow)
+        ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
+        If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
+          GetPercentage(*affected,mx,my)
+          drag = #False
+        EndIf
+  
+      Until drag = #False
+      ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
     EndIf
     
   EndProcedure
@@ -600,11 +585,11 @@ Module View
   ; View Event
   ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
-
+    If Not event : ProcedureReturn : EndIf
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     
     If *Me\leaf
-      If *Me\content <> #Null
+      If *Me\content <> #Null And event = #PB_Event_Gadget
         Protected *content.UI::IUI = *Me\content
         *content\Event(event)
       EndIf
@@ -707,7 +692,7 @@ Module ViewManager
 ;       ev_data\width = w
 ;       ev_data\height = h
       View::Resize(*manager\main,0,0,w,h)
-      View::OnEvent(*manager\main,#PB_Event_SizeWindow)
+      ;View::OnEvent(*manager\main,#PB_Event_SizeWindow)
   EndProcedure
     
     
@@ -728,7 +713,6 @@ Module ViewManager
       If *view\left : RecurseView(*manager,*view\left) : EndIf
       If *view\right : RecurseView(*manager,*view\right) : EndIf
     EndIf
-    
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -737,7 +721,7 @@ Module ViewManager
   Procedure.i GetActiveView(*manager.ViewManager_t,x.i,y.i)
     Protected *view.View::View_t = *manager\main
     View::GetActive(*view,x,y)
-    RecurseView(*manager,*manager\main)
+    ProcedureReturn RecurseView(*manager,*manager\main)
     
   EndProcedure
   
@@ -778,7 +762,7 @@ Module ViewManager
   ; Event
   ;----------------------------------------------------------------------------------
   Procedure OnEvent(*manager.ViewManager_t,event.i)
-     
+    
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
@@ -788,8 +772,21 @@ Module ViewManager
     Protected my = WindowMouseY(*manager\window)
         
     GetActiveView(*manager,mx,my)
-
+    Debug "MANAGER EVENT : "+Str(event)
     Select event
+      Case #PB_Event_Gadget      
+        If *manager\active 
+          Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
+          If touch
+            View::EventSplitter(*manager\active,touch)
+            View::TouchBorderEvent(*manager\active,touch)
+            View::OnEvent(*manager\active,event)
+          Else
+            View::ClearBorderEvent(*manager\active)
+            View::OnEvent(*manager\active,event)
+          EndIf
+        EndIf
+          
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
         View::OnEvent(*manager\main,#PB_Event_Timer)
@@ -851,22 +848,7 @@ Module ViewManager
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
-      Default        
-        If *manager\active
-          Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
-          
-          If touch
-            View::EventSplitter(*manager\active,touch)
-            View::TouchBorderEvent(*manager\active,touch)
-          
-          Else
-            View::ClearBorderEvent(*manager\active)
-            View::OnEvent(*manager\active,event)
-          EndIf
-        Else
-          Debug "No Active View!!!"
-          
-        EndIf
+      
     EndSelect
   
   EndProcedure
@@ -893,7 +875,7 @@ Module ViewManager
     *Me\window = OpenWindow(#PB_Any, 0, 0, width, height, *Me\name, options)  
 ;     SetWindowColor(*Me\window,RGB(240,240,240))
     EnableWindowDrop(*Me\window,#PB_Drop_Private,#PB_Drag_Move,#VIEW_SPLITTER_DROP)
-    *Me\main = View::New(x.i,y.i,WindowWidth(*Me\window),WindowHeight(*Me\window),#Null,#False,"Raafal",#True)
+    *Me\main = View::New(x.i,y.i,WindowWidth(*Me\window),WindowHeight(*Me\window),#Null,#False,name,#True)
     *Me\main\manager = *Me
     *Me\main\parentID = *Me\window
     *Me\active = *Me\main
@@ -919,8 +901,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 830
-; FirstLine = 806
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 587
+; FirstLine = 582
 ; Folding = ------
 ; EnableXP

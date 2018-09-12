@@ -182,9 +182,6 @@ Arguments::AddLong(*args,"Shape",Shape::#SHAPE_CUBE)
 CreatePolymeshCmd::Do(*args)
 
 
-
-
-
 Procedure Update(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   default_layer\Draw  (*app\context)
@@ -215,8 +212,8 @@ EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 20
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 182
+; FirstLine = 153
 ; Folding = -
 ; EnableXP
