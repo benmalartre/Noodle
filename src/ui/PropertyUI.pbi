@@ -116,7 +116,7 @@ Module PropertyUI
 
           If ListSize(*Me\props())
             ForEach *Me\props()
-              CompilerIf #PB_Compiler_Version <550
+              CompilerIf #PB_Compiler_Version <560
                 ControlProperty::OnEvent(*Me\props(),Control::#PB_EventType_Resize,@ev_datas)
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
@@ -449,9 +449,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 303
+; IDE Options = PureBasic 5.51 (Linux - x64)
+; CursorPosition = 118
+; FirstLine = 117
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

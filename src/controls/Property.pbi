@@ -1315,7 +1315,11 @@ Module ControlProperty
               ev_data\width = wi
               ev_data\x    = *Me\posX + wi * d
               ev_data\y    = *son\posY
-              son\OnEvent(#PB_EventType_Resize, @ev_data)
+              CompilerIf #PB_Compiler_Version <560
+                son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+              CompilerElse
+                son\OnEvent(#PB_EventType_Resize, @ev_data)
+              CompilerEndIf
               If Not *Me\rowflags(c) : walk = #False : EndIf
             Next
             c + nbc_row - 1
@@ -1325,7 +1329,11 @@ Module ControlProperty
             ev_data\width = *ev_data\width
             ev_data\x    = *son\posX
             ev_data\y    = *son\posY
-            son\OnEvent(#PB_EventType_Resize, @ev_data)
+            CompilerIf #PB_Compiler_Version <560
+              son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+            CompilerElse
+              son\OnEvent(#PB_EventType_Resize, @ev_data)
+            CompilerEndIf
           EndIf
         Next
         
@@ -1336,7 +1344,7 @@ Module ControlProperty
           If *son\type = Control::#CONTROL_GROUP
             ev_data\x    = *son\posX
             ev_data\y    = *son\posY
-            CompilerIf #PB_Compiler_Version <550
+            CompilerIf #PB_Compiler_Version <560
               son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
             CompilerElse
               son\OnEvent(#PB_EventType_Resize, @ev_data)
@@ -1698,8 +1706,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 440
-; FirstLine = 418
+; IDE Options = PureBasic 5.51 (Linux - x64)
+; CursorPosition = 1346
+; FirstLine = 1323
 ; Folding = --------
 ; EnableXP

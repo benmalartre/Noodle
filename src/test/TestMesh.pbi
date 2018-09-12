@@ -90,8 +90,6 @@ Procedure Draw(*app.Application::Application_t)
   
   Protected *t.Transform::Transform_t = *light\localT
   
-  View::OnEvent(*app\manager\main,Event())
-  
   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
   Object3D::SetLocalTransform(*light, *t)
@@ -228,12 +226,12 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 89
+; IDE Options = PureBasic 5.51 (Linux - x64)
+; CursorPosition = 90
+; FirstLine = 73
 ; Folding = -
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

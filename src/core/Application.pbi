@@ -606,7 +606,7 @@ CompilerEndIf
           EndSelect
         EndIf
         
-        ;If event : ViewManager::OnEvent(*app\manager,event) : EndIf
+        If event : ViewManager::OnEvent(*app\manager,event) : EndIf
         *callback(*app)
         
       Until event = #PB_Event_CloseWindow
@@ -614,9 +614,9 @@ CompilerEndIf
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 577
-; FirstLine = 555
+; IDE Options = PureBasic 5.51 (Linux - x64)
+; CursorPosition = 608
+; FirstLine = 581
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL
