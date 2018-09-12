@@ -104,12 +104,12 @@ Procedure Draw(*app.Application::Application_t)
 ;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
 
  
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/width
-;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 
@@ -229,18 +229,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 183
-; FirstLine = 174
-; Folding = -
-; EnableThread
-; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
-; Debugger = Standalone
-; Constant = #USE_GLFW=0
-; EnableUnicode
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 186
+; CursorPosition = 109
+; FirstLine = 89
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

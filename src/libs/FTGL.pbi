@@ -39,9 +39,9 @@ DeclareModule FTGL
   
   Structure FTGL_FontAtlas Align #PB_Structure_AlignC
     metadata.FTGL_GlyphInfos[256]
-    width.l
-    height.l
-    size_px.l
+    width.i
+    height.i
+    size_px.i
     
     *buffer
   EndStructure
@@ -81,6 +81,8 @@ DeclareModule FTGL
   If FileSize(FONT_FILE_NAME) = -1
     FONT_FILE_NAME = "fontsArial/arial.ttf"
   EndIf
+  
+  MessageRequester("FTGL", Str(FileSize(FONT_FILE_NAME)))
  
   Global *ftgl_atlas.FTGL_FontAtlas = 0
   Global NewMap *atlases.FTGL_FontAtlas()
@@ -416,9 +418,9 @@ Module FTGL
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 295
-; FirstLine = 262
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 17
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
