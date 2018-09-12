@@ -472,29 +472,29 @@ Module Polymesh
   ;{
   Procedure Update(*p.Polymesh_t)
     
-;     If *p\stack
-;       PolymeshGeometry::Reset(*p\geom)
-;       Stack::Update(*p\stack)
-;     EndIf
-;     
-;     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
-;       Protected p.Object3D::IObject3D = *p
-;       p\Setup(*p\shader)
-;     Else 
-;       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
-;         PolymeshGeometry::RecomputeNormals(*p\geom,1.0)
-;         glBindVertexArray(*p\vao)
-;         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
-;         UpdateGLData(*p)
-; ;         glBindVertexArray(*p\vao2)
-; ;         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
-; ;         UpdateGLEdgeData(*p)
-;         glBindBuffer(#GL_ARRAY_BUFFER,0)
-;         glBindVertexArray(0)
-;         SetClean(*p)
-;       EndIf
-;     EndIf
-;    glCheckError("Update Polymesh")
+    If *p\stack
+      PolymeshGeometry::Reset(*p\geom)
+      Stack::Update(*p\stack)
+    EndIf
+    
+    If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
+      Protected p.Object3D::IObject3D = *p
+      p\Setup(*p\shader)
+    Else 
+      If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
+        PolymeshGeometry::RecomputeNormals(*p\geom,1.0)
+        glBindVertexArray(*p\vao)
+        glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
+        UpdateGLData(*p)
+;         glBindVertexArray(*p\vao2)
+;         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
+;         UpdateGLEdgeData(*p)
+        glBindBuffer(#GL_ARRAY_BUFFER,0)
+        glBindVertexArray(0)
+        SetClean(*p)
+      EndIf
+    EndIf
+   glCheckError("Update Polymesh")
   EndProcedure
   ;}
   
@@ -526,16 +526,17 @@ Module Polymesh
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
       ;     EndIf
-      If *p\selected
-        glEnable(#GL_BLEND)
-        glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
-        glEnable (#GL_POLYGON_OFFSET_FILL)
+      ;If *p\selected
+          glEnable(#GL_BLEND)
+          glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
+        glEnable (#GL_POLYGON_OFFSET_LINE)
         glPolygonOffset (4.0, 1.0)
         glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
 
         glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
         glDisable(#GL_BLEND)
-      EndIf
+        glDisable (#GL_POLYGON_OFFSET_LINE)
+      ;EndIf
       
     glBindVertexArray(0)
   EndProcedure
@@ -576,7 +577,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 496
-; FirstLine = 449
+; CursorPosition = 536
+; FirstLine = 501
 ; Folding = ----
 ; EnableXP

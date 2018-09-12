@@ -28,8 +28,8 @@ void main(){
 	vertex_color = color;
 	vertex_position = vec3(view * model * vec4(position,1.0));
 	mat4 rot = extractRotationMatrix(view * model);
-	vertex_normal = normal;//vec3(rot * vec4(normal,0.0));
-	vertex_tangent = tangent;//vec3(rot * vec4(tangent,0.0));
+	vertex_normal = vec3(rot * vec4(normal,1.0));
+	vertex_tangent = vec3(rot * vec4(tangent,1.0));
 	gl_Position = projection * vec4(vertex_position,1.0);
 }
   

@@ -120,7 +120,7 @@ EndProcedure
 ; Draw
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
-  Debug "DRAW SELECTIOn LAYER"
+  Debug "DRAW  LAYER"
   Protected layer.Layer::ILayer = *layer
 ;   layer\Update()
     ; ---[ Find Up View Point ]--------------------------
@@ -129,9 +129,7 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   
   ; ---[ Bind Framebuffer and Clean ]-------------------
   Framebuffer::BindOutput(*layer\buffer)
-  GLCheckError("Bind Framebuffer")
   glViewport(0,0,*layer\width,*layer\height)
-  GLCheckError("GL Viewport")
   ;glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
   glClearColor(0,0,0,0)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
@@ -149,13 +147,10 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   ; Recursive Draw
   DrawChildren(*layer,Scene::*current_scene\root,*ctx)
   
-  glFlush()
-  glFinish()
+;   glFlush()
+;   glFinish()
   
   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
-  
-  glFlush()
-  glFinish()
   
   Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
    ; Read the pixel at the center of the screen.
@@ -236,7 +231,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 141
+; CursorPosition = 184
+; FirstLine = 142
 ; Folding = --
 ; EnableXP

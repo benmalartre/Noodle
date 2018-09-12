@@ -63,6 +63,8 @@ Procedure RandomGround()
   Define *p.v3f32
   For i=0 To CArray::GetCount(*topo\vertices)-1
     *p = CArray::GetValue(*topo\vertices, i)
+    *p\x * 10
+    *p\z * 10
     *p\y = (Sin(*p\x/10) *4 ); + (Random(10)*0.1 - 0.5)) * Cos(*p\z *0.04 )  + Random(10)*0.25
   Next
   PolymeshGeometry::Set2(*geom, *topo)
@@ -199,7 +201,7 @@ Procedure Draw(*app.Application::Application_t)
     *loc = CArray::GetValuePtr(*samples,i)
     *pos = Location::GetPosition(*loc)
     *nrm = Location::GetNormal(*loc)
-    size = Random(70)/10
+    size = Random(70)/2
     Vector3::ScaleInPlace(*nrm, size)
     Vector3::AddInPlace(*pos, *nrm)
     Matrix4::SetIdentity(@m)
@@ -225,8 +227,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 121
+; CursorPosition = 183
+; FirstLine = 174
 ; Folding = -
 ; EnableThread
 ; EnableXP
