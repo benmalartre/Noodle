@@ -3,7 +3,10 @@ XIncludeFile "../core/Application.pbi"
 
 
 XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/GLFW.pbi"
+CompilerIf (#USE_GLFW = #True)
+  XIncludeFile "../libs/GLFW.pbi"
+CompilerEndIf
+
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../libs/FTGL.pbi"
 XIncludeFile "../libs/Booze.pbi"
@@ -153,13 +156,13 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 91
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 8
+; FirstLine = 1
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin\Alembic.app
+; Executable = bin/Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

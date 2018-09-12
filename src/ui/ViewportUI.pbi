@@ -160,7 +160,8 @@ Module ViewportUI
 ;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
 ;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-    
+    Debug "######################### Viewport Event ######################"
+    Debug "EVENT : "+Str(event)
     Protected width.i, height.i
     Protected *top.View::View_t = *Me\top
     Protected *manager.ViewManager::ViewManager_t = *top\manager
@@ -195,14 +196,12 @@ Module ViewportUI
 
           Select EventType()
             Case #PB_EventType_Focus
-              Debug "############ VIEWPORT GET FOCUS"
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
               AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
                       
             Case #PB_EventType_LostFocus
-              Debug "############ VIEWPORT LOSE FOCUS"
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
               RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
@@ -285,38 +284,8 @@ Module ViewportUI
               
             Case #PB_EventType_MouseWheel
               delta = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_WheelDelta)
-              ;Dolly(*Me,delta*10,delta*10,width,height)
+;               Dolly(*Me,delta*10,delta*10,width,height)
           EndSelect
-;           Select EventType()
-;             Case #PB_EventType_LeftButtonDown
-;               *Me\down = #True
-;               
-;             Case #PB_EventType_LeftButtonUp
-;               *Me\down = #False
-;               
-;             Case #PB_EventType_MouseMove
-;               Debug "MOUSEE MOVE..."
-;               Protected modifier.i = GetGadgetAttribute(*Me\gadgetID, #PB_OpenGL_Modifiers)
-;               If *Me\tool = Globals::#TOOL_CAMERA
-;                 Debug "TOOL IS CAMERA"
-;                 If *Me\camera : Camera::OnEvent(*Me\camera,*Me\gadgetID) : EndIf
-;               Else
-;                 Protected hit.b = #False
-;                 Select *Me\tool
-;                   Case Globals::#TOOL_SCALE
-;                     hit = Handle::OnEvent(*Me\handle, *Me\gadgetID)
-;                   Case Globals::#TOOL_ROTATE
-;                     hit = Handle::OnEvent(*Me\handle, *Me\gadgetID)
-;                   Case Globals::#TOOL_TRANSLATE
-;                     hit = Handle::OnEvent(*Me\handle, *Me\gadgetID)
-;                 EndSelect
-;                 
-;                 If Not hit
-;                   
-;                 EndIf
-;                 
-;               EndIf
-;           EndSelect
 
         EndIf
         
@@ -661,8 +630,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 304
-; FirstLine = 292
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 355
+; FirstLine = 327
 ; Folding = -----
 ; EnableXP

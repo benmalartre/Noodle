@@ -585,11 +585,11 @@ Module View
   ; View Event
   ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
-
+    If Not event : ProcedureReturn : EndIf
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     
     If *Me\leaf
-      If *Me\content <> #Null
+      If *Me\content <> #Null And event = #PB_Event_Gadget
         Protected *content.UI::IUI = *Me\content
         *content\Event(event)
       EndIf
@@ -762,6 +762,7 @@ Module ViewManager
   ; Event
   ;----------------------------------------------------------------------------------
   Procedure OnEvent(*manager.ViewManager_t,event.i)
+    
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
@@ -771,8 +772,21 @@ Module ViewManager
     Protected my = WindowMouseY(*manager\window)
         
     GetActiveView(*manager,mx,my)
-
+    Debug "MANAGER EVENT : "+Str(event)
     Select event
+      Case #PB_Event_Gadget      
+        If *manager\active 
+          Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
+          If touch
+            View::EventSplitter(*manager\active,touch)
+            View::TouchBorderEvent(*manager\active,touch)
+            View::OnEvent(*manager\active,event)
+          Else
+            View::ClearBorderEvent(*manager\active)
+            View::OnEvent(*manager\active,event)
+          EndIf
+        EndIf
+          
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
         View::OnEvent(*manager\main,#PB_Event_Timer)
@@ -834,19 +848,7 @@ Module ViewManager
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
-      Default        
-        If *manager\active 
-          Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
-        
-          If touch
-            View::EventSplitter(*manager\active,touch)
-            View::TouchBorderEvent(*manager\active,touch)
-            View::OnEvent(*manager\active,event)
-          Else
-            View::ClearBorderEvent(*manager\active)
-            View::OnEvent(*manager\active,event)
-          EndIf
-        EndIf
+      
     EndSelect
   
   EndProcedure
@@ -899,8 +901,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 597
-; FirstLine = 573
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 587
+; FirstLine = 582
 ; Folding = ------
 ; EnableXP

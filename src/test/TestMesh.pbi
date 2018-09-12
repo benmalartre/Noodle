@@ -11,7 +11,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -88,26 +90,26 @@ Procedure Draw(*app.Application::Application_t)
   
   Protected *t.Transform::Transform_t = *light\localT
   
+  View::OnEvent(*app\manager\main,Event())
+  
   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
   Object3D::SetLocalTransform(*light, *t)
-  
-  
   
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
   ViewportUI::Draw(*viewport, *app\context)
   
-  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
-  glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
+;   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
 
  
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 
@@ -155,7 +157,7 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,2048,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,64,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*bunny,*s_polymesh)
@@ -231,6 +233,15 @@ EndIf
 ; FirstLine = 174
 ; Folding = -
 ; EnableThread
+; EnableXP
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Debugger = Standalone
+; Constant = #USE_GLFW=0
+; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 186
+; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone

@@ -2,7 +2,7 @@
 ;  OpenGl Layer For 3D Picking Using GLSL Shaders
 ; ============================================================================
 XIncludeFile "Layer.pbi"
-XIncludeFile "..\opengl\Context.pbi"
+XIncludeFile "../opengl/Context.pbi"
 
 DeclareModule LayerSelection
   UseModule Math
@@ -233,5 +233,10 @@ EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 184
 ; FirstLine = 142
+; Folding = --
+; EnableXP
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 183
 ; Folding = --
 ; EnableXP

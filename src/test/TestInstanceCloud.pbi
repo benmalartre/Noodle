@@ -5,7 +5,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -126,7 +129,10 @@ Procedure Draw(*app.Application::Application_t)
  If Time::Init()
    Log::Init()
    FTGL::Init()
-   Alembic::Init()
+   CompilerIf #USE_ALEMBIC
+     Alembic::Init()
+   CompilerEndIf
+   
    Scene::*current_scene = Scene::New()
    ExamineDesktops()
    *app = Application::New("Test Instances",width,height)
@@ -256,10 +262,10 @@ Procedure Draw(*app.Application::Application_t)
   
 
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 197
-; Folding = -
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 134
+; FirstLine = 97
+; Folding = --
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone

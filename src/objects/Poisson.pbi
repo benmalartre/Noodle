@@ -1,5 +1,5 @@
-﻿XIncludeFile "..\core\Math.pbi"
-XIncludeFile "..\core\Array.pbi"
+﻿XIncludeFile "../core/Math.pbi"
+XIncludeFile "../core/Array.pbi"
 XIncludeFile "Geometry.pbi"
 XIncludeFile "Box.pbi"
 
@@ -177,9 +177,7 @@ Module Poisson
 
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 119
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 19
 ; Folding = --
 ; EnableXP

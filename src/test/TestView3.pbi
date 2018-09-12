@@ -12,7 +12,10 @@ FTGL::Init()
 Controls::Init()
 Commands::Init()
 UIColor::Init()
-Alembic::Init()
+CompilerIf #USE_ALEMBIC
+  Alembic::Init()
+CompilerEndIf
+
 
 
 Global WIDTH = 800
@@ -107,9 +110,9 @@ AddButton(*ui, "PUSH ME")
 AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 31
+; IDE Options = PureBasic 5.61 (Linux - x64)
+; CursorPosition = 17
+; FirstLine = 10
 ; Folding = -
 ; EnableXP
 ; EnableUnicode
