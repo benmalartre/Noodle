@@ -575,7 +575,7 @@ CompilerEndIf
       Wend
     CompilerElse
       Repeat
-        event = WaitWindowEvent()
+        event = WaitWindowEvent(1000/60)
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -614,9 +614,9 @@ CompilerEndIf
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.51 (Linux - x64)
-; CursorPosition = 608
-; FirstLine = 581
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 577
+; FirstLine = 562
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

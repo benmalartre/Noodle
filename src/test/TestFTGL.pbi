@@ -4,7 +4,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -21,11 +24,12 @@ Procedure Draw(*app.Application::Application_t)
   LayerDefault::Draw(*layer,*app\context)
   
   Protected sx.f = 0.004
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   FTGL::Draw(*app\context\writer,"Hello everybody,",-1,0.9,sx,sx)
   FTGL::Draw(*app\context\writer,"This is Font Drawing in OpenGL",-1,0.75,sx,sx)
   FTGL::Draw(*app\context\writer,"Using FreeType C Library",-1,0.6,sx,sx)
-  
+  FTGL::EndDraw(*app\context\writer)
   ViewportUI::FlipBuffer(*viewport)
   
 EndProcedure
@@ -69,9 +73,8 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 16
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 31
 ; Folding = -
 ; EnableXP
 ; Executable = Test

@@ -96,12 +96,13 @@ Procedure Draw(*app.Application::Application_t)
   
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
-  ViewportUI::Draw(*viewport, *app\context)
   
-;   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
-;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
+  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+  glUseProgram(*s\pgm)
+  glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
+  
+  ViewportUI::Draw(*viewport, *app\context)
 
- 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -226,12 +227,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.51 (Linux - x64)
-; CursorPosition = 90
-; FirstLine = 73
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 104
+; FirstLine = 86
 ; Folding = -
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
+; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

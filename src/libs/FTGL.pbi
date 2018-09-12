@@ -81,9 +81,7 @@ DeclareModule FTGL
   If FileSize(FONT_FILE_NAME) = -1
     FONT_FILE_NAME = "fontsArial/arial.ttf"
   EndIf
-  
-  MessageRequester("FTGL", Str(FileSize(FONT_FILE_NAME)))
- 
+   
   Global *ftgl_atlas.FTGL_FontAtlas = 0
   Global NewMap *atlases.FTGL_FontAtlas()
   
@@ -145,7 +143,7 @@ Module FTGL
     *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 8, "Arial8")
     *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 16, "Arial16")
     *ftgl_atlas = AddAtlas(FONT_FILE_NAME, 32, "Arial32")
-    If FindMapElement(*atlases(), "Arial16")
+    If FindMapElement(*atlases(), "Arial32")
       *ftgl_atlas = *atlases()
     EndIf
    
@@ -253,7 +251,9 @@ Module FTGL
       y2 = -y - *infos\bt * sy
       w = *infos\bw * sx
       h = *infos\bh * sy
-      
+      Debug "------------------------------------------------"
+      Debug Str(*infos\bl)+","+Str(*infos\bh)+","+Str(*infos\bt)+","+Str(*infos\bw)
+      Debug Str(x2)+","+Str(y2)+","+Str(w)+","+Str(h)
       ; advance the cursor to the start of the next character
       x+*infos\ax*sx
       y+*infos\ay*sy
@@ -419,8 +419,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 17
+; CursorPosition = 327
+; FirstLine = 323
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
