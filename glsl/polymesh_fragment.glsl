@@ -67,14 +67,14 @@ if(lightPosition.w == 0.0) {
 		float d = dot(vertex_normal, normalize(lightPosition));
 		if(gl_FrontFacing)
 		{
-			if(d<0) outColor = vec4(ambient,1.0);
+			if(d<0) outColor = vec4(ambient,1.0) * vertex_color;
 			else
 			{
 				vec3 lightColor = vec3(1.0,0.8,0.75);
-				outColor = vec4(d*lightColor, 1.0);
+				outColor = vec4(d*lightColor, 1.0) * vertex_color;
 			}
 		}
-		else outColor = vec4(ambient,1.0);
+		else outColor = vec4(ambient,1.0) * vertex_color;
 	}
 
 }

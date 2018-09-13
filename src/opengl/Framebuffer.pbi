@@ -591,8 +591,9 @@ EndProcedure
 
   
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 401
+; FirstLine = 395
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

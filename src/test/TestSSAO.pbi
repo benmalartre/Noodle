@@ -293,30 +293,30 @@ Procedure Draw(*app.Application::Application_t)
     Framebuffer::BindInput(*ssao,3)
   EndIf
   
-  Framebuffer::BindOutput(*deferred)
-  glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
-  shader = *s_deferred\pgm
-  glUseProgram(shader)
-  glViewport(0,0,*deferred\width,*deferred\height)
-  glUniform1i(glGetUniformLocation(shader,"position_map"),0)
-  glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
-  glUniform1i(glGetUniformLocation(shader,"color_map"),2)
-  glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
-  glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
-  Define i = 0
-  ForEach *lights()
-    Light::PassToShader(*lights(),shader,i)
-    i+1
-  Next
-  
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
-  
-  ScreenQuad::Draw(*quad)
-  
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *deferred\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
+;   Framebuffer::BindOutput(*deferred)
+;   glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
+;   shader = *s_deferred\pgm
+;   glUseProgram(shader)
+;   glViewport(0,0,*deferred\width,*deferred\height)
+;   glUniform1i(glGetUniformLocation(shader,"position_map"),0)
+;   glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
+;   glUniform1i(glGetUniformLocation(shader,"color_map"),2)
+;   glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
+;   glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
+;   Define i = 0
+;   ForEach *lights()
+;     Light::PassToShader(*lights(),shader,i)
+;     i+1
+;   Next
+;   
+;   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
+;   
+;   ScreenQuad::Draw(*quad)
+;   
+;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *deferred\frame_id);
+;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;   glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
   
   CompilerIf Not #USE_GLFW
     SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
@@ -503,9 +503,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 9
-; FirstLine = 2
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 318
+; FirstLine = 275
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

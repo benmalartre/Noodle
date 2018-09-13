@@ -26,9 +26,9 @@ void main(){
     gl_Position = projection * viewPos;
     vertex_color = color;
 	
-    //mat3 normalMatrix = transpose(inverse(mat3(view* model)));
-    //vertex_normal = normalMatrix * normal;
-    vertex_normal = normal;
+    mat3 normalMatrix = transpose(inverse(mat3(view* model)));
+    vertex_normal = normalMatrix * normal;
+    //vertex_normal = normal;
 	vec4 p = model * vec4(position,1.0f);
 }
  

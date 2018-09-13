@@ -67,7 +67,7 @@ Procedure RandomGround()
     *p = CArray::GetValue(*topo\vertices, i)
     *p\x * 10
     *p\z * 10
-    *p\y = (Sin(*p\x/10) *4 ); + (Random(10)*0.1 - 0.5)) * Cos(*p\z *0.04 )  + Random(10)*0.25
+    *p\y = (Sin(*p\x/100) *40 + (Random(100)*0.1 - 5)) 
   Next
   PolymeshGeometry::Set2(*geom, *topo)
   ProcedureReturn *ground
@@ -156,9 +156,9 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,64,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,32,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
@@ -170,28 +170,12 @@ Procedure Draw(*app.Application::Application_t)
   Define i
       
   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
-;   CArray::AppendPtr(*topos,*ggeom\topo)
-;   Define m.m4f32
-;   Define v.v3f32
-;   Vector3::Set(@v,0,1,0)
-;   Matrix4::SetIdentity(@m)
-;   Matrix4::SetTranslation(@m,@v)
-;   Topology::Transform(*bgeom\topo, @m)
-;   CArray::AppendPtr(*topos,*bgeom\topo) 
-;   
-;   Topology::MergeArray(*mgeom\topo,*topos)
   
   Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
   Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
   Define m.m4f32
   Define pos.v3f32
   
-;   Vector3::Set(@pos,0,7,0)
-;   Matrix4::SetIdentity(@m)
-;   Matrix4::SetTranslation(@m,@pos)
-;   CArray::Append(*matrices,@m)
-;   
-;   Vector3::Set(@pos,2,7,4)
   Matrix4::SetIdentity(@m)
   
   Define *loc.Geometry::Location_t
@@ -202,8 +186,8 @@ Procedure Draw(*app.Application::Application_t)
     *loc = CArray::GetValuePtr(*samples,i)
     *pos = Location::GetPosition(*loc)
     *nrm = Location::GetNormal(*loc)
-    size = Random(70)/2
-    Vector3::ScaleInPlace(*nrm, size)
+    size = Random(50)+32
+    Vector3::ScaleInPlace(*nrm, size/2)
     Vector3::AddInPlace(*pos, *nrm)
     Matrix4::SetIdentity(@m)
     Matrix4::SetTranslation(@m,*pos)
@@ -217,6 +201,7 @@ Procedure Draw(*app.Application::Application_t)
   Topology::TransformArray(*topo,*matrices,*outtopo)
   Topology::MergeArray(*topo,*outtopo)
   PolymeshGeometry::Set2(*mgeom,*topo)
+  PolymeshGeometry::RandomColorByPolygon(*mgeom)
   Object3D::Freeze(*merged)
   Object3D::AddChild(*root,*merged)
   
@@ -228,8 +213,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 86
+; CursorPosition = 69
+; FirstLine = 39
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

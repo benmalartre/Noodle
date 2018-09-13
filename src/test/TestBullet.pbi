@@ -12,7 +12,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -421,9 +423,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 258
-; FirstLine = 230
-; Folding = -
+; CursorPosition = 16
+; FirstLine = 10
+; Folding = --
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
