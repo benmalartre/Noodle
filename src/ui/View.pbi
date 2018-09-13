@@ -772,9 +772,10 @@ Module ViewManager
     Protected my = WindowMouseY(*manager\window)
         
     GetActiveView(*manager,mx,my)
-    Debug "MANAGER EVENT : "+Str(event)
+
     Select event
       Case #PB_Event_Gadget      
+        Debug "MANAGER EVENT : GADGET"
         If *manager\active 
           Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
           If touch
@@ -901,8 +902,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 587
-; FirstLine = 582
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 771
+; FirstLine = 759
 ; Folding = ------
 ; EnableXP

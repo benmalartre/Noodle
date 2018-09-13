@@ -140,6 +140,7 @@ CompilerEndIf
     fps.f
     framecount.i
     lasttime.l
+    dirty.b
   EndStructure
   
   Enumeration 
@@ -564,6 +565,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   Procedure Loop(*app.Application_t,*callback.PFNDRAWFN)
     Define event
+    
     CompilerIf #USE_GLFW
       While Not glfwWindowShouldClose(*app\window)
         ;glfwWaitEvents()
@@ -584,39 +586,44 @@ CompilerEndIf
             If event = 24 : Continue : EndIf
         CompilerEndSelect
         
+        Select event
+          Case Globals::#EVENT_TREE_CREATED
+            Protected *graph = ViewManager::*view_manager\uis("Graph")
+            Protected *tree = EventData()
+            If *graph
+              GraphUI::SetContent(*graph,*tree)
+            EndIf   
+            *callback(*app)
+          Case #PB_Event_Menu
+            Select EventMenu()
+              Case Globals::#SHORTCUT_TRANSLATE
+                *app\tool = Globals::#TOOL_TRANSLATE
+              Case Globals::#SHORTCUT_ROTATE
+                *app\tool = Globals::#TOOL_ROTATE
+              Case Globals::#SHORTCUT_SCALE
+                *app\tool = Globals::#TOOL_SCALE
+              Case Globals::#SHORTCUT_CAMERA
+                *app\tool = Globals::#TOOL_CAMERA
+              Default 
+                *app\tool = Globals::#TOOL_MAX
+            EndSelect
+            *callback(*app)
+            
+          Case #PB_Event_Gadget
+            If event : ViewManager::OnEvent(*app\manager,event) : EndIf
+            *callback(*app)
+        EndSelect
         
-        If event = Globals::#EVENT_TREE_CREATED
-          Protected *graph = ViewManager::*view_manager\uis("Graph")
-          Protected *tree = EventData()
-          If *graph
-            GraphUI::SetContent(*graph,*tree)
-          EndIf   
-        ElseIf event = #PB_Event_Menu
-          Select EventMenu()
-            Case Globals::#SHORTCUT_TRANSLATE
-              *app\tool = Globals::#TOOL_TRANSLATE
-            Case Globals::#SHORTCUT_ROTATE
-              *app\tool = Globals::#TOOL_ROTATE
-            Case Globals::#SHORTCUT_SCALE
-              *app\tool = Globals::#TOOL_SCALE
-            Case Globals::#SHORTCUT_CAMERA
-              *app\tool = Globals::#TOOL_CAMERA
-            Default 
-              *app\tool = Globals::#TOOL_MAX
-          EndSelect
-        EndIf
         
-        If event : ViewManager::OnEvent(*app\manager,event) : EndIf
-        *callback(*app)
         
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 577
-; FirstLine = 562
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 142
+; FirstLine = 101
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

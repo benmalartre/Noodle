@@ -5,7 +5,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -64,7 +67,7 @@ Define model.m4f32
 ;--------------------------------------------
 If Time::Init()
   Log::Init()
-  *app = Application::New("Test",800,600)
+  *app = Application::New("Test",120,60)
 
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
@@ -95,9 +98,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 41
-; FirstLine = 35
+; IDE Options = PureBasic 5.62 (Linux - x64)
+; CursorPosition = 87
+; FirstLine = 15
 ; Folding = -
 ; EnableThread
 ; EnableXP
