@@ -56,6 +56,7 @@ DeclareModule PolymeshGeometry
   Declare GridTopology(*topo.Topology_t,radius.f,u.i,v.i)
   Declare InitSampling(*mesh.PolymeshGeometry_t)
   Declare Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
+  Declare ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
 EndDeclareModule
 
 ;========================================================================================
@@ -2392,7 +2393,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 614
-; FirstLine = 570
+; CursorPosition = 58
+; FirstLine = 24
 ; Folding = ---4H9--8--
 ; EnableXP

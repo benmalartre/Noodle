@@ -8,18 +8,18 @@ DeclareModule Line
   UseModule Math
   #Line_TOLERANCE = 0.0000000001
   
-  Declare Set(*Me.Geometry::Line_t,*origin.v3f32,*direction.v3f32)
-  Declare SetOrig(*Line.Geometry::Line_t,*pos.v3f32)
-  Declare SetDirection(*Line.Geometry::Line_t,*dir.v3f32)
+  Declare Set(*Me.Geometry::Line_t,*start.v3f32,*end.v3f32)
+  Declare SetStart(*Line.Geometry::Line_t,*pos.v3f32)
+  Declare SetEnd(*Line.Geometry::Line_t,*pos.v3f32)
   
   Declare GetPoint( *line.Geometry::Line_t, t.f , *io.v3f32)
   Declare.b FindClosestPoint(*line.Geometry::Line_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
   Declare.b FindClosestPoints(*line1.Geometry::Line_t,
-                                *line2.Geometry::Line_t,
-                                *closest1.v3f32,
-                                *closest2.v3f32,
-                                *t1=#Null,
-                                *t2=#Null)
+                              *line2.Geometry::Line_t,
+                              *closest1.v3f32,
+                              *closest2.v3f32,
+                              *t1=#Null,
+                              *t2=#Null)
   
 EndDeclareModule
 
@@ -29,16 +29,15 @@ Module Line
   ;---------------------------------------------------------
   ; Set Origin
   ;---------------------------------------------------------
-  Procedure SetOrig(*line.Geometry::Line_t,*pos.v3f32)
-    Vector3::SetFromOther(*line\position,*pos)
+  Procedure SetStart(*line.Geometry::Line_t,*pos.v3f32)
+    Vector3::SetFromOther(*line\p1,*pos)
   EndProcedure
   
   ;---------------------------------------------------------
   ; Set Direction
   ;---------------------------------------------------------
-  Procedure SetDirection(*line.Geometry::Line_t,*dir.v3f32)
-    Vector3::SetFromOther(*line\direction,*dir)
-    Vector3::NormalizeInPlace(*line\direction)
+  Procedure SetEnd(*line.Geometry::Line_t,*pos.v3f32)
+    Vector3::SetFromOther(*line\p2,*pos)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -47,8 +46,11 @@ Module Line
   ;Return the point on the line at \p ( p0 + t * dir ).
   ; Remember dir has been normalized so t represents a unit distance.
   Procedure GetPoint( *line.Geometry::Line_t, t.f , *io.v3f32)
-    Vector3::Scale(*io, *line\direction, t)
-    Vector3::AddInPlace(*io, *line\position)
+    Protected direction.v3f32
+    Vector3::Sub(@direction, *line\p2, *line\p1)
+    Vector3::NormalizeInPlace(@direction)
+    Vector3::Scale(*io, @direction, t)
+    Vector3::AddInPlace(*io, *line\p1)
   EndProcedure
     
   ;---------------------------------------------------------
@@ -56,11 +58,12 @@ Module Line
   ;---------------------------------------------------------
   Procedure.b FindClosestPoint(*line.Geometry::Line_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
     ; Compute the vector from the start point To the given point.
-    Protected v.v3f32
-    Vector3::Sub(@v, *p, *line\position)
-    
+    Protected v.v3f32, d.v3f32
+    Vector3::Sub(@v, *p, *line\p1)
+    Vector3::Sub(@d, *line\p2, *line\p1)
+    Vector3::NormalizeInPlace(@d)
     ; Find the length of the projection of this vector onto the line.
-    Protected lt.f = Vector3::Dot(@v, *line\direction)
+    Protected lt.f = Vector3::Dot(@v, @d)
     
     If *t : PokeF(*t, lt) : EndIf
     If *io : GetPoint(*line, lt, *io) : EndIf
@@ -80,10 +83,12 @@ Module Line
     ;   d1 = line 1's direction
     ;   p2 = line 2's position
     ;   d2 = line 2's direction
-    Protected *p1 = *line1\position 
-    Protected *d1 = *line1\direction
-    Protected *p2 = *line2\position
-    Protected *d2 = *line2\direction
+    Protected *p1 = *line1\p1 
+    Protected d1.v3f32
+    Vector3::Sub(@d1, *line1\p2, *line1\p2)
+    Protected *p2 = *line2\p1
+    Protected d2.v3f32
+    Vector3::Sub(@d2, *line2\p2, *line2\p2)
     
     ; We want To find points closest1 And closest2 on each line.
     ; Their parametric definitions are:
@@ -110,12 +115,12 @@ Module Line
     ;   d = d2.d2
     ;   e = d2.d1 (== a, If you're paying attention)
     ;   f = d2.p1 - d2.p2
-    Protected a.f = Vector3::Dot(*d1, *d2)
-    Protected b.f  = Vector3::Dot(*d1, *d1)
-    Protected c.f  = Vector3::Dot(*d1, *p1) - Vector3::Dot(*d1, *p2)
-    Protected d.f  = Vector3::Dot(*d2, *d2)
+    Protected a.f = Vector3::Dot(@d1, @d2)
+    Protected b.f  = Vector3::Dot(@d1, @d1)
+    Protected c.f  = Vector3::Dot(@d1, *p1) - Vector3::Dot(@d1, *p2)
+    Protected d.f  = Vector3::Dot(@d2, @d2)
     Protected e.f  = a;
-    Protected f.f  = Vector3::Dot(*d2, *p1) - Vector3::Dot(*d2, *p2)
+    Protected f.f  = Vector3::Dot(@d2, *p1) - Vector3::Dot(@d2, *p2)
     
     ; And we End up With:
     ;  t2 * a - t1 * b = c
@@ -147,10 +152,10 @@ Module Line
   ;---------------------------------------------
   ;  Set
   ;---------------------------------------------
-  Procedure Set(*Me.Geometry::Line_t,*position.v3f32,*direction.v3f32)
+  Procedure Set(*Me.Geometry::Line_t,*p1.v3f32,*p2.v3f32)
     
-    If *position : Vector3::SetFromOther(*Me\position,*position) : EndIf
-    If *direction : Vector3::SetFromOther(*Me\direction,*direction) : EndIf
+    If *p1 : Vector3::SetFromOther(*Me\p1,*p1) : EndIf
+    If *p2 : Vector3::SetFromOther(*Me\p2,*p2) : EndIf
     
     ProcedureReturn *Me
   EndProcedure
@@ -161,8 +166,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 4
+; CursorPosition = 88
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

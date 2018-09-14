@@ -47,8 +47,8 @@ DeclareModule Geometry
   Structure Line_t
     ; Parametric description:
     ;  l(t) = _p0 + t * _length * _dir;
-    position.v3f32
-    direction.v3f32
+    p1.v3f32
+    p2.v3f32    
   EndStructure
   ;}
   
@@ -454,7 +454,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 409
-; FirstLine = 394
+; CursorPosition = 50
+; FirstLine = 31
 ; Folding = -----
 ; EnableXP
