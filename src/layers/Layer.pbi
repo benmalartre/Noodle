@@ -180,11 +180,27 @@ Module Layer
   ; Resize
   ;---------------------------------------------------
   Procedure Resize(*layer.Layer_t,width,height.i)
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
-    Framebuffer::SetSize(*buffer,width,height)
-    *layer\width = width
-    *layer\height = height
-    glViewport(0,0,*layer\width,*layer\height)
+;     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
+;     Debug "RESIZE FRAMEBUFFER : "+*layer\name
+;     
+;     Debug "NUM ATTACHMENTS : "+Str(ArraySize(*layer\buffer\attachments()))
+;     Protected numRBOs = ArraySize(*layer\buffer\rbos())
+;     Debug "NUM RENDER BUFFER OBJECTS : "+Str(numRBOs)
+;     Protected i
+;     For i=0 To numRBOs - 1:
+;       Debug "RBO : "+*layer\buffer\rbos(i)\name
+;     Next
+;     
+;     Protected numTBOs = ArraySize(*layer\buffer\tbos())
+;     Debug "NUM TEXTURE BUFFER OBJECTS : "+Str(numTBOs)
+;     For i=0 To numTBOs - 1:
+;       Debug "TBO : "+*layer\buffer\tbos(i)\name
+;     Next
+;     
+;     Framebuffer::SetSize(*buffer,width,height)
+;     *layer\width = width
+;     *layer\height = height
+;     glViewport(0,0,*layer\width,*layer\height)
   EndProcedure
   
   ;---------------------------------------------------
@@ -698,7 +714,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 551
-; FirstLine = 524
+; CursorPosition = 202
+; FirstLine = 149
 ; Folding = -----
 ; EnableXP

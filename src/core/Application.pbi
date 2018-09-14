@@ -165,7 +165,7 @@ CompilerEndIf
     #TOOL_MAX
   EndEnumeration
   
-  Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+  Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*app.Application_t)
   Declare Loop(*app.Application_t,*callback)
   
@@ -207,7 +207,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Constructor
   ;-----------------------------------------------------------------------------
-  Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+  Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
     Protected *app.Application_t = AllocateMemory(SizeOf(Application_t))
     InitializeStructure(*app,Application_t)
     *app\name = name
@@ -609,6 +609,10 @@ CompilerEndIf
             EndSelect
             *callback(*app)
             
+          Case #PB_Event_SizeWindow
+            ViewManager::OnEvent(*app\manager,event)
+            *callback(*app)
+            
           Case #PB_Event_Gadget
             If event : ViewManager::OnEvent(*app\manager,event) : EndIf
             *callback(*app)
@@ -621,9 +625,9 @@ CompilerEndIf
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 142
-; FirstLine = 101
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 612
+; FirstLine = 563
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -54,6 +54,12 @@ Global proj.m4f32
 Global T.f
 
 
+Procedure RandomLine()
+  Protected seed.v3f32
+  
+EndProcedure
+
+
 Procedure RandomGround()
   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
@@ -213,8 +219,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 39
+; CursorPosition = 112
+; FirstLine = 103
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

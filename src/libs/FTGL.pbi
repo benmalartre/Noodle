@@ -251,9 +251,6 @@ Module FTGL
       y2 = -y - *infos\bt * sy
       w = *infos\bw * sx
       h = *infos\bh * sy
-      Debug "------------------------------------------------"
-      Debug Str(*infos\bl)+","+Str(*infos\bh)+","+Str(*infos\bt)+","+Str(*infos\bw)
-      Debug Str(x2)+","+Str(y2)+","+Str(w)+","+Str(h)
       ; advance the cursor to the start of the next character
       x+*infos\ax*sx
       y+*infos\ay*sy
@@ -419,8 +416,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 327
-; FirstLine = 323
+; CursorPosition = 252
+; FirstLine = 250
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

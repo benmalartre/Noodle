@@ -160,14 +160,15 @@ Module ViewportUI
 ;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
 ;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-    Debug "######################### Viewport Event ######################"
-    Debug "EVENT : "+Str(event)
-    Protected width.i, height.i
+
+    Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\top
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     
     Select event
       Case #PB_Event_SizeWindow
+        Debug "NUM LAYERS : "+Str(ListSize(*Me\layers()))
+        ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
         
         width = *top\width
         height = *top\height
@@ -176,6 +177,7 @@ Module ViewportUI
         *Me\height = height
         *Me\x = *top\x
         *Me\y = *top\y
+        
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
         
@@ -541,7 +543,6 @@ Module ViewportUI
   ; Unproject
   ;-------------------------------------------------------
   Procedure Unproject(*v.ViewportUI_t,*world_pos.v3f32)
-    Debug "----------------------------- UNPROJECT ------------------------------------------"
     Protected window_pos.v3f32
     Define.d x,y
     ;glfwGetCursorPos(*v\window,@x,@y)
@@ -579,7 +580,6 @@ Module ViewportUI
   ;  If _out\w = 0 
   ;    ProcedureReturn 0
   ;  Else 
-     Debug "Set 3D Unprojected Position "
      Protected div.f = 1/ _out\w
      *world_pos\x = _out\x
      *world_pos\y = _out\y
@@ -630,8 +630,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 355
-; FirstLine = 327
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 169
+; FirstLine = 156
 ; Folding = -----
 ; EnableXP

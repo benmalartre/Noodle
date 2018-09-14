@@ -106,7 +106,7 @@ DeclareModule ViewManager
   
   Global *view_manager.ViewManager_t
   
-  Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+  Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*manager.ViewManager_t)
   Declare OnEvent(*manager.ViewManager_t,event.i)
 ;   Declare UpdateMap(*manager.ViewManager_t)
@@ -775,7 +775,6 @@ Module ViewManager
 
     Select event
       Case #PB_Event_Gadget      
-        Debug "MANAGER EVENT : GADGET"
         If *manager\active 
           Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
           If touch
@@ -793,7 +792,6 @@ Module ViewManager
         View::OnEvent(*manager\main,#PB_Event_Timer)
       
       Case Globals::#EVENT_BUTTON_PRESSED
-        Debug "Button Pressed ---> "+PeekS(EventData())
         
       Case Globals::#EVENT_COMMAND_CALLED
         View::OnEvent(*manager\main,Globals::#EVENT_COMMAND_CALLED)
@@ -864,7 +862,7 @@ Module ViewManager
   ; ----------------------------------------------------------------------------------
   ; Constructor
   ; ----------------------------------------------------------------------------------
-  Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered)
+  Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
     Protected *Me.ViewManager_t = AllocateMemory(SizeOf(ViewManager_t))
     
     InitializeStructure(*Me,ViewManager_t)
@@ -902,8 +900,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 771
-; FirstLine = 759
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 620
+; FirstLine = 617
 ; Folding = ------
 ; EnableXP

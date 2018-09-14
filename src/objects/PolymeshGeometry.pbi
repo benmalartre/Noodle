@@ -909,9 +909,7 @@ Module PolymeshGeometry
   Procedure UpdateColors(*mesh.PolymeshGeometry_t)
     Protected i,v
     Protected *vertex.Vertex_t
-    
-    Debug "Normal Size : "+Str(CArray::GetCount(*mesh\a_normals))
-    Debug "Color Size : "+Str(CArray::GetCount(*mesh\a_colors))
+
   ;   
   ;   For i=0 To *mesh\a_tritosample\GetCount()-1
   ;     v = *mesh\a_triangleindices\GetValue(i)  
@@ -1010,6 +1008,15 @@ Module PolymeshGeometry
     GetUVWSFromExtrusion(*geom,*points,*section)
   
   EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Extrude Polygons
+  ;---------------------------------------------------------
+  Procedure ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
+    
+  EndProcedure
+  
+  
   ;---------------------------------------------------------
   ; Update
   ;---------------------------------------------------------
@@ -2393,7 +2400,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 24
-; Folding = ---4H9--8--
+; CursorPosition = 937
+; FirstLine = 909
+; Folding = ----P5--4--
 ; EnableXP
