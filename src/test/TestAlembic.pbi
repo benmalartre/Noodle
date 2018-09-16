@@ -25,7 +25,10 @@ XIncludeFile "../objects/Polymesh.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -111,10 +114,10 @@ If Time::Init()
       Define *t.Transform::Transform_t = *model\localT
       Define p.v3f32
       Define q.v3f32
-      Vector3::Set(@p,Random(50)-25,Random(10),0)
-      Quaternion::Randomize(@q)
+      Vector3::Set(@p,i*20,0,0)
+;       Quaternion::Randomize(@q)
       Transform::SetTranslation(*t, @p)
-      Transform::SetRotationFromQuaternion(*t, @q)
+;       Transform::SetRotationFromQuaternion(*t, @q)
       Object3D::SetlocalTransform(*model, *t)
       Scene::AddModel(Scene::*current_scene,*model)
       
@@ -156,13 +159,13 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 8
-; FirstLine = 1
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 83
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin/Alembic.app
+; Executable = bin\Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

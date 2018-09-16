@@ -16,12 +16,7 @@ DeclareModule ControlNumber
   #NUMBER_INTEGER   = %0010
   #NUMBER_PERCENT   = %0100
   #NUMBER_NOSLIDER  = %1000
- 
-  Global COLOR_BACK_ENABLE.i
-  Global COLOR_BACK_OVER.i
-  Global COLOR_BACK_FOCUSED.i
-  Global COLOR_BACK_DISABLE.i
-  Global COLOR_FRONT_ENABLE.i
+
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlNumber_t )
@@ -284,13 +279,14 @@ Module ControlNumber
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
+    Procedure hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Set Font ]-----------------------------------------------------------
     Protected tc.i = UIColor::COLOR_NUMBER_FG
     DrawingFont(FontID(Globals::#FONT_TEXT))
+  ;   raaSetFontEdit( raa_font_node )
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - TextHeight( *Me\value ) )/2 + yoff
     
@@ -320,14 +316,14 @@ Module ControlNumber
     Protected tw     .i = x_end - x_start  
     Protected tlen   .i = *Me\posW - *Me\posS
     
-    ; 같�[ Right Overflow ]같같같같같같같같같같같같같같같같같같같같같같같같같같�
+    ; ---[ Right Overflow ]-----------------------------------------------------
     If tw > rof
       While tw > rof
         *Me\posS + 1
         tw = x_end - *Me\lookup(*Me\posS)
       Wend
       tlen = *Me\posW - *Me\posS
-    ; 같�[ Clip Text ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
+    ; ---[ Left Overflow ]------------------------------------------------------
     Else
       Protected i_end.i = *Me\posW
       While ( tw <= rof ) And ( i_end < *Me\lookup_count )
@@ -365,6 +361,7 @@ Module ControlNumber
       ; ...[ Compute Slider Extends ]...........................................
       Protected factor.d = ( *Me\value_n - *Me\soft_min )/( *Me\soft_max - *Me\soft_min )
       Protected slider_w.i = Math::Min( *Me\sizX - 4, Math::Max( 0, factor*( *Me\sizX - 4 ) ) )
+      Debug "SLIDER W : "+Str(slider_w)
       If *Me\options & #NUMBER_NOSLIDER
         slider_w = *Me\sizX - 4
       EndIf
@@ -376,56 +373,92 @@ Module ControlNumber
     DrawingMode(#PB_2DDrawing_Default)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_DISABLE)
+      RoundBox( xoff, yoff, *Me\sizX , *Me\sizY , 3, 3, UIColor::COLOR_NUMBER_BG)
+;       DrawImage( ImageID(s_gui_controls_number_disabled_l ),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_disabled_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
+;       DrawImage( ImageID(s_gui_controls_number_disabled_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_disabled_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
+;       DrawImage( ImageID(s_gui_controls_number_disabled_cl),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_disabled_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
       ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLOR_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
-      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_FOCUSED)
+      RoundBox(xoff, yoff, *Me\sizX , *Me\sizY , 3, 3, UIColor::COLOR_NUMBER_BG)
+;       DrawImage( ImageID(s_gui_controls_number_focused_l),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_focused_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
+;       DrawImage( ImageID(s_gui_controls_number_focused_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_OVER)
+      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
+      Box(xoff + slider_w-2, yoff, 4, *Me\sizY, RGB(255,0,0)) 
+;       DrawImage( ImageID(s_gui_controls_number_over_l   ),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_over_c   ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
+;       DrawImage( ImageID(s_gui_controls_number_over_r   ), *Me\sizX - 8 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_over_s   ),            2 + xoff, 1 + yoff, slider_w,      16 )
+;       DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
     Else
-      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, COLOR_BACK_ENABLE)
+      If slider_w > *Me\sizX * 0.5
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
+        RoundBox(xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_FG)
+        Box(xoff+slider_w-1, yoff, 2, *Me\sizY, UIColor::COLOR_CARET) 
+      Else
+        RoundBox(xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_FG)
+        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
+        
+        Box(xoff+slider_w-1, yoff, 2, *Me\sizY, RGB(0,255,0)) 
+      EndIf
+      
+      
+;       Box(xoff + slider_w-2, yoff, 4, *Me\sizY, RGB(0,0,255)) 
+;       DrawImage( ImageID(s_gui_controls_number_normal_l ),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_normal_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
+;       DrawImage( ImageID(s_gui_controls_number_normal_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_normal_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
+;       DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
+;       DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
     EndIf
     
-    ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
-    Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
+    Box(xoff + slider_w, yoff, 2, *Me\sizY, RGB(255,222,255)) 
     
-    ; ---[ Handle Caret & Selection ]-------------------------------------------
-    If *Me\focused
-      ; ---[ Has Selection ]----------------------------------------------------
-      If *Me\selected
-        ; ---[ Draw Regular Text + Selection ]----------------------------------
-        CompilerSelect #PB_Compiler_OS
-          CompilerCase #PB_OS_Windows
-            Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-          CompilerCase #PB_OS_Linux
-            Box( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-          CompilerCase #PB_OS_MacOS
-            Box( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-        CompilerEndSelect
-        DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-        DrawText( tx + xoff, ty, dtext, UIColor::COLOR_SELECTED_FG )
-      ; ---[ Just Caret ]-------------------------------------------------------
-      Else
-        ; ---[ Draw Value ]-----------------------------------------------------
-        DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-        DrawText( tx + xoff, ty, dtext, tc )
-        ; ---[ Draw Caret ]-----------------------------------------------------
-        If *Me\caret_switch > 0 Or Not *Me\timer_on
-          CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Windows
-              Line( tx + posXL + xoff, ty,   1, 13, UIColor::COLOR_CARET )
-            CompilerCase #PB_OS_Linux
-              Line( tx + posXL + xoff, ty+1, 1, 13, UIColor::COLOR_CARET )
-            CompilerCase #PB_OS_MacOS
-              Line( tx + posXL + xoff, ty+2, 1, 13, UIColor::COLOR_CARET )
-          CompilerEndSelect
-        EndIf
-      EndIf
-    Else
-      ; ---[ Draw Value ]-------------------------------------------------------
+;     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
+;     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
+;     
+;     ; ---[ Handle Caret & Selection ]-------------------------------------------
+;     If *Me\focused
+;       ; ---[ Has Selection ]----------------------------------------------------
+;       If *Me\selected
+;         ; ---[ Draw Regular Text + Selection ]----------------------------------
+;         CompilerSelect #PB_Compiler_OS
+;           CompilerCase #PB_OS_Windows
+;             Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+;           CompilerCase #PB_OS_Linux
+;             Box( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+;           CompilerCase #PB_OS_MacOS
+;             Box( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+;         CompilerEndSelect
+;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+;         DrawText( tx + xoff, ty, dtext, UIColor::COLOR_SELECTED_FG )
+;       ; ---[ Just Caret ]-------------------------------------------------------
+;       Else
+;         ; ---[ Draw Value ]-----------------------------------------------------
+;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+;         DrawText( tx + xoff, ty, dtext, tc )
+;         ; ...[ Draw Caret ].....................................................
+;         If *Me\caret_switch > 0 Or Not *Me\timer_on
+;           CompilerSelect #PB_Compiler_OS
+;             CompilerCase #PB_OS_Windows
+;               Line( tx + posXL + xoff, ty,   1, 13, UIColor::COLOR_CARET )
+;             CompilerCase #PB_OS_Linux
+;               Line( tx + posXL + xoff, ty+1, 1, 13, UIColor::COLOR_CARET )
+;             CompilerCase #PB_OS_MacOS
+;               Line( tx + posXL + xoff, ty+2, 1, 13, UIColor::COLOR_CARET )
+;           CompilerEndSelect
+;         EndIf
+;       EndIf
+;     Else
+;       ; ---[ Draw Value ]-------------------------------------------------------
 ;       CompilerSelect #PB_Compiler_OS
 ;           CompilerCase #PB_OS_Windows
 ;             RoundBox( -3 + tx + xoff, ty,   tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
@@ -434,9 +467,9 @@ Module ControlNumber
 ;           CompilerCase #PB_OS_MacOS
 ;             RoundBox( -3 + tx + xoff, ty+2, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
 ;         CompilerEndSelect
-        DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-        DrawText( tx + xoff, ty, dtext, tc )
-    EndIf
+;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+;         DrawText( tx + xoff, ty, dtext, tc )
+;     EndIf
     
   EndProcedure
   ;}
@@ -562,6 +595,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     ;  MouseMove
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
+
       ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
         ; ...[ Check Down ]...................................................
@@ -591,11 +625,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           Control::Invalidate(*Me)
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          ;If *Me\object
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
-            PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
-          ;EndIf
-          
+          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
+          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
         EndIf
         ; ...[ Processed ]....................................................
@@ -1212,7 +1243,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1128
-; FirstLine = 1100
+; CursorPosition = 628
+; FirstLine = 616
 ; Folding = ----
 ; EnableXP

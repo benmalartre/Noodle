@@ -8,7 +8,10 @@ EnableExplicit
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 Global *s_simple.Program::Program_t
@@ -48,11 +51,19 @@ Log::Init()
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
- 
 
 
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
 *drawer = Drawer::New()
+
+Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+Define.v3f32 bmin, bmax
+Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
+Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
+Define *octree.Octree::Octree_t = Octree::New(@bmin.v3f32, @bmax.v3f32, 0)
+Octree::Build(*octree, *geom)
+Octree::Draw(*octree, *drawer, *geom)
+Octree::Delete(*octree)
 
 Define *poisson.Poisson::Poisson_t = Poisson::New()
 Define box.Geometry::Box_t
@@ -64,30 +75,25 @@ Box::Set(@box, @origin, @extend)
 Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
 Global *root.Model::Model_t = Model::New("Model")
-Object3D::AddChild(*root, *mesh)
+; Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 
 Scene::AddModel(Scene::*current_scene, *root)
 
 Define t.d = Time::Get()
-Poisson::CreateGrid(*poisson, @box,4)
-Define numSamples = Poisson::Sample(*poisson)
-
-Poisson::SampleMesh(*poisson, *mesh\geom, *mesh\localT)
-
-Define *pnt.Drawer::Point_t = Drawer::NewPoints(*drawer, *poisson\positions)
-Drawer::SetSize(*pnt, 4)
-
-Drawer::SetColor(*pnt, Color::_RED())
+; Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.2)
+; ; Define numSamples = Poisson::Sample(*poisson)
+; Poisson::SignedDistances(*poisson, *mesh\geom)
+; Poisson::Setup(*poisson, *drawer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 
-Define str.s
-str + "#################### POISSON SAMPLING ######################"+Chr(10)
-str + " Generated "+Str(numSamples) + " Samples in "+StrD(Time::Get()-t)+" milliseconds"+Chr(10)
-str + "############################################################"+Chr(10)
-
-MessageRequester("POISSON", str)
+; Define str.s
+; str + "#################### POISSON SAMPLING ######################"+Chr(10)
+; str + " Generated "+Str(numSamples) + " Samples in "+StrD(Time::Get()-t)+" milliseconds"+Chr(10)
+; str + "############################################################"+Chr(10)
+; 
+; MessageRequester("POISSON", str)
 
 Application::Loop(*app, @Draw())
 
@@ -131,8 +137,8 @@ Application::Loop(*app, @Draw())
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 53
+; CursorPosition = 64
+; FirstLine = 48
 ; Folding = -
 ; EnableThread
 ; EnableXP

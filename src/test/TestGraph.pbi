@@ -111,14 +111,12 @@ Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 GraphUI::SetContent(*graph,*tree)
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 
-
-
 Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
-
-
-
+ViewportUI::AddLayer(*viewport, *layer)
 
 Scene::Setup(Scene::*current_scene,*app\context)
+
+ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
 
 Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
@@ -145,7 +143,7 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Graph Tree",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
-   FTGL::EndDraw(*app\context\writer)
+  FTGL::EndDraw(*app\context\writer)
   
   CompilerIf Not #USE_GLFW
     ViewportUI::FlipBuffer(*viewport)
@@ -158,8 +156,9 @@ EndProcedure
 Define e.i
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 102
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

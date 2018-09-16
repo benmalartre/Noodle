@@ -68,7 +68,7 @@ DeclareModule View
 ;   Declare DrawDebug(*view.View_t)
   Declare.b MouseInside(*view,x.i,y.i)
   Declare TouchBorder(*view,x.i,y.i,w.i)
-  Declare TouchBorderEvent(*view,border.i)
+  Declare TouchBorderEvent(*view)
   Declare ClearBorderEvent(*view)
   Declare GetActive(*view,x.i,y.i)
   Declare Split(*view,options.i=0,perc.i=50)
@@ -97,7 +97,7 @@ DeclareModule ViewManager
     *main.View::View_t
     *active.View::View_t
     Map *uis.UI::UI_t()
-
+    imageID.i
     lastx.i
     lasty.i
     window.i
@@ -109,6 +109,9 @@ DeclareModule ViewManager
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*manager.ViewManager_t)
   Declare OnEvent(*manager.ViewManager_t,event.i)
+  Declare DrawPickImage(*manager.ViewManager_t)
+  Declare Draw(*manager.ViewManager_t)
+  Declare Pick(*Me.ViewManager_t, mx.i, my.i)
 ;   Declare UpdateMap(*manager.ViewManager_t)
 EndDeclareModule
 
@@ -135,16 +138,9 @@ Module View
     *view\name = name
     *view\lorr = lorr
     *view\content = #Null
-   
-;     *view\gadgetID = ContainerGadget(#PB_Any,x,y,width,height)
-;   
-;     SetGadgetColor(*view\gadgetID,#PB_Gadget_BackColor,COLOR_MAIN_BG)
-;     ;*view\canvasID = FrameGadget(#PB_Any,0,0,width,height,"test");CanvasGadget(#PB_Any,0,0,width,height)
-;     
-;     CloseGadgetList()
     
     *view\axis = axis
-    *view\type = 0;#VIEW_EMPTY
+    *view\type = 0
     
     ;increment view id counter
     view_id_counter + 1
@@ -165,9 +161,6 @@ Module View
   ; Delete View
   ;----------------------------------------------------------
   Procedure Delete(*view.View_t)
-;     If *view\gadgetID : FreeGadget(*view\gadgetID) : EndIf
-;     If *view\canvasID : FreeGadget(*view\canvasID) : EndIf
-;     If *view\imageID  : FreeImage(*view\imageID)   : EndIf
     
     FreeMemory(*view)
     
@@ -356,9 +349,7 @@ Module View
         *view\splitterID = CanvasGadget(#PB_Any,*view\x,*view\y+my-hs,*view \width,2*hs)
         If Not *view\fixed : SetGadgetAttribute(*view\splitterID,#PB_Canvas_Cursor,#PB_Cursor_UpDown):EndIf
       EndIf
-      
-     
-      
+
       *view\axis = Bool(options & #PB_Splitter_Vertical)
       *view\leaf = #False
       *view\perc = perc
@@ -376,35 +367,13 @@ Module View
   ;----------------------------------------------------------------------------------
   ; Touch Border Event
   ;----------------------------------------------------------------------------------
-  Procedure.i TouchBorderEvent(*view.View_t,border.i)
+  Procedure.i TouchBorderEvent(*view.View_t)
+    If Not *view : ProcedureReturn : EndIf
     Protected *manager.ViewManager::ViewManager_t = *view\manager
     Protected btn.i
     If *view\fixed : ProcedureReturn : EndIf
-
     If EventType() = #PB_EventType_LeftButtonDown
       Protected drag.b = #True
-      
-      ; Get Affected View
-      Protected *affected.View_t
-      Select border
-        Case #VIEW_TOP
-          *affected = *view\tsplitter
-        Case #VIEW_LEFT
-          *affected = *view\lsplitter
-        Case #VIEW_RIGHT
-          *affected = *view\rsplitter
-        Case #VIEW_BOTTOM
-          *affected = *view\bsplitter
-      EndSelect
-      
-      ; No Parent View ---> Cannot resize
-      If Not *affected : ProcedureReturn : EndIf
-      If *affected\content
-        *affected\content\active = #True
-      EndIf
-      
-      
-      
       
       Protected sx,sy,sw, sh
       Protected mx = WindowMouseX(*manager\window)
@@ -422,7 +391,7 @@ Module View
         
         ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
         If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
-          GetPercentage(*affected,mx,my)
+          GetPercentage(*view,mx,my)
           drag = #False
         EndIf
   
@@ -444,19 +413,16 @@ Module View
   ; Touch Border
   ;----------------------------------------------------------------------------------
   Procedure.i TouchBorder(*view.View_t,x.i,y.i,w.i)
-    
+    If Not  *view : ProcedureReturn : EndIf
+
     ;Left border
-    If Abs(*view\x - x)<w                 And  *view\y<y    And *view\y+*view\height>y : ProcedureReturn #VIEW_LEFT : EndIf
-    
+    If Abs(x - *view\x)<w                     : ProcedureReturn #VIEW_LEFT : EndIf
     ;Right border
-    If Abs((*view\x+*view\width) - x)<w   And  *view\y<y    And *view\y+*view\height>y : ProcedureReturn #VIEW_RIGHT : EndIf
-    
+    If Abs((*view\x+*view\width) - x)<w       : ProcedureReturn #VIEW_RIGHT : EndIf
     ;Top border
-    If Abs(*view\y - y)<w                 And  *view\x<x    And *view\x+*view\width>x : ProcedureReturn #VIEW_TOP : EndIf
-    
+    If Abs(y - *view\y)<w                     : ProcedureReturn #VIEW_TOP : EndIf
     ;Bottom border
-     If Abs((*view\y+*view\height) - y)<w  And  *view\x<x    And *view\x+*view\width>x : ProcedureReturn #VIEW_BOTTOM : EndIf
-    
+     If Abs((*view\y+*view\height) - y)<w     : ProcedureReturn #VIEW_BOTTOM : EndIf
     ProcedureReturn #VIEW_NONE
     
   EndProcedure
@@ -483,11 +449,9 @@ Module View
         StartDrawing(CanvasOutput(*affected\splitterID  ))
         ;         Box(0,0,GadgetWidth(*view\top\splitterID),GadgetHeight(*view\top\splitterID),RGB(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01))
         Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
-        StopDrawing()
-       
-        
+        StopDrawing() 
+        ProcedureReturn *affected
       EndIf
-      
     EndIf
     
   EndProcedure
@@ -509,8 +473,6 @@ Module View
   ;----------------------------------------------------------------------------------
   ; Draw
   ;----------------------------------------------------------------------------------
-
-  
   Procedure Draw(*view.View_t)
     
     If *view\leaf And *view\dirty
@@ -534,26 +496,20 @@ Module View
   ;----------------------------------------------------------------------------------
   Procedure GetActive(*view.View_t,x.i,y.i)
     Protected *manager.ViewManager::ViewManager_t = *view\manager
-    
     Protected active.b = *view\active 
-    
     If *view\leaf
       If MouseInside(*view,x,y) = #True
         *view\active = #True
-        
         If active <>#True : *view\dirty  = #True : EndIf
-        ProcedureReturn #True
       Else
         *view\active = #False
         If active = #True : *view\dirty = #True : EndIf
-        ProcedureReturn #False
       EndIf
     Else
       If *view\left : GetActive(*view\left,x,y) : EndIf
       If *view\right : GetActive(*view\right,x,y) : EndIf
     EndIf
-    
-  
+
   EndProcedure
   
   ;-----------------------------------------------------------------------------------
@@ -589,7 +545,7 @@ Module View
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     
     If *Me\leaf
-      If *Me\content <> #Null And event = #PB_Event_Gadget
+      If *Me\content <> #Null
         Protected *content.UI::IUI = *Me\content
         *content\Event(event)
       EndIf
@@ -686,27 +642,17 @@ Module ViewManager
     If Not *manager : ProcedureReturn : EndIf
     Protected w = WindowWidth(*manager\window,#PB_Window_InnerCoordinate)
     Protected h = WindowHeight(*manager\window,#PB_Window_InnerCoordinate)
-;       Protected ev_data.EventTypeDatas_t
-;       ev_data\x = 0
-;       ev_data\y = 0
-;       ev_data\width = w
-;       ev_data\height = h
-      View::Resize(*manager\main,0,0,w,h)
-      ;View::OnEvent(*manager\main,#PB_Event_SizeWindow)
+
+    View::Resize(*manager\main,0,0,w,h)
+    DrawPickImage(*manager)
   EndProcedure
-    
-    
+  
   ;----------------------------------------------------------------------------------
   ; Recurse View
   ;----------------------------------------------------------------------------------
   Procedure RecurseView(*manager.ViewManager_t,*view.View::View_t)
     If *view\leaf
       If *view\active
-        If *manager\active And *manager\active <> *view
-          *manager\active\active = #False
-          *manager\active\dirty = #True
-          View::OnEvent(*manager\active,#PB_EventType_LostFocus)
-        EndIf
         *manager\active = *view
       EndIf
     Else
@@ -721,8 +667,8 @@ Module ViewManager
   Procedure.i GetActiveView(*manager.ViewManager_t,x.i,y.i)
     Protected *view.View::View_t = *manager\main
     View::GetActive(*view,x,y)
-    ProcedureReturn RecurseView(*manager,*manager\main)
-    
+
+    ProcedureReturn RecurseView(*manager, *manager\main)
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -762,7 +708,7 @@ Module ViewManager
   ; Event
   ;----------------------------------------------------------------------------------
   Procedure OnEvent(*manager.ViewManager_t,event.i)
-    
+
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
@@ -770,22 +716,52 @@ Module ViewManager
     
     Protected mx = WindowMouseX(*manager\window)
     Protected my = WindowMouseY(*manager\window)
-        
-    GetActiveView(*manager,mx,my)
+    
+    Protected *active.View::View_t = Pick(*manager, mx, my)
 
     Select event
-      Case #PB_Event_Gadget      
-        If *manager\active 
-          Protected touch = View::TouchBorder(*manager\active,mx,my,#VIEW_BORDER_SENSIBILITY)
-          If touch
-            View::EventSplitter(*manager\active,touch)
-            View::TouchBorderEvent(*manager\active,touch)
-            View::OnEvent(*manager\active,event)
+      Case #PB_Event_Gadget   
+         If *active
+          Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
+          If EventType() = #PB_EventType_LostFocus
+            gadgetID = EventGadget()
+            If FindMapElement(*manager\uis(), Str(gadgetID))
+              View::OnEvent(*manager\uis()\top, event)
+            EndIf
           Else
-            View::ClearBorderEvent(*manager\active)
-            View::OnEvent(*manager\active,event)
+            If touch
+              View::EventSplitter(*active,touch)
+              Protected *affected.View::View_t = View::EventSplitter(*active,touch)
+              If *affected
+                View::TouchBorderEvent(*affected)
+              EndIf
+            Else
+              View::ClearBorderEvent(*active)
+            EndIf
+            View::OnEvent(*active,event)
           EndIf
+          
         EndIf
+;         If *active
+;           Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
+;           If touch
+;             If type = #PB_EventType_LeftButtonDown
+;               Debug "TOUCH LEFT BUTTON DOWN"
+;             EndIf
+;             Protected *affected.View::View_t = View::EventSplitter(*active,touch)
+;             If *affected
+;               View::TouchBorderEvent(*affected)
+;             EndIf
+;           Else
+;             View::ClearBorderEvent(*active)
+;           EndIf
+;           View::OnEvent(*active,event)
+;         EndIf
+;         
+;         gadget = EventGadget()
+;         If FindMapElement(*manager\uis(), Str(gadget))
+;           View::OnEvent(*manager\uis()\top,event)
+;         EndIf
           
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
@@ -832,25 +808,99 @@ Module ViewManager
             MessageRequester("View Manager","Redo Called")
             Commands::Redo(Commands::*manager)
           Default
-            View::OnEvent(*manager\active,#PB_Event_Menu)
+            View::OnEvent(*active,#PB_Event_Menu)
             
         EndSelect
         
-            
       Case #PB_Event_SizeWindow
         Resize(*manager)
+        DrawPickImage(*manager)
       Case #PB_Event_MaximizeWindow
         Resize(*manager)
+        DrawPickImage(*manager)
       Case #PB_Event_MoveWindow
         Resize(*manager)
+        DrawPickImage(*manager)
       Case #PB_Event_Menu
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
       
+      
     EndSelect
-  
+    
+    *manager\active = *active
+    
   EndProcedure
+  
+  ;----------------------------------------------------------------------------------
+  ; Recurse Draw View
+  ;----------------------------------------------------------------------------------
+  Procedure RecurseDrawPickImage(*manager.ViewManager_t,*view.View::View_t)
+    If *view\leaf And *view\content
+      AddMapElement(*manager\uis(), Str(*view\content\gadgetID))
+      *manager\uis() = *view\content
+      Box(*view\x-#VIEW_BORDER_SENSIBILITY*0.5,
+          *view\y-#VIEW_BORDER_SENSIBILITY*0.5,
+          *view\width+#VIEW_BORDER_SENSIBILITY,
+          *view\height+#VIEW_BORDER_SENSIBILITY,
+          *view\content\gadgetID)
+    Else
+      If *view\left : RecurseDrawPickImage(*manager,*view\left) : EndIf
+      If *view\right : RecurseDrawPickImage(*manager,*view\right) : EndIf
+    EndIf
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------------
+  ; Draw Pick Image
+  ; ----------------------------------------------------------------------------------
+  Procedure DrawPickImage(*Me.ViewManager_t)
+    ClearMap(*Me\uis())
+    ResizeImage(*Me\imageID, *Me\main\width, *Me\main\height)
+    StartDrawing(ImageOutput(*Me\imageID))
+    DrawingMode(#PB_2DDrawing_AllChannels)
+    RecurseDrawPickImage(*Me,*Me\main)
+    StopDrawing()
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------------
+  ; Draw Over Pick Image (DEV)
+  ; ----------------------------------------------------------------------------------
+  Procedure Draw(*Me.ViewManager_t)
+    StartDrawing(WindowOutput(*Me\window))
+    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    DrawImage(ImageID(*Me\imageID),0,0)
+    If *Me\active
+      DrawingMode(#PB_2DDrawing_Default)
+      Box(*Me\active\x, *Me\active\y, *Me\active\width, *Me\active\height, RGBA(255,255,255,128))
+    EndIf
+    
+    StopDrawing()
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------------
+  ; Pick Active View
+  ; ----------------------------------------------------------------------------------
+  Procedure Pick(*Me.ViewManager_t, mx.i, my.i)
+    Protected picked.i
+    StartDrawing(ImageOutput(*Me\imageID))
+    DrawingMode(#PB_2DDrawing_AllChannels)
+    If mx>=0 And mx<ImageWidth(*Me\imageID) And my>=0 And my<ImageHeight(*Me\imageID)
+      
+      picked = Point(mx, my)
+      If FindMapElement(*Me\uis(), Str(picked))
+        StopDrawing()
+        ProcedureReturn *Me\uis()\top
+      EndIf
+    EndIf
+    StopDrawing()
+    ProcedureReturn #Null
+  EndProcedure
+  
+  
+  ; ----------------------------------------------------------------------------------
+  ; Constructor
+  ; ----------------------------------------------------------------------------------
 
   ;------------------------------------------------------------------
   ; Destuctor
@@ -867,31 +917,14 @@ Module ViewManager
     
     InitializeStructure(*Me,ViewManager_t)
   
-    
-    ;Protected options.i = #PB_Window_BorderLess|#PB_Window_Maximize
-    ;Protected options.i = #PB_Window_SystemMenu|#PB_Window_SizeGadget|#PB_Window_MaximizeGadget|#PB_Window_MinimizeGadget
     *Me\name = name
     *Me\window = OpenWindow(#PB_Any, 0, 0, width, height, *Me\name, options)  
-;     SetWindowColor(*Me\window,RGB(240,240,240))
     EnableWindowDrop(*Me\window,#PB_Drop_Private,#PB_Drag_Move,#VIEW_SPLITTER_DROP)
     *Me\main = View::New(x.i,y.i,WindowWidth(*Me\window),WindowHeight(*Me\window),#Null,#False,name,#True)
     *Me\main\manager = *Me
     *Me\main\parentID = *Me\window
     *Me\active = *Me\main
-  
-    
-   
-;   AddKeyboardShortcut(*manager\window,#PB_Shortcut_Return                 ,#RAA_SHORTCUT_ENTER)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Tab                    ,#SHORTCUT_NEXT)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Shift|#PB_Shortcut_Tab ,#SHORTCUT_PREVIOUS)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Shift|#PB_Shortcut_R   ,#SHORTCUT_RESET)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Delete                 ,#SHORTCUT_DELETE)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Control|#PB_Shortcut_C ,#SHORTCUT_COPY)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Control|#PB_Shortcut_V ,#SHORTCUT_PASTE)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Control|#PB_Shortcut_X ,#SHORTCUT_CUT)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Control|#PB_Shortcut_Z ,#SHORTCUT_UNDO)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Control|#PB_Shortcut_Y ,#SHORTCUT_REDO)
-;     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Escape                 ,#SHORTCUT_QUIT)
+    *Me\imageID = CreateImage(#PB_Any, width, height, 32)
 
     *view_manager = *Me
     
@@ -901,7 +934,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 620
-; FirstLine = 617
+; CursorPosition = 836
+; FirstLine = 825
 ; Folding = ------
 ; EnableXP

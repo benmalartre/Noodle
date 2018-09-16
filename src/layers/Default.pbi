@@ -97,18 +97,20 @@ Module LayerDefault
     Framebuffer::BindOutput(*buffer)
     
     ;   Clear(*layer)
-    glClearColor(0.66,0.66,0.66,1.0)
+    glClearColor(0.63,0.63,0.63,1.0)
+    
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     glCheckError("[LayerDefault] Clear")
     glEnable(#GL_DEPTH_TEST)
-    
     glViewport(0,0,*layer\width,*layer\height)
     
     ; Find Up View Point
     ;-----------------------------------------------
-    Protected *view.m4f32,*proj.m4f32,view.m4f32
+    Protected *view.m4f32,proj.m4f32,view.m4f32
     *view = Layer::GetViewMatrix(*layer)
-    *proj = Layer::GetProjectionMatrix(*layer)
+    Protected *camera.Camera::Camera_t = *layer\pov
+    Protected aspect.f = *layer\width / *layer\height
+    Matrix4::GetProjectionMatrix(@proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
     
     ;Draw Shaded Polymeshes 
     ;-----------------------------------------------
@@ -117,7 +119,7 @@ Module LayerDefault
     glUseProgram(shader)
       
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
     
@@ -132,7 +134,7 @@ Module LayerDefault
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
     
     ;Draw Curve Objects
@@ -141,14 +143,14 @@ Module LayerDefault
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
     
     *shader.Program::Program_t = *ctx\shaders("wireframe")
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
 
     
@@ -163,7 +165,7 @@ Module LayerDefault
 ;     Protected m.m4f32
 ;     Matrix4::SetIdentity(@m)
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
 ;     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
 
@@ -177,8 +179,8 @@ Module LayerDefault
     glEnable(#GL_DEPTH_TEST)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
     
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
     
     Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
     
@@ -200,8 +202,8 @@ Module LayerDefault
   ;   glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
     
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
   ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
     
@@ -219,8 +221,8 @@ Module LayerDefault
     Matrix4::SetIdentity(@model)
  
     glDisable(#GL_DEPTH_TEST)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
     GLCheckError("DRAW NULLS")
@@ -287,7 +289,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 50
+; CursorPosition = 99
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

@@ -31,13 +31,19 @@ DeclareModule ControlColor
   EndStructure
   
   Interface IControlColor Extends Control::IControl
-    OnClick()
+    SetRed()
+    SetGreen()
+    SetBlue()
   EndInterface
   
   Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
   Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  Declare OnClick(*Me.ControlColor_t)
+  Declare SetRed(*Me.ControlColor_t)
+  Declare SetGreen(*Me.ControlColor_t)
+  Declare SetBlue(*Me.ControlColor_t)
+  
+  
   ; ============================================================================
   ;  VTABLE ( Object + Control + ControlColor )
   ; ============================================================================
@@ -45,7 +51,6 @@ DeclareModule ControlColor
     ControlColorVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
-    Data.i @OnClick()
   EndDataSection
 
   
@@ -314,21 +319,18 @@ Module ControlColor
   Procedure OnMessage(type.i, *up)
     Protected *sig.Signal::Signal_t = *up
     Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
-    Protected fn.Class::CLASSMESSAGE = *sig\rcv_slot
-    
-    fn(type, *sig)
+    Protected Me.ControlColor::IControlColor = *Me
+    Select *sig\rcv_slot
+      Case 0:
+        SetRed(*Me)
+      Case 1:
+        SetGreen(*Me)
+      Case 2:
+        SetBlue(*Me)
+    EndSelect
     
   EndProcedure
-  
-  
-  Procedure OnClick(*Me.ControlColor_t)
-    MessageRequester("COLOR", "ON CLICK")
-    *Me\red = Random(255)
-    *Me\green = Random(255)
-    *Me\blue = Random(255)
-    Color::Set(*Me\color, *Me\red / 255, *Me\green/255, *Me\blue / 255)
-    Control::Invalidate(*Me)
-  EndProcedure
+
   
 
 
@@ -349,6 +351,30 @@ Module ControlColor
     ; ---[ Return String Value ]------------------------------------------------
     ProcedureReturn( *Me\label )
     
+  EndProcedure
+  
+  Procedure SetRed(*ctrl.ControlColor::ControlColor_t)
+    *ctrl\red = 255
+    *ctrl\green = 0
+    *ctrl\blue = 0
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Control::Invalidate(*ctrl)
+  EndProcedure
+  
+  Procedure SetGreen(*ctrl.ControlColor::ControlColor_t)
+    *ctrl\red = 0
+    *ctrl\green = 255
+    *ctrl\blue = 0
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Control::Invalidate(*ctrl)
+  EndProcedure
+  
+  Procedure SetBlue(*ctrl.ControlColor::ControlColor_t)
+    *ctrl\red = 0
+    *ctrl\green = 0
+    *ctrl\blue = 255
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Control::Invalidate(*ctrl)
   EndProcedure
 
   ; ============================================================================
@@ -406,8 +432,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 314
-; FirstLine = 278
+; CursorPosition = 330
+; FirstLine = 309
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

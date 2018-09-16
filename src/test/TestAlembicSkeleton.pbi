@@ -3,7 +3,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -57,6 +60,7 @@ If Time::Init()
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  ViewportUI::AddLayer(*viewport, *layer)
   layer = *layer
   *pgm = *app\context\shaders("instances")
   
@@ -118,8 +122,8 @@ If Time::Init()
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 21
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 28
 ; Folding = -
 ; EnableXP

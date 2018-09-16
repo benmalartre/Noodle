@@ -117,6 +117,7 @@ Module TimelineUI
       ev_data\y = *Me\y
       ev_data\width = *Me\width
       ev_data\height = *Me\height
+      *Me\gadgetID = *Me\timeline\gadgetID
       ResizeGadget(*Me\timeline\gadgetID,0,0,*Me\width,*Me\height)
       ControlTimeline::OnEvent(*Me\timeline,#PB_Event_SizeWindow,@ev_data)
     ElseIf event = #PB_Event_Timer
@@ -147,8 +148,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 124
-; FirstLine = 106
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 93
 ; Folding = --
 ; EnableXP

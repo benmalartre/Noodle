@@ -57,6 +57,7 @@ DeclareModule PolymeshGeometry
   Declare InitSampling(*mesh.PolymeshGeometry_t)
   Declare Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
   Declare ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
+  Declare.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *cp.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
 EndDeclareModule
 
 ;========================================================================================
@@ -436,6 +437,10 @@ Module PolymeshGeometry
     Next
     
     ; Finaly Vertex Normals
+    If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints
+      RecomputeVertexPolygons(*mesh)
+    EndIf
+    
     Protected nbp, index
     base = 0
     For i=0 To *mesh\nbpoints-1
@@ -633,6 +638,8 @@ Module PolymeshGeometry
       Next j
       base+nbv
     Next i
+    
+    Debug indices
     
     CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
     CArray::SetCount(*mesh\a_vertexpolygonindices, total)
@@ -832,15 +839,13 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure Reset(*geom.PolymeshGeometry_t)
     
-;     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
-;       ;Set2(*geom,*geom\base)
-;     Else
-;       SetPointsPosition(*geom,*geom\base\vertices)
-;       ;SetPointsNormal(*geom,*geom\base\normals)
-;       ;RecomputeNormals(*geom)
-;     EndIf 
-    
-      
+    If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
+      Set2(*geom,*geom\base)
+    Else
+      SetPointsPosition(*geom,*geom\base\vertices)
+      ;SetPointsNormal(*geom,*geom\base\normals)
+      RecomputeNormals(*geom)
+    EndIf 
 
   EndProcedure
   
@@ -1014,6 +1019,28 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
     
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Closest Location
+  ;---------------------------------------------------------
+  Procedure.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *loc.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
+    Protected hit.b=#False
+    Protected distance.f, minDistance.f = Math::#F32_MAX
+    Define.l a,b,c
+    Define.v3f32 *a, *b, *c
+    Define i
+    For i = 0 To *mesh\nbtriangles - 1
+      a = CArray::GetValueL(*mesh\a_triangleindices, i*3)
+      b = CArray::GetValueL(*mesh\a_triangleindices, i*3+1)
+      c = CArray::GetValueL(*mesh\a_triangleindices, i*3+2)
+      *a = CArray::GetValue(*mesh\a_positions, a)
+      *b = CArray::GetValue(*mesh\a_positions, b)
+      *c = CArray::GetValue(*mesh\a_positions, c)
+      Location::ClosestPoint(*loc, *a, *b, *c, *p, @minDistance)
+    Next
+    PokeF(*distance, minDistance)
+    ProcedureReturn #True
   EndProcedure
   
   
@@ -2400,7 +2427,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 937
-; FirstLine = 909
-; Folding = ----P5--4--
+; CursorPosition = 1039
+; FirstLine = 1023
+; Folding = ----fw--v--
 ; EnableXP

@@ -11,9 +11,9 @@ DeclareModule SRTToMatrixNode
   Structure SRTToMatrixNode_t Extends Node::Node_t
   EndStructure
   
-  ;------------------------------
+  ;-------------------------------------------------------------------------------------------------
   ;Interface
-  ;------------------------------
+  ;-------------------------------------------------------------------------------------------------
   Interface ISRTToMatrixNode Extends Node::INode 
   EndInterface
   
@@ -23,9 +23,9 @@ DeclareModule SRTToMatrixNode
   Declare Evaluate(*node.SRTToMatrixNode_t)
   Declare Terminate(*node.SRTToMatrixNode_t)
   
-  ; ============================================================================
+  ; ==================================================================================================
   ;  ADMINISTRATION
-  ; ============================================================================
+  ; ==================================================================================================
   ;{
   Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("SRTToMatrixNode","Conversion",@New())
   Nodes::AppendDescription(*desc)
@@ -70,9 +70,7 @@ Module SRTToMatrixNode
   EndProcedure
   
   Procedure Evaluate(*node.SRTToMatrixNode_t)
-    
-      
-      
+
       Protected *input.NodePort::NodePort_t
       SelectElement(*node\inputs(),0)
       Protected *m_scl.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
@@ -134,13 +132,13 @@ Module SRTToMatrixNode
   ;  CONSTRUCTORS
   ; ============================================================================
   ;{
-  ; ---[ Heap & stack]-----------------------------------------------------------------
+  ; ---[ Heap & stack]----------------------------------------------------------
   Procedure.i New(*tree.Tree::Tree_t,type.s="SRTToMatrixNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
-    ; ---[ Allocate Node Memory ]---------------------------------------------
+    ; ---[ Allocate Node Memory ]-----------------------------------------------
     Protected *Me.SRTToMatrixNode_t = AllocateMemory(SizeOf(SRTToMatrixNode_t))
     
-    ; ---[ Init Node]----------------------------------------------
+    ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(SRTToMatrixNode,*tree,type,x,y,w,h,c)
     
     ; ---[ Return Node ]--------------------------------------------------------
@@ -152,12 +150,11 @@ Module SRTToMatrixNode
   Class::DEF(SRTToMatrixNode)
 
 EndModule
-; ============================================================================
+; ==============================================================================
 ;  EOF
-; ============================================================================
+; ==============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
 ; Folding = --
 ; EnableXP

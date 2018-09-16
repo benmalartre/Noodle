@@ -40,6 +40,7 @@ DeclareModule GLContext
     height.d
     useGLFW.b
     ID.i
+    focus.b
     shader.GLuint
     
     Map *shaders.Program::Program_t()
@@ -182,9 +183,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 152
-; FirstLine = 123
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 9
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

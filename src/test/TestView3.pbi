@@ -16,8 +16,6 @@ CompilerIf #USE_ALEMBIC
   Alembic::Init()
 CompilerEndIf
 
-
-
 Global WIDTH = 800
 Global HEIGHT = 600
 Global *viewport.ViewportUI::ViewportUI_t
@@ -25,15 +23,20 @@ Global *default.Layer::Layer_t
 Global *app.Application::Application_t
 
 Procedure Update()
-;   ViewportUI::SetContext(*viewport)
-;   Scene::Update(Scene::*current_scene)
-;   LayerDefault::Draw(*default,*app\context)
-;   ViewportUI::FlipBuffer(*viewport)
+  ViewportUI::SetContext(*viewport)
+  Scene::Update(Scene::*current_scene)
+  LayerDefault::Draw(*default,*app\context)
+  ViewportUI::FlipBuffer(*viewport)
 EndProcedure
 
 Procedure Callback(type.i, *sig.Signal::Signal_t)
   MessageRequester("CALLBACK" , "CALL 911 : "+StrF(*sig\sigdata))  
 EndProcedure
+
+Procedure BunnyCallback(*bunny.Polymesh::Polymesh_t)
+  
+EndProcedure
+
 
 Structure MyObject_t Extends Object::Object_t
   
@@ -101,18 +104,27 @@ EndProcedure
 *app = Application::New("Test Property",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Scene::*current_scene = Scene::New()
-; Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
-; Scene::AddChild(Scene::*current_scene,*bunny)
+Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+Scene::AddChild(Scene::*current_scene,*bunny)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property", #Null)
+Global *splitted.View::View_t = View::Split(*m\main, 0,75)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
 AddButton(*ui, "PUSH ME")
 AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
+*app\context = *viewport\context
+*viewport\camera = *app\camera
+ViewportUI::SetContext(*viewport)
+
+*default = LayerDefault::New(*viewport\width, *viewport\height, *app\context, *app\camera)
+ViewportUI::AddLayer(*viewport, *default)
+Scene::Setup(Scene::*current_scene, *app\context)
+
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 17
-; FirstLine = 10
-; Folding = -
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 13
+; Folding = --
 ; EnableXP
 ; EnableUnicode

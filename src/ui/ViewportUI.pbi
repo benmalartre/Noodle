@@ -167,12 +167,9 @@ Module ViewportUI
     
     Select event
       Case #PB_Event_SizeWindow
-        Debug "NUM LAYERS : "+Str(ListSize(*Me\layers()))
-        ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
-        
         width = *top\width
         height = *top\height
-        
+
         *Me\width = width
         *Me\height = height
         *Me\x = *top\x
@@ -180,7 +177,8 @@ Module ViewportUI
         
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
-        
+
+        ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
 
         If *Me\context  
           *Me\context\width = *Me\width
@@ -188,64 +186,65 @@ Module ViewportUI
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
       Case #PB_Event_Gadget
-        If EventGadget() = *Me\gadgetID
-          Protected deltax.d, deltay.d
-          Protected modifiers.i
-          *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
-          *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
-          width = GadgetWidth(*Me\gadgetID)
-          height = GadgetHeight(*Me\gadgetID)
+        Protected deltax.d, deltay.d
+        Protected modifiers.i
+        *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
+        *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
+        width = GadgetWidth(*Me\gadgetID)
+        height = GadgetHeight(*Me\gadgetID)
 
-          Select EventType()
-            Case #PB_EventType_Focus
-              AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
-              AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
-              AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
-              AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
-                      
-            Case #PB_EventType_LostFocus
-              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
-              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
-              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
-              RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
-                      
-            Case #PB_EventType_MouseMove
-              If *Me\down
-                deltax = *Me\mx-*Me\oldX
-                deltay = *Me\my-*Me\oldY 
-                modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
-              
-                If modifiers & #PB_OpenGL_Alt
-                  If *Me\lmb_p
-                    Camera::Orbit(*Me\camera,deltax,deltay,width,height)
-                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
-                  ElseIf *Me\mmb_p
-                    Camera::Pan(*Me\camera,deltax,deltay,width,height)
-                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
-                  ElseIf *Me\rmb_p
-                    Camera::Dolly(*Me\camera,deltax,deltay,width,height)
-                    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
-                  EndIf
-                Else
-                  Select *Me\tool
-                    Case Globals::#TOOL_TRANSLATE
-                      Handle::Translate(*Me\handle, deltax, deltay, width, height)
-                  EndSelect
+        Select EventType()
+          Case #PB_EventType_Focus
+            *Me\context\focus = #True
+            AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+            AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+            AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+            AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
+                    
+          Case #PB_EventType_LostFocus
+            *Me\context\focus = #False
+            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
+            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
+            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
+            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
+                    
+          Case #PB_EventType_MouseMove
+            If *Me\down
+              deltax = *Me\mx-*Me\oldX
+              deltay = *Me\my-*Me\oldY 
+              modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
+            
+              If modifiers & #PB_OpenGL_Alt
+                If *Me\lmb_p
+                  Camera::Orbit(*Me\camera,deltax,deltay,width,height)
+                  If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                ElseIf *Me\mmb_p
+                  Camera::Pan(*Me\camera,deltax,deltay,width,height)
+                  If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                ElseIf *Me\rmb_p
+                  Camera::Dolly(*Me\camera,deltax,deltay,width,height)
+                  If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 EndIf
-                
-                *Me\oldX = *Me\mx
-                *Me\oldY = *Me\my
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
-                    GetRay(*Me, *Me\ray)
-                    Handle::PickTranslate(*Me\handle, *Me\ray)
+                    Handle::Translate(*Me\handle, deltax, deltay, width, height)
                 EndSelect
-                
               EndIf
+              
+              *Me\oldX = *Me\mx
+              *Me\oldY = *Me\my
+            Else
+              Select *Me\tool
+                Case Globals::#TOOL_TRANSLATE
+                  GetRay(*Me, *Me\ray)
+                  Handle::PickTranslate(*Me\handle, *Me\ray)
+              EndSelect
+              
+            EndIf
 
-        
-            Case #PB_EventType_LeftButtonDown
+      
+          Case #PB_EventType_LeftButtonDown
 ;               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
 ;               If modifiers = #PB_OpenGL_Alt
 ;                 *Me\rmb_p = #True
@@ -255,41 +254,40 @@ Module ViewportUI
 ;                 *Me\lmb_p = #True
 ;               EndIf  
 ;               
-              *Me\lmb_p = #True
-              *Me\down = #True
-              *Me\oldX = *Me\mx
-              *Me\oldY = *Me\my
-            
-            Case #PB_EventType_LeftButtonUp
-              *Me\lmb_p = #False
-              *Me\down = #False
+            *Me\lmb_p = #True
+            *Me\down = #True
+            *Me\oldX = *Me\mx
+            *Me\oldY = *Me\my
           
-            Case #PB_EventType_MiddleButtonDown
-              *Me\mmb_p = #True
-              *Me\down = #True
-              *Me\oldX = *Me\mx
-              *Me\oldY = *Me\my
+          Case #PB_EventType_LeftButtonUp
+            *Me\lmb_p = #False
+            *Me\down = #False
         
-            Case #PB_EventType_MiddleButtonUp
-              *Me\mmb_p = #False
-              *Me\down = #False
-              
-            Case #PB_EventType_RightButtonDown
-              *Me\rmb_p = #True
-              *Me\down = #True
-              *Me\oldX = *Me\mx
-              *Me\oldY = *Me\my
-              
-            Case #PB_EventType_RightButtonUp
-              *Me\rmb_p = #False
-              *Me\down = #False
-              
-            Case #PB_EventType_MouseWheel
-              delta = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_WheelDelta)
-;               Dolly(*Me,delta*10,delta*10,width,height)
-          EndSelect
+          Case #PB_EventType_MiddleButtonDown
+            *Me\mmb_p = #True
+            *Me\down = #True
+            *Me\oldX = *Me\mx
+            *Me\oldY = *Me\my
+      
+          Case #PB_EventType_MiddleButtonUp
+            *Me\mmb_p = #False
+            *Me\down = #False
+            
+          Case #PB_EventType_RightButtonDown
+            *Me\rmb_p = #True
+            *Me\down = #True
+            *Me\oldX = *Me\mx
+            *Me\oldY = *Me\my
+            
+          Case #PB_EventType_RightButtonUp
+            *Me\rmb_p = #False
+            *Me\down = #False
+            
+          Case #PB_EventType_MouseWheel
+            delta = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_WheelDelta)
+            ;               Dolly(*Me,delta*10,delta*10,width,height)
 
-        EndIf
+        EndSelect
         
       Case #PB_Event_Menu
         Select EventMenu()
@@ -631,7 +629,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 156
+; CursorPosition = 204
+; FirstLine = 193
 ; Folding = -----
 ; EnableXP

@@ -292,11 +292,14 @@ Module GraphUI
     Protected *top.View::View_t = *Me\top
 
     Protected *manager.ViewManager::ViewManager_t = *top\manager
-    
-    If *node And FindMapElement(*manager\uis(),"Property")
-      Protected *property.PropertyUI::PropertyUI_t = *manager\uis()
-
-      PropertyUI::Setup(*property,*node)
+    If *node
+      ForEach *manager\uis()
+        If *manager\uis()\name = "Property"
+         Protected *property.PropertyUI::PropertyUI_t = *manager\uis()
+         PropertyUI::Setup(*manager\uis(),*node)
+         Break
+       EndIf
+     Next
     Else
       ;Open Floating *property View
 ;       MessageRequester("[GRAPH UI]","Inspect Node Property doesn' exists!!! Create It Floating!!!")
@@ -1654,7 +1657,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 205
+; CursorPosition = 297
+; FirstLine = 286
 ; Folding = --------
 ; EnableXP

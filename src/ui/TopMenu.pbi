@@ -190,13 +190,14 @@ Module TopMenuUI
     *Me\name = "Top Menu"
     *Me\type = Globals::#VIEW_TOPMENU
     *Me\container = ContainerGadget(#PB_Any,*Me\x,*Me\y,*Me\width,*Me\height)
-                                    
+                                  
 
     Protected *manager.ViewManager::ViewManager_t = *parent\manager
     
     ; ---[ Menu ]------------------
     *Me\menu = ControlMenu::New(*manager\window,*Me\container,*Me\x,*Me\y,*Me\width,*Me\height)
-  
+    *Me\gadgetID = *Me\menu\gadgetID
+    
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
     Protected *args.Arguments::Arguments_t = Arguments::New()
     Arguments::AddPtr(*args,"Scene",Scene::*current_scene)
@@ -275,8 +276,8 @@ Module TopMenuUI
   
   
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 135
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 203
+; FirstLine = 174
 ; Folding = ---
 ; EnableXP

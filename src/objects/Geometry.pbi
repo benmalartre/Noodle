@@ -176,11 +176,9 @@ DeclareModule Geometry
   ;{
   Structure Triangle_t
     id.i
-    *v1.Vertex_t
-    *v2.Vertex_t
-    *v3.Vertex_t
-    normal.v3f32
-    position.v3f32
+    map_id.i
+    vertices.i[3]
+    boundary.b
   EndStructure
   ;}
   
@@ -346,7 +344,16 @@ DeclareModule Geometry
     *geometry.Geometry::CurveGeometry_t
     *t.Transform::Transform_t
   EndStructure
-
+  
+  ; HalfEdge
+  ; --------------------------------------------
+  Structure HalfEdge_t
+    vertex.i
+    face.i
+    edge.i
+    opposite_he.i
+    next_he.i
+  EndStructure
   
   ; Element
   ; ----------------------------------------------------------------------------
@@ -454,7 +461,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 31
+; CursorPosition = 342
+; FirstLine = 308
 ; Folding = -----
 ; EnableXP

@@ -164,7 +164,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
       If *Me\visible And *Me\enable
-        If *Me\down
+        If *Me\down And *ev_data
           If ( *ev_data\x < 0 ) Or ( *ev_data\x >= *Me\sizX ) Or ( *ev_data\y < 0 ) Or ( *ev_data\y >= *Me\sizY )
             If *Me\over : *Me\over = #False : Control::Invalidate(*Me) : EndIf
           Else
@@ -342,7 +342,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 173
+; CursorPosition = 166
+; FirstLine = 134
 ; Folding = ---
 ; EnableXP

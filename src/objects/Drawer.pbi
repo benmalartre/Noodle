@@ -13,7 +13,6 @@ XIncludeFile "PolymeshGeometry.pbi"
 DeclareModule Drawer
   UseModule OpenGL
   UseModule OpenGLExt
-  UseModule Math
   
   Enumeration
     #ITEM_POINT
@@ -23,6 +22,7 @@ DeclareModule Drawer
     #ITEM_BOX
     #ITEM_MATRIX
     #ITEM_SPHERE
+    #ITEM_TRIANGLE
     #ITEM_COMPOUND
   EndEnumeration
   
@@ -50,6 +50,9 @@ DeclareModule Drawer
     *indices.CArray::CArrayLong  
   EndStructure
   
+  Structure Triangle_t Extends Item_t
+  EndStructure
+  
   Structure Box_t Extends Item_t
     m.Math::m4f32  
   EndStructure
@@ -59,7 +62,7 @@ DeclareModule Drawer
   EndStructure
   
   Structure Matrix_t Extends Item_t
-    m.m4f32
+    m.Math::m4f32
   EndStructure
   
   Structure Compound_t Extends Item_t
@@ -82,17 +85,20 @@ DeclareModule Drawer
   EndInterface
 
   Declare New( name.s = "Drawer")
-  Declare NewPoint(*Me.Drawer_t, *position.v3f32)
+  Declare NewPoint(*Me.Drawer_t, *position.Math::v3f32)
 ;   Declare NewColoredPoint(*Me.Drawer_t, *position.v3f32, *color.c4f32)
   Declare NewPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewLine(*Me.Drawer_t, *start.v3f32, *end.v3f32)
+  Declare NewColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  Declare NewLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
   Declare NewLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
   Declare NewColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-  Declare NewBox(*Me.Drawer_t, *m.m4f32)
-  Declare NewSphere(*Me.Drawer_t, *m.m4f32)
-  Declare NewMatrix(*Me.Drawer_t, *m.m4f32)
+  Declare NewBox(*Me.Drawer_t, *m.Math::m4f32)
+  Declare NewSphere(*Me.Drawer_t, *m.Math::m4f32)
+  Declare NewMatrix(*Me.Drawer_t, *m.Math::m4f32)
+  Declare NewTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare NewColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare Delete(*Me.Drawer_t)
   Declare DeletePoint(*Me.Point_t)
   Declare DeleteLine(*Me.Line_t)
@@ -100,7 +106,8 @@ DeclareModule Drawer
   Declare DeleteLoop(*Me.Loop_t)
   Declare DeleteBox(*Me.Box_t)
   Declare DeleteMatrix(*Me.Matrix_t)
-  Declare SetColor(*Me.Item_t, *color.c4f32)
+  Declare DeleteTriangle(*Me.Triangle_t)
+  Declare SetColor(*Me.Item_t, *color.Math::c4f32)
   Declare SetSize(*Me.Item_t, size.f)
   Declare Flush(*Me.Drawer_t)
   Declare Setup(*Me.Drawer_t,*shader.Program::Program_t)
@@ -173,7 +180,6 @@ Module Drawer
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Setup(*Me.Drawer_t,*shader.Program::Program_t)
-    
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -190,7 +196,6 @@ Module Drawer
     EndIf
     
     Protected *item.Item_t
-    Debug "########## NUM ITEMS : "+Str(ListSize(*Me\items()))
     ForEach *Me\items()
       *item = *me\items()
       ;Create Or ReUse Vertex Array Object
@@ -208,8 +213,6 @@ Module Drawer
       ; Fill Buffer Data
       plength = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
       clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
-      Debug "POSITION SIZE : "+Str(plength)
-      Debug "COLRO SIZE : "+Str(clength)
       tlength = plength + clength
       glBufferData(#GL_ARRAY_BUFFER,tlength,#Null,#GL_DYNAMIC_DRAW)
       glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
@@ -290,6 +293,8 @@ Module Drawer
           DeleteBox(*Me\items())
         Case #ITEM_MATRIX
           DeleteMatrix(*Me\items())
+        Case #ITEM_TRIANGLE
+          DeleteTriangle(*Me\items())
         Case #ITEM_COMPOUND
           Debug "NOT IMPLEMENTED"
       EndSelect
@@ -369,6 +374,11 @@ Module Drawer
     glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + 2 * offset)
   EndProcedure
   
+  ; ---[ Draw Triangle Item ]--------------------------------------------------
+  Procedure DrawTriangle(*Me.Triangle_t)
+    glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
+  EndProcedure
+  
   ; ---[ Draw Item ]-----------------------------------------------------------
   Procedure Draw(*Me.Drawer_t)
     If Not *Me : ProcedureReturn : EndIf
@@ -379,6 +389,7 @@ Module Drawer
     Else
       glEnable(#GL_DEPTH_TEST)
     EndIf
+    
     
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
     ForEach *Me\items()
@@ -399,6 +410,8 @@ Module Drawer
             DrawSphere(*Me\items(), *Me\shader\pgm)
           Case #ITEM_MATRIX
             DrawMatrix(*Me\items(), *Me\shader\pgm)
+          Case #ITEM_TRIANGLE
+            DrawTriangle(*Me\items())
         EndSelect
       EndWith
     Next
@@ -474,6 +487,13 @@ Module Drawer
     FreeMemory(*Me)
   EndProcedure
   
+  ; ---[ Delete Triangle Item ]--------------------------------------------------
+  Procedure DeleteTriangle(*Me.Triangle_t)
+    DeleteItem(*Me)
+    CArray::Delete(*Me\positions)
+    FreeMemory(*Me)
+  EndProcedure
+  
   ; ---[ Delete Drawer Item ]--------------------------------------------------
   Procedure Delete( *Me.Drawer_t )
     ForEach *Me\items()
@@ -492,6 +512,8 @@ Module Drawer
           DeleteSphere(*Me\items())
         Case #ITEM_MATRIX
           DeleteMatrix(*Me\items())
+        Case #ITEM_TRIANGLE
+          DeleteTriangle(*Me\items())
       EndSelect
     Next
     ClearList(*Me\items())
@@ -532,7 +554,7 @@ Module Drawer
   
   
   ; ---[ New Point Item ]------------------------------------------------------
-  Procedure NewPoint(*Me.Drawer_t, *position.v3f32)
+  Procedure NewPoint(*Me.Drawer_t, *position.Math::v3f32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
@@ -565,9 +587,24 @@ Module Drawer
     ProcedureReturn *point
   EndProcedure
   
+  ; ---[ New Colored Points Item ]------------------------------------------------------
+  Procedure NewColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+    Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
+    InitializeStructure(*point, Point_t)
+    *point\type = #ITEM_POINT
+    *point\positions = CArray::newCArrayV3F32()
+    *point\colors = CArray::newCArrayC4F32()
+    CArray::Copy(*point\positions, *positions)
+    CArray::Copy(*point\colors, *colors)
+    AddElement(*Me\items())
+    *Me\items() = *point
+    *Me\dirty = #True
+    ProcedureReturn *point
+  EndProcedure
+  
   
   ; ---[ New Line Item ]-------------------------------------------------------
-  Procedure NewLine(*Me.Drawer_t, *start.v3f32, *end.v3f32)
+  Procedure NewLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
@@ -721,6 +758,37 @@ Module Drawer
     ProcedureReturn *matrix
   EndProcedure
   
+  ; ---[ New Triangle Item ]------------------------------------------------------
+  Procedure NewTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+    Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
+    InitializeStructure(*triangle, Triangle_t)
+    *triangle\type = #ITEM_TRIANGLE
+    *triangle\positions = CArray::newCArrayV3F32()
+    *triangle\colors = CArray::newCArrayC4F32()
+    CArray::Copy(*triangle\positions, *positions)
+    CArray::SetCount(*triangle\colors, CArray::GetCount(*triangle\positions))
+    SetColor(*triangle, Color::_BLACK())
+    AddElement(*Me\items())
+    *Me\items() = *triangle
+    *Me\dirty = #True
+    ProcedureReturn *triangle
+  EndProcedure
+  
+  ; ---[ New Colored Triangle Item ]------------------------------------------------------
+  Procedure NewColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+    Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
+    InitializeStructure(*triangle, Triangle_t)
+    *triangle\type = #ITEM_TRIANGLE
+    *triangle\positions = CArray::newCArrayV3F32()
+    *triangle\colors = CArray::newCArrayC4F32()
+    CArray::Copy(*triangle\positions, *positions)
+    CArray::Copy(*triangle\colors, *colors)
+    AddElement(*Me\items())
+    *Me\items() = *triangle
+    *Me\dirty = #True
+    ProcedureReturn *triangle
+  EndProcedure
+  
   ; ---[ Reflection ]----------------------------------------------------------
   Class::DEF( Drawer )
   
@@ -730,7 +798,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 690
-; FirstLine = 675
-; Folding = -------
+; CursorPosition = 783
+; FirstLine = 736
+; Folding = --------
 ; EnableXP

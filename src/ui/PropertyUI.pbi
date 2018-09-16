@@ -25,6 +25,8 @@ DeclareModule PropertyUI
   Declare Clear(*Me.PropertyUI_t)
   Declare SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
   Declare SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
+  Declare AppendStart(*Me.PropertyUI_t)
+  Declare AppendStop(*Me.PropertyUI_t)
   Declare AddProperty(*Me.PropertyUI_t, *prop.ControlProperty::COntrolProperty_t)
   Declare Setup(*Me.PropertyUI_t,*object.Object::Object_t)
   Declare CollapseProperty(*Me.PropertyUI_t, index.i)
@@ -37,7 +39,6 @@ DeclareModule PropertyUI
     Data.i @Init()
     Data.i @OnEvent()
     Data.i @Term()
-
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -68,12 +69,11 @@ Module PropertyUI
     *Me\height = h
     
     *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1)
+    *Me\gadgetID = *Me\container
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLORA_MAIN_BG)
     
     *Me\prop = #Null
    
-    CloseGadgetList()
-    
     View::SetContent(*parent,*Me)
     ProcedureReturn *Me
   EndProcedure
@@ -95,6 +95,20 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   Procedure Init(*Me.PropertyUI_t)
     
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Append Start
+  ; ----------------------------------------------------------------------------
+  Procedure AppendStart(*Me.PropertyUI_t)
+    OpenGadgetList(*Me\container)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Append End
+  ; ----------------------------------------------------------------------------
+  Procedure AppendStop(*Me.PropertyUI_t)
+    CloseGadgetList()
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -325,15 +339,13 @@ Module PropertyUI
   ;  Add Property
   ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
-    OpenGadgetList(*Me\container)
+    CloseGadgetList()
     AddElement(*Me\props())
     *Me\props() = *prop
     *Me\prop = *prop
     *Me\anchorY + *prop\dy
-    CloseGadgetList()
   EndProcedure
-  
-  
+
   
   ; ----------------------------------------------------------------------------
   ;  Setup
@@ -449,9 +461,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.51 (Linux - x64)
-; CursorPosition = 118
-; FirstLine = 117
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 52
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

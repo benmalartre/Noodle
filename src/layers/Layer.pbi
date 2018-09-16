@@ -180,27 +180,14 @@ Module Layer
   ; Resize
   ;---------------------------------------------------
   Procedure Resize(*layer.Layer_t,width,height.i)
-;     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
-;     Debug "RESIZE FRAMEBUFFER : "+*layer\name
-;     
-;     Debug "NUM ATTACHMENTS : "+Str(ArraySize(*layer\buffer\attachments()))
-;     Protected numRBOs = ArraySize(*layer\buffer\rbos())
-;     Debug "NUM RENDER BUFFER OBJECTS : "+Str(numRBOs)
-;     Protected i
-;     For i=0 To numRBOs - 1:
-;       Debug "RBO : "+*layer\buffer\rbos(i)\name
-;     Next
-;     
-;     Protected numTBOs = ArraySize(*layer\buffer\tbos())
-;     Debug "NUM TEXTURE BUFFER OBJECTS : "+Str(numTBOs)
-;     For i=0 To numTBOs - 1:
-;       Debug "TBO : "+*layer\buffer\tbos(i)\name
-;     Next
-;     
-;     Framebuffer::SetSize(*buffer,width,height)
-;     *layer\width = width
-;     *layer\height = height
-;     glViewport(0,0,*layer\width,*layer\height)
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
+    Framebuffer::Resize(*buffer,width,height)
+
+    glViewport(0,0,width,height)
+    
+    *layer\width = width
+    *layer\height = height
+       
   EndProcedure
   
   ;---------------------------------------------------
@@ -515,28 +502,25 @@ Module Layer
     
     ; Find Up View Point
     ;-----------------------------------------------
-    Protected *view.m4f32,*proj.m4f32,view.m4f32
+    Protected *view.m4f32,proj.m4f32,view.m4f32
+    Protected *camera.Camera::Camera_t = *layer\pov
+    Protected aspect.f = *layer\width / *layer\height
     *view = Layer::GetViewMatrix(*layer)
-    *proj = Layer::GetProjectionMatrix(*layer)
+    Matrix4::GetProjectionMatrix(@proj, *camera\fov, aspect, *camera\nearplane, *camera\farplane)
     
     ;Draw Polymeshes 
     ;-----------------------------------------------
     Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
     Protected shader.GLuint =  *shader\pgm
     glUseProgram(shader)
-    GLCheckError("[LayerDefault]  Use Program")
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-    GLCheckError("[LayerDefault] Set Matrices")
     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-    GLCheckError("[LayerDefault] Uniforms")  
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
     DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
-  
-    GLCheckError("[LayerDefault] Draw Polymeshes")
-    
+      
     ; Draw Instance Clouds 
     ;-----------------------------------------------
     Protected *pgm.Program::Program_t = *ctx\shaders("instances")
@@ -554,8 +538,8 @@ Module Layer
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
     
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
     glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
     glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
     
@@ -714,7 +698,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 149
+; CursorPosition = 196
+; FirstLine = 177
 ; Folding = -----
 ; EnableXP

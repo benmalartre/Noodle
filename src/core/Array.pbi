@@ -105,6 +105,7 @@ DeclareModule CArray
   Declare AppendUnique(*array.CArrayT,*unique)
   Declare AppendUniqueStr(*array.CArrayT,unique.s)
   Declare Fill(*array.CArrayT, *value)
+  Declare FillB(*array.CArrayT, b.b)
   Declare FillC(*array.CArrayT, c.c)
   Declare FillL(*array.CArrayT, l.l)
   Declare FillI(*array.CArrayT, i.i)
@@ -609,6 +610,19 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; FillA
+  ;----------------------------------------------------------------
+  Procedure FillB(*array.CArrayT,b.b)
+    If Not *Array\type = #ARRAY_BOOL : ProcedureReturn : EndIf
+    
+    Protected i
+    For i = 0 To *array\itemCount-1
+      PokeB(GetPtr(*array, i), b)
+    Next
+  EndProcedure
+ 
+  
+  ;----------------------------------------------------------------
   ; FillC
   ;----------------------------------------------------------------
   Procedure FillC(*array.CArrayT,c.c)
@@ -1109,7 +1123,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 74
+; CursorPosition = 107
+; FirstLine = 67
 ; Folding = -----------
 ; EnableXP

@@ -137,7 +137,7 @@ Module Object
   Procedure SignalConnect( *Me.Object_t, *slot.Slot::Slot_t, slot.i )  
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me Or Not *slot : ProcedureReturn :EndIf
-  
+  Debug "CONNECT SLOT : "+Str(slot)
     ; ---[ Connect Me To Signal ]-----------------------------------------------
     Slot::Connect(*slot,*Me, slot )
   EndProcedure
@@ -152,7 +152,7 @@ Module Object
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 78
+; CursorPosition = 139
+; FirstLine = 97
 ; Folding = ---
 ; EnableXP

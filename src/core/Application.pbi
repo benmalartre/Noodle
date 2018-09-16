@@ -40,6 +40,8 @@ XIncludeFile "../objects/Selection.pbi"
 XIncludeFile "../objects/Sampler.pbi"
 XIncludeFile "../objects/Ray.pbi"
 XIncludeFile "../objects/Poisson.pbi"
+XIncludeFile "../objects/Triangle.pbi"
+XIncludeFile "../objects/Octree.pbi"
 
 XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
@@ -576,6 +578,8 @@ CompilerEndIf
        
       Wend
     CompilerElse
+      ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
+      *callback(*app)
       Repeat
         event = WaitWindowEvent(1000/60)
         ; filter Windows events
@@ -587,6 +591,9 @@ CompilerEndIf
         CompilerEndSelect
         
         Select event
+          Case Globals::#EVENT_PARAMETER_CHANGED
+            Scene::Update(Scene::*current_scene)
+            *callback(*app)
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = ViewManager::*view_manager\uis("Graph")
             Protected *tree = EventData()
@@ -626,8 +633,8 @@ CompilerEndIf
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 612
-; FirstLine = 563
+; CursorPosition = 43
+; FirstLine = 14
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -1374,6 +1374,23 @@ Module ControlProperty
       ;  Focus
       ; ------------------------------------------------------------------------
       Case #PB_EventType_Focus
+        Debug "PROPERTY UI FOCUS"
+        If *Me\overchild
+          If *Me\overchild <> *overchild
+            *Me\overchild\OnEvent(#PB_EventType_LostFocus)
+            *Me\overchild = *overchild
+            If *Me\overchild
+              *Me\overchild\OnEvent(#PB_EventType_Focus)
+            EndIf
+            
+          EndIf
+        Else
+          If *overchild
+            *Me\overchild = *overchild
+            *Me\overchild\OnEvent(#PB_EventType_Focus)
+          EndIf
+        EndIf
+        
         
       ; ------------------------------------------------------------------------
       ;  ChildFocused
@@ -1412,6 +1429,7 @@ Module ControlProperty
         xm = Min( Max( xm, 0 ), *Me\sizX - 1 )
         ym = Min( Max( ym, 0 ), *Me\sizY - 1 )
         
+        
         If *overchild
           If *Me\overchild 
             If *Me\overchild <> *overchild
@@ -1433,10 +1451,17 @@ Module ControlProperty
     Case #PB_EventType_LeftButtonDown
       *Me\down = #True
       If *overchild
-        If *Me\focuschild And ( *overchild <> *Me\focuschild )
-          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+        If *Me\focuschild 
+          If *overchild <> *Me\focuschild
+            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+            *Me\overchild = *overchild
+            *Me\overchild\OnEvent( #PB_EventType_Focus, #Null )
+          EndIf
+        Else
+          *Me\overchild = *overchild
+          *Me\overchild\OnEvent( #PB_EventType_Focus, #Null )
         EndIf
-        *Me\overchild = *overchild
+        
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
         ev_data\xoff = *overchild\posX
@@ -1706,8 +1731,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.51 (Linux - x64)
-; CursorPosition = 1346
-; FirstLine = 1323
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1715
+; FirstLine = 1678
 ; Folding = --------
 ; EnableXP

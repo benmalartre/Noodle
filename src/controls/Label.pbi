@@ -115,7 +115,8 @@ Module ControlLabel
     ;   raaClipBoxHole( 0 + xoff, 3 + yoff, *Me\sizX-24, *Me\sizY-6 )
     DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
     DrawText( 0 + xoff, ty, *Me\label, tc )
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+
+    
   EndProcedure
   
   
@@ -360,7 +361,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 335
-; FirstLine = 300
+; CursorPosition = 117
+; FirstLine = 56
 ; Folding = --
 ; EnableXP

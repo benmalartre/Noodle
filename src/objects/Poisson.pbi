@@ -17,6 +17,8 @@ DeclareModule Poisson
     box.Geometry::Box_t
     numSamples.i
     *positions.CArray::CArrayV3F32
+    *distances.CArray::CArrayFloat
+    *hits.CArray::CArrayBool
     *samples.CArray::CArrayInt
     
     List active.i()
@@ -28,8 +30,9 @@ DeclareModule Poisson
   Declare.i Sample(*poisson.Poisson_t)
   Declare.b InsertPoint(*poisson.Poisson_t, index.i, *p.v3f32)
   Declare RandomPoint(*poisson.Poisson_t, *p.v3f32)
-  Declare SampleMesh(*poisson.Poisson_t, *mesh.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
-  
+  Declare SampleMesh(*poisson.Poisson_t, *mesh.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t, numSamples.i=128)
+  Declare SignedDistances(*poisson.Poisson_t, *mesh.Geometry::PolymeshGeometry_t)
+  Declare Setup(*poisson.Poisson_t, *drawer.Drawer::Drawer_t)
 EndDeclareModule
 
 
@@ -44,14 +47,16 @@ Module Poisson
     
     *Me\positions = CArray::newCArrayV3F32()
     *Me\samples = CArray::newCArrayInt()
-    
+    *Me\distances = CArray::newCArrayFloat()
+    *Me\hits = CArray::newCArrayBool()
     ProcedureReturn *Me
   EndProcedure
   
   Procedure Delete(*Me.Poisson_t)
     CArray::Delete(*Me\samples)
     CArray::Delete(*Me\positions)
-    
+    CArray::Delete(*Me\distances)
+    CArray::Delete(*Me\hits)
     ClearStructure(*Me, Poisson_t)
     FreeMemory(*Me)
   EndProcedure
@@ -89,19 +94,21 @@ Module Poisson
     ; allocate memory
     *Me\numSamples = *Me\resolution[0] * *Me\resolution[1] * *Me\resolution[2]
     CArray::SetCount(*Me\samples, *Me\numSamples)
+    CArray::SetCount(*Me\hits, *Me\numSamples)
     CArray::FillI(*Me\samples, -1)
+    CArray::FillB(*Me\hits, #False)
   EndProcedure
   
   ; insert point
   Procedure.b InsertPoint(*Me.Poisson_t, index.i, *p.v3f32)
     If Box::ContainsPoint(*Me\box, *p)
       Define.l ix, iy, iz, idx
-      
+      Define numSamples.i = CArray::GetCount(*Me\samples)
       ix = (*p\x-(*Me\box\origin\x-*Me\box\extend\x))/*Me\dimension\x
       iy = (*p\y-(*Me\box\origin\y-*Me\box\extend\y))/*Me\dimension\y
       iz = (*p\z-(*Me\box\origin\z-*Me\box\extend\z))/*Me\dimension\z
       idx = iz * *Me\resolution[0] * *Me\resolution[1] + iy * *Me\resolution[0] + ix
-      If idx < *Me\numSamples
+      If idx < numSamples
         If Carray::GetValueI(*Me\samples, idx) = -1
           CArray::SetValueI(*Me\samples, idx, index)
           ProcedureReturn #True
@@ -112,6 +119,66 @@ Module Poisson
     ProcedureReturn #False
   EndProcedure
   
+  Procedure SignedDistances(*Me.Poisson_t, *mesh.Geometry::PolymeshGeometry_t)
+    Define numSamples.i = CArray::GetCount(*Me\samples)
+    CArray::SetCount(*Me\distances, numSamples)
+    Define i
+    Define cp.Geometry::Location_t
+    Define p.v3f32
+    Define x, y, z
+    Define i=0
+    For z=0 To *Me\resolution[2] - 1
+      For y=0 To *Me\resolution[1] - 1
+        For x=0 To *Me\resolution[0] - 1
+          Vector3::Set(@p, 
+                       *Me\dimension\x*x+*Me\box\origin\x-*Me\box\extend\x,
+                       *Me\dimension\y*y+*Me\box\origin\y-*Me\box\extend\y,
+                       *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
+          If PolymeshGeometry::GetClosestLocation(*mesh, @p, @cp, CArray::GetPtr(*Me\distances, i))
+            CArray::SetValueB(*Me\hits, i, #True)
+          EndIf 
+          i+1
+        Next
+      Next
+    Next
+    
+  EndProcedure
+  
+  Procedure Setup(*Me.Poisson_t, *drawer.Drawer::Drawer_t)
+    Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+    Define *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
+    CArray::SetCount(*positions,*Me\numSamples)
+    CArray::SetCount(*colors,*Me\numSamples)
+    Define c.c4f32
+    Define i
+    Define d.f
+    Define x,y,z
+    
+    For Z=0 To *Me\resolution[2] - 1
+      For y=0 To *Me\resolution[1] - 1
+        For x=0 To *Me\resolution[0] - 1
+          Vector3::Set(@p, 
+                       *Me\dimension\x*x+*Me\box\origin\x-*Me\box\extend\x,
+                       *Me\dimension\y*y+*Me\box\origin\y-*Me\box\extend\y,
+                       *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
+          CArray::SetValue(*positions, i, @p)
+          d = CArray::GetValueF(*Me\distances, i)
+          Color::Set(@c, 1- d, d, 0, 1)
+          CArray::SetValue(*colors, i, @c)
+         
+          i+1
+        Next
+      Next
+    Next
+    
+    Define *pnt.Drawer::Point_t = Drawer::NewColoredPoints(*drawer, *positions, *colors)
+    Drawer::SetSize(*pnt, 4)
+    
+    CArray::Delete(*positions)
+    CArray::Delete(*colors)
+  EndProcedure
+
+
   Structure ParallelSampleDatas_t
     *poisson.Poisson_t
     *mesh.Geometry::PolymeshGeometry_t
@@ -168,16 +235,17 @@ Module Poisson
     ProcedureReturn index
   EndProcedure
   
-  Procedure SampleMesh(*Me.Poisson_t, *mesh.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure SampleMesh(*Me.Poisson_t, *mesh.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t, numSamples.i=128)
     PolymeshGeometry::InitSampling(*mesh)
-    PolymeshGeometry::Sample(*mesh, *t, 100, *Me\positions)  
+    PolymeshGeometry::Sample(*mesh, *t, numSamples, *Me\positions)  
   EndProcedure
   
   
 
 EndModule
 
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 19
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 165
+; FirstLine = 119
+; Folding = ---
 ; EnableXP

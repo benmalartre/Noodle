@@ -81,24 +81,24 @@ Module Framebuffer
     glBindFramebuffer(#GL_FRAMEBUFFER,*Me\frame_id)
     status = glCheckFramebufferStatus(#GL_FRAMEBUFFER)
     If status <> #GL_FRAMEBUFFER_COMPLETE
-      Debug "[CFramebuffer] Status Error on Creation"
+      Debug "[Framebuffer] Status Error on Creation"
       Select status
         Case #GL_FRAMEBUFFER_UNDEFINED
-          Debug "[CFramebuffer] UNDEFINED"
+          Debug "[Framebuffer] UNDEFINED"
         Case #GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"
         Case #GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"
         Case #GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER"
         Case #GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER"
         Case #GL_FRAMEBUFFER_UNSUPPORTED
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_UNSUPPORTED"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_UNSUPPORTED"
         Case #GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"
         Case #GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS 
-          Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"
+          Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"
       EndSelect
       
     EndIf
@@ -108,9 +108,7 @@ Module Framebuffer
 
   ; Attach Render Buffer
   ;------------------------------------------------------------------
-  Procedure AttachRender(*Me.Framebuffer_t,name.s,iformat.GLenum)
-
-    
+  Procedure AttachRender(*Me.Framebuffer_t,name.s,iformat.GLenum)    
     If *Me\width = 0 Or *Me\height = 0
       Debug "[Framebuffer::AttachRender]One of the Frame buffer Dimension is Zero"
       ProcedureReturn
@@ -118,9 +116,9 @@ Module Framebuffer
     
     Protected id.i = ArraySize(*Me\rbos())
     ReDim *Me\rbos(id+1)
-    Protected *rbo.RenderBuffer_t = *Me\rbos(id+1)
+    Protected *rbo.RenderBuffer_t = *Me\rbos(id)
     *rbo\name = name
-    
+        
     If iformat = #GL_DEPTH_COMPONENT24 Or iformat = #GL_DEPTH_COMPONENT
       *rbo\attachment = #GL_DEPTH_ATTACHMENT
     ElseIf iformat = #GL_STENCIL_INDEX1 Or iformat = #GL_STENCIL_INDEX4 Or iformat = #GL_STENCIL_INDEX8 Or iformat = #GL_STENCIL_INDEX16 Or iformat = #GL_STENCIL_INDEX
@@ -147,7 +145,7 @@ Module Framebuffer
       *Me\stencil_id = *rbo\bufferID
     EndIf
     
-     CheckStatus(*Me)
+    CheckStatus(*Me)
     
     glBindFramebuffer(#GL_FRAMEBUFFER,0)
     glBindRenderbuffer(#GL_RENDERBUFFER,0)
@@ -340,20 +338,21 @@ Module Framebuffer
     *buffer\height = height
     
     Protected i
+    Protected *rbo.RenderBuffer_t
+    
     glBindFramebuffer(#GL_FRAMEBUFFER,*buffer\frame_id)
     For i=0 To ArraySize( *buffer\rbos())-1
-     
-      glBindRenderbuffer(#GL_RENDERBUFFER,*buffer\rbos(i)\bufferID)
-      glRenderbufferStorage(#GL_RENDERBUFFER,*buffer\rbos(i)\type,*buffer\width,*buffer\height)
+      *rbo = *buffer\rbos(i)
+      
+      glBindRenderbuffer(#GL_RENDERBUFFER,*rbo\bufferID)
+      glRenderbufferStorage(#GL_RENDERBUFFER,*rbo\format,*buffer\width,*buffer\height)
     Next
     
     Protected *tbo.TextureBuffer_t
     For i=0 To ArraySize( *buffer\tbos())-1
       *tbo = *buffer\tbos(i)
-
       glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)
-      glTexImage2D(#GL_TEXTURE_2D,0,iformat,*buffer\width,*buffer\height,0,*tbo\format,*tbo\type,#Null)
-
+      glTexImage2D( #GL_TEXTURE_2D, 0, *tbo\iformat, width, height, 0, *tbo\format, *tbo\type, #Null )
     Next
 
   EndProcedure
@@ -372,11 +371,9 @@ Module Framebuffer
   Procedure BindInput(*Me.Framebuffer_t,offset.i=0)
     Protected i
     Protected nb = ArraySize(*Me\tbos())
-    Debug "BIND "+*Me\name
     For i=0 To nb-1
       glActiveTexture(#GL_TEXTURE0 + (i+offset))
       glBindTexture(#GL_TEXTURE_2D,*Me\tbos(i)\textureID)
-      Debug "BIND : "+Str(i+offset)+" ---> "+Str(*Me\tbos(i)\textureID)
     Next i
   
   EndProcedure
@@ -520,24 +517,24 @@ Procedure Check(*Me.Framebuffer_t)
   glBindFramebuffer(#GL_FRAMEBUFFER,*Me\frame_id)
   status = glCheckFramebufferStatus(#GL_FRAMEBUFFER)
   If status <> #GL_FRAMEBUFFER_COMPLETE
-    Debug "[CFramebuffer] Status Error on Creation"
+    Debug "[Framebuffer] Status Error on Creation"
     Select status
       Case #GL_FRAMEBUFFER_UNDEFINED
-        Debug "[CFramebuffer] UNDEFINED"
+        Debug "[Framebuffer] UNDEFINED"
       Case #GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT"
       Case #GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT"
       Case #GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER"
       Case #GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER"
       Case #GL_FRAMEBUFFER_UNSUPPORTED
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_UNSUPPORTED"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_UNSUPPORTED"
       Case #GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"
       Case #GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS 
-        Debug "[CFramebuffer] GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"
+        Debug "[Framebuffer] GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS"
     EndSelect
 
   EndIf
@@ -547,7 +544,7 @@ EndProcedure
 
   ; Destructor
   ;-----------------------------------------
-  Procedure Delete(*buffer.FrameBuffer_t)
+Procedure Delete(*buffer.FrameBuffer_t)
     Protected i
     For i=0 To ArraySize(*buffer\rbos())-1
       glDeleteRenderBuffers(1,@*buffer\rbos(i)\bufferID)
@@ -575,16 +572,13 @@ EndProcedure
   Procedure.i New(name.s,width.i,height.i)
     Protected *buffer.FrameBuffer_t = AllocateMemory(SizeOf(FrameBuffer_t))
     InitializeStructure(*buffer,FrameBuffer_t)
-    ;*Me\frame_id = 0
+    *buffer\frame_id = 0
     *buffer\depth_id = 0
     *buffer\stencil_id = 0
     *buffer\width = width
     *buffer\height = height
     *buffer\name = name
-    
     glGetIntegerv(#GL_MAX_COLOR_ATTACHMENTS,@*buffer\max_color_attachment)
-    Debug "FrameBuffer Max Color Attachements : "+Str(*buffer\max_color_attachment)
-
     glGenFramebuffers(1,@*buffer\frame_id)
     ProcedureReturn *buffer
   EndProcedure
@@ -592,8 +586,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 395
+; CursorPosition = 339
+; FirstLine = 331
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

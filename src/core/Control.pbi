@@ -68,7 +68,7 @@ DeclareModule Control
     visible    .i
     enable     .i
     options    .i
-    sigonchanged.i
+;     sigonchanged.i
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -267,7 +267,7 @@ Module Control
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 70
-; FirstLine = 45
+; FirstLine = 51
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

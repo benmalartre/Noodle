@@ -100,7 +100,7 @@ Module Slot
     While NextElement(*Me\rcv())
       Protected *t = *Me\rcv()\r_inst
       ; ...[ Set Signal Reciever ]..............................................
-      *Me\sig\rcv_inst = *Me\rcv()\r_inst
+      *Me\sig\rcv_inst = *t
       *Me\sig\rcv_slot = *Me\rcv()\r_slot
       ; ...[ Send Signal ]......................................................
       *Me\rcv()\r_cmsg(0, @*Me\sig )
@@ -159,7 +159,6 @@ Module Slot
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 106
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP
