@@ -376,7 +376,9 @@ Module Drawer
   
   ; ---[ Draw Triangle Item ]--------------------------------------------------
   Procedure DrawTriangle(*Me.Triangle_t)
+    glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
     glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
+    glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
   EndProcedure
   
   ; ---[ Draw Item ]-----------------------------------------------------------
@@ -798,7 +800,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 783
-; FirstLine = 736
+; CursorPosition = 380
+; FirstLine = 374
 ; Folding = --------
 ; EnableXP

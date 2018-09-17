@@ -534,7 +534,7 @@ UseModule Math
 ;         MessageRequester("Save Tree",s)
   
       Default
-        MessageRequester("Raabit","Save File Failed..."+*obj\class\name)
+        MessageRequester("Noodle","Save File Failed..."+*obj\class\name)
     EndSelect
     
   EndProcedure
@@ -558,9 +558,9 @@ UseModule Math
     If Not path = ""
       *saver\path = path
     Else
-      Protected defaultFile$ = GetCurrentDirectory()+"scene.raaScene"
-      Protected pattern$ = "Raabit Scene File | *.raaScene"
-      *saver\path = SaveFileRequester("Raabit Saver",defaultFile$,pattern$,0)
+      Protected defaultFile$ = GetCurrentDirectory()+"scene.scene"
+      Protected pattern$ = "Noodle Scene File | *.scene"
+      *saver\path = SaveFileRequester("Noodle Saver",defaultFile$,pattern$,0)
     EndIf
     If *saver\path
       *saver\xml = CreateXML(#PB_Any,#PB_UTF8)
@@ -576,8 +576,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 484
-; FirstLine = 451
+; CursorPosition = 536
+; FirstLine = 523
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

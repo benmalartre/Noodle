@@ -76,9 +76,7 @@ Module Sampler
       Protected *loc.Geometry::Location_t  = Location::New(*mesh,*parent\globalT)
       CArray::AppendPtr(*locations,*loc)
       
-      *loc\u = u
-      *loc\v = v
-      *loc\w = 1 -(u+v)
+      Vector3::Set(*loc\uvw, u, v, 1-(u+v))
       *loc\tid = tid
       Vector3::SetFromOther(*loc\p,@sum)      
       
@@ -108,8 +106,8 @@ Module Sampler
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 55
+; CursorPosition = 78
+; FirstLine = 53
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -1027,16 +1027,19 @@ Module PolymeshGeometry
   Procedure.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *loc.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
     Protected hit.b=#False
     Protected distance.f, minDistance.f = Math::#F32_MAX
-    Define.l a,b,c
-    Define.v3f32 *a, *b, *c
+
     Define i
+    Define tri.Geometry::Triangle_t
     For i = 0 To *mesh\nbtriangles - 1
-      a = CArray::GetValueL(*mesh\a_triangleindices, i*3)
-      b = CArray::GetValueL(*mesh\a_triangleindices, i*3+1)
-      c = CArray::GetValueL(*mesh\a_triangleindices, i*3+2)
-      *a = CArray::GetValue(*mesh\a_positions, a)
-      *b = CArray::GetValue(*mesh\a_positions, b)
-      *c = CArray::GetValue(*mesh\a_positions, c)
+      tri\id = i
+      tri\vertices[0] = CArray::GetValueL(*mesh\a_triangleindices, i*3)
+      tri\vertices[1] = CArray::GetValueL(*mesh\a_triangleindices, i*3+1)
+      tri\vertices[2] = CArray::GetValueL(*mesh\a_triangleindices, i*3+2)
+      
+      *a = CArray::GetValue(*mesh\a_positions, tri\vertices[0])
+      *b = CArray::GetValue(*mesh\a_positions, tri\vertices[1])
+      *c = CArray::GetValue(*mesh\a_positions, tri\vertices[2])
+      ;Triangle::ClosestPoint(@tri, *mesh\a_positions, *pnt , *loc\p, @*loc\u, @*loc\v, @*loc\w)
       Location::ClosestPoint(*loc, *a, *b, *c, *p, @minDistance)
     Next
     PokeF(*distance, minDistance)
@@ -1190,13 +1193,13 @@ Module PolymeshGeometry
       r = Random_0_1() * *mesh\totalArea
       For j=0 To *mesh\nbtriangles - 1
         If r < CArray::GetValueF(*mesh\a_triangleareas, j)
-          loc\u=Random_0_1()
-          loc\v=Random_0_1()
-          If loc\u + loc\v > 1
-            loc\u = 1-loc\u
-            loc\v = 1-loc\v
+          loc\uvw\x=Random_0_1()
+          loc\uvw\y=Random_0_1()
+          If loc\uvw\x + loc\uvw\y > 1
+            loc\uvw\x = 1-loc\uvw\x
+            loc\uvw\y = 1-loc\uvw\y
           EndIf
-          loc\w = 1-loc\u-loc\v
+          loc\uvw\z = 1-loc\uvw\x-loc\uvw\y
           loc\tid = j
           CArray::SetValue(*io, i, Location::GetPosition(@loc))
           Break
@@ -2394,7 +2397,6 @@ Module PolymeshGeometry
       *Me\nbtriangles = 0
       *Me\nbpolygons = 0
     Else
-
       ; ----[ Initial Topology ]--------------------------------------------------
     
       Select shape
@@ -2427,7 +2429,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1039
-; FirstLine = 1023
+; CursorPosition = 1040
+; FirstLine = 1022
 ; Folding = ----fw--v--
 ; EnableXP

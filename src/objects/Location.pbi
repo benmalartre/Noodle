@@ -45,11 +45,11 @@ Module Location
     
     ; Position : P= wA + uB + vC
     Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(@x,*a, *Me\u)
+    Vector3::Scale(@x,*a, *Me\uvw\x)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*b, *Me\v)
+    Vector3::Scale(@x,*b, *Me\uvw\y)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*c, *Me\w)
+    Vector3::Scale(@x,*c, *Me\uvw\z)
     Vector3::AddInPlace(*Me\p,@x)
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
     ProcedureReturn *Me\p
@@ -103,11 +103,11 @@ Module Location
     
   ;   Normal :
     Vector3::Set(*Me\n,0,0,0)
-    Vector3::Scale(@x,*a,*Me\u)
+    Vector3::Scale(@x,*a,*Me\uvw\x)
     Vector3::AddInPlace(*Me\n,@x)
-    Vector3::Scale(@x,*b,*Me\v)
+    Vector3::Scale(@x,*b,*Me\uvw\y)
     Vector3::AddInPlace(*Me\n,@x)
-    Vector3::Scale(@x,*c,*Me\w)
+    Vector3::Scale(@x,*c,*Me\uvw\z)
     Vector3::AddInPlace(*Me\n,@x)
     Vector3::MulByMatrix4InPlace(*Me\n,*Me\t)
     
@@ -128,11 +128,11 @@ Module Location
     
     ; Color : P= wA + uB + vC
     Vector3::Set(*Me\c,0,0,0)
-    Vector3::Scale(@x,*a,*Me\w)
+    Vector3::Scale(@x,*a,*Me\uvw\z)
     Vector3::AddInPlace(*Me\c,@x)
-    Vector3::Scale(@x,*b,*Me\u)
+    Vector3::Scale(@x,*b,*Me\uvw\x)
     Vector3::AddInPlace(*Me\c,@x)
-    Vector3::Scale(@x,*c,*Me\v)
+    Vector3::Scale(@x,*c,*Me\uvw\y)
     Vector3::AddInPlace(*Me\c,@x)
   
   ;   ; Color
@@ -168,11 +168,11 @@ Module Location
     
     ; Position
     Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(@x,*a,*Me\u)
+    Vector3::Scale(@x,*a,*Me\uvw\x)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*b,*Me\v)
+    Vector3::Scale(@x,*b,*Me\uvw\y)
     Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*c,1-(*Me\u+*Me\v))
+    Vector3::Scale(@x,*c,*Me\uvw\z)
     Vector3::AddInPlace(*Me\p,@x)
     
     ; Normal
@@ -196,9 +196,7 @@ Module Location
   ;------------------------------------------------------------------
   Procedure SetUVW(*Me.Location_t,u.f=0.0,v.f=0.0,w.f=0.0)
     If Not *Me : ProcedureReturn : EndIf
-    *Me\u = u
-    *Me\v = v
-    *Me\w = w
+    Vector3::Set(*Me\uvw, u, v, w)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -300,9 +298,7 @@ Module Location
   
   If d < maxDistance And d < PeekF(*distance)
     Vector3::SetFromOther(*Me\p, @closest)
-    *Me\v = s
-    *Me\w = t
-    *Me\u = 1.0 - v - w
+    Vector3::Set(*Me\uvw, 1.0- s - t, s, t)
     PokeF(*distance, d)
     ProcedureReturn #True
   EndIf
@@ -331,9 +327,7 @@ EndProcedure
     ; ----[ Initialize ]--------------------------------------------------------
     *Me\tid = tid
     *Me\geometry = *geom
-    *Me\u = u
-    *Me\v = v
-    *Me\w = w
+    Vector3::Set(*Me\uvw, u, v, w)
     *Me\t = *t
     If *Me\geometry And *Me\tid>-1
       ;Update(*Me)
@@ -344,7 +338,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 300
-; FirstLine = 263
+; CursorPosition = 329
+; FirstLine = 285
 ; Folding = ---
 ; EnableXP

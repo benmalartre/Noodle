@@ -75,7 +75,7 @@ DeclareModule Triangle
   
   Declare GetCenter(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32)
   Declare GetNormal(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *normal.v3f32)
-  Declare ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *u, *v, *w)
+  Declare ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
   Declare.b Touch(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32, *boxhalfsize.v3f32)
   Declare.b PlaneBoxTest(*Me.Triangle_t, *normal.v3f32, *vert.v3f32, *maxbox.v3f32)
   Declare.b IsBoundary(*Me.Triangle_t)
@@ -115,7 +115,7 @@ Module Triangle
   ;------------------------------------------------------------------
   ; Closest Point
   ;------------------------------------------------------------------
-  Procedure ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *u, *v, *w)
+  Procedure ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
     Define.v3f32 *A, *B, *C
     *A = CArray::GetValue(*positions, *Me\vertices[0])
     *B = CArray::GetValue(*positions, *Me\vertices[1])
@@ -204,13 +204,14 @@ Module Triangle
   EndIf
   
   Vector3::SetFromOther(*closest, *A)
-  PokeF(*v, s)
-  PokeF(*w, t)
-  PokeF(*u, 1.0-v-w)
   Vector3::ScaleInPlace(@edge0, s)
   Vector3::ScaleInPlace(@edge1, t)
   Vector3::AddInPlace(*closest, @edge0)
   Vector3::AddInPlace(*closest, @edge1)
+  
+  *uvw\y = s
+  *uvw\z = t
+  *uvw\x = 1.0-v-w
 
 EndProcedure
 
@@ -330,7 +331,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 295
-; FirstLine = 194
+; CursorPosition = 77
+; FirstLine = 51
 ; Folding = ---
 ; EnableXP

@@ -16,8 +16,8 @@ UseJPEG2000ImageDecoder()
 DeclareModule Utils
   UseModule Math
   Declare GLDecodeID(x,y,z)
-  Declare GL_LoadImage(imageID,flipY.b=#True,wrap_s=#GL_CLAMP,wrap_t=#GL_CLAMP,min_f=#GL_NEAREST,mag_f=#GL_NEAREST)
-  Declare GL_WriteImage(path.s,width.i,height.i)
+  Declare GLLoadImage(imageID,flipY.b=#True,wrap_s=#GL_CLAMP,wrap_t=#GL_CLAMP,min_f=#GL_NEAREST,mag_f=#GL_NEAREST)
+  Declare GLWriteImage(path.s,width.i,height.i)
   Declare TransformPositionArray(*io.CArray::CArrayV3F32,*points.CArray::CArrayV3F32,*m.m4f32)
   Declare TransformPositionArrayInPlace(*points.CArray::CArrayV3F32,*m.m4f32)
   Declare BuildCircleSection(*io.CArray::CArrayV3F32, nbp.i = 12, radius.f = 1.0,start_angle.f = 0.0,end_angle.f = 360.0)
@@ -118,7 +118,7 @@ Module Utils
   ;------------------------------------------------------------
   ; Load Image
   ;------------------------------------------------------------
-  Procedure GL_LoadImage(imageID,flipY.b=#True,wrap_s=#GL_CLAMP,wrap_t=#GL_CLAMP,min_f=#GL_NEAREST,mag_f=#GL_NEAREST)
+  Procedure GLLoadImage(imageID,flipY.b=#True,wrap_s=#GL_CLAMP,wrap_t=#GL_CLAMP,min_f=#GL_NEAREST,mag_f=#GL_NEAREST)
     If imageID <> #Null
       Protected out.GLint
       glGenTextures(1,@out)
@@ -170,7 +170,7 @@ Module Utils
   ;------------------------------------------------------------
   ; Write Image
   ;------------------------------------------------------------
-  Procedure GL_WriteImage(path.s,width.i,height.i)
+  Procedure GLWriteImage(path.s,width.i,height.i)
      ;Read Frame Buffer
     Protected GLubyte_s.GLubyte
     Define *datas = AllocateMemory(width * height * SizeOf(GLubyte_s)*4)
@@ -550,7 +550,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 202
+; CursorPosition = 145
+; FirstLine = 126
 ; Folding = ---
 ; EnableXP

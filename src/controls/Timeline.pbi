@@ -143,8 +143,8 @@ Module ControlTimeline
     
     
     ; ---[ Local Variables ]----------------------------------------------------
-    Protected w.i = *Me\sizX ;- 2 * #Raa_Timeline_NumberWidth
-    Protected l.i = 0;#Raa_Timeline_NumberWidth
+    Protected w.i = *Me\sizX 
+    Protected l.i = 0
     Protected h.i = *Me\sizY-30
     Protected r.i = Time::endframe - Time::startframe
     Protected s.f = w/r
@@ -1115,7 +1115,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 979
-; FirstLine = 949
+; CursorPosition = 152
+; FirstLine = 141
 ; Folding = ------
 ; EnableXP

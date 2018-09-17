@@ -21,7 +21,37 @@ Global *torus.Polymesh::Polymesh_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 
+Procedure PolygonSoup()
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_NONE)
+  Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+  Protected *topo.Geometry::Topology_t = Topology::New()
+  
+  Protected numTriangles.i = 1024
+  Protected t.i
+  CArray::SetCount(*topo\faces, numTriangles * 4)
+  CArray::SetCount(*topo\vertices, numTriangles * 3)
+  Protected a.v3f32, b.v3f32, c.v3f32
+  For t=0 To numTriangles -1
+    Vector3::Set(@a, Random(20)-10, Random(20)-10, Random(20)-10)
+    Vector3::Set(@b, Random(20)-10, Random(20)-10, Random(20)-10)
+    Vector3::Set(@c, Random(20)-10, Random(20)-10, Random(20)-10)
+    CArray::SetValue(*topo\vertices, t*3+0, @a)
+    CArray::SetValue(*topo\vertices, t*3+1, @b)
+    CArray::SetValue(*topo\vertices, t*3+2, @c)
+    
+    CArray::SetValueL(*topo\faces, t*4+0, t*3+0)
+    CArray::SetValueL(*topo\faces, t*4+1, t*3+1)
+    CArray::SetValueL(*topo\faces, t*4+2, t*3+2)
+    CArray::SetValueL(*topo\faces, t*4+3, -2)
+  Next
+  
+  PolymeshGeometry::Set2(*geom, *topo)
+  Topology::Delete(*topo)
+  ProcedureReturn *mesh
+  
+EndProcedure
 
+ 
 Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Scene::*current_scene\dirty= #True
@@ -53,17 +83,18 @@ Log::Init()
 EndIf
 
 
-Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
+Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_TORUS)
+Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
 *drawer = Drawer::New()
 
-; Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-; Define.v3f32 bmin, bmax
-; Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
-; Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
-; Define *octree.Octree::Octree_t = Octree::New(@bmin.v3f32, @bmax.v3f32, 0)
-; Octree::Build(*octree, *geom)
-; Octree::Draw(*octree, *drawer, *geom)
-; Octree::Delete(*octree)
+Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+Define.v3f32 bmin, bmax
+Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
+Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
+Define *octree.Octree::Octree_t = Octree::New(@bmin.v3f32, @bmax.v3f32, 0)
+Octree::Build(*octree, *geom)
+Octree::Draw(*octree, *drawer, *geom)
+Octree::Delete(*octree)
 
 Define *poisson.Poisson::Poisson_t = Poisson::New()
 Define box.Geometry::Box_t
@@ -75,16 +106,16 @@ Box::Set(@box, @origin, @extend)
 Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
 Global *root.Model::Model_t = Model::New("Model")
-; Object3D::AddChild(*root, *mesh)
+Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 
 Scene::AddModel(Scene::*current_scene, *root)
 
 Define t.d = Time::Get()
-Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.2)
-; Define numSamples = Poisson::Sample(*poisson)
-Poisson::SignedDistances(*poisson, *mesh\geom)
-Poisson::Setup(*poisson, *drawer)
+; Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.2)
+; ; Define numSamples = Poisson::Sample(*poisson)
+; Poisson::SignedDistances(*poisson, *mesh\geom)
+; Poisson::Setup(*poisson, *drawer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 
@@ -137,8 +168,8 @@ Application::Loop(*app, @Draw())
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 51
+; CursorPosition = 53
+; FirstLine = 75
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -74,7 +74,7 @@ CompilerEndIf
   XIncludeFile "Object3DNode.pbi"
   XIncludeFile "ExecuteNode.pbi"
 
-;   ; Constants
+  ; Constants
   XIncludeFile "BooleanNode.pbi"
   XIncludeFile "IntegerNode.pbi"
   XIncludeFile "FloatNode.pbi"
@@ -82,15 +82,15 @@ CompilerEndIf
   XIncludeFile "QuaternionNode.pbi"
   XIncludeFile "StringNode.pbi"
   XIncludeFile "TimeNode.pbi"
-;   
-;   ; Arrays
+  
+  ; Arrays
   XIncludeFile "BuildArrayNode.pbi"
   XIncludeFile "BuildArrayFromConstantNode.pbi"
   XIncludeFile "BuildIndexArrayNode.pbi"
   XIncludeFile "ArraySubIndicesNode.pbi"
   XIncludeFile "MatrixArrayNode.pbi"
   
-;   ; Utils
+  ; Utils
   XIncludeFile "IfNode.pbi"
   XIncludeFile "AddNode.pbi"
   XIncludeFile "SubtractNode.pbi"
@@ -99,7 +99,6 @@ CompilerEndIf
   XIncludeFile "PerlinNode.pbi"
   XIncludeFile "FileExistsNode.pbi"
   
-; ;   XIncludeFile "raafal.graph.node.noise.pbi"
   XIncludeFile "MultiplyNode.pbi"
   XIncludeFile "MultiplyByScalarNode.pbi"
   XIncludeFile "DivideByScalarNode.pbi"
@@ -111,12 +110,11 @@ CompilerEndIf
   XIncludeFile "NormalizeNode.pbi"
   XIncludeFile "RotateVectorNode.pbi"
   XIncludeFile "LinearInterpolateNode.pbi"
-;   XIncludeFile "raafal.graph.node.floattocolor.pbi"
   XIncludeFile "Vector3ToFloatNode.pbi"
   XIncludeFile "SRTToMatrixNode.pbi"
   XIncludeFile "AxisAngleToRotationNode.pbi"
-;   
-;   ; Operators
+  
+  ; Operators
   XIncludeFile "TreeNode.pbi"
   XIncludeFile "GetDataNode.pbi"
   XIncludeFile "SetDataNode.pbi"
@@ -124,18 +122,14 @@ CompilerEndIf
   ; Generators
   XIncludeFile "AddPointNode.pbi"
   XIncludeFile "SampleGeometryNode.pbi"
-;   
-;   ; Topology
+  
+  ; Topology
   XIncludeFile "PrimitiveMeshNode.pbi"
   XIncludeFile "TransformTopoNode.pbi"
   XIncludeFile "MergeTopoNode.pbi"
-  XIncludeFile "MergeTopoArrayNode.pbi"
-;   
-;   ; Shaders
-;   XIncludeFile "raafal.graph.node.layer.pbi"
-;   XIncludeFile "raafal.graph.node.shader.pbi"
-;   XIncludeFile "raafal.graph.node.framebuffer.pbi"
-; ;   XIncludeFile "raafal.graph.node.renderbuffer.pbi"
+  XIncludeFile "MergeTopoArrayNode.pbi"  
+  
+  ; Alembic
   CompilerIf #USE_ALEMBIC 
     XIncludeFile "AlembicIPolymeshTopoNode.pbi"
     XIncludeFile "AlembicIPolymeshTopoSimpleNode.pbi"
@@ -145,10 +139,10 @@ CompilerEndIf
   
 ;   
   IncludePath "../"
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 69
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 123
+; FirstLine = 86
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

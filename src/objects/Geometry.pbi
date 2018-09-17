@@ -308,9 +308,7 @@ DeclareModule Geometry
   ; --------------------------------------------
   Structure Location_t
     tid.i
-    u.f
-    v.f
-    w.f
+    uvw.v3f32
     n.v3f32
     p.v3f32
     c.c4f32
@@ -461,7 +459,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 308
+; CursorPosition = 310
+; FirstLine = 290
 ; Folding = -----
 ; EnableXP

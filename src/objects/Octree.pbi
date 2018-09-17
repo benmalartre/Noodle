@@ -4,7 +4,7 @@ XIncludeFile "../core/Math.pbi"
 ;=======================================================================
 DeclareModule Octree
   UseModule Math
-  #MAX_ELEMENTS = 4
+  #MAX_ELEMENTS = 32
   Enumeration 
     #ELEMENT_1D
     #ELEMENT_2D
@@ -15,16 +15,21 @@ DeclareModule Octree
     v.f[3]
   EndStructure
   
-  Structure Octree_t
-	  depth.i
+  Structure Cell_t
+    depth.i
 	  bmin.v3f32
 	  bmax.v3f32
   
 	  isLeaf.b
-	  *geom.Geometry::Geometry_t
-  	*children.Octree_t[8]
+	  *children.Cell_t[8]
   	*elements.CArray::CArrayLong
   	color.c4f32
+  EndStructure
+  
+  Structure Octree_t Extends Cell_t
+	  
+	  *geom.Geometry::Geometry_t
+  	
   EndStructure
   
   DataSection
@@ -37,17 +42,25 @@ DeclareModule Octree
   Declare New(*bmin.v3f32, *bmax.v3f32, depth=0)
   Declare Delete(*octree.Octree_t)
   
-  Declare GetCenter(*octree.Octree_t, *center.v3f32)
-  Declare GetHalfSize(*octree.Octree_t, *halfsize.v3f32)
-  
-  Declare.f GetDistance1D(p.f, lower.f, upper.f)
-  Declare.f getDistance(*octree.Octree_t, *p.v3f32)
-  
-  Declare Split (*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
+ 
   Declare Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
   
   Declare NumCells(*octree.Octree_t, *numCells)
   Declare Draw(*octree.Octree_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
+  
+  Declare GetCenter(*cell.Cell_t, *center.v3f32)
+  Declare GetHalfSize(*cell.Cell_t, *halfsize.v3f32)
+  
+  Declare.f GetDistance1D(p.f, lower.f, upper.f)
+  Declare.f getDistance(*cell.Cell_t, *p.v3f32)
+  
+  Declare Split (*cell.Cell_t, *geom.Geometry::PolymeshGeometry_t)
+  
+  Declare Barycentric(*p.v3f32, *a.v3f32, *b.v3f32, *c.v3f32, *uvw.v3f32)
+  Declare GetClosestCell(*octree.Octree_t, *point.v3f32, *closestCell.Cell_t)
+  Declare RecurseGetClosestCell(*point.v3f32, *cell.Cell_t, *closestDistance, *closestCell)
+  Declare GetNearbyCells(*point.v3f32, *cell.Cell_t, *cells.CArray::CArrayPtr, closestDistance.f)
+  Declare RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
   
 EndDeclareModule
 
@@ -114,22 +127,22 @@ Module Octree
   ;---------------------------------------------------------------------
   ; Get Distance
   ;---------------------------------------------------------------------
-  Procedure.f GetDistance(*octree.Octree_t, *point.v3f32)
-    Protected dx.f = GetDistance1D(*point\x, *octree\bmin\x, *octree\bmax\x)
-    Protected dy.f = GetDistance1D(*point\y, *octree\bmin\y, *octree\bmax\y)
-    Protected dz.f = GetDistance1D(*point\z, *octree\bmin\z, *octree\bmax\z)
+  Procedure.f GetDistance(*cell.Cell_t, *point.v3f32)
+    Protected dx.f = GetDistance1D(*point\x, *cell\bmin\x, *cell\bmax\x)
+    Protected dy.f = GetDistance1D(*point\y, *cell\bmin\y, *cell\bmax\y)
+    Protected dz.f = GetDistance1D(*point\z, *cell\bmin\z, *cell\bmax\z)
     ProcedureReturn Sqr(dx * dx + dy * dy + dz * dz)
   EndProcedure
   
   ;---------------------------------------------------------------------
   ; CLEAR
   ;---------------------------------------------------------------------
-  Procedure Clear(*octree.Octree_t)
+  Procedure Clear(*cell.Cell_t)
     Define i
     For i=0 To 7
-      If *octree\children[i] : Octree::Delete(*octree\children[i]) : EndIf
+      If *cell\children[i] : Octree::Delete(*cell\children[i]) : EndIf
     Next
-    If CArray::GetCount(*octree\elements): CArray::SetCount(*octree\elements, 0) : EndIf
+    If CArray::GetCount(*cell\elements): CArray::SetCount(*cell\elements, 0) : EndIf
     
   EndProcedure
   
@@ -138,20 +151,20 @@ Module Octree
   ;---------------------------------------------------------------------
   ; INTERSECT SPHERE
   ;---------------------------------------------------------------------
-  Procedure.b IntersectSphere(*octree.Octree_t, *center.v3f32, radius.f)
+  Procedure.b IntersectSphere(*cell.Cell_t, *center.v3f32, radius.f)
     Define r2.f = radius * radius
     Define dmin.f = 0
     
-    If *center\x < *octree\bmin\x : dmin + Pow(*center\x-*octree\bmin\x, 2)
-    ElseIf *center\x > *octree\bmax\x : dmin + Pow(*center\x-*octree\bmax\x, 2)
+    If *center\x < *cell\bmin\x : dmin + Pow(*center\x-*cell\bmin\x, 2)
+    ElseIf *center\x > *cell\bmax\x : dmin + Pow(*center\x-*cell\bmax\x, 2)
     EndIf
     
-    If *center\y < *octree\bmin\y : dmin + Pow(*center\y-*octree\bmin\y, 2)
-    ElseIf *center\y > *octree\bmax\y : dmin + Pow(*center\y-*octree\bmax\y, 2)
+    If *center\y < *cell\bmin\y : dmin + Pow(*center\y-*cell\bmin\y, 2)
+    ElseIf *center\y > *cell\bmax\y : dmin + Pow(*center\y-*cell\bmax\y, 2)
     EndIf
     
-    If *center\z < *octree\bmin\z : dmin + Pow(*center\z-*octree\bmin\z, 2)
-    ElseIf *center\z > *octree\bmax\z : dmin + Pow(*center\z-*octree\bmax\z, 2)
+    If *center\z < *cell\bmin\z : dmin + Pow(*center\z-*cell\bmin\z, 2)
+    ElseIf *center\z > *cell\bmax\z : dmin + Pow(*center\z-*cell\bmax\z, 2)
     EndIf
     
     ProcedureReturn Bool(dmin <= r2)
@@ -170,17 +183,17 @@ Module Octree
   ;---------------------------------------------------------------------
   ; GET FURTHEST CORNER
   ;---------------------------------------------------------------------
-  Procedure GetFurthestCorner(*octree.Octree_t, *point.v3f32, *corner.v3f32)
+  Procedure GetFurthestCorner(*cell.Cell_t, *point.v3f32, *corner.v3f32)
     Protected delta.v3f32
     Define dist.f
     Define furthestDist.f=-1.0
     Dim P(6)
-    P(0) = *octree\bmin\x
-    P(1) = *octree\bmin\y
-    P(2) = *octree\bmin\z
-    P(3) = *octree\bmax\x
-    P(4) = *octree\bmax\y
-    P(5) = *octree\bmax\z
+    P(0) = *cell\bmin\x
+    P(1) = *cell\bmin\y
+    P(2) = *cell\bmin\z
+    P(3) = *cell\bmax\x
+    P(4) = *cell\bmax\y
+    P(5) = *cell\bmax\z
     
     Protected z
     Protected current.v3f32
@@ -259,6 +272,118 @@ Module Octree
   EndProcedure
   
   ;---------------------------------------------------------------------
+  ; BARYCENTRIC
+  ;---------------------------------------------------------------------
+  Procedure Barycentric(*p.v3f32, *a.v3f32, *b.v3f32, *c.v3f32, *uvw.v3f32)
+    Define.v3f32 v0, v1, v2
+    Vector3::Sub(@v0, *b, *a)
+    Vector3::Sub(@v1, *c, *a)
+    Vector3::Sub(@v2, *p, *a)
+
+    Define d00.f = Vector3::Dot(v0,v0)
+    Define d01.f = Vector3::Dot(v0,v1)
+    Define d11.f = Vector3::Dot(v1,v1)
+    Define d20.f = Vector3::Dot(v2,v0)
+    Define d21.f = Vector3::Dot(v2,v1)
+    Define denom.f = d00 * d11 - d01 * d01
+    *uvw\y = (d11 * d20 - d01 * d21) / denom
+    *uvw\z = (d00 * d21 - d01 * d20) / denom
+    *uvw\x = 1.0 - v - w
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; RECURSE GET CLOSEST CELL
+  ;---------------------------------------------------------------------
+  Procedure RecurseGetClosestCell(*point.v3f32,*cell.Cell_t, *closestDistance, *closestCell)
+    If *cell = #Null : ProcedureReturn : EndIf
+    Protected distance.f
+    If *cell\isLeaf
+      distance = GetDistance(*cell, *point)
+      If distance < PeekF(*closestDistance)
+        PokeF(*closestDistance, distance)
+        *closestCell = *cell
+      EndIf
+    Else
+      Protected cid = -1;
+      Protected cdist.f = #F32_MAX
+      Protected k
+      Protected *current.Cell_t
+      For k=0 To 7
+        *current = *cell\children[k]
+        If *current <> #Null
+          distance = GetDistance(*current, *point)
+          If distance<=cdist
+            cdist=distance
+            cid=k
+          EndIf
+        EndIf
+      Next
+      If cid >= 0
+        RecurseGetClosestCell(*point, *cell\children[cid], *closestDistance, *closestCell)
+      EndIf
+      
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; GET CLOSEST CELL
+  ;---------------------------------------------------------------------
+  Procedure GetClosestCell(*octree.Octree_t, *point.v3f32, *closestCell.Cell_t)
+
+    Protected closestDistance.f = #F32_MAX
+    
+    ; the Case of low polygon count
+    If *octree\isLeaf
+      *closestCell = *octree;
+    ; normal Case
+    Else
+      Protected j
+      For j=0 To 7
+        If *octree\children[j]
+          RecurseGetClosestCell(*point, *octree\children[j], @closestDistance, *closestCell)
+        EndIf
+      Next j
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; RECURSE NEARBY CELLS
+  ;---------------------------------------------------------------------
+  Procedure RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
+    If *cell = #Null : ProcedureReturn : EndIf
+    
+    Protected *child.Cell_t = #Null
+    Protected k
+    If Not *cell\isLeaf
+      For k=0 To 7
+        *child = *cell\children[k]
+        If *child <> #Null
+          If IntersectSphere(*child, *center, radius)
+            RecurseGetNearbyCells(*child, *center, radius, *cells)
+          EndIf
+        EndIf
+      Next
+    Else
+      If IntersectSphere(*cell, *center, radius)
+        CArray::AppendPtr(*cells, *cell)
+      EndIf
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; GET NEARBY CELLS
+  ;---------------------------------------------------------------------
+  Procedure GetNearbyCells(*point.v3f32, *cell.Cell_t, *cells.CArray::CArrayPtr, closestDistance.f)
+    If Not *cell\isLeaf
+      Protected j
+      For j=0 To 7
+        RecurseGetNearbyCells(*cell\children[j], *point, closestDistance, *cells)
+      Next
+    EndIf
+  EndProcedure
+  
+  
+  ;---------------------------------------------------------------------
   ; SPLIT
   ;---------------------------------------------------------------------
   Procedure Split(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
@@ -333,7 +458,7 @@ Module Octree
   EndProcedure
   
   ;---------------------------------------------------------------------
-  ; DARW OCTREE
+  ; DRAW OCTREE
   ;---------------------------------------------------------------------
   Procedure Draw(*octree.Octree_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
     Protected m.m4f32
@@ -389,6 +514,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 15
-; Folding = ---
+; CursorPosition = 467
+; FirstLine = 253
+; Folding = ----
 ; EnableXP

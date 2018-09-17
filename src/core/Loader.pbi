@@ -536,7 +536,7 @@ Module Loader
     Protected *Me.Loader_t = AllocateMemory(SizeOf(Loader_t))
     *Me\path = path
     *Me\numLoaded3DObject = 0
-    Protected file.s = OpenFileRequester("Raabit Load Scene",path,extensions(1),-1)
+    Protected file.s = OpenFileRequester("Noodle Load Scene",path,extensions(1),-1)
     If file
       *Me\xml = LoadXML(#PB_Any,file)
     EndIf
@@ -548,8 +548,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 113
+; CursorPosition = 538
+; FirstLine = 495
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
