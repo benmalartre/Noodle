@@ -63,12 +63,12 @@ Module Sampler
         v = 1-v
       EndIf
       Vector3::Set(sum,0,0,0)
-      Vector3::Scale(@p,*a,u)
-      Vector3::AddInPlace(@sum,@p)
-      Vector3::Scale(@p, *b,v)
-      Vector3::AddInPlace(@sum,@p)
-      Vector3::Scale(@p, *c,1-(u+v))
-      Vector3::AddInPlace(@sum,@p)
+      Vector3::Scale(p,*a,u)
+      Vector3::AddInPlace(sum,p)
+      Vector3::Scale(p, *b,v)
+      Vector3::AddInPlace(sum,p)
+      Vector3::Scale(p, *c,1-(u+v))
+      Vector3::AddInPlace(sum,p)
       
       s = 1;Random(10)*0.1
       Vector3::Set(scl,s,s,s)
@@ -78,20 +78,20 @@ Module Sampler
       
       Vector3::Set(*loc\uvw, u, v, 1-(u+v))
       *loc\tid = tid
-      Vector3::SetFromOther(*loc\p,@sum)      
+      Vector3::SetFromOther(*loc\p,sum)      
       
       *a = CArray::GetValue(*mesh\a_pointnormals,a)
       *b = CArray::GetValue(*mesh\a_pointnormals,b)
       *c = CArray::GetValue(*mesh\a_pointnormals,c)
       Vector3::Set(sum,0,0,0)
-      Vector3::Scale(@p,*a,u)
-      Vector3::AddInPlace(@sum,@p)
-      Vector3::Scale(@p, *b,v)
-      Vector3::AddInPlace(@sum,@p)
-      Vector3::Scale(@p, *c,1-(u+v))
-      Vector3::AddInPlace(@sum,@p)
+      Vector3::Scale(p,*a,u)
+      Vector3::AddInPlace(sum,p)
+      Vector3::Scale(p, *b,v)
+      Vector3::AddInPlace(sum,p)
+      Vector3::Scale(p, *c,1-(u+v))
+      Vector3::AddInPlace(sum,p)
       
-      Vector3::SetFromOther(*loc\n,@sum)
+      Vector3::SetFromOther(*loc\n,sum)
       
       *ca = CArray::GetValue(*mesh\a_colors,tid*3)
       *cb = CArray::GetValue(*mesh\a_colors,tid*3+1)
@@ -106,7 +106,7 @@ Module Sampler
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 85
+; CursorPosition = 93
 ; FirstLine = 53
 ; Folding = -
 ; EnableXP

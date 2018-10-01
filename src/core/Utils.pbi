@@ -209,8 +209,10 @@ Module Utils
     Protected v.v3f32
     CArray::SetCount(*io,nb)
     Protected *v.v3f32
+    
     For i=0 To nb-1
-      Vector3::MulByMatrix4(@v,CArray::GetValue(*points,i),*m)
+      *v = CArray::GetValue(*points,i)
+      Vector3::MulByMatrix4(v,*v,*m)
       CArray::SetValue(*io,i,@v)
     Next
   EndProcedure
@@ -220,9 +222,10 @@ Module Utils
   Procedure TransformPositionArrayInPlace(*points.CArray::CArrayV3F32,*m.m4f32)
     Protected i
     Protected nb = CArray::GetCount(*points)
-
+    Protected *v.v3f32
     For i=0 To nb-1
-      Vector3::MulByMatrix4InPlace(CArray::GetValue(*points,i),*m)
+      *v = CArray::GetValue(*points,i)
+      Vector3::MulByMatrix4InPlace(*v,*m)
     Next
   EndProcedure
 
@@ -245,8 +248,8 @@ Module Utils
     For i=0 To nbp-1
       angle = start_angle + i* st
       *p = CArray::GetValue(*io,i)
-      Quaternion::SetFromAxisAngle(@q,@axis,Radian(angle))
-      Vector3::MulByQuaternion(*p,@r,@q)
+      Quaternion::SetFromAxisAngle(q,axis,Radian(angle))
+      Vector3::MulByQuaternion(*p,r,q)
       CArray::SetValue(*io,i,*p)
     Next
   
@@ -272,22 +275,22 @@ Module Utils
     Protected t.Transform::Transform_t
     
     
-    Vector3::SetFromOther(@previous,*a)
-    Vector3::SetFromOther(@up,*up)
+    Vector3::SetFromOther(previous,*a)
+    Vector3::SetFromOther(up,*up)
     
     For i=0 To nb-1
       u = i* st
-      Vector3::BezierInterpolate(@p,*a,*b,*c,*d,u)
+      Vector3::BezierInterpolate(p,*a,*b,*c,*d,u)
   
       ;Orientation
       If i>0
-        Vector3::Sub(@delta,@p,@previous)
-        Vector3::NormalizeInPlace(@delta)
-        Vector3::Cross(@side,*up,@delta)
-        Vector3::Cross(@up,@delta,@side)
-        Vector3::NormalizeInPlace(@up)
-        Quaternion::LookAt(t\t\rot,@delta,@up)
-        Vector3::SetFromOther(*up,@up)
+        Vector3::Sub(delta,p,previous)
+        Vector3::NormalizeInPlace(delta)
+        Vector3::Cross(side,*up,delta)
+        Vector3::Cross(up,delta,side)
+        Vector3::NormalizeInPlace(up)
+        Quaternion::LookAt(t\t\rot,delta,up, #False)
+        Vector3::SetFromOther(*up,up)
       EndIf
       
       ; Scale
@@ -296,7 +299,7 @@ Module Utils
       Vector3::Set(t\t\scl,r,r,r)
      
       ;Position
-      Vector3::SetFromOther(t\t\pos,@p)
+      Vector3::SetFromOther(t\t\pos,p)
       Transform::UpdateMatrixFromSRT(@t)
       CArray::SetValue(*io,i,t\m)
       
@@ -304,7 +307,7 @@ Module Utils
         Matrix4::SetTranslation(t\m,@previous)
         CArray::SetValue(*io,0,t\m)
       EndIf
-      Vector3::SetFromOther(@previous,@p)
+      Vector3::SetFromOther(previous,p)
       
     Next
    
@@ -321,14 +324,14 @@ Module Utils
     Protected vn.v3f32
     Protected q2.q4f32
     
-    Vector3::Normalize(@vn,*v)
-    Quaternion::Conjugate(@q2,*q)
+    Vector3::Normalize(vn,*v)
+    Quaternion::Conjugate(q2,*q)
     
     Protected vecQuat.q4f32, resQuat.q4f32
     
-    Quaternion::Set(@vecQuat,vn\x,vn\y,vn\z,1.0)
-    Quaternion::Multiply(@resQuat,@vecQuat,@q2)
-    Quaternion::Multiply(@resQuat,*q,@resQuat)
+    Quaternion::Set(vecQuat,vn\x,vn\y,vn\z,1.0)
+    Quaternion::Multiply(resQuat,vecQuat,q2)
+    Quaternion::Multiply(resQuat,*q,resQuat)
     
     Vector3::Set(*io,resQuat\x,resQuat\y,resQuat\z)
     Vector3::SetLength(*io,len)
@@ -347,12 +350,12 @@ Module Utils
     EndIf
     
     Define.v3f32 xaxis, yaxis, zaxis
-    Vector3::Normalize(@zaxis,*dir)
-    Vector3::Cross(@xaxis,*up,@zaxis)
-    Vector3::NormalizeInPlace(@xaxis)
+    Vector3::Normalize(zaxis,*dir)
+    Vector3::Cross(xaxis,*up,zaxis)
+    Vector3::NormalizeInPlace(xaxis)
     
-    Vector3::Cross(@yaxis,@zaxis,@xaxis)
-    Vector3::NormalizeInPlace(@yaxis)
+    Vector3::Cross(yaxis,zaxis,xaxis)
+    Vector3::NormalizeInPlace(yaxis)
     
     *io\v[0] = xaxis\x
     *io\v[3] = yaxis\x
@@ -373,16 +376,16 @@ Module Utils
   ;-------------------------------------------------------------------
   Procedure ClosestPointOnTriangle(*io.v3f32,*a.v3f32,*b.v3f32,*c.v3f32,*p.v3f32)
     Define.v3f32 e0,e1,v
-    Vector3::Sub(@e0,*b,*a)
-    Vector3::Sub(@e1,*c,*a)
-    Vector3::Sub(@v,*a,*p)
+    Vector3::Sub(e0,*b,*a)
+    Vector3::Sub(e1,*c,*a)
+    Vector3::Sub(v,*a,*p)
     
     Define.d a,b,c,d,e
-    a = Vector3::Dot(@e0,@e0)
-    b = Vector3::Dot(@e0,@e1)
-    c = Vector3::Dot(@e1,@e1)
-    d = Vector3::Dot(@e0,@v)
-    e = Vector3::Dot(@e1,@v)
+    a = Vector3::Dot(e0,e0)
+    b = Vector3::Dot(e0,e1)
+    c = Vector3::Dot(e1,e1)
+    d = Vector3::Dot(e0,v)
+    e = Vector3::Dot(e1,v)
     
     Define det.d = a*c - b*b
     Define s.d = b*e - c*d
@@ -451,10 +454,10 @@ Module Utils
       EndIf
     EndIf
     Define.v3f32 se0, te1
-    Vector3::Scale(@se0,@e0,s)
-    Vector3::Scale(@te1,@e1,t)
-    Vector3::Add(*io,*a,@se0)
-    Vector3::AddInPlace(*io,@te1)
+    Vector3::Scale(se0,e0,s)
+    Vector3::Scale(te1,e1,t)
+    Vector3::Add(*io,*a,se0)
+    Vector3::AddInPlace(*io,te1)
       
   EndProcedure
   ;}
@@ -550,7 +553,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 511
-; FirstLine = 497
+; CursorPosition = 333
+; FirstLine = 323
 ; Folding = ---
 ; EnableXP

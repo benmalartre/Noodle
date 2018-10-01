@@ -103,10 +103,12 @@ Module PolymeshGeometry
     
     ; Get Vertices
     CArray::SetCount(*mesh\a_vertices, *mesh\nbpoints)
+    Protected *v.v3f32
     For i=0 To *mesh\nbpoints-1
       *vertex = Vertex::New(i)
+      *v = CArray::GetValue(*mesh\a_positions,i)
       CArray::SetValuePtr(*mesh\a_vertices, i,*vertex)
-      Vector3::SetFromOther(*vertex\position ,CArray::GetValue(*mesh\a_positions,i))
+      Vector3::SetFromOther(*vertex\position , *v)
     Next i
    
     Protected cnt=0
@@ -283,12 +285,12 @@ Module PolymeshGeometry
     Define.v3f32 bmin,bmax
     If normalize
       Geometry::ComputeBoundingBox(*geom)
-      Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
-      Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
+      Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
+      Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
       ; Normalized UVs
       Define.v3f32 va,vb,vc,offset,scl,delta
       
-      Vector3::Sub(@delta,@bmax,@bmin)
+      Vector3::Sub(delta,bmax,bmin)
       
       Define.v3f32 *va,*vb,*vc
       
@@ -405,15 +407,19 @@ Module PolymeshGeometry
     Vector3::Set(n,0,0,0)
 
     ; First Triangle Normals
+    Define.v3f32 *a, *b, *c
     For i=0 To *mesh\nbtriangles-1
       a = CArray::GetValueL(*mesh\a_triangleindices,i*3)
       b = CArray::GetValueL(*mesh\a_triangleindices,i*3+1)
       c = CArray::GetValueL(*mesh\a_triangleindices,i*3+2)
-      Vector3::Sub(@ab,CArray::GetValue(*mesh\a_positions,a),CArray::GetValue(*mesh\a_positions,b))
-      Vector3::Sub(@ac,CArray::GetValue(*mesh\a_positions,b),CArray::GetValue(*mesh\a_positions,c))
+      *a = CArray::GetValue(*mesh\a_positions,a)
+      *b = CArray::GetValue(*mesh\a_positions,b)
+      *c = CArray::GetValue(*mesh\a_positions,c)
+      Vector3::Sub(ab,*a,*b)
+      Vector3::Sub(ac,*a,*c)
   
-      Vector3::Cross(@norm,@ac,@ab)
-      Vector3::NormalizeInPlace(@norm)
+      Vector3::Cross(norm,ac,ab)
+      Vector3::NormalizeInPlace(norm)
       CArray::SetValue(*mesh\a_normals,cnt,@norm)
       CArray::SetValue(*mesh\a_normals,cnt+1,@norm)
       CArray::SetValue(*mesh\a_normals,cnt+2,@norm)
@@ -423,15 +429,18 @@ Module PolymeshGeometry
     
     ; Then Polygons Normals
     Protected nbv, nbt
+    Define *n.v3f32
     CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
     For i=0 To*mesh\nbpolygons-1
       nbv = CArray::GetvalueL(*mesh\a_facecount, i)
       nbt = nbv-2
       Vector3::Set(n, 0,0,0)
+      
       For j=0 To nbt-1
-        Vector3::AddInPlace(@n, CArray::GetValue(*mesh\a_normals, base+j*3))
+        *n = CArray::GetValue(*mesh\a_normals, base+j*3)
+        Vector3::AddInPlace(n, *n)
       Next
-      Vector3::NormalizeInPlace(@n)
+      Vector3::NormalizeInPlace(n)
       CArray::SetValue(*mesh\a_polygonnormals, i, @n)
       base+nbt*3
     Next
@@ -448,9 +457,10 @@ Module PolymeshGeometry
       Vector3::Set(n, 0,0,0)
       For j=0 To nbp-1
         index = CArray::GetValueL(*mesh\a_vertexpolygonindices, base+j)
-        Vector3::AddInPlace(@n, CArray::GetValue(*mesh\a_polygonnormals, index))
+        *n = CArray::GetValue(*mesh\a_polygonnormals, index)
+        Vector3::AddInPlace(n, *n)
       Next
-      Vector3::ScaleInPlace(@n, 1/nbp)
+      Vector3::ScaleInPlace(n, 1/nbp)
       CArray::SetValue(*mesh\a_pointnormals, i, @n)
       base + nbp
     Next
@@ -485,28 +495,37 @@ Module PolymeshGeometry
     
     ; //	sum tangents per-triangle:
     ; First Triangle Normals
+    Define.v3f32 *a, *b, *c
+    Define.v3f32 *u, *v, *w
     For i=0 To *mesh\nbtriangles-1
       a = CArray::GetValueL(*mesh\a_triangleindices,i*3)
       b = CArray::GetValueL(*mesh\a_triangleindices,i*3+1)
       c = CArray::GetValueL(*mesh\a_triangleindices,i*3+2)
-  
-      Vector3::Sub(@ab,CArray::GetValue(*mesh\a_positions,a),CArray::GetValue(*mesh\a_positions,b))
-      Vector3::Sub(@ac,CArray::GetValue(*mesh\a_positions,a),CArray::GetValue(*mesh\a_positions,c))
       
-      Vector3::Sub(@tab,CArray::GetValue(*mesh\a_uvws,i*3+1),CArray::GetValue(*mesh\a_uvws,i*3))
-      Vector3::Sub(@tac,CArray::GetValue(*mesh\a_uvws,i*3+2),CArray::GetValue(*mesh\a_uvws,i*3))
+      *a = CArray::GetValue(*mesh\a_positions,a)
+      *b = CArray::GetValue(*mesh\a_positions,b)
+      *c = CArray::GetValue(*mesh\a_positions,c)
+      
+      Vector3::Sub(ab,*a,*b)
+      Vector3::Sub(ac,*a, *c)
+      
+      *u = CArray::GetValue(*mesh\a_uvws,i*3)
+      *v = CArray::GetValue(*mesh\a_uvws,i*3+1)
+      *w = CArray::GetValue(*mesh\a_uvws,i*3+2)
+      Vector3::Sub(tab,*v,*u)
+      Vector3::Sub(tac,*w,*u)
       
       r = 1;/(tab\x*tac\y - tab\y * tac\x)
       Vector3::Set(tan,(tac\y*ab\x - tab\y * ac\x)*r,(tac\y*ab\y - tab\y * ac\y)*r,(tac\y*ab\z - tab\y * ac\z)*r)
       
       *t1 = CArray::GetValue(*mesh\a_tangents,i*3)
-      Vector3::AddInPlace(*t1,@tan)
+      Vector3::AddInPlace(*t1,tan)
       
       *t2 = CArray::GetValue(*mesh\a_tangents,i*3+1)
-      Vector3::AddInPlace(*t2,@tan)
+      Vector3::AddInPlace(*t2,tan)
       
       *t3 = CArray::GetValue(*mesh\a_tangents,i*3+2)
-      Vector3::AddInPlace(*t3,@tan)
+      Vector3::AddInPlace(*t3,tan)
 
     Next
     Protected *tan.v3f32
@@ -1065,9 +1084,11 @@ Module PolymeshGeometry
     Protected i
     Protected offset.v3f32
     Protected pos.v3f32
+    Protected *p.v3f32
     Vector3::Set(offset,0,0.02,0.01)
     For i = 0 To *mesh\nbpoints-1
-      Vector3::Add(@pos,CArray::GetValue(*pos,i),@offset)
+      *p = CArray::GetValue(*pos,i)
+      Vector3::Add(pos,*p,offset)
       CArray::SetValue(*pos,i,@pos)
     Next i
     SetPointsPosition(*mesh,*pos)
@@ -1143,7 +1164,7 @@ Module PolymeshGeometry
     Protected ab.v3f32, ac.v3f32, bc.v3f32
     CArray::SetCount(*mesh\a_triangleareas, *mesh\nbtriangles)
     CArray::SetCount(*mesh\a_polygonareas, *mesh\nbpolygons)
-    
+    Protected *a.v3f32, *b.v3f32, *c.v3f32
   
     ; Loop Per Polygon
     ;------------------------------------
@@ -1163,11 +1184,13 @@ Module PolymeshGeometry
         a = CArray::GetValueL(*mesh\a_faceindices,z+y)
         b = CArray::GetValueL(*mesh\a_faceindices,z+y+1)
         c = CArray::GetValueL(*mesh\a_faceindices,last)
-        
-        Vector3::Sub(@ab, CArray::GetValue(*mesh\a_positions, b), CArray::GetValue(*mesh\a_positions, a))
-        Vector3::Sub(@ac, CArray::GetValue(*mesh\a_positions, c), CArray::GetValue(*mesh\a_positions, a))
-        Vector3::Sub(@bc, CArray::GetValue(*mesh\a_positions, c), CArray::GetValue(*mesh\a_positions, b))
-        tArea = TriangleArea(Vector3::Length(@ab), Vector3::Length(@ac), Vector3::Length(@bc))
+        *a = CArray::GetValue(*mesh\a_positions, a)
+        *b = CArray::GetValue(*mesh\a_positions, b)
+        *c = CArray::GetValue(*mesh\a_positions, c)
+        Vector3::Sub(ab, *b, *a)
+        Vector3::Sub(ac, *c, *a)
+        Vector3::Sub(bc, *c, *b)
+        tArea = TriangleArea(Vector3::Length(ab), Vector3::Length(ac), Vector3::Length(bc))
         CArray::SetValueF(*mesh\a_triangleareas, t, tArea)
         t + 1
         area + tArea
@@ -2115,13 +2138,13 @@ Module PolymeshGeometry
 
     For i=0 To v
       
-      Vector3::LinearInterpolate(@c,@bc,@tc,i*t)
+      Vector3::LinearInterpolate(c,bc,tc,i*t)
       For j=0 To u-1
           
-        Quaternion::SetFromAxisAngleValues(@q,0,1,0,Radian(j*s))
+        Quaternion::SetFromAxisAngleValues(q,0,1,0,Radian(j*s))
         Vector3::Set(p,0,0,1)
-        Vector3::MulByQuaternionInPlace(@p,@q)
-        Vector3::AddInPlace(@p,@c)
+        Vector3::MulByQuaternionInPlace(p,q)
+        Vector3::AddInPlace(p,c)
         CArray::Append(*topo\vertices,p)
       Next
       
@@ -2229,8 +2252,8 @@ Module PolymeshGeometry
     Protected incr.f = 1/u*360
     CArray::SetValue(*geom\a_positions,0,@x)
     For i=0 To u-1
-      Quaternion::SetFromAxisAngleValues(@q,0,1,0,Radian(i*incr))
-      Vector3::MulByQuaternion(@x,@p,@q)
+      Quaternion::SetFromAxisAngleValues(q,0,1,0,Radian(i*incr))
+      Vector3::MulByQuaternion(x,p,q)
       CArray::SetValue(*geom\a_positions,i+1,@x)
       CArray::SetValueL(*geom\a_faceindices,i*3,0)
       CArray::SetValueL(*geom\a_faceindices,i*3+1,i+1)
@@ -2437,7 +2460,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2358
-; FirstLine = 2370
+; CursorPosition = 2254
+; FirstLine = 2240
 ; Folding = ----fw--v--
 ; EnableXP

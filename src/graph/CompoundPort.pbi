@@ -122,8 +122,7 @@ Module CompoundNodePort
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal.CArray::CArrayV3F32 = *port\value
         Protected v.v3f32
-        
-        Vector3::SetFromOther(@v,CArray::GetValue(*vVal,0))
+        CopyMemory(CArray::GetValue(*vVal,0), @v, 12)
         
         Protected *vCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected f.f = *vCtrl\value_n
@@ -143,21 +142,21 @@ Module CompoundNodePort
       Case Attribute::#ATTR_TYPE_Quaternion
         Protected *qVal.CArray::CArrayQ4F32 = *port\value
         Protected q.q4f32
-        
-        Vector3::SetFromOther(@q,CArray::GetValue(*qVal,0))
+        Protected *o.q4f32 = CArray::GetValue(*qVal,0)
+        Quaternion::SetFromOther(q, *o)
         
         Protected *qCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         f.f = *qCtrl\value_n
         Select *sig\rcv_slot
           Case 0;X
             Debug "X Parameter Vector Update..."
-            Quaternion::Set(@q,f,q\y,q\z,q\w)
+            Quaternion::Set(q,f,q\y,q\z,q\w)
           Case 1;Y
-            Quaternion::Set(@q,q\x,f,q\z,q\w)
+            Quaternion::Set(q,q\x,f,q\z,q\w)
           Case 2;Z
-            Quaternion::Set(@q,q\x,q\y,f,q\w)
+            Quaternion::Set(q,q\x,q\y,f,q\w)
           Case 3;Angle
-            Quaternion::Set(@q,q\x,q\y,q\z,Radian(f))
+            Quaternion::Set(q,q\x,q\y,q\z,Radian(f))
         EndSelect
         
         CArray::SetValue(*qVal,0,@q)
@@ -217,7 +216,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 128
+; CursorPosition = 145
+; FirstLine = 129
 ; Folding = --
 ; EnableXP

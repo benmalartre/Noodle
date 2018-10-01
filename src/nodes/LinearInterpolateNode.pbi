@@ -151,13 +151,13 @@ Module LinearInterpolateNode
         
         CArray::SetCount(*v3Out,m_max)
 
-        Protected *fv3,*sv3
+        Protected *fv3.v3f32,*sv3.v3f32
         Protected bv3.f
         For i=0 To m_max-1
           *fv3 = CArray::GetValue(*v3In1,Max(i,f_nb-1))
           *sv3 = CArray::GetValue(*v3In2,Max(i,s_nb-1))
           bv3 = CArray::GetValueF(*blend,Max(i,b_nb-1))
-          Vector3::LinearInterpolate(@v3,*fv3,*sv3,bv3)
+          Vector3::LinearInterpolate(v3,*fv3,*sv3,bv3)
           CArray::SetValue(*v3Out,i,@v)
         Next i
         
@@ -208,9 +208,10 @@ EndModule
 ; ============================================================================
 
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 45
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 131
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

@@ -157,7 +157,7 @@ Module BulletConstraint
     Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
     Protected axisA.v3f32, axisB.v3f32
     Protected q.q4f32
-    Quaternion::SetIdentity(@q)
+    Quaternion::SetIdentity(q)
     Vector3::Set(axisA,1,0,0)
     Vector3::Set(axisB,0,1,0)
     
@@ -205,7 +205,7 @@ Module BulletConstraint
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
+; CursorPosition = 159
 ; FirstLine = 152
 ; Folding = ---
 ; EnableXP

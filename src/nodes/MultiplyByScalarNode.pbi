@@ -150,18 +150,22 @@ Module MultiplyByScalarNode
         *vOut = *output\value
         *vIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*vOut,CArray::GetCount(*vIn))
-        
+        Protected *v.v3f32
+        Define scalar.f
         If scalarConstant
           If *vIn
             For i=0 To CArray::GetCount(*vIn)-1
-              Vector3::Scale(@v,CArray::GetValue(*vIn,i),scalar)
-              CArray::SetValue(*vOut,i,v)
+              *v = CArray::GetValue(*vIn,i)
+              Vector3::Scale(v,*v,scalar)
+              CArray::SetValue(*vOut,i,@v)
             Next i
           EndIf
         Else
           If *vIn And CArray::GetCount(*vIn) = CArray::GetCount(*scalarData)
             For i=0 To CArray::GetCount(*vIn)-1
-              Vector3::Scale(@v,CArray::GetValue(*vIn,i),CArray::GetValueF(*scalarData,i))
+              *v = CArray::GetValue(*vIn,i)
+              scalar = CArray::GetValueF(*scalarData,i)
+              Vector3::Scale(v,*v,scalar)
               CArray::SetValue(*vOut,i,@v)
             Next i
           EndIf
@@ -216,8 +220,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 55
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 167
+; FirstLine = 125
 ; Folding = --
 ; EnableXP

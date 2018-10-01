@@ -1664,7 +1664,7 @@ Module ControlProperty
     
     
     Define q.Math::q4f32
-    Quaternion::SetIdentity(@q)
+    Quaternion::SetIdentity(q)
     AddQuaternionControl(*prop,"quaternion","quat",@q,*mesh)
     
     *group = AddGroup(*prop,"ICONS")
@@ -1732,7 +1732,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1715
-; FirstLine = 1678
+; CursorPosition = 1666
+; FirstLine = 1662
 ; Folding = --------
 ; EnableXP

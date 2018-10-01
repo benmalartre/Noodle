@@ -63,7 +63,7 @@ Module SRTToMatrixNode
     CArray::SetValue(*node\inputs()\value,0,@scl)
     NextElement(*node\inputs())
     Protected quat.q4f32
-    Quaternion::SetIdentity(@quat)
+    Quaternion::SetIdentity(quat)
     CArray::SetValue(*node\inputs()\value,0,@quat)
     
     *node\label = "SRT To Matrix"
@@ -155,7 +155,7 @@ EndModule
 ; ==============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 65
+; FirstLine = 61
 ; Folding = --
 ; EnableXP

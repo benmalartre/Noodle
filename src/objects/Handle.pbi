@@ -241,9 +241,9 @@ Module Handle
       Protected size_p.i = 12
       For i=0 To nbp-3
         Vector3::Set(v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
-        Vector3::Echo(@v, "BEFORE")
-        Vector3::MulByMatrix4InPlace(@v,@offset)
-        Vector3::Echo(@v, "AFTER")
+        Vector3::Echo(v, "BEFORE")
+        Vector3::MulByMatrix4InPlace(v,offset)
+        Vector3::Echo(v, "AFTER")
         CArray::SetValue(\positions,i+2,@v)
       Next i
       
@@ -464,8 +464,8 @@ Module Handle
   Procedure Resize(*Me.Handle_t,*camera.Camera::Camera_t)
     Protected delta.v3f32
     Protected *handle_pos.v3f32 = *Me\transform\t\pos  
-    Vector3::Sub(@delta,*camera\pos,*handle_pos)
-    *Me\distance = Vector3::Length(@delta)
+    Vector3::Sub(delta,*camera\pos,*handle_pos)
+    *Me\distance = Vector3::Length(delta)
     *Me\scl = *Me\distance*Radian(*camera\fov*2)
   EndProcedure
   
@@ -661,13 +661,13 @@ Module Handle
            ProcedureReturn
        EndSelect
        
-       Vector3::Sub(@dir,*lookat,*pos)
+       Vector3::Sub(dir,*lookat,*pos)
       
-      Protected l.f = Vector3::Length(@dir)
+      Protected l.f = Vector3::Length(dir)
       Protected inv_view.m4f32
   
       Vector3::Set(scl,l,l,l)
-      Quaternion::LookAt(@quat,@dir,*up)
+      Quaternion::LookAt(quat,dir,*up,#False)
       Transform::SetTranslationFromXYZValues(*Me\transform,*pos\x,*pos\y,*pos\z)
       Transform::SetRotationFromQuaternion(*Me\transform,@quat)
       Transform::SetScaleFromXYZValues(*Me\transform,scl\x,scl\y,scl\z)
@@ -714,8 +714,8 @@ Module Handle
         glUniform4f(*Me\u_color,0.33,1,0.33,1)
       EndIf
       
-      Quaternion::SetFromAxisAngleValues(@quat,0,0,-1,Radian(90))
-      Matrix4::SetFromQuaternion(@offset,@quat)
+      Quaternion::SetFromAxisAngleValues(quat,0,0,-1,Radian(90))
+      Matrix4::SetFromQuaternion(offset,quat)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       DrawAxis(*Me,0.33,1,0.33)
       
@@ -726,7 +726,7 @@ Module Handle
         glUniform4f(*Me\u_color,0.33,0.33,1,1)
       EndIf
       
-      Quaternion::SetFromAxisAngleValues(@quat,0,1,0,Radian(90))
+      Quaternion::SetFromAxisAngleValues(quat,0,1,0,Radian(90))
       Matrix4::SetFromQuaternion(@offset,@quat)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       DrawAxis(*Me,0,0,1)
@@ -743,7 +743,7 @@ Module Handle
       Protected S.v3f32
       Vector3::Set(S, 0.01,0.01,0.01)
       Matrix4::SetIdentity(@X)
-      Vector3::Add(@P, *Me\ray\origin, *Me\ray\direction)
+      Vector3::Add(P, *Me\ray\origin, *Me\ray\direction)
       Matrix4::SetScale(@X, @S)
       Matrix4::SetTranslation(@X, @P)
       glBindVertexArray(*Me\cursor_vao)
@@ -833,7 +833,7 @@ Module Handle
         Protected mat.m4f32
         Matrix4::Inverse(@mat,*t\m)
      
-        Vector3::MulByMatrix4(@pos,*Me\transform\t\pos,@mat)
+        Vector3::MulByMatrix4(pos,*Me\transform\t\pos,@mat)
         Transform::SetTranslationFromXYZValues(*Me\target\localT,pos\x,pos\y,pos\z)
         Transform::UpdateMatrixFromSRT(*Me\target\localT)
       EndIf
@@ -885,7 +885,7 @@ Module Handle
       Matrix4::Inverse(@mat,*t\m)
       Protected scl.v3f32
    
-      Vector3::MulByMatrix4(@scl,*Me\transform\t\scl,@mat)
+      Vector3::MulByMatrix4(scl,*Me\transform\t\scl,@mat)
       Transform::SetScaleFromXYZValues(*Me\target\localT,scl\x,scl\y,scl\z)
       Transform::UpdateMatrixFromSRT(*Me\target\localT)
       *Me\target\dirty = #True
@@ -907,24 +907,24 @@ Module Handle
     
     Select *Me\active_axis
       Case #Handle_Active_X
-        Quaternion::SetFromAxisAngleValues(@q2,1,0,0,Radian((deltax+deltay)/2))
-        Quaternion::Multiply(@q3,*q,@q2)
+        Quaternion::SetFromAxisAngleValues(q2,1,0,0,Radian((deltax+deltay)/2))
+        Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\transform,@q3)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetRotationFromQuaternion(*Me\display,@q3)
         Transform::UpdateMatrixFromSRT(*Me\display)
        
       Case #Handle_Active_Y
-       Quaternion::SetFromAxisAngleValues(@q2,0,1,0,Radian((deltax+deltay)/2))
-        Quaternion::Multiply(@q3,*q,@q2)
+       Quaternion::SetFromAxisAngleValues(q2,0,1,0,Radian((deltax+deltay)/2))
+        Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\transform,@q3)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetRotationFromQuaternion(*Me\display,@q3)
         Transform::UpdateMatrixFromSRT(*Me\display)
         
       Case #Handle_Active_Z
-        Quaternion::SetFromAxisAngleValues(@q2,0,0,1,Radian((deltax+deltay)/2))
-        Quaternion::Multiply(@q3,*q,@q2)
+        Quaternion::SetFromAxisAngleValues(q2,0,0,1,Radian((deltax+deltay)/2))
+        Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\transform,@q3)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetRotationFromQuaternion(*Me\display,@q3)
@@ -1224,7 +1224,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 869
-; FirstLine = 816
+; CursorPosition = 954
+; FirstLine = 905
 ; Folding = ------
 ; EnableXP

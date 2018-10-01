@@ -190,7 +190,7 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_QUATERNION
         Protected *qVal4.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
         Protected q4.q4f32
-        Quaternion::SetIdentity(@q4)
+        Quaternion::SetIdentity(q4)
         CArray::Append(*qVal4,q4)
         *port\value = *qVal4
         
@@ -707,7 +707,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 178
-; FirstLine = 174
+; CursorPosition = 192
+; FirstLine = 188
 ; Folding = ----
 ; EnableXP

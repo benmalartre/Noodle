@@ -144,12 +144,12 @@ Module Animation
       
       ForEach *pose\Ts()
         SelectElement(*animation\current\Ts(),j)
-        Vector3::Scale(@scl,*pose\Ts()\t\scl,weight)
+        Vector3::Scale(scl,*pose\Ts()\t\scl,weight)
         Vector3::AddInPlace(*animation\current\Ts()\t\scl,@scl)
-        Quaternion::MultiplyByScalar(@rot,*pose\Ts()\t\rot,weight)
-        Quaternion::AddInPlace(*animation\current\Ts()\t\rot,@rot)
-        Vector3::Scale(@pos,*pose\Ts()\t\pos,weight)
-        Vector3::AddInPlace(*animation\current\Ts()\t\pos,@pos)
+        Quaternion::MultiplyByScalar(rot,*pose\Ts()\t\rot,weight)
+        Quaternion::AddInPlace(*animation\current\Ts()\t\rot,rot)
+        Vector3::Scale(pos,*pose\Ts()\t\pos,weight)
+        Vector3::AddInPlace(*animation\current\Ts()\t\pos,pos)
       
         j+1
       Next
@@ -417,7 +417,7 @@ Module Animation
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 251
-; FirstLine = 247
+; CursorPosition = 151
+; FirstLine = 145
 ; Folding = --
 ; EnableXP

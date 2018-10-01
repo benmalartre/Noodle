@@ -803,8 +803,8 @@ Module Light
     Protected *t.Transform::Transform_t = *Me\localT
     
     Vector3::Set(*t\t\scl,1,1,1)
-    Vector3::Sub(@dir,*Me\lookat,*Me\pos)
-    Quaternion::LookAt(*t\t\rot,@dir,*Me\up )
+    Vector3::Sub(dir,*Me\lookat,*Me\pos)
+    Quaternion::LookAt(*t\t\rot,@dir,*Me\up,#False)
     Vector3::SetFromOther(*t\t\pos,*Me\pos)
     
     Transform::SetMatrixFromSRT(*t\m,*t\t\scl,*t\t\rot,*t\t\pos)
@@ -834,16 +834,16 @@ Module Light
     Protected *t.Transform::Transform_t = *c\localT
     Protected delta.v3f32
     Protected dist.v3f32
-    Vector3::Sub(@dist,*c\pos,*c\lookat)
-    Protected d.f = Vector3::Length(@dist)
+    Vector3::Sub(dist,*c\pos,*c\lookat)
+    Protected d.f = Vector3::Length(dist)
     delta\x = -deltax/(width/2)*d
     delta\z = deltay/(height/2)*d
     
     Protected *q.q4f32 = *t\t\rot 
-    Vector3::MulByQuaternionInPlace(@delta,*q)
+    Vector3::MulByQuaternionInPlace(delta,*q)
   
-    Vector3::AddInPlace(*c\pos,@delta)
-    Vector3::AddInPlace(*c\lookat,@delta)
+    Vector3::AddInPlace(*c\pos,delta)
+    Vector3::AddInPlace(*c\lookat,delta)
     
     ;Update Light Transform
     LookAt(*c)
@@ -860,7 +860,7 @@ Module Light
     delta = deltay/height
    
     Protected interpolated.v3f32
-    Vector3::LinearInterpolate(@interpolated,*c\pos,*c\lookat,delta)
+    Vector3::LinearInterpolate(interpolated,*c\pos,*c\lookat,delta)
     Vector3::Set(*c\pos,interpolated\x,interpolated\y,interpolated\z)
     
     ;Update Light Transform
@@ -874,8 +874,8 @@ Module Light
   Procedure Orbit(*c.Light_t,deltax.f,deltay.f,width.f,height.f)
 
     Protected r.v3f32,axis.v3f32
-    Vector3::Sub(@r,*c\pos,*c\lookat)
-    Protected d.f = Vector3::Length(@r)
+    Vector3::Sub(r,*c\pos,*c\lookat)
+    Protected d.f = Vector3::Length(r)
     Vector3::Set(r,0,0,d)
     Protected q.q4f32
     
@@ -883,14 +883,14 @@ Module Light
     *c\azimuth - deltax
   
     Vector3::Set(axis,1,0,0)
-    Quaternion::SetFromAxisAngle(@q,@axis,*c\polar*#F32_DEG2RAD)
-    Vector3::MulByQuaternionInPlace(@r,@q)
+    Quaternion::SetFromAxisAngle(q,axis,*c\polar*#F32_DEG2RAD)
+    Vector3::MulByQuaternionInPlace(r,q)
     
     Vector3::Set(axis,0,1,0)
-    Quaternion::SetFromAxisAngle(@q,@axis,*c\azimuth*#F32_DEG2RAD)
-    Vector3::MulByQuaternionInPlace(@r,@q)
+    Quaternion::SetFromAxisAngle(q,axis,*c\azimuth*#F32_DEG2RAD)
+    Vector3::MulByQuaternionInPlace(r,q)
     
-    Vector3::AddInPlace(@r,*c\lookat)
+    Vector3::AddInPlace(r,*c\lookat)
     Vector3::Set(*c\pos,r\x,r\y,r\z)
     
     ;Flip Up Vector if necessary
@@ -910,8 +910,8 @@ Module Light
   ;--------------------------------------------------------------------
   Procedure GetSphericalCoordinates(*c.Light_t)
     Protected r.v3f32
-    Vector3::Sub(@r,*c\pos,*c\lookat)
-    Protected d.f = Vector3::Length(@r)
+    Vector3::Sub(r,*c\pos,*c\lookat)
+    Protected d.f = Vector3::Length(r)
     *c\polar = -ACos(r\y/d)*#F32_RAD2DEG
     *c\azimuth = ATan(r\x/r\z)*#F32_RAD2DEG
   EndProcedure
@@ -1069,7 +1069,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 888
-; FirstLine = 188
-; Folding = d7I--
+; CursorPosition = 889
+; FirstLine = 227
+; Folding = d7e--
 ; EnableXP

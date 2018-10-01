@@ -45,12 +45,12 @@ Module Location
     
     ; Position : P= wA + uB + vC
     Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(@x,*a, *Me\uvw\x)
-    Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*b, *Me\uvw\y)
-    Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*c, *Me\uvw\z)
-    Vector3::AddInPlace(*Me\p,@x)
+    Vector3::Scale(x,*a, *Me\uvw\x)
+    Vector3::AddInPlace(*Me\p,x)
+    Vector3::Scale(x,*b, *Me\uvw\y)
+    Vector3::AddInPlace(*Me\p,x)
+    Vector3::Scale(x,*c, *Me\uvw\z)
+    Vector3::AddInPlace(*Me\p,x)
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
     ProcedureReturn *Me\p
    
@@ -72,13 +72,13 @@ Module Location
     *c = CArray::GetValue(*geom\a_positions,c)
     
     
-    Vector3::Sub(@ab,*b,*a)
-    Vector3::Sub(@ac,*c,*a)
+    Vector3::Sub(ab,*b,*a)
+    Vector3::Sub(ac,*c,*a)
     
-    Vector3::NormalizeInPlace(@ab)
-    Vector3::NormalizeInPlace(@ac)
+    Vector3::NormalizeInPlace(ab)
+    Vector3::NormalizeInPlace(ac)
     
-    Vector3::Cross(*Me\n,@ab,@ac)
+    Vector3::Cross(*Me\n,ab,ac)
   ;   Vector3::MulByMatrix4InPlace(*Me\n,*Me\t\GetMatrix())
     Vector3::NormalizeInPlace(*Me\n)
     ;   Vector3::MulByQuaternionInPlace(*Me\n,*Me\t\GetQuaternion())
@@ -103,13 +103,13 @@ Module Location
     
   ;   Normal :
     Vector3::Set(*Me\n,0,0,0)
-    Vector3::Scale(@x,*a,*Me\uvw\x)
-    Vector3::AddInPlace(*Me\n,@x)
-    Vector3::Scale(@x,*b,*Me\uvw\y)
-    Vector3::AddInPlace(*Me\n,@x)
-    Vector3::Scale(@x,*c,*Me\uvw\z)
-    Vector3::AddInPlace(*Me\n,@x)
-    Vector3::MulByMatrix4InPlace(*Me\n,*Me\t)
+    Vector3::Scale(x,*a,*Me\uvw\x)
+    Vector3::AddInPlace(*Me\n,x)
+    Vector3::Scale(x,*b,*Me\uvw\y)
+    Vector3::AddInPlace(*Me\n,x)
+    Vector3::Scale(x,*c,*Me\uvw\z)
+    Vector3::AddInPlace(*Me\n,x)
+;     Vector3::MulByMatrix4InPlace(*Me\n,*Me\t)
     
     ProcedureReturn *Me\n
   EndProcedure
@@ -128,12 +128,12 @@ Module Location
     
     ; Color : P= wA + uB + vC
     Vector3::Set(*Me\c,0,0,0)
-    Vector3::Scale(@x,*a,*Me\uvw\z)
-    Vector3::AddInPlace(*Me\c,@x)
-    Vector3::Scale(@x,*b,*Me\uvw\x)
-    Vector3::AddInPlace(*Me\c,@x)
-    Vector3::Scale(@x,*c,*Me\uvw\y)
-    Vector3::AddInPlace(*Me\c,@x)
+    Vector3::Scale(x,*a,*Me\uvw\z)
+    Vector3::AddInPlace(*Me\c,x)
+    Vector3::Scale(x,*b,*Me\uvw\x)
+    Vector3::AddInPlace(*Me\c,x)
+    Vector3::Scale(x,*c,*Me\uvw\y)
+    Vector3::AddInPlace(*Me\c,x)
   
   ;   ; Color
   ;   Color4_Set(*Me\n,0,0,0,0)
@@ -168,17 +168,17 @@ Module Location
     
     ; Position
     Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(@x,*a,*Me\uvw\x)
-    Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*b,*Me\uvw\y)
-    Vector3::AddInPlace(*Me\p,@x)
-    Vector3::Scale(@x,*c,*Me\uvw\z)
-    Vector3::AddInPlace(*Me\p,@x)
+    Vector3::Scale(x,*a,*Me\uvw\x)
+    Vector3::AddInPlace(*Me\p,x)
+    Vector3::Scale(x,*b,*Me\uvw\y)
+    Vector3::AddInPlace(*Me\p,x)
+    Vector3::Scale(x,*c,*Me\uvw\z)
+    Vector3::AddInPlace(*Me\p,x)
     
     ; Normal
-    Vector3::Sub(@ab,*b,*a)
-    Vector3::Sub(@ac,*c,*a)
-    Vector3::Cross(*Me\n,@ab,@ac)
+    Vector3::Sub(ab,*b,*a)
+    Vector3::Sub(ac,*c,*a)
+    Vector3::Cross(*Me\n,ab,ac)
     Vector3::NormalizeInPlace(*Me\n)
     
   EndProcedure
@@ -207,18 +207,18 @@ Module Location
     Protected edge0.v3f32
     Protected edge1.v3f32
     
-    Vector3::Sub(@edge0, *B, *A)
-    Vector3::Sub(@edge1, *C, *A)
+    Vector3::Sub(edge0, *B, *A)
+    Vector3::Sub(edge1, *C, *A)
     
     Protected v0.v3f32
-    Vector3::Sub(@v0, *A, *P)
+    Vector3::Sub(v0, *A, *P)
     
     Define.f a,b,c,d,e
-    a = Vector3::Dot(@edge0, @edge0)
-    b = Vector3::Dot(@edge0, @edge1)
-    c = Vector3::Dot(@edge1, @edge1)
-    d = Vector3::Dot(@edge0, @v0)
-    e = Vector3::Dot(@edge1, @v0)
+    a = Vector3::Dot(edge0, edge0)
+    b = Vector3::Dot(edge0, edge1)
+    c = Vector3::Dot(edge1, edge1)
+    d = Vector3::Dot(edge0, v0)
+    e = Vector3::Dot(edge1, v0)
     
     Define.f det, s, t
     det = a*c - b*b
@@ -288,17 +288,17 @@ Module Location
   EndIf
 
   Protected closest.v3f32, delta.v3f32
-  Vector3::SetFromOther(@closest, *A)
-  Vector3::ScaleInPlace(@edge0, s)
-  Vector3::ScaleInPlace(@edge1, t)
-  Vector3::AddInPlace(@closest, @edge0)
-  Vector3::AddInPlace(@closest, @edge1)
+  Vector3::SetFromOther(closest, *A)
+  Vector3::ScaleInPlace(edge0, s)
+  Vector3::ScaleInPlace(edge1, t)
+  Vector3::AddInPlace(closest, edge0)
+  Vector3::AddInPlace(closest, edge1)
   
-  Vector3::Sub(@delta, *p, @closest)
-  d.f = Vector3::Length(@delta)
+  Vector3::Sub(delta, *p, closest)
+  d.f = Vector3::Length(delta)
   
   If d < maxDistance And d < PeekF(*distance)
-    Vector3::SetFromOther(*Me\p, @closest)
+    Vector3::SetFromOther(*Me\p, closest)
     Vector3::Set(*Me\uvw, 1.0- s - t, s, t)
     PokeF(*distance, d)
     ProcedureReturn #True
@@ -339,7 +339,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 205
-; FirstLine = 200
+; CursorPosition = 301
+; FirstLine = 286
 ; Folding = ---
 ; EnableXP

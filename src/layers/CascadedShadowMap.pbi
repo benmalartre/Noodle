@@ -171,15 +171,15 @@ Module LayerCascadedShadowMap
       
       Dim frustrumCorners.v4f32(#NUM_FRUSTUM_CORNERS)
       ; Near Face
-      Vector4::Set(@frustrumCorners(0), xn, yn, *layer\cascadeEnds(i), 1.0)
-      Vector4::Set(@frustrumCorners(1), -xn, yn, *layer\cascadeEnds(i), 1.0)
-      Vector4::Set(@frustrumCorners(2), xn, -yn, *layer\cascadeEnds(i), 1.0)
-      Vector4::Set(@frustrumCorners(3), -xn, -yn, *layer\cascadeEnds(i), 1.0)
+      Vector4::Set(frustrumCorners(0), xn, yn, *layer\cascadeEnds(i), 1.0)
+      Vector4::Set(frustrumCorners(1), -xn, yn, *layer\cascadeEnds(i), 1.0)
+      Vector4::Set(frustrumCorners(2), xn, -yn, *layer\cascadeEnds(i), 1.0)
+      Vector4::Set(frustrumCorners(3), -xn, -yn, *layer\cascadeEnds(i), 1.0)
       ; Far Face
-      Vector4::Set(@frustrumCorners(4), xf, yf, *layer\cascadeEnds(i+1), 1.0)
-      Vector4::Set(@frustrumCorners(5), -xf, yf, *layer\cascadeEnds(i+1), 1.0)
-      Vector4::Set(@frustrumCorners(6), xf, -yf, *layer\cascadeEnds(i+1), 1.0)
-      Vector4::Set(@frustrumCorners(7), -xf, -yf, *layer\cascadeEnds(i+1), 1.0)
+      Vector4::Set(frustrumCorners(4), xf, yf, *layer\cascadeEnds(i+1), 1.0)
+      Vector4::Set(frustrumCorners(5), -xf, yf, *layer\cascadeEnds(i+1), 1.0)
+      Vector4::Set(frustrumCorners(6), xf, -yf, *layer\cascadeEnds(i+1), 1.0)
+      Vector4::Set(frustrumCorners(7), -xf, -yf, *layer\cascadeEnds(i+1), 1.0)
       
       ;Calculate the orthographic projections for the cascades. 
       ;The frustumCorners Array is populated with the eight corners of each cascade in view space.
@@ -198,10 +198,10 @@ Module LayerCascadedShadowMap
       
       For j=0 To #NUM_FRUSTUM_CORNERS-1
         ;Transform the frustum coordinate from view To world space
-        Vector4::MulByMatrix4(@vW,frustrumCorners(j), @invview)
+        Vector4::MulByMatrix4(vW,frustrumCorners(j), invview)
 
         ;Transform the frustum coordinate from world To light space
-        Vector4::MulByMatrix4(@frustumCornersL(j), @vW, @lightM)
+        Vector4::MulByMatrix4(frustumCornersL(j), vW, lightM)
         
         minX = Math::Min(minX, frustumCornersL(j)\x)
         maxX = Math::Max(maxX, frustumCornersL(j)\x)
@@ -236,8 +236,8 @@ Module LayerCascadedShadowMap
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected vView.Math::v4f32, vClip.Math::v4f32
     For i=0 To 2
-      Vector4::Set(@vView,0.0,0.0,-*layer\cascadeEnds(i+1),1.0)
-      Vector4::MulByMatrix4(@vClip,@vView,*camera\projection,#False)
+      Vector4::Set(vView,0.0,0.0,-*layer\cascadeEnds(i+1),1.0)
+      Vector4::MulByMatrix4(vClip,vView,*camera\projection)
       glUniform1f(glGetUniformLocation(shader,"cascades_end[" + Str(i) + "]"), vClip\z)
     Next
   EndProcedure
@@ -353,8 +353,8 @@ Module LayerCascadedShadowMap
   
   Class::DEF(LayerCascadedShadowMap)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 148
-; FirstLine = 137
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 239
+; FirstLine = 235
 ; Folding = ---
 ; EnableXP

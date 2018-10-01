@@ -445,9 +445,9 @@ Module Geometry
   Procedure ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
     Protected e1.v3f32
     Protected e2.v3f32
-    Vector3::Sub(@e1,*b,*a)
-    Vector3::Sub(@e2,*c,*a)
-    Vector3::Cross(*Me\normal, @e1, @e2)
+    Vector3::Sub(e1,*b,*a)
+    Vector3::Sub(e2,*c,*a)
+    Vector3::Cross(*Me\normal, e1, e2)
     Vector3::NormalizeInPlace(*Me\normal)
     *Me\distance = Vector3::Dot(*Me\normal, *a)
   EndProcedure
@@ -459,7 +459,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 414
+; CursorPosition = 449
 ; FirstLine = 406
 ; Folding = -----
 ; EnableXP

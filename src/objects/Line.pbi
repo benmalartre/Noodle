@@ -47,9 +47,9 @@ Module Line
   ; Remember dir has been normalized so t represents a unit distance.
   Procedure GetPoint( *line.Geometry::Line_t, t.f , *io.v3f32)
     Protected direction.v3f32
-    Vector3::Sub(@direction, *line\p2, *line\p1)
-    Vector3::NormalizeInPlace(@direction)
-    Vector3::Scale(*io, @direction, t)
+    Vector3::Sub(direction, *line\p2, *line\p1)
+    Vector3::NormalizeInPlace(direction)
+    Vector3::Scale(*io, direction, t)
     Vector3::AddInPlace(*io, *line\p1)
   EndProcedure
     
@@ -59,11 +59,11 @@ Module Line
   Procedure.b FindClosestPoint(*line.Geometry::Line_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
     ; Compute the vector from the start point To the given point.
     Protected v.v3f32, d.v3f32
-    Vector3::Sub(@v, *p, *line\p1)
-    Vector3::Sub(@d, *line\p2, *line\p1)
-    Vector3::NormalizeInPlace(@d)
+    Vector3::Sub(v, *p, *line\p1)
+    Vector3::Sub(d, *line\p2, *line\p1)
+    Vector3::NormalizeInPlace(d)
     ; Find the length of the projection of this vector onto the line.
-    Protected lt.f = Vector3::Dot(@v, @d)
+    Protected lt.f = Vector3::Dot(v, d)
     
     If *t : PokeF(*t, lt) : EndIf
     If *io : GetPoint(*line, lt, *io) : EndIf
@@ -83,12 +83,12 @@ Module Line
     ;   d1 = line 1's direction
     ;   p2 = line 2's position
     ;   d2 = line 2's direction
-    Protected *p1 = *line1\p1 
+    Protected *p1.v3f32 = *line1\p1 
     Protected d1.v3f32
-    Vector3::Sub(@d1, *line1\p2, *line1\p2)
-    Protected *p2 = *line2\p1
+    Vector3::Sub(d1, *line1\p2, *line1\p2)
+    Protected *p2.v3f32 = *line2\p1
     Protected d2.v3f32
-    Vector3::Sub(@d2, *line2\p2, *line2\p2)
+    Vector3::Sub(d2, *line2\p2, *line2\p2)
     
     ; We want To find points closest1 And closest2 on each line.
     ; Their parametric definitions are:
@@ -115,12 +115,12 @@ Module Line
     ;   d = d2.d2
     ;   e = d2.d1 (== a, If you're paying attention)
     ;   f = d2.p1 - d2.p2
-    Protected a.f = Vector3::Dot(@d1, @d2)
-    Protected b.f  = Vector3::Dot(@d1, @d1)
-    Protected c.f  = Vector3::Dot(@d1, *p1) - Vector3::Dot(@d1, *p2)
-    Protected d.f  = Vector3::Dot(@d2, @d2)
+    Protected a.f = Vector3::Dot(d1, d2)
+    Protected b.f  = Vector3::Dot(d1, d1)
+    Protected c.f  = Vector3::Dot(d1, *p1) - Vector3::Dot(d1, *p2)
+    Protected d.f  = Vector3::Dot(d2, d2)
     Protected e.f  = a;
-    Protected f.f  = Vector3::Dot(@d2, *p1) - Vector3::Dot(@d2, *p2)
+    Protected f.f  = Vector3::Dot(d2, *p1) - Vector3::Dot(d2, *p2)
     
     ; And we End up With:
     ;  t2 * a - t1 * b = c
@@ -166,8 +166,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 84
+; CursorPosition = 85
+; FirstLine = 83
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

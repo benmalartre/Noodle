@@ -152,19 +152,24 @@ Module SubtractNode
         *vIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*vOut,CArray::GetCount(*vIn))
         CArray::Copy(*vOut,*vIn)
+        Define *p1.v3f32, *p2.v3f32
         While NextElement(*node\inputs())
           *input = *node\inputs()
           If *input\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
           *vIn = NodePort::AcquireInputData(*input)
           If *vIn
             If CArray::GetCount(*vIn) = 1
+              *p1 = CArray::GetValue(*vIn,0)
               For i=0 To CArray::GetCount(*vOut)-1
-                Vector3::Sub(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,0))
+                *p2 = CArray::GetValue(*vOut,i)
+                Vector3::Sub(v,*p2,*p1)
                 CArray::SetValue(*vOut,i,@v)
               Next i
             Else
               For i=0 To CArray::GetCount(*vIn)-1
-                Vector3::Sub(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,i))
+                *p1 = CArray::GetValue(*vIn,i)
+                *p2 = CArray::GetValue(*vOut,i)
+                Vector3::Sub(v,*p2, *p1)
                 CArray::SetValue(*vOut,i,@v)
                 If i=CArray::GetCount(*vOut)-1 : Break : EndIf
                 
@@ -220,9 +225,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 53
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 171
+; FirstLine = 167
 ; Folding = --
 ; EnableThread
 ; EnableXP

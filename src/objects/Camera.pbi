@@ -191,9 +191,9 @@ Module Camera
     Protected t.Transform::Transform_t
     
     Vector3::Set(scl,1,1,1)
-    Vector3::Sub(@dir,*Me\lookat,*Me\pos)
+    Vector3::Sub(dir,*Me\lookat,*Me\pos)
   
-    Quaternion::LookAt(t\t\rot,@dir,*Me\up )
+    Quaternion::LookAt(t\t\rot,@dir,*Me\up, #False)
   
     Vector3::SetFromOther(t\t\pos,*Me\pos)
     
@@ -234,19 +234,19 @@ Module Camera
     Protected delta.v3f32
     Protected dist.v3f32
   
-    Vector3::Sub(@dist,*Me\pos,*Me\lookat)
-    Protected d.f = Vector3::Length(@dist)
+    Vector3::Sub(dist,*Me\pos,*Me\lookat)
+    Protected d.f = Vector3::Length(dist)
     delta\x = -deltax/(width/2)*d
     delta\y = deltay/(height/2)*d
     delta\z = 0
     
     Protected q.q4f32
     Matrix4::GetQuaternion(*Me\view,@q)
-    Vector3::MulByQuaternionInPlace(@delta,@q)
+    Vector3::MulByQuaternionInPlace(delta,q)
 
     
-    Vector3::AddInPlace(*Me\pos,@delta)
-    Vector3::AddInPlace(*Me\lookat,@delta)
+    Vector3::AddInPlace(*Me\pos,delta)
+    Vector3::AddInPlace(*Me\lookat,delta)
     
     ;Update Camera Transform
     LookAt(*Me)
@@ -261,7 +261,7 @@ Module Camera
     delta = (deltay/height + deltax/width) * 2
   
     Protected interpolated.v3f32
-    Vector3::LinearInterpolate(@interpolated,*Me\pos,*Me\lookat,delta)
+    Vector3::LinearInterpolate(interpolated,*Me\pos,*Me\lookat,delta)
 ;     Protected diff.v3f32
 ;     Vector3::Sub(@diff, @interpolate, *Me\pos)
     Vector3::Set(*Me\pos,interpolated\x,interpolated\y,interpolated\z)
@@ -278,8 +278,8 @@ Module Camera
   Procedure Orbit(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
  
     Protected r.v3f32,axis.v3f32
-    Vector3::Sub(@r,*Me\pos,*Me\lookat)
-    Protected d.f = Vector3::Length(@r)
+    Vector3::Sub(r,*Me\pos,*Me\lookat)
+    Protected d.f = Vector3::Length(r)
     Vector3::Set(r,0,0,d)
     Protected q.q4f32
     
@@ -287,14 +287,14 @@ Module Camera
     *Me\azimuth - deltax
   
     Vector3::Set(axis,1,0,0)
-    Quaternion::SetFromAxisAngle(@q,@axis,*Me\polar*#F32_DEG2RAD)
-    Vector3::MulByQuaternionInPlace(@r,@q)
+    Quaternion::SetFromAxisAngle(q,axis,*Me\polar*#F32_DEG2RAD)
+    Vector3::MulByQuaternionInPlace(r,q)
     
     Vector3::Set(axis,0,1,0)
-    Quaternion::SetFromAxisAngle(@q,@axis,*Me\azimuth*#F32_DEG2RAD)
-    Vector3::MulByQuaternionInPlace(@r,@q)
+    Quaternion::SetFromAxisAngle(q,axis,*Me\azimuth*#F32_DEG2RAD)
+    Vector3::MulByQuaternionInPlace(r,q)
     
-    Vector3::AddInPlace(@r,*Me\lookat)
+    Vector3::AddInPlace(r,*Me\lookat)
     Vector3::Set(*Me\pos,r\x,r\y,r\z)
     
     ;Flip Up Vector if necessary
@@ -314,7 +314,7 @@ Module Camera
   ;----------------------------------------------------------------------------
   Procedure GetSphericalCoordinates(*Me.Camera_t)
     Protected r.v3f32
-    Vector3::Sub(@r,*Me\pos,*Me\lookat)
+    Vector3::Sub(r,*Me\pos,*Me\lookat)
     Protected d.f = Vector3::Length(@r)
     *Me\polar = -ACos(r\y/d)*#F32_RAD2DEG
     *Me\azimuth = ATan(r\x/r\z)*#F32_RAD2DEG
@@ -386,8 +386,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 371
-; FirstLine = 318
+; CursorPosition = 293
+; FirstLine = 285
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

@@ -97,7 +97,6 @@ Module MultiplyNode
         ; Float
         ;....................................................
       Case Attribute::#ATTR_TYPE_FLOAT
-        Debug "Multiply FLOAT Mode..."
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
   
@@ -139,15 +138,20 @@ Module MultiplyNode
         *input = *node\inputs()
   
         *vIn = NodePort::AcquireInputData(*input)
+        Define *p1.v3f32, *p2.v3f32
         If *vIn
           If CArray::GetCount(*vIn) = CArray::GetCount(*vOut)
             For i=0 To CArray::GetCount(*vIn)-1
-              Vector3::Multiply(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,i))
+              *p1 = CArray::GetValue(*vIn,i)
+              *p2 = CArray::GetValue(*vOut,i)
+              Vector3::Multiply(v,*p2, *p1)
               CArray::SetValue(*vOut,i,v)
             Next i
           Else
+            *p1 = CArray::GetValue(*vIn,0)
             For i=0 To CArray::GetCount(*vIn)-1
-              Vector3::Multiply(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,0))
+              *p2 = CArray::GetValue(*vOut,i)
+              Vector3::Multiply(v,*p2, *p1)
               CArray::SetValue(*vOut,i,v)
             Next i
           EndIf
@@ -203,8 +207,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 49
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 147
+; FirstLine = 155
 ; Folding = --
 ; EnableXP

@@ -723,8 +723,10 @@ Module Drawer
     
     ; Transform vertex positions
     Protected i
+    Protected *p.Math::v3f32
     For i=0 To 7
-      Vector3::MulByMatrix4InPlace(CArray::GetValue(*box\positions, i),*box\m)
+      *p = CArray::GetValue(*box\positions, i)
+      Vector3::MulByMatrix4InPlace(*p,*box\m)
     Next
     AddElement(*Me\items())
     *Me\items() = *box
@@ -747,8 +749,10 @@ Module Drawer
     
     ; Transform vertex positions
     Protected i
+    Protected *p.Math::v3f32
     For i=0 To Shape::#SPHERE_NUM_VERTICES-1
-      Vector3::MulByMatrix4InPlace(CArray::GetValue(*sphere\positions, i),*sphere\m)
+      *p = CArray::GetValue(*sphere\positions, i)
+      Vector3::MulByMatrix4InPlace(*p,*sphere\m)
     Next
     AddElement(*Me\items())
     *Me\items() = *sphere
@@ -812,7 +816,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 717
-; FirstLine = 708
+; CursorPosition = 758
+; FirstLine = 748
 ; Folding = --------
 ; EnableXP

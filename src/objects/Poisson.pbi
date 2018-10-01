@@ -80,7 +80,7 @@ Module Poisson
     *Me\radius = radius
     Box::SetFromOther(*Me\box, *box)
     Protected size.v3f32
-    Vector3::Scale(@size, *box\extend, 2.0)
+    Vector3::Scale(size, *box\extend, 2.0)
     Protected cubeRoot.f = *Me\radius / Sqr(3)
     
     *Me\resolution[0] = Max(1, Min(Round(size\x / cubeRoot, #PB_Round_Down), 128))
@@ -208,19 +208,21 @@ Module Poisson
   Procedure.i Sample(*Me.Poisson_t)
     ; Initial Sample Point at BBox origin
     Protected p.v3f32, rp.v3f32
-    Vector3::SetFromOther(@p, *Me\box\origin)
+    Vector3::SetFromOther(p, *Me\box\origin)
     CArray::Append(*Me\positions, @p)
     AddElement(*Me\active())
     *Me\active() = 0
     Protected numActives.i = ListSize(*Me\active())
     Protected check.b
     Protected i, index = 0
+    Protected *p.v3f32
     While numActives
       check = #False
       For i=0 To #MAXIMUM_SAMPLES - 1
         LastElement(*Me\active())
         RandomPoint(*Me, @rp)
-        Vector3::AddInPlace(@rp, CArray::GetValue(*Me\positions, *Me\active()))
+        *p = CArray::GetValue(*Me\positions, *Me\active())
+        Vector3::AddInPlace(rp, *p)
         If InsertPoint(*Me, index, @rp)
           CArray::Append(*Me\positions, @rp)
           InsertElement(*Me\active())
@@ -246,7 +248,7 @@ Module Poisson
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 143
+; CursorPosition = 217
+; FirstLine = 195
 ; Folding = ---
 ; EnableXP

@@ -215,23 +215,31 @@ Module CurveGeometry
 	  Protected i, j, base=0
 	  Protected numVertices.i
 	  Protected nrm.v3f32
-	  Protected upv.v3f32
+	  Protected upv.v3f32, t1.v3f32, t2.v3f32
+	  Protected *p1.v3f32, *p2.v3f32, *p3.v3f32
 	  Vector3::Set(upv, 0,0,1)
 	  For i=0 To CArray::GetCount(*Me\a_numVertices)
 	    numVertices = CArray::GetValueL(*Me\a_numVertices, i)
 	    For j=0 To numVertices -1
 	      If j = 0
-          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, base+1), CArray::GetValue(*me\a_positions, base))
+	        *p1 = CArray::GetValue(*me\a_positions, base)
+	        *p2 = CArray::GetValue(*me\a_positions, base+1)
+          Vector3::Sub(t1, *p2, *p1)
         ElseIf j = numVertices - 2 Or *Me\nbpoints = j + base + 1
-          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, base + j), CArray::GetValue(*me\a_positions, base+j-1))
+          *p1 = CArray::GetValue(*me\a_positions, base+j-1)
+          *p2 = CArray::GetValue(*me\a_positions, base + j)
+          Vector3::Sub(t1, *p2, *p1)
         Else
-          Vector3::Sub(@t1, CArray::GetValue(*me\a_positions, j+base), CArray::GetValue(*me\a_positions, j+base-1))
-          Vector3::Sub(@t2, CArray::GetValue(*me\a_positions, j+base+1), CArray::GetValue(*me\a_positions, j+base))
-          Vector3::AddInPlace(@t1, @t2)
-          Vector3::ScaleInPlace(@t1, 0.5)
+          *p1 = CArray::GetValue(*me\a_positions, j+base)
+          *p2 = CArray::GetValue(*me\a_positions, j+base-1)
+          *p3 = CArray::GetValue(*me\a_positions, j+base+1)
+          Vector3::Sub(t1, *p1, *p2)
+          Vector3::Sub(t2, *p3, *p1)
+          Vector3::AddInPlace(t1, t2)
+          Vector3::ScaleInPlace(t1, 0.5)
         EndIf
-        Vector3::Cross(@norm, @t1, @upv)
-        Vector3::NormalizeInPlace(@norm)
+        Vector3::Cross(nrm, t1, upv)
+        Vector3::NormalizeInPlace(nrm)
         CArray::SetValue(*Me\a_normals, j+base, @norm)
       Next
       base + numVertices
@@ -271,18 +279,18 @@ Module CurveGeometry
   	Protected t2.v3f32
   	Protected t3.v3f32
   	If *A
-  	  Vector3::Sub(@t2, *C, *A)
+  	  Vector3::Sub(t2, *C, *A)
   	Else
-  	  Vector3::Sub(@t2, *C, *B)
+  	  Vector3::Sub(t2, *C, *B)
   	EndIf
-  	Vector3::ScaleInPlace(@t2, 0.5)
+  	Vector3::ScaleInPlace(t2, 0.5)
   	
   	If *D
-  	  Vector3::Sub(@t3, *D, *B)
+  	  Vector3::Sub(t3, *D, *B)
   	Else
-  	  Vector3::Sub(@t3, *C, *B)
+  	  Vector3::Sub(t3, *C, *B)
   	EndIf
-  	Vector3::ScaleInPlace(@t3, 0.5)
+  	Vector3::ScaleInPlace(t3, 0.5)
   	
   	; Compute point at u
   	Protected x.f = weights\x * *B\x + weights\y * *C\x + weights\z * t2\x + weights\w * t3\x
@@ -545,7 +553,7 @@ Module CurveGeometry
     Vector3::Set(c, 1,0,0)
     Vector3::Set(n, 0,0,1)
     For i=0 To *Me\nbpoints-1
-      Vector3::AddInPlace(@p, @offset)
+      Vector3::AddInPlace(p, offset)
       p\x + (1 - 2 *Random_0_1()) * 10
       p\y + (1 - 2 *Random_0_1()) * 10
       p\z + (1 - 2 *Random_0_1()) * 10
@@ -587,7 +595,7 @@ Module CurveGeometry
     For i=0 To N-1
       Math::UniformPointOnSphere(@offset)
       For j=0 To numCVs -1
-        Vector3::AddInPlace(@p, @offset)
+        Vector3::AddInPlace(p, offset)
         p\x + (1 - 2 * Random_0_1())
         p\y + (1 - 2 * Random_0_1())
         p\z + (1 - 2 * Random_0_1())
@@ -664,7 +672,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 602
-; FirstLine = 549
+; CursorPosition = 597
+; FirstLine = 593
 ; Folding = ------
 ; EnableXP

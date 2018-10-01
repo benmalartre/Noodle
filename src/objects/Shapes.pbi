@@ -12934,26 +12934,26 @@ Module Shape
       *b = CArray::GetValue(*Me\positions,b)
       *c = CArray::GetValue(*Me\positions,c)
       
-      Vector3::Sub(@ab,*b,*a)
-      Vector3::Sub(@ac,*c,*a)
+      Vector3::Sub(ab,*b,*a)
+      Vector3::Sub(ac,*c,*a)
       
-      Vector3::NormalizeInPlace(@ab)
-      Vector3::NormalizeInPlace(@ac)
+      Vector3::NormalizeInPlace(ab)
+      Vector3::NormalizeInPlace(ac)
   
-      Vector3::Cross(@norm,@ac,@ab)
-      Vector3::NormalizeInPlace(@norm)
+      Vector3::Cross(norm,ac,ab)
+      Vector3::NormalizeInPlace(norm)
 
       
       *n1 = CArray::GetValue(*Me\normals,a)
-      Vector3::Add(@accum,*n1,@norm)
+      Vector3::Add(accum,*n1,norm)
       CArray::SetValue(*Me\normals,a,@accum)
       
       *n1 = CArray::GetValue(*Me\normals,b)
-      Vector3::Add(@accum,*n1,@norm)
+      Vector3::Add(accum,*n1,norm)
       CArray::SetValue(*Me\normals,b,@accum)
       
       *n1 = CArray::GetValue(*Me\normals,c)
-      Vector3::Add(@accum,*n1,@norm)
+      Vector3::Add(accum,*n1,norm)
       CArray::SetValue(*Me\normals,c,@accum)
       
       cnt+3
@@ -13366,7 +13366,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 12992
-; FirstLine = 12988
+; CursorPosition = 12955
+; FirstLine = 12968
 ; Folding = ---
 ; EnableXP

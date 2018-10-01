@@ -31,10 +31,10 @@ Module Ray
   Procedure Transform(*ray.Geometry::Ray_t, *m.m4f32)
     Protected origin.v4f32
     Protected direction.v4f32
-    Vector4::Set(@origin, *ray\origin\x, *ray\origin\y, *ray\origin\z, 1)
-    Vector4::MulByMatrix4(*ray\origin, @origin, *m)
-    Vector4::Set(@direction, *ray\direction\x, *ray\direction\y, *ray\direction\z, 0)
-    Vector4::MulByMatrix4(*ray\direction, @direction, *m)
+    Vector4::Set(origin, *ray\origin\x, *ray\origin\y, *ray\origin\z, 1)
+    Vector4::MulByMatrix4(*ray\origin, origin, *m)
+    Vector4::Set(direction, *ray\direction\x, *ray\direction\y, *ray\direction\z, 0)
+    Vector4::MulByMatrix4(*ray\direction, direction, *m)
   EndProcedure
   
   ;---------------------------------------------
@@ -96,12 +96,12 @@ Module Ray
     
     ; get a point on the plane
     Protected planePoint.v3f32
-    Vector3::SCale(@planePoint, *plane\normal,  *plane\distance)
+    Vector3::Scale(planePoint, *plane\normal,  *plane\distance)
     
     ; compute the parametric distance to the plane
     ; reject intersection ouside the ray bounds
-    Vector3::SubInPlace(@planePoint, *ray\origin)
-    Protected t.f = Vector3::Dot(@planePoint, *plane\normal) / d
+    Vector3::SubInPlace(planePoint, *ray\origin)
+    Protected t.f = Vector3::Dot(planePoint, *plane\normal) / d
     If t < 0 : ProcedureReturn #False : EndIf
     If *distance : PokeF(*distance, t) : EndIf
     If *frontFacing : PokeB(*frontFacing, Bool(d < 0)) : EndIf
@@ -139,9 +139,9 @@ Module Ray
   ;---------------------------------------------------------
   Procedure.b SphereIntersection(*ray.Geometry::Ray_t, *sphere.Geometry::Sphere_t, *enterDistance=#Null, *exitDistance=#Null)
     Protected Q.v3f32
-    Vector3::Sub(@Q,*sphere\center,*ray\origin)
-    Protected c.f = Vector3::Length(@Q)
-    Protected v.f = Vector3::Dot(@Q,*ray\direction)
+    Vector3::Sub(Q,*sphere\center,*ray\origin)
+    Protected c.f = Vector3::Length(Q)
+    Protected v.f = Vector3::Dot(Q,*ray\direction)
     Protected d.d = *sphere\radius * *sphere\radius - (c*c - v*v)
     
     ;if there was no intersection return -1
@@ -178,7 +178,6 @@ Module Ray
       If t<0 : ProcedureReturn #False : EndIf
       If *enterDistance : PokeF(*enterDistance, t) : EndIf
       If *exitDistance : PokeF(*exitDistance, t) : EndIf
-      Debug "DISCRMANAT TOOM SAMAAL"
       ProcedureReturn #True
     EndIf
     
@@ -214,12 +213,12 @@ Module Ray
     Protected unitAxis.v3f32
     Protected delta.v3f32
     Protected u.v3f32, v.v3f32, w.v3f32
-    Vector3::Normalize(@unitAxis, *cylinder\axis)
-    Vector3::Sub(@delta, *ray\origin, *cylinder\position)
-    Vector3::Scale(@w, @unitAxis, Vector3::Dot(*ray\direction, @unitAxis))
-    Vector3::Sub(@u, *ray\direction, @w)
-    Vector3::Scale(@w, @unitAxis, Vector3::Dot(@delta, @unitAxis))
-    Vector3::Sub(@v, @delta, @w)
+    Vector3::Normalize(unitAxis, *cylinder\axis)
+    Vector3::Sub(delta, *ray\origin, *cylinder\position)
+    Vector3::Scale(w, unitAxis, Vector3::Dot(*ray\direction, unitAxis))
+    Vector3::Sub(u, *ray\direction, w)
+    Vector3::Scale(w, unitAxis, Vector3::Dot(delta, unitAxis))
+    Vector3::Sub(v, delta, w)
     
     ; Quadratic equation For implicit infinite cylinder
     Protected a.f = Vector3::Dot(u, u)
@@ -234,7 +233,7 @@ Module Ray
   ;---------------------------------------------------------
   Procedure.b TriangleIntersection(*ray.Geometry::Ray_t, *a.v3f32, *b.v3f32, *c.v3f32, *distance=#Null, *baryCoords.v3f32=#Null, *frontFacing=#Null, maxDist.f=#F32_MAX)
     Protected plane.Geometry::Plane_t
-    Geometry::ConstructPlaneFromThreePoints(@plane, *a, *b, *c)
+    Geometry::ConstructPlaneFromThreePoints(plane, *a, *b, *c)
     Protected intersectDist.f
     If Not Ray::PlaneIntersection(*ray, @plane, @intersectDist, *frontFacing)
       ProcedureReturn #False
@@ -307,8 +306,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 263
-; FirstLine = 251
+; CursorPosition = 34
+; FirstLine = 30
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

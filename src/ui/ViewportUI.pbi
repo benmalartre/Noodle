@@ -368,24 +368,24 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure ViewToWorld(*v.ViewportUI_t,mx.d,my.d,*world_pos.v3f32)
     Protected view.v3f32
-    Vector3::Sub(@view,*v\camera\lookat,*v\camera\pos)
-    Vector3::NormalizeInPlace(@view)
+    Vector3::Sub(view,*v\camera\lookat,*v\camera\pos)
+    Vector3::NormalizeInPlace(view)
     
     Protected h.v3f32
-    Vector3::Cross(@h,@view,*v\camera\up)
-    Vector3::NormalizeInPlace(@h)
+    Vector3::Cross(h,view,*v\camera\up)
+    Vector3::NormalizeInPlace(h)
     
     Protected v.v3f32
-    Vector3::Cross(@v,@h,@view)
-    Vector3::NormalizeInPlace(@v)
+    Vector3::Cross(v,h,view)
+    Vector3::NormalizeInPlace(v)
     
     
     Protected rad.f = *v\camera\fov * #F32_PI / 180
     Protected vLength.f = Tan(rad/2) * *v\camera\nearplane
     Protected hLength.f = vLength *(*v\width/*v\height)
     
-    Vector3::ScaleInPlace(@v,vLength)
-    Vector3::ScaleInPlace(@h,hLength)
+    Vector3::ScaleInPlace(v,vLength)
+    Vector3::ScaleInPlace(h,hLength)
     
     ;Remap mouse coordinates
     mx - *v\width/2
@@ -395,16 +395,16 @@ Module ViewportUI
     my/(*v\height*0.5)
     
   
-    Vector3::ScaleInPlace(@h,mx)
-    Vector3::ScaleInPlace(@v,-my)
+    Vector3::ScaleInPlace(h,mx)
+    Vector3::ScaleInPlace(v,-my)
     
     Protected ray.v3f32
     
-    Vector3::ScaleInPlace(@view,*v\camera\nearplane)
-    Vector3::AddInPlace(@view,*v\camera\pos)
-    Vector3::Add(@ray,@h,@v)
-    Vector3::AddInPlace(@ray,@view)
-    Vector3::Sub(*world_pos,@ray,*v\camera\pos)
+    Vector3::ScaleInPlace(view,*v\camera\nearplane)
+    Vector3::AddInPlace(view,*v\camera\pos)
+    Vector3::Add(ray,h,v)
+    Vector3::AddInPlace(ray,view)
+    Vector3::Sub(*world_pos,ray,*v\camera\pos)
     Vector3::ScaleInPlace(*world_pos,*v\camera\farplane)
     Vector3::AddInPlace(*world_pos,*v\camera\pos)
   EndProcedure
@@ -422,13 +422,13 @@ Module ViewportUI
     
     ; 4d Homogeneous Clip Coordinates
     Define ray_clip.v4f32
-    Vector4::Set(@ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
+    Vector4::Set(ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
     
     ; 4d Eye (Camera) Coordinates
     Define inv_proj.m4f32
     Matrix4::Inverse(@inv_proj,*Me\camera\projection)
     Define ray_eye.v4f32
-    Vector4::MulByMatrix4(@ray_eye,@ray_clip,@inv_proj,#False)
+    Vector4::MulByMatrix4(ray_eye,ray_clip,inv_proj)
     ray_eye\z = -1
     ray_eye\w = 0
     
@@ -436,7 +436,7 @@ Module ViewportUI
     Define inv_view.m4f32
     Define ray_world.v4f32
     Matrix4::Inverse(@inv_view,*Me\camera\view)
-    Vector4::MulByMatrix4(@ray_world,@ray_eye,@inv_view,#False)
+    Vector4::MulByMatrix4(ray_world,ray_eye,inv_view)
     
     Vector3::Set(*ray_dir,ray_world\x,ray_world\y,ray_world\z)
     Vector3::NormalizeInPlace(*ray_dir)
@@ -466,8 +466,8 @@ Module ViewportUI
   
     ViewToRay(*v,mx,my,@ray_end)
     
-    Vector3::ScaleInPlace(@ray_end,*v\camera\farplane)
-    Vector3::AddInPlace(@ray_end,*v\camera\pos)
+    Vector3::ScaleInPlace(ray_end,*v\camera\farplane)
+    Vector3::AddInPlace(ray_end,*v\camera\pos)
     
     Protected *scn.Scene::Scene_t = Scene::*current_scene
     Protected *hit.Object3D::Object3D_t =*scn\rayhit
@@ -509,7 +509,7 @@ Module ViewportUI
         Protected up.v3f32
         Vector3::Set(up,0,1,0)
   
-        Quaternion::LookAt(*outQ,rcr\m_normalWorld,@up)
+        Quaternion::LookAt(*outQ,rcr\m_normalWorld,up, #False)
         Transform::SetRotationFromQuaternion(*outT,*outQ)
         Transform::SetTranslationFromXYZValues(*outT,rcr\m_positionWorld\v[0],rcr\m_positionWorld\v[1],rcr\m_positionWorld\v[2])
         Transform::SetScaleFromXYZValues(*outT,1,1,1)
@@ -547,10 +547,10 @@ Module ViewportUI
     x = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
     y = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
     Vector3::Set(window_pos,x,*v\height-y,0.5)
-    Vector3::Echo(@window_pos,"Window Pos")
+    Vector3::Echo(window_pos,"Window Pos")
     Protected viewport.v4f32
-    Vector4::Set(@viewport,*v\x,*v\y,*v\width,*v\height)
-    Vector4::Echo(@viewport,"Viewport")
+    Vector4::Set(viewport,*v\x,*v\y,*v\width,*v\height)
+    Vector4::Echo(viewport,"Viewport")
     
     Define.m4f32 m,A;
     Define.v4f32 _in,_out;
@@ -572,8 +572,8 @@ Module ViewportUI
     _in\w=1.0;
     
     ;Objects coordinates
-    Vector4::MulByMatrix4(@_out, @_in, @m);
-    Vector4::Echo(@_out,"Projected")
+    Vector4::MulByMatrix4(_out, _in, m);
+    Vector4::Echo(_out,"Projected")
   
   ;  If _out\w = 0 
   ;    ProcedureReturn 0
@@ -629,7 +629,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 548
-; FirstLine = 495
+; CursorPosition = 511
+; FirstLine = 507
 ; Folding = -----
 ; EnableXP

@@ -92,9 +92,11 @@ Module Topology
   Procedure Transform(*topo.Topology_t,*m.m4f32)
     Protected p.v3f32
     Protected i
+    Protected *p.v3f32
     For i=0 To CArray::GetCount(*topo\vertices)-1
-      Vector3::SetFromOther(@p,CArray::GetValue(*topo\vertices,i))
-      Vector3::MulByMatrix4InPlace(@p,*m)
+      *p = CArray::GetValue(*topo\vertices,i)
+      Vector3::SetFromOther(p,*p)
+      Vector3::MulByMatrix4InPlace(p,*m)
       CArray::SetValue(*topo\vertices,i,p)
     Next
   EndProcedure
@@ -311,7 +313,7 @@ Module Topology
       Protected *m.m4f32 = CArray::GetValue(*points,ID)
       Protected p.v3f32
       
-      Vector3::MulByMatrix4InPlace(@p,*m)
+      Vector3::MulByMatrix4InPlace(p,*m)
       CArray::Append(*topo\vertices,@p)
       Protected pID = CArray::GetCount(*topo\vertices)-1
  
@@ -343,7 +345,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 208
-; FirstLine = 181
+; CursorPosition = 324
+; FirstLine = 292
 ; Folding = ---
 ; EnableXP

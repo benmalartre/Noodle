@@ -185,9 +185,9 @@ Module Skeleton
       CArray::SetValue(*geom\a_scale, ID,*Me\bones()\statictransform\t\scl)
       *q = *Me\bones()\statictransform\t\rot
       Vector3::Set(normal,0,1,0)
-      Vector3::MulByQuaternionInPlace(@normal,*q)
+      Vector3::MulByQuaternionInPlace(normal,*q)
       Vector3::Set(tangent,1,0,0)
-      Vector3::MulByQuaternionInPlace(@tangent,*q)
+      Vector3::MulByQuaternionInPlace(tangent,*q)
       CArray::SetValue(*geom\a_normals, ID,@normal)
       CArray::SetValue(*geom\a_tangents, ID,@tangent)
 
@@ -215,9 +215,9 @@ Module Skeleton
       
       *q = *pose\Ts()\t\rot
       Vector3::Set(normal,0,1,0)
-      Vector3::MulByQuaternionInPlace(@normal,*q)
+      Vector3::MulByQuaternionInPlace(normal,*q)
       Vector3::Set(tangent,1,0,0)
-      Vector3::MulByQuaternionInPlace(@tangent,*q)
+      Vector3::MulByQuaternionInPlace(tangent,*q)
       CArray::SetValue(*geom\a_normals, ID,@normal)
       CArray::SetValue(*geom\a_tangents, ID,@tangent)
       CArray::SetValue(*geom\a_positions, ID,*pose\Ts()\t\pos)
@@ -233,7 +233,7 @@ Module Skeleton
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 218
+; CursorPosition = 219
 ; FirstLine = 180
 ; Folding = ---
 ; EnableXP

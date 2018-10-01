@@ -129,18 +129,18 @@ Module PointCloudGeometry
       z = Random(255)/255 - 0.5
       
       Vector3::Set(v,x,y,z)
-      Vector3::NormalizeInPlace(@v)
-      Vector3::ScaleInPlace(@v,radius)
+      Vector3::NormalizeInPlace(v)
+      Vector3::ScaleInPlace(v,radius)
       
       CArray::SetValue(*geom\a_positions,i,@v)
 
       ; Set Normals
-      Vector3::NormalizeInPlace(@v)
+      Vector3::NormalizeInPlace(v)
       CArray::SetValue(*geom\a_normals,i,@v)
       
       ; Set Tangents
       Vector3::Set(c,0,1,0)
-      Vector3::Cross(@t,@v,@c)
+      Vector3::Cross(t,v,c)
       CArray::SetValue(*geom\a_tangents,i,@t)
 
       ; Set Color
@@ -247,9 +247,9 @@ Module PointCloudGeometry
     
     Define.f r,g,b, x,y ,z
     Define delta.v3f32
-    Vector3::Sub(@delta,*end,*start)
+    Vector3::Sub(delta,*end,*start)
     
-    Define l.f = Vector3::Length(@delta)
+    Define l.f = Vector3::Length(delta)
     Define st.f = l/(*geom\nbPoints-1.0)
     Define stc.f
     
@@ -268,7 +268,7 @@ Module PointCloudGeometry
       ; Set Tangent
       *t = CArray::GetValue(*geom\a_tangents,i)
       Vector3::Set(*t,0,1,0)
-      Vector3::Cross(@tmp,*v,*t)
+      Vector3::Cross(tmp,*v,*t)
       Vector3::SetFromOther(*t,@tmp)
       
       ;Set Color
@@ -333,7 +333,7 @@ Module PointCloudGeometry
       Vector3::Set(n,0,1,0)
       CArray::Append(*p\a_normals,@n)
       Vector3::Set(c,1,0,0)
-      Vector3::Cross(@t,@n,@c)
+      Vector3::Cross(t,n,c)
       CArray::Append(*p\a_tangents,@t)
 
       CArray::AppendL(*p\a_indices,*p\incrementID)
@@ -388,7 +388,7 @@ Module PointCloudGeometry
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 245
-; FirstLine = 236
+; CursorPosition = 336
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

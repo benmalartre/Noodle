@@ -561,7 +561,7 @@ Module Arguments
       Protected *arg.Argument_t = *args\args()
       *arg\type = #ARGS_M3F32
       *arg\name = name
-      Quaternion::SetFromOther(*arg\m3,*value)
+      Matrix3::SetFromOther(*arg\m3,*value)
     EndIf
   EndProcedure
   
@@ -572,7 +572,7 @@ Module Arguments
       Protected *arg.Argument_t = *args\args()
       *arg\type = #ARGS_M4F32
       *arg\name = name
-      Quaternion::SetFromOther(*arg\m4,*value)
+      Matrix4::SetFromOther(*arg\m4,*value)
     EndIf
   EndProcedure
   
@@ -666,8 +666,8 @@ EndModule
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 660
-; FirstLine = 613
+; CursorPosition = 574
+; FirstLine = 529
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

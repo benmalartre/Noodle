@@ -86,10 +86,12 @@ Module RotateVectorNode
     Protected i
     Protected *v.v3f32
     Protected *q.q4f32
+    Protected *o.v3f32
     For i =0 To m_max-1
       *v = CArray::GetValue(*vIn,Min(i,i_max-1))
       *q = CArray::GetValue(*rotation,Min(i,r_max-1))
-      Vector3::MulByQuaternion(CArray::GetValue(*vOut,i),*v,*q)
+      *o = CArray::GetValue(*vOut,i)
+      Vector3::MulByQuaternion(*o,*v,*q)
     Next
     
   EndProcedure
@@ -128,8 +130,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

@@ -219,11 +219,11 @@ Module Octree
     Protected current.v3f32
     For z=0 To 7
       Vector3::Set(current, P(GetCurrentCorner(z, 0)), P(GetCurrentCorner(z, 1)), P(GetCurrentCorner(z, 2)))
-      Vector3::Sub(@delta, *point, @current)
-      dist = Vector3::Length(@delta)
+      Vector3::Sub(delta, *point, current)
+      dist = Vector3::Length(delta)
       If dist > furthestDist
         furthestDist = dist
-        Vector3::SetFromOther(*corner, @current)
+        Vector3::SetFromOther(*corner, current)
       EndIf
     Next
 
@@ -273,9 +273,9 @@ Module Octree
   ;---------------------------------------------------------------------
   Procedure Barycentric(*p.v3f32, *a.v3f32, *b.v3f32, *c.v3f32, *uvw.v3f32)
     Define.v3f32 v0, v1, v2
-    Vector3::Sub(@v0, *b, *a)
-    Vector3::Sub(@v1, *c, *a)
-    Vector3::Sub(@v2, *p, *a)
+    Vector3::Sub(v0, *b, *a)
+    Vector3::Sub(v1, *c, *a)
+    Vector3::Sub(v2, *p, *a)
 
     Define d00.f = Vector3::Dot(v0,v0)
     Define d01.f = Vector3::Dot(v0,v1)
@@ -513,9 +513,9 @@ Module Octree
     Protected *a.v3f32, *b.v3f32, *c.v3f32
     Matrix4::SetIdentity(@m)
     If *octree\isLeaf
-      Vector3::Sub(@s, *octree\bmax, *octree\bmin)
-      Vector3::Add(@p, *octree\bmin, *octree\bmax)
-      Vector3::ScaleInPlace(@p, 0.5)
+      Vector3::Sub(s, *octree\bmax, *octree\bmin)
+      Vector3::Add(p, *octree\bmin, *octree\bmax)
+      Vector3::ScaleInPlace(p, 0.5)
       Matrix4::SetScale(@m, @s)
       Matrix4::SetTranslation(@m, @p)
       Protected *box.Drawer::Box_t = Drawer::NewBox(*drawer, @m)
@@ -536,9 +536,10 @@ Module Octree
         *b = CArray::GetValue(*positions, t*3+1)
         *c = CArray::GetValue(*positions, t*3+2)
         
-        Vector3::SetFromOther(*a, CArray::GetValue(*geom\a_positions, a))
-        Vector3::SetFromOther(*b, CArray::GetValue(*geom\a_positions, b))
-        Vector3::SetFromOther(*c, CArray::GetValue(*geom\a_positions, c))
+        CopyMemory(CArray::GetValue(*geom\a_positions, a), *a, 12)
+        CopyMemory(CArray::GetValue(*geom\a_positions, b), *b, 12)
+        CopyMemory(CArray::GetValue(*geom\a_positions, c), *c, 12)
+
         *a\x + (Random(200)-100)*0.001
         *a\y + (Random(200)-100)*0.001
         *a\z + (Random(200)-100)*0.001
@@ -576,7 +577,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 392
+; CursorPosition = 541
+; FirstLine = 511
 ; Folding = -----
 ; EnableXP

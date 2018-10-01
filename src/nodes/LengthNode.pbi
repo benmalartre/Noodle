@@ -62,7 +62,7 @@ Module LengthNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\inputs()
    
-    Protected v.v3f32
+    Protected v.v3f32, *v.v3f32
     Protected *vIn.CArray::CArrayV3F32,*fOut.CArray::CArrayFloat
     *vOut = *output\value
     *vIn = NodePort::AcquireInputData(*node\inputs())
@@ -110,9 +110,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 50
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 64
+; FirstLine = 58
 ; Folding = --
 ; EnableThread
 ; EnableXP

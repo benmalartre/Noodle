@@ -104,8 +104,11 @@ Module Triangle
   ; Get Center
   ;------------------------------------------------------------------
   Procedure GetCenter(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32)
-    Vector3::Add(*center, CArray::GetValue(*positions, *Me\vertices[0]), CArray::GetValue(*positions, *Me\vertices[1]))
-    Vector3::AddInPlace(*center, CArray::GetValue(*positions, *Me\vertices[2]))
+    Protected *a.v3f32 = CArray::GetValue(*positions, *Me\vertices[0])
+    Protected *b.v3f32 = CArray::GetValue(*positions, *Me\vertices[1])
+    Protected *c.v3f32 = CArray::GetValue(*positions, *Me\vertices[2])
+    Vector3::Add(*center, *a, *b)
+    Vector3::AddInPlace(*center, *c)
     Vector3::ScaleInPlace(*center,1.0/3.0)
   EndProcedure
   
@@ -115,10 +118,13 @@ Module Triangle
   Procedure GetNormal(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *normal.v3f32)
     ; get triangle edges
     Protected AB.v3f32, AC.v3f32
-    Vector3::Sub(@AB, CArray::GetValue(*positions, *Me\vertices[1]), CArray::GetValue(*positions, *Me\vertices[0]))
-    Vector3::Sub(@AC, CArray::GetValue(*positions, *Me\vertices[2]), CArray::GetValue(*positions, *Me\vertices[0]))
+    Protected *a.v3f32 = CArray::GetValue(*positions, *Me\vertices[0])
+    Protected *b.v3f32 = CArray::GetValue(*positions, *Me\vertices[1])
+    Protected *c.v3f32 = CArray::GetValue(*positions, *Me\vertices[2])
+    Vector3::Sub(AB, *b, *a)
+    Vector3::Sub(AC, *c, *a)
     ; cross product
-    Vector3::Cross(*normal, @AB, @AC)
+    Vector3::Cross(*normal, AB, AC)
     ; normalize
     Vector3::NormalizeInPlace(*normal)
   EndProcedure
@@ -128,24 +134,24 @@ Module Triangle
   ;------------------------------------------------------------------
   Procedure ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
     Define.v3f32 *A, *B, *C
-    *A = CArray::GetValue(*positions, *Me\vertices[0])
-    *B = CArray::GetValue(*positions, *Me\vertices[1])
-    *C = CArray::GetValue(*positions, *Me\vertices[2])
+    *A = *positions + *Me\vertices[0] * 12
+    *B = *positions + *Me\vertices[1] * 12
+    *C = *positions + *Me\vertices[2] * 12
     Protected edge0.v3f32
     Protected edge1.v3f32
     
-    Vector3::Sub(@edge0, *B, *A)
-    Vector3::Sub(@edge1, *C, *A)
+    Vector3::Sub(edge0, *B, *A)
+    Vector3::Sub(edge1, *C, *A)
     
     Protected v0.v3f32
-    Vector3::Sub(@v0, *A, *P)
+    Vector3::Sub(v0, *A, *pnt)
     
     Define.f a,b,c,d,e
-    a = Vector3::Dot(@edge0, @edge0)
-    b = Vector3::Dot(@edge0, @edge1)
-    c = Vector3::Dot(@edge1, @edge1)
-    d = Vector3::Dot(@edge0, @v0)
-    e = Vector3::Dot(@edge1, @v0)
+    a = Vector3::Dot(edge0, edge0)
+    b = Vector3::Dot(edge0, edge1)
+    c = Vector3::Dot(edge1, edge1)
+    d = Vector3::Dot(edge0, v0)
+    e = Vector3::Dot(edge1, v0)
     
     Define.f det, s, t
     det = a*c - b*b
@@ -215,10 +221,10 @@ Module Triangle
   EndIf
   
   Vector3::SetFromOther(*closest, *A)
-  Vector3::ScaleInPlace(@edge0, s)
-  Vector3::ScaleInPlace(@edge1, t)
-  Vector3::AddInPlace(*closest, @edge0)
-  Vector3::AddInPlace(*closest, @edge1)
+  Vector3::ScaleInPlace(edge0, s)
+  Vector3::ScaleInPlace(edge1, t)
+  Vector3::AddInPlace(*closest, edge0)
+  Vector3::AddInPlace(*closest, edge1)
   
   *uvw\y = s
   *uvw\z = t
@@ -245,16 +251,18 @@ EndProcedure
     ; This is the fastest branch on Sun 
     ; move everything so that the boxcenter is in (0,0,0)
     Define.v3f32 v0, v1, v2
-    
-    Vector3::Sub(@v0, *positions + *Me\vertices[0] * 12, *center)
-    Vector3::Sub(@v1, *positions + *Me\vertices[1] * 12, *center)
-    Vector3::Sub(@v2, *positions + *Me\vertices[2] * 12, *center)
+    Define.v3f32 *a = *positions + *Me\vertices[0] * 12
+    Define.v3f32 *b = *positions + *Me\vertices[1] * 12
+    Define.v3f32 *c = *positions + *Me\vertices[2] * 12
+    Vector3::Sub(v0, *a, *center)
+    Vector3::Sub(v1, *b, *center)
+    Vector3::Sub(v2, *c, *center)
  
     ; compute triangle edges
     Define.v3f32 e0, e1, e2
-    Vector3::Sub(@e0, @v1, @v0)
-    Vector3::Sub(@e1, @v2, @v1)
-    Vector3::Sub(@e2, @v0, @v2)
+    Vector3::Sub(e0, v1, v0)
+    Vector3::Sub(e1, v2, v1)
+    Vector3::Sub(e2, v0, v2)
     
     ;  test the 9 tests first (this was faster) 
     fex = Abs(e0\x)
@@ -300,7 +308,7 @@ EndProcedure
     ; test If the box intersects the plane of the triangle
     ; compute plane equation of triangle: normal*x+d=0
     Protected normal.v3f32 
-    Vector3::Cross(@normal, @e0, @e1)
+    Vector3::Cross(normal, e0, e1)
     
     ProcedureReturn PlaneBoxTest(@normal, @v0, *boxhalfsize)
         
@@ -320,8 +328,8 @@ EndProcedure
     v = *vert\z
     If *normal\z > 0.0 :  vmin\z = -*maxbox\z - v : vmax\z = *maxbox\z - v : Else : vmin\z = *maxbox\z -v : vmax\z = -*maxbox\z - v : EndIf
     
-    If Vector3::Dot(*normal, @vmin) > 0.0 : ProcedureReturn #False : EndIf
-    If Vector3::Dot(*normal, @vmax) >= 0.0 : ProcedureReturn #True : EndIf
+    If Vector3::Dot(*normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
+    If Vector3::Dot(*normal, vmax) >= 0.0 : ProcedureReturn #True : EndIf
     ProcedureReturn #False
 
   EndProcedure
@@ -335,7 +343,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 230
+; CursorPosition = 143
+; FirstLine = 130
 ; Folding = ---
 ; EnableXP

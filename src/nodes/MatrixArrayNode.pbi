@@ -67,7 +67,7 @@ Module MatrixArrayNode
 
       Protected scl.v3f32,ori.q4f32,pos.v3f32
       Vector3::Set(scl,1,1,1)
-      Quaternion::SetIdentity(@ori)
+      Quaternion::SetIdentity(ori)
       
       For i=0 To nb - 1
         Vector3::Set(pos,i,0,0)
@@ -136,7 +136,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 64
+; CursorPosition = 69
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

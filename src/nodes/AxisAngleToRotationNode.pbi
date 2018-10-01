@@ -84,10 +84,13 @@ Module AxisANgleToRotationNode
     Protected i
     Protected *v.v3f32
     Protected *q.q4f32
+    Protected *a.v3f32
+    Protected angle.f
     For i =0 To m_max-1
       *q = CArray::GetValue(*qOut,i)
-      Quaternion::SetFromAxisAngle(*q,CArray::GetValue(*axis,Min(i,a_max-1)),CArray::GetValueF(*angle,Min(i,n_max-1)))
-;       Quaternion::SetFromAxisAngle(*q,CArray::GetValue(*axis,Min(i,a_max)),CArray::GetValueF(*angle,Min(i,n_max)))
+      *a = CArray::GetValue(*axis,Min(i,a_max-1))
+      angle = CArray::GetValueF(*angle,Min(i,n_max-1))
+      Quaternion::SetFromAxisAngle(*q,*a, angle)
     Next
  
   EndProcedure
@@ -125,8 +128,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 48
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 76
 ; Folding = --
 ; EnableXP
