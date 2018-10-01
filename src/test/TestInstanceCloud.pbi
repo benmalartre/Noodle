@@ -205,15 +205,15 @@ Procedure Draw(*app.Application::Application_t)
 ;   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   ;PointCloudGeometry::PointsOnGrid(*cloud\geom,24,24)
   Define startP.v3f32, endP.v3f32
-  Vector3::Set(@startP, -10,0,0)
-  Vector3::Set(@endP, 10,0,0)
+  Vector3::Set(startP, -10,0,0)
+  Vector3::Set(endP, 10,0,0)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
 ;   Define *T.Transform::Transform_t = *mesh\localT
 ;   Define pos.v3f32
 ; 
-;   Vector3::Set(@pos,0,2,0)
+;   Vector3::Set(pos,0,2,0)
 ;   Matrix4::SetTranslation(*mesh\matrix,@pos)
-;   Vector3::Set(@pos,4,4,4)
+;   Vector3::Set(pos,4,4,4)
 ;   Matrix4::SetScale(*mesh\matrix,@pos)
 ;   ;Polymesh::Setup(*bunnies(),*s_gbuffer)
 ;  
@@ -224,8 +224,8 @@ Procedure Draw(*app.Application::Application_t)
   
   
   Define ps.v3f32, pe.v3f32
-  Vector3::Set(@ps,-10,0,0)
-  Vector3::Set(@pe,10,0,0)
+  Vector3::Set(ps,-10,0,0)
+  Vector3::Set(pe,10,0,0)
   *ground = CreateGround()
   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
@@ -235,7 +235,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   
 ;   Define i
 ;   Define s.v3f32
-;   Vector3::Set(@s,13,13,13)
+;   Vector3::Set(s,13,13,13)
 ;   Define *l.Geometry::Location_t
 ;   For i=0 To *cgeom\nbpoints-1
 ;     *l = CArray::GetValuePtr(*locs,i)
@@ -262,9 +262,9 @@ Procedure Draw(*app.Application::Application_t)
   
 
 EndIf
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 134
-; FirstLine = 97
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 237
+; FirstLine = 203
 ; Folding = --
 ; EnableXP
 ; Executable = Test

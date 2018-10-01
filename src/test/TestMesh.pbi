@@ -61,7 +61,7 @@ EndProcedure
 
 
 Procedure RandomGround()
-  Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
+  Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_NONE)
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
   Protected *topo.Geometry::Topology_t = *geom\topo
   
@@ -76,6 +76,7 @@ Procedure RandomGround()
     *p\y = (Sin(*p\x/100) *40 + (Random(100)*0.1 - 5)) 
   Next
   PolymeshGeometry::Set2(*geom, *topo)
+  Object3D::Freeze(*ground)
   ProcedureReturn *ground
 EndProcedure
 
@@ -198,7 +199,7 @@ Procedure Draw(*app.Application::Application_t)
     Matrix4::SetIdentity(@m)
     Matrix4::SetTranslation(@m,*pos)
     
-    Vector3::Set(@scl, size, size, size)
+    Vector3::Set(scl, size, size, size)
     Matrix4::SetScale(@m, @scl)
   CArray::Append(*matrices,@m)
  Next
@@ -219,8 +220,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 103
+; CursorPosition = 201
+; FirstLine = 167
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

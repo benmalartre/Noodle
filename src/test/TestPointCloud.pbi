@@ -168,7 +168,7 @@ Procedure Draw(*app.Application::Application_t)
 ;     For z=-10 To 10
 ;       AddElement(*bunnies())
 ;       *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
-;       Vector3::Set(@pos,x,0,z)
+;       Vector3::Set(pos,x,0,z)
 ;       Matrix4::SetTranslation(*bunnies()\matrix,@pos)
 ;     Next
 ;   Next
@@ -185,13 +185,13 @@ Procedure Draw(*app.Application::Application_t)
 ;   Next
   
   Define a.v3f32, b.v3f32
-  Vector3::Set(@a,-10,0,0)
-  Vector3::Set(@b,10,0,0)
+  Vector3::Set(a,-10,0,0)
+  Vector3::Set(b,10,0,0)
   
   
   Define p_start.v3f32,p_end.v3f32
-  Vector3::Set(@p_start,-1,0,0)
-  Vector3::Set(@p_end,1,0,0)
+  Vector3::Set(p_start,-1,0,0)
+  Vector3::Set(p_end,1,0,0)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@p_start,@p_end)
   PointCloudGeometry::PointsOnSphere(*cloud\geom,5)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
@@ -231,9 +231,9 @@ Procedure Draw(*app.Application::Application_t)
     Until e = #PB_Event_CloseWindow
   CompilerEndIf
 EndIf
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 157
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 193
+; FirstLine = 170
 ; Folding = -
 ; EnableXP
 ; Executable = Test

@@ -176,7 +176,7 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal3.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
         Protected v3.v3f32
-        Vector3::Set(@v3,0,0,0)
+        Vector3::Set(v3,0,0,0)
         CArray::Append(*vVal3,v3)
         *port\value = *vVal3
         
@@ -707,7 +707,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 636
-; FirstLine = 597
+; CursorPosition = 178
+; FirstLine = 174
 ; Folding = ----
 ; EnableXP

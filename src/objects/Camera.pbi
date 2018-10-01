@@ -190,7 +190,7 @@ Module Camera
     
     Protected t.Transform::Transform_t
     
-    Vector3::Set(@scl,1,1,1)
+    Vector3::Set(scl,1,1,1)
     Vector3::Sub(@dir,*Me\lookat,*Me\pos)
   
     Quaternion::LookAt(t\t\rot,@dir,*Me\up )
@@ -280,22 +280,22 @@ Module Camera
     Protected r.v3f32,axis.v3f32
     Vector3::Sub(@r,*Me\pos,*Me\lookat)
     Protected d.f = Vector3::Length(@r)
-    Vector3::Set(@r,0,0,d)
+    Vector3::Set(r,0,0,d)
     Protected q.q4f32
     
     *Me\polar - deltay
     *Me\azimuth - deltax
   
-    Vector3::Set(@axis,1,0,0)
+    Vector3::Set(axis,1,0,0)
     Quaternion::SetFromAxisAngle(@q,@axis,*Me\polar*#F32_DEG2RAD)
     Vector3::MulByQuaternionInPlace(@r,@q)
     
-    Vector3::Set(@axis,0,1,0)
+    Vector3::Set(axis,0,1,0)
     Quaternion::SetFromAxisAngle(@q,@axis,*Me\azimuth*#F32_DEG2RAD)
     Vector3::MulByQuaternionInPlace(@r,@q)
     
     Vector3::AddInPlace(@r,*Me\lookat)
-    Vector3::Set(@*Me\pos,r\x,r\y,r\z)
+    Vector3::Set(*Me\pos,r\x,r\y,r\z)
     
     ;Flip Up Vector if necessary
     Protected p.f = Abs(Mod(*Me\polar,360))
@@ -369,7 +369,7 @@ Module Camera
   Procedure GetViewTransform(*camera.Camera_t, *m.m4f32)
     Protected tm.m4f32, rm.m4f32
     Protected inv_pos.v3f32
-    Vector3::Set(@inv_pos, -*camera\pos\x, -*camera\pos\y, -*camera\pos\z)
+    Vector3::Set(inv_pos, -*camera\pos\x, -*camera\pos\y, -*camera\pos\z)
     Matrix4::TranslationMatrix(@tm, @inv_pos)
     Matrix4::Echo(@tm, "Translation Matrix")
     Matrix4::DirectionMatrix(@rm, *camera\lookat, *camera\up)
@@ -386,8 +386,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 261
-; FirstLine = 254
+; CursorPosition = 371
+; FirstLine = 318
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

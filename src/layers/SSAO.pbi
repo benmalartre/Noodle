@@ -115,9 +115,10 @@ Module LayerSSAO
     
     Protected ns = *layer\noise_size * *layer\noise_size
     CArray::SetCount(*layer\noise,ns)
-  
+    Protected *n.v3f32
     For i=0 To ns-1
-      Vector3::Set(CArray::GetValue(*layer\noise,i),Random(100)*0.02-1,Random(100)*0.02-1,0)
+      *n = CArray::GetValue(*layer\noise,i)
+      Vector3::Set(*n,Random(100)*0.02-1,Random(100)*0.02-1,0)
       Vector3::NormalizeInPlace(CArray::GetValue(*layer\noise,i))
     Next i
     
@@ -237,8 +238,8 @@ Module LayerSSAO
   
   Class::DEF(LayerSSAO)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 120
-; FirstLine = 97
+; FirstLine = 103
 ; Folding = --
 ; EnableXP

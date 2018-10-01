@@ -89,7 +89,7 @@ If Time::Init()
       
       ;Draw(vao,nbp)
       ;       DrawKDTree(*tree,cube_vao,shader)
-;       Vector3::Set(@s,5,5,5)
+;       Vector3::Set(s,5,5,5)
 ;       Matrix4::SetScale(@offset,@s)
 ;       glUniform3f(glGetUniformLocation(shader,"color"),1,0,0)
 ;       glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@offset)
@@ -143,7 +143,7 @@ If Time::Init()
       
       ;Draw(vao,nbp)
       ;       DrawKDTree(*tree,cube_vao,shader)
-;       Vector3::Set(@s,5,5,5)
+;       Vector3::Set(s,5,5,5)
 ;       Matrix4::SetScale(@offset,@s)
 ;       glUniform3f(glGetUniformLocation(shader,"color"),1,0,0)
 ;       glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@offset)
@@ -157,8 +157,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 75
+; CursorPosition = 145
+; FirstLine = 92
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

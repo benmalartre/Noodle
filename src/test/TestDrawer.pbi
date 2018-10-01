@@ -57,7 +57,7 @@ Procedure RandomSpheres(numItems.i,y.f=0)
   Protected p.v3f32
   Define i,j
   For i=0 To numItems-1
-    Vector3::Set(@p,i, y, (Random(10)-5)/10)
+    Vector3::Set(p,i, y, (Random(10)-5)/10)
     Matrix4::SetIdentity(@m)
     Matrix4::SetTranslation(@m,@p)
 
@@ -75,7 +75,7 @@ Procedure RandomCubes(numItems.i,y.f=0)
   Protected p.v3f32
   Define i,j
   For i=0 To numItems-1
-    Vector3::Set(@p,i, y, (Random(10)-5)/10)
+    Vector3::Set(p,i, y, (Random(10)-5)/10)
     Matrix4::SetIdentity(@m)
     Matrix4::SetTranslation(@m,@p)
 
@@ -93,7 +93,7 @@ Procedure RandomStrips(numItems.i)
   Define i,j
   For i=0 To numItems-1
     For j=0 To CArray::GetCount(*positions)-1
-      Vector3::Set(@position, i, j, (Random(10)-5)/10)
+      Vector3::Set(position, i, j, (Random(10)-5)/10)
       CArray::SetValue(*positions, j, @position)
     Next
     Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
@@ -111,7 +111,7 @@ Procedure RandomPoints(numItems.i)
   Define i,j
   For i=0 To numItems-1
     For j=0 To CArray::GetCount(*positions)-1
-      Vector3::Set(@position, i, j, (Random(10)-5)/10)
+      Vector3::Set(position, i, j, (Random(10)-5)/10)
       CArray::SetValue(*positions, j, @position)
     Next
     Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
@@ -199,8 +199,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 95
+; CursorPosition = 113
+; FirstLine = 60
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -114,7 +114,7 @@ If Time::Init()
       Define *t.Transform::Transform_t = *model\localT
       Define p.v3f32
       Define q.v3f32
-      Vector3::Set(@p,i*20,0,0)
+      Vector3::Set(p,i*20,0,0)
 ;       Quaternion::Randomize(@q)
       Transform::SetTranslation(*t, @p)
 ;       Transform::SetRotationFromQuaternion(*t, @q)
@@ -140,7 +140,7 @@ If Time::Init()
 ;   Define pos.v3f32
 ;   For i=0 To 12
 ;     Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Star",Shape::#SHAPE_BUNNY)
-;     Vector3::Set(@pos,Random(10),Random(10),Random(10))
+;     Vector3::Set(pos,Random(10),Random(10),Random(10))
 ;     Object3D::AddChild(*model,*mesh)
 ;     Matrix4::SetTranslation(*mesh\model,@pos)
 ;   Next
@@ -160,8 +160,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 83
+; CursorPosition = 142
+; FirstLine = 107
 ; Folding = -
 ; EnableThread
 ; EnableXP

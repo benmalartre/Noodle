@@ -201,7 +201,7 @@ Module BulletRigidBody
         
       Case Bullet::#GROUNDPLANE_SHAPE
           Protected norm.Math::v3f32
-          Vector3::Set(@norm,0,1,0)
+          Vector3::Set(norm,0,1,0)
         *shape = Bullet::BTNewGroundPlaneShape(@norm,*obj\localT\t\scl\x)
         
       Case Bullet::#BOX_SHAPE
@@ -267,7 +267,7 @@ Module BulletRigidBody
       Select shapetype
         Case Bullet::#GROUNDPLANE_SHAPE
           Protected norm.Math::v3f32
-          Vector3::Set(@norm,0,1,0)
+          Vector3::Set(norm,0,1,0)
           *cshape = Bullet::BTNewGroundPlaneShape(@norm, 100)
         Case Bullet::#BOX_SHAPE
           *cshape = Bullet::BTNewBoxShape(0.5,0.5,0.5)
@@ -359,7 +359,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 96
+; CursorPosition = 269
+; FirstLine = 216
 ; Folding = --
 ; EnableXP

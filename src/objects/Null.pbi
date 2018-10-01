@@ -143,17 +143,17 @@ Module Null
         CArray::SetCount(*positions,6)
         *Me\nbp = 6
         
-        Vector3::Set(@pos,-hSize,0,0)
+        Vector3::Set(pos,-hSize,0,0)
         CArray::SetValue(*positions,0,@pos)
-        Vector3::Set(@pos,hSize,0,0)
+        Vector3::Set(pos,hSize,0,0)
         CArray::SetValue(*positions,1,@pos)
-        Vector3::Set(@pos,0,-hSize,0)
+        Vector3::Set(pos,0,-hSize,0)
         CArray::SetValue(*positions,2,@pos)
-        Vector3::Set(@pos,0,hSize,0)
+        Vector3::Set(pos,0,hSize,0)
         CArray::SetValue(*positions,3,@pos)
-        Vector3::Set(@pos,0,0,hSize)
+        Vector3::Set(pos,0,0,hSize)
         CArray::SetValue(*positions,4,@pos)
-        Vector3::Set(@pos,0,0,-hSize)
+        Vector3::Set(pos,0,0,-hSize)
         CArray::SetValue(*positions,5,@pos)
         
       Case #Icon_Disc
@@ -162,7 +162,7 @@ Module Null
         theta.f = 360/22
   
         For i=0 To 21
-          Vector3::Set(@pos,Sin(Radian(i*theta))*hSize,0,Cos(Radian(i*theta))*hSize)
+          Vector3::Set(pos,Sin(Radian(i*theta))*hSize,0,Cos(Radian(i*theta))*hSize)
           CArray::SetValue(*positions,i,pos)
         Next i
         
@@ -173,19 +173,19 @@ Module Null
   
         ; X Aligned
         For i=0 To 21
-          Vector3::Set(@pos,0,Sin(Radian(i*theta))*hSize,Cos(Radian(i*theta))*hSize)
+          Vector3::Set(pos,0,Sin(Radian(i*theta))*hSize,Cos(Radian(i*theta))*hSize)
           CArray::SetValue(*positions,i,pos)
         Next i
         
         ; Y Aligned
         For i=22 To 43
-          Vector3::Set(@pos,Sin(Radian(i*theta))*hSize,0,Cos(Radian(i*theta))*hSize)
+          Vector3::Set(pos,Sin(Radian(i*theta))*hSize,0,Cos(Radian(i*theta))*hSize)
           CArray::SetValue(*positions,i,pos)
         Next i
         
         ; Z Aligned
         For i=44 To 65
-          Vector3::Set(@pos,Sin(Radian(i*theta))*hSize,Cos(Radian(i*theta))*hSize,0)
+          Vector3::Set(pos,Sin(Radian(i*theta))*hSize,Cos(Radian(i*theta))*hSize,0)
           CArray::SetValue(*positions,i,pos)
         Next i
         
@@ -370,7 +370,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 308
-; FirstLine = 305
+; CursorPosition = 187
+; FirstLine = 145
 ; Folding = ---
 ; EnableXP

@@ -175,58 +175,28 @@ DeclareModule Math
   ; ----------------------------------------------------------------------------
   ;  v2f32 Structure
   ; --------------------------------------------------------------------------
- Structure v2f32
-   StructureUnion
-     x.f
-     u.f
-   EndStructureUnion
-   StructureUnion
-     y.f
-     v.f
-   EndStructureUnion
+  Structure v2f32
+    x.f
+    y.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
   ;  v3f32 Structure
   ; --------------------------------------------------------------------------
   Structure v3f32
-    StructureUnion
-      x.f
-      r.f
-      u.f
-    EndStructureUnion
-    StructureUnion
-      y.f
-      g.f
-      v.f
-    EndStructureUnion
-    StructureUnion
-      z.f
-      b.f
-      w.f
-    EndStructureUnion
+    x.f
+    y.f
+    z.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
   ;  v4f32 Structure
   ; --------------------------------------------------------------------------
   Structure v4f32
-    StructureUnion
-      x.f
-      r.f
-    EndStructureUnion
-    StructureUnion
-      y.f
-      g.f
-    EndStructureUnion
-    StructureUnion
-      z.f
-      b.f
-    EndStructureUnion
-    StructureUnion
-      w.f
-      a.f
-      EndStructureUnion
+    x.f
+    y.f
+    z.f
+    w.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -253,22 +223,10 @@ DeclareModule Math
   ;  c4f32 Structure
   ; --------------------------------------------------------------------------
   Structure c4f32
-    StructureUnion
-      r.f
-      x.f
-    EndStructureUnion
-    StructureUnion
-      g.f
-      y.f
-    EndStructureUnion
-    StructureUnion
-      b.f
-      z.f
-    EndStructureUnion
-    StructureUnion
-      a.f
-      w.f
-    EndStructureUnion
+    r.f
+    g.f
+    b.f
+    a.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -313,122 +271,21 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Vector2
   UseModule Math
-  
-  ;------------------------------------------------------------------
-  ; SET
-  ;------------------------------------------------------------------
-  Macro Set(v,_x,_f)
-    v\x = _x
-    v\y = _f
-  EndMacro
-  
-  Macro SetFromOther(v,o)
-    v\x = o\x
-    v\y = o\y
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; ADD
-  ;------------------------------------------------------------------
-  Macro Add(v,a,b)
-    v\x = a\x + b\x
-    v\y = a\y + b\y
-  EndMacro
-  
-  Macro AddInPlace(v,o)
-    v\x + o\x
-    v\y + o\y
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SUB
-  ;------------------------------------------------------------------
-  Macro Sub(v,a,b)
-    v\x = a\x - b\x
-    v\y = a\y - b\y
-  EndMacro
-  
-  Macro SubInPlace(v,o)
-    v\x - o\x
-    v\y - o\y
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SCALE
-  ;------------------------------------------------------------------
-  Macro Scale(v,o,mult)
-    v\x = o\x * mult
-    v\y = o\y * mult
-  EndMacro
-  
-  Macro ScaleInPlace(v,mult)
-    v\x * mult
-    v\y * mult
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; INVERT
-  ;------------------------------------------------------------------
-  Macro Invert(v, o)
-    If o\x <> 0.0 : v\x = 1 / o\x : EndIf
-    If o\y <> 0.0 : v\y = 1 / o\y : EndIf
-  EndMacro
-  
-  Macro InvertInPlace(v)
-    If v\x <> 0.0 : v\x = 1 / v\x : EndIf
-    If v\y <> 0.0 : v\y = 1 / v\y : EndIf
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; LENGTH
-  ;------------------------------------------------------------------
-  Macro LengthSquared(v)
-    v\x * v\x + v\y * v\y
-  EndMacro
-  
-  Macro Length(v)
-    Sqr(v\x * v\x + v\y * v\y)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; NORMALIZE
-  ;------------------------------------------------------------------
-  Macro Normalize(v, o)
-    l.f = LengthSquared(o)
-    If (l <> 0)
-      l =  Sqr(l)
-      v\x = o\x / l
-      v\y = o\y / l
-    EndIf
-  EndMacro
-  
-  Macro NormalizeInPlace(v)
-    l.f = LengthSquared(v)
-    If (l <> 0)
-      l =  Sqr(l)
-      v\x / l
-      v\y / l
-    EndIf
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; ANGLE
-  ;------------------------------------------------------------------
-  Macro GetAngle(v, o, angle)
-    Define fCosAngle.f,fLen.f
-    
-    fLen = Length(v)
-    fLen * Length(o)
-    
-    If fLen < #F32_EPS
-      angle = 0
-    Else
-      fCosAngle = (*v\x* *o\x + *v\y * *o\y)/fLen
-      Clamp(fCosAngle,-1,1)
-      angle = ACos(fCosAngle)
-    EndIf
-  EndMacro
-
+  Declare Set(*v.v2f32,x.f=0,y.f=0)
+  Declare SetFromOther(*v.v2f32,*o.v2f32)
+  Declare.f LengthSquared(*v.v2f32)
+  Declare.f Length(*v.v2f32)
+  Declare.f Normalize(*v.v2f32,*o.v2f32)
+  Declare.f NormalizeInPlace(*v.v2f32)
+  Declare.f GetAngle(*v.v2f32,*o.v2f32)
+  Declare Add(*v.v2f32,*a.v2f32,*b.v2f32)
+  Declare AddInPlace(*v.v2f32,*o.v2f32)
+  Declare SubInPlace(*v.v2f32,*o.v2f32)
+  Declare Sub(*v.v2f32,*a.v2f32,*b.v2f32)
+  Declare Scale(*v.v2f32,*o.v2f32,mult.f=1.0)
+  Declare ScaleInPlace(*v.v2f32,mult.f=1.0)
+  Declare Invert(*o.v2f32, *v.v2f32)
+  Declare InvertInPlace(*v.v2f32)
   Declare LinearInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,blend.f=0.0)
   Declare BezierInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,u.f)
   Declare HermiteInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,mu.f,tension.f,bias.f)
@@ -445,13 +302,7 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Vector3
   UseModule Math
-  ;   Declare Set(*v.v3f32,x.f=0,y.f=0,z.f=0)
-  Macro Set(v,_x,_y,_z)
-    v\x = _x
-    v\y = _y
-    v\z = _z
-  EndMacro
-  
+  Declare Set(*v.v3f32,x.f=0,y.f=0,z.f=0)
   Declare SetFromOther(*v.v3f32,*o.v3f32)
   Declare.f LengthSquared(*v.v3f32)
   Declare.f Length(*v.v3f32)
@@ -750,9 +601,7 @@ Module Math
   ; ----------------------------------------------------------------------------
   Procedure UniformPointOnCircle(*p.v2f32, radius.f=1.0)
     Protected angle.f = Random_0_1() * #F32_2PI 
-    Protected x.f =  Cos(angle) * radius
-    Protected y.f = Sin(angle) * radius
-    Vector2::Set(*p,x,y)
+    Vector2::Set(*p, Cos(angle) * radius, Sin(angle) * radius)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -776,9 +625,7 @@ Module Math
   Procedure.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
     Protected angle.f = Random_0_1() * #F32_2PI 
     Protected r.f = Sqr(Random_0_1())
-    Protected x.f = Cos(angle) * radius * r
-    Protected y.f = Sin(angle) * radius * r
-    Vector2::Set(*p, x, y)
+    Vector2::Set(*p, Cos(angle) * radius * r, Sin(angle) * radius * r)
     ProcedureReturn Vector2::Length(*p)
   EndProcedure
   
@@ -833,6 +680,124 @@ Module Vector2
     EndIf
   EndProcedure
 
+
+  ; Set
+  ;----------------------------------------------------
+  Procedure Set(*v.v2f32,x.f=0,y.f=0)
+    *v\x = x
+    *v\y = y
+  EndProcedure
+  
+  Procedure SetFromOther(*v.v2f32,*o.v2f32)
+    *v\x = *o\x
+    *v\y = *o\y
+  EndProcedure
+
+  ; Get Length Squared
+  ;----------------------------------------
+  Procedure.f LengthSquared(*v.v2f32)
+    ProcedureReturn (*v\x * *v\x + *v\y * *v\y)
+  EndProcedure
+  
+  ; Get Length
+  ;----------------------------------------
+  Procedure.f Length(*v.v2f32)
+    ProcedureReturn (Sqr(LengthSquared(*v)))
+  EndProcedure
+
+  ; Normalize
+  ;----------------------------------------
+  Procedure.f Normalize(*v.v2f32,*o.v2f32)
+    Protected l.f = Length(*o)
+    ;Avoid error dividing by zero
+    If l = 0 : l =1.0 :EndIf
+    
+    Protected div.f = 1/l
+    *v\x = *o\x * div
+    *v\y = *o\y * div
+    ProcedureReturn l
+   EndProcedure
+   
+   ; Normalize In Place
+  ;----------------------------------------
+  Procedure.f NormalizeInPlace(*v.v2f32)
+    Protected l.f = Length(*v)
+    
+    ;Avoid error dividing by zero
+    If l = 0 : l =1.0 :EndIf
+    
+    Protected div.f = 1/l
+    *v\x * div
+    *v\y * div
+    ProcedureReturn l
+  EndProcedure
+
+  ; Get Angle
+  ;----------------------------------------
+  Procedure.f GetAngle(*v.v2f32,*o.v2f32)
+    Protected fCosAngle.f,fLen.f
+    
+    fLen = Length(*v)
+    fLen * Length(*o)
+    
+    If fLen < #F32_EPS
+      ProcedureReturn 0
+    Else
+      fCosAngle = (*v\x* *o\x + *v\y * *o\y)/fLen
+      Clamp(fCosAngle,-1,1)
+      ProcedureReturn ACos(fCosAngle)
+    EndIf
+    
+  
+   EndProcedure
+
+  ; Add
+  ;----------------------------------------------------
+  Procedure Add(*v.v2f32,*a.v2f32,*b.v2f32)
+    *v\x = *a\x + *b\x
+    *v\y = *a\y + *b\y
+  EndProcedure
+  
+  Procedure AddInPlace(*v.v2f32,*o.v2f32)
+    *v\x + *o\x
+    *v\y + *o\y
+  EndProcedure
+
+  ; Sub
+  ;----------------------------------------------------
+  Procedure SubInPlace(*v.v2f32,*o.v2f32)
+    *v\x - *o\x
+    *v\y - *o\y
+  EndProcedure
+  
+  Procedure Sub(*v.v2f32,*a.v2f32,*b.v2f32)
+    *v\x = *a\x - *b\x
+    *v\y = *a\y - *b\y
+  EndProcedure
+
+  ; Scale
+  ;-----------------------------------------------------
+  Procedure Scale(*v.v2f32,*o.v2f32,mult.f=1.0)
+    *v\x = *o\x * mult
+    *v\y = *o\y * mult
+  EndProcedure
+  
+  Procedure ScaleInPlace(*v.v2f32,mult.f=1.0)
+    *v\x * mult
+    *v\y * mult
+  EndProcedure
+  
+  ; Invert
+  ;-----------------------------------------------------
+  Procedure Invert(*v.v2f32,*o.v2f32)
+    If *o\x <> 0.0 : *v\x = 1.0 / *o\x : Else : *v\x = 0.0 : EndIf
+    If *o\y <> 0.0 : *v\y = 1.0 / *o\y : Else : *v\y = 0.0 : EndIf
+  EndProcedure
+  
+  Procedure InvertInPlace(*v.v2f32)
+    If *v\x <> 0.0 : *v\x = 1.0 / *v\x : EndIf
+    If *v\y <> 0.0 : *v\y = 1.0 / *v\y : EndIf
+  EndProcedure
 
   ; Linear Interpolate
   ;-----------------------------------------------------
@@ -927,6 +892,14 @@ Module Vector3
       *v\y = ValF(StringField(s,2,","))
       *v\z = ValF(StringField(s,3,","))
     EndIf
+  EndProcedure
+
+  ; Set
+  ;----------------------------------------------------
+  Procedure Set(*v.v3f32,x.f=0,y.f=0,z.f=0)
+    *v\x = x
+    *v\y = y
+    *v\z = z
   EndProcedure
   
   Procedure SetFromOther(*v.v3f32,*o.v3f32)
@@ -1442,7 +1415,7 @@ Module Quaternion
   ;-----------------------------------------
   Procedure SetFromAxisAngleValues(*q.q4f32,x.f,y.f,z.f,angle.f)
     Protected n.v3f32,axis.v3f32,halfAngle.f,sinAngle.f
-    Vector3::Set(axis,x,y,z)
+    Vector3::Set(@axis,x,y,z)
     Vector3::Normalize(@n,@axis)
     halfAngle = angle*0.5
     sinAngle = Sin(halfAngle)
@@ -1584,8 +1557,8 @@ Module Quaternion
     EndIf
     
     ;First, figure out z-coordinate for projection of p1 and p2 to deformed sphere
-    Vector3::Set(p1,p1x,p1y,ProjectToSphere(#TRACKBALLSIZE,p1x,p1y))
-    Vector3::Set(p2,p2x,p2y,ProjectToSphere(#TRACKBALLSIZE,p2x,p2y))
+    Vector3::Set(@p1,p1x,p1y,ProjectToSphere(#TRACKBALLSIZE,p1x,p1y))
+    Vector3::Set(@p2,p2x,p2y,ProjectToSphere(#TRACKBALLSIZE,p2x,p2y))
     
     ;Now we want the cross product of p1 and p2 which is our axis of rotation
     Vector3::Cross(@axis,@p2,@p1)
@@ -1613,8 +1586,8 @@ Module Quaternion
     Protected v1.v3f32, v2.v3f32, v3.v3f32, v4.v3f32
     Protected w.f, d.f
     
-    Vector3::Set(v1,*q1\x,*q1\y,*q1\z)
-    Vector3::Set(v2,*q2\x,*q2\y,*q2\z)
+    Vector3::Set(@v1,*q1\x,*q1\y,*q1\z)
+    Vector3::Set(@v2,*q2\x,*q2\y,*q2\z)
     Vector3::Cross(@v3,@v1,@v2)
     d = Vector3::Dot(@v1,@v2)
     
@@ -1767,9 +1740,9 @@ Module Quaternion
 ; ;-----------------------------------------
 ; Procedure Draw(*q.q4f32)
 ;   Define.v3f32 x,y,z
-;   Vector3::Set(x,1,0,0)
-;   Vector3::Set(y,0,1,0)
-;   Vector3::Set(z,0,0,1)
+;   Vector3::Set(@x,1,0,0)
+;   Vector3::Set(@y,0,1,0)
+;   Vector3::Set(@z,0,0,1)
 ;   Vector3::MulByq4f32InPlace(@x,*q)
 ;   Vector3::MulByq4f32InPlace(@y,*q)
 ;   Vector3::MulByq4f32InPlace(@z,*q)
@@ -2674,9 +2647,9 @@ Module Transform
   ;------------------------------------------
   Procedure SetMatrixFromSRT(*m.m4f32,*s.v3f32,*r.q4f32,*t.v3f32)
     Protected x.v3f32, y.v3f32, z.v3f32
-    Vector3::Set(x,*s\x,0,0 )
-    Vector3::Set(y,0,*s\y,0 )
-    Vector3::Set(z,0,0,*s\z )
+    Vector3::Set(@x,*s\x,0,0 )
+    Vector3::Set(@y,0,*s\y,0 )
+    Vector3::Set(@z,0,0,*s\z )
     
     Vector3::MulByQuaternionInPlace(@x,*r)
     Vector3::MulByQuaternionInPlace(@y,*r)
@@ -2707,9 +2680,9 @@ Module Transform
   Procedure SetSRTFromMatrix(*m.m4f32,*s.v3f32,*r.q4f32,*t.v3f32)
     Protected x.v3f32, y.v3f32, z.v3f32
     ;Extract the x,y,z axes
-    Vector3::Set(x,*m\v[0],*m\v[1],*m\v[2])
-    Vector3::Set(y,*m\v[4],*m\v[5],*m\v[6])
-    Vector3::Set(z,*m\v[8],*m\v[9],*m\v[10])
+    Vector3::Set(@x,*m\v[0],*m\v[1],*m\v[2])
+    Vector3::Set(@y,*m\v[4],*m\v[5],*m\v[6])
+    Vector3::Set(@z,*m\v[8],*m\v[9],*m\v[10])
     
     ; Set Scale
     Vector3::Set(*s,Vector3::Length(@x),Vector3::Length(@y),Vector3::Length(@z))
@@ -2827,8 +2800,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 430
-; FirstLine = 397
+; CursorPosition = 1870
+; FirstLine = 1850
 ; Folding = -----------------------------------
 ; EnableXP
 ; EnableUnicode

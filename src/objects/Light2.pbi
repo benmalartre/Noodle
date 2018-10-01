@@ -865,17 +865,17 @@ Module Light
     Protected r.v3f32,axis.v3f32
     Vector3::Sub(@r,*c\pos,*c\lookat)
     Protected d.f = Vector3::Length(@r)
-    Vector3::Set(@r,0,0,d)
+    Vector3::Set(r,0,0,d)
     Protected q.q4f32
     
     *c\polar - deltay
     *c\azimuth - deltax
   
-    Vector3::Set(@axis,1,0,0)
+    Vector3::Set(axis,1,0,0)
     Quaternion::SetFromAxisAngle(@q,@axis,*c\polar*#F32_DEG2RAD)
     Vector3::MulByQuaternionInPlace(@r,@q)
     
-    Vector3::Set(@axis,0,1,0)
+    Vector3::Set(axis,0,1,0)
     Quaternion::SetFromAxisAngle(@q,@axis,*c\azimuth*#F32_DEG2RAD)
     Vector3::MulByQuaternionInPlace(@r,@q)
     
@@ -1057,8 +1057,8 @@ Module Light
   
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 959
-; FirstLine = 921
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 877
+; FirstLine = 867
 ; Folding = -----
 ; EnableXP

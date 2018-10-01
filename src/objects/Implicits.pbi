@@ -568,7 +568,7 @@ Module Implicit
      Protected f.f
      Protected l.l
      Protected color.v3f32
-     Vector3::Set(@color,Random(255)/255,Random(255)/255,Random(255)/255)
+     Vector3::Set(color,Random(255)/255,Random(255)/255,Random(255)/255)
     Select shape
       Case  #IMPLICIT_NONE 
       Case  #IMPLICIT_AXIS
@@ -689,7 +689,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 212
-; FirstLine = 160
+; CursorPosition = 570
+; FirstLine = 566
 ; Folding = --
 ; EnableXP

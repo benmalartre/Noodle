@@ -66,11 +66,11 @@ Module MatrixArrayNode
 
 
       Protected scl.v3f32,ori.q4f32,pos.v3f32
-      Vector3::Set(@scl,1,1,1)
+      Vector3::Set(scl,1,1,1)
       Quaternion::SetIdentity(@ori)
       
       For i=0 To nb - 1
-        Vector3::Set(@pos,i,0,0)
+        Vector3::Set(pos,i,0,0)
         Transform::SetMatrixFromSRT(CArray::GetValue(*m_out,i),@scl,@ori,@pos)
 
       Next
@@ -135,8 +135,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 36
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

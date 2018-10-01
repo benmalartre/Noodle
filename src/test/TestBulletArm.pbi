@@ -80,7 +80,7 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   For i=0 To CArray::GetCount(*mesh\a_positions)-1
    
     *p = CArray::GetValue(*mesh\a_positions,i)
-    Vector3::Set(@pos,*p\x*10,(Random(20)-10)*0.1,*p\z*10)
+    Vector3::Set(pos,*p\x*10,(Random(20)-10)*0.1,*p\z*10)
     CArray::SetValue(*mesh\a_positions,i,pos)
   Next
   
@@ -114,14 +114,14 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   Protected upv.v3f32
   Protected rot.q4f32
   Protected scl.v3f32
-  Vector3::Set(@upv, 0,0,1)
+  Vector3::Set(upv, 0,0,1)
   Protected l.f
   
   Vector3::LinearInterpolate(@pos, *start, *end, 0.5)
   Vector3::Sub(@delta, *end, *start)
   l = Vector3::Length(@delta)
   Quaternion::LookAt(@rot, @delta, @upv)
-  Vector3::Set(@scl, 1, l, 1)
+  Vector3::Set(scl, 1, l, 1)
   
   ; add bone
   Protected *bone.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_CUBE)
@@ -194,8 +194,8 @@ Procedure AddConstraint(*A.Object3D::Object3D_t, *B.Object3D::Object3D_t, *drawe
   Protected axis1.v3f32
   Protected axis2.v3f32
   
-  Vector3::Set(@axis1,0,12,0)
-  Vector3::Set(@axis2,12,12,0)
+  Vector3::Set(axis1,0,12,0)
+  Vector3::Set(axis2,12,12,0)
   
   DrawPivot(*A, *drawer)
   
@@ -224,18 +224,18 @@ Procedure BulletCharacter(*s.Program::Program_t)
   BTCreateCurvedGroundData(*s)
   
   ; add bicep
-  Vector3::Set(@sp, 0,0,0)
-  Vector3::Set(@ep, 2,0,0)
+  Vector3::Set(sp, 0,0,0)
+  Vector3::Set(ep, 2,0,0)
   *bicep = AddBone(*root, "Bicep_Bone", *s, @sp, @ep, 0.0)
   
   ; add forearm
-  Vector3::Set(@sp, 2,0,0)
-  Vector3::Set(@ep, 5,0,-0.5)
+  Vector3::Set(sp, 2,0,0)
+  Vector3::Set(ep, 5,0,-0.5)
   *forearm = AddBone(*root, "Forearm_Bone", *s, @sp, @ep, 1.0)
   
   ; add hand
-  Vector3::Set(@sp, 5,0,-0.5)
-  Vector3::Set(@ep, 8,0,0)
+  Vector3::Set(sp, 5,0,-0.5)
+  Vector3::Set(ep, 8,0,0)
   *hand = AddBone(*root, "Hand_Bone", *s, @sp, @ep, 1.0)
   
   ; add constraints
@@ -363,8 +363,8 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
 ;   *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
 ;   Define pos.v3f32,scl.v3f32
-;   Vector3::Set(@pos,0,-1,0)
-;   Vector3::Set(@scl,100,1,100)
+;   Vector3::Set(pos,0,-1,0)
+;   Vector3::Set(scl,100,1,100)
 ;   Matrix4::SetScale(*ground\matrix,@scl)
 ;   Matrix4::SetTranslation(*ground\matrix,@pos)
 ;   
@@ -382,8 +382,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 266
-; FirstLine = 241
+; CursorPosition = 366
+; FirstLine = 313
 ; Folding = --
 ; EnableThread
 ; EnableXP

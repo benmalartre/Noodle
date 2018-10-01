@@ -203,6 +203,7 @@ Module Location
   ; Closest Point
   ;------------------------------------------------------------------
   Procedure ClosestPoint( *Me.Location_t, *A.v3f32, *B.v3f32, *C.v3f32, *P.v3f32, *distance, maxDistance.f=Math::#F32_MAX)
+    
     Protected edge0.v3f32
     Protected edge1.v3f32
     
@@ -338,7 +339,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 329
-; FirstLine = 285
+; CursorPosition = 205
+; FirstLine = 200
 ; Folding = ---
 ; EnableXP

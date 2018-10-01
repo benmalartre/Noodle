@@ -136,7 +136,7 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   For i=0 To CArray::GetCount(*mesh\a_positions)-1
    
     *p = CArray::GetValue(*mesh\a_positions,i)
-    Vector3::Set(@pos,*p\x*10,(Random(20)-10),*p\z*10)
+    Vector3::Set(pos,*p\x*10,(Random(20)-10),*p\z*10)
     CArray::SetValue(*mesh\a_positions,i,pos)
   Next
   
@@ -191,7 +191,7 @@ Procedure BulletScene(*s.Program::Program_t)
   Protected i
   Protected nb = 12
   For i=0 To nb
-    Vector3::Set(@v,0,i,0)
+    Vector3::Set(v,0,i,0)
     CArray::Append(*pos,@v)
   Next
   ;BTCreateSphereSoftBody()
@@ -205,7 +205,7 @@ Procedure BulletScene(*s.Program::Program_t)
 Protected *t.Transform::Transform_t
 Protected color.c4f32
 Protected factor.v3f32
-Vector3::Set(@factor,1,1,1)
+Vector3::Set(factor,1,1,1)
 Color::Set(@color,1.0,0.5,0.4)
   For x=0 To 7
     For y=0 To 1
@@ -218,7 +218,7 @@ Color::Set(@color,1.0,0.5,0.4)
         ;*cube\Sphere()
         ;OPolymeshGeometry_Sphere(*cube\GetGeometry(),1,12,12)
         *t.Transform::Transform_t = *cube\localT
-        Vector3::Set(@p,x*2-10,10*2+y,z*2-10)
+        Vector3::Set(p,x*2-10,10*2+y,z*2-10)
         Vector3::SetFromOther(*t\t\pos,@p)
 
         Quaternion::SetFromAxisAngleValues(@q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
@@ -405,8 +405,8 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
 ;   *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
 ;   Define pos.v3f32,scl.v3f32
-;   Vector3::Set(@pos,0,-1,0)
-;   Vector3::Set(@scl,100,1,100)
+;   Vector3::Set(pos,0,-1,0)
+;   Vector3::Set(scl,100,1,100)
 ;   Matrix4::SetScale(*ground\matrix,@scl)
 ;   Matrix4::SetTranslation(*ground\matrix,@pos)
 ;   
@@ -423,8 +423,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 10
+; CursorPosition = 408
+; FirstLine = 355
 ; Folding = --
 ; EnableThread
 ; EnableXP

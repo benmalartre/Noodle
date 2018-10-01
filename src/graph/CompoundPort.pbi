@@ -130,11 +130,11 @@ Module CompoundNodePort
         Select *sig\rcv_slot
           Case 0;X
             Debug "X Parameter Vector Update..."
-            Vector3::Set(@v,f,v\y,v\z)
+            Vector3::Set(v,f,v\y,v\z)
           Case 1;Y
-            Vector3::Set(@v,v\x,f,v\z)
+            Vector3::Set(v,v\x,f,v\z)
           Case 2;Z
-            Vector3::Set(@v,v\x,v\y,f)
+            Vector3::Set(v,v\x,v\y,f)
         EndSelect
         
         CArray::SetValue(*vVal,0,@v)
@@ -216,8 +216,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 127
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 136
+; FirstLine = 128
 ; Folding = --
 ; EnableXP

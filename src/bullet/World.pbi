@@ -197,7 +197,7 @@ Module BulletWorld
     If Not*Me : ProcedureReturn : EndIf
     
     Protected gravity.v3f32
-    Vector3::Set(@gravity,x,y,z)
+    Vector3::Set(gravity,x,y,z)
     Bullet::BTSetGravity(*Me\world,@gravity)
   EndProcedure
   
@@ -245,7 +245,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 63
+; CursorPosition = 199
+; FirstLine = 192
 ; Folding = --
 ; EnableXP

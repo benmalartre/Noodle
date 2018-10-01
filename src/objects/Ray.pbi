@@ -253,21 +253,21 @@ Module Ray
     If xAbs > yAbs And xAbs > zAbs
       inter0 = *ray\origin\y + intersectDist * *ray\direction\y
       inter1 = *ray\origin\z + intersectDist * *ray\direction\z
-      Vector2::Set(@d0, inter0 - *a\y, inter1 - *a\z)
-      Vector2::Set(@d1, *b\y - *a\y, *b\z - *a\z)
-      Vector2::Set(@d2, *c\y - *a\y, *c\z - *a\z)
+      Vector2::Set(d0, inter0 - *a\y, inter1 - *a\z)
+      Vector2::Set(d1, *b\y - *a\y, *b\z - *a\z)
+      Vector2::Set(d2, *c\y - *a\y, *c\z - *a\z)
     ElseIf yAbs > zAbs
       inter0 = *ray\origin\z + intersectDist * *ray\direction\z
       inter1 = *ray\origin\x + intersectDist * *ray\direction\x
-      Vector2::Set(@d0, inter0 - *a\z, inter1 - *a\x)
-      Vector2::Set(@d1, *b\z - *a\z, *b\x - *a\x)
-      Vector2::Set(@d2, *c\z - *a\z, *c\x - *a\x)
+      Vector2::Set(d0, inter0 - *a\z, inter1 - *a\x)
+      Vector2::Set(d1, *b\z - *a\z, *b\x - *a\x)
+      Vector2::Set(d2, *c\z - *a\z, *c\x - *a\x)
     Else
       inter0 = *ray\origin\x + intersectDist * *ray\direction\x
       inter1 = *ray\origin\y + intersectDist * *ray\direction\y
-      Vector2::Set(@d0, inter0 - *a\x, inter1 - *a\y)
-      Vector2::Set(@d1, *b\x - *a\x, *b\y - *a\y)
-      Vector2::Set(@d2, *c\x - *a\x, *c\y - *a\y)
+      Vector2::Set(d0, inter0 - *a\x, inter1 - *a\y)
+      Vector2::Set(d1, *b\x - *a\x, *b\y - *a\y)
+      Vector2::Set(d2, *c\x - *a\x, *c\y - *a\y)
     EndIf
     
     ; XXX This code can miss some intersections on very tiny tris.
@@ -307,8 +307,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 93
+; CursorPosition = 263
+; FirstLine = 251
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

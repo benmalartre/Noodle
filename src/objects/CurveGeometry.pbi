@@ -216,7 +216,7 @@ Module CurveGeometry
 	  Protected numVertices.i
 	  Protected nrm.v3f32
 	  Protected upv.v3f32
-	  Vector3::Set(@upv, 0,0,1)
+	  Vector3::Set(upv, 0,0,1)
 	  For i=0 To CArray::GetCount(*Me\a_numVertices)
 	    numVertices = CArray::GetValueL(*Me\a_numVertices, i)
 	    For j=0 To numVertices -1
@@ -541,16 +541,16 @@ Module CurveGeometry
     Define n.v3f32
     Define w.f
     Define offset.v3f32
-    Vector3::Set(@offset, 0,1,0)
-    Vector3::Set(@c, 1,0,0)
-    Vector3::Set(@n, 0,0,1)
+    Vector3::Set(offset, 0,1,0)
+    Vector3::Set(c, 1,0,0)
+    Vector3::Set(n, 0,0,1)
     For i=0 To *Me\nbpoints-1
       Vector3::AddInPlace(@p, @offset)
       p\x + (1 - 2 *Random_0_1()) * 10
       p\y + (1 - 2 *Random_0_1()) * 10
       p\z + (1 - 2 *Random_0_1()) * 10
       CArray::SetValue(*Me\a_positions, i, @p)
-      Vector3::Set(@c, Random_0_1(), Random_0_1(), Random_0_1())
+      Vector3::Set(c, Random_0_1(), Random_0_1(), Random_0_1())
       CArray::SetValue(*Me\a_colors, i, @c)
       CArray::SetValue(*Me\a_normals, i, @n)
       CArray::SetValueF(*Me\a_widths, i, 0.1)
@@ -581,9 +581,9 @@ Module CurveGeometry
     Define dec.f = 1.0 / (numCVs-1) * 0.1
     Define t1.v3f32, t2.v3f32
     Define upv.v3f32
-    Vector3::Set(@upv, 1,0,0)
-    Vector3::Set(@color, 1,0,0)
-    Vector3::Set(@norm, 0,0,1)
+    Vector3::Set(upv, 1,0,0)
+    Vector3::Set(color, 1,0,0)
+    Vector3::Set(norm, 0,0,1)
     For i=0 To N-1
       Math::UniformPointOnSphere(@offset)
       For j=0 To numCVs -1
@@ -593,14 +593,14 @@ Module CurveGeometry
         p\z + (1 - 2 * Random_0_1())
         
         CArray::SetValue(*Me\a_positions, j+base, @p)
-        Vector3::Set(@color, Random_0_1(), Random_0_1(), Random_0_1())
+        Vector3::Set(color, Random_0_1(), Random_0_1(), Random_0_1())
         CArray::SetValue(*Me\a_colors, j+base, @color)
         CArray::SetValue(*Me\a_normals, j+base, @norm)
         CArray::SetValueF(*Me\a_widths, j+base, 0.1)
       Next
 
       CArray::SetValueL(*Me\a_numVertices, i, numCVs)
-      Vector3::Set(@p, 0,0,0)
+      Vector3::Set(p, 0,0,0)
       
       base + numCVs
     Next
@@ -664,7 +664,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 218
-; FirstLine = 209
+; CursorPosition = 602
+; FirstLine = 549
 ; Folding = ------
 ; EnableXP

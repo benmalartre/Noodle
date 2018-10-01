@@ -133,7 +133,7 @@ Module LayerDefered
 ;     glUniform1i(glGetUniformLocation(shader,"shadow_map"),5)
 ;     
 ;     Protected focus.v3f32
-;     Vector3::Set(@focus,0,0,1)
+;     Vector3::Set(focus,0,0,1)
 ;     
 ;     glUniform3f(glGetUniformLocation(shader,"focus"),focus\x,focus\y,focus\z)
 ;   
@@ -178,8 +178,8 @@ Module LayerDefered
       Protected sunColor.v3f32
       Protected sunDirection.v3f32
       Protected sunIntensity.f = 1.0
-      Vector3::Set(@sunColor, 1,0.9,0.75)
-      Vector3::Set(@sunDirection, 0.45,1, 0.66)
+      Vector3::Set(sunColor, 1,0.9,0.75)
+      Vector3::Set(sunDirection, 0.45,1, 0.66)
       glUniform3fv(glGetUniformLocation(shader,"sun.direction"), 1, @sunDirection)
       glUniform3fv(glGetUniformLocation(shader,"sun.color"), 1, @sunColor)
       glUniform1f(glGetUniformLocation(shader,"sun.intensity"), @sunIntensity)
@@ -249,8 +249,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 175
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 181
+; FirstLine = 135
 ; Folding = --
 ; EnableXP

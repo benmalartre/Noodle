@@ -46,7 +46,7 @@ Procedure RandomPointCloud(numPoints.i, *m.m4f32)
   For i=0 To numPoints-1
     *pos = CArray::GetValue(*position, i)
     Vector3::Set(*pos, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02)
-;     Vector3::Set(@dir, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02)
+;     Vector3::Set(dir, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02, 1.0 - Random(100)*0.02)
 ;     Vector3::NormalizeInPlace(@dir)
 ;     Vector3::Scale(*pos, @dir, Random(100)*0.01)
     Vector3::MulByMatrix4InPlace(*pos, *m)
@@ -128,7 +128,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
   Else
     Protected sum.v3f32
     Protected *p.v3f32
-    Vector3::Set(@sum, 0,0,0)
+    Vector3::Set(sum, 0,0,0)
     Protected i.i
     For i=0 To *geom\nbpoints - 1
       *p = CArray::GetValue(*geom\a_positions,i)
@@ -177,20 +177,20 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
         
     Select det_max_one
       Case 0
-        Vector3::Set(@nrm, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
+        Vector3::Set(nrm, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
       Case 1
-        Vector3::Set(@nrm, xz * yz - xy * zz, det_y, xy * xz - yz * xx)
+        Vector3::Set(nrm, xz * yz - xy * zz, det_y, xy * xz - yz * xx)
       Case 2
-        Vector3::Set(@nrm, xy * yz - xz * yy, xy * xz - yz * xx, det_z)
+        Vector3::Set(nrm, xy * yz - xz * yy, xy * xz - yz * xx, det_z)
     EndSelect
     
     Select det_max_two
       Case 0
-        Vector3::Set(@upv, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
+        Vector3::Set(upv, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
       Case 1
-        Vector3::Set(@upv, xz * yz - xy * zz, det_y, xy * xz - yz * xx)
+        Vector3::Set(upv, xz * yz - xy * zz, det_y, xy * xz - yz * xx)
       Case 2
-        Vector3::Set(@upv, xy * yz - xz * yy, xy * xz - yz * xx, det_z)
+        Vector3::Set(upv, xy * yz - xz * yy, xy * xz - yz * xx, det_z)
     EndSelect
     
       
@@ -205,7 +205,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Matrix4::SetFromQuaternion(@m, @rot)
 ;     Matrix4::DirectionMatrix(@m, @nrm, @upv)
     Matrix4::SetTranslation(@m, @centroid)
-;     Vector3::Set(@scl, 12,12,12)
+;     Vector3::Set(scl, 12,12,12)
 ;     Transform::SetScale(@t, @scl)
 ;     Quaternion::LookAt(@rot, @nrm, @upv)
 ;     Transform::SetRotationFromQuaternion(@t,@rot)
@@ -254,13 +254,13 @@ FTGL::Init()
   Object3D::SetShader(*ground,*s_polymesh)
   
   Define ctr.v3f32, nrm.v3f32
-  Vector3::Set(@ctr, 0,4,0)
-  Vector3::Set(@nrm, 0,1,1)
+  Vector3::Set(ctr, 0,4,0)
+  Vector3::Set(nrm, 0,1,1)
   
   Define t.Transform::Transform_t
   Define q.q4f32
   Define upv.v3f32
-  Vector3::Set(@upv, 0,0,1)
+  Vector3::Set(upv, 0,0,1)
   Quaternion::LookAt(@q, @nrm, @upv)
   Transform::SetTranslation(@t, @ctr)
   Transform::SetRotationFromQuaternion(@t, @q)
@@ -286,7 +286,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 215
-; FirstLine = 157
+; CursorPosition = 262
+; FirstLine = 209
 ; Folding = -
 ; EnableXP

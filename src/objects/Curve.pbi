@@ -101,9 +101,9 @@ Module Curve
     glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
     
     Protected c.v3f32
-    Vector3::Set(@c, 0,1,0)
+    Vector3::Set(c, 0,1,0)
     Protected n.v3f32
-    Vector3::Set(@n, 1,0,0)
+    Vector3::Set(n, 1,0,0)
     Protected width.f = 0.222
     ; Push Buffer To GPU
     Protected *samples.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
@@ -316,7 +316,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 229
-; FirstLine = 218
+; CursorPosition = 105
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP

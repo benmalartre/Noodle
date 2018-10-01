@@ -211,7 +211,7 @@ Procedure Draw(*app.Application::Application_t)
   Define p.v3f32
 
   ForEach *bunnies()
-  ;         Vector3::Set(@p,*bunnies()\model\v[12],Sin(Time::Get()+i)+2,*bunnies()\model\v[14])
+  ;         Vector3::Set(p,*bunnies()\model\v[12],Sin(Time::Get()+i)+2,*bunnies()\model\v[14])
   ;         Matrix4::SetTranslation(*bunnies()\model,@p)
     glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*bunnies()\matrix)
     Polymesh::Draw(*bunnies())
@@ -420,9 +420,9 @@ If Time::Init()
       For z=0 To 7
         AddElement(*bunnies())
         *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
-        Vector3::Set(@color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
+        Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
-        Vector3::Set(@pos,x-5,y+0.5,z-5)
+        Vector3::Set(pos,x-5,y+0.5,z-5)
         Matrix4::SetTranslation(*bunnies()\matrix,@pos)
         Polymesh::Setup(*bunnies(),*s_gbuffer)
       Next
@@ -504,8 +504,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 318
-; FirstLine = 275
+; CursorPosition = 424
+; FirstLine = 371
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

@@ -224,14 +224,14 @@ Module Handle
       ;Set Point Position
       Protected scl.v3f32
       Matrix4::SetIdentity(@offset)
-      Vector3::Set(@scl,0.1,0.1,0.1)
+      Vector3::Set(scl,0.1,0.1,0.1)
       Matrix4::SetScale(@offset,@scl)
       
       ; Handle Axis
       Protected p.v3f32
-      Vector3::Set(@p,0,0,0)
+      Vector3::Set(p,0,0,0)
       CArray::SetValue(\positions,@p,0)
-      Vector3::Set(@p,3,0,0)
+      Vector3::Set(p,3,0,0)
       CArray::SetValue(\positions,@p,1)
  
       ; Handle Head
@@ -240,7 +240,7 @@ Module Handle
       Protected *datas = ?shape_cube_positions
       Protected size_p.i = 12
       For i=0 To nbp-3
-        Vector3::Set(@v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
+        Vector3::Set(v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
         Vector3::Echo(@v, "BEFORE")
         Vector3::MulByMatrix4InPlace(@v,@offset)
         Vector3::Echo(@v, "AFTER")
@@ -284,11 +284,11 @@ Module Handle
       CArray::SetCount(\indices,nbi)
 
       Protected p.v3f32
-      Vector3::Set(@p,0,-1,0)
+      Vector3::Set(p,0,-1,0)
       CArray::SetValue(\positions,0,@p)
-      Vector3::Set(@p,0,0,0)
+      Vector3::Set(p,0,0,0)
       CArray::SetValue(\positions,1,@p)
-      Vector3::Set(@p,0,1,0)
+      Vector3::Set(p,0,1,0)
       CArray::SetValue(\positions,2,@p)
       
       CArray::SetValueL(\indices,0,0)
@@ -320,10 +320,10 @@ Module Handle
       CArray::SetCount(\indices,nbi)
 
       Protected pos.v3f32
-      Vector3::Set(@pos,0,0,0)
+      Vector3::Set(pos,0,0,0)
       CArray::SetValue(\positions,0,@pos)
 
-      Vector3::Set(@pos,3,0,0)
+      Vector3::Set(pos,3,0,0)
       CArray::SetValue(\positions,1,@pos)
       
       CArray::SetValueL(\indices,0,0)
@@ -334,7 +334,7 @@ Module Handle
       For i=0 To div-1
         x = Sin(Radian(st*i))
         y = Cos(Radian(st*i))
-        Vector3::Set(@pos,2.6,x*0.12,y*0.12)
+        Vector3::Set(pos,2.6,x*0.12,y*0.12)
         CArray::SetValue(\positions,i+2,@pos)
         CArray::SetValueL(\indices,i*3+2,i+2)
 
@@ -372,10 +372,10 @@ Module Handle
 
       
       Protected pos.v3f32
-      Vector3::Set(@pos,0,0,0)
+      Vector3::Set(pos,0,0,0)
       CArray::SetValue(\positions,0,@pos)
       
-      Vector3::Set(@pos,3,0,0)
+      Vector3::Set(pos,3,0,0)
       CArray::SetValue(\positions,1,@pos)
       
       CArray::SetValueL(\indices,0,0)
@@ -389,10 +389,10 @@ Module Handle
       For i=0 To div-1
         x = -Sin(Radian(st*i))
         y = Cos(Radian(st*i))
-        Vector3::Set(@pos,-0.1,x,y)
+        Vector3::Set(pos,-0.1,x,y)
         CArray::SetValue(\positions,i+2,@pos)
 
-        Vector3::Set(@pos,0.1,x,y)
+        Vector3::Set(pos,0.1,x,y)
         CArray::SetValue(\positions,i+2+div,@pos)
         
         CArray::SetValueL(\indices,offset,i+2)
@@ -443,9 +443,9 @@ Module Handle
       
       
       Protected pos.v3f32
-      Vector3::Set(@pos,0,0,0)
+      Vector3::Set(pos,0,0,0)
       CArray::SetValue(\positions,0,@pos)
-      Vector3::Set(@pos,0,0,-1)
+      Vector3::Set(pos,0,0,-1)
       CArray::SetValue(\positions,1,@pos)
       
       CArray::SetValueL(\indices,0,0)
@@ -666,7 +666,7 @@ Module Handle
       Protected l.f = Vector3::Length(@dir)
       Protected inv_view.m4f32
   
-      Vector3::Set(@scl,l,l,l)
+      Vector3::Set(scl,l,l,l)
       Quaternion::LookAt(@quat,@dir,*up)
       Transform::SetTranslationFromXYZValues(*Me\transform,*pos\x,*pos\y,*pos\z)
       Transform::SetRotationFromQuaternion(*Me\transform,@quat)
@@ -741,7 +741,7 @@ Module Handle
       Protected X.m4f32
       Protected P.v3f32
       Protected S.v3f32
-      Vector3::Set(@S, 0.01,0.01,0.01)
+      Vector3::Set(S, 0.01,0.01,0.01)
       Matrix4::SetIdentity(@X)
       Vector3::Add(@P, *Me\ray\origin, *Me\ray\direction)
       Matrix4::SetScale(@X, @S)
@@ -770,7 +770,7 @@ Module Handle
 ;         
 ;         Vector3::Scale(@P, *Me\ray\direction, distance)
 ;         Vector3::AddInPlace(@P, *Me\ray\origin)
-;         Vector3::Set(@S, 0.05,0.05,0.05)
+;         Vector3::Set(S, 0.05,0.05,0.05)
 ;         Matrix4::SetIdentity(@X)
 ;         Matrix4::SetScale(@X, @S)
 ;         Matrix4::SetTranslation(@X,@P)
@@ -854,20 +854,20 @@ Module Handle
     
     Select *Me\active_axis
       Case #Handle_Active_X
-        Vector3::Set(@s2,*s\x+delta,*s\y,*s\z)
+        Vector3::Set(s2,*s\x+delta,*s\y,*s\z)
         Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\display)
 
       Case #Handle_Active_Y
-        Vector3::Set(@s2,*s\x,*s\y+delta,*s\z)
+        Vector3::Set(s2,*s\x,*s\y+delta,*s\z)
         Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\display)
       Case #Handle_Active_Z
-        Vector3::Set(@s2,*s\x,*s\y,*s\z+delta)
+        Vector3::Set(s2,*s\x,*s\y,*s\z+delta)
         Transform::SetScaleFromXYZValues(*Me\transform,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\transform)
         Transform::SetScaleFromXYZValues(*Me\display,s2\x,s2\y,s2\z)
@@ -1224,7 +1224,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 468
-; FirstLine = 459
+; CursorPosition = 869
+; FirstLine = 816
 ; Folding = ------
 ; EnableXP

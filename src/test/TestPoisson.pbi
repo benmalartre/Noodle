@@ -68,8 +68,8 @@ Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
 Define *poisson.Poisson::Poisson_t = Poisson::New()
 Define box.Geometry::Box_t
 Define origin.v3f32, extend.v3f32
-Vector3::Set(@origin, 1,3,2)
-Vector3::Set(@extend, 12,12,12)
+Vector3::Set(origin, 1,3,2)
+Vector3::Set(extend, 12,12,12)
 Box::Set(@box, @origin, @extend)
 
 Scene::*current_scene = Scene::New()
@@ -137,8 +137,8 @@ Application::Loop(*app, @Draw())
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 51
+; CursorPosition = 71
+; FirstLine = 66
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -418,7 +418,7 @@ Module ViewportUI
     Define y.f = 1 - (2 * my) / *Me\height
     Define z.f = 1
     Define ray_nds.v3f32
-    Vector3::Set(@ray_nds, x, y, z)
+    Vector3::Set(ray_nds, x, y, z)
     
     ; 4d Homogeneous Clip Coordinates
     Define ray_clip.v4f32
@@ -507,7 +507,7 @@ Module ViewportUI
         Protected *outQ.q4f32 = *outT\t\rot
         
         Protected up.v3f32
-        Vector3::Set(@up,0,1,0)
+        Vector3::Set(up,0,1,0)
   
         Quaternion::LookAt(*outQ,rcr\m_normalWorld,@up)
         Transform::SetRotationFromQuaternion(*outT,*outQ)
@@ -546,7 +546,7 @@ Module ViewportUI
     ;glfwGetCursorPos(*v\window,@x,@y)
     x = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
     y = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    Vector3::Set(@window_pos,x,*v\height-y,0.5)
+    Vector3::Set(window_pos,x,*v\height-y,0.5)
     Vector3::Echo(@window_pos,"Window Pos")
     Protected viewport.v4f32
     Vector4::Set(@viewport,*v\x,*v\y,*v\width,*v\height)
@@ -629,7 +629,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 204
-; FirstLine = 193
+; CursorPosition = 548
+; FirstLine = 495
 ; Folding = -----
 ; EnableXP

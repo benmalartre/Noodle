@@ -490,7 +490,7 @@ Module Bullet
   ;   Debug "Sdk_Bullet_World --> "+Str(*raa_bullet_sdk\m_world)
   
     Protected gravity.v3f32
-    Vector3::Set(@gravity,0,-10,0)
+    Vector3::Set(gravity,0,-10,0)
     BTSetGravity(*bullet_world,@gravity)
     
     ; ---[ OK ]-----------------------------------------------------------------
@@ -515,7 +515,7 @@ Module Bullet
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 302
-; FirstLine = 271
+; CursorPosition = 492
+; FirstLine = 462
 ; Folding = ---
 ; EnableXP

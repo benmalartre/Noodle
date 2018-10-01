@@ -109,7 +109,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Protected m3.m3f32
   Protected norm.v3f32
   Protected up.v3f32
-  Vector3::Set(@up,1,0,0)
+  Vector3::Set(up,1,0,0)
   Protected dist.f = #F32_MAX
  
   
@@ -188,8 +188,8 @@ Procedure AddRay()
   Define.c4f32 color
   
   ;Ray 1
-  Vector3::Set(@sp,2,10,0)
-  Vector3::Set(@ep,0,0,0)
+  Vector3::Set(sp,2,10,0)
+  Vector3::Set(ep,0,0,0)
   
   Color::Set(@color,1,0,0,1)
   *ray = newTestRay(*bunny,@sp,@ep,@color)
@@ -248,8 +248,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 118
+; CursorPosition = 191
+; FirstLine = 138
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

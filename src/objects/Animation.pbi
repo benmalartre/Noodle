@@ -249,7 +249,7 @@ Module Animation
 ; ;             *T2 = *n\localT
 ; ;             Transform::SetScale(*T2,CArray::GetValue(*static_scl,i))
 ; ;             Transform::SetRotationFromQuaternion(*T2,CArray::GetValue(*static_rot,i))
-; ;             Vector3::Set(@p,Random(10),Random(10),Random(10))
+; ;             Vector3::Set(p,Random(10),Random(10),Random(10))
 ; ;             Transform::SetTranslation(*T2,CArray::GetValue(*static_pos,i))
 ; ;             Object3D::SetLocalTransform(*n,*T2)
 ;             
@@ -417,7 +417,7 @@ Module Animation
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 161
+; CursorPosition = 251
+; FirstLine = 247
 ; Folding = --
 ; EnableXP

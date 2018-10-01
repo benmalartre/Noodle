@@ -658,16 +658,16 @@ EndModule
 ;   Arguments::AddPtr(*args,"Memory Pointer",*mem)
 ;   
 ;   Define v.v3f32
-;   Vector3::Set(@v,3.33,4.56,7.258)
+;   Vector3::Set(v,3.33,4.56,7.258)
 ;   Arguments::AddV3F32(*args,"Vec3",@v)
 ;   
 ;   Arguments::Echo(*args)
 ;   Arguments::Delete(*args)
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 39
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 660
+; FirstLine = 613
 ; Folding = -------
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

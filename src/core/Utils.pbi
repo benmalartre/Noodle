@@ -233,8 +233,8 @@ Module Utils
     Protected q.q4f32
     Protected axis.v3f32
     Protected r.v3f32
-    Vector3::Set(@axis,0,1,0)
-    Vector3::Set(@r,radius,0,0)
+    Vector3::Set(axis,0,1,0)
+    Vector3::Set(r,radius,0,0)
     Protected *p.v3f32
     Protected angle.f
     Protected i=0
@@ -342,7 +342,7 @@ Module Utils
   Procedure DirectionToRotation(*io.m3f32,*dir.v3f32,*up.v3f32=#Null)
     If *up=#Null
       Define up.v3f32
-      Vector3::Set(@up,0,1,0)
+      Vector3::Set(up,0,1,0)
       *up = @up
     EndIf
     
@@ -500,7 +500,7 @@ Module Utils
 ;         u = 1-u
 ;         v = 1-v
 ;       EndIf
-;       Vector3::Set(@sum,0,0,0)
+;       Vector3::Set(sum,0,0,0)
 ;       Vector3::Scale(@p,*a,u)
 ;       Vector3::AddInPlace(@sum,@p)
 ;       Vector3::Scale(@p, *b,v)
@@ -509,7 +509,7 @@ Module Utils
 ;       Vector3::AddInPlace(@sum,@p)
 ;       
 ;       s = 1;Random(10)*0.1
-;       Vector3::Set(@scl,s,s,s)
+;       Vector3::Set(scl,s,s,s)
 ;       
 ;       Protected *loc.Geometry::Location_t = Location::New()
 ;       *loc\u = u
@@ -521,7 +521,7 @@ Module Utils
 ;       *a = CArray::GetValue(*m\a_pointnormals,a)
 ;       *b = CArray::GetValue(*m\a_pointnormals,b)
 ;       *c = CArray::GetValue(*m\a_pointnormals,c)
-;        Vector3::Set(@sum,0,0,0)
+;        Vector3::Set(sum,0,0,0)
 ;       Vector3::Scale(@p,*a,u)
 ;       Vector3::AddInPlace(@sum,@p)
 ;       Vector3::Scale(@p, *b,v)
@@ -540,7 +540,7 @@ Module Utils
 ;       Color::SetFromOther(*loc\c,@color)
 ;       
 ;       ; flipper tmp datas
-;       Vector3::Set(@uvw,u,v,tid)
+;       Vector3::Set(uvw,u,v,tid)
 ;       
 ;       
 ;     Next
@@ -550,7 +550,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 126
+; CursorPosition = 511
+; FirstLine = 497
 ; Folding = ---
 ; EnableXP

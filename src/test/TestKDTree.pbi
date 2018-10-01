@@ -285,8 +285,8 @@ If Time::Init()
   Define.m4f32 model,view,proj
   Matrix4::SetIdentity(@model)
   Define.v3f32 pos,lookat,up
-  Vector3::Set(@pos,5,10,5)
-  Vector3::Set(@up,0,1,0)
+  Vector3::Set(pos,5,10,5)
+  Vector3::Set(up,0,1,0)
   Matrix4::GetViewMatrix(@view,@pos,@lookat,@up)
   Matrix4::GetProjectionMatrix(@proj,60,1.4,0.01,10000)
   
@@ -422,7 +422,7 @@ If Time::Init()
       T = Time::Get()
       KDTree::SearchN(*tree,@query,2,-1)
       TSearch = Time::Get()-T
-      Vector3::Set(@p,query\v[0],query\v[1],query\v[2])
+      Vector3::Set(p,query\v[0],query\v[1],query\v[2])
       Matrix4::SetIdentity(@model)
       Matrix4::SetTranslation(@model,@p)
       Matrix4::SetIdentity(@offset)
@@ -453,8 +453,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 223
+; CursorPosition = 424
+; FirstLine = 400
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

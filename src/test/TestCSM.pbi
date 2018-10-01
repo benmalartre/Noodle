@@ -198,8 +198,8 @@ Procedure Draw(*app.Application::Application_t)
   Sampler::SamplePolymesh(*ground\geom,*samples,1,7)
   
   Define pos.v3f32,scl.v3f32
-  Vector3::Set(@pos,0,-5,0)
-  Vector3::Set(@scl,100,1,100)
+  Vector3::Set(pos,0,-5,0)
+  Vector3::Set(scl,100,1,100)
   Matrix4::SetScale(*ground\localT\m,@scl)
   Matrix4::SetTranslation(*ground\localT\m,@pos)
   Transform::UpdateSRTFromMatrix(*ground\localT)
@@ -215,8 +215,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 157
+; CursorPosition = 201
+; FirstLine = 162
 ; Folding = -
 ; EnableThread
 ; EnableXP

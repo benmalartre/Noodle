@@ -7,7 +7,7 @@ UseModule CArray
 ; Define a.v3f32
 ; Define i
 ; For i=0 To 12
-;   Vector3::Set(@a,0,i,0)
+;   Vector3::Set(a,0,i,0)
 ;   CArray::Append(*array,a)
 ; Next
 ; 
@@ -160,8 +160,8 @@ Next
 ;   Debug f
 ;   
 ; Next
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 139
-; FirstLine = 113
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 9
+; FirstLine = 5
 ; EnableXP
 ; EnableUnicode

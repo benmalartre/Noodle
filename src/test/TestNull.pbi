@@ -162,14 +162,14 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene, *root)
   
   Define pos.v3f32,scl.v3f32
-  Vector3::Set(@pos,0,-1,0)
-  Vector3::Set(@scl,100,1,100)
+  Vector3::Set(pos,0,-1,0)
+  Vector3::Set(scl,100,1,100)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 86
+; CursorPosition = 165
+; FirstLine = 115
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

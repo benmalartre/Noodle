@@ -100,7 +100,7 @@ Module FloatToVector3Node
 
     For i=0 To m_max-1
       
-      Vector3::Set(@v,CArray::GetValueF(*m_x,Min(i,x_nb)),CArray::GetValueF(*m_y,Min(i,y_nb)),CArray::GetValueF(*m_z,Min(i,z_nb)))
+      Vector3::Set(v,CArray::GetValueF(*m_x,Min(i,x_nb)),CArray::GetValueF(*m_y,Min(i,y_nb)),CArray::GetValueF(*m_z,Min(i,z_nb)))
       CArray::SetValue(*m_out,i,v)
     Next i
    
@@ -143,8 +143,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 50
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 102
+; FirstLine = 91
 ; Folding = --
 ; EnableXP

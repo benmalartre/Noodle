@@ -158,8 +158,8 @@ Module BulletConstraint
     Protected axisA.v3f32, axisB.v3f32
     Protected q.q4f32
     Quaternion::SetIdentity(@q)
-    Vector3::Set(@axisA,1,0,0)
-    Vector3::Set(@axisB,0,1,0)
+    Vector3::Set(axisA,1,0,0)
+    Vector3::Set(axisB,0,1,0)
     
 ;   	#CONSTRAINT_HINGE
 ;   	#CONSTRAINT_CONETWIST
@@ -205,7 +205,7 @@ Module BulletConstraint
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 102
+; CursorPosition = 161
+; FirstLine = 152
 ; Folding = ---
 ; EnableXP

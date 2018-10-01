@@ -67,14 +67,14 @@ Procedure UpdateCamera(*object.Object3D::Object3D_t,*camera.Camera::Camera_t,x.f
    Protected *t.Transform::Transform_t = *camera\localT  
   Protected dir.v3f32
   Protected up.v3f32
-  Vector3::Set(@up,0,1,0)
+  Vector3::Set(up,0,1,0)
   Vector3::Sub(@dir,*camera\pos,*camera\lookat)
   Vector3::NormalizeInPlace(@dir)
   
     Protected delta.v3f32
   Protected m3.m3f32
-  Vector3::Set(@delta,x,y)
-  Vector3::Set(@delta,delta\x,0,delta\y)
+  Vector3::Set(delta,x,y)
+  Vector3::Set(delta,delta\x,0,delta\y)
   Utils::DirectionToRotation(@m3,@dir,@up)
   Vector3::MulByMatrix3InPlace(@delta,@m3)
   
@@ -101,7 +101,7 @@ Procedure Update(*app.Application::Application_t)
   Protected *cm.m4f32 = *app\camera\matrix
   Protected q.q4f32
   Protected v.v3f32
-  Vector3::Set(@v,x,0,z)
+  Vector3::Set(v,x,0,z)
 
   Matrix4::GetQuaternion(*cm,@q)
   Vector3::MulByQuaternionInPlace(@v,@q)
@@ -220,8 +220,8 @@ Procedure Update(*app.Application::Application_t)
   *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
   Object3D::SetShader(*ground,*s_polymesh)
   Define pos.v3f32,scl.v3f32
-  Vector3::Set(@pos,0,-1,0)
-  Vector3::Set(@scl,100,1,100)
+  Vector3::Set(pos,0,-1,0)
+  Vector3::Set(scl,100,1,100)
   Matrix4::SetScale(*ground\matrix,@scl)
   Matrix4::SetTranslation(*ground\matrix,@pos)
   
@@ -241,8 +241,8 @@ Procedure Update(*app.Application::Application_t)
   Application::Loop(*app, @Update())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 212
-; FirstLine = 183
+; CursorPosition = 223
+; FirstLine = 170
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

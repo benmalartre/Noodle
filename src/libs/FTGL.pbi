@@ -215,11 +215,12 @@ Module FTGL
   ;-------------------------------------------------------------------------------------
   Procedure SetColor(*drawer.FTGL_Drawer,r.f,g.f,b.f,a.f)
     If *drawer
-    *drawer\color\r = r
-    *drawer\color\g = g
-    *drawer\color\b = b
-    *drawer\color\a = a
-  EndIf
+      *drawer\color\r = r
+      *drawer\color\g = g
+      *drawer\color\b = b
+      *drawer\color\a = a
+      glUniform4fv(glGetUniformLocation(*drawer\shader\pgm,"color"),1,*drawer\color)
+    EndIf
   
   EndProcedure
   
@@ -416,8 +417,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 252
-; FirstLine = 250
+; CursorPosition = 221
+; FirstLine = 212
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

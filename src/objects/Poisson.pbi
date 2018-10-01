@@ -130,7 +130,7 @@ Module Poisson
     For z=0 To *Me\resolution[2] - 1
       For y=0 To *Me\resolution[1] - 1
         For x=0 To *Me\resolution[0] - 1
-          Vector3::Set(@p, 
+          Vector3::Set(p, 
                        *Me\dimension\x*x+*Me\box\origin\x-*Me\box\extend\x,
                        *Me\dimension\y*y+*Me\box\origin\y-*Me\box\extend\y,
                        *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
@@ -153,11 +153,12 @@ Module Poisson
     Define i
     Define d.f
     Define x,y,z
+    Define p.v3f32
     
     For Z=0 To *Me\resolution[2] - 1
       For y=0 To *Me\resolution[1] - 1
         For x=0 To *Me\resolution[0] - 1
-          Vector3::Set(@p, 
+          Vector3::Set(p, 
                        *Me\dimension\x*x+*Me\box\origin\x-*Me\box\extend\x,
                        *Me\dimension\y*y+*Me\box\origin\y-*Me\box\extend\y,
                        *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
@@ -245,7 +246,7 @@ Module Poisson
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 142
+; CursorPosition = 155
+; FirstLine = 143
 ; Folding = ---
 ; EnableXP

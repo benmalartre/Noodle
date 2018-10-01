@@ -78,7 +78,7 @@ Define pos.v3f32, rot.q4f32
 ;       For z=0 To 7
 ;         AddElement(*bunnies())
 ;         *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
-;         Vector3::Set(@color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
+;         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
 ;         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
 ;         *t = *bunnies()\localT
 ;         Scene::AddChild(Scene::*current_scene,*bunnies())
@@ -213,7 +213,7 @@ EndProcedure
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 153
+; CursorPosition = 80
+; FirstLine = 76
 ; Folding = -
 ; EnableXP

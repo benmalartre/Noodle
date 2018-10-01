@@ -60,8 +60,8 @@ Procedure Sphere()
   
   Protected target.v3f32
   Protected upv.v3f32
-  Vector3::Set(@target,0,1,0)
-  Vector3::Set(@upv,1,0,0)
+  Vector3::Set(target,0,1,0)
+  Vector3::Set(upv,1,0,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
   Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
   Utils::TransformPositionArrayInPlace(*pnts,@m)
@@ -70,8 +70,8 @@ Procedure Sphere()
     AddLineTwo("Data.f " + StrF(*p\x,5) + "," + StrF(*p\y) + "," + StrF(*p\z))
   Next
   
-  Vector3::Set(@target,0,0,1)
-  Vector3::Set(@upv,0,1,0)
+  Vector3::Set(target,0,0,1)
+  Vector3::Set(upv,0,1,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
   Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
   Utils::TransformPositionArrayInPlace(*pnts,@m)
@@ -80,8 +80,8 @@ Procedure Sphere()
     AddLineTwo("Data.f " + StrF(*p\x,5) + "," + StrF(*p\y) + "," + StrF(*p\z))
   Next
   
-  Vector3::Set(@target,1,0,0)
-  Vector3::Set(@upv,0,1,0)
+  Vector3::Set(target,1,0,0)
+  Vector3::Set(upv,0,1,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
   Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
   Utils::TransformPositionArrayInPlace(*pnts,@m)
@@ -99,7 +99,7 @@ Sphere()
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 38
+; CursorPosition = 83
+; FirstLine = 46
 ; Folding = -
 ; EnableXP

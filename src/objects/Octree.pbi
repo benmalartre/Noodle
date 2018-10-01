@@ -1,10 +1,14 @@
 XIncludeFile "../core/Math.pbi"
+XIncludeFile "../core/Morton.pbi"
 ;=======================================================================
 ; DECLARATION
 ;=======================================================================
 DeclareModule Octree
   UseModule Math
-  #MAX_ELEMENTS = 32
+  #MAX_ELEMENTS = 64
+  #LONG_BITS = 21
+  #MAX_L        = ((1<<(#LONG_BITS))-1) 
+
   Enumeration 
     #ELEMENT_1D
     #ELEMENT_2D
@@ -24,12 +28,13 @@ DeclareModule Octree
 	  *children.Cell_t[8]
   	*elements.CArray::CArrayLong
   	color.c4f32
+  	morton.i
   EndStructure
   
   Structure Octree_t Extends Cell_t
-	  
+    eMax.i
+	  numCells.i
 	  *geom.Geometry::Geometry_t
-  	
   EndStructure
   
   DataSection
@@ -42,11 +47,10 @@ DeclareModule Octree
   Declare New(*bmin.v3f32, *bmax.v3f32, depth=0)
   Declare Delete(*octree.Octree_t)
   
- 
-  Declare Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
+;   Declare NewCell(*bmin.v3f32, *bmax.v3f32, depth=0)
+  Declare Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
   
   Declare NumCells(*octree.Octree_t, *numCells)
-  Declare Draw(*octree.Octree_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
   
   Declare GetCenter(*cell.Cell_t, *center.v3f32)
   Declare GetHalfSize(*cell.Cell_t, *halfsize.v3f32)
@@ -54,14 +58,18 @@ DeclareModule Octree
   Declare.f GetDistance1D(p.f, lower.f, upper.f)
   Declare.f getDistance(*cell.Cell_t, *p.v3f32)
   
-  Declare Split (*cell.Cell_t, *geom.Geometry::PolymeshGeometry_t)
+  Declare Split(*cell.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
   
   Declare Barycentric(*p.v3f32, *a.v3f32, *b.v3f32, *c.v3f32, *uvw.v3f32)
   Declare GetClosestCell(*octree.Octree_t, *point.v3f32, *closestCell.Cell_t)
-  Declare RecurseGetClosestCell(*point.v3f32, *cell.Cell_t, *closestDistance, *closestCell)
+  Declare RecurseGetClosestCell(*cell.Cell_t, *point.v3f32, *closestDistance, *closestCell)
   Declare GetNearbyCells(*point.v3f32, *cell.Cell_t, *cells.CArray::CArrayPtr, closestDistance.f)
   Declare RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
+  Declare Draw(*cell.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
   
+  Declare CartesianToReal(*cell.Cell_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
+  Declare RealToCartesian(*cell.Cell_t, *real.Math::v3f32, *cartersian.Morton::Point3D_t)
+  Declare EncodeMorton(*cell.Cell_t)
 EndDeclareModule
 
 
@@ -75,10 +83,15 @@ Module Octree
   Procedure New(*bmin.v3f32, *bmax.v3f32, depth=0)
     Protected *octree.Octree_t = AllocateMemory(SizeOf(Octree_t))
     InitializeStructure(*octree, Octree_t)
-    *octree \elements = CArray::newCArrayLong()
+    *octree\elements = CArray::newCArrayLong()
+    *octree\depth = depth
+    
     Vector3::SetFromOther(*octree\bmin, *bmin)
     Vector3::SetFromOther(*octree\bmax, *bmax)
     Color::Randomize(*octree\color)
+    
+;     EncodeMorton(*octree)
+     
     ProcedureReturn *octree
   EndProcedure
   
@@ -95,19 +108,28 @@ Module Octree
     FreeMemory(*octree)
   EndProcedure
   
+  Procedure EncodeMorton(*cell.Cell_t)
+    Protected p.Morton::Point3D_t
+    Protected center.v3f32
+    GetCenter(*cell, @center)
+    RealToCartesian(*cell, @center, @p)
+    *cell\morton = Morton::Encode3D(@p)  
+  EndProcedure
+  
+  
   ;---------------------------------------------------------------------
   ; GET CENTER
   ;---------------------------------------------------------------------
-  Procedure GetCenter(*octree.Octree_t, *center.v3f32)
-    Vector3::Add(*center, *octree\bmin, *octree\bmax)
+  Procedure GetCenter(*cell.Cell_t, *center.v3f32)
+    Vector3::Add(*center, *cell\bmin, *cell\bmax)
     Vector3::ScaleInPlace(*center, 0.5)
   EndProcedure
   
   ;---------------------------------------------------------------------
   ; GET HALF SIZE
   ;---------------------------------------------------------------------
-  Procedure GetHalfSize(*octree.Octree_t, *halfsize.v3f32)
-    Vector3::Sub(*halfsize, *octree\bmax, *octree\bmin)
+  Procedure GetHalfSize(*cell.Cell_t, *halfsize.v3f32)
+    Vector3::Sub(*halfsize, *cell\bmax, *cell\bmin)
     Vector3::ScaleInPlace(*halfsize, 0.5)
   EndProcedure
   
@@ -145,8 +167,6 @@ Module Octree
     If CArray::GetCount(*cell\elements): CArray::SetCount(*cell\elements, 0) : EndIf
     
   EndProcedure
-  
-  
   
   ;---------------------------------------------------------------------
   ; INTERSECT SPHERE
@@ -198,7 +218,7 @@ Module Octree
     Protected z
     Protected current.v3f32
     For z=0 To 7
-      Vector3::Set(@current, P(GetCurrentCorner(z, 0)), P(GetCurrentCorner(z, 1)), P(GetCurrentCorner(z, 2)))
+      Vector3::Set(current, P(GetCurrentCorner(z, 0)), P(GetCurrentCorner(z, 1)), P(GetCurrentCorner(z, 2)))
       Vector3::Sub(@delta, *point, @current)
       dist = Vector3::Length(@delta)
       If dist > furthestDist
@@ -212,27 +232,24 @@ Module Octree
   ;---------------------------------------------------------------------
   ; BUILD
   ;---------------------------------------------------------------------
-  Procedure Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
+  Procedure Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
     Clear(*octree)
     Protected numTriangles = *geom\nbtriangles
     CArray::SetCount(*octree\elements, numTriangles)
+
     Define i
-    For i=0 To numTriangles - 1
-      CArray::SetValueL(*octree\elements, i, i)
-    Next
+    For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
     Vector3::Sub(*octree\bmin, *geom\bbox\origin, *geom\bbox\extend)
     Vector3::Add(*octree\bmax, *geom\bbox\origin, *geom\bbox\extend)
     
-    Debug "NUM TRIANGLES : "+Str(CArray::GetCount(*octree\elements))
-     
-    Split(*octree, *geom)
+    *octree\eMax = maxDepth
+    Split(*octree, *geom, maxDepth)
     
-    
-    Debug "################### OCTREE ######################"
-    Protected nbCells.i = 0
-    NumCells(*octree, @nbCells)
-    Debug "Num CELLS : "+Str(nbCells)
-    Debug "#################################################"
+;     *octree\numCells = 0
+;     NumCells(*octree, @*octree\numCells)
+;     Debug "################### OCTREE ######################"
+;     Debug "Num CELLS : "+Str(*octree\numCells)
+;     Debug "#################################################"
 ;     Select *geom\type
 ;       Case Geometry::#GEOMETRY_1D
 ;         Debug "POINT CLOUD OCTREE"
@@ -250,26 +267,6 @@ Module Octree
 ;         Split(*octree, *geom\a_positions)
 ;     EndSelect
   EndProcedure  
-  
-  ;---------------------------------------------------------------------
-  ; GET POINT
-  ;---------------------------------------------------------------------
-  Procedure GetPoint(*octree.Octree_t, *pnt.Point_t, index.i)
-    Select index
-      Case 0:
-        *pnt\v[0] = *octree\bmin\x
-        *pnt\v[1] = 0.5*(*octree\bmin\x+*octree\bmax\x)
-        *pnt\v[2] = *octree\bmax\x
-      Case 1:
-        *pnt\v[0] = *octree\bmin\y
-        *pnt\v[1] = 0.5*(*octree\bmin\y+*octree\bmax\y)
-        *pnt\v[2] = *octree\bmax\y
-      Case 2
-        *pnt\v[0] = *octree\bmin\z
-        *pnt\v[1] = 0.5*(*octree\bmin\z+*octree\bmax\z)
-        *pnt\v[2] = *octree\bmax\z
-    EndSelect
-  EndProcedure
   
   ;---------------------------------------------------------------------
   ; BARYCENTRIC
@@ -294,7 +291,7 @@ Module Octree
   ;---------------------------------------------------------------------
   ; RECURSE GET CLOSEST CELL
   ;---------------------------------------------------------------------
-  Procedure RecurseGetClosestCell(*point.v3f32,*cell.Cell_t, *closestDistance, *closestCell)
+  Procedure RecurseGetClosestCell(*cell.Cell_t, *point.v3f32, *closestDistance, *closestCell)
     If *cell = #Null : ProcedureReturn : EndIf
     Protected distance.f
     If *cell\isLeaf
@@ -386,52 +383,55 @@ Module Octree
   ;---------------------------------------------------------------------
   ; SPLIT
   ;---------------------------------------------------------------------
-  Procedure Split(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t)
-    Protected tsz = CArray::GetCount(*octree\elements)
-  
-    If tsz <= #MAX_ELEMENTS Or 
-       (tsz <= 2*#MAX_ELEMENTS And *octree\depth > 3) Or
-       (tsz <= 3*#MAX_ELEMENTS And *octree\depth > 4) Or 
-       *octree\depth > 6:
-       *octree\isLeaf = #True
-        ProcedureReturn
-      EndIf
-    
+  Procedure Split(*octree.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
+    Protected tsz = *octree\elements\itemCount
+    If tsz <= #MAX_ELEMENTS Or *octree\depth >= maxDepth:
+      *octree\isLeaf = #True
+      ProcedureReturn
+    EndIf
+
     *octree\isLeaf = #False
     Protected i, j, k, m, t
     Define.Point_t xx, yy, zz
-    GetPoint(*octree, @xx, 0)
-    GetPoint(*octree, @yy, 1)
-    GetPoint(*octree, @zz, 2)
+    Define *xx.v3f32 = @xx
+    Define *yy.v3f32 = @yy
+    Define *zz.v3f32 = @zz
+    Define *child.Cell_t
+    Vector3::Set(*xx, *octree\bmin\x, 0.5*(*octree\bmin\x+*octree\bmax\x), *octree\bmax\x)
+    Vector3::Set(*yy, *octree\bmin\y, 0.5*(*octree\bmin\y+*octree\bmax\y), *octree\bmax\y)
+    Vector3::Set(*zz, *octree\bmin\z, 0.5*(*octree\bmin\z+*octree\bmax\z), *octree\bmax\z)
     
     Define.v3f32 center, halfsize
     Define.v3f32 bmin, bmax
     Define tri.Geometry::Triangle_t
+    Define.v3f32 *a, *b, *c
     For i=0 To 1
       For j=0 To 1
         For k=0 To 1
           m = 4*i+2*j+k
-          Vector3::Set(@bmin, xx\v[i], yy\v[j], zz\v[k])
-          Vector3::Set(@bmax, xx\v[i+1], yy\v[j+1], zz\v[k+1])
-          *octree\children[m] = Octree::New(@bmin, @bmax, *octree\depth + 1)
-          GetCenter(*octree\children[m], @center)
-          GetHalfSize(*octree\children[m], @halfsize)
-          tsz = CArray::GetCount(*octree\elements)
+          Vector3::Set(bmin, xx\v[i], yy\v[j], zz\v[k])
+          Vector3::Set(bmax, xx\v[i+1], yy\v[j+1], zz\v[k+1])
+          *child = Octree::New(@bmin, @bmax, *octree\depth + 1)
+          GetCenter(*child, @center)
+          GetHalfSize(*child, @halfsize)
+
           For t=0 To tsz -1
             tri\id = CArray::GetValueL(*octree\elements, t)
-            tri\vertices[0] = CArray::GetValueL(*geom\a_triangleindices, tri\id *3)
-            tri\vertices[1] = CArray::GetValueL(*geom\a_triangleindices, tri\id *3+1)
-            tri\vertices[2] = CArray::GetValueL(*geom\a_triangleindices, tri\id *3+2)
-            If Triangle::Touch(@tri, *geom\a_positions, @center, @halfsize)
-              CArray::AppendL(*octree\children[m]\elements, tri\id)
+            tri\vertices[0] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3)
+            tri\vertices[1] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3 + 1)
+            tri\vertices[2] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3 + 2)
+            
+            If Triangle::Touch(@tri, *geom\a_positions\data, @center, @halfsize)
+               CArray::AppendL(*child\elements, tri\id)
             EndIf
           Next t
           
-          If Not CArray::GetCount(*octree\children[m]\elements):
-            Delete(*octree\children[m])
+          If Not *child\elements\itemCount
             *octree\children[m] = #Null
+            Delete(*child)
           Else
-            Split(*octree\children[m], *geom)
+            *octree\children[m] = *child
+            Split(*octree\children[m], *geom, maxDepth)
           EndIf
         Next k
       Next j
@@ -440,6 +440,7 @@ Module Octree
     Carray::SetCount(*octree\elements, 0)
    
   EndProcedure
+  
   
   ;---------------------------------------------------------------------
   ; GET NUM LEAVE CELLS
@@ -458,12 +459,58 @@ Module Octree
   EndProcedure
   
   ;---------------------------------------------------------------------
+  ; GET CELL
+  ;---------------------------------------------------------------------
+  Procedure GetCell(*octree.Octree_t, posx.i, posy.i, posz.i, e.i)
+    Protected  e0.i=*octree\eMax
+    Protected search.b = #True
+    Protected index.i
+    ; tant qu'il y a des fils et que la profondeur n'est pas atteinte
+    While search And e0 > e
+      ; on descend d'un niveau dans la profondeur de l'arbre
+      e0 - 1
+      index = ((posx >> e0) & 1) + (((posy >> e0) & 1) << 1) +  (((posz >> e0) & 1) << 2)
+      If *octree\children[index]
+        *octree = *octree\children[index]
+      Else
+        search = #False
+      EndIf
+    Wend
+    
+    ProcedureReturn *octree
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; Conversion Utils
+  ;---------------------------------------------------------------------
+  Procedure CartesianToReal(*cell.Cell_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
+    Protected factor.f
+    factor = #MAX_L * (*cell\bmax\x - *cell\bmax\x)
+    *real\x = factor * *cartersian\x + *cell\bmin\x
+    factor = #MAX_L * (*cell\bmax\y - *cell\bmax\y)
+    *real\y = factor * *cartersian\y + *cell\bmin\y
+    actor = #MAX_L * (*cell\bmax\z - *cell\bmax\z)
+    *real\z = factor * *cartersian\z + *cell\bmin\z
+  EndProcedure
+  
+  Procedure RealToCartesian(*cell.Cell_t, *real.Math::v3f32, *cartersian.Morton::Point3D_t)
+    Protected factor.f 
+    factor = #MAX_L / (*cell\bmax\x - *cell\bmin\x)
+    *cartersian\x = Int(factor *(*real\x - *cell\bmin\x))
+    factor = #MAX_L / (*cell\bmax\y - *cell\bmin\y)
+    *cartersian\y = Int(factor *(*real\y - *cell\bmin\y))
+    factor = #MAX_L / (*cell\bmax\z - *cell\bmin\z)
+    *cartersian\z = Int(factor *(*real\z - *cell\bmin\z))
+  EndProcedure
+
+  ;---------------------------------------------------------------------
   ; DRAW OCTREE
   ;---------------------------------------------------------------------
-  Procedure Draw(*octree.Octree_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
+  Procedure Draw(*octree.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
     Protected m.m4f32
     Protected s.v3f32
     Protected p.v3f32
+    Protected *a.v3f32, *b.v3f32, *c.v3f32
     Matrix4::SetIdentity(@m)
     If *octree\isLeaf
       Vector3::Sub(@s, *octree\bmax, *octree\bmin)
@@ -484,10 +531,27 @@ Module Octree
         a = CArray::GetValueL(*geom\a_triangleindices, CArray::GetValueL(*octree\elements, t) *3)
         b = CArray::GetValueL(*geom\a_triangleindices, CArray::GetValueL(*octree\elements, t) *3+1)
         c = CArray::GetValueL(*geom\a_triangleindices, CArray::GetValueL(*octree\elements, t) *3+2)
+        
+        *a = CArray::GetValue(*positions, t*3)
+        *b = CArray::GetValue(*positions, t*3+1)
+        *c = CArray::GetValue(*positions, t*3+2)
+        
+        Vector3::SetFromOther(*a, CArray::GetValue(*geom\a_positions, a))
+        Vector3::SetFromOther(*b, CArray::GetValue(*geom\a_positions, b))
+        Vector3::SetFromOther(*c, CArray::GetValue(*geom\a_positions, c))
+        *a\x + (Random(200)-100)*0.001
+        *a\y + (Random(200)-100)*0.001
+        *a\z + (Random(200)-100)*0.001
+        
+        *b\x + (Random(200)-100)*0.001
+        *b\y + (Random(200)-100)*0.001
+        *b\z + (Random(200)-100)*0.001
+        
+        *c\x + (Random(200)-100)*0.001
+        *c\y + (Random(200)-100)*0.001
+        *c\z + (Random(200)-100)*0.001
 
-        Vector3::SetFromOther(CArray::GetValue(*positions, t*3), CArray::GetValue(*geom\a_positions, a))
-        Vector3::SetFromOther(CArray::GetValue(*positions, t*3+1), CArray::GetValue(*geom\a_positions, b))
-        Vector3::SetFromOther(CArray::GetValue(*positions, t*3+2), CArray::GetValue(*geom\a_positions, c))
+        
         
         Color::SetFromOther(CArray::GetValue(*colors, t*3), *octree\color)
         Color::SetFromOther(CArray::GetValue(*colors, t*3+1), *octree\color)
@@ -508,13 +572,11 @@ Module Octree
     EndIf
     
   EndProcedure
-  
-  
-  
+
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 467
-; FirstLine = 253
-; Folding = ----
+; CursorPosition = 401
+; FirstLine = 392
+; Folding = -----
 ; EnableXP

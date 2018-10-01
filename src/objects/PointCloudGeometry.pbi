@@ -118,7 +118,7 @@ Module PointCloudGeometry
     Protected s.v3f32
     Protected t.v3f32
     
-    Vector3::Set(@s,1,1,1)
+    Vector3::Set(s,1,1,1)
     
     Define.f r,g,b, x,y ,z
     
@@ -128,7 +128,7 @@ Module PointCloudGeometry
       y = Random(255)/255 - 0.5
       z = Random(255)/255 - 0.5
       
-      Vector3::Set(@v,x,y,z)
+      Vector3::Set(v,x,y,z)
       Vector3::NormalizeInPlace(@v)
       Vector3::ScaleInPlace(@v,radius)
       
@@ -139,7 +139,7 @@ Module PointCloudGeometry
       CArray::SetValue(*geom\a_normals,i,@v)
       
       ; Set Tangents
-      Vector3::Set(@c,0,1,0)
+      Vector3::Set(c,0,1,0)
       Vector3::Cross(@t,@v,@c)
       CArray::SetValue(*geom\a_tangents,i,@t)
 
@@ -151,7 +151,7 @@ Module PointCloudGeometry
       CArray::SetValue(*geom\a_color,i,@c)
 
       ; Set Scale
-      Vector3::Set(@s,1,1,1)
+      Vector3::Set(s,1,1,1)
       CArray::SetValue(*geom\a_scale,i,@s)
       
       ; Set Size
@@ -184,7 +184,7 @@ Module PointCloudGeometry
     Protected incrx.f = 1.0
     Protected incrz.f = 1.0
     
-    Vector3::Set(@s,1,1,1)
+    Vector3::Set(s,1,1,1)
     
     Define.f r,g,b
     Protected x, z
@@ -193,15 +193,15 @@ Module PointCloudGeometry
     For x=0 To nx-1
       For z=0 To nz-1
         ; position
-        Vector3::Set(@v,x*incrx,0,z*incrz)
+        Vector3::Set(v,x*incrx,0,z*incrz)
         CArray::SetValue(*geom\a_positions,i,@v)
         
        ; Set Normals
-        Vector3::Set(@v, 0,1,0)
+        Vector3::Set(v, 0,1,0)
         CArray::SetValue(*geom\a_normals,i,@v)
         
         ; Set Tangents
-        Vector3::Set(@t,1,0,0)
+        Vector3::Set(t,1,0,0)
         CArray::SetValue(*geom\a_tangents,i,@t)
   
         ; Set Color
@@ -212,7 +212,7 @@ Module PointCloudGeometry
         CArray::SetValue(*geom\a_color,i,@c)
   
         ; Set Scale
-        Vector3::Set(@s,1,1,1)
+        Vector3::Set(s,1,1,1)
         CArray::SetValue(*geom\a_scale,i,@s)
         
         ; Set Size
@@ -243,8 +243,7 @@ Module PointCloudGeometry
     Protected *s.v3f32
     Protected *t.v3f32
     Protected tmp.v3f32
-    
-    Vector3::Set(@s,1,1,1)
+   
     
     Define.f r,g,b, x,y ,z
     Define delta.v3f32
@@ -324,16 +323,16 @@ Module PointCloudGeometry
     Protected n.v3f32
     Protected s.v3f32
     Protected t.v3f32
-    Vector3::Set(@s,1,1,1)
+    Vector3::Set(s,1,1,1)
     
     Define .f r,g,b
     
     For i=0 To nbp-1
       *p\nbpoints + 1
       CArray::Append(*p\a_positions,CArray::GetValue(*pos,i))
-      Vector3::Set(@n,0,1,0)
+      Vector3::Set(n,0,1,0)
       CArray::Append(*p\a_normals,@n)
-      Vector3::Set(@c,1,0,0)
+      Vector3::Set(c,1,0,0)
       Vector3::Cross(@t,@n,@c)
       CArray::Append(*p\a_tangents,@t)
 
@@ -343,10 +342,10 @@ Module PointCloudGeometry
       r = Random(255)/255
       g = Random(255)/255
       b = Random(255)/255
-      Vector3::Set(@c,r,g,b)
+      Vector3::Set(c,r,g,b)
       CArray::Append(*p\a_color,@c)
       
-      Vector3::Set(@s,1,1,1)
+      Vector3::Set(s,1,1,1)
       CArray::Append(*p\a_scale,@s)
       
       CArray::AppendF(*p\a_size,1)
@@ -388,8 +387,8 @@ Module PointCloudGeometry
 
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 319
-; FirstLine = 312
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 245
+; FirstLine = 236
 ; Folding = ---
 ; EnableXP

@@ -177,7 +177,7 @@ DeclareModule Geometry
   Structure Triangle_t
     id.i
     map_id.i
-    vertices.i[3]
+    vertices.l[3]
     boundary.b
   EndStructure
   ;}
@@ -411,8 +411,8 @@ Module Geometry
     Protected i
     Protected *v.v3f32
     Protected bmin.v3f32, bmax.v3f32
-    Vector3::Set(@bmin,#F32_MAX,#F32_MAX,#F32_MAX)
-    Vector3::Set(@bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
+    Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
+    Vector3::Set(bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
   
     For i=0 To *geom\nbpoints-1
       *v = CArray::GetValue(*geom\a_positions,i)
@@ -459,7 +459,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 310
-; FirstLine = 290
+; CursorPosition = 414
+; FirstLine = 406
 ; Folding = -----
 ; EnableXP

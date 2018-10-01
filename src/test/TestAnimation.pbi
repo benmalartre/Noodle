@@ -110,7 +110,7 @@ Stack::Delete(*A\skeleton\cloud\stack)
 ;   Define pos.v3f32
 ;   For i=0 To 12
 ;     Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Star",Shape::#SHAPE_BUNNY)
-;     Vector3::Set(@pos,Random(10),Random(10),Random(10))
+;     Vector3::Set(pos,Random(10),Random(10),Random(10))
 ;     Object3D::AddChild(*model,*mesh)
 ;     Matrix4::SetTranslation(*mesh\model,@pos)
 ;   Next
@@ -130,8 +130,8 @@ Scene::AddModel(Scene::*current_scene,*model)
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 47
+; CursorPosition = 112
+; FirstLine = 77
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

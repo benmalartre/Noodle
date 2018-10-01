@@ -59,7 +59,7 @@ Module SRTToMatrixNode
     
     FirstElement(*node\inputs())
     Protected scl.v3f32
-    Vector3::Set(@scl,1,1,1)
+    Vector3::Set(scl,1,1,1)
     CArray::SetValue(*node\inputs()\value,0,@scl)
     NextElement(*node\inputs())
     Protected quat.q4f32
@@ -155,6 +155,7 @@ EndModule
 ; ==============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

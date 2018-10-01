@@ -34,6 +34,7 @@ DeclareModule Drawer
     vao.i
     vbo.i
     eab.i
+    wireframe.b
   EndStructure
   
   Structure Point_t Extends Item_t
@@ -343,10 +344,13 @@ Module Drawer
   
   ; ---[ Draw Box Item ]-----------------------------------------------------
   Procedure DrawBox(*Me.Box_t)
-;     glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-;     glDrawElements(#GL_TRIANGLES,48,#GL_UNSIGNED_INT,Shape::GetFaces(Shape::#SHAPE_CUBE))
-    glLineWidth(*Me\size)
-    glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
+    If *Me\wireframe
+      glLineWidth(*Me\size)
+      glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
+    Else
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+      glDrawElements(#GL_TRIANGLES,48,#GL_UNSIGNED_INT,Shape::GetFaces(Shape::#SHAPE_CUBE))
+    EndIf
   EndProcedure
   
   ; ---[ Draw Sphere Item ]--------------------------------------------------
@@ -376,9 +380,15 @@ Module Drawer
   
   ; ---[ Draw Triangle Item ]--------------------------------------------------
   Procedure DrawTriangle(*Me.Triangle_t)
-    glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-    glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
-    glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+    If *Me\wireframe
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
+      glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+    Else
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
+    EndIf
+    
   EndProcedure
   
   ; ---[ Draw Item ]-----------------------------------------------------------
@@ -705,6 +715,7 @@ Module Drawer
     *box\type = #ITEM_BOX
     *box\positions = CArray::newCArrayV3F32()
     *box\colors = CArray::newCArrayC4F32()
+    *box\wireframe = #True
     Matrix4::SetFromOther(*box\m, *m)
     CArray::SetCount(*box\positions, 8)
     CArray::SetCount(*box\colors, 8)
@@ -718,6 +729,7 @@ Module Drawer
     AddElement(*Me\items())
     *Me\items() = *box
     *Me\dirty = #True
+    
     ProcedureReturn *box
   EndProcedure
   
@@ -800,7 +812,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 380
-; FirstLine = 374
+; CursorPosition = 717
+; FirstLine = 708
 ; Folding = --------
 ; EnableXP

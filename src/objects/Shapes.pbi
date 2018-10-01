@@ -12915,7 +12915,7 @@ Module Shape
     Protected cnt = 0
     
     Define a
-    Vector3::Set(@accum,0,0,0)
+    Vector3::Set(accum,0,0,0)
     
     For i=0 To CArray::GetCount(*Me\normals)-1
       *n = CArray::GetValue(*Me\normals,i)
@@ -12990,7 +12990,7 @@ Module Shape
      Protected f.f
      Protected l.l
      Protected color.v3f32
-     Vector3::Set(@color,Random(255)/255,Random(255)/255,Random(255)/255)
+     Vector3::Set(color,Random(255)/255,Random(255)/255,Random(255)/255)
     Select shape
       Case  #SHAPE_NONE 
       Case  #SHAPE_AXIS
@@ -13366,7 +13366,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 12976
-; FirstLine = 12972
+; CursorPosition = 12992
+; FirstLine = 12988
 ; Folding = ---
 ; EnableXP
