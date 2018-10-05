@@ -193,7 +193,7 @@ Module Camera
     Vector3::Set(scl,1,1,1)
     Vector3::Sub(dir,*Me\lookat,*Me\pos)
   
-    Quaternion::LookAt(t\t\rot,@dir,*Me\up, #False)
+    Quaternion::LookAt(t\t\rot,dir,*Me\up, #False)
   
     Vector3::SetFromOther(t\t\pos,*Me\pos)
     
@@ -315,7 +315,7 @@ Module Camera
   Procedure GetSphericalCoordinates(*Me.Camera_t)
     Protected r.v3f32
     Vector3::Sub(r,*Me\pos,*Me\lookat)
-    Protected d.f = Vector3::Length(@r)
+    Protected d.f = Vector3::Length(r)
     *Me\polar = -ACos(r\y/d)*#F32_RAD2DEG
     *Me\azimuth = ATan(r\x/r\z)*#F32_RAD2DEG
   EndProcedure
@@ -337,7 +337,7 @@ Module Camera
   ;----------------------------------------------------------------
   ; Zoom
   ;-----------------------------------------------------------------
-  Procedure OCamera_Zoom(*Me.Camera_t,delta.f)
+  Procedure Zoom(*Me.Camera_t,delta.f)
     Debug "Camera Zoom!!!"
   EndProcedure
   
@@ -386,8 +386,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 293
-; FirstLine = 285
+; CursorPosition = 307
+; FirstLine = 291
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

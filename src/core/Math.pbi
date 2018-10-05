@@ -172,7 +172,7 @@ DeclareModule Math
    io = a0*y1+a1*m0+a2*m1+a3*y2;
  EndMacro
  
-  ; ----------------------------------------------------------------------------
+   ; ----------------------------------------------------------------------------
   ;  v2f32 Structure
   ; --------------------------------------------------------------------------
  Structure v2f32
@@ -394,20 +394,20 @@ DeclareModule Vector2
   ; NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v, _o)
-    Define _length.f = Vector3::LengthSquared(_o)
-    If (_length <> 0)
-      _length =  Sqr(_length)
-      _v\x = _o\x / _length
-      _v\y = _o\y / _length
+    Define _mag.f = Vector3::LengthSquared(_o)
+    If (_mag <> 0)
+      _mag =  Sqr(_mag)
+      _v\x = _o\x / _mag
+      _v\y = _o\y / _mag
     EndIf
   EndMacro
   
   Macro NormalizeInPlace(_v)
-    Define _length.f = Vector3::LengthSquared(_v)
-    If (_length <> 0)
-      _length =  Sqr(_length)
-      _v\x / _length
-      _v\y / _length
+    Define _mag.f = Vector3::LengthSquared(_v)
+    If (_mag <> 0)
+      _mag =  Sqr(_mag)
+      _v\x / _mag
+      _v\y / _mag
     EndIf
   EndMacro
   
@@ -459,11 +459,11 @@ DeclareModule Vector2
   ; DOT
   ;------------------------------------------------------------------
   Macro Dot(_v,_o)
-    _v\x * _o\x + _v\y * _o\y
+    (_v\x * _o\x + _v\y * _o\y)
   EndProcedure
   
   ;------------------------------------------------------------------
-  ; DOT
+  ; SET LENGTH
   ;------------------------------------------------------------------
   Macro SetLength(_v,_length)
     NormalizeInPlace(_v)
@@ -501,7 +501,30 @@ DeclareModule Vector2
       v\y = ValF(StringField(s,2,","))
     EndIf
   EndMacro
-
+;   Declare Set(*v.v2f32,x.f=0,y.f=0)
+;   Declare SetFromOther(*v.v2f32,*o.v2f32)
+;   Declare.f LengthSquared(*v.v2f32)
+;   Declare.f Length(*v.v2f32)
+;   Declare.f Normalize(*v.v2f32,*o.v2f32)
+;   Declare.f NormalizeInPlace(*v.v2f32)
+;   Declare.f GetAngle(*v.v2f32,*o.v2f32)
+;   Declare Add(*v.v2f32,*a.v2f32,*b.v2f32)
+;   Declare AddInPlace(*v.v2f32,*o.v2f32)
+;   Declare SubInPlace(*v.v2f32,*o.v2f32)
+;   Declare Sub(*v.v2f32,*a.v2f32,*b.v2f32)
+;   Declare Scale(*v.v2f32,*o.v2f32,mult.f=1.0)
+;   Declare ScaleInPlace(*v.v2f32,mult.f=1.0)
+;   Declare Invert(*o.v2f32, *v.v2f32)
+;   Declare InvertInPlace(*v.v2f32)
+;   Declare LinearInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,blend.f=0.0)
+;   Declare BezierInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,u.f)
+;   Declare HermiteInterpolate(*v.v2f32,*a.v2f32,*b.v2f32,*c.v2f32,*d.v2f32,mu.f,tension.f,bias.f)
+;   Declare.f Dot(*v.v2f32,*o.v2f32)
+;   Declare SetLength(*v.v2f32,l.f)
+;   Declare Multiply(*o.v2f32,*a.v2f32,*b.v2f32)
+;   Declare Echo(*v.v2f32,name.s="")
+;   Declare.s ToString(*v.v2f32)
+;   Declare FromString(*v.v2f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -540,22 +563,22 @@ DeclareModule Vector3
   ; NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v,_o)
-    Define _length.f = Sqr(_o\x * _o\x + _o\y * _o\y + _o\z * _o\z)
+    Define _mag.f = Sqr(_o\x * _o\x + _o\y * _o\y + _o\z * _o\z)
     ;Avoid error dividing by zero
-    If _length = 0 : _length =1.0 :EndIf
+    If _mag = 0 : _mag =1.0 :EndIf
     
-    Define _div.f = 1.0/_length
+    Define _div.f = 1.0/_mag
     _v\x = _o\x * _div
     _v\y = _o\y * _div
     _v\z = _o\z * _div
   EndMacro
 
   Macro NormalizeInPlace(_v)
-    Define _length.f = Sqr(_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
+    Define _mag.f = Sqr(_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
     ;Avoid error dividing by zero
-    If _length = 0 : _length =1.0 :EndIf
+    If _mag = 0 : _mag =1.0 :EndIf
     
-    Define _div.f = 1.0/_length
+    Define _div.f = 1.0/_mag
     _v\x * _div
     _v\y * _div
     _v\z * _div
@@ -649,11 +672,10 @@ DeclareModule Vector3
   EndMacro
   
   Macro BezierInterpolate(_v,_a,_b,_c,_d,_u)
-
     Define _u2.f = 1-_u
     Define.f _t1,_t2,_t3,_t4
   
-    _t1 = Pow((_u2),3)
+    _t1 = Pow(_u2,3)
     _t2 = 3*Pow(_u2,2)*_u
     _t3 = 3*_u2*Pow(_u,2)
     _t4 = Pow(_u,3)
@@ -663,7 +685,6 @@ DeclareModule Vector3
      _v\z = _t1 * _a\z + _t2* _b\z + _t3* _c\z + _t4 * _d\z
    
   EndMacro
-
 
   Macro HermiteInterpolate(_v,_a,_b,_c,_d,_mu,_tension,_bias)
     HERMITE_INTERPOLATE(_v\x,_a\x,_b\x,_c\x,_d\x,_mu,_tension,_bias)
@@ -684,11 +705,12 @@ DeclareModule Vector3
   ; DOT
   ;------------------------------------------------------------------
   Macro Dot(_v,_o)
-    _v\x * _o\x + _v\y * _o\y + _v\z * _o\z
+    (_v\x * _o\x + _v\y * _o\y + _v\z * _o\z)
   EndMacro
+
   
   ;------------------------------------------------------------------
-  ; LENGTH
+  ; SET LENGTH
   ;------------------------------------------------------------------
   Macro SetLength(_v,_length)
     Vector3::NormalizeInPlace(_v)
@@ -770,11 +792,9 @@ DeclareModule Vector3
   ; MULTIPLY BY QUATERNIO9N
   ;------------------------------------------------------------------
   Macro MulByQuaternion(_out,_in,_q)
-  	Define _length.f = Vector3::Length(_in)
-  	
+  	Define _inmag.f = Vector3::Length(_in)
   	;normalize vector
   	Vector3::Normalize(_out,_in)
-  	
     Define.q4f32 _vecQuat, _conjQuat, _resQuat
     _vecQuat\x = _out\x
     _vecQuat\y = _out\y
@@ -784,16 +804,17 @@ DeclareModule Vector3
     Quaternion::Conjugate(_conjQuat,_q)
     Quaternion::Multiply(_resQuat,_vecQuat,_conjQuat)
     Quaternion::Multiply(_resQuat,_q,_resQuat)
+    
+    _out\x = _resQuat\x
+    _out\y = _resQuat\y
+    _out\z = _resQuat\z
   
-  	Vector3::Set(_out,_resQuat\x,_resQuat\y,_resQuat\z)
-  
-  	Vector3::NormalizeInPlace(_out)
-  
-  	Vector3::ScaleInPlace(_out, _length)
+    Vector3::NormalizeInPlace(_out)
+    Vector3::ScaleInPlace(_out, _inmag)
   EndMacro
   
   Macro MulByQuaternionInPlace(_v,_q)
-  	Define _length.f = Vector3::Length(_v)
+  	Define _vmag.f = Vector3::Length(_v)
   	
   	;normalize vector
   	Define _vn.v3f32
@@ -808,12 +829,13 @@ DeclareModule Vector3
     Quaternion::Conjugate(_conjQuat,_q)
     Quaternion::Multiply(_resQuat,_vecQuat,_conjQuat)
     Quaternion::Multiply(_resQuat,_q,_resQuat)
-  
-  	Vector3::Set(_v,_resQuat\x,_resQuat\y,_resQuat\z)
+    
+    _v\x = _resQuat\x
+    _v\y = _resQuat\y
+    _v\z = _resQuat\z
   
   	Vector3::NormalizeInPlace(_v)
-  	Vector3::ScaleInPlace(_v,_length)
- 
+  	Vector3::ScaleInPlace(_v,_vmag)
   EndMacro
   
   ;------------------------------------------------------------------
@@ -840,7 +862,19 @@ DeclareModule Vector3
       _v\z = ValF(StringField(_s,3,","))
     EndIf
   EndMacro
- 
+;   Declare Cross(*v.v3f32,*a.v3f32,*b.v3f32)
+;   Declare.f Dot(*v.v3f32,*o.v3f32)
+;   Declare SetLength(*v.v3f32,l.f)
+;   Declare Multiply(*o.v3f32,*a.v3f32,*b.v3f32)
+;   Declare MulByMatrix3(*v.v3f32,*o.v3f32,*m.m4f32)
+;   Declare MulByMatrix3InPlace(*v.v3f32,*m.m4f32)
+;   Declare MulByMatrix4(*v.v3f32,*o.v3f32,*m.m4f32)
+;   Declare MulByMatrix4InPlace(*v.v3f32,*m.m4f32)
+;   Declare MulByQuaternion(*out.v3f32,*in.v3f32,*q.q4f32)
+; 	Declare MulByQuaternionInPlace(*v.v3f32,*q.q4f32)
+; 	Declare Echo(*v.v3f32,name.s="")
+; 	Declare.s ToString(*v.v3f32)
+; 	Declare FromString(*v.v3f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -848,91 +882,13 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Vector4
   UseModule Math
-  ;------------------------------------------------------------------
-  ; SET
-  ;------------------------------------------------------------------
-  Macro Set(_v,_x,_y,_z,_w)
-    _v\w = _w
-    _v\x = _x
-    _v\y = _y
-    _v\z = _z
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SET FROM OTHER
-  ;------------------------------------------------------------------
-  Macro SetFromOther(_v,_o)
-    _v\w = _o\w
-    _v\x = _o\x
-    _v\y = _o\y
-    _v\z = _o\z
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; MULTIPLY BY MATRIX4
-  ;------------------------------------------------------------------
-  Macro MulByMatrix4(_v,_o,_m);,_transpose)
-;     If _transpose
-;       _v\x = _o\x * _m\v[0] + _o\y * _m\v[1] + _o\z * _m\v[2] + _o\w * _m\v[3]
-;       _v\y = _o\x * _m\v[4] + _o\y * _m\v[5] + _o\z * _m\v[6] + _o\w * _m\v[7]
-;       _v\z = _o\x * _m\v[8] + _o\y * _m\v[9] + _o\z * _m\v[10] + _o\w * _m\v[11]
-;       _v\w = _o\x * _m\v[12] + _o\y * _m\v[13] + _o\z * _m\v[15] + _o\w * _m\v[15]
-;     Else
-      _v\x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _o\w * _m\v[12]
-      _v\y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _o\w * _m\v[13]
-      _v\z = _o\x * _m\v[2] + _o\y * _m\v[6] + _o\z * _m\v[10] + _o\w * _m\v[14]
-      _v\w = _o\x * _m\v[3] + _o\y * _m\v[7] + _o\z * _m\v[11] + _o\w * _m\v[15]
-;     EndIf
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; MULTIPLY BY MATRIX4 IN PLACE
-  ;------------------------------------------------------------------
-  Macro MulByMatrix4InPlace(_v,_m);,_transpose)
-    Define _x.f,_y.f,_z.f,_w.f
-;     If _transpose
-;       _x = _v\x * _m\v[0] + _v\y * _m\v[1] + _v\z * _m\v[2] + _v\w * _m\v[3]
-;       _y = _v\x * _m\v[4] + _v\y * _m\v[5] + _v\z * _m\v[6] + _v\w * _m\v[7]
-;       _z = _v\x * _m\v[8] + _v\y * _m\v[9] + _v\z * _m\v[10] + _v\w * _m\v[11]
-;       _w = _v\x * _m\v[12] + _v\y * _m\v[13] + _v\z * _m\v[15] + _v\w * _m\v[15]
-;     Else
-      _x = _v\x * _m\v[0] + _v\y * _m\v[4] + _v\z * _m\v[8] + _v\w * _m\v[12]
-      _y = _v\x * _m\v[1] + _v\y * _m\v[5] + _v\z * _m\v[9] + _v\w * _m\v[13]
-      _z = _v\x * _m\v[2] + _v\y * _m\v[6] + _v\z * _m\v[10] + _v\w * _m\v[14]
-      _w = _v\x * _m\v[3] + _v\y * _m\v[7] + _v\z * _m\v[11] + _v\w * _m\v[15]
-;     EndIf
-  
-    _v\x = _x
-    _v\y = _y
-    _v\z = _z
-    _v\w = _w
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; ECHO
-  ;------------------------------------------------------------------
-  Macro Echo(_v,_prefix)
-    Debug _prefix+"("+StrF(v\x,3)+","+StrF(_v\y,3)+","+StrF(_v\z,3)+","+StrF(_v\w,3)+")"
-  EndMacro
-      
-  ;------------------------------------------------------------------
-  ; TO STRING
-  ;------------------------------------------------------------------
-  Macro ToString(_v)
-    StrF(_v\x)+","+StrF(_v\y)+","+StrF(_v\z)+","+StrF(_v\w)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; FROM STRING
-  ;------------------------------------------------------------------
-  Macro FromString(_v, _s)
-    If CountString(_s,",")=3
-      _v\x = ValF(StringField(_s,1,","))
-      _v\y = ValF(StringField(_s,2,","))
-      _v\z = ValF(StringField(_s,3,","))
-      _v\w = ValF(StringField(_s,4,","))
-    EndIf
-  EndMacro
+  Declare Set(*v.v4f32,x.f=0,y.f=0,z.f=0,w.f=1.0)
+  Declare SetFromOther(*v.v4f32,*o.v4f32)
+  Declare MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
+  Declare MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
+  Declare Echo(*v.v4f32,name.s="")
+  Declare.s ToString(*v.v4f32)
+  Declare FromString(*v.v4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -943,386 +899,36 @@ DeclareModule Quaternion
   #RENORMCOUNT  = 97
   #TRACKBALLSIZE  = 0.8
   Declare.f ProjectToSphere(r.f,x.f,y.f)
-;   Declare Set(*q.q4f32,x.f=0,y.f=0,z.f=0,w.f=1)
-;   Declare SetFromOther(*q1.q4f32,*q2.q4f32)
-;   Declare Negate(*q1.q4f32,*q2.q4f32)
-;   Declare NegateInPlace(*q1.q4f32)
-;   Declare SetIdentity(*q.q4f32)
-;   Declare.f Dot(*q1.q4f32,*q2.q4f32)
-;   Declare SetFromAxisAngle(*q.q4f32,*axis.v3f32,angle.f)
-;   Declare SetFromAxisAngleValues(*q.q4f32,x.f,y.f,z.f,angle.f)
-;   Declare SetFromEulerAngles(*q.q4f32,pitch.f, yaw.f, roll.f)
-;   Declare Normalize(*out.q4f32,*q.q4f32) 
-;   Declare NormalizeInPlace(*q.q4f32)
-;   Declare Conjugate(*out.q4f32,*q.q4f32)
-;   Declare ConjugateInPlace(*q.q4f32)
-;   Declare Multiply(*out.q4f32,*q1.q4f32,*q2.q4f32)
-;   Declare MultiplyInPlace(*q1.q4f32,*q2.q4f32)
-;   Declare MultiplyByScalar(*out.q4f32,*q1.q4f32,s.f)
-;   Declare MultiplyByScalarInPlace(*q1.q4f32,s.f)
-;   Declare TrackBall(*q.q4f32,p1x.f,p1y.f,p2x.f,p2y.f)
-;   Declare Add(*out.q4f32,*q1.q4f32,*q2.q4f32)
-;   Declare AddInPlace(*q.q4f32,*o.q4f32)
-;   Declare LookAt(*q.q4f32,*dir.v3f32,*up.v3f32,transpose.b = #False)
-;   Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
-;   Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
-;   Declare Randomize(*q.q4f32)
-;   Declare Randomize2(*q.q4f32)
-;   Declare RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
-;   Declare RandomizeAroundPlane(*q.q4f32)
-;   Declare Echo(*q.q4f32,prefix.s ="")
-;   Declare.s ToString(*q.q4f32)
-;   Declare FromString(*q.q4f32, s.s)
-  
-  
-  ;------------------------------------------------------------------
-  ; SET
-  ;------------------------------------------------------------------
-  Macro Set(_q,_x,_y,_z,_w=1)
-    _q\x = _x
-    _q\y = _y
-    _q\z = _z
-    _q\w = _w
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; SET FROM OTHER
-  ;------------------------------------------------------------------
-  Macro SetFromOther(_q1,_q2)
-    _q1\x = _q2\x
-    _q1\y = _q2\y
-    _q1\z = _q2\z
-    _q1\w = _q2\w
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; NEGATE
-  ;------------------------------------------------------------------
-  Macro Negate(_q1,_q2)
-    _q1\x = -_q2\x
-    _q1\y = -_q2\y
-    _q1\z = -_q2\z
-    _q1\w = -_q2\w
-  EndMacro
-  
-  Macro NegateInPlace(_q1)
-    _q1\x * -1
-    _q1\y * -1
-    _q1\z * -1
-    _q1\w * -1
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; SET IDENTITY
-  ;------------------------------------------------------------------
-  Macro SetIdentity(_q)
-    _q\x = 0
-    _q\y = 0
-    _q\z = 0
-    _q\w = 1
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; DOT PRODUCT
-  ;------------------------------------------------------------------
-  Macro Dot(_q1,_q2)
-    _q1\x * _q2\x + _q1\y * _q2\y + _q1\z * _q2\z + _q1\w * _q2\w
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SET FROM AXIS ANGLE
-  ;------------------------------------------------------------------
-  Macro SetFromAxisAngle(_q,_axis,_angle)
-    Define _n.v3f32
-    Define _halfAngle.f, _sinAngle.f
-    Vector3::Normalize(_n,_axis)
-    _halfAngle = _angle*0.5
-    _sinAngle = Sin(_halfAngle)
-    _q\x = _n\x * _sinAngle
-    _q\y = _n\y * _sinAngle
-    _q\z = _n\z * _sinAngle
-    _q\w = Cos(_halfAngle)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SET FROM AXIS ANGLE VALUES
-  ;------------------------------------------------------------------
-  Macro SetFromAxisAngleValues(_q,_x,_y,_z,_angle)
-    Define _n.v3f32, _axis.v3f32, _halfAngle.f, _sinAngle.f
-    Vector3::Set(_axis,_x,_y,_z)
-    Vector3::Normalize(_n,_axis)
-    _halfAngle = _angle*0.5
-    _sinAngle = Sin(_halfAngle)
-    _q\x = _n\x * _sinAngle
-    _q\y = _n\y * _sinAngle
-    _q\z = _n\z * _sinAngle
-    _q\w = Cos(_halfAngle)
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; SET FROM EULER ANGLES
-  ;------------------------------------------------------------------
-  Macro SetFromEulerAngles(_q,_pitch, _yaw, _roll)
-    Define.f _p,_y,_r
-    _p = _pitch * #F32_DEG2RAD * 0.5
-    _y = _yaw * #F32_DEG2RAD * 0.5
-    _r = _roll * #F32_DEG2RAD * 0.5
-    
-    Define.f _sinp,_siny,_sinr,_cosp,_cosy,_cosr
-    _sinp = Sin(_p)
-    _siny = Sin(_y)
-    _sinr = Sin(_r)
-    _cosp = Cos(_p)
-    _cosy = Cos(_y)
-    _cosr = Cos(_r)
-  
-  	_q\x = _sinr * _cosp * _cosy - _cosr * _sinp * _siny
-  	_q\y = _cosr * _sinp * _cosy + _sinr * _cosp * _siny
-  	_q\z = _cosr * _cosp * _siny - _sinr * _sinp * _cosy
-  	_q\w = _cosr * _cosp * _cosy + _sinr * _sinp * _siny
-  	NormalizeInPlace(_q)
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; NORMALIZE
-  ;------------------------------------------------------------------
-  Macro Normalize(_out,_q)
-    Define.f _mag2
-    _mag2 = _q\x * _q\x + _q\y * _q\y + _q\z * _q\z + _q\w * _q\w
-    If mag2 <> 0.0
-      If Abs(mag2 - 1.0)>0.0001
-        Define.f _mag = Sqr(mag2)
-        _out\x = _q\x/_mag
-        _out\y = _q\y/_mag
-        _out\z = _q\z/_mag
-        _out\w = _q\w/_mag
-      EndIf
-    EndIf
-  EndMacro
-  
-  Macro NormalizeInPlace(_q)
-    Define.f _mag2
-    _mag2 = _q\x * _q\x + _q\y * _q\y + _q\z * _q\z + _q\w * _q\w
-    
-    If _mag2 <> 0.0
-      If Abs(_mag2 - 1.0)>0.0001
-        Define.f _mag = Sqr(_mag2)
-        _q\x / _mag
-        _q\y / _mag
-        _q\z / _mag
-        _q\w / _mag
-      EndIf
-    EndIf
-  EndMacro
-  
-    
-  ;------------------------------------------------------------------
-  ; CONJUGATE
-  ;------------------------------------------------------------------
-  Macro Conjugate(_out,_q)
-    _out\x = -_q\x
-    _out\y = -_q\y
-    _out\z = -_q\z
-    _out\w = _q\w
-  EndMacro
-  
-  Macro ConjugateInPlace(_q)
-    _q\x = -_q\x
-    _q\y = -_q\y
-    _q\z = -_q\z
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; MULTIPLY
-  ;------------------------------------------------------------------
-  Macro Multiply(_out,_q1,_q2)
-    _out\x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
-    _out\y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
-    _out\z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
-    _out\w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
-  EndMacro
-  
-  Macro MultiplyInPlace(_q1,_q2)
-    Define.f _x,_y,_z,_w
-    _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
-    _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
-    _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
-    _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
-    _q1\x = _x
-    _q1\y = _y
-    _q1\z = _z
-    _q1\w = _w
-  EndMacro
-
-  ;------------------------------------------------------------------
-  ; MULTIPLY BY SCALAR
-  ;------------------------------------------------------------------
-  Macro MultiplyByScalar(_out,_q1,_s)
-    _out\x = _q1\x * _s
-    _out\y = _q1\y * _s
-    _out\z = _q1\z * _s
-    _out\w = _q1\w * _s
-  EndMacro
-  
-  Macro MultiplyByScalarInPlace(_q1,_s)
-    _q1\x * _s
-    _q1\y * _s
-    _q1\z * _s
-    _q1\w * _s
-  EndMacro
-
-
-  ;------------------------------------------------------------------
-  ; ADD
-  ;------------------------------------------------------------------
-  Macro Add(_out,_q1,_q2)
-;     Static count.i=0
-    Define.v3f32 _v1, _v2, _v3, _v4
-    Define.f _w, _d
-    
-    Vector3::Set(_v1,_q1\x,_q1\y,_q1\z)
-    Vector3::Set(_v2,_q2\x,_q2\y,_q2\z)
-    Vector3::Cross(_v3,_v1,_v2)
-    _d = Vector3::Dot(_v1,_v2)
-    
-    Vector3::ScaleInPlace(_v1,_q2\w)
-    Vector3::ScaleInPlace(_v2,_q1\w)
-    
-    Vector3::Add(_v4,_v1,_v2)
-    Vector3::AddInPlace(_v4,_v3)
-    Quaternion::Set(_out,_v4\x,_v4\y,_v4\z,_q1\w * _q2\w - _d)
-    
-;     If (count+1 > #RENORMCOUNT)
-;       count = 0
-;       NormalizeInPlace(*out)
-;     EndIf
-  EndMacro
-  
-  Macro AddInPlace(_q,_o)
-    Define.q4f32 _t
-    Quaternion::Set(_t,_q\x,_q\y,_q\z,_q\w)
-    Quaternion::Add(_q,_t,_o)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; LOOK AT
-  ;------------------------------------------------------------------
-  Macro LookAt(_q,_dir,_up,_transpose)
-    Protected _m.m3f32
-    Matrix3::SetFromTwoVectors(@_m,_dir,_up)
-    Matrix3::GetQuaternion(@_m,_q,_transpose)   
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; LINEAR INTERPOLATE
-  ;------------------------------------------------------------------
-  Macro LinearInterpolate(_out,_q1,_q2,_b)
-    _out\x = (1-_b) * _q1\x + _b * _q2\x
-    _out\y = (1-_b) * _q1\y + _b * _q2\y
-    _out\z = (1-_b) * _q1\z + _b * _q2\z
-    _out\w = (1-_b) * _q1\w + _b * _q2\w
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; RANDOMIZE
-  ;------------------------------------------------------------------
-  Macro Randomize(q)
-    Define.f _x,_y,_z
-    _x = Random(255)/255
-    _y = Random(255)/255
-    _z = Random(255)/255
-    Quaternion::Set(_q, Sqr(_x*Cos(#F32_2PI*_z)), Sqr(1-_x*Sin(#F32_2PI*_y)), Sqr(1-_x*Cos(#F32_2PI*_y)), Sqr(_x*Sin(#F32_2PI*_z)))
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; RANDOMIZE 2
-  ;------------------------------------------------------------------
-  Macro Randomize2(_q)
-    Define.v2f32 _p0,_p1
-    Define _d1.f = UniformPointOnDisc(@_p1) + #F32_EPS
-    Define _s1.f = 1/Sqr(_d1)
-    Define _d0.f = UniformPointOnDisc(@_p0);  // or positive in 'x' since -Q & Q are equivalent
-    Define _s0.f = Sqr(1.0-_d0)
-    Define _s.f  = s0*s1
-  
-    Quaternion::Set(_q, _p0\y, _s*_p1\x, _s*_p1\y, _p0\x)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; RANDOMIZE AROUND AXIS
-  ;------------------------------------------------------------------
-  Macro RandomizeAroundAxis(_q, _axis)
-    Protected _p.v2f32
-    UniformPointOnCircle(@_p)
-    Quaternion::Set(*_q, _p\y * _axis\x, _p\y * _axis\y, _p\y * _axis\z, _p\x)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; RANDOMIZE AROUND PLANE
-  ;------------------------------------------------------------------
-  Macro RandomizeAroundPlane(_q)
-    Define.v2f32 _p
-    Define.f _d = UniformPointOnDisc2(@_p)
-    Define.f -s = Sqr(_d)
-    Quaternion::Set(_q, _p\x, _p\y, 0.0, _s)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; SLERP
-  ;------------------------------------------------------------------
-  Macro Slerp(_out,_q1,_q2,_blend)
-    If(_blend<0)
-      Quaternion::SetFromOther(_out,_q1)
-    ElseIf _blend>=1
-      Quaternion::SetFromOther(_out,_q2)
-    Else
-      Define.f _dotproduct = _q1\x * _q2\x + _q1\y * _q2\y + _q1\z * _q2\z + _q1\w * _q2\w
-      Define.f _theta, _st,_sut, _sout, _coeff1, _coeff2
-      
-      _blend * 0.5
-      
-      _theta = ACos(_dotproduct)
-      If _theta<0 : _theta * -1 :EndIf
-      
-      _st = Sin(_theta)
-      _sut = Sin(_blend*_theta)
-      _sout = Sin((1-_blend)*_theta)
-      _coeff1 = _sout/_st
-      _coeff2 = _sut/_st
-      
-      _out\x = _coeff1 * _q1\x + _coeff2 * _q2\x
-      _out\y = _coeff1 * _q1\y + _coeff2 * _q2\y
-      _out\z = _coeff1 * _q1\z + _coeff2 * _q2\z
-      _out\w = _coeff1 * _q1\w + _coeff2 * _q2\w
-    EndIf
-  EndMacro
-
-
-  ;------------------------------------------------------------------
-  ; ECHO
-  ;------------------------------------------------------------------
-  Macro Echo(_q,_prefix)
-    Debug _prefix+"("+StrF(_q\x,3)+","+StrF(_q\y,3)+","+StrF(_q\z,3)+","+StrF(_q\w,3)+")"
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; TO STRING
-  ;------------------------------------------------------------------
-  Macro ToString(_q)
-    StrF(_q\w)+","+StrF(_q\x)+","+StrF(_q\y)+","+StrF(_q\z)
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; FROM STRING
-  ;------------------------------------------------------------------
-  Macro FromString(_q, _s)
-    If CountString(_s,",")=3
-      _q\w = ValF(StringField(_s,1,","))
-      _q\x = ValF(StringField(_s,2,","))
-      _q\y = ValF(StringField(_s,3,","))
-      _q\z = ValF(StringField(_s,4,","))
-    EndIf
-  EndMacro
+  Declare Set(*q.q4f32,x.f=0,y.f=0,z.f=0,w.f=1)
+  Declare SetFromOther(*q1.q4f32,*q2.q4f32)
+  Declare Negate(*q1.q4f32,*q2.q4f32)
+  Declare NegateInPlace(*q1.q4f32)
+  Declare SetIdentity(*q.q4f32)
+  Declare.f Dot(*q1.q4f32,*q2.q4f32)
+  Declare SetFromAxisAngle(*q.q4f32,*axis.v3f32,angle.f)
+  Declare SetFromAxisAngleValues(*q.q4f32,x.f,y.f,z.f,angle.f)
+  Declare SetFromEulerAngles(*q.q4f32,pitch.f, yaw.f, roll.f)
+  Declare Normalize(*out.q4f32,*q.q4f32) 
+  Declare NormalizeInPlace(*q.q4f32)
+  Declare Conjugate(*out.q4f32,*q.q4f32)
+  Declare ConjugateInPlace(*q.q4f32)
+  Declare Multiply(*out.q4f32,*q1.q4f32,*q2.q4f32)
+  Declare MultiplyInPlace(*q1.q4f32,*q2.q4f32)
+  Declare MultiplyByScalar(*out.q4f32,*q1.q4f32,s.f)
+  Declare MultiplyByScalarInPlace(*q1.q4f32,s.f)
+  Declare TrackBall(*q.q4f32,p1x.f,p1y.f,p2x.f,p2y.f)
+  Declare Add(*out.q4f32,*q1.q4f32,*q2.q4f32)
+  Declare AddInPlace(*q.q4f32,*o.q4f32)
+  Declare LookAt(*q.q4f32,*dir.v3f32,*up.v3f32,transpose.b = #False)
+  Declare LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
+  Declare Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
+  Declare Randomize(*q.q4f32)
+  Declare Randomize2(*q.q4f32)
+  Declare RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+  Declare RandomizeAroundPlane(*q.q4f32)
+  Declare Echo(*q.q4f32,prefix.s ="")
+  Declare.s ToString(*q.q4f32)
+  Declare FromString(*q.q4f32, s.s)
 EndDeclareModule
 
 ;====================================================================
@@ -1537,9 +1143,7 @@ Module Math
   ; ----------------------------------------------------------------------------
   Procedure UniformPointOnCircle(*p.v2f32, radius.f=1.0)
     Protected angle.f = Random_0_1() * #F32_2PI 
-    Protected x.f =  Cos(angle) * radius
-    Protected y.f = Sin(angle) * radius
-    Vector2::Set(*p,x,y)
+    Vector2::Set(*p, Cos(angle) * radius, Sin(angle) * radius)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -1563,9 +1167,7 @@ Module Math
   Procedure.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
     Protected angle.f = Random_0_1() * #F32_2PI 
     Protected r.f = Sqr(Random_0_1())
-    Protected x.f = Cos(angle) * radius * r
-    Protected y.f = Sin(angle) * radius * r
-    Vector2::Set(*p, x, y)
+    Vector2::Set(*p, Cos(angle) * radius * r, Sin(angle) * radius * r)
     ProcedureReturn Vector2::Length(*p)
   EndProcedure
   
@@ -1609,6 +1211,98 @@ EndModule
 ; Vector4 Module Implementation
 ;====================================================================
 Module Vector4
+  UseModule Math
+  ;-----------------------------------------
+  ; Set
+  ;-----------------------------------------
+  Procedure Set(*v.v4f32,x.f=0,y.f=0,z.f=0,w.f=1.0)
+    *v\w = w
+    *v\x = x
+    *v\y = y
+    *v\z = z
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Set From Other
+  ;-----------------------------------------
+  Procedure SetFromOther(*v.v4f32,*o.v4f32)
+    *v\w = *o\w
+    *v\x = *o\x
+    *v\y = *o\y
+    *v\z = *o\z
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Multiply By Matrix4
+  ;-----------------------------------------
+  Procedure MulByMatrix4(*v.v4f32,*o.v4f32,*m.m4f32,transpose.b=#False)
+    Protected x.f,y.f,z.f,w.f
+
+;     If Not transpose
+;       x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *o\w * *m\v[3]
+;       y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *o\w * *m\v[7]
+;       z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *o\w * *m\v[11]
+;       w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *o\w * *m\v[15]
+;     Else
+      x = *o\x * *m\v[0] + *o\y * *m\v[4] + *o\z * *m\v[8] + *o\w * *m\v[12]
+      y = *o\x * *m\v[1] + *o\y * *m\v[5] + *o\z * *m\v[9] + *o\w * *m\v[13]
+      z = *o\x * *m\v[2] + *o\y * *m\v[6] + *o\z * *m\v[10] + *o\w * *m\v[14]
+      w = *o\x * *m\v[3] + *o\y * *m\v[7] + *o\z * *m\v[11] + *o\w * *m\v[15]
+;     EndIf
+  
+    *v\x = x
+    *v\y = y
+    *v\z = z
+    *v\w = w
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Multiply By Matrix4 In Place
+  ;-----------------------------------------
+  Procedure MulByMatrix4InPlace(*v.v4f32,*m.m4f32,transpose.b=#False)
+    Protected x.f,y.f,z.f,w.f
+;     If Not transpose
+;       x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *v\w * *m\v[3]
+;       y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *v\w * *m\v[7]
+;       z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *v\w * *m\v[11]
+;       w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *v\w * *m\v[15]
+;     Else
+      x = *v\x * *m\v[0] + *v\y * *m\v[4] + *v\z * *m\v[8] + *v\w * *m\v[12]
+      y = *v\x * *m\v[1] + *v\y * *m\v[5] + *v\z * *m\v[9] + *v\w * *m\v[13]
+      z = *v\x * *m\v[2] + *v\y * *m\v[6] + *v\z * *m\v[10] + *v\w * *m\v[14]
+      w = *v\x * *m\v[3] + *v\y * *m\v[7] + *v\z * *m\v[11] + *v\w * *m\v[15]
+;     EndIf
+  
+    *v\x = x
+    *v\y = y
+    *v\z = z
+    *v\w = w
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Echo
+  ;-----------------------------------------
+  Procedure Echo(*v.v4f32,prefix.s="")
+    Debug prefix+"("+StrF(*v\x,3)+","+StrF(*v\y,3)+","+StrF(*v\z,3)+","+StrF(*v\w,3)+")"
+  EndProcedure
+      
+  ; ToString
+  ;----------------------------------------------------
+  Procedure.s ToString(*v.v4f32)
+    ProcedureReturn StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\z)+","+StrF(*v\w)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*v.v4f32, s.s)
+    If CountString(s,",")=3
+      *v\x = ValF(StringField(s,1,","))
+      *v\y = ValF(StringField(s,2,","))
+      *v\z = ValF(StringField(s,3,","))
+      *v\w = ValF(StringField(s,4,","))
+    EndIf
+  EndProcedure
+  
 EndModule
 
 ;====================================================================
@@ -1616,9 +1310,9 @@ EndModule
 ;====================================================================
 Module Quaternion
   UseModule Math
-  ;------------------------------------------------------------------
-  ; PROJECT TO SPHERE
-  ;------------------------------------------------------------------
+  ;-----------------------------------------
+  ; Project To Sphere
+  ;-----------------------------------------
   Procedure.f ProjectToSphere(r.f, x.f, y.f)
     Protected d.f, t.f, z.f
     d = Sqr(x*x + y*y)
@@ -1632,9 +1326,209 @@ Module Quaternion
     ProcedureReturn z
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; TRACKBALL
-  ;------------------------------------------------------------------
+  ;-----------------------------------------
+  ; Set
+  ;-----------------------------------------
+  Procedure Set(*q.q4f32,x.f=0,y.f=0,z.f=0,w.f=1)
+    *q\x = x
+    *q\y = y
+    *q\z = z
+    *q\w = w
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Set From Other
+  ;-----------------------------------------
+  Procedure SetFromOther(*q1.q4f32,*q2.q4f32)
+    *q1\x = *q2\x
+    *q1\y = *q2\y
+    *q1\z = *q2\z
+    *q1\w = *q2\w
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Negate
+  ;-----------------------------------------
+  Procedure Negate(*q1.q4f32,*q2.q4f32)
+    *q1\x = -*q2\x
+    *q1\y = -*q2\y
+    *q1\z = -*q2\z
+    *q1\w = -*q2\w
+  EndProcedure
+  
+  Procedure NegateInPlace(*q1.q4f32)
+    *q1\x * -1
+    *q1\y * -1
+    *q1\z * -1
+    *q1\w * -1
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Set Identity
+  ;-----------------------------------------
+  Procedure SetIdentity(*q.q4f32)
+    *q\x = 0
+    *q\y = 0
+    *q\z = 0
+    *q\w = 1
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Dot Product
+  ;-----------------------------------------
+  Procedure.f Dot(*q1.q4f32,*q2.q4f32)
+    ProcedureReturn *q1\x * *q2\x + *q1\y * *q2\y + *q1\z * *q2\z + *q1\w * *q2\w
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Set From Axis\Angle
+  ;-----------------------------------------
+  Procedure SetFromAxisAngle(*q.q4f32,*axis.v3f32,angle.f)
+    Protected n.v3f32,halfAngle.f,sinAngle.f
+    Vector3::Normalize(n,*axis)
+    halfAngle = angle*0.5
+    sinAngle = Sin(halfAngle)
+    *q\x = n\x * sinAngle
+    *q\y = n\y * sinAngle
+    *q\z = n\z * sinAngle
+    *q\w = Cos(halfAngle)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Set From Axis\Angle Values
+  ;-----------------------------------------
+  Procedure SetFromAxisAngleValues(*q.q4f32,x.f,y.f,z.f,angle.f)
+    Protected n.v3f32,axis.v3f32,halfAngle.f,sinAngle.f
+    Vector3::Set(axis,x,y,z)
+    Vector3::Normalize(n,@axis)
+    halfAngle = angle*0.5
+    sinAngle = Sin(halfAngle)
+    *q\x = n\x * sinAngle
+    *q\y = n\y * sinAngle
+    *q\z = n\z * sinAngle
+    *q\w = Cos(halfAngle)
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Set From Euler
+  ;-----------------------------------------
+  Procedure SetFromEulerAngles(*q.q4f32,pitch.f, yaw.f, roll.f)
+    Define.f p,y,r
+    p = pitch * #F32_DEG2RAD * 0.5
+    y = yaw * #F32_DEG2RAD * 0.5
+    r = roll * #F32_DEG2RAD * 0.5
+    
+    Define.f sinp,siny,sinr,cosp,cosy,cosr
+    sinp = Sin(p)
+    siny = Sin(y)
+    sinr = Sin(r)
+    cosp = Cos(p)
+    cosy = Cos(y)
+    cosr = Cos(r)
+  
+  	*q\x = sinr * cosp * cosy - cosr * sinp * siny
+  	*q\y = cosr * sinp * cosy + sinr * cosp * siny
+  	*q\z = cosr * cosp * siny - sinr * sinp * cosy
+  	*q\w = cosr * cosp * cosy + sinr * sinp * siny
+  	NormalizeInPlace(*q)
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Normalize
+  ;-----------------------------------------
+  Procedure Normalize(*out.q4f32,*q.q4f32)
+    Protected mag2.f
+    mag2 = *q\x * *q\x + *q\y * *q\y + *q\z * *q\z + *q\w * *q\w
+    If mag2 = 0.0 : ProcedureReturn : EndIf
+    If Abs(mag2 - 1.0)>0.0001
+      Protected mag.f = Sqr(mag2)
+    
+      *out\x = *q\x/mag
+      *out\y = *q\y/mag
+      *out\z = *q\z/mag
+      *out\w = *q\w/mag
+    EndIf
+    
+  EndProcedure
+  
+  Procedure NormalizeInPlace(*q.q4f32)
+    Protected mag2.f
+    mag2 = *q\x * *q\x + *q\y * *q\y + *q\z * *q\z + *q\w * *q\w
+    
+    If mag2 = 0.0 : ProcedureReturn : EndIf
+    If Abs(mag2 - 1.0)>0.0001
+      Protected mag.f = Sqr(mag2)
+      *q\x / mag
+      *q\y / mag
+      *q\z / mag
+      *q\w / mag
+    EndIf
+    
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Conjugate
+  ;-----------------------------------------
+  Procedure Conjugate(*out.q4f32,*q.q4f32)
+    *out\x = -*q\x
+    *out\y = -*q\y
+    *out\z = -*q\z
+    *out\w = *q\w
+  EndProcedure
+  
+  Procedure ConjugateInPlace(*q.q4f32)
+    *q\x = -*q\x
+    *q\y = -*q\y
+    *q\z = -*q\z
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Multiply
+  ;-----------------------------------------
+  Procedure Multiply(*out.q4f32,*q1.q4f32,*q2.q4f32)
+    Protected x.f,y.f,z.f,w.f
+    x = (*q1\w * *q2\x) + (*q1\x * *q2\w) + (*q1\y * *q2\z) - (*q1\z * *q2\y)
+    y = (*q1\w * *q2\y) + (*q1\y * *q2\w) + (*q1\z * *q2\x) - (*q1\x * *q2\z)
+    z = (*q1\w * *q2\z) + (*q1\z * *q2\w) + (*q1\x * *q2\y) - (*q1\y * *q2\x)
+    w = (*q1\w * *q2\w) - (*q1\x * *q2\x) - (*q1\y * *q2\y) - (*q1\z * *q2\z)
+    *out\x = x
+    *out\y = y
+    *out\z = z
+    *out\w = w
+  EndProcedure
+  
+  Procedure MultiplyInPlace(*q1.q4f32,*q2.q4f32)
+    Protected x.f,y.f,z.f,w.f
+    x = (*q1\w * *q2\x) + (*q1\x * *q2\w) + (*q1\y * *q2\z) - (*q1\z * *q2\y)
+    y = (*q1\w * *q2\y) + (*q1\y * *q2\w) + (*q1\z * *q2\x) - (*q1\x * *q2\z)
+    z = (*q1\w * *q2\z) + (*q1\z * *q2\w) + (*q1\x * *q2\y) - (*q1\y * *q2\x)
+    w = (*q1\w * *q2\w) - (*q1\x * *q2\x) - (*q1\y * *q2\y) - (*q1\z * *q2\z)
+    *q1\x = x
+    *q1\y = y
+    *q1\z = z
+    *q1\w = w
+  EndProcedure
+
+  ;-----------------------------------------
+  ; Multiply By Scalar
+  ;-----------------------------------------
+  Procedure MultiplyByScalar(*out.q4f32,*q1.q4f32,s.f)
+    *out\x = *q1\x*s
+    *out\y = *q1\y*s
+    *out\z = *q1\z*s
+    *out\w = *q1\w*s
+  EndProcedure
+  
+  Procedure MultiplyByScalarInPlace(*q1.q4f32,s.f)
+    *q1\x * s
+    *q1\y * s
+    *q1\z * s
+    *q1\w * s
+  EndProcedure
+
+  ;-----------------------------------------
+  ; TrackBall
+  ;-----------------------------------------
   Procedure TrackBall(*q.q4f32,p1x.f,p1y.f,p2x.f,p2y.f)
     Protected axis.v3f32
     Protected phi.f
@@ -1667,6 +1561,180 @@ Module Quaternion
     ProcedureReturn
     
   EndProcedure
+
+  ;-----------------------------------------
+  ; Add
+  ;-----------------------------------------
+  Procedure Add(*out.q4f32,*q1.q4f32,*q2.q4f32)
+    Static count.i=0
+    Protected v1.v3f32, v2.v3f32, v3.v3f32, v4.v3f32
+    Protected w.f, d.f
+    
+    Vector3::Set(v1,*q1\x,*q1\y,*q1\z)
+    Vector3::Set(v2,*q2\x,*q2\y,*q2\z)
+    Vector3::Cross(v3,v1,v2)
+    d = Vector3::Dot(v1,v2)
+    
+    Vector3::ScaleInPlace(v1,*q2\w)
+    Vector3::ScaleInPlace(v2,*q1\w)
+    
+    Vector3::Add(v4,v1,v2)
+    Vector3::AddInPlace(v4,v3)
+    Set(*out,v4\x,v4\y,v4\z,*q1\w * *q2\w - d)
+    
+    If (count+1 > #RENORMCOUNT)
+      count = 0
+      NormalizeInPlace(*out)
+    EndIf
+  EndProcedure
+  
+  Procedure AddInPlace(*q.q4f32,*o.q4f32)
+    Protected t.q4f32
+    Set(@t,*q\x,*q\y,*q\z,*q\w)
+    Add(*q,@t,*o)
+  EndProcedure
+  
+
+
+  ;-----------------------------------------
+  ; Look At
+  ;-----------------------------------------
+  Procedure LookAt(*q.q4f32,*dir.v3f32,*up.v3f32,transpose.b = #False)
+    Protected m.m3f32
+    Matrix3::SetFromTwoVectors(@m,*dir,*up)
+    Matrix3::GetQuaternion(@m,*q,transpose)   
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; LinearInterpolate
+  ;-----------------------------------------
+  Procedure LinearInterpolate(*out.q4f32,*q1.q4f32,*q2.q4f32,b.f)
+    *out\x = (1-b) * *q1\x + b * *q2\x
+    *out\y = (1-b) * *q1\y + b * *q2\y
+    *out\z = (1-b) * *q1\z + b * *q2\z
+    *out\w = (1-b) * *q1\w + b * *q2\w
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize
+  ;-----------------------------------------
+  Procedure Randomize(*q.q4f32)
+    Protected x.f,y.f,z.f
+    x = Random(255)/255
+    y = Random(255)/255
+    z = Random(255)/255
+    Set(*q, Sqr(x*Cos(#F32_2PI*z)), Sqr(1-x*Sin(#F32_2PI*y)), Sqr(1-x*Cos(#F32_2PI*y)), Sqr(x*Sin(#F32_2PI*z)))
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize 2 
+  ;-----------------------------------------
+  Procedure Randomize2(*q.q4f32)
+    Define.v2f32 p0,p1
+    Define d1.f = UniformPointOnDisc(@p1) + #F32_EPS
+    Define s1.f = 1/Sqr(d1)
+    Define d0 = UniformPointOnDisc(@p0);  // or positive in 'x' since -Q & Q are equivalent
+    Define s0.f = Sqr(1.0-d0)
+    Define s.f  = s0*s1
+  
+    Set(*q, p0\y, s*p1\x, s*p1\y, p0\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Axis
+  ;-----------------------------------------
+  Procedure RandomizeAroundAxis(*q.q4f32, *axis.v3f32)
+    Protected p.v2f32
+    UniformPointOnCircle(@p)
+    Set(*q, p\y * *axis\x, p\y * *axis\y, p\y * *axis\z, p\x)
+  EndProcedure
+  
+  ;-----------------------------------------
+  ; Randomize Around Plane
+  ;-----------------------------------------
+  Procedure RandomizeAroundPlane(*q.q4f32)
+    Protected p.v2f32
+    Protected d.f = UniformPointOnDisc2(@p)
+    Protected s.f = Sqr(d)
+    Set(*q, p\x, p\y, 0.0, s)
+  EndProcedure
+  
+  
+  ;-----------------------------------------
+  ; Slerp
+  ;-----------------------------------------
+  
+  Procedure Slerp(*out.q4f32,*q1.q4f32,*q2.q4f32,blend.f)
+    If(blend<0)
+      SetFromOther(*out,*q1)
+      ProcedureReturn
+    ElseIf blend>=1
+      SetFromOther(*out,*q2)
+      ProcedureReturn
+    EndIf
+    
+    Define dotproduct.f = *q1\x * *q2\x + *q1\y * *q2\y + *q1\z * *q2\z + *q1\w * *q2\w
+    Define.f theta, st,sut, sout, coeff1, coeff2;
+    
+    blend * 0.5
+    
+    theta = ACos(dotproduct)
+    If theta<0 : theta * -1 :EndIf
+    
+    st = Sin(theta)
+    sut = Sin(blend*theta)
+    sout = Sin((1-blend)*theta)
+    coeff1 = sout/st
+    coeff2 = sut/st
+    
+    *out\x = coeff1 * *q1\x + coeff2 * *q2\x
+    *out\y = coeff1 * *q1\y + coeff2 * *q2\y
+    *out\z = coeff1 * *q1\z + coeff2 * *q2\z
+    *out\w = coeff1 * *q1\w + coeff2 * *q2\w
+    
+  EndProcedure
+
+  ; Log
+  ;------------------------------------------
+  Procedure Echo(*q.q4f32,prefix.s ="")
+    Debug prefix+"("+StrF(*q\x,3)+","+StrF(*q\y,3)+","+StrF(*q\z,3)+","+StrF(*q\w,3)+")"
+  EndProcedure
+  
+  ; ToString
+  ;----------------------------------------------------
+  Procedure.s ToString(*q.q4f32)
+    ProcedureReturn StrF(*q\w)+","+StrF(*q\x)+","+StrF(*q\y)+","+StrF(*q\z)
+  EndProcedure
+  
+  ; FromString
+  ;----------------------------------------------------
+  Procedure FromString(*q.q4f32, s.s)
+    If CountString(s,",")=3
+      *q\w = ValF(StringField(s,1,","))
+      *q\x = ValF(StringField(s,2,","))
+      *q\y = ValF(StringField(s,3,","))
+      *q\z = ValF(StringField(s,4,","))
+    EndIf
+  EndProcedure
+
+; ;-----------------------------------------
+; ; Draw
+; ;-----------------------------------------
+; Procedure Draw(*q.q4f32)
+;   Define.v3f32 x,y,z
+;   Vector3::Set(@x,1,0,0)
+;   Vector3::Set(@y,0,1,0)
+;   Vector3::Set(@z,0,0,1)
+;   Vector3::MulByq4f32InPlace(@x,*q)
+;   Vector3::MulByq4f32InPlace(@y,*q)
+;   Vector3::MulByq4f32InPlace(@z,*q)
+;   Vector3::Draw(@x,1,0,0,1)
+;   Vector3::Draw(@y,0,1,0,1)
+;   Vector3::Draw(@z,0,0,1,1)
+; EndProcedure
+; 
+; ;}
+  
 EndModule
 
 ;====================================================================
@@ -2599,7 +2667,7 @@ Module Transform
     Vector3::Set(z,*m\v[8],*m\v[9],*m\v[10])
     
     ; Set Scale
-    Vector3::Set(*s,Vector3::Length(@x),Vector3::Length(@y),Vector3::Length(@z))
+    Vector3::Set(*s,Vector3::Length(x),Vector3::Length(y),Vector3::Length(z))
   
     Define.f qx,qy,qz,qw,qw4
     Protected tr.f = *m\v[0] + *m\v[5] + *m\v[10]
@@ -2714,8 +2782,14 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1186
-; FirstLine = 1185
-; Folding = ----------------------------------
+; CursorPosition = 1870
+; FirstLine = 1850
+; Folding = -----------------------------------
+; EnableXP
+; EnableUnicode
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1213
+; FirstLine = 1193
+; Folding = --------------------------------
 ; EnableXP
 ; EnableUnicode
