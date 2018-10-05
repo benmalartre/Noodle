@@ -1317,8 +1317,9 @@ DeclareModule Quaternion
     ProcedureReturn StrF(_q\w)+","+StrF(_q\x)+","+StrF(_q\y)+","+StrF(_q\z)
   EndMacro
   
-  ; FromString
-  ;----------------------------------------------------
+  ;------------------------------------------------------------------
+  ; QUATERNION FROM STRING
+  ;------------------------------------------------------------------
   Macro FromString(_q, _s)
     If CountString(_s,",")=3
       _q\w = ValF(StringField(_s,1,","))
@@ -1389,19 +1390,148 @@ DeclareModule Color
     Color::?COLOR_BLACK
   EndMacro
   
-  Declare AddInplace(*c1.c4f32,*c2.c4f32)
-  Declare Add(*io.c4f32,*a.c4f32,*b.c4f32)
-  Declare Set(*io.c4f32,r.f=0,g.f=0,b.f=0,a.f=1)
-  Declare SetFromOther(*c1.c4f32,*c2.c4f32)
-  Declare Normalize(*io.c4f32,*c.c4f32)
-  Declare NormalizeInPlace(*c.c4f32)
-  Declare Randomize(*c.c4f32)
-  Declare RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
-  Declare LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
-  Declare Echo(*c.c4f32,prefix.s ="")
-  Declare.s ToString(*c.c4f32)
-  Declare FromString(*c.c4f32, s.s)
-  Declare MapRGB(*c.c4f32, r.f=1, g.f=1, b.f=1, a.f=1, x.f=0)
+  ;------------------------------------------------------------------
+  ; COLOR ADD IN PLACE
+  ;------------------------------------------------------------------
+  Macro AddInplace(_c1,_c2)
+    _c1\r + _c2\r
+    _c1\g + _c2\g
+    _c1\b + _c2\b
+    _c1\a + _c2\a
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR ADD
+  ;------------------------------------------------------------------
+  Macro Add(_io,_a,_b)
+    _io\r = _a\r + _b\r
+    _io\g = _a\g + _b\g
+    _io\b = _a\b + _b\b
+    _io\a = _a\a + _b\a
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR SET
+  ;------------------------------------------------------------------
+  Macro Set(_io,_r,_g,_b,_a)
+    _io\r = _r
+    _io\g = _g
+    _io\b = _b
+    _io\a = _a
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR SET FROM OTHER
+  ;------------------------------------------------------------------
+  Macro SetFromOther(_c1,_c2)
+    _c1\r = _c2\r
+    _c1\g = _c2\g
+    _c1\b = _c2\b
+    _c1\a = _c2\a
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR NORMALIZE
+  ;------------------------------------------------------------------
+  Macro Normalize(_io,_c)
+    
+    Define l.f = Vector3::Length(_c)
+    ;Avoid error dividing by zero
+    If _l = 0 : _l =1.0 :EndIf
+    
+    Define _div.f = 1/_l
+    _io\r = _c\r * _div
+    _io\g = _c\g * _div
+    _io\b = _c\b * _div
+    _io\a = _c\a
+  EndMacro
+  
+   
+  ;------------------------------------------------------------------
+  ; COLOR NORMALIZE IN PLACE
+  ;------------------------------------------------------------------
+  Macro NormalizeInPlace(_c)
+    Define _l.f = Vector3::Length(_c)
+    
+    ;Avoid error dividing by zero
+    If _l = 0 : _l =1.0 :EndIf
+    
+    Protected _div.f = 1/_l
+    _c\r * _div
+    _c\g * _div
+    _c\b * _div
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR RANDOMIZE
+  ;------------------------------------------------------------------
+  Macro Randomize(_c)
+    Define _invf = 1 / 255.0
+    _c\r = Random(255)*_invf
+    _c\g = Random(255)*_invf
+    _c\b = Random(255)*_invf
+    _c\a = 1.0
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; COLOR RANDOMIZE LUMINOSITY
+  ;------------------------------------------------------------------
+  Macro RandomLuminosity(_c,_min,_max)
+    Define _v.f = Random(255)/255.0 
+    _c\r = _v 
+    _c\g = _v
+    _c\b = _v 
+    _c\a = 1.0
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR LINEAR INTERPOLATE
+  ;------------------------------------------------------------------
+  Macro LinearInterpolate(_io, _c1, _c2, _blend)
+    LINEAR_INTERPOLATE(_io\r, _c1\r, _c2\r, _blend)
+    LINEAR_INTERPOLATE(_io\g, _c1\g, _c2\g, _blend)
+    LINEAR_INTERPOLATE(_io\b, _c1\b, _c2\b, _blend)
+    LINEAR_INTERPOLATE(_io\a, _c1\a, _c2\a, _blend)
+  EndMacro
+  
+  Macro MapRGB(_io.c4f32, _r, _g, _b, _a, _x)
+    Protected _alpha.f = Mod(_x,1)/3.0
+    
+;     def RGB(minimum, maximum, value):
+;     minimum, maximum = float(minimum), float(maximum)
+;     ratio = 2 * (value-minimum) / (maximum - minimum)
+;     b = Int(max(0, 255*(1 - ratio)))
+;     r = Int(max(0, 255*(ratio - 1)))
+;     g = 255 - b - r
+;     Return r, g, b
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR ECHO
+  ;------------------------------------------------------------------
+  Macro Echo(_c,prefix)
+    Debug prefix + ": "+StrF(_c\r)+","+StrF(_c\g)+","+StrF(_c\b)+","+StrF(_c\a)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR TO STRING
+  ;------------------------------------------------------------------
+  Macro ToString(_c)
+    StrF(_c\r)+","+StrF(_c\g)+","+StrF(_c\b)+","+StrF(_c\a)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR FROM STRING
+  ;------------------------------------------------------------------
+  Macro FromString(_c, _s)
+    If CountString(_s,",")=3
+      _c\r = ValF(StringField(_s,1,","))
+      _c\g = ValF(StringField(_s,2,","))
+      _c\b = ValF(StringField(_s,3,","))
+      _c\a = ValF(StringField(_s,4,","))
+    EndIf
+  EndMacro
+ 
 EndDeclareModule
 
 ;====================================================================
@@ -1499,7 +1629,6 @@ DeclareModule Transform
   Declare SetRotationFromQuaternion(*t.Transform_t,*q.q4f32)
   Declare SetScaleFromXYZValues(*t.Transform_t,x.f,y.f,z.f)
 EndDeclareModule
-
 
 ;====================================================================
 ; Math Module Implementation
@@ -1638,137 +1767,6 @@ EndModule
 ; Color Module Implementation
 ;====================================================================
 Module Color
-  UseModule Math
-  ; Add In Place
-  ;----------------------------------------
-  Procedure AddInplace(*c1.c4f32,*c2.c4f32)
-    *c1\r + *c2\r
-    *c1\g + *c2\g
-    *c1\b + *c2\b
-    *c1\a + *c2\a
-  EndProcedure
-  
-  ; Add
-  ;----------------------------------------
-  Procedure Add(*io.c4f32,*a.c4f32,*b.c4f32)
-    *io\r = *a\r + *b\r
-    *io\g = *a\g + *b\g
-    *io\b = *a\b + *b\b
-    *io\a = *a\a + *b\a
-  EndProcedure
-  
-  ; Set
-  ;----------------------------------------
-  Procedure Set(*io.c4f32,r.f=0,g.f=0,b.f=0,a.f=1)
-    *io\r = r
-    *io\g = g
-    *io\b = b
-    *io\a = a
-  EndProcedure
-  
-  ; Set From Other
-  ;----------------------------------------
-  Procedure SetFromOther(*c1.c4f32,*c2.c4f32)
-    *c1\r = *c2\r
-    *c1\g = *c2\g
-    *c1\b = *c2\b
-    *c1\a = *c2\a
-  EndProcedure
-  
-  ; Normalize
-  ;----------------------------------------
-  Procedure Normalize(*io.c4f32,*c.c4f32)
-    
-    Protected l.f = Vector3::Length(*c)
-    ;Avoid error dividing by zero
-    If l = 0 : l =1.0 :EndIf
-    
-    Protected div.f = 1/l
-    *io\r = *c\r * div
-    *io\g = *c\g * div
-    *io\b = *c\b * div
-    *io\a = *c\a
-   EndProcedure
-   
-   ; Normalize In Place
-  ;----------------------------------------
-  Procedure NormalizeInPlace(*c.c4f32)
-    Protected l.f = Vector3::Length(*c)
-    
-    ;Avoid error dividing by zero
-    If l = 0 : l =1.0 :EndIf
-    
-    Protected div.f = 1/l
-    *c\r * div
-    *c\g * div
-    *c\b * div
-  EndProcedure
-  
-  ; Randomize
-  ;----------------------------------------
-  Procedure Randomize(*c.c4f32)
-    *c\r = Random(100)*0.01  
-    *c\g = Random(100)*0.01 
-    *c\b = Random(100)*0.01 
-    *c\a = 1.0
-  EndProcedure
-  
-  ; Random Luminosity
-  ;----------------------------------------
-  Procedure RandomLuminosity(*c.c4f32,min.f=0,max.f=1)
-    Protected v.f = Random(100)*0.01 
-    *c\r = v 
-    *c\g = v
-    *c\b = v 
-    *c\a = 1.0
-  EndProcedure
-  
-  
-  ; LinearInterpolate
-  ;----------------------------------------
-  Procedure LinearInterpolate(*io.c4f32, *c1.c4f32, *c2.c4f32, blend.f)
-    LINEAR_INTERPOLATE(*io\r, *c1\r, *c2\r, blend)
-    LINEAR_INTERPOLATE(*io\g, *c1\g, *c2\g, blend)
-    LINEAR_INTERPOLATE(*io\b, *c1\b, *c2\b, blend)
-    LINEAR_INTERPOLATE(*io\a, *c1\a, *c2\a, blend)
-  EndProcedure
-  
-  Procedure MapRGB(*io.c4f32, r.f=1.0, g.f=1.0, b.f=1.0, a.f=1.0, x.f=0.0)
-    Protected alpha.f = Mod(x,1)/3.0
-    
-;     def RGB(minimum, maximum, value):
-;     minimum, maximum = float(minimum), float(maximum)
-;     ratio = 2 * (value-minimum) / (maximum - minimum)
-;     b = Int(max(0, 255*(1 - ratio)))
-;     r = Int(max(0, 255*(ratio - 1)))
-;     g = 255 - b - r
-;     Return r, g, b
-  EndProcedure
-  
-  
-  ; Echo
-  ;----------------------------------------------------
-  Procedure Echo(*c.c4f32,prefix.s ="")
-    Debug "[Color] : "+StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
-  EndProcedure
-  
-  ; ToString
-  ;----------------------------------------------------
-  Procedure.s ToString(*c.c4f32)
-    ProcedureReturn StrF(*c\r)+","+StrF(*c\g)+","+StrF(*c\b)+","+StrF(*c\a)
-  EndProcedure
-  
-  ; FromString
-  ;----------------------------------------------------
-  Procedure FromString(*c.c4f32, s.s)
-    If CountString(s,",")=3
-      *c\r = ValF(StringField(s,1,","))
-      *c\g = ValF(StringField(s,2,","))
-      *c\b = ValF(StringField(s,3,","))
-      *c\a = ValF(StringField(s,4,","))
-    EndIf
-  EndProcedure
-  
 EndModule
 
 ;====================================================================
@@ -2679,14 +2677,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1870
-; FirstLine = 1850
-; Folding = -----------------------------------
-; EnableXP
-; EnableUnicode
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1200
-; FirstLine = 1159
-; Folding = ----------------------------------
+; CursorPosition = 1525
+; FirstLine = 1515
+; Folding = -----------------------------
 ; EnableXP
 ; EnableUnicode
