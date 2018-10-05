@@ -32,9 +32,9 @@ Module Ray
     Protected origin.v4f32
     Protected direction.v4f32
     Vector4::Set(origin, *ray\origin\x, *ray\origin\y, *ray\origin\z, 1)
-    Vector4::MulByMatrix4(*ray\origin, origin, *m)
+    Vector4::MulByMatrix4(*ray\origin, origin, *m, #False)
     Vector4::Set(direction, *ray\direction\x, *ray\direction\y, *ray\direction\z, 0)
-    Vector4::MulByMatrix4(*ray\direction, direction, *m)
+    Vector4::MulByMatrix4(*ray\direction, direction, *m, #False)
   EndProcedure
   
   ;---------------------------------------------
@@ -306,8 +306,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; CursorPosition = 36
+; FirstLine = 32
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

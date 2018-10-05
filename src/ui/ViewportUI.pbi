@@ -428,7 +428,7 @@ Module ViewportUI
     Define inv_proj.m4f32
     Matrix4::Inverse(@inv_proj,*Me\camera\projection)
     Define ray_eye.v4f32
-    Vector4::MulByMatrix4(ray_eye,ray_clip,inv_proj)
+    Vector4::MulByMatrix4(ray_eye,ray_clip,inv_proj,#False)
     ray_eye\z = -1
     ray_eye\w = 0
     
@@ -436,7 +436,7 @@ Module ViewportUI
     Define inv_view.m4f32
     Define ray_world.v4f32
     Matrix4::Inverse(@inv_view,*Me\camera\view)
-    Vector4::MulByMatrix4(ray_world,ray_eye,inv_view)
+    Vector4::MulByMatrix4(ray_world,ray_eye,inv_view, #False)
     
     Vector3::Set(*ray_dir,ray_world\x,ray_world\y,ray_world\z)
     Vector3::NormalizeInPlace(*ray_dir)
@@ -572,7 +572,7 @@ Module ViewportUI
     _in\w=1.0;
     
     ;Objects coordinates
-    Vector4::MulByMatrix4(_out, _in, m);
+    Vector4::MulByMatrix4(_out, _in, m, #False)
     Vector4::Echo(_out,"Projected")
   
   ;  If _out\w = 0 
@@ -629,7 +629,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 511
-; FirstLine = 507
+; CursorPosition = 574
+; FirstLine = 570
 ; Folding = -----
 ; EnableXP

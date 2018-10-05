@@ -39,9 +39,9 @@ Module Box
     Protected extend.v4f32
     ;     Vector4::Set(@origin, (*box\bmin\x + *box\bmax\x) * 0.5, (*box\bmin\y + *box\bmax\y)*0.5, (*box\bmin\z + *box\bmax\z)*0.5, 1)
     Vector4::Set(origin, *Me\origin\x, *Me\origin\y, *Me\origin\z, 1)
-    Vector4::MulByMatrix4(*Me\origin, origin, *m)
+    Vector4::MulByMatrix4(*Me\origin, origin, *m, #Fals)
     Vector4::Set(extend, *Me\extend\x, *Me\extend\y, *Me\extend\z, 0)
-    Vector4::MulByMatrix4(*Me\extend, extend, *m)
+    Vector4::MulByMatrix4(*Me\extend, extend, *m, #False)
   EndProcedure
   
   ;---------------------------------------------
@@ -172,7 +172,7 @@ Module Box
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 43
-; FirstLine = 36
+; FirstLine = 37
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -198,10 +198,10 @@ Module LayerCascadedShadowMap
       
       For j=0 To #NUM_FRUSTUM_CORNERS-1
         ;Transform the frustum coordinate from view To world space
-        Vector4::MulByMatrix4(vW,frustrumCorners(j), invview)
+        Vector4::MulByMatrix4(vW,frustrumCorners(j), invview, #False)
 
         ;Transform the frustum coordinate from world To light space
-        Vector4::MulByMatrix4(frustumCornersL(j), vW, lightM)
+        Vector4::MulByMatrix4(frustumCornersL(j), vW, lightM, #False)
         
         minX = Math::Min(minX, frustumCornersL(j)\x)
         maxX = Math::Max(maxX, frustumCornersL(j)\x)
@@ -237,7 +237,7 @@ Module LayerCascadedShadowMap
     Protected vView.Math::v4f32, vClip.Math::v4f32
     For i=0 To 2
       Vector4::Set(vView,0.0,0.0,-*layer\cascadeEnds(i+1),1.0)
-      Vector4::MulByMatrix4(vClip,vView,*camera\projection)
+      Vector4::MulByMatrix4(vClip,vView,*camera\projection, #False)
       glUniform1f(glGetUniformLocation(shader,"cascades_end[" + Str(i) + "]"), vClip\z)
     Next
   EndProcedure
