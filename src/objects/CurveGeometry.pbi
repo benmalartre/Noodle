@@ -378,7 +378,7 @@ Module CurveGeometry
     Protected nbVertices.i
     Protected offsetSample.i = 0
     Protected offsetVertex.i = 0
-    Protected *c1.v3f32, *c2.v3f32
+    Protected *c1.c4f32, *c2.c4f32, *o.c4f32
     Protected gPos.f, fInc.f
     Protected i, ip1
     Protected u.f
@@ -397,8 +397,10 @@ Module CurveGeometry
         u = gPos - Round(gPos, #PB_Round_Down)
         *c1 = CArray::GetValue(*Me\a_colors, ip1 )
         *c2 = CArray::GetValue(*Me\a_colors, ip1+1)
-        
-        Color::LinearInterpolate(CArray::GetValue(*colors, i + offsetSample), *c1, *c2, u)        
+        *c1\a = 1
+        *c2\a = 1
+        *o = CArray::GetValue(*colors, i + offsetSample)
+        Color::LinearInterpolate(*o, *c1, *c2, u)        
         gPos + fInc
       Next
       
@@ -672,7 +674,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 597
-; FirstLine = 593
+; CursorPosition = 400
+; FirstLine = 366
 ; Folding = ------
 ; EnableXP

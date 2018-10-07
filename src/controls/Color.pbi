@@ -357,7 +357,7 @@ Module ControlColor
     *ctrl\red = 255
     *ctrl\green = 0
     *ctrl\blue = 0
-    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255, 1.0)
     Control::Invalidate(*ctrl)
   EndProcedure
   
@@ -365,7 +365,7 @@ Module ControlColor
     *ctrl\red = 0
     *ctrl\green = 255
     *ctrl\blue = 0
-    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255, 1.0)
     Control::Invalidate(*ctrl)
   EndProcedure
   
@@ -373,7 +373,7 @@ Module ControlColor
     *ctrl\red = 0
     *ctrl\green = 0
     *ctrl\blue = 255
-    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255)
+    Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255, 1.0)
     Control::Invalidate(*ctrl)
   EndProcedure
 
@@ -432,8 +432,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 330
-; FirstLine = 309
+; CursorPosition = 375
+; FirstLine = 346
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -511,13 +511,14 @@ Module Octree
     Protected s.v3f32
     Protected p.v3f32
     Protected *a.v3f32, *b.v3f32, *c.v3f32
-    Matrix4::SetIdentity(@m)
+    Protected *col.c4f32
+    Matrix4::SetIdentity(m)
     If *octree\isLeaf
       Vector3::Sub(s, *octree\bmax, *octree\bmin)
       Vector3::Add(p, *octree\bmin, *octree\bmax)
       Vector3::ScaleInPlace(p, 0.5)
-      Matrix4::SetScale(@m, @s)
-      Matrix4::SetTranslation(@m, @p)
+      Matrix4::SetScale(m, s)
+      Matrix4::SetTranslation(m, p)
       Protected *box.Drawer::Box_t = Drawer::NewBox(*drawer, @m)
       Drawer::SetColor(*box,*octree\color)
       
@@ -551,17 +552,18 @@ Module Octree
         *c\x + (Random(200)-100)*0.001
         *c\y + (Random(200)-100)*0.001
         *c\z + (Random(200)-100)*0.001
-
         
-        
-        Color::SetFromOther(CArray::GetValue(*colors, t*3), *octree\color)
-        Color::SetFromOther(CArray::GetValue(*colors, t*3+1), *octree\color)
-        Color::SetFromOther(CArray::GetValue(*colors, t*3+2), *octree\color)
+        *col = CArray::GetValue(*colors, t*3)
+        Color::SetFromOther(*col, *octree\color)
+        *col = CArray::GetValue(*colors, t*3+1)
+        Color::SetFromOther(*col, *octree\color)
+        *col = CArray::GetValue(*colors, t*3+2)
+        Color::SetFromOther(*col, *octree\color)
       Next
       
       Protected *triangles.Drawer::Triangle_t = Drawer::NewColoredTriangle(*drawer, *positions, *colors)
       CArray::Delete(*positions)
-      CARray::Delete(*colors)
+      CArray::Delete(*colors)
     Else
       Protected i
       For i=0 To 7
@@ -577,7 +579,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 511
+; CursorPosition = 521
+; FirstLine = 504
 ; Folding = -----
 ; EnableXP

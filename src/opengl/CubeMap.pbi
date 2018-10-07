@@ -250,8 +250,8 @@ Module CubeMap
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"P"),1,#GL_FALSE,*camera\projection)
     Protected view.Math::m4f32
     Protected pos.Math::v3f32
-    Matrix4::SetFromOther(@view,*camera\view)
-    Matrix4::SetTranslation(@view,@pos)
+    Matrix4::SetFromOther(view,*camera\view)
+    Matrix4::SetTranslation(view,@pos)
     glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"V"),1,#GL_FALSE,@view)
     glBindVertexArray(*Me\vao);
     glDrawArrays(#GL_TRIANGLES, 0, 36);
@@ -262,8 +262,8 @@ Module CubeMap
   
 EndModule
 
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 139
-; FirstLine = 117
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 252
+; FirstLine = 210
 ; Folding = --
 ; EnableXP

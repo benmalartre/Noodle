@@ -315,7 +315,7 @@ DeclareModule Vector2
   UseModule Math
   
   ;------------------------------------------------------------------
-  ; VECTOR3 SET
+  ; VECTOR2 SET
   ;------------------------------------------------------------------
   Macro Set(v,_x,_f)
     v\x = _x
@@ -328,7 +328,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 ADD
+  ; VECTOR2 ADD
   ;------------------------------------------------------------------
   Macro Add(v,a,b)
     v\x = a\x + b\x
@@ -341,7 +341,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 SUB
+  ; VECTOR2 SUB
   ;------------------------------------------------------------------
   Macro Sub(v,a,b)
     v\x = a\x - b\x
@@ -354,7 +354,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 SCALE
+  ; VECTOR2 SCALE
   ;------------------------------------------------------------------
   Macro Scale(v,o,mult)
     v\x = o\x * mult
@@ -367,7 +367,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 INVERT
+  ; VECTOR2 INVERT
   ;------------------------------------------------------------------
   Macro Invert(v, o)
     If o\x <> 0.0 : v\x = 1 / o\x : EndIf
@@ -380,7 +380,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 LENGTH
+  ; VECTOR2 LENGTH
   ;------------------------------------------------------------------
   Macro LengthSquared(v)
     v\x * v\x + v\y * v\y
@@ -391,7 +391,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 NORMALIZE
+  ; VECTOR2 NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v, _o)
     Define _mag.f = Vector3::LengthSquared(_o)
@@ -412,7 +412,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 ANGLE
+  ; VECTOR2 ANGLE
   ;------------------------------------------------------------------
   Macro GetAngle(_v, _o, _angle)
     Define _fCosAngle.f, _fLen.f
@@ -430,7 +430,7 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 INTERPOLATION
+  ; VECTOR2 INTERPOLATION
   ;------------------------------------------------------------------
   Macro LinearInterpolate(_v,_a,_b,_blend)
     _v\x = (1-_blend) * _a\x + _blend * _b\x
@@ -456,14 +456,14 @@ DeclareModule Vector2
   EndProcedure
   
   ;------------------------------------------------------------------
-  ; VECTOR3 DOT
+  ; VECTOR2 DOT
   ;------------------------------------------------------------------
   Macro Dot(_v,_o)
     (_v\x * _o\x + _v\y * _o\y)
   EndProcedure
   
   ;------------------------------------------------------------------
-  ; VECTOR3 SET LENGTH
+  ; VECTOR2 SET LENGTH
   ;------------------------------------------------------------------
   Macro SetLength(_v,_length)
     NormalizeInPlace(_v)
@@ -471,7 +471,7 @@ DeclareModule Vector2
   EndProcedure
 
   ;------------------------------------------------------------------
-  ; VECTOR3 MULTIPLY
+  ; VECTOR2 MULTIPLY
   ;------------------------------------------------------------------
   Macro Multiply(_o,_a,_b)
     _o\x = _a\x * _b\x
@@ -479,21 +479,21 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 ECHO
+  ; VECTOR2 ECHO
   ;------------------------------------------------------------------
   Macro Echo(_v,_name="")
     Debug _name +":("+StrF(_v\x)+","+StrF(_v\y)+")"
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 TO STRING
+  ; VECTOR2 TO STRING
   ;------------------------------------------------------------------
   Macro ToString(v)
     StrF(v\x)+","+StrF(v\y)
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 FROM STRING
+  ; VECTOR2 FROM STRING
   ;------------------------------------------------------------------
   Macro FromString(v, s)
     If CountString(s,",")=1
@@ -1183,8 +1183,8 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   Macro Add(_out,_q1,_q2)
     Static _count.i=0
-    Protected _v1.v3f32, _v2.v3f32, _v3.v3f32, _v4.v3f32
-    Protected _w.f, _d.f
+    Define _v1.v3f32, _v2.v3f32, _v3.v3f32, _v4.v3f32
+    Define _w.f, _d.f
     
     Vector3::Set(_v1,_q1\x,_q1\y,_q1\z)
     Vector3::Set(_v2,_q2\x,_q2\y,_q2\z)
@@ -1234,9 +1234,9 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   Macro Randomize(_q)
     Define _x.f,_y.f,_z.f
-    _x = Random(255)/255
-    _y = Random(255)/255
-    _z = Random(255)/255
+    _x = Random(255)/255.0
+    _y = Random(255)/255.0
+    _z = Random(255)/255.0
     Quaternion::Set(_q, Sqr(_x*Cos(#F32_2PI*_z)), Sqr(1-_x*Sin(#F32_2PI*_y)), Sqr(1-_x*Cos(#F32_2PI*_y)), Sqr(_x*Sin(#F32_2PI*_z)))
   EndMacro
   
@@ -1338,7 +1338,7 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Color
   UseModule Math
-  
+  #C4F32_SIZE = 16
   DataSection
     COLOR_RED:
     Data.f 1,0,0,1
@@ -1456,7 +1456,7 @@ DeclareModule Color
     ;Avoid error dividing by zero
     If _l = 0 : _l =1.0 :EndIf
     
-    Protected _div.f = 1/_l
+    Define _div.f = 1/_l
     _c\r * _div
     _c\g * _div
     _c\b * _div
@@ -1466,12 +1466,12 @@ DeclareModule Color
   ; COLOR RANDOMIZE
   ;------------------------------------------------------------------
   Macro Randomize(_c)
-    Define _invf = 1 / 255.0
+    Define _invf.f = 1 / 255.0
     _c\r = Random(255)*_invf
     _c\g = Random(255)*_invf
     _c\b = Random(255)*_invf
     _c\a = 1.0
-  EndProcedure
+  EndMacro
   
   ;------------------------------------------------------------------
   ; COLOR RANDOMIZE LUMINOSITY
@@ -1494,8 +1494,8 @@ DeclareModule Color
     LINEAR_INTERPOLATE(_io\a, _c1\a, _c2\a, _blend)
   EndMacro
   
-  Macro MapRGB(_io.c4f32, _r, _g, _b, _a, _x)
-    Protected _alpha.f = Mod(_x,1)/3.0
+  Macro MapRGB(_io, _r, _g, _b, _a, _x)
+    Define _alpha.f = Mod(_x,1)/3.0
     
 ;     def RGB(minimum, maximum, value):
 ;     minimum, maximum = float(minimum), float(maximum)
@@ -1539,17 +1539,244 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Matrix3
   UseModule Math
-  Declare Set(*m.m3f32,m00.f,m01.f,m02.f,m10.f,m11.f,m12.f,m20.f,m21.f,m22.f)
-  Declare SetIdentity(*m.m3f32)
-  Declare SetFromOther(*m.m3f32,*o.m3f32)
-  Declare SetFromTwoVectors(*m.m3f32,*dir.v3f32,*up.v3f32)
-  Declare SetFromQuaternion(*m.m3f32,*q.q4f32)
-  Declare MulByMatrix3InPlace(*m.m3f32,*o.m3f32)
-  Declare MulByMatrix3(*m.m3f32,*f.m3f32,*s.m3f32)
-  Declare GetQuaternion(*m.m3f32,*q.q4f32,transpose.b=#False)
-  Declare Echo(*m.m3f32)
-  Declare.s ToString(*m.m3f32)
-  Declare FromString(*m.m3f32, s.s)
+  
+  #M3F32_SIZE = 36
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 ECHO
+  ;------------------------------------------------------------------
+  Macro Echo(_m)
+    Debug  "Matrix3*3("+
+           StrF(_m\v[0])+","+
+           StrF(_m\v[1])+","+
+           StrF(_m\v[2])+","+
+           StrF(_m\v[3])+","+
+           StrF(_m\v[4])+","+
+           StrF(_m\v[5])+","+
+           StrF(_m\v[6])+","+
+           StrF(_m\v[7])+","+
+           StrF(_m\v[8])+")"
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 TO STRING
+  ;------------------------------------------------------------------
+  Macro ToString(_m)
+    StrF(_m\v[0])+","+
+    StrF(_m\v[1])+","+
+    StrF(_m\v[2])+","+
+    StrF(_m\v[3])+","+
+    StrF(_m\v[4])+","+
+    StrF(_m\v[5])+","+
+    StrF(_m\v[6])+","+
+    StrF(_m\v[7])+","+
+    StrF(_m\v[8])
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 FROM STRING
+  ;------------------------------------------------------------------
+  Macro FromString(_m, _s)
+    If CountString(_s,",")=8
+      Define _i
+      For _i=0 To 8 : _m\v[_i] = ValF(StringField(_s,_i+1,",")) : Next
+    EndIf
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 SET
+  ;------------------------------------------------------------------
+  Macro Set(_m,_m00,_m01,_m02,_m10,_m11,_m12,_m20,_m21,_m22)
+    _m\v[0] = _m00
+    _m\v[1] = _m01
+    _m\v[2] = _m02
+    _m\v[3] = _m10
+    _m\v[4] = _m11
+    _m\v[5] = _m12
+    _m\v[6] = _m20
+    _m\v[7] = _m21
+    _m\v[8] = _m22
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 SET IDENTITY
+  ;------------------------------------------------------------------
+  Macro SetIdentity(_m)
+    _m\v[0] = 1.0
+    _m\v[1] = 0.0
+    _m\v[2] = 0.0
+    _m\v[3] = 0.0
+    _m\v[4] = 1.0
+    _m\v[5] = 0.0
+    _m\v[6] = 0.0
+    _m\v[7] = 0.0
+    _m\v[8] = 1.0
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 SET FROM OTHER
+  ;------------------------------------------------------------------
+  Macro SetFromOther(_m,_o)
+    Define _i
+    For _i=0 To 8
+      _m\v[_i] = _o\v[_i]
+    Next _i
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 SET FROM TWO VECTORS
+  ;------------------------------------------------------------------
+  Macro SetFromTwoVectors(_m,_dir,_up)
+    Define _N.v3f32
+    Vector3::Normalize(_N, _dir)
+    Define _U.v3f32
+    Vector3::Cross(_U, _up, _N)
+    Vector3::NormalizeInPlace(_U)
+    Define _V.v3f32
+    Vector3::Cross(_V, _N, _U)
+    Vector3::NormalizeInPlace(_V)
+    
+    _m\v[0] = _V\x : _m\v[1] = _V\y : _m\v[2] = _V\z
+    _m\v[3] = _N\x : _m\v[4] = _N\y : _m\v[5] = _N\z
+    _m\v[6] = _U\x : _m\v[7] = _U\y : _m\v[8] = _U\z
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 SET FROM QUATERNION
+  ;------------------------------------------------------------------
+  Macro SetFromQuaternion(_m,_q)
+    Define _qn.f, _qs.f
+    Define _qxs.f, _qys.f, _qzs.f
+    Protected _qwx.f, _qwy.f, _qwz.f
+    Protected _qxx.f, _qxy.f, _qxz.f
+    Protected _qyy.f, _qyz.f, _qzz.f
+    
+    _qn = (_q\x * _q\x) + (_q\y * _q\y) + (_q\z * _q\z) + (_q\w * _q\w)
+    If _qn>0
+      _qs = 2/_qn
+    Else
+      _qs = 0
+    EndIf
+    
+    _qxs = _q\x * _qs  : _qys = _q\y * _qs  : _qzs = _q\z * _qs
+    _qwx = _q\w * _qxs : _qwy = _q\w * _qys : _qwz = _q\w * _qzs
+    _qxx = _q\x * _qxs : _qxy = _q\x * _qys : _qxz = _q\x * _qzs
+    _qyy = _q\y * _qys : _qyz = _q\y * _qzs : _qzz = _q\z * _qzs
+    
+    _m\v[0] = 1 - (_qyy + _qzz) : _m\v[3] = _qxy - _qwz     : _m\v[6] = _qxz + _qwy
+    _m\v[1] = _qxy + _qwz       : _m\v[4] = 1- (_qxx +_qzz) : _m\v[7] = _qyz - _qwx
+    _m\v[2] = _qxz - _qwy       : _m\v[5] = _qyz + _qwx     : _m\v[8] = 1 - (_qxx + _qyy)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 MULTIPLY BY MATRIX3 IN PLACE
+  ;------------------------------------------------------------------
+  Macro MulByMatrix3InPlace(_m,_o)
+    Define _tmp_m3.m3f32
+    _tmp_m3\v[0] = _m\v[0] * _o\v[0] + _m\v[1] * _o\v[3] + _m\v[2] * _o\v[6]
+    _tmp_m3\v[1] = _m\v[0] * _o\v[1] + _m\v[1] * _o\v[4] + _m\v[2] * _o\v[7]
+    _tmp_m3\v[2] = _m\v[0] * _o\v[2] + _m\v[1] * _o\v[5] + _m\v[2] * _o\v[8]
+    
+    _tmp_m3\v[3] = _m\v[3] * _o\v[0] + _m\v[4] * _o\v[3] + _m\v[5] * _o\v[6]
+    _tmp_m3\v[4] = _m\v[3] * _o\v[1] + _m\v[4] * _o\v[4] + _m\v[5] * _o\v[7]
+    _tmp_m3\v[5] = _m\v[3] * _o\v[2] + _m\v[4] * _o\v[5] + _m\v[5] * _o\v[8]
+    
+    _tmp_m3\v[6] = _m\v[6] * _o\v[0] + _m\v[7] * _o\v[3] + _m\v[8] * _o\v[6]
+    _tmp_m3\v[7] = _m\v[6] * _o\v[1] + _m\v[7] * _o\v[4] + _m\v[8] * _o\v[7]
+    _tmp_m3\v[8] = _m\v[6] * _o\v[2] + _m\v[7] * _o\v[5] + _m\v[8] * _o\v[8]
+    
+    Matrix3::Set(*m,_tmp_m3\v[0],_tmp_m3\v[1],_tmp_m3\v[2],
+                    _tmp_m3\v[3],_tmp_m3\v[4],_tmp_m3\v[5],
+                    _tmp_m3\v[6],_tmp_m3\v[7],_tmp_m3\v[8])
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 MULTIPLY BY MATRIX3
+  ;------------------------------------------------------------------
+  Macro MulByMatrix3(_m,_f,_s)
+    _m\v[0] = _f\v[0] * _s\v[0] + _f\v[1] * _s\v[3] + _f\v[2] * _s\v[6]
+    _m\v[1] = _f\v[0] * _s\v[1] + _f\v[1] * _s\v[4] + _f\v[2] * _s\v[7]
+    _m\v[2] = _f\v[0] * _s\v[2] + _f\v[1] * _s\v[5] + _f\v[2] * _s\v[8]
+    
+    _m\v[3] = _f\v[3] * _s\v[0] + _f\v[4] * _s\v[3] + _f\v[5] * _s\v[6]
+    _m\v[4] = _f\v[3] * _s\v[1] + _f\v[4] * _s\v[4] + _f\v[5] * _s\v[7]
+    _m\v[5] = _f\v[3] * _s\v[2] + _f\v[4] * _s\v[5] + _f\v[5] * _s\v[8]
+    
+    _m\v[6] = _f\v[6] * _s\v[0] + _f\v[7] * _s\v[3] + _f\v[8] * _s\v[6]
+    _m\v[7] = _f\v[6] * _s\v[1] + _f\v[7] * _s\v[4] + _f\v[8] * _s\v[7]
+    _m\v[8] = _f\v[6] * _s\v[2] + _f\v[7] * _s\v[5] + _f\v[8] * _s\v[8]
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 GET QUATERNION
+  ;------------------------------------------------------------------
+  Macro GetQuaternion(_m,_q,_transpose)
+    Define _t.f
+    Define _s.f
+    
+    If _transpose
+      _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
+      If _t >0.00000001
+        _s = Sqr(_t)*2
+        _q\x = (_m\v[7]-_m\v[5])/_s
+        _q\y = (_m\v[2]-_m\v[6])/_s
+        _q\z = (_m\v[3]-_m\v[1])/_s
+        _q\w = 0.25 * _s 
+      Else
+        
+        If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
+          _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
+          _q\x = 0.25 * _s
+          _q\y = (_m\v[3] + _m\v[1])/_s
+          _q\z = (_m\v[2] + _m\v[6])/_s
+          _q\w = (_m\v[7] - _m\v[5])/_s
+        ElseIf _m\v[4]>_m\v[8]
+          _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
+          _q\x = (_m\v[3] + _m\v[1])/_s
+          _q\y = 0.25 * _s
+          _q\z = (_m\v[7] + _m\v[5])/_s
+          _q\w = (_m\v[2] - _m\v[6])/_s
+        Else
+          _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
+          _q\x = (_m\v[2] + _m\v[6])/_s
+          _q\y = (_m\v[7] + _m\v[5])/_s
+          _q\z = 0.25 * _s
+          _q\w = (_m\v[3] - _m\v[1])/_s
+        EndIf
+      EndIf
+    Else
+  
+      _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
+      If _t >0.00000001
+        _s = Sqr(_t)*2
+        _q\x = (_m\v[5]-_m\v[7])/_s
+        _q\y = (_m\v[6]-_m\v[2])/_s
+        _q\z = (_m\v[1]-_m\v[3])/_s
+        _q\w = 0.25 * _s 
+      Else
+        If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
+          _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
+          _q\x = 0.25 * _s
+          _q\y = (_m\v[1] + _m\v[3])/_s
+          _q\z = (_m\v[6] + _m\v[2])/_s
+          _q\w = (_m\v[5] - _m\v[7])/_s
+        ElseIf _m\v[4]>_m\v[8]
+          _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
+          _q\x = (_m\v[1] + _m\v[3])/_s
+          _q\y = 0.25 * _s
+          _q\z = (_m\v[5] + _m\v[7])/_s
+          _q\w = (_m\v[6] - _m\v[2])/_s
+        Else
+          _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
+          _q\x = (_m\v[6] + _m\v[2])/_s
+          _q\y = (_m\v[5] + _m\v[7])/_s
+          _q\z = 0.25 * _s
+          _q\w = (_m\v[1] - _m\v[3])/_s
+        EndIf
+      EndIf
+    EndIf  
+  EndMacro
+
 EndDeclareModule
 
 ;====================================================================
@@ -1557,6 +1784,9 @@ EndDeclareModule
 ;====================================================================
 DeclareModule Matrix4
   UseModule Math
+  
+  #M4F32_SIZE = 64
+  
   DataSection
     M_IDENTITY:
     Data.f 1.0,0.0,0.0,0.0
@@ -1565,38 +1795,409 @@ DeclareModule Matrix4
     Data.f 0.0,0.0,0.0,1.0
   EndDataSection
   
+  ;------------------------------------------------------------------
+  ; MATRIX4 IDENTITY
+  ;------------------------------------------------------------------
   Macro IDENTITY()
     Matrix4::?M_IDENTITY
   EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 ECHO
+  ;------------------------------------------------------------------
+  Macro Echo(_m,_name)
+    Debug _name+" :Matrix4*4("+
+          StrF(_m\v[0],3)+","+
+          StrF(_m\v[1],3)+","+
+          StrF(_m\v[2],3)+","+
+          StrF(_m\v[3],3)+","+
+          StrF(_m\v[4],3)+","+
+          StrF(_m\v[5],3)+","+
+          StrF(_m\v[6],3)+","+
+          StrF(_m\v[7],3)+","+
+          StrF(_m\v[8],3)+","+
+          StrF(_m\v[9],3)+","+
+          StrF(_m\v[10],3)+","+
+          StrF(_m\v[11],3)+","+
+          StrF(_m\v[12],3)+","+
+          StrF(_m\v[13],3)+","+
+          StrF(_m\v[14],3)+","+
+          StrF(_m\v[15],3)+")"
+  EndMacro
   
-  Declare Set(*m.m4f32,m00.f,m01.f,m02.f,m03.f,m10.f,m11.f,m12.f,m13.f,m20.f,m21.f,m22.f,m23.f,m30.f,m31.f,m32.f,m33.f)
-  Declare SetZero(*m.m4f32)
-  Declare SetIdentity(*m.m4f32)
-  Declare SetTranslation(*m.m4f32,*v.v3f32)
-  Declare SetScale(*m.m4f32,*v.v3f32)
-  Declare SetFromOther(*m.m4f32,*o.m4f32)
-  Declare SetFromQuaternion(*m.m4f32,*q.q4f32)
-  Declare Multiply(*m.m4f32,*f.m4f32,*s.m4f32)
-  Declare MultiplyInPlace(*m.m4f32,*o.m4f32)
-  Declare RotateX(*m.m4f32,x.f)
-  Declare RotateY(*m.m4f32,y.f)
-  Declare RotateZ(*m.m4f32,z.f)
-  Declare.b ComputeInverse(*m.m4f32,*o.m4f32,transpose.b=#False)
+  ;------------------------------------------------------------------
+  ; MATRIX4 AS STRING
+  ;------------------------------------------------------------------
+  Macro ToString(_m)
+    StrF(_m\v[0],3)+","+
+    StrF(_m\v[1],3)+","+
+    StrF(_m\v[2],3)+","+
+    StrF(_m\v[3],3)+","+
+    StrF(_m\v[4],3)+","+
+    StrF(_m\v[5],3)+","+
+    StrF(_m\v[6],3)+","+
+    StrF(_m\v[7],3)+","+
+    StrF(_m\v[8],3)+","+
+    StrF(_m\v[9],3)+","+
+    StrF(_m\v[10],3)+","+
+    StrF(_m\v[11],3)+","+
+    StrF(_m\v[12],3)+","+
+    StrF(_m\v[13],3)+","+
+    StrF(_m\v[14],3)+","+
+    StrF(_m\v[15],3)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 FROM STRING
+  ;------------------------------------------------------------------
+  Macro FromString(_m, _s)
+    If CountString(_s,",") <> 15
+      Matrix4::SetIdentity(_m)
+    Else
+      Define _i
+      For _i=0 To 15
+        _m\v[_i] = ValF(StringField(_s,i+1,","))
+      Next
+    EndIf
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET
+  ;------------------------------------------------------------------
+  Macro Set(_m,_m00,_m01,_m02,_m03,_m10,_m11,_m12,_m13,_m20,_m21,_m22,_m23,_m30,_m31,_m32,_m33)
+    _m\v[0] = _m00   : _m\v[1] = _m01   : _m\v[2] = _m02   : _m\v[3] = _m03
+    _m\v[4] = _m10   : _m\v[5] = _m11   : _m\v[6] = _m12   : _m\v[7] = _m13
+    _m\v[8] = _m20   : _m\v[9] = _m21   : _m\v[10] = _m22  : _m\v[11] = _m23
+    _m\v[12] = _m30  : _m\v[13] = _m31  : _m\v[14] = _m32  : _m\v[15] = _m33
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET ZERO
+  ;------------------------------------------------------------------
+  Macro SetZero(_m)
+    _m\v[0] = 0 : _m\v[1] = 0 : _m\v[2] = 0 : _m\v[3] = 0 
+    _m\v[4] = 0 : _m\v[5] = 0 : _m\v[6] = 0 : _m\v[7] = 0 
+    _m\v[8] = 0 : _m\v[9] = 0 : _m\v[10] = 0 : _m\v[11] = 0 
+    _m\v[12] = 0 : _m\v[13] = 0 : _m\v[14] = 0 : _m\v[15] = 0 
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET IDENTITY
+  ;------------------------------------------------------------------
+  Macro SetIdentity(_m)
+    Matrix4::SetZero(_m)
+    _m\v[0] = 1
+    _m\v[5] = 1
+    _m\v[10] = 1
+    _m\v[15] = 1
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET TRANSLATION
+  ;------------------------------------------------------------------
+  Macro SetTranslation(_m,_v)
+    _m\v[12] = _v\x
+    _m\v[13] = _v\y
+    _m\v[14] = _v\z
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET SCALE
+  ;------------------------------------------------------------------
+  Macro SetScale(_m,_v)
+    _m\v[0] = _v\x
+    _m\v[5] = _v\y
+    _m\v[10] = _v\z
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET FROM OTHER
+  ;------------------------------------------------------------------
+  Macro SetFromOther(_m,_o)
+    CopyMemory(@_o\v[0], @_m\v[0], Matrix4::#M4F32_SIZE)
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 SET FROM QUATERNION
+  ;------------------------------------------------------------------
+  Macro SetFromQuaternion(_m,_q)
+    Define.f _smfq_wx, _smfq_wy,_smfq_wz
+    Define.f _smfq_xx, _smfq_yy, _smfq_yz
+    Define.f _smfq_xy, _smfq_xz, _smfq_zz
+    Define.f _smfq_x2, _smfq_y2, _smfq_z2
+    
+    ;Calculate Coefficients
+    _smfq_x2 = _q\x + _q\x      : _smfq_y2 = _q\y+ _q\y             : _smfq_z2 = _q\z + _q\z
+    _smfq_xx = _q\x *  _smfq_x2 : _smfq_xy = _q\x * _smfq_y2        : _smfq_xz = _q\x * _smfq_z2
+    _smfq_yy = _q\y * _smfq_y2  : _smfq_yz = _q\y * _smfq_z2        : _smfq_zz = _q\z * _smfq_z2
+    _smfq_wx = _q\w * _smfq_x2  : _smfq_wy = _q\w * _smfq_y2        : _smfq_wz = _q\w * _smfq_z2
+    
+    _m\v[0] = 1-(_smfq_yy+_smfq_zz) : _m\v[1] = _smfq_xy-_smfq_wz       : _m\v[2] = _smfq_xz+_smfq_wy         : _m\v[3] = 0.0
+    _m\v[4] = _smfq_xy + _smfq_wz   : _m\v[5] = 1 - (_smfq_xx+_smfq_zz) : _m\v[6] = _smfq_yz-_smfq_wx         : _m\v[7] = 0.0
+    _m\v[8] = _smfq_xz - _smfq_wy   : _m\v[9] = _smfq_yz + _smfq_wx     : _m\v[10] = 1 - (_smfq_xx+_smfq_yy)  : _m\v[11] = 0.0
+    _m\v[12] = 0                    : _m\v[13] = 0                      : _m\v[14] = 0                        : _m\v[15] = 1.0
+  EndMacro
+
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 MULTIPLY
+  ;------------------------------------------------------------------
+  Macro Multiply(_m,_f,_s)
+    _m\v[0]   = _s\v[0] * _f\v[0] + _s\v[1] * _f\v[4]+ _s\v[2]  * _f\v[8] + _s\v[3] * _f\v[12]
+    _m\v[4]   = _s\v[4] * _f\v[0] + _s\v[5] * _f\v[4]+ _s\v[6]  * _f\v[8] + _s\v[7] * _f\v[12]
+    _m\v[8]   = _s\v[8] * _f\v[0] + _s\v[9] * _f\v[4]+ _s\v[10] * _f\v[8] + _s\v[11]* _f\v[12]
+    _m\v[12]  = _s\v[12]* _f\v[0] + _s\v[13]* _f\v[4]+ _s\v[14] * _f\v[8] + _s\v[15]* _f\v[12] 
+    
+    _m\v[1]   = _s\v[0] * _f\v[1] + _s\v[1] * _f\v[5]+ _s\v[2] * _f\v[9] + _s\v[3] * _f\v[13]
+    _m\v[5]   = _s\v[4] * _f\v[1] + _s\v[5] * _f\v[5]+ _s\v[6] * _f\v[9] + _s\v[7] * _f\v[13]
+    _m\v[9]   = _s\v[8] * _f\v[1] + _s\v[9] * _f\v[5]+ _s\v[10]* _f\v[9] + _s\v[11]* _f\v[13]
+    _m\v[13]  = _s\v[12]* _f\v[1] + _s\v[13]* _f\v[5]+ _s\v[14]* _f\v[9] + _s\v[15]* _f\v[13]
+    
+    _m\v[2]   = _s\v[0] * _f\v[2] + _s\v[1] * _f\v[6] + _s\v[2] * _f\v[10] + _s\v[3] * _f\v[14]
+    _m\v[6]   = _s\v[4] * _f\v[2] + _s\v[5] * _f\v[6] + _s\v[6] * _f\v[10] + _s\v[7] * _f\v[14]
+    _m\v[10]  = _s\v[8] * _f\v[2] + _s\v[9] * _f\v[6] + _s\v[10]* _f\v[10] + _s\v[11]* _f\v[14]
+    _m\v[14]  = _s\v[12]* _f\v[2] + _s\v[13]* _f\v[6] + _s\v[14]* _f\v[10] + _s\v[15]* _f\v[14]
+    
+    _m\v[3]   = _s\v[0] * _f\v[3] + _s\v[1] * _f\v[7]+ _s\v[2] * _f\v[11] + _s\v[3] * _f\v[15]
+    _m\v[7]   = _s\v[4] * _f\v[3] + _s\v[5] * _f\v[7]+ _s\v[6] * _f\v[11] + _s\v[7] * _f\v[15]
+    _m\v[11]   = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
+    _m\v[15]  = _s\v[12]* _f\v[3] + _s\v[13]* _f\v[7]+ _s\v[14]* _f\v[11]  + _s\v[15]* _f\v[15]  
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 MULTIPLY IN PLACE
+  ;------------------------------------------------------------------
+  Macro MultiplyInPlace(_m,_o)
+    Define.m4f32 _mm4_tmp
+    Matrix4::Multiply(_mm4_tmp, _m, _o)
+    CopyMemory(_mm4_tmp, _m, #M4F32_SIZE)
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 ROTATE X
+  ;------------------------------------------------------------------
+  Macro RotateX(_m,_x)
+    Define _mm4_tmp.m4f32
+    Matrix4::SetIdentity(_mm4_tmp)
+    _mm4_tmp\v[5] = Cos(Radian(_x))
+    _mm4_tmp\v[6] = Sin(Radian(_x))
+    _mm4_tmp\v[9] = -Sin(Radian(_x))
+    _mm4_tmp\v[10] = Cos(Radian(_x))
+    Matrix4::MultiplyInPlace(_m,_mm4_tmp)
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 ROTATE Y
+  ;------------------------------------------------------------------
+  Macro RotateY(_m,_y)
+    Define __mm4_tmp.m4f32
+    Matrix4::SetIdentity(__mm4_tmp)
+    __mm4_tmp\v[0] = Cos(Radian(_y))
+    __mm4_tmp\v[2] = -Sin(Radian(_y))
+    __mm4_tmp\v[8] = Sin(Radian(_y))
+    __mm4_tmp\v[10] = Cos(Radian(_y))
+    
+    Matrix4::MultiplyInPlace(_m,__mm4_tmp)
+  EndMacro
+  
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 ROTATE Z
+  ;------------------------------------------------------------------
+  Macro RotateZ(_m,_z)
+    Define __mm4_tmp.m4f32
+    Matix4::SetIdentity(__mm4_tmp)
+    __mm4_tmp\v[0] = Cos(Radian(_z))
+    __mm4_tmp\v[1] = Sin(Radian(_z))
+    __mm4_tmp\v[4] = -Sin(Radian(_z))
+    __mm4_tmp\v[5] = Cos(Radian(_z))
+    Matrix4::MultiplyInPlace(_m,_tmp)
+  EndMacro
+
+  ;------------------------------------------------------------------
+  ; MATRIX4 TRANSPOSE
+  ;------------------------------------------------------------------
+  Macro Transpose(_m,_o)
+    _m\v[0] = _o\v[0]
+    _m\v[4] = _o\v[1]
+    _m\v[8] = _o\v[2]
+    _m\v[12] = _o\v[3]
+    
+    _m\v[1] = _o\v[4]
+    _m\v[5] = _o\v[5]
+    _m\v[9] = _o\v[6]
+    _m\v[13] = _o\v[7]
+    
+    _m\v[2] = _o\v[8]
+    _m\v[6] = _o\v[9]
+    _m\v[10] = _o\v[10]
+    _m\v[14] = _o\v[11]
+    
+    _m\v[3] = _o\v[12]
+    _m\v[7] = _o\v[13]
+    _m\v[11] = _o\v[14]
+    _m\v[15] = _o\v[15]
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 TRANSPOSE IN PLACE
+  ;------------------------------------------------------------------
+  Macro TransposeInPlace(_m)
+    Define _m4_tmp.m4f32
+    Matrix4::Transpose(_m4_tmp,_m)
+    Matrix4::SetFromOther(_m,_m4_tmp)
+  EndMacro
+
+  ;-------------------------------------------
+  ; MATRIX4 TRANSPOSE INVERSE
+  ;-------------------------------------------
+  Macro TransposeInverse(_m,_o)
+    Define _m4_tmp.m4f32
+    If Matrix4::ComputeInverse(@_m4_tmp,@_o,#True)
+      Matrix4::SetFromOther(_m,_m4_tmp)
+    EndIf
+  EndMacro
+  
+  Macro TransposeInverseInPlace(_m)
+    Matrix4::TransposeInverse(_m,_m)
+  EndMacro
+
+  ;-------------------------------------------
+  ; Compute the Projection Matrix
+  ;-------------------------------------------
+  Macro GetProjectionMatrix(_m,_fov,_aspect,_znear,_zfar)
+    Define _m4_invf.f = 1 / Tan(Radian(_fov)*0.5)
+    Maximum(_znear,0.000001)
+    Matrix4::SetIdentity(_m)
+
+    _m\v[0] = _m4_invf/_aspect
+    _m\v[5] = _m4_invf
+    _m\v[10] = (_zfar+_znear)/(_znear-_zfar)
+    _m\v[14] = (2*_zfar*_znear)/(_znear-_zfar)
+    _m\v[11] = -1
+    _m\v[15] = 0
+  EndMacro
+
+  ;---------------------------------------------
+  ; Get Ortho Matrix
+  ;---------------------------------------------
+  Macro GetOrthoMatrix(_m,_left,_right,_bottom,_top,_znear,_zfar)
+    Matrix4::SetIdentity(_m)
+    _m\v[0] = 2/(_right-_left)
+    _m\v[5] = 2/(_top-_bottom)
+    _m\v[10] = -2/(_zfar-_znear)
+    _m\v[12] = -(_right+_left)/(_right-_left)
+    _m\v[13] = -(_top+_bottom)/(_top-_bottom)
+    _m\v[14] = -(_zfar+_znear)/(_zfar-_znear)
+  EndMacro
+
+  ;---------------------------------------------
+  ; Get View Matrix
+  ;---------------------------------------------
+  Macro GetViewMatrix(_io,_pos,_lookat,_up)
+    Define.v3f32 _m4_side,_m4_up,_m4_dir
+    
+    ; Calculate Orientation
+    Vector3::Sub(_m4_dir,_lookat,_pos)
+    Vector3::NormalizeInPlace(_m4_dir)
+    Vector3::Cross(_m4_side,_m4_dir,_up)
+    Vector3::NormalizeInPlace(_m4_side)
+    Vector3::Cross(_m4_up,_m4_side,_m4_dir)
+    Vector3::NormalizeInPlace(_m4_up)
+    
+    Define.f _m4_d1,_m4_d2,_m4_d3
+    _m4_d1 = -Vector3::Dot(_m4_side,_pos)
+    _m4_d2 = -Vector3::Dot(_m4_up,_pos)
+    _m4_d3 = Vector3::Dot(_m4_dir,_pos)
+    
+    Define _m4_tmp.m4f32
+    _m4_tmp\v[0] = _m4_side\x : _m4_tmp\v[1]   = _m4_up\x   :_m4_tmp\v[2]  = -_m4_dir\x : _m4_tmp\v[3]  = 0 
+    _m4_tmp\v[4] = _m4_side\y : _m4_tmp\v[5]   = _m4_up\y   :_m4_tmp\v[6]  = -_m4_dir\y : _m4_tmp\v[7]  = 0 
+    _m4_tmp\v[8] = _m4_side\z : _m4_tmp\v[9]   = _m4_up\z   :_m4_tmp\v[10] = -_m4_dir\z : _m4_tmp\v[11] = 0 
+    _m4_tmp\v[12] = _m4_d1    : _m4_tmp\v[13]  = _m4_d2     :_m4_tmp\v[14] = _m4_d3     : _m4_tmp\v[15] = 1 
+    
+    Matrix4::SetFromOther(_io,_m4_tmp)
+  EndMacro
+  
+  
+  ;-------------------------------------------
+  ; Get Quaternion
+  ;-------------------------------------------
+  Macro GetQuaternion(_m,_q)
+    Define.f _m4gq_qx,_m4gq_qy,_m4gq_qz,_m4gq_qw,_m4gq_qw4
+    Define _m4gq_tr.f = _m\v[0] + _m\v[5] + _m\v[10]
+    Define _m4gq_S.f
+    If _m4gq_tr > 0
+      _m4gq_S = Sqr(tr+1.0) * 2
+      _m4gq_qw = 0.25 * _m4gq_S
+      _m4gq_qx = (_m\v[9] - _m\v[6]) / _m4gq_S
+      _m4gq_qy = (_m\v[2] - _m\v[8]) / _m4gq_S
+      _m4gq_qz = (_m\v[4] - _m\v[1]) / _m4gq_S
+    ElseIf (_m\v[0] > _m\v[5])And(_m\v[0] > _m\v[10])
+      _m4gq_S = Sqr(1.0 + _m\v[0] - _m\v[5] - _m\v[10]) * 2
+      _m4gq_qw = (_m\v[9] - _m\v[6]) / _m4gq_S
+      _m4gq_qx = 0.25 * _m4gq_S
+      _m4gq_qy = (_m\v[1] + _m\v[4]) / _m4gq_S
+      _m4gq_qz = (_m\v[2] + _m\v[8]) / _m4gq_S
+    ElseIf (_m\v[5] > _m\v[10])
+      _m4gq_S = Sqr(1.0 + _m\v[5] - _m\v[0] - _m\v[10]) * 2
+      _m4gq_qw = (_m\v[2] - _m\v[8]) / _m4gq_S
+      _m4gq_qx = (_m\v[1] + _m\v[4]) / _m4gq_S
+      _m4gq_qy = 0.25 * _m4gq_S
+      _m4gq_qz = (_m\v[6] + _m\v[9]) / _m4gq_S
+    Else
+      _m4gq_S = Sqr(1.0 + _m\v[10] - _m\v[0] - _m\v[5]) * 2
+      _m4gq_qw = (_m\v[4] - _m\v[1]) / _m4gq_S
+      _m4gq_qx = (_m\v[2] + _m\v[8]) / _m4gq_S
+      _m4gq_qy = (_m\v[6] + _m\v[9]) / _m4gq_S
+      _m4gq_qz = 0.25 * _m4gq_S
+    EndIf
+  
+    ; set the rotation!
+    _q\x = _m4gq_qx
+    _q\y = _m4gq_qy
+    _q\z = _m4gq_qz
+    _q\w = _m4gq_qw
+  EndMacro  
+  
+  ;-------------------------------------------
+  ; Get Translation Matrix
+  ;-------------------------------------------
+  Macro TranslationMatrix(_m, _pos)
+    Matrix4::SetIdentity(_m)
+    _m\v[12] = _pos\x
+    _m\v[13] = _pos\y
+    _m\v[14] = _pos\z
+  EndMacro
+  
+  ;-------------------------------------------
+  ; Get Direction Matrix
+  ;-------------------------------------------
+  Macro DirectionMatrix(_m, _target, _up)
+    Define _N.v3f32
+    Vector3::Normalize(_N, _target)
+    Define _U.v3f32
+    Vector3::Cross(_U, _up, _N)
+    Vector3::NormalizeInPlace(_U)
+    Define _V.v3f32
+    Vector3::Cross(_V,_N, _U)
+    Vector3::NormalizeInPlace(_V)
+    
+    _m\v[0] = _V\x : _m\v[1] = _V\y : _m\v[2]  = _V\z : _m\v[3] = 0
+    _m\v[4] = _N\x : _m\v[5] = _N\y : _m\v[6]  = _N\z : _m\v[7] = 0
+    _m\v[8] = _U\x : _m\v[9] = _U\y : _m\v[10] = _U\z : _m\v[11] = 0
+    _m\v[12] = 0   : _m\v[13] = 0   : _m\v[14] = 0    : _m\v[15] = 1
+    
+;     *m\v[0] = U\x : *m\v[1] = V\y : *m\v[2] = N\z  : *m\v[3] = 0
+;     *m\v[4] = U\x : *m\v[5] = V\y : *m\v[6] = N\z  : *m\v[7] = 0
+;     *m\v[8] = U\x : *m\v[9] = V\y : *m\v[10] = N\z : *m\v[11] = 0
+;     *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
+    
+  EndMacro
+  
   Declare.b Inverse(*m.m4f32,*o.m4f32)
   Declare.b InverseInPlace(*m.m4f32)
-  Declare Transpose(*m.m4f32,*o.m4f32)
-  Declare TransposeInPlace(*m.m4f32)
-  Declare.b TransposeInverse(*m.m4f32,*o.m4f32)
-  Declare.b TransposeInverseInPlace(*m.m4f32)
-  Declare GetProjectionMatrix(*m.m4f32,fov.f,aspect.f,znear.f,zfar.f)
-  Declare GetOrthoMatrix(*m.m4f32,left.f,right.f,bottom.f,top.f,znear,zfar)
-  Declare GetViewMatrix(*io.m4f32,*pos.v3f32,*lookat.v3f32,*up.v3f32)
-  Declare GetQuaternion(*m.m4f32,*q.q4f32)
-  Declare Echo(*m.m4f32,name.s="")
-  Declare.s ToString(*m.m4f32)
-  Declare FromString(*m.m4f32, s.s)
-  Declare TranslationMatrix(*m.m4f32, *pos.v3f32)
-  Declare DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
+  
 EndDeclareModule
 
 ;====================================================================
@@ -1773,241 +2374,6 @@ EndModule
 ; Matrix3 Module Implementation
 ;====================================================================
 Module Matrix3
-  UseModule Math
-  
-  ; Echo
-  ;------------------------------------------
-  Procedure Echo(*m.m3f32)
-    Protected l.s = "Matrix3*3("
-    Protected i=0
-    For i=0 To 8
-      If i<8
-        l+StrF(*m\v[i])+","
-      Else
-        l+StrF(*m\v[i])+")"
-      EndIf
-    Next i
-    Debug l
-  EndProcedure
-  
-  ; ToString
-  ;----------------------------------------------------
-  Procedure.s ToString(*m.m3f32)
-    Protected s.s
-    Protected i
-    For i=0 To 7 : s+StrF(*m\v[i])+"," : Next
-    s + StrF(*m\v[8])
-    ProcedureReturn s
-  EndProcedure
-  
-  ; FromString
-  ;----------------------------------------------------
-  Procedure FromString(*m.m3f32, s.s)
-    If CountString(s,",")=8
-      Protected i
-      For i=0 To 8 : *m\v[i] = ValF(StringField(s,i+1,",")) : Next
-    EndIf
-  EndProcedure
-  
-  ; Set
-  ;------------------------------------------
-  Procedure Set(*m.m3f32,m00.f,m01.f,m02.f,m10.f,m11.f,m12.f,m20.f,m21.f,m22.f)
-    *m\v[0] = m00
-    *m\v[1] = m01
-    *m\v[2] = m02
-    *m\v[3] = m10
-    *m\v[4] = m11
-    *m\v[5] = m12
-    *m\v[6] = m20
-    *m\v[7] = m21
-    *m\v[8] = m22
-  EndProcedure
-  
-  ; Set Identity
-  ;---------------------------------------
-  Procedure SetIdentity(*m.m3f32)
-    *m\v[0] = 1.0
-    *m\v[1] = 0.0
-    *m\v[2] = 0.0
-    *m\v[3] = 0.0
-    *m\v[4] = 1.0
-    *m\v[5] = 0.0
-    *m\v[6] = 0.0
-    *m\v[7] = 0.0
-    *m\v[8] = 1.0
-  EndProcedure
-  
-  ; Set From Other(copy values)
-  ;---------------------------------------
-  Procedure SetFromOther(*m.m3f32,*o.m3f32)
-    Protected i
-    For i=0 To 8
-      *m\v[i] = *o\v[i]
-    Next i
-  EndProcedure
-  
-  ; Set From Two Vectors
-  ;---------------------------------------
-  Procedure SetFromTwoVectors(*m.m3f32,*dir.v3f32,*up.v3f32)
-    Protected N.v3f32
-    Vector3::Normalize(N, *dir)
-    Protected U.v3f32
-    Vector3::Cross(U, *up, N)
-    Vector3::NormalizeInPlace(U)
-    Protected V.v3f32
-    Vector3::Cross(V, N, U)
-    Vector3::NormalizeInPlace(V)
-    
-    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z
-    *m\v[3] = N\x : *m\v[4] = N\y : *m\v[5] = N\z
-    *m\v[6] = U\x : *m\v[7] = U\y : *m\v[8] = U\z
-    
-;     Define.v3f32 forward,side,up
-;     Vector3::Normalize(@forward,*dir)
-;     Vector3::Normalize(@up,*up)
-;     
-;     Vector3::Cross(@side,@forward,@up)
-;     Vector3::Cross(@up,@side,@forward)
-;     
-;     Vector3::NormalizeInPlace(@side)
-;     Vector3::NormalizeInPlace(@up)
-;     
-;     ;Set(*m,side\x,side\y,side\z,up\x,up\y,up\z,-forward\x,-forward\y,-forward\z)
-;     Set(*m, up\x,up\y,up\z,forward\x,forward\y,forward\z,side\x,side\y,side\z)
-  EndProcedure
-  
-  ; Set From Quaternion
-  ;---------------------------------------
-  Procedure SetFromQuaternion(*m.m3f32,*q.q4f32)
-    Protected n.f, s.f
-    Protected xs.f, ys.f, zs.f
-    Protected wx.f, wy.f, wz.f
-    Protected xx.f, xy.f, xz.f
-    Protected yy.f, yz.f, zz.f
-    
-    n = (*q\x * *q\x) + (*q\y * *q\y) + (*q\z * *q\z) + (*q\w * *q\w)
-    If n>0
-      s = 2/n
-    Else
-      s = 0
-    EndIf
-    
-    xs = *q\x * s  : ys = *q\y * s  : zs = *q\z * s
-    wx = *q\w * xs : wy = *q\w * ys : wz = *q\w * zs
-    xx = *q\x * xs : xy = *q\x * ys : xz = *q\x * zs
-    yy = *q\y * ys : yz = *q\y * zs : zz = *q\z * zs
-    
-    *m\v[0] = 1 - (yy + zz) : *m\v[3] = xy - wz     : *m\v[6] = xz + wy
-    *m\v[1] = xy + wz       : *m\v[4] = 1- (xx +zz) : *m\v[7] = yz - wx
-    *m\v[2] = xz - wy       : *m\v[5] = yz + wx     : *m\v[8] = 1 - (xx + yy)
-  EndProcedure
-  
-  ; MultiplyByMatrix3InPlace
-  ;--------------------------------------------------
-  Procedure MulByMatrix3InPlace(*m.m3f32,*o.m3f32)
-    Protected tmp.m3f32
-    tmp\v[0] = *m\v[0] * *o\v[0] + *m\v[1] * *o\v[3] + *m\v[2] * *o\v[6]
-    tmp\v[1] = *m\v[0] * *o\v[1] + *m\v[1] * *o\v[4] + *m\v[2] * *o\v[7]
-    tmp\v[2] = *m\v[0] * *o\v[2] + *m\v[1] * *o\v[5] + *m\v[2] * *o\v[8]
-    
-    tmp\v[3] = *m\v[3] * *o\v[0] + *m\v[4] * *o\v[3] + *m\v[5] * *o\v[6]
-    tmp\v[4] = *m\v[3] * *o\v[1] + *m\v[4] * *o\v[4] + *m\v[5] * *o\v[7]
-    tmp\v[5] = *m\v[3] * *o\v[2] + *m\v[4] * *o\v[5] + *m\v[5] * *o\v[8]
-    
-    tmp\v[6] = *m\v[6] * *o\v[0] + *m\v[7] * *o\v[3] + *m\v[8] * *o\v[6]
-    tmp\v[7] = *m\v[6] * *o\v[1] + *m\v[7] * *o\v[4] + *m\v[8] * *o\v[7]
-    tmp\v[8] = *m\v[6] * *o\v[2] + *m\v[7] * *o\v[5] + *m\v[8] * *o\v[8]
-    
-    Set(*m,tmp\v[0],tmp\v[1],tmp\v[2],tmp\v[3],tmp\v[4],tmp\v[5],tmp\v[6],tmp\v[7],tmp\v[8])
-  EndProcedure
-  
-  ; MultiplyByMatrix3
-  ;--------------------------------------------------
-  Procedure MulByMatrix3(*m.m3f32,*f.m3f32,*s.m3f32)
-    *m\v[0] = *f\v[0] * *s\v[0] + *f\v[1] * *s\v[3] + *f\v[2] * *s\v[6]
-    *m\v[1] = *f\v[0] * *s\v[1] + *f\v[1] * *s\v[4] + *f\v[2] * *s\v[7]
-    *m\v[2] = *f\v[0] * *s\v[2] + *f\v[1] * *s\v[5] + *f\v[2] * *s\v[8]
-    
-    *m\v[3] = *f\v[3] * *s\v[0] + *f\v[4] * *s\v[3] + *f\v[5] * *s\v[6]
-    *m\v[4] = *f\v[3] * *s\v[1] + *f\v[4] * *s\v[4] + *f\v[5] * *s\v[7]
-    *m\v[5] = *f\v[3] * *s\v[2] + *f\v[4] * *s\v[5] + *f\v[5] * *s\v[8]
-    
-    *m\v[6] = *f\v[6] * *s\v[0] + *f\v[7] * *s\v[3] + *f\v[8] * *s\v[6]
-    *m\v[7] = *f\v[6] * *s\v[1] + *f\v[7] * *s\v[4] + *f\v[8] * *s\v[7]
-    *m\v[8] = *f\v[6] * *s\v[2] + *f\v[7] * *s\v[5] + *f\v[8] * *s\v[8]
-  EndProcedure
-  
-  ; Get Quaternion
-  ;------------------------------------------------------
-  Procedure GetQuaternion(*m.m3f32,*q.q4f32,transpose.b=#False)
-    Protected t.f
-    Protected s.f
-    
-    If transpose
-      t.f = 1+*m\v[0]+*m\v[4]+*m\v[8]
-      If t >0.00000001
-        s = Sqr(t)*2
-        *q\x = (*m\v[7]-*m\v[5])/s
-        *q\y = (*m\v[2]-*m\v[6])/s
-        *q\z = (*m\v[3]-*m\v[1])/s
-        *q\w = 0.25 * s 
-      Else
-        
-        If *m\v[0]>*m\v[4] And *m\v[0]>*m\v[8]
-          s = Sqr(1+ *m\v[0] - *m\v[4] - *m\v[8])*2
-          *q\x = 0.25 * s
-          *q\y = (*m\v[3] + *m\v[1])/s
-          *q\z = (*m\v[2] + *m\v[6])/s
-          *q\w = (*m\v[7] - *m\v[5])/s
-        ElseIf *m\v[4]>*m\v[8]
-          s = Sqr(1+ *m\v[4] - *m\v[0] - *m\v[8])*2
-          *q\x = (*m\v[3] + *m\v[1])/s
-          *q\y = 0.25 * s
-          *q\z = (*m\v[7] + *m\v[5])/s
-          *q\w = (*m\v[2] - *m\v[6])/s
-        Else
-          s = Sqr(1+ *m\v[8] - *m\v[0] - *m\v[4])*2
-          *q\x = (*m\v[2] + *m\v[6])/s
-          *q\y = (*m\v[7] + *m\v[5])/s
-          *q\z = 0.25 * s
-          *q\w = (*m\v[3] - *m\v[1])/s
-        EndIf
-      EndIf
-    Else
-  
-      t.f = 1+*m\v[0]+*m\v[4]+*m\v[8]
-      s.f
-      If t >0.00000001
-        s = Sqr(t)*2
-        *q\x = (*m\v[5]-*m\v[7])/s
-        *q\y = (*m\v[6]-*m\v[2])/s
-        *q\z = (*m\v[1]-*m\v[3])/s
-        *q\w = 0.25 * s 
-      Else
-        
-        If *m\v[0]>*m\v[4] And *m\v[0]>*m\v[8]
-          s = Sqr(1+ *m\v[0] - *m\v[4] - *m\v[8])*2
-          *q\x = 0.25 * s
-          *q\y = (*m\v[1] + *m\v[3])/s
-          *q\z = (*m\v[6] + *m\v[2])/s
-          *q\w = (*m\v[5] - *m\v[7])/s
-        ElseIf *m\v[4]>*m\v[8]
-          s = Sqr(1+ *m\v[4] - *m\v[0] - *m\v[8])*2
-          *q\x = (*m\v[1] + *m\v[3])/s
-          *q\y = 0.25 * s
-          *q\z = (*m\v[5] + *m\v[7])/s
-          *q\w = (*m\v[6] - *m\v[2])/s
-        Else
-          s = Sqr(1+ *m\v[8] - *m\v[0] - *m\v[4])*2
-          *q\x = (*m\v[6] + *m\v[2])/s
-          *q\y = (*m\v[5] + *m\v[7])/s
-          *q\z = 0.25 * s
-          *q\w = (*m\v[1] - *m\v[3])/s
-        EndIf
-      EndIf
-    EndIf
-    
-  EndProcedure
 EndModule
 
 
@@ -2016,206 +2382,9 @@ EndModule
 ;====================================================================
 Module Matrix4
   UseModule Math
-  ; Log
-  ;--------------------------------------------------
-  Procedure Echo(*m.m4f32,name.s="")
-    Protected l.s = name+" :Matrix4*4("
-    Protected i
-    For i=0 To 15
-      If i<15
-        l+StrF(*m\v[i],3)+","
-      Else
-        l+StrF(*m\v[i],3)+")"
-      EndIf
-    Next i
-    Debug l
-  EndProcedure
-  
-  ; As String
-  ;--------------------------------------------------
-  Procedure.s ToString(*m.m4f32)
-    Protected s.s
-    Protected i
-    For i=0 To 14 : s+StrF(*m\v[i])+"," : Next
-    s+StrF(*m\v[15])
-    ProcedureReturn s
-  EndProcedure
-  
-  ; From String
-  ;--------------------------------------------------
-  Procedure FromString(*m.m4f32, s.s)
-    If CountString(s,",") <> 15
-      SetIdentity(*m)
-    Else
-      Protected i
-      For i=0 To 15
-        *m\v[i] = ValF(StringField(s,i+1,","))
-      Next i
-    EndIf
-  EndProcedure
-
-  ; Set
-  ;------------------------------------------
-  Procedure Set(*m.m4f32,m00.f,m01.f,m02.f,m03.f,m10.f,m11.f,m12.f,m13.f,m20.f,m21.f,m22.f,m23.f,m30.f,m31.f,m32.f,m33.f)
-    *m\v[0] = m00   : *m\v[1] = m01   : *m\v[2] = m02   : *m\v[3] = m03
-    *m\v[4] = m10   : *m\v[5] = m11   : *m\v[6] = m12   : *m\v[7] = m13
-    *m\v[8] = m20   : *m\v[9] = m21   : *m\v[10] = m22  : *m\v[11] = m23
-    *m\v[12] = m30  : *m\v[13] = m31  : *m\v[14] = m32  : *m\v[15] = m33
-    ProcedureReturn *m
-  EndProcedure
-
-  ; Set Zero
-  ;---------------------------------------
-  Procedure SetZero(*m.m4f32)
-    Protected i
-    For i=0 To 15
-      *m\v[i] = 0 
-    Next i
-  EndProcedure
-
-  ; Set Identity
-  ;---------------------------------------
-  Procedure SetIdentity(*m.m4f32)
-    SetZero(*m)
-    *m\v[0] = 1
-    *m\v[5] = 1
-    *m\v[10] = 1
-    *m\v[15] = 1
-  EndProcedure
-
-  ; Set Translation
-  ;---------------------------------------
-  Procedure SetTranslation(*m.m4f32,*v.v3f32)
-    *m\v[12] = *v\x
-    *m\v[13] = *v\y
-    *m\v[14] = *v\z
-  EndProcedure
-
-  ; Set Scale
-  ;---------------------------------------
-  Procedure SetScale(*m.m4f32,*v.v3f32)
-    *m\v[0] = *v\x
-    *m\v[5] = *v\y
-    *m\v[10] = *v\z
-  EndProcedure
-  
-  ; Matrix Set From Other(copy values)
-  ;------------------------------------------------------
-  Procedure SetFromOther(*m.m4f32,*o.m4f32)
-   Protected i
-    For i=0 To 15
-      *m\v[i] = *o\v[i]
-    Next i
-  EndProcedure
-
-  ; Set From q4f32
-  ;---------------------------------------
-  Procedure SetFromQuaternion(*m.m4f32,*q.q4f32)
-    Define.f wx, wy,wz,xx,yy,yz,xy,xz,zz,x2,y2,z2
-    
-    ;Calculate Coefficients
-    x2 = *q\x + *q\x      : y2 = *q\y+ *q\y       : z2 = *q\z + *q\z
-    xx = *q\x * x2        : xy = *q\x * y2        : xz = *q\x * z2
-    yy = *q\y * y2        : yz = *q\y * z2        : zz = *q\z * z2
-    wx = *q\w * x2        : wy = *q\w * y2        : wz = *q\w * z2
-    
-    *m\v[0] = 1-(yy+zz) : *m\v[1] = xy-wz       : *m\v[2] = xz+wy         : *m\v[3] = 0.0
-    *m\v[4] = xy + wz   : *m\v[5] = 1 - (xx+zz) : *m\v[6] = yz-wx         : *m\v[7] = 0.0
-    *m\v[8] = xz - wy   : *m\v[9] = yz + wx     : *m\v[10] = 1 - (xx+yy)  : *m\v[11] = 0.0
-    *m\v[12] = 0        : *m\v[13] = 0          : *m\v[14] = 0            : *m\v[15] = 1.0
-  EndProcedure
-
-
-  ; Matrix Multiply
-  ;--------------------------------------------------
-  Procedure Multiply(*m.m4f32,*f.m4f32,*s.m4f32)
-    Protected i, j
-    For j=0 To 3
-      For i=0 To 3
-        *m\v[4*i+j] = *s\v[4*i]* *f\v[j] + *s\v[4*i+1]* *f\v[j+4]+ *s\v[4*i+2]* *f\v[j+8] + *s\v[4*i+3]* *f\v[j+12]
-      Next i
-    Next j
-    
-  ;   Define nR,nC,r
-  ;   For nR=0 To 3
-  ;     r = nR*4
-  ;     For nC=0 To 3
-  ;       *m\v[r+nC] = *f\v[r+0] * *s\v[0+nC] + *f\v[r+1] * *s\v[4+nC] + *f\v[r+2] * *s\v[8+nC] + *f\v[r+3] * *s\v[12+nC]
-  ;     Next nC
-  ;   Next nR
-   
-  EndProcedure
-  
-  ; Matrix Multiply In Place
-  ;------------------------------------------------------
-  Procedure MultiplyInPlace(*m.m4f32,*o.m4f32)
-    Define.f tmp1,tmp2,tmp3,tmp4
-    Protected i, j
-    For j=0 To 3
-      tmp1 = *m\v[j]
-      tmp2 = *m\v[j+4]
-      tmp3 = *m\v[j+8]
-      tmp4 = *m\v[j+12]
-      For i=0 To 3
-        *m\v[4*i+j] = *o\v[4*i]*tmp1 + *o\v[4*i+1]*tmp2 + *o\v[4*i+2]*tmp3 + *o\v[4*i+3]*tmp4
-      Next i
-    Next j
-  ;   Protected tmp.m4f32
-  ;   Protected nR, nC, r, c
-  ;   For nR=0 To 3
-  ;      r = nR*4
-  ;      For nC=0 To 3
-  ;        tmp\v[r+nC] = *m\v[r+0] * *o\v[0+nC] + *m\v[r+1] * *o\v[4+nC] + *m\v[r+2] * *o\v[8+nC] + *m\v[r+3] * *o\v[12+nC]
-  ;     Next nC
-  ;   Next nR
-  ;   SetFromOther(*m,@tmp)
-  ;   ;Set(*m,tmp\v[0],tmp\v[1],tmp\v[2],tmp\v[3],tmp\v[4],tmp\v[5],tmp\v[6],tmp\v[7],tmp\v[8],tmp\v[9],tmp\v[10],tmp\v[11],tmp\v[12],tmp\v[13],tmp\v[14],tmp\v[15])
-  EndProcedure
-
-  ; Rotate X
-  ;---------------------------------------
-  Procedure RotateX(*m.m4f32,x.f)
-    Define tmp.m4f32
-    SetIdentity(@tmp)
-    tmp\v[5] = Cos(Radian(x))
-    tmp\v[6] = Sin(Radian(x))
-    tmp\v[9] = -Sin(Radian(x))
-    tmp\v[10] = Cos(Radian(x))
-    
-        MultiplyInPlace(*m,@tmp)
-   
-  EndProcedure
-
-  ; Rotate Y
-  ;---------------------------------------
-  Procedure RotateY(*m.m4f32,y.f)
-    Define tmp.m4f32
-    SetIdentity(@tmp)
-    tmp\v[0] = Cos(Radian(y))
-    tmp\v[2] = -Sin(Radian(y))
-    tmp\v[8] = Sin(Radian(y))
-    tmp\v[10] = Cos(Radian(y))
-    
-    MultiplyInPlace(*m,@tmp)
-   
-  EndProcedure
-  
-  ; Rotate Z
-  ;---------------------------------------
-  Procedure RotateZ(*m.m4f32,z.f)
-    Define tmp.m4f32
-    SetIdentity(@tmp)
-    tmp\v[0] = Cos(Radian(z))
-    tmp\v[1] = Sin(Radian(z))
-    tmp\v[4] = -Sin(Radian(z))
-    tmp\v[5] = Cos(Radian(z))
-    
-    MultiplyInPlace(*m,@tmp)
-   
-  EndProcedure
-
-  ; Compute Inverse
-  ;------------------------------------------------------
+  ;------------------------------------------------------------------
+  ; MATRIX4 COMPUTE INVERSE
+  ;------------------------------------------------------------------
   Procedure.b ComputeInverse(*m.m4f32,*o.m4f32,transpose.b=#False)
     
     Define.i i,j,k,cnt
@@ -2283,12 +2452,12 @@ Module Matrix4
     
     ProcedureReturn #True       
   EndProcedure
-
+  
   ;-------------------------------------------
   ; Invert Matrix
   ;-------------------------------------------
   Procedure.b Inverse(*m.m4f32,*o.m4f32)
-    ProcedureReturn ComputeInverse(*m,*o)
+    ComputeInverse(*m,*o)
   EndProcedure
   
   Procedure.b InverseInPlace(*m.m4f32)
@@ -2297,180 +2466,10 @@ Module Matrix4
       ProcedureReturn #False
     EndIf
     
-    SetFromOther(*m,@tmp)
+    SetFromOther(*m,tmp)
     ProcedureReturn #True
   EndProcedure
-
-  ;-------------------------------------------
-  ; Transpose Matrix
-  ;-------------------------------------------
-  Procedure Transpose(*m.m4f32,*o.m4f32)
-    Protected x, y
-    For x=0 To 3
-      For y=0 To 3
-        *m\v[x+y*4] = *o\v[x*4+y]
-      Next y
-    Next x
-  EndProcedure
   
-  Procedure TransposeInPlace(*m.m4f32)
-    Protected tmp.m4f32
-    Transpose(@tmp,*m)
-    SetFromOther(*m,@tmp)
-  EndProcedure
-
-  ;-------------------------------------------
-  ; Transpose Inverse Matrix
-  ;-------------------------------------------
-  Procedure.b TransposeInverse(*m.m4f32,*o.m4f32)
-    Protected tmp.m4f32
-    If ComputeInverse(@tmp,*o,#True)
-      SetFromOther(*m,@tmp)
-      ProcedureReturn #True
-    Else ;Singular Matrix
-      ProcedureReturn #False
-    EndIf
-  EndProcedure
-  
-  Procedure.b TransposeInverseInPlace(*m.m4f32)
-    ProcedureReturn(TransposeInverse(*m,*m))
-  EndProcedure
-
-  ;-------------------------------------------
-  ; Compute the Projection Matrix
-  ;-------------------------------------------
-  Procedure GetProjectionMatrix(*m.m4f32,fov.f,aspect.f,znear.f,zfar.f)
-
-    Protected f.f = 1 / Tan(Radian(fov)*0.5)
-    Maximum(znear,0.000001)
-    SetIdentity(*m)
-
-    *m\v[0] = f/aspect
-    *m\v[5] = f
-    *m\v[10] = (zfar+znear)/(znear-zfar)
-    *m\v[14] = (2*zfar*znear)/(znear-zfar)
-    *m\v[11] = -1
-    *m\v[15] = 0
-    
-    
-  EndProcedure
-
-  ;---------------------------------------------
-  ; Get Ortho Matrix
-  ;---------------------------------------------
-  Procedure GetOrthoMatrix(*m.m4f32,left.f,right.f,bottom.f,top.f,znear,zfar)
-    SetIdentity(*m)
-    *m\v[0] = 2/(right-left)
-    *m\v[5] = 2/(top-bottom)
-    *m\v[10] = -2/(zfar-znear)
-    *m\v[12] = -(right+left)/(right-left)
-    *m\v[13] = -(top+bottom)/(top-bottom)
-    *m\v[14] = -(zfar+znear)/(zfar-znear)
-  EndProcedure
-
-  ;---------------------------------------------
-  ; Get View Matrix
-  ;---------------------------------------------
-  Procedure GetViewMatrix(*io.m4f32,*pos.v3f32,*lookat.v3f32,*up.v3f32)
-    Define.v3f32 side,up,dir
-    
-    ; Calculate Orientation
-    Vector3::Sub(dir,*lookat,*pos)
-    Vector3::NormalizeInPlace(dir)
-    Vector3::Cross(side,dir,*up)
-    Vector3::NormalizeInPlace(side)
-    Vector3::Cross(up,side,dir)
-    Vector3::NormalizeInPlace(up)
-    
-    Define.f d1,d2,d3
-    d1 = -Vector3::Dot(side,*pos)
-    d2 = -Vector3::Dot(up,*pos)
-    d3 = Vector3::Dot(dir,*pos)
-    
-    Define rm.m4f32
-    rm\v[0] = side\x : rm\v[1]   = up\x  :rm\v[2]  = -dir\x : rm\v[3]  = 0 
-    rm\v[4] = side\y : rm\v[5]   = up\y  :rm\v[6]  = -dir\y : rm\v[7]  = 0 
-    rm\v[8] = side\z : rm\v[9]   = up\z  :rm\v[10] = -dir\z : rm\v[11] = 0 
-    rm\v[12] = d1    : rm\v[13]  = d2    :rm\v[14] = d3     : rm\v[15] = 1 
-    
-    SetFromOther(*io,rm)
-  EndProcedure
-  
-  
-  ;-------------------------------------------
-  ; Get Quaternion
-  ;-------------------------------------------
-  Procedure GetQuaternion(*m.m4f32,*q.q4f32)
-    Define.f qx,qy,qz,qw,qw4
-    Protected tr.f = *m\v[0] + *m\v[5] + *m\v[10]
-    Protected S.f
-    If tr > 0
-      S = Sqr(tr+1.0) * 2
-      qw = 0.25 * S
-      qx = (*m\v[9] - *m\v[6]) / S
-      qy = (*m\v[2] - *m\v[8]) / S
-      qz = (*m\v[4] - *m\v[1]) / S
-    ElseIf (*m\v[0] > *m\v[5])And(*m\v[0] > *m\v[10])
-      S = Sqr(1.0 + *m\v[0] - *m\v[5] - *m\v[10]) * 2
-      qw = (*m\v[9] - *m\v[6]) / S
-      qx = 0.25 * S
-      qy = (*m\v[1] + *m\v[4]) / S
-      qz = (*m\v[2] + *m\v[8]) / S
-    ElseIf (*m\v[5] > *m\v[10])
-      S = Sqr(1.0 + *m\v[5] - *m\v[0] - *m\v[10]) * 2
-      qw = (*m\v[2] - *m\v[8]) / S
-      qx = (*m\v[1] + *m\v[4]) / S
-      qy = 0.25 * S
-      qz = (*m\v[6] + *m\v[9]) / S
-    Else
-      S = Sqr(1.0 + *m\v[10] - *m\v[0] - *m\v[5]) * 2
-      qw = (*m\v[4] - *m\v[1]) / S
-      qx = (*m\v[2] + *m\v[8]) / S
-      qy = (*m\v[6] + *m\v[9]) / S
-      qz = 0.25 * S
-    EndIf
-  
-    ; set the rotation!
-    *q\x = qx
-    *q\y = qy
-    *q\z = qz
-    *q\w = qw
-  EndProcedure
-  
-  ;-------------------------------------------
-  ; Get Translation Matrix
-  ;-------------------------------------------
-  Procedure TranslationMatrix(*m.m4f32, *pos.v3f32)
-    SetIdentity(*m)
-    *m\v[12] = *pos\x
-    *m\v[13] = *pos\y
-    *m\v[14] = *pos\z
-  EndProcedure
-  
-  ;-------------------------------------------
-  ; Get Direction Matrix
-  ;-------------------------------------------
-  Procedure DirectionMatrix(*m.m4f32, *target.v3f32, *up.v3f32)
-    Protected N.v3f32
-    Vector3::Normalize(N, *target)
-    Protected U.v3f32
-    Vector3::Cross(U, *up, N)
-    Vector3::NormalizeInPlace(U)
-    Protected V.v3f32
-    Vector3::Cross(V, N, U)
-    Vector3::NormalizeInPlace(V)
-    
-    *m\v[0] = V\x : *m\v[1] = V\y : *m\v[2] = V\z  : *m\v[3] = 0
-    *m\v[4] = N\x : *m\v[5] = N\y : *m\v[6] = N\z  : *m\v[7] = 0
-    *m\v[8] = U\x : *m\v[9] = U\y : *m\v[10] = U\z : *m\v[11] = 0
-    *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
-    
-;     *m\v[0] = U\x : *m\v[1] = V\y : *m\v[2] = N\z  : *m\v[3] = 0
-;     *m\v[4] = U\x : *m\v[5] = V\y : *m\v[6] = N\z  : *m\v[7] = 0
-;     *m\v[8] = U\x : *m\v[9] = V\y : *m\v[10] = N\z : *m\v[11] = 0
-;     *m\v[12] = 0  : *m\v[13] = 0  : *m\v[14] = 0   : *m\v[15] = 1
-    
-  EndProcedure
 EndModule
 
 
@@ -2677,8 +2676,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1525
-; FirstLine = 1515
-; Folding = -----------------------------
+; CursorPosition = 2471
+; FirstLine = 2434
+; Folding = ---------------------------------
 ; EnableXP
 ; EnableUnicode

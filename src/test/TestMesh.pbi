@@ -142,7 +142,7 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   ViewportUI::AddLayer(*viewport, *layer)
@@ -183,7 +183,7 @@ Procedure Draw(*app.Application::Application_t)
   Define m.m4f32
   Define pos.v3f32
   
-  Matrix4::SetIdentity(@m)
+  Matrix4::SetIdentity(m)
   
   Define *loc.Geometry::Location_t
   Define *pos.v3f32, *nrm.v3f32
@@ -196,11 +196,11 @@ Procedure Draw(*app.Application::Application_t)
     size = Random(50)+32
     Vector3::ScaleInPlace(*nrm, size/2)
     Vector3::AddInPlace(*pos, *nrm)
-    Matrix4::SetIdentity(@m)
-    Matrix4::SetTranslation(@m,*pos)
+    Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m,*pos)
     
     Vector3::Set(scl, size, size, size)
-    Matrix4::SetScale(@m, @scl)
+    Matrix4::SetScale(m, scl)
   CArray::Append(*matrices,@m)
  Next
   
@@ -214,14 +214,15 @@ Procedure Draw(*app.Application::Application_t)
   
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root,*bunny)
-   Scene::AddModel(Scene::*current_scene,*root)
-   Scene::Setup(Scene::*current_scene,*app\context)
+  
+  Scene::AddModel(Scene::*current_scene,*root)
+  Scene::Setup(Scene::*current_scene,*app\context)
    
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 201
-; FirstLine = 167
+; CursorPosition = 202
+; FirstLine = 168
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

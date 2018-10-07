@@ -79,7 +79,6 @@ Module Polymesh
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
    
-    
     ; ---[ Attributes ]---------------------------------------------------------
     Protected *mesh.Geometry::PolymeshGeometry_t = *Me\geom
     Object3D::Object3D_ATTR()
@@ -173,7 +172,6 @@ Module Polymesh
         Object3D::SetAttributeDirty(*Me,"PointVelocity")
         Object3D::SetAttributeDirty(*Me,"Normals")
       EndIf
-      
     EndIf
   EndProcedure
   
@@ -578,7 +576,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 475
-; FirstLine = 466
+; CursorPosition = 80
+; FirstLine = 274
 ; Folding = ----
 ; EnableXP

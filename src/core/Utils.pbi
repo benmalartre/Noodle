@@ -308,10 +308,8 @@ Module Utils
         CArray::SetValue(*io,0,t\m)
       EndIf
       Vector3::SetFromOther(previous,p)
-      
     Next
-   
-  
+
   EndProcedure
   ;}
   
@@ -553,7 +551,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 333
-; FirstLine = 323
+; CursorPosition = 309
+; FirstLine = 287
 ; Folding = ---
 ; EnableXP

@@ -180,7 +180,7 @@ Module Skeleton
     Protected tangent.v3f32
     Protected *q.q4f32
     Protected c.c4f32
-    Color::Set(@c,1,0,0)
+    Color::Set(c,1,0,0,1)
     ForEach *Me\bones()
       CArray::SetValue(*geom\a_scale, ID,*Me\bones()\statictransform\t\scl)
       *q = *Me\bones()\statictransform\t\rot
@@ -208,7 +208,7 @@ Module Skeleton
     Protected tangent.v3f32
     Protected *q.q4f32
     Protected c.c4f32
-    Color::Set(@c,1,0,0,1)
+    Color::Set(c,1,0,0,1)
     ForEach *pose\Ts()
       
       CArray::SetValue(*geom\a_scale, ID,*pose\Ts()\t\scl)
@@ -233,7 +233,7 @@ Module Skeleton
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 219
+; CursorPosition = 210
 ; FirstLine = 180
 ; Folding = ---
 ; EnableXP

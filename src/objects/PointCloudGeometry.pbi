@@ -87,7 +87,7 @@ Module PointCloudGeometry
       size = 2
       CArray::SetValueF(*geom\a_size,i,size)
       *col = CArray::GetValue(*geom\a_color,i)
-      Color::RandomLuminosity(*col)
+      Color::RandomLuminosity(*col,0,1)
     Next
     
   EndProcedure
@@ -147,7 +147,7 @@ Module PointCloudGeometry
       r = (120+Random(50))/255
       g = (20+Random(5))/255
       b = (10+Random(4))/255
-      Color::Set(@c,r,g,b,1.0)
+      Color::Set(c,r,g,b,1.0)
       CArray::SetValue(*geom\a_color,i,@c)
 
       ; Set Scale
@@ -208,12 +208,12 @@ Module PointCloudGeometry
         r = (120+Random(50))/255
         g = (20+Random(5))/255
         b = (10+Random(4))/255
-        Color::Set(@c,r,g,b,1.0)
-        CArray::SetValue(*geom\a_color,i,@c)
+        Color::Set(c,r,g,b,1.0)
+        CArray::SetValue(*geom\a_color,i,c)
   
         ; Set Scale
         Vector3::Set(s,1,1,1)
-        CArray::SetValue(*geom\a_scale,i,@s)
+        CArray::SetValue(*geom\a_scale,i,s)
         
         ; Set Size
         CArray::SetValueF(*geom\a_size,i,1)
@@ -297,7 +297,7 @@ Module PointCloudGeometry
 
     If *base = #Null
       Protected base.c4f32
-      Color::Set(@base,0.5,0.5,0.5,1.0)
+      Color::Set(base,0.5,0.5,0.5,1.0)
       *base = @base
     EndIf
     
@@ -388,7 +388,7 @@ Module PointCloudGeometry
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 336
+; CursorPosition = 299
+; FirstLine = 286
 ; Folding = ---
 ; EnableXP

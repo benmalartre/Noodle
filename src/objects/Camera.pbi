@@ -241,7 +241,7 @@ Module Camera
     delta\z = 0
     
     Protected q.q4f32
-    Matrix4::GetQuaternion(*Me\view,@q)
+    Matrix4::GetQuaternion(*Me\view,q)
     Vector3::MulByQuaternionInPlace(delta,q)
 
     
@@ -370,11 +370,11 @@ Module Camera
     Protected tm.m4f32, rm.m4f32
     Protected inv_pos.v3f32
     Vector3::Set(inv_pos, -*camera\pos\x, -*camera\pos\y, -*camera\pos\z)
-    Matrix4::TranslationMatrix(@tm, @inv_pos)
-    Matrix4::Echo(@tm, "Translation Matrix")
-    Matrix4::DirectionMatrix(@rm, *camera\lookat, *camera\up)
-    Matrix4::Echo(@rm, "Direction Matrix")
-    Matrix4::Multiply(*m, @rm, @tm)
+    Matrix4::TranslationMatrix(tm, inv_pos)
+    Matrix4::Echo(tm, "Translation Matrix")
+    Matrix4::DirectionMatrix(*m, *camera\lookat, *camera\up)
+    Matrix4::Echo(rm, "Direction Matrix")
+    Matrix4::Multiply(*m, rm, tm)
   EndProcedure
   
   
@@ -386,8 +386,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 307
-; FirstLine = 291
+; CursorPosition = 374
+; FirstLine = 333
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

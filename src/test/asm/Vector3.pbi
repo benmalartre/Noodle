@@ -17,11 +17,10 @@ Procedure.f Float_Add(a.f, b.f)
 EndProcedure
 
 Procedure move_four_float(*src, *dst, count.l)
-
   !mov     rcx,    [p.v_count]       ; # of float Data
   
-    !mov     rdi,    [p.p_dst]         ; dst pointer
-    !mov     rsi,    [p.p_src]         ; src pointer
+  !mov     rdi,    [p.p_dst]         ; dst pointer
+  !mov     rsi,    [p.p_src]         ; src pointer
 
 !loop1:
     !movaps  xmm0,   [rsi]             ; get from src
@@ -122,19 +121,21 @@ Macro M_Vector3_AddInPlace(a, b)
 EndMacro
 
 Procedure Vector3_AddInPlace_Array(*src, *dst, count.l)
-    !mov     ecx,    [p.v_count]       ; # of float Data
-    !mov     rdi,    [p.p_dst]         ; dst pointer
-    !mov     rsi,    [p.p_src]         ; src pointer
+!     mov     ecx,    [p.v_count]       ; # of float Data
+!     mov     rdi,    [p.p_dst]         ; dst pointer
+!     mov     rsi,    [p.p_src]         ; src pointer
 
-!loop2:
-    !movaps  xmm0,   [rsi]             ; get from src
-    !movaps  [rdi],  xmm0              ; put To dst
+!loop_vec3_addinplace_array:
+!     movaps  xmm0,   [rdi]             ; get initial value
+!     movaps  xmm1,   [rsi]             ; get value to add
+!     addps   xmm0,   xmm1              ; 4 float packed addition
+!     movaps  [rdi],  xmm0              ; put back to dst
 
-    !add     rsi,    16
-    !add     rdi,    16
+!     add     rsi,    16                ; offset src pointer
+!     add     rdi,    16                ; offset dst pointer
 
-    !dec     ecx                       ; Next
-    !jnz     loop2
+!     dec     ecx                       ; next
+!     jnz     loop_vec3_addinplace_array
 EndProcedure
 
 
@@ -248,13 +249,17 @@ Define E5.f = (ElapsedMilliseconds() - T) *0.001
 MessageRequester("ASM"," Init : "+StrF(E1)+Chr(10)+" PB : "+StrF(E2)+Chr(10)+" ASM : "+StrF(E3)+Chr(10)+" ASM MACRO : "+StrF(E4)+Chr(10)+" ASM LOOP : "+StrF(E5))
 ; ; Debug StrF(Float_Add(1.111, 3.222))
 
-Debug "X: "+StrF( Vector3_Access(@a, 0))
-Debug "Y: "+StrF( Vector3_Access(@a, 1))
-Debug "Z: "+StrF( Vector3_Access(@a, 2))
+Define value.f
+Vector3_Access(@a, 0, @value)
+Debug "X: "+StrF( value )
+Vector3_Access(@a, 1, @value)
+Debug "Y: "+StrF( value )
+Vector3_Access(@a, 2, @value)
+Debug "Z: "+StrF( value )
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 247
-; FirstLine = 201
+; CursorPosition = 91
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP

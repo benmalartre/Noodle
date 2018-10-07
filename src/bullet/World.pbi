@@ -43,8 +43,8 @@ Module BulletWorld
       Protected p.v3f32
       Protected q.q4f32
     
-      Bullet::BTGetPosition(*obj\rigidbody,@p)
-      Bullet::BTGetOrientation(*obj\rigidbody,@q)
+      Bullet::BTGetPosition(*obj\rigidbody,p)
+      Bullet::BTGetOrientation(*obj\rigidbody,q)
       
       Protected *q.q4f32 = *t\t\rot
       Transform::SetTranslationFromXYZValues(*t,p\x,p\y,p\z)
@@ -68,7 +68,7 @@ Module BulletWorld
     Bullet::BTStepSimulation(*world,time_step)
     Protected i
     Protected nbb = Bullet::BTGetNumCollideObjects(*world)
-  
+   
     Protected *rbody.Bullet::btRigidBody
     Protected *sbody.Bullet::btSoftBody
     Protected *obj.Object3D::Object3D_t
@@ -245,7 +245,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 192
+; CursorPosition = 46
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

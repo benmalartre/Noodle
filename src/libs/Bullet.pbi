@@ -515,7 +515,7 @@ Module Bullet
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 492
-; FirstLine = 462
+; CursorPosition = 76
+; FirstLine = 67
 ; Folding = ---
 ; EnableXP

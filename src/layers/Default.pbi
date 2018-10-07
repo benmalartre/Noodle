@@ -110,7 +110,7 @@ Module LayerDefault
     *view = Layer::GetViewMatrix(*layer)
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected aspect.f = *layer\width / *layer\height
-    Matrix4::GetProjectionMatrix(@proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
+    Matrix4::GetProjectionMatrix(proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
     
     ;Draw Shaded Polymeshes 
     ;-----------------------------------------------
@@ -174,7 +174,7 @@ Module LayerDefault
     Protected *pgm.Program::Program_t = *ctx\shaders("cloud")
     glUseProgram(*pgm\pgm)
     Define.m4f32 model,view,proj
-    Matrix4::SetIdentity(@model)
+    Matrix4::SetIdentity(model)
  
     glEnable(#GL_DEPTH_TEST)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
@@ -190,7 +190,7 @@ Module LayerDefault
     *pgm.Program::Program_t = *ctx\shaders("instances")
     glUseProgram(*pgm\pgm)
     
-    Matrix4::SetIdentity(@model)
+    Matrix4::SetIdentity(model)
  
   glEnable(#GL_DEPTH_TEST)
     
@@ -218,7 +218,7 @@ Module LayerDefault
     ;----------------------------------------------
     *pgm = *ctx\shaders("wireframe")
     glUseProgram(*pgm\pgm)
-    Matrix4::SetIdentity(@model)
+    Matrix4::SetIdentity(model)
  
     glDisable(#GL_DEPTH_TEST)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
@@ -289,7 +289,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 49
+; CursorPosition = 220
+; FirstLine = 216
 ; Folding = --
 ; EnableXP

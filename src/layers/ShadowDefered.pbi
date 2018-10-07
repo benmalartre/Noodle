@@ -114,16 +114,16 @@ Module LayerShadowDefered
 ; 
       
       Protected bias.m4f32
-      Matrix4::Set(@bias,
+      Matrix4::Set(bias,
                 0.5,0.0,0.0,0.0,
                 0.0,0.5,0.0,0.0,
                 0.0,0.0,0.5,0.0,
                 0.5,0.5,0.5,1.0)
       
-      Protected view_rotation_matrix
+      Protected view_rotation_matrix.m4f32
       Protected *camera.Camera::Camera_t = *layer\pov
       Protected *view.Math::m4f32 = *camera\view
-      Matrix4::Set(@view_rotation_matrix,
+      Matrix4::Set(view_rotation_matrix,
                    *view\v[0],*view\v[1],*view\v[2],*view\v[3],
                    *view\v[4],*view\v[5],*view\v[6],*view\v[7],
                    *view\v[8],*view\v[9],*view\v[10],*view\v[11],
@@ -215,8 +215,8 @@ Module LayerShadowDefered
   
   Class::DEF(LayerShadowDefered)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 130
-; FirstLine = 120
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 107
 ; Folding = --
 ; EnableXP

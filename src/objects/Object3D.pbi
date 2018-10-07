@@ -353,13 +353,13 @@ Module Object3D
     Protected *global.Transform::Transform_t = *obj\globalT
     Protected inv.m4f32
     Protected m.m4f32
-    Matrix4::Inverse(@inv,*pt\m)
+    Matrix4::Inverse(inv,*pt\m)
     
     ; Multiply by Global Matrix of Parent Object
-    Matrix4::Multiply(@m,*global\m,@inv)
+    Matrix4::Multiply(m,*global\m,@inv)
 
     ; Set Local Matrix
-    Matrix4::SetFromOther(*obj\localT\m,@m)
+    Matrix4::SetFromOther(*obj\localT\m,m)
     Transform::UpdateSRTFromMatrix(*obj\localT)
 
   EndProcedure
@@ -525,7 +525,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 470
-; FirstLine = 453
+; CursorPosition = 361
+; FirstLine = 336
 ; Folding = ------
 ; EnableXP

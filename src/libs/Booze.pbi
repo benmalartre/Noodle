@@ -1278,12 +1278,10 @@ Module AlembicIObject
              Case "Color"
                Debug "################# APPLY COLOR ##############################"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
-
-               Define *q.q4f32
-               Define q.q4f32
+               Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
                For x=0 To nbp-1
-                Color::SetFromOther(CArray::GetValue(*geom\a_color,x),CArray::GetValue(*Me\obj\m_attributes()\data,x))
+                 CopyMemory(CArray::GetValue(*Me\obj\m_attributes()\data, x), CArray::GetValue(*geom\a_color,x), SizeOf(c))
                Next
               
            EndSelect
@@ -1446,7 +1444,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 597
-; FirstLine = 581
+; CursorPosition = 1283
+; FirstLine = 1264
 ; Folding = --------
 ; EnableXP

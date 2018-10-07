@@ -97,16 +97,16 @@ Module Sampler
       *cb = CArray::GetValue(*mesh\a_colors,tid*3+1)
       *cb = CArray::GetValue(*mesh\a_colors,tid*3+1)
       ;     Vector4_Set(@color,*ca\r,*ca\g,*ca\b,*ca\a)
-      Color::Set(@color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
+      Color::Set(color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
       ;*pc\a_color\SetValue(i,@color)
-      Color::SetFromOther(*loc\c,@color)
+      Color::SetFromOther(*loc\c,color)
 
     Next
     
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 93
+; CursorPosition = 101
 ; FirstLine = 53
 ; Folding = -
 ; EnableXP

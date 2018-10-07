@@ -156,8 +156,10 @@ Module Drawer
   Procedure SetColor(*Me.Item_t,*color.Math::c4f32)
     If Not *Me : ProcedureReturn : EndIf
     Protected i
+    Protected *c.Math::c4f32
     For i=0 To CArray::GetCount(*Me\colors) - 1
-      Color::SetFromOther(CArray::GetValue(*Me\colors, i), *color)
+      *c = CArray::GetValue(*Me\colors, i)
+      Color::SetFromOther(*c, *color)
     Next
   EndProcedure
   
@@ -816,7 +818,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 758
-; FirstLine = 748
+; CursorPosition = 158
+; FirstLine = 154
 ; Folding = --------
 ; EnableXP

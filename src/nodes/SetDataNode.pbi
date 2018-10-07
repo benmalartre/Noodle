@@ -276,9 +276,10 @@ Module SetDataNode
         Case Attribute::#ATTR_TYPE_MATRIX4
           
           Protected *m4In.Carray::CArrayM4F32 = *in_data
+          Protected *m4.m4f32 = CArray::GetValue(*m4In,0)
           ;           Protected *m4Out.Carray::CArrayM4F32 = *node\attribute\data
           Protected *m4Out.m4f32 = *node\attribute\data
-          Matrix4::SetFromOther(*m4Out,CArray::GetValue(*m4In,0))
+          Matrix4::SetFromOther(*m4Out,*m4)
           
           ;CArray::Copy(*m4Out,*m4In)
           
@@ -368,9 +369,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 183
-; FirstLine = 178
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 281
+; FirstLine = 270
 ; Folding = --
 ; EnableThread
 ; EnableXP

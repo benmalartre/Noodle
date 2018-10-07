@@ -742,7 +742,7 @@ Module Light
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
     
     Protected offset.m4f32
-    Matrix4::SetIdentity(@offset)
+    Matrix4::SetIdentity(offset)
     glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
     
     Define l.GLuint
@@ -1069,7 +1069,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 889
-; FirstLine = 227
-; Folding = d7e--
+; CursorPosition = 748
+; FirstLine = 130
+; Folding = d+e--
 ; EnableXP

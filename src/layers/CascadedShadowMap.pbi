@@ -146,7 +146,7 @@ Module LayerCascadedShadowMap
     Protected view.m4f32
     
     ;Camera::GetViewTransform(*camera, @view)
-    Matrix4::GetViewMatrix(@view, *camera\pos, *camera\lookat, *camera\up)
+    Matrix4::GetViewMatrix(view, *camera\pos, *camera\lookat, *camera\up)
     Protected invview.m4f32
     Matrix4::Inverse(@invview, @view)
     
@@ -154,7 +154,7 @@ Module LayerCascadedShadowMap
     Protected *light.Light::Light_t = *layer\light
     Protected lightM.m4f32
     ;Camera::GetViewTransform(*light, @lightM)
-    Matrix4::GetViewMatrix(@lightM, *light\pos, *light\lookat, *light\up)
+    Matrix4::GetViewMatrix( lightM, *light\pos, *light\lookat, *light\up)
     
     Protected ar.f = *layer\height / *layer\width
     Protected tanHalfHFOV.f = Tan(Radian(*camera\fov / 2))
@@ -283,9 +283,9 @@ Module LayerCascadedShadowMap
       glClear(#GL_DEPTH_BUFFER_BIT)
       With *layer\cascadeProjections(i) 
         Debug "Light Projection:("+Str(\left)+","+Str(\right)+","+Str(\bottom)+","+Str(\top)+","+Str(\near)+","+Str(\far)+")"
-        Matrix4::GetOrthoMatrix(@projection,\left,\right,\bottom,\top,\near,\far)
+        Matrix4::GetOrthoMatrix(projection,\left,\right,\bottom,\top,\near,\far)
       EndWith
-      Matrix4::Echo(@projection, "Ortho "+Str(i))
+      Matrix4::Echo(projection, "Ortho "+Str(i))
       glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@projection)
       GLCheckError("[CSM] Set Projection Matrix")
       Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
@@ -354,7 +354,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 235
+; CursorPosition = 156
+; FirstLine = 152
 ; Folding = ---
 ; EnableXP

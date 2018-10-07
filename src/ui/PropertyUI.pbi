@@ -247,7 +247,7 @@ Module PropertyUI
             ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,@q,*attr)
           Case Attribute::#ATTR_TYPE_MATRIX4
             Protected m.m4f32
-            Matrix4::SetIdentity(@m)
+            Matrix4::SetIdentity(m)
             ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,@m,*attr) 
         EndSelect
       EndIf
@@ -462,8 +462,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 52
+; CursorPosition = 249
+; FirstLine = 245
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

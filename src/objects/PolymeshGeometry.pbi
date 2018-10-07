@@ -823,7 +823,7 @@ Module PolymeshGeometry
 ;     RecomputeTangents(*mesh)
 ;     
     ;Color
-    Color::Set(@color,0.33,0.33,0.33,1.0);
+    Color::Set(color,0.33,0.33,0.33,1.0);
     SetColors(*mesh,@color)
     
   EndProcedure
@@ -926,7 +926,7 @@ Module PolymeshGeometry
       b = 0.1
     EndIf
     
-    Color::Set(@c,r,g,b,1)
+    Color::Set(c,r,g,b,1)
     For i=0 To nbs-1
       
       CArray::SetValue(*mesh\a_colors,i,@c)
@@ -962,7 +962,7 @@ Module PolymeshGeometry
     CArray::SetCount(*colors,nbdeformers)
     For i=0 To nbdeformers-1
       *color = CArray::GetValue(*colors,i)
-      Color::Set(*color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+      Color::Set(*color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01, 1.0)
     Next
     
     
@@ -1003,20 +1003,21 @@ Module PolymeshGeometry
     Protected f
     Protected nbv,v
     Protected color.c4f32
-    Color::Set(@color,0.5,0.5,0.5,1.0)
+    Color::Set(color,0.5,0.5,0.5,1.0)
     If *color <> #Null
-      Color::Set(@color,*color\r,*color\g,*color\b,*color\a)
+      Color::Set(color,*color\r,*color\g,*color\b,*color\a)
     EndIf
     
     Protected tid = 0
     Protected nbt = 0
+    *color = #Null
     For f=0 To CArray::GetCount(*mesh\a_facecount)-1
       nbv = CArray::GetValueL(*mesh\a_facecount,f)
       nbt = nbv-2
       If *color <> #Null
-        Color::Set(@color,*color\r,*color\g,*color\b,*color\a)
+        Color::Set(color,*color\r,*color\g,*color\b,*color\a)
       EndIf
-      Color::Randomize(@color)
+      Color::Randomize(color)
       For v=0 To nbt-1
         CArray::SetValue(*mesh\a_colors,tid+2,@color)
         CArray::SetValue(*mesh\a_colors,tid+1,@color)
@@ -1586,7 +1587,7 @@ Module PolymeshGeometry
     CArray::SetValueL(*geom\a_facecount,5,4)
     
     Protected color.c4f32
-    Color::Set(@color,1,0,0,1);
+    Color::Set(color,1,0,0,1);
     SetColors(*geom,@color)
     RecomputeTriangles(*geom)
     RecomputeNormals(*geom,1)
@@ -1775,7 +1776,7 @@ Module PolymeshGeometry
   
     
     Protected color.c4f32
-    Color::Set(@color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
+    Color::Set(color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
    SetColors(*geom,@color)
     RecomputeTriangles(*geom)
     RecomputeNormals(*geom,1)
@@ -1956,7 +1957,7 @@ Module PolymeshGeometry
     GetTopology(*geom)
    
     ;Color
-    Color::Set(@color,1,Random(255)/255,Random(255)/255,Random(255)/255);
+    Color::Set(color,1,Random(255)/255,Random(255)/255,Random(255)/255);
     SetColors(*geom,@color)
     
     ;UVWs
@@ -2460,7 +2461,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2254
-; FirstLine = 2240
+; CursorPosition = 1012
+; FirstLine = 997
 ; Folding = ----fw--v--
 ; EnableXP

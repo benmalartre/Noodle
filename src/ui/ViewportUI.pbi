@@ -322,7 +322,7 @@ Module ViewportUI
       Protected *wireframe.Program::Program_t = *ctx\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
       Protected identity.m4f32
-      Matrix4::SetIdentity(@identity)
+      Matrix4::SetIdentity(identity)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@identity)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
@@ -491,7 +491,8 @@ Module ViewportUI
     Next
    
     If Bullet::BTRayCast(Bullet::*pick_world,*v\camera\pos,@ray_end,@rcr)
-  
+      Protected rcr_worldNorm.v3f32
+      Vector3::Set(rcr_worldNorm, rcr\m_normalWorld\v[0], rcr\m_normalWorld\v[1], rcr\m_normalWorld\v[2])
       *body = rcr\m_body
       Protected *shape.Bullet::btCollisionShape = rcr\m_shape
       
@@ -509,7 +510,7 @@ Module ViewportUI
         Protected up.v3f32
         Vector3::Set(up,0,1,0)
   
-        Quaternion::LookAt(*outQ,rcr\m_normalWorld,up, #False)
+        Quaternion::LookAt(*outQ,rcr_worldNorm,up, #False)
         Transform::SetRotationFromQuaternion(*outT,*outQ)
         Transform::SetTranslationFromXYZValues(*outT,rcr\m_positionWorld\v[0],rcr\m_positionWorld\v[1],rcr\m_positionWorld\v[2])
         Transform::SetScaleFromXYZValues(*outT,1,1,1)
@@ -560,10 +561,10 @@ Module ViewportUI
     
     ;Calculation For inverting a matrix, compute projection x modelview
     ;And store in A[16]
-    Matrix4::Multiply(@A,*proj,*view)
+    Matrix4::Multiply(A,*proj,*view)
   
     ;Now compute the inverse of matrix A
-    If Not Matrix4::Inverse(@m,@A) : ProcedureReturn 0 :EndIf
+    If Not Matrix4::Inverse(m,A) : ProcedureReturn 0 :EndIf
     
     ;Transformation of normalized coordinates between -1 And 1
     _in\x=window_pos\x/viewport\z*2.0-1.0;
@@ -629,7 +630,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 574
-; FirstLine = 570
+; CursorPosition = 566
+; FirstLine = 559
 ; Folding = -----
 ; EnableXP

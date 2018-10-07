@@ -152,7 +152,7 @@ Procedure Draw(*app.Application::Application_t)
   ;-----------------------------------------------------
 
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   
   *default = LayerDefault::New(width,height,*app\context,*app\camera)
@@ -263,8 +263,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 237
-; FirstLine = 203
+; CursorPosition = 167
+; FirstLine = 150
 ; Folding = --
 ; EnableXP
 ; Executable = Test

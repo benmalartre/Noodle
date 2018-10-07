@@ -183,7 +183,7 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_VECTOR4
         Protected *vVal4.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
         Protected v4.c4f32
-        Color::Set(@v4,0,0,0,0)
+        Color::Set(v4,0,0,0,0)
         CArray::Append(*vVal4,v4)
         *port\value = *vVal4
         
@@ -197,7 +197,7 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_MATRIX3
         Protected *mVal3.CArray::CArrayM3F32 = CArray::newCArrayM3F32()
         Protected m3.m3f32
-        Matrix3::SetIdentity(@m3)
+        Matrix3::SetIdentity(m3)
         CArray::Append(*mVal3,m3)
         *port\value = *mVal3
         
@@ -205,14 +205,14 @@ Module NodePort
 
         Protected *mVal4.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
         Protected m4.m4f32
-        Matrix4::SetIdentity(@m4)
+        Matrix4::SetIdentity(m4)
         CArray::Append(*mVal4,m4)
         *port\value = *mVal4
         
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *cVal.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
         Protected c.c4f32
-        Color::Set(@c,0,0,0,1)
+        Color::Set(c,0,0,0,1)
         CArray::Append(*cVal,c)
         *port\value = *cVal
         
@@ -707,7 +707,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 188
+; CursorPosition = 207
+; FirstLine = 203
 ; Folding = ----
 ; EnableXP

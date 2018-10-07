@@ -506,7 +506,7 @@ Module Layer
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected aspect.f = *layer\width / *layer\height
     *view = Layer::GetViewMatrix(*layer)
-    Matrix4::GetProjectionMatrix(@proj, *camera\fov, aspect, *camera\nearplane, *camera\farplane)
+    Matrix4::GetProjectionMatrix(proj, *camera\fov, aspect, *camera\nearplane, *camera\farplane)
     
     ;Draw Polymeshes 
     ;-----------------------------------------------
@@ -526,7 +526,7 @@ Module Layer
     Protected *pgm.Program::Program_t = *ctx\shaders("instances")
     glUseProgram(*pgm\pgm)
     Define.m4f32 model,view,proj
-    Matrix4::SetIdentity(@model)
+    Matrix4::SetIdentity(model)
    
   ;   glDepthMask(#GL_TRUE);
     glEnable(#GL_DEPTH_TEST)
@@ -698,7 +698,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 177
+; CursorPosition = 528
+; FirstLine = 524
 ; Folding = -----
 ; EnableXP

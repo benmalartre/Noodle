@@ -164,8 +164,8 @@ Module Poisson
                        *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
           CArray::SetValue(*positions, i, @p)
           d = CArray::GetValueF(*Me\distances, i)
-          Color::Set(@c, 1- d*4, d*4, 0, 1)
-          CArray::SetValue(*colors, i, @c)
+          Color::Set(c, 1- d*4, d*4, 0, 1)
+          CArray::SetValue(*colors, i, c)
          
           i+1
         Next
@@ -248,7 +248,7 @@ Module Poisson
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 217
-; FirstLine = 195
+; CursorPosition = 167
+; FirstLine = 162
 ; Folding = ---
 ; EnableXP

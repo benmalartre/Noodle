@@ -151,7 +151,7 @@ Module LayerShadowSimple
   
      Protected bias.m4f32
   
-    Matrix4::Set(@bias,
+    Matrix4::Set(bias,
                 0.5,0.0,0.0,0.0,
                 0.0,0.5,0.0,0.0,
                 0.0,0.0,0.5,0.0,
@@ -279,8 +279,8 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 179
-; FirstLine = 175
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 153
 ; Folding = --
 ; EnableXP

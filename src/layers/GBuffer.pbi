@@ -99,7 +99,7 @@ Module LayerGBuffer
     
     Protected *gbuffer.Framebuffer::Framebuffer_t = *layer\buffer
     Protected offset.m4f32
-    Matrix4::SetIdentity(@offset)
+    Matrix4::SetIdentity(offset)
     
     ; 1. Geometry Pass: render scene's geometry/color data into gbuffer
     Framebuffer::BindOutput(*gbuffer)
@@ -118,7 +118,7 @@ Module LayerGBuffer
      Protected bias.m4f32
      Protected invmodelview.m4f32
      
-    Matrix4::Set(@bias,
+    Matrix4::Set(bias,
                 0.5,0.0,0.0,0.0,
                 0.0,0.5,0.0,0.0,
                 0.0,0.0,0.5,0.0,
@@ -349,8 +349,8 @@ Module LayerGBuffer
   
   Class::DEF( LayerGBuffer )
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 129
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 120
+; FirstLine = 120
 ; Folding = --
 ; EnableXP

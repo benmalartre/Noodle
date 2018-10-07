@@ -223,9 +223,9 @@ Module Handle
       
       ;Set Point Position
       Protected scl.v3f32
-      Matrix4::SetIdentity(@offset)
+      Matrix4::SetIdentity(offset)
       Vector3::Set(scl,0.1,0.1,0.1)
-      Matrix4::SetScale(@offset,@scl)
+      Matrix4::SetScale(offset,scl)
       
       ; Handle Axis
       Protected p.v3f32
@@ -619,7 +619,7 @@ Module Handle
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*Me\display\m)
 
     If *Me\tool = Globals::#TOOL_TRANSFORM
-      Matrix4::SetIdentity(@offset)
+      Matrix4::SetIdentity(offset)
       glUniform4f(*Me\u_color,0,1,0,1)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       glPointSize(5)
@@ -632,7 +632,7 @@ Module Handle
        
     ElseIf *Me\tool = Globals::#TOOL_DIRECTED
       
-      Matrix4::SetIdentity(@offset)
+      Matrix4::SetIdentity(offset)
       glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,@offset)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
        Protected *pos.v3f32
@@ -703,7 +703,7 @@ Module Handle
       Else
         glUniform4f(*Me\u_color,1,0.33,0.33,1)
       EndIf
-      Matrix4::SetIdentity(@offset)
+      Matrix4::SetIdentity(offset)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       DrawAxis(*Me,1,0,0)
       
@@ -727,12 +727,12 @@ Module Handle
       EndIf
       
       Quaternion::SetFromAxisAngleValues(quat,0,1,0,Radian(90))
-      Matrix4::SetFromQuaternion(@offset,@quat)
+      Matrix4::SetFromQuaternion(offset,quat)
       glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
       DrawAxis(*Me,0,0,1)
     
     EndIf
-    Matrix4::SetIdentity(@offset)
+    Matrix4::SetIdentity(offset)
     glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
     glDisable(#GL_BLEND)
     
@@ -742,10 +742,10 @@ Module Handle
       Protected P.v3f32
       Protected S.v3f32
       Vector3::Set(S, 0.01,0.01,0.01)
-      Matrix4::SetIdentity(@X)
+      Matrix4::SetIdentity(X)
       Vector3::Add(P, *Me\ray\origin, *Me\ray\direction)
-      Matrix4::SetScale(@X, @S)
-      Matrix4::SetTranslation(@X, @P)
+      Matrix4::SetScale(X, S)
+      Matrix4::SetTranslation(X, P)
       glBindVertexArray(*Me\cursor_vao)
       glPointSize(6)
       glUniform4f(*Me\u_color,1,1,1,1)
@@ -1224,7 +1224,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 954
-; FirstLine = 905
+; CursorPosition = 747
+; FirstLine = 740
 ; Folding = ------
 ; EnableXP

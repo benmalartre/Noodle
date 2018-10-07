@@ -206,7 +206,7 @@ Protected *t.Transform::Transform_t
 Protected color.c4f32
 Protected factor.v3f32
 Vector3::Set(factor,1,1,1)
-Color::Set(@color,1.0,0.5,0.4)
+Color::Set(color,1.0,0.5,0.4,1.0)
   For x=0 To 7
     For y=0 To 1
       For z=0 To 7
@@ -219,10 +219,10 @@ Color::Set(@color,1.0,0.5,0.4)
         ;OPolymeshGeometry_Sphere(*cube\GetGeometry(),1,12,12)
         *t.Transform::Transform_t = *cube\localT
         Vector3::Set(p,x*2-10,10*2+y,z*2-10)
-        Vector3::SetFromOther(*t\t\pos,@p)
+        Vector3::SetFromOther(*t\t\pos,p)
 
-        Quaternion::SetFromAxisAngleValues(@q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
-        Quaternion::SetFromOther(*t\t\rot,@q)
+        Quaternion::SetFromAxisAngleValues(q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
+        Quaternion::SetFromOther(*t\t\rot,q)
         
         Vector3::Set(*t\t\scl,5,5,5)
         *t\srtdirty = #True
@@ -233,7 +233,7 @@ Color::Set(@color,1.0,0.5,0.4)
         Protected *body.Bullet::btRigidBody = *cube\rigidbody
         Bullet::BTSetAngularFactorF(*body,0.5)
         Bullet::BTSetFriction(*body,10)
-        Color::Randomize(@color)
+        Color::Randomize(color)
         PolymeshGeometry::SetColors(*cube\geom,@color)
       Next z
     Next y
@@ -372,7 +372,7 @@ Procedure Draw(*app.Application::Application_t)
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   BulletScene(*app\context\shaders("polymesh"))
   
@@ -415,7 +415,10 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   Polymesh::Setup(*teapot,*s_polymesh)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*bunny,*s_polymesh)
-Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::Setup(Scene::*current_scene,*app\context)
+  
+  Define nbb = Bullet::BTGetNumCollideObjects(Bullet::*bullet_world)
+  MessageRequester("TEST BULLET", Str(nbb)+" Collide Objects")
   
   
   Application::Loop(*app, @Draw())
@@ -423,8 +426,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 408
-; FirstLine = 355
+; CursorPosition = 221
+; FirstLine = 205
 ; Folding = --
 ; EnableThread
 ; EnableXP
