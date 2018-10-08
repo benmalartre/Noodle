@@ -24,7 +24,7 @@ Macro Vector3_Absolute_SIMD(_v)
   MOV rdi, _v                           ; vector3 to data register
   MOV rax, l___ieee754_128_sign_mask__  ; move sign mask to rsi register
   DisableASM
-  ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
+  ! movdqa  xmm1, [rax]                 ; bitmask removing sign        
   ! movaps xmm0, [rdi]                  ; data register to sse register
   ! andps xmm0, xmm1                    ; bitmask removing sign
   ! movaps [rdi], xmm0                  ; mov back to memory
@@ -37,7 +37,7 @@ Macro Vector3_Absolute_SIMD_Array(_v, _nb)
   MOV rcx, _nb                          ; num vector to count register
   MOV rax, l___ieee754_128_sign_mask__  ; move sign mask to rsi register
   DisableASM
-  ! movdqu  xmm1, [rax]  
+  ! movdqa  xmm1, [rax]  
   ! vector3_normalize_simd_array_loop:
   !   movaps xmm0, [rdi]                ; data register to sse register
   !   andps xmm0, xmm1                  ; bitmask removing sign
@@ -80,7 +80,7 @@ Procedure Compare(*A1, *A2, nb)
 EndProcedure
 
 
-Define nb.i = 64000000
+Define nb.i = 12000000
 Define *v1.Vector3
 Define _s.i = nb * SizeOf(Vector3)
 Define *v1A = AllocateMemory(_s)
@@ -118,21 +118,23 @@ Else
   Define T2.q = ElapsedMilliseconds() - startT
   
   startT.q = ElapsedMilliseconds()
+  Define *aligned = Align16(*v3A)
   Vector3_Absolute_SIMD_Array(*v3A, nb)
   Define T3.q = ElapsedMilliseconds() - startT
   
-  MessageRequester("COMPARE", "PB : "+Str(T1)+Chr(10)+
-                              "SIMD : "+Str(T2)+" : "+Str(Compare(*v1A, *v2A, nb))+Chr(10)+
-                              "ASM LOOP + SIMD : "+Str(T3)+" : "+Str(Compare(*v1A, *v3A, nb))+Chr(10)+
-                              Str(CompareMemory(*v2A, *v3A, _s))+Chr(10)+
-                              original+Chr(10)+"###############"+Chr(10)+
-                              ArrayString(*v1A, nb)+Chr(10)+"###############"+Chr(10)+
-                              ArrayString(*v2A, nb)+Chr(10)+"###############"+Chr(10)+
-                              ArrayString(*v3A, nb)+Chr(10))
+  MessageRequester("COMPARE", "NUM TRIANGLES : "+Str(nb)+Chr(10)+
+                              "PB : "+StrD(T1*0.001)+Chr(10)+
+                              "SIMD : "+StrD(T2*0.001)+" : "+Str(Compare(*v1A, *v2A, nb))+Chr(10)+
+                              "ASM LOOP + SIMD : "+StrD(T3*0.001)+" : "+Str(Compare(*v1A, *v3A, nb))+Chr(10))
+;                               Str(CompareMemory(*v2A, *v3A, _s))+Chr(10)+
+;                               original+Chr(10)+"###############"+Chr(10)+
+;                               ArrayString(*v1A, nb)+Chr(10)+"###############"+Chr(10)+
+;                               ArrayString(*v2A, nb)+Chr(10)+"###############"+Chr(10)+
+;                               ArrayString(*v3A, nb)+Chr(10))
   EndIf
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 55
+; CursorPosition = 114
+; FirstLine = 81
 ; Folding = --
 ; EnableXP
