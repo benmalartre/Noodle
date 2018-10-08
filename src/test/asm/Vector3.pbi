@@ -299,8 +299,6 @@ T = ElapsedMilliseconds()
 Vector3_SubInPlace_Array(*d, *s, count)
 Define E5.f = (ElapsedMilliseconds() - T) *0.001
 
-
-
 MessageRequester("ASM"," Init : "+StrF(E1)+Chr(10)+
                        " PB : "+StrF(E2)+Chr(10)+
                        " ASM : "+StrF(E3)+Chr(10)+
@@ -316,7 +314,7 @@ MessageRequester("ASM"," Init : "+StrF(E1)+Chr(10)+
 ; Debug "Z: "+StrF( value )
 
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 305
-; FirstLine = 280
+; CursorPosition = 295
+; FirstLine = 281
 ; Folding = ---
 ; EnableXP
