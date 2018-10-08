@@ -1268,7 +1268,7 @@ Module AlembicIObject
                For x=0 To nbp-1
                  *nrm = CArray::GetValue(*geom\a_normals,x)
                  *tan = CArray::GetValue(*geom\a_tangents,x)
-                 *q = CArray::GetValue(*Me\obj\m_attributes()\data,x)
+                 *q = CArray::GetPtr(*Me\obj\m_attributes()\data,x)
                  
                  Vector3::Set(*nrm,0,1,0)
                  Vector3::MulByQuaternionInPlace(*nrm,*q)
@@ -1281,7 +1281,7 @@ Module AlembicIObject
                Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
                For x=0 To nbp-1
-                 CopyMemory(CArray::GetValue(*Me\obj\m_attributes()\data, x), CArray::GetValue(*geom\a_color,x), SizeOf(c))
+                 CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data, x), CArray::GetPtr(*geom\a_color,x), SizeOf(c))
                Next
               
            EndSelect
@@ -1313,9 +1313,8 @@ Module AlembicIObject
     ;If FindMapElement(*Me\attributes(),name)
       
        nbp = CArray::GetCount(*arr)
-;        CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
-;        CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
-        CArray::Copy(*arr,*Me\attributes()\data)
+       CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
+       CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
         Break
 ;        Else
 ;          MessageRequester("[Alembic]","Property "+name+" does NOT exists!!!")
@@ -1444,7 +1443,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1283
-; FirstLine = 1264
+; CursorPosition = 1316
+; FirstLine = 1280
 ; Folding = --------
 ; EnableXP

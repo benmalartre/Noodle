@@ -115,6 +115,26 @@ DeclareModule Attribute
     writable.b
   EndStructure
   
+  Macro GetValue(_attribute)
+    Select attribute\datatype
+      Case #ATTR_TYPE_BOOL
+        CArray::GetValueB(_attribute\data,0)
+      Case #ATTR_TYPE_CHAR
+        CArray::GetValueB(_attribute\data,0)
+      Case #ATTR_TYPE_LONG
+        CArray::GetValueL(_attribute\data,0)
+      Case #ATTR_TYPE_INTEGER
+        CArray::GetValueI(_attribute\data,0)
+      Case #ATTR_TYPE_FLOAT
+        CArray::GetValueF(_attribute\data,0)
+      Case #ATRT_TYPE_DOUBLE
+        CArray::GetValueD(_attribute\data,0)
+    EndSelect
+    
+  EndMacro
+  
+  
+  
   Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,read_only.b,constant.b,writable.b=#True)
   Declare Delete(*attribute.Attribute_t)
   Declare GetSize(*attribute.Attribute_t)
@@ -125,7 +145,7 @@ DeclareModule Attribute
   Declare SetFromString(*attribute.Attribute_t,in_string.s)
   Declare SetFromBase64(*attribute.Attribute_t,in_base64.s)
   Declare ReadOnly(*attribute.Attribute_t)
-  
+;   Declare GetValue(*attribute.Attribute_t)
   Global CLASS.Class::Class_t
   
   DataSection:
@@ -328,7 +348,7 @@ Module Attribute
           Case #ATTR_TYPE_LONG
              *l_datas.CArray::CArrayLong = *attribute\data
             For it=0 To CArray::GetCount(*l_datas)-1
-              out_string +Str(PeekL(CArray::GetValue(i_datas,it)))+","
+              out_string +Str(PeekL(CArray::GetValue(*l_datas,it)))+","
             Next
    
           Case #ATTR_TYPE_INTEGER
@@ -591,7 +611,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 569
-; FirstLine = 530
+; CursorPosition = 147
+; FirstLine = 143
 ; Folding = ---
 ; EnableXP

@@ -83,31 +83,32 @@ UseModule Math
   ; Save Node Ports
   ;----------------------------------------------------------------------------
   Procedure SavePorts(*saver.Saver_t,parentnode.i,*node.Node::Node_t)
-    Protected *attr.NodePort::NodePort_t
+    Protected *port.NodePort::NodePort_t
     Protected attr.i
     ForEach *node\inputs()
-      *attr = *node\inputs()
+      *port = *node\inputs()
       attr = CreateXMLNode(parentnode,"input_port")
-      SetXMLAttribute(attr,"Name",*attr\name)
-      SetXMLAttribute(attr,"Type",Str(*attr\currenttype))
-      Select *attr\currenttype
+      SetXMLAttribute(attr,"Name",*port\name)
+      SetXMLAttribute(attr,"Type",Str(*port\currenttype))
+      Protected *array.CArray::CArrayT = *port\value
+      Select *port\currenttype
         Case Attribute::#ATTR_TYPE_BOOL
-          SetXMLAttribute(attr,"Value",Str(CArray::GetValueB(*attr\value,0)))
+          SetXMLAttribute(attr,"Value",Str(CArray::GetValueB(*array, 0)))
         Case Attribute::#ATTR_TYPE_INTEGER
-          SetXMLAttribute(attr,"Value",Str(CArray::GetValueI(*attr\value,0)))
+          SetXMLAttribute(attr,"Value",Str(CArray::GetValueI(*array,0)))
         Case Attribute::#ATTR_TYPE_FLOAT
-          SetXMLAttribute(attr,"Value",StrF(CArray::GetValueF(*attr\value,0)))
+          SetXMLAttribute(attr,"Value",StrF(CArray::GetValueF(*array,0)))
         Case Attribute::#ATTR_TYPE_VECTOR2
-          Protected *v2.v2f32 = CArray::GetValue(*attr\value,0)
+          Protected *v2.v2f32 = CArray::GetValue(*array,0)
           SetXMLAttribute(attr,"Value","["+StrF(*v2\x)+","+StrF(*v2\y)+"]")
         Case Attribute::#ATTR_TYPE_VECTOR3
-          Protected *v3.v3f32 = CArray::GetValue(*attr\value,0)
+          Protected *v3.v3f32 = CArray::GetValue(*array,0)
           SetXMLAttribute(attr,"Value","["+StrF(*v3\x)+","+StrF(*v3\y)+","+StrF(*v3\z)+"]")
         Case Attribute::#ATTR_TYPE_Quaternion
-          Protected *q4.q4f32 = CArray::GetValue(*attr\value,0)
+          Protected *q4.q4f32 = CArray::GetValue(*array,0)
           SetXMLAttribute(attr,"Value","["+StrF(*q4\x)+","+StrF(*q4\y)+","+StrF(*q4\z)+","+StrF(*q4\w)+"]")
           Case Attribute::#ATTR_TYPE_COLOR
-          Protected *c4.c4f32 = CArray::GetValue(*attr\value,0)
+          Protected *c4.c4f32 = CArray::GetValue(*array,0)
           SetXMLAttribute(attr,"Value","["+StrF(*c4\r)+","+StrF(*c4\g)+","+StrF(*c4\b)+","+StrF(*c4\a)+"]")
       EndSelect
       
@@ -118,10 +119,10 @@ UseModule Math
       ;SetXMLAttribute(attr,"Size",Str(OGraphNodePort_GetDataSize()))
     Next
     ForEach *node\outputs()
-      *attr = *node\outputs()
+      *port = *node\outputs()
       attr = CreateXMLNode(parentnode,"output_port")
-      SetXMLAttribute(attr,"Name",*attr\name)
-      SetXMLAttribute(attr,"Type",Str(*attr\currenttype))
+      SetXMLAttribute(attr,"Name",*port\name)
+      SetXMLAttribute(attr,"Type",Str(*port\currenttype))
 
       ;SetXMLAttribute(attr,"Size",Str(OGraphNodePort_GetDataSize()))
     Next
@@ -576,8 +577,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 536
-; FirstLine = 523
+; CursorPosition = 124
+; FirstLine = 80
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

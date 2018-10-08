@@ -80,7 +80,7 @@ Module MultiplyNode
         *lOut = *output\value
         *lIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*lOut,CArray::GetCount(*lIn))
-        CArray::Copy(*lOut,*In)
+        CArray::Copy(*lOut,*lIn)
         NextElement(*node\inputs())
         *input = *node\inputs()
         
@@ -208,7 +208,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 155
+; CursorPosition = 82
+; FirstLine = 78
 ; Folding = --
 ; EnableXP

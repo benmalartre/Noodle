@@ -239,14 +239,19 @@ Module Octree
 
     Define i
     For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+
     Vector3::Sub(*octree\bmin, *geom\bbox\origin, *geom\bbox\extend)
     Vector3::Add(*octree\bmax, *geom\bbox\origin, *geom\bbox\extend)
-    
+
     *octree\eMax = maxDepth
     Split(*octree, *geom, maxDepth)
     
+    NumCells(*octree, @*octree\numCells)
+    
+    MessageRequester("OCTREE", Str(*octree\numCells))
+    
 ;     *octree\numCells = 0
-;     NumCells(*octree, @*octree\numCells)
+;     
 ;     Debug "################### OCTREE ######################"
 ;     Debug "Num CELLS : "+Str(*octree\numCells)
 ;     Debug "#################################################"
@@ -448,7 +453,7 @@ Module Octree
   Procedure NumCells(*octree.Octree_t, *numCells)
     Protected i
     For i=0 To 7
-      If *octree \children[i]
+      If *octree\children[i]
         If *octree\children[i]\isLeaf
           PokeL(*numCells, PeekL(*numCells)+1)
         Else
@@ -579,7 +584,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 521
-; FirstLine = 504
+; CursorPosition = 399
+; FirstLine = 392
 ; Folding = -----
 ; EnableXP

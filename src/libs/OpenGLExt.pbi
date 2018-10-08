@@ -1,11 +1,9 @@
 ﻿XIncludeFile "OpenGL.pbi"
-CompilerIf (#USE_GLFW = #True)
-  MessageRequester("FUCKIN INCLUDE  GLFW", "GLFW")
-  XIncludeFile "../libs/GLFW.pbi"
-CompilerEndIf
+
 DeclareModule OpenGLExt
   UseModule OpenGL
-  CompilerIf (#USE_GLFW = #True)
+  CompilerIf Defined(USE_GLFW, #PB_Constant)  And (#USE_GLFW = #True)
+    XIncludeFile "../libs/GLFW.pbi"
     UseModule GLFW
   CompilerEndIf
   
@@ -1494,7 +1492,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 16
+; CursorPosition = 15
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

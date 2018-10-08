@@ -11,7 +11,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -58,10 +60,10 @@ Procedure RandomSpheres(numItems.i,y.f=0)
   Define i,j
   For i=0 To numItems-1
     Vector3::Set(p,i, y, (Random(10)-5)/10)
-    Matrix4::SetIdentity(@m)
-    Matrix4::SetTranslation(@m,@p)
+    Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m,p)
 
-    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewSphere(*drawer, @m)
     Drawer::SetColor(*item,  @color)
   Next
@@ -76,10 +78,10 @@ Procedure RandomCubes(numItems.i,y.f=0)
   Define i,j
   For i=0 To numItems-1
     Vector3::Set(p,i, y, (Random(10)-5)/10)
-    Matrix4::SetIdentity(@m)
-    Matrix4::SetTranslation(@m,@p)
+    Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m,p)
 
-    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewBox(*drawer, @m)
     Drawer::SetColor(*item,  @color)
   Next
@@ -96,7 +98,7 @@ Procedure RandomStrips(numItems.i)
       Vector3::Set(position, i, j, (Random(10)-5)/10)
       CArray::SetValue(*positions, j, @position)
     Next
-    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewStrip(*drawer, *positions)
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
@@ -114,7 +116,7 @@ Procedure RandomPoints(numItems.i)
       Vector3::Set(position, i, j, (Random(10)-5)/10)
       CArray::SetValue(*positions, j, @position)
     Next
-    Color::Set(@color, Random(255)/255, Random(255)/255, Random(255)/255)
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewPoints(*drawer, *positions)
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
@@ -173,7 +175,7 @@ Procedure Draw(*app.Application::Application_t)
   
   
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
 
@@ -199,8 +201,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 60
+; CursorPosition = 177
+; FirstLine = 148
 ; Folding = --
 ; EnableThread
 ; EnableXP

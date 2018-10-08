@@ -427,8 +427,8 @@ Module Geometry
       If *v\z > bmax\z : bmax\z = *v\z : EndIf
     Next i
     
-    Vector3::LinearInterpolate(*geom\bbox\origin, @bmin, @bmax, 0.5)
-    Vector3::Sub(*geom\bbox\extend, @bmax, @bmin)
+    Vector3::LinearInterpolate(*geom\bbox\origin, bmin, bmax, 0.5)
+    Vector3::Sub(*geom\bbox\extend, bmax, bmin)
     Vector3::ScaleInPlace(*geom\bbox\extend, 0.5)
     
   EndProcedure
@@ -459,7 +459,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 449
-; FirstLine = 406
+; CursorPosition = 422
+; FirstLine = 396
 ; Folding = -----
 ; EnableXP

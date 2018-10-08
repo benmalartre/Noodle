@@ -230,7 +230,6 @@ Module Camera
   ; Pan
   ;----------------------------------------------------------------------------
   Procedure Pan(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
-
     Protected delta.v3f32
     Protected dist.v3f32
   
@@ -250,6 +249,25 @@ Module Camera
     
     ;Update Camera Transform
     LookAt(*Me)
+;     Protected delta.v3f32
+;     Protected dist.v3f32
+;   
+;     Vector3::Sub(dist,*Me\pos,*Me\lookat)
+;     Protected d.f = Vector3::Length(dist)
+;     delta\x = -deltax/(width/2)*d
+;     delta\y = deltay/(height/2)*d
+;     delta\z = 0
+;     
+;     Protected q.q4f32
+;     Matrix4::GetQuaternion(*Me\view,q)
+;     Vector3::MulByQuaternionInPlace(delta,q)
+; 
+;     
+;     Vector3::AddInPlace(*Me\pos,delta)
+;     Vector3::AddInPlace(*Me\lookat,delta)
+;     
+;     ;Update Camera Transform
+;     LookAt(*Me)
   
   EndProcedure
   
@@ -386,8 +404,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 374
-; FirstLine = 333
+; CursorPosition = 235
+; FirstLine = 231
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

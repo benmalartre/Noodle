@@ -409,9 +409,9 @@ Module PolymeshGeometry
     ; First Triangle Normals
     Define.v3f32 *a, *b, *c
     For i=0 To *mesh\nbtriangles-1
-      a = CArray::GetValueL(*mesh\a_triangleindices,i*3)
-      b = CArray::GetValueL(*mesh\a_triangleindices,i*3+1)
-      c = CArray::GetValueL(*mesh\a_triangleindices,i*3+2)
+      a = CArray::GetValueL(*mesh\a_triangleindices,(i*3))
+      b = CArray::GetValueL(*mesh\a_triangleindices,(i*3+1))
+      c = CArray::GetValueL(*mesh\a_triangleindices,(i*3+2))
       *a = CArray::GetValue(*mesh\a_positions,a)
       *b = CArray::GetValue(*mesh\a_positions,b)
       *c = CArray::GetValue(*mesh\a_positions,c)
@@ -651,7 +651,7 @@ Module PolymeshGeometry
     For i=0 To *mesh\nbpolygons-1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
       For j=0 To nbv-1
-        k = CArray::GetValueL(*mesh\a_faceindices,base+j)
+        k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
         indices(k) + Str(i)+","
         total+1
       Next j
@@ -2461,7 +2461,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1012
-; FirstLine = 997
+; CursorPosition = 426
+; FirstLine = 402
 ; Folding = ----fw--v--
 ; EnableXP

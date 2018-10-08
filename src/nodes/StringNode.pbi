@@ -58,7 +58,7 @@ Module StringNode
   Procedure Evaluate(*node.StringNode_t)
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *value.CArray::CArrayFloat = NodePort::AcquireInputData(*input)
+    Protected *value.CArray::CArrayStr = NodePort::AcquireInputData(*input)
     
     If *value
       Protected *outdata.CArray::CArrayStr = *output\value
@@ -110,8 +110,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 47
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 41
 ; Folding = --
 ; EnableXP

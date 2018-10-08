@@ -64,7 +64,7 @@ Module FileExistsNode
     
     
     
-    Protected *filenameArray.CArray::CArrayBool = NodePort::AcquireInputData(*filenamePort)
+    Protected *filenameArray.CArray::CArrayStr = NodePort::AcquireInputData(*filenamePort)
 
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *outputArray.CArray::CArrayBool = *output\value
@@ -116,9 +116,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 52
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 46
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -188,7 +188,7 @@ Procedure Draw(*app.Application::Application_t)
   
 
       
-  Matrix4::SetIdentity(@offset)
+  Matrix4::SetIdentity(offset)
   
   shader = *s_gbuffer\pgm
   glUseProgram(shader)
@@ -416,14 +416,14 @@ If Time::Init()
   Define color.v3f32
   Define x,y,z
   For x = 0 To 7
-    For y=0 To 0
+    For y=0 To 7
       For z=0 To 7
         AddElement(*bunnies())
         *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
         Vector3::Set(pos,x-5,y+0.5,z-5)
-        Matrix4::SetTranslation(*bunnies()\matrix,@pos)
+        Matrix4::SetTranslation(*bunnies()\matrix,pos)
         Polymesh::Setup(*bunnies(),*s_gbuffer)
       Next
     Next
@@ -477,10 +477,11 @@ If Time::Init()
   
   *noise = CArray::newCArrayV3F32()
   CArray::SetCount(*noise,noise_size)
-
+  Define *n.v3f32 
   For i=0 To noise_size-1
-    Vector3::Set(CArray::GetPtr(*noise,i),Random(100)*0.02-1,Random(100)*0.02-1,0)
-    Vector3::NormalizeInPlace(CArray::GetPtr(*noise,i))
+    *n = CArray::GetPtr(*noise,i)
+    Vector3::Set(*n,Random(100)*0.02-1,Random(100)*0.02-1,0)
+    Vector3::NormalizeInPlace(*n)
   Next i
   
   
@@ -493,9 +494,9 @@ If Time::Init()
   glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_T,#GL_REPEAT)
   
   
-  Matrix4::SetIdentity(@offset)
-  Quaternion::SetIdentity(@q)
-  Matrix4::SetFromQuaternion(@m,@q)
+  Matrix4::SetIdentity(offset)
+  Quaternion::SetIdentity(q)
+  Matrix4::SetFromQuaternion(m,q)
   
   Application::Loop(*app,@Draw())
 
@@ -504,8 +505,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 424
-; FirstLine = 371
+; CursorPosition = 418
+; FirstLine = 378
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

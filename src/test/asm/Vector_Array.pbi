@@ -45,7 +45,7 @@ Vector3_Array_Average(*points, numPoints.i, @accum)
 Debug "ACCUM : "+StrF(accum\x)+", "+StrF(accum\y)+", "+StrF(accum\z)
 Vector3_Array_Free(*points)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 22
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

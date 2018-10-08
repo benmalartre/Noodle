@@ -674,7 +674,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 400
-; FirstLine = 366
+; CursorPosition = 226
+; FirstLine = 220
 ; Folding = ------
 ; EnableXP

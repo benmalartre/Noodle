@@ -2119,46 +2119,45 @@ DeclareModule Matrix4
     Matrix4::SetFromOther(_io,_m4_tmp)
   EndMacro
   
-  
   ;-------------------------------------------
   ; Get Quaternion
   ;-------------------------------------------
   Macro GetQuaternion(_m,_q)
-    Define.f _m4gq_qx,_m4gq_qy,_m4gq_qz,_m4gq_qw,_m4gq_qw4
-    Define _m4gq_tr.f = _m\v[0] + _m\v[5] + _m\v[10]
-    Define _m4gq_S.f
-    If _m4gq_tr > 0
-      _m4gq_S = Sqr(tr+1.0) * 2
-      _m4gq_qw = 0.25 * _m4gq_S
-      _m4gq_qx = (_m\v[9] - _m\v[6]) / _m4gq_S
-      _m4gq_qy = (_m\v[2] - _m\v[8]) / _m4gq_S
-      _m4gq_qz = (_m\v[4] - _m\v[1]) / _m4gq_S
+    Define.f _qx,_qy,_qz,_qw,_qw4
+    Define _tr.f = _m\v[0] + _m\v[5] + _m\v[10]
+    Define _S.f
+    If _tr > 0
+      _S = Sqr(_tr+1.0) * 2
+      _qw = 0.25 * _S
+      _qx = (_m\v[9] - _m\v[6]) / _S
+      _qy = (_m\v[2] - _m\v[8]) / _S
+      _qz = (_m\v[4] - _m\v[1]) / _S
     ElseIf (_m\v[0] > _m\v[5])And(_m\v[0] > _m\v[10])
-      _m4gq_S = Sqr(1.0 + _m\v[0] - _m\v[5] - _m\v[10]) * 2
-      _m4gq_qw = (_m\v[9] - _m\v[6]) / _m4gq_S
-      _m4gq_qx = 0.25 * _m4gq_S
-      _m4gq_qy = (_m\v[1] + _m\v[4]) / _m4gq_S
-      _m4gq_qz = (_m\v[2] + _m\v[8]) / _m4gq_S
+      _S = Sqr(1.0 + _m\v[0] - _m\v[5] - _m\v[10]) * 2
+      _qw = (_m\v[9] - _m\v[6]) / _S
+      _qx = 0.25 * _S
+      _qy = (_m\v[1] + _m\v[4]) / _S
+      _qz = (_m\v[2] + _m\v[8]) / _S
     ElseIf (_m\v[5] > _m\v[10])
-      _m4gq_S = Sqr(1.0 + _m\v[5] - _m\v[0] - _m\v[10]) * 2
-      _m4gq_qw = (_m\v[2] - _m\v[8]) / _m4gq_S
-      _m4gq_qx = (_m\v[1] + _m\v[4]) / _m4gq_S
-      _m4gq_qy = 0.25 * _m4gq_S
-      _m4gq_qz = (_m\v[6] + _m\v[9]) / _m4gq_S
+      _S = Sqr(1.0 + _m\v[5] - _m\v[0] - _m\v[10]) * 2
+      _qw = (_m\v[2] - _m\v[8]) / _S
+      _qx = (_m\v[1] + _m\v[4]) / _S
+      _qy = 0.25 * _S
+      _qz = (_m\v[6] + _m\v[9]) / _S
     Else
-      _m4gq_S = Sqr(1.0 + _m\v[10] - _m\v[0] - _m\v[5]) * 2
-      _m4gq_qw = (_m\v[4] - _m\v[1]) / _m4gq_S
-      _m4gq_qx = (_m\v[2] + _m\v[8]) / _m4gq_S
-      _m4gq_qy = (_m\v[6] + _m\v[9]) / _m4gq_S
-      _m4gq_qz = 0.25 * _m4gq_S
+      _S = Sqr(1.0 + _m\v[10] - _m\v[0] - _m\v[5]) * 2
+      _qw = (_m\v[4] - _m\v[1]) / _S
+      _qx = (_m\v[2] + _m\v[8]) / _S
+      _qy = (_m\v[6] + _m\v[9]) / _S
+      _qz = 0.25 * _S
     EndIf
   
     ; set the rotation!
-    _q\x = _m4gq_qx
-    _q\y = _m4gq_qy
-    _q\z = _m4gq_qz
-    _q\w = _m4gq_qw
-  EndMacro  
+    _q\x = _qx
+    _q\y = _qy
+    _q\z = _qz
+    _q\w = _qw
+  EndMacro
   
   ;-------------------------------------------
   ; Get Translation Matrix
@@ -2197,6 +2196,7 @@ DeclareModule Matrix4
   
   Declare.b Inverse(*m.m4f32,*o.m4f32)
   Declare.b InverseInPlace(*m.m4f32)
+;   Declare GetQuaternion(*m.m4f32,*q.q4f32)
   
 EndDeclareModule
 
@@ -2676,8 +2676,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2471
-; FirstLine = 2434
-; Folding = ---------------------------------
+; CursorPosition = 650
+; FirstLine = 641
+; Folding = ----------------------------------
 ; EnableXP
 ; EnableUnicode

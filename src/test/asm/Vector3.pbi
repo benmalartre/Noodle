@@ -16,7 +16,7 @@ Procedure.f Float_Add(a.f, b.f)
   ProcedureReturn v
 EndProcedure
 
-Procedure move_four_float(*src, *dst, count.l)
+Procedure move_four_float(*src, *dst, count.i)
   !mov     rcx,    [p.v_count]       ; # of float Data
   
   !mov     rdi,    [p.p_dst]         ; dst pointer
@@ -35,7 +35,7 @@ Procedure move_four_float(*src, *dst, count.l)
 
   EndProcedure
   
- Procedure Vector3_Access(*a.Vector3f, offset.l, *value)
+ Procedure Vector3_Access(*a.Vector3f, offset.i, *value)
    ! mov rcx, [p.v_offset]
    ! mov rsi, [p.p_a]
    ! add rsi, rcx
@@ -87,6 +87,12 @@ Procedure Vector3_AddInPlace_PB(*a.Vector3f, *b.Vector3f)
   *a\z + *b\z
 EndProcedure 
 
+Procedure Vector3_SubInPlace_PB(*a.Vector3f, *b.Vector3f)
+  *a\x - *b\x
+  *a\y - *b\y
+  *a\z - *b\z
+EndProcedure 
+
 
 Procedure Vector3_AddInPlace(*a.Vector3f, *b.Vector3f)
   ! mov rsi, [p.p_b]
@@ -94,7 +100,7 @@ Procedure Vector3_AddInPlace(*a.Vector3f, *b.Vector3f)
   ! movaps xmm0, [rdi]
   ! movaps xmm1, [rsi]
   ! addps xmm0, xmm1
-  ! movups [rdi], xmm0
+  ! movaps [rdi], xmm0
 EndProcedure
 
 Procedure Vector3_Add(*a.Vector3f, *b.Vector3f, *c.Vector3f)
@@ -109,6 +115,27 @@ Procedure Vector3_Add(*a.Vector3f, *b.Vector3f, *c.Vector3f)
   ! movaps [rdi], xmm0
 EndProcedure
 
+Procedure Vector3_SubInPlace(*a.Vector3f, *b.Vector3f)
+  ! mov rsi, [p.p_b]
+  ! mov rdi, [p.p_a]
+  ! movaps xmm0, [rdi]
+  ! movaps xmm1, [rsi]
+  ! subps xmm0, xmm1
+  ! movaps [rdi], xmm0
+EndProcedure
+
+Procedure Vector3_Sub(*a.Vector3f, *b.Vector3f, *c.Vector3f)
+  ! mov rsi, [p.p_a]
+  ! mov rax, [p.p_b]
+  ! mov rdi, [p.p_c]
+  ! movaps xmm0, [rdi]
+  ! movaps xmm1, [rsi]
+  ! movaps xmm2, [rax]
+  ! addps xmm0, xmm1
+  ! subps xmm0, xmm2
+  ! movaps [rdi], xmm0
+EndProcedure
+
 Macro M_Vector3_AddInPlace(a, b)
   EnableASM
   MOV rsi, b
@@ -117,11 +144,22 @@ Macro M_Vector3_AddInPlace(a, b)
   ! movaps xmm0, [rdi]
   ! movaps xmm1, [rsi]
   ! addps xmm0, xmm1
-  ! movups [rdi], xmm0
+  ! movaps [rdi], xmm0
 EndMacro
 
-Procedure Vector3_AddInPlace_Array(*src, *dst, count.l)
-!     mov     ecx,    [p.v_count]       ; # of float Data
+Macro M_Vector3_SubInPlace(a, b)
+  EnableASM
+  MOV rsi, b
+  MOV rdi, a
+  DisableASM
+  ! movaps xmm0, [rdi]
+  ! movaps xmm1, [rsi]
+  ! subps xmm0, xmm1
+  ! movaps [rdi], xmm0
+EndMacro
+
+Procedure Vector3_AddInPlace_Array(*src, *dst, count.i)
+!     mov     rcx,    [p.v_count]       ; # of float Data
 !     mov     rdi,    [p.p_dst]         ; dst pointer
 !     mov     rsi,    [p.p_src]         ; src pointer
 
@@ -134,8 +172,26 @@ Procedure Vector3_AddInPlace_Array(*src, *dst, count.l)
 !     add     rsi,    16                ; offset src pointer
 !     add     rdi,    16                ; offset dst pointer
 
-!     dec     ecx                       ; next
+!     dec     rcx                       ; next
 !     jnz     loop_vec3_addinplace_array
+EndProcedure
+
+Procedure Vector3_SubInPlace_Array(*src, *dst, count.i)
+!     mov     rcx,    [p.v_count]       ; # of float Data
+!     mov     rdi,    [p.p_dst]         ; dst pointer
+!     mov     rsi,    [p.p_src]         ; src pointer
+
+!loop_vec3_subinplace_array:
+!     movaps  xmm0,   [rdi]             ; get initial value
+!     movaps  xmm1,   [rsi]             ; get value to add
+!     subps   xmm0,   xmm1              ; 4 float packed substraction
+!     movaps  [rdi],  xmm0              ; put back to dst
+
+!     add     rsi,    16                ; offset src pointer
+!     add     rdi,    16                ; offset dst pointer
+
+!     dec     rcx                       ; next
+!     jnz     loop_vec3_subinplace_array
 EndProcedure
 
 
@@ -259,7 +315,7 @@ Debug "Z: "+StrF( value )
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 57
+; CursorPosition = 99
+; FirstLine = 84
 ; Folding = ---
 ; EnableXP

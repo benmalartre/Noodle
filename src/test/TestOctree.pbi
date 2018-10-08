@@ -31,10 +31,12 @@ Procedure PolygonSoup()
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
+  Define *m.m4f32
   For i=0 To numTopos-1
     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
-    Matrix4::SetIdentity(CArray::GetValue(*matrices, i))
-    Matrix4::SetTranslation(CArray::GetValue(*matrices, i),   @p)
+    *m = CArray::GetPtr(*matrices, i)
+    Matrix4::SetIdentity(*m)
+    Matrix4::SetTranslation(*m,   p)
   Next
   
   Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
@@ -139,8 +141,8 @@ Define polygonSoupT.d = Time::Get() - T
 Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 
 Define.v3f32 bmin, bmax
-Vector3::Sub(@bmin, *geom\bbox\origin, *geom\bbox\extend)
-Vector3::Add(@bmax, *geom\bbox\origin, *geom\bbox\extend)
+Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
+Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
 
 
 *octree = Octree::New(@bmin.v3f32, @bmax.v3f32, 0)
@@ -170,7 +172,7 @@ Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
 viewportUI::AddLayer(*viewport, *layer)
 Global *root.Model::Model_t = Model::New("Model")
-; Object3D::AddChild(*root, *mesh)
+Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 
 Scene::AddModel(Scene::*current_scene, *root)
@@ -232,8 +234,8 @@ Octree::Delete(*octree)
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 112
+; CursorPosition = 174
+; FirstLine = 154
 ; Folding = -
 ; EnableThread
 ; EnableXP
