@@ -1,11 +1,15 @@
-﻿
+﻿Macro Align16(_mem)
+ ((_mem) + (64- (_mem)%64))
+EndMacro
 
-Structure Vector3f Align 4
+Structure Vector3
   x.f
   y.f
   z.f 
   w.f
 EndStructure
+
+
 
 Procedure.f Float_Add(a.f, b.f)
   Define v.f
@@ -35,7 +39,7 @@ Procedure move_four_float(*src, *dst, count.i)
 
   EndProcedure
   
- Procedure Vector3_Access(*a.Vector3f, offset.i, *value)
+ Procedure Vector3_Access(*a.Vector3, offset.i, *value)
    ! mov rcx, [p.v_offset]
    ! mov rsi, [p.p_a]
    ! add rsi, rcx
@@ -46,7 +50,7 @@ EndProcedure
  
   
 
-Procedure Vector3_Copy(*src.Vector3f, *dst.Vector3f)
+Procedure Vector3_Copy(*src.Vector3, *dst.Vector3)
    !mov     rdi,    [p.p_dst]         ; dst pointer
    !mov     rsi,    [p.p_src]         ; src pointer
    !movaps  xmm0,   [rsi]             ; get from src
@@ -55,7 +59,7 @@ Procedure Vector3_Copy(*src.Vector3f, *dst.Vector3f)
  
 
 
-Procedure.f Vector3_AccessX(*a.Vector3f)
+Procedure.f Vector3_AccessX(*a.Vector3)
   Define v.f
   ! mov rsi, [p.p_a]
   ! fld dword [rsi]
@@ -63,7 +67,7 @@ Procedure.f Vector3_AccessX(*a.Vector3f)
   ProcedureReturn v
 EndProcedure
 
-Procedure.f Vector3_AccessY(*a.Vector3f)
+Procedure.f Vector3_AccessY(*a.Vector3)
   Define v.f
   ! mov rsi, [p.p_a]
   ! add rsi, 4
@@ -72,7 +76,7 @@ Procedure.f Vector3_AccessY(*a.Vector3f)
   ProcedureReturn v
 EndProcedure
 
-Procedure.f Vector3_AccessZ(*a.Vector3f)
+Procedure.f Vector3_AccessZ(*a.Vector3)
   Define v.f
   ! mov rsi, [p.p_a]
   ! add rsi, 8
@@ -81,20 +85,19 @@ Procedure.f Vector3_AccessZ(*a.Vector3f)
   ProcedureReturn v
 EndProcedure
 
-Procedure Vector3_AddInPlace_PB(*a.Vector3f, *b.Vector3f)
+Procedure Vector3_AddInPlace_PB(*a.Vector3, *b.Vector3)
   *a\x + *b\x
   *a\y + *b\y
   *a\z + *b\z
 EndProcedure 
 
-Procedure Vector3_SubInPlace_PB(*a.Vector3f, *b.Vector3f)
+Procedure Vector3_SubInPlace_PB(*a.Vector3, *b.Vector3)
   *a\x - *b\x
   *a\y - *b\y
   *a\z - *b\z
 EndProcedure 
 
-
-Procedure Vector3_AddInPlace(*a.Vector3f, *b.Vector3f)
+Procedure Vector3_AddInPlace(*a.Vector3, *b.Vector3)
   ! mov rsi, [p.p_b]
   ! mov rdi, [p.p_a]
   ! movaps xmm0, [rdi]
@@ -103,7 +106,7 @@ Procedure Vector3_AddInPlace(*a.Vector3f, *b.Vector3f)
   ! movaps [rdi], xmm0
 EndProcedure
 
-Procedure Vector3_Add(*a.Vector3f, *b.Vector3f, *c.Vector3f)
+Procedure Vector3_Add(*a.Vector3, *b.Vector3, *c.Vector3)
   ! mov rsi, [p.p_a]
   ! mov rax, [p.p_b]
   ! mov rdi, [p.p_c]
@@ -115,7 +118,7 @@ Procedure Vector3_Add(*a.Vector3f, *b.Vector3f, *c.Vector3f)
   ! movaps [rdi], xmm0
 EndProcedure
 
-Procedure Vector3_SubInPlace(*a.Vector3f, *b.Vector3f)
+Procedure Vector3_SubInPlace(*a.Vector3, *b.Vector3)
   ! mov rsi, [p.p_b]
   ! mov rdi, [p.p_a]
   ! movaps xmm0, [rdi]
@@ -124,7 +127,7 @@ Procedure Vector3_SubInPlace(*a.Vector3f, *b.Vector3f)
   ! movaps [rdi], xmm0
 EndProcedure
 
-Procedure Vector3_Sub(*a.Vector3f, *b.Vector3f, *c.Vector3f)
+Procedure Vector3_Sub(*a.Vector3, *b.Vector3, *c.Vector3)
   ! mov rsi, [p.p_a]
   ! mov rax, [p.p_b]
   ! mov rdi, [p.p_c]
@@ -195,9 +198,9 @@ Procedure Vector3_SubInPlace_Array(*src, *dst, count.i)
 EndProcedure
 
 
-Define a.Vector3f
-Define b.Vector3f
-Define c.Vector3f
+Define a.Vector3
+Define b.Vector3
+Define c.Vector3
 
 ; a\x = 1.111
 ; a\y = 1.222
@@ -239,14 +242,14 @@ Define c.Vector3f
 ; Debug "AY : "+StrF(b\y)
 ; Debug "AZ : "+StrF(b\z)
 
-Define count.l = 20000000
+Define count.i = 12000000
 Define T.q = ElapsedMilliseconds()
-Define *src = AllocateMemory(count * SizeOf(Vector3f))
-Define *dst = AllocateMemory(count * SizeOf(Vector3f))
-Define *v.Vector3f
+Define *src = AllocateMemory(count * SizeOf(Vector3))
+Define *dst = AllocateMemory(count * SizeOf(Vector3))
+Define *v.Vector3
 
 For i=0 To count-1
-  *v = *src + i*SizeOf(Vector3f)
+  *v = *src + i*SizeOf(Vector3)
   *v\x =  Random(65565)/65565
   *v\y =  Random(65565)/65565
   *v\z =  Random(65565)/65565
@@ -268,7 +271,9 @@ T = ElapsedMilliseconds()
 ; Next
 
 Define offset.i
-Define sv = SizeOf(Vector3f)
+Define sv = SizeOf(Vector3)
+Define *d.Vector3
+Define *s.Vector3
 
 For i=0 To count-1
   offset = i * sv
@@ -279,25 +284,28 @@ Define E2.f = (ElapsedMilliseconds() - T) *0.001
 T = ElapsedMilliseconds()
 For i=0 To count-1
   offset = i * sv
-  Vector3_AddInPlace(*dst + offset, *src + offset)
+  *d = Align16(*dst + offset)
+  *s = Align16(*src + offset)
+  Vector3_AddInPlace(*d, *s)
 Next
 Define E3.f = (ElapsedMilliseconds() - T)*0.001
 
 
 T = ElapsedMilliseconds()
 Define offset.i
-Define *A.Vector3f, *B.Vector3f
 For i=0 To count-1
   offset = i * sv
-  *A = *dst + offset
-  *B = *src + offset
-  M_Vector3_AddInPlace(*A, *B)
+  *d = Align16(*dst + offset)
+  *s = Align16(*src + offset)
+  M_Vector3_AddInPlace(*d, *s)
 Next
 Define E4.f = (ElapsedMilliseconds() - T) *0.001
 
 
 T = ElapsedMilliseconds()
-Vector3_AddInPlace_Array(*src, *dst, count)
+*d = Align16(*dst)
+*s = Align16(*src)
+Vector3_AddInPlace_Array(*d, *s, count)
 Define E5.f = (ElapsedMilliseconds() - T) *0.001
 
 
@@ -313,9 +321,8 @@ Debug "Y: "+StrF( value )
 Vector3_Access(@a, 2, @value)
 Debug "Z: "+StrF( value )
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 84
-; Folding = ---
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 244
+; FirstLine = 236
+; Folding = ----
 ; EnableXP
