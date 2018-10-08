@@ -39,25 +39,24 @@ Procedure move_four_float(*src, *dst, count.i)
 
   EndProcedure
   
- Procedure Vector3_Access(*a.Vector3, offset.i, *value)
-   ! mov rcx, [p.v_offset]
-   ! mov rsi, [p.p_a]
+Macro Vector3_Access(_a, _offset, _value)
+  EnableASM
+  MOV rcx, _offset
+  MOV rsi, _a
+  MOV rdi, _value
+  DisableASM
    ! add rsi, rcx
    ! fld dword [rsi]
-   ! mov rdi, [p.p_value]
    ! fst dword [rdi]
-EndProcedure
+ EndMacro
  
-  
-
-Procedure Vector3_Copy(*src.Vector3, *dst.Vector3)
-   !mov     rdi,    [p.p_dst]         ; dst pointer
-   !mov     rsi,    [p.p_src]         ; src pointer
-   !movaps  xmm0,   [rsi]             ; get from src
-   !movaps  [rdi],  xmm0              ; put To dst
- EndProcedure
- 
-
+Macro Vector3_Copy(_src, _dst)
+  EnableASM
+   MOV     rdi,    _dst         ; dst pointer
+   MOV     rsi,    _src         ; src pointer
+   !movaps  xmm0,   [rsi]       ; get from src
+   !movaps  [rdi],  xmm0        ; put To dst
+ EndMacro
 
 Procedure.f Vector3_AccessX(*a.Vector3)
   Define v.f
@@ -85,64 +84,32 @@ Procedure.f Vector3_AccessZ(*a.Vector3)
   ProcedureReturn v
 EndProcedure
 
-Procedure Vector3_AddInPlace_PB(*a.Vector3, *b.Vector3)
-  *a\x + *b\x
-  *a\y + *b\y
-  *a\z + *b\z
-EndProcedure 
+Macro Vector3_AddInPlace_PB(_a, _b)
+  _a\x + _b\x
+  _a\y + _b\y
+  _a\z + _b\z
+EndMacro 
+; Procedure Vector3_AddInPlace_PB(*a.Vector3, *b.Vector3)
+;   *a\x + *b\x
+;   *a\y + *b\y
+;   *a\z + *b\z
+; EndProcedure
 
-Procedure Vector3_SubInPlace_PB(*a.Vector3, *b.Vector3)
-  *a\x - *b\x
-  *a\y - *b\y
-  *a\z - *b\z
-EndProcedure 
+Macro Vector3_SubInPlace_PB(_a, _b)
+  _a\x - _b\x
+  _a\y - _b\y
+  _a\z - _b\z
+EndMacro 
+; Procedure Vector3_SubInPlace_PB(*a.Vector3, *b.Vector3)
+;   *a\x - *b\x
+;   *a\y - *b\y
+;   *a\z - *b\z
+; EndProcedure
 
-Procedure Vector3_AddInPlace(*a.Vector3, *b.Vector3)
-  ! mov rsi, [p.p_b]
-  ! mov rdi, [p.p_a]
-  ! movaps xmm0, [rdi]
-  ! movaps xmm1, [rsi]
-  ! addps xmm0, xmm1
-  ! movaps [rdi], xmm0
-EndProcedure
-
-Procedure Vector3_Add(*a.Vector3, *b.Vector3, *c.Vector3)
-  ! mov rsi, [p.p_a]
-  ! mov rax, [p.p_b]
-  ! mov rdi, [p.p_c]
-  ! movaps xmm0, [rdi]
-  ! movaps xmm1, [rsi]
-  ! movaps xmm2, [rax]
-  ! addps xmm0, xmm1
-  ! addps xmm0, xmm2
-  ! movaps [rdi], xmm0
-EndProcedure
-
-Procedure Vector3_SubInPlace(*a.Vector3, *b.Vector3)
-  ! mov rsi, [p.p_b]
-  ! mov rdi, [p.p_a]
-  ! movaps xmm0, [rdi]
-  ! movaps xmm1, [rsi]
-  ! subps xmm0, xmm1
-  ! movaps [rdi], xmm0
-EndProcedure
-
-Procedure Vector3_Sub(*a.Vector3, *b.Vector3, *c.Vector3)
-  ! mov rsi, [p.p_a]
-  ! mov rax, [p.p_b]
-  ! mov rdi, [p.p_c]
-  ! movaps xmm0, [rdi]
-  ! movaps xmm1, [rsi]
-  ! movaps xmm2, [rax]
-  ! addps xmm0, xmm1
-  ! subps xmm0, xmm2
-  ! movaps [rdi], xmm0
-EndProcedure
-
-Macro M_Vector3_AddInPlace(a, b)
+Macro Vector3_AddInPlace(_a, _b)
   EnableASM
-  MOV rsi, b
-  MOV rdi, a
+  MOV rsi, _b
+  MOV rdi, _a
   DisableASM
   ! movaps xmm0, [rdi]
   ! movaps xmm1, [rsi]
@@ -150,14 +117,42 @@ Macro M_Vector3_AddInPlace(a, b)
   ! movaps [rdi], xmm0
 EndMacro
 
-Macro M_Vector3_SubInPlace(a, b)
+Macro Vector3_Add(_a, _b, _c)
   EnableASM
-  MOV rsi, b
-  MOV rdi, a
+  MOV rsi, _a
+  MOV rax, _b
+  MOV rdi, _c
+  DisableASM
+  ! movaps xmm0, [rdi]
+  ! movaps xmm1, [rsi]
+  ! movaps xmm2, [rax]
+  ! addps xmm0, xmm1
+  ! addps xmm0, xmm2
+  ! movaps [rdi], xmm0
+EndMacro
+
+Macro Vector3_SubInPlace(_a, _b)
+  EnableASM
+  MOV rsi, _b
+  MOV rdi, _a
   DisableASM
   ! movaps xmm0, [rdi]
   ! movaps xmm1, [rsi]
   ! subps xmm0, xmm1
+  ! movaps [rdi], xmm0
+EndMacro
+
+Macro Vector3_Sub(_a, _b, _c)
+  EnableASM
+  MOV rsi, _a
+  MOV rax, _b
+  MOV rdi, _c
+  DisableASM
+  ! movaps xmm0, [rdi]
+  ! movaps xmm1, [rsi]
+  ! movaps xmm2, [rax]
+  ! addps xmm0, xmm1
+  ! subps xmm0, xmm2
   ! movaps [rdi], xmm0
 EndMacro
 
@@ -277,7 +272,9 @@ Define *s.Vector3
 
 For i=0 To count-1
   offset = i * sv
-  Vector3_AddInPlace_PB(*dst + offset, *src + offset)
+  *d = Align16(*dst + offset)
+  *s = Align16(*src + offset)
+  Vector3_SubInPlace_PB(*d, *s)
 Next
 Define E2.f = (ElapsedMilliseconds() - T) *0.001
 
@@ -286,43 +283,40 @@ For i=0 To count-1
   offset = i * sv
   *d = Align16(*dst + offset)
   *s = Align16(*src + offset)
-  Vector3_AddInPlace(*d, *s)
+  Vector3_SubInPlace(*d, *s)
 Next
 Define E3.f = (ElapsedMilliseconds() - T)*0.001
 
 
 T = ElapsedMilliseconds()
-Define offset.i
-For i=0 To count-1
-  offset = i * sv
-  *d = Align16(*dst + offset)
-  *s = Align16(*src + offset)
-  M_Vector3_AddInPlace(*d, *s)
-Next
+
 Define E4.f = (ElapsedMilliseconds() - T) *0.001
 
 
 T = ElapsedMilliseconds()
 *d = Align16(*dst)
 *s = Align16(*src)
-Vector3_AddInPlace_Array(*d, *s, count)
+Vector3_SubInPlace_Array(*d, *s, count)
 Define E5.f = (ElapsedMilliseconds() - T) *0.001
 
 
 
-MessageRequester("ASM"," Init : "+StrF(E1)+Chr(10)+" PB : "+StrF(E2)+Chr(10)+" ASM : "+StrF(E3)+Chr(10)+" ASM MACRO : "+StrF(E4)+Chr(10)+" ASM LOOP : "+StrF(E5))
+MessageRequester("ASM"," Init : "+StrF(E1)+Chr(10)+
+                       " PB : "+StrF(E2)+Chr(10)+
+                       " ASM : "+StrF(E3)+Chr(10)+
+                       " ASM LOOP : "+StrF(E5))
 ; ; Debug StrF(Float_Add(1.111, 3.222))
 
-Define value.f
-Vector3_Access(@a, 0, @value)
-Debug "X: "+StrF( value )
-Vector3_Access(@a, 1, @value)
-Debug "Y: "+StrF( value )
-Vector3_Access(@a, 2, @value)
-Debug "Z: "+StrF( value )
+; Define value.f
+; Vector3_Access(a, 0, value)
+; Debug "X: "+StrF( value )
+; Vector3_Access(a, 1, value)
+; Debug "Y: "+StrF( value )
+; Vector3_Access(a, 2, value)
+; Debug "Z: "+StrF( value )
 
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 244
-; FirstLine = 236
-; Folding = ----
+; CursorPosition = 305
+; FirstLine = 280
+; Folding = ---
 ; EnableXP

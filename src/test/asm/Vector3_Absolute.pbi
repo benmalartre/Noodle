@@ -3,7 +3,7 @@
 EndStructure
 
 Macro Align16(_mem)
-  (_mem + 64-(_mem)%64)
+  ((_mem) + 64-(_mem)%64)
 EndMacro
 
 
@@ -22,7 +22,7 @@ Macro Vector3_Absolute_SIMD(_v)
   
   EnableASM
   MOV rdi, _v                           ; vector3 to data register
-  MOV rax, l___ieee754_128_sign_mask__  ; move sign mask to rsi register
+  MOV rax, qword l___ieee754_128_sign_mask__  ; move sign mask to rsi register
   DisableASM
   ! movdqa  xmm1, [rax]                 ; bitmask removing sign        
   ! movaps xmm0, [rdi]                  ; data register to sse register
@@ -35,7 +35,7 @@ Macro Vector3_Absolute_SIMD_Array(_v, _nb)
   EnableASM
   MOV rdi, _v                           ; vector3 array to data register
   MOV rcx, _nb                          ; num vector to count register
-  MOV rax, l___ieee754_128_sign_mask__  ; move sign mask to rsi register
+  MOV rax, qword l___ieee754_128_sign_mask__  ; move sign mask to rsi register
   DisableASM
   ! movdqa  xmm1, [rax]  
   ! vector3_normalize_simd_array_loop:
@@ -111,15 +111,17 @@ Else
   Define T1.q = ElapsedMilliseconds() - startT
   
   startT.q = ElapsedMilliseconds()
+  Define *aligned 
   For i=0 To nb -1
     *v1 = *v2A + i * SizeOf(Vector3)
-    Vector3_Absolute_SIMD(*v1)
+    *aligned = Align16(*v1)
+    Vector3_Absolute_SIMD(*aligned)
   Next
   Define T2.q = ElapsedMilliseconds() - startT
   
   startT.q = ElapsedMilliseconds()
   Define *aligned = Align16(*v3A)
-  Vector3_Absolute_SIMD_Array(*v3A, nb)
+  Vector3_Absolute_SIMD_Array(*aligned, nb)
   Define T3.q = ElapsedMilliseconds() - startT
   
   MessageRequester("COMPARE", "NUM TRIANGLES : "+Str(nb)+Chr(10)+
@@ -132,9 +134,8 @@ Else
 ;                               ArrayString(*v2A, nb)+Chr(10)+"###############"+Chr(10)+
 ;                               ArrayString(*v3A, nb)+Chr(10))
   EndIf
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 82
 ; FirstLine = 81
 ; Folding = --
 ; EnableXP
