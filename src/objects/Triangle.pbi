@@ -7,26 +7,18 @@ XIncludeFile "Geometry.pbi"
 DeclareModule Triangle
   UseModule Math
   UseModule Geometry
+  
+  DataSection
+    __128_sign_mask__:
+    Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
+  EndDataSection
+
   Macro FINDMINMAX(x0,x1,x2,min,max)
     min = x0
     max = x0
     If(x1<min) : min=x1 : ElseIf(x1>max) : max=x1 : EndIf
     If(x2<min) : min=x2 : ElseIf(x2>max) : max=x2 : EndIf
   EndMacro 
-  
-  ; ======================== X-tests ========================
-  Macro AXISTEST_X01X(_a, _b, _fa, _fb)
-    _p0 = _a * _v0\y - _b * _v0\z
-    _p2 = _a * _v2\y - _b * _v2\z
-    If _p0<_p2 : _min=_p0 : _max=_p2
-    Else : _min=_p2 : _max=_p0
-    EndIf
-    
-    _rad = fa * halfsize\y + _fb * halfsize\z
-    If _min>_rad Or _max<-_rad 
-      _touch = #False
-      EndIf
-  EndMacro
 
   ; ======================== X-tests ========================
   Macro AXISTEST_X01(a, b, fa, fb)
@@ -271,41 +263,37 @@ EndProcedure
     Vector3::Sub(v0, *a, *center)
     Vector3::Sub(v1, *b, *center)
     Vector3::Sub(v2, *c, *center)
-    
-    Vector3::SetFromOther(*a, v0)
-    Vector3::SetFromOther(*b, v1)
-    Vector3::SetFromOther(*c, v2)
  
-;     ; compute triangle edges
-;     Define.v3f32 e0
-;     Vector3::Sub(e0, v1, v0)
-;    
-;     ;  test the 9 tests first (this was faster) 
-;     fex = Abs(e0\x)
-;     fey = Abs(e0\y)
-;     fez = Abs(e0\z)
-;     
+    ; compute triangle edges
+    Define.v3f32 e0
+    Vector3::Sub(e0, v1, v0)
+   
+    ;  test the 9 tests first (this was faster) 
+    fex = Abs(e0\x)
+    fey = Abs(e0\y)
+    fez = Abs(e0\z)
+    
 ;     AXISTEST_X01(e0\z, e0\y, fez, fey)
 ;     AXISTEST_Y02(e0\z, e0\x, fez, fex)
 ;     AXISTEST_Z12(e0\y, e0\x, fey, fex)
 ;     
-;     Define.v3f32 e1
-;     Vector3::Sub(e1, v2, v1)
-;     
-;     fex = Abs(e1\x)
-;     fey = Abs(e1\y)
-;     fez = Abs(e1\z)
+    Define.v3f32 e1
+    Vector3::Sub(e1, v2, v1)
+    
+    fex = Abs(e1\x)
+    fey = Abs(e1\y)
+    fez = Abs(e1\z)
 ;     
 ;     AXISTEST_X01(e1\z, e1\y, fez, fey)
 ;     AXISTEST_Y02(e1\z, e1\x, fez, fex)
 ;     AXISTEST_Z0(e1\y, e1\x, fey, fex)
 ;     
-;     Define.v3f32 e2
-;     Vector3::Sub(e2, v0, v2)
-;     
-;     fex = Abs(e2\x)
-;     fey = Abs(e2\y)
-;     fez = Abs(e2\z)
+    Define.v3f32 e2
+    Vector3::Sub(e2, v0, v2)
+    
+    fex = Abs(e2\x)
+    fey = Abs(e2\y)
+    fez = Abs(e2\z)
 ;     
 ;     AXISTEST_X2(e2\z, e2\y, fez, fey)
 ;     AXISTEST_Y1(e2\z, e2\x, fez, fex)
@@ -348,6 +336,8 @@ EndProcedure
         
   EndProcedure
   
+  
+  
   ;rax, rcx, rdx, r8, r9, xmm0, xmm1, xmm2 and xmm3. All others must be always preserved.
   Procedure TouchArray(*positions, *indices, numTris.i, *center.v3f32, *boxhalfsize.v3f32, *hits)
     Protected normal.v3f32, a.v3f32, b.v3f32, c.v3f32,e0.v3f32, e1.v3f32
@@ -358,9 +348,13 @@ EndProcedure
     ! movups xmm7, [rax]            ; move rax to xmm7
     ! mov rax, [p.p_boxhalfsize]    ; move boxhalfsize to rax
     ! movups xmm8, [rax]            ; move rax to xmm8
+    ;     ! mov r8, [p.p_indices]
+    EnableASM
+      MOV rax, qword triangle.l___128_sign_mask__  ; move sign mask to rsi register
+    DisableASM
+    ! movdqu  xmm12, [rax]
     ! mov rax, 0
-;     ! mov r8, [p.p_indices]
-
+    
     !toucharray_loop:
     !   movups xmm9, [rsi+rax]      ; move point a to xmm9
     !   movups xmm10, [rsi+rax+4]   ; move point b to xmm10
@@ -369,9 +363,69 @@ EndProcedure
     !   subps xmm10, xmm7           ; b - center
     !   subps xmm11, xmm7           ; c - center
     
-    !   movups [rsi+rax], xmm9      ; test move back a to memory
-    !   movups [rsi+rax+4], xmm10   ; test move back b to memory
-    !   movups [rsi+rax+8], xmm11   ; test move back c to memory
+;     !   movups [rsi+rax], xmm9      ; test move back a to memory
+;     !   movups [rsi+rax+4], xmm10   ; test move back b to memory
+;     !   movups [rsi+rax+8], xmm11   ; test move back c to memory
+    
+    ; compute triangle edges
+    !  movaps xmm2, xmm9              ; move p0 to xmm2
+    !  movaps xmm1, xmm10             ; move p1 to xmm1
+    !  subps xmm1, xmm2               ; v1 - v0 = e0
+    
+    !  movaps xmm0, xmm1              ; copy e0 in xmm0
+    !  andps xmm0, xmm12              ; bitmask removing sign    
+;     !  movups [rsi+rax], xmm0         ; test move back a to memory
+    
+    !  movaps xmm3, xmm10             ; move p1 to xmm3
+    !  movaps xmm2, xmm11             ; move p2 to xmm2
+    !  subps xmm2, xmm3               ; v2 - v1 = e1
+    
+    !  movaps xmm1, xmm2              ; copy e1 in xmm1
+    !  andps xmm1, xmm12              ; bitmask removing sign
+;     !  movups [rsi+rax+4], xmm1       ; test move back b to memory
+    
+    !  movaps xmm4, xmm11             ; move p2 to xmm4
+    !  movaps xmm3, xmm9              ; move p0 to xmm3
+    !  subps xmm3, xmm4               ; v0 - v2 = e2
+    
+    !  movaps xmm2, xmm3              ; copy e2 in xmm2
+    !  andps xmm2, xmm12              ; bitmask removing sign
+;     !  movups [rsi+rax+8], xmm2       ; test move back c to memory
+
+    
+;     AXISTEST_X01(e0\z, e0\y, fez, fey)
+;     Macro AXISTEST_X01(a, b, fa, fb)
+;     p0 = a * v0\y - b * v0\z
+;     p2 = a * v2\y - b * v2\z
+;     If p0<p2 : min=p0 : max=p2
+;     Else : min=p2 : max=p0
+;     EndIf
+;     
+;     rad = fa * *boxhalfsize\y + fb * *boxhalfsize\z
+;     If min>rad Or max<-rad : ProcedureReturn #False : EndIf
+;   EndMacro
+;     AXISTEST_Y02(e0\z, e0\x, fez, fex)
+;     Macro AXISTEST_Y02(a, b, fa, fb)
+;     p0 = -a * v0\x + b * v0\z
+;     p2 = -a * v2\x + b * v2\z
+;     If p0<p2 : min=p0 : max=p2
+;     Else : min=p2 : max=p0
+;     EndIf
+;     
+;     rad = fa * *boxhalfsize\x + fb * *boxhalfsize\z
+;     If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
+;   EndMacro
+;     AXISTEST_Z12(e0\y, e0\x, fey, fex)
+;     Macro AXISTEST_Z12(a, b, fa, fb)
+;     p1 = a * v1\x - b * v1\y
+;     p2 = a * v2\x - b * v2\y
+;     If p2<p1 : min=p2 : max=p1
+;     Else : min=p1 : max=p2
+;     EndIf
+;     
+;     rad = fa * *boxhalfsize\x + fb * *boxhalfsize\y
+;     If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
+;   EndMacro
     !   add rax, 12                 ; incr point offset
 ;     !   add r8, 12                  ; incr indices offset
     !   mov dword [rdi], 1          ; set hits 
@@ -428,9 +482,8 @@ EndProcedure
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 359
-; FirstLine = 336
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 395
+; FirstLine = 394
 ; Folding = ---
 ; EnableXP

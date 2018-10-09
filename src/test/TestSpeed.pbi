@@ -1,7 +1,7 @@
-﻿XIncludeFile "E:\Projects\RnD\Noodle\src\core\Time.pbi"
-XIncludeFile "E:\Projects\RnD\Noodle\src\core\Math.pbi"
-XIncludeFile "E:\Projects\RnD\Noodle\src\objects\Geometry.pbi"
-XIncludeFile "E:\Projects\RnD\Noodle\src\objects\Triangle.pbi"
+﻿XIncludeFile "../core/Time.pbi"
+XIncludeFile "../core/Math.pbi"
+XIncludeFile "../objects/Geometry.pbi"
+XIncludeFile "../objects/Triangle.pbi"
 Structure Vector3
   x.f
   y.f
@@ -167,7 +167,7 @@ For i=0 To numTris
   CopyMemory(*soup1 + (i*3) *SizeOf(Vector3), *soup2 + (i*3) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
   CopyMemory(*soup1 + (i*3+1) *SizeOf(Vector3), *soup2 + (i*3+1) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
   CopyMemory(*soup1 + (i*3+2) *SizeOf(Vector3), *soup2 + (i*3+2) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
-
+Next
 Define numIndices = (numTris * 3)
 Dim indices.l(numIndices)
 For i=0 To  numIndices - 1
@@ -227,9 +227,8 @@ MessageRequester("Octree",
                  "NUM HITS : " +Str(numHits) + Chr(10)+
                  "TOOK : " +StrD(elapsed)  +", "+StrD(elapsed2)+Chr(10)+
                  "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 77
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 169
+; FirstLine = 145
 ; Folding = -
 ; EnableXP
