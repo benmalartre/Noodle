@@ -513,19 +513,20 @@ Module NodePort
   ; Set Value
   ;-----------------------------------------------
   Procedure SetValue(*port.NodePort_t,*value)
+    Protected *array.CArray::CArrayT = *port\value
     Select *port\datatype
       Case Attribute::#ATTR_TYPE_REFERENCE
         MessageRequester("Port Type Reference!! ","OK")
       Case Attribute::#ATTR_TYPE_BOOL
-        CArray::SetValueB(*port\value,0,PeekB(*value))
+        CArray::SetValueB(*array,0,PeekB(*value))
       Case Attribute::#ATTR_TYPE_LONG
-        CArray::SetValueL(*port\value,0,PeekL(*value))
+        CArray::SetValueL(*array,0,PeekL(*value))
       Case Attribute::#ATTR_TYPE_INTEGER
-        CArray::SetValueI(*port\value,0,PeekI(*value))
+        CArray::SetValueI(*array,0,PeekI(*value))
       Case Attribute::#ATTR_TYPE_FLOAT
-        CArray::SetValueF(*port\value,0,PeekF(*value))
+        CArray::SetValueF(*array,0,PeekF(*value))
       Default
-        CArray::SetValuePtr(*port\value,0,*value)
+        CArray::SetValuePtr(*array,0,*value)
     EndSelect
     
     
@@ -707,7 +708,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 203
+; CursorPosition = 528
+; FirstLine = 509
 ; Folding = ----
 ; EnableXP

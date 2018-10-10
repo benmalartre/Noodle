@@ -197,7 +197,6 @@ DeclareModule Alembic
 	  #ABC_ArchiveType_Any = 127;/*! Don't know what archive type it is */
 	EndEnumeration
 	
-
   ;----------------------------------------
   ;Object Infos
   ;----------------------------------------
@@ -734,7 +733,6 @@ Module AlembicIObject
   ; Create Sample
   ;---------------------------------------------------------
   Procedure CreateSample(*o.AlembicIObject_t)
-  
     Select *o\iObj\GetType()
       Case Alembic::#ABC_OBJECT_XFORM
         *o\sample = AllocateMemory(SizeOf(Alembic::ABC_XForm_Sample))
@@ -929,11 +927,6 @@ Module AlembicIObject
     Protected mesh.Alembic::IPolymesh = *o\iObj
     mesh\GetTopoSampleDescription(frame,*infos)
     
-    Debug "Get Polymesh Sample At Frame"
-    Debug "Num Points : "+Str(*infos\nbpoints)
-    Debug "Num Faces : "+Str(*infos\nbfacecount)
-    Debug "Initialized : "+Str(*o\initialized)
-    
     If *infos\hasenvelope
       MessageRequester("[ALEMBIC]","Envelope Detected!!!")
     EndIf
@@ -975,6 +968,16 @@ Module AlembicIObject
       *mesh_sample\facecount = *geom\a_facecount\data
 
       mesh\UpdateTopoSample(*infos,*mesh_sample)
+      
+      CompilerIf Defined(USE_SSE, #PB_Constant)
+        CArray::ShiftAlign(*geom\a_positions\data, *geom\nbpoints, 12, 16)
+        CArray::ShiftAlign(*geom\a_pointnormals\data, *geom\nbpoints, 12, 16)
+        CArray::ShiftAlign(*geom\a_velocities\data, *geom\nbpoints, 12, 16)
+        CArray::ShiftAlign(*geom\a_normals\data, *geom\nbsamples, 12, 16)
+        CArray::ShiftAlign(*geom\a_tangents\data, *geom\nbsamples, 12, 16)
+        CArray::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
+      CompilerEndIf
+      
 
        PolymeshGeometry::RecomputeTriangles(*geom)
        
@@ -1344,7 +1347,6 @@ Module AlembicIObject
     *o\parent = *p
    Select *o\iObj\GetType()
      Case Alembic::#ABC_OBJECT_XFORM
-       Debug "----------------------> INIT XFORM "
        
 ;      Protected *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_XFORM)
 
@@ -1356,8 +1358,7 @@ Module AlembicIObject
       
     Case Alembic::#ABC_OBJECT_POLYMESH
       ; *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_POLYMESH)
-       Debug "----------------------> INIT POLYMESH "
-      CreateSample(*o)
+       CreateSample(*o)
       ;LogProperties(*o)
       Protected *meshinfos.Alembic::ABC_Polymesh_Topo_Sample_Infos = *o\infos
       Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_NONE)
@@ -1370,7 +1371,6 @@ Module AlembicIObject
       UpdateSample(*o,1)
 
       Object3D::Freeze(*mesh)
-      
   
       ;init transform
 ;       If *o\parent<>#Null
@@ -1391,7 +1391,6 @@ Module AlembicIObject
 ;       
    Case Alembic::#ABC_OBJECT_POINTS
 ;      Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_POINTCLOUD)
-    Debug "----------------------> INIT POINTS "
      CreateSample(*o)
      
      Protected *cloudinfos.Alembic::ABC_PointCloud_Sample_Infos = *o\infos
@@ -1443,7 +1442,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1316
-; FirstLine = 1280
+; CursorPosition = 967
+; FirstLine = 933
 ; Folding = --------
 ; EnableXP

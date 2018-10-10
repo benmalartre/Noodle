@@ -163,14 +163,14 @@ Module SubtractNode
               For i=0 To CArray::GetCount(*vOut)-1
                 *p2 = CArray::GetValue(*vOut,i)
                 Vector3::Sub(v,*p2,*p1)
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
               Next i
             Else
               For i=0 To CArray::GetCount(*vIn)-1
                 *p1 = CArray::GetValue(*vIn,i)
                 *p2 = CArray::GetValue(*vOut,i)
                 Vector3::Sub(v,*p2, *p1)
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
                 If i=CArray::GetCount(*vOut)-1 : Break : EndIf
                 
               Next i
@@ -226,8 +226,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 167
+; CursorPosition = 172
+; FirstLine = 161
 ; Folding = --
 ; EnableThread
 ; EnableXP

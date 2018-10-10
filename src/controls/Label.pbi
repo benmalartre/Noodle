@@ -1,5 +1,6 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
+XIncludeFile "../core/UIColor.pbi"
 
 ; ==============================================================================
 ;  CONTROL LABEL MODULE DECLARATION
@@ -361,7 +362,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 56
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP

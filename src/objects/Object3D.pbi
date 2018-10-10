@@ -167,7 +167,6 @@ Module Object3D
   Procedure Freeze(*obj.Object3D_t)
     If *obj\type = Object3D::#Object3D_Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
-      PolymeshGeometry::GetTopology(*geom)
       Topology::Copy(*geom\base,*geom\topo)
       Stack::Clear(*obj\stack)
     EndIf
@@ -525,7 +524,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 361
-; FirstLine = 336
+; CursorPosition = 175
+; FirstLine = 162
 ; Folding = ------
 ; EnableXP

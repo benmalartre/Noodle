@@ -73,13 +73,12 @@ Procedure RandomGround()
     *p = CArray::GetValue(*topo\vertices, i)
     *p\x * 10
     *p\z * 10
-    *p\y = (Sin(*p\x/100) *40 + (Random(100)*0.1 - 5)) 
+    *p\y = (Sin(*p\x/100) *40) ;+ (Random(100)*0.1 - 5)) 
   Next
   PolymeshGeometry::Set2(*geom, *topo)
   Object3D::Freeze(*ground)
   ProcedureReturn *ground
 EndProcedure
-
 
 ; Resize
 ;--------------------------------------------
@@ -149,7 +148,7 @@ Procedure Draw(*app.Application::Application_t)
 
   Global *root.Model::Model_t = Model::New("Model")
   
-  
+
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
@@ -191,17 +190,17 @@ Procedure Draw(*app.Application::Application_t)
   Define size.f
   For i=0 To CArray::GetCount(*samples)-1
     *loc = CArray::GetValuePtr(*samples,i)
-    *pos = Location::GetPosition(*loc)
-    *nrm = Location::GetNormal(*loc)
+    Location::GetPosition(*loc)
+    Location::GetNormal(*loc)
     size = Random(50)+32
-    Vector3::ScaleInPlace(*nrm, size/2)
-    Vector3::AddInPlace(*pos, *nrm)
+    Vector3::ScaleInPlace(*loc\n, size/2)
+    Vector3::AddInPlace(*loc\p, *loc\n)
     Matrix4::SetIdentity(m)
-    Matrix4::SetTranslation(m,*pos)
+    Matrix4::SetTranslation(m,*loc\p)
     
     Vector3::Set(scl, size, size, size)
     Matrix4::SetScale(m, scl)
-  CArray::Append(*matrices,@m)
+    CArray::Append(*matrices,m)
  Next
   
   Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
@@ -210,6 +209,7 @@ Procedure Draw(*app.Application::Application_t)
   PolymeshGeometry::Set2(*mgeom,*topo)
   PolymeshGeometry::RandomColorByPolygon(*mgeom)
   Object3D::Freeze(*merged)
+  
   Object3D::AddChild(*root,*merged)
   
   Object3D::AddChild(*root,*ground)
@@ -222,7 +222,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 202
-; FirstLine = 168
+; FirstLine = 163
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

@@ -1,4 +1,9 @@
-﻿DeclareModule Polygonizer
+﻿XIncludeFile "../core/Math.pbi"
+XIncludeFile "../core/Array.pbi"
+XIncludeFile "../objects/Geometry.pbi"
+XIncludeFile "../objects/PolymeshGeometry.pbi"
+
+DeclareModule Polygonizer
   Structure Point_t
     p.f[3]
     d.f
@@ -18,7 +23,6 @@
     Array points.Point_t(0)
     Array cells.Cell_t(0)
   EndStructure
-  
   
   DataSection
     EDGE_TABLE:
@@ -314,6 +318,14 @@
       Data.i -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 
     EndDataSection
+
+  Macro EdgeTable(_index)
+    PeekI(?EDGE_TABLE + (_index) * SizeOf(_index))
+  EndMacro
+  
+  Macro TriTable(_cubeindex, _index)
+    PeekI(?TRI_TABLE + ((_cubeindex) << 4 + (_index)) << 3)
+  EndMacro
     
   Declare CreateGrid(*box.Geometry::Box_t, cellSize.f)
   Declare PolygonizeCell(*grid.Cell_t, isolevel.f, *triangles)
@@ -325,19 +337,12 @@
 EndDeclareModule
 
 Module Polygonizer
-  Procedure EdgeTable(index.i)
-    ProcedureReturn PeekI(?EDGE_TABLE + index * SizeOf(index)) 
-  EndProcedure
-  
-  Procedure TriTable(cubeindex.i, index.i)
-    ProcedureReturn PeekI(?TRI_TABLE + (cubeindex * 16 + index) * SizeOf(index))
-  EndProcedure
   
   Procedure CreateGrid(*box.Geometry::Box_t, cellSize.f)
     Protected *grid.Grid_t = AllocateMemory(SizeOf(Grid_t))
     InitializeStructure(*grid, Grid_t)
     Protected size.Math::v3f32
-    Vector3::Scale(@size, *box\extend, 2.0)
+    Vector3::Scale(size, *box\extend, 2.0)
     
     *grid\resolution[0] = Math::Max(1, Math::Min(size\x / cellSize, 128))
     *grid\resolution[1] = Math::Max(1, Math::Min(size\y / cellSize, 128))
@@ -366,39 +371,38 @@ Module Polygonizer
           *p\p[0] = *box\origin\x - *box\extend\x  + x * cs\x
           *p\p[1] = *box\origin\y - *box\extend\y  + y * cs\y
           *p\p[2] = *box\origin\z - *box\extend\z  + z * cs\z
-          *p\d = *p\p[1]  + Sin(*p\p[0] * 3)*0.4 * Cos(*p\p[2]*3) * 0.75
+          *p\d = *p\p[1]  ;+ Sin(*p\p[0] * 3)*0.4 * Cos(*p\p[2]*3) * 0.75
         Next
       Next
     Next
     
     ; setup cells
     Protected *c.Cell_t
-    
-    
+
     For z = 0 To *grid\resolution[2] -1
       For y = 0 To *grid\resolution[1] -1
         For x = 0 To *grid\resolution[0] -1
           *c = *grid\cells(z * slice + y * line+ x)
           
-          *c\p[0] = @*grid\points(z     * slice_ext + y     * line_ext + x     )
-          *c\p[1] = @*grid\points(z     * slice_ext + y     * line_ext + x + 1 )
-          *c\p[2] = @*grid\points((z+1) * slice_ext + y     * line_ext + x + 1 )
-          *c\p[3] = @*grid\points((z+1) * slice_ext + y     * line_ext + x     ) 
-          *c\p[4] = @*grid\points(z     * slice_ext + (y+1) * line_ext + x     )
-          *c\p[5] = @*grid\points(z     * slice_ext + (y+1) * line_ext + x + 1 )
-          *c\p[6] = @*grid\points((z+1) * slice_ext + (y+1) * line_ext + x + 1 )
-          *c\p[7] = @*grid\points((z+1) * slice_ext + (y+1) * line_ext + x     )   
-          Debug "CELL ID "+Str(z * slice + y * line+ x)
-          Protected s.s
-          s = Str(z     * slice_ext + y     * line_ext + x     )+", "
-          s + Str(z     * slice_ext + y     * line_ext + x + 1 )+", "
-          s + Str((z+1) * slice_ext + y     * line_ext + x + 1 )+", "
-          s + Str((z+1) * slice_ext + y     * line_ext + x     )+", "
-          s + Str(z     * slice_ext + (y+1) * line_ext + x     )+", "
-          s + Str(z     * slice_ext + (y+1) * line_ext + x + 1 )+", "
-          s + Str((z+1) * slice_ext + (y+1) * line_ext + x + 1 )+", "
-          s + Str((z+1) * slice_ext + (y+1) * line_ext + x     ) 
-          Debug s
+          *c\p[0] = *grid\points(z     * slice_ext + y     * line_ext + x     )
+          *c\p[1] = *grid\points(z     * slice_ext + y     * line_ext + x + 1 )
+          *c\p[2] = *grid\points((z+1) * slice_ext + y     * line_ext + x + 1 )
+          *c\p[3] = *grid\points((z+1) * slice_ext + y     * line_ext + x     ) 
+          *c\p[4] = *grid\points(z     * slice_ext + (y+1) * line_ext + x     )
+          *c\p[5] = *grid\points(z     * slice_ext + (y+1) * line_ext + x + 1 )
+          *c\p[6] = *grid\points((z+1) * slice_ext + (y+1) * line_ext + x + 1 )
+          *c\p[7] = *grid\points((z+1) * slice_ext + (y+1) * line_ext + x     )   
+;           Debug "CELL ID "+Str(z * slice + y * line+ x)
+;           Protected s.s
+;           s = Str(z     * slice_ext + y     * line_ext + x     )+", "
+;           s + Str(z     * slice_ext + y     * line_ext + x + 1 )+", "
+;           s + Str((z+1) * slice_ext + y     * line_ext + x + 1 )+", "
+;           s + Str((z+1) * slice_ext + y     * line_ext + x     )+", "
+;           s + Str(z     * slice_ext + (y+1) * line_ext + x     )+", "
+;           s + Str(z     * slice_ext + (y+1) * line_ext + x + 1 )+", "
+;           s + Str((z+1) * slice_ext + (y+1) * line_ext + x + 1 )+", "
+;           s + Str((z+1) * slice_ext + (y+1) * line_ext + x     ) 
+;           Debug s
         Next
       Next
     Next
@@ -712,7 +716,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 368
-; FirstLine = 361
+; CursorPosition = 373
+; FirstLine = 336
 ; Folding = --
 ; EnableXP

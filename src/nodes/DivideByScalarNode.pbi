@@ -157,7 +157,7 @@ Module DivideByScalarNode
             For i=0 To CArray::GetCount(*vIn)-1
               *v = CArray::GetValue(*vIn,i)
               Vector3::Scale(v,*v,1/scalar)
-              CArray::SetValue(*vOut,i,@v)
+              CArray::SetValue(*vOut,i,v)
             Next i
           EndIf
         Else
@@ -170,7 +170,7 @@ Module DivideByScalarNode
                 Vector3::Scale(v,*v,1/scalar)
               EndIf
               
-              CArray::SetValue(*vOut,i,@v)
+              CArray::SetValue(*vOut,i,v)
             Next i
           EndIf
         EndIf
@@ -224,7 +224,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 164
+; CursorPosition = 172
+; FirstLine = 155
 ; Folding = --
 ; EnableXP

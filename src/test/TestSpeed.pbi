@@ -157,7 +157,7 @@ Procedure PolygonSoup(numTris.i)
 	ProcedureReturn *positions
 EndProcedure
 	
-Define numTris.i = 10000000
+Define numTris.i = 12000000
 Define size_soup.i = numTris * 9 * 4
 Define size_soup_aligned.i = numTris * 12 * 4
 
@@ -227,8 +227,8 @@ MessageRequester("Octree",
                  "NUM HITS : " +Str(numHits) + Chr(10)+
                  "TOOK : " +StrD(elapsed)  +", "+StrD(elapsed2)+Chr(10)+
                  "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 169
-; FirstLine = 145
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 139
 ; Folding = -
 ; EnableXP

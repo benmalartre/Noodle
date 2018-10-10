@@ -25,7 +25,7 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   glUseProgram(*s_simple\pgm)
   Define.m4f32 model,view,proj
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   Framebuffer::BindOutput(*buffer)
 
@@ -67,7 +67,7 @@ Define model.m4f32
 ;--------------------------------------------
 If Time::Init()
   Log::Init()
-  *app = Application::New("Test",120,60)
+  *app = Application::New("Test",800,400)
 
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
@@ -77,7 +77,7 @@ If Time::Init()
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   Debug *app\width
@@ -98,9 +98,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Linux - x64)
-; CursorPosition = 87
-; FirstLine = 15
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 41
 ; Folding = -
 ; EnableThread
 ; EnableXP

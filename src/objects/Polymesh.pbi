@@ -246,14 +246,15 @@ Module Polymesh
     Protected GLfloat_s.GLfloat
     
     ; Get Polymesh Datas
-    Protected s3 = SizeOf(GLfloat_s) * 3
-    Protected s4 = SizeOf(GLfloat_s) * 4
+    Protected s3 = SizeOf(v3f32)
+    Protected s4 = SizeOf(c4f32)
     Protected size_p.i = nbs * s3
     Protected size_c.i = nbs * s4
     Protected size_t.i = 4*size_p + size_c
+
     
     ; Allocate Memory
-    Protected *flatdata = AllocateMemory(size_p)
+    Protected *flatdata = AllocateMemory(size_t)
     Protected i
     Protected *v.v3f32
     Protected *c.c4f32
@@ -261,16 +262,13 @@ Module Polymesh
     ; Push Buffer to GPU
     glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_STATIC_DRAW)
     
-;     Protected startT1.d = Time::Get()
     ; POSITIONS
     ;-------------------------------------------------------------
-    Protected size_v = CArray::GetItemSize(*geom\a_positions)
-    Protected size_i = CArray::GetItemSize(*geom\a_triangleindices)
     Protected id.l
+    
     For i=0 To nbs-1
-      id = PeekL(*geom\a_triangleindices\data+(i*size_i))
-      *v = *geom\a_positions\data + size_v*id
-      CopyMemory(*v,*flatdata+i*s3,s3)
+      id = CArray::GetValueL(*geom\a_triangleindices, i)
+      CopyMemory(CArray::GetValue(*geom\a_positions, id),*flatdata+i*s3,s3)
     Next i
 
 ;     FreeMemory(*flatdata)
@@ -309,24 +307,25 @@ Module Polymesh
      ;-------------------------------------------------------------
     Protected c
     Protected *cl.c4f32
+    Protected a.a = SizeOf(v3f32) / 4
     
     glBufferSubData(#GL_ARRAY_BUFFER,4*size_p,size_c,CArray::GetPtr(*geom\a_colors,0))
     
     ; Attribute Position 0
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    glVertexAttribPointer(0,a,#GL_FLOAT,#GL_FALSE,0,0)
     
     ; Attribute Normal 1
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,size_p)
+    glVertexAttribPointer(1,a,#GL_FLOAT,#GL_FALSE,0,size_p)
     
     ; Attribute Tangent 2
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2,3,#GL_FLOAT,#GL_FALSE,0,2*size_p)
+    glVertexAttribPointer(2,a,#GL_FLOAT,#GL_FALSE,0,2*size_p)
     
     ; Attribute UVWs 2
     glEnableVertexAttribArray(3)
-    glVertexAttribPointer(3,3,#GL_FLOAT,#GL_FALSE,0,3*size_p)
+    glVertexAttribPointer(3,a,#GL_FLOAT,#GL_FALSE,0,3*size_p)
     
     ; Attribute Color 3
     glEnableVertexAttribArray(4)
@@ -576,7 +575,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 296
-; FirstLine = 274
+; CursorPosition = 322
+; FirstLine = 283
 ; Folding = ----
 ; EnableXP

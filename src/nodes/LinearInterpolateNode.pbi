@@ -158,7 +158,7 @@ Module LinearInterpolateNode
           *sv3 = CArray::GetValue(*v3In2,Max(i,s_nb-1))
           bv3 = CArray::GetValueF(*blend,Max(i,b_nb-1))
           Vector3::LinearInterpolate(v3,*fv3,*sv3,bv3)
-          CArray::SetValue(*v3Out,i,@v)
+          CArray::SetValue(*v3Out,i,v)
         Next i
         
       Case Attribute::#ATTR_TYPE_UNDEFINED
@@ -209,8 +209,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 131
+; CursorPosition = 160
+; FirstLine = 156
 ; Folding = --
 ; EnableThread
 ; EnableXP

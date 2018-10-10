@@ -157,7 +157,7 @@ Module MultiplyByScalarNode
             For i=0 To CArray::GetCount(*vIn)-1
               *v = CArray::GetValue(*vIn,i)
               Vector3::Scale(v,*v,scalar)
-              CArray::SetValue(*vOut,i,@v)
+              CArray::SetValue(*vOut,i,v)
             Next i
           EndIf
         Else
@@ -166,7 +166,7 @@ Module MultiplyByScalarNode
               *v = CArray::GetValue(*vIn,i)
               scalar = CArray::GetValueF(*scalarData,i)
               Vector3::Scale(v,*v,scalar)
-              CArray::SetValue(*vOut,i,@v)
+              CArray::SetValue(*vOut,i,v)
             Next i
           EndIf
         EndIf
@@ -221,7 +221,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 125
+; CursorPosition = 89
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

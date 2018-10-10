@@ -96,7 +96,7 @@ Procedure RandomStrips(numItems.i)
   For i=0 To numItems-1
     For j=0 To CArray::GetCount(*positions)-1
       Vector3::Set(position, i, j, (Random(10)-5)/10)
-      CArray::SetValue(*positions, j, @position)
+      CArray::SetValue(*positions, j, position)
     Next
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewStrip(*drawer, *positions)
@@ -114,7 +114,7 @@ Procedure RandomPoints(numItems.i)
   For i=0 To numItems-1
     For j=0 To CArray::GetCount(*positions)-1
       Vector3::Set(position, i, j, (Random(10)-5)/10)
-      CArray::SetValue(*positions, j, @position)
+      CArray::SetValue(*positions, j, position)
     Next
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::NewPoints(*drawer, *positions)
@@ -201,8 +201,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 148
+; CursorPosition = 116
+; FirstLine = 112
 ; Folding = --
 ; EnableThread
 ; EnableXP

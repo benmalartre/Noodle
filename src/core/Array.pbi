@@ -23,6 +23,21 @@ DeclareModule CArray
     #ARRAY_STR
   EndEnumeration
   
+  #SIZE_BOOL  = 1
+  #SIZE_CHAR  = 2
+  #SIZE_INT   = 8
+  #SIZE_LONG  = 4
+  #SIZE_FLOAT = 4
+  #SIZE_DOUBLE= 8
+  #SIZE_PTR   = 8
+  #SIZE_V2F32 = 8
+  #SIZE_V3F32 = 12
+  #SIZE_C4F32 = 16
+  #SIZE_C4U8  = 4
+  #SIZE_Q4F32 = 16
+  #SIZE_M3F32 = 36
+  #SIZE_M4F32 = 64
+  #SIZE_TRF32 = 40
   Structure CArrayT
     type.i
     itemSize.i
@@ -77,57 +92,45 @@ DeclareModule CArray
   EndStructure
   
   ;----------------------------------------------------------------
-  ; Copy
-  ;----------------------------------------------------------------
-  Macro Copy(_array,_src)
-    If Not _array\itemCount = _src\itemCount Or Not _array\itemSize = _src\itemSize
-      _array\itemSize = _src\itemSize
-      CArray::SetCount(_array,_src\itemCount)
-    EndIf
-    
-    CopyMemory(_src\data,_array\data,_src\itemCount * _src\itemSize)
-  EndMacro
-  
-  ;----------------------------------------------------------------
   ; GetValue
   ;----------------------------------------------------------------
   Macro GetValue(_array,_index)
-      _array\data+(_index)*_array\itemSize
+      (_array\data+ ((_index) * _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValueB
   ;----------------------------------------------------------------
   Macro GetValueB(_array,_index)
-    PeekB(_array\data+(_index)* _array\itemSize)
+    PeekB(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValueC
   ;----------------------------------------------------------------
   Macro GetValueC(_array,_index)
-    PeekC(_array\data+(_index)* _array\itemSize)
+    PeekC(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValueI
   ;----------------------------------------------------------------
   Macro GetValueI(_array,_index)
-    PeekI(_array\data+(_index)* _array\itemSize)
+    PeekI(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValueL
   ;----------------------------------------------------------------
   Macro GetValueL(_array,_index)
-    PeekL(_array\data+(_index)* _array\itemSize)
+    PeekL(_array\data+((_index) * _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValueF
   ;----------------------------------------------------------------
   Macro GetValueF(_array,_index)
-    PeekF(_array\data+(_index)* _array\itemSize)
+    PeekF(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   
@@ -135,33 +138,127 @@ DeclareModule CArray
   ; GetValueD
   ;----------------------------------------------------------------
   Macro GetValueD(_array,_index)
-    PeekD(_array\data+(_index)* _array\itemSize)
+    PeekD(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
   ; GetValuePtr
   ;----------------------------------------------------------------
   Macro GetValuePtr(_array,_index)
-    PeekI(_array\data+(_index)* _array\itemSize)
+    PeekI(_array\data+((_index)* _array\itemSize))
   EndMacro
   
   ;----------------------------------------------------------------
-  ; GetValueStr
+  ; SetValue
   ;----------------------------------------------------------------
-  Macro GetValueStr(_array,_index)
-    PeekS(SelectElement(_array\_str(),_index))
+  Macro SetValue(_array,_index,_value)
+     Define *__value_ptr = _value
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount
+        CopyMemory(*__value_ptr,_array\data+(_index)* _array\itemSize,_array\itemSize)
+      EndIf
+    CompilerElse
+      CopyMemory(*__value_ptr,_array\data+(_index)* _array\itemSize,_array\itemSize)
+    CompilerEndIf
+  EndMacro
+ 
+  ;----------------------------------------------------------------
+  ; SetValueB
+  ;----------------------------------------------------------------
+  Macro SetValueB(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount
+        PokeB(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeB(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
   EndMacro
   
+   ;----------------------------------------------------------------
+  ; SetValueC
+  ;----------------------------------------------------------------
+  Macro SetValueC(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        PokeC(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeC(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
+  EndMacro
+  
+  ;----------------------------------------------------------------
+  ; SetValueI
+  ;----------------------------------------------------------------
+  Macro SetValueI(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        PokeI(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeI(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
+  EndMacro
+  
+  ;----------------------------------------------------------------
+  ; SetValueL
+  ;----------------------------------------------------------------
+  Macro SetValueL(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        PokeL(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeL(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
+  EndMacro
+  
+  ;----------------------------------------------------------------
+  ; SetValueF
+  ;----------------------------------------------------------------
+  Macro SetValueF(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        PokeF(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeF(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
+  EndMacro
+  
+  ;----------------------------------------------------------------
+  ; SetValuePtr
+  ;----------------------------------------------------------------
+  Macro SetValuePtr(_array,_index,_value)
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        PokeI(_array\data+(_index)* _array\itemSize,_value)
+      EndIf
+    CompilerElse
+      PokeI(_array\data+(_index)* _array\itemSize,_value)
+    CompilerEndIf
+  EndMacro
+  
+  ;----------------------------------------------------------------
+  ; SetValueStr
+  ;----------------------------------------------------------------
+  Macro SetValueStr(_array,_index,_value)
+    Define *__sa.CArray::CArrayStr = _array
+    CompilerIf Defined(ARRAY_GUARDED, #PB_Constant)
+      If _index>=0 And _index<_array\itemCount 
+        SelectElement(*__sa\_str(), _index)
+        *__sa\_str() = _value
+      EndIf
+    CompilerElse
+      SelectElement(*__sa\_str(), _index)
+      *__sa\_str() = _value
+    CompilerEndIf
+  EndMacro
   
   Declare GetPtr(*array.CArrayT, index.i)
-  Declare SetValue(*array.CArrayT, index.i, *value)
-  Declare SetValueB(*array.CArrayT,index.i,value.b)
-  Declare SetValueC(*array.CArrayT,index.i,value.c)
-  Declare SetValueI(*array.CArrayT,index.i,value.i)
-  Declare SetValueL(*array.CArrayT,index.i,value.l)
-  Declare SetValueF(*array.CArrayT,index.i,value.f)
-  Declare SetValuePtr(*array.CArrayT,index.i,*value)
-  Declare SetValueStr(*array.CArrayT,index.i,value.s)
+  Declare.s GetValueStr(*array.CArrayStr, index.i)
+  Declare Copy(*array.CArrayT, *src.CArrayT)
   Declare Append(*array.CArrayT,*value)
   Declare AppendB(*array.CArrayT,value.b)
   Declare AppendC(*array.CArrayT,value.c)
@@ -187,6 +284,8 @@ DeclareModule CArray
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
   Declare Alert(*array.CArrayT, label.s="")
+  Declare ShiftAlign(*data, nb, src_size.i, dst_size.i)
+  Declare UnshiftAlign(*data, nb, src_size.i, dst_size.i)
   
   Declare newCArrayBool()
   Declare newCArrayChar()
@@ -218,97 +317,30 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; GetValueStr
+  ;----------------------------------------------------------------
+  Procedure.s GetValueStr(*array.CArrayStr, index.i)
+    SelectElement(*array\_str(),index)
+    ProcedureReturn *array\_str()
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; Copy
+  ;----------------------------------------------------------------
+  Procedure Copy(*array.CArray::CArrayT,*src.CArray::CArrayT)
+    If Not *array\itemCount = *src\itemCount Or Not *array\itemSize = *src\itemSize
+      *array\itemSize = *src\itemSize
+      CArray::SetCount(*array,*src\itemCount)
+    EndIf
+    
+    CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
+  EndProcedure
+  
+  ;----------------------------------------------------------------
   ; Get Item SIze
   ;----------------------------------------------------------------
   Procedure GetItemSize(*array.CArrayT)
     ProcedureReturn *Array\itemSize 
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValue
-  ;----------------------------------------------------------------
-  Procedure SetValue(*array.CArrayT,index.i,*value)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      CopyMemory(*value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
- 
-  ;----------------------------------------------------------------
-  ; SetValueB
-  ;----------------------------------------------------------------
-  Procedure SetValueB(*array.CArrayT,index.i,value.b)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeB(*array\data+offset,value)
-      ;CopyMemory(@value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
-  
-   ;----------------------------------------------------------------
-  ; SetValueC
-  ;----------------------------------------------------------------
-  Procedure SetValueC(*array.CArrayT,index.i,value.c)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeC(*array\data+offset,value)
-      ;CopyMemory(@value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValueI
-  ;----------------------------------------------------------------
-  Procedure SetValueI(*array.CArrayT,index.i,value.i)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeI(*array\data+offset,value)
-      ;CopyMemory(@value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValueL
-  ;----------------------------------------------------------------
-  Procedure SetValueL(*array.CArrayT,index.i,value.l)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeL(*array\data+offset,value)
-      ;CopyMemory(@value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValueF
-  ;----------------------------------------------------------------
-  Procedure SetValueF(*array.CArrayT,index.i,value.f)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeF(*array\data+offset,value)
-;       CopyMemory(@value,*array\data+offset,*array\itemSize)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValuePtr
-  ;----------------------------------------------------------------
-  Procedure SetValuePtr(*array.CArrayT,index.i,*value)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      PokeI(*array\data+offset,*value)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; SetValueStr
-  ;----------------------------------------------------------------
-  Procedure SetValueStr(*array.CArrayT,index.i,value.s)
-    If index>=0 And index<*array\itemCount
-      offset.i = index* *array\itemSize
-      Protected *sa.CArrayStr = *array
-      SelectElement(*sa\_str(),index)
-      *sa\_str() = value
-    EndIf
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1078,6 +1110,43 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; Shift Align
+  ;----------------------------------------------------------------
+  Procedure ShiftAlign(*data, nb.i, src_size, dst_size.i)
+    If dst_size > src_size
+      Define offset_dst = (nb-1) * dst_size
+      Define offset_src = (nb-1) * src_size
+      
+      Define *src, *dst
+      While nb >= 0
+        *src = *data + offset_src
+        *dst = *data + offset_dst
+        MoveMemory(*src, *dst, src_size)
+        FillMemory(*dst + src_size, dst_size-src_size, 0)
+        offset_dst - dst_size
+        offset_src - src_size
+        nb - 1  
+      Wend
+    EndIf
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; Unshift Align
+  ;----------------------------------------------------------------
+  Procedure UnshiftAlign(*data, nb.i, src_size, dst_size.i)
+    If dst_size < src_size
+      Define *src, *dst
+      Define i
+      For i=1 To nb-1
+        *src = *data + i * src_size
+        *dst = *data + i * dst_size
+        MoveMemory(*src, *dst, src_size)
+      Next
+      FillMemory(*data + nb * dst_size, nb * src_size - nb * dst_size, 0)
+    EndIf
+  EndProcedure
+  
+  ;----------------------------------------------------------------
   ; Destructor
   ;----------------------------------------------------------------
   Procedure Delete(*array.CArrayT)
@@ -1092,7 +1161,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 147
+; CursorPosition = 1126
+; FirstLine = 1103
 ; Folding = -----------
 ; EnableXP

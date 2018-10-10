@@ -308,9 +308,9 @@ DeclareModule Geometry
   ; --------------------------------------------
   Structure Location_t
     tid.i
-    uvw.v3f32
-    n.v3f32
     p.v3f32
+    n.v3f32
+    uvw.v3f32
     c.c4f32
     *geometry.Geometry::Geometry_t
     *t.Transform::Transform_t
@@ -321,11 +321,9 @@ DeclareModule Geometry
   Structure PointOnMesh_t
     gid.i
     tid.i
-    u.f
-    v.f
-    w.f
-    n.v3f32
     p.v3f32
+    n.v3f32
+    uvw.v3f32
     c.c4f32
     *geometry.Geometry::PolymeshGeometry_t
     *t.Transform::Transform_t
@@ -459,7 +457,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 422
-; FirstLine = 396
+; CursorPosition = 334
+; FirstLine = 299
 ; Folding = -----
 ; EnableXP

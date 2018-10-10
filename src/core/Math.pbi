@@ -205,6 +205,9 @@ DeclareModule Math
       b.f
       w.f
     EndStructureUnion
+    CompilerIf Defined(USE_SSE, #PB_Constant)
+      _unused.f
+    CompilerEndIf
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -383,7 +386,7 @@ DeclareModule Vector2
   ; VECTOR2 LENGTH
   ;------------------------------------------------------------------
   Macro LengthSquared(v)
-    v\x * v\x + v\y * v\y
+    (v\x * v\x + v\y * v\y)
   EndMacro
   
   Macro Length(v)
@@ -394,7 +397,7 @@ DeclareModule Vector2
   ; VECTOR2 NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v, _o)
-    Define _mag.f = Vector3::LengthSquared(_o)
+    Define _mag.f = Vector2::LengthSquared(_o)
     If (_mag <> 0)
       _mag =  Sqr(_mag)
       _v\x = _o\x / _mag
@@ -403,7 +406,7 @@ DeclareModule Vector2
   EndMacro
   
   Macro NormalizeInPlace(_v)
-    Define _mag.f = Vector3::LengthSquared(_v)
+    Define _mag.f = Vector2::LengthSquared(_v)
     If (_mag <> 0)
       _mag =  Sqr(_mag)
       _v\x / _mag
@@ -519,7 +522,7 @@ DeclareModule Vector3
     _v\z = _z
   EndMacro
   
-  Macro SetFromOther(_v,_o)
+  Macro SetFromOther(_v, _o)
     _v\x = _o\x
     _v\y = _o\y
     _v\z = _o\z
@@ -529,7 +532,7 @@ DeclareModule Vector3
   ; VECTOR3 LENGTH
   ;------------------------------------------------------------------
   Macro LengthSquared(_v)
-    _v\x * _v\x + _v\y * _v\y + _v\z * _v\z
+    (_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
   EndMacro
   
   Macro Length(_v)
@@ -539,27 +542,33 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   ; VECTOR3 NORMALIZE
   ;------------------------------------------------------------------
-  Macro Normalize(_v,_o)
-    Define _mag.f = Sqr(_o\x * _o\x + _o\y * _o\y + _o\z * _o\z)
-    ;Avoid error dividing by zero
-    If _mag = 0 : _mag =1.0 :EndIf
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Normalize(*v.v3f32, *o.v3f32)
+    Declare NormalizeInPlace(*v.v3f32)
+  CompilerElse
+    Macro Normalize(_v,_o)
+      Define _mag.f = Sqr(_o\x * _o\x + _o\y * _o\y + _o\z * _o\z)
+      ;Avoid error dividing by zero
+      If _mag = 0 : _mag =1.0 :EndIf
+      
+      Define _div.f = 1.0/_mag
+      _v\x = _o\x * _div
+      _v\y = _o\y * _div
+      _v\z = _o\z * _div
+    EndMacro
     
-    Define _div.f = 1.0/_mag
-    _v\x = _o\x * _div
-    _v\y = _o\y * _div
-    _v\z = _o\z * _div
-  EndMacro
-
-  Macro NormalizeInPlace(_v)
-    Define _mag.f = Sqr(_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
-    ;Avoid error dividing by zero
-    If _mag = 0 : _mag =1.0 :EndIf
-    
-    Define _div.f = 1.0/_mag
-    _v\x * _div
-    _v\y * _div
-    _v\z * _div
-  EndMacro
+    Macro NormalizeInPlace(_v)
+      Define _mag.f = Sqr(_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
+      ;Avoid error dividing by zero
+      If _mag = 0 : _mag =1.0 :EndIf
+      
+      Define _div.f = 1.0/_mag
+      _v\x * _div
+      _v\y * _div
+      _v\z * _div
+    EndMacro
+  CompilerEndIf
+  
 
   ;------------------------------------------------------------------
   ; VECTOR3 GET ANGLE
@@ -672,12 +681,16 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   ; CROSS
   ;------------------------------------------------------------------
-  Macro Cross(_v,_a,_b)
-    _v\x = (_a\y * _b\z) - (_a\z * _b\y)
-    _v\y = (_a\z * _b\x) - (_a\x * _b\z)
-    _v\z = (_a\x * _b\y) - (_a\y * _b\x)
-  EndMacro
-
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Cross(*v.v3f32, *a.v3f32, *b.v3f32)
+  CompilerElse
+    Macro Cross(_v,_a,_b)
+      _v\x = (_a\y * _b\z) - (_a\z * _b\y)
+      _v\y = (_a\z * _b\x) - (_a\x * _b\z)
+      _v\z = (_a\x * _b\y) - (_a\y * _b\x)
+    EndMacro
+  CompilerEndIf
+  
   ;------------------------------------------------------------------
   ; VECTOR3 DOT
   ;------------------------------------------------------------------
@@ -766,7 +779,7 @@ DeclareModule Vector3
   EndMacro
 
   ;------------------------------------------------------------------
-  ; VECTOR3 MULTIPLY BY QUATERNIO9N
+  ; VECTOR3 MULTIPLY BY QUATERNION
   ;------------------------------------------------------------------
   Macro MulByQuaternion(_out,_in,_q)
   	Define _inmag.f = Vector3::Length(_in)
@@ -2335,6 +2348,74 @@ EndModule
 ; v3f32 Module Implementation
 ;====================================================================
 Module Vector3
+CompilerIf Defined(USE_SSE, #PB_Constant)
+  Procedure Cross(*v.v3f32,*a.v3f32,*b.v3f32)
+    ! mov rax, [p.p_a]
+    ! mov rcx, [p.p_b]
+    ! mov rdx, [p.p_v]
+  
+    ! movups xmm0,[rax]             ; move point a to xmm0
+    ! movups xmm1,[rcx]             ; move point b to xmm1
+    
+    ! movaps xmm2,xmm0              ; copy point a to xmm2
+    ! movaps xmm3,xmm1              ; copy point b to xmm3
+    
+    ! shufps xmm0,xmm0,00001001b    ; exchange 2 and 3 element (a)
+    ! shufps xmm1,xmm1,00010010b    ; exchange 1 and 2 element (b)
+    ! mulps  xmm0,xmm1
+           
+    ! shufps xmm2,xmm2,00010010b    ; exchange 1 and 2 element (a)
+    ! shufps xmm3,xmm3,00001001b    ; exchange 2 and 3 element (b)
+    ! mulps  xmm2,xmm3
+          
+    ! subps  xmm0,xmm2
+    
+    ! movups [rdx],xmm0             ; push back to memory
+  EndProcedure
+
+Procedure Normalize(*v.v3f32, *o.v3f32)
+  ! mov rax, [p.p_o]
+  ! movups xmm0, [rax]
+  
+  ! movaps xmm6, xmm0      ;effectue une copie du vecteur dans xmm6
+  ! mulps xmm0, xmm0       ;carré de chaque composante
+  ; mix1
+  ! movaps xmm7, xmm0
+  ! shufps xmm7, xmm7, $4e
+  ! addps xmm0, xmm7       ;additionne les composantes mélangées
+  ; mix2
+  ! movaps xmm7, xmm0
+  ! shufps xmm7, xmm7, $11
+  ! addps xmm0, xmm7       ;additionne les composantes mélangées
+  ; 1/sqrt
+  ! rsqrtps xmm0, xmm0     ;inverse de la racine carrée (= longueur)
+  ! mulps xmm0, xmm6       ;que multiplie le vecteur initial
+  
+  ! mov rax, [p.p_v]
+  ! movups [rax], xmm0     ; send back to memory
+EndProcedure
+
+Procedure NormalizeInPlace(*v.v3f32)
+  ! mov rax, [p.p_v]
+  ! movups xmm0, [rax]
+  
+  ! movaps xmm6, xmm0      ;effectue une copie du vecteur dans xmm6
+  ! mulps xmm0, xmm0       ;carré de chaque composante
+  ; mix1
+  ! movaps xmm7, xmm0
+  ! shufps xmm7, xmm7, $4e
+  ! addps xmm0, xmm7       ;additionne les composantes mélangées
+  ; mix2
+  ! movaps xmm7, xmm0
+  ! shufps xmm7, xmm7, $11
+  ! addps xmm0, xmm7       ;additionne les composantes mélangées
+  ; 1/sqrt
+  ! rsqrtps xmm0, xmm0     ;inverse de la racine carrée (= longueur)
+  ! mulps xmm0, xmm6       ;que multiplie le vecteur initial
+  
+  ! movups [rax], xmm0     ; send back to memory
+EndProcedure
+CompilerEndIf
 EndModule
 
 ;====================================================================
@@ -2676,8 +2757,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 650
-; FirstLine = 641
-; Folding = ----------------------------------
+; CursorPosition = 388
+; FirstLine = 375
+; Folding = -----------------------------------
 ; EnableXP
 ; EnableUnicode

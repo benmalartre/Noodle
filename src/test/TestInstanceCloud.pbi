@@ -241,7 +241,7 @@ Procedure Draw(*app.Application::Application_t)
 ;     *l = CArray::GetValuePtr(*locs,i)
 ;     CArray::SetValue(*cgeom\a_positions,i,*l\p)
 ;     CArray::SetValue(*cgeom\a_normals,i,*l\n)
-;     CArray::SetValue(*cgeom\a_scale,i,@s)
+;     CArray::SetValue(*cgeom\a_scale,i,s)
 ;     CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
 ;   Next
 ;     
@@ -263,8 +263,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 150
+; CursorPosition = 244
+; FirstLine = 210
 ; Folding = --
 ; EnableXP
 ; Executable = Test

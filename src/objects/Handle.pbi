@@ -230,9 +230,9 @@ Module Handle
       ; Handle Axis
       Protected p.v3f32
       Vector3::Set(p,0,0,0)
-      CArray::SetValue(\positions,@p,0)
+      CArray::SetValue(\positions,0,p)
       Vector3::Set(p,3,0,0)
-      CArray::SetValue(\positions,@p,1)
+      CArray::SetValue(\positions,1,p)
  
       ; Handle Head
       Protected v.v3f32
@@ -244,7 +244,7 @@ Module Handle
         Vector3::Echo(v, "BEFORE")
         Vector3::MulByMatrix4InPlace(v,offset)
         Vector3::Echo(v, "AFTER")
-        CArray::SetValue(\positions,i+2,@v)
+        CArray::SetValue(\positions,i+2,v)
       Next i
       
       ; Set Triangle Indices Array
@@ -285,11 +285,11 @@ Module Handle
 
       Protected p.v3f32
       Vector3::Set(p,0,-1,0)
-      CArray::SetValue(\positions,0,@p)
+      CArray::SetValue(\positions,0,p)
       Vector3::Set(p,0,0,0)
-      CArray::SetValue(\positions,1,@p)
+      CArray::SetValue(\positions,1,p)
       Vector3::Set(p,0,1,0)
-      CArray::SetValue(\positions,2,@p)
+      CArray::SetValue(\positions,2,p)
       
       CArray::SetValueL(\indices,0,0)
       CArray::SetValueL(\indices,1,1)
@@ -321,10 +321,10 @@ Module Handle
 
       Protected pos.v3f32
       Vector3::Set(pos,0,0,0)
-      CArray::SetValue(\positions,0,@pos)
+      CArray::SetValue(\positions,0,pos)
 
       Vector3::Set(pos,3,0,0)
-      CArray::SetValue(\positions,1,@pos)
+      CArray::SetValue(\positions,1,pos)
       
       CArray::SetValueL(\indices,0,0)
       CArray::SetValueL(\indices,1,1)
@@ -335,7 +335,7 @@ Module Handle
         x = Sin(Radian(st*i))
         y = Cos(Radian(st*i))
         Vector3::Set(pos,2.6,x*0.12,y*0.12)
-        CArray::SetValue(\positions,i+2,@pos)
+        CArray::SetValue(\positions,i+2,pos)
         CArray::SetValueL(\indices,i*3+2,i+2)
 
         If i = div-1
@@ -373,10 +373,10 @@ Module Handle
       
       Protected pos.v3f32
       Vector3::Set(pos,0,0,0)
-      CArray::SetValue(\positions,0,@pos)
+      CArray::SetValue(\positions,0,pos)
       
       Vector3::Set(pos,3,0,0)
-      CArray::SetValue(\positions,1,@pos)
+      CArray::SetValue(\positions,1,pos)
       
       CArray::SetValueL(\indices,0,0)
       CArray::SetValueL(\indices,1,1)
@@ -390,10 +390,10 @@ Module Handle
         x = -Sin(Radian(st*i))
         y = Cos(Radian(st*i))
         Vector3::Set(pos,-0.1,x,y)
-        CArray::SetValue(\positions,i+2,@pos)
+        CArray::SetValue(\positions,i+2,pos)
 
         Vector3::Set(pos,0.1,x,y)
-        CArray::SetValue(\positions,i+2+div,@pos)
+        CArray::SetValue(\positions,i+2+div,pos)
         
         CArray::SetValueL(\indices,offset,i+2)
         offset + 1
@@ -444,9 +444,9 @@ Module Handle
       
       Protected pos.v3f32
       Vector3::Set(pos,0,0,0)
-      CArray::SetValue(\positions,0,@pos)
+      CArray::SetValue(\positions,0,pos)
       Vector3::Set(pos,0,0,-1)
-      CArray::SetValue(\positions,1,@pos)
+      CArray::SetValue(\positions,1,pos)
       
       CArray::SetValueL(\indices,0,0)
       CArray::SetValueL(\indices,1,1)
@@ -1224,7 +1224,7 @@ Module Handle
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 747
-; FirstLine = 740
+; CursorPosition = 448
+; FirstLine = 442
 ; Folding = ------
 ; EnableXP

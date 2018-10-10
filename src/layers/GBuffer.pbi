@@ -350,7 +350,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 120
+; CursorPosition = 139
+; FirstLine = 123
 ; Folding = --
 ; EnableXP

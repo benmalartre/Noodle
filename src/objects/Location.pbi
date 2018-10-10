@@ -52,8 +52,7 @@ Module Location
     Vector3::Scale(x,*c, *Me\uvw\z)
     Vector3::AddInPlace(*Me\p,x)
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
-    ProcedureReturn *Me\p
-   
+
   EndProcedure
   
   ;---------------------------------------------------------
@@ -70,20 +69,17 @@ Module Location
     *a = CArray::GetValue(*geom\a_positions,a)
     *b = CArray::GetValue(*geom\a_positions,b)
     *c = CArray::GetValue(*geom\a_positions,c)
-    
-    
+
     Vector3::Sub(ab,*b,*a)
     Vector3::Sub(ac,*c,*a)
     
     Vector3::NormalizeInPlace(ab)
     Vector3::NormalizeInPlace(ac)
-    
     Vector3::Cross(*Me\n,ab,ac)
   ;   Vector3::MulByMatrix4InPlace(*Me\n,*Me\t\GetMatrix())
     Vector3::NormalizeInPlace(*Me\n)
     ;   Vector3::MulByQuaternionInPlace(*Me\n,*Me\t\GetQuaternion())
     
-    ProcedureReturn *Me\n
   EndProcedure
   
   ;---------------------------------------------------------
@@ -110,8 +106,7 @@ Module Location
     Vector3::Scale(x,*c,*Me\uvw\z)
     Vector3::AddInPlace(*Me\n,x)
 ;     Vector3::MulByMatrix4InPlace(*Me\n,*Me\t)
-    
-    ProcedureReturn *Me\n
+
   EndProcedure
   
   ;---------------------------------------------------------
@@ -179,6 +174,7 @@ Module Location
     Vector3::Sub(ab,*b,*a)
     Vector3::Sub(ac,*c,*a)
     Vector3::Cross(*Me\n,ab,ac)
+
     Vector3::NormalizeInPlace(*Me\n)
     
   EndProcedure
@@ -339,7 +335,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 301
-; FirstLine = 286
+; CursorPosition = 172
+; FirstLine = 141
 ; Folding = ---
 ; EnableXP

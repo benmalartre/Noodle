@@ -14,7 +14,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -38,8 +40,8 @@ Global *polygonizer.Polygonizer::Grid_t
 
 Procedure MapWorldPositionToScreenSpace(*view.m4f32, *proj.m4f32, width.i, height.i, *w.v3f32, *s.v2f32)
   Protected w2s.v3f32
-  Vector3::MulByMatrix4 (@w2s, *w, *view)
-  Vector3::MulByMatrix4InPlace(@w2s, *proj)
+  Vector3::MulByMatrix4 (w2s, *w, *view)
+  Vector3::MulByMatrix4InPlace(w2s, *proj)
   *s\x = width * (w2s\x + 1.0)/2.0
   *s\y = height * (1.0 - ((w2s\y + 1.0) / 2.0))
 EndProcedure
@@ -109,6 +111,7 @@ FTGL::Init()
  
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
     
@@ -117,14 +120,14 @@ FTGL::Init()
   
   shader = *s_polymesh\pgm
 
-  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_BUNNY)
+  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   Object3D::SetShader(*mesh,*s_polymesh)
   Object3D::AddChild(*root, *mesh)
   
   Geometry::ComputeBoundingBox(*geom)
-   
-  *polygonizer = Polygonizer::CreateGrid(*geom\bbox, 0.05)
+
+  *polygonizer = Polygonizer::CreateGrid(*geom\bbox, 0.6)
 
   Polygonizer::Polygonize(*polygonizer, *geom)
   
@@ -133,7 +136,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 70
+; CursorPosition = 113
+; FirstLine = 83
 ; Folding = -
 ; EnableXP

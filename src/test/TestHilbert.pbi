@@ -502,8 +502,8 @@ Procedure DrawCells(*grid.Hilbert::Grid_t)
     Color::Set(@c, u , 1-u, 0, 1.0)
     
     If index > 0
-      CArray::SetValue(*colors, index*2, @c)
-      CArray::SetValue(*colors, index*2+1, @c)
+      CArray::SetValue(*colors, index*2, c)
+      CArray::SetValue(*colors, index*2+1, c)
       Hilbert::MapHilbertSpaceToWorldSpace(*grid, @p1, CArray::GetValue(*positions, index*2))
       Hilbert::MapHilbertSpaceToWorldSpace(*grid, @p2, CArray::GetValue(*positions, index*2+1))
     EndIf
@@ -608,7 +608,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 602
-; FirstLine = 548
+; CursorPosition = 505
+; FirstLine = 500
 ; Folding = ---
 ; EnableXP

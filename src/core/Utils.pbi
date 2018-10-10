@@ -213,7 +213,7 @@ Module Utils
     For i=0 To nb-1
       *v = CArray::GetValue(*points,i)
       Vector3::MulByMatrix4(v,*v,*m)
-      CArray::SetValue(*io,i,@v)
+      CArray::SetValue(*io,i,v)
     Next
   EndProcedure
   
@@ -551,7 +551,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 309
-; FirstLine = 287
+; CursorPosition = 215
+; FirstLine = 211
 ; Folding = ---
 ; EnableXP

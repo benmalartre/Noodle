@@ -152,12 +152,12 @@ Module JoystickNode
             If CArray::GetCount(*vIn) = 1
               For i=0 To CArray::GetCount(*vOut)-1
                 Vector3::Add(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,0))
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
               Next i
             Else
               For i=0 To CArray::GetCount(*vIN)-1
                 Vector3::Add(@v,CArray::GetValue(*vOut,i),CArray::GetValue(*vIn,0))
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
               Next i
             EndIf
             
@@ -211,9 +211,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 38
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 150
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

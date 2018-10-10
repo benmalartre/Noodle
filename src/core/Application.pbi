@@ -12,7 +12,7 @@ XIncludeFile "Image.pbi"
 
 
 XIncludeFile "../libs/OpenGL.pbi"
-CompilerIf (#USE_GLFW = #True)
+CompilerIf #USE_GLFW
   XIncludeFile "../libs/GLFW.pbi"
 CompilerEndIf
 
@@ -633,8 +633,8 @@ CompilerEndIf
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 583
-; FirstLine = 580
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

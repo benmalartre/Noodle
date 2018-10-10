@@ -121,22 +121,22 @@ Debug "====================== ARRAY STRING =============================="
 Define *array7.CArrayStr = CArray::newCArrayStr()
 CArray::SetCount(*array7,7)
 Define x
-For x=0 To CArray::GetCount(*array7)
+For x=0 To CArray::GetCount(*array7) -1
   ;CArray::SetValueI(*array4,x,*mesh)
 CArray::SetValueStr(*array7,x,"Hello World")
 Next
 
-CArray::SetCount(*array7,5)
-For x=0 To CArray::GetCount(*array7)
+CArray::SetCount(*array7,13)
+For x=7 To CArray::GetCount(*array7) -1
   ;CArray::SetValueI(*array4,x,*mesh)
-CArray::SetValueStr(*array7,x,"Fuck You")
+CArray::SetValueStr(*array7,x,"Dlrow olleh")
 Next
 
 Define *array8.CArrayStr = CArray::newCArrayStr()
 CArray::SetCount(*array8,3)
 Define x
-For x=0 To CArray::GetCount(*array8)
-CArray::SetValueStr(*array8,x,"Suck Me")
+For x=0 To CArray::GetCount(*array8) -1
+CArray::SetValueStr(*array8,x,"10100110")
 Next
 CArray::AppendArray(*array7,*array8)
 
@@ -161,7 +161,7 @@ Next
 ;   
 ; Next
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 5
+; CursorPosition = 126
+; FirstLine = 108
 ; EnableXP
 ; EnableUnicode

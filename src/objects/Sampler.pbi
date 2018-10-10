@@ -106,7 +106,7 @@ Module Sampler
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 101
+; CursorPosition = 77
 ; FirstLine = 53
 ; Folding = -
 ; EnableXP

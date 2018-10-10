@@ -188,13 +188,13 @@ Module Skeleton
       Vector3::MulByQuaternionInPlace(normal,*q)
       Vector3::Set(tangent,1,0,0)
       Vector3::MulByQuaternionInPlace(tangent,*q)
-      CArray::SetValue(*geom\a_normals, ID,@normal)
-      CArray::SetValue(*geom\a_tangents, ID,@tangent)
+      CArray::SetValue(*geom\a_normals, ID,normal)
+      CArray::SetValue(*geom\a_tangents, ID,tangent)
 
       CArray::SetValue(*geom\a_positions, ID,*Me\bones()\statictransform\t\pos)
       CArray::SetValueL(*geom\a_indices,ID,ID)
       CArray::SetValueF(*geom\a_size,ID,2)
-      CArray::SetValue(*geom\a_color,ID,@c)
+      CArray::SetValue(*geom\a_color,ID,c)
       ID+1
     Next
     
@@ -218,12 +218,12 @@ Module Skeleton
       Vector3::MulByQuaternionInPlace(normal,*q)
       Vector3::Set(tangent,1,0,0)
       Vector3::MulByQuaternionInPlace(tangent,*q)
-      CArray::SetValue(*geom\a_normals, ID,@normal)
-      CArray::SetValue(*geom\a_tangents, ID,@tangent)
+      CArray::SetValue(*geom\a_normals, ID,normal)
+      CArray::SetValue(*geom\a_tangents, ID,tangent)
       CArray::SetValue(*geom\a_positions, ID,*pose\Ts()\t\pos)
       CArray::SetValueL(*geom\a_indices,ID,ID)
       CArray::SetValueF(*geom\a_size,ID,2)
-      CArray::SetValue(*geom\a_color,ID,@c)
+      CArray::SetValue(*geom\a_color,ID,c)
       ID+1
     Next
     
@@ -233,7 +233,7 @@ Module Skeleton
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 210
+; CursorPosition = 225
 ; FirstLine = 180
 ; Folding = ---
 ; EnableXP

@@ -273,66 +273,66 @@ EndProcedure
     fey = Abs(e0\y)
     fez = Abs(e0\z)
     
-;     AXISTEST_X01(e0\z, e0\y, fez, fey)
-;     AXISTEST_Y02(e0\z, e0\x, fez, fex)
-;     AXISTEST_Z12(e0\y, e0\x, fey, fex)
-;     
+    AXISTEST_X01(e0\z, e0\y, fez, fey)
+    AXISTEST_Y02(e0\z, e0\x, fez, fex)
+    AXISTEST_Z12(e0\y, e0\x, fey, fex)
+    
     Define.v3f32 e1
     Vector3::Sub(e1, v2, v1)
     
     fex = Abs(e1\x)
     fey = Abs(e1\y)
     fez = Abs(e1\z)
-;     
-;     AXISTEST_X01(e1\z, e1\y, fez, fey)
-;     AXISTEST_Y02(e1\z, e1\x, fez, fex)
-;     AXISTEST_Z0(e1\y, e1\x, fey, fex)
-;     
+    
+    AXISTEST_X01(e1\z, e1\y, fez, fey)
+    AXISTEST_Y02(e1\z, e1\x, fez, fex)
+    AXISTEST_Z0(e1\y, e1\x, fey, fex)
+    
     Define.v3f32 e2
     Vector3::Sub(e2, v0, v2)
     
     fex = Abs(e2\x)
     fey = Abs(e2\y)
     fez = Abs(e2\z)
-;     
-;     AXISTEST_X2(e2\z, e2\y, fez, fey)
-;     AXISTEST_Y1(e2\z, e2\x, fez, fex)
-;     AXISTEST_Z12(e2\y, e2\x, fey, fex)
-;     
-; 
-;     ; first test overlap in the {x,y,z}-directions
-;     ; find min, max of the triangle each direction, And test For overlap in
-;     ; that direction -- this is equivalent To testing a minimal AABB around
-;     ; the triangle against the AABB    
-;     ; test in X-direction
-;     FINDMINMAX(v0\x,v1\x,v2\x,min,max)
-;     If(min>*boxhalfsize\x Or max<-*boxhalfsize\x) : ProcedureReturn #False : EndIf
-;     
-;    ; test in Y-direction
-;     FINDMINMAX(v0\y,v1\y,v2\y,min,max)
-;     If(min>*boxhalfsize\y Or max<-*boxhalfsize\y) : ProcedureReturn #False : EndIf
-;     
-;     ; test in Z-direction
-;     FINDMINMAX(v0\z,v1\z,v2\z,min,max)
-;     If(min>*boxhalfsize\z Or max<-*boxhalfsize\z) : ProcedureReturn #False : EndIf
-;     
-;     ; test If the box intersects the plane of the triangle
-;     ; compute plane equation of triangle: normal*x+d=0
-;     Protected normal.v3f32 
-;     Vector3::Cross(normal, e0, e1)
-;     
-;     Define.v3f32 vmin,vmax
-;     Define.f v
-;     v = v0\x
-;     If normal\x > 0.0 :  vmin\x = -*boxhalfsize\x - v : vmax\x = *boxhalfsize\x - v : Else : vmin\x = *boxhalfsize\x -v : vmax\x = -*boxhalfsize\x - v : EndIf
-;     v = v0\y
-;     If normal\y > 0.0 :  vmin\y = -*boxhalfsize\y - v : vmax\y = *boxhalfsize\y - v : Else : vmin\y = *boxhalfsize\y -v : vmax\y = -*boxhalfsize\y - v : EndIf
-;     v = v0\z
-;     If normal\z > 0.0 :  vmin\z = -*boxhalfsize\z - v : vmax\z = *boxhalfsize\z - v : Else : vmin\z = *boxhalfsize\z -v : vmax\z = -*boxhalfsize\z - v : EndIf
-;     
-;     If Vector3::Dot(normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
-;     If Vector3::Dot(normal, vmax) >= 0.0 : ProcedureReturn #True : EndIf
-;     ProcedureReturn #True
+    
+    AXISTEST_X2(e2\z, e2\y, fez, fey)
+    AXISTEST_Y1(e2\z, e2\x, fez, fex)
+    AXISTEST_Z12(e2\y, e2\x, fey, fex)
+    
+
+    ; first test overlap in the {x,y,z}-directions
+    ; find min, max of the triangle each direction, And test For overlap in
+    ; that direction -- this is equivalent To testing a minimal AABB around
+    ; the triangle against the AABB    
+    ; test in X-direction
+    FINDMINMAX(v0\x,v1\x,v2\x,min,max)
+    If(min>*boxhalfsize\x Or max<-*boxhalfsize\x) : ProcedureReturn #False : EndIf
+    
+   ; test in Y-direction
+    FINDMINMAX(v0\y,v1\y,v2\y,min,max)
+    If(min>*boxhalfsize\y Or max<-*boxhalfsize\y) : ProcedureReturn #False : EndIf
+    
+    ; test in Z-direction
+    FINDMINMAX(v0\z,v1\z,v2\z,min,max)
+    If(min>*boxhalfsize\z Or max<-*boxhalfsize\z) : ProcedureReturn #False : EndIf
+    
+    ; test If the box intersects the plane of the triangle
+    ; compute plane equation of triangle: normal*x+d=0
+    Protected normal.v3f32 
+    Vector3::Cross(normal, e0, e1)
+    
+    Define.v3f32 vmin,vmax
+    Define.f v
+    v = v0\x
+    If normal\x > 0.0 :  vmin\x = -*boxhalfsize\x - v : vmax\x = *boxhalfsize\x - v : Else : vmin\x = *boxhalfsize\x -v : vmax\x = -*boxhalfsize\x - v : EndIf
+    v = v0\y
+    If normal\y > 0.0 :  vmin\y = -*boxhalfsize\y - v : vmax\y = *boxhalfsize\y - v : Else : vmin\y = *boxhalfsize\y -v : vmax\y = -*boxhalfsize\y - v : EndIf
+    v = v0\z
+    If normal\z > 0.0 :  vmin\z = -*boxhalfsize\z - v : vmax\z = *boxhalfsize\z - v : Else : vmin\z = *boxhalfsize\z -v : vmax\z = -*boxhalfsize\z - v : EndIf
+    
+    If Vector3::Dot(normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
+    If Vector3::Dot(normal, vmax) >= 0.0 : ProcedureReturn #True : EndIf
+    ProcedureReturn #True
         
   EndProcedure
   
@@ -344,55 +344,67 @@ EndProcedure
     ! mov rsi, [p.p_positions]
     ! mov rdi, [p.p_hits]
     ! mov rcx, [p.v_numTris]
-    ! mov rax, [p.p_center]         ; move center to rax
-    ! movups xmm7, [rax]            ; move rax to xmm7
-    ! mov rax, [p.p_boxhalfsize]    ; move boxhalfsize to rax
-    ! movups xmm8, [rax]            ; move rax to xmm8
+    ! mov rax, [p.p_center]           ; move center to rax
+    ! movups xmm7, [rax]              ; move rax to xmm7
+    ! mov rax, [p.p_boxhalfsize]      ; move boxhalfsize to rax
+    ! movups xmm8, [rax]              ; move rax to xmm8
     ;     ! mov r8, [p.p_indices]
     EnableASM
-      MOV rax, qword triangle.l___128_sign_mask__  ; move sign mask to rsi register
+      MOV rax, triangle.l___128_sign_mask__  ; move sign mask to rsi register
     DisableASM
     ! movdqu  xmm12, [rax]
     ! mov rax, 0
     
     !toucharray_loop:
-    !   movups xmm9, [rsi+rax]      ; move point a to xmm9
-    !   movups xmm10, [rsi+rax+4]   ; move point b to xmm10
-    !   movups xmm11, [rsi+rax+8]   ; move point c to xmm11
-    !   subps xmm9, xmm7            ; a - center
-    !   subps xmm10, xmm7           ; b - center
-    !   subps xmm11, xmm7           ; c - center
+    !   movups xmm9, [rsi+rax]        ; move point a to xmm9
+    !   movups xmm10, [rsi+rax+4]     ; move point b to xmm10
+    !   movups xmm11, [rsi+rax+8]     ; move point c to xmm11
+    !   subps xmm9, xmm7              ; a - center (p0)
+    !   subps xmm10, xmm7             ; b - center (p1)
+    !   subps xmm11, xmm7             ; c - center (p2)
     
 ;     !   movups [rsi+rax], xmm9      ; test move back a to memory
 ;     !   movups [rsi+rax+4], xmm10   ; test move back b to memory
 ;     !   movups [rsi+rax+8], xmm11   ; test move back c to memory
     
     ; compute triangle edges
-    !  movaps xmm2, xmm9              ; move p0 to xmm2
-    !  movaps xmm1, xmm10             ; move p1 to xmm1
-    !  subps xmm1, xmm2               ; v1 - v0 = e0
+    !   movaps xmm2, xmm9              ; move p0 to xmm2
+    !   movaps xmm1, xmm10             ; move p1 to xmm1
+    !   subps xmm1, xmm2               ; v1 - v0 = e0
     
-    !  movaps xmm0, xmm1              ; copy e0 in xmm0
-    !  andps xmm0, xmm12              ; bitmask removing sign    
+    !   movaps xmm0, xmm1              ; copy e0 in xmm0
+    !   andps xmm0, xmm12              ; bitmask removing sign    
 ;     !  movups [rsi+rax], xmm0         ; test move back a to memory
     
-    !  movaps xmm3, xmm10             ; move p1 to xmm3
-    !  movaps xmm2, xmm11             ; move p2 to xmm2
-    !  subps xmm2, xmm3               ; v2 - v1 = e1
+    !   movaps xmm3, xmm10             ; move p1 to xmm3
+    !   movaps xmm2, xmm11             ; move p2 to xmm2
+    !   subps xmm2, xmm3               ; v2 - v1 = e1
     
-    !  movaps xmm1, xmm2              ; copy e1 in xmm1
-    !  andps xmm1, xmm12              ; bitmask removing sign
+    !   movaps xmm1, xmm2              ; copy e1 in xmm1
+    !   andps xmm1, xmm12              ; bitmask removing sign
 ;     !  movups [rsi+rax+4], xmm1       ; test move back b to memory
     
-    !  movaps xmm4, xmm11             ; move p2 to xmm4
-    !  movaps xmm3, xmm9              ; move p0 to xmm3
-    !  subps xmm3, xmm4               ; v0 - v2 = e2
+    !   movaps xmm4, xmm11             ; move p2 to xmm4
+    !   movaps xmm3, xmm9              ; move p0 to xmm3
+    !   subps xmm3, xmm4               ; v0 - v2 = e2
     
-    !  movaps xmm2, xmm3              ; copy e2 in xmm2
-    !  andps xmm2, xmm12              ; bitmask removing sign
-;     !  movups [rsi+rax+8], xmm2       ; test move back c to memory
+    !   movaps xmm2, xmm3              ; copy e2 in xmm2
+    !   andps xmm2, xmm12              ; bitmask removing sign
+;     !  movups [rsi+rax+8], xmm2     ; test move back c to memory
 
+    !   movaps xmm4, xmm0              ; push e0 in xmm4
+;     !   andps xmm4, 00000001b
+    !   shufps xmm4, xmm4, 01100110b   ; shuffle e0\z,e0\y,e0\z,e0\y
     
+    !   movaps xmm5, xmm9              ; push p0 to xmm5
+    !   movaps xmm6, xmm11             ; push p2 to xmm6
+    !   shufps xmm5, xmm6, 10011001b   ; shuffle p0\y,p0\z,p2\y,p2\z
+    
+    !   mulps xmm4, xmm5
+    
+;     !	  movmskps rax, xmm5	            ; Extract the sign bits from four 32-bits floats in xmm6 and create 4 bit mask in eax 
+
+;     ! mulps xmm4
 ;     AXISTEST_X01(e0\z, e0\y, fez, fey)
 ;     Macro AXISTEST_X01(a, b, fa, fb)
 ;     p0 = a * v0\y - b * v0\z
@@ -482,8 +494,8 @@ EndProcedure
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 395
-; FirstLine = 394
+; FirstLine = 361
 ; Folding = ---
 ; EnableXP

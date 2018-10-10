@@ -1,4 +1,4 @@
-﻿Structure Vector3
+﻿Structure Vector3 ;Align 16
   v.f[3]
 EndStructure
 
@@ -101,7 +101,7 @@ Procedure Compare(*A1, *A2, nb)
     EndIf
     If Abs(*v1\v[2] - *v2\v[2]) > 0.0001
       ProcedureReturn #False
-    EndIf
+    EndIf 
   Next
   
   ProcedureReturn #True
@@ -158,7 +158,7 @@ Else
   Vector3_Absolute_SIMD_Array(*av3, nb)
   Define T3.q = ElapsedMilliseconds() - startT
   
-  MessageRequester("COMPARE", "NUM TRIANGLES : "+Str(nb)+Chr(10)+
+  MessageRequester("ABSOLUTE", "NUM TRIANGLES : "+Str(nb)+Chr(10)+
                               "PB : "+StrD(T1*0.001)+Chr(10)+
                               "SIMD : "+StrD(T2*0.001)+" : "+Str(Compare(*av1, *av2, nb))+Chr(10)+
                               "ASM LOOP + SIMD : "+StrD(T3*0.001)+" : "+Str(Compare(*av1, *av2, nb))+Chr(10)+
@@ -168,8 +168,8 @@ Else
                               ArrayString(*av2, nb)+Chr(10)+"###############"+Chr(10)+
                               ArrayString(*av3, nb)+Chr(10))
   EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 155
-; FirstLine = 125
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 15
 ; Folding = --
 ; EnableXP

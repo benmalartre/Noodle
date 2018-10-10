@@ -60,12 +60,11 @@ Module Topology
   ;  Set
   ; ----------------------------------------------------------------------------
   Procedure Set(*topo.Topology_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong)
+    Debug "TOPOLOGY SET : "+Str(*topo)
+    Debug "DATA : "+Str(*topo\vertices\data)
+    Debug "ITEM SIZE : "+Str(*topo\vertices\itemSize)
+    Debug "ITEM COUNT : "+Str(*topo\vertices\itemCount)
     If CArray::GetCount(*vertices)>0
-      Protected size_t.i
-      size_t = CArray::GetCount(*vertices) * CArray::GetItemSize(*vertices)
-    
-      CArray::SetCount(*topo\vertices,CArray::GetCount(*vertices))
-      CArray::SetCount(*topo\faces,CArray::GetCount(*faces))
       CArray::Copy(*topo\vertices,*vertices)
       CArray::Copy(*topo\faces,*faces)
     EndIf
@@ -83,7 +82,7 @@ Module Topology
   ;  Copy
   ; ----------------------------------------------------------------------------
   Procedure Copy(*topo.Topology_t,*other.Topology_t)
-    Set(*topo.Topology_t,*other\vertices,*other\faces)
+    Set(*topo,*other\vertices,*other\faces)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -345,7 +344,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 292
+; CursorPosition = 65
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP

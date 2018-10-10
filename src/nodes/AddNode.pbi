@@ -157,14 +157,14 @@ Module AddNode
                 *p1 = CArray::GetValue(*vOut,i)
                 *p2 = CArray::GetValue(*vIn,0)
                 Vector3::Add(v,*p1,*p2)
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
               Next i
             Else
               For i=0 To CArray::GetCount(*vIn)-1
                 *p1 = CArray::GetValue(*vOut,i)
                 *p2 = CArray::GetValue(*vIn,i)
                 Vector3::Add(v, *p1, *p2)
-                CArray::SetValue(*vOut,i,@v)
+                CArray::SetValue(*vOut,i,v)
                 If i=CArray::GetCount(*vOut)-1 : Break : EndIf
                 
               Next i
@@ -223,8 +223,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 170
+; CursorPosition = 36
 ; Folding = --
 ; EnableThread
 ; EnableXP

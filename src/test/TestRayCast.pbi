@@ -2,8 +2,6 @@
 
 UseModule Math
 
-
-
 ;---------------------------------------------------
 ; TEST STRUCTURE
 ;---------------------------------------------------
@@ -23,6 +21,7 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *ray.TestRay_t
 Global *bunny.Polymesh::Polymesh_t
+Global *layer.Layer::Layer_t
 
 ;---------------------------------------------------
 ; Constructor
@@ -46,7 +45,6 @@ Procedure newTestRay(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32
   *tr\mesh\wireframe_g = 1
   *tr\mesh\wireframe_b = 0
   Scene::AddChild(Scene::*current_scene, *tr\drawer)
- 
 
   ProcedureReturn *tr
 EndProcedure
@@ -97,12 +95,12 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Protected *pnts.Drawer::Item_t = Drawer::NewPoints(*tr\drawer, *positions)
   Drawer::SetSize(*pnts, 4)
   Protected color.c4f32
-  Color::Set(@color, 1,0,0,1)
+  Color::Set(color, 1,0,0,1)
   Drawer::SetColor(*pnts, @color)
   
   Protected *line.Drawer::Item_t = Drawer::NewLine(*tr\drawer, *tr\start_pos, *tr\end_pos)
   Drawer::SetSize(*line, 2)
-  Color::Set(@color, 0,1,0,1)
+  Color::Set(color, 0,1,0,1)
   Drawer::SetColor(*line, @color)
   
   Protected q.q4f32
@@ -115,7 +113,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   
   Define.v3f32 a,b,c
   Define color.c4f32
-  Color::Set(@color, 1,0,0,1)
+  Color::Set(color, 1,0,0,1)
 
   Protected *pnt.Drawer::Item_t
   Protected *tri.CArray::CarrayV3F32 = CArray::newCArrayV3F32()
@@ -129,16 +127,16 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
     *b = Carray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
     *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3))
     
-    Vector3::MulByMatrix4(@a,*a,*t\m)
-    Vector3::MulByMatrix4(@b,*b,*t\m)
-    Vector3::MulByMatrix4(@c,*c,*t\m)
+    Vector3::MulByMatrix4(a,*a,*t\m)
+    Vector3::MulByMatrix4(b,*b,*t\m)
+    Vector3::MulByMatrix4(c,*c,*t\m)
     
     intersect.b = Ray::TriangleIntersection(*tr\ray,@a,@b,@c,@*tr\dist,*tr\uvw, @frontFacing)
     If intersect And *tr\dist<dist
       Debug "INTERSECT TRIANGLE : "+Str(i)
-      CArray::SetValue(*tri, 0, @a)
-      CArray::SetValue(*tri, 1, @b)
-      CArray::SetValue(*tri, 2, @c)
+      CArray::SetValue(*tri, 0, a)
+      CArray::SetValue(*tri, 1, b)
+      CArray::SetValue(*tri, 2, c)
       
       *pnt = Drawer::NewLoop(*tr\drawer, *tri)
       Drawer::SetSize(*pnt, 8)
@@ -146,14 +144,12 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
       
       *tr\location\geometry = *geom
       *tr\location\t = *t
-      *tr\location\u = *tr\uvw\x
-      *tr\location\v = *tr\uvw\y
-      *tr\location\w = *tr\uvw\z
+      Vector3::SetFromOther(*tr\location\uvw, *tr\uvw)
       *tr\location\tid = i
       
       *pnt = Drawer::NewPoint(*tr\drawer, Location::GetPosition(*tr\location))
       Drawer::SetSize(*pnt, 8)
-      Color::Set(@color, 1,1,0,1)
+      Color::Set(color, 1,1,0,1)
       Drawer::SetColor(*pnt, @color)
       
     Else
@@ -169,7 +165,7 @@ EndProcedure
 
 Procedure AddBunny()
   Define q2.q4f32
-  Quaternion::SetFromAxisAngleValues(@q2,0,0,1,Radian(45))
+  Quaternion::SetFromAxisAngleValues(q2,0,0,1,Radian(45))
   *bunny = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Define *tb.Transform::Transform_t = *bunny\localT
   Transform::SetScaleFromXYZValues(*tb,3,3,3)
@@ -191,7 +187,7 @@ Procedure AddRay()
   Vector3::Set(sp,2,10,0)
   Vector3::Set(ep,0,0,0)
   
-  Color::Set(@color,1,0,0,1)
+  Color::Set(color,1,0,0,1)
   *ray = newTestRay(*bunny,@sp,@ep,@color)
 EndProcedure
 
@@ -212,8 +208,9 @@ Procedure Draw(*app.Application::Application_t)
 
 
  Define useJoystick.b = #False
- width = 800
- height = 600
+ Define width = 800
+ Define height = 600
+ Define model.m4f32
  ; Main
  Globals::Init()
 ;  Bullet::Init( )
@@ -232,7 +229,7 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
 
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   ViewportUI::AddLayer(*viewport, *layer)
@@ -248,8 +245,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 138
+; CursorPosition = 36
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

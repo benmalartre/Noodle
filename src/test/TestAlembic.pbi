@@ -86,7 +86,7 @@ If Time::Init()
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
 
   *pgm = *app\context\shaders("polymesh")
   GLCheckError("Before Creating Polymeshes")
@@ -160,8 +160,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 107
+; CursorPosition = 120
+; FirstLine = 102
 ; Folding = -
 ; EnableThread
 ; EnableXP

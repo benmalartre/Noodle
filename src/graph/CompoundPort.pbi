@@ -136,7 +136,7 @@ Module CompoundNodePort
             Vector3::Set(v,v\x,v\y,f)
         EndSelect
         
-        CArray::SetValue(*vVal,0,@v)
+        CArray::SetValue(*vVal,0,v)
         ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
       Case Attribute::#ATTR_TYPE_Quaternion
@@ -159,7 +159,7 @@ Module CompoundNodePort
             Quaternion::Set(q,q\x,q\y,q\z,Radian(f))
         EndSelect
         
-        CArray::SetValue(*qVal,0,@q)
+        CArray::SetValue(*qVal,0,q)
         ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
        Case Attribute::#ATTR_TYPE_COLOR
@@ -216,7 +216,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 129
+; CursorPosition = 161
+; FirstLine = 157
 ; Folding = --
 ; EnableXP

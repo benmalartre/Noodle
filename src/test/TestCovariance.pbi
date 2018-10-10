@@ -137,11 +137,11 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     
     Protected inp.f = 1.0/*geom\nbpoints
     Protected centroid.v3f32
-    Vector3::Scale(@centroid, @sum, inp)
+    Vector3::Scale(centroid, sum, inp)
     
     Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
     CArray::SetCount(*positions, 1)
-    CArray::SetValue(*positions, 0, @centroid)
+    CArray::SetValue(*positions, 0, centroid)
     Protected *point.Drawer::Point_t = Drawer::NewPoint(*drawer, *positions)
     *point\size = 4
     Drawer::SetColor(*point, Color::_RED())
@@ -286,7 +286,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 209
+; CursorPosition = 139
+; FirstLine = 139
 ; Folding = -
 ; EnableXP

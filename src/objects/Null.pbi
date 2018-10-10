@@ -144,17 +144,17 @@ Module Null
         *Me\nbp = 6
         
         Vector3::Set(pos,-hSize,0,0)
-        CArray::SetValue(*positions,0,@pos)
+        CArray::SetValue(*positions,0,pos)
         Vector3::Set(pos,hSize,0,0)
-        CArray::SetValue(*positions,1,@pos)
+        CArray::SetValue(*positions,1,pos)
         Vector3::Set(pos,0,-hSize,0)
-        CArray::SetValue(*positions,2,@pos)
+        CArray::SetValue(*positions,2,pos)
         Vector3::Set(pos,0,hSize,0)
-        CArray::SetValue(*positions,3,@pos)
+        CArray::SetValue(*positions,3,pos)
         Vector3::Set(pos,0,0,hSize)
-        CArray::SetValue(*positions,4,@pos)
+        CArray::SetValue(*positions,4,pos)
         Vector3::Set(pos,0,0,-hSize)
-        CArray::SetValue(*positions,5,@pos)
+        CArray::SetValue(*positions,5,pos)
         
       Case #Icon_Disc
         CArray::SetCount(*positions,22)
@@ -370,7 +370,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 187
-; FirstLine = 145
+; CursorPosition = 156
+; FirstLine = 142
 ; Folding = ---
 ; EnableXP

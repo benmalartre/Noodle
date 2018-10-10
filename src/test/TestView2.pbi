@@ -90,9 +90,9 @@ CompilerEndIf
 
 UseJPEGImageDecoder()
 Define texture.i  =LoadImage(#PB_Any,"..\..\textures\moonbumpmap2.jpg")
-Define textureID = Utils::GL_LoadImage(texture,#False,#GL_REPEAT,#GL_REPEAT,#GL_LINEAR,#GL_LINEAR)
+Define textureID = Utils::GLLoadImage(texture,#False,#GL_REPEAT,#GL_REPEAT,#GL_LINEAR,#GL_LINEAR)
 Define texture2.i  =LoadImage(#PB_Any,"..\..\textures\earth.jpg")
-Define textureID2 = Utils::GL_LoadImage(texture2,#False,#GL_REPEAT,#GL_REPEAT)
+Define textureID2 = Utils::GLLoadImage(texture2,#False,#GL_REPEAT,#GL_REPEAT)
 ; ShaderUI::SetContent(*shaders,*shader)
  
 Global *ship.Polymesh::Polymesh_t = Polymesh::New("Dhip",Shape::#SHAPE_TOMATO)
@@ -105,8 +105,8 @@ ScreenQuad::Setup(*quad,*shader)
 
 Define e
 Define.m4f32 model,offset
-Matrix4::SetIdentity(@model)
-Matrix4::SetIdentity(@offset)
+Matrix4::SetIdentity(model)
+Matrix4::SetIdentity(offset)
 Define.f T
 Define *vp.ViewportUI::ViewportUI_t = *viewport
 *vp\camera = *camera
@@ -191,8 +191,9 @@ Repeat
   
   ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 117
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 108
+; FirstLine = 103
+; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

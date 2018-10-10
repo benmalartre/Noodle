@@ -54,6 +54,7 @@ Macro Vector3_Copy(_src, _dst)
   EnableASM
    MOV     rdi,    _dst         ; dst pointer
    MOV     rsi,    _src         ; src pointer
+   DisableASM
    !movups  xmm0,   [rsi]       ; get from src
    !movups  [rdi],  xmm0        ; put To dst
  EndMacro
@@ -148,6 +149,27 @@ Macro Vector3_Sub(_a, _b, _c)
   ! movups [rdi], xmm0
 EndMacro
 
+Macro Vector3_Dot(_a, _b)
+  EnableASM
+  MOV rdi, _a
+  MOV rsi, _b
+  DisableASM
+  
+  ! movups xmm6, [rdi]             ;le U signifie qu'on ne suppose pas que les données sont alignées à 128 bits
+  ! shufps xmm6, xmm6, 9         ;= 1 + 8, c'est-à-dire une rotation des 3 composantes
+  ! movups xmm7, [rsi]
+  ! shufps xmm7, xmm7, 18        ;= 2 + 16, c'est-à-dire une rotation dans l'autre sens
+  ! movaps xmm0,xmm6             ;premier produit pour chaque composante
+  ! mulps xmm0,xmm7
+  ! movups xmm6, vS1
+  ! shufps xmm6, xmm6, 18
+  ! movups xmm7, vS2
+  ! shufps xmm7, xmm7, 9
+  ! mulps xmm7,xmm6              ;deuxième produit retranché pour chaque composante
+  ! subps xmm0,xmm7
+  
+EndMacro
+
 Procedure Vector3_AddInPlace_Array(*src, *dst, count.i)
 !     mov     rcx,    [p.v_count]       ; # of float Data
 !     mov     rdi,    [p.p_dst]         ; dst pointer
@@ -183,6 +205,30 @@ Procedure Vector3_SubInPlace_Array(*src, *dst, count.i)
 !     dec     rcx                       ; next
 !     jnz     loop_vec3_subinplace_array
 EndProcedure
+
+Procedure Vector3_Cross(*a.Vector3, *b.Vector3)
+  ! mov rax,[p.p_a]          ;Put argument addresses to registers
+  ! mov rbx,[p.p_b]
+  
+  ! movups xmm0,[rax]        ;If aligned then use movaps
+  ! movups xmm1,[rbx]   
+  
+  ! movaps xmm2,xmm0         ;Copies
+  ! movaps xmm3,xmm1
+  
+  ! shufps xmm0,xmm0,0xd8    ;Exchange 2 and 3 element (V1)
+  ! shufps xmm1,xmm1,0xe1    ;Exchange 1 and 2 element (V2)
+  ! mulps  xmm0,xmm1
+         
+  ! shufps xmm2,xmm2,0xe1    ;Exchange 1 and 2 element (V1)
+  ! shufps xmm3,xmm3,0xd8    ;Exchange 2 and 3 element (V2)
+  ! mulps  xmm2,xmm3
+        
+  ! subps  xmm0,xmm2
+  
+  ! movups [rax],xmm0        ;Result
+EndProcedure
+
 
 
 Define a.Vector3
@@ -314,8 +360,8 @@ MessageRequester("ASM",msg)
 ; Vector3_Access(a, 2, value)
 ; Debug "Z: "+StrF( value )
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 241
-; FirstLine = 229
-; Folding = ---
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 217
+; FirstLine = 183
+; Folding = ----
 ; EnableXP

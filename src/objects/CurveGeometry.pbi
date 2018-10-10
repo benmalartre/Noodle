@@ -240,7 +240,7 @@ Module CurveGeometry
         EndIf
         Vector3::Cross(nrm, t1, upv)
         Vector3::NormalizeInPlace(nrm)
-        CArray::SetValue(*Me\a_normals, j+base, @norm)
+        CArray::SetValue(*Me\a_normals, j+base, norm)
       Next
       base + numVertices
     Next
@@ -559,10 +559,10 @@ Module CurveGeometry
       p\x + (1 - 2 *Random_0_1()) * 10
       p\y + (1 - 2 *Random_0_1()) * 10
       p\z + (1 - 2 *Random_0_1()) * 10
-      CArray::SetValue(*Me\a_positions, i, @p)
+      CArray::SetValue(*Me\a_positions, i, p)
       Vector3::Set(c, Random_0_1(), Random_0_1(), Random_0_1())
-      CArray::SetValue(*Me\a_colors, i, @c)
-      CArray::SetValue(*Me\a_normals, i, @n)
+      CArray::SetValue(*Me\a_colors, i, c)
+      CArray::SetValue(*Me\a_normals, i, n)
       CArray::SetValueF(*Me\a_widths, i, 0.1)
     Next
     CArray::SetValueL(*Me\a_numVertices, 0, *Me\nbpoints)
@@ -602,10 +602,10 @@ Module CurveGeometry
         p\y + (1 - 2 * Random_0_1())
         p\z + (1 - 2 * Random_0_1())
         
-        CArray::SetValue(*Me\a_positions, j+base, @p)
+        CArray::SetValue(*Me\a_positions, j+base, p)
         Vector3::Set(color, Random_0_1(), Random_0_1(), Random_0_1())
-        CArray::SetValue(*Me\a_colors, j+base, @color)
-        CArray::SetValue(*Me\a_normals, j+base, @norm)
+        CArray::SetValue(*Me\a_colors, j+base, color)
+        CArray::SetValue(*Me\a_normals, j+base, norm)
         CArray::SetValueF(*Me\a_widths, j+base, 0.1)
       Next
 
@@ -674,7 +674,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 220
+; CursorPosition = 607
+; FirstLine = 600
 ; Folding = ------
 ; EnableXP

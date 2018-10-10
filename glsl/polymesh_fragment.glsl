@@ -75,6 +75,7 @@ if(lightPosition.w == 0.0) {
 			}
 		}
 		else outColor = vec4(1.0,0.5,0.9,1.0) * vertex_color;
+
 	}
 
 }

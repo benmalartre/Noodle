@@ -316,9 +316,9 @@ Module PolymeshGeometry
         vc\y = RESCALE(*vc\y,bmin\y,bmax\y,0,1)
         vc\z = RESCALE(*vc\z,bmin\z,bmax\z,0,1)
          
-        CArray::SetValuePtr(*geom\a_uvws,cnt,@va)
-        CArray::SetValuePtr(*geom\a_uvws,cnt+1,@vb)
-        CArray::SetValuePtr(*geom\a_uvws,cnt+2,@vc) 
+        CArray::SetValuePtr(*geom\a_uvws,cnt,va)
+        CArray::SetValuePtr(*geom\a_uvws,cnt+1,vb)
+        CArray::SetValuePtr(*geom\a_uvws,cnt+2,vc) 
         cnt+3
       Next i
       
@@ -330,9 +330,9 @@ Module PolymeshGeometry
         b = CArray::GetValueL(*geom\a_triangleindices,i*3+1)
         c = CArray::GetValueL(*geom\a_triangleindices,i*3+2)
     
-        CArray::SetValuePtr(*geom\a_uvws,cnt,CArray::GetValue(*geom\a_positions,a))
-        CArray::SetValuePtr(*geom\a_uvws,cnt+1,CArray::GetValue(*geom\a_positions,b))
-        CArray::SetValuePtr(*geom\a_uvws,cnt+2,CArray::GetValue(*geom\a_positions,c)) 
+        CArray::SetValue(*geom\a_uvws,cnt,CArray::GetValue(*geom\a_positions,a))
+        CArray::SetValue(*geom\a_uvws,cnt+1,CArray::GetValue(*geom\a_positions,b))
+        CArray::SetValue(*geom\a_uvws,cnt+2,CArray::GetValue(*geom\a_positions,c)) 
         cnt+3
       Next i
     EndIf
@@ -360,18 +360,18 @@ Module PolymeshGeometry
       For v=0 To nbv-1
       
         Vector3::Set(uvws,(u)*incru,0,(v)*incrv)
-        CArray::SetValue(*geom\a_uvws,i,@uvws)
+        CArray::SetValue(*geom\a_uvws,i,uvws)
         Vector3::Set(uvws,(u)*incru,0,(v+1)*incrv)
-        CArray::SetValue(*geom\a_uvws,i+1,@uvws)
+        CArray::SetValue(*geom\a_uvws,i+1,uvws)
         Vector3::Set(uvws,(u+1)*incru,0,(v)*incrv)
-        CArray::SetValue(*geom\a_uvws,i+2,@uvws) 
+        CArray::SetValue(*geom\a_uvws,i+2,uvws) 
         
         Vector3::Set(uvws,(u)*incru,0,(v+1)*incrv)
-        CArray::SetValue(*geom\a_uvws,i+3,@uvws)
+        CArray::SetValue(*geom\a_uvws,i+3,uvws)
         Vector3::Set(uvws,(u+1)*incru,0,(v+1)*incrv)
-        CArray::SetValue(*geom\a_uvws,i+4,@uvws)
+        CArray::SetValue(*geom\a_uvws,i+4,uvws)
         Vector3::Set(uvws,(u+1)*incru,0,(v)*incrv)
-        CArray::SetValue(*geom\a_uvws,i+5,@uvws) 
+        CArray::SetValue(*geom\a_uvws,i+5,uvws) 
   
         i+6
       Next
@@ -397,7 +397,7 @@ Module PolymeshGeometry
   ; ----------------------------------------------------------------------------
   Procedure RecomputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
     
-    Protected i,j,a,b,c,base
+    Protected i,j,base
     Protected ab.v3f32, ac.v3f32,n.v3f32, norm.v3f32
     Protected *n.v3f32
   
@@ -409,20 +409,18 @@ Module PolymeshGeometry
     ; First Triangle Normals
     Define.v3f32 *a, *b, *c
     For i=0 To *mesh\nbtriangles-1
-      a = CArray::GetValueL(*mesh\a_triangleindices,(i*3))
-      b = CArray::GetValueL(*mesh\a_triangleindices,(i*3+1))
-      c = CArray::GetValueL(*mesh\a_triangleindices,(i*3+2))
-      *a = CArray::GetValue(*mesh\a_positions,a)
-      *b = CArray::GetValue(*mesh\a_positions,b)
-      *c = CArray::GetValue(*mesh\a_positions,c)
+      *a = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3)))
+      *b = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+1)))
+      *c = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+2)))
+      
       Vector3::Sub(ab,*a,*b)
       Vector3::Sub(ac,*a,*c)
-  
+      
       Vector3::Cross(norm,ac,ab)
       Vector3::NormalizeInPlace(norm)
-      CArray::SetValue(*mesh\a_normals,cnt,@norm)
-      CArray::SetValue(*mesh\a_normals,cnt+1,@norm)
-      CArray::SetValue(*mesh\a_normals,cnt+2,@norm)
+      CArray::SetValue(*mesh\a_normals,cnt,norm)
+      CArray::SetValue(*mesh\a_normals,cnt+1,norm)
+      CArray::SetValue(*mesh\a_normals,cnt+2,norm)
 
       cnt+3
     Next i
@@ -435,13 +433,12 @@ Module PolymeshGeometry
       nbv = CArray::GetvalueL(*mesh\a_facecount, i)
       nbt = nbv-2
       Vector3::Set(n, 0,0,0)
-      
       For j=0 To nbt-1
         *n = CArray::GetValue(*mesh\a_normals, base+j*3)
         Vector3::AddInPlace(n, *n)
       Next
       Vector3::NormalizeInPlace(n)
-      CArray::SetValue(*mesh\a_polygonnormals, i, @n)
+      CArray::SetValue(*mesh\a_polygonnormals, i, n)
       base+nbt*3
     Next
     
@@ -461,7 +458,7 @@ Module PolymeshGeometry
         Vector3::AddInPlace(n, *n)
       Next
       Vector3::ScaleInPlace(n, 1/nbp)
-      CArray::SetValue(*mesh\a_pointnormals, i, @n)
+      CArray::SetValue(*mesh\a_pointnormals, i, n)
       base + nbp
     Next
     
@@ -577,8 +574,7 @@ Module PolymeshGeometry
       nbt = nbv-2
       ;Get Last Point
       last = z+nbv-1
-      
-      
+
       ;Store Triangles Data
       ;-----------------------------------
       For y=0 To nbt-1
@@ -740,16 +736,10 @@ Module PolymeshGeometry
     If *topo <> *mesh\topo
       Topology::Copy(*mesh\topo, *topo)
     EndIf
-    
-    Debug "TOPOLOGY:"
-    Debug CArray::GetCount(*topo\vertices)
-    Debug CArray::GetCount(*topo\faces)
-    
-    
+
     ; ReAllocate Memory
     Protected i
     Protected nbp = CArray::GetCount(*topo\vertices)
-    Debug "POLYMESH GEOMETRY : "+Str(nbp)
     CArray::SetCount(*mesh\a_positions,nbp)
     CArray::SetCount(*mesh\a_velocities,nbp)
     CArray::SetCount(*mesh\a_pointnormals,nbp)
@@ -882,7 +872,7 @@ Module PolymeshGeometry
     Protected nbp = *mesh\nbpoints
     
     ; ---[ Check Nb Points ]--------------------------------
-    If CArray::GetCount(*v) = nbp
+    If CArray::GetCount(*v) = nbp And nbp > 0
       ; ---[ Set Point Position ]---------------------------
       CArray::Copy(*mesh\a_positions,*v)
     EndIf
@@ -929,7 +919,7 @@ Module PolymeshGeometry
     Color::Set(c,r,g,b,1)
     For i=0 To nbs-1
       
-      CArray::SetValue(*mesh\a_colors,i,@c)
+      CArray::SetValue(*mesh\a_colors,i,c)
     Next 
      
   EndProcedure
@@ -1019,9 +1009,9 @@ Module PolymeshGeometry
       EndIf
       Color::Randomize(color)
       For v=0 To nbt-1
-        CArray::SetValue(*mesh\a_colors,tid+2,@color)
-        CArray::SetValue(*mesh\a_colors,tid+1,@color)
-        CArray::SetValue(*mesh\a_colors,tid,@color)
+        CArray::SetValue(*mesh\a_colors,tid+2,color)
+        CArray::SetValue(*mesh\a_colors,tid+1,color)
+        CArray::SetValue(*mesh\a_colors,tid,color)
         tid+3
       Next
      
@@ -1090,7 +1080,7 @@ Module PolymeshGeometry
     For i = 0 To *mesh\nbpoints-1
       *p = CArray::GetValue(*pos,i)
       Vector3::Add(pos,*p,offset)
-      CArray::SetValue(*pos,i,@pos)
+      CArray::SetValue(*pos,i,pos)
     Next i
     SetPointsPosition(*mesh,*pos)
     
@@ -1216,6 +1206,7 @@ Module PolymeshGeometry
   Procedure Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
     Protected r.f
     Protected loc.Geometry::Location_t
+    Protected *p.v3f32
     loc\geometry = *mesh
     loc\t = *t
     CArray::SetCount(*io, numSamples)
@@ -1232,7 +1223,8 @@ Module PolymeshGeometry
           EndIf
           loc\uvw\z = 1-loc\uvw\x-loc\uvw\y
           loc\tid = j
-          CArray::SetValue(*io, i, Location::GetPosition(@loc))
+          *p = Location::GetPosition(loc)
+          CArray::SetValue(*io, i, *p)
           Break
         Else
           r - CArray::GetValueF(*mesh\a_triangleareas, j)
@@ -1321,17 +1313,15 @@ Module PolymeshGeometry
       CArray::Copy(*topo\vertices,*geom\a_positions)
       
       Protected nbf = CArray::GetCount(*geom\a_faceindices) + CArray::GetCount(*geom\a_facecount)
-  
       CArray::SetCount(*topo\faces,nbf)
       src_offset = 0
       dts_offset = 0
       For i=0 To CArray::GetCount(*geom\a_facecount)-1
         nbv = CArray::GetValueL(*geom\a_facecount,i)
         CopyMemory(CArray::GetPtr(*geom\a_faceindices, src_offset), CArray::GetPtr(*topo\faces, dst_offset), nbv * CArray::GetItemSize(*topo\faces))
+        CArray::SetValueL(*topo\faces,dst_offset+nbv,-2)
         src_offset + nbv 
         dst_offset + (nbv+1)
-        CArray::SetValueL(*topo\faces,dst_offset+nbv,-2)
-
       Next i
     EndIf
     
@@ -1420,7 +1410,7 @@ Module PolymeshGeometry
     CArray::SetCount(*vertices,Shape::#TORUS_NUM_VERTICES)
     For v=0 To Shape::#TORUS_NUM_VERTICES-1
       CopyMemory(Shape::?shape_torus_positions+v*SizeOf(p),@p,SizeOf(p))
-      CArray::SetValue(*vertices,v,@p)
+      CArray::SetValue(*vertices,v,p)
     Next v
     
     Define i,i2
@@ -1508,21 +1498,21 @@ Module PolymeshGeometry
     
     ; ---[ Vertices ]---------------------------
     Vector3::Set(p,l,l,l)
-    CArray::SetValue(*geom\a_positions,0,@p)
+    CArray::SetValue(*geom\a_positions,0,p)
     Vector3::Set(p,l,l,-l)
-    CArray::SetValue(*geom\a_positions,1,@p)
+    CArray::SetValue(*geom\a_positions,1,p)
     Vector3::Set(p,-l,l,-l)
-    CArray::SetValue(*geom\a_positions,2,@p)
+    CArray::SetValue(*geom\a_positions,2,p)
     Vector3::Set(p,-l,l,l)
-    CArray::SetValue(*geom\a_positions,3,@p)
+    CArray::SetValue(*geom\a_positions,3,p)
     Vector3::Set(p,l,-l,l)
-    CArray::SetValue(*geom\a_positions,4,@p)
+    CArray::SetValue(*geom\a_positions,4,p)
     Vector3::Set(p,l,-l,-l)
-    CArray::SetValue(*geom\a_positions,5,@p)
+    CArray::SetValue(*geom\a_positions,5,p)
     Vector3::Set(p,-l,-l,-l)
-    CArray::SetValue(*geom\a_positions,6,@p)
+    CArray::SetValue(*geom\a_positions,6,p)
     Vector3::Set(p,-l,-l,l)
-    CArray::SetValue(*geom\a_positions,7,@p)
+    CArray::SetValue(*geom\a_positions,7,p)
     
     CArray::SetCount(*geom\a_faceindices,24)
     
@@ -1572,7 +1562,7 @@ Module PolymeshGeometry
         Case 3
           Vector3::Set(p,0,0,0)
       EndSelect
-      CArray::SetValue(*geom\a_uvws,i,@p)
+      CArray::SetValue(*geom\a_uvws,i,p)
      
     Next i
     
@@ -1605,21 +1595,21 @@ Module PolymeshGeometry
     Protected l.f = radius*0.5
   
     Vector3::Set(p,l,l,l)
-    CArray::SetValue(*topo\vertices,0,@p)
+    CArray::SetValue(*topo\vertices,0,p)
     Vector3::Set(p,l,l,-l)
-    CArray::SetValue(*topo\vertices,1,@p)
+    CArray::SetValue(*topo\vertices,1,p)
     Vector3::Set(p,-l,l,-l)
-    CArray::SetValue(*topo\vertices,2,@p)
+    CArray::SetValue(*topo\vertices,2,p)
     Vector3::Set(p,-l,l,l)
-    CArray::SetValue(*topo\vertices,3,@p)
+    CArray::SetValue(*topo\vertices,3,p)
     Vector3::Set(p,l,-l,l)
-    CArray::SetValue(*topo\vertices,4,@p)
+    CArray::SetValue(*topo\vertices,4,p)
     Vector3::Set(p,l,-l,-l)
-    CArray::SetValue(*topo\vertices,5,@p)
+    CArray::SetValue(*topo\vertices,5,p)
     Vector3::Set(p,-l,-l,-l)
-    CArray::SetValue(*topo\vertices,6,@p)
+    CArray::SetValue(*topo\vertices,6,p)
     Vector3::Set(p,-l,-l,l)
-    CArray::SetValue(*topo\vertices,7,@p)
+    CArray::SetValue(*topo\vertices,7,p)
     
     
     ;Face
@@ -1686,11 +1676,11 @@ Module PolymeshGeometry
       yr = radius * Cos(lng)
       If i=0
         Vector3::Set(p,0,-radius,0)
-        CArray::SetValue(*geom\a_positions,0,@p)
+        CArray::SetValue(*geom\a_positions,0,p)
   
       ElseIf i = longs-1
         Vector3::Set(p,0,radius,0)
-        CArray::SetValue(*geom\a_positions,nbp-1,@p)
+        CArray::SetValue(*geom\a_positions,nbp-1,p)
   
       Else
         For j = 0 To lats-1
@@ -1699,7 +1689,7 @@ Module PolymeshGeometry
           z = Sin(lat)
           Vector3::Set(p,x*yr,y,z*yr)
           k = (i-1)*lats+j+1
-          CArray::SetValue(*geom\a_positions,k,@p)
+          CArray::SetValue(*geom\a_positions,k,p)
         Next j
       EndIf
     Next i
@@ -1805,12 +1795,12 @@ Module PolymeshGeometry
       yr = radius * Cos(lng)
       If i=0
         Vector3::Set(p,0,-radius,0)
-        CArray::SetValue(*topo\vertices,0,@p)
+        CArray::SetValue(*topo\vertices,0,p)
   
   
       ElseIf i = longs-1
         Vector3::Set(p,0,radius,0)
-        CArray::SetValue(*topo\vertices,nbp-1,@p)
+        CArray::SetValue(*topo\vertices,nbp-1,p)
   
   
       Else
@@ -1820,7 +1810,7 @@ Module PolymeshGeometry
           z = Sin(lat)
           Vector3::Set(p,x*yr,y,z*yr)
           k = (i-1)*lats+j+1
-          CArray::SetValue(*topo\vertices,k,@p)
+          CArray::SetValue(*topo\vertices,k,p)
   
         Next j
       EndIf
@@ -1933,7 +1923,7 @@ Module PolymeshGeometry
     For x=0 To u-1
       For z=0 To v-1
         Vector3::Set(pos,-0.5*sizX+x*stepx,0,-0.5*sizZ+z*stepz)
-        CArray::SetValue(*geom\a_positions,x*u+z,@pos)
+        CArray::SetValue(*geom\a_positions,x*u+z,pos)
       Next z
     Next x
     
@@ -1985,7 +1975,7 @@ Module PolymeshGeometry
     For x=0 To u-1
       For z=0 To v-1
         Vector3::Set(pos,-0.5*radius+x*stepx,0,-0.5*radius+z*stepz)
-        CArray::SetValue(*topo\vertices,x*u+z,@pos)
+        CArray::SetValue(*topo\vertices,x*u+z,pos)
       Next z
     Next x
     
@@ -2251,11 +2241,11 @@ Module PolymeshGeometry
     Protected q.q4f32
     Protected i
     Protected incr.f = 1/u*360
-    CArray::SetValue(*geom\a_positions,0,@x)
+    CArray::SetValue(*geom\a_positions,0,x)
     For i=0 To u-1
       Quaternion::SetFromAxisAngleValues(q,0,1,0,Radian(i*incr))
       Vector3::MulByQuaternion(x,p,q)
-      CArray::SetValue(*geom\a_positions,i+1,@x)
+      CArray::SetValue(*geom\a_positions,i+1,x)
       CArray::SetValueL(*geom\a_faceindices,i*3,0)
       CArray::SetValueL(*geom\a_faceindices,i*3+1,i+1)
       CArray::SetValueL(*geom\a_faceindices,i*3+2,Mod(i+1,u)+1)
@@ -2381,7 +2371,7 @@ Module PolymeshGeometry
     For i=0 To *shape\nbp-1
       *c = CArray::GetValue(*Me\a_colors,i)
       Vector3::Set(c,*c\r,*c\g,*c\b)
-      CArray::SetValue(*shape\colors,i,@c)
+      CArray::SetValue(*shape\colors,i,c)
     Next
     *shape\indexed = #False
   EndProcedure
@@ -2461,7 +2451,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 426
-; FirstLine = 402
+; CursorPosition = 1324
+; FirstLine = 1292
 ; Folding = ----fw--v--
 ; EnableXP

@@ -194,7 +194,6 @@ Module Camera
     Vector3::Sub(dir,*Me\lookat,*Me\pos)
   
     Quaternion::LookAt(t\t\rot,dir,*Me\up, #False)
-  
     Vector3::SetFromOther(t\t\pos,*Me\pos)
     
     Transform::SetMatrixFromSRT(t\m,t\t\scl,t\t\rot,t\t\pos)
@@ -404,8 +403,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 231
+; CursorPosition = 192
+; FirstLine = 170
 ; Folding = ----
 ; EnableXP
 ; EnablePurifier

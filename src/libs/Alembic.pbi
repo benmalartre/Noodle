@@ -898,7 +898,6 @@ Module AlembicObject
   ; Create Sample
   ;---------------------------------------------------------
   Procedure CreateSample(*o.AlembicObject_t)
-  
     Select *o\type
       Case Alembic::#ABC_OBJECT_XFORM
         *o\sample = AllocateMemory(SizeOf(Alembic::ABC_XForm_Sample))
@@ -1090,7 +1089,7 @@ Module AlembicObject
   ;----------------------------------------
   ;{
   Procedure GetPolymeshSampleAtFrame(*o.AlembicObject_t,frame.f)
-  
+  Debug ">>>>>>>>>>>>>>>>>>>>>>>>>> GET POLYMESH SAMPLE FRAME <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
     Protected *mesh_sample.Alembic::ABC_Polymesh_Topo_Sample = *o\sample
     Protected *mesh.Polymesh::Polymesh_t = *o\obj
     Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
@@ -1188,7 +1187,7 @@ Module AlembicObject
     EndIf
     
     *mesh\dirty = Object3D::#DIRTY_STATE_DEFORM
-    
+    Debug "POLYMESH SAMPE.  END"
   EndProcedure
   ;}
   
@@ -1463,6 +1462,7 @@ Module AlembicObject
     Define x
     Define nbp
     Define *v.v3f32
+    Define *array.CArray::CArrayT
     If FindMapElement(*Me\obj\m_attributes(),name)
        If *Me\type = Alembic::#ABC_OBJECT_POINTCLOUD
          Define *geom.Geometry::PointCloudGeometry_t = *Me\obj\geom
@@ -1483,11 +1483,11 @@ Module AlembicObject
 
                CArray::SetCount(*geom\a_normals,nbp)
                CArray::SetCount(*geom\a_tangents,nbp)
-       
+               *array = *Me\obj\m_attributes()\data
                For x=0 To nbp-1
                  *nrm = CArray::GetValue(*geom\a_normals,x)
                  *tan = CArray::GetValue(*geom\a_tangents,x)
-                 *q = CArray::GetValue(*Me\obj\m_attributes()\data,x)
+                 *q = CArray::GetValue(*array,x)
                  
                  Vector3::Set(*nrm,0,1,0)
                  Vector3::MulByQuaternionInPlace(*nrm,*q)
@@ -1496,12 +1496,12 @@ Module AlembicObject
                Next
              Case "Color"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
-
-               Define *q.q4f32
-               Define q.q4f32
+               *array = *Me\obj\m_attributes()\data
+               Define *c.c4f32
+               Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
                For x=0 To nbp-1
-                Color::SetFromOther(CArray::GetValue(*geom\a_color,x),CArray::GetValue(*Me\obj\m_attributes()\data,x))
+                 CopyMemory(CArray::GetValue(*array,x), CArray::GetValue(*geom\a_color,x), SizeOf(c))
                Next
               
            EndSelect
@@ -1528,14 +1528,16 @@ Module AlembicObject
     Define x
     Define nbp
     Define *v.v3f32
+    Define *array.CArray::CarrayT
     ForEach *Me\attributes()
       If *Me\attributes()\name = name
+        *array = *Me\attributes()\data
     ;If FindMapElement(*Me\attributes(),name)
       
        nbp = CArray::GetCount(*arr)
 ;        CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
 ;        CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
-        CArray::Copy(*arr,*Me\attributes()\data)
+        CArray::Copy(*arr,*array)
         Break
 ;        Else
 ;          MessageRequester("[Alembic]","Property "+name+" does NOT exists!!!")
@@ -1566,7 +1568,7 @@ Module AlembicObject
     
     If *o\type = Alembic::#ABC_OBJECT_XFORM
 ;      Protected *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_XFORM)
-
+      Debug "########### INIT XFORM"
       CreateSample(*o)
       *o\obj = #Null
       *o\initialized = #False
@@ -1575,7 +1577,7 @@ Module AlembicObject
       
     ElseIf *o\type = Alembic::#ABC_OBJECT_POLYMESH
       ; *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_POLYMESH)
-      
+      Debug "########### INIT POLYMESH"
       CreateSample(*o)
       ;LogProperties(*o)
       Protected *meshinfos.Alembic::ABC_Polymesh_Topo_Sample_Infos = *o\infos
@@ -1684,8 +1686,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 418
-; FirstLine = 360
+; CursorPosition = 921
+; FirstLine = 874
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

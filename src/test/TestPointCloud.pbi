@@ -6,7 +6,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -67,10 +70,10 @@ Procedure Draw(*app.Application::Application_t)
   Protected shader.i = *s_pointcloud\pgm
   
   glUseProgram(shader)
-  Matrix4::SetIdentity(@offset)
+  Matrix4::SetIdentity(offset)
   Framebuffer::BindOutput(*buffer)
   
-  Matrix4::Echo(@model,"Model")
+  Matrix4::Echo(model,"Model")
   Matrix4::Echo(*app\camera\view,"View")
   Matrix4::Echo(*app\camera\projection,"PROJECTION")
   
@@ -136,7 +139,7 @@ Procedure Draw(*app.Application::Application_t)
   EndIf
   
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -232,9 +235,9 @@ Procedure Draw(*app.Application::Application_t)
   CompilerEndIf
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 170
-; Folding = -
+; CursorPosition = 79
+; FirstLine = 56
+; Folding = --
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone
