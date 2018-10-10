@@ -1,4 +1,5 @@
 ﻿XIncludeFile "Math.pbi"
+XIncludeFile "Memory.pbi"
 
 ;========================================================================================
 ; CArray Module Declaration
@@ -452,7 +453,6 @@ Module CArray
     EndIf
     
     PokeI(*array\data+nb* *array\itemSize,*item)
-    ;CopyMemory(*item, *array\data+nb* *array\itemSize, *array\itemSize)
     *array\itemCount + 1
   EndProcedure
   
@@ -684,7 +684,7 @@ Module CArray
   Procedure SetCount(*array.CArrayT,count.i)
     If count = 0
       If *array\data And MemorySize(*array\data)
-        FreeMemory(*array\data)
+        Memory::FreeAlignedMemory(*array\data, *array\itemCount * *array\itemSize)
         *Array\data = #Null
       EndIf
       *array\itemCount = 0
@@ -692,9 +692,9 @@ Module CArray
       If Not count = *array\itemCount 
         *array\itemCount = count
         If *array\data = #Null
-          *array\data = AllocateMemory(count * *array\itemSize)
+          *array\data = Memory::AllocateAlignedMemory(count * *array\itemSize)
         Else
-          *array\data = ReAllocateMemory(*array\data,count* *array\itemSize)
+          *array\data = Memory::ReAllocateAlignedMemory(*array\data,count* *array\itemSize)
         EndIf
       EndIf
     EndIf
@@ -1161,7 +1161,6 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1126
-; FirstLine = 1103
+; CursorPosition = 1
 ; Folding = -----------
 ; EnableXP

@@ -78,13 +78,13 @@ Procedure CompareFloatArray(*A1, *A2, nb)
   ProcedureReturn #True
 EndProcedure
 
-Procedure.f LengthSquared(*v.Vector3)
-  ProcedureReturn (*v\v[0] * *v\v[0] + *v\v[1] * *v\v[1] + *v\v[2] * *v\v[2])
-EndProcedure
+Macro LengthSquared(_v)
+  (_v\v[0] * _v\v[0] + _v\v[1] * _v\v[1] + _v\v[2] * _v\v[2])
+EndMacro
 
-Procedure.f Length(*v.Vector3)
-  ProcedureReturn Sqr(*v\v[0] * *v\v[0] + *v\v[1] * *v\v[1] + *v\v[2] * *v\v[2])
-EndProcedure
+Macro Length(_v)
+  Sqr(_v\v[0] * _v\v[0] + _v\v[1] * _v\v[1] + _v\v[2] * _v\v[2])
+EndMacro
 
 Procedure.f SSELengthSquared(*v.Vector3)
   Protected l.f
@@ -210,7 +210,7 @@ MessageRequester("VECTOR LENGTH", "PB : "+Str(T1)+Chr(10)+
                             FloatArrayString(*o2A, nb)+Chr(10)+"-------------"+Chr(10)+
                             FloatArrayString(*o3A, nb)+Chr(10)+"-------------")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 95
+; CursorPosition = 84
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

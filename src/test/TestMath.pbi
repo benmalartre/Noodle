@@ -203,6 +203,7 @@ EndProcedure
 Time::Init()
 
 TestNormalize(1200000*16)
+TestCrossProduct(1200000*16)
   
 Define r.i=250
 StartDrawing(CanvasOutput(canvas))
@@ -248,8 +249,8 @@ Until WaitWindowEvent(0) = #PB_Event_CloseWindow
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 42
+; CursorPosition = 204
+; FirstLine = 165
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

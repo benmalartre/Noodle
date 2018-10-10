@@ -806,6 +806,12 @@ Module AlembicIObject
     *cloud_sample\id = CArray::GetPtr(*cloud_geom\a_indices,0)
     
     update.i =  points\UpdateSample(*cloud_infos,*cloud_sample)
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant)
+      CArray::ShiftAlign(*cloud_geom\a_positions\data, *cloud_geom\nbpoints, 12, 16)
+      CArray::ShiftAlign(*cloud_geom\a_velocities\data, *cloud_geom\nbpoints, 12, 16)
+    CompilerEndIf
+      
     UpdateProperties(*o,frame/30)
     ApplyProperty(*o,"Scale")
     ApplyProperty(*o,"Orientation")
@@ -1217,11 +1223,9 @@ Module AlembicIObject
     Protected x=0
     
     infos\time = frame
-    Debug "UPDATE PRPERIES AT FRAME : "+Str(frame)
     Protected prop.Alembic::IProperty
     For x=0 To *Me\iObj\GetNumProperties()-1
       prop = *Me\iObj\GetProperty(x)
-      Debug "UPDATE PROPERTY : "+PeekS(prop\GetName(), -1, #PB_UTF8)
       prop\GetSampleDescription(frame, @infos)
 
       SelectElement(*Me\attributes(),x)
@@ -1233,6 +1237,12 @@ Module AlembicIObject
     
       io_sample\datas = CArray::GetPtr(*attr\data,0)   
       prop\GetSample(frame, @infos, @io_sample)
+      
+      CompilerIf Defined(USE_SSE, #PB_Constant)
+        If infos\type = Alembic::#ABC_DataTraits_V3f
+          CArray::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
+        EndIf
+      CompilerEndIf
     Next
     
   EndProcedure
@@ -1252,14 +1262,13 @@ Module AlembicIObject
          If *geom
            Select name
              Case "Scale"
-               Debug "################# APPLY SCALE ##############################"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
                CArray::SetCount(*geom\a_scale,nbp)
-               CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*geom\a_scale,0),CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
-
-               
+               CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),
+                          CArray::GetPtr(*geom\a_scale,0),
+                          CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
+              
              Case "Orientation"
-               Debug "################# APPLY ORIENTATION ##############################"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
                Define *tan.v3f32
                Define *nrm.v3f32
@@ -1279,7 +1288,6 @@ Module AlembicIObject
                  Vector3::MulByQuaternionInPlace(*tan,*q)
                Next
              Case "Color"
-               Debug "################# APPLY COLOR ##############################"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
                Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
@@ -1292,16 +1300,6 @@ Module AlembicIObject
        EndIf
 
      EndIf
-  
-     
-       
-;     Protected n.s = PeekS(@*infos\name)
-;     
-;      
-;        
-;       
-;        
-;      EndIf  
    EndProcedure
    
   ;---------------------------------------------------------
@@ -1442,7 +1440,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 967
-; FirstLine = 933
+; CursorPosition = 1264
+; FirstLine = 1354
 ; Folding = --------
 ; EnableXP

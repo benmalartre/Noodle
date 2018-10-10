@@ -8,7 +8,7 @@ Structure Vector3
   x.f
   y.f
   z.f 
-;   w.f
+  w.f
 EndStructure
 
 Procedure.f Float_Add(a.f, b.f)
@@ -361,7 +361,6 @@ MessageRequester("ASM",msg)
 ; Debug "Z: "+StrF( value )
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 217
-; FirstLine = 183
+; CursorPosition = 10
 ; Folding = ----
 ; EnableXP

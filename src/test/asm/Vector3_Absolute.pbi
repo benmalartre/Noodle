@@ -1,4 +1,4 @@
-﻿Structure Vector3 ;Align 16
+﻿Structure Vector3 Align 16
   v.f[3]
 EndStructure
 
@@ -31,9 +31,9 @@ EndDataSection
 
 
 Macro Vector3_Absolute(_v)
-    If _v\v[0] < 0 : _v\v[0] = -_v\v[0] : EndIf
-    If _v\v[1] < 0 : _v\v[1] = -_v\v[1] : EndIf
-    If _v\v[2] < 0 : _v\v[2] = -_v\v[2] : EndIf
+  _v\v[0] = Abs(_v\v[0])
+  _v\v[1] = Abs(_v\v[1])
+  _v\v[2] = Abs(_v\v[2])
 EndMacro
 
 Macro Vector3_Absolute_SIMD(_v)
@@ -43,9 +43,9 @@ Macro Vector3_Absolute_SIMD(_v)
   MOV rax, qword l___ieee754_128_sign_mask__  ; move sign mask to rsi register
   DisableASM
   ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
-  ! movups xmm0, [rdi]                  ; data register to sse register
+  ! movaps xmm0, [rdi]                  ; data register to sse register
   ! andps xmm0, xmm1                    ; bitmask removing sign
-  ! movups [rdi], xmm0                  ; mov back to memory
+  ! movaps [rdi], xmm0                  ; mov back to memory
 
 EndMacro
 
@@ -57,10 +57,10 @@ Macro Vector3_Absolute_SIMD_Array(_v, _nb)
   DisableASM
   ! movdqu  xmm1, [rax]  
   ! vector3_normalize_simd_array_loop:
-  !   movups xmm0, [rdi]                ; data register to sse register
+  !   movaps xmm0, [rdi]                ; data register to sse register
   !   andps xmm0, xmm1                  ; bitmask removing sign
-  !   movups [rdi], xmm0                ; move back to array memory
-  !   add rdi, 12                       ; data offset
+  !   movaps [rdi], xmm0                ; move back to array memory
+  !   add rdi, 16                       ; data offset
   !   dec rcx                           ; dec counter
   !   jnz vector3_normalize_simd_array_loop
 EndMacro
@@ -170,6 +170,6 @@ Else
   EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 62
-; FirstLine = 15
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

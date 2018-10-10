@@ -4,6 +4,7 @@ Structure Vector3
   x.f
   y.f
   z.f
+  w.f
 EndStructure
 
 Procedure Compare(*A1, *A2, nb)
@@ -52,8 +53,8 @@ Procedure Cross_ASM(*v.Vector3,*a.Vector3,*b.Vector3)
   ! mov rax, [p.p_a]
   ! mov rcx, [p.p_b]
 
-  ! movups xmm0,[rax]   
-  ! movups xmm1,[rcx]   
+  ! movaps xmm0,[rax]   
+  ! movaps xmm1,[rcx]   
   
   ! movaps xmm2,xmm0         ;Copies
   ! movaps xmm3,xmm1
@@ -69,7 +70,7 @@ Procedure Cross_ASM(*v.Vector3,*a.Vector3,*b.Vector3)
   ! subps  xmm0,xmm2
   
   ! mov rdx, [p.p_v]
-  ! movups [rdx],xmm0        ;Result
+  ! movaps [rdx],xmm0        ;Result
 EndProcedure
 
 Macro Cross(_v, _a, _b)
@@ -112,7 +113,7 @@ For i=0 To nb-1
 Next
 Define T1.d = Time::Get() - T
 
-T = ElapsedMilliseconds()
+T = Time::Get()
 
 For i=0 To nb-1
   offset = i * SizeOf(Vector3)
@@ -131,7 +132,7 @@ MessageRequester("PB vs ASM", StrD(T1) +" : "+StrD(T2)+" EQUAL ? "+Str(Compare(*
   
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 18
+; CursorPosition = 115
+; FirstLine = 74
 ; Folding = -
 ; EnableXP
