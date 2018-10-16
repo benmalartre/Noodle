@@ -2,6 +2,7 @@
 ; Memory Module Declaration
 ;========================================================================================
 DeclareModule Memory
+  Global.q NOODLE_AVAILAIBALE_MEMORY
   
   #MEMORY_ALIGN_BYTES = 16
   
@@ -21,7 +22,6 @@ EndDeclareModule
 Module Memory
   Procedure AllocateAlignedMemory(size.i)
     Protected *memory = AllocateMemory(size + #MEMORY_ALIGN_BYTES)
-
     Protected *aligned = Align16(*memory)
     PokeB(*aligned + size + 1, (*memory % #MEMORY_ALIGN_BYTES))
     ProcedureReturn *aligned
@@ -43,6 +43,6 @@ EndModule
 ; EOF
 ;========================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 22
+; CursorPosition = 37
 ; Folding = --
 ; EnableXP

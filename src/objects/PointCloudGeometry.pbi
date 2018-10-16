@@ -388,7 +388,7 @@ Module PointCloudGeometry
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 204
-; FirstLine = 192
+; CursorPosition = 140
+; FirstLine = 114
 ; Folding = ---
 ; EnableXP

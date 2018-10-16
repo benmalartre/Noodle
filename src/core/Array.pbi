@@ -351,9 +351,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     CopyMemory(*item,*array\data+nb* *array\itemSize,*array\itemSize)
@@ -367,9 +367,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     PokeB(*array\data+nb* *array\itemSize,item)
@@ -383,9 +383,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     PokeC(*array\data+nb* *array\itemSize,item)
@@ -399,9 +399,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     PokeI(*array\data+nb* *array\itemSize,item)
@@ -415,9 +415,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     PokeL(*array\data+nb* *array\itemSize,item)
@@ -431,9 +431,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     PokeF(*array\data+nb* *array\itemSize,item)
@@ -447,12 +447,12 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* #SIZE_PTR)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* #SIZE_PTR)
     EndIf
     
-    PokeI(*array\data+nb* *array\itemSize,*item)
+    PokeI(*array\data+nb* #SIZE_PTR,*item)
     *array\itemCount + 1
   EndProcedure
   
@@ -463,9 +463,9 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = AllocateMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
     Else
-      *array\data = ReAllocateMemory(*array\data,(nb+1)* *array\itemSize)
+      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
     EndIf
     
     Protected *sa.CArrayStr = *array
@@ -485,9 +485,9 @@ Module CArray
     
     If *array\itemSize = *other\itemSize
       If *array\data = #Null
-        *array\data = AllocateMemory(nbo* *array\itemSize)
+        *array\data = Memory::AllocateAlignedMemory(nbo* *array\itemSize)
       Else
-        *array\data = ReAllocateMemory(*array\data,(nbo+nba)* *array\itemSize)
+        *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nbo+nba)* *array\itemSize)
       EndIf
       
       CopyMemory(*other\data,*array\data+nba* *array\itemSize,nbo * *array\itemSize)
@@ -1161,6 +1161,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 454
+; FirstLine = 431
 ; Folding = -----------
 ; EnableXP

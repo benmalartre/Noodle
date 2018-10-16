@@ -2,22 +2,11 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/Triangle.pbi"
-Structure Vector3
-  x.f
-  y.f
-  z.f
-EndStructure
 
-Structure __mm128_Vector3
-  x.f
-  y.f
-  z.f
-  w.f
-EndStructure
+UseModule Math
 
-
-Procedure AveragePosition(*points, numPoints.i,*avg.Vector3)
-  Protected *point.Vector3
+Procedure AveragePosition(*points, numPoints.i,*avg.v3f32)
+  Protected *point.v3f32
   *avg\x = 0 
   *avg\y = 0
   *avg\z = 0
@@ -25,7 +14,7 @@ Procedure AveragePosition(*points, numPoints.i,*avg.Vector3)
   Protected i
   Protected cnt = numPoints - 1
   For i=0 To cnt
-    *point = *points + i * SizeOf(Vector3)
+    *point = *points + i * SizeOf(v3f32)
     *avg\x + *point\x
     *avg\y + *point\y
     *avg\z + *point\z
@@ -36,7 +25,7 @@ Procedure AveragePosition(*points, numPoints.i,*avg.Vector3)
   *avg\z * ratio 
 EndProcedure
 
-Procedure AveragePositionASM(*points, numPoints.i, *avg.Vector3)
+Procedure AveragePositionASM(*points, numPoints.i, *avg.v3f32)
   *avg\x = 0 
   *avg\y = 0
   *avg\z = 0
@@ -94,10 +83,10 @@ ProcedureReturn
 EndProcedure
 
 Procedure Compare(*A1, *A2, nb)
-  Protected *v1.Vector3, *v2.Vector3
+  Protected *v1.v3f32, *v2.v3f32
   For i=0 To nb-1
-    *v1 = *A1 + i * SizeOf(Vector3)
-    *v2 = *A2 + i * SizeOf(__mm128_Vector3)
+    *v1 = *A1 + i * SizeOf(v3f32)
+    *v2 = *A2 + i * SizeOf(v3f32)
     If Abs(*v1\x - *v2\x) > 0.0000001
       ProcedureReturn #False
     EndIf
@@ -144,44 +133,36 @@ Time::Init()
 
 
 Procedure PolygonSoup(numTris.i)
-  Define *positions = AllocateMemory(numTris * 9 * 4)
+  Define *positions = Memory::AllocateAlignedMemory(numTris * 3 * SizeOf(v3f32))
 	Define offset = 0
 	For i = 0  To  numTris -1
 
 		PokeF(*positions + offset, (Random(1024) / 1024) * 50 - 25)
 		PokeF(*positions + offset + 4, (Random(1024) / 1024) * 50 - 25)
 		PokeF(*positions + offset + 8, (Random(1024) / 1024) * 50 - 25)
-		offset +12
+		offset + SizeOf(v3f32)
 	Next
 	
 	ProcedureReturn *positions
 EndProcedure
 	
 Define numTris.i = 12000000
-Define size_soup.i = numTris * 9 * 4
-Define size_soup_aligned.i = numTris * 12 * 4
+Define size_soup.i = numTris * 3 * SizeOf(v3f32)
 
 Define *soup1 = PolygonSoup(numTris)
-Define *soup2 = AllocateMemory(size_soup_aligned)
-For i=0 To numTris
-  CopyMemory(*soup1 + (i*3) *SizeOf(Vector3), *soup2 + (i*3) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
-  CopyMemory(*soup1 + (i*3+1) *SizeOf(Vector3), *soup2 + (i*3+1) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
-  CopyMemory(*soup1 + (i*3+2) *SizeOf(Vector3), *soup2 + (i*3+2) * SizeOf(__mm128_Vector3), SizeOf(Vector3))
-Next
 Define numIndices = (numTris * 3)
 Dim indices.l(numIndices)
 For i=0 To  numIndices - 1
   indices(i) = i
 Next
-
+; 
 Define center.Math::v3f32
 Define halfsize.Math::v3f32
 Vector3::Set(center,0, 7, 0)
 Vector3::Set(halfsize,0.5, 0.5, 0.5)
 Define tri.Geometry::Triangle_t
-Define.d startT = Time::Get()
 
-Define numHits = 0;
+Define numHits1 = 0, numHits2 = 0
 Define offset = 0 ;
 ; Define ID
 ; EnableASM
@@ -201,6 +182,7 @@ Define offset = 0 ;
 ; !   dec rcx
 ; !   jnz tri_touch_loop 
 Define touch.b
+Define.d startT = Time::Get()
 For i = 0 To  numTris - 1
 	tri\ID = i
 	
@@ -210,25 +192,25 @@ For i = 0 To  numTris - 1
 	offset + 3
 
 	If Triangle::Touch(tri, *soup1, center, halfsize) 
-	  numHits + 1
+	  numHits1 + 1
 	EndIf
 Next
 
 Define elapsed.d = (Time::Get() - startT)
 
-startT = Time::Get()
 Dim touches.b(numTris)
-Triangle::TouchArray(*soup2, @indices(0), numTris, center, halfsize, @touches(0))
+startT = Time::Get()
+numHits2 = Triangle::TouchArray(*soup1, @indices(0), numTris, center, halfsize, @touches(0))
 Define elapsed2.d = (Time::Get() - startT)
 
 
 MessageRequester("Octree",
                  "NUM TRIANGLES : " +Str( numTris ) + Chr(10)+
-                 "NUM HITS : " +Str(numHits) + Chr(10)+
-                 "TOOK : " +StrD(elapsed)  +", "+StrD(elapsed2)+Chr(10)+
-                 "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
+                 "NUM HITS : " +Str(numHits1) + ","+Str(numHits2)+Chr(10)+
+                 "TOOK : " +StrD(elapsed)  +", "+StrD(elapsed2)+Chr(10)+"NUM HITS : "+Str(numHits))
+;                  "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 139
+; CursorPosition = 148
+; FirstLine = 140
 ; Folding = -
 ; EnableXP

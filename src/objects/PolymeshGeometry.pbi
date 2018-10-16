@@ -2451,7 +2451,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1324
-; FirstLine = 1292
+; CursorPosition = 2352
+; FirstLine = 2323
 ; Folding = ----fw--v--
 ; EnableXP

@@ -162,7 +162,7 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,32,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
@@ -187,17 +187,20 @@ Procedure Draw(*app.Application::Application_t)
   Define *loc.Geometry::Location_t
   Define *pos.v3f32, *nrm.v3f32
   Define scl.v3f32
-  Define size.f
+  Define size.f = 7
+  Define pos.v3f32, center.v3f32
+  Vector3::Set(center, 0,5,0)
   For i=0 To CArray::GetCount(*samples)-1
     *loc = CArray::GetValuePtr(*samples,i)
     Location::GetPosition(*loc)
     Location::GetNormal(*loc)
-    size = Random(50)+32
+    size = Random(5)+5
     Vector3::ScaleInPlace(*loc\n, size/2)
     Vector3::AddInPlace(*loc\p, *loc\n)
-    Matrix4::SetIdentity(m)
-    Matrix4::SetTranslation(m,*loc\p)
-    
+;     Vector3::Randomize(pos, center, 12)
+;     Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m, *loc\p)
+;     
     Vector3::Set(scl, size, size, size)
     Matrix4::SetScale(m, scl)
     CArray::Append(*matrices,m)
@@ -221,8 +224,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 163
+; CursorPosition = 200
+; FirstLine = 160
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

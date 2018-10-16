@@ -80,16 +80,44 @@ DeclareModule Math
   #ECHO_PRECISION = 3                   ; precison on debug string
   
   DataSection
+    sse_0000_sign_mask:
+    Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+    sse_0001_sign_mask:
+    Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+    sse_0010_sign_mask:
+    Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+    sse_0011_sign_mask:
+    Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+    sse_0100_sign_mask:
+    Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+    sse_0101_sign_mask:
+    Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+    sse_0110_sign_mask:
+    Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+    sse_0111_sign_mask:
+    Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+    sse_1000_sign_mask:
+    Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+    sse_1001_sign_mask:
+    Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+    sse_1010_sign_mask:
+    Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+    sse_1011_sign_mask:
+    Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+    sse_1100_sign_mask:
+    Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+    sse_1101_sign_mask:
+    Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+    sse_1110_sign_mask:
+    Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
     sse_1111_sign_mask:
     Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
-    sse_1000_sign_mask:
-    Data.l $7FFFFFFF, $00000000, $00000000, $00000000
-    sse_0100_sign_mask:
-    Data.l $00000000, $7FFFFFFF, $00000000, $00000000
-    sse_0010_sign_mask:
-    Data.l $00000000, $00000000, $7FFFFFFF, $00000000 
-    sse_0001_sign_mask:
-    Data.l $00000000, $00000000, $00000000, $7FFFFFFF
+    sse_1111_negate_mask:
+    Data.f -1, -1, -1, -1
+    sse_1010_negate_mask:
+    Data.f 1, -1, 1, -1
+    sse_1100_negate_mask:
+    Data.f -1, -1, 1, 1
   EndDataSection
 
   ; ----------------------------------------------------------------------------
@@ -320,6 +348,7 @@ DeclareModule Math
   Declare.f Min(a.f,b.f)
   Declare.b IsClose(value.f, root.f, tolerance.f)
   Declare.f Random_0_1()
+  Declare.f Random_Neg1_1()
   Declare UniformPointOnCircle(*p.v2f32, radius.f=1.0)
   Declare.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
   Declare.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
@@ -569,7 +598,27 @@ DeclareModule Vector3
   Macro Length(_v)
     Sqr(_v\x * _v\x + _v\y * _v\y + _v\z * _v\z)
   EndMacro
-
+  
+  ;------------------------------------------------------------------
+  ; VECTOR3 ABSOLUTE
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Absolute(*v.v3f32, *o.v3f32)
+    Declare AbsoluteInPlace(*v.v3f32)
+  CompilerElse
+    Macro Absolute(_v, _o)
+      _v\v[0] = Abs(_o\v[0])
+      _v\v[1] = Abs(_o\v[1])
+      _v\v[2] = Abs(_o\v[2])
+    EndMacro
+    
+    Macro AbsoluteInPlace(_v, _o)
+      _v\v[0] = Abs(_v\v[0])
+      _v\v[1] = Abs(_v\v[1])
+      _v\v[2] = Abs(_v\v[2])
+    EndMacro
+  CompilerEndIf
+  
   ;------------------------------------------------------------------
   ; VECTOR3 NORMALIZE
   ;------------------------------------------------------------------
@@ -760,7 +809,49 @@ DeclareModule Vector3
   Macro Dot(_v,_o)
     (_v\x * _o\x + _v\y * _o\y + _v\z * _o\z)
   EndMacro
-
+  
+  ;------------------------------------------------------------------
+  ; VECTOR3 MINIMUM
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Minimize(*v.v3f32, *a.v3f32, *b.v3f32)
+    Declare MinimizeInPlace(*v.v3f32, *o.v3f32)
+  CompilerElse
+    Macro Minimize(_v, _a, _b)
+      If _a\x < _b\x : _v\x = _a\x : Else : _v\x = _b\x : EndIf
+      If _a\y < _b\y : _v\y = _a\y : Else : _v\y = _b\y : EndIf
+      If _a\z < _b\z : _v\z = _a\z : Else : _v\z = _b\z : EndIf
+    EndMacro
+    
+    Macro MinimizeInPlace(_v, _o)
+      If _o\x < _v\x : _v\x = _o\x : EndIf
+      If _o\y < _v\y : _v\y = _o\y : EndIf
+      If _o\z < _v\z : _v\z = _o\z : EndIf
+    EndMacro
+    
+  CompilerEndIf
+  
+  ;------------------------------------------------------------------
+  ; VECTOR3 MAXIMUM
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Maximize(*v.v3f32, *a.v3f32, *b.v3f32)
+    Declare MaximizeInPlace(*v.v3f32, *o.v3f32)
+  CompilerElse
+    Macro Maximize(_v, _a, _b)
+      If _a\x > _b\x : _v\x = _a\x : Else : _v\x = _b\x : EndIf
+      If _a\y > _b\y : _v\y = _a\y : Else : _v\y = _b\y : EndIf
+      If _a\z > _b\z : _v\z = _a\z : Else : _v\z = _b\z : EndIf
+    EndMacro
+    
+    Macro MaximizeInPlace(_v, _o)
+      If _o\x > _v\x : _v\x = _o\x : EndIf
+      If _o\y > _v\y : _v\y = _o\y : EndIf
+      If _o\z > _v\z : _v\z = _o\z : EndIf
+    EndMacro
+    
+  CompilerEndIf
+  
   
   ;------------------------------------------------------------------
   ; VECTOR3 SET LENGTH
@@ -773,10 +864,24 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   ; VECTOR3 MULTIPLY BY OTHER
   ;------------------------------------------------------------------
-  Macro Multiply(_o,_a,_b)
-    _o\x = _a\x * _b\x
-    _o\y = _a\y * _b\y
-    _o\z = _a\z * _b\z
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Multiply(*v.v3f32, *a.v3f32, *b.v3f32)
+  CompilerElse
+    Macro Multiply(_o,_a,_b)
+      _o\x = _a\x * _b\x
+      _o\y = _a\y * _b\y
+      _o\z = _a\z * _b\z
+    EndMacro
+  CompilerEndIf
+  
+  
+  ;------------------------------------------------------------------
+  ; VECTOR3 RANDOMIZE
+  ;------------------------------------------------------------------
+  Macro Randomize(_v,_o,_mult)
+    _v\x = _o\x + Random_Neg1_1() * _mult
+    _v\y = _o\y + Random_Neg1_1() * _mult
+    _v\z = _o\z + Random_Neg1_1() * _mult
   EndMacro
   
   ;------------------------------------------------------------------
@@ -803,43 +908,49 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   ; VECTOR3 MULTIPLY BY MATRIX4
   ;------------------------------------------------------------------
-  Macro MulByMatrix4(_v,_o,_m)
-    Define _x.f,_y.f,_z.f,_w.f
-  ;   x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *m\v[3]
-  ;   y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *m\v[7]
-  ;   z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *m\v[11]
-  ;   w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *m\v[15]
-  ;   *v\x = x/w
-  ;   *v\y = y/w
-  ;   *v\z = z/w
-    _x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _m\v[12]
-    _y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _m\v[13]
-    _z = _o\x * _m\v[2] + _o\y * _m\v[6] + _o\z * _m\v[10] + _m\v[14]
-    _w = _o\x * _m\v[3] + _o\y * _m\v[7] + _o\z * _m\v[11] + _m\v[15]
-    If _w <> 0.0
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare MulByMatrix4(*v.v3f32, *o.v3f32, *m.m4f32)
+    Declare MulByMatrix4InPlace(*v.v3f32, *m.m4f32)
+  CompilerElse
+    Macro MulByMatrix4(_v,_o,_m)
+      Define _x.f,_y.f,_z.f,_w.f
+    ;   x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *m\v[3]
+    ;   y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *m\v[7]
+    ;   z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *m\v[11]
+    ;   w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *m\v[15]
+    ;   *v\x = x/w
+    ;   *v\y = y/w
+    ;   *v\z = z/w
+      _x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _m\v[12]
+      _y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _m\v[13]
+      _z = _o\x * _m\v[2] + _o\y * _m\v[6] + _o\z * _m\v[10] + _m\v[14]
+      _w = _o\x * _m\v[3] + _o\y * _m\v[7] + _o\z * _m\v[11] + _m\v[15]
+
       _v\x = _x/_w
       _v\y = _y/_w
       _v\z = _z/_w
-    EndIf  
-  EndMacro
+    EndMacro
+    
+    Macro MulByMatrix4InPlace(_v,_m)
+      Define _x.f,_y.f,_z.f,_w.f
+      _x = _v\x * _m\v[0] + _v\y * _m\v[4] + _v\z * _m\v[8] + _m\v[12]
+      _y = _v\x * _m\v[1] + _v\y * _m\v[5] + _v\z * _m\v[9] + _m\v[13]
+      _z = _v\x * _m\v[2] + _v\y * _m\v[6] + _v\z * _m\v[10] + _m\v[14]
+      _w = _v\x * _m\v[3] + _v\y * _m\v[7] + _v\z * _m\v[11] + _m\v[15]
+
+      _v\x = _x/_w
+      _v\y = _y/_w
+      _v\z = _z/_w
+    ;   x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *m\v[3]
+    ;   y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *m\v[7]
+    ;   z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *m\v[11]
+    ;   w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *m\v[15]
+    ;   *v\x = x/w
+    ;   *v\y = y/w
+    ;   *v\z = z/w
+    EndMacro
+  CompilerEndIf
   
-  Macro MulByMatrix4InPlace(_v,_m)
-    Define _x.f,_y.f,_z.f,_w.f
-    _x = _v\x * _m\v[0] + _v\y * _m\v[4] + _v\z * _m\v[8] + _m\v[12]
-    _y = _v\x * _m\v[1] + _v\y * _m\v[5] + _v\z * _m\v[9] + _m\v[13]
-    _z = _v\x * _m\v[2] + _v\y * _m\v[6] + _v\z * _m\v[10] + _m\v[14]
-    _w = _v\x * _m\v[3] + _v\y * _m\v[7] + _v\z * _m\v[11] + _m\v[15]
-    _v\x = _x/_w
-    _v\y = _y/_w
-    _v\z = _z/_w
-  ;   x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *m\v[3]
-  ;   y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *m\v[7]
-  ;   z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *m\v[11]
-  ;   w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *m\v[15]
-  ;   *v\x = x/w
-  ;   *v\y = y/w
-  ;   *v\z = z/w
-  EndMacro
 
   ;------------------------------------------------------------------
   ; VECTOR3 MULTIPLY BY QUATERNION
@@ -1187,30 +1298,35 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   ; QUATERNION MULTIPLY
   ;------------------------------------------------------------------
-  Macro Multiply(_out,_q1,_q2)
-    Define.f _x,_y,_z,_w
-    _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
-    _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
-    _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
-    _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
-    _out\x = _x
-    _out\y = _y
-    _out\z = _z
-    _out\w = _w
-  EndMacro
+;   CompilerIf Defined(USE_SSE, #PB_Constant)
+;     Declare Multiply(*out.q4f32, *q1.q4f32, *q2.q4f32)
+;     Declare MultiplyInPlace(*q1.q4f32, *q2.q4f32)
+;   CompilerElse
+    Macro Multiply(_out,_q1,_q2)
+      Define.f _x,_y,_z,_w
+      _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
+      _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
+      _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
+      _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
+      _out\x = _x
+      _out\y = _y
+      _out\z = _z
+      _out\w = _w
+    EndMacro
+    
+    Macro MultiplyInPlace(_q1,_q2)
+      Define.f _x,_y,_z,_w
+      _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
+      _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
+      _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
+      _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
+      _q1\x = _x
+      _q1\y = _y
+      _q1\z = _z
+      _q1\w = _w
+    EndMacro
+;   CompilerEndIf
   
-  Macro MultiplyInPlace(_q1,_q2)
-    Define.f _x,_y,_z,_w
-    _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
-    _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
-    _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
-    _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
-    _q1\x = _x
-    _q1\y = _y
-    _q1\z = _z
-    _q1\w = _w
-  EndMacro
-
   ;------------------------------------------------------------------
   ; QUATERNION MULTIPLY BY SCALAR
   ;------------------------------------------------------------------
@@ -2108,37 +2224,40 @@ DeclareModule Matrix4
   ;------------------------------------------------------------------
   ; MATRIX4 TRANSPOSE
   ;------------------------------------------------------------------
-  Macro Transpose(_m,_o)
-    _m\v[0] = _o\v[0]
-    _m\v[4] = _o\v[1]
-    _m\v[8] = _o\v[2]
-    _m\v[12] = _o\v[3]
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Transpose(*m.m4f32, *o.m4f32)
+    Declare TransposeInPlace(*m.m4f32)
+  CompilerElse
     
-    _m\v[1] = _o\v[4]
-    _m\v[5] = _o\v[5]
-    _m\v[9] = _o\v[6]
-    _m\v[13] = _o\v[7]
+    Macro Transpose(_m,_o)
+      _m\v[0] = _o\v[0]
+      _m\v[4] = _o\v[1]
+      _m\v[8] = _o\v[2]
+      _m\v[12] = _o\v[3]
+      
+      _m\v[1] = _o\v[4]
+      _m\v[5] = _o\v[5]
+      _m\v[9] = _o\v[6]
+      _m\v[13] = _o\v[7]
+      
+      _m\v[2] = _o\v[8]
+      _m\v[6] = _o\v[9]
+      _m\v[10] = _o\v[10]
+      _m\v[14] = _o\v[11]
+      
+      _m\v[3] = _o\v[12]
+      _m\v[7] = _o\v[13]
+      _m\v[11] = _o\v[14]
+      _m\v[15] = _o\v[15]
+    EndMacro
     
-    _m\v[2] = _o\v[8]
-    _m\v[6] = _o\v[9]
-    _m\v[10] = _o\v[10]
-    _m\v[14] = _o\v[11]
-    
-    _m\v[3] = _o\v[12]
-    _m\v[7] = _o\v[13]
-    _m\v[11] = _o\v[14]
-    _m\v[15] = _o\v[15]
-  EndMacro
-  
-  ;------------------------------------------------------------------
-  ; MATRIX4 TRANSPOSE IN PLACE
-  ;------------------------------------------------------------------
-  Macro TransposeInPlace(_m)
-    Define _m4_tmp.m4f32
-    Matrix4::Transpose(_m4_tmp,_m)
-    Matrix4::SetFromOther(_m,_m4_tmp)
-  EndMacro
-
+    Macro TransposeInPlace(_m)
+      Define _m4_tmp.m4f32
+      Matrix4::Transpose(_m4_tmp,_m)
+      Matrix4::SetFromOther(_m,_m4_tmp)
+    EndMacro
+  CompilerEndIf
+ 
   ;-------------------------------------------
   ; MATRIX4 TRANSPOSE INVERSE
   ;-------------------------------------------
@@ -2368,6 +2487,10 @@ Module Math
     ProcedureReturn Random(#RAND_MAX)/#RAND_MAX
   EndProcedure
   
+  Procedure.f Random_Neg1_1()
+    ProcedureReturn 1 - (Random(#RAND_MAX)/#RAND_MAX * 2 )
+  EndProcedure
+  
   ; -----------------------------------------------------------------
   ;  Uniform Point On Circle
   ; -----------------------------------------------------------------
@@ -2482,6 +2605,38 @@ Module Vector3
     EndProcedure
     
     ; ---------------------------------------------------------------
+    ;  VECTOR3 MULTIPLY
+    ; ---------------------------------------------------------------
+    Procedure Multiply(*v.v3f32, *a.v3f32, *b.v3f32)
+      ! mov rcx, [p.p_a]        ; move first to register
+      ! mov rdx, [p.p_b]        ; move second to register
+      ! mov rax, [p.p_v]        ; move dst to register
+      ! movups xmm0, [rcx]      ; first packed float to xmm0
+      ! movups xmm1, [rdx]      ; second packed flota to xmm1
+      ! mulps xmm0, xmm1        ; packed multiplication
+      ! movups [rax], xmm0      ; move back to memory
+    EndProcedure
+    
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 DOT (FASTER WITH SIMPLE MACRO ---> SSE version disabled)
+    ; ---------------------------------------------------------------
+;     Procedure.f Dot(*a.v3f32, *b.v3f32)
+;       Protected d.f    
+;       ! mov rax, [p.p_a]
+;       ! mov rdx, [p.p_b]
+;       
+;       ! movups xmm0, [rax]
+;       ! movups xmm1, [rdx]
+;       ! mulps xmm0, xmm1
+;       ! haddps xmm0, xmm0
+;       ! haddps xmm0, xmm0
+;       ! movss [p.v_d], xmm0
+;       
+;       ProcedureReturn d
+;     EndProcedure
+    
+    
+    ; ---------------------------------------------------------------
     ;  VECTOR3 CROSS
     ; ---------------------------------------------------------------
     Procedure Cross(*v.v3f32,*a.v3f32,*b.v3f32)
@@ -2567,12 +2722,13 @@ Module Vector3
     EndProcedure
     
     Procedure Scale(*v.v3f32, *o.v3f32, mult.f)
-      ! mov rax, [p.p_v]
+      ! mov rdx, [p.p_v]
+      ! mov rax, [p.p_o]
       ! movups xmm0, [rax]
       ! movlps xmm1, [p.v_mult]
       ! shufps xmm1, xmm1, 0
       ! mulps xmm0, xmm1
-      ! movups [rax], xmm0
+      ! movups [rdx], xmm0
     EndProcedure
     
     ; ---------------------------------------------------------------
@@ -2600,6 +2756,29 @@ Module Vector3
     EndProcedure
     
     ; ---------------------------------------------------------------
+    ;  VECTOR3 ABSOLUTE
+    ; ---------------------------------------------------------------
+    Procedure AbsoluteInPlace(*v.v3f32)
+      ! mov rdx, [p.p_v]                    ; vector3 to data register
+      ! mov rax, qword math.l_sse_1111_sign_mask ; move sign mask to rsi register
+      ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
+      ! movups xmm0, [rdx]                  ; data register to sse register
+      ! andps xmm0, xmm1                    ; bitmask removing sign
+      ! movaps [rdx], xmm0                  ; mov back to memory
+    EndProcedure
+    
+    Procedure Absolute(*v.v3f32, *o.v3f32)
+      ! mov rdx, [p.p_v]                    ; dst vector3 to data register
+      ! mov rcx, [p.p_o]                    ; src vector3 to data register
+      ! mov rax, qword math.l_sse_1111_sign_mask ; move sign mask to rsi register
+      ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
+      ! movups xmm0, [rcx]                  ; data register to sse register
+      ! andps xmm0, xmm1                    ; bitmask removing sign
+      ! movups [rdx], xmm0                  ; move back to memory
+    EndProcedure
+
+    
+    ; ---------------------------------------------------------------
     ;  VECTOR3 INTERPOLATION
     ; ---------------------------------------------------------------
     Procedure LinearInterpolate(*v.v3f32, *a.v3f32, *b.v3f32, blend.f)
@@ -2608,8 +2787,8 @@ Module Vector3
       ! mov rcx, [p.p_b]
       ! mov rdx, [p.p_v]
     
-      ! movaps xmm0, [rax]             ; move point a to xmm0
-      ! movaps xmm1, [rcx]             ; move point b to xmm1
+      ! movups xmm0, [rax]             ; move point a to xmm0
+      ! movups xmm1, [rcx]             ; move point b to xmm1
       ! movlps xmm2, [p.v_blend]
       ! shufps xmm2, xmm2, 0           ; fill xmm2 with blend
       ! movlps xmm3, [p.v_one]         
@@ -2619,7 +2798,7 @@ Module Vector3
       ! mulps xmm0, xmm3               ; multiply point a by 1-blend 
       ! mulps xmm1, xmm2               ; multiply point b by blend
       ! addps xmm0, xmm1               ; add packed float
-      ! movaps [rdx], xmm0             ; back to memory
+      ! movups [rdx], xmm0             ; back to memory
     EndProcedure
     
     Procedure LinearInterpolateInPlace(*v.v3f32, *o.v3f32, blend.f)
@@ -2627,8 +2806,8 @@ Module Vector3
       ! mov rax, [p.p_v]
       ! mov rcx, [p.p_o]
     
-      ! movaps xmm0, [rax]             ; move point a to xmm0
-      ! movaps xmm1, [rcx]             ; move point b to xmm1
+      ! movups xmm0, [rax]             ; move point a to xmm0
+      ! movups xmm1, [rcx]             ; move point b to xmm1
       ! movlps xmm2, [p.v_blend]
       ! shufps xmm2, xmm2, 0           ; fill xmm2 with blend
       ! movlps xmm3, [p.v_one]         
@@ -2638,10 +2817,133 @@ Module Vector3
       ! mulps xmm0, xmm3               ; multiply point a by 1-blend 
       ! mulps xmm1, xmm2               ; multiply point b by blend
       ! addps xmm0, xmm1               ; add packed float
-      !movaps [rax], xmm0              ; back to memory
+      
+      ! movups [rax], xmm0             ; back to memory
     EndProcedure
     
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 MUL BY MATRIX4
+    ; ---------------------------------------------------------------
+    Procedure MulByMatrix4(*v.v3f32,*o.v3f32,*m.m4f32)
+        ! mov rax, [p.p_v]
+        ! mov rcx, [p.p_o]
+        ! mov rdx, [p.p_m]
+        
+        ; load point
+        ! movups  xmm0, [rcx]               ; d c b a
+        ! movaps  xmm1, xmm0                ; d c b a       
+        ! movaps  xmm2, xmm0                ; d c b a
+        ! movaps  xmm3, xmm0                ; d c b a
+        
+        ; shuffle point
+        ! shufps  xmm0, xmm0,0              ; a a a a 
+        ! shufps  xmm1, xmm1,01010101b      ; b b b b
+        ! shufps  xmm2, xmm2,10101010b      ; c c c c
+        ! shufps  xmm3, xmm3,11111111b      ; d d d d
+        
+        ; load matrix
+        ! movups  xmm4, [rdx]               ; m04 m03 m02 m01
+        ! movups  xmm5, [rdx+16]            ; m14 m13 m12 m11
+        ! movups  xmm6, [rdx+32]            ; m24 m23 m22 m21
+        ! movups  xmm7, [rdx+48]            ; m34 m33 m32 m31
+        
+        ; packed multiplication
+        ! mulps   xmm0, xmm4                ; a * row1
+        ! mulps   xmm1, xmm5                ; b * row2
+        ! mulps   xmm2, xmm6                ; c * row3
+        
+        ; packed addition
+        ! addps   xmm0, xmm1                
+        ! addps   xmm0, xmm2
+        ! addps   xmm0, xmm7
+        
+        ; packed determinant division
+        ! movaps xmm1, xmm0
+        ! shufps xmm1, xmm1, 11111111b
+        ! divps xmm0, xmm1
+      
+        ! movups [rax], xmm0                ; back to memory
+    EndProcedure
     
+    Procedure MulByMatrix4InPlace(*v.v3f32,*m.m4f32)
+        ! mov rax, [p.p_v]
+        ! mov rdx, [p.p_m]
+        
+        ! movups  xmm0, [rax]               ; d c b a
+        ! movaps  xmm1, xmm0                ; d c b a       
+        ! movaps  xmm2, xmm0                ; d c b a
+        ! movaps  xmm3, xmm0                ; d c b a
+      
+        ! shufps  xmm0, xmm0,0              ; a a a a 
+        ! shufps  xmm1, xmm1,01010101b      ; b b b b
+        ! shufps  xmm2, xmm2,10101010b      ; c c c c
+        ! shufps  xmm3, xmm3,11111111b      ; d d d d
+      
+        ! movups  xmm4, [rdx]
+        ! movups  xmm5, [rdx+16]
+        ! movups  xmm6, [rdx+32]
+        ! movups  xmm7, [rdx+48]
+      
+        ! mulps   xmm0, xmm4
+        ! mulps   xmm1, xmm5
+        ! mulps   xmm2, xmm6
+      
+        ! addps   xmm0, xmm1
+        ! addps   xmm0, xmm2
+        ! addps   xmm0, xmm7
+        
+        ! movaps xmm1, xmm0
+        ! shufps xmm1, xmm1, 11111111b
+        ! divps xmm0, xmm1
+      
+        ! movups [rax], xmm0
+      EndProcedure
+      
+      ; ---------------------------------------------------------------
+      ;  VECTOR3 MINIMUM
+      ; ---------------------------------------------------------------
+      Procedure Minimize(*v.v3f32, *a.v3f32, *b.v3f32)
+        ! mov rax, [p.p_v]
+        ! mov rcx, [p.p_a]
+        ! mov rdx, [p.p_b]
+        ! movups xmm0, [rcx]
+        ! movups xmm1, [rdx]
+        ! minps xmm0, xmm1
+        ! movups [rax]
+      EndProcedure
+      
+      Procedure MinimizeInPlace(*v.v3f32, *o.v3f32)
+        ! mov rax, [p.p_v]
+        ! mov rcx, [p.p_o]
+        ! movups xmm0, [rax]
+        ! movups xmm1, [rcx]
+        ! minps xmm0, xmm1
+        ! movups [rax]
+      EndProcedure
+      
+      ; ---------------------------------------------------------------
+      ;  VECTOR3 MUL BY MATRIX4
+      ; ---------------------------------------------------------------
+      Procedure Maximize(*v.v3f32, *a.v3f32, *b.v3f32)
+        ! mov rax, [p.p_v]
+        ! mov rcx, [p.p_a]
+        ! mov rdx, [p.p_b]
+        ! movups xmm0, [rcx]
+        ! movups xmm1, [rdx]
+        ! maxps xmm0, xmm1
+        ! movups [rax]
+      EndProcedure
+      
+      Procedure MaximizeInPlace(*v.v3f32, *o.v3f32)
+        ! mov rax, [p.p_v]
+        ! mov rcx, [p.p_o]
+        ! movups xmm0, [rax]
+        ! movups xmm1, [rcx]
+        ! maxps xmm0, xmm1
+        ! movups [rax]
+      EndProcedure
+      
+
   CompilerEndIf
 EndModule
 
@@ -2670,6 +2972,91 @@ Module Quaternion
     
     ProcedureReturn z
   EndProcedure
+  
+; CompilerIf Defined(USE_SSE, #PB_Constant)
+;   ;------------------------------------------------------------------
+;   ; QUATERNION MULTIPLICATION
+;   ;------------------------------------------------------------------
+;   Procedure Multiply(*out.q4f32,*q1.q4f32, *q2.q4f32)
+;     
+;     ; x = (q1\w * q2\x) + (q1\x * q2\w) + (q1\y * q2\z) - (q1\z * q2\y)
+;     ; y = (q1\w * q2\y) + (q1\y * q2\w) + (q1\z * q2\x) - (q1\x * q2\z)
+;     ; z = (q1\w * q2\z) + (q1\z * q2\w) + (q1\x * q2\y) - (q1\y * q2\x)
+;     ; w = (q1\w * q2\w) - (q1\x * q2\x) - (q1\y * q2\y) - (q1\z * q2\z)
+;     
+;     ! mov rax, [p.p_out]
+;     ! mov rcx, [p.p_q1]
+;     ! mov rdx, [p.p_q2]
+;     
+;     ! movups xmm0, [rcx]              ; load q1
+;     ! movups xmm1, [rdx]              ; load q2
+;     
+;     ! xorps xmm2, xmm2                ; reset output register
+;     
+;     ! movaps xmm2, xmm0               ; copy q1 to xmm2
+;     ! movaps xmm3, xmm0                ; and xmm3
+;     ! movaps xmm4, xmm1               ; copy q2 to xmm4
+;     ! movaps xmm5, xmm1               ; and xmm5
+;     
+;     ! shufps xmm2, xmm0, 229
+;     ! shufps xmm4, xmm1, 158
+;     ! shufps  xmm3, xmm0, 122
+;     ! shufps  xmm5, xmm1, 1
+;     ! mulps   xmm3, xmm4
+;     ! movaps  xmm4, xmm1
+;     ! mulps   xmm2, xmm5
+;     ! shufps  xmm4, xmm1, 123
+;     ! addps   xmm2, xmm3
+;     ! movaps  xmm3, xmm0
+;     ! shufps  xmm3, xmm0, 159
+;     ! shufps  xmm0, xmm0, 0
+;     ! xorps   xmm2, XMMWORD PTR .LC0[rip]
+;     ! mulps   xmm3, xmm4
+;     ! mulps   xmm0, xmm1
+;     ! subps   xmm0, xmm3
+;     ! addps   xmm0, xmm2
+;     ! movups [rax], xmm0
+;     
+; ;     movaps  xmm2, xmm0
+; ;     movaps  xmm3, xmm0
+; ;     movaps  xmm5, xmm1
+; ;     movaps  xmm4, xmm1
+; ;     shufps  xmm2, xmm0, 229
+; ;     shufps  xmm4, xmm1, 158
+; ;     shufps  xmm3, xmm0, 122
+; ;     shufps  xmm5, xmm1, 1
+; ;     mulps   xmm3, xmm4
+; ;     movaps  xmm4, xmm1
+; ;     mulps   xmm2, xmm5
+; ;     shufps  xmm4, xmm1, 123
+; ;     addps   xmm2, xmm3
+; ;     movaps  xmm3, xmm0
+; ;     shufps  xmm3, xmm0, 159
+; ;     shufps  xmm0, xmm0, 0
+; ;     xorps   xmm2, XMMWORD PTR .LC0[rip]
+; ;     mulps   xmm3, xmm4
+; ;     mulps   xmm0, xmm1
+; ;     subps   xmm0, xmm3
+; ;     addps   xmm0, xmm2
+; 
+; 
+;   EndProcedure
+;     
+;   Procedure MultiplyInPlace(*q1.q4f32, *q2.q4f32)
+;     
+;     
+; ;     Define.f _x,_y,_z,_w
+; ;     _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
+; ;     _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
+; ;     _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
+; ;     _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
+; ;     _q1\x = _x
+; ;     _q1\y = _y
+; ;     _q1\z = _z
+; ;     _q1\w = _w
+;   EndProcedure
+; CompilerEndIf
+  
 EndModule
 
 ;====================================================================
@@ -2690,6 +3077,67 @@ EndModule
 ;====================================================================
 Module Matrix4
   UseModule Math
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Procedure TransposeInPlace(*m.m4f32)
+      ! mov rax, [p.p_m]
+      
+      ! movups xmm1, [rax]                  ; move m4 row 0 to xmm4
+      ! movups xmm2, [rax+16]               ; move m4 row 1 to xmm5
+      ! movups xmm3, [rax+32]               ; move m4 row 2 to xmm6
+      ! movups xmm4, [rax+48]               ; move m4 row 3 to xmm7
+      
+      ! movaps      xmm0,   xmm3         ; xmm0:   c4 c3 c2 c1
+      ! punpckldq   xmm3,    xmm4        ; xmm3:   d2 c2 d1 c1
+      ! punpckhdq   xmm0,    xmm4        ; xmm0:   d4 c4 d3 c3
+    
+      ! movaps      xmm4,    xmm1        ; xmm4:  a4 a3 a2 a1
+      ! punpckldq   xmm1,    xmm2        ; xmm1:   b2 a2 b1 a1
+      ! punpckhdq   xmm4,    xmm2        ; xmm4:   b4 a4 b3 a3
+    
+      ! movaps      xmm2,    xmm1        ; xmm2:   b2 a2 b1 a1
+      ! punpcklqdq  xmm1,    xmm3        ; xmm1:   d1 c1 b1 a1
+      ! punpckhqdq  xmm2,    xmm3        ; xmm2:   d2 c2 b2 a2
+      ! movaps      xmm3,    xmm4        ; xmm3:   b4 a4 b3 a3
+      ! punpcklqdq  xmm3,    xmm0        ; xmm3:   d3 c3 b3 a3
+      ! punpckhqdq  xmm4,    xmm0        ; xmm4:   d4 c4 b4 a4
+      
+      ! movups [rax], xmm1
+      ! movups [rax+16], xmm2
+      ! movups [rax+32], xmm3
+      ! movups [rax+48], xmm4
+    EndProcedure
+    
+    Procedure Transpose(*m.m4f32, *o.m4f32)
+      ! mov rax, [p.p_o]
+      ! mov rdx, [p.p_m]
+       
+      ! movups xmm1, [rax]                  ; move m4 row 0 to xmm4
+      ! movups xmm2, [rax+16]               ; move m4 row 1 to xmm5
+      ! movups xmm3, [rax+32]               ; move m4 row 2 to xmm6
+      ! movups xmm4, [rax+48]               ; move m4 row 3 to xmm7
+      
+      ! movaps      xmm0,   xmm3         ; xmm0:   c4 c3 c2 c1
+      ! punpckldq   xmm3,    xmm4        ; xmm3:   d2 c2 d1 c1
+      ! punpckhdq   xmm0,    xmm4        ; xmm0:   d4 c4 d3 c3
+    
+      ! movaps      xmm4,    xmm1        ; xmm4:  a4 a3 a2 a1
+      ! punpckldq   xmm1,    xmm2        ; xmm1:   b2 a2 b1 a1
+      ! punpckhdq   xmm4,    xmm2        ; xmm4:   b4 a4 b3 a3
+    
+      ! movaps      xmm2,    xmm1        ; xmm2:   b2 a2 b1 a1
+      ! punpcklqdq  xmm1,    xmm3        ; xmm1:   d1 c1 b1 a1
+      ! punpckhqdq  xmm2,    xmm3        ; xmm2:   d2 c2 b2 a2
+      ! movaps      xmm3,    xmm4        ; xmm3:   b4 a4 b3 a3
+      ! punpcklqdq  xmm3,    xmm0        ; xmm3:   d3 c3 b3 a3
+      ! punpckhqdq  xmm4,    xmm0        ; xmm4:   d4 c4 b4 a4
+      
+      ! movups [rdx], xmm1
+      ! movups [rdx+16], xmm2
+      ! movups [rdx+32], xmm3
+      ! movups [rdx+48], xmm4
+    EndProcedure
+  CompilerEndIf
+
   ;------------------------------------------------------------------
   ; MATRIX4 COMPUTE INVERSE
   ;------------------------------------------------------------------
@@ -2984,8 +3432,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2601
-; FirstLine = 2597
-; Folding = -----------------------------H9BAOx0--
+; CursorPosition = 2627
+; FirstLine = 2346
+; Folding = -------------------------------H8----X-0--
 ; EnableXP
 ; EnableUnicode

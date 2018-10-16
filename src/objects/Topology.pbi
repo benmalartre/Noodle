@@ -94,6 +94,7 @@ Module Topology
     Protected *p.v3f32
     For i=0 To CArray::GetCount(*topo\vertices)-1
       *p = CArray::GetValue(*topo\vertices,i)
+      
       Vector3::SetFromOther(p,*p)
       Vector3::MulByMatrix4InPlace(p,*m)
       CArray::SetValue(*topo\vertices,i,p)
@@ -109,7 +110,8 @@ Module Topology
     Protected i
     For i=0 To CArray::GetCount(*matrices)-1
       *t = New(*topo)
-      Transform(*t,CArray::GetValue(*matrices,i))
+      *m = CArray::GetValue(*matrices,i)
+      Transform(*t, *m)
       CArray::AppendPtr(*topo_array,*t)
     Next i
   EndProcedure
@@ -344,7 +346,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 57
+; CursorPosition = 109
+; FirstLine = 106
 ; Folding = ---
 ; EnableXP

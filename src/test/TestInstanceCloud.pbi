@@ -61,7 +61,7 @@ Procedure CreateGround()
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
   PolymeshGeometry::GridTopology(*geom\topo,1000,10,10)
   PolymeshGeometry::Set2(*geom,*geom\topo)
-  
+  Object3D::Freeze(*ground)
   Protected *p.v3f32
   Protected i
   
@@ -104,16 +104,14 @@ Procedure Draw(*app.Application::Application_t)
   ;Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*default,*app\context)
   
-  
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer, 1,1,1,1)
+
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-
-  glDisable(#GL_BLEND)
+; 
+  FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 
@@ -173,9 +171,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_BUNNY,256)
-  Debug CArray::GetCount(*cloud\shape\positions)
-  Debug CArray::GetCount(*cloud\shape\indices)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_None,256)
 ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
 ;     *abc = Alembic::LoadABCArchive(path)
@@ -201,13 +197,13 @@ Procedure Draw(*app.Application::Application_t)
 ;     EndIf
 ;   Next
 ;   
-;   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
-;   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  ;PointCloudGeometry::PointsOnGrid(*cloud\geom,24,24)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TORUS)
+  PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,24,24)
   Define startP.v3f32, endP.v3f32
   Vector3::Set(startP, -10,0,0)
   Vector3::Set(endP, 10,0,0)
-  ;PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
+;   PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
 ;   Define *T.Transform::Transform_t = *mesh\localT
 ;   Define pos.v3f32
 ; 
@@ -227,7 +223,7 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(ps,-10,0,0)
   Vector3::Set(pe,10,0,0)
   *ground = CreateGround()
-  PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
+;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
 ;   Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
 ;   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
@@ -254,8 +250,8 @@ Procedure Draw(*app.Application::Application_t)
 ;   glActiveTexture(#GL_TEXTURE0)
 ;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
   
-
   Scene::AddChild(Scene::*current_scene,*cloud)
+  Scene::AddChild(Scene::*current_scene,*mesh)
   Scene::Setup(Scene::*current_scene,*app\context)
   
   Application::Loop(*app,@Draw())
@@ -263,8 +259,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 210
+; CursorPosition = 225
+; FirstLine = 187
 ; Folding = --
 ; EnableXP
 ; Executable = Test

@@ -110,9 +110,8 @@ Module InstanceCloud
   ;----------------------------------------------------
   Procedure GetShapeDataSize(*Me.InstanceCloud_t)
     Protected *shape.Shape::Shape_t = *Me\shape
-    Protected nbp = *shape\nbt * 3
-    Protected glfloat.f
-    Protected size_s = nbp*3*SizeOf(glfloat)
+    Protected nbv = *shape\nbt * 3
+    Protected size_s = nbv * SizeOf(v3f32)
     ProcedureReturn size_s
   EndProcedure
   
@@ -128,8 +127,7 @@ Module InstanceCloud
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
     glBufferSubData(#GL_ARRAY_BUFFER,3*size_s,size_s,CArray::GetPtr(*shape\colors,0))
-    
-
+   
   EndProcedure
   
   ; Build GL Data
@@ -138,102 +136,116 @@ Module InstanceCloud
     
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-     GetShapeDataSize(*Me)
-    ; Get Point Cloud Datas
-    Protected s_glfloat.GLfloat
-    Protected s_gluint.GLuint
-    Protected size_t.i = *geom\nbpoints * SizeOf(s_glfloat)
-    Protected size_s.i = GetShapeDataSize(*Me)
-
-    ; Vertex Array Object
-    If Not *Me\vao
-      glGenVertexArrays(1,@*Me\vao)
+    Protected sts.i = GetShapeDataSize(*Me)
+    If sts
+      ; Get Point Cloud Datas
+      Protected s_glfloat.GLfloat
+      Protected s_gluint.GLuint
+      Define st1.i = *geom\nbpoints * SizeOf(s_glfloat)
+      Define st3.i = *geom\nbpoints * SizeOf(v3f32)
+      Define st4.i = *geom\nbpoints * SizeOf(v4f32)
+  
+      ; Vertex Array Object
+      If Not *Me\vao
+        glGenVertexArrays(1,@*Me\vao)
+      EndIf
+      glBindVertexArray(*Me\vao)
+      
+      ; Create Vertex Buffer Object
+      If Not *Me\vbo
+        glGenBuffers(1,@*Me\vbo)
+      EndIf
+      glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+        
+      ; Push Buffer to GPU
+      glBufferData(#GL_ARRAY_BUFFER,sts*4+st3*4+st4+st1,#Null,#GL_DYNAMIC_DRAW)
+      GetShapeArrayDatas(*Me,sts)
+      Define offset.i = sts * 4
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st3,CArray::GetPtr(*geom\a_positions,0))
+      offset + st3
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st3,CArray::GetPtr(*geom\a_normals,0))
+      offset + st3
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st3,CArray::GetPtr(*geom\a_tangents,0))
+      offset + st3
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st4,CArray::GetPtr(*geom\a_color,0))
+      offset + st4
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st3,CArray::GetPtr(*geom\a_scale,0))
+      offset + st3
+      glBufferSubData(#GL_ARRAY_BUFFER,offset,st1,CArray::GetPtr(*geom\a_size,0))
+      offset + st1
+      
+      ; Create Element Array Buffer
+      glGenBuffers(1,@*Me\eab)
+      glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
+                   CArray::GetCount(*Me\shape\indices)* SizeOf(s_gluint),
+                   CArray::GetPtr(*Me\shape\indices,0),
+                   #GL_DYNAMIC_DRAW)
+      
+      ; Shape Datas
+      CompilerIf Defined(USE_SSE, #PB_Constant)
+        Define v3i = 4
+      CompilerElse
+        Define v3i = 3
+      CompilerEndIf
+      
+      glEnableVertexAttribArray(0)
+      glVertexAttribPointer(0,v3i,#GL_FLOAT,#GL_FALSE,0,0)
+      
+      glEnableVertexAttribArray(1)
+      glVertexAttribPointer(1,v3i,#GL_FLOAT,#GL_FALSE,0,sts)
+      
+      glEnableVertexAttribArray(2)
+      glVertexAttribPointer(2,v3i,#GL_FLOAT,#GL_FALSE,0,sts*2)
+      
+      glEnableVertexAttribArray(3)
+      glVertexAttribPointer(3,v3i,#GL_FLOAT,#GL_FALSE,0,sts*3)
+      
+      ; Attribute Position
+      glEnableVertexAttribArray(4)
+      glVertexAttribPointer(4,v3i,#GL_FLOAT,#GL_FALSE,0,sts*4)
+      
+      ; Attribute Normal
+      glEnableVertexAttribArray(5)
+      glVertexAttribPointer(5,v3i,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3)
+      
+      ; Attribute Tangent
+      glEnableVertexAttribArray(6)
+      glVertexAttribPointer(6,v3i,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*2)
+      
+      ; Attribute Color
+      glVertexAttribPointer(7,4,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*3)
+      glEnableVertexAttribArray(7)
+      
+      ;Attribute Scale
+      glVertexAttribPointer(8,v3i,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*3 + st4)
+      glEnableVertexAttribArray(8)
+      
+      ;Attribute Size
+      glVertexAttribPointer(9,1,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*4 + st4)
+      glEnableVertexAttribArray(9)
+      
+      Protected pgm = *Me\shader\pgm
+      ; Bind Attributes Locations
+      glBindAttribLocation(pgm,0,"s_pos")
+      glBindAttribLocation(pgm,1,"s_norm")
+      glBindAttribLocation(pgm,2,"s_uvws")
+      glBindAttribLocation(pgm,3,"s_color")
+      glBindAttribLocation(pgm,4,"position")
+      glBindAttribLocation(pgm,5,"normal")
+      glBindAttribLocation(pgm,6,"tangent")
+      glBindAttribLocation(pgm,7,"color")
+      glBindAttribLocation(pgm,8,"scale")
+      glBindAttribLocation(pgm,9,"size")
+      
+      
+      glVertexAttribDivisor(4,1)
+      glVertexAttribDivisor(5,1)
+      glVertexAttribDivisor(6,1)
+      glVertexAttribDivisor(7,1)
+      glVertexAttribDivisor(8,1)
+      glVertexAttribDivisor(9,1)
     EndIf
-    glBindVertexArray(*Me\vao)
-    
-    ; Create Vertex Buffer Object
-    If Not *Me\vbo
-      glGenBuffers(1,@*Me\vbo)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-    
-
-    ; Push Buffer to GPU
-    glBufferData(#GL_ARRAY_BUFFER,size_s*4+size_t*17,#Null,#GL_DYNAMIC_DRAW)
-    GetShapeArrayDatas(*Me,size_s)
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4,size_t*3,CArray::GetPtr(*geom\a_positions,0))
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*3,size_t*3,CArray::GetPtr(*geom\a_normals,0))
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*6,size_t*3,CArray::GetPtr(*geom\a_tangents,0))
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*9,size_t*4,CArray::GetPtr(*geom\a_color,0))
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*13,size_t*3,CArray::GetPtr(*geom\a_scale,0))
-    glBufferSubData(#GL_ARRAY_BUFFER,size_s*4+size_t*16,size_t,CArray::GetPtr(*geom\a_size,0))
-    
-    ; Create Element Array Buffer
-    glGenBuffers(1,@*Me\eab)
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
-                 CArray::GetCount(*Me\shape\indices)* SizeOf(s_gluint),
-                 CArray::GetPtr(*Me\shape\indices,0),
-                 #GL_DYNAMIC_DRAW)
-    
-    ; Shape Datas
-    glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-    
-    glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,size_s)
-    
-    glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2,3,#GL_FLOAT,#GL_FALSE,0,size_s*2)
-    
-    glEnableVertexAttribArray(3)
-    glVertexAttribPointer(3,3,#GL_FLOAT,#GL_FALSE,0,size_s*3)
-    
-    ; Attribute Position
-    glEnableVertexAttribArray(4)
-    glVertexAttribPointer(4,3,#GL_FLOAT,#GL_FALSE,0,size_s*4)
-    
-    ; Attribute Normal
-    glEnableVertexAttribArray(5)
-    glVertexAttribPointer(5,3,#GL_FLOAT,#GL_FALSE,0,size_t*3+size_s*4)
-    
-    ; Attribute Tangent
-    glEnableVertexAttribArray(6)
-    glVertexAttribPointer(6,3,#GL_FLOAT,#GL_FALSE,0,size_t*6+size_s*4)
-    
-    ; Attribute Color
-    glVertexAttribPointer(7,4,#GL_FLOAT,#GL_FALSE,0,size_t*9+size_s*4)
-    glEnableVertexAttribArray(7)
-    
-    ;Attribute Scale
-    glVertexAttribPointer(8,3,#GL_FLOAT,#GL_FALSE,0,size_t*13+size_s*4)
-    glEnableVertexAttribArray(8)
-    
-    ;Attribute Size
-    glVertexAttribPointer(9,1,#GL_FLOAT,#GL_FALSE,0,size_t*16+size_s*4)
-    glEnableVertexAttribArray(9)
-    
-    Protected pgm = *Me\shader\pgm
-    ; Bind Attributes Locations
-    glBindAttribLocation(pgm,0,"s_pos")
-    glBindAttribLocation(pgm,1,"s_norm")
-    glBindAttribLocation(pgm,2,"s_uvws")
-    glBindAttribLocation(pgm,3,"s_color")
-    glBindAttribLocation(pgm,4,"position")
-    glBindAttribLocation(pgm,5,"normal")
-    glBindAttribLocation(pgm,6,"tangent")
-    glBindAttribLocation(pgm,7,"color")
-    glBindAttribLocation(pgm,8,"scale")
-    glBindAttribLocation(pgm,9,"size")
-    
-    
-    glVertexAttribDivisor(4,1)
-    glVertexAttribDivisor(5,1)
-    glVertexAttribDivisor(6,1)
-    glVertexAttribDivisor(7,1)
-    glVertexAttribDivisor(8,1)
-    glVertexAttribDivisor(9,1)
-    
     
   EndProcedure
   
@@ -361,7 +373,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 132
+; FirstLine = 121
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

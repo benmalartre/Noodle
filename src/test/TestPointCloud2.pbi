@@ -56,12 +56,12 @@ Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
 PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
 Define ps.v3f32, pe.v3f32
-  Vector3::Set(@ps,-10,0,0)
-  Vector3::Set(@pe,10,0,0)
+  Vector3::Set(ps,-10,0,0)
+  Vector3::Set(pe,10,0,0)
   PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@ps,@pe)
   PointCloudGeometry::RandomizeColor(*obj\geom)
-;InstanceCloud::Setup(*obj,*s_pointcloud)
+; InstanceCloud::Setup(*obj,*s_pointcloud)
   
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
 ; 
@@ -112,7 +112,7 @@ Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Prope
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
 ; 
 ;View::SetContent(*s1\right,*graph)
-GraphUI::SetContent(*graph,*tree)
+; GraphUI::SetContent(*graph,*tree)
 
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 
@@ -134,7 +134,7 @@ Procedure Update(*app.Application::Application_t)
       Case #PB_EventType_KeyDown
         Protected key = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key)
         If key = #PB_Shortcut_Space
-          Tree::Evaluate(*tree)
+;           Tree::Evaluate(*tree)
           Scene::Update(Scene::*current_scene)
         EndIf
     EndSelect
@@ -167,9 +167,9 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 93
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 50
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -51,6 +51,7 @@ Module Location
     Vector3::AddInPlace(*Me\p,x)
     Vector3::Scale(x,*c, *Me\uvw\z)
     Vector3::AddInPlace(*Me\p,x)
+    
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
 
   EndProcedure
@@ -335,7 +336,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 141
+; CursorPosition = 52
+; FirstLine = 26
 ; Folding = ---
 ; EnableXP

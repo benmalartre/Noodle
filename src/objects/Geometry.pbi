@@ -393,7 +393,7 @@ DeclareModule Geometry
     
   EndStructure
   
-  Declare ComputeBoundingBox(*geom.Geometry_t)
+  Declare ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
   Declare GetNbPoints(*geom.Geometry_t)
   Declare GetParentObject3D(*Me.Geometry_t)
   Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
@@ -405,30 +405,75 @@ EndDeclareModule
 ; Geometry Module Implementation
 ;========================================================================================
 Module Geometry
-  Procedure ComputeBoundingBox(*geom.Geometry_t)
-    Protected i
-    Protected *v.v3f32
-    Protected bmin.v3f32, bmax.v3f32
-    Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
-    Vector3::Set(bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
-  
-    For i=0 To *geom\nbpoints-1
-      *v = CArray::GetValue(*geom\a_positions,i)
-  
-      ;Vector3_MulByMatrix4InPlace(*v,*srt)
-      If *v\x < bmin\x : bmin\x = *v\x : EndIf
-      If *v\y < bmin\y : bmin\y = *v\y : EndIf
-      If *v\z < bmin\z : bmin\z = *v\z : EndIf
+  Procedure ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
+    CompilerIf Defined(USE_SSE, #PB_Constant)
+      Define *positions = *geom\a_positions\data
+      Define nbp = *geom\nbpoints
+      Define *origin = *geom\bbox\origin
+      Define *extend = *geom\bbox\extend
+      Define half.f = 0.5
       
-      If *v\x > bmax\x : bmax\x = *v\x : EndIf
-      If *v\y > bmax\y : bmax\y = *v\y : EndIf
-      If *v\z > bmax\z : bmax\z = *v\z : EndIf
-    Next i
+      ! mov rax, [p.p_positions]              ; pass positions address to cpu
+      ! mov rcx, [p.v_nbp]                    ; pass nb of points
+      ! xor r8, r8                            ; reset offset
+      ! movaps xmm0, [rax]                    ; load first point in xmm0, initialize bmin
+      ! movaps xmm1, xmm0                     ; copy first point in xmm1, initialize bmax
+      
+      ! dec rcx                               ; decrement counter
+      ! jz output_compute_box                 ; if only one point exit
+      
+      ! loop_compute_box:
+      !   movaps xmm2, [rax+r8]               ; load current point
+      !   minps xmm0, xmm2                    ; packed minimum test
+      !   maxps xmm1, xmm2                    ; packed maximum test
+
+      !   add r8, 16                          ; increment offset
+      !   dec rcx                             ; decrement counter
+      !   jnz loop_compute_box                ; loop
+      
+      ! output_compute_box:                   ; output bbox
+      ;   compute box origin
+      !   movlps xmm2, [p.v_half]             ; load half value (0.5)
+      !   shufps xmm2, xmm2, 0                ; fill xmm3 with half
+      !   movaps xmm3, xmm0                   ; copy bmin to xmm2
+      !   mulps xmm3, xmm2                    ; multiply bmin a by half
+      !   movaps xmm4, xmm1                   ; copy bmax to xmm2
+      !   mulps xmm4, xmm2                    ; multiply bmax b by half
+      !   addps xmm3, xmm4                    ; add packed float
+      
+      ;   compute box extend
+      !   subps xmm1, xmm0                    ; packed substraction bmax - bmin
+      !   mulps xmm1, xmm2                    ; packed multiplication extend * half
+      
+      ;  back to memory
+      !   mov rdx, [p.p_origin]
+      !   movaps [rdx], xmm3
+      !   mov rdx, [p.p_extend]
+      !   movaps [rdx], xmm1
+    CompilerElse
+      Protected i
+      Protected *v.v3f32
+      Protected bmin.v3f32, bmax.v3f32
+      Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
+      Vector3::Set(bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
     
-    Vector3::LinearInterpolate(*geom\bbox\origin, bmin, bmax, 0.5)
-    Vector3::Sub(*geom\bbox\extend, bmax, bmin)
-    Vector3::ScaleInPlace(*geom\bbox\extend, 0.5)
+      For i=0 To *geom\nbpoints-1
+        *v = CArray::GetValue(*geom\a_positions,i)
     
+        ;Vector3_MulByMatrix4InPlace(*v,*srt)
+        If *v\x < bmin\x : bmin\x = *v\x : EndIf
+        If *v\y < bmin\y : bmin\y = *v\y : EndIf
+        If *v\z < bmin\z : bmin\z = *v\z : EndIf
+        
+        If *v\x > bmax\x : bmax\x = *v\x : EndIf
+        If *v\y > bmax\y : bmax\y = *v\y : EndIf
+        If *v\z > bmax\z : bmax\z = *v\z : EndIf
+      Next i
+      
+      Vector3::LinearInterpolate(*geom\bbox\origin, bmin, bmax, 0.5)
+      Vector3::Sub(*geom\bbox\extend, bmax, bmin)
+      Vector3::ScaleInPlace(*geom\bbox\extend, 0.5)
+    CompilerEndIf
   EndProcedure
   
   Procedure GetNbPoints(*geom.Geometry_t)
@@ -457,7 +502,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 334
-; FirstLine = 299
+; CursorPosition = 404
+; FirstLine = 385
 ; Folding = -----
 ; EnableXP
