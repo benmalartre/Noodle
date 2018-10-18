@@ -10,10 +10,12 @@ Time::Init()
 
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("TOTO", Shape::#Shape_None)
 
+
 Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 PolymeshGeometry::SphereTopology(*geom\topo,1,1000,1000)
+Define T.d = Time::Get()
 PolymeshGeometry::Set2(*geom, *geom\topo)
-
+MessageRequester("Time", StrD(Time::Get() - T))
 ; Geometry::ComputeBoundingBox(
 
   
@@ -21,6 +23,6 @@ PolymeshGeometry::Set2(*geom, *geom\topo)
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 10
 ; EnableXP
 ; Constant = #USE_SSE=1

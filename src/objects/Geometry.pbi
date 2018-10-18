@@ -436,9 +436,9 @@ Module Geometry
       !   movlps xmm2, [p.v_half]             ; load half value (0.5)
       !   shufps xmm2, xmm2, 0                ; fill xmm3 with half
       !   movaps xmm3, xmm0                   ; copy bmin to xmm2
-      !   mulps xmm3, xmm2                    ; multiply bmin a by half
+      !   mulps xmm3, xmm2                    ; multiply bmin by half
       !   movaps xmm4, xmm1                   ; copy bmax to xmm2
-      !   mulps xmm4, xmm2                    ; multiply bmax b by half
+      !   mulps xmm4, xmm2                    ; multiply bmax by half
       !   addps xmm3, xmm4                    ; add packed float
       
       ;   compute box extend
@@ -502,7 +502,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 404
+; CursorPosition = 433
 ; FirstLine = 385
 ; Folding = -----
 ; EnableXP

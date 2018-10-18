@@ -114,8 +114,10 @@ DeclareModule Math
     Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
     sse_1111_negate_mask:
     Data.f -1, -1, -1, -1
-    sse_1010_negate_mask:
+    sse_0101_negate_mask:
     Data.f 1, -1, 1, -1
+     sse_1010_negate_mask:
+    Data.f -1, 1, -1, 1
     sse_1100_negate_mask:
     Data.f -1, -1, 1, 1
   EndDataSection
@@ -3432,8 +3434,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2627
-; FirstLine = 2346
-; Folding = -------------------------------H8----X-0--
+; CursorPosition = 118
+; FirstLine = 72
+; Folding = -------------------------------x+---f04---
 ; EnableXP
 ; EnableUnicode

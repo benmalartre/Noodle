@@ -51,7 +51,7 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global T.f
+Global T.d
 
 
 Procedure RandomLine()
@@ -220,12 +220,14 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
+  
+  
    
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 160
+; CursorPosition = 168
+; FirstLine = 127
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

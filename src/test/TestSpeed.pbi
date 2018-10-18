@@ -149,18 +149,19 @@ EndProcedure
 Define numTris.i = 12000000
 Define size_soup.i = numTris * 3 * SizeOf(v3f32)
 
-Define *soup1 = PolygonSoup(numTris)
+Define *soup = PolygonSoup(numTris)
 Define numIndices = (numTris * 3)
 Dim indices.l(numIndices)
 For i=0 To  numIndices - 1
   indices(i) = i
 Next
 ; 
-Define center.Math::v3f32
-Define halfsize.Math::v3f32
-Vector3::Set(center,0, 7, 0)
-Vector3::Set(halfsize,0.5, 0.5, 0.5)
-Define tri.Geometry::Triangle_t
+Define box.Geometry::Box_t
+
+
+Vector3::Set(box\origin,0, 7, 0)
+Vector3::Set(box\extend,0.5, 0.5, 0.5)
+
 
 Define numHits1 = 0, numHits2 = 0
 Define offset = 0 ;
@@ -183,25 +184,39 @@ Define offset = 0 ;
 ; !   jnz tri_touch_loop 
 Define touch.b
 Define.d startT = Time::Get()
+Define.v3f32 *a, *b, *c
 For i = 0 To  numTris - 1
-	tri\ID = i
-	
-	tri\vertices[0] = offset
-	tri\vertices[1] = offset + 1
-	tri\vertices[2] = offset + 2
+	*a = *soup + (i * 3) * SizeOf(v3f32)
+	*b = *soup + (i * 3 + 1) * SizeOf(v3f32)
+	*c = *soup + (i * 3 + 2) * SizeOf(v3f32)
 	offset + 3
 
-	If Triangle::Touch(tri, *soup1, center, halfsize) 
+	If Triangle::TouchPB(box, *a, *b, *c) 
 	  numHits1 + 1
 	EndIf
 Next
 
 Define elapsed.d = (Time::Get() - startT)
 
-Dim touches.b(numTris)
-startT = Time::Get()
-numHits2 = Triangle::TouchArray(*soup1, @indices(0), numTris, center, halfsize, @touches(0))
+Define.d startT = Time::Get()
+Define.v3f32 *a, *b, *c
+For i = 0 To  numTris - 1
+	*a = *soup + (i * 3) * SizeOf(v3f32)
+	*b = *soup + (i * 3 + 1) * SizeOf(v3f32)
+	*c = *soup + (i * 3 + 2) * SizeOf(v3f32)
+	offset + 3
+
+	If Triangle::Touch(box, *a, *b, *c) 
+	  numHits2 + 1
+	EndIf
+Next
+
 Define elapsed2.d = (Time::Get() - startT)
+
+; Dim touches.b(numTris)
+; startT = Time::Get()
+; numHits2 = Triangle::TouchArray(*soup1, @indices(0), numTris, center, halfsize, @touches(0))
+; Define elapsed2.d = (Time::Get() - startT)
 
 
 MessageRequester("Octree",
@@ -211,6 +226,6 @@ MessageRequester("Octree",
 ;                  "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 148
-; FirstLine = 140
+; FirstLine = 137
 ; Folding = -
 ; EnableXP

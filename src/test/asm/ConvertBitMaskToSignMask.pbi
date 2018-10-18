@@ -6,37 +6,41 @@
 EndStructure
 
 DataSection
-  sse_negate_mask:
+  sse_negate_value:
   Data.f -1
+  sse_one_value:
+  Data.f 1
+  
 EndDataSection
 
-Procedure ConvertBitMaskToNegateMask(bitMask.c, *mask.v3f32)
-  
-  Define _x.c
-  ! mov rax, [p.v_bitMask]
-  ! mov r8, [p.v__x]
-  
-  ! xor rcx, rcx
-  ! add rcx, 16
-  
-  ! loop_mask:
-  !   mov rax, [p.v_bitMask]
-  !   and rax, rcx
-  
-  ! mov [p.v__x], rax
-  
-  
-  !   dec rcx
-  !   jnz loop_mask
-  
 
+
+Procedure ConvertBitMaskToNegateMask(*a.v3f32, *b.v3f32)
+  ! mov rax, [p.p_a]
+  ! mov rcx, [p.p_b]
+  ! movups xmm0, [rax]
+  ! movups xmm1, [rcx]
+  ! movaps xmm2, xmm0
   
+  ! cmpps xmm2, xmm1, 4
+  ! movmskps r8, xmm2
+  ! blendps xmm0, xmm1, 1
+  ! movups [rax], xmm0
 EndProcedure
 
 
-Define mask.v3f32
-ConvertBitMaskToNegateMask(%0100, *mask.v3f32)
+Define a.v3f32, b.v3f32
+a\x= 1
+a\y = 2
+a\z = 3
+b\x = -1
+b\y = -2
+b\z = -3
+
+ConvertBitMaskToNegateMask(a, b)
+
+Debug StrF(a\x)+","+StrF(a\y)+","+StrF(a\z)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 26
 ; Folding = -
 ; EnableXP

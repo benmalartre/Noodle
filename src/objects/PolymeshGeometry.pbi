@@ -554,6 +554,7 @@ Module PolymeshGeometry
   ;  Recompute Triangles
   ; ----------------------------------------------------------------------------
   Procedure RecomputeTriangles(*mesh.PolymeshGeometry_t)
+    
     Protected x,y,z,z2, nbv, nbt
     Define.v3f32 ab,ac,norm
   
@@ -2451,7 +2452,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2352
-; FirstLine = 2323
+; CursorPosition = 555
+; FirstLine = 545
 ; Folding = ----fw--v--
 ; EnableXP

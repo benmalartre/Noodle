@@ -92,13 +92,55 @@ Module Topology
     Protected p.v3f32
     Protected i
     Protected *p.v3f32
-    For i=0 To CArray::GetCount(*topo\vertices)-1
-      *p = CArray::GetValue(*topo\vertices,i)
+    CompilerIf Defined(USE_SEE, #PB_Constant)
+      Define *positions = *topo\vertices\data
+      Define nbp.i = CArray::GetCount(*topo\vertices)
+      ! mov rax, [p.p_positions]
+      ! mov rdx, [p.p_m]
+      ! mov rcx, [p.v_nbp]
       
-      Vector3::SetFromOther(p,*p)
-      Vector3::MulByMatrix4InPlace(p,*m)
-      CArray::SetValue(*topo\vertices,i,p)
-    Next
+      ! movups  xmm4, [rdx]                 ; load matrix row 0
+      ! movups  xmm5, [rdx+16]              ; load matrix row 1
+      ! movups  xmm6, [rdx+32]              ; load matrix row 2
+      ! movups  xmm7, [rdx+48]              ; load matrix row 3
+      
+      ! loop_transform_topo:
+      !   movups  xmm0, [rax]               ; d c b a
+      !   movaps  xmm1, xmm0                ; d c b a       
+      !   movaps  xmm2, xmm0                ; d c b a
+      !   movaps  xmm3, xmm0                ; d c b a
+    
+      !   shufps  xmm0, xmm0,0              ; a a a a 
+      !   shufps  xmm1, xmm1,01010101b      ; b b b b
+      !   shufps  xmm2, xmm2,10101010b      ; c c c c
+      !   shufps  xmm3, xmm3,11111111b      ; d d d d
+    
+      !   mulps   xmm0, xmm4
+      !   mulps   xmm1, xmm5
+      !   mulps   xmm2, xmm6
+    
+      !   addps   xmm0, xmm1
+      !   addps   xmm0, xmm2
+      !   addps   xmm0, xmm7
+      
+      !   movaps xmm1, xmm0
+      !   shufps xmm1, xmm1, 11111111b
+      !   divps xmm0, xmm1
+    
+      !   movups [rax], xmm0
+      !   add rax, 16
+      !   dec rcx
+      !   jnz loop_transform_topo
+      
+    CompilerElse
+      For i=0 To CArray::GetCount(*topo\vertices)-1
+        *p = CArray::GetValue(*topo\vertices,i)
+        
+        Vector3::SetFromOther(p,*p)
+        Vector3::MulByMatrix4InPlace(p,*m)
+        CArray::SetValue(*topo\vertices,i,p)
+      Next
+    CompilerEndIf
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -346,7 +388,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 106
+; CursorPosition = 90
+; FirstLine = 86
 ; Folding = ---
 ; EnableXP
