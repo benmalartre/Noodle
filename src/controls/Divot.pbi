@@ -169,20 +169,21 @@ Module ControlDivot
 
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn : EndIf
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+;     DrawingMode(#PB_2DDrawing_AlphaBlend)
     ; ---[ Reset Clipping ]-----------------------------------------------------
   ;   raaResetClip()
     
+    MovePathCursor( 0 + xoff, 0 + yoff )
     ; °°°[ Disabled ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     If Not *Me\enable
       ; ...[ Dispatch Value ]...................................................
       Select *Me\value
-        Case #ANIM_NONE              : DrawImage( ImageID(s_gui_controls_divot_disabled          ), 0 + xoff, 0 + yoff )
-        Case #ANIM_CONSTRAINT        : DrawImage( ImageID(s_gui_controls_divot_anim_cns_disabled ), 0 + xoff, 0 + yoff )
-        Case #ANIM_EXPRESSION        : DrawImage( ImageID(s_gui_controls_divot_anim_exp_disabled ), 0 + xoff, 0 + yoff )
-        Case #ANIM_KEYFRAME          : DrawImage( ImageID(s_gui_controls_divot_anim_key_disabled ), 0 + xoff, 0 + yoff )
-        Case #ANIM_OPERATOR          : DrawImage( ImageID(s_gui_controls_divot_anim_op_disabled  ), 0 + xoff, 0 + yoff )
-        Case #ANIM_SCRIPTED_OPERATOR : DrawImage( ImageID(s_gui_controls_divot_anim_sop_disabled ), 0 + xoff, 0 + yoff )
+        Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_disabled          ))
+        Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_disabled ))
+        Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_disabled ))
+        Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_disabled ))
+        Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_disabled  ))
+        Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_disabled ))
       EndSelect
     ; °°°[ Over ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     ElseIf *Me\over
@@ -190,35 +191,35 @@ Module ControlDivot
       If *Me\down
         ; ...[ Dispatch Value ].................................................
         Select *Me\value
-          Case #ANIM_NONE              : DrawImage( ImageID(s_gui_controls_divot_down          ), 0 + xoff, 0 + yoff )
-          Case #ANIM_CONSTRAINT        : DrawImage( ImageID(s_gui_controls_divot_anim_cns_down ), 0 + xoff, 0 + yoff )
-          Case #ANIM_EXPRESSION        : DrawImage( ImageID(s_gui_controls_divot_anim_exp_down ), 0 + xoff, 0 + yoff )
-          Case #ANIM_KEYFRAME          : DrawImage( ImageID(s_gui_controls_divot_anim_key_down ), 0 + xoff, 0 + yoff )
-          Case #ANIM_OPERATOR          : DrawImage( ImageID(s_gui_controls_divot_anim_op_down  ), 0 + xoff, 0 + yoff )
-          Case #ANIM_SCRIPTED_OPERATOR : DrawImage( ImageID(s_gui_controls_divot_anim_sop_down ), 0 + xoff, 0 + yoff )
+          Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_down          ))
+          Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_down ))
+          Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_down ))
+          Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_down ))
+          Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_down  ))
+          Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_down ))
         EndSelect    
       ; ---[ Up ]---------------------------------------------------------------
       Else
         ; ...[ Dispatch Value ].................................................
         Select *Me\value
-          Case #ANIM_NONE              : DrawImage( ImageID(s_gui_controls_divot_over          ), 0 + xoff, 0 + yoff )
-          Case #ANIM_CONSTRAINT        : DrawImage( ImageID(s_gui_controls_divot_anim_cns_over ), 0 + xoff, 0 + yoff )
-          Case #ANIM_EXPRESSION        : DrawImage( ImageID(s_gui_controls_divot_anim_exp_over ), 0 + xoff, 0 + yoff )
-          Case #ANIM_KEYFRAME          : DrawImage( ImageID(s_gui_controls_divot_anim_key_over ), 0 + xoff, 0 + yoff )
-          Case #ANIM_OPERATOR          : DrawImage( ImageID(s_gui_controls_divot_anim_op_over  ), 0 + xoff, 0 + yoff )
-          Case #ANIM_SCRIPTED_OPERATOR : DrawImage( ImageID(s_gui_controls_divot_anim_sop_over ), 0 + xoff, 0 + yoff )
+          Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_over          ))
+          Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_over ))
+          Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_over ))
+          Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_over ))
+          Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_over  ))
+          Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_over ))
         EndSelect
       EndIf
     ; °°°[ Normal ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     Else
       ; ...[ Dispatch Value ]...................................................
       Select *Me\value
-        Case #ANIM_NONE              : DrawImage( ImageID(s_gui_controls_divot_normal          ), 0 + xoff, 0 + yoff )
-        Case #ANIM_CONSTRAINT        : DrawImage( ImageID(s_gui_controls_divot_anim_cns_normal ), 0 + xoff, 0 + yoff )
-        Case #ANIM_EXPRESSION        : DrawImage( ImageID(s_gui_controls_divot_anim_exp_normal ), 0 + xoff, 0 + yoff )
-        Case #ANIM_KEYFRAME          : DrawImage( ImageID(s_gui_controls_divot_anim_key_normal ), 0 + xoff, 0 + yoff )
-        Case #ANIM_OPERATOR          : DrawImage( ImageID(s_gui_controls_divot_anim_op_normal  ), 0 + xoff, 0 + yoff )
-        Case #ANIM_SCRIPTED_OPERATOR : DrawImage( ImageID(s_gui_controls_divot_anim_sop_normal ), 0 + xoff, 0 + yoff )
+        Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_normal          ))
+        Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_normal ))
+        Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_normal ))
+        Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_normal ))
+        Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_normal  ))
+        Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_normal ))
       EndSelect
     EndIf
     
@@ -538,7 +539,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 400
-; FirstLine = 381
+; CursorPosition = 221
+; FirstLine = 169
 ; Folding = ---
 ; EnableXP

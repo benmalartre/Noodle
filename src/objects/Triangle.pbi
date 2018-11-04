@@ -264,7 +264,7 @@ EndProcedure
     ! subps xmm14, xmm12             ; b - center
     ! subps xmm13, xmm12             ; c - center
     
-    ! xor r8, r8                            ; reset edge counter
+    ! xor r8, r8                     ; reset edge counter
         
     ! build_edge:
     !   cmp r8, 3
@@ -884,31 +884,28 @@ EndProcedure
     AXISTEST_X01(e0\z, e0\y, fez, fey)
     AXISTEST_Y02(e0\z, e0\x, fez, fex)
     AXISTEST_Z12(e0\y, e0\x, fey, fex)
-;     
-;     Define.v3f32 e1
-;     Vector3::Sub(e1, v2, v1)
     
-;     fex = Abs(e1\x)
-;     fey = Abs(e1\y)
-;     fez = Abs(e1\z)
-;     
-;     AXISTEST_X01(e1\z, e1\y, fez, fey)
-;     AXISTEST_Y02(e1\z, e1\x, fez, fex)
-;     AXISTEST_Z00(e1\y, e1\x, fey, fex)
-;     
-;     Define.v3f32 e2
-;     Vector3::Sub(e2, v0, v2)
-;     
-;     fex = Abs(e2\x)
-;     fey = Abs(e2\y)
-;     fez = Abs(e2\z)
-;     
-;     AXISTEST_X20(e2\z, e2\y, fez, fey)
-;     AXISTEST_Y10(e2\z, e2\x, fez, fex)
-;     AXISTEST_Z12(e2\y, e2\x, fey, fex)
+    Define.v3f32 e1
+    Vector3::Sub(e1, v2, v1)
     
+    fex = Abs(e1\x)
+    fey = Abs(e1\y)
+    fez = Abs(e1\z)
     
-    ProcedureReturn #True 
+    AXISTEST_X01(e1\z, e1\y, fez, fey)
+    AXISTEST_Y02(e1\z, e1\x, fez, fex)
+    AXISTEST_Z00(e1\y, e1\x, fey, fex)
+    
+    Define.v3f32 e2
+    Vector3::Sub(e2, v0, v2)
+    
+    fex = Abs(e2\x)
+    fey = Abs(e2\y)
+    fez = Abs(e2\z)
+    
+    AXISTEST_X20(e2\z, e2\y, fez, fey)
+    AXISTEST_Y10(e2\z, e2\x, fez, fex)
+    AXISTEST_Z12(e2\y, e2\x, fey, fex)
     
     
     ; first test overlap in the {x,y,z}-directions
@@ -1371,7 +1368,7 @@ EndProcedure
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 337
-; FirstLine = 303
+; CursorPosition = 907
+; FirstLine = 860
 ; Folding = ---
 ; EnableXP

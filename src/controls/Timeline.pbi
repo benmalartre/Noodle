@@ -136,11 +136,8 @@ Module ControlTimeline
   ; ----------------------------------------------------------------------------
   Procedure hlpDrawFrames( *Me.ControlTimeline_t )
     ;---[ Start Drawing ]-------------------------------------------------------
-    StartDrawing( CanvasOutput(*Me\gadgetID) )
-    DrawingMode(#PB_2DDrawing_Transparent)
-    DrawingFont(FontID(Globals::#FONT_SUBMENU))
-    ;SetFont(RAA_FONT_HEADER)
-    
+    StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+    VectorFont(FontID(Globals::#FONT_SUBMENU))    
     
     ; ---[ Local Variables ]----------------------------------------------------
     Protected w.i = *Me\sizX 
@@ -152,32 +149,38 @@ Module ControlTimeline
     Protected m.i = hlpGetStep(r)
     
     ;---[ Draw Frames ]---------------------------------------------------------
-    Box(l,0,w,h,UIColor::COLOR_MAIN_BG)
-    Line(l,h-1,w,1,UIColor::COLOR_GROUP_FRAME)
-    For f=Time::startframe To Time::endframe
-      If f%m = 0
-        Line(l+(f-Time::startframe)*s,h/2,1,h/2,UIColor::COLOR_LABEL)
-        If Not f = Time::endframe
-          DrawText(l+(f-Time::startframe)*s+2,0,Str(f),UIColor::COLOR_LABEL)
-        EndIf
-        
-      ElseIf Mod(f, m/5) = 0
-        Line(l+(f-Time::startframe)*s,h-6,1,6,UIColor::COLOR_LABEL)
-      EndIf
-    Next f
+    AddPathBox(l,0,w,h)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    FillPath()
     
-    ;---[ Draw Current Frame ]--------------------------------------------------
-    Box(l+(Time::currentframe - Time::startframe)*s,0,3,h-1,RGB(255,100,50))
+    MovePathCursor(l,h-1)
+    AddPathLine(w,1, #PB_Path_Relative)
     
-    
-    ;---[ Draw Loop ]-----------------------------------------------------------
-    If Time::loop
-      Box(l+(Time::startloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
-      Box(l+(Time::endloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
-    EndIf
+;     Line(l,h-1,w,1,UIColor::COLOR_GROUP_FRAME)
+;     For f=Time::startframe To Time::endframe
+;       If f%m = 0
+;         Line(l+(f-Time::startframe)*s,h/2,1,h/2,UIColor::COLOR_LABEL)
+;         If Not f = Time::endframe
+;           DrawText(l+(f-Time::startframe)*s+2,0,Str(f),UIColor::COLOR_LABEL)
+;         EndIf
+;         
+;       ElseIf Mod(f, m/5) = 0
+;         Line(l+(f-Time::startframe)*s,h-6,1,6,UIColor::COLOR_LABEL)
+;       EndIf
+;     Next f
+;     
+;     ;---[ Draw Current Frame ]--------------------------------------------------
+;     Box(l+(Time::currentframe - Time::startframe)*s,0,3,h-1,RGB(255,100,50))
+;     
+;     
+;     ;---[ Draw Loop ]-----------------------------------------------------------
+;     If Time::loop
+;       Box(l+(Time::startloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
+;       Box(l+(Time::endloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
+;     EndIf
     
     ;---[ Stop Drawing ]-----------------------------------------------------------
-    StopDrawing()
+    StopVectorDrawing()
    
   
   EndProcedure
@@ -196,10 +199,10 @@ Module ControlTimeline
     
     
     ;---[ Start Drawing ]-------------------------------------------------------
-    StartDrawing( CanvasOutput(*Me\gadgetID) )
-    DrawingMode(#PB_2DDrawing_Default)
-    Box(0,*Me\sizY-30,*Me\sizX,30,UIColor::COLOR_MAIN_BG)
-    DrawingMode(#PB_2DDrawing_AlphaClip)
+    StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+    AddPathBox(0,*Me\sizY-30,*Me\sizX,30)
+    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    FillPath()
     
     ; ---[ Redraw Children ]----------------------------------------------------
     Protected ev_data.Control::EventTypeDatas_t
@@ -214,7 +217,7 @@ Module ControlTimeline
      Next
      
      ;---[ Stop Drawing ]-----------------------------------------------------------
-    StopDrawing()
+    StopVectorDrawing()
     
   EndProcedure
   ;}
@@ -227,12 +230,13 @@ Module ControlTimeline
     Protected i
     ResizeImage(*Me\imageID,*Me\sizX,*Me\sizY)
     ; ...[ Tag Picking Surface ]................................................
-    StartDrawing( ImageOutput( *Me\imageID ) )
+    StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
     ;StartDrawing(CanvasOutput(*Me\gadgetID))
     ;Box( 0, 0, *Me\sizX, *Me\sizY, RGB($00,$00,$00) )
     For i=0 To *Me\controls - 1
       *son = *Me\children(i)
-      Box( *son\posX, *son\posY, *son\sizX, *son\sizY, RGB(i+1,$0,$0) )
+      AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+      VectorSourceColor(RGBA(i+1,0,0,255) )
     Next
     StopDrawing()
   EndProcedure
@@ -394,11 +398,12 @@ Module ControlTimeline
           son.Control::IControl    = *son
           ev_data\xoff    = *son\posX
           ev_data\yoff    = *son\posY
-          StartDrawing( CanvasOutput(*Me\gadgetID) )
-          DrawingMode(#PB_2DDrawing_AlphaBlend)
-            Box( *son\posX, *son\posY, *son\sizX, *son\sizY, RAA_COLORA_MAIN_BG )
-            son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-          StopDrawing()
+          StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+          AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+          VectorSourceColor(UIColor::COLORA_MAIN_BG )
+          FillPath()
+          son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+          StopVectorDrawing()
           
         ; ------------------------------------------------------------------------
         ;  Focus
@@ -1115,7 +1120,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 141
+; CursorPosition = 202
+; FirstLine = 180
 ; Folding = ------
 ; EnableXP

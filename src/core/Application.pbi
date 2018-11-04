@@ -80,6 +80,7 @@ XIncludeFile "../controls/Controls.pbi"
 XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
+XIncludeFile "../controls/Knob.pbi"
 ;XIncludeFile "../controls/PopupMenu.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
@@ -633,8 +634,8 @@ CompilerEndIf
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; CursorPosition = 82
+; FirstLine = 34
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

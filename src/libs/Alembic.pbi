@@ -168,9 +168,9 @@ DeclareModule Alembic
   
   Macro ABCArchiveType : l :EndMacro
   Enumeration
-	  #ABC_ArchiveType_HDF5			;/*! Archive is an HDF5 archive */
-	  #ABC_ArchiveType_Ogawa		;/*! Archive is an Ogawa archive */
-	  #ABC_ArchiveType_Any = 127;/*! Don't know what archive type it is */
+	  #ABC_ArchiveType_HDF5			      ; Archive is an HDF5 archive
+	  #ABC_ArchiveType_Ogawa		      ; Archive is an Ogawa archive
+	  #ABC_ArchiveType_Any = 127      ; Don't know what archive type it is
 	EndEnumeration
 	
 
@@ -1686,8 +1686,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 921
-; FirstLine = 874
+; CursorPosition = 322
+; FirstLine = 299
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

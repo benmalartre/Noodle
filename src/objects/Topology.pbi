@@ -59,11 +59,7 @@ Module Topology
   ; ----------------------------------------------------------------------------
   ;  Set
   ; ----------------------------------------------------------------------------
-  Procedure Set(*topo.Topology_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong)
-    Debug "TOPOLOGY SET : "+Str(*topo)
-    Debug "DATA : "+Str(*topo\vertices\data)
-    Debug "ITEM SIZE : "+Str(*topo\vertices\itemSize)
-    Debug "ITEM COUNT : "+Str(*topo\vertices\itemCount)
+  Procedure Set(*topo.Topology_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayLong) 
     If CArray::GetCount(*vertices)>0
       CArray::Copy(*topo\vertices,*vertices)
       CArray::Copy(*topo\faces,*faces)
@@ -159,9 +155,9 @@ Module Topology
   EndProcedure
   
   
-  ;---------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   ; Merge
-  ;---------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure Merge(*o.Topology_t,*t1.Topology_t,*t2.Topology_t)
     Protected f1 = CArray::GetCount(*t1\faces)
     Protected f2 = CArray::GetCount(*t2\faces)
@@ -190,9 +186,9 @@ Module Topology
     Next
   EndProcedure
   
-  ;---------------------------------------------------------
+  ;-------------------------------------------------------------------------------
   ; Merge In Place
-  ;---------------------------------------------------------
+  ;-------------------------------------------------------------------------------
   Procedure MergeInPlace(*t.Topology_t,*o.Topology_t)
     Protected f1 = CArray::GetCount(*t\faces)
     Protected f2 = CArray::GetCount(*o\faces)
@@ -222,9 +218,9 @@ Module Topology
     EndIf
   EndProcedure
   
-  ;---------------------------------------------------------
+  ;---------------------------------------------------------------------------------
   ; Merge Array
-  ;---------------------------------------------------------
+  ;--------------------------------------------------------------------------------- 
   Procedure MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
     Protected nbt = CArray::GetCount(*topos)
 
@@ -269,7 +265,6 @@ Module Topology
         Next
       EndIf
     Next
-   
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -277,8 +272,7 @@ Module Topology
   ; ----------------------------------------------------------------------------
   Procedure Extrusion(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,closed.b)
     If CArray::GetCount(*points)<2 Or CArray::GetCount(*section)<2: ProcedureReturn : EndIf
-    
-   
+
     Protected p.v3f32
     Protected is,ip
     Protected *oP.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
@@ -337,11 +331,8 @@ Module Topology
           cnt+so
         EndIf
       Next
-      
-      
     EndIf
-    
-    
+
     MergeInPlace(*topo,*extrusion)
     Delete(*extrusion)
     CArray::Delete(*oP)
@@ -382,13 +373,12 @@ Module Topology
         
       EndIf
     Else
-      
+   
     EndIf
-    
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 86
+; CursorPosition = 186
+; FirstLine = 168
 ; Folding = ---
 ; EnableXP

@@ -34,20 +34,36 @@ Procedure Callback(type.i, *sig.Signal::Signal_t)
 EndProcedure
 
 Procedure BunnyCallback(*bunny.Polymesh::Polymesh_t)
-  
 EndProcedure
 
 
 Structure MyObject_t Extends Object::Object_t
-  
 EndStructure
 
 Procedure AddButton (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
   ControlProperty::AppendStart(*prop)
-  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGB(128,128,128), *ui\width, 64)
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 64)
   Object::SignalConnect(*prop, *btn\onleftclick_signal, @Callback())
+  ControlProperty::AppendStop(*prop)
+  PropertyUI::AddProperty(*ui, *prop)
+  CloseGadgetList()
+EndProcedure
+
+Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
+  OpenGadgetList(*ui\container)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
+  ControlProperty::AppendStart(*prop)
+  ControlProperty::RowStart(*prop)
+  Define i
+  For i=0 To 3
+     Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddknobControl(*prop, name, RGBA(128,128,128,255), *ui\width/4)
+  Next
+  
+  ControlProperty::RowEnd(*prop)
+;   Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 64)
+;   Object::SignalConnect(*prop, *btn\onleftclick_signal, @Callback())
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
   CloseGadgetList()
@@ -66,25 +82,22 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
   Define v.Math::v3f32
 
   ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
-  ; ; 
-  ; ; ; ControlProperty::RowStart(*prop)
-  ; ControlProperty::AddGroup(*prop, "Buttons")
-  ; Define *btn.ControlButton::ControlButton_t
-  ; Define i
-  ; For i =0 To 3
-  ;   
-  ;   *btn = ControlProperty::AddButtonControl(*prop, "BUTTON "+Str(i), "BUTTON "+Str(i), RGB(128,128,128))
-  ; Next
-  ; ControlProperty::AddColorControl(*prop, "Color1", "Color1", Color::_GREEN(), #Null)
-  ; ControlProperty::EndGroup(*prop)
-  ; 
-  ; 
+;   ControlProperty::RowStart(*prop)
+;   ControlProperty::AddGroup(*prop, "Buttons")
+;   Define *btn.ControlButton::ControlButton_t
+;   Define i
+;   For i =0 To 3
+;     
+;     *btn = ControlProperty::AddButtonControl(*prop, "BUTTON "+Str(i), "BUTTON "+Str(i), RGB(128,128,128))
+;   Next
+;   ControlProperty::AddColorControl(*prop, "Color1", "Color1", Color::_GREEN(), #Null)
+;   ControlProperty::EndGroup(*prop)
 
   Define *color.ControlColor::ControlColor_t = ControlProperty::AddColorControl(*prop, "Color2", "Color2", Color::_BLUE(), #Null)
   Define icolor.ControlColor::IControlColor = *color
   
   
-  ;   ControlGroup::RowStart(*group)
+;   ControlGroup::RowStart(*group)
 ;   Define i
 ;   For i =0 To 6
 ;     
@@ -95,9 +108,8 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
 ;   ControlProperty::EndGroup(*prop)
 
   ControlProperty::AppendStop(*prop)
-  CloseGadgetList()
-  
   PropertyUI::AddProperty(*ui, *prop)
+  CloseGadgetList()
 EndProcedure
 
 
@@ -110,7 +122,7 @@ Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
 Global *splitted.View::View_t = View::Split(*m\main, 0,75)
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
-AddButton(*ui, "PUSH ME")
+; AddButton(*ui, "PUSH ME")
 AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
@@ -124,7 +136,8 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 79
+; FirstLine = 57
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

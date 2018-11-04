@@ -60,48 +60,64 @@ Module ControlHead
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
   Procedure hlpDraw( *Me.ControlHead_t, xoff.i = 0, yoff.i = 0 )
-
     ; Check Visible
     If Not *Me\visible : ProcedureReturn : EndIf
     
     Protected w.i = *Me\sizX
     Protected h.i
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
-    
-    Box(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,UIColor::COLORA_MAIN_BG)
+;     DrawingMode(#PB_2DDrawing_AlphaBlend)
+    Debug "HEADER : "+Str(*Me\posX)+","+Str(*Me\posY)+","+Str(*Me\sizX)+","+Str(*Me\sizY)
+    AddPathBox(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
+    VectorSourceColor(RGBA(100,100,100,255));UIColor::COLORA_MAIN_BG)
+    FillPath()
     
     Protected *obj.Object::Object_t = *Me\object
     
     Protected *prop.Control::Control_t = *Me\parent
     Protected *n.Node::Node_t = *prop\object
     
-    DrawingFont(FontID(Globals::#FONT_TEXT))
-    w = TextWidth(*n\name)
-    h = TextHeight(*n\name)
+    VectorFont(FontID(Globals::#FONT_TEXT),12)
+    w = VectorTextWidth(*n\name)
+    h = VectorTextHeight(*n\name)
     
     
     If *Me\over
-      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLORA_CARET)
+      AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
+      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
+      FillPath()
     Else
-      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLORA_LABEL)
+      AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
+      VectorSourceColor(UIColor::COLORA_LABEL)
+      FillPath()
     EndIf
     
     If *Me\touch_l
-      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLORA_NUMBER_BG)
+      AddPathBox(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      FillPath()
     Else
-      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLORA_NUMBER_FG)
+      AddPathBox(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      FillPath()
     EndIf
     
     If *Me\touch_r
-      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLORA_NUMBER_BG)
+      AddPathBox(*Me\posX+*Me\sizX-#HEAD_HEIGHT-4,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      FillPath()
     Else
-      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLORA_NUMBER_FG)
+      AddPathBox(*Me\posX+*Me\sizX-#HEAD_HEIGHT-4,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      FillPath()
     EndIf
     
-    DrawingMode(#PB_2DDrawing_Transparent)
-    DrawText(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5,*n\name)
-    DrawText(*Me\posX+6,*Me\posY, "-")
-    DrawText(*Me\posX+*Me\sizX-#HEAD_HEIGHT+6,*Me\posY, "x")
+    VectorSourceColor(UIColor::COLORA_LABEL)
+    MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5)
+    DrawVectorText(*n\name)
+    MovePathCursor(*Me\posX+8,*Me\posY+2)
+    DrawVectorText("-")
+    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT+2,*Me\posY+2)
+    DrawVectorText("x")
 
 
   EndProcedure
@@ -359,7 +375,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 194
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = ---
 ; EnableXP

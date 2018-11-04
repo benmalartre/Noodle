@@ -1,7 +1,9 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
+XIncludeFile "../core/Vector.pbi"
 XIncludeFile "../ui/View.pbi"
+
 ; ==============================================================================
 ;  CONTROL NUMBER MODULE DECLARATION
 ; ==============================================================================
@@ -285,10 +287,10 @@ Module ControlNumber
     
     ; ---[ Set Font ]-----------------------------------------------------------
     Protected tc.i = UIColor::COLOR_NUMBER_FG
-    DrawingFont(FontID(Globals::#FONT_TEXT))
+    VectorFont(FontID(Globals::#FONT_TEXT))
   ;   raaSetFontEdit( raa_font_node )
     Protected tx.i = 7
-    Protected ty.i = ( *Me\sizY - TextHeight( *Me\value ) )/2 + yoff
+    Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
     
     ; ---[ Check Positions Lookup Table ]---------------------------------------
     If *Me\lookup_dirty
@@ -300,7 +302,7 @@ Module ControlNumber
       ; ...[ Update Positions ].................................................
       *Me\lookup(0) = 0
       For i=1 To *Me\lookup_count
-        *Me\lookup(i) = TextWidth( Left(*Me\value,i-1) )
+        *Me\lookup(i) = VectorTextWidth( Left(*Me\value,i-1) )
       Next
       ; ...[ Now Clean ]........................................................
       *Me\lookup_dirty = #False
@@ -361,7 +363,6 @@ Module ControlNumber
       ; ...[ Compute Slider Extends ]...........................................
       Protected factor.d = ( *Me\value_n - *Me\soft_min )/( *Me\soft_max - *Me\soft_min )
       Protected slider_w.i = Math::Min( *Me\sizX - 4, Math::Max( 0, factor*( *Me\sizX - 4 ) ) )
-      Debug "SLIDER W : "+Str(slider_w)
       If *Me\options & #NUMBER_NOSLIDER
         slider_w = *Me\sizX - 4
       EndIf
@@ -370,47 +371,52 @@ Module ControlNumber
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
     ;   raaResetClip()
-    DrawingMode(#PB_2DDrawing_Default)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      RoundBox( xoff, yoff, *Me\sizX , *Me\sizY , 3, 3, UIColor::COLOR_NUMBER_BG)
-;       DrawImage( ImageID(s_gui_controls_number_disabled_l ),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_disabled_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-;       DrawImage( ImageID(s_gui_controls_number_disabled_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_disabled_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
-;       DrawImage( ImageID(s_gui_controls_number_disabled_cl),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_disabled_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      FillPath()
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLOR_LABEL_DISABLED
+      tc = UIColor::COLORA_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
-      RoundBox(xoff, yoff, *Me\sizX , *Me\sizY , 3, 3, UIColor::COLOR_NUMBER_BG)
-;       DrawImage( ImageID(s_gui_controls_number_focused_l),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_focused_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-;       DrawImage( ImageID(s_gui_controls_number_focused_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      FillPath()
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
-      Box(xoff + slider_w-2, yoff, 4, *Me\sizY, RGB(255,0,0)) 
-;       DrawImage( ImageID(s_gui_controls_number_over_l   ),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_over_c   ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-;       DrawImage( ImageID(s_gui_controls_number_over_r   ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_over_s   ),            2 + xoff, 1 + yoff, slider_w,      16 )
-;       DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      FillPath()
+      AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
+      VectorSourceColor(RGBA(255,0,0,255))
+      FillPath()
     Else
       If slider_w > *Me\sizX * 0.5
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
-        RoundBox(xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_FG)
-        Box(xoff+slider_w-1, yoff, 2, *Me\sizY, UIColor::COLOR_CARET) 
+        Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+        VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+        FillPath()
+        Vector::RoundBoxPath( *Me\sizX-slider_w, *Me\sizY , 3, xoff+slider_w, yoff, 2)
+        VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(UIColor::COLORA_CARET)
+        FillPath()
       Else
-        RoundBox(xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_FG)
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 3, 3, UIColor::COLOR_NUMBER_BG)
-        
-        Box(xoff+slider_w-1, yoff, 2, *Me\sizY, RGB(0,255,0)) 
+        Vector::RoundBoxPath( *Me\sizX-slider_w, *Me\sizY , 3, xoff+slider_w, yoff, 2)
+        VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+        FillPath()
+        Vector::RoundBoxPath( *Me\sizX, *Me\sizY , 3, xoff, yoff, 2)
+        VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(RGBA(0,255,0,255))
+        FillPath()
       EndIf
       
-      
+      AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
+      VectorSourceColor(RGBA(0,0,255,255))
+      FillPath()
 ;       Box(xoff + slider_w-2, yoff, 4, *Me\sizY, RGB(0,0,255)) 
 ;       DrawImage( ImageID(s_gui_controls_number_normal_l ),            0 + xoff, 0 + yoff                    )
 ;       DrawImage( ImageID(s_gui_controls_number_normal_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
@@ -420,7 +426,9 @@ Module ControlNumber
 ;       DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
     EndIf
     
-    Box(xoff + slider_w, yoff, 2, *Me\sizY, RGB(255,222,255)) 
+    AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
+    VectorSourceColor(RGBA(255,222,255,255))
+    FillPath()
     
 ;     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
 ;     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
@@ -1243,7 +1251,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 628
-; FirstLine = 616
+; CursorPosition = 384
+; FirstLine = 380
 ; Folding = ----
 ; EnableXP

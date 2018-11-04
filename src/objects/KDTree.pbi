@@ -2,11 +2,18 @@
 ; DECLARATION
 ;=======================================================================
 DeclareModule KDTree
-  #KDTREE_DIM = 3
+  CompilerIf #USE_SSE
+    #KDTREE_DIM = 4
+  CompilerElse
+    #KDTREE_DIM = 3
+  CompilerEndIf
+  
   #KD_F32_MAX = 3.402823466e+38
   #KD_F32_MIN = 1.175494351e-38
+  
   Structure KDPoint_t
     v.f[#KDTREE_DIM]
+    color.Math::c4f32
   EndStructure
   
   Structure KDSort_t
@@ -74,7 +81,6 @@ Module KDTree
     ProcedureReturn dist
   EndProcedure
   
-  
   ; New Node
   ;--------------------------------------------------------------------
   Procedure NewNode(*parent.KDNode_t,ID.i,level.i)
@@ -98,7 +104,6 @@ Module KDTree
     FreeMemory(*node)
   EndProcedure
   
-    
   ; Constructor
   ;--------------------------------------------------------------------
   Procedure New()
@@ -163,15 +168,13 @@ Module KDTree
     Else
       *node\hit = #False  
     EndIf
-    
-      
   EndProcedure
+  
   ; ResetHit
   ;--------------------------------------------------------------------
   Procedure ResetHit(*tree.KDTree_t)
     ResetHitAtNode(*tree,*tree\root)
   EndProcedure
-  
   
   ; Split
   ;--------------------------------------------------------------------
@@ -198,7 +201,7 @@ Module KDTree
     
     SelectElement( *node\indices(),ListSize(*node\indices())/2)
     *node\split_value = *tree\points(*node\indices())\v[*tree\m_currentaxis]
-    
+    Define lnb.i, rnb.i
     ForEach *node\indices()
         
       j = *node\indices()
@@ -206,12 +209,15 @@ Module KDTree
       If *tree\points(j)\v[*tree\m_currentaxis]<*node\split_value
         AddElement(*left\indices())
         *left\indices() = j
+        Color::Set(*tree\points(j)\color, *left\r, *left\g, *left\b, 1)
+        lnb +1
       Else
         AddElement(*right\indices())
         *right\indices() = j
+        Color::Set(*tree\points(j)\color, *right\r, *right\g, *right\b, 1)
+        rnb + 1
       EndIf
-    Next
-    
+    Next 
   EndProcedure
   
   ; Search At Node
@@ -225,9 +231,7 @@ Module KDTree
       Protected split_axis.i = *node\level % #KDTREE_DIM
       *tree\m_cmps +1
       If *node\left = #Null
-
         PokeI(*retNode,*node)
-
         ForEach *node\indices()
           *tree\m_cmps +1
           idx = *node\indices()
@@ -236,9 +240,7 @@ Module KDTree
             best_dist = dist
             best_idx = idx
           EndIf
-          
         Next
-        
         Break 
       ElseIf(*query\v[split_axis]<*node\split_value)
         *node = *node\left
@@ -246,10 +248,8 @@ Module KDTree
         *node = *node\right
       EndIf
     Wend
-    
     PokeI(*retID,best_idx)
     PokeF(*retDist,best_dist)
-    
   EndProcedure
   
   ; Search At Node Range
@@ -277,7 +277,7 @@ Module KDTree
         If *node\left = #Null
           ForEach *node\indices()
             *tree\m_cmps +1
-            
+           
             idx = *node\indices()
             dist = Distance(*query,*tree\points(idx))
             If dist<best_dist
@@ -294,7 +294,7 @@ Module KDTree
           ; the hypercricle only intersect the right region
           ; the hypercircle intersects both
           
-          *tree\m_cmps +1
+          *tree\m_cmps + 1
           If(Abs(dist)>range)
             If dist<0
               AddElement(*next_search())
@@ -342,10 +342,10 @@ Module KDTree
         DeleteElement(*to_visit())
         split_axis = *node\level % #KDTREE_DIM
         
+        ; search leaf node
         If *node\left = #Null
           ForEach *node\indices()
             *tree\m_cmps +1
-            
             idx = *node\indices()
             dist = Distance(*query,*tree\points(idx))
             If dist<range
@@ -355,7 +355,7 @@ Module KDTree
               *tree\closests()\v = Sqr(dist)
             EndIf
           Next
-   
+        ; recurse parent node 
         Else
           dist = *query\v[split_axis]- *node\split_value
           ; there are 3 possible scenarios
@@ -382,9 +382,7 @@ Module KDTree
         EndIf
       Wend
       CopyList(*next_search(),*to_visit())
-      
     Wend  
-
   EndProcedure
   
   ; Search
@@ -404,14 +402,13 @@ Module KDTree
     Protected *node.KDNode_t = *best_node
     Protected *parent.KDNode_t
     Protected split_axis.i
-   
-    
+     
     While *node\parent
-      ;Go up
+      ; go up
       *parent = *node\parent
       split_axis = *parent\level % #KDTREE_DIM
       
-      ; Search theother node
+      ; search the other node
       Protected tmp_idx
       Protected tmp_dist.f = #KD_F32_MAX
       Protected *tmp_node.KDNode_t
@@ -472,11 +469,11 @@ Module KDTree
    
     
     While *node\parent
-      ;Go up
+      ; go up
       *parent = *node\parent
       split_axis = *parent\level % #KDTREE_DIM
       
-      ; Search theother node
+      ; search the other node
       Protected tmp_idx
       Protected tmp_dist.f = #KD_F32_MAX
       Protected *tmp_node.KDNode_t
@@ -490,8 +487,6 @@ Module KDTree
           SearchNAtNodeRange(*tree,*parent\right,*query,max_distance)
         EndIf
       EndIf
-
-      
       *node = *parent
     Wend  
     
@@ -504,13 +499,8 @@ Module KDTree
       While ListSize(*tree\closests())>max_points
         LastElement(*tree\closests())
         DeleteElement(*tree\closests())
-      Wend  
-      
+      Wend
     EndIf
-    
-    
-    
-    
   EndProcedure
   
   
@@ -658,8 +648,8 @@ EndModule
 ; ; KDTree::GetBoundingBox(*tree,,@min,@max)
 
   
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 313
-; FirstLine = 289
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 475
+; FirstLine = 478
 ; Folding = ----
 ; EnableXP

@@ -122,14 +122,13 @@ Log::Init()
 
 *app = Application::New("Octree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
- If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-   *app\context = *viewport\context
+If Not #USE_GLFW
+  *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+  *app\context = *viewport\context
   *viewport\camera = *app\camera
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
-
 
 Define T.d = Time::Get()
 Define *mesh.Polymesh::Polymesh_t = PolygonSoup()
@@ -159,7 +158,6 @@ buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
 
 buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)
 MessageRequester("Octree", buildMessage)
-
 
 Define *poisson.Poisson::Poisson_t = Poisson::New()
 Define box.Geometry::Box_t
@@ -234,8 +232,8 @@ Octree::Delete(*octree)
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 174
-; FirstLine = 154
+; CursorPosition = 126
+; FirstLine = 131
 ; Folding = -
 ; EnableThread
 ; EnableXP

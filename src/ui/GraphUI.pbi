@@ -839,9 +839,11 @@ Module GraphUI
   Procedure DrawEmpty(*Me.GraphUI_t)    
     CompilerIf Not Globals::#USE_VECTOR_DRAWING
       ; Default Drawing
-      StartDrawing(CanvasOutput(*Me\gadgetID))
-      Box(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID),RGB(200,200,200))
-      StopDrawing()
+      StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+      AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
+      VectorSourceColor(RGBA(200,200,200,255))
+      FillPath()
+      StopVectorDrawing()
     CompilerElse
       ; Vector Drawing
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
@@ -1657,7 +1659,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 297
-; FirstLine = 286
+; CursorPosition = 875
+; FirstLine = 872
 ; Folding = --------
 ; EnableXP

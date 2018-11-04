@@ -2,6 +2,7 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
+XIncludeFile "../core/Vector.pbi"
 XIncludeFile "Button.pbi"
 
 ; ==============================================================================
@@ -44,34 +45,31 @@ DeclareModule ControlIcon
   s_gui_controls_icon_name(8) = "last"
   s_gui_controls_icon_name(9) = "loop"
 
-
+  
+  ; ----------------------------------------------------------------------------
   ; Dark Icon Colors
-  ;-------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Global RAA_COLOR_DARK_ICON_RED             = 200
   Global RAA_COLOR_DARK_ICON_GREEN           = 210
   Global RAA_COLOR_DARK_ICON_BLUE            = 200
   
+  ; ----------------------------------------------------------------------------
   ; Light Icon Colors
-  ;-------------------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Global RAA_COLOR_LIGHT_ICON_RED             = 40
   Global RAA_COLOR_LIGHT_ICON_GREEN           = 50
   Global RAA_COLOR_LIGHT_ICON_BLUE            = 60
-
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlIcon_t )
   ; ----------------------------------------------------------------------------
   ;{
   Structure ControlIcon_t Extends Control::Control_t
-    ; IconData
     icon.i
     label.s
-    
-    ; states
     value.i
     over.i
     down.i
-   
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -107,8 +105,8 @@ DeclareModule ControlIcon
   
   DataSection
     ControlIconVT:
-    Data.i @OnEvent() ; mandatory override
-    Data.i @Delete(); mandatory override
+    Data.i @OnEvent()            ; mandatory override
+    Data.i @Delete()             ; mandatory override
    
     ; Images
     VIControlIcon_Default:  
@@ -160,54 +158,61 @@ Module ControlIcon
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
-    ;raaResetClip()
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable 
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,128,64))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(255,128,64,255))
+        FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(128,255,64))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(128,255,64,255))
+        FillPath()
       EndIf
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(64,255,255))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(64,255,255,255))
+        FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(64,255,32))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(64,255,32,255))
+        FillPath()
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,255,128))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(255,255,128,255))
+        FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, RGB(255,64,64))
+        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        VectorSourceColor(RGBA(255,64,64,255))
+        FillPath()
       EndIf
     EndIf
       
-    ; ---[ Draw Icon ]-------------------------------------------------------
+    ; ---[ Draw Icon ]----------------------------------------------------------
     ;DrawingMode(#PB_2DDrawing_AllChannels)
     
     Protected offx,offy
     offx = (*Me\sizX-ImageWidth(s_gui_controls_icon_img(*Me\icon)))/2
     offy = (*Me\sizY-ImageHeight(s_gui_controls_icon_img(*Me\icon)))/2
-    DrawImage(ImageID(s_gui_controls_icon_img(*Me\icon)),xoff+offx,yoff+offy)
+    MovePathCursor(xoff+offx, yoff+offy)
+    DrawVectorImage(ImageID(s_gui_controls_icon_img(*Me\icon)))
     ;DrawImage(ImageID(s_gui_controls_icon_img(*Me\icon)),xoff,yoff,*Me\sizX,*Me\sizY)
-  
-    
+ 
   EndProcedure
   ;}
-  
-  
-  
-  
-  
+
   ; ============================================================================
   ;  OVERRIDE ( CControl )
   ; ============================================================================
@@ -548,7 +553,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 418
-; FirstLine = 399
+; CursorPosition = 211
+; FirstLine = 195
 ; Folding = ----
 ; EnableXP

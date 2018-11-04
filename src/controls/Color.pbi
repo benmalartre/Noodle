@@ -75,9 +75,9 @@ Module ControlColor
     Protected tc.i = UIColor::Color_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    DrawingFont(FontID(Globals::#FONT_LABEL ))
-    Protected tx = ( *Me\sizX - TextWidth ( *Me\label ) )/2 + xoff
-    Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+    VectorFont(FontID(Globals::#FONT_LABEL ))
+    Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )/2 + xoff
+    Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     tx = Math::Max( tx, 3 + xoff )
     
     Protected cw, ch
@@ -85,37 +85,37 @@ Module ControlColor
     cw = *Me\sizX - (3*ch+10)
     
     
-    DrawingMode(#PB_2DDrawing_Gradient)      
-    FrontColor($0000FF)
-    BackColor($000000)
-    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)    
-    Box(5+xoff,5+yoff,cw,ch)
-    FrontColor($00FF00)
-    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
-    Box(5+xoff,5+ch+yoff,cw,ch)
-    FrontColor($FF0000)
-    LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
-    Box(5+xoff,5+2*ch+yoff,cw,ch, RGB(0,0,255))
-    
-    ; draw slider
-    DrawingMode(#PB_2DDrawing_Default)
-    Protected white = RGB(255,255,255)
-    Protected offset_r.f = cw * *Me\color\r-1
-    Protected offset_g.f = cw * *Me\color\g-1
-    Protected offset_b.f = cw * *Me\color\b-1
-    
-    Box(5+xoff + offset_r - 1, 5+yoff, 2 , ch, white)
-    Box(5+xoff + offset_g - 1, 5+ch+yoff, 2 , ch, white)
-    Box(5+xoff + offset_b - 1, 5+2*ch+yoff, 2 , ch, white)
-    
-    ; draw color
-    If *Me\item = #ITEM_COLOR
-      RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(122,122,122))
-    Else
-       RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(0,0,0))
-    EndIf
-    
-    RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(*Me\red, *Me\green, *Me\blue))
+;     DrawingMode(#PB_2DDrawing_Gradient)      
+;     FrontColor($0000FF)
+;     BackColor($000000)
+;     LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)    
+;     Box(5+xoff,5+yoff,cw,ch)
+;     FrontColor($00FF00)
+;     LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
+;     Box(5+xoff,5+ch+yoff,cw,ch)
+;     FrontColor($FF0000)
+;     LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)   
+;     Box(5+xoff,5+2*ch+yoff,cw,ch, RGB(0,0,255))
+;     
+;     ; draw slider
+;     DrawingMode(#PB_2DDrawing_Default)
+;     Protected white = RGB(255,255,255)
+;     Protected offset_r.f = cw * *Me\color\r-1
+;     Protected offset_g.f = cw * *Me\color\g-1
+;     Protected offset_b.f = cw * *Me\color\b-1
+;     
+;     Box(5+xoff + offset_r - 1, 5+yoff, 2 , ch, white)
+;     Box(5+xoff + offset_g - 1, 5+ch+yoff, 2 , ch, white)
+;     Box(5+xoff + offset_b - 1, 5+2*ch+yoff, 2 , ch, white)
+;     
+;     ; draw color
+;     If *Me\item = #ITEM_COLOR
+;       RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(122,122,122))
+;     Else
+;        RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(0,0,0))
+;     EndIf
+;     
+;     RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(*Me\red, *Me\green, *Me\blue))
    
     
   EndProcedure
@@ -432,8 +432,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 375
-; FirstLine = 346
+; CursorPosition = 82
+; FirstLine = 74
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

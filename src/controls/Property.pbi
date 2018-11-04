@@ -8,6 +8,7 @@ XIncludeFile "Number.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Head.pbi"
+XIncludeFile "Knob.pbi"
 
 ;========================================================================================
 ; Property Module Declaration
@@ -36,7 +37,7 @@ DeclareModule ControlProperty
     overchild .Control::IControl
     focuschild.Control::IControl
     Array *children .Control::Control_t(10)
-    Array rowflags .i       (10)
+    Array rowflags .i(10)
     List *groups.ControlGroup::ControlGroup_t()
     chilcount .i
     current   .i
@@ -76,6 +77,7 @@ DeclareModule ControlProperty
   Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
+  Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=64)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
   Declare EndGroup( *Me.ControlProperty_t)
   Declare Init( *Me.ControlProperty_t)
@@ -202,29 +204,38 @@ Module ControlProperty
     If *Me\chilcount
       If *Me\expanded
         ; ---[ Draw ]---------------------------------------------------------------
-        StartDrawing( ImageOutput(*Me\imageID) )
-        DrawingMode(#PB_2DDrawing_Default)
-        Box( 0, 0, *Me\sizX, *Me\sizY, 0 )
+        StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
+;         DrawingMode(#PB_2DDrawing_Default)
+        AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
+        VectorSourceColor(RGBA(0,0,0,255))
+        FillPath()
+        
         For i=0 To iBound
           *son = *Me\children(i)
           If *son\type = Control::#CONTROL_GROUP
-            Box( *son\posX, *son\posY, *son\sizX, *son\sizY,i+1)
+            AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+            VectorSourceColor(RGBA(i+1,0,0,255))
+            FillPath()
           Else
-            Box(*son\posX,*son\posY,*son\sizX,*son\sizY,i+1)
+            AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+            VectorSourceColor(RGBA(i+1,0,0,255))
+            FillPath()
           EndIf
           
         Next
-        StopDrawing()
+        StopVectorDrawing()
         
       Else
         ; ---[ Draw ]---------------------------------------------------------------
-        StartDrawing( ImageOutput(*Me\imageID) )
-        DrawingMode(#PB_2DDrawing_Default)
-        
-        Box( 0, 0, *Me\sizX, *Me\sizY, 0 )
+        StartVectorDrawing( ImageVectorOutput(*Me\imageID) )        
+        AddPathBox( 0, 0, *Me\sizX, *Me\sizY )
+        VectorSourceColor(RGBA(0,0,0,255))
+        FillPath()
         *son = *Me\children(0)
-        Box(*son\posX,*son\posY,*son\sizX,*son\sizY,1)
-        StopDrawing()
+        AddPathBox(*son\posX,*son\posY,*son\sizX,*son\sizY)
+        VectorSourceColor(RGBA(1,0,0,255))
+        FillPath()
+        StopVectorDrawing()
 
       EndIf
     EndIf
@@ -246,7 +257,7 @@ Module ControlProperty
     Protected curW .i
    
     ; ---[ Tag Picking Surface ]------------------------------------------------
-    DrawPickImage( *Me)
+    DrawPickImage( *Me)    
     
     If *Me\chilcount
       ; ---[ Local Variables ]----------------------------------------------------
@@ -258,38 +269,40 @@ Module ControlProperty
         
       If *Me\expanded
         ; ---[ Drawing Start ]------------------------------------------------------
-        StartDrawing( CanvasOutput(*Me\gadgetID) )
-        Box( 0, 0, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
-        DrawingMode(#PB_2DDrawing_AlphaBlend)
+        StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+        ResetCoordinates()
+        AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+        VectorSourceColor(UIColor::COLORA_MAIN_BG)
+        FillPath()
 
         ; ---[ Redraw Children ]----------------------------------------------------
         For i=0 To iBound
            son = *Me\children(i)
           *son = son
           ev_data\xoff = *son\posX
-          ev_data\yoff = *son\posY
-      
+          ev_data\yoff = *son\posY      
           son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
         Next
-    
+        
         ; ---[ Drawing End ]--------------------------------------------------------
-        StopDrawing()
+        StopVectorDrawing()
       Else
         ; ---[ Drawing Start ]------------------------------------------------------
-        StartDrawing( CanvasOutput(*Me\gadgetID) )
-        Box( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, UIColor::COLORA_MAIN_BG )
-        DrawingMode(#PB_2DDrawing_AlphaBlend)
+        StartVectorDrawing( CanvasOutput(*Me\gadgetID) )
+        ResetCoordinates()
+        AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+        VectorSourceColor( UIColor::COLORA_MAIN_BG )
+        FillPath()
         
-        ; ---[ Redraw Head ]----------------------------------------------------
-        son = *Me\children(0)
-        *son = son
-        ev_data\xoff = *son\posX
-        ev_data\yoff = *son\posY
-      
-        son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+;         ; ---[ Redraw Head ]----------------------------------------------------
+;         son = *Me\children(0)
+;         *son = son
+;         ev_data\xoff = *son\posX
+;         ev_data\yoff = *son\posY     
+;         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
     
         ; ---[ Drawing End ]--------------------------------------------------------
-        StopDrawing()
+        StopVectorDrawing()
       EndIf
     EndIf
 
@@ -302,10 +315,11 @@ Module ControlProperty
     Protected w = GadgetWidth(*Me\gadgetID)
     Protected h = GadgetHeight(*Me\gadgetID)
     
-    StartDrawing( CanvasOutput(*Me\gadgetID) )
-    Box( 0, 0, w,h, UIColor::COLOR_MAIN_BG )
-    StopDrawing()
-    
+    StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+    AddPathBox( 0, 0, w,h);
+    VectorSourceColor( UIColor::COLORA_MAIN_BG )
+    FillPath()
+    StopVectorDrawing()
   EndProcedure
   
   ; ---[ AppendStart ]----------------------------------------------------------
@@ -316,7 +330,6 @@ Module ControlProperty
     
     ; ---[ Update Status ]------------------------------------------------------
     *Me\append = #True
-  
   EndProcedure
 
   ; ---[ Append ]---------------------------------------------------------------
@@ -353,6 +366,13 @@ Module ControlProperty
   
     ; ---[ One More Control ]---------------------------------------------------
     *Me\chilcount + 1
+    
+    ; ---[ Expand height ]------------------------------------------------------
+    If *Me\chilcount > 1 And *Me\rowflags(*Me\chilcount) <> *Me\rowflags(*Me\chilcount-1)
+      *Me\dy + *ctl\sizY
+    ElseIf *Me\chilcount <= 1
+      *Me\dy + *ctl\sizY
+    EndIf
   
     ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
@@ -440,6 +460,7 @@ Module ControlProperty
     *Me\dx =0
     Protected *Ctl.Control::Control_t
     
+    OpenGadgetList(*Me\gadgetID)
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
       *btn = ControlButton::New(*obj,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
@@ -450,8 +471,33 @@ Module ControlProperty
       Append( *Me, *btn)
       If Not *Me\row : *Me\dy + 22 : EndIf
     EndIf
-    
+    CloseGadgetList()
     ProcedureReturn(*btn)
+  
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Knob Control
+  ;-----------------------------------------------------------------------------
+  Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=64)
+    ; Sanity Check
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.IControlProperty = *Me
+    Protected *knob.ControlKnob::ControlKnob_t
+    Protected *ctl.Control::Control_t
+    
+    ; Add Parameter
+    If  ListSize(*Me\groups()) And *Me\groups()
+      ControlGroup::Append(*Me\groups(),*knob)
+      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
+    Else
+      *knob = ControlKnob::New(*Me\gadgetID,name,0, 0,*Me\dx,*Me\dy,width,height, color )
+      Append( *Me, *knob)
+      If *Me\row  : *Me\dx + width : Else : *Me\dy + height : EndIf
+    EndIf
+
+    ProcedureReturn(*knob)
   
   EndProcedure
   
@@ -527,8 +573,7 @@ Module ControlProperty
       Append(*Me, *Ctl)
       RowEnd(*Me)
     EndIf
-    
-    
+
     ; Connect Signal
     If *obj
       Object::SignalConnect(*obj,*Ctl\slot,0)
@@ -536,7 +581,6 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + 22
-    
     ProcedureReturn(#True)
 
     
@@ -553,7 +597,7 @@ Module ControlProperty
     Protected *Ctl.Control::Control_t
     *Me\dx = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
-    
+        
     ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
@@ -597,7 +641,6 @@ Module ControlProperty
     *Me\dx = 0
     *Me\dy + 10
     Protected w= *Me\sizX/3
-    
     ; Create Group
     Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
     Protected width = GadgetWidth(*Me\gadgetID)/2
@@ -624,7 +667,6 @@ Module ControlProperty
     ; Add Group to PPG
     If ListSize(*Me\groups()) And *Me\groups()
       ControlGroup::Append(*Me\groups(),*group)
-  
     Else
       Append(*Me,*group)
     EndIf
@@ -637,7 +679,6 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + *group\sizY
-  
     ProcedureReturn(#True)
   EndProcedure
   
@@ -701,7 +742,6 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + *group\sizY
-    
     ProcedureReturn(#True)
   EndProcedure
 
@@ -859,7 +899,7 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    
+        
     ; Create Group
     ;------------------------------
     Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -913,7 +953,6 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy + *group\sizY
-    
     ProcedureReturn(#True)
   EndProcedure
 
@@ -925,7 +964,6 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected *Ctl.Control::Control_t
-    
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -966,7 +1004,6 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy +*group\sizY
-    
     ProcedureReturn(#True)
   EndProcedure
   
@@ -978,7 +1015,6 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected *Ctl.Control::Control_t
-    
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -1009,7 +1045,6 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy +*group\sizY
-    
     ProcedureReturn(#True)
   EndProcedure
 
@@ -1022,7 +1057,6 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -1053,7 +1087,6 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy + *group\sizY 
-    
     ProcedureReturn(*color)
   EndProcedure
 
@@ -1066,7 +1099,6 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -1082,7 +1114,6 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy + 20
-    
     ProcedureReturn(*group)
   EndProcedure
 
@@ -1110,10 +1141,9 @@ Module ControlProperty
   Procedure AddHead( *Me.ControlProperty_t)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
-    
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected *head.ControlHead::ControlHead_t
-    
+    *Me\dy = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -1126,7 +1156,6 @@ Module ControlProperty
     ;---------------------------------
     *Me\dy +#HEAD_HEIGHT
     *Me\head = *head
-    
     ProcedureReturn(*head)
   EndProcedure
   
@@ -1214,7 +1243,6 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure OnMessage( id.i, *up)
     Protected *sig.Signal::Signal_t = *up
-    Debug "########################### PROPERTY RECIEVED MESSAGE"
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -1262,6 +1290,7 @@ Module ControlProperty
   ; ============================================================================
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
+    
     Protected *c.Control::IControl = *Me\children(*Me\current)
     ; ---[ Local Variables ]----------------------------------------------------
     Protected  ev_data.Control::EventTypeDatas_t
@@ -1276,7 +1305,6 @@ Module ControlProperty
       *overchild = *Me\children(*Me\pickID)
       overchild = *overchild
     EndIf
-    
 
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
@@ -1292,8 +1320,8 @@ Module ControlProperty
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
         *Me\sizX = *ev_data\width
-        
-        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*Me\sizX,#PB_Ignore)
+
+        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*Me\sizX,*Me\sizY)
  
         ev_data\x = 0
         ev_data\y = 0
@@ -1303,6 +1331,7 @@ Module ControlProperty
         Protected nbc_row.i
         Protected idr.i = 0
         Protected wi.i
+        
         ; Resize Controls
         For c=0 To *Me\chilcount - 1
           If *Me\rowflags(c) 
@@ -1313,8 +1342,8 @@ Module ControlProperty
               son = *Me\children(c+d)
               *son = son
               ev_data\width = wi
-              ev_data\x    = *Me\posX + wi * d
-              ev_data\y    = *son\posY
+              ev_data\x     = *Me\posX + wi * d
+              ev_data\y     = *son\posY
               CompilerIf #PB_Compiler_Version <560
                 son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
               CompilerElse
@@ -1327,8 +1356,8 @@ Module ControlProperty
             son = *Me\children(c)
             *son = son
             ev_data\width = *ev_data\width
-            ev_data\x    = *son\posX
-            ev_data\y    = *son\posY
+            ev_data\x     = *son\posX
+            ev_data\y     = *son\posY
             CompilerIf #PB_Compiler_Version <560
               son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
             CompilerElse
@@ -1355,6 +1384,7 @@ Module ControlProperty
         Draw( *Me )
         DrawPickImage(*Me)
         
+
         ProcedureReturn( #True )
           
       ; ------------------------------------------------------------------------
@@ -1365,16 +1395,17 @@ Module ControlProperty
         son.Control::IControl    = *son
         ev_data\xoff    = *son\posX
         ev_data\yoff    = *son\posY
-        StartDrawing( CanvasOutput(*Me\gadgetID) )
-        Box( *son\posX, *son\posY, *son\sizX, *son\sizY, UIColor::COLOR_MAIN_BG )
+        StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+        AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+        VectorSourceColor(UIColor::COLORA_MAIN_BG )
+        FillPath()
         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-        StopDrawing()
+        StopVectorDrawing()
   
       ; ------------------------------------------------------------------------
       ;  Focus
       ; ------------------------------------------------------------------------
       Case #PB_EventType_Focus
-        Debug "PROPERTY UI FOCUS"
         If *Me\overchild
           If *Me\overchild <> *overchild
             *Me\overchild\OnEvent(#PB_EventType_LostFocus)
@@ -1382,7 +1413,6 @@ Module ControlProperty
             If *Me\overchild
               *Me\overchild\OnEvent(#PB_EventType_Focus)
             EndIf
-            
           EndIf
         Else
           If *overchild
@@ -1390,8 +1420,7 @@ Module ControlProperty
             *Me\overchild\OnEvent(#PB_EventType_Focus)
           EndIf
         EndIf
-        
-        
+
       ; ------------------------------------------------------------------------
       ;  ChildFocused
       ; ------------------------------------------------------------------------
@@ -1429,21 +1458,21 @@ Module ControlProperty
         xm = Min( Max( xm, 0 ), *Me\sizX - 1 )
         ym = Min( Max( ym, 0 ), *Me\sizY - 1 )
         
-        
-        If *overchild
-          If *Me\overchild 
-            If *Me\overchild <> *overchild
-              *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
-              *Me\overchild = *overchild
+        If *Me\overchild
+          If *Me\overchild <> *overchild
+            *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
+            *Me\overchild = *overchild
+            If *Me\overchild
               *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
-            Else
-              *Me\overchild\OnEvent(#PB_EventType_MouseMove)
             EndIf
           Else
-            *Me\overchild = *overchild
-            *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
+            *Me\overchild\OnEvent(#PB_EventType_MouseMove)
           EndIf
+        ElseIf *overchild
+          *Me\overchild = *overchild
+          *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
         EndIf
+        
         
       ; ------------------------------------------------------------------------
       ;  LeftButtonDown
@@ -1454,12 +1483,9 @@ Module ControlProperty
         If *Me\focuschild 
           If *overchild <> *Me\focuschild
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-            *Me\overchild = *overchild
-            *Me\overchild\OnEvent( #PB_EventType_Focus, #Null )
           EndIf
-        Else
-          *Me\overchild = *overchild
-          *Me\overchild\OnEvent( #PB_EventType_Focus, #Null )
+          *Me\focuschild = *overchild
+          *Me\focuschild\OnEvent( #PB_EventType_Focus, #Null )
         EndIf
         
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
@@ -1712,7 +1738,6 @@ Module ControlProperty
   
     ; Init Structure
     InitializeStructure( *Me, ControlProperty_t ) ; List
-    
     DrawEmpty(*Me)
    
     ; Return Initialized Object
@@ -1732,7 +1757,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1666
-; FirstLine = 1662
+; CursorPosition = 301
+; FirstLine = 257
 ; Folding = --------
 ; EnableXP

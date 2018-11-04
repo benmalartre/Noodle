@@ -5,7 +5,9 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -115,7 +117,7 @@ If Time::Init()
      
       shader = *s_reflection\pgm
       glUseProgram(shader)
-      Matrix4::SetIdentity(@offset)
+      Matrix4::SetIdentity(offset)
       glEnable(#GL_DEPTH_TEST)
       
       glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@offset)
@@ -123,7 +125,7 @@ If Time::Init()
       glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*camera\view)
       CompilerIf #USE_LEGACY_OPENGL
         Define m.m4f32
-        Matrix4::Inverse(@m,*camera \view)
+        Matrix4::Inverse(m,*camera \view)
         glUniformMatrix4fv(glGetUniformLocation(shader,"inverseView"),1,#GL_FALSE,m)
       CompilerEndIf
       glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*camera\projection)
@@ -132,15 +134,13 @@ If Time::Init()
       Polymesh::Draw(*bunny)
       
       ; Draw infos
-      glEnable(#GL_BLEND)
-      glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-      glDisable(#GL_DEPTH_TEST)
-      FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+      FTGL::BeginDraw(*app\context\writer)
+      FTGL::SetColor(*app\context\writer,1,1,1,1)
       Define ss.f = 0.85/w
       Define ratio.f = w / h
-      FTGL::Draw(*ftgl_drawer,"FPS : "+Str(777),-0.9,0.9,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
-      
+      FTGL::Draw(*app\context\writer,"FPS : "+Str(777),-0.9,0.9,ss,ss*ratio)
+      FTGL::Draw(*app\context\writer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
+      FTGL::EndDraw(*app\context\writer)
       ;Draw(vao,nbp)
       ;       DrawKDTree(*tree,cube_vao,shader)
 ;       Vector3::Set(s,5,5,5)
@@ -157,8 +157,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 92
+; CursorPosition = 142
+; FirstLine = 99
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

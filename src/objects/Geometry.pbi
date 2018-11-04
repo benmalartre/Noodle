@@ -406,6 +406,10 @@ EndDeclareModule
 ;========================================================================================
 Module Geometry
   Procedure ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
+    If Not *geom Or *geom\nbpoints = 0
+      ProcedureReturn
+    EndIf
+    
     CompilerIf Defined(USE_SSE, #PB_Constant)
       Define *positions = *geom\a_positions\data
       Define nbp = *geom\nbpoints
@@ -502,7 +506,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 433
-; FirstLine = 385
+; CursorPosition = 411
+; FirstLine = 391
 ; Folding = -----
 ; EnableXP

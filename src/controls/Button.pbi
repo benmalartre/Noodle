@@ -53,47 +53,96 @@ Module ControlButton
 ; ----------------------------------------------------------------------------
 ;  hlpDraw
 ; ----------------------------------------------------------------------------
-Procedure hlpDraw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
-
-  ; ---[ Check Visible ]------------------------------------------------------
+  Procedure hlpDraw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
+  ;---[ Check Visible ]-------------------------------------------------------
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
-  Protected tc.i = UIColor::Color_LABEL
+  Protected tc.i = UIColor::COLORA_LABEL
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  DrawingFont(FontID(Globals::#FONT_LABEL ))
-  Protected tx = ( *Me\sizX - TextWidth ( *Me\label ) )/2 + xoff
-  Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+  VectorFont(FontID(Globals::#FONT_LABEL), 16)
+  Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )*0.5 + xoff
+  Protected ty = (*Me\sizY - VectorTextHeight( *Me\label ) )*0.5+ yoff
   tx = Math::Max( tx, 3 + xoff )
   
-  DrawingMode(#PB_2DDrawing_Default)
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    Box(xoff, yoff, *Me\sizX, *Me\sizY, *Me\color_disabled)
-    tc = UIColor::Color_LABEL_DISABLED
+    AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
+    VectorSourceColor(*Me\color_disabled)
+    FillPath()
+    tc = UIColor::COLORA_LABEL_DISABLED
   Else
-    ; ---[ Check Over ]---------------------------------------------------------
+    ; ---[ Check Over ]-------------------------------------------------------
     If *Me\over
       If *Me\down Or  *Me\value < 0 
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, *Me\color_pressed)
-        tc = UIColor::Color_LABEL_NEG
+        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(*Me\color_pressed)
+        FillPath()
+        tc = UIColor::COLORA_LABEL_NEG
       Else
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_over)
+        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(*Me\color_over)
+        FillPath()
       EndIf
     Else
       If *Me\down
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_pressed)
-        tc = UIColor::Color_LABEL_NEG
+        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(*Me\color_pressed)
+        FillPath()
+        tc = UIColor::COLORA_LABEL_NEG
       Else
-        RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_enabled)
+        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(*Me\color_enabled)
+        FillPath()
       EndIf
     EndIf
   EndIf  
-
+  
   ; ---[ Draw Label ]---------------------------------------------------------
-  DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-  DrawText( tx, ty, *Me\label, tc )
+  MovePathCursor(tx, ty )
+  VectorSourceColor(tc)
+  DrawVectorText(*Me\label)
+  
+;   ; ---[ Check Visible ]----------------------------------------------------
+;   If Not *Me\visible : ProcedureReturn( void ) : EndIf
+;   
+;   ; ---[ Label Color ]------------------------------------------------------
+;   Protected tc.i = UIColor::Color_LABEL
+;   
+;   ; ---[ Set Font ]---------------------------------------------------------
+;   DrawingFont(FontID(Globals::#FONT_LABEL ))
+;   Protected tx = ( *Me\sizX - TextWidth ( *Me\label ) )/2 + xoff
+;   Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+;   tx = Math::Max( tx, 3 + xoff )
+;   
+;   DrawingMode(#PB_2DDrawing_Default)
+;   ; ---[ Check Disabled ]---------------------------------------------------
+;   If Not *Me\enable
+;     Box(xoff, yoff, *Me\sizX, *Me\sizY, *Me\color_disabled)
+;     tc = UIColor::Color_LABEL_DISABLED
+;   Else
+;     ; ---[ Check Over ]-----------------------------------------------------
+;     If *Me\over
+;       If *Me\down Or  *Me\value < 0 
+;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, *Me\color_pressed)
+;         tc = UIColor::Color_LABEL_NEG
+;       Else
+;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_over)
+;       EndIf
+;     Else
+;       If *Me\down
+;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_pressed)
+;         tc = UIColor::Color_LABEL_NEG
+;       Else
+;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_enabled)
+;       EndIf
+;     EndIf
+;   EndIf  
+; 
+;   ; ---[ Draw Label ]---------------------------------------------------------
+;   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
+;   DrawText( tx, ty, *Me\label, tc )
   
 EndProcedure
 ;}
@@ -105,7 +154,6 @@ EndProcedure
 ;{
 ; ---[ OnEvent ]--------------------------------------------------------------
 Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  
   ; ---[ Retrieve Interface ]-------------------------------------------------
   Protected Me.Control::IControl = *Me
 
@@ -274,10 +322,10 @@ Procedure InitializeColors(*Me.ControlButton_t, color.i)
   
   Protected avg.i = (r+g+b)/3
   
-  *Me\color_disabled = RGB((r+avg)/2, (g+avg)/2, (b+avg)/2)
+  *Me\color_disabled = RGBA((r+avg)/2, (g+avg)/2, (b+avg)/2, 255)
   *Me\color_enabled = color
-  *Me\color_over = RGB(r+avg/3, g+avg/3, b+avg/3)
-  *Me\color_pressed = RGB(r+avg/2, g+avg/2, b+avg/2)
+  *Me\color_over = RGBA(r+avg/3, g+avg/3, b+avg/3, 255)
+  *Me\color_pressed = RGBA(r+avg/2, g+avg/2, b+avg/2, 255)
 EndProcedure
 
 
@@ -342,7 +390,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 134
+; CursorPosition = 68
+; FirstLine = 39
 ; Folding = ---
 ; EnableXP

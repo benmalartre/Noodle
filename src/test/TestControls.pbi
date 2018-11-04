@@ -1,0 +1,52 @@
+﻿XIncludeFile "../core/Application.pbi"
+
+EnableExplicit
+UseModule Math
+UseModule OpenGL
+UseModule OpenGLExt
+
+Procedure Update()
+  Debug "Update Called..."  
+EndProcedure
+
+
+Globals::Init()
+Time::Init()
+Log::Init()
+FTGL::Init()
+Controls::Init()
+Commands::Init()
+UIColor::Init()
+
+Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
+Controls::SetTheme(Globals::#GUI_THEME_DARK)
+Define *m.ViewManager::ViewManager_t = *app\manager
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*m\main, "Property", #Null)
+
+OpenGadgetList(*ui\container)
+
+Define name.s = "Prop"
+Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\width, *ui\height-128)
+
+ControlProperty::AppendStart(*prop)
+Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
+Object::SignalConnect(*ui,*head\slot,0)
+
+Define v.Math::v3f32
+ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
+ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
+
+ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
+ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
+
+
+ControlProperty::AppendStop(*prop)
+PropertyUI::AddProperty(*ui, *prop)
+CloseGadgetList()
+
+
+Application::Loop(*app,@Update())
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 40
+; Folding = -
+; EnableXP

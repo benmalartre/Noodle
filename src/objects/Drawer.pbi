@@ -221,7 +221,11 @@ Module Drawer
       glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
       glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
       glEnableVertexAttribArray(0)
-      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerIf #USE_SSE
+        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
+        glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerEndIf
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
       
@@ -271,7 +275,11 @@ Module Drawer
       glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
         
       glEnableVertexAttribArray(0)
-      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerIf #USE_SSE
+        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
+        glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerEndIf
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
 
@@ -565,8 +573,7 @@ Module Drawer
     ProcedureReturn *Me 
     
   EndProcedure
-  
-  
+
   ; ---[ New Point Item ]------------------------------------------------------
   Procedure NewPoint(*Me.Drawer_t, *position.Math::v3f32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
@@ -577,7 +584,7 @@ Module Drawer
     SetColor(*point, Color::_BLACK())
     CArray::SetCount(*point\positions, 1)
     CArray::SetCount(*point\colors, 1)
-    CArray::SetValue(*point\positions, 0, *position)
+    If *position : CArray::SetValue(*point\positions, 0, *position) : EndIf
     AddElement(*Me\items())
     *Me\items() = *point
     *Me\dirty = #True
@@ -590,10 +597,13 @@ Module Drawer
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
-    *point\positions = CArray::newCArrayV3F32()
-    *point\colors = CArray::newCArrayC4F32()
-    CArray::Copy(*point\positions, *positions)
-    CArray::SetCount(*point\colors, CArray::GetCount(*point\positions))
+    If CArray::GetCount(*positions)
+      *point\positions = CArray::newCArrayV3F32()
+      *point\colors = CArray::newCArrayC4F32()
+      CArray::Copy(*point\positions, *positions)
+      CArray::SetCount(*point\colors, CArray::GetCount(*point\positions))
+    EndIf
+    
     SetColor(*point, Color::_BLACK())
     AddElement(*Me\items())
     *Me\items() = *point
@@ -606,10 +616,12 @@ Module Drawer
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
-    *point\positions = CArray::newCArrayV3F32()
-    *point\colors = CArray::newCArrayC4F32()
-    CArray::Copy(*point\positions, *positions)
-    CArray::Copy(*point\colors, *colors)
+    If CArray::GetCount(*positions)
+      *point\positions = CArray::newCArrayV3F32()
+      *point\colors = CArray::newCArrayC4F32()
+      CArray::Copy(*point\positions, *positions)
+      CArray::Copy(*point\colors, *colors)
+    EndIf
     AddElement(*Me\items())
     *Me\items() = *point
     *Me\dirty = #True
@@ -640,10 +652,12 @@ Module Drawer
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
-    *line\positions = CArray::newCArrayV3F32()
-    *line\colors = CArray::newCArrayC4F32()
-    CArray::Copy(*line\positions, *positions)
-    CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
+    If CArray::GetCount(*positions)
+      *line\positions = CArray::newCArrayV3F32()
+      *line\colors = CArray::newCArrayC4F32()
+      CArray::Copy(*line\positions, *positions)
+      CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
+    EndIf
     SetColor(*line, Color::_BLACK())
     AddElement(*Me\items())
     *Me\items() = *line
@@ -656,11 +670,12 @@ Module Drawer
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
-    *line\positions = CArray::newCArrayV3F32()
-    *line\colors = CArray::newCArrayC4F32()
-    CArray::Copy(*line\positions, *positions)
-    CArray::Copy(*line\colors, *colors)
-
+    If CArray::GetCount(*positions)
+      *line\positions = CArray::newCArrayV3F32()
+      *line\colors = CArray::newCArrayC4F32()
+      CArray::Copy(*line\positions, *positions)
+      CArray::Copy(*line\colors, *colors)
+    EndIf
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -672,17 +687,18 @@ Module Drawer
     Protected *strip.Strip_t = AllocateMemory(SizeOf(Strip_t))
     InitializeStructure(*strip, Strip_t)
     *strip\type = #ITEM_STRIP
-    *strip\positions = CArray::newCArrayV3F32()
-    *strip\colors = CArray::newCArrayC4F32()
-    *strip\indices = CArray::newCArrayLong()
-    CArray::Copy(*strip\positions, *positions)
-    CArray::SetCount(*strip\colors, CArray::GetCount(*strip\positions))
-    If Not *indices = #Null
-      CArray::Copy(*strip\indices, *indices)
-    Else
-      CArray::AppendL(*strip\indices, CArray::GetCount(*strip\positions))
+    If CArray::GetCount(*positions)
+      *strip\positions = CArray::newCArrayV3F32()
+      *strip\colors = CArray::newCArrayC4F32()
+      *strip\indices = CArray::newCArrayLong()
+      CArray::Copy(*strip\positions, *positions)
+      CArray::SetCount(*strip\colors, CArray::GetCount(*strip\positions))
+      If Not *indices = #Null
+        CArray::Copy(*strip\indices, *indices)
+      Else
+        CArray::AppendL(*strip\indices, CArray::GetCount(*strip\positions))
+      EndIf
     EndIf
-    
     AddElement(*Me\items())
     *Me\items() = *strip
     *Me\dirty = #True
@@ -694,15 +710,17 @@ Module Drawer
     Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
     InitializeStructure(*loop, Loop_t)
     *loop\type = #ITEM_LOOP
-    *loop\positions = CArray::newCArrayV3F32()
-    *loop\colors = CArray::newCArrayC4F32()
-    *loop\indices = CArray::newCArrayLong()
-    CArray::Copy(*loop\positions, *positions)
-    CArray::SetCount(*loop\colors, CArray::GetCount(*loop\positions))
-    If Not *indices = #Null
-      CArray::Copy(*loop\indices, *indices)
-    Else
-      CArray::AppendL(*loop\indices, CArray::GetCount(*loop\positions))
+    If CArray::GetCount(*positions)
+      *loop\positions = CArray::newCArrayV3F32()
+      *loop\colors = CArray::newCArrayC4F32()
+      *loop\indices = CArray::newCArrayLong()
+      CArray::Copy(*loop\positions, *positions)
+      CArray::SetCount(*loop\colors, CArray::GetCount(*loop\positions))
+      If Not *indices = #Null
+        CArray::Copy(*loop\indices, *indices)
+      Else
+        CArray::AppendL(*loop\indices, CArray::GetCount(*loop\positions))
+      EndIf
     EndIf
     AddElement(*Me\items())
     *Me\items() = *loop
@@ -818,7 +836,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 154
+; CursorPosition = 575
+; FirstLine = 542
 ; Folding = --------
 ; EnableXP

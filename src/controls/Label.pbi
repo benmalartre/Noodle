@@ -69,8 +69,8 @@ Module ControlLabel
     EndIf
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    DrawingFont( FontID(Globals::#FONT_LABEL ))
-    Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+    VectorFont( FontID(Globals::#FONT_LABEL ))
+    Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
   ;   raaResetClip()
@@ -87,25 +87,32 @@ Module ControlLabel
     Protected maxW .i = *Me\sizX
     Protected curW .i
     
-    curW = TextWidth(label)
+    curW = VectorTextWidth(label)
     While Len(label) And ( curW > maxW )
       label = Left( label, Len(label)-1 )
-      curW = TextWidth(label)
+      curW = VectorTextWidth(label)
     Wend
     If Len(label) <> lalen
       lalen = Len(label)
       label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
     Else
-      LineXY     ( TextWidth(label)+5.0 + xoff, ty + 10, *Me\sizX-1 + xoff, ty + 10, UIColor::COLOR_LINE_DIMMED )
+      MovePathCursor(VectorTextWidth(label)+5.0 + xoff, ty + 10)
+      AddPathLine(*Me\sizX-1 + xoff, ty + 10)
+      VectorSourceColor(UIColor::COLOR_LINE_DIMMED )
+      StrokePath(1)
     EndIf
     
     ; ---[ Light Theme Marked Highlight ]---------------------------------------
-    Box( -6 + xoff, ty-3, 6, 20, UIColor::COLOR_MAIN_BG )
+    AddPathBox( -6 + xoff, ty-3, 6, 20)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG )
+    FillPath()
     If *Me\value
       ;If raaGUIGetTheme() = #RAA_GUI_THEME_LIGHT
-        RoundBox( -3 + xoff, ty-2, TextWidth(label)+6, 18, 5, 5, UIColor::COLOR_LABEL_MARKED )
-        DrawingMode( #PB_2DDrawing_Outlined )
-        RoundBox( -3 + xoff, ty-2, TextWidth(label)+6, 18, 5, 5, UIColor::COLOR_LABEL_DISABLED )
+      AddPathBox( -3 + xoff, ty-2, TextWidth(label)+6, 18)
+      VectorSourceColor( UIColor::COLOR_LABEL_MARKED )
+      FillPath(#PB_Path_Preserve)
+      VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
+      StrokePath(2)
       ;Else
 ;         DrawingMode( #PB_2DDrawing_Outlined )
 ;         RoundBox( -3 + xoff, ty-2, TextWidth(label)+6, 18, 5, 5, Globals::COLOR_LABEL_MARKED_DIMMED )
@@ -114,8 +121,9 @@ Module ControlLabel
     
     ; ---[ Draw Label ]---------------------------------------------------------
     ;   raaClipBoxHole( 0 + xoff, 3 + yoff, *Me\sizX-24, *Me\sizY-6 )
-    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-    DrawText( 0 + xoff, ty, *Me\label, tc )
+    MovePathCursor(0 + xoff, ty)
+    VectorSourceColor(tc)
+    DrawVectorText(*Me\label)
 
     
   EndProcedure
@@ -362,6 +370,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 107
+; FirstLine = 102
 ; Folding = --
 ; EnableXP

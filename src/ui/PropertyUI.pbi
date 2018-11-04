@@ -68,9 +68,9 @@ Module PropertyUI
     *Me\width = w
     *Me\height = h
     
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1)
+    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,#PB_ScrollArea_BorderLess)
     *Me\gadgetID = *Me\container
-    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLORA_MAIN_BG)
+    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, RGB(112,128,112));UIColor::COLOR_MAIN_BG)
     
     *Me\prop = #Null
    
@@ -339,7 +339,6 @@ Module PropertyUI
   ;  Add Property
   ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
-    CloseGadgetList()
     AddElement(*Me\props())
     *Me\props() = *prop
     *Me\prop = *prop
@@ -462,8 +461,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 249
-; FirstLine = 245
+; CursorPosition = 72
+; FirstLine = 30
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

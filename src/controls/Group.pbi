@@ -243,12 +243,12 @@ Procedure hlpDraw( *Me.ControlGroup_t )
   Protected maxW .i = *Me\sizX - 21
   Protected curW .i
   
-  DrawingFont( FontID(Globals::#FONT_HEADER ))
+  VectorFont( FontID(Globals::#FONT_HEADER ))
   
-  curW = TextWidth(label)
+  curW = VectorTextWidth(label)
   While Len(label) And ( curW > maxW )
     label = Left( label, Len(label)-1 )
-    curW = TextWidth(label)
+    curW = VectorTextWidth(label)
   Wend
   If Len(label) <> lalen
     lalen = Len(label)
@@ -256,28 +256,33 @@ Procedure hlpDraw( *Me.ControlGroup_t )
   EndIf
  
   
-  DrawingMode( #PB_2DDrawing_Outlined )
-  RoundBox   ( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, 5.0, 5.0, UIColor::COLOR_GROUP_FRAME )
+  AddPathBox( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0)
+  VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
+  StrokePath(2, #PB_Path_RoundCorner)   
 
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Windows
-      DrawingMode( #PB_2DDrawing_Default )
-      Box( *Me\posX+12, *Me\posY, curW+6, 12, UIColor::COLOR_MAIN_BG )
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText( *Me\posX+15,  *Me\posY, label, UIColor::COLOR_GROUP_LABEL )
+      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      FillPath()
+      MovePathCursor(*Me\posX+15,  *Me\posY)
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      DrawVectorText( label )
     CompilerCase #PB_OS_Linux
-      DrawingMode( #PB_2DDrawing_Default )
-      Box( *Me\posX+12, *Me\posY, curW+6, 12, UIColor::COLOR_MAIN_BG )
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText( *Me\posX+15,  *Me\posY, label, UIColor::COLOR_GROUP_LABEL )
+      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      FillPath()
+      MovePathCursor(*Me\posX+15,  *Me\posY)
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      DrawVectorText( label )
     CompilerCase #PB_OS_MacOS
-      DrawingMode( #PB_2DDrawing_Default )
-      Box( *Me\posX+12, *Me\posY, curW+6, 12, UIColor::COLOR_MAIN_BG )
-      DrawingMode(#PB_2DDrawing_Transparent)
-      DrawText( *Me\posX+15, *Me\posY-3, label, UIColor::COLOR_GROUP_LABEL )
+      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12 )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      FillPath()
+       MovePathCursor(*Me\posX+15, *Me\posY-3)
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      DrawVectorText( label )
   CompilerEndSelect
-  
-  DrawingMode(#PB_2DDrawing_AlphaBlend)
   
   ; ---[ Sanity Check ]-------------------------------------------------------
   If *Me\chilcount < 1 : ProcedureReturn : EndIf
@@ -332,9 +337,10 @@ Procedure hlpDrawPickImage( *Me.ControlGroup_t )
   Protected *son  .Control::Control_t
   
   ; ---[ Tag Picking Surface ]------------------------------------------------
-  StartDrawing( ImageOutput( *Me\imageID ) )
-  DrawingMode(#PB_2DDrawing_Default)
-  Box( 0, 0, *Me\sizX, *Me\sizY, 0 )
+  StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
+  AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
+  VectorSourceColor(RGBA(0,0,0,255))
+  FillPath()
   For i=0 To iBound
       
     *son = *Me\children(i)
@@ -342,10 +348,12 @@ Procedure hlpDrawPickImage( *Me.ControlGroup_t )
     If *son\type = Control::#CONTROL_GROUP
       
     Else
-      Box( *son\posX, *son\posY, *son\sizX, *son\sizY, i+1)
+      AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+      VectorSourceColor(RGBA(i+1,0,0,255))
+      FillPath()
     EndIf
    Next
-   StopDrawing()
+   StopVectorDrawing()
 EndProcedure
 ;}
 
@@ -410,9 +418,10 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       son = *son
       ev_data\xoff    = *son\posX+*Me\posX
       ev_data\yoff    = *son\posY+*Me\posY
-      StartDrawing(CanvasOutput(*Me\gadgetID))
-      DrawingMode(#PB_2DDrawing_AlphaBlend)
-      Box( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY, UIColor::COLOR_MAIN_BG )
+      StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+      AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      FillPath()
       son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
       StopDrawing()
         
@@ -939,7 +948,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 813
-; FirstLine = 809
+; CursorPosition = 423
+; FirstLine = 410
 ; Folding = ---6
 ; EnableXP

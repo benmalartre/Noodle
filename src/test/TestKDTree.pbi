@@ -6,14 +6,25 @@ XIncludeFile "../objects/KDTree.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 UseModule Shape
 
 EnableExplicit
 
 Global *camera.Camera::Camera_t = #Null
-
+Global *app.Application::Application_t
+Global *drawer.Drawer::Drawer_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global *layer.LayerDefault::LayerDefault_t
+Global *kdtree.KDTree::KDTree_t
+Global nbp.i
+Global TBuild.d, TSearch.d
+Global query.KDTree::KDPoint_t
+Global *query_display.Drawer::Sphere_t
 
 ; Push Color Array
 ;--------------------------------------------
@@ -24,7 +35,7 @@ Procedure PushColorArray(*node.KDTree::KDNode_t,*mem)
   Protected *pnt.KDTree::KDPoint_t
   If ListSize(*node\indices())
     ForEach *node\indices()
-      *pnt = *mem+*node\indices()* SizeOf(KDTree::KDPoint_t)
+      *pnt = *mem + *node\indices() * SizeOf(KDTree::KDPoint_t)
       *pnt\v[0] = *node\r
       *pnt\v[1] = *node\g
       *pnt\v[2] = *node\b
@@ -36,48 +47,41 @@ EndProcedure
 ; Build Color Array
 ;--------------------------------------------
 Procedure BuildColorArray(*tree.KDTree::KDTree_t,*mem)
-
   *mem = PushColorArray(*tree\root,*mem)
-  
   ProcedureReturn *mem
 EndProcedure
 
 ; Build Color Array
 ;--------------------------------------------
 Procedure BuildQueryColorArray()
-  Protected *mem = AllocateMemory(Shape::#POINT_NUM_VERTICES*#PB_Long)
+  Protected *mem = AllocateMemory(Shape::#POINT_NUM_VERTICES*4)
   Protected i,j
   Protected nbs = Shape::#POINT_NUM_VERTICES/3
   Protected *pnt.KDTree::KDPoint_t
-  
   For i=0 To nbs-1
     *pnt = *mem+i* SizeOf(KDTree::KDPoint_t)
     j=i/nbs
     Select j%3
       Case 0
         *pnt\v[0]=1
-        *pnt\v[0]=0
-        *pnt\v[0]=0
+        *pnt\v[1]=0
+        *pnt\v[2]=0
       Case 1
         *pnt\v[0]=0
-        *pnt\v[0]=1
-        *pnt\v[0]=0
+        *pnt\v[1]=1
+        *pnt\v[2]=0
       Case 2
         *pnt\v[0]=0
-        *pnt\v[0]=0
-        *pnt\v[0]=1
+        *pnt\v[1]=0
+        *pnt\v[2]=1
     EndSelect
-    
   Next
-
   ProcedureReturn *mem
 EndProcedure
-
 
 ; Build Position Array
 ;--------------------------------------------
 Procedure BuildPositionArray(*tree.KDTree::KDTree_t,*mem)
-  
   Protected i
   Protected *pnt.KDTree::KDPoint_t
   For i=0 To *tree\m_nbp-1
@@ -86,14 +90,12 @@ Procedure BuildPositionArray(*tree.KDTree::KDTree_t,*mem)
     *pnt\v[1] = Random(100)*0.05
     *pnt\v[2] = Random(100)*0.05
   Next
-  
   ProcedureReturn *mem
 EndProcedure
 
 ; Build Position Array From Shape
 ;--------------------------------------------
 Procedure BuildPositionArrayFromShape(*tree.KDTree::KDTree_t,*mem,shape.i)
-  
   Protected i
   Protected *pnt.KDTree::KDPoint_t
   For i=0 To *tree\m_nbp-1
@@ -102,7 +104,6 @@ Procedure BuildPositionArrayFromShape(*tree.KDTree::KDTree_t,*mem,shape.i)
     *pnt\v[1] = Random(100)*0.05
     *pnt\v[2] = Random(100)*0.05
   Next
-  
   ProcedureReturn *mem
 EndProcedure
 
@@ -120,158 +121,200 @@ EndProcedure
 
 ; DrawKDNode
 ;--------------------------------------------
-Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t,shader.i,ID.i=-1)
+Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t)
   If *node\left
-    DrawKDNode(*tree,*node\left,shader)
-    DrawKDNode(*tree,*node\right,shader)
+    DrawKDNode(*tree,*node\left)
+    DrawKDNode(*tree,*node\right)
   Else
     If *node\hit
-    Protected m.m4f32
-      Matrix4::SetIdentity(@m)
+      Protected m.m4f32
+      Matrix4::SetIdentity(m)
       Protected min.v3f32,max.v3f32, c.v3f32,s.v3f32
       KDTree::GetBoundingBox(*tree,*node,@min,@max)
-      Vector3::Sub(@s,@max,@min)
+      Vector3::Sub(s,max,min)
   ;     Vector3::ScaleInPlace(@s,0.5)
-      Vector3::LinearInterpolate(@c,@min,@max,0.5)
+      Vector3::LinearInterpolate(c,min,max,0.5)
       
-      Matrix4::SetScale(@m,@s)
-      Matrix4::SetTranslation(@m,@c)
-      glUniform4f(glGetUniformLocation(shader,"color"),*node\r,*node\g,*node\b,0.25)
-      glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
-      glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,#Null)
-      EndIf
-
+      Matrix4::SetScale(m,s)
+      Matrix4::SetTranslation(m,c)
+      
+      Define *box.Drawer::Box_t = Drawer::NewBox(*drawer, m)
+      Define color.c4f32
+      Color::Set(color, *node\r,*node\g,*node\b, 1)
+      Drawer::SetColor(*box, color)
+    EndIf
   EndIf
+EndProcedure
+
+; DrawPoints
+;--------------------------------------------
+Procedure DrawKDPoints(*tree.KDTree::KDTree_t)
+  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Protected *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
   
+  CArray::SetCount(*positions, *tree\m_nbp)
+  CArray::SetCount(*colors, *tree\m_nbp)
+  Protected i
+  Protected *p.v3f32
+  Protected *c.c4f32
   
+  For i=0 To *tree\m_nbp - 1
+    *p = CArray::GetValue(*positions, i)
+    *c = CArray::GetValue(*colors, i)
+    Vector3::Set(*p, *tree\points(i)\v[0], *tree\points(i)\v[1], *tree\points(i)\v[2])
+    Color::SetFromOther(*c, *tree\points(i)\color)
+  Next
+  
+;   CopyMemory(*tree\points(0), CArray::GetPtr(*positions, 0), *tree\m_nbp * SizeOf(KDTree::KDPoint_t))
+  Protected *PNT.Drawer::Point_t = Drawer::NewPoints(*drawer, *positions)
+  Drawer::SetColor(*PNT, Color::_PURPLE())
+  Drawer::SetSize(*PNT, 4)
+  CArray::Delete(*positions)
+EndProcedure
+
+; DrawQuery
+;--------------------------------------------
+Procedure DrawKDQuery(*tree.KDTree::KDTree_t)
+  Define m.m4f32
+  Matrix4::SetIdentity(m)
+  Define p.v3f32
+  Vector3::Set(p, query\v[0], query\v[1], query\v[2])
+  Matrix4::SetTranslation(m, p)
+  *query_display = Drawer::NewSphere(*drawer, m)
+  Drawer::SetColor(*query_display, Color::_GREEN())
 EndProcedure
 
 ; DrawKDTree
 ;--------------------------------------------
-Procedure DrawKDTree(*tree.KDTree::KDTree_t,vao.i,shader,ID=-1)
-  glBindVertexArray(vao)
-  
-   DrawKDNode(*tree,*tree\root,shader.i,ID)
-  glBindVertexArray(0)
+Procedure DrawKDTree(*tree.KDTree::KDTree_t)
+   DrawKDNode(*tree,*tree\root)
 EndProcedure
 
-Procedure DrawCube(vao)
-  glBindVertexArray(vao)
-  glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,#Null)
-  glBindVertexArray(0)
-EndProcedure
-
-Procedure DrawQuery(vao,shader)
-  glBindVertexArray(vao)
-  glUniform4f(glGetUniformLocation(shader,"color"),1,0,0,1)
-  glDrawElements(#GL_LINES,Shape::#SPHERE_NUM_EDGES*2,#GL_UNSIGNED_INT,#Null)
-  glBindVertexArray(0)
-EndProcedure
- 
-; Draw
-;--------------------------------------------
-Procedure Draw(*tree.KDTree::KDTree_t,vao)
-  glClearColor(0.25,0.25,0.25,1.0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  
-  glEnable(#GL_BLEND)
-  glEnable(#GL_POINT_SMOOTH)
-  glPointSize(1)
-  glEnable(#GL_DEPTH_TEST)
-  
-  glBindVertexArray(vao)
-  glDrawArrays(#GL_POINTS,0,*tree\m_nbp)
-  
-  glPointSize(12)
-  Protected i
-;   ForEach *tree\closests()
-;     glDrawArrays(#GL_POINTS,*tree\closests()\ID,1)
-;   Next
-  
-  
-  glBindVertexArray(0)
-
-EndProcedure
-
- 
 ; View Event
 ;--------------------------------------------
- Procedure OpenGLViewEvent(gadget,*camera.Camera::Camera_t,*query.KDTree::KDPoint_t)
+ Procedure OpenGLViewEvent(gadget,*query.KDTree::KDPoint_t)
    Define.f mx,my
    Define deltax.d, deltay.d
-   
-   ;Camera::Event(*camera,GadgetX(gadget),GadgetY(gadget),GadgetWidth(gadget),GadgetHeight(gadget))
-   Select EventType()
-    Case #PB_EventType_KeyDown
-      Select GetGadgetAttribute(gadget,#PB_OpenGL_Key)
-        Case #PB_Shortcut_Left
-          *query\v[0]-0.1
-        Case #PB_Shortcut_Right
-          *query\v[0]+0.1
-        Case #PB_Shortcut_Up
-          *query\v[2]-0.1
-        Case #PB_Shortcut_Down
-          *query\v[2]+0.1
-        Case #PB_Shortcut_PageUp
-          *query\v[1]+0.1
-        Case #PB_Shortcut_PageDown
-          *query\v[1]-0.1
-      EndSelect
-
-  EndSelect
- 
+   Debug "OpenGLViewEvent"
+   If EventGadget() = gadget
+     Debug "GOOD GADGET"
+     Select EventType()
+         
+       Case #PB_EventType_KeyDown
+         Debug "KEY DOWN"
+        Select GetGadgetAttribute(gadget,#PB_OpenGL_Key)
+          Case #PB_Shortcut_Left
+            *query\v[0]-0.1
+          Case #PB_Shortcut_Right
+            *query\v[0]+0.1
+          Case #PB_Shortcut_Up
+            *query\v[2]-0.1
+          Case #PB_Shortcut_Down
+            *query\v[2]+0.1
+          Case #PB_Shortcut_PageUp
+            *query\v[1]+0.1
+          Case #PB_Shortcut_PageDown
+            *query\v[1]-0.1
+        EndSelect
+    EndSelect
+  EndIf
+  Define p.v3f32
+  Vector3::Set(p, *query\v[0], *query\v[1], *query\v[2])
+  Matrix4::SetTranslation(*query_display\m, p)
 EndProcedure
- 
 
-; Main
+; Update
 ;--------------------------------------------
+Procedure KDTreeUpdate()
+  OpenGLViewEvent(*viewport\gadgetID, query)
+  Define retID.i
+  Define retDist.f
+  
+  Define max_distance = 1
+  Define max_points = 4
+  ;   KDTree::Search(*kdtree,query,@retID,@retDist)
+  KDTree::ResetHit(*kdtree)
+  KDTree::SearchN(*kdtree, query,max_distance,max_points)
+  Debug "NUM CLOSESTS : "+Str(ListSize(*kdtree\closests()))
+  Drawer::Flush(*drawer)
+  
+  DrawKDTree(*kdtree)
+  DrawKDPoints(*kdtree)
+  DrawKDQuery(*kdtree)
+  
+  ViewportUI::SetContext(*viewport)
+  Scene::*current_scene\dirty= #True
+  
+  Scene::Update(Scene::*current_scene)
+;   Define numCells.l
+;   Octree::NumCells(*octree, @numCells)
+  LayerDefault::Draw(*layer, *app\context)
+
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/*viewport\width
+  Define ratio.f = *viewport\width / *viewport\height
+  FTGL::Draw(*app\context\writer,"OCTREE : ",-0.9,1,ss,ss*ratio)
+  FTGL::SetColor(*app\context\writer,1,0.5,0.75,1)
+  FTGL::Draw(*app\context\writer,"Nb points : "+Str(nbp),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Nb queries : "+Str(*kdtree\m_cmps),-0.9,0.85,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb closests : "+Str(ListSize(*tree\closests())),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Time to Build KDTree : "+StrD(TBuild),-0.9,0.75,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"Time to Search KDTree : "+StrD(TSearch),-0.9,0.7,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
+  
+  ViewportUI::FlipBuffer(*viewport)
+EndProcedure
+
+; --------------------------------------------
+;   Main
+; --------------------------------------------
 If Time::Init()
   Log::Init()
-  CompilerIf #USE_GLFW
-    glfwInit()
-    Define *window.GLFWWindow = glfwCreateFullScreenWindow()
-    ;glfwCreateWindow(800,600,"TestGLFW",#Null,#Null)
-    glfwMakeContextCurrent(*window)
-    GLLoadExtensions()
-  CompilerElse
-    Define window.i = OpenWindow(#PB_Any,0,0,800,600,"OpenGLGadget",#PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget)
-    Define gadget.i = OpenGLGadget(#PB_Any,0,0,WindowWidth(window,#PB_Window_InnerCoordinate),WindowHeight(window,#PB_Window_InnerCoordinate),#PB_OpenGL_Keyboard)
-    SetGadgetAttribute(gadget,#PB_OpenGL_SetContext,#True)
-    GLLoadExtensions()
-   CompilerEndIf  
-   
-   FTGL::Init()
-   Define *ftgl_drawer.FTGL::FTGL_Drawer = FTGL::New()
-   
-  Define nbp = 100000
+  FTGL::Init()
+
+  *app = Application::New("KDTree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
+  If Not #USE_GLFW
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *app\context = *viewport\context
+    *viewport\camera = *app\camera
+    View::SetContent(*app\manager\main,*viewport)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  EndIf
+  
+  *drawer = Drawer::New("KDTree_Visualizer")
+  Scene::*current_scene = Scene::New()
+  *layer = LayerDefault::New(800,800,*app\context,*app\camera)
+  viewportUI::AddLayer(*viewport, *layer)
+  Global *root.Model::Model_t = Model::New("Model")
+  Object3D::AddChild(*root, *drawer)
+  Scene::AddModel(Scene::*current_scene, *root)
+  
+  nbp = 12000
   Define pnt.KDTree::KDPoint_t
   Define *pnt.KDTree::KDPoint_t
   Define *col.KDTree::KDPoint_t
   Define i
-  
-  *camera = Camera::New("Camera",Camera::#Camera_Perspective)
-   
-;    Define *position = Shape::?shape_teapot_positions
+    
   Define  *position = AllocateMemory(nbp * 3 *#PB_Float)
   Define  *colors = AllocateMemory(nbp * 3 *#PB_Float)
   
-  
-  Define *tree.KDTree::KDTree_t = KDTree::New()
-  *tree\m_nbp = nbp
-  BuildPositionArray(*tree,*position)
+  *kdtree = KDTree::New()
+  *kdtree\m_nbp = nbp
+  BuildPositionArray(*kdtree,*position)
   
   Define T.d = Time::Get()
-  KDTree::Build(*tree,*position,nbp,12,100)
-  BuildColorArray(*tree,*colors)
-  Define TBuild.d = Time::Get()
-  
-  Define query.KDTree::KDPoint_t
-  query\v[0] = -1
+  KDTree::Build(*kdtree,*position,nbp,12,4)
+  BuildColorArray(*kdtree,*colors)
+  TBuild.d = Time::Get()
+ 
+  query\v[0] = 0
   query\v[1] = -0.2
-  query\v[2] = -1
+  query\v[2] = 0
   Define retID.i
   Define retDist.f
-  KDTree::Search(*tree,@query,@retID,@retDist)
+  KDTree::Search(*kdtree,@query,@retID,@retDist)
+  
 ;   Define result.s
 ;   result = "Closest Point ID : "+Str(retID)+"\n"
 ;   result + "Closest Distance : "+StrF(retDist)+"\n"
@@ -279,182 +322,19 @@ If Time::Init()
 ;   MessageRequester("KDTree",result)
   ; Define.KDTree::KDPoint_t min,max
   ; KDTree::GetBoundingBox(*tree,,@min,@max)
+  DrawKDTree(*kdtree)
+  DrawKDPoints(*kdtree)
+  DrawKDQuery(*kdtree)
   
-  
-  ; Camera Setup
-  Define.m4f32 model,view,proj
-  Matrix4::SetIdentity(@model)
-  Define.v3f32 pos,lookat,up
-  Vector3::Set(pos,5,10,5)
-  Vector3::Set(up,0,1,0)
-  Matrix4::GetViewMatrix(@view,@pos,@lookat,@up)
-  Matrix4::GetProjectionMatrix(@proj,60,1.4,0.01,10000)
-  
-  Define *wireframe.Program::Program_t = Program::New("","")
-  Program::Build(*wireframe,"wireframe")
-  Define *cloud.Program::Program_t = Program::New("","")
-  Program::Build(*wireframe,"cloud")
-  
-  glUseProgram(*wireframe\pgm)
-  
-   ; Cube
-  Define cube_vao.i
-  glGenVertexArrays(1,@cube_vao)
-  glBindVertexArray(cube_vao)
-  
-  Define cube_vbo.i
-  glGenBuffers(1,@cube_vbo)
-  glBindBuffer(#GL_ARRAY_BUFFER,cube_vbo)
-  glBufferData(#GL_ARRAY_BUFFER,8*3*#PB_Float,Shape::?shape_cube_positions,#GL_STATIC_DRAW)
+  Scene::Setup(Scene::*current_scene, *app\context)
+  Application::Loop(*app, @KDTreeUpdate())
 
-  glEnableVertexAttribArray(0)
-  glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,#Null)
+  KDTree::Delete(*kdtree)
   
-   Define cube_eab.i
-  glGenBuffers(1,@cube_eab)
-  glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,cube_eab)
-  glBufferData(#GL_ELEMENT_ARRAY_BUFFER,24*#PB_Long,Shape::?shape_cube_edges,#GL_STATIC_DRAW)
-
-  glBindVertexArray(0)
-  
-  ; Query
-  Define query_vao.i
-  glGenVertexArrays(1,@query_vao)
-  glBindVertexArray(query_vao)
-  
-  Define query_vbo.i
-  glGenBuffers(1,@query_vbo)
-  glBindBuffer(#GL_ARRAY_BUFFER,query_vbo)
-  glBufferData(#GL_ARRAY_BUFFER,Shape::#POINT_NUM_VERTICES*6*#PB_Float,#Null,#GL_STATIC_DRAW)
-  glBufferSubData(#GL_ARRAY_BUFFER,0,Shape::#POINT_NUM_VERTICES*3*#PB_Float,Shape::?shape_point_positions)
-  
-  Define *query_colors = BuildQueryColorArray()
-  glBufferSubData(#GL_ARRAY_BUFFER,Shape::#POINT_NUM_VERTICES*3*#PB_Float,Shape::#POINT_NUM_VERTICES*3*#PB_Float,*query_colors)
-  glEnableVertexAttribArray(0)
-  glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,#Null)
-  
-  Define query_eab.i
-  glGenBuffers(1,@query_eab)
-  glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,query_eab)
-  glBufferData(#GL_ELEMENT_ARRAY_BUFFER,Shape::#POINT_NUM_EDGES*2*#PB_Long,Shape::?shape_point_edges,#GL_STATIC_DRAW)
-  
-  glUseProgram(*cloud\pgm)
-  ;Point Cloud
-  Define vao.i
-  glGenVertexArrays(1,@vao)
-  glBindVertexArray(vao)
-  
-  Define vbo.i
-  glGenBuffers(1,@vbo)
-  glBindBuffer(#GL_ARRAY_BUFFER,vbo)
-  glBufferData(#GL_ARRAY_BUFFER,nbp*6*#PB_Float,#Null,#GL_STATIC_DRAW)
-  
-  glBufferSubData(#GL_ARRAY_BUFFER,0,nbp*3*#PB_Float,*position)
-  glBufferSubData(#GL_ARRAY_BUFFER,nbp*3*#PB_Float,nbp*3*#PB_Float,*colors)
-  
-  glEnableVertexAttribArray(0)
-  glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,#Null)
-   
-  glEnableVertexAttribArray(1)
-  glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,nbp*3*#PB_Float)   
-;   glBindVertexArray(0)
-;   glBindBuffer(#GL_ARRAY_BUFFER,0)
-
-  Define offset.m4f32,model.m4f32
-  Matrix4::SetIdentity(@offset)
-  Matrix4::SetIdentity(@model)
-  Define a.v3f32
-  Define b.v3f32
-  Define c.v3f32
-  Define m.m4f32
-  Define q.q4f32
-  Define p.v3f32
-  Quaternion::SetIdentity(@q)
-  Matrix4::SetFromQuaternion(@m,@q)
-  Define pID = 0
-  Define TSearch.d
-  CompilerIf #USE_GLFW
-    While Not glfwWindowShouldClose(*window)
-      glfwPollEvents()
-
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"offset"),1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE,*camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE,*camera\projection)
-      Draw(vao,nbp)
-      DrawKDTree(*tree,cube_vao,shader)
-;       DrawQuery(query_vao)
-      glfwSwapBuffers(*window)
-     
-    Wend
-  CompilerElse
-    Define e,w,h
-    Repeat
-      e = WaitWindowEvent(1000/60)
-      w = GadgetWidth(gadget)
-      h = GadgetHeight(gadget)
-      glEnable(#GL_DEPTH_TEST)
-      If e=#PB_Event_SizeWindow
-        Resize(window,gadget,*camera)
-      EndIf
-      
-;       Camera::Event(*camera,mx,my,vwidth,vheight)
-        Camera::OnEvent(*camera,gadget)
-
-       Matrix4::SetIdentity(@offset)
-      OpenGLViewEvent(gadget,*camera,@query)
-      glUseProgram(*cloud\pgm)
-      glUniformMatrix4fv(glGetUniformLocation(*cloud\pgm,"offset"),1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*cloud\pgm,"model"),1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*cloud\pgm,"view"),1,#GL_FALSE,*camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*cloud\pgm,"projection"),1,#GL_FALSE,*camera\projection)
-      pID+1
-      If pID>=Shape::#TEAPOT_NUM_VERTICES : pID=0:EndIf
-      Draw(*tree,vao)
-      
-      
-      glUseProgram(*wireframe\pgm)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE,*camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE,*camera\projection)
-      DrawKDTree(*tree,cube_vao,*wireframe\pgm)
-      
-      T = Time::Get()
-      KDTree::SearchN(*tree,@query,2,-1)
-      TSearch = Time::Get()-T
-      Vector3::Set(p,query\v[0],query\v[1],query\v[2])
-      Matrix4::SetIdentity(@model)
-      Matrix4::SetTranslation(@model,@p)
-      Matrix4::SetIdentity(@offset)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@model)   
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"offset"),1,#GL_FALSE,@offset)
-      DrawQuery(query_vao,*wireframe\pgm)
-      
-      glEnable(#GL_BLEND)
-      glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-      glDisable(#GL_DEPTH_TEST)
-      FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-      Define ss.f = 0.85/w
-      Define ratio.f = w / h
-      
-      FTGL::Draw(*ftgl_drawer,"Nb points : "+Str(nbp),-0.9,0.9,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"Nb queries : "+Str(*tree\m_cmps),-0.9,0.85,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"Nb closests : "+Str(ListSize(*tree\closests())),-0.9,0.8,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"Time to Build KDTree : "+StrD(TBuild),-0.9,0.75,ss,ss*ratio)
-      FTGL::Draw(*ftgl_drawer,"Time to Search KDTree : "+StrD(TSearch),-0.9,0.7,ss,ss*ratio)
-      glDisable(#GL_BLEND)
-      
-      SetGadgetAttribute(gadget,#PB_OpenGL_FlipBuffers,#True)
-
-    Until e = #PB_Event_CloseWindow
-  CompilerEndIf
 EndIf
-
-; glDeleteBuffers(1,@vbo)
-; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 424
-; FirstLine = 400
+; CursorPosition = 306
+; FirstLine = 270
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

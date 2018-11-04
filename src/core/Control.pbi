@@ -21,6 +21,7 @@ DeclareModule Control
     
     #PB_EventType_Attribute
   EndEnumeration
+  
   ; ---[ Gadget Types ]--------------------
   Enumeration
     #CONTROL_CHECK
@@ -37,6 +38,13 @@ DeclareModule Control
     #CONTROL_SHADERCODE
     #CONTROL_EXPLORER
     #CONTROL_HEAD
+  EndEnumeration
+  
+  ; ---[ Gadget State ]--------------------
+  Enumeration
+    #CONTROL_DEFAULT
+    #CONTROL_OVER
+    #CONTROL_PRESSED
   EndEnumeration
   
   Structure EventTypeDatas_t
@@ -68,7 +76,7 @@ DeclareModule Control
     visible    .i
     enable     .i
     options    .i
-;     sigonchanged.i
+    state      .i
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -266,8 +274,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 51
+; CursorPosition = 46
+; FirstLine = 24
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

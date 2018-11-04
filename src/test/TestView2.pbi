@@ -69,6 +69,7 @@ Define *viewport.UI::IUI = ViewportUI::New(*s2\left,"ViewportUI")
 Define *shaders.UI::IUI = ShaderUI::New(*s2\right,"ShaderUI",#Null)
 Define *graph.UI::IUI = GraphUI::New(*s3\left,"GraphUI")
 Define *timeline.UI::IUI = TimelineUI::New(*s3\right)
+
 ; FTGL Drawer
 ;-----------------------------------------------------
 FTGL::Init()
@@ -86,8 +87,6 @@ CompilerElse
   Global *shader2.Program::Program_t = Program::NewFromName("polymesh")
 CompilerEndIf
 
-
-
 UseJPEGImageDecoder()
 Define texture.i  =LoadImage(#PB_Any,"..\..\textures\moonbumpmap2.jpg")
 Define textureID = Utils::GLLoadImage(texture,#False,#GL_REPEAT,#GL_REPEAT,#GL_LINEAR,#GL_LINEAR)
@@ -98,7 +97,6 @@ Define textureID2 = Utils::GLLoadImage(texture2,#False,#GL_REPEAT,#GL_REPEAT)
 Global *ship.Polymesh::Polymesh_t = Polymesh::New("Dhip",Shape::#SHAPE_TOMATO)
 Global *quad.ScreenQuad::ScreenQuad_t = ScreenQuad::New() 
 Global *camera.Camera::Camera_t = Camera::New("Camera",Camera::#Camera_Perspective)
-
 
 Polymesh::Setup(*ship,*shader2)
 ScreenQuad::Setup(*quad,*shader)
@@ -116,8 +114,7 @@ Repeat
   T = Application::GetFPS(*app)
 ;   SetGadgetAttribute(*viewport
 ;   Framebuffer::BindOutput(*buffer)
-  
-
+ 
   glClearColor(0,0,0,1.0)
   glViewport(0, 0, GadgetWidth(*vp\gadgetID),GadgetHeight(*vp\gadgetID))
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -146,8 +143,6 @@ Repeat
   glUniform1i(glGetUniformLocation(*shader\pgm,"iChannel1"),1)
   SetGadgetAttribute(*vp\gadgetID,#PB_OpenGL_SetContext,#True)
   ScreenQuad::Draw(*quad)
-  
-  
   
   glUseProgram(*shader2\pgm)
   glDepthMask(#GL_TRUE)
@@ -192,8 +187,8 @@ Repeat
   ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 103
+; CursorPosition = 70
+; FirstLine = 41
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

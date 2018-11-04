@@ -1,6 +1,6 @@
-﻿;====================================================================
+﻿;===============================================================================
 ; Math Module Declaration(Shared)
-;====================================================================
+;===============================================================================
 DeclareModule Math
   
   ; ----------------------------------------------------------------------------
@@ -454,6 +454,13 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR2 DOT
+  ;------------------------------------------------------------------
+  Macro Dot(_v,_o)
+    (_v\x * _o\x + _v\y * _o\y)
+  EndMacro
+  
+  ;------------------------------------------------------------------
   ; VECTOR2 NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v, _o)
@@ -480,16 +487,35 @@ DeclareModule Vector2
   Macro GetAngle(_v, _o, _angle)
     Define _fCosAngle.f, _fLen.f
     
-    _fLen = Vector3::Length(_v)
-    _fLen * Vector3::Length(_o)
+    _fLen = Vector2::Length(_v)
+    _fLen * Vector2::Length(_o)
     
-    If _fLen < #F32_EPS
+    If _fLen < Math::#F32_EPS
       _angle = 0
     Else
       _fCosAngle = (_v\x* _o\x + _v\y * _o\y)/_fLen
-      Clamp(_fCosAngle,-1,1)
+      Math::Clamp(_fCosAngle,-1,1)
       _angle = ACos(_fCosAngle)
     EndIf
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 ROTATE (angle in radians)
+  ;------------------------------------------------------------------
+  Macro Rotate(_v,_o, _angle)
+    Define _cs.f = Cos(_angle)
+    Define _sn.f = Sin(_angle)
+    _v\x = _o\x * _cs - _o\y * _sn
+    _v\y = _o\x * _sn + _o\y * _cs
+  EndMacro
+  
+  Macro RotateInPlace(_v, _angle)
+    Define _cs.f = Cos(_angle)
+    Define _sn.f = Sin(_angle)
+    Define _x.f = _v\x * _cs - _v\y * _sn
+    Define _y.f = _v\x * _sn + _v\y * _cs
+    _v\x = _x
+    _v\y = _y
   EndMacro
   
   ;------------------------------------------------------------------
@@ -511,19 +537,12 @@ DeclareModule Vector2
     
      _v\x = _t1 * _a\x + _t2* _b\x + _t3* _c\x + _t4 * _d\x
      _v\y = _t1 * _a\y + _t2* _b\y + _t3* _c\y + _t4 * _d\y
-  EndProcedure
+  EndMacro
 
-  Procedure HermiteInterpolate(_v,_a,_b,_c,_d,_mu,_tension,_bias)
+  Macro HermiteInterpolate(_v,_a,_b,_c,_d,_mu,_tension,_bias)
     HERMITE_INTERPOLATE(_v\x,_a\x,_b\x,_c\x,_d\x,_mu,_tension,_bias)
     HERMITE_INTERPOLATE(_v\y,_a\y,_b\y,_c\y,_d\y,_mu,_tension,_bias)
-  EndProcedure
-  
-  ;------------------------------------------------------------------
-  ; VECTOR2 DOT
-  ;------------------------------------------------------------------
-  Macro Dot(_v,_o)
-    (_v\x * _o\x + _v\y * _o\y)
-  EndProcedure
+  Macro
   
   ;------------------------------------------------------------------
   ; VECTOR2 SET LENGTH
@@ -531,7 +550,7 @@ DeclareModule Vector2
   Macro SetLength(_v,_length)
     NormalizeInPlace(_v)
     ScaleInPlace(_v,_length)
-  EndProcedure
+  EndMacro
 
   ;------------------------------------------------------------------
   ; VECTOR2 MULTIPLY
@@ -546,8 +565,8 @@ DeclareModule Vector2
   ;------------------------------------------------------------------
   Macro Echo(_v,_name="")
     Debug _name +":("+
-          StrF(_v\x, #ECHO_PRECISION)+","+
-          StrF(_v\y, #ECHO_PRECISION)+")"
+          StrF(_v\x, Math::#ECHO_PRECISION)+","+
+          StrF(_v\y, Math::#ECHO_PRECISION)+")"
   EndMacro
   
   ;------------------------------------------------------------------
@@ -566,6 +585,7 @@ DeclareModule Vector2
       v\y = ValF(StringField(s,2,","))
     EndIf
   EndMacro
+  
  
 EndDeclareModule
 
@@ -1009,9 +1029,9 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   Macro Echo(_v,_name)
     Debug _name +":("+
-          StrF(_v\x, #ECHO_PRECISION)+","+
-          StrF(_v\y, #ECHO_PRECISION)+","+
-          StrF(_v\z, #ECHO_PRECISION)+")"
+          StrF(_v\x, Math::#ECHO_PRECISION)+","+
+          StrF(_v\y, Math::#ECHO_PRECISION)+","+
+          StrF(_v\z, Math::#ECHO_PRECISION)+")"
   EndMacro
   
   ;------------------------------------------------------------------
@@ -1110,10 +1130,10 @@ DeclareModule Vector4
   ;------------------------------------------------------------------
   Macro Echo(_v,_prefix)
     Debug _prefix+"("+
-          StrF(_v\x,#ECHO_PRECISION)+","+
-          StrF(_v\y,#ECHO_PRECISION)+","+
-          StrF(_v\z,#ECHO_PRECISION)+","+
-          StrF(_v\w,#ECHO_PRECISION)+")"
+          StrF(_v\x,Math::#ECHO_PRECISION)+","+
+          StrF(_v\y,Math::#ECHO_PRECISION)+","+
+          StrF(_v\z,Math::#ECHO_PRECISION)+","+
+          StrF(_v\w,Math::#ECHO_PRECISION)+")"
   EndMacro
       
   ;------------------------------------------------------------------
@@ -1509,10 +1529,10 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   Macro Echo(_q,_prefix)
     Debug _prefix+"("+
-          StrF(_q\x,#ECHO_PRECISION)+","+
-          StrF(_q\y,#ECHO_PRECISION)+","+
-          StrF(_q\z,#ECHO_PRECISION)+","+
-          StrF(_q\w,#ECHO_PRECISION)+")"
+          StrF(_q\x,Math::#ECHO_PRECISION)+","+
+          StrF(_q\y,Math::#ECHO_PRECISION)+","+
+          StrF(_q\z,Math::#ECHO_PRECISION)+","+
+          StrF(_q\w,Math::#ECHO_PRECISION)+")"
   EndMacro
   
   ;------------------------------------------------------------------
@@ -1716,10 +1736,10 @@ DeclareModule Color
   ;------------------------------------------------------------------
   Macro Echo(_c,prefix)
     Debug prefix + ": "+
-          StrF(_c\r, #ECHO_PRECISION)+","+
-          StrF(_c\g, #ECHO_PRECISION)+","+
-          StrF(_c\b, #ECHO_PRECISION)+","+
-          StrF(_c\a, #ECHO_PRECISION)
+          StrF(_c\r, Math::#ECHO_PRECISION)+","+
+          StrF(_c\g, Math::#ECHO_PRECISION)+","+
+          StrF(_c\b, Math::#ECHO_PRECISION)+","+
+          StrF(_c\a, Math::#ECHO_PRECISION)
   EndMacro
   
   ;------------------------------------------------------------------
@@ -1756,30 +1776,30 @@ DeclareModule Matrix3
   ;------------------------------------------------------------------
   Macro Echo(_m)
     Debug  "Matrix3*3("+
-           StrF(_m\v[0], #ECHO_PRECISION)+","+
-           StrF(_m\v[1], #ECHO_PRECISION)+","+
-           StrF(_m\v[2], #ECHO_PRECISION)+","+
-           StrF(_m\v[3], #ECHO_PRECISION)+","+
-           StrF(_m\v[4], #ECHO_PRECISION)+","+
-           StrF(_m\v[5], #ECHO_PRECISION)+","+
-           StrF(_m\v[6], #ECHO_PRECISION)+","+
-           StrF(_m\v[7], #ECHO_PRECISION)+","+
-           StrF(_m\v[8], #ECHO_PRECISION)+")"
+           StrF(_m\v[0], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[1], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[2], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[3], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[4], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[5], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[6], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[7], Math::#ECHO_PRECISION)+","+
+           StrF(_m\v[8], Math::#ECHO_PRECISION)+")"
   EndMacro
   
   ;------------------------------------------------------------------
   ; MATRIX3 TO STRING
   ;------------------------------------------------------------------
   Macro ToString(_m)
-    StrF(_m\v[0], #ECHO_PRECISION)+","+
-    StrF(_m\v[1], #ECHO_PRECISION)+","+
-    StrF(_m\v[2], #ECHO_PRECISION)+","+
-    StrF(_m\v[3], #ECHO_PRECISION)+","+
-    StrF(_m\v[4], #ECHO_PRECISION)+","+
-    StrF(_m\v[5], #ECHO_PRECISION)+","+
-    StrF(_m\v[6], #ECHO_PRECISION)+","+
-    StrF(_m\v[7], #ECHO_PRECISION)+","+
-    StrF(_m\v[8], #ECHO_PRECISION)
+    StrF(_m\v[0], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[1], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[2], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[3], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[4], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[5], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[6], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[7], Math::#ECHO_PRECISION)+","+
+    StrF(_m\v[8], Math::#ECHO_PRECISION)
   EndMacro
   
   ;------------------------------------------------------------------
@@ -2016,22 +2036,22 @@ DeclareModule Matrix4
   ;------------------------------------------------------------------
   Macro Echo(_m,_name)
     Debug _name+" :Matrix4*4("+
-          StrF(_m\v[0],#ECHO_PRECISION)+","+
-          StrF(_m\v[1],#ECHO_PRECISION)+","+
-          StrF(_m\v[2],#ECHO_PRECISION)+","+
-          StrF(_m\v[3],#ECHO_PRECISION)+","+
-          StrF(_m\v[4],#ECHO_PRECISION)+","+
-          StrF(_m\v[5],#ECHO_PRECISION)+","+
-          StrF(_m\v[6],#ECHO_PRECISION)+","+
-          StrF(_m\v[7],#ECHO_PRECISION)+","+
-          StrF(_m\v[8],#ECHO_PRECISION)+","+
-          StrF(_m\v[9],#ECHO_PRECISION)+","+
-          StrF(_m\v[10],#ECHO_PRECISION)+","+
-          StrF(_m\v[11],#ECHO_PRECISION)+","+
-          StrF(_m\v[12],#ECHO_PRECISION)+","+
-          StrF(_m\v[13],#ECHO_PRECISION)+","+
-          StrF(_m\v[14],#ECHO_PRECISION)+","+
-          StrF(_m\v[15],#ECHO_PRECISION)+")"
+          StrF(_m\v[0],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[1],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[2],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[3],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[4],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[5],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[6],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[7],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[8],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[9],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[10],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[11],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[12],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[13],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[14],Math::#ECHO_PRECISION)+","+
+          StrF(_m\v[15],Math::#ECHO_PRECISION)+")"
   EndMacro
   
   ;------------------------------------------------------------------
@@ -3434,8 +3454,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 72
-; Folding = -------------------------------x+---f04---
+; CursorPosition = 456
+; FirstLine = 427
+; Folding = --------------------------------Y----v+8---
 ; EnableXP
 ; EnableUnicode
