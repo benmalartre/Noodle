@@ -37,19 +37,21 @@ Module Vector
     ; Create xml tree
     Protected xml = CreateXML(#PB_Any) 
     Protected node = CreateXMLNode(RootXMLNode(xml), *icon\name) 
+    SetXMLNodeName(node, *icon\name)
+    SetXMLNodeText(node, "What tHE fUCK YOU MEAN FUCKIN DEAD?")
     Protected i = 0
     
     ; loop items
     ForEach(*icon\items())
       ; Create first xml node (in main node)
       item = CreateXMLNode(node, "Item"+Str(i)) 
-      SetXMLAttribute(item, "stroke", Str(*icon\stroke)) 
-      SetXMLAttribute(item, "stroke_width", StrF(*icon\stroke_width)) 
-      SetXMLAttribute(item, "color", Str(*icon\color)) 
-      SetXMLAttribute(item, "filled", StrF(*icon\filled)) 
-      SetXMLAttribute(item, "closed", StrF(*icon\closed)) 
-      SetXMLAttribute(item, "preserve", StrF(*icon\preserve)) 
-      SetXMLNodeText(item, *icon\segments)
+      SetXMLAttribute(item, "stroke", Str(*icon\items()\stroke)) 
+      SetXMLAttribute(item, "stroke_width", StrF(*icon\items()\stroke_width)) 
+      SetXMLAttribute(item, "color", Str(*icon\items()\color)) 
+      SetXMLAttribute(item, "filled", StrF(*icon\items()\filled)) 
+      SetXMLAttribute(item, "closed", StrF(*icon\items()\closed)) 
+      SetXMLAttribute(item, "preserve", StrF(*icon\items()\preserve)) 
+      SetXMLNodeText(item, *icon\items()\segments)
       i + 1
     Next
     
@@ -81,7 +83,7 @@ Module Vector
         MessageRequester("XML", Str(numItems))
         Protected i
         Protected *child
-        For i=0 To numItems-1
+        For i=1 To numItems
           *child = ChildXMLNode(*node , i)  
           If *child
             AddElement(*icon\items())
@@ -175,64 +177,88 @@ Module Vector
   
 EndModule
 
+Procedure Bulb()
+  Define window = OpenWindow(#PB_Any, 0,0,800,800, "VECTOR")
+  Define canvas = CanvasGadget(#PB_Any, 0,0,800,800)
+  Define size = 32
+  Define radius = 6
+  Define offsetx = 20
+  Define offsetY = 20
+  Define stroke_width = 2
 
-Define window = OpenWindow(#PB_Any, 0,0,800,800, "VECTOR")
-Define canvas = CanvasGadget(#PB_Any, 0,0,800,800)
-Define size = 32
-Define radius = 6
-Define offsetx = 20
-Define offsetY = 20
-Define stroke_width = 2
-
-Define icon.Vector::Icon_t
-InitializeStructure(icon, Vector::Icon_t)
-Define color.i
-
-;*icon.Icon_t, stroke.i, stroke_width.f, color.i, closed.b, filled.b, preserve.b)
-
-StartVectorDrawing(CanvasVectorOutput(canvas))
-ScaleCoordinates(10,10)
-BeginVectorLayer()
-  Vector::RoundBoxPath(size, size, radius, offsetx, offsety, stroke_width)
-  color = RGBA(128,128,128,255)
+  Define icon.Vector::Icon_t
+  icon\name = "ICON1"
+  InitializeStructure(icon, Vector::Icon_t)
+  Define color.i
+  
+  StartVectorDrawing(CanvasVectorOutput(canvas))
+  ScaleCoordinates(10,10)
+  BeginVectorLayer()
+    Vector::RoundBoxPath(size, size, radius, offsetx, offsety, stroke_width)
+    color = RGBA(128,128,128,255)
+    VectorSourceColor(color)
+    Vector::AddItem(icon, 0,0,color,#False, #True, #True)
+    FillPath(#PB_Path_Preserve)
+    
+    
+    color = RGBA(100,100,100,255)
+    VectorSourceColor(color)
+    Vector::AddItem(icon, #PB_Path_RoundCorner | #PB_Path_RoundEnd,stroke_width,color,#True, #False, #False)
+    StrokePath(stroke_width, #PB_Path_RoundCorner | #PB_Path_RoundEnd)
+  EndVectorLayer()
+    
+    
+  BeginVectorLayer()
+  AddPathCircle(offsetx + size*0.5, offsety + size * 0.33, size*0.25)
+  color = RGBA(255,255,128,255)
   VectorSourceColor(color)
-  Vector::AddItem(icon, 0,0,color,#False, #True, #True)
+  Vector::AddItem(icon, #PB_Path_Default,0,color,#False, #True, #True)
   FillPath(#PB_Path_Preserve)
   
-  
-  color = RGBA(100,100,100,255)
+  color = RGBA(255,255,222,255)
   VectorSourceColor(color)
   Vector::AddItem(icon, #PB_Path_RoundCorner | #PB_Path_RoundEnd,stroke_width,color,#True, #False, #False)
   StrokePath(stroke_width, #PB_Path_RoundCorner | #PB_Path_RoundEnd)
-EndVectorLayer()
+   
+  EndVectorLayer()
   
+  StopVectorDrawing()
   
-BeginVectorLayer()
-AddPathCircle(offsetx + size*0.5, offsety + size * 0.33, size*0.25)
-color = RGBA(255,255,128,255)
-VectorSourceColor(color)
-Vector::AddItem(icon, #PB_Path_Default,0,color,#False, #True, #True)
-FillPath(#PB_Path_Preserve)
+  Vector::WriteToFile(icon, "E:/Projects/RnD/Noodle/rsc/vector/icon1.xml")
+  
+  Repeat
+  Until WaitWindowEvent() = #PB_Event_CloseWindow
+EndProcedure
 
-color = RGBA(255,255,222,255)
-VectorSourceColor(color)
-Vector::AddItem(icon, #PB_Path_RoundCorner | #PB_Path_RoundEnd,stroke_width,color,#True, #False, #False)
-StrokePath(stroke_width, #PB_Path_RoundCorner | #PB_Path_RoundEnd)
- 
-EndVectorLayer()
+Procedure FromFile()
+  Define window = OpenWindow(#PB_Any, 0,0,800,800, "VECTOR")
+  Define canvas = CanvasGadget(#PB_Any, 0,0,800,800)
+  Define size = 32
+  Define radius = 6
+  Define offsetx = 20
+  Define offsetY = 20
+  Define stroke_width = 2
 
-StopVectorDrawing()
+  Define icon.Vector::Icon_t
+  icon\name = "ICON1"
+  InitializeStructure(icon, Vector::Icon_t)
+  Define color.i
+  
+  Vector::ReadFromFile(icon, "E:/Projects/RnD/Noodle/rsc/vector/icon1.xml")
+  StartVectorDrawing(CanvasVectorOutput(canvas))
+  Vector::Draw(icon)
+  StopVectorDrawing()
+  
+  Repeat
+  Until WaitWindowEvent() = #PB_Event_CloseWindow
+EndProcedure
 
-Vector::WriteToFile(icon, "E:/Projects/RnD/Noodle/rsc/vector/icon1.xml")
-
-Repeat
-Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 159
+; CursorPosition = 226
+; FirstLine = 197
 ; Folding = --
 ; EnableXP

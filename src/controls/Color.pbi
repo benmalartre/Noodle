@@ -84,8 +84,15 @@ Module ControlColor
     ch = (*Me\sizY - 10) / 3
     cw = *Me\sizX - (3*ch+10)
     
+    VectorSourceLinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)
+    VectorSourceGradientColor(RGBA(255, 0, 0, 255), 0.0)
+    VectorSourceGradientColor(RGBA(0, 255, 0, 255), 0.5)
+    VectorSourceGradientColor(RGBA(0, 0, 255, 255), 1.0)
     
-;     DrawingMode(#PB_2DDrawing_Gradient)      
+    AddPathBox(5+xoff,5+yoff,cw,ch)
+    FillPath()
+
+
 ;     FrontColor($0000FF)
 ;     BackColor($000000)
 ;     LinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)    
@@ -432,8 +439,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 74
+; CursorPosition = 91
+; FirstLine = 62
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

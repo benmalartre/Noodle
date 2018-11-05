@@ -417,13 +417,7 @@ Module ControlNumber
       AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
       VectorSourceColor(RGBA(0,0,255,255))
       FillPath()
-;       Box(xoff + slider_w-2, yoff, 4, *Me\sizY, RGB(0,0,255)) 
-;       DrawImage( ImageID(s_gui_controls_number_normal_l ),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_normal_c ),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-;       DrawImage( ImageID(s_gui_controls_number_normal_r ), *Me\sizX - 8 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_normal_s ),            2 + xoff, 1 + yoff, slider_w,      16 )
-;       DrawImage( ImageID(s_gui_controls_number_normal_cl),            0 + xoff, 0 + yoff                    )
-;       DrawImage( ImageID(s_gui_controls_number_normal_cr), *Me\sizX - 8 + xoff, 0 + yoff                    )
+      
     EndIf
     
     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
@@ -1251,7 +1245,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 384
-; FirstLine = 380
+; CursorPosition = 419
+; FirstLine = 410
 ; Folding = ----
 ; EnableXP

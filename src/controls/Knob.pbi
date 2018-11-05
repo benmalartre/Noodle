@@ -10,10 +10,10 @@ DeclareModule ControlKnob
   ; ----------------------------------------------------------------------------
   ;  Constants ( ControlKnob_t )
   ; ----------------------------------------------------------------------------
-  #PB_GadgetType_Knob = 32
+  #PB_GadgetType_Knob = 128
   
-  #KNOB_INNER_RADIUS = 16
-  #KNOB_OUTER_RADIUS = 24
+  #KNOB_INNER_RADIUS = 42
+  #KNOB_OUTER_RADIUS = 64
   #KNOB_MARKER_SIZE  = 5
   #KNOB_ZERO_SIZE    = 32
   #KNOB_MARKER_WIDTH = 2
@@ -29,12 +29,12 @@ DeclareModule ControlKnob
     mouseY.i
     angle.f
     last_angle.f
+    angle_offset.f
     over.i
     down.i
     min.f
     max.f
     value.f
-    side.f
     *onleftclick_signal.Slot::Slot_t
     *onleftdoubleclick_signal.Slot::Slot_t
   EndStructure
@@ -62,7 +62,6 @@ EndDeclareModule
 ;  IMPLEMENTATION ( Helpers )
 ; ============================================================================
 Module ControlKnob
-;{
 ; ----------------------------------------------------------------------------
 ;  hlpGetAngle
 ; ----------------------------------------------------------------------------
@@ -70,14 +69,14 @@ Procedure.f hlpGetAngle( *Me.ControlKnob_t )
   Define a.Math::v2f32, b.Math::v2f32, center.Math::v2f32
   Define angle.f
   Vector2::Set(center, *Me\sizX * 0.5 + *Me\posX, *Me\sizY * 0.5 + *Me\posY)
-  Vector2::Set(a, 0, 1)
+  Vector2::Set(a, *Me\oldX, *Me\oldY)
   Vector2::SubInPlace(a, center)
   Vector2::NormalizeInPlace(a)
   Vector2::Set(b, *Me\mouseX, *Me\mouseY)
   Vector2::SubInPlace(b, center)
   Vector2::NormalizeInPlace(b)
   Vector2::GetAngle(a, b, angle)
-  ProcedureReturn angle
+  ProcedureReturn Degree(angle)
 EndProcedure
 
 ; ----------------------------------------------------------------------------
@@ -123,11 +122,11 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   AddPathCircle(cx, cy, #KNOB_OUTER_RADIUS)
   Select *Me\state
     Case Control::#CONTROL_DEFAULT
-      VectorSourceColor(RGBA(64,64,64,255))
+      VectorSourceColor(RGBA(86,86,86,255))
     Case Control::#CONTROL_OVER
-      VectorSourceColor(RGBA(76,76,76,255))
+      VectorSourceColor(RGBA(92,92,92,255))
     Case Control::#CONTROL_PRESSED
-      VectorSourceColor(RGBA(80,80,80,255))
+      VectorSourceColor(RGBA(100,100,100,255))
   EndSelect
   
   FillPath(#PB_Path_Preserve)
@@ -136,11 +135,11 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   AddPathCircle(cx, cy, #KNOB_INNER_RADIUS)
   Select *Me\state
     Case Control::#CONTROL_DEFAULT
-      VectorSourceColor(RGBA(86,86,86,255))
+      VectorSourceColor(RGBA(64,64,64,255))
     Case Control::#CONTROL_OVER
-      VectorSourceColor(RGBA(92,92,92,255))
+      VectorSourceColor(RGBA(76,76,76,255))
     Case Control::#CONTROL_PRESSED
-      VectorSourceColor(RGBA(100,100,100,255))
+      VectorSourceColor(RGBA(80,80,80,255))
   EndSelect
   
   FillPath(#PB_Path_Preserve)
@@ -178,7 +177,7 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
     
     MovePathCursor(cx, cy)
     AddPathLine(a\x, a\y)
-    AddPathCircle(cx, cy,  #KNOB_OUTER_RADIUS * 1.2, *Me\last_angle, *Me\angle)
+    AddPathCircle(cx, cy,  #KNOB_OUTER_RADIUS * 1.2, *Me\last_angle + Math::#F32_PI_2, *Me\angle)
     
     Vector2::Set(a, *Me\mouseX, *Me\mouseY)
     Vector2::SubInPlace(a, center)
@@ -193,10 +192,9 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   EndIf
   
   ; debug side
-  MovePathCursor(0, 0)
+  MovePathCursor(20, 30)
   VectorSourceColor(RGBA(255,255,0,255))
-  DrawVectorText(Str(*Me\side))
-  
+  DrawVectorText(Str(*Me\angle))
   EndVectorLayer()
   
 EndProcedure
@@ -254,7 +252,8 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
         *Me\mouseX = *Me\oldX
         *Me\mouseY = *Me\oldY
         
-        *Me\last_angle = hlpGetAngle( *Me ) + Math::#F32_PI
+        *Me\last_angle = *Me\angle
+        *Me\angle_offset = hlpGetAngle(*Me)
        
         Control::Invalidate(*Me)
       EndIf
@@ -283,13 +282,8 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
         If *Me\down
           *Me\mouseX = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX)
           *Me\mouseY = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY)
-          
-          *Me\side = hlpGetSide(*Me)
-          If *Me\side < 0
-            *Me\angle = Degree(*Me\last_angle - hlpGetAngle(*Me))
-          Else
-            *Me\angle = Degree(*Me\last_angle + hlpGetAngle(*Me)- Math::#F32_PI_2)
-          EndIf
+          *Me\angle = *Me\last_angle + hlpGetAngle(*Me) + *Me\angle_offset
+
           Slot::Trigger(*Me\onleftclick_signal, Signal::#SIGNAL_TYPE_PING, @*Me\angle)
           Control::Invalidate(*Me)
         EndIf
@@ -436,7 +430,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 144
+; CursorPosition = 284
+; FirstLine = 257
 ; Folding = ---
 ; EnableXP

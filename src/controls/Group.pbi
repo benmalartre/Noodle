@@ -257,30 +257,30 @@ Procedure hlpDraw( *Me.ControlGroup_t )
  
   
   AddPathBox( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0)
-  VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
-  StrokePath(2, #PB_Path_RoundCorner)   
+  VectorSourceColor(UIColor::COLORA_GROUP_FRAME )
+  StrokePath(1, #PB_Path_RoundCorner)   
 
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Windows
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      VectorSourceColor(UIColor::COLORA_MAIN_BG )
       FillPath()
       MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
       DrawVectorText( label )
     CompilerCase #PB_OS_Linux
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      VectorSourceColor(UIColor::COLORA_MAIN_BG )
       FillPath()
       MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
       DrawVectorText( label )
     CompilerCase #PB_OS_MacOS
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12 )
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      VectorSourceColor(UIColor::COLORA_MAIN_BG )
       FillPath()
        MovePathCursor(*Me\posX+15, *Me\posY-3)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
       DrawVectorText( label )
   CompilerEndSelect
   
@@ -323,7 +323,6 @@ Procedure Pick(*Me.ControlGroup_t)
   StopDrawing()
   
   ProcedureReturn pickID
-  
 EndProcedure
 
 ; ----------------------------------------------------------------------------
@@ -420,10 +419,10 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       ev_data\yoff    = *son\posY+*Me\posY
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+      VectorSourceColor(UIColor::COLORA_MAIN_BG )
       FillPath()
       son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-      StopDrawing()
+      StopVectorDrawing()
         
     ; ------------------------------------------------------------------------
     ;  Draw
@@ -948,7 +947,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 423
-; FirstLine = 410
+; CursorPosition = 260
+; FirstLine = 244
 ; Folding = ---6
 ; EnableXP

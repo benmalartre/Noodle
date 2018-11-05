@@ -26,7 +26,8 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   ControlProperty::RowStart(*prop)
   Define i
   For i=0 To 0
-     Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255))
+    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 256, 256)
+;     ( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   Next
   ControlProperty::RowEnd(*prop)
   ControlProperty::AppendStop(*prop)
@@ -34,7 +35,7 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   CloseGadgetList()
 EndProcedure
 
-Global *app.Application::Application_t = Application::New("Test KNOT",128,128,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
+Global *app.Application::Application_t = Application::New("Test KNOT",512,512,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
@@ -45,6 +46,6 @@ AddKnobs(*ui, "KNOB")
 Application::Loop(*app,@Update())
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
+; CursorPosition = 28
 ; Folding = -
 ; EnableXP

@@ -135,7 +135,7 @@ Module PropertyUI
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               CompilerEndIf
-              ev_datas\y = ev_datas\y + *Me\props()\sizY
+              ev_datas\y + *Me\props()\sizY
             Next
           EndIf
 
@@ -146,6 +146,7 @@ Module PropertyUI
           If ListSize(*Me\props())
             ForEach *Me\props()
               ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+              ev_datas\y+*Me\props()\sizY
             Next
           EndIf
 
@@ -461,8 +462,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 30
+; CursorPosition = 181
+; FirstLine = 86
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

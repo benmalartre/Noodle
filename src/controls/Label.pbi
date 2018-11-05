@@ -63,9 +63,9 @@ Module ControlLabel
     ; ---[ Label Color ]--------------------------------------------------------
     Protected tc.i
     If *Me\value
-      tc = UIColor::COLOR_LABEL_MARKED
+      tc = UIColor::COLORA_LABEL_MARKED
     Else
-      tc = UIColor::COLOR_LABEL
+      tc = UIColor::COLORA_LABEL
     EndIf
     
     ; ---[ Set Font ]-----------------------------------------------------------
@@ -73,12 +73,11 @@ Module ControlLabel
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
-  ;   raaResetClip()
     
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLOR_LABEL_DISABLED
+      tc = UIColor::COLORA_LABEL_DISABLED
     EndIf
     
     ; ---[ Local Variables ]----------------------------------------------------
@@ -98,20 +97,25 @@ Module ControlLabel
     Else
       MovePathCursor(VectorTextWidth(label)+5.0 + xoff, ty + 10)
       AddPathLine(*Me\sizX-1 + xoff, ty + 10)
-      VectorSourceColor(UIColor::COLOR_LINE_DIMMED )
+      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED )
       StrokePath(1)
     EndIf
     
     ; ---[ Light Theme Marked Highlight ]---------------------------------------
     AddPathBox( -6 + xoff, ty-3, 6, 20)
-    VectorSourceColor(UIColor::COLOR_MAIN_BG )
+    If *Me\over
+      VectorSourceColor(UIColor::COLORA_SECONDARY_BG )
+    Else
+      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+    EndIf
+    
     FillPath()
     If *Me\value
       ;If raaGUIGetTheme() = #RAA_GUI_THEME_LIGHT
-      AddPathBox( -3 + xoff, ty-2, TextWidth(label)+6, 18)
-      VectorSourceColor( UIColor::COLOR_LABEL_MARKED )
+      AddPathBox( -3 + xoff, ty-2, VectorTextWidth(label)+6, 18)
+      VectorSourceColor( UIColor::COLORA_LABEL_MARKED )
       FillPath(#PB_Path_Preserve)
-      VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
+      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
       StrokePath(2)
       ;Else
 ;         DrawingMode( #PB_2DDrawing_Outlined )
@@ -125,7 +129,6 @@ Module ControlLabel
     VectorSourceColor(tc)
     DrawVectorText(*Me\label)
 
-    
   EndProcedure
   
   
@@ -228,7 +231,6 @@ Module ControlLabel
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
-            ; TODO : >>> TRIGGER ACTION <<<
             Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
           EndIf
         EndIf
@@ -370,7 +372,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 102
+; CursorPosition = 99
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

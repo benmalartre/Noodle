@@ -205,7 +205,6 @@ Module ControlProperty
       If *Me\expanded
         ; ---[ Draw ]---------------------------------------------------------------
         StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
-;         DrawingMode(#PB_2DDrawing_Default)
         AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
         VectorSourceColor(RGBA(0,0,0,255))
         FillPath()
@@ -288,7 +287,7 @@ Module ControlProperty
         StopVectorDrawing()
       Else
         ; ---[ Drawing Start ]------------------------------------------------------
-        StartVectorDrawing( CanvasOutput(*Me\gadgetID) )
+        StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         ResetCoordinates()
         AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
         VectorSourceColor( UIColor::COLORA_MAIN_BG )
@@ -705,19 +704,19 @@ Module ControlProperty
     ControlGroup::RowStart(*group)
   
     ; Add X Parameter
-    ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+;     ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
     ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
     *xCtl = ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
     ControlGroup::Append(*group, *xCtl )
     
     ; Add Y Parameter
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+;     ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
     ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
     *yCtl = ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *yCtl )
     
     ; Add Z Parameter
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+;     ControlGroup::Append(*group, ControlDivot::New(*obj,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
     ControlGroup::Append(*group, ControlLabel::New(*obj,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
     *zCtl = ControlNumber::New(*obj,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *zCtl)
@@ -1757,7 +1756,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 301
-; FirstLine = 257
+; CursorPosition = 279
+; FirstLine = 253
 ; Folding = --------
 ; EnableXP

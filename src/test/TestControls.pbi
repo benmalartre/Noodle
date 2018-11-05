@@ -26,27 +26,29 @@ Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*m\main, "Property", #Null
 OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
-Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\width, *ui\height-128)
+Define i
+For i=0 To 3
+  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name+Str(i+1), name+Str(i+1),0,128,*ui\width, *ui\height-128)
+  
+  ControlProperty::AppendStart(*prop)
+  Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
+  Object::SignalConnect(*ui,*head\slot,0)
+  
+  Define v.Math::v3f32
+  ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
+  Define c.Math::c4f32
+  ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
+  
+  
+  ControlProperty::AppendStop(*prop)
+  PropertyUI::AddProperty(*ui, *prop)
+Next
 
-ControlProperty::AppendStart(*prop)
-Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
-Object::SignalConnect(*ui,*head\slot,0)
-
-Define v.Math::v3f32
-ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
-ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
-
-ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
-ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", @v, #Null)
-
-
-ControlProperty::AppendStop(*prop)
-PropertyUI::AddProperty(*ui, *prop)
 CloseGadgetList()
 
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 40
+; CursorPosition = 37
 ; Folding = -
 ; EnableXP

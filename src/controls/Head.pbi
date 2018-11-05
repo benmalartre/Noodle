@@ -65,10 +65,9 @@ Module ControlHead
     
     Protected w.i = *Me\sizX
     Protected h.i
-;     DrawingMode(#PB_2DDrawing_AlphaBlend)
-    Debug "HEADER : "+Str(*Me\posX)+","+Str(*Me\posY)+","+Str(*Me\sizX)+","+Str(*Me\sizY)
+
     AddPathBox(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-    VectorSourceColor(RGBA(100,100,100,255));UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLORA_MAIN_BG)
     FillPath()
     
     Protected *obj.Object::Object_t = *Me\object
@@ -79,8 +78,7 @@ Module ControlHead
     VectorFont(FontID(Globals::#FONT_TEXT),12)
     w = VectorTextWidth(*n\name)
     h = VectorTextHeight(*n\name)
-    
-    
+
     If *Me\over
       AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
       VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
@@ -114,12 +112,17 @@ Module ControlHead
     VectorSourceColor(UIColor::COLORA_LABEL)
     MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5)
     DrawVectorText(*n\name)
-    MovePathCursor(*Me\posX+8,*Me\posY+2)
-    DrawVectorText("-")
-    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT+2,*Me\posY+2)
-    DrawVectorText("x")
-
-
+    MovePathCursor(*Me\posX+2,*Me\posY+8)
+    AddPathLine(12,0, #PB_Path_Relative)
+    StrokePath(2)
+    
+    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT+10,*Me\posY+4)
+    AddPathLine(-10,10, #PB_Path_Relative)
+    StrokePath(2)
+    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY+4)
+    AddPathLine(10,10, #PB_Path_Relative)
+    StrokePath(2)
+    
   EndProcedure
   ;}
 
@@ -163,7 +166,6 @@ Module ControlHead
       ;  MouseEnter
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseEnter
-        Debug "CONTROl HEAD MOUSE ENTER"
         *Me\over = #True
         Control::Invalidate(*Me)
   
@@ -209,16 +211,6 @@ Module ControlHead
                 Control::Invalidate(*Me)
               EndIf
             EndIf
-            
-;             
-;             If mx<10 Or mx > *Me\sizX-10
-;               MessageRequester("HEAD", "TOUCH BORDER")
-;             EndIf
-            
-;             StartDrawing(CanvasOutput(*Me\parent\gadgetID))
-;             Circle(mx,my,3,RGBA(255,255,255,255))
-;             Circle(mx,my,2,RGBA(255,0,0,255))
-;             StopDrawing()
             
           EndIf
           
@@ -375,7 +367,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 66
+; CursorPosition = 118
+; FirstLine = 96
 ; Folding = ---
 ; EnableXP
