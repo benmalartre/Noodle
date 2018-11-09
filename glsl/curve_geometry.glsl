@@ -43,4 +43,4 @@ void main() {
 	gl_Position = projection * (gl_in[1].gl_Position + right1);
 	EmitVertex();
 	EndPrimitive();
-};
+}

@@ -6,6 +6,7 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in float width;
 
 uniform mat4 view;
+
 out VertexData {
 	vec3 position;
 	vec3 color;
@@ -21,4 +22,4 @@ void main() {
 	outData.color = color;
 	outData.width = width;
     gl_Position = view * vec4(position, 1.0);
-};
+}

@@ -281,10 +281,6 @@ Module PolymeshGeometry
     Define.f h,w
     Protected a,b,c,i
     
-    Debug *geom
-    Debug CArray::GetCount(*geom\a_positions)
-    Debug CArray::GetCount(*geom\a_faceindices)
-    
     Define.v3f32 bmin,bmax
     If normalize
       Geometry::ComputeBoundingBox(*geom)
@@ -657,9 +653,7 @@ Module PolymeshGeometry
       Next j
       base+nbv
     Next i
-    
-    Debug indices
-    
+        
     CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
     CArray::SetCount(*mesh\a_vertexpolygonindices, total)
     
@@ -2453,7 +2447,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 813
-; FirstLine = 791
+; CursorPosition = 655
+; FirstLine = 653
 ; Folding = ----fw--v--
 ; EnableXP

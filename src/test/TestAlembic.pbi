@@ -159,13 +159,13 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
 ; CursorPosition = 120
-; FirstLine = 102
+; FirstLine = 1
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin\Alembic.app
+; Executable = bin/Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

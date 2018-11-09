@@ -256,10 +256,16 @@ Module CreatePolymeshCmd
     Protected *parent.Object3D::Object3D_t
     
     If *parent=#Null
-      *selected.Object3D::Object3D_t =CArray::GetValuePtr(Scene::*current_scene\selection,0)
-      If *selected
-        MessageRequester("CreatePolymeshCmd","Parent Selected "+*selected\class\name)
-        *parent = *selected
+      Debug Scene::*current_scene
+      Debug Scene::*current_scene\selection
+      If CArray::GetCount(Scene::*current_scene\selection)
+        *selected.Object3D::Object3D_t =CArray::GetValuePtr(Scene::*current_scene\selection,0)
+        If *selected
+          MessageRequester("CreatePolymeshCmd","Parent Selected "+*selected\class\name)
+          *parent = *selected
+        Else
+          *parent = Scene::*current_scene\root
+        EndIf
       Else
         *parent = Scene::*current_scene\root
       EndIf
@@ -317,9 +323,9 @@ Module CreatePolymeshCmd
     Commands::Do(Commands::*manager)
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 214
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 270
+; FirstLine = 254
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

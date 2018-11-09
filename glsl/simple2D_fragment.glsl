@@ -1,4 +1,4 @@
-#version 130
+#version 330
 
 // texture coordinates from vertex shaders
 in vec2 st;

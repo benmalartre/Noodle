@@ -224,7 +224,7 @@ Module Object3D
       ForEach *child\parent\children()
         If *child\parent\children() = *child
           DeleteElement(*child\parent\children())
-          Break;
+          Break
         EndIf
       Next
     EndIf
@@ -523,8 +523,8 @@ Module Object3D
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 162
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 226
+; FirstLine = 217
 ; Folding = ------
 ; EnableXP

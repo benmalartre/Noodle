@@ -208,7 +208,6 @@ Module Handle
   ; Scale Handle
   ;-----------------------------------------------------------------------------
   Procedure ScaleHandle(*Me.Handle_t)
-    ;Clear(*Me.Handle_t)
     Protected i
     With *Me\scale_handle
       Protected nbp = 8+2
@@ -241,9 +240,7 @@ Module Handle
       Protected size_p.i = 12
       For i=0 To nbp-3
         Vector3::Set(v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
-        Vector3::Echo(v, "BEFORE")
         Vector3::MulByMatrix4InPlace(v,offset)
-        Vector3::Echo(v, "AFTER")
         CArray::SetValue(\positions,i+2,v)
       Next i
       
@@ -1196,7 +1193,6 @@ Module Handle
     
     Protected m.m4f32
     Protected pos.v3f32
-    ;nesCSlot(@*Me\sig_onchanged, *Me )
   
     *Me\scale_handle = Shape::New(Shape::#Shape_axis)
     ScaleHandle(*Me)
@@ -1222,9 +1218,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 448
-; FirstLine = 442
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 735
+; FirstLine = 732
 ; Folding = ------
 ; EnableXP

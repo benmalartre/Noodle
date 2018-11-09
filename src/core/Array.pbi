@@ -26,19 +26,32 @@ DeclareModule CArray
   
   #SIZE_BOOL  = 1
   #SIZE_CHAR  = 2
-  #SIZE_INT   = 8
   #SIZE_LONG  = 4
   #SIZE_FLOAT = 4
   #SIZE_DOUBLE= 8
-  #SIZE_PTR   = 8
+  
+  CompilerIf #PB_Compiler_Version = #PB_Processor_x86
+    #SIZE_INT   = 4
+    #SIZE_PTR   = 4
+  CompilerElse
+    #SIZE_INT   = 8
+    #SIZE_PTR   = 8
+  CompilerEndIf
   #SIZE_V2F32 = 8
-  #SIZE_V3F32 = 12
+  
+  CompilerIf #USE_SSE
+    #SIZE_V3F32 = 12
+  CompilerElse
+    #SIZE_V3F32 = 16
+  CompilerEndIf  
+  
   #SIZE_C4F32 = 16
   #SIZE_C4U8  = 4
   #SIZE_Q4F32 = 16
   #SIZE_M3F32 = 36
   #SIZE_M4F32 = 64
   #SIZE_TRF32 = 40
+  
   Structure CArrayT
     type.i
     itemSize.i
@@ -349,11 +362,14 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure Append(*array.CArrayT,*item)
     Protected nb = *array\itemCount
-    
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(*array\itemSize, *array\itemSize)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Debug *array\data 
+      Debug PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
+      Debug *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, *array\itemSize)
     EndIf
     
     CopyMemory(*item,*array\data+nb* *array\itemSize,*array\itemSize)
@@ -367,9 +383,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_BOOL)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_BOOL)
     EndIf
     
     PokeB(*array\data+nb* *array\itemSize,item)
@@ -383,9 +400,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_CHAR)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_CHAR)
     EndIf
     
     PokeC(*array\data+nb* *array\itemSize,item)
@@ -399,9 +417,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_INT)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_INT)
     EndIf
     
     PokeI(*array\data+nb* *array\itemSize,item)
@@ -409,15 +428,16 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; AppendI
+  ; AppendL
   ;----------------------------------------------------------------
   Procedure AppendL(*array.CArrayT,item.l)
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_LONG)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_LONG)
     EndIf
     
     PokeL(*array\data+nb* *array\itemSize,item)
@@ -431,9 +451,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_FLOAT)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_FLOAT)
     EndIf
     
     PokeF(*array\data+nb* *array\itemSize,item)
@@ -445,11 +466,11 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure AppendPtr(*array.CArrayT,*item)
     Protected nb = *array\itemCount
-    
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* #SIZE_PTR)
+      *array\data = Memory::AllocateAlignedMemory(1* #SIZE_PTR, #SIZE_PTR)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* #SIZE_PTR)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_PTR + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_PTR, #SIZE_PTR)
     EndIf
     
     PokeI(*array\data+nb* #SIZE_PTR,*item)
@@ -463,9 +484,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize)
+      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_PTR)
     Else
-      *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nb+1)* *array\itemSize)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_PTR)
     EndIf
     
     Protected *sa.CArrayStr = *array
@@ -485,9 +507,10 @@ Module CArray
     
     If *array\itemSize = *other\itemSize
       If *array\data = #Null
-        *array\data = Memory::AllocateAlignedMemory(nbo* *array\itemSize)
+        *array\data = Memory::AllocateAlignedMemory(nbo* *array\itemSize, *array\itemSize)
       Else
-        *array\data = Memory::ReAllocateAlignedMemory(*array\data,(nbo+nba)* *array\itemSize)
+        Define *oldmemory = *array\data - PeekB(*array\data + nba * *array\itemSize + 1)
+        *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nbo+nba)* *array\itemSize, *array\itemSize)
       EndIf
       
       CopyMemory(*other\data,*array\data+nba* *array\itemSize,nbo * *array\itemSize)
@@ -561,7 +584,9 @@ Module CArray
               ProcedureReturn 
             EndIf
           Next
+          Debug "APPEND PTR"
           AppendPtr(*array,*unique)
+          Debug "DONE"
       EndSelect
       
       
@@ -690,12 +715,13 @@ Module CArray
       *array\itemCount = 0
     Else
       If Not count = *array\itemCount 
-        *array\itemCount = count
         If *array\data = #Null
-          *array\data = Memory::AllocateAlignedMemory(count * *array\itemSize)
+          *array\data = Memory::AllocateAlignedMemory(count * *array\itemSize, *array\itemSize)
         Else
-          *array\data = Memory::ReAllocateAlignedMemory(*array\data,count* *array\itemSize)
+          Define *oldmemory = *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
+          *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,count* *array\itemSize, *array\itemSize)
         EndIf
+        *array\itemCount = count
       EndIf
     EndIf
     
@@ -938,10 +964,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayBool()
     Protected *array.CArrayBool = AllocateMemory(SizeOf(CArrayBool))
-    Protected b.b
     *array\type = #ARRAY_BOOL
     *array\itemCount = 0
-    *array\itemSize = SizeOf(b)
+    *array\itemSize = #SIZE_BOOL
     ProcedureReturn *array
   EndProcedure
   
@@ -950,10 +975,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayChar()
     Protected *array.CArrayChar = AllocateMemory(SizeOf(CArrayChar))
-    Protected c.c
     *array\type = #ARRAY_CHAR
     *array\itemCount = 0
-    *array\itemSize = SizeOf(c)
+    *array\itemSize = #SIZE_CHAR
     ProcedureReturn *array
   EndProcedure
   
@@ -962,10 +986,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayInt()
     Protected *array.CArrayInt = AllocateMemory(SizeOf(CArrayInt))
-    Protected i.i
     *array\type = #ARRAY_INT
     *array\itemCount = 0
-    *array\itemSize = SizeOf(i)
+    *array\itemSize = #SIZE_INT
     ProcedureReturn *array
   EndProcedure
   
@@ -974,10 +997,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayLong()
     Protected *array.CArrayLong = AllocateMemory(SizeOf(CArrayLong))
-    Protected l.l
     *array\type = #ARRAY_LONG
     *array\itemCount = 0
-    *array\itemSize = SizeOf(l)
+    *array\itemSize = #SIZE_LONG
     ProcedureReturn *array
   EndProcedure
   
@@ -986,10 +1008,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayFloat()
     Protected *array.CArrayFloat = AllocateMemory(SizeOf(CArrayFloat))
-    Protected f.f
     *array\type = #ARRAY_FLOAT
     *array\itemCount = 0
-    *array\itemSize = SizeOf(f)
+    *array\itemSize = #SIZE_FLOAT
     ProcedureReturn *array
   EndProcedure
   
@@ -1000,7 +1021,7 @@ Module CArray
     Protected *array.CArrayV2F32 = AllocateMemory(SizeOf(CArrayV2F32))
     *array\type = #ARRAY_V2F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(v2f32)
+    *array\itemSize = #SIZE_V2F32
     *array\data = #Null
     ProcedureReturn *array
   EndProcedure
@@ -1012,7 +1033,7 @@ Module CArray
     Protected *array.CArrayV3F32 = AllocateMemory(SizeOf(CArrayV3F32))
     *array\type = #ARRAY_V3F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(v3f32)
+    *array\itemSize = #SIZE_V3F32
     *array\data = #Null
     ProcedureReturn *array
   EndProcedure
@@ -1024,7 +1045,7 @@ Module CArray
     Protected *array.CArrayC4U8 = AllocateMemory(SizeOf(CArrayC4U8))
     *array\type = #ARRAY_C4U8
     *array\itemCount = 0
-    *array\itemSize = SizeOf(c4u8)
+    *array\itemSize = #SIZE_C4U8
     ProcedureReturn *array
   EndProcedure
   
@@ -1036,7 +1057,7 @@ Module CArray
     Protected *array.CArrayC4F32 = AllocateMemory(SizeOf(CArrayC4F32))
     *array\type = #ARRAY_C4F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(c4f32)
+    *array\itemSize = #SIZE_C4F32
     ProcedureReturn *array
   EndProcedure
   
@@ -1047,7 +1068,7 @@ Module CArray
     Protected *array.CArrayQ4F32 = AllocateMemory(SizeOf(CArrayQ4F32))
     *array\type = #ARRAY_Q4F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(q4f32)
+    *array\itemSize = #SIZE_Q4F32
     ProcedureReturn *array
   EndProcedure
   
@@ -1058,7 +1079,7 @@ Module CArray
     Protected *array.CArrayM3F32 = AllocateMemory(SizeOf(CArrayM3F32))
     *array\type = #ARRAY_M3F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(m3f32)
+    *array\itemSize = #SIZE_M3F32
     ProcedureReturn *array
   EndProcedure
   
@@ -1069,7 +1090,7 @@ Module CArray
     Protected *array.CArrayM4F32 = AllocateMemory(SizeOf(CArrayM4F32))
     *array\type = #ARRAY_M4F32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(m4f32)
+    *array\itemSize = #SIZE_M4F32
     ProcedureReturn *array
   EndProcedure
   
@@ -1080,7 +1101,7 @@ Module CArray
     Protected *array.CArrayTRF32 = AllocateMemory(SizeOf(CArrayTRF32))
     *array\type = #ARRAY_TRF32
     *array\itemCount = 0
-    *array\itemSize = SizeOf(trf32)
+    *array\itemSize = #SIZE_TRF32
     ProcedureReturn *array
   EndProcedure
   
@@ -1089,10 +1110,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure newCArrayPtr()
     Protected *array.CArrayPtr = AllocateMemory(SizeOf(CArrayPtr))
-    Protected i.i
     *array\type = #ARRAY_PTR
     *array\itemCount = 0
-    *array\itemSize = SizeOf(i)
+    *array\itemSize = #SIZE_PTR
     ProcedureReturn *array
   EndProcedure
   
@@ -1102,10 +1122,9 @@ Module CArray
   Procedure newCArrayStr()
     Protected *array.CArrayStr = AllocateMemory(SizeOf(CArrayStr))
     InitializeStructure(*array,CArrayStr)
-    Protected s.i
     *array\type = #ARRAY_STR
     *array\itemCount = 0
-    *array\itemSize = SizeOf(s)
+    *array\itemSize = #SIZE_PTR
     ProcedureReturn *array
   EndProcedure
   
@@ -1161,7 +1180,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 694
-; FirstLine = 678
-; Folding = -----------
+; CursorPosition = 364
+; FirstLine = 356
+; Folding = ------------
 ; EnableXP

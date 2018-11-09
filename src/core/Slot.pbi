@@ -26,16 +26,14 @@ Module Slot
   ;  Connect
   ; ----------------------------------------------------------------------------
   Procedure Connect( *Me.Slot_t, *rcv, slot.i )
-    Debug "CONNECT SLOT : "+Str(*Me)+", "+Str(*rcv)+", "+Str(slot) 
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *rcv : ProcedureReturn : EndIf
     
     Protected *obj.Object::Object_t = *rcv
-    Debug "RECIEVER : "+Str(*rcv)
     
     ; ---[ Retrieve Reciever Class ]--------------------------------------------
     Protected *cls.Class::Class_t = *obj\class
-    Debug "CLASS : "+*cls\name
+    
     ; ---[ Check Reciever Class Has Class Message Procedure ]-------------------
     If #Null = *cls\cmsg
       ProcedureReturn #False
@@ -49,7 +47,6 @@ Module Slot
     
     ; ---[ Add Element ]--------------------------------------------------------
     Protected *p.SlotReciever_t = AddElement(*Me\rcv())
-    Debug "NUM RECIEVERS : "+Str(ListSize(*Me\rcv()))
     ; ---[ Set Element ]--------------------------------------------------------
     *p\r_inst = *rcv
     *p\r_slot = slot
@@ -95,7 +92,6 @@ Module Slot
     LockMutex( *Me\mux )
     
     Define  *cls.Class::Class_t = *Me\sig\snd_class
-    Debug "SENDER CLASS : "+*cls\name
     
     ; ---[ Set Signal Type & Data ]---------------------------------------------
     *Me\sig\type    = type
@@ -167,7 +163,7 @@ Module Slot
 
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 23
+; CursorPosition = 106
+; FirstLine = 91
 ; Folding = --
 ; EnableXP

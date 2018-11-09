@@ -23,4 +23,4 @@ void main() {
 	vec3 specular = pow(max(dot(lightDir, reflectDir), 0.0), shininess) * ks * lightColor;
 	// final color
 	color = vec4((ambient + diffuse + specular) * inData.color, 1.0);
-};
+}
