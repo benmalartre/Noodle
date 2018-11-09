@@ -17,8 +17,6 @@ Procedure Update()
   
 EndProcedure
 
-
-
 Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
@@ -35,7 +33,7 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   CloseGadgetList()
 EndProcedure
 
-Global *app.Application::Application_t = Application::New("Test KNOT",512,512,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
+Global *app.Application::Application_t = Application::New("Test Knob",512,512,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
@@ -44,8 +42,8 @@ Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property", #Null)
 AddKnobs(*ui, "KNOB")
 
 Application::Loop(*app,@Update())
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 28
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 35
+; FirstLine = 10
 ; Folding = -
 ; EnableXP

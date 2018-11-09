@@ -280,7 +280,10 @@ Module PolymeshGeometry
     Protected cnt=0
     Define.f h,w
     Protected a,b,c,i
-  
+    
+    Debug *geom
+    Debug CArray::GetCount(*geom\a_positions)
+    Debug CArray::GetCount(*geom\a_faceindices)
     
     Define.v3f32 bmin,bmax
     If normalize
@@ -754,8 +757,7 @@ Module PolymeshGeometry
     If CArray::GetCount(*topo\vertices)
       CopyMemory(CArray::GetPtr(*topo\vertices,0),CArray::GetPtr(*mesh\a_positions,0),nbp* CArray::GetItemSize(*topo\vertices))
     EndIf
-    
-    
+   
     Protected vid
     Protected counter=0
     Protected started=0
@@ -783,7 +785,6 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_colors,*mesh\nbsamples)
     CArray::SetCount(*mesh\a_uvws,*mesh\nbsamples)
     
-    
     nbf=0
     nbi=0
     For i=0 To CArray::GetCount(*topo\faces)-1
@@ -809,7 +810,7 @@ Module PolymeshGeometry
 
     ; UVs
     GetUVWSFromPosition(*mesh,#True)
-;     
+    
 ;     ; Tangents
 ;     RecomputeTangents(*mesh)
 ;     
@@ -2451,8 +2452,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 555
-; FirstLine = 545
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 813
+; FirstLine = 791
 ; Folding = ----fw--v--
 ; EnableXP

@@ -410,7 +410,7 @@ Module Geometry
       ProcedureReturn
     EndIf
     
-    CompilerIf Defined(USE_SSE, #PB_Constant)
+    CompilerIf #USE_SSE
       Define *positions = *geom\a_positions\data
       Define nbp = *geom\nbpoints
       Define *origin = *geom\bbox\origin
@@ -425,6 +425,7 @@ Module Geometry
       
       ! dec rcx                               ; decrement counter
       ! jz output_compute_box                 ; if only one point exit
+      ! add r8, 16                            ; increment offset (skip first point)
       
       ! loop_compute_box:
       !   movaps xmm2, [rax+r8]               ; load current point
@@ -450,10 +451,10 @@ Module Geometry
       !   mulps xmm1, xmm2                    ; packed multiplication extend * half
       
       ;  back to memory
-      !   mov rdx, [p.p_origin]
-      !   movaps [rdx], xmm3
-      !   mov rdx, [p.p_extend]
-      !   movaps [rdx], xmm1
+      !   mov rdx, [p.p_origin]               ; bbox origin (unaligned)
+      !   movups [rdx], xmm3                  ; set from xmm3 
+      !   mov rdx, [p.p_extend]               ; bbox extend (unaligned)
+      !   movups [rdx], xmm1                  ; set from xmm1
     CompilerElse
       Protected i
       Protected *v.v3f32
@@ -505,8 +506,8 @@ Module Geometry
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 411
-; FirstLine = 391
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 427
+; FirstLine = 417
 ; Folding = -----
 ; EnableXP

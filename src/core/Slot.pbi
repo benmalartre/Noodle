@@ -10,6 +10,8 @@ Module Signal
     *Me\type      = Signal::#SIGNAL_TYPE_UNKNOWN
     *Me\sigdata   = #Null
     *Me\snd_inst  = *sender
+    Define *snd_obj.Object::Object_t = *sender
+    *Me\snd_class = *snd_obj\class
     *Me\rcv_inst  = #Null
     *Me\rcv_slot  = 0
   
@@ -24,13 +26,16 @@ Module Slot
   ;  Connect
   ; ----------------------------------------------------------------------------
   Procedure Connect( *Me.Slot_t, *rcv, slot.i )
+    Debug "CONNECT SLOT : "+Str(*Me)+", "+Str(*rcv)+", "+Str(slot) 
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *rcv : ProcedureReturn : EndIf
     
     Protected *obj.Object::Object_t = *rcv
+    Debug "RECIEVER : "+Str(*rcv)
+    
     ; ---[ Retrieve Reciever Class ]--------------------------------------------
     Protected *cls.Class::Class_t = *obj\class
-    
+    Debug "CLASS : "+*cls\name
     ; ---[ Check Reciever Class Has Class Message Procedure ]-------------------
     If #Null = *cls\cmsg
       ProcedureReturn #False
@@ -44,7 +49,7 @@ Module Slot
     
     ; ---[ Add Element ]--------------------------------------------------------
     Protected *p.SlotReciever_t = AddElement(*Me\rcv())
-    
+    Debug "NUM RECIEVERS : "+Str(ListSize(*Me\rcv()))
     ; ---[ Set Element ]--------------------------------------------------------
     *p\r_inst = *rcv
     *p\r_slot = slot
@@ -89,13 +94,16 @@ Module Slot
     ; ---[ Lock List ]----------------------------------------------------------
     LockMutex( *Me\mux )
     
+    Define  *cls.Class::Class_t = *Me\sig\snd_class
+    Debug "SENDER CLASS : "+*cls\name
+    
     ; ---[ Set Signal Type & Data ]---------------------------------------------
     *Me\sig\type    = type
     *Me\sig\sigdata = *sig_data
     
     ; ---[ Reset List ]---------------------------------------------------------
     ResetList(*Me\rcv())
-
+    
     ; ---[ Walk Through All Elements ]------------------------------------------
     While NextElement(*Me\rcv())
       Protected *t = *Me\rcv()\r_inst
@@ -158,7 +166,8 @@ Module Slot
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 23
 ; Folding = --
 ; EnableXP

@@ -20,6 +20,8 @@ DeclareModule ControlHead
     value.i
     touch_l.i
     touch_r.i
+    *ondelete_signal.Slot::Slot_t
+    *onexpand_signal.Slot::Slot_t
   EndStructure
 
   ; ----------------------------------------------------------------------------
@@ -75,19 +77,13 @@ Module ControlHead
     Protected *prop.Control::Control_t = *Me\parent
     Protected *n.Node::Node_t = *prop\object
     
-    VectorFont(FontID(Globals::#FONT_TEXT),12)
+    VectorFont(FontID(Globals::#FONT_TEXT),22)
     w = VectorTextWidth(*n\name)
     h = VectorTextHeight(*n\name)
 
-    If *Me\over
-      AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
-      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
-      FillPath()
-    Else
-      AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
-      VectorSourceColor(UIColor::COLORA_LABEL)
-      FillPath()
-    EndIf
+    AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
+    VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
+    FillPath()
     
     If *Me\touch_l
       AddPathBox(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
@@ -186,34 +182,30 @@ Module ControlHead
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseMove
         If *Me\visible And *Me\enable
-          If *Me\down
+          Protected mx = GetGadgetAttribute(*Me\parent\gadgetID,#PB_Canvas_MouseX)
+          Protected my = GetGadgetAttribute(*Me\parent\gadgetID,#PB_Canvas_MouseY)
+          
+          If mx-*Me\posX < 20
+            *Me\touch_l = #True
+            *Me\touch_r = #False
             Control::Invalidate(*Me)
           Else
-            Protected mx = GetGadgetAttribute(*Me\parent\gadgetID,#PB_Canvas_MouseX)
-            Protected my = GetGadgetAttribute(*Me\parent\gadgetID,#PB_Canvas_MouseY)
-            
-            If mx-*Me\posX < 20
-              *Me\touch_l = #True
+            If *Me\touch_l
+              *Me\touch_l = #False
               Control::Invalidate(*Me)
-            Else
-              If *Me\touch_l
-                *Me\touch_l = #False
-                Control::Invalidate(*Me)
-              EndIf
-              
-            EndIf
-            If mx-*Me\posX > *Me\parent\sizX-20
-              *Me\touch_r = #True
-              Control::Invalidate(*Me)
-            Else
-              If *Me\touch_r
-                *Me\touch_r = #False
-                Control::Invalidate(*Me)
-              EndIf
             EndIf
             
           EndIf
-          
+          If mx-*Me\posX > *Me\parent\sizX-20
+            *Me\touch_r = #True
+            *Me\touch_l = #False
+            Control::Invalidate(*Me)
+          Else
+            If *Me\touch_r
+              *Me\touch_r = #False
+              Control::Invalidate(*Me)
+            EndIf
+          EndIf
         EndIf
   
       ; ------------------------------------------------------------------------
@@ -232,9 +224,13 @@ Module ControlHead
         If *Me\visible And *Me\enable
           *Me\down = #False
           If *Me\over And *Me\touch_l 
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#False)
+            Debug "EXPAND..."
+            Debug *Me\class\name
+            Slot::Trigger(*Me\onexpand_signal,Signal::#SIGNAL_TYPE_PING,#Null)
           ElseIf *Me\over And *Me\touch_r
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#True)
+            Debug "DELETE..."
+            Debug *Me\class\name
+            Slot::Trigger(*Me\ondelete_signal,Signal::#SIGNAL_TYPE_PING,#Null)
           EndIf
           
         EndIf
@@ -294,6 +290,8 @@ Module ControlHead
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlHead_t )
+    Slot::Delete(*Me\ondelete_signal)
+    Slot::Delete(*Me\onexpand_signal)
     ; ---[ Deallocate Memory ]--------------------------------------------------
     FreeMemory( *Me )
   EndProcedure
@@ -328,7 +326,10 @@ Module ControlHead
     *Me\down     = #False
     *Me\touch_l  = #False
     *Me\touch_r  = #False
-
+    
+    *Me\ondelete_signal = Slot::New(*Me)
+    *Me\onexpand_signal = Slot::New(*Me)
+    
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
     
@@ -366,8 +367,8 @@ Module ControlHead
   
   Class::DEF(ControlHead)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 96
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 227
+; FirstLine = 205
 ; Folding = ---
 ; EnableXP

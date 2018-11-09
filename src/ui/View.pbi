@@ -13,24 +13,21 @@ DeclareModule View
     #VIEW_RIGHT
     #VIEW_OTHER
   EndEnumeration
-  
-  
 
   Structure View_t
-    
-    *manager ;CViewManager(Not declared so commented)
-    *content.UI::UI_t ;
+    *manager                        ; view manager
+    *content.UI::UI_t               ; view content
     *right.View_t
     *left.View_t
     *top.View_t
     
-    name.s                          ; View Name
+    name.s                          ; view name
     lorr.b                          ; left or right view
     
-    x.i                             ; View Position X
-    y.i                             ; View Position Y
-    width.i                         ; View Actual Width
-    height.i                        ; View Actual Height
+    x.i                             ; view position X
+    y.i                             ; view position Y
+    width.i                         ; view actual width
+    height.i                        ; view actual height
     id.i                            ; unique ID
     axis.b                          ; splitter axis
     perc.i                          ; splitter percentage
@@ -45,9 +42,9 @@ DeclareModule View
     offsety.i
     zoom.i
     
-    splitterID.i                    ; Canvas Splitter ID(if not leaf)
+    splitterID.i                    ; canvas splitter ID(if not leaf)
 
-    parentID.i                      ; Parent Window ID
+    parentID.i                      ; parent window ID
     leaf.b
     active.b
     dirty.b                         ; view need a refresh
@@ -58,7 +55,6 @@ DeclareModule View
     rsplitter.i
     tsplitter.i
     bsplitter.i
-    
     
   EndStructure
   
@@ -474,6 +470,7 @@ Module View
   ; Draw
   ;----------------------------------------------------------------------------------
   Procedure Draw(*view.View_t)
+
     
     If *view\leaf And *view\dirty
       ;OViewControl_OnEvent(*view\control,#PB_Event_Repaint,#Null)
@@ -481,7 +478,7 @@ Module View
   ;     Box(0,0,*view\width,*view\height,RGB(100,100,100))
   ;     DrawImage(ImageID(*view\imageID),*view\offsetx,*view\offsety) 
   ;     *view\dirty = #False
-  ;     DrawingMode(#PB_2DDrawing_Outlined)
+  ;     DrawingModeDrawPick
   ;     RoundBox(0,0,*view\width,*view\height,2,2,RGB(120,120,120))
   ;     StopDrawing()
     Else
@@ -708,7 +705,7 @@ Module ViewManager
   ; Event
   ;----------------------------------------------------------------------------------
   Procedure OnEvent(*manager.ViewManager_t,event.i)
-
+    
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
@@ -720,8 +717,8 @@ Module ViewManager
     Protected *active.View::View_t = Pick(*manager, mx, my)
 
     Select event
-      Case #PB_Event_Gadget   
-         If *active
+      Case #PB_Event_Gadget
+        If *active
           Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
           If EventType() = #PB_EventType_LostFocus
             gadgetID = EventGadget()
@@ -740,7 +737,6 @@ Module ViewManager
             EndIf
             View::OnEvent(*active,event)
           EndIf
-          
         EndIf
 ;         If *active
 ;           Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
@@ -789,7 +785,7 @@ Module ViewManager
 ;             EndIf
 ;             
 ;         EndSelect
-;         
+       
       Case #PB_Event_Menu
         Select EventMenu()
 ;           Case Globals::#SHORTCUT_COPY
@@ -825,8 +821,6 @@ Module ViewManager
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
-      
-      
     EndSelect
     
     *manager\active = *active
@@ -834,17 +828,30 @@ Module ViewManager
   EndProcedure
   
   ;----------------------------------------------------------------------------------
+  ; Get Unique ID
+  ;----------------------------------------------------------------------------------
+  Procedure GetUniqueID(*manager.ViewManager_t, *view.View::View_t)
+    Protected uuid.i = Random(65535)
+    If FindMapElement(*manager\uis(), Str(uuid))
+      GetUniqueID(*manager, *view)
+    Else
+      AddMapElement(*manager\uis(), Str(uuid))
+      *manager\uis() = *view\content
+      ProcedureReturn uuid
+    EndIf  
+  EndProcedure
+  
+  ;----------------------------------------------------------------------------------
   ; Recurse Draw View
   ;----------------------------------------------------------------------------------
   Procedure RecurseDrawPickImage(*manager.ViewManager_t,*view.View::View_t)
     If *view\leaf And *view\content
-      AddMapElement(*manager\uis(), Str(*view\content\gadgetID))
-      *manager\uis() = *view\content
+      Define uuid.i = GetUniqueID(*manager, *view)
+      DrawingMode(#PB_2DDrawing_Default)
       Box(*view\x-#VIEW_BORDER_SENSIBILITY*0.5,
           *view\y-#VIEW_BORDER_SENSIBILITY*0.5,
           *view\width+#VIEW_BORDER_SENSIBILITY,
-          *view\height+#VIEW_BORDER_SENSIBILITY,
-          *view\content\gadgetID)
+          *view\height+#VIEW_BORDER_SENSIBILITY, uuid)
     Else
       If *view\left : RecurseDrawPickImage(*manager,*view\left) : EndIf
       If *view\right : RecurseDrawPickImage(*manager,*view\right) : EndIf
@@ -858,7 +865,6 @@ Module ViewManager
     ClearMap(*Me\uis())
     ResizeImage(*Me\imageID, *Me\main\width, *Me\main\height)
     StartDrawing(ImageOutput(*Me\imageID))
-    DrawingMode(#PB_2DDrawing_AllChannels)
     RecurseDrawPickImage(*Me,*Me\main)
     StopDrawing()
   EndProcedure
@@ -874,7 +880,6 @@ Module ViewManager
       DrawingMode(#PB_2DDrawing_Default)
       Box(*Me\active\x, *Me\active\y, *Me\active\width, *Me\active\height, RGBA(255,255,255,128))
     EndIf
-    
     StopDrawing()
   EndProcedure
   
@@ -884,9 +889,8 @@ Module ViewManager
   Procedure Pick(*Me.ViewManager_t, mx.i, my.i)
     Protected picked.i
     StartDrawing(ImageOutput(*Me\imageID))
-    DrawingMode(#PB_2DDrawing_AllChannels)
+    DrawingMode(#PB_2DDrawing_Default)
     If mx>=0 And mx<ImageWidth(*Me\imageID) And my>=0 And my<ImageHeight(*Me\imageID)
-      
       picked = Point(mx, my)
       If FindMapElement(*Me\uis(), Str(picked))
         StopDrawing()
@@ -896,7 +900,6 @@ Module ViewManager
     StopDrawing()
     ProcedureReturn #Null
   EndProcedure
-  
   
   ; ----------------------------------------------------------------------------------
   ; Constructor
@@ -933,8 +936,7 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 836
-; FirstLine = 825
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 15
 ; Folding = ------
 ; EnableXP

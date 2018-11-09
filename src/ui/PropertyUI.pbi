@@ -114,7 +114,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  OnEvent
   ; ----------------------------------------------------------------------------
-  Procedure OnEvent(*Me.PropertyUI_t,event.i)
+  Procedure OnEvent(*Me.PropertyUI_t,event.i)    
     If *Me
       Protected *top.View::View_t = *Me\top
       Protected ev_datas.Control::EventTypeDatas_t
@@ -135,7 +135,7 @@ Module PropertyUI
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               CompilerEndIf
-              ev_datas\y + *Me\props()\sizY
+              If *Me\props() : ev_datas\y + *Me\props()\sizY : EndIf
             Next
           EndIf
 
@@ -145,16 +145,26 @@ Module PropertyUI
         Case #PB_Event_Gadget
           If ListSize(*Me\props())
             ForEach *Me\props()
-              ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
-              ev_datas\y+*Me\props()\sizY
+              If ev_datas\x >= *Me\props()\posX And 
+                 ev_datas\x < *Me\props()\posX + *Me\props()\sizX And
+                 ev_datas\y >= *Me\props()\posY And 
+                 ev_datas\y < *Me\props()\posY + *Me\props()\sizY :
+                    ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+              EndIf
+              ev_datas\y + *Me\props()\sizY
             Next
           EndIf
 
         Case #PB_Event_Menu
           If ListSize(*Me\props())
             ForEach *Me\props()
-              ControlProperty::OnEvent(*Me\props(),EventMenu(),#Null)
-              ev_datas\y+*Me\props()\sizY
+              If ev_datas\x >= *Me\props()\posX And 
+                 ev_datas\x < *Me\props()\posX + *Me\props()\sizX And
+                 ev_datas\y >= *Me\props()\posY And 
+                 ev_datas\y < *Me\props()\posY + *Me\props()\sizY :
+                    ControlProperty::OnEvent(*Me\props(),EventMenu(),#Null)
+              EndIf
+              ev_datas\y + *Me\props()\sizY
             Next
           EndIf 
       EndSelect
@@ -179,19 +189,16 @@ Module PropertyUI
     Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
     Protected *c.ControlProperty::ControlProperty_t = *h\parent
-    Protected cmd.b = *sig\sigdata
-    If cmd
+    Debug "ON MESSAGE : ID = "+Str(id)
+    If id = 0
       DeleteProperty(*Me, *c)
-    Else
+    ElseIf id = 1
       If *c\expanded
         CollapseProperty(*Me, *c)
       Else
         ExpandProperty(*Me, *c)
       EndIf
-      
     EndIf
-
-        
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -201,9 +208,6 @@ Module PropertyUI
     Protected i
     Protected *prop.ControlProperty::ControlProperty_t = *Me\prop
     If *prop
-      For i=0 To *prop\chilcount-1
-        Debug *prop\children(i)\name
-      Next
       ControlProperty::Clear(*prop)
     EndIf
   EndProcedure
@@ -332,7 +336,8 @@ Module PropertyUI
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
     
     Protected *head.ControlHead::ControlHead_t = *p\head
-    Object::SignalConnect(*Me, *head\slot,0)
+    Object::SignalConnect(*Me, *head\ondelete_signal, 0)
+    Object::SignalConnect(*Me, *head\onexpand_signal, 1)
 
   EndProcedure
   
@@ -429,12 +434,17 @@ Module PropertyUI
     Protected dirty.b  =#False
     Protected offY.i = 0
     
+    Debug "Delete Property : "+Str(*prop)
+    
     ForEach *Me\props()
+      Debug *Me\props()
       If *Me\props() = *prop
+        Debug "FOUND"
         offY = *Me\props()\sizY
+        ControlProperty::Delete(*Me\props())
         DeleteElement(*Me\props())
-        ControlProperty::Delete(*prop)
         dirty = #True
+        Break
       Else
         If dirty
           *Me\props()\posY - offY
@@ -461,9 +471,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 86
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 337
+; FirstLine = 315
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

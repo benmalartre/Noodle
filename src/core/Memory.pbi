@@ -7,7 +7,8 @@ DeclareModule Memory
   #MEMORY_ALIGN_BYTES = 16
   
   Macro Align16(_memory)
-    (((_memory) + 15) &~ $0F)
+    ;(((_memory) + 15) &~ $0F)
+    (_memory + (#MEMORY_ALIGN_BYTES - _memory % #MEMORY_ALIGN_BYTES))
   EndMacro
   
   Declare AllocateAlignedMemory(size.i)
@@ -42,7 +43,7 @@ EndModule
 ;========================================================================================
 ; EOF
 ;========================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 37
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 10
 ; Folding = --
 ; EnableXP

@@ -2592,16 +2592,14 @@ Module Vector3
       ! movups [rax], xmm0      ; move back to memory
     EndProcedure
 
-    Procedure Add(*v.v3f32, *a.v3f32, *b.v3f32)
-      ! mov rcx, [p.p_a]
-      ! mov rdx, [p.p_b]
-      ! mov rax, [p.p_v]
-      ! movups xmm0, [rax]
-      ! movups xmm1, [rcx]
-      ! movups xmm2, [rdx]
-      ! addps xmm0, xmm1
-      ! addps xmm0, xmm2
-      ! movups [rdi], xmm0
+    Procedure Add(*v.v3f32, *a.v3f32, *b.v3f32)      
+      ! mov rcx, [p.p_a]        ; move point a to rcx register
+      ! mov rdx, [p.p_b]        ; move point b to rdx register
+      ! mov rax, [p.p_v]        ; move point v to rax register
+      ! movups xmm0, [rcx]      ; point a to xmm0
+      ! movups xmm1, [rdx]      ; point b to xmm1
+      ! addps xmm0, xmm1        ; packed addition
+      ! movups [rax], xmm0      ; move back to memory
     EndProcedure
     
     ; ---------------------------------------------------------------
@@ -3453,9 +3451,9 @@ EndModule
 ;====================================================================
 ; EOF
 ;====================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 456
-; FirstLine = 427
-; Folding = --------------------------------Y----v+8---
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 2601
+; FirstLine = 2432
+; Folding = --------------------------------Y----r-+---
 ; EnableXP
 ; EnableUnicode

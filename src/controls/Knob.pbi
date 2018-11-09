@@ -12,8 +12,8 @@ DeclareModule ControlKnob
   ; ----------------------------------------------------------------------------
   #PB_GadgetType_Knob = 128
   
-  #KNOB_INNER_RADIUS = 42
-  #KNOB_OUTER_RADIUS = 64
+  #KNOB_INNER_RADIUS = 24
+  #KNOB_OUTER_RADIUS = 32
   #KNOB_MARKER_SIZE  = 5
   #KNOB_ZERO_SIZE    = 32
   #KNOB_MARKER_WIDTH = 2
@@ -35,8 +35,7 @@ DeclareModule ControlKnob
     min.f
     max.f
     value.f
-    *onleftclick_signal.Slot::Slot_t
-    *onleftdoubleclick_signal.Slot::Slot_t
+    *onchanged_signal.Slot::Slot_t
   EndStructure
   
   Declare New(*object.Object::Object_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
@@ -66,15 +65,13 @@ Module ControlKnob
 ;  hlpGetAngle
 ; ----------------------------------------------------------------------------
 Procedure.f hlpGetAngle( *Me.ControlKnob_t )
-  Define a.Math::v2f32, b.Math::v2f32, center.Math::v2f32
+  Define a.Math::v2f32, b.Math::v2f32, c.Math::v2f32, center.Math::v2f32
   Define angle.f
   Vector2::Set(center, *Me\sizX * 0.5 + *Me\posX, *Me\sizY * 0.5 + *Me\posY)
   Vector2::Set(a, *Me\oldX, *Me\oldY)
   Vector2::SubInPlace(a, center)
-  Vector2::NormalizeInPlace(a)
   Vector2::Set(b, *Me\mouseX, *Me\mouseY)
   Vector2::SubInPlace(b, center)
-  Vector2::NormalizeInPlace(b)
   Vector2::GetAngle(a, b, angle)
   ProcedureReturn Degree(angle)
 EndProcedure
@@ -82,15 +79,12 @@ EndProcedure
 ; ----------------------------------------------------------------------------
 ;  hlpGetSide
 ; ----------------------------------------------------------------------------
-Procedure.f hlpGetSide( *Me.ControlKnob_t )
+Procedure.f hlpGetSide( *Me.ControlKnob_t)
   Define a.Math::v2f32, b.Math::v2f32, center.Math::v2f32
   Vector2::Set(center, *Me\sizX * 0.5 + *Me\posX, *Me\sizY * 0.5 + *Me\posY)
   Vector2::Set(a, *Me\oldX, *Me\oldY)
   Vector2::SubInPlace(a, center)
-  Vector2::NormalizeInPlace(a)
-  Vector2::Set(b, *Me\mouseX, *Me\mouseY)
-  Vector2::SubInPlace(b, center)
-  Vector2::NormalizeInPlace(b)
+  Vector2::Set(b, center\y - *Me\mouseY, -(center\x - *Me\mouseX))
   Define dot.f = Vector2::Dot(a, b)
   ProcedureReturn dot
 EndProcedure
@@ -171,30 +165,54 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
     Define a.Math::v2f32, b.Math::v2f32, center.Math::v2f32
     Vector2::Set(center, cx, cy)
     Vector2::Set(a, 0, -1)
-    Vector2::RotateInPlace(a, *Me\last_angle)
+    Vector2::RotateInPlace(a, Radian(*Me\last_angle))
     Vector2::ScaleInPlace(a, #KNOB_OUTER_RADIUS * 1.25)
     Vector2::AddInPlace(a, center)
     
     MovePathCursor(cx, cy)
     AddPathLine(a\x, a\y)
-    AddPathCircle(cx, cy,  #KNOB_OUTER_RADIUS * 1.2, *Me\last_angle + Math::#F32_PI_2, *Me\angle)
     
-    Vector2::Set(a, *Me\mouseX, *Me\mouseY)
-    Vector2::SubInPlace(a, center)
-    Vector2::NormalizeInPlace(a)
+    Vector2::Set(a, 0, -1)
+    Vector2::RotateInPlace(a, Radian(*Me\angle))
     Vector2::ScaleInPlace(a, #KNOB_OUTER_RADIUS * 1.25)
     Vector2::AddInPlace(a, center)
+    
+    MovePathCursor(cx, cy)
+    AddPathLine(a\x, a\y)
     
     MovePathCursor(cx, cy)
     AddPathLine(a\x, a\y)
     VectorSourceColor(RGBA(255,0,128,128))
     StrokePath(#KNOB_MARKER_WIDTH, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
+    
+    Vector2::Set(a, *Me\mouseX, *Me\mouseY)
+    AddPathCircle(a\x, a\y, 4)
+;     Vector2::SubInPlace(a, center)
+;     Vector2::NormalizeInPlace(a)
+;     Vector2::ScaleInPlace(a, #KNOB_OUTER_RADIUS * 1.25)
+;     Vector2::AddInPlace(a, center)
+    
+    MovePathCursor(cx, cy)
+    AddPathLine(a\x, a\y)
+    VectorSourceColor(RGBA(255,128,0,128))
+    StrokePath(#KNOB_MARKER_WIDTH, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
+    
+    If *Me\last_angle < *Me\angle
+      AddPathCircle(cx, cy,  #KNOB_OUTER_RADIUS * 1.2, *Me\last_angle - 90, *Me\angle - 90)
+    Else
+      AddPathCircle(cx, cy,  #KNOB_OUTER_RADIUS * 1.2, *Me\angle - 90, *Me\last_angle - 90)
+    EndIf
+    
+    VectorSourceColor(RGBA(255,128,0,128))
+    StrokePath(#KNOB_MARKER_WIDTH *2, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
   EndIf
   
   ; debug side
-  MovePathCursor(20, 30)
-  VectorSourceColor(RGBA(255,255,0,255))
-  DrawVectorText(Str(*Me\angle))
+  ResetCoordinates()
+  Define value_s.s = StrF(*Me\value, 3)
+  MovePathCursor(cx - VectorTextWidth(value_s) * 0.5, cy + #KNOB_OUTER_RADIUS * 1.4)
+  VectorSourceColor(RGBA(255,0,128,128))
+  DrawVectorText(value_s)
   EndVectorLayer()
   
 EndProcedure
@@ -265,13 +283,10 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
       If *Me\visible And *Me\enable
         *Me\down = #False
         If *Me\over And ( *Me\options & #PB_Button_Toggle )
-          *Me\value*-1
+          *Me\value * -1
         EndIf
         Control::Invalidate(*Me)
-        If *Me\over
-          Slot::Trigger(*Me\onleftclick_signal,Signal::#SIGNAL_TYPE_PING,@*Me\value)
-          PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
-        EndIf
+        
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -282,11 +297,18 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
         If *Me\down
           *Me\mouseX = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX)
           *Me\mouseY = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY)
-          *Me\angle = *Me\last_angle + hlpGetAngle(*Me) + *Me\angle_offset
+          Define side.f = hlpGetSide(*Me) 
+          Define angle.f = hlpGetAngle(*Me)
+          If side < 0
+            *Me\angle = *Me\last_angle + angle + *Me\angle_offset
+          Else
+            *Me\angle = *Me\last_angle -( angle + *Me\angle_offset)
+          EndIf
 
-          Slot::Trigger(*Me\onleftclick_signal, Signal::#SIGNAL_TYPE_PING, @*Me\angle)
-          Control::Invalidate(*Me)
+          Slot::Trigger(*Me\onchanged_signal, Signal::#SIGNAL_TYPE_PING, @*Me\value)
+          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
         EndIf
+        Control::Invalidate(*Me)
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -359,25 +381,11 @@ Procedure SetTheme(theme.i)
   
 EndProcedure
 
-Procedure InitializeColors(*Me.ControlKnob_t, color.i)
-  Protected r.i  =Red(color)
-  Protected g.i = Green(color)
-  Protected b.i = Blue(color)
-  
-  Protected avg.i = (r+g+b)/3
-;   
-;   *Me\color_disabled = RGB((r+avg)/2, (g+avg)/2, (b+avg)/2)
-;   *Me\color_enabled = color
-;   *Me\color_over = RGB(r+avg/3, g+avg/3, b+avg/3)
-;   *Me\color_pressed = RGB(r+avg/2, g+avg/2, b+avg/2)
-EndProcedure
-
 ; ============================================================================
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlKnob_t )
-  Slot::Delete(*Me\onleftclick_signal)
-  Slot::Delete(*Me\onleftdoubleclick_signal)
+  Slot::Delete(*Me\onchanged_signal)
   Object::TERM(ControlKnob)
   ; ---[ Deallocate Memory ]--------------------------------------------------
   ClearStructure(*Me,ControlKnob_t)
@@ -408,10 +416,8 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   *Me\visible    = #True
   *Me\enable     = #True
   *Me\options    = options
-  *Me\value      = 1
-  *Me\onleftclick_signal = Slot::New(*Me)
-  *Me\onleftdoubleclick_signal = Slot::New(*Me)
-  InitializeColors(*Me, color)
+  *Me\value      = 0
+  *Me\onchanged_signal = Slot::New(*Me)
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   
@@ -429,8 +435,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 284
-; FirstLine = 257
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 386
+; FirstLine = 383
 ; Folding = ---
 ; EnableXP

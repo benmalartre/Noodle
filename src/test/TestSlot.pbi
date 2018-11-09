@@ -13,7 +13,6 @@ UIColor::Init()
 
 Global *app.Application::Application_t = Application::New("Noodle",800,600,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
-
 Global WIDTH = 1024
 Global HEIGHT = 1024
 
@@ -37,7 +36,7 @@ CompilerIf Not #USE_GLFW
   *app\context\height = GadgetHeight(*viewport\gadgetID)
   *viewport\camera = *app\camera
   *viewport\context = *app\context
-  ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   
   Global *graph.GraphUI::GraphUI_t = GraphUI::New(*view\right,"GraphUI")
 ;   Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"Property",*A)
@@ -212,8 +211,7 @@ EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 76
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 14
 ; Folding = -
 ; EnableXP

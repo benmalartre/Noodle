@@ -27,17 +27,18 @@ OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
-For i=0 To 3
+For i=0 To 1
   Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name+Str(i+1), name+Str(i+1),0,128,*ui\width, *ui\height-128)
   
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
-  Object::SignalConnect(*ui,*head\slot,0)
+  Object::SignalConnect(*ui, *head\ondelete_signal, 0)
+  Object::SignalConnect(*ui, *head\onexpand_signal, 1)
   
   Define v.Math::v3f32
   ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
-  Define c.Math::c4f32
-  ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
+;   Define c.Math::c4f32
+;   ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
   
   
   ControlProperty::AppendStop(*prop)
@@ -48,7 +49,8 @@ CloseGadgetList()
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 37
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 23
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

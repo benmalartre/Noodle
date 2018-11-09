@@ -1149,11 +1149,8 @@ Module ControlProperty
     *head = ControlHead::New(*Me,*Me\name+"_Head",options,*Me\dx,*Me\dy+2,width,18) 
     Append(*Me,*head)
     
-    Object::SignalConnect(*Me,*head\slot,0)
-    
     ; Offset for Next Control
     ;---------------------------------
-    *Me\dy +#HEAD_HEIGHT
     *Me\head = *head
     ProcedureReturn(*head)
   EndProcedure
@@ -1500,7 +1497,7 @@ Module ControlProperty
       ; ------------------------------------------------------------------------
       ;  LeftButtonUp
       ; ------------------------------------------------------------------------
-      Case #PB_EventType_LeftButtonUp
+    Case #PB_EventType_LeftButtonUp
         *overchild.Control::Control_t = *Me\overchild
         If *overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
@@ -1658,9 +1655,9 @@ Module ControlProperty
       ;Case #PB_EventType_MiddleButtonUp
       ;Case #PB_EventType_MouseWheel
       ;Case #PB_EventType_PopupMenu
-        ;Debug ">> PopupMenu"
+      ;Debug ">> PopupMenu"
       ;Case #PB_EventType_PopupWindow
-        ;Debug ">> PopupWindow"
+      ;Debug ">> PopupWindow"
         
     EndSelect
   
@@ -1755,8 +1752,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 253
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 1149
+; FirstLine = 1137
 ; Folding = --------
 ; EnableXP
