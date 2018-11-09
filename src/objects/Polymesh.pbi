@@ -198,8 +198,8 @@ Module Polymesh
     Protected GLfloat_s.GLfloat
     
     ; Get Polymesh Datas
-    Protected s3 = SizeOf(GLfloat_s) * 3
-    Protected s4 = SizeOf(GLfloat_s) * 4
+    Protected s3 = SizeOf(v3f32)
+    Protected s4 = SizeOf(c4f32)
     Protected size_p.i = nbs * s3
     Protected size_c.i = nbs * s4
     Protected size_t.i = 4*size_p + size_c
@@ -216,8 +216,8 @@ Module Polymesh
     Protected size_i = CArray::GetItemSize(*geom\a_triangleindices)
     Protected id.l
     For i=0 To nbs-1
-      id = PeekL(*geom\a_triangleindices\data+(i*size_i))
-      *v = *geom\a_positions\data + size_v*id
+      id = CArray::GetValueL(*geom\a_triangleindices, i)
+      *v = CArray::GetValue(*geom\a_positions, id)
       CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
 ;     For i=0 To nbs-1
@@ -254,9 +254,10 @@ Module Polymesh
 
     
     ; Allocate Memory
-    Protected *flatdata = AllocateMemory(size_t)
+    Protected *flatdata = AllocateMemory(size_p)
     Protected i
     Protected *v.v3f32
+    Protected *o.v3f32
     Protected *c.c4f32
     
     ; Push Buffer to GPU
@@ -265,31 +266,14 @@ Module Polymesh
     ; POSITIONS
     ;-------------------------------------------------------------
     Protected id.l
-    
     For i=0 To nbs-1
       id = CArray::GetValueL(*geom\a_triangleindices, i)
-      CopyMemory(CArray::GetValue(*geom\a_positions, id),*flatdata+i*s3,s3)
+      *v = CArray::GetValue(*geom\a_positions, id)
+      CopyMemory(*v,*flatdata+i*s3,s3)
     Next i
-
-;     FreeMemory(*flatdata)
-;     Protected endT1.d = Time::get()
-;     
-;     Protected startT2.d = Time::Get()
-;     ; POSITIONS
-;     ;-------------------------------------------------------------
-;     For i=0 To nbs-1
-;       *v = CArray::GetValue(*geom\a_positions,CArray::GetValueL(*geom\a_triangleindices,i))
-;       CopyMemory(*v,*flatdata+i*s3,s3)
-;     Next i
-;     
-;     Protected endT2.d = Time::get()
     
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,*flatdata)
     FreeMemory(*flatdata)
-    
-;     Protected delta1.d = endT1-startT1
-;     Protected delta2.d = endT2-startT2
-;     MessageRequester("Time Difference",StrF(delta1)+Chr(10)+StrF(delta2))
     
     ; NORMALS
     ;-------------------------------------------------------------
@@ -303,33 +287,37 @@ Module Polymesh
     ;-------------------------------------------------------------
     glBufferSubData(#GL_ARRAY_BUFFER,3*size_p,size_p,CArray::GetPtr(*geom\a_uvws,0))
     
-     ; COLORS
-     ;-------------------------------------------------------------
+    ; COLORS
+    ;-------------------------------------------------------------
     Protected c
     Protected *cl.c4f32
-    Protected a.a = SizeOf(v3f32) / 4
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Protected x.a = 4
+    CompilerElse
+      Protected x.a = 3
+    CompilerEndIf
     
     glBufferSubData(#GL_ARRAY_BUFFER,4*size_p,size_c,CArray::GetPtr(*geom\a_colors,0))
     
     ; Attribute Position 0
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,a,#GL_FLOAT,#GL_FALSE,0,0)
+    glVertexAttribPointer(0,x,#GL_FLOAT,#GL_FALSE,0,0)
     
     ; Attribute Normal 1
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1,a,#GL_FLOAT,#GL_FALSE,0,size_p)
+    glVertexAttribPointer(1,x,#GL_FLOAT,#GL_FALSE,0,size_p)
     
     ; Attribute Tangent 2
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2,a,#GL_FLOAT,#GL_FALSE,0,2*size_p)
+    glVertexAttribPointer(2,x,#GL_FLOAT,#GL_FALSE,0,2*size_p)
     
     ; Attribute UVWs 2
     glEnableVertexAttribArray(3)
-    glVertexAttribPointer(3,a,#GL_FLOAT,#GL_FALSE,0,3*size_p)
+    glVertexAttribPointer(3,x,#GL_FLOAT,#GL_FALSE,0,3*size_p)
     
     ; Attribute Color 3
     glEnableVertexAttribArray(4)
-    glVertexAttribPointer(4,4,#GL_FLOAT,#GL_FALSE,0,4*size_p)
+    glVertexAttribPointer(4,x,#GL_FLOAT,#GL_FALSE,0,4*size_p)
 
   EndProcedure
   
@@ -398,7 +386,7 @@ Module Polymesh
     
     Protected nbs = CArray::GetCount(*geom\a_triangleindices)
     If nbs <3 : ProcedureReturn : EndIf
-   
+    
     ; Setup Static Kinematic STate
     ;ResetStaticKinematicState(*p)nbs
 
@@ -575,7 +563,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 554
-; FirstLine = 542
+; CursorPosition = 314
+; FirstLine = 261
 ; Folding = ----
 ; EnableXP

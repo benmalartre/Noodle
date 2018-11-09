@@ -18,7 +18,9 @@ EndDeclareModule
 ; Memory Module Implementation
 ;========================================================================================
 Module Memory
-  
+  ;--------------------------------------------------------------------------------------
+  ; ALLOCATE ALIGNED MEMORY
+  ;--------------------------------------------------------------------------------------
   Procedure AllocateAlignedMemory(size.i, align_bytes.i)
     Protected *memory = AllocateMemory(size + align_bytes)
     Protected *aligned
@@ -33,7 +35,10 @@ Module Memory
     
     ProcedureReturn *aligned
   EndProcedure
-
+  
+  ;--------------------------------------------------------------------------------------
+  ; REALLOCATE ALIGNED MEMORY
+  ;--------------------------------------------------------------------------------------
   Procedure ReAllocateAlignedMemory(*memory, size.i, align_bytes.i)
     *memory = ReAllocateMemory(*memory, size + align_bytes)
     Protected *aligned
@@ -46,10 +51,13 @@ Module Memory
       PokeB(*aligned + size + 1, 0)
     EndIf
 
-    
     ProcedureReturn *aligned
+    
   EndProcedure
   
+  ;--------------------------------------------------------------------------------------
+  ; FREE ALIGNED MEMORY
+  ;--------------------------------------------------------------------------------------
   Procedure FreeAlignedMemory(*memory, size.i)
     FreeMemory(*memory - PeekB(*memory + size + 1))
   EndProcedure
@@ -59,7 +67,6 @@ EndModule
 ; EOF
 ;========================================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 15
+; CursorPosition = 32
 ; Folding = --
 ; EnableXP

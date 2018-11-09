@@ -225,6 +225,9 @@ Module ViewportUI
                   Camera::Dolly(*Me\camera,deltax,deltay,width,height)
                   If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 EndIf
+              ElseIf modifiers & #PB_OpenGL_Command
+                Camera::Dolly(*Me\camera,deltax,deltay,width,height)
+                  If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
@@ -285,7 +288,8 @@ Module ViewportUI
             
           Case #PB_EventType_MouseWheel
             delta = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_WheelDelta)
-            ;               Dolly(*Me,delta*10,delta*10,width,height)
+            Camera::Dolly(*Me\camera,delta,delta,width,height)
+            If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
 
         EndSelect
         
@@ -630,7 +634,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 124
-; FirstLine = 108
+; CursorPosition = 292
+; FirstLine = 285
 ; Folding = -----
 ; EnableXP

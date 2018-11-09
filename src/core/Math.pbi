@@ -251,7 +251,7 @@ DeclareModule Math
       b.f
       w.f
     EndStructureUnion
-    CompilerIf Defined(USE_SSE, #PB_Constant)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       _unused.f
     CompilerEndIf
   EndStructure
@@ -779,15 +779,15 @@ DeclareModule Vector3
     Declare LinearInterpolateInPlace(*v.v3f32, *o.v3f32, blend.f)
   CompilerElse
     Macro LinearInterpolate(_v,_a,_b,_blend)
-      _v\x = (1-_blend) * _a\x + _blend * _b\x
-      _v\y = (1-_blend) * _a\y + _blend * _b\y
-      _v\z = (1-_blend) * _a\z + _blend * _b\z
+      LINEAR_INTERPOLATE(_v\x,_a\x,_b\x,_blend)
+      LINEAR_INTERPOLATE(_v\y,_a\y,_b\y,_blend)
+      LINEAR_INTERPOLATE(_v\z,_a\z,_b\z,_blend)
     EndMacro
     
     Macro LinearInterpolateInPlace(_v,_o,_blend)
-      _v\x = (1-_blend) * _v\x + _blend * _o\x
-      _v\y = (1-_blend) * _v\y + _blend * _o\y
-      _v\z = (1-_blend) * _v\z + _blend * _o\z
+      LINEAR_INTERPOLATE(_v\x,_v\x,_o\x,_blend)
+      LINEAR_INTERPOLATE(_v\y,_v\y,_o\y,_blend)
+      LINEAR_INTERPOLATE(_v\z,_v\z,_b\z,_blend)
     EndMacro
   CompilerEndIf
 
@@ -2171,36 +2171,45 @@ DeclareModule Matrix4
   ;------------------------------------------------------------------
   ; MATRIX4 MULTIPLY
   ;------------------------------------------------------------------
-  Macro Multiply(_m,_f,_s)
-    _m\v[0]   = _s\v[0] * _f\v[0] + _s\v[1] * _f\v[4]+ _s\v[2]  * _f\v[8] + _s\v[3] * _f\v[12]
-    _m\v[4]   = _s\v[4] * _f\v[0] + _s\v[5] * _f\v[4]+ _s\v[6]  * _f\v[8] + _s\v[7] * _f\v[12]
-    _m\v[8]   = _s\v[8] * _f\v[0] + _s\v[9] * _f\v[4]+ _s\v[10] * _f\v[8] + _s\v[11]* _f\v[12]
-    _m\v[12]  = _s\v[12]* _f\v[0] + _s\v[13]* _f\v[4]+ _s\v[14] * _f\v[8] + _s\v[15]* _f\v[12] 
-    
-    _m\v[1]   = _s\v[0] * _f\v[1] + _s\v[1] * _f\v[5]+ _s\v[2] * _f\v[9] + _s\v[3] * _f\v[13]
-    _m\v[5]   = _s\v[4] * _f\v[1] + _s\v[5] * _f\v[5]+ _s\v[6] * _f\v[9] + _s\v[7] * _f\v[13]
-    _m\v[9]   = _s\v[8] * _f\v[1] + _s\v[9] * _f\v[5]+ _s\v[10]* _f\v[9] + _s\v[11]* _f\v[13]
-    _m\v[13]  = _s\v[12]* _f\v[1] + _s\v[13]* _f\v[5]+ _s\v[14]* _f\v[9] + _s\v[15]* _f\v[13]
-    
-    _m\v[2]   = _s\v[0] * _f\v[2] + _s\v[1] * _f\v[6] + _s\v[2] * _f\v[10] + _s\v[3] * _f\v[14]
-    _m\v[6]   = _s\v[4] * _f\v[2] + _s\v[5] * _f\v[6] + _s\v[6] * _f\v[10] + _s\v[7] * _f\v[14]
-    _m\v[10]  = _s\v[8] * _f\v[2] + _s\v[9] * _f\v[6] + _s\v[10]* _f\v[10] + _s\v[11]* _f\v[14]
-    _m\v[14]  = _s\v[12]* _f\v[2] + _s\v[13]* _f\v[6] + _s\v[14]* _f\v[10] + _s\v[15]* _f\v[14]
-    
-    _m\v[3]   = _s\v[0] * _f\v[3] + _s\v[1] * _f\v[7]+ _s\v[2] * _f\v[11] + _s\v[3] * _f\v[15]
-    _m\v[7]   = _s\v[4] * _f\v[3] + _s\v[5] * _f\v[7]+ _s\v[6] * _f\v[11] + _s\v[7] * _f\v[15]
-    _m\v[11]   = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
-    _m\v[15]  = _s\v[12]* _f\v[3] + _s\v[13]* _f\v[7]+ _s\v[14]* _f\v[11]  + _s\v[15]* _f\v[15]  
-  EndMacro
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare Multiply(*m.m4f32, *f.m4f32, *s.m4f32)
+  CompilerElse
+    Macro Multiply(_m,_f,_s)
+      _m\v[0]   = _s\v[0] * _f\v[0] + _s\v[1] * _f\v[4]+ _s\v[2]  * _f\v[8] + _s\v[3] * _f\v[12]
+      _m\v[4]   = _s\v[4] * _f\v[0] + _s\v[5] * _f\v[4]+ _s\v[6]  * _f\v[8] + _s\v[7] * _f\v[12]
+      _m\v[8]   = _s\v[8] * _f\v[0] + _s\v[9] * _f\v[4]+ _s\v[10] * _f\v[8] + _s\v[11]* _f\v[12]
+      _m\v[12]  = _s\v[12]* _f\v[0] + _s\v[13]* _f\v[4]+ _s\v[14] * _f\v[8] + _s\v[15]* _f\v[12] 
+      
+      _m\v[1]   = _s\v[0] * _f\v[1] + _s\v[1] * _f\v[5]+ _s\v[2] * _f\v[9] + _s\v[3] * _f\v[13]
+      _m\v[5]   = _s\v[4] * _f\v[1] + _s\v[5] * _f\v[5]+ _s\v[6] * _f\v[9] + _s\v[7] * _f\v[13]
+      _m\v[9]   = _s\v[8] * _f\v[1] + _s\v[9] * _f\v[5]+ _s\v[10]* _f\v[9] + _s\v[11]* _f\v[13]
+      _m\v[13]  = _s\v[12]* _f\v[1] + _s\v[13]* _f\v[5]+ _s\v[14]* _f\v[9] + _s\v[15]* _f\v[13]
+      
+      _m\v[2]   = _s\v[0] * _f\v[2] + _s\v[1] * _f\v[6] + _s\v[2] * _f\v[10] + _s\v[3] * _f\v[14]
+      _m\v[6]   = _s\v[4] * _f\v[2] + _s\v[5] * _f\v[6] + _s\v[6] * _f\v[10] + _s\v[7] * _f\v[14]
+      _m\v[10]  = _s\v[8] * _f\v[2] + _s\v[9] * _f\v[6] + _s\v[10]* _f\v[10] + _s\v[11]* _f\v[14]
+      _m\v[14]  = _s\v[12]* _f\v[2] + _s\v[13]* _f\v[6] + _s\v[14]* _f\v[10] + _s\v[15]* _f\v[14]
+      
+      _m\v[3]   = _s\v[0] * _f\v[3] + _s\v[1] * _f\v[7]+ _s\v[2] * _f\v[11] + _s\v[3] * _f\v[15]
+      _m\v[7]   = _s\v[4] * _f\v[3] + _s\v[5] * _f\v[7]+ _s\v[6] * _f\v[11] + _s\v[7] * _f\v[15]
+      _m\v[11]   = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
+      _m\v[15]  = _s\v[12]* _f\v[3] + _s\v[13]* _f\v[7]+ _s\v[14]* _f\v[11]  + _s\v[15]* _f\v[15]  
+    EndMacro
+  CompilerEndIf
   
   ;------------------------------------------------------------------
   ; MATRIX4 MULTIPLY IN PLACE
   ;------------------------------------------------------------------
-  Macro MultiplyInPlace(_m,_o)
-    Define.m4f32 _mm4_tmp
-    Matrix4::Multiply(_mm4_tmp, _m, _o)
-    CopyMemory(_mm4_tmp, _m, #M4F32_SIZE)
-  EndMacro
+  CompilerIf Defined(USE_SSE, #PB_Constant)
+    Declare MultiplyInPlace(*m.m4f32, *o.m4f32)
+  CompilerElse
+    Macro MultiplyInPlace(_m,_o)
+      Define.m4f32 _mm4_tmp
+      Matrix4::Multiply(_mm4_tmp, _m, _o)
+      CopyMemory(_mm4_tmp, _m, #M4F32_SIZE)
+    EndMacro
+  CompilerEndIf
+  
 
   ;------------------------------------------------------------------
   ; MATRIX4 ROTATE X
@@ -3131,10 +3140,10 @@ Module Matrix4
       ! mov rax, [p.p_o]
       ! mov rdx, [p.p_m]
        
-      ! movups xmm1, [rax]                  ; move m4 row 0 to xmm4
-      ! movups xmm2, [rax+16]               ; move m4 row 1 to xmm5
-      ! movups xmm3, [rax+32]               ; move m4 row 2 to xmm6
-      ! movups xmm4, [rax+48]               ; move m4 row 3 to xmm7
+      ! movups xmm1, [rax]               ; move m4 row 0 to xmm4
+      ! movups xmm2, [rax+16]            ; move m4 row 1 to xmm5
+      ! movups xmm3, [rax+32]            ; move m4 row 2 to xmm6
+      ! movups xmm4, [rax+48]            ; move m4 row 3 to xmm7
       
       ! movaps      xmm0,   xmm3         ; xmm0:   c4 c3 c2 c1
       ! punpckldq   xmm3,    xmm4        ; xmm3:   d2 c2 d1 c1
@@ -3156,6 +3165,112 @@ Module Matrix4
       ! movups [rdx+32], xmm3
       ! movups [rdx+48], xmm4
     EndProcedure
+    
+    Procedure Multiply(*m.m4f32, *f.m4f32, *s.m4f32)
+      ! mov rdx, [p.p_m]
+      ! mov rax, [p.p_f]
+      ! mov rcx, [p.p_s]
+      ! xor r8, r8
+      
+      ! movups xmm4, [rax]
+      ! movups xmm5, [rax + 16]
+      ! movups xmm6, [rax + 32]
+      ! movups xmm7, [rax + 48]
+      
+      ! multiply_loop:
+      !   movups xmm0, [rcx]
+      !   movaps xmm1, xmm0
+      !   movaps xmm2, xmm0
+      !   movaps xmm3, xmm0
+      
+      !   shufps xmm0, xmm0, 00000000b
+      !   shufps xmm1, xmm1, 01010101b
+      !   shufps xmm2, xmm2, 10101010b
+      !   shufps xmm3, xmm3, 11111111b
+
+      !   mulps xmm0, xmm4
+      !   mulps xmm1, xmm5
+      !   mulps xmm2, xmm6
+      !   mulps xmm3, xmm7
+      
+      !   addps xmm0, xmm1
+      !   addps xmm0, xmm2
+      !   addps xmm0, xmm3
+      
+      !   movups [rdx], xmm0
+      !   add rdx, 16
+      !   add rcx, 16
+      !   inc r8
+      !   cmp r8, 4
+      !   jl multiply_loop
+    EndProcedure
+    
+    Procedure MultiplyInPlace(*m.m4f32, *o.m4f32)
+      Protected tmp.m4f32
+      Matrix4::SetFromOther(tmp, *m)
+      ! mov rdx, [p.p_m]
+      ! mov rax, [p.v_tmp]
+      ! mov rcx, [p.p_o]
+      ! xor r8, r8
+      
+      ! movups xmm4, [rax]
+      ! movups xmm5, [rax + 16]
+      ! movups xmm6, [rax + 32]
+      ! movups xmm7, [rax + 48]
+      
+      ! m4f32_multiplyinplace_loop:
+      !   movups xmm0, [rcx]
+      !   movaps xmm1, xmm0
+      !   movaps xmm2, xmm0
+      !   movaps xmm3, xmm0
+      
+      !   shufps xmm0, xmm0, 00000000b
+      !   shufps xmm1, xmm1, 01010101b
+      !   shufps xmm2, xmm2, 10101010b
+      !   shufps xmm3, xmm3, 11111111b
+
+      !   mulps xmm0, xmm4
+      !   mulps xmm1, xmm5
+      !   mulps xmm2, xmm6
+      !   mulps xmm3, xmm7
+      
+      !   addps xmm0, xmm1
+      !   addps xmm0, xmm2
+      !   addps xmm0, xmm3
+      
+      !   movups [rdx], xmm0
+      !   add rdx, 16
+      !   add rcx, 16
+      !   inc r8
+      !   cmp r8, 4
+      !   jl m4f32_multiplyinplace_loop
+    EndProcedure
+    
+;     Macro Multiply(_m,_f,_s)
+;       _m\v[0]   = _s\v[0] * _f\v[0] + _s\v[1] * _f\v[4]+ _s\v[2]  * _f\v[8] + _s\v[3] * _f\v[12]
+;       _m\v[1]   = _s\v[0] * _f\v[1] + _s\v[1] * _f\v[5]+ _s\v[2] * _f\v[9] + _s\v[3] * _f\v[13]
+;       _m\v[2]   = _s\v[0] * _f\v[2] + _s\v[1] * _f\v[6] + _s\v[2] * _f\v[10] + _s\v[3] * _f\v[14]
+;       _m\v[3]   = _s\v[0] * _f\v[3] + _s\v[1] * _f\v[7]+ _s\v[2] * _f\v[11] + _s\v[3] * _f\v[15]
+    
+    
+;       _m\v[4]   = _s\v[4] * _f\v[0] + _s\v[5] * _f\v[4]+ _s\v[6]  * _f\v[8] + _s\v[7] * _f\v[12]
+;       _m\v[5]   = _s\v[4] * _f\v[1] + _s\v[5] * _f\v[5]+ _s\v[6] * _f\v[9] + _s\v[7] * _f\v[13]
+;       _m\v[6]   = _s\v[4] * _f\v[2] + _s\v[5] * _f\v[6] + _s\v[6] * _f\v[10] + _s\v[7] * _f\v[14]
+;       _m\v[7]   = _s\v[4] * _f\v[3] + _s\v[5] * _f\v[7]+ _s\v[6] * _f\v[11] + _s\v[7] * _f\v[15]
+
+
+;       _m\v[8]   = _s\v[8] * _f\v[0] + _s\v[9] * _f\v[4]+ _s\v[10] * _f\v[8] + _s\v[11]* _f\v[12]
+;       _m\v[9]   = _s\v[8] * _f\v[1] + _s\v[9] * _f\v[5]+ _s\v[10]* _f\v[9] + _s\v[11]* _f\v[13]
+;       _m\v[10]  = _s\v[8] * _f\v[2] + _s\v[9] * _f\v[6] + _s\v[10]* _f\v[10] + _s\v[11]* _f\v[14]
+;       _m\v[11]   = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
+
+
+;       _m\v[12]  = _s\v[12]* _f\v[0] + _s\v[13]* _f\v[4]+ _s\v[14] * _f\v[8] + _s\v[15]* _f\v[12] 
+;       _m\v[13]  = _s\v[12]* _f\v[1] + _s\v[13]* _f\v[5]+ _s\v[14]* _f\v[9] + _s\v[15]* _f\v[13]
+;       _m\v[14]  = _s\v[12]* _f\v[2] + _s\v[13]* _f\v[6] + _s\v[14]* _f\v[10] + _s\v[15]* _f\v[14]
+;       _m\v[15]  = _s\v[12]* _f\v[3] + _s\v[13]* _f\v[7]+ _s\v[14]* _f\v[11]  + _s\v[15]* _f\v[15]  
+    
+;     EndMacro
   CompilerEndIf
 
   ;------------------------------------------------------------------
@@ -3452,8 +3567,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 2601
-; FirstLine = 2432
-; Folding = --------------------------------Y----r-+---
+; CursorPosition = 789
+; FirstLine = 774
+; Folding = --------------------------------Y----r-+----
 ; EnableXP
 ; EnableUnicode

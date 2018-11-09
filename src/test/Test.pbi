@@ -78,10 +78,7 @@ If Time::Init()
   EndIf
   
   Matrix4::SetIdentity(model)
-  
-  Debug "Size "+Str(*app\width)+","+Str(*app\height)
-  Debug *app\width
-  Debug *app\height
+
   *buffer = Framebuffer::New("Color",*app\width,*app\height)
   
   *s_simple = Program::NewFromName("simple")
@@ -91,16 +88,23 @@ If Time::Init()
   Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
   Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
 
-  *torus = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
-  *cloud = PointCloud::New("Cloud",Shape::#SHAPE_TORUS)
+  *torus = Polymesh::New("Torus",Shape::#SHAPE_CUBE)
+;   Define *geom.Geometry::PolymeshGeometry_t = *torus\geom
+;   Define *indices = *geom\a_faceindices
+;   Define *positions = *geom\a_positions
+;   
+;   Define msg.s = CArray::GetAsString(*indices, "INDICES : ")+Chr(10)
+;   msg + CArray::GetAsString(*positions, "POSITIONS : ")+Chr(10)
+;   MessageRequester("CUBE", msg)
+;   *cloud = PointCloud::New("Cloud",Shape::#SHAPE_TORUS)
   Polymesh::Setup(*torus,*s_simple)
-  PointCloud::Setup(*cloud,*s_simple)
+;   PointCloud::Setup(*cloud,*s_simple)
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 41
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 98
+; FirstLine = 65
 ; Folding = -
 ; EnableThread
 ; EnableXP

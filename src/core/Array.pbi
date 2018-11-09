@@ -39,10 +39,10 @@ DeclareModule CArray
   CompilerEndIf
   #SIZE_V2F32 = 8
   
-  CompilerIf #USE_SSE
-    #SIZE_V3F32 = 12
-  CompilerElse
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     #SIZE_V3F32 = 16
+  CompilerElse
+    #SIZE_V3F32 = 12
   CompilerEndIf  
   
   #SIZE_C4F32 = 16
@@ -272,6 +272,7 @@ DeclareModule CArray
   
   Declare GetPtr(*array.CArrayT, index.i)
   Declare.s GetValueStr(*array.CArrayStr, index.i)
+  Declare.s GetAsString(*array.CArrayT, label.s="")
   Declare Copy(*array.CArrayT, *src.CArrayT)
   Declare Append(*array.CArrayT,*value)
   Declare AppendB(*array.CArrayT,value.b)
@@ -354,7 +355,7 @@ Module CArray
   ; Get Item SIze
   ;----------------------------------------------------------------
   Procedure GetItemSize(*array.CArrayT)
-    ProcedureReturn *Array\itemSize 
+    ProcedureReturn *array\itemSize 
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -365,9 +366,6 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(*array\itemSize, *array\itemSize)
     Else
-      Debug *array\data 
-      Debug PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
-      Debug *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
       Define *oldmemory = *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, *array\itemSize)
     EndIf
@@ -584,9 +582,7 @@ Module CArray
               ProcedureReturn 
             EndIf
           Next
-          Debug "APPEND PTR"
           AppendPtr(*array,*unique)
-          Debug "DONE"
       EndSelect
       
       
@@ -1180,7 +1176,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 364
-; FirstLine = 356
+; CursorPosition = 363
+; FirstLine = 359
 ; Folding = ------------
 ; EnableXP

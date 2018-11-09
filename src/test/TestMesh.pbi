@@ -225,8 +225,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 206
-; FirstLine = 191
+; CursorPosition = 215
+; FirstLine = 182
 ; Folding = -
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app

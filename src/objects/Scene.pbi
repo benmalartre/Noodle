@@ -743,9 +743,6 @@ Module Scene
   Procedure Delete( *Me.Scene_t )
     Protected *model.Model::Model_t
     Protected i
-    ForEach *Me\root\children()
-      Debug *me\root\children()\fullname
-    Next
     
     Root::Delete(*Me\root)
     CArray::Delete(*Me\models)
@@ -814,8 +811,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 276
-; FirstLine = 234
+; CursorPosition = 626
+; FirstLine = 623
 ; Folding = -------
 ; EnableThread
 ; EnableXP

@@ -88,7 +88,7 @@ Module Topology
     Protected p.v3f32
     Protected i
     Protected *p.v3f32
-    CompilerIf Defined(USE_SEE, #PB_Constant)
+    CompilerIf Defined(USE_SEE, #PB_Constant) And #USE_SSE
       Define *positions = *topo\vertices\data
       Define nbp.i = CArray::GetCount(*topo\vertices)
       ! mov rax, [p.p_positions]
@@ -101,7 +101,7 @@ Module Topology
       ! movups  xmm7, [rdx+48]              ; load matrix row 3
       
       ! loop_transform_topo:
-      !   movups  xmm0, [rax]               ; d c b a
+      !   movaps  xmm0, [rax]               ; d c b a
       !   movaps  xmm1, xmm0                ; d c b a       
       !   movaps  xmm2, xmm0                ; d c b a
       !   movaps  xmm3, xmm0                ; d c b a
@@ -123,7 +123,7 @@ Module Topology
       !   shufps xmm1, xmm1, 11111111b
       !   divps xmm0, xmm1
     
-      !   movups [rax], xmm0
+      !   movaps [rax], xmm0
       !   add rax, 16
       !   dec rcx
       !   jnz loop_transform_topo
@@ -377,8 +377,8 @@ Module Topology
     EndIf
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 168
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 90
+; FirstLine = 83
 ; Folding = ---
 ; EnableXP

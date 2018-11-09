@@ -256,8 +256,6 @@ Module CreatePolymeshCmd
     Protected *parent.Object3D::Object3D_t
     
     If *parent=#Null
-      Debug Scene::*current_scene
-      Debug Scene::*current_scene\selection
       If CArray::GetCount(Scene::*current_scene\selection)
         *selected.Object3D::Object3D_t =CArray::GetValuePtr(Scene::*current_scene\selection,0)
         If *selected
@@ -307,8 +305,6 @@ Module CreatePolymeshCmd
       Scene::RemoveObject(Scene::*current_scene,*info\mesh)
       Object3D::RemoveChild(*info\parent,*info\mesh)
       Polymesh::Delete(*info\mesh)
-      
-      Debug "Removed Polymesh from Scene Graph"
     EndIf
     
   EndProcedure
@@ -324,8 +320,8 @@ Module CreatePolymeshCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 270
-; FirstLine = 254
+; CursorPosition = 104
+; FirstLine = 101
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

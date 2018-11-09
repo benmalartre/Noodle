@@ -283,7 +283,7 @@ Module PolymeshGeometry
     
     Define.v3f32 bmin,bmax
     If normalize
-      Geometry::ComputeBoundingBox(*geom)
+    
       Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
       Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
       ; Normalized UVs
@@ -443,6 +443,8 @@ Module PolymeshGeometry
     
     ; Finaly Vertex Normals
     If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints
+      Debug "NUM Vertex Polygon Count : "+Str(Carray::GetCount(*mesh\a_vertexpolygoncount))
+      Debug "NUM Vertex : "+Str(*mesh\nbpoints)
       RecomputeVertexPolygons(*mesh)
     EndIf
     
@@ -642,12 +644,16 @@ Module PolymeshGeometry
   Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
     Protected i, j, k, nbv, base, total
     Protected Dim indices.s(*mesh\nbpoints)
+    Debug "Nb Polygons : "+Str(*mesh\nbpolygons)
     base=0
     total = 0
     For i=0 To *mesh\nbpolygons-1
+      Debug "I : "+Str(i)
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
+      Debug "Nb Vertices : "+Str(nbv)
       For j=0 To nbv-1
         k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
+;         Debug "K : "+Str(k)
         indices(k) + Str(i)+","
         total+1
       Next j
@@ -668,6 +674,9 @@ Module PolymeshGeometry
       Next
       base + nbp
     Next
+    
+    Debug "Vertex Polygon Count : "+Str(*mesh\a_vertexpolygoncount)
+    Debug "Vertex Polygon Indices : "+Str(total)
 
   EndProcedure
   
@@ -742,17 +751,19 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_velocities,nbp)
     CArray::SetCount(*mesh\a_pointnormals,nbp)
     *mesh\nbpoints = nbp
-    
+        
     Protected *vertex.Geometry::Vertex_t
     Protected color.c4f32
     Protected normal.v3f32
     Protected pos.v3f32
     
     If CArray::GetCount(*topo\vertices)
-      CopyMemory(CArray::GetPtr(*topo\vertices,0),CArray::GetPtr(*mesh\a_positions,0),nbp* CArray::GetItemSize(*topo\vertices))
+      CopyMemory(CArray::GetPtr(*topo\vertices,0),
+                 CArray::GetPtr(*mesh\a_positions,0),
+                 nbp* CArray::GetItemSize(*topo\vertices))
     EndIf
    
-    Protected vid
+    Protected vid.l
     Protected counter=0
     Protected started=0
     Protected nbi=0,nbf=0,nbt=0
@@ -793,21 +804,25 @@ Module PolymeshGeometry
         counter+1
       EndIf
     Next i
+    
+    MessageRequester("Faces", CArray::GetAsString(*mesh\a_facecount))
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
     
     ; Recompute Polymesh datas
+    
     RecomputeTriangles(*mesh)
     RecomputeEdges(*mesh)
     RecomputeVertexPolygons(*mesh)
-;     ; GetDualGraph(*mesh)
+    Geometry::ComputeBoundingBox(*mesh)
+    ; GetDualGraph(*mesh)
     RecomputeNormals(*mesh,1)
 
     ; UVs
     GetUVWSFromPosition(*mesh,#True)
     
-;     ; Tangents
-;     RecomputeTangents(*mesh)
-;     
+    ; Tangents
+    RecomputeTangents(*mesh)
+    
     ;Color
     Color::Set(color,0.33,0.33,0.33,1.0);
     SetColors(*mesh,@color)
@@ -1440,7 +1455,9 @@ Module PolymeshGeometry
     Define p.v3f32
     CArray::SetCount(*topo\vertices,Shape::#TORUS_NUM_VERTICES)
   
-    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TORUS),CArray::GetPtr(*topo\vertices,0),Shape::#TORUS_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
+    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TORUS),
+               CArray::GetPtr(*topo\vertices,0),
+               Shape::#TORUS_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
   
     
     Define i.i
@@ -2447,7 +2464,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 655
-; FirstLine = 653
+; CursorPosition = 753
+; FirstLine = 749
 ; Folding = ----fw--v--
 ; EnableXP

@@ -406,11 +406,11 @@ EndDeclareModule
 ;========================================================================================
 Module Geometry
   Procedure ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
-    If Not *geom Or *geom\nbpoints = 0
+    If Not *geom Or Not *geom\nbpoints
       ProcedureReturn
     EndIf
     
-    CompilerIf #USE_SSE
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       Define *positions = *geom\a_positions\data
       Define nbp = *geom\nbpoints
       Define *origin = *geom\bbox\origin
@@ -461,7 +461,7 @@ Module Geometry
       Protected bmin.v3f32, bmax.v3f32
       Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
       Vector3::Set(bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
-    
+
       For i=0 To *geom\nbpoints-1
         *v = CArray::GetValue(*geom\a_positions,i)
     
@@ -475,9 +475,12 @@ Module Geometry
         If *v\z > bmax\z : bmax\z = *v\z : EndIf
       Next i
       
-      Vector3::LinearInterpolate(*geom\bbox\origin, bmin, bmax, 0.5)
-      Vector3::Sub(*geom\bbox\extend, bmax, bmin)
-      Vector3::ScaleInPlace(*geom\bbox\extend, 0.5)
+      Protected *box.Geometry::Box_t = *geom\bbox
+      Vector3::LinearInterpolate(*box\origin, bmin, bmax, 0.5)
+      Vector3::Sub(*box\extend, bmax, bmin)
+      Vector3::ScaleInPlace(*box\extend, 0.5)
+
+
     CompilerEndIf
   EndProcedure
   
@@ -507,7 +510,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 427
-; FirstLine = 417
+; CursorPosition = 480
+; FirstLine = 447
 ; Folding = -----
 ; EnableXP
