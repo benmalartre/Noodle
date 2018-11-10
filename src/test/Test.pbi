@@ -88,7 +88,7 @@ If Time::Init()
   Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
   Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
 
-  *torus = Polymesh::New("Torus",Shape::#SHAPE_CUBE)
+  *torus = Polymesh::New("Torus",Shape::#SHAPE_BUNNY)
 ;   Define *geom.Geometry::PolymeshGeometry_t = *torus\geom
 ;   Define *indices = *geom\a_faceindices
 ;   Define *positions = *geom\a_positions
@@ -103,7 +103,7 @@ If Time::Init()
   Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 98
+; CursorPosition = 90
 ; FirstLine = 65
 ; Folding = -
 ; EnableThread

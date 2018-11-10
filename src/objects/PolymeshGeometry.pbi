@@ -818,7 +818,7 @@ Module PolymeshGeometry
     
     ;Color
     Color::Set(color,0.33,0.33,0.33,1.0)
-    SetColors(*mesh,@color)
+    SetColors(*mesh,color)
     
     
     
@@ -904,7 +904,7 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Set Point Color
   ;---------------------------------------------------------
-  Procedure SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null);,*v.CArrayV3F32)
+  Procedure SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
     Protected nbs = *mesh\nbsamples
     
     ; ---[ Set Point Normal ]---------------------------
@@ -924,7 +924,6 @@ Module PolymeshGeometry
     
     Color::Set(c,r,g,b,1)
     For i=0 To nbs-1
-      
       CArray::SetValue(*mesh\a_colors,i,c)
     Next 
      
@@ -2459,7 +2458,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 2415
-; FirstLine = 2390
+; CursorPosition = 925
+; FirstLine = 902
 ; Folding = ----fw--v--
 ; EnableXP

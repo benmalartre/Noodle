@@ -49,7 +49,7 @@ DeclareModule Shape
   ;  OpenGL Shapes
   ; ============================================================================
   ;{
-CompilerIf Defined(USE_SSE, #PB_Constant)
+CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   ;-----------------------------------------------------------------------------
   ; Point
   ;-----------------------------------------------------------------------------
@@ -26165,8 +26165,8 @@ Module Shape
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25693
-; FirstLine = 25673
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 51
+; FirstLine = 48
 ; Folding = ----
 ; EnableXP

@@ -92,24 +92,14 @@ If Time::Init()
   GLCheckError("Before Creating Polymeshes")
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
-    Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/PureBasic/Noodle/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
-    Define i
-    *model = Model::New("Alembic")
-    For i=0 To 0:
-      Define *abc.Model::Model_t = Alembic::LoadABCArchive(path)
-;       Define *r5.Polymesh::Polymesh_t = Polymesh::new("Sphere", Shape::#SHAPE_BUNNY)
-;       Define *geom.Geometry::PolymeshGeometry_t = *r5\geom
-;       numVertices + *geom\nbpoints
-      Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*abc)
-      Transform::SetTranslationFromXYZValues(*T, i*3,0,0)
-      Object3D::SetLocalTransform(*abc, *T)
-      Object3D::UpdateTransform(*abc,*model\globalT)
-      Object3D::AddChild(*model,*abc)
-    Next
+    Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/PureBasic/Noodle/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)    
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-    Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Elephant.abc","Alembic (*.abc)|*.abc",0)
-    Define i
-    For i=0 To 12
+    Define path.s = OpenFileRequester("Alembic Archive","D:\Projects\RnD\PureBasic\Noodle\abc\Elephant.abc","Alembic (*.abc)|*.abc",0)    
+  CompilerElse
+    Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Elephant.abc","Alembic (*.abc)|*.abc",0)
+  CompilerEndIf
+     Define i
+  For i=0 To 12
       *model = Alembic::LoadABCArchive(path)
       Define *t.Transform::Transform_t = *model\localT
       Define p.v3f32
@@ -122,11 +112,6 @@ If Time::Init()
       Scene::AddModel(Scene::*current_scene,*model)
       
     Next
-    
-  CompilerElse
-    Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Elephant.abc","Alembic (*.abc)|*.abc",0)
-    *model = Alembic::LoadABCArchive(path)
-  CompilerEndIf
   
   Define maxNumVertices.GLint
   ;glGetIntegerv(#GL_MAX_ELEMENTS_VERTICES, @maxNumVertices)
@@ -160,8 +145,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 120
-; FirstLine = 1
+; CursorPosition = 100
+; FirstLine = 89
 ; Folding = -
 ; EnableThread
 ; EnableXP

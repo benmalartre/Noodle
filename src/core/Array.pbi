@@ -362,16 +362,22 @@ Module CArray
   ; Append
   ;----------------------------------------------------------------
   Procedure Append(*array.CArrayT,*item)
+    
     Protected nb = *array\itemCount
+    Debug "APPEND ITEM"
+    Debug "NB : "+Str(nb)
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(*array\itemSize, *array\itemSize)
+      Debug "ALLOCATE : "+Str(*array\data)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + *array\itemCount * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, *array\itemSize)
+      Debug "REALLOCATE : "+Str(*array\data)+", "+Str(PeekC(*array\data + nb * *array\itemSize + 1))
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * *array\itemSize + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1) * *array\itemSize, *array\itemSize)
     EndIf
     
-    CopyMemory(*item,*array\data+nb* *array\itemSize,*array\itemSize)
-    *array\itemCount = nb +1
+    CopyMemory(*item,*array\data+nb * *array\itemSize,*array\itemSize)
+    *array\itemCount + 1
+
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -381,10 +387,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_BOOL)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_BOOL, #SIZE_BOOL)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_BOOL)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_BOOL + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_BOOL, #SIZE_BOOL)
     EndIf
     
     PokeB(*array\data+nb* *array\itemSize,item)
@@ -398,10 +404,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_CHAR)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_CHAR, #SIZE_CHAR)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_CHAR)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_CHAR + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_CHAR, #SIZE_CHAR)
     EndIf
     
     PokeC(*array\data+nb* *array\itemSize,item)
@@ -415,10 +421,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_INT)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_INT, #SIZE_INT)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_INT)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_INT + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_INT, #SIZE_INT)
     EndIf
     
     PokeI(*array\data+nb* *array\itemSize,item)
@@ -432,10 +438,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_LONG)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_LONG, #SIZE_LONG)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_LONG)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_LONG + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_LONG, #SIZE_LONG)
     EndIf
     
     PokeL(*array\data+nb* *array\itemSize,item)
@@ -449,10 +455,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_FLOAT)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_FLOAT, #SIZE_FLOAT)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_FLOAT)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_FLOAT + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_FLOAT, #SIZE_FLOAT)
     EndIf
     
     PokeF(*array\data+nb* *array\itemSize,item)
@@ -465,9 +471,9 @@ Module CArray
   Procedure AppendPtr(*array.CArrayT,*item)
     Protected nb = *array\itemCount
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* #SIZE_PTR, #SIZE_PTR)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_PTR, #SIZE_PTR)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_PTR + 1)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_PTR + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_PTR, #SIZE_PTR)
     EndIf
     
@@ -482,10 +488,10 @@ Module CArray
     Protected nb = *array\itemCount
     
     If *array\data = #Null
-      *array\data = Memory::AllocateAlignedMemory(1* *array\itemSize, #SIZE_PTR)
+      *array\data = Memory::AllocateAlignedMemory(#SIZE_PTR, #SIZE_PTR)
     Else
-      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
-      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* *array\itemSize, #SIZE_PTR)
+      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_PTR + 1)
+      *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_PTR, #SIZE_PTR)
     EndIf
     
     Protected *sa.CArrayStr = *array
@@ -507,7 +513,7 @@ Module CArray
       If *array\data = #Null
         *array\data = Memory::AllocateAlignedMemory(nbo* *array\itemSize, *array\itemSize)
       Else
-        Define *oldmemory = *array\data - PeekB(*array\data + nba * *array\itemSize + 1)
+        Define *oldmemory = *array\data - PeekC(*array\data + nba * *array\itemSize + 1)
         *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nbo+nba)* *array\itemSize, *array\itemSize)
       EndIf
       
@@ -1176,7 +1182,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 363
-; FirstLine = 359
+; CursorPosition = 372
+; FirstLine = 357
 ; Folding = ------------
 ; EnableXP

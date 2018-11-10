@@ -27,10 +27,10 @@ Module Memory
     Define offset.i = *memory % align_bytes
     If offset <> 0
       *aligned = AlignMemory(*memory, align_bytes)
-      PokeB(*aligned + size + 1, align_bytes - offset)
+      PokeC(*aligned + size + 1, align_bytes - offset)
     Else
       *aligned = *memory
-      PokeB(*aligned + size + 1, 0)
+      PokeC(*aligned + size + 1, 0)
     EndIf
     
     ProcedureReturn *aligned
@@ -40,26 +40,25 @@ Module Memory
   ; REALLOCATE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure ReAllocateAlignedMemory(*memory, size.i, align_bytes.i)
-    *memory = ReAllocateMemory(*memory, size + align_bytes)
+    *memory = ReAllocateMemory(*memory, size + align_bytes, #PB_Memory_NoClear)
     Protected *aligned
     Define offset.i = *memory % align_bytes
     If offset <> 0
       *aligned = AlignMemory(*memory, align_bytes)
-      PokeB(*aligned + size + 1, align_bytes - offset)
+      PokeC(*aligned + size + 1, align_bytes - offset)
     Else
       *aligned = *memory
-      PokeB(*aligned + size + 1, 0)
+      PokeC(*aligned + size + 1, 0)
     EndIf
 
-    ProcedureReturn *aligned
-    
+    ProcedureReturn *aligned 
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; FREE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure FreeAlignedMemory(*memory, size.i)
-    FreeMemory(*memory - PeekB(*memory + size + 1))
+    FreeMemory(*memory - PeekC(*memory + size + 1))
   EndProcedure
   
 EndModule
@@ -67,6 +66,7 @@ EndModule
 ; EOF
 ;========================================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 32
+; CursorPosition = 51
+; FirstLine = 33
 ; Folding = --
 ; EnableXP

@@ -317,7 +317,7 @@ Module Polymesh
     
     ; Attribute Color 3
     glEnableVertexAttribArray(4)
-    glVertexAttribPointer(4,x,#GL_FLOAT,#GL_FALSE,0,4*size_p)
+    glVertexAttribPointer(4,4,#GL_FLOAT,#GL_FALSE,0,4*size_p)
 
   EndProcedure
   
@@ -563,7 +563,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 314
-; FirstLine = 261
+; CursorPosition = 319
+; FirstLine = 288
 ; Folding = ----
 ; EnableXP

@@ -1319,7 +1319,7 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   ; QUATERNION MULTIPLY
   ;------------------------------------------------------------------
-;   CompilerIf Defined(USE_SSE, #PB_Constant)
+;   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
 ;     Declare Multiply(*out.q4f32, *q1.q4f32, *q2.q4f32)
 ;     Declare MultiplyInPlace(*q1.q4f32, *q2.q4f32)
 ;   CompilerElse
@@ -3541,8 +3541,8 @@ EndModule
 ; EOF
 ;====================================================================
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 951
-; FirstLine = 930
+; CursorPosition = 1321
+; FirstLine = 1317
 ; Folding = --------------------------------x+---X-0----
 ; EnableXP
 ; EnableUnicode

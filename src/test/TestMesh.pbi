@@ -180,29 +180,33 @@ Procedure Draw(*app.Application::Application_t)
   Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
   Define m.m4f32
   Define pos.v3f32
-  
-  Matrix4::SetIdentity(m)
-  
+    
   Define *loc.Geometry::Location_t
   Define *pos.v3f32, *nrm.v3f32
   Define scl.v3f32
   Define size.f = 7
   Define pos.v3f32, center.v3f32
   Vector3::Set(center, 0,5,0)
+;   CArray::SetCount(*matrices, CArray::GetCount(*samples))
   For i=0 To CArray::GetCount(*samples)-1
-    *loc = CArray::GetValuePtr(*samples,i)
-    Location::GetPosition(*loc)
-    Location::GetNormal(*loc)
-    size = Random(5)+5
-    Vector3::ScaleInPlace(*loc\n, size/2)
-    Vector3::AddInPlace(*loc\p, *loc\n)
+;     *loc = CArray::GetValuePtr(*samples,i)
+;     Location::GetPosition(*loc)
+;     Location::GetNormal(*loc)
+;     Matrix4::SetIdentity(m)
+;     size = Random(5)+5
+;     Vector3::ScaleInPlace(*loc\n, size/2)
+;     Vector3::AddInPlace(*loc\p, *loc\n)
 ;     Vector3::Randomize(pos, center, 12)
 ;     Matrix4::SetIdentity(m)
-    Matrix4::SetTranslation(m, *loc\p)
+;     Matrix4::SetTranslation(m, *loc\p)
 ;     
-    Vector3::Set(scl, size, size, size)
-    Matrix4::SetScale(m, scl)
+;     Vector3::Set(scl, size, size, size)
+;     Matrix4::SetScale(m, scl)
+    Matrix4::SetIdentity(m)
+    Vector3::Set(pos, 0, i, 0)
+    Matrix4::SetTranslation(m, pos)
     CArray::Append(*matrices,m)
+;     CArray::SetValue(*matrices, i, m)
  Next
   
   Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
@@ -212,7 +216,7 @@ Procedure Draw(*app.Application::Application_t)
   PolymeshGeometry::RandomColorByPolygon(*mgeom)
   Object3D::Freeze(*merged)
   
-;   Object3D::AddChild(*root,*merged)
+  Object3D::AddChild(*root,*merged)
   
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root,*bunny)
@@ -223,8 +227,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 214
-; FirstLine = 185
+; CursorPosition = 189
+; FirstLine = 176
 ; Folding = -
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app

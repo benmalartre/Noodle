@@ -131,10 +131,7 @@ Module Topology
     CompilerElse
       For i=0 To CArray::GetCount(*topo\vertices)-1
         *p = CArray::GetValue(*topo\vertices,i)
-        
-        Vector3::SetFromOther(p,*p)
-        Vector3::MulByMatrix4InPlace(p,*m)
-        CArray::SetValue(*topo\vertices,i,p)
+        Vector3::MulByMatrix4InPlace(*p,*m)
       Next
     CompilerEndIf
   EndProcedure
@@ -149,7 +146,7 @@ Module Topology
     For i=0 To CArray::GetCount(*matrices)-1
       *t = New(*topo)
       *m = CArray::GetValue(*matrices,i)
-;       Transform(*t, *m)
+      Transform(*t, *m)
       CArray::AppendPtr(*topo_array,*t)
     Next i
   EndProcedure
@@ -378,7 +375,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 151
+; CursorPosition = 144
 ; FirstLine = 140
 ; Folding = ---
 ; EnableXP

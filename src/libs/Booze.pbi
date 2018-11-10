@@ -807,7 +807,7 @@ Module AlembicIObject
     
     update.i =  points\UpdateSample(*cloud_infos,*cloud_sample)
     
-    CompilerIf Defined(USE_SSE, #PB_Constant)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       CArray::ShiftAlign(*cloud_geom\a_positions\data, *cloud_geom\nbpoints, 12, 16)
       CArray::ShiftAlign(*cloud_geom\a_velocities\data, *cloud_geom\nbpoints, 12, 16)
     CompilerEndIf
@@ -975,7 +975,7 @@ Module AlembicIObject
 
       mesh\UpdateTopoSample(*infos,*mesh_sample)
       
-      CompilerIf Defined(USE_SSE, #PB_Constant)
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
         CArray::ShiftAlign(*geom\a_positions\data, *geom\nbpoints, 12, 16)
         CArray::ShiftAlign(*geom\a_pointnormals\data, *geom\nbpoints, 12, 16)
         CArray::ShiftAlign(*geom\a_velocities\data, *geom\nbpoints, 12, 16)
@@ -1238,7 +1238,7 @@ Module AlembicIObject
       io_sample\datas = CArray::GetPtr(*attr\data,0)   
       prop\GetSample(frame, @infos, @io_sample)
       
-      CompilerIf Defined(USE_SSE, #PB_Constant)
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
         If infos\type = Alembic::#ABC_DataTraits_V3f
           CArray::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
         EndIf
@@ -1438,9 +1438,8 @@ Module AlembicIObject
 EndModule
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1264
-; FirstLine = 1354
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 1240
+; FirstLine = 1236
 ; Folding = --------
 ; EnableXP

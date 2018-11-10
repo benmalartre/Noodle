@@ -234,7 +234,7 @@ Module Triangle
 
 EndProcedure
 
-; CompilerIf Defined(USE_SSE, #PB_Constant)
+; CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   Procedure.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32)
     Define *origin.v3f32 = *box\origin
     Define *extend.v3f32 = *box\extend
@@ -1367,8 +1367,8 @@ EndProcedure
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 907
-; FirstLine = 860
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 236
+; FirstLine = 817
 ; Folding = ---
 ; EnableXP
