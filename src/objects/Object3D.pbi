@@ -347,7 +347,15 @@ Module Object3D
   ; Update Local Transform
   ;-----------------------------------------------
   Procedure UpdateLocalTransform(*obj.Object3D::Object3D_t)
-    Protected *pt.Transform::Transform_t = *obj\parent\globalT
+    Protected *pt.Transform::Transform_t
+    If *obj\parent
+      *pt = *obj\parent\globalT
+    Else
+      Define pt.Math::trf32
+      Transform::Init(pt)
+      *pt = pt
+    EndIf
+    
     Protected *local.Transform::Transform_t = *obj\localT
     Protected *global.Transform::Transform_t = *obj\globalT
     Protected inv.m4f32
@@ -524,7 +532,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 226
-; FirstLine = 217
+; CursorPosition = 354
+; FirstLine = 344
 ; Folding = ------
 ; EnableXP

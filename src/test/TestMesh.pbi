@@ -212,21 +212,19 @@ Procedure Draw(*app.Application::Application_t)
   PolymeshGeometry::RandomColorByPolygon(*mgeom)
   Object3D::Freeze(*merged)
   
-  Object3D::AddChild(*root,*merged)
+;   Object3D::AddChild(*root,*merged)
   
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root,*bunny)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-  
-  
-   
+
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 215
-; FirstLine = 182
+; CursorPosition = 214
+; FirstLine = 185
 ; Folding = -
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app

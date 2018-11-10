@@ -9,26 +9,39 @@ XIncludeFile "../objects/Polymesh.pbi"
 Time::Init()
 
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("TOTO", Shape::#Shape_None)
-
-
+Define *worldSpace.Math::m4f32 = *mesh\globalT\m
+Define *T.Math::trf32 = *mesh\localT
+Transform::SetTranslationFromXYZValues(*T, 12, 6, 3)
+Transform::SetScaleFromXYZValues(*T, 2, 1, 0.5)
+Define q.Math::q4f32
+Quaternion::SetFromAxisAngleValues(q,0,0,1,Radian(90))
+Transform::SetRotationFromQuaternion(*T, q)
 Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 PolymeshGeometry::SphereTopology(*geom\topo,1,512,512)
 
 
 PolymeshGeometry::Set2(*geom, *geom\topo)
-
+Object3D::SetLocalTransform(*mesh, *T)
+Object3D::UpdateTransform(*mesh)
 Define T.d = Time::Get()
-Geometry::ComputeBoundingBox(*geom)
-Define msg.s = StrD(Time::Get() - T)+Chr(10)
-msg + "ORIGIN : "+Vector3::ToString(*geom\bbox\origin)+Chr(10)
-msg + "EXTEND : "+Vector3::ToString(*geom\bbox\extend)+Chr(10)
+Define i
+Define msg.s
+For i=0 To 12:
+  Geometry::RecomputeBoundingBox(*geom, #True, *worldSpace)
+  msg.s + StrD(Time::Get() - T)+Chr(10)
+  msg + "ORIGIN : "+Vector3::ToString(*geom\bbox\origin)+Chr(10)
+  msg + "EXTEND : "+Vector3::ToString(*geom\bbox\extend)+Chr(10)
+  T = Time::Get()
+Next
+
+; Geometry::RecomputeBoundingBox(*geom, #False)
 
 MessageRequester("Time", msg)
 
 
   
-
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 20
+; CursorPosition = 16
+; FirstLine = 4
 ; EnableXP
 ; Constant = #USE_SSE=1

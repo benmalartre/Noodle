@@ -443,8 +443,6 @@ Module PolymeshGeometry
     
     ; Finaly Vertex Normals
     If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints
-      Debug "NUM Vertex Polygon Count : "+Str(Carray::GetCount(*mesh\a_vertexpolygoncount))
-      Debug "NUM Vertex : "+Str(*mesh\nbpoints)
       RecomputeVertexPolygons(*mesh)
     EndIf
     
@@ -644,16 +642,12 @@ Module PolymeshGeometry
   Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
     Protected i, j, k, nbv, base, total
     Protected Dim indices.s(*mesh\nbpoints)
-    Debug "Nb Polygons : "+Str(*mesh\nbpolygons)
     base=0
     total = 0
     For i=0 To *mesh\nbpolygons-1
-      Debug "I : "+Str(i)
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
-      Debug "Nb Vertices : "+Str(nbv)
       For j=0 To nbv-1
         k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
-;         Debug "K : "+Str(k)
         indices(k) + Str(i)+","
         total+1
       Next j
@@ -674,9 +668,6 @@ Module PolymeshGeometry
       Next
       base + nbp
     Next
-    
-    Debug "Vertex Polygon Count : "+Str(*mesh\a_vertexpolygoncount)
-    Debug "Vertex Polygon Indices : "+Str(total)
 
   EndProcedure
   
@@ -751,7 +742,8 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_velocities,nbp)
     CArray::SetCount(*mesh\a_pointnormals,nbp)
     *mesh\nbpoints = nbp
-        
+    
+    
     Protected *vertex.Geometry::Vertex_t
     Protected color.c4f32
     Protected normal.v3f32
@@ -805,15 +797,16 @@ Module PolymeshGeometry
       EndIf
     Next i
     
-    MessageRequester("Faces", CArray::GetAsString(*mesh\a_facecount))
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
     
-    ; Recompute Polymesh datas
+    ; Recompute Bounding Box
+    Geometry::RecomputeBoundingBox(*mesh)
     
+    ; Recompute Polymesh datas
     RecomputeTriangles(*mesh)
     RecomputeEdges(*mesh)
     RecomputeVertexPolygons(*mesh)
-    Geometry::ComputeBoundingBox(*mesh)
+    
     ; GetDualGraph(*mesh)
     RecomputeNormals(*mesh,1)
 
@@ -824,8 +817,10 @@ Module PolymeshGeometry
     RecomputeTangents(*mesh)
     
     ;Color
-    Color::Set(color,0.33,0.33,0.33,1.0);
+    Color::Set(color,0.33,0.33,0.33,1.0)
     SetColors(*mesh,@color)
+    
+    
     
   EndProcedure
   
@@ -2464,7 +2459,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 753
-; FirstLine = 749
+; CursorPosition = 2415
+; FirstLine = 2390
 ; Folding = ----fw--v--
 ; EnableXP

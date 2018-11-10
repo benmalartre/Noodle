@@ -149,7 +149,7 @@ Module Topology
     For i=0 To CArray::GetCount(*matrices)-1
       *t = New(*topo)
       *m = CArray::GetValue(*matrices,i)
-      Transform(*t, *m)
+;       Transform(*t, *m)
       CArray::AppendPtr(*topo_array,*t)
     Next i
   EndProcedure
@@ -378,7 +378,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 83
+; CursorPosition = 151
+; FirstLine = 140
 ; Folding = ---
 ; EnableXP

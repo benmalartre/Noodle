@@ -393,7 +393,7 @@ DeclareModule Geometry
     
   EndStructure
   
-  Declare ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
+  Declare RecomputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
   Declare GetNbPoints(*geom.Geometry_t)
   Declare GetParentObject3D(*Me.Geometry_t)
   Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
@@ -405,7 +405,7 @@ EndDeclareModule
 ; Geometry Module Implementation
 ;========================================================================================
 Module Geometry
-  Procedure ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False)
+  Procedure RecomputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
     If Not *geom Or Not *geom\nbpoints
       ProcedureReturn
     EndIf
@@ -417,6 +417,7 @@ Module Geometry
       Define *extend = *geom\bbox\extend
       Define half.f = 0.5
       
+      ; load datas to cpu
       ! mov rax, [p.p_positions]              ; pass positions address to cpu
       ! mov rcx, [p.v_nbp]                    ; pass nb of points
       ! xor r8, r8                            ; reset offset
@@ -427,17 +428,87 @@ Module Geometry
       ! jz output_compute_box                 ; if only one point exit
       ! add r8, 16                            ; increment offset (skip first point)
       
-      ! loop_compute_box:
+      ! mov rdx, [p.v_worldSpace]             ; local or world space bounding box
+      ! cmp rdx, 0
+      ! je loop_compute_box_local             ; jump to local space computation
+      
+      ; load world space matrix
+      ! mov rdx, [p.p_m]                      ; load worldspace matrix in xmmm
+      ! movups  xmm6, [rdx]                   ; load first row in xmm6  
+      ! movups  xmm7, [rdx+16]                ; load second row in xmm7
+      ! movups  xmm8, [rdx+32]                ; load third row in xmm8
+      ! movups  xmm9, [rdx+48]                ; load fourth row in xmm9
+      
+      ; mul by matrix bmin and bmax
+      ! movaps xmm2, xmm0                   ; d c b a
+      ! movaps xmm3, xmm0                   ; d c b a   
+      ! movaps xmm4, xmm0                   ; d c b a 
+      
+      ! shufps xmm0, xmm0, 0                 ; a a a a 
+      ! shufps xmm2, xmm2, 01010101b         ; b b b b
+      ! shufps xmm3, xmm3, 10101010b         ; c c c c
+      ! shufps xmm4, xmm4, 11111111b         ; d d d d
+ 
+      ! mulps  xmm0, xmm6
+      ! mulps  xmm2, xmm7
+      ! mulps  xmm3, xmm8
+      
+      ! addps  xmm0, xmm2
+      ! addps  xmm0, xmm3
+      ! addps  xmm0, xmm9
+        
+      ! movaps xmm3, xmm0
+      ! shufps xmm3, xmm3, 11111111b
+      ! divps xmm0, xmm3
+      
+      ! movaps xmm1, xmm0
+      ! jmp loop_compute_box_world            ; jump to world space computation
+      
+      ; compute local bounding box
+      ! loop_compute_box_local:
       !   movaps xmm2, [rax+r8]               ; load current point
       !   minps xmm0, xmm2                    ; packed minimum test
       !   maxps xmm1, xmm2                    ; packed maximum test
 
       !   add r8, 16                          ; increment offset
       !   dec rcx                             ; decrement counter
-      !   jnz loop_compute_box                ; loop
+      !   jnz loop_compute_box_local          ; loop
+      !   jmp output_compute_box
       
+      ; compute world bounding box
+      ! loop_compute_box_world:
+      !   movaps xmm2, [rax+r8]               ; d c b a
+      !   movaps xmm3, xmm2                   ; d c b a
+      !   movaps xmm4, xmm2                   ; d c b a       
+      !   movaps xmm5, xmm2                   ; d c b a
+      
+      !   shufps xmm2, xmm2,0                 ; a a a a 
+      !   shufps xmm3, xmm3,01010101b         ; b b b b
+      !   shufps xmm4, xmm4,10101010b         ; c c c c
+      !   shufps xmm5, xmm5,11111111b         ; d d d d
+ 
+      !   mulps  xmm2, xmm6
+      !   mulps  xmm3, xmm7
+      !   mulps  xmm4, xmm8
+      
+      !   addps  xmm2, xmm3
+      !   addps  xmm2, xmm4
+      !   addps  xmm2, xmm9
+        
+      !   movaps xmm3, xmm2
+      !   shufps xmm3, xmm3, 11111111b
+      !   divps xmm2, xmm3
+      
+      !   minps xmm0, xmm2                    ; packed minimum test
+      !   maxps xmm1, xmm2                    ; packed maximum test
+
+      !   add r8, 16                          ; increment offset
+      !   dec rcx                             ; decrement counter
+      !   jnz loop_compute_box_world          ; loop
+      !   jmp output_compute_box
+      
+      ; output bounding box
       ! output_compute_box:                   ; output bbox
-      ;   compute box origin
       !   movlps xmm2, [p.v_half]             ; load half value (0.5)
       !   shufps xmm2, xmm2, 0                ; fill xmm3 with half
       !   movaps xmm3, xmm0                   ; copy bmin to xmm2
@@ -446,26 +517,25 @@ Module Geometry
       !   mulps xmm4, xmm2                    ; multiply bmax by half
       !   addps xmm3, xmm4                    ; add packed float
       
-      ;   compute box extend
       !   subps xmm1, xmm0                    ; packed substraction bmax - bmin
       !   mulps xmm1, xmm2                    ; packed multiplication extend * half
       
-      ;  back to memory
       !   mov rdx, [p.p_origin]               ; bbox origin (unaligned)
       !   movups [rdx], xmm3                  ; set from xmm3 
       !   mov rdx, [p.p_extend]               ; bbox extend (unaligned)
       !   movups [rdx], xmm1                  ; set from xmm1
+      
     CompilerElse
       Protected i
       Protected *v.v3f32
       Protected bmin.v3f32, bmax.v3f32
       Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
       Vector3::Set(bmax,-#F32_MAX,-#F32_MAX,-#F32_MAX)
-
+      
       For i=0 To *geom\nbpoints-1
         *v = CArray::GetValue(*geom\a_positions,i)
     
-        ;Vector3_MulByMatrix4InPlace(*v,*srt)
+        If worldSpace : Vector3::MulByMatrix4InPlace(*v,*m) : EndIf 
         If *v\x < bmin\x : bmin\x = *v\x : EndIf
         If *v\y < bmin\y : bmin\y = *v\y : EndIf
         If *v\z < bmin\z : bmin\z = *v\z : EndIf
@@ -476,11 +546,9 @@ Module Geometry
       Next i
       
       Protected *box.Geometry::Box_t = *geom\bbox
-      Vector3::LinearInterpolate(*box\origin, bmin, bmax, 0.5)
+      Vector3::LinearInterpolate(*box\origin, bmin, bmax, 0.5)    
       Vector3::Sub(*box\extend, bmax, bmin)
       Vector3::ScaleInPlace(*box\extend, 0.5)
-
-
     CompilerEndIf
   EndProcedure
   
@@ -510,7 +578,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 480
-; FirstLine = 447
+; CursorPosition = 454
+; FirstLine = 470
 ; Folding = -----
 ; EnableXP
