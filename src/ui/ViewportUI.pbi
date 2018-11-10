@@ -226,8 +226,8 @@ Module ViewportUI
                   If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 EndIf
               ElseIf modifiers & #PB_OpenGL_Command
-                Camera::Dolly(*Me\camera,deltax,deltay,width,height)
-                  If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+                Camera::Pan(*Me\camera,deltax,deltay,width,height)
+                If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
@@ -634,7 +634,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 292
-; FirstLine = 285
+; CursorPosition = 229
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP

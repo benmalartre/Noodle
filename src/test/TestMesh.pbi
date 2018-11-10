@@ -189,22 +189,20 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(center, 0,5,0)
 ;   CArray::SetCount(*matrices, CArray::GetCount(*samples))
   For i=0 To CArray::GetCount(*samples)-1
-;     *loc = CArray::GetValuePtr(*samples,i)
-;     Location::GetPosition(*loc)
-;     Location::GetNormal(*loc)
-;     Matrix4::SetIdentity(m)
-;     size = Random(5)+5
-;     Vector3::ScaleInPlace(*loc\n, size/2)
-;     Vector3::AddInPlace(*loc\p, *loc\n)
-;     Vector3::Randomize(pos, center, 12)
-;     Matrix4::SetIdentity(m)
-;     Matrix4::SetTranslation(m, *loc\p)
-;     
-;     Vector3::Set(scl, size, size, size)
-;     Matrix4::SetScale(m, scl)
+    *loc = CArray::GetValuePtr(*samples,i)
+    Location::GetPosition(*loc)
+    Location::GetNormal(*loc)
     Matrix4::SetIdentity(m)
-    Vector3::Set(pos, 0, i, 0)
-    Matrix4::SetTranslation(m, pos)
+    size = Random(5)+5
+    Vector3::ScaleInPlace(*loc\n, size/2)
+    Vector3::AddInPlace(*loc\p, *loc\n)
+    Vector3::Randomize(pos, center, 12)
+    Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m, *loc\p)
+    
+    Vector3::Set(scl, size, size, size)
+    Matrix4::SetScale(m, scl)
+   
     CArray::Append(*matrices,m)
 ;     CArray::SetValue(*matrices, i, m)
  Next
@@ -227,8 +225,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 176
+; CursorPosition = 204
+; FirstLine = 187
 ; Folding = -
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app
