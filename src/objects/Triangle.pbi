@@ -831,9 +831,9 @@ EndProcedure
     !   haddps xmm7, xmm7
     !   haddps xmm7, xmm7                       ; dot 
     !   xorps xmm8, xmm8
-    !   comiss xmm8, xmm7                      ; packed compare
+    !   comiss xmm8, xmm7                       ; packed compare
     !   jbe intersection                        ; 0 < vmax
-    !   jmp no_intersection                    ; branch if lower
+    !   jmp no_intersection                     ; no intersection
     
     ; ---------------------------------------------------------------------------------
     ; triangle intersect box
@@ -1368,7 +1368,7 @@ EndProcedure
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 817
+; CursorPosition = 835
+; FirstLine = 815
 ; Folding = ---
 ; EnableXP
