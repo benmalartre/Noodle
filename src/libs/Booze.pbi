@@ -1170,7 +1170,11 @@ Module AlembicIObject
         CArray::SetCount(*attr\data,*infos\nbitems)
         *sample\datas = CArray::GetPtr(*attr\data,0)
         prop\GetSample(1, *infos, *sample)   
-        CArray::Echo(*attr\data, name)
+        If Defined(USE_SSE, #PB_Constant) And #USE_SSE
+          If *infos\type = Alembic::#ABC_DataTraits_V3f
+            CArray::ShiftAlign(*attr\data, *infos\nbitems, 12, 16)
+          EndIf
+        EndIf
       EndIf
    Next
      
@@ -1195,7 +1199,7 @@ Module AlembicIObject
     
     For i=0 To *Me\iObj\GetNumProperties()-1
       Define prop.Alembic::IProperty = *Me\iObj\GetProperty(i)
-      prop\GetSampleDescription(frame, @infos)
+      prop\GetSampleDescription(frame, infos)
       If PeekS(prop\GetName()) = name 
        SelectElement(*Me\attributes(),x)
        *attr = *Me\attributes()
@@ -1204,7 +1208,12 @@ Module AlembicIObject
        EndIf
        
        io_sample\datas = CArray::GetPtr(*attr\data,0)   
-       prop\GetSample(infos\time, @infos, @io_sample)
+       prop\GetSample(infos\time, infos, io_sample)
+       If Defined(USE_SSE, #PB_Constant) And #USE_SSE
+          If infos\type = Alembic::#ABC_DataTraits_V3f
+            CArray::ShiftAlign(*attr\data, infos\nbitems, 12, 16)
+          EndIf
+        EndIf
        Break
      EndIf
      x+1
@@ -1438,8 +1447,8 @@ Module AlembicIObject
 EndModule
 
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1240
-; FirstLine = 1236
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1289
+; FirstLine = 1287
 ; Folding = --------
 ; EnableXP

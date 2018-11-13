@@ -2372,12 +2372,12 @@ Module PolymeshGeometry
     CArray::Copy(*shape\uvws,*Me\a_uvws)
     CArray::Copy(*shape\indices,*Me\a_triangleindices)
     
-    Protected c.v3f32
+    Protected c.c4f32
     Protected *c.c4f32
     CArray::SetCount(*shape\colors,*shape\nbp)
     For i=0 To *shape\nbp-1
       *c = CArray::GetValue(*Me\a_colors,i)
-      Vector3::Set(c,*c\r,*c\g,*c\b)
+      Color::Set(c,*c\r,*c\g,*c\b,1)
       CArray::SetValue(*shape\colors,i,c)
     Next
     *shape\indexed = #False
@@ -2457,8 +2457,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 925
-; FirstLine = 902
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 2374
+; FirstLine = 2347
 ; Folding = ----fw--v--
 ; EnableXP

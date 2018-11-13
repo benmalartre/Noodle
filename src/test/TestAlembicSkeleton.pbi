@@ -55,7 +55,7 @@ If Time::Init()
   
   Debug "Camera :: "+Str(*app\camera)
   
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
     
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
@@ -123,7 +123,7 @@ If Time::Init()
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 28
+; CursorPosition = 57
+; FirstLine = 53
 ; Folding = -
 ; EnableXP

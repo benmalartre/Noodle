@@ -110,6 +110,7 @@ Module InstanceCloud
   ;----------------------------------------------------
   Procedure GetShapeDataSize(*Me.InstanceCloud_t)
     Protected *shape.Shape::Shape_t = *Me\shape
+    
     Protected nbv = *shape\nbt * 3
     Protected size_s = nbv * SizeOf(v3f32)
     ProcedureReturn size_s
@@ -122,7 +123,6 @@ Module InstanceCloud
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
 
-    ;     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s*4,*flatdatas)
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s,CArray::GetPtr(*shape\positions,0))
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
@@ -372,9 +372,9 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 185
-; FirstLine = 181
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 134
+; FirstLine = 130
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

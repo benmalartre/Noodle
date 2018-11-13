@@ -23,6 +23,7 @@ DeclareModule Vector
   Declare ReadFromFile(*icon.Icon_t, filename.s)
   Declare Draw(*icon.Icon_t)
   Declare RoundBoxPath(width.f, height.f, radius.f=6, offsetx=0, offsety=0, stroke_width=2)
+  Declare MoveCursorPathOnCircle(cx.f, cy.f, radius.f, angle.f)
 EndDeclareModule
 
 
@@ -174,6 +175,15 @@ Module Vector
     ClosePath()
   EndProcedure
   
+  ;-----------------------------------------------------------------------------
+  ; MOVE CURSOR PATH ON CIRCLE
+  ;-----------------------------------------------------------------------------
+  Procedure MoveCursorPathOnCircle(cx.f, cy.f, radius.f, angle.f)
+    Define pcx.f = Cos(angle) * radius
+    Define pcy.f = Sin(angle) * radius
+    MovePathCursor(cx + pcx, cy + pcy)
+  EndProcedure
+  
   
 EndModule
 
@@ -258,7 +268,7 @@ EndProcedure
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 197
-; Folding = --
+; CursorPosition = 182
+; FirstLine = 159
+; Folding = ---
 ; EnableXP

@@ -199,7 +199,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   
   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TORUS)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  PointCloudGeometry::PointsOnGrid(*cloud\geom,24,24)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,8,8)
   Define startP.v3f32, endP.v3f32
   Vector3::Set(startP, -10,0,0)
   Vector3::Set(endP, 10,0,0)
@@ -259,8 +259,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 187
+; CursorPosition = 201
+; FirstLine = 181
 ; Folding = --
 ; EnableXP
 ; Executable = Test

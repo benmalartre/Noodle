@@ -25,6 +25,7 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   Define i
   For i=0 To 0
     Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 256, 256)
+    ControlKnob::SetLimits(*knob, 1000,9000)
 ;     ( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   Next
   ControlProperty::RowEnd(*prop)
@@ -42,8 +43,7 @@ Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property", #Null)
 AddKnobs(*ui, "KNOB")
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 35
-; FirstLine = 10
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 27
 ; Folding = -
 ; EnableXP

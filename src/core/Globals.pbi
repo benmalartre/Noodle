@@ -44,6 +44,7 @@ DeclareModule Globals
     #FONT_MENU
     #FONT_SUBMENU
     #FONT_NODE
+    #FONT_DIGITAL
   EndEnumeration
   
   Enumeration
@@ -196,6 +197,10 @@ Module Globals
   Procedure Init()
      ; ---[ Init Once ]----------------------------------------------------
     Protected lval.l = 0
+    If  RegisterFontFile("E:/Projects/RnD/Noodle/fonts/Digital/ds-digi.ttf")
+      LoadFont(#FONT_DIGITAL, "ds-digi", 32)
+    EndIf
+
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
         
@@ -223,9 +228,6 @@ Module Globals
         LoadFont(#FONT_SUBMENU,"Tahoma",8,#PB_Font_Bold)
         LoadFont(#FONT_NODE,"Tahoma",8)  
     CompilerEndSelect
-    
-      
-
   EndProcedure
   
   Procedure Term()
@@ -247,8 +249,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 185
+; CursorPosition = 221
+; FirstLine = 191
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

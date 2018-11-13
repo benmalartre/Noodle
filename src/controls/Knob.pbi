@@ -35,6 +35,12 @@ DeclareModule ControlKnob
     min.f
     max.f
     value.f
+    last_value.f
+    limited.b
+    min_limit.f
+    max_limit.f
+    increment.f
+    ascending.b
     *onchanged_signal.Slot::Slot_t
   EndStructure
   
@@ -42,6 +48,7 @@ DeclareModule ControlKnob
   Declare Init()
   Declare Term()
   Declare SetTheme(theme.i)
+  Declare SetLimits(*Me.ControlKnob_t, min_limit.f, max_limit.f)
   Declare Delete(*Me.ControlKnob_t)
   Declare OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -146,17 +153,23 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   
   For i=0 To #KNOB_NUM_MARKERS-1
     MovePathCursor(cx+Cos(i*incr)*(#KNOB_INNER_RADIUS), cy+Sin(i*incr)*(#KNOB_INNER_RADIUS))
-    AddPathLine(cx+Cos(i*incr)*(#KNOB_INNER_RADIUS-#KNOB_MARKER_SIZE), cy+Sin(i*incr)*(#KNOB_INNER_RADIUS-#KNOB_MARKER_SIZE))
+    ;     AddPathLine(cx+Cos(i*incr)*(#KNOB_INNER_RADIUS-#KNOB_MARKER_SIZE), cy+Sin(i*incr)*(#KNOB_INNER_RADIUS-#KNOB_MARKER_SIZE))
+    AddPathLine(cx+Cos(i*incr)*(#KNOB_OUTER_RADIUS), cy+Sin(i*incr)*(#KNOB_OUTER_RADIUS))
   Next
   
   VectorSourceColor(RGBA(16, 16, 16, 255))
   StrokePath(#KNOB_MARKER_WIDTH, #PB_Path_RoundCorner|#PB_Path_RoundEnd)  
   
   ; zero marker
-  MovePathCursor(cx, cy - #KNOB_OUTER_RADIUS)
-  AddPathLine(cx + #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
-  AddPathLine(cx - #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
-  AddPathLine(cx, cy - #KNOB_OUTER_RADIUS)
+;   MovePathCursor(cx, cy - #KNOB_OUTER_RADIUS)
+;   AddPathLine(cx + #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
+;   AddPathLine(cx - #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
+;   AddPathLine(cx, cy - #KNOB_OUTER_RADIUS)
+;   FillPath()
+  MovePathCursor(cx, cy - (#KNOB_OUTER_RADIUS + 8))
+  AddPathLine(cx + #KNOB_ZERO_SIZE * 0.16, cy - #KNOB_OUTER_RADIUS)
+  AddPathLine(cx - #KNOB_ZERO_SIZE * 0.16, cy - #KNOB_OUTER_RADIUS)
+  AddPathLine(cx, cy - (#KNOB_OUTER_RADIUS + 8))
   FillPath()
   
   ; manipulator
@@ -207,8 +220,33 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
     StrokePath(#KNOB_MARKER_WIDTH *2, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
   EndIf
   
-  ; debug side
   ResetCoordinates()
+  
+  ; display limits
+  If Not *Me\limited
+    AddPathCircle(cx, cy,#KNOB_OUTER_RADIUS + 12)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(8, #PB_Path_Connected)
+  Else
+    AddPathCircle(cx, cy,#KNOB_OUTER_RADIUS + 12, -240,60)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(8, #PB_Path_Connected)
+    
+    Define min_s.s = Str(*Me\min_limit)
+    Define max_s.s = Str(*Me\max_limit)
+    Define min_w = VectorTextWidth(min_s)
+    Define max_w = VectorTextWidth(max_s)
+    VectorFont(FontID(Globals::#FONT_LABEL), 8)
+    VectorSourceColor(RGBA(0,0,0,128))
+    Vector::MoveCursorPathOnCircle(cx - min_w, cy, #KNOB_OUTER_RADIUS*1.2, Radian(-260))
+    DrawVectorText(min_s)
+    Vector::MoveCursorPathOnCircle(cx + max_w , cy, #KNOB_OUTER_RADIUS*1.2, Radian(80))
+    DrawVectorText(max_s)
+
+  EndIf
+  
+  ; display value
+  VectorFont(FontID(Globals::#FONT_MENU), 12)
   Define value_s.s = StrF(*Me\value, 3)
   MovePathCursor(cx - VectorTextWidth(value_s) * 0.5, cy + #KNOB_OUTER_RADIUS * 1.4)
   VectorSourceColor(RGBA(255,0,128,128))
@@ -272,6 +310,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
         
         *Me\last_angle = *Me\angle
         *Me\angle_offset = hlpGetAngle(*Me)
+        *Me\last_value = *Me\value
        
         Control::Invalidate(*Me)
       EndIf
@@ -282,9 +321,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
         *Me\down = #False
-        If *Me\over And ( *Me\options & #PB_Button_Toggle )
-          *Me\value * -1
-        EndIf
+       
         Control::Invalidate(*Me)
         
       EndIf
@@ -299,10 +336,28 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
           *Me\mouseY = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY)
           Define side.f = hlpGetSide(*Me) 
           Define angle.f = hlpGetAngle(*Me)
+          
+          Define current_angle
           If side < 0
             *Me\angle = *Me\last_angle + angle + *Me\angle_offset
+            If *Me\angle < *Me\last_angle
+              *Me\ascending = #False
+            Else 
+              *Me\ascending = #True
+            EndIf
           Else
             *Me\angle = *Me\last_angle -( angle + *Me\angle_offset)
+            If *Me\angle < *Me\last_angle
+              *Me\ascending = #True
+            Else 
+              *Me\ascending = #False
+            EndIf
+          EndIf
+          
+          If *Me\ascending
+            *Me\value = *Me\last_value + Radian(angle + *Me\angle_offset) 
+          Else
+            *Me\value = *Me\last_value - Radian(angle + *Me\angle_offset) 
           EndIf
 
           Slot::Trigger(*Me\onchanged_signal, Signal::#SIGNAL_TYPE_PING, @*Me\value)
@@ -382,6 +437,15 @@ Procedure SetTheme(theme.i)
 EndProcedure
 
 ; ============================================================================
+;  SET LIMITS
+; ============================================================================
+Procedure SetLimits(*Me.ControlKnob_t, min_limit.f, max_limit.f)
+  *Me\limited = #True
+  *Me\min_limit = min_limit
+  *Me\max_limit = max_limit
+EndProcedure
+
+; ============================================================================
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlKnob_t )
@@ -435,8 +499,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 386
-; FirstLine = 383
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 242
+; FirstLine = 230
 ; Folding = ---
 ; EnableXP

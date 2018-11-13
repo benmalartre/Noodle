@@ -3011,6 +3011,11 @@ Module Quaternion
 ;     ; y = (q1\w * q2\y) + (q1\y * q2\w) + (q1\z * q2\x) - (q1\x * q2\z)
 ;     ; z = (q1\w * q2\z) + (q1\z * q2\w) + (q1\x * q2\y) - (q1\y * q2\x)
 ;     ; w = (q1\w * q2\w) - (q1\x * q2\x) - (q1\y * q2\y) - (q1\z * q2\z)
+  
+  ; x = (q1\x * q2\w) + (q1\y * q2\z) + (q1\z * q2\y) + (q1\w * q2\x)
+  ; y = -(q1\x * q2\z) + (q1\y * q2\w) + (q1\z * q2\x) + (q1\w * q2\y)
+  ; z = (q1\x * q2\y) - (q1\y * q2\x) + (q1\z * q2\w) + (q1\w * q2\z)
+  ; w = -(q1\x * q2\x) - (q1\y * q2\y) - (q1\z * q2\z) + (q1\w * q2\w)
 ;     
 ;     ! mov rax, [p.p_out]
 ;     ! mov rcx, [p.p_q1]
@@ -3022,7 +3027,7 @@ Module Quaternion
 ;     ! xorps xmm2, xmm2                ; reset output register
 ;     
 ;     ! movaps xmm2, xmm0               ; copy q1 to xmm2
-;     ! movaps xmm3, xmm0                ; and xmm3
+;     ! movaps xmm3, xmm0               ; and xmm3
 ;     ! movaps xmm4, xmm1               ; copy q2 to xmm4
 ;     ! movaps xmm5, xmm1               ; and xmm5
 ;     
@@ -3044,30 +3049,30 @@ Module Quaternion
 ;     ! subps   xmm0, xmm3
 ;     ! addps   xmm0, xmm2
 ;     ! movups [rax], xmm0
-;     
-; ;     movaps  xmm2, xmm0
-; ;     movaps  xmm3, xmm0
-; ;     movaps  xmm5, xmm1
-; ;     movaps  xmm4, xmm1
-; ;     shufps  xmm2, xmm0, 229
-; ;     shufps  xmm4, xmm1, 158
-; ;     shufps  xmm3, xmm0, 122
-; ;     shufps  xmm5, xmm1, 1
-; ;     mulps   xmm3, xmm4
-; ;     movaps  xmm4, xmm1
-; ;     mulps   xmm2, xmm5
-; ;     shufps  xmm4, xmm1, 123
-; ;     addps   xmm2, xmm3
-; ;     movaps  xmm3, xmm0
-; ;     shufps  xmm3, xmm0, 159
-; ;     shufps  xmm0, xmm0, 0
-; ;     xorps   xmm2, XMMWORD PTR .LC0[rip]
-; ;     mulps   xmm3, xmm4
-; ;     mulps   xmm0, xmm1
-; ;     subps   xmm0, xmm3
-; ;     addps   xmm0, xmm2
-; 
-; 
+    
+;     movaps  xmm2, xmm0
+;     movaps  xmm3, xmm0
+;     movaps  xmm5, xmm1
+;     movaps  xmm4, xmm1
+;     shufps  xmm2, xmm0, 229
+;     shufps  xmm4, xmm1, 158
+;     shufps  xmm3, xmm0, 122
+;     shufps  xmm5, xmm1, 1
+;     mulps   xmm3, xmm4
+;     movaps  xmm4, xmm1
+;     mulps   xmm2, xmm5
+;     shufps  xmm4, xmm1, 123
+;     addps   xmm2, xmm3
+;     movaps  xmm3, xmm0
+;     shufps  xmm3, xmm0, 159
+;     shufps  xmm0, xmm0, 0
+;     xorps   xmm2, XMMWORD PTR .LC0[rip]
+;     mulps   xmm3, xmm4
+;     mulps   xmm0, xmm1
+;     subps   xmm0, xmm3
+;     addps   xmm0, xmm2
+
+
 ;   EndProcedure
 ;     
 ;   Procedure MultiplyInPlace(*q1.q4f32, *q2.q4f32)
@@ -3540,9 +3545,9 @@ EndModule
 ;====================================================================
 ; EOF
 ;====================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1321
-; FirstLine = 1317
-; Folding = --------------------------------x+---X-0----
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 646
+; FirstLine = 646
+; Folding = -------------------------------j0---8-----
 ; EnableXP
 ; EnableUnicode

@@ -3,7 +3,7 @@
 EnableExplicit
 
 Alembic::Init()
-Global *manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
+Global *manager.Alembic::IArchiveManager = Alembic::abc_manager
 
 Global window = OpenWindow(#PB_Any,0,0,800,600,"Alembic Archive")
 Global load = ButtonGadget(#PB_Any,0,0,800,25, "Choose Alembic File")
@@ -12,13 +12,14 @@ Global explorer = TreeGadget(#PB_Any,0,25,800,575)
 Procedure.i LogABCArchive(path.s)
   If FileSize(path)>0 And GetExtensionPart(path) = "abc"
     
-    If Alembic::*abc_manager<>#Null
-      Protected *abc_manager.AlembicManager::AlembicManager_t = Alembic::*abc_manager
-      Global *abc_archive.AlembicArchive::AlembicArchive_t = AlembicManager::OpenArchive(*abc_manager,path)
-      Global startframe = Alembic::ABC_GetStartFrame(*abc_archive\archive)
-      Global endframe = Alembic::ABC_GetEndFrame(*abc_archive\archive)
-      Global numsamples = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
-      Global numsamples2 = Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,1)
+    If Alembic::abc_manager<>#Null
+      Protected *abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
+      Protected *abc_archive.IArchive = Alembic::OpenIArchive(path)
+      
+      Global startframe = *abc_archive\GetStartTime() 
+      Global endframe = *abc_archive\GetEndTime();Alembic::ABC_GetEndFrame(*abc_archive\archive)
+      Global numsamples = *abc_archive\GetMaxNumSamplesForTimeSamplingIndex(0);Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
+      Global numsamples2 = *abc_archive\ABC_GetMaxNumSamplesForTimeSamplingIndex(1)
       ; CreateObject List
       Protected i,j
       Protected *abc_obj.AlembicObject::AlembicObject_t
@@ -29,8 +30,8 @@ Procedure.i LogABCArchive(path.s)
       Protected pName.s
       Protected infos.Alembic::ABC_Attribute_Sample_Infos
             
-      For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
-        *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
+      For i=0 To *abc_archive\GetNumObjects()-1
+        *abc_obj = *abc_archive\GetObject(i)(i)
         ;Alembic::ABC_InitObject(*abc_obj\ptr,*abc_obj\type)
         
         AddGadgetItem(explorer,-1,*abc_obj\name)
@@ -128,7 +129,8 @@ Alembic::Terminate()
   
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 29
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; EnableUnicode
