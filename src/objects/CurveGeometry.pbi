@@ -240,7 +240,7 @@ Module CurveGeometry
         EndIf
         Vector3::Cross(nrm, t1, upv)
         Vector3::NormalizeInPlace(nrm)
-        CArray::SetValue(*Me\a_normals, j+base, norm)
+        CArray::SetValue(*Me\a_normals, j+base, nrm)
       Next
       base + numVertices
     Next
@@ -595,7 +595,7 @@ Module CurveGeometry
     Vector3::Set(color, 1,0,0)
     Vector3::Set(norm, 0,0,1)
     For i=0 To N-1
-      Math::UniformPointOnSphere(@offset)
+      Math::UniformPointOnSphere(offset)
       For j=0 To numCVs -1
         Vector3::AddInPlace(p, offset)
         p\x + (1 - 2 * Random_0_1())
@@ -674,7 +674,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 607
-; FirstLine = 600
+; CursorPosition = 242
+; FirstLine = 202
 ; Folding = ------
 ; EnableXP

@@ -48,6 +48,7 @@ DeclareModule ViewportUI
   Declare AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
+  Declare SetHandleTool(*Me.ViewportUI_t, tool.i)
   Declare GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
   ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
   
@@ -302,6 +303,7 @@ Module ViewportUI
             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
             *Me\tool = Globals::#TOOL_ROTATE
           Case Globals::#SHORTCUT_TRANSLATE
+            MessageRequester("VIEWPORT", "TRANSLATE ACTIVE")
             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
             *Me\tool = Globals::#TOOL_TRANSLATE
           Case Globals::#SHORTCUT_CAMERA
@@ -365,6 +367,13 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure SetHandleTargets(*Me.ViewportUI_t, *targets)
     Handle::SetTargets(*Me\handle, *targets)
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Set Handle Tool
+  ;------------------------------------------------------------------
+  Procedure SetHandleTool(*Me.ViewportUI_t, tool)
+    Handle::SetActiveTool(*Me\handle, tool)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -633,8 +642,7 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 229
-; FirstLine = 216
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 50
 ; Folding = -----
 ; EnableXP

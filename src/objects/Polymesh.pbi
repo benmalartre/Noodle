@@ -127,7 +127,7 @@ Module Polymesh
     Protected *topology = Attribute::New("Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*data,#False,#True)
     Object3D::AddAttribute(*Me,*topology)
 ;     *Me\texture = 0
-  
+    Object3D::Freeze(*Me)
     ProcedureReturn *Me
   EndProcedure
   
@@ -457,9 +457,9 @@ Module Polymesh
   ;{
   Procedure Update(*p.Polymesh_t)
     
-    If *p\stack
+    If *p\stack 
       PolymeshGeometry::Reset(*p\geom)
-      Stack::Update(*p\stack)
+;       Stack::Update(*p\stack)
     EndIf
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
@@ -562,8 +562,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 319
-; FirstLine = 288
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 462
+; FirstLine = 454
 ; Folding = ----
 ; EnableXP

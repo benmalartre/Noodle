@@ -1248,7 +1248,11 @@ Module AlembicIObject
       prop\GetSample(frame, @infos, @io_sample)
       
       CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        If infos\type = Alembic::#ABC_DataTraits_V3f
+        MessageRequester(*Me\attributes()\name, Str(infos\traits))
+        If infos\type = Alembic::#ABC_PropertyType_Array And
+           (infos\traits = Alembic::#ABC_DataTraits_P3f Or
+            infos\traits = Alembic::#ABC_DataTraits_N3f Or
+            infos\traits = Alembic::#ABC_DataTraits_V3f):
           CArray::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
         EndIf
       CompilerEndIf
@@ -1272,6 +1276,7 @@ Module AlembicIObject
            Select name
              Case "Scale"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               
                CArray::SetCount(*geom\a_scale,nbp)
                CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),
                           CArray::GetPtr(*geom\a_scale,0),
@@ -1448,7 +1453,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1289
-; FirstLine = 1287
+; CursorPosition = 1255
+; FirstLine = 1246
 ; Folding = --------
 ; EnableXP

@@ -11,59 +11,60 @@ Global explorer = TreeGadget(#PB_Any,0,25,800,575)
 
 Procedure.i LogABCArchive(path.s)
   If FileSize(path)>0 And GetExtensionPart(path) = "abc"
-    
     If Alembic::abc_manager<>#Null
-      Protected *abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
-      Protected *abc_archive.IArchive = Alembic::OpenIArchive(path)
-      
-      Global startframe = *abc_archive\GetStartTime() 
-      Global endframe = *abc_archive\GetEndTime();Alembic::ABC_GetEndFrame(*abc_archive\archive)
-      Global numsamples = *abc_archive\GetMaxNumSamplesForTimeSamplingIndex(0);Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
-      Global numsamples2 = *abc_archive\ABC_GetMaxNumSamplesForTimeSamplingIndex(1)
-      ; CreateObject List
-      Protected i,j
-      Protected *abc_obj.AlembicObject::AlembicObject_t
-      Protected *abc_par.AlembicObject::AlembicObject_t = #Null
-      Protected *prop.Alembic::ABC_property
-      Protected nbp = 0
-
-      Protected pName.s
-      Protected infos.Alembic::ABC_Attribute_Sample_Infos
-            
-      For i=0 To *abc_archive\GetNumObjects()-1
-        *abc_obj = *abc_archive\GetObject(i)(i)
-        ;Alembic::ABC_InitObject(*abc_obj\ptr,*abc_obj\type)
-        
-        AddGadgetItem(explorer,-1,*abc_obj\name)
-      
-        If *abc_obj\type = Alembic::#ABC_OBJECT_POLYMESH Or *abc_obj\type = Alembic::#ABC_OBJECT_POINTCLOUD
-          nbp = Alembic::ABC_GetNumProperties(*abc_obj\ptr)
-          Debug *abc_obj\name+" ---> Num Properties : "+Str(nbp)
-     
-          For j=0 To nbp-1
-            Protected *mem = Alembic::ABC_GetPropertyName(*abc_obj\ptr,j)
-            If *mem
-              pName = PeekS(*mem, -1, #PB_UTF8)
-              Debug pName
-              *prop = Alembic::ABC_GetProperty(*abc_obj\ptr,j)
-              If *prop
-                Alembic::ABC_GetAttributeSampleDescription(*prop,1,@infos)
-                Debug "PROPERTY "+pName 
-                Debug "Name "+PeekS(@infos\name,-1,#PB_UTF8)
-                ;Alembic::ABC_GetAttributeValueAtIndex(*prop,1,0)
-                Debug "Nb Items : "+Str(infos\nbitems)
-                Debug "Type : "+Str(infos\type)
-              EndIf
-              
-            Else
-              Debug "Property Invalid "+Str(i)
-            EndIf
-            
-          Next
-          
-        EndIf
-        
-      Next i
+      Define *abc_archive = Alembic::LoadABCArchive(path)
+;     If Alembic::abc_manager<>#Null
+;       Protected *abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
+;       Protected *abc_archive.IArchive = Alembic::OpenIArchive(path)
+;       
+;       Global startframe = *abc_archive\GetStartTime() 
+;       Global endframe = *abc_archive\GetEndTime();Alembic::ABC_GetEndFrame(*abc_archive\archive)
+;       Global numsamples = *abc_archive\GetMaxNumSamplesForTimeSamplingIndex(0);Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
+;       Global numsamples2 = *abc_archive\ABC_GetMaxNumSamplesForTimeSamplingIndex(1)
+;       ; CreateObject List
+;       Protected i,j
+;       Protected *abc_obj.AlembicObject::AlembicObject_t
+;       Protected *abc_par.AlembicObject::AlembicObject_t = #Null
+;       Protected *prop.Alembic::ABC_property
+;       Protected nbp = 0
+; 
+;       Protected pName.s
+;       Protected infos.Alembic::ABC_Attribute_Sample_Infos
+;             
+;       For i=0 To *abc_archive\GetNumObjects()-1
+;         *abc_obj = *abc_archive\GetObject(i)(i)
+;         ;Alembic::ABC_InitObject(*abc_obj\ptr,*abc_obj\type)
+;         
+;         AddGadgetItem(explorer,-1,*abc_obj\name)
+;       
+;         If *abc_obj\type = Alembic::#ABC_OBJECT_POLYMESH Or *abc_obj\type = Alembic::#ABC_OBJECT_POINTCLOUD
+;           nbp = Alembic::ABC_GetNumProperties(*abc_obj\ptr)
+;           Debug *abc_obj\name+" ---> Num Properties : "+Str(nbp)
+;      
+;           For j=0 To nbp-1
+;             Protected *mem = Alembic::ABC_GetPropertyName(*abc_obj\ptr,j)
+;             If *mem
+;               pName = PeekS(*mem, -1, #PB_UTF8)
+;               Debug pName
+;               *prop = Alembic::ABC_GetProperty(*abc_obj\ptr,j)
+;               If *prop
+;                 Alembic::ABC_GetAttributeSampleDescription(*prop,1,@infos)
+;                 Debug "PROPERTY "+pName 
+;                 Debug "Name "+PeekS(@infos\name,-1,#PB_UTF8)
+;                 ;Alembic::ABC_GetAttributeValueAtIndex(*prop,1,0)
+;                 Debug "Nb Items : "+Str(infos\nbitems)
+;                 Debug "Type : "+Str(infos\type)
+;               EndIf
+;               
+;             Else
+;               Debug "Property Invalid "+Str(i)
+;             EndIf
+;             
+;           Next
+;           
+;         EndIf
+;         
+;       Next i
 
       
 ;       ; Create a new Model
@@ -111,7 +112,7 @@ Repeat
     If EventGadget() = load And EventType() = #PB_EventType_LeftClick 
       ClearGadgetItems(explorer)
       Define path.s = OpenFileRequester("Alembic Archive","","Alembic (*.abc)|*.abc",0)
-      Define *archive.AlembicArchive::AlembicArchive_t = LogABCArchive(path)
+;       Define *archive.AlembicArchive::AlembicArchive_t = LogABCArchive(path)
   
       If *archive <> #Null
         Debug AlembicManager::GetNumOpenArchives(*manager)
@@ -129,8 +130,8 @@ Alembic::Terminate()
   
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 16
-; FirstLine = 12
+; CursorPosition = 114
+; FirstLine = 72
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

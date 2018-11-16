@@ -395,7 +395,7 @@ Module PolymeshGeometry
   ;  Recompute Normals
   ; ----------------------------------------------------------------------------
   Procedure RecomputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
-    
+    Define T.d = Time::Get()
     Protected i,j,base
     Protected ab.v3f32, ac.v3f32,n.v3f32, norm.v3f32
     Protected *n.v3f32
@@ -404,48 +404,210 @@ Module PolymeshGeometry
     Protected cnt = 0
   
     Vector3::Set(n,0,0,0)
-
-    ; First Triangle Normals
-    Define.v3f32 *a, *b, *c
-    For i=0 To *mesh\nbtriangles-1
-      *a = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3)))
-      *b = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+1)))
-      *c = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+2)))
-      
-      Vector3::Sub(ab,*a,*b)
-      Vector3::Sub(ac,*a,*c)
-      
-      Vector3::Cross(norm,ac,ab)
-      Vector3::NormalizeInPlace(norm)
-      CArray::SetValue(*mesh\a_normals,cnt,norm)
-      CArray::SetValue(*mesh\a_normals,cnt+1,norm)
-      CArray::SetValue(*mesh\a_normals,cnt+2,norm)
-
-      cnt+3
-    Next i
-    
-    ; Then Polygons Normals
-    Protected nbv, nbt
-    Define *n.v3f32
     CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
-    For i=0 To*mesh\nbpolygons-1
-      nbv = CArray::GetvalueL(*mesh\a_facecount, i)
-      nbt = nbv-2
-      Vector3::Set(n, 0,0,0)
-      For j=0 To nbt-1
-        *n = CArray::GetValue(*mesh\a_normals, base+j*3)
-        Vector3::AddInPlace(n, *n)
-      Next
-      Vector3::NormalizeInPlace(n)
-      CArray::SetValue(*mesh\a_polygonnormals, i, n)
-      base+nbt*3
-    Next
     
-    ; Finaly Vertex Normals
-    If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints
+    Define doRecomputeVertexPolygons = #False
+    ; Recompute Vertex Polygons if necessary
+    If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints     
       RecomputeVertexPolygons(*mesh)
+      doRecomputeVertexPolygons = #True
     EndIf
     
+    ; First Triangle Normals
+    Define.v3f32 *a, *b, *c
+    Define *positions = *mesh\a_positions\data
+    Define *indices = *mesh\a_triangleindices\data
+    Define *normals = *mesh\a_normals\data
+    Define *polygonnormals = *mesh\a_polygonnormals\data
+    Define numTris = *mesh\nbtriangles
+    Define numPolygons = *mesh\nbpolygons
+    Define *facecount = *mesh\a_facecount\data
+    Define *faceindices = *mesh\a_faceindices\data
+    Define nbv, nbt
+    
+   
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      
+      ! mov edx, [p.p_indices]                ; move indices to ecx register
+      ! mov rsi, [p.p_positions]              ; move positions to rsi register
+      ! mov rdi, [p.p_normals]                ; move normals to rdi register
+      
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+        ! mov r9, 16                         ; move item size to eax register
+      CompilerElse
+        ! mov r9, 12                         ; move item size to eax register
+      CompilerEndIf
+      
+      ! mov ecx, [p.v_numTris]               ; move num triangles to edx register
+
+      ! loop_compute_triangle_normal:
+      !   mov eax, [edx]                    ; get value for desired point A
+      !   imul rax, r9                      ; compute offset in position array
+      !   mov r10, rsi                      ; load positions array
+      !   add r10, rax                      ; offset to desired item
+      !   movups xmm2, [r10]                ; load point A to xmm0
+      !   movaps xmm3, xmm2                 ; copy point A to xmm1
+      !   add edx, 4                        ; offset next item
+      
+      !   mov eax, [edx]                    ; get value for desired point B
+      !   imul rax, r9                      ; compute offset in position array
+      !   mov r10, rsi
+      !   add r10, rax                      ; offset to desired item
+      !   movups xmm0, [r10]                ; load point B to xmm2
+      !   add edx, 4                        ; offset next item
+      
+      !   mov eax, [edx]                    ; get value for desired point B
+      !   imul rax, r9                      ; compute offset in position array
+      !   mov r10, rsi
+      !   add r10, rax                      ; offset to desired item
+      !   movups xmm1, [r10]                ; load point C to xmm3
+      !   add edx, 4                        ; offset next item
+      
+      !   subps xmm0, xmm2                  ; compute vector AB
+      !   subps xmm1, xmm3                  ; compute vector AC
+      
+      ; ---------------------------------------------------------------------------------
+      ; cross product
+      ; ---------------------------------------------------------------------------------
+      !   movaps xmm2,xmm0                  ; copy vec AB to xmm2
+      !   movaps xmm3,xmm1                  ; copy vec AC to xmm3
+        
+      !   shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
+      !   shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
+      !   mulps  xmm2,xmm3
+               
+      !   shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
+      !   shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
+      !   mulps  xmm0,xmm1
+              
+      !   subps  xmm0,xmm2                  ; cross product triangle normal
+      
+      ; ---------------------------------------------------------------------------------
+      ; normalize in place
+      ; ---------------------------------------------------------------------------------
+      !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
+      !   mulps xmm0, xmm0                  ; carré de chaque composante
+      ; mix1
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 01001110b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; mix2
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 00010001b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; 1/sqrt
+      !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
+      !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      
+      !   jmp set_triangle_normals
+      
+      ; ---------------------------------------------------------------------------------
+      ; next triangle
+      ; ---------------------------------------------------------------------------------
+      ! next_triangle:
+      !   dec ecx                           ; decrement triangle counter
+      !   jg loop_compute_triangle_normal   ; loop next triangle
+      ! jmp set_polygon_normals
+      
+      ; ---------------------------------------------------------------------------------
+      ; set triangle normals
+      ; ---------------------------------------------------------------------------------
+      ! set_triangle_normals:
+      !   mov r11, 3                        ; reset triangle vertex counter
+      !   loop_set_triangle_normals:
+      !     movups [rdi], xmm0              ; move memory
+      !     add rdi, r9                     ; offset in normals array
+      !     dec r11                         ; decrement vertex counter
+      !     jg loop_set_triangle_normals    ; loop triangle vertices
+      !   jmp next_triangle                 ; jump next triangle
+      
+      ; ---------------------------------------------------------------------------------
+      ; set polygon normals
+      ; ---------------------------------------------------------------------------------
+      ! set_polygon_normals:
+      !   mov ecx, [p.v_numPolygons]
+      !   mov edx, [p.p_facecount]
+      !   mov rsi, [p.p_normals] 
+      !   mov rdi, [p.p_polygonnormals] 
+      
+      ! loop_set_polygon_normals:
+      !   mov eax, [edx]                          ; get num vertices for this polygon
+      !   add edx, 4                              ; increment face count for next polygon
+      !   mov r11, -2
+      !   add r11, rax                          ; compute num tris
+      !   xorps xmm0, xmm0
+      
+      ! loop_per_polygon_triangle:
+      !   movups xmm1, [rsi]
+      !   addps xmm0, xmm1
+      !   add rsi, 48
+      !   dec r11
+      !   jg loop_per_polygon_triangle
+      
+      ; ---------------------------------------------------------------------------------
+      ; normalize in place
+      ; ---------------------------------------------------------------------------------
+      ! movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
+      ! mulps xmm0, xmm0                  ; carré de chaque composante
+      ; mix1
+      ! movaps xmm7, xmm0
+      ! shufps xmm7, xmm7, 01001110b
+      ! addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; mix2
+      ! movaps xmm7, xmm0
+      ! shufps xmm7, xmm7, 00010001b
+      ! addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; 1/sqrt
+      ! rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
+      ! mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+       
+      ; ---------------------------------------------------------------------------------
+      ; set polygon normal
+      ; ---------------------------------------------------------------------------------
+      ! movups [rdi], xmm0
+      ! add rdi, 16
+      
+      ! dec ecx
+      ! jg loop_set_polygon_normals
+
+
+    CompilerElse
+      For i=0 To *mesh\nbtriangles-1
+        *a = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3)))
+        *b = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+1)))
+        *c = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+2)))
+        
+        Vector3::Sub(ab,*a,*b)
+        Vector3::Sub(ac,*a,*c)
+        
+        Vector3::Cross(norm,ac,ab)
+        Vector3::NormalizeInPlace(norm)
+        CArray::SetValue(*mesh\a_normals,cnt,norm)
+        CArray::SetValue(*mesh\a_normals,cnt+1,norm)
+        CArray::SetValue(*mesh\a_normals,cnt+2,norm)
+  
+        cnt+3
+      Next i
+      
+      ; Then Polygons Normals
+      Define *n.v3f32
+      CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
+      For i=0 To*mesh\nbpolygons-1
+        nbv = CArray::GetvalueL(*mesh\a_facecount, i)
+        nbt = nbv-2
+        Vector3::Set(n, 0,0,0)
+        For j=0 To nbt-1
+          *n = CArray::GetValue(*mesh\a_normals, base+j*3)
+          Vector3::AddInPlace(n, *n)
+        Next
+        Vector3::NormalizeInPlace(n)
+        CArray::SetValue(*mesh\a_polygonnormals, i, n)
+        base+nbt*3
+      Next
+      
+    CompilerEndIf
+
     Protected nbp, index
     base = 0
     For i=0 To *mesh\nbpoints-1
@@ -646,6 +808,7 @@ Module PolymeshGeometry
     total = 0
     For i=0 To *mesh\nbpolygons-1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
+
       For j=0 To nbv-1
         k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
         indices(k) + Str(i)+","
@@ -734,6 +897,8 @@ Module PolymeshGeometry
     If *topo <> *mesh\topo
       Topology::Copy(*mesh\topo, *topo)
     EndIf
+    
+    If Not CArray::GetCount(*topo\vertices) : ProcedureReturn : EndIf
 
     ; ReAllocate Memory
     Protected i
@@ -864,6 +1029,7 @@ Module PolymeshGeometry
     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
       Set2(*geom,*geom\base)
     Else
+;       If *geom\dirty
       SetPointsPosition(*geom,*geom\base\vertices)
       ;SetPointsNormal(*geom,*geom\base\normals)
       RecomputeNormals(*geom)
@@ -2458,7 +2624,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2374
-; FirstLine = 2347
-; Folding = ----fw--v--
+; CursorPosition = 631
+; FirstLine = 588
+; Folding = -----B---+-
 ; EnableXP

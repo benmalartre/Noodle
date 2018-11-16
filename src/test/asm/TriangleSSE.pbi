@@ -12,7 +12,19 @@ DataSection
   Data.b %10100000    ; x z mask
   z_axis_bits:
   Data.b %01010000    ; x y mask
+  epsilon_bits:
+  Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
 EndDataSection
+
+DataSection
+  problematic_tris:
+  Data.f -0.6800000072,-0.719999969,-0.719999969,-0.5500000119,-0.8299999833,-0.8299999833,-0.6699999571,-0.5999999642,-0.5199999809
+  Data.f -0.7899999619,-0.7299999595,-0.7299999595,-0.5199999809,-0.7599999905,-0.7599999905,-0.6399999857,-0.9499999881,-0.7999999523
+  Data.f -0.7799999714,-0.5999999642,-0.5999999642,-0.6899999976,-0.8299999833,-0.8299999833,-0.5899999738,-0.8599999547,-0.719999969
+  Data.f -0.5600000024,-0.8499999642,-0.8499999642,-0.969999969,-0.75,-0.75,-0.6699999571,-0.7699999809,-0.6499999762
+  
+EndDataSection
+
 
 Macro FINDMINMAX(x0,x1,x2,min,max)
   min = x0
@@ -30,9 +42,6 @@ Macro AXISTEST_X01(a, b, fa, fb)
   EndIf
   
   rad = fa * *extend\y + fb * *extend\z 
-  *output\x = rad
-  *output\y = rad
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False : EndIf
   
 EndMacro
@@ -45,10 +54,6 @@ Macro AXISTEST_X20(a, b, fa, fb)
   EndIf
   
   rad = fa * *extend\y + fb * *extend\z
-    
-  *output\x = rad
-  *output\y = rad
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
   
 EndMacro
@@ -63,9 +68,6 @@ Macro AXISTEST_Y02(a, b, fa, fb)
   EndIf
   
   rad = fa * *extend\x + fb * *extend\z
-  *output\x = rad
-  *output\y = rad
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
 
 EndMacro
@@ -78,15 +80,11 @@ Macro AXISTEST_Y10(a, b, fa, fb)
   EndIf
   
   rad = fa * *extend\x + fb * *extend\z
-  *output\x = min
-  *output\y = max
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
 
 EndMacro
   
 ; ======================== Z-tests ========================
-; AXISTEST_Z12(e0\y, e0\x, fey, fex)
 Macro AXISTEST_Z12(a, b, fa, fb)
   p1 = a * v1\x - b * v1\y
   p2 = a * v2\x - b * v2\y
@@ -95,9 +93,6 @@ Macro AXISTEST_Z12(a, b, fa, fb)
   EndIf
 
   rad = fa * *extend\x + fb * *extend\y
-  *output\x = rad
-  *output\y = rad
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
 
 EndMacro
@@ -110,9 +105,6 @@ Macro AXISTEST_Z00(a, b, fa, fb)
   EndIf
   
   rad = fa * *extend\x + fb * *extend\y
-  *output\x = rad
-  *output\y = rad
-  *output\z = rad
   If min>rad Or max<-rad : ProcedureReturn #False  : EndIf
 
 EndMacro
@@ -150,39 +142,6 @@ Procedure.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output.v3
   Vector3::Sub(e1, v2, v1)
   Vector3::Sub(e2, v0, v2)
   
-  ; first test overlap in the {x,y,z}-directions
-  ; find min, max of the triangle each direction, And test For overlap in
-  ; that direction -- this is equivalent To testing a minimal AABB around
-  ; the triangle against the AABB    
-  ; test in X-direction
-  FINDMINMAX(v0\x,v1\x,v2\x,min,max)
-  If(min>*extend\x Or max<-*extend\x) : ProcedureReturn #False : EndIf
-  
- ; test in Y-direction
-  FINDMINMAX(v0\y,v1\y,v2\y,min,max)
-  If(min>*extend\y Or max<-*extend\y) : ProcedureReturn #False : EndIf
-  
-  ; test in Z-direction
-  FINDMINMAX(v0\z,v1\z,v2\z,min,max)
-  If(min>*extend\z Or max<-*extend\z) : ProcedureReturn #False : EndIf
-  
-  ; test If the box intersects the plane of the triangle
-  ; compute plane equation of triangle: normal*x+d=0
-  Protected normal.v3f32 
-  Vector3::Cross(normal, e0, e1)
-  
-  Define.v3f32 vmin,vmax
-  Define.f v
-  v = v0\x
-  If normal\x > 0.0 :  vmin\x = -*extend\x - v : vmax\x = *extend\x - v : Else : vmin\x = *extend\x -v : vmax\x = -*extend\x - v : EndIf
-  v = v0\y
-  If normal\y > 0.0 :  vmin\y = -*extend\y - v : vmax\y = *extend\y - v : Else : vmin\y = *extend\y -v : vmax\y = -*extend\y - v : EndIf
-  v = v0\z
-  If normal\z > 0.0 :  vmin\z = -*extend\z - v : vmax\z = *extend\z - v : Else : vmin\z = *extend\z -v : vmax\z = -*extend\z - v : EndIf
-  
-  If Vector3::Dot(normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
-  If Vector3::Dot(normal, vmax) < 0.0 : ProcedureReturn #False : EndIf
-
   fex = Abs(e0\x)
   fey = Abs(e0\y)
   fez = Abs(e0\z)
@@ -207,84 +166,41 @@ Procedure.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output.v3
   AXISTEST_Y10(e2\z, e2\x, fez, fex)
   AXISTEST_Z12(e2\y, e2\x, fey, fex)
   
+  ; first test overlap in the {x,y,z}-directions
+  ; find min, max of the triangle each direction, And test For overlap in
+  ; that direction -- this is equivalent To testing a minimal AABB around
+  ; the triangle against the AABB    
+  ; test in X-direction
+  FINDMINMAX(v0\x,v1\x,v2\x,min,max)
+  If(min>*extend\x Or max<-*extend\x) : ProcedureReturn #False : EndIf
+  
+  ; test in Y-direction
+  FINDMINMAX(v0\y,v1\y,v2\y,min,max)
+  If(min>*extend\y Or max<-*extend\y) : ProcedureReturn #False : EndIf
+  
+  ; test in Z-direction
+  FINDMINMAX(v0\z,v1\z,v2\z,min,max)
+  If(min>*extend\z Or max<-*extend\z) : ProcedureReturn #False : EndIf
+;   
+  ; test If the box intersects the plane of the triangle
+  ; compute plane equation of triangle: normal*x+d=0
+;   Protected normal.v3f32 
+;   Vector3::Cross(normal, e0, e1)
+  
+;   Define.v3f32 vmin,vmax
+;   Define.f v
+;   v = v0\x
+;   If normal\x > 0.0 :  vmin\x = -*extend\x - v : vmax\x = *extend\x - v : Else : vmin\x = *extend\x -v : vmax\x = -*extend\x - v : EndIf
+;   v = v0\y
+;   If normal\y > 0.0 :  vmin\y = -*extend\y - v : vmax\y = *extend\y - v : Else : vmin\y = *extend\y -v : vmax\y = -*extend\y - v : EndIf
+;   v = v0\z
+;   If normal\z > 0.0 :  vmin\z = -*extend\z - v : vmax\z = *extend\z - v : Else : vmin\z = *extend\z -v : vmax\z = -*extend\z - v : EndIf
+;   
+;   If Vector3::Dot(normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
+;   If Vector3::Dot(normal, vmax) < 0.0 : ProcedureReturn #False : EndIf
+;   
   ProcedureReturn #True
 EndProcedure
-
-; ======================== X-tests ========================
-Macro AXISTEST_X01_SSE()
-  !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
-  !   shufps xmm2, xmm2, 01011010b        ; ez ez ey ey
-  
-  !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
-  !   movaps xmm4, xmm15                  ; copy p2 to xmm4 (b)
-
-  !   shufps xmm3, xmm4, 10011001b        ; ay az by bz
-  !   shufps xmm3, xmm3, 11011000b        ; ay by az bz
-  !   mov [p.v_v], r12
-  
-  !   mulps  xmm2, xmm3                   ; e ^ p packed 2D cross product (c)
-
-  !   movaps xmm3, xmm2                   ; copy c to xmm3
-  !   movaps xmm4, xmm2                   ; copy c to xmm4
-  
-  !   shufps xmm3, xmm3, 01000100b        ; cx cy cx cy
-  !   shufps xmm4, xmm4, 11101110b        ; cz cw cz cw
-
-  !   subps  xmm3, xmm4                   ; packed subtraction 
-  
-  !   movaps xmm6, xmm12                  ; copy box to xmm6
-  !   shufps xmm6, xmm6, 10100101b        ; yyzz mask (box)
-  !   movaps xmm8, xmm7                   ; copy abs edge to xmm8
-  !   shufps xmm8, xmm8, 01011010b        ; zzyy mask (abs edge)
-  !   mulps xmm6, xmm8                    ; packed multiply with box
-  
-  !   movss xmm8, xmm6                   ; r0
-  !   psrldq xmm6, 8                     ; shift right 8 bytes
-  !   movss xmm9, xmm6                   ; r1
-  !   addss xmm8, xmm9                   ; rad = r0 + r1
-  !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
-  !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r11
-  !   mulps xmm8, xmm4                   ; -rad -rad rad rad
-  
-  ; ------------------------------------------------------------------
-  ; check side
-  ; ------------------------------------------------------------------
-  !   movaps xmm4, xmm3                  ; copy xmm3 in xmm4
-  !   psrldq xmm4, 4                     ; shift right 4 bytes
-  !   comiss xmm4, xmm3                  ; compare first value
-
-  !   jb lower
-  !   jmp greater
-  
-  ; ------------------------------------------------------------------
-  ; test axis greater
-  ; ------------------------------------------------------------------
-  ! greater:      
-  !   shufps xmm3, xmm3, 01000100b       ; x y x y 
-  !   jmp separate_axis
-
-  ; ------------------------------------------------------------------
-  ; test axis lower
-  ; ------------------------------------------------------------------
-  ! lower:  
-  !   shufps xmm3, xmm3, 00010001b       ; y x y x
-  !   jmp separate_axis
-   
-  ; ------------------------------------------------------------------
-  ; separate axis theorem
-  ; ------------------------------------------------------------------
-  ! separate_axis:
-  !   movaps xmm9, xmm8                   ; make a copy of rad in xmm9
-  !   shufps xmm8, xmm3, 11111010b        ; shuffle rad rad  max  max
-  !   shufps xmm3, xmm9, 00000000b        ; shuffle min min -rad -rad
-  
-  !   cmpps xmm8, xmm3, 5                 ; packed compare radius < axis
-  !   movmskps r12, xmm8                  ; move compare mask to register
-  
-  !   cmp r12, 15                         ; if not 15, an exclusion condition happened
-  !   je next_edge
-  !   jmp no_intersection                 ; discard    
-EndMacro
 
 Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output.v3f32)
   Define hit = #False
@@ -304,8 +220,6 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   ! movups xmm11, [rax]               ; move center packed data to xmm11
   ! mov rax, [p.p_extend]             ; move boxhalfsize address to rax
   ! movups xmm12, [rax]               ; move boxhalfsize packed data to xmm12
-  
-  ! mov rdx, [p.p_output]
   
 ;     ! mov r8, [p.p_indices]
 ;     EnableASM
@@ -340,7 +254,6 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   jl edge1  
   !   cmp r8, 9
   !   jl edge2
-  !   jmp test_intersection
   
   ; ----------------------------------------------------
   ; edge0
@@ -415,9 +328,6 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   je edge_axis_y10                     ; second axis
   !   cmp r8, 8                           ; check edge counter
   !   je edge_axis_z12                       ; second axis
-  !   jmp test_intersection
-
-   
 
   ; ----------------------------------------------------
   ; edge_axis0_x01
@@ -431,7 +341,6 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
 
   !   shufps xmm3, xmm4, 10011001b        ; ay az by bz
   !   shufps xmm3, xmm3, 11011000b        ; ay by az bz
-  !   mov [p.v_v], r12
   
   !   jmp axis_test_sub
   
@@ -447,7 +356,6 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
 
   !   shufps xmm3, xmm4, 10011001b        ; ay az by bz
   !   shufps xmm3, xmm3, 11011000b        ; ay by az bz
-  !   mov [p.v_v], r12
   
   !   jmp axis_test_sub
    
@@ -644,12 +552,12 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   ! finalize_radius:
   !   movss xmm8, xmm6                   ; r0
   !   psrldq xmm6, 8                     ; shift right 8 bytes
-  !   movss xmm9, xmm6                   ; r1
-  !   addss xmm8, xmm9                   ; rad = r0 + r1
+  !   addss xmm8, xmm6                   ; rad = r0 + r1
   !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
   !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r11
   !   mulps xmm8, xmm4                   ; -rad -rad rad rad
   !   jmp check_side                     ; check side
+  
   
   ; ------------------------------------------------------------------
   ; check side
@@ -657,7 +565,7 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   ! check_side:
   !   movaps xmm4, xmm3                  ; copy xmm3 in xmm4
   !   psrldq xmm4, 4                     ; shift right 4 bytes
-  !   comiss xmm4, xmm3                  ; compare first value
+  !   comiss xmm4, xmm3                 ; compare first value
 
   !   jb lower
   !   jmp greater
@@ -692,10 +600,10 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   jmp no_intersection                 ; discard    
   
   ! next_edge:
-  !   add r8, 1                           ; increment edge counter
+  !   inc r8                              ; increment edge counter
   !   cmp r8, 9                           ; if not last edge  
   !   jl build_edge                       ; loop
-  !   jmp intersection
+  !   jmp test_intersection
 
   ; ------------------------------------------------------------------
   ; axist test hit
@@ -739,18 +647,20 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   movmskps r12, xmm1                
   
   !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-  !   jg no_intersection       
-   !  jmp intersection
+  !   jg no_intersection     
+  
+    ! jmp intersection
+
   ; ---------------------------------------------------------------------------------
   ; triangle-box intersection
   ; ---------------------------------------------------------------------------------
   !   movaps xmm0, xmm14          ; copy p1 to xmm0
-  !   movaps xmm1, xmm13          ; copy p2 to xmm1
+  !   movaps xmm1, xmm15          ; copy p2 to xmm1
   
   ; ---------------------------------------------------------------------------------
   ;  compute edges
   ; ---------------------------------------------------------------------------------
-  !   subps xmm0, xmm15             ; compute edge0 (p1 - p0)
+  !   subps xmm0, xmm13             ; compute edge0 (p1 - p0)
   !   subps xmm1, xmm14             ; compute edge1 (p2 - p1)
   
   !   movaps xmm2,xmm0              ; copy edge0 to xmm2
@@ -759,15 +669,15 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   ; ---------------------------------------------------------------------------------
   ; compute triangle normal
   ; ---------------------------------------------------------------------------------
-  !   shufps xmm0,xmm0,00001001b    ; exchange 2 and 3 element (V1)
-  !   shufps xmm1,xmm1,00010010b    ; exchange 1 and 2 element (V2)
+  !   shufps xmm0,xmm0,00001001b        ; exchange 2 and 3 element (a)
+  !   shufps xmm1,xmm1,00010010b        ; exchange 1 and 2 element (b)
   !   mulps  xmm0,xmm1
-         
-  !   shufps xmm2,xmm2,00010010b    ; exchange 1 and 2 element (V1)
-  !   shufps xmm3,xmm3,00001001b    ; exchange 2 and 3 element (V2)
+           
+  !   shufps xmm2,xmm2,00010010b        ; exchange 1 and 2 element (a)
+  !   shufps xmm3,xmm3,00001001b        ; exchange 2 and 3 element (b)
   !   mulps  xmm2,xmm3
-        
-  !   subps  xmm0,xmm2              ; xmm0 contains triangle plane normal
+          
+  !   subps  xmm0,xmm2                  ; cross product triangle normal
 
   ; ---------------------------------------------------------------------------------
   ; check side
@@ -782,12 +692,12 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
   !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
   
-  !   subps xmm4, xmm15             ; box - p0
-  !   subps xmm5, xmm15             ; -box - p0
+  !   subps xmm4, xmm13             ; box - p0
+  !   subps xmm5, xmm13             ; -box - p0
   !   movaps xmm6, xmm4             ; make a copy
   
   !   cmp r12, 8
-  !   jb case_low
+  !   jbe case_low
   !   jmp case_up
   
   ; ---------------------------------------------------------------------------------
@@ -942,9 +852,9 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   haddps xmm7, xmm7
   !   xorps xmm8, xmm8
   
-  !   ucomiss xmm8, xmm7                       ; 0<=vmin
-  !   jb no_intersection                      ; branch if greater
-  !   jmp normal_dot_max                      ; branch if lower
+  !   comiss xmm8, xmm7                       ; 0<=vmin
+  !   jbe no_intersection                     ; branch if lower or equal
+  !   jmp normal_dot_max                      ; branch if greater
 
   ; ---------------------------------------------------------------------------------
   ; normal dot vmax >= 0 ?
@@ -956,7 +866,7 @@ Procedure.b TouchSSE(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *output
   !   haddps xmm7, xmm7                       ; dot 
   !   xorps xmm8, xmm8
   !   comiss xmm8, xmm7                      ; packed compare
-  !   jbe intersection                        ; 0 < vmax
+  !   jb intersection                        ; 0 < vmax
   !   jmp no_intersection                    ; branch if lower
   
   ; ---------------------------------------------------------------------------------
@@ -976,21 +886,30 @@ EndProcedure
 Time::Init()
 
 
-Define numTris = 24000
+; Define numTris = 4
+Define numTris = 24000000
 
 Define *positions = AllocateMemory(numTris * 3 * SizeOf(v3f32))
 Define *indices = AllocateMemory(numTris * 12)
 Define *hits = AllocateMemory(numTris)
-Define box.Geometry::Box_t
+Global box.Geometry::Box_t
 
-Vector3::Set(box\origin, 1,1,1)
-Vector3::Set(box\extend,1.75,1.75,1.75)
+Vector3::Set(box\origin, 0,0,0)
+Vector3::Set(box\extend,0.5,0.5,0.5)
 
 ; ax bx az bz
 
 RandomSeed(2)
 Define i
 Define *p.v3f32
+
+; CopyMemory(?problematic_tris, *positions, 12 * SizeOf(v3f32))
+; For i=0 To numTris - 1
+;   PokeL(*indices + (i*3+0)*4, i*3+0)
+;   PokeL(*indices + (i*3+1)*4, i*3+1)
+;   PokeL(*indices + (i*3+2)*4, i*3+2)
+; Next
+
 For i=0 To numTris - 1
   *p = *positions + (i*3)*SizeOf(v3f32)
   Vector3::Set(*p, -0.55, 0, 0.66)
@@ -1014,6 +933,7 @@ Next
 Procedure Divergence(*A, *B, nb)
   Define diverge.i = 0
   Define i
+ 
   For i = 0 To nb - 1
     If PeekB(*A+i) <> PeekB(*B+i)
       diverge + 1
@@ -1022,35 +942,59 @@ Procedure Divergence(*A, *B, nb)
   ProcedureReturn diverge
 EndProcedure
 
+Procedure.i Problematic(*X, *Y, nb, *positions)
+  Define *a.Math::v3f32, *b.Math::v3f32, *c.Math::v3f32
+  Define pblm.i = 0
+  Define output.v3f32
+  For i = 0 To nb - 1
+    If PeekB(*X+i) <> PeekB(*Y+i)
+      *a = *positions + (i*3) * SizeOf(Math::v3f32)
+      *b = *positions + (i*3+1) * SizeOf(Math::v3f32)
+      *c = *positions + (i*3+2) * SizeOf(Math::v3f32)
+      pblm + 1
+    EndIf
+    
+  Next
+  ProcedureReturn pblm
+EndProcedure
+
+
 Define output1.v3f32
 Define output2.v3f32
 
 Define.v3f32 *a, *b, *c
 Define pbs.s, asms.s
-Define *touch1 = AllocateMemory(numTris)
-Define *touch2 = AllocateMemory(numTris)
+Dim touch1.b(numTris)
+Dim touch2.b(numTris)
+Define hits1 = 0
+Define hits2 = 0
 Define T.d = Time::get()
+Define msg1.s
 For i=0 To numTris - 1
   *a = *positions + (i*3)*SizeOf(v3f32)
   *b = *positions + (i*3+1)*SizeOf(v3f32)
   *c = *positions + (i*3+2)*SizeOf(v3f32)
-  PokeB(*touch1+i,Touch(box, *a, *b, *c, output1))
+  touch1(i) = Touch(box, *a, *b, *c, output1)
+  If touch1(i) : hits1 + 1 : EndIf
+  
 ;   pbs + Str(PeekB(*touch1+i))+" : "+StrF(output1\x,3)+","+StrF(output1\y,3)+","+StrF(output1\z,3)+","+StrF(output1\_unused,3)+Chr(10)
 Next
 Define T1.d = Time::Get() - t
-
+Define msg2.s
 T = Time::Get()
 For i=0 To numTris - 1
   *a = *positions + (i*3)*SizeOf(v3f32)
   *b = *positions + (i*3+1)*SizeOf(v3f32)
   *c = *positions + (i*3+2)*SizeOf(v3f32)
-  PokeB(*touch2+i, TouchSSE(box, *a, *b, *c, output2))
+  touch2(i) = TouchSSE(box, *a, *b, *c, output2)
+  If touch2(i) : hits2 + 1 : EndIf
 ;   asms + Str(PeekB(*touch2+i))+ " : "+StrF(output2\x,3)+","+StrF(output2\y,3)+","+StrF(output2\z,3)+","+StrF(output2\_unused,3)+Chr(10)
 Next
 Define T2.d = Time::Get() - t
-Define msg.s = "EQUAL : "+Str(CompareMemory(*touch1, *touch2, numTris))+Chr(10)
-msg + "Divergence : "+Str(Divergence(*touch1, *touch2, numTris))+" on "+Str(numTris)+Chr(10)
-msg+ StrD(T1)+" vs "+StrD(T2)
+Define msg.s = "EQUAL : "+Str(CompareMemory(@touch1(0), @touch2(0), numTris))+Chr(10)
+msg + "HITS 1 : "+Str(hits1)+", HITS 2 : "+Str(hits2)+Chr(10)
+msg+ StrD(T1)+" vs "+StrD(T2)+Chr(10)
+msg + "PROBLEMATICS : "+Str(Problematic(@touch1(0), @touch2(0), numTris, *positions))
 
 MessageRequester("Touch",msg)
 ; Debug pbs
@@ -1058,7 +1002,9 @@ MessageRequester("Touch",msg)
 ; Debug asms
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 287
-; FirstLine = 253
+; CursorPosition = 889
+; FirstLine = 871
 ; Folding = --
 ; EnableXP
+; DisableDebugger
+; Constant = #USE_SSE=1

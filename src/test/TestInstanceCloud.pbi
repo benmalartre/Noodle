@@ -225,21 +225,21 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-;   Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
-;   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
-;   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
-;   
-;   Define i
-;   Define s.v3f32
-;   Vector3::Set(s,13,13,13)
-;   Define *l.Geometry::Location_t
-;   For i=0 To *cgeom\nbpoints-1
-;     *l = CArray::GetValuePtr(*locs,i)
-;     CArray::SetValue(*cgeom\a_positions,i,*l\p)
-;     CArray::SetValue(*cgeom\a_normals,i,*l\n)
-;     CArray::SetValue(*cgeom\a_scale,i,s)
-;     CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
-;   Next
+  Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
+  Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
+  
+  Define i
+  Define s.v3f32
+  Vector3::Set(s,13,13,13)
+  Define *l.Geometry::Location_t
+  For i=0 To *cgeom\nbpoints-1
+    *l = CArray::GetValuePtr(*locs,i)
+    CArray::SetValue(*cgeom\a_positions,i,*l\p)
+    CArray::SetValue(*cgeom\a_normals,i,*l\n)
+    CArray::SetValue(*cgeom\a_scale,i,s)
+    CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
+  Next
 ;     
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
@@ -259,8 +259,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 201
-; FirstLine = 181
+; CursorPosition = 241
+; FirstLine = 187
 ; Folding = --
 ; EnableXP
 ; Executable = Test

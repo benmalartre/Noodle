@@ -524,7 +524,6 @@ Module Scene
       Protected *c.Object3D::Object3D_t
 
       Matrix4::SetIdentity(*root\globalT\m)
-
       ForEach *root\children()
         child = *root\children()
         
@@ -810,9 +809,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 626
-; FirstLine = 623
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 532
+; FirstLine = 486
 ; Folding = -------
 ; EnableThread
 ; EnableXP

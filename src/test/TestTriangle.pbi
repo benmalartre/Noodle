@@ -58,18 +58,21 @@ Procedure Compute()
 	Define halfsize.Math::v3f32
 	Vector3::Set(center, 0, 7, 0)
 	Vector3::Set(halfsize,0.5, 0.5, 0.5)
-	Protected *boxhalfsize.Math::v3f32 = @halfsize
+	Protected *boxhalfsize.Math::v3f32 = halfsize
 
 	
 	Define.Math::v3f32 *a, *b, *c
 	Define tri.Geometry::Triangle_t
-	Define *tri.Geometry::Triangle_t = @tri
+	Define *tri.Geometry::Triangle_t = tri
 	Define.f min,max,p0,p1,p2,rad,fex,fey,fez
 	Define.Math::v3f32 v0, v1, v2
 	Define.Math::v3f32 e0, e1, e2
 	Define normal.Math::v3f32
 	Define.Math::v3f32 vmin,vmax
-  Define.f v
+	Define.f v
+	Define box.Geometry::Box_t
+	Vector3::SetFromOther(box\origin, center)
+	Vector3::SetFromOther(box\extend, halfsize)
   
   Define offset = 0
   Define i, j
@@ -81,10 +84,13 @@ Procedure Compute()
     tri\vertices[0] = offset
     tri\vertices[1] = offset + 1
     tri\vertices[2] = offset + 2
-
+    
+    *a = *soup + i * 12
+    *b = *soup + i * 12 + 4
+    *c = *soup + i * 12 + 8
     offset + 3
     
-    If Triangle::Touch(@tri, *soup, @center, @halfsize)
+    If Triangle::Touch(box, *a, *b, *c)
 		  numHits+1
 		EndIf
 	Next
@@ -115,8 +121,8 @@ Until e = #PB_Event_CloseWindow
 
 
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 88
-; FirstLine = 72
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 57
 ; Folding = -
 ; EnableXP

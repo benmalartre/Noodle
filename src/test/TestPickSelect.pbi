@@ -9,7 +9,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -55,12 +57,12 @@ Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
   Define i,j
   Protected *t.Transform::Transform_t
   For i=0 To numItems-1
-    Vector3::Set(@p,Mod(i,12), y+i/12, (Random(10)-5)/10)
-    Quaternion::Randomize2(@q)
+    Vector3::Set(p,Mod(i,12), y+i/12, (Random(10)-5)/10)
+    Quaternion::Randomize2(q)
     *item = Polymesh::New("Bunny"+Str(i), Shape::#SHAPE_TEAPOT)
     *t = *item\localT
-    Transform::SetTranslation(*t, @p)
-    Transform::SetRotationFromQuaternion(*t, @q)
+    Transform::SetTranslation(*t, p)
+    Transform::SetRotationFromQuaternion(*t, q)
     Object3D::SetLocalTransform(*item, *t)
     Object3D::AddChild(*root, *item)
   Next
@@ -78,7 +80,7 @@ Procedure Draw(*app.Application::Application_t)
   *select\mouseY = *viewport\height -*viewport\my
   LayerSelection::Draw(*select, *app\context)
   
-  LayerDefault::Draw(*layer, *app\context)
+;   LayerDefault::Draw(*layer, *app\context)
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -114,7 +116,7 @@ Procedure Draw(*app.Application::Application_t)
   
   
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   *select = LayerSelection::New(800,600,*app\context,*app\camera)
@@ -134,12 +136,12 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-   
+  Scene::Update(Scene::*current_scene)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 45
+; CursorPosition = 124
+; FirstLine = 70
 ; Folding = -
 ; EnableThread
 ; EnableXP

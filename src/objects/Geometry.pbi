@@ -440,14 +440,14 @@ Module Geometry
       ! movups  xmm9, [rdx+48]                ; load fourth row in xmm9
       
       ; mul by matrix bmin and bmax
-      ! movaps xmm2, xmm0                   ; d c b a
-      ! movaps xmm3, xmm0                   ; d c b a   
-      ! movaps xmm4, xmm0                   ; d c b a 
+      ! movaps xmm2, xmm0                     ; d c b a
+      ! movaps xmm3, xmm0                     ; d c b a   
+      ! movaps xmm4, xmm0                     ; d c b a 
       
-      ! shufps xmm0, xmm0, 0                 ; a a a a 
-      ! shufps xmm2, xmm2, 01010101b         ; b b b b
-      ! shufps xmm3, xmm3, 10101010b         ; c c c c
-      ! shufps xmm4, xmm4, 11111111b         ; d d d d
+      ! shufps xmm0, xmm0, 0                  ; a a a a 
+      ! shufps xmm2, xmm2, 01010101b          ; b b b b
+      ! shufps xmm3, xmm3, 10101010b          ; c c c c
+      ! shufps xmm4, xmm4, 11111111b          ; d d d d
  
       ! mulps  xmm0, xmm6
       ! mulps  xmm2, xmm7
@@ -577,8 +577,8 @@ Module Geometry
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 454
-; FirstLine = 470
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 455
+; FirstLine = 476
 ; Folding = -----
 ; EnableXP

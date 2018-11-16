@@ -4,6 +4,7 @@ XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/PolymeshGeometry.pbi"
 
 DeclareModule Polygonizer
+
   Structure Point_t
     p.f[3]
     d.f
@@ -347,7 +348,6 @@ Module Polygonizer
     *grid\resolution[0] = Math::Max(1, Math::Min(size\x / cellSize, 128))
     *grid\resolution[1] = Math::Max(1, Math::Min(size\y / cellSize, 128))
     *grid\resolution[2] = Math::Max(1, Math::Min(size\z / cellSize, 128))
-    
 
     ReDim *grid\cells(*grid\resolution[0] * *grid\resolution[1] * *grid\resolution[2])
     ReDim *grid\points((*grid\resolution[0]+1) * (*grid\resolution[1]+1) * (*grid\resolution[2]+1))
@@ -371,7 +371,9 @@ Module Polygonizer
           *p\p[0] = *box\origin\x - *box\extend\x  + x * cs\x
           *p\p[1] = *box\origin\y - *box\extend\y  + y * cs\y
           *p\p[2] = *box\origin\z - *box\extend\z  + z * cs\z
-          *p\d = *p\p[1]  ;+ Sin(*p\p[0] * 3)*0.4 * Cos(*p\p[2]*3) * 0.75
+          *p\d =  *p\p[1] + Sin(*p\p[0])*0.6
+
+          
         Next
       Next
     Next
@@ -392,17 +394,7 @@ Module Polygonizer
           *c\p[5] = *grid\points(z     * slice_ext + (y+1) * line_ext + x + 1 )
           *c\p[6] = *grid\points((z+1) * slice_ext + (y+1) * line_ext + x + 1 )
           *c\p[7] = *grid\points((z+1) * slice_ext + (y+1) * line_ext + x     )   
-;           Debug "CELL ID "+Str(z * slice + y * line+ x)
-;           Protected s.s
-;           s = Str(z     * slice_ext + y     * line_ext + x     )+", "
-;           s + Str(z     * slice_ext + y     * line_ext + x + 1 )+", "
-;           s + Str((z+1) * slice_ext + y     * line_ext + x + 1 )+", "
-;           s + Str((z+1) * slice_ext + y     * line_ext + x     )+", "
-;           s + Str(z     * slice_ext + (y+1) * line_ext + x     )+", "
-;           s + Str(z     * slice_ext + (y+1) * line_ext + x + 1 )+", "
-;           s + Str((z+1) * slice_ext + (y+1) * line_ext + x + 1 )+", "
-;           s + Str((z+1) * slice_ext + (y+1) * line_ext + x     ) 
-;           Debug s
+
         Next
       Next
     Next
@@ -531,9 +523,9 @@ Module Polygonizer
    
    Protected mu.f
    mu = (isolevel - *p1\d) / (*p2\d - *p1\d)
-   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0])
-   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1])
-   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2]);
+   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0]) + Random(100)*0.001
+   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1]) + Random(100)*0.001
+   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2]) + Random(100)*0.001
 
    ProcedureReturn
    
@@ -553,7 +545,6 @@ Module Polygonizer
     Define *faces.CArray::CArrayLong = CArray::newCArrayLong()
     Define *t.Polygonizer::Triangle_t
     Define i
-    
     For c=0 To numCells - 1
       Define numTris = PolygonizeCell(*grid\cells(c), 0.1, *triangles)
       If numTris
@@ -716,7 +707,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 373
-; FirstLine = 336
+; CursorPosition = 527
+; FirstLine = 503
 ; Folding = --
 ; EnableXP

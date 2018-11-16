@@ -95,7 +95,7 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   ViewportUI::AddLayer(*viewport, *layer)
@@ -120,13 +120,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 16
-; FirstLine = 9
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 97
+; FirstLine = 63
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

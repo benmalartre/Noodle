@@ -120,23 +120,25 @@ FTGL::Init()
   
   shader = *s_polymesh\pgm
 
-  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
+  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("BUNNY",Shape::#SHAPE_SPHERE)
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   Object3D::SetShader(*mesh,*s_polymesh)
   Object3D::AddChild(*root, *mesh)
   
-  Geometry::ComputeBoundingBox(*geom)
+  Define box.Geometry::Box_t
+  Vector3::Set(box\extend, 12,12,12)
 
-  *polygonizer = Polygonizer::CreateGrid(*geom\bbox, 0.6)
+  *polygonizer = Polygonizer::CreateGrid(box, 0.01)
 
   Polygonizer::Polygonize(*polygonizer, *geom)
+  Object3D::Freeze(*mesh)
   
   Scene::AddModel(Scene::*current_scene, *root)
   Scene::Setup(Scene::*current_scene, *app\context)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 83
+; CursorPosition = 130
+; FirstLine = 79
 ; Folding = -
 ; EnableXP

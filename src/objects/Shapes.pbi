@@ -25680,9 +25680,9 @@ Module Shape
     Protected *c.c4f32
     For i=0 To *Me\nbp-1
       *c = CArray::GetValue(*Me\colors,i)
-      *c\x = *color\x 
-      *c\y = *color\y 
-      *c\z = *color\z 
+      *c\r = *color\r 
+      *c\g = *color\g 
+      *c\b = *color\b 
     Next
     
   EndProcedure
@@ -25694,9 +25694,9 @@ Module Shape
     Protected *c.c4f32
     For i=0 To *Me\nbp-1
       *c = CArray::GetValue(*Me\colors,i)
-      *c\x = *color\x + (Random(100)*0.02-1)*variance
-      *c\y = *color\y + (Random(100)*0.02-1)*variance
-      *c\z = *color\z + (Random(100)*0.02-1)*variance
+      *c\r = *color\r + (Random(100)*0.02-1)*variance
+      *c\g = *color\g + (Random(100)*0.02-1)*variance
+      *c\b = *color\b + (Random(100)*0.02-1)*variance
     Next
     
   EndProcedure
@@ -25721,8 +25721,7 @@ Module Shape
       *n = CArray::GetValue(*Me\normals,i)
       Vector3::Set(*n,0,0,0)
     Next
-    
-    
+ 
     ; First Triangle Normals
     Define l.l
     For i=0 To *Me\nbt-1
@@ -26165,8 +26164,8 @@ Module Shape
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 48
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 25723
+; FirstLine = 25692
 ; Folding = ----
 ; EnableXP

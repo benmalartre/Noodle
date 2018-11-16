@@ -130,17 +130,23 @@ Module Curve
     
     *Me\initialized = #True 
     
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define v3i = 4
+    CompilerElse
+      Define v3i = 3
+    CompilerEndIf
+    
     ; Attribute Position
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    glVertexAttribPointer(0,v3i,#GL_FLOAT,#GL_FALSE,0,0)
     
     ; Attribute Color
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,size_p)
+    glVertexAttribPointer(1,v3i,#GL_FLOAT,#GL_FALSE,0,size_p)
     
     ; Attribute Normal
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2,3,#GL_FLOAT,#GL_FALSE,0,2*size_p)
+    glVertexAttribPointer(2,v3i,#GL_FLOAT,#GL_FALSE,0,2*size_p)
     
     ; Attribute Width
     glEnableVertexAttribArray(3)
@@ -316,7 +322,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 99
+; CursorPosition = 135
+; FirstLine = 131
 ; Folding = ---
 ; EnableXP

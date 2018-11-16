@@ -269,15 +269,15 @@ EndProcedure
     ! build_edge:
     !   cmp r8, 3
     !   jl edge0
-    
-    !   cmp r8, 6
-    !   jl edge1
-   
-;     !   cmp r8, 9
-;     !   jl edge2
-    
-    !   jmp intersection;test_hit
-    
+;     
+;     !   cmp r8, 6
+;     !   jl edge1
+;    
+; ;     !   cmp r8, 9
+; ;     !   jl edge2
+;     
+;     !   jmp intersection;test_hit
+;     
     ; ----------------------------------------------------
     ; edge0
     ; ----------------------------------------------------
@@ -302,60 +302,60 @@ EndProcedure
     !   je edge_axis1                      ; second axis
     !   cmp r8, 2                           ; check edge counter
     !   je edge_axis2                      ; third axis
-    !   jmp build_edge
-    
-    ; ----------------------------------------------------
-    ; edge1
-    ; ----------------------------------------------------
-    ! edge1:
-    !   cmp r8, 3
-    !   je edge1_load
-    !   jmp edge1_test
-    
-    ! edge1_load:
-    !   movaps xmm0, xmm13                  ; move p2 to xmm1
-    !   subps xmm0, xmm14                   ; e1 = p2 - p1
-    !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    
-    !   movdqu  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
-    !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
-    !   jmp edge1_test
-    
-    ! edge1_test:
-    !   cmp r8 , 3                          ; check edge counter
-    !   je edge_axis0                      ; first axis
-    !   cmp r8, 4                           ; check edge counter
-    !   je edge_axis1                      ; second axis
-    !   cmp r8, 5                           ; check edge counter
-    !   je edge_axis2                      ; third axis
-    !   jmp build_edge
-     
-    ; ----------------------------------------------------
-    ; edge2
-    ; ----------------------------------------------------
-    ! edge2:
-    !   cmp r8, 7
-    !   je edge2_load
-    !   jmp edge2_test
-    
-    ! edge2_load:
-    !   movaps xmm0, xmm15                  ; move p0 to xmm1
-    !   subps xmm0, xmm13                   ; e1 = p0 - p2
-    !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    
-    !   movdqu  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
-    !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
-    !   jmp edge2_test
-    
-    ! edge2_test:
-    !   cmp r8 , 6                          ; check edge counter
-    !   je edge_axis0                      ; first axis
-    !   cmp r8, 7                           ; check edge counter
-    !   je edge_axis1                      ; second axis
-    !   cmp r8, 8                           ; check edge counter
-    !   je edge_axis2                      ; third axis
-    !   jmp no_intersection              
-    
+    !   jmp no_intersection;build_edge
+;     
+;     ; ----------------------------------------------------
+;     ; edge1
+;     ; ----------------------------------------------------
+;     ! edge1:
+;     !   cmp r8, 3
+;     !   je edge1_load
+;     !   jmp edge1_test
+;     
+;     ! edge1_load:
+;     !   movaps xmm0, xmm13                  ; move p2 to xmm1
+;     !   subps xmm0, xmm14                   ; e1 = p2 - p1
+;     !   movaps xmm7, xmm0                   ; make a copy in xmm7
+;     
+;     !   movdqu  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
+;     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
+;     !   jmp edge1_test
+;     
+;     ! edge1_test:
+;     !   cmp r8 , 3                          ; check edge counter
+;     !   je edge_axis0                      ; first axis
+;     !   cmp r8, 4                           ; check edge counter
+;     !   je edge_axis1                      ; second axis
+;     !   cmp r8, 5                           ; check edge counter
+;     !   je edge_axis2                      ; third axis
+;     !   jmp build_edge
+;      
+;     ; ----------------------------------------------------
+;     ; edge2
+;     ; ----------------------------------------------------
+;     ! edge2:
+;     !   cmp r8, 7
+;     !   je edge2_load
+;     !   jmp edge2_test
+;     
+;     ! edge2_load:
+;     !   movaps xmm0, xmm15                  ; move p0 to xmm1
+;     !   subps xmm0, xmm13                   ; e1 = p0 - p2
+;     !   movaps xmm7, xmm0                   ; make a copy in xmm7
+;     
+;     !   movdqu  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
+;     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
+;     !   jmp edge2_test
+;     
+;     ! edge2_test:
+;     !   cmp r8 , 6                          ; check edge counter
+;     !   je edge_axis0                      ; first axis
+;     !   cmp r8, 7                           ; check edge counter
+;     !   je edge_axis1                      ; second axis
+;     !   cmp r8, 8                           ; check edge counter
+;     !   je edge_axis2                      ; third axis
+;     !   jmp no_intersection              
+;     
     ; ----------------------------------------------------
     ; edge_axis0
     ; ----------------------------------------------------
@@ -515,11 +515,10 @@ EndProcedure
     ! finalize_radius:
     !   movss xmm8, xmm6                   ; r0
       
-    !   psrldq xmm6, 8                     ; shift right
+    !   pslldq xmm6, 8                     ; shift left
     !   movss xmm9, xmm6                   ; r0
     !   addss xmm8, xmm9                   ; rad = r0 + r1
     !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad
-    !   movups [rdx], xmm8
     !   jmp negate_max_radius              ; negate max radius
     
     ; ------------------------------------------------------------------
@@ -537,7 +536,7 @@ EndProcedure
     !   movaps xmm4, xmm3                  ; copy xmm3 in xmm4
     !   psrldq xmm4, 4                     ; shift left 4 bytes
     !   ucomiss xmm4, xmm3                 ; compare first value
-    !   jp greater                         ; branch is greater
+    !   jge greater                         ; branch is greater
     !   jmp lower                          ; branch is lower
     
     
@@ -570,271 +569,271 @@ EndProcedure
     !   cmp r8, 8
     !   je no_intersection
     !   jmp build_edge
-
     
-    ; ------------------------------------------------------------------
-    ; axist test hit
-    ; ------------------------------------------------------------------
-    ! test_hit:
-    ; ---------------------------------------------------------------------------------
-    ; load points
-    ; ---------------------------------------------------------------------------------
-    !   movaps xmm0, xmm15
-    !   movaps xmm1, xmm15            ; make a copy of p0 in xmm15
-    !   movaps xmm2, xmm14            ; make a copy of p1 in xmm14
-    !   movaps xmm3, xmm13            ; make a copy of p2 in xmm13
-    ; ---------------------------------------------------------------------------------
-    ; load box
-    ; ---------------------------------------------------------------------------------
-    !   movaps xmm4, xmm11            ; copy box extend to xmm4
-    !   movaps xmm5, xmm11            ; copy box extend to xmm5
-    
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
-    !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
-    
-    ; ---------------------------------------------------------------------------------
-    ; find min/max
-    ; ---------------------------------------------------------------------------------
-    !   minps xmm0, xmm2              ; packed minimum
-    !   minps xmm0, xmm3              ; packed minimum
-      
-    !   maxps xmm1, xmm2              ; packed maximum
-    !   maxps xmm1, xmm3              ; packed maximum
-    
-    ; ---------------------------------------------------------------------------------
-    ; early axis rejection
-    ; ---------------------------------------------------------------------------------
-    !   cmpps xmm4, xmm0, 1           ; packed compare boxhalfsize < minimum
-    !   movmskps r12, xmm4            ; get comparison result
-    
-    !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg no_intersection                        
-    
-    !   cmpps xmm1, xmm5, 1           ; packed compare maximum < -boxhalfsize
-    !   movmskps r12, xmm1                
-    
-    !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg no_intersection       
-        
-    ; ---------------------------------------------------------------------------------
-    ; triangle-box intersection
-    ; ---------------------------------------------------------------------------------
-    !   movaps xmm0, xmm14          ; copy p1 to xmm0
-    !   movaps xmm1, xmm13          ; copy p2 to xmm1
-    
-    ; ---------------------------------------------------------------------------------
-    ;  compute edges
-    ; ---------------------------------------------------------------------------------
-    !   subps xmm0, xmm15             ; compute edge0 (p1 - p0)
-    !   subps xmm1, xmm14             ; compute edge1 (p2 - p1)
-    
-    !   movaps xmm2,xmm0              ; copy edge0 to xmm2
-    !   movaps xmm3,xmm1              ; copy edge1 to xmm3
-    
-    ; ---------------------------------------------------------------------------------
-    ; compute triangle normal
-    ; ---------------------------------------------------------------------------------
-    !   shufps xmm0,xmm0,00001001b    ; exchange 2 and 3 element (V1)
-    !   shufps xmm1,xmm1,00010010b    ; exchange 1 and 2 element (V2)
-    !   mulps  xmm0,xmm1
-           
-    !   shufps xmm2,xmm2,00010010b    ; exchange 1 and 2 element (V1)
-    !   shufps xmm3,xmm3,00001001b    ; exchange 2 and 3 element (V2)
-    !   mulps  xmm2,xmm3
-          
-    !   subps  xmm0,xmm2              ; xmm0 contains triangle plane normal
-  
-    ; ---------------------------------------------------------------------------------
-    ; check side
-    ; ---------------------------------------------------------------------------------
-    !   xorps xmm6, xmm6
-    !   cmpps xmm6, xmm0 , 1          ; check 0 < normal
-    !   movmskps r12, xmm6
-    
-    !   movaps xmm4, xmm11            ; copy boxhalfsize to xmm7
-    !   movaps xmm5, xmm11            ; copy boxhalfsize to xmm5 
-    
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
-    !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
-    
-    !   subps xmm4, xmm15             ; box - p0
-    !   subps xmm5, xmm15             ; -box - p0
-    !   movaps xmm6, xmm4             ; make a copy
-    
-    !   cmp r12, 8
-    !   jb case_low
-    !   jmp case_up
-    
-    ; ---------------------------------------------------------------------------------
-    ; case 0-7
-    ; ---------------------------------------------------------------------------------
-    ! case_low:
-    !   cmp r12, 0
-    !   je case_0
-    
-    !   cmp r12, 1
-    !   je case_1
-    
-    !   cmp r12, 2
-    !   je case_2
-    
-    !   cmp r12, 3
-    !   je case_3
-    
-    !   cmp r12, 4
-    !   je case_4
-    
-    !   cmp r12, 5
-    !   je case_5
-    
-    !   cmp r12, 6
-    !   je case_6
-    
-    !   cmp r12, 7
-    !   je case_7
-    
-    ; ---------------------------------------------------------------------------------
-    ; case 8-15
-    ; ---------------------------------------------------------------------------------
-    ! case_up:
-    !   cmp r12, 8
-    !   je case_8
-    
-    !   cmp r12, 9
-    !   je case_9
-    
-    !   cmp r12, 10
-    !   je case_10
-    
-    !   cmp r12, 11
-    !   je case_11
-    
-    !   cmp r12, 12
-    !   je case_12
-    
-    !   cmp r12, 13
-    !   je case_13
-    
-    !   cmp r12, 14
-    !   je case_14
-    
-    !   cmp r12, 15
-    !   je case_15
-    
-    ; ---------------------------------------------------------------------------------
-    ; cases
-    ; ---------------------------------------------------------------------------------
-    ! case_0:
-    !   blendps xmm4, xmm5, 0                    ; vmin = boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 15                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_1:
-    !   blendps xmm4, xmm5, 1                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 14                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_2:
-    !   blendps xmm4, xmm5, 2                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 13                   ; vmax =  -boxx-p0x, boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_3:
-    !   blendps xmm4, xmm5, 3                   ; vmin = -boxx-p0x, -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 12                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_4:
-    !   blendps xmm4, xmm5, 4                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 11                  ; vmax = -boxx-p0x, -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_5:
-    !   blendps xmm4, xmm5, 5                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 10                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_6:
-    !   blendps xmm4, xmm5, 6                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 9                   ; vmax = -boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_7:
-    !   blendps xmm4, xmm5, 7                   ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 8                   ; vmax = boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_8:
-    !   blendps xmm4, xmm5, 8                   ; vmin = boxx-p0x, boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 7                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_9:
-    !   blendps xmm4, xmm5, 9                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 6                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_10:
-    !   blendps xmm4, xmm5, 10                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 5                   ; vmax =  -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_11:
-    !   blendps xmm4, xmm5, 11                   ; vmin =-boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 4                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_12:
-    !   blendps xmm4, xmm5, 12                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 3                   ; vmax =  -boxx-p0x, -boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_13:
-    !   blendps xmm4, xmm5, 13                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 2                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_14:
-    !   blendps xmm4, xmm5, 14                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 1                   ; vmax =  -boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_15:
-    !   blendps xmm4, xmm5, 15                  ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 0                   ; vmax = boxx-p0x, boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! normal_dot:
-    !   jmp normal_dot_min
-    
-    ; ---------------------------------------------------------------------------------
-    ; normal dot vmin > 0 ?
-    ; ---------------------------------------------------------------------------------
-    ! normal_dot_min:
-    !   movups xmm7, xmm0                       ; copy normal to xmm7
-    !   mulps xmm7, xmm4                        ; compute normal dot vmin
-    !   haddps xmm7, xmm7
-    !   haddps xmm7, xmm7
-    !   xorps xmm8, xmm8
-    
-    !   ucomiss xmm8, xmm7                       ; 0<=vmin
-    !   jb no_intersection                      ; branch if greater
-    !   jmp normal_dot_max                      ; branch if lower
-    
-    
-    ; ---------------------------------------------------------------------------------
-    ; normal dot vmax >= 0 ?
-    ; ---------------------------------------------------------------------------------
-    ! normal_dot_max:
-    !   movups xmm7, xmm0                       ; copy normal to xmm7
-    !   mulps xmm7, xmm6                        ; compute normal dot vmax
-    !   haddps xmm7, xmm7
-    !   haddps xmm7, xmm7                       ; dot 
-    !   xorps xmm8, xmm8
-    !   comiss xmm8, xmm7                       ; packed compare
-    !   jbe intersection                        ; 0 < vmax
-    !   jmp no_intersection                     ; no intersection
-    
+;     
+;     ; ------------------------------------------------------------------
+;     ; axist test hit
+;     ; ------------------------------------------------------------------
+;     ! test_hit:
+;     ; ---------------------------------------------------------------------------------
+;     ; load points
+;     ; ---------------------------------------------------------------------------------
+;     !   movaps xmm0, xmm15
+;     !   movaps xmm1, xmm15            ; make a copy of p0 in xmm15
+;     !   movaps xmm2, xmm14            ; make a copy of p1 in xmm14
+;     !   movaps xmm3, xmm13            ; make a copy of p2 in xmm13
+;     ; ---------------------------------------------------------------------------------
+;     ; load box
+;     ; ---------------------------------------------------------------------------------
+;     !   movaps xmm4, xmm11            ; copy box extend to xmm4
+;     !   movaps xmm5, xmm11            ; copy box extend to xmm5
+;     
+;     !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+;     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; find min/max
+;     ; ---------------------------------------------------------------------------------
+;     !   minps xmm0, xmm2              ; packed minimum
+;     !   minps xmm0, xmm3              ; packed minimum
+;       
+;     !   maxps xmm1, xmm2              ; packed maximum
+;     !   maxps xmm1, xmm3              ; packed maximum
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; early axis rejection
+;     ; ---------------------------------------------------------------------------------
+;     !   cmpps xmm4, xmm0, 1           ; packed compare boxhalfsize < minimum
+;     !   movmskps r12, xmm4            ; get comparison result
+;     
+;     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
+;     !   jg no_intersection                        
+;     
+;     !   cmpps xmm1, xmm5, 1           ; packed compare maximum < -boxhalfsize
+;     !   movmskps r12, xmm1                
+;     
+;     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
+;     !   jg no_intersection       
+;         
+;     ; ---------------------------------------------------------------------------------
+;     ; triangle-box intersection
+;     ; ---------------------------------------------------------------------------------
+;     !   movaps xmm0, xmm14          ; copy p1 to xmm0
+;     !   movaps xmm1, xmm13          ; copy p2 to xmm1
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ;  compute edges
+;     ; ---------------------------------------------------------------------------------
+;     !   subps xmm0, xmm15             ; compute edge0 (p1 - p0)
+;     !   subps xmm1, xmm14             ; compute edge1 (p2 - p1)
+;     
+;     !   movaps xmm2,xmm0              ; copy edge0 to xmm2
+;     !   movaps xmm3,xmm1              ; copy edge1 to xmm3
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; compute triangle normal
+;     ; ---------------------------------------------------------------------------------
+;     !   shufps xmm0,xmm0,00001001b    ; exchange 2 and 3 element (V1)
+;     !   shufps xmm1,xmm1,00010010b    ; exchange 1 and 2 element (V2)
+;     !   mulps  xmm0,xmm1
+;            
+;     !   shufps xmm2,xmm2,00010010b    ; exchange 1 and 2 element (V1)
+;     !   shufps xmm3,xmm3,00001001b    ; exchange 2 and 3 element (V2)
+;     !   mulps  xmm2,xmm3
+;           
+;     !   subps  xmm0,xmm2              ; xmm0 contains triangle plane normal
+;   
+;     ; ---------------------------------------------------------------------------------
+;     ; check side
+;     ; ---------------------------------------------------------------------------------
+;     !   xorps xmm6, xmm6
+;     !   cmpps xmm6, xmm0 , 1          ; check 0 < normal
+;     !   movmskps r12, xmm6
+;     
+;     !   movaps xmm4, xmm11            ; copy boxhalfsize to xmm7
+;     !   movaps xmm5, xmm11            ; copy boxhalfsize to xmm5 
+;     
+;     !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+;     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
+;     
+;     !   subps xmm4, xmm15             ; box - p0
+;     !   subps xmm5, xmm15             ; -box - p0
+;     !   movaps xmm6, xmm4             ; make a copy
+;     
+;     !   cmp r12, 8
+;     !   jb case_low
+;     !   jmp case_up
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; case 0-7
+;     ; ---------------------------------------------------------------------------------
+;     ! case_low:
+;     !   cmp r12, 0
+;     !   je case_0
+;     
+;     !   cmp r12, 1
+;     !   je case_1
+;     
+;     !   cmp r12, 2
+;     !   je case_2
+;     
+;     !   cmp r12, 3
+;     !   je case_3
+;     
+;     !   cmp r12, 4
+;     !   je case_4
+;     
+;     !   cmp r12, 5
+;     !   je case_5
+;     
+;     !   cmp r12, 6
+;     !   je case_6
+;     
+;     !   cmp r12, 7
+;     !   je case_7
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; case 8-15
+;     ; ---------------------------------------------------------------------------------
+;     ! case_up:
+;     !   cmp r12, 8
+;     !   je case_8
+;     
+;     !   cmp r12, 9
+;     !   je case_9
+;     
+;     !   cmp r12, 10
+;     !   je case_10
+;     
+;     !   cmp r12, 11
+;     !   je case_11
+;     
+;     !   cmp r12, 12
+;     !   je case_12
+;     
+;     !   cmp r12, 13
+;     !   je case_13
+;     
+;     !   cmp r12, 14
+;     !   je case_14
+;     
+;     !   cmp r12, 15
+;     !   je case_15
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; cases
+;     ; ---------------------------------------------------------------------------------
+;     ! case_0:
+;     !   blendps xmm4, xmm5, 0                    ; vmin = boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 15                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z,  -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_1:
+;     !   blendps xmm4, xmm5, 1                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 14                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_2:
+;     !   blendps xmm4, xmm5, 2                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 13                   ; vmax =  -boxx-p0x, boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_3:
+;     !   blendps xmm4, xmm5, 3                   ; vmin = -boxx-p0x, -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 12                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_4:
+;     !   blendps xmm4, xmm5, 4                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 11                  ; vmax = -boxx-p0x, -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_5:
+;     !   blendps xmm4, xmm5, 5                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 10                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_6:
+;     !   blendps xmm4, xmm5, 6                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 9                   ; vmax = -boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_7:
+;     !   blendps xmm4, xmm5, 7                   ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 8                   ; vmax = boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_8:
+;     !   blendps xmm4, xmm5, 8                   ; vmin = boxx-p0x, boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 7                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_9:
+;     !   blendps xmm4, xmm5, 9                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 6                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_10:
+;     !   blendps xmm4, xmm5, 10                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 5                   ; vmax =  -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_11:
+;     !   blendps xmm4, xmm5, 11                   ; vmin =-boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 4                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_12:
+;     !   blendps xmm4, xmm5, 12                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 3                   ; vmax =  -boxx-p0x, -boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_13:
+;     !   blendps xmm4, xmm5, 13                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 2                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_14:
+;     !   blendps xmm4, xmm5, 14                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 1                   ; vmax =  -boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_15:
+;     !   blendps xmm4, xmm5, 15                  ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 0                   ; vmax = boxx-p0x, boxy-p0y, boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! normal_dot:
+;     !   jmp normal_dot_min
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; normal dot vmin > 0 ?
+;     ; ---------------------------------------------------------------------------------
+;     ! normal_dot_min:
+;     !   movups xmm7, xmm0                       ; copy normal to xmm7
+;     !   mulps xmm7, xmm4                        ; compute normal dot vmin
+;     !   haddps xmm7, xmm7
+;     !   haddps xmm7, xmm7
+;     !   xorps xmm8, xmm8
+;     
+;     !   ucomiss xmm8, xmm7                       ; 0<=vmin
+;     !   jb no_intersection                      ; branch if greater
+;     !   jmp normal_dot_max                      ; branch if lower
+;     
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; normal dot vmax >= 0 ?
+;     ; ---------------------------------------------------------------------------------
+;     ! normal_dot_max:
+;     !   movups xmm7, xmm0                       ; copy normal to xmm7
+;     !   mulps xmm7, xmm6                        ; compute normal dot vmax
+;     !   haddps xmm7, xmm7
+;     !   haddps xmm7, xmm7                       ; dot 
+;     !   xorps xmm8, xmm8
+;     !   comiss xmm8, xmm7                       ; packed compare
+;     !   jbe intersection                        ; 0 < vmax
+;     !   jmp no_intersection                     ; no intersection
+;     
     ; ---------------------------------------------------------------------------------
     ; triangle intersect box
     ; ---------------------------------------------------------------------------------
@@ -1367,8 +1366,8 @@ EndProcedure
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 835
-; FirstLine = 815
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 517
+; FirstLine = 467
 ; Folding = ---
 ; EnableXP

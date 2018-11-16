@@ -583,18 +583,33 @@ Module Handle
   ; Draw
   ;------------------------------------------------------------
   Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
+    Debug "##########################################################"
+    Debug "HANDLE DRAW"
+    Debug "##########################################################"
+
     If Not *Me\target : ProcedureReturn : EndIf
-    
+     Debug "HAS TARGET"
+    Debug "##########################################################"
     Select *Me\tool
       Case Globals::#TOOL_SCALE
         glBindVertexArray(*Me\scale_vao)
-      Case Globals::#TOOL_ROTATE
+        Debug "SCALE"
+    Debug "##########################################################"
+  Case Globals::#TOOL_ROTATE
+    Debug "HAS ROTATE"
+    Debug "##########################################################"
         glBindVertexArray(*Me\rotate_vao)
       Case Globals::#TOOL_TRANSLATE
+        Debug "HAS TRANSLATE"
+    Debug "##########################################################"
         glBindVertexArray(*Me\translate_vao)
       Case Globals::#TOOL_TRANSFORM
+        Debug "HAS TRANSFORM"
+    Debug "##########################################################"
         glBindVertexArray(*Me\transform_vao)
       Case Globals::#TOOL_DIRECTED
+        Debug "HAS DIRECTED"
+    Debug "##########################################################"
         glBindVertexArray(*Me\directed_vao)
     EndSelect
     
@@ -1022,7 +1037,6 @@ Module Handle
   ; Set Active Tool
   ;-----------------------------------------------------------------------------
   Procedure SetActiveTool(*Me.Handle_t,tool.i)
-  
     *Me\tool = tool
     Select *Me\tool
       Case Globals::#TOOL_DIRECTED
@@ -1218,8 +1232,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 735
-; FirstLine = 732
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 610
+; FirstLine = 580
 ; Folding = ------
 ; EnableXP
