@@ -25,7 +25,7 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   PolymeshGeometry::SphereTopology(*topo, 3,32,16)
-  Protected numTopos.i = 128
+  Protected numTopos.i = 32
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -232,8 +232,8 @@ Octree::Delete(*octree)
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 131
+; CursorPosition = 27
+; FirstLine = 21
 ; Folding = -
 ; EnableThread
 ; EnableXP

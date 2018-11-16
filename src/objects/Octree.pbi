@@ -246,9 +246,9 @@ Module Octree
     *octree\eMax = maxDepth
     Split(*octree, *geom, maxDepth)
     
-;     NumCells(*octree, @*octree\numCells)
-;     
-;     MessageRequester("OCTREE", Str(*octree\numCells))
+    NumCells(*octree, @*octree\numCells)
+    
+    MessageRequester("OCTREE", Str(*octree\numCells))
     
 ;     *octree\numCells = 0
 ;     
@@ -388,21 +388,24 @@ Module Octree
     m = 4*_i+2*_j+_k
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
-    *child = Octree::New(@bmin, @bmax, *octree\depth + 1)
-    GetCenter(*child, @center)
-    GetHalfSize(*child, @halfsize)
+    *child = Octree::New(bmin, bmax, *octree\depth + 1)
+    Define box.Geometry::Box_t
+    GetCenter(*child, box\origin)
+    GetHalfSize(*child, box\extend)
     Dim touches.b(*geom\nbtriangles)
-    Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, @center, @halfsize,@touches(0))
-;     For t=0 To tsz -1
-;       tri\id = CArray::GetValueL(*octree\elements, t)
-;       tri\vertices[0] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3)
-;       tri\vertices[1] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3 + 1)
-;       tri\vertices[2] = CArray::GetValueL(*geom\a_triangleindices, tri\id * 3 + 2)
-;       
-;       If Triangle::Touch(@tri, *geom\a_positions\data, @center, @halfsize)
-;          CArray::AppendL(*child\elements, tri\id)
-;       EndIf
-;     Next t
+    Define.Math::v3f32 *a, *b, *c
+    tsz = *octree\elements\itemCount
+    For t=0 To tsz - 1
+      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
+      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
+      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2))
+      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, t) : EndIf
+    Next
+    
+;     Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, center, halfsize,@touches(0))
+;     For t=0 To tsz - 1
+;       If touches(t) : CArray::AppendL(*child\elements, t) : EndIf
+;     Next
     
     If Not *child\elements\itemCount
       *octree\children[m] = #Null
@@ -413,7 +416,7 @@ Module Octree
     EndIf
   EndMacro
   
-  
+ 
   ;---------------------------------------------------------------------
   ; SPLIT
   ;---------------------------------------------------------------------
@@ -421,7 +424,6 @@ Module Octree
     Protected tsz = *octree\elements\itemCount
     If tsz <= #MAX_ELEMENTS Or *octree\depth >= maxDepth:
       *octree\isLeaf = #True
-      ProcedureReturn
     EndIf
 
     *octree\isLeaf = #False
@@ -591,7 +593,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 78
+; CursorPosition = 402
+; FirstLine = 385
 ; Folding = -----
 ; EnableXP

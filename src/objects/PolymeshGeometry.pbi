@@ -429,7 +429,7 @@ Module PolymeshGeometry
     
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       
-      ! mov edx, [p.p_indices]                ; move indices to ecx register
+      ! mov edx, [p.p_indices]                ; move indices to edx register
       ! mov rsi, [p.p_positions]              ; move positions to rsi register
       ! mov rdi, [p.p_normals]                ; move normals to rdi register
       
@@ -2624,7 +2624,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 631
-; FirstLine = 588
+; CursorPosition = 467
+; FirstLine = 411
 ; Folding = -----B---+-
 ; EnableXP
