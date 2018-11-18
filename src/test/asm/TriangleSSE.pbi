@@ -135,8 +135,8 @@ MessageRequester("Touch",msg)
 ; Debug asms
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 77
+; CursorPosition = 106
+; FirstLine = 78
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

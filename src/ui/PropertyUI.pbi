@@ -124,6 +124,7 @@ Module PropertyUI
       Select event
         Case #PB_Event_SizeWindow
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
+         
           ev_datas\x = 0
           ev_datas\y = 0
           ev_datas\height = #PB_Ignore
@@ -158,13 +159,7 @@ Module PropertyUI
         Case #PB_Event_Menu
           If ListSize(*Me\props())
             ForEach *Me\props()
-              If ev_datas\x >= *Me\props()\posX And 
-                 ev_datas\x < *Me\props()\posX + *Me\props()\sizX And
-                 ev_datas\y >= *Me\props()\posY And 
-                 ev_datas\y < *Me\props()\posY + *Me\props()\sizY :
-                    ControlProperty::OnEvent(*Me\props(),EventMenu(),#Null)
-              EndIf
-              ev_datas\y + *Me\props()\sizY
+              ControlProperty::OnEvent(*Me\props(),EventMenu(),#Null)
             Next
           EndIf 
       EndSelect
@@ -189,7 +184,7 @@ Module PropertyUI
     Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
     Protected *c.ControlProperty::ControlProperty_t = *h\parent
-    Debug "ON MESSAGE : ID = "+Str(id)
+
     If id = 0
       DeleteProperty(*Me, *c)
     ElseIf id = 1
@@ -471,9 +466,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 337
-; FirstLine = 315
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 333
+; FirstLine = 330
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

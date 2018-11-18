@@ -199,7 +199,7 @@ Module InstanceCloud
       glVertexAttribPointer(2,v3i,#GL_FLOAT,#GL_FALSE,0,sts*2)
       
       glEnableVertexAttribArray(3)
-      glVertexAttribPointer(3,v3i,#GL_FLOAT,#GL_FALSE,0,sts*3)
+      glVertexAttribPointer(3,4,#GL_FLOAT,#GL_FALSE,0,sts*3)
       
       ; Attribute Position
       glEnableVertexAttribArray(4)
@@ -373,8 +373,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 134
-; FirstLine = 130
+; CursorPosition = 189
+; FirstLine = 181
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

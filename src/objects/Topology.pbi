@@ -63,6 +63,8 @@ Module Topology
     If CArray::GetCount(*vertices)>0
       CArray::Copy(*topo\vertices,*vertices)
       CArray::Copy(*topo\faces,*faces)
+    Else
+      Clear(*topo)
     EndIf
   EndProcedure
   
@@ -375,7 +377,6 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 137
 ; Folding = ---
 ; EnableXP

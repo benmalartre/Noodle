@@ -97,16 +97,6 @@ Module PointCloud
     FreeMemory(*Me)
   EndProcedure
   
-  ;------------ Attributes -----------------------------
-  ; Position          x3
-  ; Velocity          x3
-  ; Normal            x3
-  ; Tangent           x3
-  ; Scale             x3
-  ; Color             x4
-  ; Size              x1
-  ;-----------------------------------------------------
-  
   
   ;-----------------------------------------------------
   ; Buil GL Data 
@@ -118,12 +108,12 @@ Module PointCloud
     Protected nbv = *geom\nbpoints
     If nbv <3 : ProcedureReturn : EndIf
     
-    Protected GLfloat_s.GLfloat
+    Protected float.f
     
     ; Get PointCloud Datas
-    Protected s1 = SizeOf(GLfloat_s)
-    Protected s3 = SizeOf(GLfloat_s) * 3
-    Protected s4 = SizeOf(GLfloat_s) * 4
+    Protected s1 = SizeOf(float)
+    Protected s3 = SizeOf(v3f32)
+    Protected s4 = SizeOf(c4f32)
     Protected size_p.i = nbv * s3
     Protected size_c.i = nbv * s4
     Protected size_s.i = nbv * s1
@@ -165,26 +155,30 @@ Module PointCloud
      ;-------------------------------------------------------------
     glBufferSubData(#GL_ARRAY_BUFFER,5*size_p+size_c,size_s,CArray::GetPtr(*geom\a_size,0))
     
+    Define x.a = 3
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      x.a = 4
+    CompilerEndIf
     
     ; Attibute Position 0
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    glVertexAttribPointer(0,x,#GL_FLOAT,#GL_FALSE,0,0)
     
     ; Attibute Velocities 1
     glEnableVertexAttribArray(1)
-    glVertexAttribPointer(1,3,#GL_FLOAT,#GL_FALSE,0,size_p)
+    glVertexAttribPointer(1,x,#GL_FLOAT,#GL_FALSE,0,size_p)
     
     ;Attibute Normal 2
     glEnableVertexAttribArray(2)
-    glVertexAttribPointer(2,3,#GL_FLOAT,#GL_FALSE,0,2*size_p)
+    glVertexAttribPointer(2,x,#GL_FLOAT,#GL_FALSE,0,2*size_p)
     
     ;Attibute Tangent 3
     glEnableVertexAttribArray(3)
-    glVertexAttribPointer(3,3,#GL_FLOAT,#GL_FALSE,0,3*size_p)
+    glVertexAttribPointer(3,x,#GL_FLOAT,#GL_FALSE,0,3*size_p)
     
     ;Attibute Scale 4
     glEnableVertexAttribArray(4)
-    glVertexAttribPointer(4,3,#GL_FLOAT,#GL_FALSE,0,4*size_p)
+    glVertexAttribPointer(4,x,#GL_FLOAT,#GL_FALSE,0,4*size_p)
     
     ; Attribute Color 5
     glEnableVertexAttribArray(5)
@@ -201,8 +195,6 @@ Module PointCloud
     glBindAttribLocation(*p\shader\pgm, 4, "scale");
     glBindAttribLocation(*p\shader\pgm, 5, "color")  ;
     glBindAttribLocation(*p\shader\pgm, 6, "size")   ;
-    
-    
 
   EndProcedure
     
@@ -219,7 +211,6 @@ Module PointCloud
    
     ; Setup Static Kinematic STate
     ;ResetStaticKinematicState(*p)
-    
     
     ; Create or ReUse Vertex Array Object
     If Not *p\vao
@@ -350,7 +341,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 13
+; CursorPosition = 55
+; FirstLine = 43
 ; Folding = ---
 ; EnableXP

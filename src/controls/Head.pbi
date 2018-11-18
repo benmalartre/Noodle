@@ -77,7 +77,7 @@ Module ControlHead
     Protected *prop.Control::Control_t = *Me\parent
     Protected *n.Node::Node_t = *prop\object
     
-    VectorFont(FontID(Globals::#FONT_TEXT),22)
+    VectorFont(FontID(Globals::#FONT_TEXT),14)
     w = VectorTextWidth(*n\name)
     h = VectorTextHeight(*n\name)
 
@@ -221,16 +221,12 @@ Module ControlHead
       ;  LeftButtonUp
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonUp
-        If *Me\visible And *Me\enable
+        If *Me\visible And *Me\enable And *Me\over
           *Me\down = #False
           If *Me\over And *Me\touch_l 
-            Debug "EXPAND..."
-            Debug *Me\class\name
             Slot::Trigger(*Me\onexpand_signal,Signal::#SIGNAL_TYPE_PING,#Null)
           ElseIf *Me\over And *Me\touch_r
-            Debug "DELETE..."
-            Debug *Me\class\name
-            Slot::Trigger(*Me\ondelete_signal,Signal::#SIGNAL_TYPE_PING,#Null)
+;             Slot::Trigger(*Me\ondelete_signal,Signal::#SIGNAL_TYPE_PING,#Null)
           EndIf
           
         EndIf
@@ -367,8 +363,8 @@ Module ControlHead
   
   Class::DEF(ControlHead)
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 227
-; FirstLine = 205
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 226
+; FirstLine = 203
 ; Folding = ---
 ; EnableXP

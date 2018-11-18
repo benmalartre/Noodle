@@ -255,15 +255,15 @@ Module Attribute
 ;               out_string = "("+StrF(v2\x)+","+StrF(v2\y)+")"
             Case #ATTR_TYPE_VECTOR3
               Protected v3.v3f32
-              CopyMemory(*attribute\data,@v3,SizeOf(v3))
+              CopyMemory(*attribute\data,v3,SizeOf(v3))
               out_string = "("+StrF(v3\x)+","+StrF(v3\y)+","+StrF(v3\z)+")"
             Case #ATTR_TYPE_QUATERNION
               Protected q.q4f32
-              CopyMemory(*attribute\data,@q,SizeOf(q))
+              CopyMemory(*attribute\data,q,SizeOf(q))
               out_string = "("+StrF(q\x)+","+StrF(q\y)+","+StrF(q\z)+","+StrF(q\w)+")"
             Case #ATTR_TYPE_Matrix4
               Protected m4.m4f32
-              CopyMemory(*attribute\data,@m4,SizeOf(m4))
+              CopyMemory(*attribute\data,m4,SizeOf(m4))
               out_string = "("+StrF(m4\v[0])+","+StrF(m4\v[1])+","+StrF(m4\v[2])+","+StrF(m4\v[3])+","+
                            StrF(m4\v[4])+","+StrF(m4\v[5])+","+StrF(m4\v[6])+","+StrF(m4\v[7])+","+
                            StrF(m4\v[8])+","+StrF(m4\v[9])+","+StrF(m4\v[10])+","+StrF(m4\v[11])+","+
@@ -275,24 +275,24 @@ Module Attribute
           Case #ATTR_TYPE_BOOL
             Protected *b_datas.CArray::CArrayBool = *attribute\data
             For it=0 To CArray::GetCount(*b_datas)-1
-              out_string +Str(PeekB(CArray::GetValue(*b_datas,it)))+","
+              out_string +Str(CArray::GetValueB(*b_datas,it))+","
             Next
             
             Case #ATTR_TYPE_LONG
             Protected *l_datas.CArray::CArrayLong = *attribute\data
             For it=0 To CArray::GetCount(*l_datas)-1
-              out_string +Str(PeekL(CArray::GetValue(*l_datas,it)))+","
+              out_string +Str(CArray::GetValueL(*l_datas,it))+","
             Next
    
           Case #ATTR_TYPE_INTEGER
             Protected *i_datas.CArray::CArrayInt = *attribute\data
             For it=0 To CArray::GetCount(*i_datas)-1
-              out_string +Str(PeekI(CArray::GetValue(*i_datas,it)))+","
+              out_string +Str(CArray::GetValueI(*i_datas,it))+","
             Next
           Case #ATTR_TYPE_FLOAT
             Protected *f_datas.CArray::CArrayFloat = *attribute\data
             For it=0 To CArray::GetCount(*f_datas)-1
-              out_string +StrF(PeekF(CArray::GetValue(*f_datas,it)))+","
+              out_string +StrF(CArray::GetValueF(*f_datas,it))+","
             Next
           Case #ATTR_TYPE_VECTOR2
 ;             Protected v2_datas.CArrayV2F32 = *attribute\data
@@ -611,7 +611,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 143
+; CursorPosition = 294
+; FirstLine = 373
 ; Folding = ---
 ; EnableXP

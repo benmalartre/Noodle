@@ -68,7 +68,7 @@ If Time::Init()
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     *model = Alembic::LoadABCArchive("../../abc/MonkeySkeleton.abc");
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-    *model = Alembic::LoadABCArchive("..\..\abc\MonkeySkeleton.abc")
+    *model = Alembic::LoadABCArchive("..\..\abc\Lizard Skeleton.abc")
   CompilerElse
     *model = Alembic::LoadABCArchive("../../abc/MonkeySkeleton.abc")
   CompilerEndIf
@@ -123,7 +123,7 @@ If Time::Init()
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
+; CursorPosition = 70
 ; FirstLine = 53
 ; Folding = -
 ; EnableXP

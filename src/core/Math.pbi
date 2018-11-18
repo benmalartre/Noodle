@@ -252,7 +252,7 @@ DeclareModule Math
       w.f
     EndStructureUnion
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      _unused.f
+      _w.f
     CompilerEndIf
   EndStructure
   
@@ -275,7 +275,7 @@ DeclareModule Math
     StructureUnion
       w.f
       a.f
-      EndStructureUnion
+    EndStructureUnion
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -2446,16 +2446,17 @@ EndDeclareModule
 DeclareModule Transform
   UseModule Math
   Structure Transform_t
-    ;underlying trf32
-    t.trf32
-
-    ;underlying matrix
+    ; underlying matrix
     m.m4f32
-     
-     ;States
+    
+    ; underlying trf32
+    t.trf32
+    
+    ; dirty states
     srtdirty.b   
     matrixdirty.b
   EndStructure
+  
   Declare Init(*t.Transform_t)
   Declare Set(*t.Transform_t,*s.v3f32,*r.q4f32,*p.v3f32)
   Declare SetFromOther(*t.Transform_t,*o.Transform_t)
@@ -3211,7 +3212,7 @@ Module Matrix4
     
     Procedure MultiplyInPlace(*m.m4f32, *o.m4f32)
       Protected tmp.m4f32
-      Matrix4::SetFromOther(tmp, *m)
+      CopyMemory(*m\v, tmp\v, SizeOf(m4f32))
       ! mov rdx, [p.p_m]
       ! mov rax, [p.v_tmp]
       ! mov rcx, [p.p_o]
@@ -3382,11 +3383,10 @@ Module Transform
   ;------------------------------------------
   Procedure ComputeLocal(*l.Transform_t,*g.Transform_t,*p.Transform_t)
     Protected inv.m4f32
-    Matrix4::Inverse(@inv,*p)
-    Matrix4::Multiply(*l\m,*g\m,@inv)
+    Matrix4::Inverse(inv,*p)
+    Matrix4::Multiply(*l\m,*g\m,inv)
     UpdateSRTFromMatrix(*l)
   EndProcedure
-  
   
   ;------------------------------------------
   ; Update Matrix From SRT values
@@ -3543,8 +3543,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 776
-; FirstLine = 761
-; Folding = -------------------------------------------
+; CursorPosition = 663
+; FirstLine = 649
+; Folding = --------------------------------------------
 ; EnableXP
 ; EnableUnicode

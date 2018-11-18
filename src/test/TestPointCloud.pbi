@@ -61,6 +61,7 @@ Procedure Draw(*app.Application::Application_t)
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
     CocoaMessage( 0, *viewport\context\ID, "makeCurrentContext" )
   CompilerEndIf
+  ViewportUI::SetContext(*viewport)
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -73,24 +74,12 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(offset)
   Framebuffer::BindOutput(*buffer)
   
-  Matrix4::Echo(model,"Model")
-  Matrix4::Echo(*app\camera\view,"View")
-  Matrix4::Echo(*app\camera\projection,"PROJECTION")
-  
-  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@model)
+  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,model)
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*app\camera\projection)
   glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   T+0.01
 
-;   Polymesh::Draw(*torus)
-;   Polymesh::Draw(*teapot)
-;   Polymesh::Draw(*ground)
-;   Polymesh::Draw(*null)
-;   Polymesh::Draw(*cube)
-;   ForEach *bunnies()
-;     Polymesh::Draw(*bunnies())
-;   Next
   PointCloud::Draw(*cloud)
   
   glDisable(#GL_DEPTH_TEST)
@@ -100,25 +89,15 @@ Procedure Draw(*app.Application::Application_t)
   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
   glReadBuffer(#GL_COLOR_ATTACHMENT0)
   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-  glDisable(#GL_DEPTH_TEST)
   
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*ftgl_drawer,"Point Cloud Nb Vertices : "+Str(*cloud\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::BeginDraw(*ftgl_drawer)
+;   FTGL::SetColor(*ftgl_drawer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*ftgl_drawer,"Point Cloud Nb Vertices : "+Str(*cloud\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*ftgl_drawer)
   
-  glDisable(#GL_BLEND)
-  
- CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\context\ID, "flushBuffer" )
-  CompilerElse
-    If Not #USE_GLFW
-      SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-    EndIf
-  CompilerEndIf
+ ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
 
@@ -195,49 +174,23 @@ Procedure Draw(*app.Application::Application_t)
   Define p_start.v3f32,p_end.v3f32
   Vector3::Set(p_start,-1,0,0)
   Vector3::Set(p_end,1,0,0)
-  ;PointCloudGeometry::PointsOnLine(*cloud\geom,@p_start,@p_end)
+;   PointCloudGeometry::PointsOnLine(*cloud\geom,p_start,p_end)
   PointCloudGeometry::PointsOnSphere(*cloud\geom,5)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   PointCloud::Setup(*cloud,*s_pointcloud)
-;   PointCloudGeometry::PointsOnSphere(*cloud\geom)
+  Object3D::Freeze(*cloud)
   
   Define i
   Define *geom.Geometry::PointCloudGeometry_t = *cloud\geom
   Define *p.v3f32
   Define msg.s
-  For i=0 To *cloud\geom\nbpoints-1
-    *p = CArray::GetValue(*geom\a_positions,i)
-    msg + StrF(*p\x)+","+StrF(*p\y)+","+StrF(*p\z)+","+Chr(10)
-  Next
-  MessageRequester("POINTCLOUD POSITIONS",msg)
   
-  ; Main Loop
-  ;----------------------------------------------
-  Define e
-  CompilerIf #USE_GLFW
-    glfwMakeContextCurrent(*app\window)
-    While Not glfwWindowShouldClose(*app\window)
-      ;glfwWaitEvents()
-      glfwPollEvents()
-      
-      Draw(*app)
-    
-      glfwSwapBuffers(*app\window)
-     
-    Wend
-  CompilerElse
-    Repeat
-      e = WaitWindowEvent(1000/60)
-      ViewManager::OnEvent(*app\manager,e)
-      Draw(*app)
-
-    Until e = #PB_Event_CloseWindow
-  CompilerEndIf
+  Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 56
-; Folding = --
+; CursorPosition = 176
+; FirstLine = 131
+; Folding = -
 ; EnableXP
 ; Executable = Test
 ; Debugger = Standalone

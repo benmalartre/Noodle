@@ -12,7 +12,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf  #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -72,14 +74,12 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   Object3D::SetShader(*ground,*shader)
   
   Protected i
-  Protected pos.v3f32
   Protected *p.v3f32
   
   For i=0 To CArray::GetCount(*mesh\a_positions)-1
    
     *p = CArray::GetValue(*mesh\a_positions,i)
-    Vector3::Set(pos,*p\x*10,(Random(20)-10),*p\z*10)
-    CArray::SetValue(*mesh\a_positions,i,pos)
+    Vector3::Set(*p,*p\x*10,(Random(20)-10),*p\z*10)
   Next
   
 
@@ -128,7 +128,7 @@ Procedure BulletScene(*s.Program::Program_t)
   Protected nb = 12
   For i=0 To nb
     Vector3::Set(v,0,i,0)
-    CArray::Append(*pos,@v)
+    CArray::Append(*pos,v)
   Next
   ;BTCreateSphereSoftBody()
   
@@ -144,74 +144,40 @@ Protected factor.v3f32
 
  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("RigidBodies",Shape::#SHAPE_SPHERE)
 Vector3::Set(factor,1,1,1)
-Color::Set(@color,1.0,0.5,0.4)
+Color::Set(color,1.0,0.5,0.4,1)
   For x=0 To 7
     For y=0 To 1
       For z=0 To 7
-        Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_SPHERE)
-        Object3D::SetShader(*cube,*s)
+        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
+        Object3D::SetShader(*mesh,*s)
         ;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
-        Object3D::AddChild(*root,*cube)
+        Object3D::AddChild(*root,*mesh)
 
-        ;*cube\Sphere()
-        ;OPolymeshGeometry_Sphere(*cube\GetGeometry(),1,12,12)
-        *t.Transform::Transform_t = *cube\localT
+        ;*mesh\Sphere()
+        ;OPolymeshGeometry_Sphere(*mesh\GetGeometry(),1,12,12)
+        *t.Transform::Transform_t = *mesh\localT
         Vector3::Set(p,x*2-10,10*2+y,z*2-10)
-        Vector3::SetFromOther(*t\t\pos,@p)
+        Vector3::SetFromOther(*t\t\pos,p)
 
-        Quaternion::SetFromAxisAngleValues(@q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
-        Quaternion::SetFromOther(*t\t\rot,@q)
+        Quaternion::SetFromAxisAngleValues(q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
+        Quaternion::SetFromOther(*t\t\rot,q)
         
         Vector3::Set(*t\t\scl,3,3,3)
         *t\srtdirty = #True
-        Object3D::SetGlobalTransform(*cube,*t)
-        Object3D::UpdateTransform(*cube,*root\globalT)
-        BulletRigidBody::BTCreateRigidBodyFrom3DObject(*cube,Bullet::#SPHERE_SHAPE,1.0,Bullet::*bullet_world)
-        Protected *body.Bullet::btRigidBody = *cube\rigidbody
+        Object3D::SetGlobalTransform(*mesh,*t)
+        Object3D::UpdateTransform(*mesh,*root\globalT)
+        BulletRigidBody::BTCreateRigidBodyFrom3DObject(*mesh,Bullet::#CONVEXHULL_SHAPE,1.0,Bullet::*bullet_world)
+        Protected *body.Bullet::btRigidBody = *mesh\rigidbody
         Bullet::BTSetAngularFactorF(*body,0.5)
         Bullet::BTSetFriction(*body,10)
-        Color::Randomize(@color)
-        PolymeshGeometry::SetColors(*cube\geom,@color)
+        Color::Randomize(color)
+        PolymeshGeometry::SetColors(*mesh\geom,color)
       Next z
     Next y
   Next x
   
     BTCreateCurvedGroundData(*s)
   
-  ;Ground
-
-;   Protected *ground.CPolymesh = newCPolymesh("Ground",#RAA_SHAPE_SPHERE,0.0)
-;   *root\AddChild(*ground)
-; 
-;   
-;   Protected *geom.CPolymeshGeometry_t = *ground\GetGeometry()
-;   ;OPolymeshGeometry_Cube(*ground\GetGeometry(),1,1,40,40)
-;   *t = *ground\GetGlobalTransform()
-;   *t\SetScaleFromXYZValues(40,20,40)
-;   *t\SetTranslationY(-20)
-;   *ground\SetLocalTransform(*t)
-;   *ground\UpdateTransform(*root\GetGlobalTransform())
-;   
-;   
-;   BTCreateRigidBodyFrom3DObject(*ground,#BULLET_TRIANGLEMESH_SHAPE,0.0)
-  
-;   *raa_current_scene\handle\SetTarget(*ground)
-  
-  
-    ; ---[ Debugging Raycast ]---------------------------------------------------
-;     Protected hit.CNull = newCNull("RayHit")
-;   *root\AddChild(hit)
-; 
-;   *t = hit\GetLocalTransform()
-;   
-;   *t\SetScaleFromXYZValues(1,1,1)
-;   hit\SetGlobalTransform(*t)
-;   hit\UpdateTransform(*root\GetGlobalTransform());   
-;   
-;   
-;   *raa_current_scene\rayhit = hit
-;scene\AddModel(*root)
-  Debug "---------------------- ooooo ----------------------------------"
   Scene::AddModel(Scene::*current_scene,*root)
   ProcedureReturn Scene::*current_scene
 EndProcedure
@@ -306,7 +272,7 @@ Procedure Draw(*app.Application::Application_t)
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   BulletScene(*app\context\shaders("polymesh"))
   
@@ -357,9 +323,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 342
-; FirstLine = 289
-; Folding = -
+; CursorPosition = 87
+; FirstLine = 37
+; Folding = --
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

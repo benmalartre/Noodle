@@ -807,10 +807,10 @@ Module AlembicIObject
     
     update.i =  points\UpdateSample(*cloud_infos,*cloud_sample)
     
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      CArray::ShiftAlign(*cloud_geom\a_positions\data, *cloud_geom\nbpoints, 12, 16)
-      CArray::ShiftAlign(*cloud_geom\a_velocities\data, *cloud_geom\nbpoints, 12, 16)
-    CompilerEndIf
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       Memory::ShiftAlign(*cloud_geom\a_positions\data, *cloud_geom\nbpoints, 12, 16)
+;       Memory::ShiftAlign(*cloud_geom\a_velocities\data, *cloud_geom\nbpoints, 12, 16)
+;     CompilerEndIf
       
     UpdateProperties(*o,frame/30)
     ApplyProperty(*o,"Scale")
@@ -975,14 +975,14 @@ Module AlembicIObject
 
       mesh\UpdateTopoSample(*infos,*mesh_sample)
       
-      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        CArray::ShiftAlign(*geom\a_positions\data, *geom\nbpoints, 12, 16)
-        CArray::ShiftAlign(*geom\a_pointnormals\data, *geom\nbpoints, 12, 16)
-        CArray::ShiftAlign(*geom\a_velocities\data, *geom\nbpoints, 12, 16)
-        CArray::ShiftAlign(*geom\a_normals\data, *geom\nbsamples, 12, 16)
-        CArray::ShiftAlign(*geom\a_tangents\data, *geom\nbsamples, 12, 16)
-        CArray::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
-      CompilerEndIf
+;       CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;         Memory::ShiftAlign(*geom\a_positions\data, *geom\nbpoints, 12, 16)
+;         Memory::ShiftAlign(*geom\a_pointnormals\data, *geom\nbpoints, 12, 16)
+;         Memory::ShiftAlign(*geom\a_velocities\data, *geom\nbpoints, 12, 16)
+;         Memory::ShiftAlign(*geom\a_normals\data, *geom\nbsamples, 12, 16)
+;         Memory::ShiftAlign(*geom\a_tangents\data, *geom\nbsamples, 12, 16)
+;         Memory::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
+;       CompilerEndIf
       
 
        PolymeshGeometry::RecomputeTriangles(*geom)
@@ -1170,11 +1170,11 @@ Module AlembicIObject
         CArray::SetCount(*attr\data,*infos\nbitems)
         *sample\datas = CArray::GetPtr(*attr\data,0)
         prop\GetSample(1, *infos, *sample)   
-        If Defined(USE_SSE, #PB_Constant) And #USE_SSE
-          If *infos\type = Alembic::#ABC_DataTraits_V3f
-            CArray::ShiftAlign(*attr\data, *infos\nbitems, 12, 16)
-          EndIf
-        EndIf
+;         If Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;           If *infos\type = Alembic::#ABC_DataTraits_V3f
+;             Memory::ShiftAlign(*attr\data, *infos\nbitems, 12, 16)
+;           EndIf
+;         EndIf
       EndIf
    Next
      
@@ -1209,11 +1209,11 @@ Module AlembicIObject
        
        io_sample\datas = CArray::GetPtr(*attr\data,0)   
        prop\GetSample(infos\time, infos, io_sample)
-       If Defined(USE_SSE, #PB_Constant) And #USE_SSE
-          If infos\type = Alembic::#ABC_DataTraits_V3f
-            CArray::ShiftAlign(*attr\data, infos\nbitems, 12, 16)
-          EndIf
-        EndIf
+;        If Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;           If infos\type = Alembic::#ABC_DataTraits_V3f
+;             Memory::ShiftAlign(*attr\data, infos\nbitems, 12, 16)
+;           EndIf
+;         EndIf
        Break
      EndIf
      x+1
@@ -1247,21 +1247,19 @@ Module AlembicIObject
       io_sample\datas = CArray::GetPtr(*attr\data,0)   
       prop\GetSample(frame, @infos, @io_sample)
       
-      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        MessageRequester(*Me\attributes()\name, Str(infos\traits))
-        If infos\type = Alembic::#ABC_PropertyType_Array And
-           (infos\traits = Alembic::#ABC_DataTraits_P3f Or
-            infos\traits = Alembic::#ABC_DataTraits_N3f Or
-            infos\traits = Alembic::#ABC_DataTraits_V3f):
-          CArray::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
-        EndIf
-      CompilerEndIf
+;       CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;         MessageRequester(*Me\attributes()\name, Str(infos\traits))
+;         If infos\type = Alembic::#ABC_PropertyType_Array And
+;            (infos\traits = Alembic::#ABC_DataTraits_P3f Or
+;             infos\traits = Alembic::#ABC_DataTraits_N3f Or
+;             infos\traits = Alembic::#ABC_DataTraits_V3f):
+;           Memory::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
+;         EndIf
+;       CompilerEndIf
     Next
     
   EndProcedure
 
-   
-   
   ;---------------------------------------------------------
   ; Apply Properties
   ;---------------------------------------------------------
@@ -1453,7 +1451,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1255
-; FirstLine = 1246
+; CursorPosition = 1257
+; FirstLine = 1245
 ; Folding = --------
 ; EnableXP

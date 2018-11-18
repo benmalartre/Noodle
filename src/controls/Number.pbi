@@ -597,11 +597,12 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     ;  MouseMove
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
-
+      Debug ".............. MOUSE MOVE"
       ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
         ; ...[ Check Down ]...................................................
         If *Me\down
+          Debug "DOWN , EVDATAS = "+Str(*ev_data)
           ; ...[ Sanity Check ]...............................................
           If Not *ev_data : ProcedureReturn : EndIf
           ; ...[ Check Mouse Selecting ]......................................
@@ -639,6 +640,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     ;  LeftButtonDown
     ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonDown
+      Debug "NUMBER LEFT BUTTON DOWN"
+      Debug Str(*Me\visible)+", "+Str(*Me\enable)+", "+Str(*Me\over)+", "+Str(*ev_data)
       ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable And *Me\over
         ; ...[ Sanity Check ].................................................
@@ -647,6 +650,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         *Me\down = #True
         ; ...[ Check Not Yet Focused ]........................................
         If *Me\focused
+          Debug "FOCUSED"
           If Not *Me\options & ControlNumber::#NUMBER_NOSLIDER
             ; ...[ Update Value ]...............................................
             *Me\value_n = ( *ev_data\x - 2.0 )/( *Me\sizX - 4.0 )*( *Me\soft_max - *Me\soft_min ) + *Me\soft_min
@@ -661,6 +665,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ; ...[ Positions Lookup Table Is Now Dirty ]........................
           *Me\lookup_dirty = #True
         Else
+          Debug "NOT FOCUSED"
           ; ...[ Update Strong Cursor Position ]..............................
           *Me\posG = hlpCharPosFromMousePos( *Me, *ev_data\x )
           ; ...[ Reset Selection ]............................................
@@ -1245,7 +1250,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 419
-; FirstLine = 410
+; CursorPosition = 587
+; FirstLine = 539
 ; Folding = ----
 ; EnableXP

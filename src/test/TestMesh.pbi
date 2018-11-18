@@ -129,6 +129,7 @@ Procedure Draw(*app.Application::Application_t)
  FTGL::Init()
 ;--------------------------------------------
  If Time::Init()
+   Define sT.d = Time::Get()
    Log::Init()
    *app = Application::New("TestMesh",width,height)
 
@@ -221,15 +222,15 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-
+  MessageRequester("TIME", StrD(Time::Get() - sT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 204
-; FirstLine = 187
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 217
+; FirstLine = 159
 ; Folding = -
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

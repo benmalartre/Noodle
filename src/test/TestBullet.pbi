@@ -19,61 +19,61 @@ UseModule OpenGLExt
 
 EnableExplicit
 
-Global ErrorMessage$
-Procedure ErrorHandler()
- 
-  ErrorMessage$ = "A program error was detected:" + Chr(13) 
-  ErrorMessage$ + Chr(13)
-  ErrorMessage$ + "Error Message:   " + ErrorMessage()      + Chr(13)
-  ErrorMessage$ + "Error Code:      " + Str(ErrorCode())    + Chr(13)  
-  ErrorMessage$ + "Code Address:    " + Str(ErrorAddress()) + Chr(13)
- 
-  If ErrorCode() = #PB_OnError_InvalidMemory   
-    ErrorMessage$ + "Target Address:  " + Str(ErrorTargetAddress()) + Chr(13)
-  EndIf
- 
-  If ErrorLine() = -1
-    ErrorMessage$ + "Sourcecode line: Enable OnError lines support to get code line information." + Chr(13)
-  Else
-    ErrorMessage$ + "Sourcecode line: " + Str(ErrorLine()) + Chr(13)
-    ErrorMessage$ + "Sourcecode file: " + ErrorFile() + Chr(13)
-  EndIf
- 
-  ErrorMessage$ + Chr(13)
-  ErrorMessage$ + "Register content:" + Chr(13)
- 
-  CompilerSelect #PB_Compiler_Processor 
-    CompilerCase #PB_Processor_x86
-      ErrorMessage$ + "EAX = " + Str(ErrorRegister(#PB_OnError_EAX)) + Chr(13)
-      ErrorMessage$ + "EBX = " + Str(ErrorRegister(#PB_OnError_EBX)) + Chr(13)
-      ErrorMessage$ + "ECX = " + Str(ErrorRegister(#PB_OnError_ECX)) + Chr(13)
-      ErrorMessage$ + "EDX = " + Str(ErrorRegister(#PB_OnError_EDX)) + Chr(13)
-      ErrorMessage$ + "EBP = " + Str(ErrorRegister(#PB_OnError_EBP)) + Chr(13)
-      ErrorMessage$ + "ESI = " + Str(ErrorRegister(#PB_OnError_ESI)) + Chr(13)
-      ErrorMessage$ + "EDI = " + Str(ErrorRegister(#PB_OnError_EDI)) + Chr(13)
-      ErrorMessage$ + "ESP = " + Str(ErrorRegister(#PB_OnError_ESP)) + Chr(13)
- 
-    CompilerCase #PB_Processor_x64
-      ErrorMessage$ + "RAX = " + Str(ErrorRegister(#PB_OnError_RAX)) + Chr(13)
-      ErrorMessage$ + "RBX = " + Str(ErrorRegister(#PB_OnError_RBX)) + Chr(13)
-      ErrorMessage$ + "RCX = " + Str(ErrorRegister(#PB_OnError_RCX)) + Chr(13)
-      ErrorMessage$ + "RDX = " + Str(ErrorRegister(#PB_OnError_RDX)) + Chr(13)
-      ErrorMessage$ + "RBP = " + Str(ErrorRegister(#PB_OnError_RBP)) + Chr(13)
-      ErrorMessage$ + "RSI = " + Str(ErrorRegister(#PB_OnError_RSI)) + Chr(13)
-      ErrorMessage$ + "RDI = " + Str(ErrorRegister(#PB_OnError_RDI)) + Chr(13)
-      ErrorMessage$ + "RSP = " + Str(ErrorRegister(#PB_OnError_RSP)) + Chr(13)
-      ErrorMessage$ + "Display of registers R8-R15 skipped."         + Chr(13)
- 
-  CompilerEndSelect
- 
-  MessageRequester("OnError example", ErrorMessage$)
-  End
-  
-  
-  
-EndProcedure
-
- OnErrorCall(@ErrorHandler())
+; Global ErrorMessage$
+; Procedure ErrorHandler()
+;  
+;   ErrorMessage$ = "A program error was detected:" + Chr(13) 
+;   ErrorMessage$ + Chr(13)
+;   ErrorMessage$ + "Error Message:   " + ErrorMessage()      + Chr(13)
+;   ErrorMessage$ + "Error Code:      " + Str(ErrorCode())    + Chr(13)  
+;   ErrorMessage$ + "Code Address:    " + Str(ErrorAddress()) + Chr(13)
+;  
+;   If ErrorCode() = #PB_OnError_InvalidMemory   
+;     ErrorMessage$ + "Target Address:  " + Str(ErrorTargetAddress()) + Chr(13)
+;   EndIf
+;  
+;   If ErrorLine() = -1
+;     ErrorMessage$ + "Sourcecode line: Enable OnError lines support to get code line information." + Chr(13)
+;   Else
+;     ErrorMessage$ + "Sourcecode line: " + Str(ErrorLine()) + Chr(13)
+;     ErrorMessage$ + "Sourcecode file: " + ErrorFile() + Chr(13)
+;   EndIf
+;  
+;   ErrorMessage$ + Chr(13)
+;   ErrorMessage$ + "Register content:" + Chr(13)
+;  
+;   CompilerSelect #PB_Compiler_Processor 
+;     CompilerCase #PB_Processor_x86
+;       ErrorMessage$ + "EAX = " + Str(ErrorRegister(#PB_OnError_EAX)) + Chr(13)
+;       ErrorMessage$ + "EBX = " + Str(ErrorRegister(#PB_OnError_EBX)) + Chr(13)
+;       ErrorMessage$ + "ECX = " + Str(ErrorRegister(#PB_OnError_ECX)) + Chr(13)
+;       ErrorMessage$ + "EDX = " + Str(ErrorRegister(#PB_OnError_EDX)) + Chr(13)
+;       ErrorMessage$ + "EBP = " + Str(ErrorRegister(#PB_OnError_EBP)) + Chr(13)
+;       ErrorMessage$ + "ESI = " + Str(ErrorRegister(#PB_OnError_ESI)) + Chr(13)
+;       ErrorMessage$ + "EDI = " + Str(ErrorRegister(#PB_OnError_EDI)) + Chr(13)
+;       ErrorMessage$ + "ESP = " + Str(ErrorRegister(#PB_OnError_ESP)) + Chr(13)
+;  
+;     CompilerCase #PB_Processor_x64
+;       ErrorMessage$ + "RAX = " + Str(ErrorRegister(#PB_OnError_RAX)) + Chr(13)
+;       ErrorMessage$ + "RBX = " + Str(ErrorRegister(#PB_OnError_RBX)) + Chr(13)
+;       ErrorMessage$ + "RCX = " + Str(ErrorRegister(#PB_OnError_RCX)) + Chr(13)
+;       ErrorMessage$ + "RDX = " + Str(ErrorRegister(#PB_OnError_RDX)) + Chr(13)
+;       ErrorMessage$ + "RBP = " + Str(ErrorRegister(#PB_OnError_RBP)) + Chr(13)
+;       ErrorMessage$ + "RSI = " + Str(ErrorRegister(#PB_OnError_RSI)) + Chr(13)
+;       ErrorMessage$ + "RDI = " + Str(ErrorRegister(#PB_OnError_RDI)) + Chr(13)
+;       ErrorMessage$ + "RSP = " + Str(ErrorRegister(#PB_OnError_RSP)) + Chr(13)
+;       ErrorMessage$ + "Display of registers R8-R15 skipped."         + Chr(13)
+;  
+;   CompilerEndSelect
+;  
+;   MessageRequester("OnError example", ErrorMessage$)
+;   End
+;   
+;   
+;   
+; EndProcedure
+; 
+;  OnErrorCall(@ErrorHandler())
 
 Global down.b
 Global lmb_p.b
@@ -134,9 +134,8 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   Protected *p.v3f32
   
   For i=0 To CArray::GetCount(*mesh\a_positions)-1
-   
     *p = CArray::GetValue(*mesh\a_positions,i)
-    Vector3::Set(pos,*p\x*10,(Random(20)-10),*p\z*10)
+    Vector3::Set(pos,*p\x*8,*p\y*3 + Random(5),*p\z*8)
     CArray::SetValue(*mesh\a_positions,i,pos)
   Next
   
@@ -170,13 +169,9 @@ EndProcedure
 
 
 Procedure BulletScene(*s.Program::Program_t)
-  
-  
-  
+
   Scene::*current_scene = Scene::New("Test Bullet")
   Protected scene.Scene::IScene = Scene::*current_scene
-  
-  BTCreateCurvedGroundData(*s)
   
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -189,7 +184,7 @@ Procedure BulletScene(*s.Program::Program_t)
   Protected *id.CArray::CArrayChar = CArray::newCArrayChar()
   Protected v.v3f32
   Protected i
-  Protected nb = 12
+  Protected nb = 164
   For i=0 To nb
     Vector3::Set(v,0,i,0)
     CArray::Append(*pos,@v)
@@ -207,10 +202,10 @@ Protected color.c4f32
 Protected factor.v3f32
 Vector3::Set(factor,1,1,1)
 Color::Set(color,1.0,0.5,0.4,1.0)
-  For x=0 To 7
-    For y=0 To 1
-      For z=0 To 7
-        Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
+  For x=0 To 4
+    For y=0 To 12
+      For z=0 To 4
+        Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_CYLINDER)
         Object3D::SetShader(*cube,*s)
         ;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
         Object3D::AddChild(*root,*cube)
@@ -224,9 +219,9 @@ Color::Set(color,1.0,0.5,0.4,1.0)
         Quaternion::SetFromAxisAngleValues(q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
         Quaternion::SetFromOther(*t\t\rot,q)
         
-        Vector3::Set(*t\t\scl,5,5,5)
+        Vector3::Set(*t\t\scl,3,3,3)
         *t\srtdirty = #True
-        Object3D::SetGlobalTransform(*cube,*t)
+        Object3D::SetLocalTransform(*cube,*t)
         Object3D::SetStaticTransform(*cube,*t)
         Object3D::UpdateTransform(*cube,*root\globalT)
         BulletRigidBody::BTCreateRigidBodyFrom3DObject(*cube,Bullet::#CONVEXHULL_SHAPE,1.0,Bullet::*bullet_world)
@@ -239,42 +234,9 @@ Color::Set(color,1.0,0.5,0.4,1.0)
     Next y
   Next x
   
-   
+    ;Ground
+   BTCreateCurvedGroundData(*s)
   
-  ;Ground
-
-;   Protected *ground.CPolymesh = newCPolymesh("Ground",#RAA_SHAPE_SPHERE,0.0)
-;   *root\AddChild(*ground)
-; 
-;   
-;   Protected *geom.CPolymeshGeometry_t = *ground\GetGeometry()
-;   ;OPolymeshGeometry_Cube(*ground\GetGeometry(),1,1,40,40)
-;   *t = *ground\GetGlobalTransform()
-;   *t\SetScaleFromXYZValues(40,20,40)
-;   *t\SetTranslationY(-20)
-;   *ground\SetLocalTransform(*t)
-;   *ground\UpdateTransform(*root\GetGlobalTransform())
-;   
-;   
-;   BTCreateRigidBodyFrom3DObject(*ground,#BULLET_TRIANGLEMESH_SHAPE,0.0)
-  
-;   *current_scene\handle\SetTarget(*ground)
-  
-  
-    ; ---[ Debugging Raycast ]---------------------------------------------------
-;     Protected hit.CNull = newCNull("RayHit")
-;   *root\AddChild(hit)
-; 
-;   *t = hit\GetLocalTransform()
-;   
-;   *t\SetScaleFromXYZValues(1,1,1)
-;   hit\SetGlobalTransform(*t)
-;   hit\UpdateTransform(*root\GetGlobalTransform());   
-;   
-;   
-;   *raa_current_scene\rayhit = hit
-;scene\AddModel(*root)
-  Debug "---------------------- ooooo ----------------------------------"
   Scene::AddModel(Scene::*current_scene,*root)
   ProcedureReturn Scene::*current_scene
 EndProcedure
@@ -289,19 +251,21 @@ Procedure Draw(*app.Application::Application_t)
     EndIf
   EndIf
   
+  BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
+  
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
-  BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
-  BulletWorld::AddGroundPlane(Bullet::*bullet_world)
+  
+ 
 ;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
   
  default_layer\Draw  (*app\context)
-  gbuffer\Draw(*app\context  )
-  shadowmap\Draw(*app\context)
+;   gbuffer\Draw(*app\context  )
+;   shadowmap\Draw(*app\context)
   
   ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
 
-  defered\Draw(*app\context)
+;   defered\Draw(*app\context)
   ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
   ;bitmap\Draw(*app\context)
   ;ssao\Draw(*app\context)
@@ -368,7 +332,7 @@ Procedure Draw(*app.Application::Application_t)
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
      *app\context = *viewport\context
     *viewport\camera = *app\camera
-
+    
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -380,24 +344,25 @@ Procedure Draw(*app.Application::Application_t)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
+  ViewportUI::AddLayer(*viewport, *Default)
   LayerDefault::Setup(*default)
   
-  Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
-  LayerGBuffer::Setup(*gbuffer)
-  
-
-  Global *shadowmap.Layer::Layer_t = LayerShadowMap::New(1024,1024,*app\context,*light)
-  LayerShadowMap::Setup(*shadowmap)
-  
-  Light::Update(*light)
-  ; Debug *app\context\shaders("simple2D")  
-  Global *defered.Layer::Layer_t = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
-  LayerShadowDefered::Setup(*defered)
+;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
+;   LayerGBuffer::Setup(*gbuffer)
+;   
+; 
+;   Global *shadowmap.Layer::Layer_t = LayerShadowMap::New(1024,1024,*app\context,*light)
+;   LayerShadowMap::Setup(*shadowmap)
+;   
+;   Light::Update(*light)
+;   ; Debug *app\context\shaders("simple2D")  
+;   Global *defered.Layer::Layer_t = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
+;   LayerShadowDefered::Setup(*defered)
   
   Global default_layer.Layer::ILayer = *default
-  Global gbuffer.Layer::ILayer = *gbuffer
-  Global shadowmap.Layer::ILayer = *shadowmap
-  Global defered.Layer::ILayer = *defered
+;   Global gbuffer.Layer::ILayer = *gbuffer
+;   Global shadowmap.Layer::ILayer = *shadowmap
+;   Global defered.Layer::ILayer = *defered
   
   
 
@@ -418,7 +383,6 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Setup(Scene::*current_scene,*app\context)
   
   Define nbb = Bullet::BTGetNumCollideObjects(Bullet::*bullet_world)
-  MessageRequester("TEST BULLET", Str(nbb)+" Collide Objects")
   
   
   Application::Loop(*app, @Draw())
@@ -426,9 +390,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 205
-; Folding = --
+; CursorPosition = 207
+; FirstLine = 201
+; Folding = -
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

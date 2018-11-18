@@ -231,11 +231,14 @@ Module PointCloudGeometry
   Procedure PointsOnLine(*geom.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
     
     CArray::SetCount(*geom\a_positions,*geom\nbpoints)
+    CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
     CArray::SetCount(*geom\a_normals,*geom\nbpoints)
     CArray::SetCount(*geom\a_tangents,*geom\nbpoints)
     CArray::SetCount(*geom\a_color,*geom\nbpoints)
     CArray::SetCount(*geom\a_scale,*geom\nbpoints)
     CArray::SetCount(*geom\a_size,*geom\nbpoints)
+    CArray::SetCount(*geom\a_indices,*geom\nbpoints)
+    CArray::SetCount(*geom\a_uvws,*geom\nbpoints)
     
     Protected i
     Protected *v.v3f32
@@ -298,7 +301,7 @@ Module PointCloudGeometry
     If *base = #Null
       Protected base.c4f32
       Color::Set(base,0.5,0.5,0.5,1.0)
-      *base = @base
+      *base = base
     EndIf
     
     For i=0 To CArray::GetCount(*geom\a_color)-1
@@ -315,8 +318,7 @@ Module PointCloudGeometry
   ;----------------------------------------------
   Procedure AddPoints(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32 )
     Protected i
-    Debug "Add Point Called"
-    Debug "Num Points : "+Str(CArray::GetCount(*pos))
+
     Protected nbp.i = CArray::GetCount(*pos)
     Protected v.v3f32
     Protected c.v3f32
@@ -331,10 +333,10 @@ Module PointCloudGeometry
       *p\nbpoints + 1
       CArray::Append(*p\a_positions,CArray::GetValue(*pos,i))
       Vector3::Set(n,0,1,0)
-      CArray::Append(*p\a_normals,@n)
+      CArray::Append(*p\a_normals,n)
       Vector3::Set(c,1,0,0)
       Vector3::Cross(t,n,c)
-      CArray::Append(*p\a_tangents,@t)
+      CArray::Append(*p\a_tangents,t)
 
       CArray::AppendL(*p\a_indices,*p\incrementID)
       
@@ -343,10 +345,10 @@ Module PointCloudGeometry
       g = Random(255)/255
       b = Random(255)/255
       Vector3::Set(c,r,g,b)
-      CArray::Append(*p\a_color,@c)
+      CArray::Append(*p\a_color,c)
       
       Vector3::Set(s,1,1,1)
-      CArray::Append(*p\a_scale,@s)
+      CArray::Append(*p\a_scale,s)
       
       CArray::AppendF(*p\a_size,1)
   
@@ -380,15 +382,15 @@ Module PointCloudGeometry
 ;       ;SetPointsNormal(*geom,*geom\base\normals)
 ;       ;RecomputeNormals(*geom)
 ;     EndIf 
-    
-      
+;     
+;       
 
   EndProcedure
 
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 114
+; CursorPosition = 385
+; FirstLine = 331
 ; Folding = ---
 ; EnableXP

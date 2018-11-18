@@ -99,7 +99,7 @@ If Time::Init()
     Define path.s = OpenFileRequester("Alembic Archive","/home/benmalartre/RnD/PureBasic/Noodle/abc/Elephant.abc","Alembic (*.abc)|*.abc",0)
   CompilerEndIf
      Define i
-  For i=0 To 12
+  For i=0 To 0
       *model = Alembic::LoadABCArchive(path)
       Define *t.Transform::Transform_t = *model\localT
       Define p.v3f32
@@ -134,8 +134,8 @@ If Time::Init()
   
  
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
-  *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
+;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
+;   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
    ViewportUI::AddLayer(*viewport, *layer)
 ;   *cloud = PointCloud::New("PointCloud",100)
 ;   PointCloud::Setup(*cloud,*pgm)
@@ -144,13 +144,13 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 100
-; FirstLine = 89
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 114
+; FirstLine = 87
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = bin/Alembic.app
+; Executable = bin\Alembic.app
 ; Compiler = PureBasic 5.31 (Windows - x64)
 ; Debugger = Standalone
 ; Warnings = Display

@@ -395,7 +395,8 @@ Module PolymeshGeometry
   ;  Recompute Normals
   ; ----------------------------------------------------------------------------
   Procedure RecomputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
-    Define T.d = Time::Get()
+    If Not *mesh\nbpoints Or Not *mesh\nbtriangles : ProcedureReturn : EndIf
+    
     Protected i,j,base
     Protected ab.v3f32, ac.v3f32,n.v3f32, norm.v3f32
     Protected *n.v3f32
@@ -406,11 +407,9 @@ Module PolymeshGeometry
     Vector3::Set(n,0,0,0)
     CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
     
-    Define doRecomputeVertexPolygons = #False
     ; Recompute Vertex Polygons if necessary
     If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints     
       RecomputeVertexPolygons(*mesh)
-      doRecomputeVertexPolygons = #True
     EndIf
     
     ; First Triangle Normals
@@ -425,20 +424,13 @@ Module PolymeshGeometry
     Define *faceindices = *mesh\a_faceindices\data
     Define nbv, nbt
     
-   
-    
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       
       ! mov edx, [p.p_indices]                ; move indices to edx register
       ! mov rsi, [p.p_positions]              ; move positions to rsi register
       ! mov rdi, [p.p_normals]                ; move normals to rdi register
       
-      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        ! mov r9, 16                         ; move item size to eax register
-      CompilerElse
-        ! mov r9, 12                         ; move item size to eax register
-      CompilerEndIf
-      
+      ! mov r9, 16                         ; move item size to eax register
       ! mov ecx, [p.v_numTris]               ; move num triangles to edx register
 
       ! loop_compute_triangle_normal:
@@ -644,12 +636,9 @@ Module PolymeshGeometry
     Protected *n1.v3f32
     Protected cnt = 0
     Protected r.f
-  
-    Vector3::Set(t,0,0,0)
-  
-    For i=0 To CArray::GetCount(*mesh\a_tangents)-1
-      CopyMemory(@t,CArray::GetPtr(*mesh\a_tangents,i),CArray::GetItemSize(*mesh\a_tangents))
-    Next
+    
+    ; reset tangent
+    FillMemory(CArray::GetItemSize(*mesh\a_tangents) * CArray::GetCount(*mesh\a_tangents), 0)
     
     ; //	sum tangents per-triangle:
     ; First Triangle Normals
@@ -715,12 +704,9 @@ Module PolymeshGeometry
   ;  Recompute Triangles
   ; ----------------------------------------------------------------------------
   Procedure RecomputeTriangles(*mesh.PolymeshGeometry_t)
-    
-    Protected x,y,z,z2, nbv, nbt
-    Define.v3f32 ab,ac,norm
-  
     ; Rebuild triangle Data
     ;-----------------------------------
+    Protected x,y,z, nbv, nbt
     Protected a, b, c, last , cnt
     z=0
     cnt=0
@@ -875,14 +861,21 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_samples,0)
     CArray::SetCount(*mesh\a_colors,0)
     CArray::SetCount(*mesh\a_normals,0)
+    CArray::SetCount(*mesh\a_tangents,0)
     CArray::SetCount(*mesh\a_positions,0)
+    CArray::SetCount(*mesh\a_velocities,0)
     CArray::SetCount(*mesh\a_pointnormals,0)
+    CArray::SetCount(*mesh\a_polygonnormals,0)
     CArray::SetCount(*mesh\a_velocities,0)
     CArray::SetCount(*mesh\a_triangleindices,0)
     CArray::SetCount(*mesh\a_uvws,0)
     CArray::SetCount(*mesh\a_pointnormals,0)
     CArray::SetCount(*mesh\a_facecount,0)
     CArray::SetCount(*mesh\a_faceindices,0)
+    CArray::SetCount(*mesh\a_vertexpolygoncount,0)
+    CArray::SetCount(*mesh\a_vertexpolygonindices,0)
+    CArray::SetCount(*mesh\a_polygonareas,0)
+    CArray::SetCount(*mesh\a_triangleareas,0)
   
   EndProcedure
   
@@ -914,7 +907,7 @@ Module PolymeshGeometry
     Protected normal.v3f32
     Protected pos.v3f32
     
-    If CArray::GetCount(*topo\vertices)
+    If CArray::GetCount(*topo\vertices) :
       CopyMemory(CArray::GetPtr(*topo\vertices,0),
                  CArray::GetPtr(*mesh\a_positions,0),
                  nbp* CArray::GetItemSize(*topo\vertices))
@@ -1060,10 +1053,7 @@ Module PolymeshGeometry
     ; ---[ Check Nb Samples ]--------------------------------
     If CArray::GetCount(*v) = nbs
       ; ---[ Set Sample Normal ]---------------------------
-      Protected i
-      For i=0 To nbs-1
-        CArray::SetValue(*mesh\a_normals,i,CArray::GetValue(*v,i))
-      Next 
+      CArray::Copy(*mesh\a_normals,*v)
     EndIf
   EndProcedure
   
@@ -1521,12 +1511,11 @@ Module PolymeshGeometry
       For i=0 To 2
         l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+t*3*SizeOf(l))
         CArray::SetValueL(*topo\faces,id,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+t*3*SizeOf(l)+SizeOf(l))
+        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+(t*3+1)*SizeOf(l))
         CArray::SetValueL(*topo\faces,id+1,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+t*3*SizeOf(l)+2*SizeOf(l))
+        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+(t*3+2)*SizeOf(l))
         CArray::SetValueL(*topo\faces,id+2,l)
       Next i
-      
       CArray::SetValueL(*topo\faces,id+3,-2)
       id+4
     Next t
@@ -1537,18 +1526,19 @@ Module PolymeshGeometry
   ; Teapot Primitive
   ;---------------------------------------------------------
   Procedure TeapotTopology(*topo.Topology_t)
-  
-   
+
     Define v=0
     Define p.v3f32
     CArray::SetCount(*topo\vertices,Shape::#TEAPOT_NUM_VERTICES)
   
-    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TEAPOT),CArray::GetPtr(*topo\vertices,0),Shape::#TEAPOT_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
+    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TEAPOT),
+               CArray::GetPtr(*topo\vertices,0),
+               Shape::#TEAPOT_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
   
     
     Define i.i
     Define l.l
-    CArray::SetCount(*topo\faces,Shape::#TEAPOT_NUM_INDICES+Shape::#TEAPOT_NUM_TRIANGLES)
+    CArray::SetCount(*topo\faces,Shape::#TEAPOT_NUM_TRIANGLES*4)
     Define id=0
     Define t
     For t=0 To Shape::#TEAPOT_NUM_TRIANGLES-1
@@ -2128,16 +2118,14 @@ Module PolymeshGeometry
    
   EndProcedure
   
-  
   Procedure GridTopology(*topo.Topology_t,radius.f,u.i,v.i)
     Math::MAXIMUM(u,2)
     Math::MAXIMUM(v,2)
     
     Protected nbp = (u-1)*(v-1)
-    Protected nbs = nbp *4
   
     CArray::SetCount(*topo\vertices,u*v)
-    CArray::SetCount(*topo\faces,nbp+nbs)
+    CArray::SetCount(*topo\faces,nbp*5)
     
     Protected x,z
     Define.f stepx, stepz
@@ -2624,7 +2612,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 467
-; FirstLine = 411
-; Folding = -----B---+-
+; CursorPosition = 399
+; FirstLine = 569
+; Folding = -----g--f--
 ; EnableXP

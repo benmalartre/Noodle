@@ -130,11 +130,11 @@ Module Curve
     
     *Me\initialized = #True 
     
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      Define v3i = 4
-    CompilerElse
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       Define v3i = 4
+;     CompilerElse
       Define v3i = 3
-    CompilerEndIf
+;     CompilerEndIf
     
     ; Attribute Position
     glEnableVertexAttribArray(0)
@@ -322,7 +322,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 131
+; CursorPosition = 132
+; FirstLine = 128
 ; Folding = ---
 ; EnableXP

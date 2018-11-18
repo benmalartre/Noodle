@@ -7,7 +7,7 @@ Define msg.s
 For i=0 To 128:
   
   Define size = (Random(128)+1) * #ALIGN_BYTES + oldsize
-  Define *oldmem = *mem - PeekC(*mem + oldsize + 1)
+  Define *oldmem = *mem - PeekB(*mem + oldsize + 1)
   msg + Str(oldsize)+", "+Str(size)+", "+Str(PeekC(*mem + oldsize + 1))+", "+Str(*mem)+", "+Str(*oldmem)+Chr(10)
   *mem = Memory::ReAllocateAlignedMemory(*oldmem, size, #ALIGN_BYTES)
   
@@ -16,6 +16,6 @@ Next
 
 MessageRequester("TEST MEMORY", msg)
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 9
 ; EnableXP

@@ -337,8 +337,7 @@ Module ControlProperty
     If Not *ctl
       ProcedureReturn
     EndIf
-  
-    
+
     ; ---[ Check Gadget List Status ]-------------------------------------------
     If #False = *Me\append
       ; ...[ FAILED ]...........................................................
@@ -362,21 +361,24 @@ Module ControlProperty
   
     ; ---[ Set Row Flag ]-------------------------------------------------------
     *Me\rowflags( *Me\chilcount ) = *Me\row
-  
-    ; ---[ One More Control ]---------------------------------------------------
-    *Me\chilcount + 1
-    
+    Debug *ctl\name + " : "+Str(*Me\row)
+
     ; ---[ Expand height ]------------------------------------------------------
-    If *Me\chilcount > 1 And *Me\rowflags(*Me\chilcount) <> *Me\rowflags(*Me\chilcount-1)
+    
+    If *Me\chilcount > 1 And Not *Me\row;Bool(*Me\rowflags(*Me\chilcount-1) <> *Me\rowflags(*Me\chilcount))
       *Me\dy + *ctl\sizY
-    ElseIf *Me\chilcount <= 1
+    ElseIf *Me\chilcount = 0
       *Me\dy + *ctl\sizY
     EndIf
+    
+    ; ---[ One More Control ]---------------------------------------------------
+    *Me\chilcount + 1
   
     ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
   
   EndProcedure
+  
   ; ---[ AppendStop ]-----------------------------------------------------------
   Procedure AppendStop( *Me.ControlProperty_t )
     
@@ -412,16 +414,15 @@ Module ControlProperty
   ; RowEnd
   ;-----------------------------------------------------------------------------
   Procedure RowEnd( *Me.ControlProperty_t )
-    
+    ; Update Current Child
+ 
+    If *Me\chilcount>0 : *Me\rowflags( *Me\chilcount - 1) = #False : EndIf
+
     ; Check Row Status
     If Not *Me\row : ProcedureReturn( void ) : EndIf
-    
-    ; Update Current Child
-    If *Me\chilcount>0 : *Me\rowflags( *Me\chilcount - 1 ) = #False : EndIf
-    
+
     ; Update Status
     *Me\row = #False
-    
   EndProcedure
 ;   ; ---[ Draw Title Bar ]-------------------------------------------------------
 ;   ;------------------------------------------------------------
@@ -518,17 +519,13 @@ Module ControlProperty
       ControlGroup::RowStart(*Me\groups())
       ControlGroup::Append(*Me\groups(),ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append(*Me\groups(),ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlCheck::New(*obj,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      ControlGroup::Append(*Me\groups(),*Ctl)
+      ControlGroup::Append(*Me\groups(),ControlCheck::New(*obj,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       ControlGroup::RowEnd(*Me\groups())
     Else
-      
       RowStart(*Me)
       Append( *Me,ControlDivot::New(*obj,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append( *Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlCheck::New(*obj, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      Append( *Me,*Ctl)
-    
+      Append( *Me,ControlCheck::New(*obj, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       RowEnd(*Me)
     EndIf
     
@@ -602,18 +599,15 @@ Module ControlProperty
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append( *Me\groups(), ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      ControlGroup::Append( *Me\groups(), *Ctl )
+      ControlGroup::Append( *Me\groups(), ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append(*Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      Append(*Me,*Ctl )
+      Append(*Me,ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
       RowEnd(*Me)
     EndIf
-    
     
     ; Connect Signal
     If *obj
@@ -1102,11 +1096,10 @@ Module ControlProperty
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*obj, name, name,*Me\gadgetID, *Me\dx, *Me\dy, width, 50 ,options)
-    
     AddElement(*Me\groups())
     *Me\groups() = *group
     Append(*Me,*group)
-   
+    
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
   
@@ -1274,7 +1267,7 @@ Module ControlProperty
     Protected index = base
     Protected search.b = #True
     While search
-      If  Not *Me\rowflags(index) : search = #False : EndIf
+      If Not *Me\rowflags(index) : search = #False : EndIf
       index+1
     Wend
     ProcedureReturn index - base
@@ -1300,6 +1293,8 @@ Module ControlProperty
     If *Me\pickID > -1 And *Me\pickID < *Me\chilcount 
       *overchild = *Me\children(*Me\pickID)
       overchild = *overchild
+    Else
+      *overchild = #Null
     EndIf
 
     ; ---[ Dispatch Event ]-----------------------------------------------------
@@ -1315,9 +1310,15 @@ Module ControlProperty
       CompilerEndIf
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
-        *Me\sizX = *ev_data\width
-
+        *Me\sizX = *ev_data\width 
+        
+        ; restore background
         ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*Me\sizX,*Me\sizY)
+        StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+        AddPathBox(0,0,*Me\sizX,*Me\sizY)
+        VectorSourceColor(UIColor::COLORA_MAIN_BG)
+        FillPath()
+        StopVectorDrawing()
  
         ev_data\x = 0
         ev_data\y = 0
@@ -1337,6 +1338,7 @@ Module ControlProperty
             For d=0 To nbc_row -1
               son = *Me\children(c+d)
               *son = son
+              Debug *son\name + ": "+*son\class\name
               ev_data\width = wi
               ev_data\x     = *Me\posX + wi * d
               ev_data\y     = *son\posY
@@ -1351,6 +1353,7 @@ Module ControlProperty
           Else
             son = *Me\children(c)
             *son = son
+            Debug *son\name + ": "+*son\class\name
             ev_data\width = *ev_data\width
             ev_data\x     = *son\posX
             ev_data\y     = *son\posY
@@ -1362,25 +1365,9 @@ Module ControlProperty
           EndIf
         Next
         
-        ; Resize Groups
-        For c=0 To *Me\chilcount-1
-          son = *Me\children(c)
-          *son = son
-          If *son\type = Control::#CONTROL_GROUP
-            ev_data\x    = *son\posX
-            ev_data\y    = *son\posY
-            CompilerIf #PB_Compiler_Version <560
-              son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
-            CompilerElse
-              son\OnEvent(#PB_EventType_Resize, @ev_data)
-            CompilerEndIf
-          EndIf
-        Next
-        
         Draw( *Me )
         DrawPickImage(*Me)
         
-
         ProcedureReturn( #True )
           
       ; ------------------------------------------------------------------------
@@ -1480,16 +1467,16 @@ Module ControlProperty
           If *overchild <> *Me\focuschild
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
-          *Me\focuschild = *overchild
-          *Me\focuschild\OnEvent( #PB_EventType_Focus, #Null )
+          
         EndIf
+        *Me\focuschild = *overchild
+        *Me\focuschild\OnEvent( #PB_EventType_Focus, #Null )
         
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
         ev_data\xoff = *overchild\posX
         ev_data\yoff = *overchild\posY
         *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
-
       ElseIf *Me\focuschild
         *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
       EndIf
@@ -1498,13 +1485,12 @@ Module ControlProperty
       ;  LeftButtonUp
       ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonUp
-        *overchild.Control::Control_t = *Me\overchild
         If *overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild = *overchild
           *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
         EndIf
-      
         *Me\down = #False
         
       ; ------------------------------------------------------------------------
@@ -1752,8 +1738,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 1149
-; FirstLine = 1137
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1296
+; FirstLine = 1274
 ; Folding = --------
 ; EnableXP

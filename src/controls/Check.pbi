@@ -150,20 +150,20 @@ Module ControlCheck
     Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    DrawingFont(FontID( Globals::#FONT_LABEL ))
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
-    Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+    VectorFont(FontID( Globals::#FONT_LABEL ))
+    Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
   ;   raaResetClip()
     
+    MovePathCursor(0 + xoff, 0 + yoff)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       ; ...[ Dispatch Value ]...................................................
       Select *Me\value
-        Case  1 : DrawImage( ImageID(s_gui_controls_check_disabled_checked     ), 0 + xoff, 0 + yoff )
-        Case  0 : DrawImage( ImageID(s_gui_controls_check_disabled_unchecked   ), 0 + xoff, 0 + yoff )
-        Case -1 : DrawImage( ImageID(s_gui_controls_check_disabled_undetermined), 0 + xoff, 0 + yoff )
+        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_checked     ))
+        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_unchecked   ))
+        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_undetermined))
       EndSelect
       ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLOR_LABEL_DISABLED
@@ -171,25 +171,25 @@ Module ControlCheck
     ElseIf *Me\over
       ; ...[ Dispatch Value ]...................................................
       Select *Me\value
-        Case  1 : DrawImage( ImageID(s_gui_controls_check_over_checked     ), 0 + xoff, 0 + yoff )
-        Case  0 : DrawImage( ImageID(s_gui_controls_check_over_unchecked   ), 0 + xoff, 0 + yoff )
-        Case -1 : DrawImage( ImageID(s_gui_controls_check_over_undetermined), 0 + xoff, 0 + yoff )
+        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_over_checked     ) )
+        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_over_unchecked   ) )
+        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_over_undetermined) )
       EndSelect
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; ...[ Dispatch Value ]...................................................
       Select *Me\value
-        Case  1 : DrawImage( ImageID(s_gui_controls_check_normal_checked     ), 0 + xoff, 0 + yoff )
-        Case  0 : DrawImage( ImageID(s_gui_controls_check_normal_unchecked   ), 0 + xoff, 0 + yoff )
-        Case -1 : DrawImage( ImageID(s_gui_controls_check_normal_undetermined), 0 + xoff, 0 + yoff )
+        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_checked     ) )
+        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_normal_unchecked   ) )
+        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_undetermined) )
       EndSelect
     EndIf
     
     ; ---[ Draw Label ]---------------------------------------------------------
     ;   raaClipBoxHole( 23 + xoff, 3 + yoff, *Me\sizX-24, *Me\sizY-6 )
-    DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-    DrawText( 23 + xoff, ty, *Me\label, tc )
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
+    MovePathCursor( 23 + xoff, ty)
+    VectorSourceColor(tc)
+    DrawVectorText(*Me\label )
   EndProcedure
   ;}
   
@@ -260,7 +260,7 @@ Module ControlCheck
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseMove
         If *Me\visible And *Me\enable
-          If *Me\down
+          If *Me\down And *ev_data
             If ( *ev_data\x < 0 ) Or ( *ev_data\x >= *Me\sizX ) Or ( *ev_data\y < 0 ) Or ( *ev_data\y >= *Me\sizY )
               If *Me\over
                 If *Me\value : *Me\value = #False : Else : *Me\value = #True : EndIf
@@ -540,7 +540,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 392
-; FirstLine = 388
+; CursorPosition = 262
+; FirstLine = 230
 ; Folding = ----
 ; EnableXP

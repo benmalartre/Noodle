@@ -2,12 +2,8 @@
 ; DECLARATION
 ;=======================================================================
 DeclareModule KDTree
-  CompilerIf #USE_SSE
-    #KDTREE_DIM = 4
-  CompilerElse
-    #KDTREE_DIM = 3
-  CompilerEndIf
-  
+  #KDTREE_DIM = 3
+
   #KD_F32_MAX = 3.402823466e+38
   #KD_F32_MIN = 1.175494351e-38
   
@@ -517,7 +513,7 @@ Module KDTree
     ReDim *tree\points(nbp-1)
     Protected i
     For i=0 To nbp-1
-      *tree\points(i) = *pnts+i*SizeOf(KDPoint_t)
+      *tree\points(i) = *pnts+i*SizeOf(KDTree::KDPoint_t)
     Next
 
     For i=0 To nbp-1
@@ -540,17 +536,17 @@ Module KDTree
             Protected *left.KDNode_t = NewNode(*node,*tree\m_id,*node\level+1)
             Protected *right.KDNode_t = NewNode(*node,*tree\m_id+1,*node\level+1)
             *tree\m_id+2
-            
+
             Split(*tree,*node,*left,*right)
-            
-            ;Clear current indices
-            ClearList( *node\indices())
             
             *node\left = *left
             *node\right = *right
             *node\leftID = *left\ID
             *node\rightID = *right\ID
             
+            ;Clear current indices
+            ClearList( *node\indices())
+
             If ListSize(*left\indices())
               AddElement(*next_search())
               *next_search() = *left
@@ -649,7 +645,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 475
-; FirstLine = 478
+; CursorPosition = 184
+; FirstLine = 159
 ; Folding = ----
 ; EnableXP

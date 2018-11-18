@@ -25,7 +25,7 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   PolymeshGeometry::SphereTopology(*topo, 3,32,16)
-  Protected numTopos.i = 32
+  Protected numTopos.i = 1
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -101,7 +101,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::Update(Scene::*current_scene)
   Define numCells.l
-  Octree::NumCells(*octree, @numCells)
+;   Octree::NumCells(*octree, @numCells)
   LayerDefault::Draw(*layer, *app\context)
 
   FTGL::BeginDraw(*app\context\writer)
@@ -132,7 +132,7 @@ EndIf
 
 Define T.d = Time::Get()
 Define *mesh.Polymesh::Polymesh_t = PolygonSoup()
-; Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
+Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
 *drawer = Drawer::New()
 Define polygonSoupT.d = Time::Get() - T
 
@@ -144,7 +144,7 @@ Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
 Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
 
 
-*octree = Octree::New(@bmin.v3f32, @bmax.v3f32, 0)
+*octree = Octree::New(bmin.v3f32, bmax.v3f32, 0)
 T = Time::Get()
 Octree::Build(*octree, *geom, 4)
 Define buildOctreeT.d = Time::get() - T
@@ -159,12 +159,12 @@ buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
 buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)
 MessageRequester("Octree", buildMessage)
 
-Define *poisson.Poisson::Poisson_t = Poisson::New()
-Define box.Geometry::Box_t
-Define origin.v3f32, extend.v3f32
-Vector3::Set(origin, 1,3,2)
-Vector3::Set(extend, 12,12,12)
-Box::Set(@box, @origin, @extend)
+; Define *poisson.Poisson::Poisson_t = Poisson::New()
+; Define box.Geometry::Box_t
+; Define origin.v3f32, extend.v3f32
+; Vector3::Set(origin, 1,3,2)
+; Vector3::Set(extend, 12,12,12)
+; Box::Set(@box, @origin, @extend)
 
 Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
@@ -192,7 +192,7 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app, @Draw())
 
-Octree::Delete(*octree)
+; Octree::Delete(*octree)
 
 ;     
 ; Define model.m4f32
@@ -232,8 +232,8 @@ Octree::Delete(*octree)
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 21
+; CursorPosition = 148
+; FirstLine = 116
 ; Folding = -
 ; EnableThread
 ; EnableXP

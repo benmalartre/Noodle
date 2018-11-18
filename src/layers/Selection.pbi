@@ -120,7 +120,6 @@ EndProcedure
 ; Draw
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
-  Debug "DRAW  LAYER"
   Protected layer.Layer::ILayer = *layer
 ;   layer\Update()
     ; ---[ Find Up View Point ]--------------------------
@@ -236,7 +235,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 183
+; CursorPosition = 122
+; FirstLine = 153
 ; Folding = --
 ; EnableXP

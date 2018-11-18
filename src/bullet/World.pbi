@@ -47,7 +47,7 @@ Module BulletWorld
       Bullet::BTGetOrientation(*obj\rigidbody,q)
       
       Protected *q.q4f32 = *t\t\rot
-      Transform::SetTranslationFromXYZValues(*t,p\x,p\y,p\z)
+      Transform::SetTranslationFromXYZValues(*t,p\x, p\y, p\z)
       Quaternion::Set(*q,q\x,q\y,q\z,q\w)
       Transform::SetRotationFromQuaternion(*t,*q)
       Object3D::SetGlobalTransform(*obj,*t)
@@ -72,6 +72,7 @@ Module BulletWorld
     Protected *rbody.Bullet::btRigidBody
     Protected *sbody.Bullet::btSoftBody
     Protected *obj.Object3D::Object3D_t
+
     For i=0 To nbb-1
       ;If BTGetBodyType(*world,i) = #
       *rbody = Bullet::BTGetRigidBodyByID(*world,i)
@@ -79,9 +80,6 @@ Module BulletWorld
       If(*rbody)
         *obj = Bullet::BTGetUserData(*rbody)
         If *obj
-          Debug "Rigid Body Ptr ---> "+Str(*rbody)
-          Debug "3DObject Ptr ---------------> "+Str(*obj)
-          Debug "3DObject Name : "+*obj\name
           hlpUpdateChild( *obj)
         EndIf
       EndIf
@@ -245,7 +243,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 30
+; CursorPosition = 74
+; FirstLine = 61
 ; Folding = --
 ; EnableXP

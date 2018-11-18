@@ -153,40 +153,84 @@ Module BulletRigidBody
   EndProcedure
   
   ;-----------------------------------------------
-  ; Construct ConvexHull from CPolymesh
+  ; Construct ConvexHull from Polymesh
   ;-----------------------------------------------
   Procedure BTConvexHullCollisionShape(*obj.Object3D::Object3D_t)
     
     Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
-     Protected *shape.Bullet::btCollisionShape = Bullet::BTNewConvexHullShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
-  
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define size_t = *geom\nbpoints * 12
+      Protected *mem = AllocateMemory(size_t)
+      Define i
+      For i=0 To *geom\nbpoints-1
+        CopyMemory(*geom\a_positions\data + i * 16, *mem + i * 12, 12)  
+      Next
+      
+;       CopyMemory(*geom\a_positions\data, *mem, size_t)
+;       Memory::UnshiftAlign(*mem, *geom\nbpoints, 16, 12)
+      Protected *shape.Bullet::btCollisionShape = Bullet::BTNewConvexHullShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,*mem)
+      FreeMemory(*mem)
+    CompilerElse
+      Protected *shape.Bullet::btCollisionShape = Bullet::BTNewConvexHullShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
+    CompilerEndIf
+
     ProcedureReturn *shape
   EndProcedure
   
   ;-----------------------------------------------
-  ; Construct ConvexDecomposition from CPolymesh
+  ; Construct ConvexDecomposition from Polymesh
   ;-----------------------------------------------
   Procedure BTConvexDecompositionCollisionShape(*obj.Object3D::Object3D_t)
     
     Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
     Debug "ConvexDecompositionShape Called for "+*obj\name
     ;Debug "Nb Cluster Afetr Convex Decomposition : "+Str(BTNewConvexDecompositionShape(*geom\nbtriangles,*geom\a_triangleindices\GetPtr(),*geom\nbpoints,*geom\a_positions\GetPtr()))
-     ;Protected *shape.btCollisionShape = BTNewConvexDecompositionShape(*geom\nbtriangles,*geom\a_triangleindices\GetPtr(),*geom\nbpoints,*geom\a_positions\GetPtr())
+     Protected *shape.Bullet::btCollisionShape ;BTNewConvexDecompositionShape(*geom\nbtriangles,*geom\a_triangleindices\GetPtr(),*geom\nbpoints,*geom\a_positions\GetPtr())
   
-    ;ProcedureReturn *shape
+    ProcedureReturn *shape
   EndProcedure
   
   ;-----------------------------------------------
-  ; Construct Triangle Mesh from CPolymesh
+  ; Construct Triangle Mesh from Polymesh
   ;-----------------------------------------------
   Procedure BTTriangleMeshCollisionShape(*obj.Object3D::Object3D_t)
     Protected *shape.Bullet::btCollisionShape
-    
-    
-    
     Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
-    *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
-
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      
+;       Define size_t = *geom\nbpoints * 16
+;       Protected *mem = AllocateMemory(size_t)
+;       CopyMemory(*geom\a_positions\data, *mem, size_t)
+;       Memory::UnshiftAlign(*mem, *geom\nbpoints, 16, 12)
+      *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, CArray::GetPtr(*geom\a_positions,0),#True)
+;       FreeMemory(*mem)
+    CompilerElse
+      *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, CArray::GetPtr(*geom\a_positions,0),#False)
+    CompilerEndIf
+          
+    ProcedureReturn *shape
+  EndProcedure
+  
+  ;-----------------------------------------------
+  ; Construct GImpact Mesh from Polymesh
+  ;-----------------------------------------------
+  Procedure BTGImpactCollisionShape(*obj.Object3D::Object3D_t)
+    Protected *shape.Bullet::btCollisionShape
+    Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define size_t = *geom\nbpoints * 16
+      Protected *mem = AllocateMemory(size_t)
+      CopyMemory(*geom\a_positions\data, *mem, size_t)
+      Memory::UnshiftAlign(*mem, *geom\nbpoints, 16, 12)
+      *shape = Bullet::BTNewGImpactShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, *mem)
+      FreeMemory(*mem)
+    CompilerElse
+      *shape = Bullet::BTNewGImpactShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
+    CompilerEndIf
+          
     ProcedureReturn *shape
   EndProcedure
   
@@ -195,14 +239,18 @@ Module BulletRigidBody
   ; Create Rigid Body From 3D Object
   ;-----------------------------------------------
   Procedure BTCreateRigidBodyFrom3DObject(*obj.Object3D::Object3D_t,shapetype.i,mass.f,*world.Bullet::btDynamicsWorld=#Null)
-    Protected *shape.Bullet::btCollisionShape 
+    Protected *shape.Bullet::btCollisionShape = #Null
     *obj\mass = mass
+    
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;        CArray::UnshiftAlign(*obj\geom\a_positions\data, *obj\geom\nbpoints, 16, 12)  
+;      CompilerEndIf
+     
     Select shapetype
-        
       Case Bullet::#GROUNDPLANE_SHAPE
           Protected norm.Math::v3f32
           Vector3::Set(norm,0,1,0)
-        *shape = Bullet::BTNewGroundPlaneShape(@norm,*obj\localT\t\scl\x)
+        *shape = Bullet::BTNewGroundPlaneShape(norm,*obj\localT\t\scl\x)
         
       Case Bullet::#BOX_SHAPE
         *shape = Bullet::BTNewBoxShape(0.5,0.5,0.5)
@@ -234,10 +282,13 @@ Module BulletRigidBody
         If Not *obj\type = Object3D::#Object3D_Polymesh : ProcedureReturn :EndIf
         Protected *mesh.Polymesh::Polymesh_t = *obj
         Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-        *shape = Bullet::BTNewGImpactShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
-    
+        *shape = BTGImpactCollisionShape(*obj)
+
     EndSelect 
     
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       CArray::ShiftAlign(*obj\geom\a_positions\data, *obj\geom\nbpoints, 12, 16) 
+;     CompilerEndIf
     
     If *shape
       Protected *body.Bullet::btRigidBody = BTAddRigidBodyFromShape(*obj,*shape,mass,*world)
@@ -245,8 +296,7 @@ Module BulletRigidBody
     Else
       MessageRequester("BULLET", "Can Not Create Rigid Body Shape For "+*obj\name)
     EndIf
-    
-  
+
   EndProcedure
   
   ;-----------------------------------------------
@@ -263,7 +313,7 @@ Module BulletRigidBody
     For c=0 To CArray::GetCount(*objs)-1
       *child = CArray::GetValue(*objs,c)
       *tc = *child\globalT
-  
+
       Select shapetype
         Case Bullet::#GROUNDPLANE_SHAPE
           Protected norm.Math::v3f32
@@ -279,23 +329,20 @@ Module BulletRigidBody
           *cshape = Bullet::BTNewCapsuleShape(0.5,1)
         Case Bullet::#CONE_SHAPE
           *cshape = Bullet::BTNewConeShape(0.5,1)
-        Case Bullet::#CONVEXHULL_SHAPE
-          ; only works on Polymesh
+        Case Bullet::#CONVEXHULL_SHAPE      ; only works on Polymesh
           If Not *child\type = Object3D::#Object3D_Polymesh : Return :EndIf
-          
-        Case Bullet::#TRIANGLEMESH_SHAPE
-          ; only works on Polymesh
+
+        Case Bullet::#TRIANGLEMESH_SHAPE    ; only works on Polymesh
           If Not *child\type = Object3D::#Object3D_Polymesh : Return :EndIf
           *cshape = BTTriangleMeshCollisionShape(*child)
-        Case Bullet::#GIMPACT_SHAPE
-          ; only works on Polymesh
-          If Not *child\type  = Object3D::#Object3D_Polymesh : Return :EndIf
-          Protected *mesh.Polymesh::Polymesh_t = *child
-          Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-          *cshape = Bullet::BTNewGImpactShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints,CArray::GetPtr(*geom\a_positions,0))
           
+        Case Bullet::#GIMPACT_SHAPE         ; only works on Polymesh
+          If Not *child\type  = Object3D::#Object3D_Polymesh : Return :EndIf
+          *cshape = BTGImpactCollisionShape(*child)
+
       EndSelect 
       Bullet::BTAddChildShape(*pshape,*cshape,*tc\t\pos,*tc\t\rot)
+
     Next c
     
     Protected *body.Bullet::btRigidBody = BTAddRigidBodyFromShape(CArray::GetValue(*objs,0),*pshape,mass)
@@ -320,6 +367,7 @@ Module BulletRigidBody
     Protected *t.Transform::Transform_t = *obj\globalT
     *mesh = *obj
     *geom = *mesh\geom
+    
     
     Select shapetype
      Case Bullet::#CONVEXHULL_SHAPE
@@ -359,7 +407,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 216
-; Folding = --
+; CursorPosition = 207
+; FirstLine = 8
+; Folding = ---
 ; EnableXP

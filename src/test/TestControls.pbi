@@ -6,7 +6,6 @@ UseModule OpenGL
 UseModule OpenGLExt
 
 Procedure Update()
-  Debug "Update Called..."  
 EndProcedure
 
 
@@ -37,9 +36,23 @@ For i=0 To 1
   
   Define v.Math::v3f32
   ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
-;   Define c.Math::c4f32
-;   ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
+  Define c.Math::c4f32
+  ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
+;   
+  Define b.b
+  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+
+  Define f.f
+  ControlProperty::AddFloatControl(*prop, "Float", "Float", f, #Null)
   
+  Define v2.v2f32
+  ControlProperty::AddVector2Control(*prop, "Vector2", "Vector2", v2, #Null)
+  
+  Define q.q4f32
+  ControlProperty::AddQuaternionControl(*prop, "Quaternion", "Quaternion", q, #Null)
+;   
   
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
@@ -49,8 +62,7 @@ CloseGadgetList()
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 23
-; FirstLine = 13
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 53
 ; Folding = -
 ; EnableXP

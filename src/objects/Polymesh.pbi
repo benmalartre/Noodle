@@ -14,7 +14,6 @@ DeclareModule Polymesh
   UseModule Math
   
   Structure Polymesh_t Extends Object3D::Object3D_t
-    ;*shape.Shape::Shape_t
     deformdirty.b
     topodirty.b
     radius.f
@@ -24,9 +23,6 @@ DeclareModule Polymesh
     u.i
     v.i
     wireframe.b
-;     vao2.i
-;     vbo2.i
-;     eab2.i
   EndStructure
   
   Interface IPolymesh Extends Object3D::IObject3D
@@ -289,15 +285,15 @@ Module Polymesh
     
     ; COLORS
     ;-------------------------------------------------------------
-    Protected c
-    Protected *cl.c4f32
+    glBufferSubData(#GL_ARRAY_BUFFER,4*size_p,size_c,CArray::GetPtr(*geom\a_colors,0))
+    
+    ; Activate Attributes
+    ;-------------------------------------------------------------
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       Protected x.a = 4
     CompilerElse
       Protected x.a = 3
     CompilerEndIf
-    
-    glBufferSubData(#GL_ARRAY_BUFFER,4*size_p,size_c,CArray::GetPtr(*geom\a_colors,0))
     
     ; Attribute Position 0
     glEnableVertexAttribArray(0)
@@ -458,7 +454,7 @@ Module Polymesh
   Procedure Update(*p.Polymesh_t)
     
     If *p\stack 
-      PolymeshGeometry::Reset(*p\geom)
+;       PolymeshGeometry::Reset(*p\geom)
 ;       Stack::Update(*p\stack)
     EndIf
     
@@ -479,7 +475,7 @@ Module Polymesh
         SetClean(*p)
       EndIf
     EndIf
-   glCheckError("Update Polymesh")
+
   EndProcedure
   ;}
   
@@ -563,7 +559,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 462
-; FirstLine = 454
+; CursorPosition = 289
+; FirstLine = 261
 ; Folding = ----
 ; EnableXP

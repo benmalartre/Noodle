@@ -624,6 +624,10 @@ CompilerEndIf
           Case #PB_Event_Gadget
             If event : ViewManager::OnEvent(*app\manager,event) : EndIf
             *callback(*app)
+            
+          Default
+            If event : ViewManager::OnEvent(*app\manager,event) : EndIf
+            *callback(*app)
         EndSelect
         
         
@@ -633,9 +637,9 @@ CompilerEndIf
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 624
-; FirstLine = 597
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 629
+; FirstLine = 577
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

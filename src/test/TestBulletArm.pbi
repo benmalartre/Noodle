@@ -15,7 +15,9 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -117,10 +119,10 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   Vector3::Set(upv, 0,0,1)
   Protected l.f
   
-  Vector3::LinearInterpolate(@pos, *start, *end, 0.5)
-  Vector3::Sub(@delta, *end, *start)
-  l = Vector3::Length(@delta)
-  Quaternion::LookAt(@rot, @delta, @upv)
+  Vector3::LinearInterpolate(pos, *start, *end, 0.5)
+  Vector3::Sub(delta, *end, *start)
+  l = Vector3::Length(delta)
+  Quaternion::LookAt(rot, delta, upv, #False)
   Vector3::Set(scl, 1, l, 1)
   
   ; add bone
@@ -130,9 +132,9 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   
   ; set transform
   Protected *t.Transform::Transform_t = *bone\localT
-  Transform::SetScale(*t, @scl)
-  Transform::SetRotationFromQuaternion(*t, @rot)
-  Transform::SetTranslation(*t, @pos)
+  Transform::SetScale(*t, scl)
+  Transform::SetRotationFromQuaternion(*t, rot)
+  Transform::SetTranslation(*t, pos)
   *t\srtdirty = #True
   
   Object3D::SetGlobalTransform(*bone,*t)
@@ -147,8 +149,8 @@ Procedure AddBone(*parent.Object3D::Object3D_t, name.s, *shader.Program::Program
   
   ; set color
   Protected color.c4f32
-  Color::Randomize(@color)
-  PolymeshGeometry::SetColors(*bone\geom,@color)  
+  Color::Randomize(color)
+  PolymeshGeometry::SetColors(*bone\geom,color)  
   
   ; output 
   ProcedureReturn *bone
@@ -163,26 +165,26 @@ Procedure DrawPivot(*A.Object3D::Object3D_t, *drawer.Drawer::Drawer_t)
   Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
   CArray::SetCount(*positions, 2)
   Protected *p.v3f32 = CArray::GetPtr(*positions, 1)
-  Vector3::SetFromOther(CArray::GetPtr(*positions, 0), *A\globalT\t\pos)
+  CopyMemory(CArray::GetValue(*positions, 0), *A\globalT\t\pos, SizeOf(v3f32))
   Vector3::Set(*p,1,0,0)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
   
   
   Protected color.c4f32
-  Color::Set(@color, 1,0,0,1)
+  Color::Set(color, 1,0,0,1)
   
   Protected *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,1,0)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
-  Color::Set(@color, 0,1,0,1)
+  Color::Set(color, 0,1,0,1)
   *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,0,1)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
-  Color::Set(@color, 0,0,1,1)
+  Color::Set(color, 0,0,1,1)
   *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
@@ -199,7 +201,7 @@ Procedure AddConstraint(*A.Object3D::Object3D_t, *B.Object3D::Object3D_t, *drawe
   
   DrawPivot(*A, *drawer)
   
-  Protected *hinge.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*A, *B, @pivot1, @pivot2, @axis1, @axis2)
+  Protected *hinge.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*A, *B, pivot1, pivot2, axis1, axis2)
   Bullet::BTAddConstraint(Bullet::*bullet_world,*hinge\cns,#True)
   ProcedureReturn *hinge
   
@@ -226,17 +228,17 @@ Procedure BulletCharacter(*s.Program::Program_t)
   ; add bicep
   Vector3::Set(sp, 0,0,0)
   Vector3::Set(ep, 2,0,0)
-  *bicep = AddBone(*root, "Bicep_Bone", *s, @sp, @ep, 0.0)
+  *bicep = AddBone(*root, "Bicep_Bone", *s, sp, ep, 0.0)
   
   ; add forearm
   Vector3::Set(sp, 2,0,0)
   Vector3::Set(ep, 5,0,-0.5)
-  *forearm = AddBone(*root, "Forearm_Bone", *s, @sp, @ep, 1.0)
+  *forearm = AddBone(*root, "Forearm_Bone", *s, sp, ep, 1.0)
   
   ; add hand
   Vector3::Set(sp, 5,0,-0.5)
   Vector3::Set(ep, 8,0,0)
-  *hand = AddBone(*root, "Hand_Bone", *s, @sp, @ep, 1.0)
+  *hand = AddBone(*root, "Hand_Bone", *s, sp, ep, 1.0)
   
   ; add constraints
   AddConstraint(*bicep, *forearm, *drawer)
@@ -329,7 +331,7 @@ Procedure Draw(*app.Application::Application_t)
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   *drawer = Drawer::New()
   BulletCharacter(*app\context\shaders("polymesh"))
@@ -382,8 +384,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 366
-; FirstLine = 313
+; CursorPosition = 136
+; FirstLine = 108
 ; Folding = --
 ; EnableThread
 ; EnableXP

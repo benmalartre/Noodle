@@ -410,122 +410,122 @@ Module Geometry
       ProcedureReturn
     EndIf
     
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      Define *positions = *geom\a_positions\data
-      Define nbp = *geom\nbpoints
-      Define *origin = *geom\bbox\origin
-      Define *extend = *geom\bbox\extend
-      Define half.f = 0.5
-      
-      ; load datas to cpu
-      ! mov rax, [p.p_positions]              ; pass positions address to cpu
-      ! mov rcx, [p.v_nbp]                    ; pass nb of points
-      ! xor r8, r8                            ; reset offset
-      ! movaps xmm0, [rax]                    ; load first point in xmm0, initialize bmin
-      ! movaps xmm1, xmm0                     ; copy first point in xmm1, initialize bmax
-      
-      ! dec rcx                               ; decrement counter
-      ! jz output_compute_box                 ; if only one point exit
-      ! add r8, 16                            ; increment offset (skip first point)
-      
-      ! mov rdx, [p.v_worldSpace]             ; local or world space bounding box
-      ! cmp rdx, 0
-      ! je loop_compute_box_local             ; jump to local space computation
-      
-      ; load world space matrix
-      ! mov rdx, [p.p_m]                      ; load worldspace matrix in xmmm
-      ! movups  xmm6, [rdx]                   ; load first row in xmm6  
-      ! movups  xmm7, [rdx+16]                ; load second row in xmm7
-      ! movups  xmm8, [rdx+32]                ; load third row in xmm8
-      ! movups  xmm9, [rdx+48]                ; load fourth row in xmm9
-      
-      ; mul by matrix bmin and bmax
-      ! movaps xmm2, xmm0                     ; d c b a
-      ! movaps xmm3, xmm0                     ; d c b a   
-      ! movaps xmm4, xmm0                     ; d c b a 
-      
-      ! shufps xmm0, xmm0, 0                  ; a a a a 
-      ! shufps xmm2, xmm2, 01010101b          ; b b b b
-      ! shufps xmm3, xmm3, 10101010b          ; c c c c
-      ! shufps xmm4, xmm4, 11111111b          ; d d d d
- 
-      ! mulps  xmm0, xmm6
-      ! mulps  xmm2, xmm7
-      ! mulps  xmm3, xmm8
-      
-      ! addps  xmm0, xmm2
-      ! addps  xmm0, xmm3
-      ! addps  xmm0, xmm9
-        
-      ! movaps xmm3, xmm0
-      ! shufps xmm3, xmm3, 11111111b
-      ! divps xmm0, xmm3
-      
-      ! movaps xmm1, xmm0
-      ! jmp loop_compute_box_world            ; jump to world space computation
-      
-      ; compute local bounding box
-      ! loop_compute_box_local:
-      !   movaps xmm2, [rax+r8]               ; load current point
-      !   minps xmm0, xmm2                    ; packed minimum test
-      !   maxps xmm1, xmm2                    ; packed maximum test
-
-      !   add r8, 16                          ; increment offset
-      !   dec rcx                             ; decrement counter
-      !   jnz loop_compute_box_local          ; loop
-      !   jmp output_compute_box
-      
-      ; compute world bounding box
-      ! loop_compute_box_world:
-      !   movaps xmm2, [rax+r8]               ; d c b a
-      !   movaps xmm3, xmm2                   ; d c b a
-      !   movaps xmm4, xmm2                   ; d c b a       
-      !   movaps xmm5, xmm2                   ; d c b a
-      
-      !   shufps xmm2, xmm2,0                 ; a a a a 
-      !   shufps xmm3, xmm3,01010101b         ; b b b b
-      !   shufps xmm4, xmm4,10101010b         ; c c c c
-      !   shufps xmm5, xmm5,11111111b         ; d d d d
- 
-      !   mulps  xmm2, xmm6
-      !   mulps  xmm3, xmm7
-      !   mulps  xmm4, xmm8
-      
-      !   addps  xmm2, xmm3
-      !   addps  xmm2, xmm4
-      !   addps  xmm2, xmm9
-        
-      !   movaps xmm3, xmm2
-      !   shufps xmm3, xmm3, 11111111b
-      !   divps xmm2, xmm3
-      
-      !   minps xmm0, xmm2                    ; packed minimum test
-      !   maxps xmm1, xmm2                    ; packed maximum test
-
-      !   add r8, 16                          ; increment offset
-      !   dec rcx                             ; decrement counter
-      !   jnz loop_compute_box_world          ; loop
-      !   jmp output_compute_box
-      
-      ; output bounding box
-      ! output_compute_box:                   ; output bbox
-      !   movlps xmm2, [p.v_half]             ; load half value (0.5)
-      !   shufps xmm2, xmm2, 0                ; fill xmm3 with half
-      !   movaps xmm3, xmm0                   ; copy bmin to xmm2
-      !   mulps xmm3, xmm2                    ; multiply bmin by half
-      !   movaps xmm4, xmm1                   ; copy bmax to xmm2
-      !   mulps xmm4, xmm2                    ; multiply bmax by half
-      !   addps xmm3, xmm4                    ; add packed float
-      
-      !   subps xmm1, xmm0                    ; packed substraction bmax - bmin
-      !   mulps xmm1, xmm2                    ; packed multiplication extend * half
-      
-      !   mov rdx, [p.p_origin]               ; bbox origin (unaligned)
-      !   movups [rdx], xmm3                  ; set from xmm3 
-      !   mov rdx, [p.p_extend]               ; bbox extend (unaligned)
-      !   movups [rdx], xmm1                  ; set from xmm1
-      
-    CompilerElse
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       Define *positions = *geom\a_positions\data
+;       Define nbp = *geom\nbpoints
+;       Define *origin = *geom\bbox\origin
+;       Define *extend = *geom\bbox\extend
+;       Define half.f = 0.5
+;       
+;       ; load datas to cpu
+;       ! mov rax, [p.p_positions]              ; pass positions address to cpu
+;       ! mov rcx, [p.v_nbp]                    ; pass nb of points
+;       ! xor r8, r8                            ; reset offset
+;       ! movaps xmm0, [rax]                    ; load first point in xmm0, initialize bmin
+;       ! movaps xmm1, xmm0                     ; copy first point in xmm1, initialize bmax
+;       
+;       ! dec rcx                               ; decrement counter
+;       ! jz output_compute_box                 ; if only one point exit
+;       ! add r8, 16                            ; increment offset (skip first point)
+;       
+;       ! mov rdx, [p.v_worldSpace]             ; local or world space bounding box
+;       ! cmp rdx, 0
+;       ! je loop_compute_box_local             ; jump to local space computation
+;       
+;       ; load world space matrix
+;       ! mov rdx, [p.p_m]                      ; load worldspace matrix in xmmm
+;       ! movups  xmm6, [rdx]                   ; load first row in xmm6  
+;       ! movups  xmm7, [rdx+16]                ; load second row in xmm7
+;       ! movups  xmm8, [rdx+32]                ; load third row in xmm8
+;       ! movups  xmm9, [rdx+48]                ; load fourth row in xmm9
+;       
+;       ; mul by matrix bmin and bmax
+;       ! movaps xmm2, xmm0                     ; d c b a
+;       ! movaps xmm3, xmm0                     ; d c b a   
+;       ! movaps xmm4, xmm0                     ; d c b a 
+;       
+;       ! shufps xmm0, xmm0, 0                  ; a a a a 
+;       ! shufps xmm2, xmm2, 01010101b          ; b b b b
+;       ! shufps xmm3, xmm3, 10101010b          ; c c c c
+;       ! shufps xmm4, xmm4, 11111111b          ; d d d d
+;  
+;       ! mulps  xmm0, xmm6
+;       ! mulps  xmm2, xmm7
+;       ! mulps  xmm3, xmm8
+;       
+;       ! addps  xmm0, xmm2
+;       ! addps  xmm0, xmm3
+;       ! addps  xmm0, xmm9
+;         
+;       ! movaps xmm3, xmm0
+;       ! shufps xmm3, xmm3, 11111111b
+;       ! divps xmm0, xmm3
+;       
+;       ! movaps xmm1, xmm0
+;       ! jmp loop_compute_box_world            ; jump to world space computation
+;       
+;       ; compute local bounding box
+;       ! loop_compute_box_local:
+;       !   movaps xmm2, [rax+r8]               ; load current point
+;       !   minps xmm0, xmm2                    ; packed minimum test
+;       !   maxps xmm1, xmm2                    ; packed maximum test
+; 
+;       !   add r8, 16                          ; increment offset
+;       !   dec rcx                             ; decrement counter
+;       !   jnz loop_compute_box_local          ; loop
+;       !   jmp output_compute_box
+;       
+;       ; compute world bounding box
+;       ! loop_compute_box_world:
+;       !   movaps xmm2, [rax+r8]               ; d c b a
+;       !   movaps xmm3, xmm2                   ; d c b a
+;       !   movaps xmm4, xmm2                   ; d c b a       
+;       !   movaps xmm5, xmm2                   ; d c b a
+;       
+;       !   shufps xmm2, xmm2,0                 ; a a a a 
+;       !   shufps xmm3, xmm3,01010101b         ; b b b b
+;       !   shufps xmm4, xmm4,10101010b         ; c c c c
+;       !   shufps xmm5, xmm5,11111111b         ; d d d d
+;  
+;       !   mulps  xmm2, xmm6
+;       !   mulps  xmm3, xmm7
+;       !   mulps  xmm4, xmm8
+;       
+;       !   addps  xmm2, xmm3
+;       !   addps  xmm2, xmm4
+;       !   addps  xmm2, xmm9
+;         
+;       !   movaps xmm3, xmm2
+;       !   shufps xmm3, xmm3, 11111111b
+;       !   divps xmm2, xmm3
+;       
+;       !   minps xmm0, xmm2                    ; packed minimum test
+;       !   maxps xmm1, xmm2                    ; packed maximum test
+; 
+;       !   add r8, 16                          ; increment offset
+;       !   dec rcx                             ; decrement counter
+;       !   jnz loop_compute_box_world          ; loop
+;       !   jmp output_compute_box
+;       
+;       ; output bounding box
+;       ! output_compute_box:                   ; output bbox
+;       !   movlps xmm2, [p.v_half]             ; load half value (0.5)
+;       !   shufps xmm2, xmm2, 0                ; fill xmm3 with half
+;       !   movaps xmm3, xmm0                   ; copy bmin to xmm2
+;       !   mulps xmm3, xmm2                    ; multiply bmin by half
+;       !   movaps xmm4, xmm1                   ; copy bmax to xmm2
+;       !   mulps xmm4, xmm2                    ; multiply bmax by half
+;       !   addps xmm3, xmm4                    ; add packed float
+;       
+;       !   subps xmm1, xmm0                    ; packed substraction bmax - bmin
+;       !   mulps xmm1, xmm2                    ; packed multiplication extend * half
+;       
+;       !   mov rdx, [p.p_origin]               ; bbox origin (unaligned)
+;       !   movups [rdx], xmm3                  ; set from xmm3 
+;       !   mov rdx, [p.p_extend]               ; bbox extend (unaligned)
+;       !   movups [rdx], xmm1                  ; set from xmm1
+;       
+;     CompilerElse
       Protected i
       Protected *v.v3f32
       Protected bmin.v3f32, bmax.v3f32
@@ -549,7 +549,7 @@ Module Geometry
       Vector3::LinearInterpolate(*box\origin, bmin, bmax, 0.5)    
       Vector3::Sub(*box\extend, bmax, bmin)
       Vector3::ScaleInPlace(*box\extend, 0.5)
-    CompilerEndIf
+;     CompilerEndIf
   EndProcedure
   
   Procedure GetNbPoints(*geom.Geometry_t)
@@ -578,7 +578,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 455
-; FirstLine = 476
+; CursorPosition = 551
+; FirstLine = 500
 ; Folding = -----
 ; EnableXP

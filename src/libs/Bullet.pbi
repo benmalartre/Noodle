@@ -377,7 +377,7 @@ DeclareModule Bullet
       BTNewCompoundShape()                                  ; return a btCollisionShape Object
       BTAddChildShape(*compoundShape.btCollisionShape,*childShape.btCollisionShape, *childPos.btVector3,*childOrn.btQuaternion)
       BTNewGImpactShape(num_tri.i,*indices, num_vertices.i,*vertices) ; indices is an array of int , vertices an array of btVector3
-      BTNewBvhTriangleMeshShape(num_tri.i,*indices, num_vertices.i,*vertices) ; indices is an array of int , vertices an array of btVector3
+      BTNewBvhTriangleMeshShape(num_tri.i,*indices, num_vertices.i,*vertices, aligned.b) ; indices is an array of int , vertices an array of btVector3
       BTDeleteShape(*shape.btCollisionShape)
       BTSetCollisionMargin(*body.btRigidBody,margin.btReal)
       BTGetCollisionMargin.btReal(*body.btRigidBody)
@@ -515,7 +515,7 @@ Module Bullet
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 67
+; CursorPosition = 379
+; FirstLine = 250
 ; Folding = ---
 ; EnableXP

@@ -12,7 +12,10 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -73,7 +76,7 @@ Procedure Ground(*scene.Scene::Scene_t,*shader.Program::Program_t)
   For i=0 To CArray::GetCount(*mesh\a_positions)-1
    
     *p = CArray::GetValue(*mesh\a_positions,i)
-    Vector3::Set(@pos,*p\x*10,(Random(5)-2.5),*p\z*10)
+    Vector3::Set(pos,*p\x*10,(Random(5)-2.5),*p\z*10)
     CArray::SetValue(*mesh\a_positions,i,pos)
   Next
   Object3D::Freeze(*ground)
@@ -111,8 +114,8 @@ Procedure Wheel(*model.Model::Model_t,*shader.Program::Program_t,name.s,*pos.v3f
   Protected q.q4f32
   Protected *t.Transform::Transform_t = *wheel\localT
 Transform::Init(*t)
-  Quaternion::SetFromAxisAngleValues(*t\t\rot,0,0,1,Math::#F32_PI_2)
-  Vector3::Set(*t\t\scl,radius,1,radius)
+  Quaternion::SetFromAxisAngleValues(*t\t\rot,0,0,-1,Math::#F32_PI_2)
+  Vector3::Set(*t\t\scl,radius,0.5,radius)
   Vector3::SetFromOther(*t\t\pos,*pos)
   *t\srtdirty = #True
   Object3D::SetGlobalTransform(*wheel,*t)
@@ -121,8 +124,8 @@ Transform::Init(*t)
   
   BulletRigidBody::BTCreateRigidBodyFrom3DObject(*wheel,Bullet::#CYLINDER_SHAPE,1.0,Bullet::*bullet_world)
   Protected scl.v3f32
-  Vector3::Set(@scl,1,1,1)
-  Bullet::BTSetScaling(*wheel\rigidbody,@scl)
+  Vector3::Set(scl,radius,0.5,radius)
+  Bullet::BTSetScaling(*wheel\rigidbody,scl)
 
   Protected *body.Bullet::btRigidBody = *wheel\rigidbody
   Bullet::BTSetAngularFactorF(*body,0.5)
@@ -134,9 +137,12 @@ EndProcedure
 
 Procedure Vehicle(*scene.Scene::Scene_t,*shader.Program::Program_t,w.f,h.f,d.f)
   Protected wh.f = h/4
-  Protected wr.f = wh
+  Protected wr.f = wh *2
+  Define color.c4f32
   Protected *model.Model::Model_t = Model::New("Vehicle")
   Protected *chassis.Polymesh::Polymesh_t = Polymesh::New("Chassis",Shape::#SHAPE_CUBE)
+  Color::Randomize(color)
+  PolymeshGeometry::SetColors(*chassis\geom, color)
   *chassis\shader = *shader
   
   Object3D::AddChild(*model,*chassis)
@@ -149,32 +155,35 @@ Procedure Vehicle(*scene.Scene::Scene_t,*shader.Program::Program_t,w.f,h.f,d.f)
   Object3D::SetGlobalTransform(*chassis,*t)
   Object3D::UpdateTransform(*chassis,#Null)
   
-  BulletRigidBody::BTCreateRigidBodyFrom3DObject(*chassis,Bullet::#BOX_SHAPE,100,Bullet::*bullet_world)
+  BulletRigidBody::BTCreateRigidBodyFrom3DObject(*chassis,Bullet::#BOX_SHAPE,10,Bullet::*bullet_world)
   Protected scl.v3f32
-  Vector3::Set(@scl,1,1,1)
-  Bullet::BTSetScaling(*chassis\rigidbody,@scl)
+  Vector3::Set(scl,w,sh,d)
+  Bullet::BTSetScaling(*chassis\rigidbody,scl)
   
   
-;   Protected *head.Polymesh::Polymesh_t = Polymesh::New("Head",Shape::#SHAPE_CUBE)
-;   *head\shader = *shader
-;   
-;   Object3D::AddChild(*chassis,*head)
-;   *t.Transform::Transform_t = *head\localT
-; 
-;   Transform::SetScaleFromXYZValues(*t,w/3,h-wh,d/3)
-;   Transform::SetTranslationFromXYZValues(*t,w/2,wr+(h-wh)/2,d/2)
-;   Object3D::SetLocalTransform(*head,*t)
+  Protected *head.Polymesh::Polymesh_t = Polymesh::New("Head",Shape::#SHAPE_CUBE)
+  
+  Color::Randomize(color)
+  PolymeshGeometry::SetColors(*head\geom, color)
+  *head\shader = *shader
+  
+  Object3D::AddChild(*chassis,*head)
+  *t.Transform::Transform_t = *head\localT
+
+  Transform::SetScaleFromXYZValues(*t,w/3,h-wh,d/3)
+  Transform::SetTranslationFromXYZValues(*t,w/2,wr+(h-wh)/2,d/2)
+  Object3D::SetLocalTransform(*head,*t)
   
   Protected pos.v3f32
-  Vector3::Set(@pos,-(w/2+0.5),0,d/3)
-  Protected *lfwheel.Object3D::Object3D_t = Wheel(*model,*shader,"LFWheel",@pos,wr)
+  Vector3::Set(pos,-2,th,d/3)
+  Protected *lfwheel.Object3D::Object3D_t = Wheel(*model,*shader,"LFWheel",pos,wr)
     
-  Vector3::Set(@pos,w/2+0.5,0,d/3)
-  Protected *rfwheel.Object3D::Object3D_t = Wheel(*model,*shader,"RFWheel",@pos,wr)
-  Vector3::Set(@pos,-(w/2+0.5),0,-d/3)
-  Protected *lbwheel.Object3D::Object3D_t = Wheel(*model,*shader,"LBWheel",@pos,wr)
-  Vector3::Set(@pos,w/2+0.5,0,-d/3)
-  Protected *rbwheel.Object3D::Object3D_t = Wheel(*model,*shader,"RBWheel",@pos,wr)
+;   Vector3::Set(pos,w/2+0.5,0,d/3)
+;   Protected *rfwheel.Object3D::Object3D_t = Wheel(*model,*shader,"RFWheel",pos,wr)
+;   Vector3::Set(pos,-(w/2+0.5),0,-d/3)
+;   Protected *lbwheel.Object3D::Object3D_t = Wheel(*model,*shader,"LBWheel",pos,wr)
+;   Vector3::Set(pos,w/2+0.5,0,-d/3)
+;   Protected *rbwheel.Object3D::Object3D_t = Wheel(*model,*shader,"RBWheel",pos,wr)
   
   
   Protected pivot1.v3f32
@@ -182,57 +191,53 @@ Procedure Vehicle(*scene.Scene::Scene_t,*shader.Program::Program_t,w.f,h.f,d.f)
   Protected axis1.v3f32
   Protected axis2.v3f32
   
-  Vector3::Set(@pivot1,0,0,0)
-  Vector3::Set(@pivot2,-(w/2+0.5),-sh/2,d/3)
+  Vector3::Set(pivot1,0,1,0)
+  Vector3::Set(pivot2,-2,0,d/3)
   
-  Vector3::Set(@axis1,0,1,0)
-  Vector3::Set(@axis2,1,0,0)
+  Vector3::Set(axis1,0,1,0)
+  Vector3::Set(axis2,1,0,0)
 
-  Protected *lfcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*lfwheel,*chassis,@pivot1,@pivot2,@axis1,@axis2,#False)
+  Protected *lfcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*lfwheel,*chassis,pivot1,pivot2,axis1,axis2,#False)
   Bullet::BTAddConstraint(Bullet::*bullet_world,*lfcns\cns,#True)
   
-  Vector3::Set(@pivot1,0,0,0)
-  Vector3::Set(@pivot2,w/2+0.5,-sh/2,d/3)
-  Protected *rfcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*rfwheel,*chassis,@pivot1,@pivot2,@axis1,@axis2,#False)
-                                                                                               ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
-  Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns,#True)
-  
-  Vector3::Set(@pivot1,0,0,0)
-  Vector3::Set(@pivot2,-(w/2+0.5),-sh/2,-d/3)
-  Protected *lbcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*lbwheel,*chassis,@pivot1,@pivot2,@axis1,@axis2,#False)
-                                                                                               ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
-  Bullet::BTAddConstraint(Bullet::*bullet_world,*lbcns\cns,#True)
-  
-  Vector3::Set(@pivot1,0,0,0)
-  Vector3::Set(@pivot2,w/2+0.5,-sh/2,-d/3)
-  Protected *rbcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*rbwheel,*chassis,@pivot1,@pivot2,@axis1,@axis2,#False)
-                                                                                               ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
-  Bullet::BTAddConstraint(Bullet::*bullet_world,*rbcns\cns,#True)
-  ; 
-  
-  Protected *head.Polymesh::Polymesh_t = Polymesh::New("Head",Shape::#SHAPE_CUBE)
-  *chassis\shader = *shader
+;   Vector3::Set(pivot1,0,0,0)
+;   Vector3::Set(pivot2,w/2+0.5,-sh/2,d/3)
+;   Protected *rfcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*rfwheel,*chassis,pivot1,pivot2,axis1,axis2,#False)
+;                                                                                                ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
+;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns,#True)
+;   
+;   Vector3::Set(pivot1,0,0,0)
+;   Vector3::Set(pivot2,-(w/2+0.5),-sh/2,-d/3)
+;   Protected *lbcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*lbwheel,*chassis,pivot1,pivot2,axis1,axis2,#False)
+;                                                                                                ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
+;   Bullet::BTAddConstraint(Bullet::*bullet_world,*lbcns\cns,#True)
+;   
+;   Vector3::Set(pivot1,0,0,0)
+;   Vector3::Set(pivot2,w/2+0.5,-sh/2,-d/3)
+;   Protected *rbcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewHinge(*rbwheel,*chassis,pivot1,pivot2,axis1,axis2,#False)
+;                                                                                                ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
+;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rbcns\cns,#True)
+
   
   Object3D::AddChild(*model,*head)
   *t = *head\localT
-  
 
   Transform::SetScaleFromXYZValues(*t,w/2,h/2,d/2)
   Transform::SetTranslationFromXYZValues(*t,0,h*2,0) 
   Object3D::SetGlobalTransform(*head,*t)
   Object3D::UpdateTransform(*head,#Null)
   
-  BulletRigidBody::BTCreateRigidBodyFrom3DObject(*head,Bullet::#BOX_SHAPE,100,Bullet::*bullet_world)
-  Vector3::Set(@scl,1,1,1)
-  Bullet::BTSetScaling(*head\rigidbody,@scl)
-  
-  Vector3::Set(@pivot1,0,-1,0)
-  Vector3::Set(@pivot2,0,1,0)
-  
-  
-  Protected *hcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewPoint2Point(*head,*chassis,@pivot1,@pivot2)
-                                                                                               ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
-  Bullet::BTAddConstraint(Bullet::*bullet_world,*hcns\cns,#False)
+;   BulletRigidBody::BTCreateRigidBodyFrom3DObject(*head,Bullet::#BOX_SHAPE,100,Bullet::*bullet_world)
+;   Vector3::Set(scl,1,1,1)
+;   Bullet::BTSetScaling(*head\rigidbody,scl)
+;   
+;   Vector3::Set(pivot1,0,-1,0)
+;   Vector3::Set(pivot2,0,1,0)
+;   
+;   
+;   Protected *hcns.BulletConstraint::BTConstraint_t = BulletConstraint::NewPoint2Point(*head,*chassis,pivot1,pivot2)
+;                                                                                                ;   Bullet::BTAddConstraint(Bullet::*bullet_world,*rfcns\cns)
+;   Bullet::BTAddConstraint(Bullet::*bullet_world,*hcns\cns,#False)
   
   Scene::AddModel(*scene,*model)
 EndProcedure
@@ -246,14 +251,11 @@ Procedure Draw(*app.Application::Application_t)
 ;   EndIf
   
   If EventType() = #PB_EventType_KeyDown
-    If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
+    If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Return
       BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
     EndIf
   EndIf
-  
-      
- 
-  
+
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -261,9 +263,9 @@ Procedure Draw(*app.Application::Application_t)
   glEnable(#GL_DEPTH_TEST)
   
   glUseProgram(shader)
-  Matrix4::SetIdentity(@offset)
+  Matrix4::SetIdentity(offset)
   Framebuffer::BindOutput(*buffer)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@model)
+  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,model)
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*app\camera\projection)
   glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
@@ -272,6 +274,8 @@ Procedure Draw(*app.Application::Application_t)
   
   ;Polymesh::Draw(*torus)
   
+  Scene::*current_scene\dirty = #True
+  Scene::Update(Scene::*current_scene)
   Scene::Update(Scene::*current_scene)
   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
   
@@ -328,10 +332,10 @@ Procedure Draw(*app.Application::Application_t)
      *app\context = GLContext::New(0,#False,*viewport\gadgetID)
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -369,7 +373,8 @@ Scene::Setup(*scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 127
-; Folding = -
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 177
+; FirstLine = 148
+; Folding = --
 ; EnableXP

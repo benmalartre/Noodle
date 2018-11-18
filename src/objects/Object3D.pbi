@@ -110,8 +110,6 @@ DeclareModule Object3D
     DeleteMapElement(m,k)
   EndMacro
   
-  
-  
   Interface IObject3D
    ; GetName.s()
     Delete()
@@ -120,7 +118,6 @@ DeclareModule Object3D
     Clean()
     Draw()
   EndInterface
-  
   
   Declare.b IsA(*obj.Object3D_t,type.i)
   Declare Freeze(*obj.Object3D_t)
@@ -157,13 +154,16 @@ EndDeclareModule
 
 
 Module Object3D
+  ; ----------------------------------------------------------------------------
   ; Is A
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure.b IsA(*obj.Object3D_t,type.i)
     ProcedureReturn Bool(*obj\type = type)
   EndProcedure
+  
+  ; ----------------------------------------------------------------------------
   ; Freeze
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure Freeze(*obj.Object3D_t)
     If *obj\type = Object3D::#Object3D_Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
@@ -173,14 +173,16 @@ Module Object3D
    
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; FreezeTransform
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure FreezeTransform(*obj.Object3D_t)
     
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; Reset Local Kinematic State
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure ResetLocalKinematicState(*obj.Object3D_t)
     Vector3::Set(*obj\localT\t\pos,0,0,0)
     Quaternion::SetIdentity(*obj\localT\t\rot)
@@ -189,8 +191,9 @@ Module Object3D
     Transform::UpdateMatrixFromSRT(*obj\localT)
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; Reset Global Kinematic State
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure ResetGlobalKinematicState(*obj.Object3D_t)
     Vector3::Set(*obj\globalT\t\pos,0,0,0)
     Quaternion::SetIdentity(*obj\globalT\t\rot)
@@ -199,14 +202,16 @@ Module Object3D
     Transform::UpdateMatrixFromSRT(*obj\globalT)
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; Reset Static Kinematic State
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure ResetStaticKinematicState(*obj.Object3D_t)
     Transform::SetFromOther(*obj\staticT,*obj\globalT)
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; Remove Child
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure.b RemoveChild(*obj.Object3D_t,*child.Object3D_t)
     ForEach *obj\children()
       If *obj\children() = *child
@@ -217,8 +222,9 @@ Module Object3D
   
   EndProcedure
   
+  ; ----------------------------------------------------------------------------
   ; Add Child 
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   Procedure AddChild(*parent.Object3D_t,*child.Object3D_t)
     If *child\parent
       ForEach *child\parent\children()
@@ -240,8 +246,9 @@ Module Object3D
     *parent\children() = *child
   EndProcedure
   
-   ; Set Shader 
-  ;--------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
+  ; Set Shader 
+  ; ----------------------------------------------------------------------------
   Procedure SetShader(*obj.Object3D_t,*shader.Program::Program_t)
     *obj\shader = *shader
   EndProcedure
@@ -532,7 +539,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 223
+; CursorPosition = 158
+; FirstLine = 141
 ; Folding = ------
 ; EnableXP

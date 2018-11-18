@@ -12,6 +12,8 @@ DeclareModule Memory
   Declare AllocateAlignedMemory(size.i)
   Declare ReAllocateAlignedMemory(*memory, size.i)
   Declare FreeAlignedMemory(*memory, size.i)
+  Declare ShiftAlign(*data, nb.i, src_size, dst_size.i)
+  Declare UnshiftAlign(*data, nb.i, src_size, dst_size.i)
   
 EndDeclareModule
 
@@ -28,10 +30,10 @@ Module Memory
     Define offset.i = *memory % #ALIGN_BYTES
     If offset <> 0
       *aligned = AlignMemory(*memory, #ALIGN_BYTES)
-      PokeC(*aligned + size + 1, #ALIGN_BYTES - offset)
+      PokeB(*aligned + size + 1, #ALIGN_BYTES - offset)
     Else
       *aligned = *memory
-      PokeC(*aligned + size + 1, 0)
+      PokeB(*aligned + size + 1, 0)
     EndIf
     
     ProcedureReturn *aligned
@@ -46,10 +48,10 @@ Module Memory
     Define offset.i = *memory % #ALIGN_BYTES
     If offset <> 0
       *aligned = AlignMemory(*memory, #ALIGN_BYTES)
-      PokeC(*aligned + size + 1, #ALIGN_BYTES - offset)
+      PokeB(*aligned + size + 1, #ALIGN_BYTES - offset)
     Else
       *aligned = *memory
-      PokeC(*aligned + size + 1, 0)
+      PokeB(*aligned + size + 1, 0)
     EndIf
 
     ProcedureReturn *aligned 
@@ -59,7 +61,44 @@ Module Memory
   ; FREE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure FreeAlignedMemory(*memory, size.i)
-    FreeMemory(*memory - PeekC(*memory + size + 1))
+    FreeMemory(*memory - PeekB(*memory + size + 1))
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; Shift Align
+  ;--------------------------------------------------------------------------------------
+  Procedure ShiftAlign(*data, nb.i, src_size, dst_size.i)
+    If dst_size > src_size
+      Define offset_dst = (nb-1) * dst_size
+      Define offset_src = (nb-1) * src_size
+      
+      Define *src, *dst
+      While nb >= 0
+        *src = *data + offset_src
+        *dst = *data + offset_dst
+        MoveMemory(*src, *dst, src_size)
+        FillMemory(*dst + src_size, dst_size-src_size, 0)
+        offset_dst - dst_size
+        offset_src - src_size
+        nb - 1  
+      Wend
+    EndIf
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; Unshift Align
+  ;--------------------------------------------------------------------------------------
+  Procedure UnshiftAlign(*data, nb.i, src_size, dst_size.i)
+    If dst_size < src_size
+      Define *src, *dst
+      Define i
+      For i=1 To nb-1
+        *src = *data + i * src_size
+        *dst = *data + i * dst_size
+        MoveMemory(*src, *dst, src_size)
+      Next
+      FillMemory(*data + nb * dst_size, nb * src_size - nb * dst_size, 0)
+    EndIf
   EndProcedure
   
 EndModule
@@ -67,7 +106,7 @@ EndModule
 ; EOF
 ;========================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 9
+; CursorPosition = 75
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

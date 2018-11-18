@@ -41,8 +41,10 @@ DeclareModule CArray
   
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     #SIZE_V3F32 = 16
+    #SIZE_TRF32 = 48
   CompilerElse
     #SIZE_V3F32 = 12
+    #SIZE_TRF32 = 40
   CompilerEndIf  
   
   #SIZE_C4F32 = 16
@@ -50,12 +52,12 @@ DeclareModule CArray
   #SIZE_Q4F32 = 16
   #SIZE_M3F32 = 36
   #SIZE_M4F32 = 64
-  #SIZE_TRF32 = 40
   
   Structure CArrayT
     type.i
     itemSize.i
     itemCount.i
+    aligned.b
     *data
   EndStructure
   
@@ -270,8 +272,8 @@ DeclareModule CArray
     CompilerEndIf
   EndMacro
   
-  Declare GetPtr(*array.CArrayT, index.i)
-  Declare.s GetValueStr(*array.CArrayStr, index.i)
+  Declare GetPtr(*array.CArrayT, index.i=0)
+  Declare.s GetValueStr(*array.CArrayStr, index.i=0)
   Declare.s GetAsString(*array.CArrayT, label.s="")
   Declare Copy(*array.CArrayT, *src.CArrayT)
   Declare Append(*array.CArrayT,*value)
@@ -299,8 +301,6 @@ DeclareModule CArray
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
   Declare Alert(*array.CArrayT, label.s="")
-  Declare ShiftAlign(*data, nb, src_size.i, dst_size.i)
-  Declare UnshiftAlign(*data, nb, src_size.i, dst_size.i)
   
   Declare newCArrayBool()
   Declare newCArrayChar()
@@ -327,14 +327,14 @@ Module CArray
   ;----------------------------------------------------------------
   ; GetPtr
   ;----------------------------------------------------------------
-  Procedure GetPtr(*array.CArrayT, index.i)
-    ProcedureReturn *array\data + index* *array\itemSize
+  Procedure GetPtr(*array.CArrayT, index.i = 0)
+    ProcedureReturn *array\data + index * *array\itemSize
   EndProcedure
   
   ;----------------------------------------------------------------
   ; GetValueStr
   ;----------------------------------------------------------------
-  Procedure.s GetValueStr(*array.CArrayStr, index.i)
+  Procedure.s GetValueStr(*array.CArrayStr, index.i=0)
     SelectElement(*array\_str(),index)
     ProcedureReturn *array\_str()
   EndProcedure
@@ -367,7 +367,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(*array\itemSize)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * *array\itemSize + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * *array\itemSize + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1) * *array\itemSize)
     EndIf
     
@@ -385,7 +385,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_BOOL)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_BOOL + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_BOOL + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_BOOL)
     EndIf
     
@@ -402,7 +402,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_CHAR)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_CHAR + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_CHAR + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_CHAR)
     EndIf
     
@@ -419,7 +419,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_INT)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_INT + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_INT + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_INT)
     EndIf
     
@@ -436,7 +436,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_LONG)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_LONG + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_LONG + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_LONG)
     EndIf
     
@@ -453,7 +453,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_FLOAT)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_FLOAT + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_FLOAT + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_FLOAT)
     EndIf
     
@@ -469,7 +469,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_PTR)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_PTR + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_PTR + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_PTR)
     EndIf
     
@@ -486,7 +486,7 @@ Module CArray
     If *array\data = #Null
       *array\data = Memory::AllocateAlignedMemory(#SIZE_PTR)
     Else
-      Define *oldmemory = *array\data - PeekC(*array\data + nb * #SIZE_PTR + 1)
+      Define *oldmemory = *array\data - PeekB(*array\data + nb * #SIZE_PTR + 1)
       *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nb+1)* #SIZE_PTR)
     EndIf
     
@@ -509,7 +509,7 @@ Module CArray
       If *array\data = #Null
         *array\data = Memory::AllocateAlignedMemory(nbo* *array\itemSize)
       Else
-        Define *oldmemory = *array\data - PeekC(*array\data + nba * *array\itemSize + 1)
+        Define *oldmemory = *array\data - PeekB(*array\data + nba * *array\itemSize + 1)
         *array\data = Memory::ReAllocateAlignedMemory(*oldmemory,(nbo+nba)* *array\itemSize)
       EndIf
       
@@ -708,7 +708,7 @@ Module CArray
     If count = 0
       If *array\data And MemorySize(*array\data)
         Memory::FreeAlignedMemory(*array\data, *array\itemCount * *array\itemSize)
-        *Array\data = #Null
+        *array\data = #Null
       EndIf
       *array\itemCount = 0
     Else
@@ -1127,43 +1127,6 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; Shift Align
-  ;----------------------------------------------------------------
-  Procedure ShiftAlign(*data, nb.i, src_size, dst_size.i)
-    If dst_size > src_size
-      Define offset_dst = (nb-1) * dst_size
-      Define offset_src = (nb-1) * src_size
-      
-      Define *src, *dst
-      While nb >= 0
-        *src = *data + offset_src
-        *dst = *data + offset_dst
-        MoveMemory(*src, *dst, src_size)
-        FillMemory(*dst + src_size, dst_size-src_size, 0)
-        offset_dst - dst_size
-        offset_src - src_size
-        nb - 1  
-      Wend
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; Unshift Align
-  ;----------------------------------------------------------------
-  Procedure UnshiftAlign(*data, nb.i, src_size, dst_size.i)
-    If dst_size < src_size
-      Define *src, *dst
-      Define i
-      For i=1 To nb-1
-        *src = *data + i * src_size
-        *dst = *data + i * dst_size
-        MoveMemory(*src, *dst, src_size)
-      Next
-      FillMemory(*data + nb * dst_size, nb * src_size - nb * dst_size, 0)
-    EndIf
-  EndProcedure
-  
-  ;----------------------------------------------------------------
   ; Destructor
   ;----------------------------------------------------------------
   Procedure Delete(*array.CArrayT)
@@ -1178,7 +1141,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 404
-; Folding = ------------
+; CursorPosition = 54
+; FirstLine = 24
+; Folding = -----------
 ; EnableXP

@@ -16,7 +16,7 @@ DeclareModule Octree
   EndEnumeration
   
   Structure Point_t
-    v.f[3]
+      v.f[3]
   EndStructure
   
   Structure Cell_t
@@ -111,9 +111,9 @@ Module Octree
   Procedure EncodeMorton(*cell.Cell_t)
     Protected p.Morton::Point3D_t
     Protected center.v3f32
-    GetCenter(*cell, @center)
-    RealToCartesian(*cell, @center, @p)
-    *cell\morton = Morton::Encode3D(@p)  
+    GetCenter(*cell, center)
+    RealToCartesian(*cell, center, p)
+    *cell\morton = Morton::Encode3D(p)  
   EndProcedure
   
   
@@ -246,9 +246,9 @@ Module Octree
     *octree\eMax = maxDepth
     Split(*octree, *geom, maxDepth)
     
-    NumCells(*octree, @*octree\numCells)
-    
-    MessageRequester("OCTREE", Str(*octree\numCells))
+;     NumCells(*octree, @*octree\numCells)
+;     
+;     MessageRequester("OCTREE", Str(*octree\numCells))
     
 ;     *octree\numCells = 0
 ;     
@@ -389,23 +389,29 @@ Module Octree
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
     *child = Octree::New(bmin, bmax, *octree\depth + 1)
-    Define box.Geometry::Box_t
+    
     GetCenter(*child, box\origin)
     GetHalfSize(*child, box\extend)
-    Dim touches.b(*geom\nbtriangles)
-    Define.Math::v3f32 *a, *b, *c
+    Vector3::Echo(box\origin, "origin")
+    Vector3::Echo(box\extend, "extend")
+;     Dim touches.b(*geom\nbtriangles)
+    
     tsz = *octree\elements\itemCount
     For t=0 To tsz - 1
-      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
-      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
-      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2))
-      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, t) : EndIf
+      xt = CArray::GetValueL(*octree\elements, t)
+      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3))
+      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+1))
+      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+2))
+
+      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, t) : numHits + 1 :EndIf
     Next
     
-;     Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, center, halfsize,@touches(0))
-;     For t=0 To tsz - 1
-;       If touches(t) : CArray::AppendL(*child\elements, t) : EndIf
+;     Define numHits = Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, box,@touches(0))
+;     CArray::SetCount(*child\elements, numHits)
+;     For t=0 To ArraySize(touches())-1
+;       If touches(t) : CArray::SetValueL(*child\elements, idx, t) : EndIf
 ;     Next
+;     
     
     If Not *child\elements\itemCount
       *octree\children[m] = #Null
@@ -429,9 +435,11 @@ Module Octree
     *octree\isLeaf = #False
     Protected i, j, k, m, t
     Define.Point_t xx, yy, zz
-    Define *xx.v3f32 = @xx
-    Define *yy.v3f32 = @yy
-    Define *zz.v3f32 = @zz
+        Define xt
+    Define numHits = 0
+    Define *xx.v3f32 = xx
+    Define *yy.v3f32 = yy
+    Define *zz.v3f32 = zz
     Define *child.Cell_t
     Vector3::Set(*xx, *octree\bmin\x, 0.5*(*octree\bmin\x+*octree\bmax\x), *octree\bmax\x)
     Vector3::Set(*yy, *octree\bmin\y, 0.5*(*octree\bmin\y+*octree\bmax\y), *octree\bmax\y)
@@ -440,6 +448,9 @@ Module Octree
     Define.v3f32 center, halfsize
     Define.v3f32 bmin, bmax
     Define tri.Geometry::Triangle_t
+    Define box.Geometry::Box_t
+    Define *a.Math::v3f32, *b.Math::v3f32, *c.Math::v3f32
+    Define a.Math::v3f32, b.Math::v3f32, c.Math::v3f32
     
     CreateCell(0,0,0)
     CreateCell(0,0,1)
@@ -551,9 +562,9 @@ Module Octree
         *b = CArray::GetValue(*positions, t*3+1)
         *c = CArray::GetValue(*positions, t*3+2)
         
-        CopyMemory(CArray::GetValue(*geom\a_positions, a), *a, 12)
-        CopyMemory(CArray::GetValue(*geom\a_positions, b), *b, 12)
-        CopyMemory(CArray::GetValue(*geom\a_positions, c), *c, 12)
+        CopyMemory(CArray::GetValue(*geom\a_positions, a), *a, SizeOf(v3f32))
+        CopyMemory(CArray::GetValue(*geom\a_positions, b), *b, SizeOf(v3f32))
+        CopyMemory(CArray::GetValue(*geom\a_positions, c), *c, SizeOf(v3f32))
 
         *a\x + (Random(200)-100)*0.001
         *a\y + (Random(200)-100)*0.001
@@ -593,7 +604,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 402
-; FirstLine = 385
+; CursorPosition = 405
+; FirstLine = 370
 ; Folding = -----
 ; EnableXP
