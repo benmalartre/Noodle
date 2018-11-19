@@ -579,6 +579,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 28
+; CursorPosition = 502
+; FirstLine = 471
 ; Folding = -----
 ; EnableXP

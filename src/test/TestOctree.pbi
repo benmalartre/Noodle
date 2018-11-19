@@ -18,6 +18,7 @@ Global *torus.Polymesh::Polymesh_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *octree.Octree::Octree_t
+Global query.v3f32
 
 Procedure PolygonSoup()
   Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_None)
@@ -25,8 +26,8 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::TorusTopology(*topo)
-  Protected numTopos.i = 32
+  PolymeshGeometry::SphereTopology(*topo, 1,32 ,16)
+  Protected numTopos.i = 64
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -34,11 +35,12 @@ Procedure PolygonSoup()
   Define p.v3f32
   Define s.v3f32
   Define *m.m4f32
+  RandomSeed(666)
   For i=0 To numTopos-1
     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
     *m = CArray::GetPtr(*matrices, i)
     Matrix4::SetIdentity(*m)
-    Vector3::Set(s, Random(4)+2,Random(4)+2,Random(4)+2)
+    Vector3::Set(s, 1,1,1);Random(4)+2,Random(4)+2,Random(4)+2)
     Matrix4::SetScale(*m, s)
     Matrix4::SetTranslation(*m,   p)
   Next
@@ -98,15 +100,38 @@ Procedure PolygonSoup()
   
 EndProcedure
 
+Procedure TestHit()
+  Vector3::RandomizeInPlace(query,0.5)
+  Define loc.Geometry::Location_t
+  Define i
+
+  Define hit = Octree::GetClosestPoint(*octree, query, loc)
+  
+  Define P = Drawer::NewPoint(*drawer, query)
+  
+  Drawer::SetSize(P, 12)
+  Drawer::SetColor(P, Color::_RED())
+  If hit
+    P = Drawer::NewPoint(*drawer, loc\p)
+    Drawer::SetSize(P, 10)
+    Drawer::SetColor(P, Color::_GREEN())
+    Define L = Drawer::NewLine(*drawer, query, loc\p)
+    Drawer::SetColor(L, Color::_WHITE())
+  EndIf
+EndProcedure
  
 Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Scene::*current_scene\dirty= #True
   
+  Drawer::Flush(*drawer)
+  TestHit()
   Scene::Update(Scene::*current_scene)
   Define numCells.l
 ;   Octree::NumCells(*octree, @numCells)
   LayerDefault::Draw(*layer, *app\context)
+  
+
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -120,6 +145,9 @@ Procedure Draw(*app.Application::Application_t)
   
   ViewportUI::FlipBuffer(*viewport)
 EndProcedure
+
+
+
 
 Time::Init()
 Log::Init()
@@ -158,12 +186,35 @@ Define drawOctreeT.d = Time::get() - T
 Define numCells.i = 0
 Octree::NumCells(*octree, @numCells)
 
+
+
 Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
 buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
 buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
-buildMessage + "Num Leaves : "+Str(numCells)
-buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)
-MessageRequester("Octree", buildMessage)
+buildMessage + "Num Leaves : "+Str(numCells)+Chr(10)
+buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
+
+Vector3::Set(query, 1,2,1)
+Define loc.Geometry::Location_t
+Define i
+T = Time::Get()
+For i=0 To 0
+  Define hit = Octree::GetClosestPoint(*octree, query, loc)
+Next
+Define hitT.d = Time::Get() - T
+
+Define P = Drawer::NewPoint(*drawer, query)
+
+Drawer::SetSize(P, 12)
+Drawer::SetColor(P, Color::_RED())
+If hit
+  buildMessage + "HIT : "+Vector3::ToString(loc\p)+Chr(10)
+  buildMessage + "1000000 Tests took : "+StrD(hitT)
+  P = Drawer::NewPoint(*drawer, loc\p)
+  Drawer::SetSize(P, 10)
+  Drawer::SetColor(P, Color::_GREEN())
+EndIf
+
 
 Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
@@ -182,8 +233,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 125
+; CursorPosition = 42
+; FirstLine = 21
 ; Folding = -
 ; EnableThread
 ; EnableXP

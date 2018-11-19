@@ -72,10 +72,10 @@ Module ControlColor
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
 
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = UIColor::Color_LABEL
+    Protected tc.i = UIColor::COLORA_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    VectorFont(FontID(Globals::#FONT_LABEL ))
+    VectorFont(FontID(Globals::#FONT_LABEL ),16)
     Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )/2 + xoff
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     tx = Math::Max( tx, 3 + xoff )
@@ -85,11 +85,27 @@ Module ControlColor
     cw = *Me\sizX - (3*ch+10)
     
     VectorSourceLinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)
-    VectorSourceGradientColor(RGBA(255, 0, 0, 255), 0.0)
-    VectorSourceGradientColor(RGBA(0, 255, 0, 255), 0.5)
-    VectorSourceGradientColor(RGBA(0, 0, 255, 255), 1.0)
+    VectorSourceGradientColor(RGBA(0, 0, 0, 255), 0.0)
+    VectorSourceGradientColor(RGBA(122, 0, 0, 255), 0.5)
+    VectorSourceGradientColor(RGBA(255, 0, 0, 255), 1.0)
     
     AddPathBox(5+xoff,5+yoff,cw,ch)
+    FillPath()
+    
+    VectorSourceLinearGradient(5+xoff, 5+yoff+ch, 5+xoff+cw, 5+yoff+2*ch)
+    VectorSourceGradientColor(RGBA(0, 0, 0, 255), 0.0)
+    VectorSourceGradientColor(RGBA(0, 122, 0, 255), 0.5)
+    VectorSourceGradientColor(RGBA(0, 255, 0, 255), 1.0)
+    
+    AddPathBox(5+xoff,5+yoff+ch,cw,ch)
+    FillPath()
+    
+    VectorSourceLinearGradient(5+xoff, 5+yoff+2*ch, 5+xoff+cw, 5+yoff+3*ch)
+    VectorSourceGradientColor(RGBA(0, 0, 0, 255), 0.0)
+    VectorSourceGradientColor(RGBA(0, 0, 122, 255), 0.5)
+    VectorSourceGradientColor(RGBA(0, 0, 255, 255), 1.0)
+    
+    AddPathBox(5+xoff,5+yoff+2*ch,cw,ch)
     FillPath()
 
 
@@ -115,14 +131,20 @@ Module ControlColor
 ;     Box(5+xoff + offset_g - 1, 5+ch+yoff, 2 , ch, white)
 ;     Box(5+xoff + offset_b - 1, 5+2*ch+yoff, 2 , ch, white)
 ;     
-;     ; draw color
-;     If *Me\item = #ITEM_COLOR
-;       RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(122,122,122))
-;     Else
-;        RoundBox(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 4, 4, RGB(0,0,0))
-;     EndIf
-;     
-;     RoundBox(*Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 4, 4, RGB(*Me\red, *Me\green, *Me\blue))
+    ; draw color
+    If *Me\item = #ITEM_COLOR
+      Vector::RoundBoxPath(3*ch+4, 3*ch+4, 4,*Me\sizX - 3*ch + 8, 3+yoff, 2)
+      VectorSourceColor(RGBA(122,122,122,255))
+      FillPath()
+    Else
+      Vector::RoundBoxPath( 3*ch+4, 3*ch+4, 4,*Me\sizX - 3*ch + 8, 3+yoff, 2)
+      VectorSourceColor(RGBA(0,0,0,255))
+      FillPath()
+    EndIf
+    
+    Vector::RoundBoxPath( 3*ch, 3*ch, 4,*Me\sizX - 3*ch + 10, 5+yoff, 2)
+    VectorSourceColor(RGBA(*Me\red, *Me\green, *Me\blue,255))
+    FillPath()
    
     
   EndProcedure
@@ -131,9 +153,7 @@ Module ControlColor
   ;  hlpPick
   ; ----------------------------------------------------------------------------
   Procedure hlpPick( *Me.ControlColor_t, mx.i = 0, my.i = 0 )
-    Debug " ### HlpPick "+*Me\name
-    Debug mx
-    Debug my
+
     If Not *Me\visible : ProcedureReturn : EndIf
     
     If mx < 5 Or mx > *Me\sizX - 5 Or my<5 Or my> *Me\sizY-5
@@ -439,8 +459,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 62
+; CursorPosition = 135
+; FirstLine = 109
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

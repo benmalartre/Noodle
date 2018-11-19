@@ -8,11 +8,11 @@ DeclareModule Triangle
   UseModule Math
   UseModule Geometry
 
-  Macro FINDMINMAX(x0,x1,x2,min,max)
-    min = x0
-    max = x0
-    If(x1<min) : min=x1 : ElseIf(x1>max) : max=x1 : EndIf
-    If(x2<min) : min=x2 : ElseIf(x2>max) : max=x2 : EndIf
+  Macro FINDMINMAX(x0,x1,x2,bmin,bmax)
+    bmin = x0
+    bmax = x0
+    If(x1<bmin) : bmin=x1 : ElseIf(x1>bmax) : bmax=x1 : EndIf
+    If(x2<bmin) : bmin=x2 : ElseIf(x2>bmax) : bmax=x2 : EndIf
   EndMacro 
   
   Macro ON_TEST_FAIL_RETURN
@@ -27,76 +27,76 @@ DeclareModule Triangle
   Macro AXISTEST_X01(a, b, fa, fb, ret)
     p0 = a * v0\y - b * v0\z
     p2 = a * v2\y - b * v2\z
-    If p0<p2 : min=p0 : max=p2
-    Else : min=p2 : max=p0
+    If p0<p2 : bmin=p0 : bmax=p2
+    Else : bmin=p2 : bmax=p0
     EndIf
    
     rad = fa * *box\extend\y + fb * *box\extend\z
-    If min>rad Or max<-rad : ret : EndIf
+    If bmin>rad Or bmax<-rad : ret : EndIf
   EndMacro
   
   Macro AXISTEST_X20(a, b, fa, fb, ret)
     p0 = a * v0\y - b * v0\z
     p1 = a * v1\y - b * v1\z
-    If p0<p1 : min=p0 : max=p1
-    Else : min=p1 : max=p0
+    If p0<p1 : bmin=p0 : bmax=p1
+    Else : bmin=p1 : bmax=p0
     EndIf
     
     rad = fa * *box\extend\y + fb * *box\extend\z
-    If min>rad Or max<-rad : ret  : EndIf
+    If bmin>rad Or bmax<-rad : ret  : EndIf
   EndMacro
 
   ; ======================== Y-tests ========================
   Macro AXISTEST_Y02(a, b, fa, fb, ret)
     p0 = -a * v0\x + b * v0\z
     p2 = -a * v2\x + b * v2\z
-    If p0<p2 : min=p0 : max=p2
-    Else : min=p2 : max=p0
+    If p0<p2 : bmin=p0 : bmax=p2
+    Else : bmin=p2 : bmax=p0
     EndIf
     
     rad = fa * *box\extend\x + fb * *box\extend\z
-    If min>rad Or max<-rad : ret  : EndIf
+    If bmin>rad Or bmax<-rad : ret  : EndIf
   EndMacro
 
   Macro AXISTEST_Y10(a, b, fa, fb, ret)
     p0 = -a * v0\x + b * v0\z
     p1 = -a * v1\x + b * v1\z
-    If p0<p1 : min=p0 : max=p1 
-    Else : min=p1 : max=p0
+    If p0<p1 : bmin=p0 : bmax=p1 
+    Else : bmin=p1 : bmax=p0
     EndIf
     
     rad = fa * *box\extend\x + fb * *box\extend\z
-    If min>rad Or max<-rad : ret : EndIf
+    If bmin>rad Or bmax<-rad : ret : EndIf
   EndMacro
     
   ; ======================== Z-tests ========================
   Macro AXISTEST_Z12(a, b, fa, fb, ret)
     p1 = a * v1\x - b * v1\y
     p2 = a * v2\x - b * v2\y
-    If p2<p1 : min=p2 : max=p1
-    Else : min=p1 : max=p2
+    If p2<p1 : bmin=p2 : bmax=p1
+    Else : bmin=p1 : bmax=p2
     EndIf
     
     rad = fa * *box\extend\x + fb * *box\extend\y
-    If min>rad Or max<-rad : ret  : EndIf
+    If bmin>rad Or bmax<-rad : ret  : EndIf
   EndMacro
   
   Macro AXISTEST_Z00(a, b, fa, fb, ret)
     p0 = a * v0\x - b * v0\y
     p1 = a * v1\x - b * v1\y
-    If p0<p1 : min=p0 : max=p1
-    Else : min=p1 : max=p0
+    If p0<p1 : bmin=p0 : bmax=p1
+    Else : bmin=p1 : bmax=p0
     EndIf
     
     rad = fa * *box\extend\x + fb * *box\extend\y
-    If min>rad Or max<-rad : ret  : EndIf
+    If bmin>rad Or bmax<-rad : ret  : EndIf
   EndMacro
 
   Declare GetCenter(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32)
   Declare GetNormal(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *normal.v3f32)
   Declare ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
   Declare.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32)
-  Declare TouchArray(*positions , *indices, numTris.i, *box.Geometry::Box_t, *hits)
+  Declare TouchArray(*positions , *indices, *elements, numTris.i, *box.Geometry::Box_t, *hits)
   Declare.b PlaneBoxTest( *normal.v3f32, *vert.v3f32, *maxbox.v3f32)
   Declare.b IsBoundary(*Me.Triangle_t)
 EndDeclareModule
@@ -242,32 +242,31 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
    Procedure.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32)
     Define *origin.v3f32 = *box\origin
     Define *extend.v3f32 = *box\extend
-      
-    ! mov rax, [p.p_origin]             ; move center address to rax
-    ! movups xmm11, [rax]               ; move center packed data to xmm11
-    ! mov rax, [p.p_extend]             ; move boxhalfsize address to rax
-    ! movups xmm12, [rax]               ; move boxhalfsize packed data to xmm12
+ 
+    ! mov rax, [p.p_origin]                   ; move center address to rax
+    ! movups xmm11, [rax]                     ; move center packed data to xmm11
+    ! mov rax, [p.p_extend]                   ; move boxhalfsize address to rax
+    ! movups xmm12, [rax]                     ; move boxhalfsize packed data to xmm12
   
     ! mov r9, math.l_sse_1111_sign_mask       ; move 1111 sign mask to r9 register 
     ! mov r10, math.l_sse_1100_negate_mask    ; move 1100 negate mask to r10 register
-    ! mov r11, math.l_sse_0101_negate_mask    ; move 0101 negate mask to r11 register
-    ! mov r12, math.l_sse_1010_negate_mask    ; move 1010 negate mask to r12 register
+    ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter 
     
     ; ----------------------------------------------------
     ; load triangle
     ; ----------------------------------------------------
-    ! mov rax, [p.p_a]                    ; move positions address to rax
-    ! movaps xmm13, [rax]                 ; move point a to xmm13
+    ! mov rax, [p.p_a]                        ; move positions address to rax
+    ! movaps xmm13, [rax]                     ; move point a to xmm13
     ! mov rax, [p.p_b] 
-    ! movaps xmm14, [rax]                 ; move point b to xmm14
+    ! movaps xmm14, [rax]                     ; move point b to xmm14
     ! mov rax, [p.p_c]  
-    ! movaps xmm15, [rax]                 ; move point c to xmm15
+    ! movaps xmm15, [rax]                     ; move point c to xmm15
     
-    ! subps xmm13, xmm11                  ; p0 = a - center
-    ! subps xmm14, xmm11                  ; p1 = b - center 
-    ! subps xmm15, xmm11                  ; p2 = c - center
+    ! subps xmm13, xmm11                      ; p0 = a - center
+    ! subps xmm14, xmm11                      ; p1 = b - center 
+    ! subps xmm15, xmm11                      ; p2 = c - center
       
     ! build_edge:
     !   cmp r8, 3
@@ -576,7 +575,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
     !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
-    !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r11
+    !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r10
     !   mulps xmm8, xmm4                   ; -rad -rad rad rad
     !   jmp check_side                     ; check side
     
@@ -611,13 +610,12 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; ------------------------------------------------------------------
     ! separate_axis:
     !   movaps xmm9, xmm8                   ; make a copy of rad in xmm9
-    !   shufps xmm8, xmm3, 11111010b        ; shuffle rad rad  max  max
+    !   shufps xmm8, xmm3, 11111111b        ; shuffle rad rad  max  max
     !   shufps xmm3, xmm9, 00000000b        ; shuffle min min -rad -rad
-    
-    !   cmpps xmm8, xmm3, 5                 ; packed compare radius < axis
+    !   cmpps xmm8, xmm3, 1                 ; packed compare radius < axis
     !   movmskps r12, xmm8                  ; move compare mask to register
-    
-    !   cmp r12, 15                         ; if not 15, an exclusion condition happened
+        
+    !   cmp r12, 0                          ; if not 0, an exclusion condition happened
     !   je next_edge
     !   jmp no_intersection                 ; discard    
     
@@ -631,6 +629,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; axist test hit
     ; ------------------------------------------------------------------
     ! test_intersection:
+    
     ; ---------------------------------------------------------------------------------
     ; load points
     ; ---------------------------------------------------------------------------------
@@ -644,9 +643,9 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups  xmm6, [r13]           ; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
-    
+
     ; ---------------------------------------------------------------------------------
     ; find min/max
     ; ---------------------------------------------------------------------------------
@@ -662,14 +661,16 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   cmpps xmm4, xmm0, 1           ; packed compare boxhalfsize < minimum
     !   movmskps r12, xmm4            ; get comparison result
     
+    !   btr r12, 3                    ; reset fourth bit (unused only there for alignment)
     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg no_intersection                        
+    !   jne no_intersection         
     
     !   cmpps xmm1, xmm5, 1           ; packed compare maximum < -boxhalfsize
     !   movmskps r12, xmm1                
     
+    !   btr r12, 3                    ; reset fourth bit (unused only there for alignment)
     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg no_intersection     
+    !   jne no_intersection  
     
     ; ---------------------------------------------------------------------------------
     ; triangle-box intersection
@@ -709,7 +710,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy boxhalfsize to xmm7
     !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups  xmm6, [r13]           ; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
     
     !   subps xmm4, xmm13             ; box - p0
@@ -877,7 +878,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp normal_dot_max                      ; branch if greater
   
     ; ---------------------------------------------------------------------------------
-    ; normal dot vmax < 0 ?
+    ; 0 < normal dot vmax ?
     ; ---------------------------------------------------------------------------------
     ! normal_dot_max:
     !   movaps xmm7, xmm0                       ; copy normal to xmm7
@@ -900,7 +901,6 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; ---------------------------------------------------------------------------------
     ! no_intersection:
     ProcedureReturn #False
-  
   EndProcedure
 CompilerElse
   
@@ -918,7 +918,7 @@ CompilerElse
 ;      3) crossproduct(edge from triangle, {x,y,z}-direction)
 ;      
 ;      this gives 3x3=9 more tests 
-    Define.f min,max,p0,p1,p2,rad,fex,fey,fez
+    Define.f bmin,bmax,p0,p1,p2,rad,fex,fey,fez
     
     ; This is the fastest branch on Sun 
     ; move everything so that the boxcenter is in (0,0,0)
@@ -939,7 +939,7 @@ CompilerElse
     AXISTEST_X01(e0\z, e0\y, fez, fey, Triangle::ON_TEST_FAIL_RETURN)
     AXISTEST_Y02(e0\z, e0\x, fez, fex, Triangle::ON_TEST_FAIL_RETURN)
     AXISTEST_Z12(e0\y, e0\x, fey, fex, Triangle::ON_TEST_FAIL_RETURN)
-    
+
     Define.v3f32 e1
     Vector3::Sub(e1, v2, v1)
     
@@ -950,7 +950,7 @@ CompilerElse
     AXISTEST_X01(e1\z, e1\y, fez, fey, Triangle::ON_TEST_FAIL_RETURN)
     AXISTEST_Y02(e1\z, e1\x, fez, fex, Triangle::ON_TEST_FAIL_RETURN)
     AXISTEST_Z00(e1\y, e1\x, fey, fex, Triangle::ON_TEST_FAIL_RETURN)
-    
+        
     Define.v3f32 e2
     Vector3::Sub(e2, v0, v2)
     
@@ -962,22 +962,22 @@ CompilerElse
     AXISTEST_Y10(e2\z, e2\x, fez, fex, Triangle::ON_TEST_FAIL_RETURN)
     AXISTEST_Z12(e2\y, e2\x, fey, fex, Triangle::ON_TEST_FAIL_RETURN)
     
+    
     ; first test overlap in the {x,y,z}-directions
     ; find min, max of the triangle each direction, And test For overlap in
     ; that direction -- this is equivalent To testing a minimal AABB around
     ; the triangle against the AABB    
     ; test in X-direction
-    FINDMINMAX(v0\x,v1\x,v2\x,min,max)
-    If(min>*box\extend\x Or max<-*box\extend\x) : ProcedureReturn #False : EndIf
+    FINDMINMAX(v0\x,v1\x,v2\x,bmin,bmax)
+    If(bmin>*box\extend\x Or bmax<-*box\extend\x) : ProcedureReturn #False : EndIf
     
    ; test in Y-direction
-    FINDMINMAX(v0\y,v1\y,v2\y,min,max)
-    If(min>*box\extend\y Or max<-*box\extend\y) : ProcedureReturn #False : EndIf
+    FINDMINMAX(v0\y,v1\y,v2\y,bmin,bmax)
+    If(bmin>*box\extend\y Or bmax<-*box\extend\y) : ProcedureReturn #False : EndIf
     
     ; test in Z-direction
-    FINDMINMAX(v0\z,v1\z,v2\z,min,max)
-    If(min>*box\extend\z Or max<-*box\extend\z) : ProcedureReturn #False : EndIf
-    
+    FINDMINMAX(v0\z,v1\z,v2\z,bmin,bmax)
+    If(bmin>*box\extend\z Or bmax<-*box\extend\z) : ProcedureReturn #False : EndIf
     
     ; test If the box intersects the plane of the triangle
     ; compute plane equation of triangle: normal*x+d=0
@@ -1016,65 +1016,63 @@ CompilerElse
     If Vector3::Dot(normal, vmin) > 0.0 : ProcedureReturn #False : EndIf
     If Vector3::Dot(normal, vmax) >= 0.0 : ProcedureReturn #True : EndIf
     ProcedureReturn #False
-        
   EndProcedure
 CompilerEndIf
 
 
  
 CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-  Procedure TouchArray(*positions, *indices, numTris.i, *box.Geometry::Box_t, *hits)
+  Procedure TouchArray(*positions, *indices, *elements, numTris.i, *box.Geometry::Box_t, *hits)
     
-    Define *center = *box\origin
-    Define *boxhalfsize = *box\extend
-    Define numHits.i
+    Define *center.v3f32 = *box\origin
+    Define *boxhalfsize.v3f32 = *box\extend
+    Define numHits.i = 0
     
     ! mov edi, [p.p_hits]
     ! mov ecx, [p.v_numTris]
     ! mov edx, [p.p_indices]            ; move indices to edx register
+    ! mov r14, [p.p_elements]           ; move indices to edx register
     ! mov rsi, [p.p_center]             ; move center address to rsi
     ! movups xmm11, [rsi]               ; move center packed data to xmm11
     ! mov rsi, [p.p_boxhalfsize]        ; move boxhalfsize address to rsi
     ! movups xmm12, [rsi]               ; move boxhalfsize packed data to xmm12
     ! mov rsi, [p.p_positions]          ; move positions address to rsi
-    ! mov r15, [p.v_numHits]
 
     ! mov r9, math.l_sse_1111_sign_mask       ; move 1111 sign mask to r9 register 
     ! mov r10, math.l_sse_1100_negate_mask    ; move 1100 negate mask to r10 register
-    ! mov r11, math.l_sse_0101_negate_mask    ; move 0101 negate mask to r11 register
-    ! mov r12, math.l_sse_1010_negate_mask    ; move 1010 negate mask to r12 register
+    ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
     
     ! xor r8, r8
+    ! xor r11, r11
 
     ; ----------------------------------------------------
     ; load triangle
     ; ----------------------------------------------------
     ! array_load_triangle:
-    !   mov eax, [edx]                    ; get value for desired point A
+    !   mov eax, [r14]                    ; load triangle index
+    !   imul rax, 12                      ; compute offset in indices array
+    !   mov eax, [edx + eax]              ; get index for desired point A
     !   imul rax, 16                      ; compute offset in position array
-    !   mov r13, rsi                      ; load positions array
-    !   add r13, rax                      ; offset to desired item
-    !   movups xmm13, [r13]               ; load point A to xmm0
-    !   add edx, 4                        ; offset next item
+    !   movaps xmm13, [rsi + rax]         ; load point A to xmm13
     
-    !   mov eax, [edx]                    ; get value for desired point B
+    !   mov eax, [r14]                    ; load triangle index
+    !   imul rax, 12                      ; compute offset in indices array
+    !   mov eax, [edx + eax + 4]          ; get value for desired point B
     !   imul rax, 16                      ; compute offset in position array
-    !   mov r13, rsi
-    !   add r13, rax                      ; offset to desired item
-    !   movups xmm14, [r13]               ; load point B to xmm2
-    !   add edx, 4                        ; offset next item
+    !   movaps xmm14, [rsi + rax]         ; load point B to xmm14
     
-    !   mov eax, [edx]                    ; get value for desired point B
+    !   mov eax, [r14]                    ; load triangle index
+    !   imul rax, 12                      ; compute offset in indices array
+    !   mov eax, [edx + eax + 8]          ; get value for desired point C
     !   imul rax, 16                      ; compute offset in position array
-    !   mov r13, rsi
-    !   add r13, rax                      ; offset to desired item
-    !   movups xmm15, [r13]               ; load point C to xmm3
-    !   add edx, 4                        ; offset next item
+    !   movaps xmm15, [rsi + rax]         ; load point C to xmm15
     
     !   subps xmm13, xmm11                ; p0 = a - center
     !   subps xmm14, xmm11                ; p1 = b - center 
     !   subps xmm15, xmm11                ; p2 = c - center
     
+    !   add r14, 4
+
     ; ----------------------------------------------------
     ; build edge
     ; ----------------------------------------------------
@@ -1104,11 +1102,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     
     ! array_edge0_test:
     !   cmp r8 , 0                          ; check edge counter
-    !   je array_edge_axis_x01                       ; first axis
+    !   je array_edge_axis_x01              ; first axis
     !   cmp r8, 1                           ; check edge counter
-    !   je array_edge_axis_y02                       ; second axis
+    !   je array_edge_axis_y02              ; second axis
     !   cmp r8, 2                           ; check edge counter
-    !   je array_edge_axis_z12                       ; second axis
+    !   je array_edge_axis_z12              ; second axis
     
     ; ----------------------------------------------------
     ; edge1
@@ -1129,11 +1127,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     
     ! array_edge1_test:
     !   cmp r8 , 3                         ; check edge counter
-    !   je array_edge_axis_x01                     ; first axis
+    !   je array_edge_axis_x01             ; first axis
     !   cmp r8, 4                          ; check edge counter
-    !   je array_edge_axis_y02                      ; second axis
+    !   je array_edge_axis_y02             ; second axis
     !   cmp r8, 5                          ; check edge counter
-    !   je array_edge_axis_z00                      ; second axis
+    !   je array_edge_axis_z00             ; second axis
     
      
     ; ----------------------------------------------------
@@ -1154,11 +1152,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   
     ! array_edge2_test:
     !   cmp r8 , 6                          ; check edge counter
-    !   je array_edge_axis_x20                       ; first axis
+    !   je array_edge_axis_x20              ; first axis
     !   cmp r8, 7                           ; check edge counter
-    !   je array_edge_axis_y10                     ; second axis
+    !   je array_edge_axis_y10              ; second axis
     !   cmp r8, 8                           ; check edge counter
-    !   je array_edge_axis_z12                       ; second axis
+    !   je array_edge_axis_z12              ; second axis
   
     ; ----------------------------------------------------
     ; edge_axis0_x01
@@ -1200,8 +1198,8 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
-    !   movups xmm3, xmm13                  ; copy p0 to xmm3 (a)
-    !   movups xmm4, xmm15                  ; copy p2 to xmm4 (b)
+    !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
+    !   movaps xmm4, xmm15                  ; copy p2 to xmm4 (b)
   
     !   shufps xmm3, xmm4, 10001000b        ; ax az bx bz
     !   shufps xmm3, xmm3, 11011000b        ; ax bx az bz
@@ -1218,8 +1216,8 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
-    !   movups xmm3, xmm13                  ; copy p0 to xmm3 (a)
-    !   movups xmm4, xmm14                  ; copy p1 to xmm4 (b)
+    !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
+    !   movaps xmm4, xmm14                  ; copy p1 to xmm4 (b)
   
     !   shufps xmm3, xmm4, 10001000b        ; ax az bx bz
     !   shufps xmm3, xmm3, 11011000b        ; ax bx az bz
@@ -1233,8 +1231,8 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00000101b        ; ey ey ex ex
     
-    !   movups xmm3, xmm14                  ; copy p1 to xmm3 (a)
-    !   movups xmm4, xmm15                  ; copy p2 to xmm4 (b)
+    !   movaps xmm3, xmm14                  ; copy p1 to xmm3 (a)
+    !   movaps xmm4, xmm15                  ; copy p2 to xmm4 (b)
   
     !   shufps xmm3, xmm4, 01000100b        ; ax ay bx by
     !   shufps xmm3, xmm3, 11011000b        ; ax bx ay by
@@ -1248,8 +1246,8 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00000101b        ; ey ey ex ex
     
-    !   movups xmm3, xmm13                  ; copy p0 to xmm3 (a)
-    !   movups xmm4, xmm14                  ; copy p1 to xmm4 (b)
+    !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
+    !   movaps xmm4, xmm14                  ; copy p1 to xmm4 (b)
   
     !   shufps xmm3, xmm4, 01000100b        ; ax ay bx by
     !   shufps xmm3, xmm3, 11011000b        ; ax bx ay by
@@ -1396,7 +1394,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! array_check_side:
     !   movaps xmm4, xmm3                  ; copy xmm3 in xmm4
     !   psrldq xmm4, 4                     ; shift right 4 bytes
-    !   comiss xmm4, xmm3                 ; compare first value
+    !   comiss xmm4, xmm3                  ; compare first value
   
     !   jb array_lower
     !   jmp array_greater
@@ -1420,26 +1418,26 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; ------------------------------------------------------------------
     ! array_separate_axis:
     !   movaps xmm9, xmm8                   ; make a copy of rad in xmm9
-    !   shufps xmm8, xmm3, 11111010b        ; shuffle rad rad  max  max
+    !   shufps xmm8, xmm3, 11111111b        ; shuffle rad rad  max  max
     !   shufps xmm3, xmm9, 00000000b        ; shuffle min min -rad -rad
-    
-    !   cmpps xmm8, xmm3, 5                 ; packed compare radius < axis
+    !   cmpps xmm8, xmm3, 1                 ; packed compare radius < axis
     !   movmskps r12, xmm8                  ; move compare mask to register
-    
-    !   cmp r12, 15                         ; if not 15, an exclusion condition happened
+        
+    !   cmp r12, 0                          ; if not 0, an exclusion condition happened
     !   je array_next_edge
-    !   jmp array_no_hit                    ; discard    
+    !   jmp array_no_intersection           ; discard    
     
     ! array_next_edge:
     !   inc r8                              ; increment edge counter
     !   cmp r8, 9                           ; if not last edge  
     !   jl array_build_edge                 ; loop
-    !   jmp array_test_hit
+    !   jmp array_test_intersection
     
     ; ------------------------------------------------------------------
     ; axist test hit
     ; ------------------------------------------------------------------
-    ! array_test_hit:
+    ! array_test_intersection:
+    
     ; ---------------------------------------------------------------------------------
     ; load points
     ; ---------------------------------------------------------------------------------
@@ -1453,9 +1451,9 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups  xmm6, [r13]           ; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
-    
+
     ; ---------------------------------------------------------------------------------
     ; find min/max
     ; ---------------------------------------------------------------------------------
@@ -1471,20 +1469,22 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   cmpps xmm4, xmm0, 1           ; packed compare boxhalfsize < minimum
     !   movmskps r12, xmm4            ; get comparison result
     
+    !   btr r12, 3                    ; reset fourth bit (unused only there for alignment)
     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg array_no_hit                        
+    !   jne array_no_intersection         
     
     !   cmpps xmm1, xmm5, 1           ; packed compare maximum < -boxhalfsize
     !   movmskps r12, xmm1                
     
+    !   btr r12, 3                    ; reset fourth bit (unused only there for alignment)
     !   cmp r12, 0                    ; if any of the above test is true the triangle is outside of the box
-    !   jg array_no_hit     
+    !   jne array_no_intersection     
     
     ; ---------------------------------------------------------------------------------
     ; triangle-box intersection
     ; ---------------------------------------------------------------------------------
-    !   movaps xmm0, xmm14          ; copy p1 to xmm0
-    !   movaps xmm1, xmm15          ; copy p2 to xmm1
+    !   movaps xmm0, xmm14              ; copy p1 to xmm0
+    !   movaps xmm1, xmm15              ; copy p2 to xmm1
     
     ; ---------------------------------------------------------------------------------
     ;  compute edges
@@ -1518,7 +1518,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy boxhalfsize to xmm7
     !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    !   movups  xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups  xmm6, [r13]           ; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
     
     !   subps xmm4, xmm13             ; box - p0
@@ -1675,42 +1675,43 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; normal dot vmin > 0 ?
     ; ---------------------------------------------------------------------------------
     ! array_normal_dot_min:
-    !   movups xmm7, xmm0                       ; copy normal to xmm7
+    !   movaps xmm7, xmm0                       ; copy normal to xmm7
     !   mulps xmm7, xmm4                        ; compute normal dot vmin
     !   haddps xmm7, xmm7
     !   haddps xmm7, xmm7
     !   xorps xmm8, xmm8
     
     !   comiss xmm8, xmm7                       ; 0<=vmin
-    !   jbe array_no_hit                    ; branch if lower or equal
-    !   jmp array_normal_dot_max                      ; branch if greater
+    !   jbe array_no_intersection               ; branch if lower or equal
+    !   jmp array_normal_dot_max                ; branch if greater
   
     ; ---------------------------------------------------------------------------------
-    ; normal dot vmax < 0 ?
+    ; 0 < normal dot vmax ?
     ; ---------------------------------------------------------------------------------
     ! array_normal_dot_max:
-    !   movups xmm7, xmm0                       ; copy normal to xmm7
+    !   movaps xmm7, xmm0                       ; copy normal to xmm7
     !   mulps xmm7, xmm6                        ; compute normal dot vmax
     !   haddps xmm7, xmm7
     !   haddps xmm7, xmm7                       ; dot 
     !   xorps xmm8, xmm8
     !   comiss xmm8, xmm7                       ; packed compare
-    !   jb array_hit                            ; 0 < vmax
-    !   jmp array_no_hit                        ; branch if lower
-
-    ; ------------------------------------------------------------------
-    ; hit
-    ; ------------------------------------------------------------------
-    ! array_hit:
-    !   mov byte [edi], 1                       ; set hits to True
-    !   inc r15
-    !   jmp array_next_triangle
+    !   jb array_intersection                   ; 0 < vmax
+    !   jmp array_no_intersection               ; branch if lower
     
-    ; ------------------------------------------------------------------
-    ; no hit
-    ; ------------------------------------------------------------------
-    ! array_no_hit:
-    !   mov byte [edi], 0                       ; set hits to False
+    ; ---------------------------------------------------------------------------------
+    ; triangle intersect box
+    ; ---------------------------------------------------------------------------------
+    ! array_intersection:
+    !   mov [edi], byte 1                       ; set hit flag
+    !   inc r11                                 ; increment hits counter
+    !   jmp array_next_triangle
+
+    
+    ; ---------------------------------------------------------------------------------
+    ; triangle does NOT intersect box
+    ; ---------------------------------------------------------------------------------
+    ! array_no_intersection:  
+    !   mov [edi], byte 0                      ; set hit flag
     !   jmp array_next_triangle
     
     ; ------------------------------------------------------------------
@@ -1727,12 +1728,12 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; exit
     ; ------------------------------------------------------------------
     ! array_exit:
-    ! mov [p.v_numHits], r15
+    ! mov [p.v_numHits], r11
     ProcedureReturn numHits
  
   EndProcedure
 CompilerElse
-  Procedure TouchArray(*positions, *indices, numTris.i, *box.Geometry::Box_t, *hits)
+  Procedure TouchArray(*positions, *indices, *elements, numTris.i, *box.Geometry::Box_t, *hits)
 ;      use separating axis theorem To test overlap between triangle And box
 ;      need To test For overlap in these directions:
 ;      
@@ -1750,10 +1751,17 @@ CompilerElse
     Define t
     Define si = 4
     Define sp = SizeOf(v3f32)
+    Define numHits.i = 0
+    Define it
+    Protected normal.v3f32 
+    Define.v3f32 vmin,vmax
+    Define.f v
+            
     For t=0 To numTris - 1
-      *a = *positions + PeekL(*indices +(t*3)*si) * sp
-      *b = *positions + PeekL(*indices +(t*3+1)*si) * sp
-      *c = *positions + PeekL(*indices +(t*3+2)*si) * sp
+      it = PeekL(*elements + t*4)
+      *a = *positions + PeekL(*indices +it*12) * sp
+      *b = *positions + PeekL(*indices +it*12+4) * sp
+      *c = *positions + PeekL(*indices +it*12+8) * sp
       
       ; reset hit info
       PokeB(*hits + t, #False)
@@ -1812,14 +1820,10 @@ CompilerElse
       FINDMINMAX(v0\z,v1\z,v2\z,min,max)
       If(min>*box\extend\z Or max<-*box\extend\z) : Continue : EndIf
       
-      
       ; test If the box intersects the plane of the triangle
       ; compute plane equation of triangle: normal*x+d=0
-      Protected normal.v3f32 
       Vector3::Cross(normal, e0, e1)
-      
-      Define.v3f32 vmin,vmax
-      Define.f v
+
       v = v0\x
       If normal\x > 0.0 
         vmin\x = -*box\extend\x - v 
@@ -1848,9 +1852,10 @@ CompilerElse
       EndIf
       
       If Vector3::Dot(normal, vmin) > 0.0 : Continue : EndIf
-      If Vector3::Dot(normal, vmax) >= 0.0 : PokeB(*hits+t, #True) : EndIf
+      If Vector3::Dot(normal, vmax) >= 0.0 : PokeB(*hits+t, #True) : numHits + 1: EndIf
     Next
     
+    ProcedureReturn numHits
   EndProcedure
 CompilerEndIf
 
@@ -1882,7 +1887,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 96
+; CursorPosition = 980
+; FirstLine = 968
 ; Folding = ----
 ; EnableXP

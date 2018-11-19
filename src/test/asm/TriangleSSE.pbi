@@ -12,13 +12,16 @@ Time::Init()
 ; Define numTris = 4
 Define numTris = 12800000
 
-Define *positions = AllocateMemory(numTris * 3 * SizeOf(v3f32))
-Define *indices = AllocateMemory(numTris * 12)
+Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+CArray::SetCount(*positions, numTris * 3)
+Define *indices.CArray::CArrayLong = CArray::newCArrayLong()
+CArray::SetCount(*indices, numTris*3)
+
 Define *hits = AllocateMemory(numTris)
 Global box.Geometry::Box_t
 
 Vector3::Set(box\origin, 0,0,0)
-Vector3::Set(box\extend,0.5,0.5,0.5)
+Vector3::Set(box\extend,2,2,2)
 
 ; ax bx az bz
 
@@ -34,23 +37,19 @@ Define *p.v3f32
 ; Next
 
 For i=0 To numTris - 1
-  *p = *positions + (i*3)*SizeOf(v3f32)
-  Vector3::Set(*p, -0.55, 0, 0.66)
-  Vector3::Set(*p, Random(50)-100, Random(50)-100, Random(50)-100)
-  Vector3::ScaleInPlace(*p, 0.01)
-  PokeL(*indices + (i*3)*4, i*3)
+  *p = *positions\data + (i*3)*SizeOf(v3f32)
+  Vector3::Set(*p, Random(50)-25, Random(50)-25, Random(50)-25)
+  PokeL(*indices\data + (i*3)*4, i*3)
   
-  *p = *positions + (i*3+1)*SizeOf(v3f32)
-  Vector3::Set(*p, Random(50)-100, Random(50)-100, Random(50)-100)
-  Vector3::ScaleInPlace(*p, 0.01)
+  *p = *positions\data + (i*3+1)*SizeOf(v3f32)
+  Vector3::Set(*p, Random(50)-25, Random(50)-25, Random(50)-25)
 ;   Vector3::Set(*p, 0.1, 1, 0.1)
-  PokeL(*indices + (i*3+1)*4, i*3+1)
+  PokeL(*indices\data + (i*3+1)*4, i*3+1)
   
-  *p = *positions + (i*3+2)*SizeOf(v3f32)
-  Vector3::Set(*p, Random(50)-100, Random(50)-100, Random(50)-100)
-  Vector3::ScaleInPlace(*p, 0.01)
+  *p = *positions\data + (i*3+2)*SizeOf(v3f32)
+  Vector3::Set(*p, Random(50)-25, Random(50)-25, Random(50)-25)
 ;   Vector3::Set(*p, 0.55, 0,-0.66)
-  PokeL(*indices + (i*3+2)*4, i*3+2)
+  PokeL(*indices\data + (i*3+2)*4, i*3+2)
 Next
 
 Procedure Divergence(*A, *B, nb)
@@ -92,18 +91,20 @@ Dim touch2.b(numTris)
 Define hits1 = 0
 Define hits2 = 0
 Define hits3 = 0
-Define T.d = Time::get()
+
 Define msg1.s
+Define.v3f32 tmp1, tmp2
+Define T.d = Time::get()
 For i=0 To numTris - 1
-  *a = *positions + (i*3)*SizeOf(v3f32)
-  *b = *positions + (i*3+1)*SizeOf(v3f32)
-  *c = *positions + (i*3+2)*SizeOf(v3f32)
-  touch1(i) = Triangle::Touch(box, *a, *b, *c)
-  If touch1(i) : hits1 + 1 : EndIf
+  *a = CArray::GetValue(*positions, i*3)
+  *b = CArray::GetValue(*positions, i*3+1)
+  *c = CArray::GetValue(*positions, i*3+2)
+
+ If Triangle::Touch(box, *a, *b, *c): hits1 + 1 : EndIf
   
-;   pbs + Str(PeekB(*touch1+i))+" : "+StrF(output1\x,3)+","+StrF(output1\y,3)+","+StrF(output1\z,3)+","+StrF(output1\_unused,3)+Chr(10)
+; ;   pbs + Str(PeekB(*touch1+i))+" : "+StrF(output1\x,3)+","+StrF(output1\y,3)+","+StrF(output1\z,3)+","+StrF(output1\_unused,3)+Chr(10)
 Next
-Define T1.d = Time::Get() - t
+Define T1.d = Time::Get() - T
 ; Define msg2.s
 ; T = Time::Get()
 ; For i=0 To numTris - 1
@@ -117,8 +118,8 @@ Define T1.d = Time::Get() - t
 ; Define T2.d = Time::Get() - t
 
 T = Time::Get()
-Triangle::TouchArray(*positions, *indices, numTris, box, *hits)
-Define T3.d = Time::Get() - t
+hits2 = Triangle::TouchArray(*positions\data, *indices\data, *indices\data, numTris, box, *hits)
+Define T3.d = Time::Get() - T
 
 For i=0 To numTris - 1
   hits3 + PeekB(*hits+i)
@@ -127,7 +128,9 @@ Next
 Define msg.s = "EQUAL : "+Str(CompareMemory(@touch1(0), @touch2(0), numTris))+Chr(10)
 msg + "HITS 1 : "+Str(hits1)+", HITS 2 : "+Str(hits2)+", HITS 3 : "+Str(hits3)+Chr(10)
 msg+ StrD(T1)+" vs "+StrD(T2)+" vs "+StrD(T3)+Chr(10)
-msg + "PROBLEMATICS : "+Str(Problematic(@touch1(0), @touch2(0), numTris, *positions))
+msg + "PROBLEMATICS : "+Str(Problematic(@touch1(0), @touch2(0), numTris, *positions\data))+Chr(10)
+msg + "USE SSE : "+Str(#USE_SSE)
+
 
 MessageRequester("Touch",msg)
 ; Debug pbs
@@ -135,8 +138,7 @@ MessageRequester("Touch",msg)
 ; Debug asms
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 78
+; CursorPosition = 23
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

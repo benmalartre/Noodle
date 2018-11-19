@@ -68,7 +68,7 @@ Module PropertyUI
     *Me\width = w
     *Me\height = h
     
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,#PB_ScrollArea_BorderLess)
+    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,#PB_ScrollArea_BorderLess|#PB_ScrollArea_Center)
     *Me\gadgetID = *Me\container
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, RGB(112,128,112));UIColor::COLOR_MAIN_BG)
     
@@ -120,7 +120,7 @@ Module PropertyUI
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
-      ev_datas\width = *top\width
+      ev_datas\width = *top\width - 20
       Select event
         Case #PB_Event_SizeWindow
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
@@ -185,15 +185,15 @@ Module PropertyUI
     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
     Protected *c.ControlProperty::ControlProperty_t = *h\parent
 
-    If id = 0
-      DeleteProperty(*Me, *c)
-    ElseIf id = 1
-      If *c\expanded
-        CollapseProperty(*Me, *c)
-      Else
-        ExpandProperty(*Me, *c)
-      EndIf
-    EndIf
+;     If id = 0
+;       DeleteProperty(*Me, *c)
+;     ElseIf id = 1
+;       If *c\expanded
+;         CollapseProperty(*Me, *c)
+;       Else
+;         ExpandProperty(*Me, *c)
+;       EndIf
+;     EndIf
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -467,8 +467,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 333
-; FirstLine = 330
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
