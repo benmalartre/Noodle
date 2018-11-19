@@ -84,7 +84,7 @@ Module LayerShadowDefered
   Procedure Draw(*layer.LayerShadowDefered_t,*ctx.GLContext::GLContext_t)
     
     
-    
+    Debug "SHADOW DEFERED DRAW CALLED................................."
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
@@ -95,7 +95,7 @@ Module LayerShadowDefered
       shader = *ctx\shaders("shadowdefered")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
-      Framebuffer::BindInputByID(*layer\shadowmap,0,4)
+      Framebuffer::BindInput(*layer\shadowmap,ArraySize(*layer\gbuffer\tbos()))
       Framebuffer::BindOutput(*layer\buffer)
       glClearColor(0.5,0.5,0.5,0.5)
       glClear(#GL_COLOR_BUFFER_BIT);
@@ -104,21 +104,14 @@ Module LayerShadowDefered
       glUniform1i(glGetUniformLocation(shader,"position_map"),0)
       glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
       glUniform1i(glGetUniformLocation(shader,"color_map"),2)
-      glUniform1i(glGetUniformLocation(shader,"shadowcoords_map"),3)
-      glUniform1i(glGetUniformLocation(shader,"shadow_map"),4)
-;       
-; ;       uniform vec3 camera_position;
-; ;       uniform mat4 light_view;
-; ;       uniform mat4 light_proj;
-; ;       uniform mat4 view;
-; 
-      
+      glUniform1i(glGetUniformLocation(shader,"shadow_map"),3)
+
       Protected bias.m4f32
       Matrix4::Set(bias,
-                0.5,0.0,0.0,0.0,
-                0.0,0.5,0.0,0.0,
-                0.0,0.0,0.5,0.0,
-                0.5,0.5,0.5,1.0)
+                   0.5,0.0,0.0,0.0,
+                   0.0,0.5,0.0,0.0,
+                   0.0,0.0,0.5,0.0,
+                   0.5,0.5,0.5,1.0)
       
       Protected view_rotation_matrix.m4f32
       Protected *camera.Camera::Camera_t = *layer\pov
@@ -134,8 +127,9 @@ Module LayerShadowDefered
       glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
       glUniformMatrix4fv(glGetUniformLocation(shader,"light_view"),1,#GL_FALSE,*light\view)
       glUniformMatrix4fv(glGetUniformLocation(shader,"light_proj"),1,#GL_FALSE,*light\projection)
-      glUniformMatrix4fv(glGetUniformLocation(shader,"view_rotation_matrix"),1,#GL_FALSE,@view_rotation_matrix)
+      glUniformMatrix4fv(glGetUniformLocation(shader,"view_rotation_matrix"),1,#GL_FALSE,view_rotation_matrix)
       glUniform3f(glGetUniformLocation(shader,"light_position"),*light\pos\x,*light\pos\y,*light\pos\z)
+      glUniform3f(glGetUniformLocation(shader,"camera_position"),0,0,0)
       
       glUniform1f(glGetUniformLocation(shader,"x_pixel_offset"),1/*layer\shadowmap\width)
       glUniform1f(glGetUniformLocation(shader,"y_pixel_offset"),1/*layer\shadowmap\height)
@@ -146,31 +140,14 @@ Module LayerShadowDefered
 ;         Light::PassToShader(*lights(),shader,i)
 ;         i+1
 ;       Next
-      glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    ;       glUniform3fv(glGetUniformLocation(shader, "viewPos"),1, *camera\pos)_
-      *layer\quad\pgm = *ctx\shaders("defered")
+
+      *layer\quad\pgm = *ctx\shaders("shadowdefered")
       ScreenQuad::Draw(*layer\quad)
-      GLCheckError("ShadowDefered Draw Done")
       Protected vwidth = *ctx\width
       Protected vheight = *ctx\height
       Protected ratio.f = *layer\width/*layer\height
       
       Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
-      GLCheckError("ShadowDefered Blit Result")
-      ;glDepthMask(#GL_FALSE)
-      ;glViewport(0,0,vwidth,vheight)
-;       glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;       GLCheckError("Bind Default Write Framebuffer")
-;       glClearColor(0.0,0.0,0.0,1.0)
-;       glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;       glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\shadowmap\frame_id)
-;       GLCheckError("Bind Read Shadow Framebuffer")
-;       glReadBuffer(#GL_DEPTH_ATTACHMENT)
-;       GLCheckError("Read Shadow Buffer")
-;       glBlitFramebuffer(0, 0, 800,600,0, 0, 200, 200*ratio,#GL_DEPTH_BUFFER_BIT,#GL_LINEAR);
-;       GLCheckError("ShadowDefered Blit Shadow Texture")
-      glEnable(#GL_DEPTH_TEST)
-      
       GLCheckError("ShadowDefered Done")
       
   EndProcedure
@@ -197,7 +174,7 @@ Module LayerShadowDefered
     *Me\shadowmap = *shadowmap
     *Me\pov = *camera
     *Me\image = CreateImage(#PB_Any,width,height,32)
-    *Me\buffer = Framebuffer::New("Deferred",width,height)
+    *Me\buffer = Framebuffer::New("ShadowDefered",width,height)
     Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
 ;     Framebuffer::AttachRender(*Me\buffer,"Depth",#GL_DEPTH)
     *Me\mask = #GL_COLOR_BUFFER_BIT
@@ -216,7 +193,7 @@ Module LayerShadowDefered
   Class::DEF(LayerShadowDefered)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 122
+; CursorPosition = 131
 ; FirstLine = 107
 ; Folding = --
 ; EnableXP

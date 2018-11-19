@@ -8,7 +8,7 @@
   <section name="data">
     <explorer view="C:\Documents and Settings\Administrator\My Documents\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2018-11-18 11:26" user="benjamin" host="HATE_ROCKET"/>
+    <lastopen date="2018-11-19 01:55" user="benjamin" host="HATE_ROCKET"/>
   </section>
   <section name="files">
     <file name="src\bullet\Constraint.pbi">
@@ -32,99 +32,99 @@
       <fingerprint md5="09f1a278586db8d3758bb43be4382e7b"/>
     </file>
     <file name="src\controls\Button.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="ed1a34bc3acd79916f9bb5a250d17b2f"/>
     </file>
     <file name="src\controls\Check.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="ab4903f28a50759fe42dedfa7d51c822"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="deb3252542d33a20516555b79b0a5b8b"/>
     </file>
     <file name="src\controls\Color.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="fcc0822b7a7d8efcb673db2427b8d25d"/>
     </file>
     <file name="src\controls\ColorWheel.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="869d7b504b45fcb3658cbf4a51529ec5"/>
     </file>
     <file name="src\controls\Combo.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="227c73cbe87885a5143a2e52b91f697e"/>
     </file>
     <file name="src\controls\Controls.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="4103627a00d53dd8bcb8c495ee4c058d"/>
     </file>
     <file name="src\controls\Divot.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="9b5302b9689c532461476990a8027a18"/>
     </file>
     <file name="src\controls\Dummy.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="194f6c14e13350af5a7671e6987ca124"/>
     </file>
     <file name="src\controls\Edit.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="705ca78380181adb7bed87abe9bf00e4"/>
     </file>
     <file name="src\controls\Explorer.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="4a51ccac9dad01bd422d342b3de5f39c"/>
     </file>
     <file name="src\controls\Group.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="ee943186268d7ace6690debbb082e57c"/>
     </file>
     <file name="src\controls\Head.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="27fe1464ca1f09d63b2fa99859a29466"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="0bce3fc4c463e7fffebc4eec15d29c0e"/>
     </file>
     <file name="src\controls\Icon.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="e7dbefa14a58178b00aa73a1ef0e07d2"/>
     </file>
     <file name="src\controls\Joystick.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="837af690f3819d02b73326b5156cff24"/>
     </file>
     <file name="src\controls\Knob.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="d4097b067fb08b62810cec7182c1a503"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="32fab0971e1441c0606debbac5ff166e"/>
     </file>
     <file name="src\controls\Label.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="eab5b9140dfa86fc5ff83857b7781793"/>
     </file>
     <file name="src\controls\Menu.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="4c77d092f0bfa6aaf7f807291891b5cf"/>
     </file>
     <file name="src\controls\Number.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="d242d7abe131c4756c35b24d83f9fdf7"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="e2dea5a20c1b1612362ed9a3de675aaf"/>
     </file>
     <file name="src\controls\PopupMenu.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="336eae85f3ab0da5fb71884a059a3346"/>
     </file>
     <file name="src\controls\Property.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="06579563e8279d0f8b2c44d176a82d49"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="12c61e0c6e5abd0900ae509c910fc9de"/>
     </file>
     <file name="src\controls\Scintilla.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="d1300685526b08d755bdd733c2f84cf2"/>
     </file>
     <file name="src\controls\Slider.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="1de6046fea8ec043df07ba62895ce349"/>
     </file>
     <file name="src\controls\Stepper.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="9fdb3e2dc04d03748a0395239a300599"/>
     </file>
     <file name="src\controls\Timeline.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="ed8628bbd96f7c6beb3b88b4f8c481c0"/>
     </file>
     <file name="src\core\Application.pbi">
@@ -137,7 +137,7 @@
     </file>
     <file name="src\core\Array.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="4f155c2fc129939b13145747cc529734"/>
+      <fingerprint md5="289d42e4f10902622f4605475f21e2e4"/>
     </file>
     <file name="src\core\Attribute.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -169,7 +169,7 @@
     </file>
     <file name="src\core\Globals.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="75648f4bc9dd4de3772f602d5945bd4c"/>
+      <fingerprint md5="8dfe285b7013d9c24f2bdc1da9f7a5ef"/>
     </file>
     <file name="src\core\Image.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -185,7 +185,7 @@
     </file>
     <file name="src\core\Math.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="51353657675f95df56cc10c7734b9ac0"/>
+      <fingerprint md5="ea384c4a2620a1bfe868cbb087e481f9"/>
     </file>
     <file name="src\core\Memory.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -317,31 +317,31 @@
     </file>
     <file name="src\layers\Default.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="a6d27866791cc35331a5f52c828d8020"/>
+      <fingerprint md5="316ab2a0591baebe12b6fc7b93a3bdfa"/>
     </file>
     <file name="src\layers\Defered.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="c5bee276691d0e4c2bfbd795092fc05d"/>
+      <fingerprint md5="e623af25c3ea832b4070853ef990c309"/>
     </file>
     <file name="src\layers\GBuffer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="bf788caca9847f710a9f7a4b2c00e0e5"/>
+      <fingerprint md5="7718587da0dc9b33b68ad0532f00f2ad"/>
     </file>
     <file name="src\layers\Layer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="0388543cc6dd3e7c651978140c9e0cb2"/>
+      <fingerprint md5="5c9c34b01280762628e0864f79aba66a"/>
     </file>
     <file name="src\layers\Selection.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d26886efc4e0a7d0d8d7e9b39b3069e7"/>
+      <fingerprint md5="978e0218a307e28faf972084144d6002"/>
     </file>
     <file name="src\layers\ShadowDefered.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d16d062042bd378129b054ca13840288"/>
+      <fingerprint md5="9402edd38743911712f62f2934d82d51"/>
     </file>
     <file name="src\layers\ShadowMap.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="da19adb453dc8222bea562f0fcd58651"/>
+      <fingerprint md5="1faf9e4a4dd2fea1dc344141552862f3"/>
     </file>
     <file name="src\layers\ShadowSimple.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -349,7 +349,7 @@
     </file>
     <file name="src\layers\SSAO.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="9a15fdc6b4c36a4770b8f090b92f1fcd"/>
+      <fingerprint md5="f398e98a9aa1a674afcedf323bbe6282"/>
     </file>
     <file name="src\layers\Toon.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -641,7 +641,7 @@
     </file>
     <file name="src\objects\Drawer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="86f658613bf643962b1ef491067913da"/>
+      <fingerprint md5="fb10981a964f54100c58e6bf068d48ee"/>
     </file>
     <file name="src\objects\Edge.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -649,11 +649,11 @@
     </file>
     <file name="src\objects\Geometry.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="48e572babca367f18f17ba2db37a142f"/>
+      <fingerprint md5="f5bc6c484712ad98d72d3fddb0adb3f8"/>
     </file>
     <file name="src\objects\Grid3D.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d40401c6fc6d7d5fd6e7fcb78b26d30f"/>
+      <fingerprint md5="87708c9b7c85f1976d61e79ffe15107a"/>
     </file>
     <file name="src\objects\Handle.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -668,16 +668,16 @@
       <fingerprint md5="c89b2ff78a0dd2643cfd8bca7e489db9"/>
     </file>
     <file name="src\objects\InstanceCloud.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="290aef86a567a028862e4082ab073cf6"/>
     </file>
     <file name="src\objects\KDTree.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="eae7045d00fc1781a6582390b4584078"/>
     </file>
     <file name="src\objects\Light.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="1d1c6ffeba8b0a82a4e20f1aad534362"/>
+      <fingerprint md5="1ba93824fc796e8aab14424f4e9eef06"/>
     </file>
     <file name="src\objects\Light2.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -689,7 +689,7 @@
     </file>
     <file name="src\objects\Location.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="3aea57ff63fea5a72573e380b0a72297"/>
+      <fingerprint md5="862537611395e496d64956b8eb022a1b"/>
     </file>
     <file name="src\objects\Model.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -705,7 +705,7 @@
     </file>
     <file name="src\objects\Octree.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d60cd4cab9befad7f02d12481efd24e3"/>
+      <fingerprint md5="7408718699311c21c717a34dce453f43"/>
     </file>
     <file name="src\objects\PointCloud.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -737,7 +737,7 @@
     </file>
     <file name="src\objects\Ray.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="87e899e16b6fe56e3fed8f328d1a7357"/>
+      <fingerprint md5="83cbe158f059807871a78ff33522eed5"/>
     </file>
     <file name="src\objects\Root.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -748,8 +748,8 @@
       <fingerprint md5="e28825c2b6b020c0aae5f28cab09fddd"/>
     </file>
     <file name="src\objects\Sampler.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="547efb4bba65ba091d970268ddfc08a2"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="177f7ab315ebf808722f56fc861ad50e"/>
     </file>
     <file name="src\objects\Scene.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -777,7 +777,7 @@
     </file>
     <file name="src\objects\Triangle.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="20059fc301462eef29c6c19f20797be8"/>
+      <fingerprint md5="b163a7a6f43494d98871b27876c9442a"/>
     </file>
     <file name="src\objects\Vertex.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -808,7 +808,7 @@
       <fingerprint md5="9a7e15a45c508f39f942c96692259879"/>
     </file>
     <file name="src\test\asm\Test_Index.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
       <fingerprint md5="87314ea27c432433b193b87bb8634b9a"/>
     </file>
     <file name="src\test\ConvertHtoPB.pbi">
@@ -844,7 +844,7 @@
       <fingerprint md5="0e65c737867bd949de90bdd2de18a242"/>
     </file>
     <file name="src\test\TestAlembic.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="52d7b5f5c59bfaae6726dded611dedf8"/>
     </file>
     <file name="src\test\TestAlembicArchive.pbi">
@@ -897,7 +897,7 @@
     </file>
     <file name="src\test\TestControls.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="9dd4db85f765f28a953f4b875779e47d"/>
+      <fingerprint md5="2341462e6143088fcf4ae70e6b4540ca"/>
     </file>
     <file name="src\test\TestCovariance.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -956,24 +956,24 @@
       <fingerprint md5="2ed6a6593bf2f8005b4e0349b4c54002"/>
     </file>
     <file name="src\test\TestInstanceCloud.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d4fb6a250884639bc1d92e935ccc633a"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="dd17e14050d909be0de0c4564d70df4b"/>
     </file>
     <file name="src\test\TestJoystick.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="291b717757ce86989d2e83d321206f2a"/>
     </file>
     <file name="src\test\TestKDTree.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="4f47f25f5dfd64f5ea732388654b0168"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="977e68cecf82934c1077467508256115"/>
     </file>
     <file name="src\test\TestKnob.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="f2e122105db350a1845167f59f459370"/>
+      <fingerprint md5="f794a48b19cfcb8ef06eaa2219f37f02"/>
     </file>
     <file name="src\test\TestLights.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="eb085eac79777ef2aead2c6223176083"/>
+      <fingerprint md5="f14066049d7f35b9700ba83ba2362868"/>
     </file>
     <file name="src\test\TestLinux.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1005,7 +1005,7 @@
     </file>
     <file name="src\test\TestOctree.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="ef8ec89fdcc078593e3c138d2b5e3dfd"/>
+      <fingerprint md5="0ec61054724b5d33a04435d77cd91085"/>
     </file>
     <file name="src\test\TestPerlin.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1032,8 +1032,8 @@
       <fingerprint md5="aa204736a34cfa9254e5a1182c261180"/>
     </file>
     <file name="src\test\TestRayCast.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="1328b3d6e84ea18c49669f999c0e1a14"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="abae286d4c231d85349aa7ee1a529de1"/>
     </file>
     <file name="src\test\TestRtAudio.pb">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1056,7 +1056,7 @@
       <fingerprint md5="3af7144130f82337a3511f5fa2f97699"/>
     </file>
     <file name="src\test\TestSpeed.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="5e6c53477ac1e89297ae089193df4e82"/>
     </file>
     <file name="src\test\TestSSAO.pbi">
@@ -1066,6 +1066,10 @@
     <file name="src\test\TestStepper.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="16b5571009ac49e037d2f74b5cbefdd6"/>
+    </file>
+    <file name="src\test\TestThreadedTouchTriangle.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="75d4bb331289671c748fc70382a997f2"/>
     </file>
     <file name="src\test\TestTriangle.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1117,7 +1121,7 @@
     </file>
     <file name="src\ui\PropertyUI.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="072873616e8cf61a9527c943c7a832f4"/>
+      <fingerprint md5="297d71f8b74a7d8452a27c01c112a4bb"/>
     </file>
     <file name="src\ui\ShaderUI.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1143,14 +1147,190 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="0fc5529702db248c49a3f96887a08dd1"/>
     </file>
-    <file name="src\test\TestThreadedTouchTriangle.pb">
+    <file name="src\test\asm\AlignedShapes.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="3cda48bbe491f1a76b6868e5e07bfe88"/>
+    </file>
+    <file name="src\test\asm\asm_learning.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="f0f44c2cc8682d3ad4e9b859b8a32f5f"/>
+    </file>
+    <file name="src\test\asm\AVXSin.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="79d8e5a38ba364fd614d3863c1109584"/>
+    </file>
+    <file name="src\test\asm\AxistTest_ASM.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="ea4946cef5a279bf103b413f6d016a11"/>
+    </file>
+    <file name="src\test\asm\Bits.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="16ec8074c0e793451d8401bfc320e054"/>
+    </file>
+    <file name="src\test\asm\comiss.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="a75565cf8048a41bbfc0d4201936fd75"/>
+    </file>
+    <file name="src\test\asm\ConvertBitMaskToSignMask.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="be6bfde7ce3179932ef6098da27796f2"/>
+    </file>
+    <file name="src\test\asm\CopyMemory.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="51d97ec30fa6655a8772b4cb6082c39d"/>
+    </file>
+    <file name="src\test\asm\CPUInfos.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="efd1da9a0304bc5fb9def25a1db586ec"/>
+    </file>
+    <file name="src\test\asm\FindMinMax.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="b94a40761ae21f367ea0d6393ed71811"/>
+    </file>
+    <file name="src\test\asm\FuckinLoop.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="f5f05009947be41b10ff2ecefa142ac9"/>
+    </file>
+    <file name="src\test\asm\Horner.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="15d78181f22144ad92ffa9ccaf75eb8f"/>
+    </file>
+    <file name="src\test\asm\IntArray.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="d8077762c257dac555f2790b621162a6"/>
+    </file>
+    <file name="src\test\asm\InverseMat4x4.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="ea29ff9618d46ead4a503f73f271670f"/>
+    </file>
+    <file name="src\test\asm\Mandelbrot.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="42354ac56d97ebe1a0c86cf25e7ef225"/>
+    </file>
+    <file name="src\test\asm\Matrix4_Transpose.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="e4d18e25521b0c6d9b6f62b72222b13d"/>
+    </file>
+    <file name="src\test\asm\MultiplyMat4x4.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="cc79f21cf07788a8d9e2420bc1759ded"/>
+    </file>
+    <file name="src\test\asm\proper_case.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="46724ae61a21d9810b28ee7080113a39"/>
+    </file>
+    <file name="src\test\asm\Randomize.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="72fae93d6ed929871c04e1d2b44185e3"/>
+    </file>
+    <file name="src\test\asm\Screen.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="80b35eb38a96f9dab351b5b5fb19c30f"/>
+    </file>
+    <file name="src\test\asm\ShiftAlignMemory.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="d130425ed8755e5dfaf4b9aea33ecd41"/>
+    </file>
+    <file name="src\test\asm\Shuffle.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="d938049c0efedc3c72d4daba6a49e040"/>
+    </file>
+    <file name="src\test\asm\Speed_davies.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="42c32ab86a72b42166e687f793a97fbe"/>
+    </file>
+    <file name="src\test\asm\SSE_ChangeSign.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="f165ef0ee788948d1f081768f95820b2"/>
+    </file>
+    <file name="src\test\asm\SSE_Macros.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="90f7a403ded00183511d389116e02650"/>
+    </file>
+    <file name="src\test\asm\Test_Branch.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="b90563a3c29218b4b264b7761853354f"/>
+    </file>
+    <file name="src\test\asm\Test_Element.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="ccb64113c91d13eafa53fd61102ab04c"/>
+    </file>
+    <file name="src\test\asm\Test_Macros.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="a3c048575b1d48c34abd1e0f06ada51e"/>
+    </file>
+    <file name="src\test\asm\TriangleSSE.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="4d456d408b5705faeb7141d6b6ded445"/>
+    </file>
+    <file name="src\test\asm\Unaligned2Aligned.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="326a977fb77f898f2175bdddf96b672d"/>
+    </file>
+    <file name="src\test\asm\UnalignedShapes.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="1dd974d8415be7456858e314be60fbb7"/>
+    </file>
+    <file name="src\test\asm\Vector_Array.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="eca9bc9fb8db43d6cc6dab35e3a678f9"/>
+    </file>
+    <file name="src\test\asm\Vector_Blend.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="d49357f269232af14e95646e26839882"/>
+    </file>
+    <file name="src\test\asm\Vector_Cross.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="a2dc346e852ab6322f9b7d28a0267f8c"/>
+    </file>
+    <file name="src\test\asm\Vector3.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="724a754e10a8a46c584817c8e119c00c"/>
+    </file>
+    <file name="src\test\asm\Vector3_Absolute.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="708bdcc002521e94f2230c325961f592"/>
+    </file>
+    <file name="src\test\asm\Vector3_Dot.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="c12d64b49ed75a98fa810a094cc2ae4c"/>
+    </file>
+    <file name="src\test\asm\Vector3_Interpolate.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="060d8432985602f75eaee9691593b60b"/>
+    </file>
+    <file name="src\test\asm\Vector3_Length.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="8b379201a28407d9c750adc7fb0c6ca1"/>
+    </file>
+    <file name="src\test\asm\Vector3_Minimum.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="de8a40b2676acb36ae180da5d50968d2"/>
+    </file>
+    <file name="src\test\asm\Vector3_MulByMatrix4.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="6e9c4366218ee1e705c874fdcc2b6d11"/>
+    </file>
+    <file name="src\test\asm\Vector3_Negate.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="5b84d3e1a4a1493eaad285341c37fc1f"/>
+    </file>
+    <file name="src\test\asm\Vector3_Normalize.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="b91e3e212ebe0f90815737a4ba26cb7d"/>
+    </file>
+    <file name="src\test\asm\Vector3_Set.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++-"/>
+      <fingerprint md5="425fcfbc8f1fa498a4651679eeb55594"/>
+    </file>
+    <file name="src\test\TestRayBox.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="75d4bb331289671c748fc70382a997f2"/>
+      <fingerprint md5="0a2600df994e67469bb5ecde8a2c436a"/>
     </file>
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\test\TestKDTree.pbi"/>
+      <inputfile value="src\test\TestInstanceCloud.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 5.62 (Windows - x64)"/>
       <executable value="bin\SandBox.exe"/>

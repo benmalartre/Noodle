@@ -220,7 +220,7 @@ Module Grid3D
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 138
+; CursorPosition = 123
+; FirstLine = 94
 ; Folding = ---
 ; EnableXP

@@ -159,7 +159,6 @@ Module LayerDefered
 ;     glUseProgram(0)
     
     Define nb_lights = CArray::GetCount(Scene::*current_scene\lights)
-    
     glViewport(0,0,*layer\width,*layer\height)
       shader = *ctx\shaders("defered")\pgm
       glUseProgram(shader)
@@ -250,7 +249,7 @@ Module LayerDefered
   Class::DEF(LayerDefered)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 135
+; CursorPosition = 161
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

@@ -906,6 +906,12 @@ DeclareModule Vector3
     _v\z = _o\z + Random_Neg1_1() * _mult
   EndMacro
   
+  Macro RandomizeInPlace(_v,_mult)
+    _v\x + Random_Neg1_1() * _mult
+    _v\y + Random_Neg1_1() * _mult
+    _v\z + Random_Neg1_1() * _mult
+  EndMacro
+  
   ;------------------------------------------------------------------
   ; VECTOR3 MULTIPLY BY MATRIX3
   ;------------------------------------------------------------------
@@ -942,14 +948,15 @@ DeclareModule Vector3
     ;   *v\x = x/w
     ;   *v\y = y/w
     ;   *v\z = z/w
-      _v\x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _m\v[12]
-      _v\y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _m\v[13]
-      _v\z = _o\x * _m\v[2] + _o\y * _m\v[6] + _o\z * _m\v[10] + _m\v[14]
-      _v\w = _o\x * _m\v[3] + _o\y * _m\v[7] + _o\z * _m\v[11] + _m\v[15]
+      Define _x.f,_y.f,_z.f,_w.f
+      _x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _m\v[12]
+      _y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _m\v[13]
+      _z = _o\x * _m\v[2] + _o\y * _m\v[6] + _o\z * _m\v[10] + _m\v[14]
+      _w = _o\x * _m\v[3] + _o\y * _m\v[7] + _o\z * _m\v[11] + _m\v[15]
 
-      _v\x / _v\w
-      _v\y / _v\w
-      _v\z / _v\w
+      _v\x = _x/_w
+      _v\y = _y/_w
+      _v\z = _z/_w
     EndMacro
     
     Macro MulByMatrix4InPlace(_v,_m)
@@ -1268,7 +1275,7 @@ DeclareModule Quaternion
   	_q\y = _cosr * _sinp * _cosy + _sinr * _cosp * _siny
   	_q\z = _cosr * _cosp * _siny - _sinr * _sinp * _cosy
   	_q\w = _cosr * _cosp * _cosy + _sinr * _sinp * _siny
-  	NormalizeInPlace(_q)
+  	Quaternion::NormalizeInPlace(_q)
   EndMacro
 
   ;------------------------------------------------------------------
@@ -2306,6 +2313,11 @@ DeclareModule Matrix4
   ; Compute the Projection Matrix
   ;-------------------------------------------
   Macro GetProjectionMatrix(_m,_fov,_aspect,_znear,_zfar)
+    Debug _m
+    Debug _fov
+    Debug _aspect
+    Debug _znear
+    Debug _zfar
     Define _m4_invf.f = 1 / Tan(Radian(_fov)*0.5)
     Maximum(_znear,0.000001)
     Matrix4::SetIdentity(_m)
@@ -3543,8 +3555,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 663
-; FirstLine = 649
+; CursorPosition = 913
+; FirstLine = 899
 ; Folding = --------------------------------------------
 ; EnableXP
 ; EnableUnicode

@@ -96,12 +96,12 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Drawer::SetSize(*pnts, 4)
   Protected color.c4f32
   Color::Set(color, 1,0,0,1)
-  Drawer::SetColor(*pnts, @color)
+  Drawer::SetColor(*pnts, color)
   
   Protected *line.Drawer::Item_t = Drawer::NewLine(*tr\drawer, *tr\start_pos, *tr\end_pos)
   Drawer::SetSize(*line, 2)
   Color::Set(color, 0,1,0,1)
-  Drawer::SetColor(*line, @color)
+  Drawer::SetColor(*line, color)
   
   Protected q.q4f32
   Protected m3.m3f32
@@ -121,7 +121,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Protected frontFacing.b
   
   Protected *red_col.c4f32 = Color::_RED()
-  Debug "GEOMETRY NUM TRIANGLE S : "+Str(*geom\nbtriangles)
+  Define msg.s
   For i=0 To *geom\nbtriangles-1
     *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
     *b = Carray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
@@ -131,32 +131,33 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
     Vector3::MulByMatrix4(b,*b,*t\m)
     Vector3::MulByMatrix4(c,*c,*t\m)
     
-    intersect.b = Ray::TriangleIntersection(*tr\ray,@a,@b,@c,@*tr\dist,*tr\uvw, @frontFacing)
+    intersect.b = Ray::TriangleIntersection(*tr\ray,a,b,c,@*tr\dist,*tr\uvw, @frontFacing)
     If intersect And *tr\dist<dist
-      Debug "INTERSECT TRIANGLE : "+Str(i)
       CArray::SetValue(*tri, 0, a)
       CArray::SetValue(*tri, 1, b)
       CArray::SetValue(*tri, 2, c)
       
       *pnt = Drawer::NewLoop(*tr\drawer, *tri)
-      Drawer::SetSize(*pnt, 8)
-      Drawer::SetColor(*pnt, Color::_RED())
+      Drawer::SetSize(*pnt, 1)
+      Drawer::SetColor(*pnt, Color::_MAGENTA())
       
       *tr\location\geometry = *geom
       *tr\location\t = *t
       Vector3::SetFromOther(*tr\location\uvw, *tr\uvw)
       *tr\location\tid = i
       
-      *pnt = Drawer::NewPoint(*tr\drawer, Location::GetPosition(*tr\location))
-      Drawer::SetSize(*pnt, 8)
-      Color::Set(color, 1,1,0,1)
-      Drawer::SetColor(*pnt, @color)
+;       *pnt = Drawer::NewPoint(*tr\drawer, Location::GetPosition(*tr\location))
+;       Drawer::SetSize(*pnt, 8)
+;       Color::Set(color, 1,1,0,1)
+;       Drawer::SetColor(*pnt, color)
       
     Else
 
     EndIf
     
-  Next
+    Next
+    
+    Debug msg
   
   CArray::Delete(*tri)
   CArray::Delete(*positions)
@@ -169,7 +170,7 @@ Procedure AddBunny()
   *bunny = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Define *tb.Transform::Transform_t = *bunny\localT
   Transform::SetScaleFromXYZValues(*tb,3,3,3)
-  Transform::SetRotationFromQuaternion(*tb, @q2)
+  Transform::SetRotationFromQuaternion(*tb,q2)
   Transform::SetTranslationFromXYZValues(*tb,0.55,1,0)
   
   Scene::AddChild(Scene::*current_scene, *bunny)
@@ -188,7 +189,7 @@ Procedure AddRay()
   Vector3::Set(ep,0,0,0)
   
   Color::Set(color,1,0,0,1)
-  *ray = newTestRay(*bunny,@sp,@ep,@color)
+  *ray = newTestRay(*bunny,sp,ep,color)
 EndProcedure
 
 
@@ -204,7 +205,6 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
-
 
 
  Define useJoystick.b = #False
@@ -245,8 +245,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 18
+; CursorPosition = 141
+; FirstLine = 94
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

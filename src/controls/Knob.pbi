@@ -226,11 +226,11 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\limited
     AddPathCircle(cx, cy,#KNOB_OUTER_RADIUS + 12)
     VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(8, #PB_Path_Connected)
+    StrokePath(8 );#PB_Path_Connected)
   Else
     AddPathCircle(cx, cy,#KNOB_OUTER_RADIUS + 12, -240,60)
     VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(8, #PB_Path_Connected)
+    StrokePath(8 );#PB_Path_Connected)
     
     Define min_s.s = Str(*Me\min_limit)
     Define max_s.s = Str(*Me\max_limit)
@@ -500,7 +500,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 81
+; CursorPosition = 232
+; FirstLine = 228
 ; Folding = ---
 ; EnableXP

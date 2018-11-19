@@ -1,3 +1,4 @@
+
 #version 330 core
 out vec4 outColor;
 in vec2 texCoords;
@@ -38,22 +39,25 @@ return mat4(m[0].xyzw,
 
 void main()
 {      
-	/*
+	
     // Retrieve data from gbuffer
     vec3 position = texture(position_map, texCoords).rgb;
     vec3 normal = texture(normal_map, texCoords).rgb;
     vec3 diffuse = texture(color_map, texCoords).rgb;
     float specular = texture(color_map, texCoords).a;
-    float ao = 1.0;//texture(ssao_map, texCoords).r;
+    float shadow = texture(shadow_map, texCoords).r;
 	
+	/*
 	vec3 viewPos = view[3].xyz;
 	
     // Then calculate lighting as usual
-	vec3 ambient = vec3(0.333 * ao);
+	vec3 ambient = vec3(0.333);
     vec3 lighting  = ambient; // hard-coded ambient component
 	mat4 rot = extractRotationMatrix(view);
+	
 	normal = (rot * vec4(normal,0.0)).xyz;
     vec3 viewDir  = normalize(-position); // Viewpos is (0.0.0)
+	
     vec3 sunDir = sun.direction;
     sunDir = (rot * vec4(sunDir,1.0)).xyz;
     lighting = max(dot(normal,sunDir),0.0) * sun.color;
@@ -78,11 +82,11 @@ void main()
         //specular *= attenuation;
         lighting += diffuse;// + specular;
     }    
+	
+    //outColor = vec4(lighting, 1.0);
+    */
+    outColor = vec4(shadow, shadow, shadow, 1.0);
 
-    outColor = vec4(lighting, 1.0);
-    
-    outColor = vec4(lighting,1.0) * texture(color_map, texCoords);
-	*/
-	outColor = vec4(1,1,0,1);
+	//outColor = vec4(shadow,shadow,shadow,1);
 
 }

@@ -62,6 +62,7 @@ Module Sampler
         u = 1-u
         v = 1-v
       EndIf
+      
       Vector3::Set(sum,0,0,0)
       Vector3::Scale(p,*a,u)
       Vector3::AddInPlace(sum,p)
@@ -79,6 +80,7 @@ Module Sampler
       Vector3::Set(*loc\uvw, u, v, 1-(u+v))
       *loc\tid = tid
       Vector3::SetFromOther(*loc\p,sum)      
+      Vector3::MulByMatrix4InPlace(*loc\p, *loc\t\m)
       
       *a = CArray::GetValue(*mesh\a_pointnormals,a)
       *b = CArray::GetValue(*mesh\a_pointnormals,b)
@@ -92,6 +94,7 @@ Module Sampler
       Vector3::AddInPlace(sum,p)
       
       Vector3::SetFromOther(*loc\n,sum)
+      Vector3::MulByMatrix4InPlace(*loc\n, *loc\t\m)
       
       *ca = CArray::GetValue(*mesh\a_colors,tid*3)
       *cb = CArray::GetValue(*mesh\a_colors,tid*3+1)
@@ -106,8 +109,8 @@ Module Sampler
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 33
+; CursorPosition = 104
+; FirstLine = 50
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

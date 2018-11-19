@@ -239,6 +239,8 @@ Module LayerDefault
   Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
   glDisable(#GL_DEPTH_TEST)
   glDisable(#GL_BLEND)
+  
+  glUseProgram(0)
 
 ;   Layer::WriteImage(*layer,"D:\Projects\RnD\PureBasic\Noodle\pictures\Test.png",#GL_RGBA)
   EndProcedure
@@ -288,7 +290,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 85
+; CursorPosition = 242
+; FirstLine = 200
 ; Folding = --
 ; EnableXP

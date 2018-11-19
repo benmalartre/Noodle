@@ -171,12 +171,16 @@ Module Location
     Vector3::Scale(x,*c,*Me\uvw\z)
     Vector3::AddInPlace(*Me\p,x)
     
+    Vector3::MulByMatrix4InPlace(*Me\p, *Me\t\m)
+    
     ; Normal
     Vector3::Sub(ab,*b,*a)
     Vector3::Sub(ac,*c,*a)
     Vector3::Cross(*Me\n,ab,ac)
 
     Vector3::NormalizeInPlace(*Me\n)
+    
+    Vector3::MulByMatrix4InPlace(*Me\n, *Me\t\m)
     
   EndProcedure
   
@@ -328,7 +332,7 @@ EndProcedure
     Vector3::Set(*Me\uvw, u, v, w)
     *Me\t = *t
     If *Me\geometry And *Me\tid>-1
-      ;Update(*Me)
+      Update(*Me)
     EndIf
     
     ProcedureReturn *Me
@@ -336,7 +340,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 26
+; CursorPosition = 182
+; FirstLine = 283
 ; Folding = ---
 ; EnableXP

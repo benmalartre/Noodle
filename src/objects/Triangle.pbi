@@ -94,7 +94,7 @@ DeclareModule Triangle
 
   Declare GetCenter(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32)
   Declare GetNormal(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *normal.v3f32)
-  Declare ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
+  Declare ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
   Declare.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32)
   Declare TouchArray(*positions , *indices, numTris.i, *box.Geometry::Box_t, *hits)
   Declare.b PlaneBoxTest( *normal.v3f32, *vert.v3f32, *maxbox.v3f32)
@@ -141,19 +141,16 @@ Module Triangle
   ;------------------------------------------------------------------
   ; Closest Point
   ;------------------------------------------------------------------
-  Procedure ClosestPoint(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
-    Define.v3f32 *A, *B, *C
-    *A = *positions + *Me\vertices[0] * 12
-    *B = *positions + *Me\vertices[1] * 12
-    *C = *positions + *Me\vertices[2] * 12
+  Procedure ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
+
     Protected edge0.v3f32
     Protected edge1.v3f32
     
-    Vector3::Sub(edge0, *B, *A)
-    Vector3::Sub(edge1, *C, *A)
+    Vector3::Sub(edge0, *b, *a)
+    Vector3::Sub(edge1, *c, *a)
     
     Protected v0.v3f32
-    Vector3::Sub(v0, *A, *pnt)
+    Vector3::Sub(v0, *a, *pnt)
     
     Define.f a,b,c,d,e
     a = Vector3::Dot(edge0, edge0)
@@ -229,7 +226,7 @@ Module Triangle
     EndIf
   EndIf
   
-  Vector3::SetFromOther(*closest, *A)
+  Vector3::SetFromOther(*closest, *a)
   Vector3::ScaleInPlace(edge0, s)
   Vector3::ScaleInPlace(edge1, t)
   Vector3::AddInPlace(*closest, edge0)
@@ -1885,7 +1882,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 251
-; FirstLine = 242
+; CursorPosition = 96
+; FirstLine = 96
 ; Folding = ----
 ; EnableXP

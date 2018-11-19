@@ -16,7 +16,7 @@ DeclareModule Octree
   EndEnumeration
   
   Structure Point_t
-      v.f[3]
+    v.f[3]
   EndStructure
   
   Structure Cell_t
@@ -66,6 +66,7 @@ DeclareModule Octree
   Declare GetNearbyCells(*point.v3f32, *cell.Cell_t, *cells.CArray::CArrayPtr, closestDistance.f)
   Declare RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
   Declare Draw(*cell.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
+  Declare.b GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
   
   Declare CartesianToReal(*cell.Cell_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
   Declare RealToCartesian(*cell.Cell_t, *real.Math::v3f32, *cartersian.Morton::Point3D_t)
@@ -155,6 +156,117 @@ Module Octree
     Protected dz.f = GetDistance1D(*point\z, *cell\bmin\z, *cell\bmax\z)
     ProcedureReturn Sqr(dx * dx + dy * dy + dz * dz)
   EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; Get Closest Point
+  ;---------------------------------------------------------------------
+  Procedure.b GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
+    Protected *closestCell.Cell_t = #Null
+    GetClosestCell(*octree, *pnt, *closestCell)
+    Define closestDistance.f = #F32_MAX
+    Define distance.f
+    Define.v3f32 closest, delta, uvw
+    Define closestTriangle.i = -1
+    Define *geom.Geometry::PolymeshGeometry_t = *octree\geom
+    Define.v3f32 *a, *b, *c
+    Define i, j
+    
+    For i=0 To *closestCell\elements\itemCount - 1
+      j = CArray::GetValueL(*closestCell\elements, i)
+      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, j*3))
+      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, j*3+1))
+      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, j*3+2))
+      
+      Triangle::ClosestPoint(*a, *b, *c, *pnt , closest, uvw)
+      Vector3::Sub(delta,*pnt, closest)
+      distance = Vector3::Length(delta)
+      If distance < closestDistance
+        closestDistance = distance
+        *loc\geometry = *octree\geom
+        *loc\tid = j
+        Vector3::SetFromOther(*loc\p, closest)
+        Vector3::SetFromOther(*loc\uvw, uvw)
+      EndIf
+    Next
+    
+    Define *nearbyCells.CArray::CArrayPtr = CArray::newCArrayPtr()
+    If Not *octree\isLeaf
+      GetNearbyCells(*pnt, *closestCell, *nearbyCells, closestDistance)
+    EndIf
+    
+    CArray::Delete(*nearbyCells)
+    
+;     void Intersector::getClosestPoint(const MVector& queryPoint, ClosestPoint& closestPoint)
+; {
+;     Octree* closestCell = NULL;
+;     getClosestCell(queryPoint, closestCell);
+; 
+;     // brute force neighbor cell
+;     //std::vector<Triangle*>::iterator tri = closestCell->getTriangles().begin();
+;     Triangle* T;
+;     float closestDistance = FLT_MAX;
+;     float distance;
+;     float currentU, currentV, currentW;
+;     MVector closest;
+;     MVector delta;
+;     Triangle* closestTriangle = NULL;
+;     For(unsigned t=0;t<closestCell->getSize();t++)
+;     {
+;         T = closestCell->getTriangle(t);
+;         T->closestPoint( positions, queryPoint , closest, currentU, currentV, currentW);
+;         delta = queryPoint-closest;
+;         distance = delta.length();
+;         
+;         If(distance<closestDistance)
+;         {
+;             closestDistance = distance;
+;             closestPoint.position = closest;
+;             closestTriangle = T;
+;             closestPoint.U = currentU;
+;             closestPoint.V = currentV;
+;             closestPoint.W = currentW;
+;         }
+;     }
+;     
+;     std::vector<Octree*> nearbyCells;
+;     If(!octree.isLeaf())
+;     {
+;         getNearbyCells(queryPoint, closestCell, nearbyCells, closestDistance);
+;     }
+;     
+;     // loop nearby cells
+;     std::vector<Octree*>::iterator nearby = nearbyCells.begin();
+;     For(;nearby<nearbyCells.end();nearby++)
+;     {
+;         //T = (*nearby)->getTriangles().begin();
+;         //For(;tri< (*nearby)->getTriangles().end();tri++)
+;         For(unsigned t=0;t<(*nearby)->getSize();t++)
+;         {
+;             T = (*nearby)->getTriangle(t);
+;             T->closestPoint( positions, queryPoint , closest, currentU, currentV, currentW);
+;             delta = queryPoint-closest;
+;             distance = delta.length();
+;             
+;             If(distance<closestDistance)
+;             {
+;                 closestDistance = distance;
+;                 closestPoint.position = closest;
+;                 closestTriangle = T;
+;                 closestPoint.U = currentU;
+;                 closestPoint.V = currentV;
+;                 closestPoint.W = currentW;
+;             }
+;         }
+;     }
+;     
+;     closestPoint.triangleID = closestTriangle->ID;
+;     closestPoint.triangleMapID = closestTriangle->mapID;
+;     closestPoint.boundary = closestTriangle->boundary;
+;     closestTriangle->getNormal(positions, closestPoint.normal);
+;     
+;     }
+  EndProcedure
+  
   
   ;---------------------------------------------------------------------
   ; CLEAR
@@ -389,21 +501,19 @@ Module Octree
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
     *child = Octree::New(bmin, bmax, *octree\depth + 1)
-    
+
     GetCenter(*child, box\origin)
     GetHalfSize(*child, box\extend)
     Vector3::Echo(box\origin, "origin")
     Vector3::Echo(box\extend, "extend")
 ;     Dim touches.b(*geom\nbtriangles)
-    
-    tsz = *octree\elements\itemCount
+   
     For t=0 To tsz - 1
       xt = CArray::GetValueL(*octree\elements, t)
       *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3))
       *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+1))
       *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+2))
-
-      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, t) : numHits + 1 :EndIf
+      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, xt) : numHits + 1 :EndIf
     Next
     
 ;     Define numHits = Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, box,@touches(0))
@@ -430,16 +540,17 @@ Module Octree
     Protected tsz = *octree\elements\itemCount
     If tsz <= #MAX_ELEMENTS Or *octree\depth >= maxDepth:
       *octree\isLeaf = #True
+      ProcedureReturn
     EndIf
 
     *octree\isLeaf = #False
     Protected i, j, k, m, t
     Define.Point_t xx, yy, zz
-        Define xt
+    Define xt
     Define numHits = 0
-    Define *xx.v3f32 = xx
-    Define *yy.v3f32 = yy
-    Define *zz.v3f32 = zz
+    Define *xx.v3f32 = @xx
+    Define *yy.v3f32 = @yy
+    Define *zz.v3f32 = @zz
     Define *child.Cell_t
     Vector3::Set(*xx, *octree\bmin\x, 0.5*(*octree\bmin\x+*octree\bmax\x), *octree\bmax\x)
     Vector3::Set(*yy, *octree\bmin\y, 0.5*(*octree\bmin\y+*octree\bmax\y), *octree\bmax\y)
@@ -450,7 +561,6 @@ Module Octree
     Define tri.Geometry::Triangle_t
     Define box.Geometry::Box_t
     Define *a.Math::v3f32, *b.Math::v3f32, *c.Math::v3f32
-    Define a.Math::v3f32, b.Math::v3f32, c.Math::v3f32
     
     CreateCell(0,0,0)
     CreateCell(0,0,1)
@@ -565,18 +675,6 @@ Module Octree
         CopyMemory(CArray::GetValue(*geom\a_positions, a), *a, SizeOf(v3f32))
         CopyMemory(CArray::GetValue(*geom\a_positions, b), *b, SizeOf(v3f32))
         CopyMemory(CArray::GetValue(*geom\a_positions, c), *c, SizeOf(v3f32))
-
-        *a\x + (Random(200)-100)*0.001
-        *a\y + (Random(200)-100)*0.001
-        *a\z + (Random(200)-100)*0.001
-        
-        *b\x + (Random(200)-100)*0.001
-        *b\y + (Random(200)-100)*0.001
-        *b\z + (Random(200)-100)*0.001
-        
-        *c\x + (Random(200)-100)*0.001
-        *c\y + (Random(200)-100)*0.001
-        *c\z + (Random(200)-100)*0.001
         
         *col = CArray::GetValue(*colors, t*3)
         Color::SetFromOther(*col, *octree\color)
@@ -604,7 +702,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 405
-; FirstLine = 370
+; CursorPosition = 164
+; FirstLine = 153
 ; Folding = -----
 ; EnableXP

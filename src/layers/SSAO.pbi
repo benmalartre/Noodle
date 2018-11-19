@@ -115,10 +115,11 @@ Module LayerSSAO
     
     Protected ns = *layer\noise_size * *layer\noise_size
     CArray::SetCount(*layer\noise,ns)
-    Protected n.v3f32
+    Protected *n.v3f32
     For i=0 To ns-1
-      CopyMemory(CArray::GetValue(*layer\noise,i), @n, 12)
-      Vector3::NormalizeInPlace(n)
+      
+      *n = CArray::GetValue(*layer\noise,i)
+      Vector3::RandomizeInPlace(*n,1)
     Next i
     
     If Not *layer\noise_tex
@@ -126,7 +127,12 @@ Module LayerSSAO
     EndIf
     
     glBindTexture(#GL_TEXTURE_2D,*layer\noise_tex)
-    glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,*layer\noise_size,*layer\noise_size,0,#GL_RGB,#GL_FLOAT,CArray::GetPtr(*layer\noise,0))
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,*layer\noise_size,*layer\noise_size,0,#GL_RGBA,#GL_FLOAT,CArray::GetPtr(*layer\noise,0))
+    CompilerElse
+      glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,*layer\noise_size,*layer\noise_size,0,#GL_RGB,#GL_FLOAT,CArray::GetPtr(*layer\noise,0))
+    CompilerEndIf
+    
     glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MAG_FILTER,#GL_NEAREST)
     glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MIN_FILTER,#GL_NEAREST)
     glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_S,#GL_REPEAT)
@@ -179,14 +185,18 @@ Module LayerSSAO
     ;       For i=0 To nbsamples-1
     ;         glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
     ;       Next
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      glUniform4fv(*layer\u_kernel_samples,*layer\nbsamples,Carray::GetPtr(*layer\kernel,0))
+    CompilerElse
+      glUniform3fv(*layer\u_kernel_samples,*layer\nbsamples,Carray::GetPtr(*layer\kernel,0))
+    CompilerEndIf
     
-    glUniform3fv(*layer\u_kernel_samples,*layer\nbsamples,Carray::GetPtr(*layer\kernel,0))
     glUniform1i(*layer\u_kernel_size,*layer\nbsamples)
     glUniform2f(*layer\u_noise_scale,*layer\buffer\width/*layer\noise_size,*layer\buffer\height/*layer\noise_size)
     
 
     ScreenQuad::Draw(*layer\quad)
-    ;       
+       
     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\buffer\frame_id);
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
@@ -238,7 +248,7 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 75
+; CursorPosition = 121
+; FirstLine = 117
 ; Folding = --
 ; EnableXP

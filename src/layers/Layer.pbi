@@ -447,7 +447,6 @@ Module Layer
         obj\Draw()
       EndIf
     Next
-    GLCheckError("[Layer] Draw Point Clouds")
   EndProcedure
   
   ;---------------------------------------------------
@@ -466,7 +465,6 @@ Module Layer
         obj\Draw()
       EndIf
     Next
-    GLCheckError("[Layer] Draw Nulls")
   EndProcedure
   
   ;---------------------------------------------------
@@ -698,7 +696,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 528
-; FirstLine = 524
+; CursorPosition = 467
+; FirstLine = 446
 ; Folding = -----
 ; EnableXP

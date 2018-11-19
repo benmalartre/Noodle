@@ -91,6 +91,8 @@ Module LayerShadowMap
   glColorMask(#GL_FALSE, #GL_FALSE, #GL_FALSE, #GL_FALSE);
   
   Protected *light.Light::Light_t = *layer\pov
+  Debug *light\fov
+  Debug *light\aspect
 	Light::UpdateProjection(*light)
 	Light::Update(*light)
 	
@@ -105,9 +107,7 @@ Module LayerShadowMap
   Protected shader.GLuint = *ctx\shaders("shadowmap")\pgm
   glBindAttribLocation(shader, 0, "position")
 	glUseProgram(shader)
-	
-	Vector3::Echo(*light\pos,"LIGHT POSITION")
-	Matrix4::Echo(*view, "LIGHT VIEW")
+
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
   
@@ -157,9 +157,10 @@ Module LayerShadowMap
     
     glActiveTexture(#GL_TEXTURE0)
     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,0))
-;     GetImage(*layer)
-
+    
     Framebuffer::Unbind(*layer\buffer)
+    glUseProgram(0)
+    
     Debug "-------------------------------- LAYER SHADOW MAP DRAW ENDED -----------------------------------"
 
   EndProcedure
@@ -198,8 +199,8 @@ Module LayerShadowMap
   
   Class::DEF(LayerShadowMap)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 42
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 161
+; FirstLine = 122
 ; Folding = --
 ; EnableXP

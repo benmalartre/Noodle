@@ -53,6 +53,7 @@ return mat4(m[0].xyzw,
 
 void main( void )
 {
+
     // Read the data from the textures
     vec4 color = texture( color_map, texCoords );
 	if(color.a == 0.0) discard;
@@ -79,7 +80,7 @@ void main( void )
 			s += lookup(shadow_coords,vec2(x,y));
 	
 	s /= 64.0 ;
-	*/
+
 	
 	// use modulo to vary the sample pattern
 	vec2 o = mod(floor(shadow_coords.xy), 2.0);
@@ -89,18 +90,21 @@ void main( void )
 	s += lookup(shadow_coords,vec2(-1.5, -0.5) + o);
 	s += lookup(shadow_coords,vec2( 0.5, -0.5) + o);
 	s *= 0.25 ;
-	
+	*/
 	s = max(s,0.25);
 	
 	outColor = vec4(s,s,s,1.0);
-	//outColor = texture(shadow_map,texCoords);
+
 	/*
+	outColor = texture( shadow_map, texCoords );
+	//outColor = texture(shadow_map,texCoords);
+
     float diffuse_light = 0.25;
 	if(max(dot(normal,vec4(light_dir,1.0)),0)>0.0) diffuse_light = 1.0;
 	outColor = color *vec4(diffuse_light)*s ;
-    */
+    
 	//outColor = vec4(s);
-	/*
+	
     float ambient_light = 0.1;
 
     outColor = (diffuse_light + ambient_light ) * image + pow(max(dot(light_dir,reflected_eye_vector),0.0), 100) * 1.5 * shadow;

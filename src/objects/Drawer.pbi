@@ -212,7 +212,7 @@ Module Drawer
         glGenBuffers(1,@*item\vbo)
       EndIf
       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
-
+      
       ; Fill Buffer Data
       plength = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
       clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
@@ -221,11 +221,11 @@ Module Drawer
       glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
       glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
       glEnableVertexAttribArray(0)
-;       CompilerIf #USE_SSE
-;         glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-;       CompilerElse
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
         glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-;       CompilerEndIf
+      CompilerEndIf
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
       
@@ -275,11 +275,11 @@ Module Drawer
       glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
         
       glEnableVertexAttribArray(0)
-;       CompilerIf #USE_SSE
-;         glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-;       CompilerElse
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
         glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-;       CompilerEndIf
+      CompilerEndIf
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
 
@@ -836,7 +836,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 273
+; CursorPosition = 226
+; FirstLine = 216
 ; Folding = --------
 ; EnableXP

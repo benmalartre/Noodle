@@ -112,26 +112,82 @@ Module Ray
   ; Intersection with box
   ;---------------------------------------------------------
   Procedure.b BoxIntersection(*ray.Geometry::Ray_t, *box.Geometry::Box_t)
-    Define.f tx1,tx2,ty1,ty2,tz1,tz2,tmin,tmax
-    tx1 = (*box\origin\x - *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
-    tx2 = (*box\origin\x + *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
-   
-    tmin = Min(tx1, tx2)
-    tmax = Max(tx1, tx2)
-   
-    ty1 = (*box\origin\y - *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
-    ty2 = (*box\origin\y + *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
-   
-    tmin = Max(tmin, Min(ty1, ty2))
-    tmax = Min(tmax, Max(ty1, ty2))
+    Vector3::Invert(*ray\inv_direction, *ray\direction)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define *box_orig.v3f32 = *box\origin
+      Define *box_extend.v3f32 = *box\extend
+      Define *ray_orig.v3f32 = *ray\origin
+      Define *ray_invdir.v3f32 = *ray\inv_direction
+      
+      ! mov rax, [p.p_box_orig]
+      ! movups xmm0, [rax]
+      ! mov rax, [p.p_box_extend]
+      ! movups xmm1, [rax]
+      
+      ! mov rax, [p.p_ray_orig]
+      ! movups xmm2, [rax]
+      ! mov rax, [p.p_ray_invdir]
+      ! movups xmm3, [rax]
+      
+      ! movaps xmm4, xmm0                 ; copy box origin to xmm4
+      ! subps xmm4, xmm1                  ; subtract box extend
+      ! subps xmm4, xmm2                  ; subtract ray orig
+      ! mulps xmm4, xmm3                  ; mul by ray in dir
+      
+      ! movaps xmm5, xmm0                 ; copy box origin to xmm5
+      ! addps xmm5, xmm1                  ; add box extend
+      ! subps xmm5, xmm2                  ; subtract ray orig
+      ! mulps xmm5, xmm3                  ; mul by ray in dir
+      
+      ! movaps xmm6, xmm4                 ; copy in xmm6
+      ! minps xmm4, xmm5                  ; packed minimum
+      ! maxps xmm6, xmm5                  ; packed maximum
+      
+      ! movhlps xmm7,xmm4                 ; move top two floats to lower part of xmm1
+      ! minps   xmm4,xmm7                 ; get minimum of the two sets of floats
+      ! pshufd  xmm7,xmm4,$55             ; move second float to lower part of xmm1
+      ! minps   xmm4,xmm7                 ; get minimum of the two remaining floats
+      
+      ! movhlps xmm8,xmm6                 ; move top two floats to lower part of xmm1
+      ! maxps   xmm6,xmm8                 ; get maximum of the two sets of floats
+      ! pshufd  xmm8,xmm6,$55             ; move second float to lower part of xmm1
+      ! maxps   xmm6,xmm8                 ; get maximum of the two remaining floats
+      
+      ! comiss xmm8, xmm6
+      
+      ! jge ray_box_intersection
+      ! jmp ray_box_no_intersection
+      
+      ! ray_box_no_intersection:
+      ProcedureReturn #False
+
+      ! ray_box_intersection:
+      ProcedureReturn #True
+
+    CompilerElse
+      Define.f tx1,tx2,ty1,ty2,tz1,tz2,tmin,tmax
+      tx1 = (*box\origin\x - *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
+      tx2 = (*box\origin\x + *box\extend\x - *ray\origin\x)* *ray\inv_direction\x
+     
+      tmin = Min(tx1, tx2)
+      tmax = Max(tx1, tx2)
+     
+      ty1 = (*box\origin\y - *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
+      ty2 = (*box\origin\y + *box\extend\y - *ray\origin\y)* *ray\inv_direction\y
+     
+      tmin = Max(tmin, Min(ty1, ty2))
+      tmax = Min(tmax, Max(ty1, ty2))
+      
+      tz1 = (*box\origin\z - *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
+      tz2 = (*box\origin\z + *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
+     
+      tmin = Max(tmin, Min(tz1, tz2))
+      tmax = Min(tmax, Max(tz1, tz2))
+     
     
-    tz1 = (*box\origin\z - *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
-    tz2 = (*box\origin\z + *box\extend\z - *ray\origin\z)* *ray\inv_direction\z
-   
-    tmin = Max(tmin, Min(tz1, tz2))
-    tmax = Min(tmax, Max(tz1, tz2))
-  
-    ProcedureReturn Bool(tmax >= tmin)
+      ProcedureReturn Bool(tmax >= tmin)
+    CompilerEndIf
+    
   EndProcedure
   
   ;---------------------------------------------------------
@@ -235,7 +291,7 @@ Module Ray
     Protected plane.Geometry::Plane_t
     Geometry::ConstructPlaneFromThreePoints(plane, *a, *b, *c)
     Protected intersectDist.f
-    If Not Ray::PlaneIntersection(*ray, @plane, @intersectDist, *frontFacing)
+    If Not Ray::PlaneIntersection(*ray, plane, @intersectDist, *frontFacing)
       ProcedureReturn #False
     EndIf
     If intersectDist > maxDist : ProcedureReturn #False : EndIf
@@ -306,8 +362,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 32
+; CursorPosition = 131
+; FirstLine = 127
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

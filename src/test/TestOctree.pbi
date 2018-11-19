@@ -24,18 +24,22 @@ Procedure PolygonSoup()
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   Protected *topo.Geometry::Topology_t = Topology::New()
   
-  PolymeshGeometry::SphereTopology(*topo, 3,32,16)
-  Protected numTopos.i = 1
+  ;   PolymeshGeometry::TeapotTopology(*topo)
+  PolymeshGeometry::TorusTopology(*topo)
+  Protected numTopos.i = 32
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
+  Define s.v3f32
   Define *m.m4f32
   For i=0 To numTopos-1
     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
     *m = CArray::GetPtr(*matrices, i)
     Matrix4::SetIdentity(*m)
+    Vector3::Set(s, Random(4)+2,Random(4)+2,Random(4)+2)
+    Matrix4::SetScale(*m, s)
     Matrix4::SetTranslation(*m,   p)
   Next
   
@@ -151,20 +155,15 @@ Define buildOctreeT.d = Time::get() - T
 T = Time::Get()
 Octree::Draw(*octree, *drawer, *geom)
 Define drawOctreeT.d = Time::get() - T
+Define numCells.i = 0
+Octree::NumCells(*octree, @numCells)
 
 Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
 buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
 buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
-
+buildMessage + "Num Leaves : "+Str(numCells)
 buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)
 MessageRequester("Octree", buildMessage)
-
-; Define *poisson.Poisson::Poisson_t = Poisson::New()
-; Define box.Geometry::Box_t
-; Define origin.v3f32, extend.v3f32
-; Vector3::Set(origin, 1,3,2)
-; Vector3::Set(extend, 12,12,12)
-; Box::Set(@box, @origin, @extend)
 
 Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
@@ -176,64 +175,15 @@ Object3D::AddChild(*root, *drawer)
 Scene::AddModel(Scene::*current_scene, *root)
 
 Define t.d = Time::Get()
-; Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.2)
-; ; Define numSamples = Poisson::Sample(*poisson)
-; Poisson::SignedDistances(*poisson, *mesh\geom)
-; Poisson::Setup(*poisson, *drawer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 
-; Define str.s
-; str + "#################### POISSON SAMPLING ######################"+Chr(10)
-; str + " Generated "+Str(numSamples) + " Samples in "+StrD(Time::Get()-t)+" milliseconds"+Chr(10)
-; str + "############################################################"+Chr(10)
-; 
-; MessageRequester("POISSON", str)
-
 Application::Loop(*app, @Draw())
 
-; Octree::Delete(*octree)
-
-;     
-; Define model.m4f32
-; ; Main
-; ;--------------------------------------------
-; If Time::Init()
-;   Log::Init()
-;   *app = Application::New("Test",800,600)
-; 
-;   If Not #USE_GLFW
-;     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-;     *app\context = *viewport\context
-;     *viewport\camera = *app\camera
-;     View::SetContent(*app\manager\main,*viewport)
-;     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-;   EndIf
-;   
-;   Matrix4::SetIdentity(@model)
-;   
-;   Debug "Size "+Str(*app\width)+","+Str(*app\height)
-;   Debug *app\width
-;   Debug *app\height
-;   *buffer = Framebuffer::New("Color",*app\width,*app\height)
-;   
-;   *s_simple = Program::NewFromName("simple")
-; 
-;   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
-;   
-;   Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
-;   Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
-; 
-;   *torus = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
-;   *cloud = PointCloud::New("Cloud",Shape::#SHAPE_TORUS)
-;   Polymesh::Setup(*torus,*s_simple)
-;   PointCloud::Setup(*cloud,*s_simple)
-;   
-;   Application::Loop(*app,@Draw())
-; EndIf
+Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 116
+; CursorPosition = 171
+; FirstLine = 125
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -112,6 +112,7 @@ Module LayerGBuffer
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected shader.i = *ctx\shaders("gbuffer")\pgm
     glUseProgram(shader)
+    GLCheckError("CHECK SHADER")
     
     Protected *light.Light::Light_t = Scene::GetMainLight(Scene::*current_scene)
     
@@ -189,7 +190,7 @@ Module LayerGBuffer
     glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,WIDTH-bw, HEIGHT-3*bh, WIDTH, HEIGHT-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
     
     Framebuffer::Unbind(*layer\buffer)
-  
+;   
 ;     Framebuffer::BindOutput(*layer\buffer)
 ;   
 ;     glViewport(0,0,*layer\width,*layer\height)
@@ -350,7 +351,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 123
+; CursorPosition = 191
+; FirstLine = 135
 ; Folding = --
 ; EnableXP
