@@ -414,24 +414,29 @@ Module PolymeshGeometry
     
     ; First Triangle Normals
     Define.v3f32 *a, *b, *c
-    Define *positions = *mesh\a_positions\data
-    Define *indices = *mesh\a_triangleindices\data
-    Define *normals = *mesh\a_normals\data
-    Define *polygonnormals = *mesh\a_polygonnormals\data
-    Define numTris = *mesh\nbtriangles
-    Define numPolygons = *mesh\nbpolygons
-    Define *facecount = *mesh\a_facecount\data
-    Define *faceindices = *mesh\a_faceindices\data
-    Define nbv, nbt
-    
+    Define nbv, nbt, nbp
+
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      
+      Define *positions = *mesh\a_positions\data
+      Define *indices = *mesh\a_triangleindices\data
+      Define *normals = *mesh\a_normals\data
+      Define *polygonnormals = *mesh\a_polygonnormals\data
+      Define *pointnormals = *mesh\a_pointnormals\data
+      Define numPoints = *mesh\nbpoints
+      Define numTris = *mesh\nbtriangles
+      Define numPolygons = *mesh\nbpolygons
+      Define *facecount = *mesh\a_facecount\data
+      Define *faceindices = *mesh\a_faceindices\data
+      Define *vertexpolygoncount = *mesh\a_vertexpolygoncount\data
+      Define *vertexpolygonindices = *mesh\a_vertexpolygonindices\data
       
       ! mov edx, [p.p_indices]                ; move indices to edx register
       ! mov rsi, [p.p_positions]              ; move positions to rsi register
       ! mov rdi, [p.p_normals]                ; move normals to rdi register
       
-      ! mov r9, 16                         ; move item size to eax register
-      ! mov ecx, [p.v_numTris]               ; move num triangles to edx register
+      ! mov r9, 16                          ; move item size to eax register
+      ! mov ecx, [p.v_numTris]              ; move num triangles to edx register
 
       ! loop_compute_triangle_normal:
       !   mov eax, [edx]                    ; get value for desired point A
@@ -500,7 +505,7 @@ Module PolymeshGeometry
       ! next_triangle:
       !   dec ecx                           ; decrement triangle counter
       !   jg loop_compute_triangle_normal   ; loop next triangle
-      ! jmp set_polygon_normals
+      ! jmp init_polygon_normals
       
       ; ---------------------------------------------------------------------------------
       ; set triangle normals
@@ -517,25 +522,25 @@ Module PolymeshGeometry
       ; ---------------------------------------------------------------------------------
       ; set polygon normals
       ; ---------------------------------------------------------------------------------
-      ! set_polygon_normals:
+      ! init_polygon_normals:
       !   mov ecx, [p.v_numPolygons]
       !   mov edx, [p.p_facecount]
       !   mov rsi, [p.p_normals] 
       !   mov rdi, [p.p_polygonnormals] 
       
-      ! loop_set_polygon_normals:
+      ! set_polygon_normals:
       !   mov eax, [edx]                          ; get num vertices for this polygon
       !   add edx, 4                              ; increment face count for next polygon
-      !   mov r11, -2
-      !   add r11, rax                          ; compute num tris
-      !   xorps xmm0, xmm0
+      !   mov r11, -2                             ; load -2 value in r11
+      !   add r11, rax                            ; compute num tris (num vertices - 2)
+      !   xorps xmm0, xmm0                        ; reset xmm0
       
-      ! loop_per_polygon_triangle:
-      !   movups xmm1, [rsi]
-      !   addps xmm0, xmm1
-      !   add rsi, 48
-      !   dec r11
-      !   jg loop_per_polygon_triangle
+      ! loop_polygon_normals:
+      !   movups xmm1, [rsi]                      ; load triangle normal
+      !   addps xmm0, xmm1                        ; accumulate in xmm0
+      !   add rsi, 48                             ; next triangle normal
+      !   dec r11                                 ; decrement tri counter
+      !   jg loop_polygon_normals            ; loop next triangle
       
       ; ---------------------------------------------------------------------------------
       ; normalize in place
@@ -561,7 +566,57 @@ Module PolymeshGeometry
       ! add rdi, 16
       
       ! dec ecx
-      ! jg loop_set_polygon_normals
+      ! jg set_polygon_normals
+      
+      ; ---------------------------------------------------------------------------------
+      ; average point normal
+      ; ---------------------------------------------------------------------------------
+      ! init_average_point_normals:
+      !   mov ecx, [p.v_numPoints]
+      !   mov edx, [p.p_vertexpolygoncount]
+      !   mov eax, [p.p_vertexpolygonindices]
+      !   mov rsi, [p.p_polygonnormals] 
+      !   mov rdi, [p.p_pointnormals] 
+      
+      ! set_average_point_normals:
+      !   mov r11d, [edx]                         ; get num polygons for this vertex
+      !   add edx, 4                              ; increment vertex polygon count for next vertex
+      !   xorps xmm0, xmm0                        ; reset xmm0
+      
+      ! loop_average_point_normals:
+      !   mov r12d, [eax]                         ; load polygon index
+      !   add eax, 4
+      !   imul r12, 16
+      !   movups xmm1, [rsi + r12]                ; load polygon normal
+      !   addps xmm0, xmm1                        ; accumulate in xmm0
+      !   dec r11d                                ; decrement polygon counter
+      !   jg loop_average_point_normals           ; loop next polygon
+      
+      ; ---------------------------------------------------------------------------------
+      ; normalize in place
+      ; ---------------------------------------------------------------------------------
+      ! movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
+      ! mulps xmm0, xmm0                  ; carré de chaque composante
+      ; mix1
+      ! movaps xmm7, xmm0
+      ! shufps xmm7, xmm7, 01001110b
+      ! addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; mix2
+      ! movaps xmm7, xmm0
+      ! shufps xmm7, xmm7, 00010001b
+      ! addps xmm0, xmm7                  ; additionne les composantes mélangées
+      ; 1/sqrt
+      ! rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
+      ! mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      
+      ; ---------------------------------------------------------------------------------
+      ; set point normal
+      ; ---------------------------------------------------------------------------------
+      ! movups [rdi], xmm0
+      ! add rdi, 16
+      
+      ! dec ecx
+      ! jg set_average_point_normals
 
 
     CompilerElse
@@ -598,23 +653,39 @@ Module PolymeshGeometry
         base+nbt*3
       Next
       
+      ; Average Point Normals
+      base = 0
+      For i=0 To *mesh\nbpoints-1
+        nbp = CArray::GetValueL(*mesh\a_vertexpolygoncount, i)
+        Vector3::Set(n, 0,0,0)
+        For j=0 To nbp-1
+          index = CArray::GetValueL(*mesh\a_vertexpolygonindices, base+j)
+          *n = CArray::GetValue(*mesh\a_polygonnormals, index)
+          Vector3::AddInPlace(n, *n)
+        Next
+        Vector3::ScaleInPlace(n, 1/nbp)
+        CArray::SetValue(*mesh\a_pointnormals, i, n)
+        base + nbp
+      Next
+      
+      ; Average Point Normals
+      base = 0
+      For i=0 To *mesh\nbpoints-1
+        nbp = CArray::GetValueL(*mesh\a_vertexpolygoncount, i)
+        Vector3::Set(n, 0,0,0)
+        For j=0 To nbp-1
+          index = CArray::GetValueL(*mesh\a_vertexpolygonindices, base+j)
+          *n = CArray::GetValue(*mesh\a_polygonnormals, index)
+          Vector3::AddInPlace(n, *n)
+        Next
+        Vector3::ScaleInPlace(n, 1/nbp)
+        CArray::SetValue(*mesh\a_pointnormals, i, n)
+        base + nbp
+      Next
+      
     CompilerEndIf
 
-    Protected nbp, index
-    base = 0
-    For i=0 To *mesh\nbpoints-1
-      nbp = CArray::GetValueL(*mesh\a_vertexpolygoncount, i)
-      Vector3::Set(n, 0,0,0)
-      For j=0 To nbp-1
-        index = CArray::GetValueL(*mesh\a_vertexpolygonindices, base+j)
-        *n = CArray::GetValue(*mesh\a_polygonnormals, index)
-        Vector3::AddInPlace(n, *n)
-      Next
-      Vector3::ScaleInPlace(n, 1/nbp)
-      CArray::SetValue(*mesh\a_pointnormals, i, n)
-      base + nbp
-    Next
-    
+
     ; Display Normals
     For i=0 To *mesh\nbsamples-1
       *n = CArray::GetValue(*mesh\a_pointnormals, CArray::GetValueL(*mesh\a_triangleindices, i))
@@ -792,9 +863,9 @@ Module PolymeshGeometry
     Protected Dim indices.s(*mesh\nbpoints)
     base=0
     total = 0
+
     For i=0 To *mesh\nbpolygons-1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
-
       For j=0 To nbv-1
         k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
         indices(k) + Str(i)+","
@@ -2612,7 +2683,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 399
-; FirstLine = 569
+; CursorPosition = 419
+; FirstLine = 383
 ; Folding = -----g--f--
 ; EnableXP

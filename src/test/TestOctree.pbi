@@ -29,7 +29,7 @@ Procedure PolygonSoup()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
   PolymeshGeometry::SphereTopology(*topo, 1,32 ,16)
-  Protected numTopos.i = 12
+  Protected numTopos.i = 2
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -210,7 +210,7 @@ buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
 Vector3::Set(query, 1,2,1)
 Define loc.Geometry::Location_t
 Define i
-Define numTests = 128000
+Define numTests = 1024
 T = Time::Get()
 For i=0 To numTests-1
   Define hit = Octree::GetClosestPoint(*octree, query, loc)
@@ -249,8 +249,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 100
+; CursorPosition = 212
+; FirstLine = 12
 ; Folding = -
 ; EnableThread
 ; EnableXP

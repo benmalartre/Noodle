@@ -169,10 +169,7 @@ Module ControlProperty
     Protected iw = ImageWidth(*Me\imageID)
     Protected ih = ImageHeight(*Me\imageID)
 
-    If xm<0 Or ym<0 Or xm>= iw Or im>=ih : ProcedureReturn : EndIf
-    
-    xm = Math::Min( Math::Max( xm, 0 ), iw - 1 )
-    ym = Math::Min( Math::Max( ym, 0 ), ih - 1 )
+    If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
     
      ; First get gadget under mouse
     StartDrawing( ImageOutput(*Me\imageID) )
@@ -194,6 +191,7 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure.i DrawPickImage( *Me.ControlProperty_t)
     ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+
     ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount - 1
@@ -361,15 +359,6 @@ Module ControlProperty
   
     ; ---[ Set Row Flag ]-------------------------------------------------------
     *Me\rowflags( *Me\chilcount ) = *Me\row
-    Debug *ctl\name + " : "+Str(*Me\row)
-
-    ; ---[ Expand height ]------------------------------------------------------
-    
-    If *Me\chilcount > 1 And Not *Me\row;Bool(*Me\rowflags(*Me\chilcount-1) <> *Me\rowflags(*Me\chilcount))
-      *Me\dy + *ctl\sizY
-    ElseIf *Me\chilcount = 0
-      *Me\dy + *ctl\sizY
-    EndIf
     
     ; ---[ One More Control ]---------------------------------------------------
     *Me\chilcount + 1
@@ -404,10 +393,9 @@ Module ControlProperty
     
     ; Check Row Status
     If *Me\row : ProcedureReturn( void ) : EndIf
-    
     ; Update Status
     *Me\row = #True
-    
+    *Me\dx = 0
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -420,10 +408,11 @@ Module ControlProperty
 
     ; Check Row Status
     If Not *Me\row : ProcedureReturn( void ) : EndIf
-
+;     *Me\dy + *Me\children(*Me\chilcount-1)\sizY
     ; Update Status
     *Me\row = #False
   EndProcedure
+  
 ;   ; ---[ Draw Title Bar ]-------------------------------------------------------
 ;   ;------------------------------------------------------------
 ;   Procedure DrawHead(*Me.ControlProperty_t)
@@ -496,7 +485,7 @@ Module ControlProperty
       Append( *Me, *knob)
       If *Me\row  : *Me\dx + width : Else : *Me\dy + height : EndIf
     EndIf
-
+    
     ProcedureReturn(*knob)
   
   EndProcedure
@@ -1145,6 +1134,10 @@ Module ControlProperty
     ; Offset for Next Control
     ;---------------------------------
     *Me\head = *head
+    
+    ; ---[ Expand height ]------------------------------------------------------
+    *Me\dy + *head\sizY
+
     ProcedureReturn(*head)
   EndProcedure
   
@@ -1338,14 +1331,13 @@ Module ControlProperty
             For d=0 To nbc_row -1
               son = *Me\children(c+d)
               *son = son
-              Debug *son\name + ": "+*son\class\name
               ev_data\width = wi
               ev_data\x     = *Me\posX + wi * d
               ev_data\y     = *son\posY
               CompilerIf #PB_Compiler_Version <560
-                son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+                son\OnEvent(Control::#PB_EventType_Resize, ev_data)
               CompilerElse
-                son\OnEvent(#PB_EventType_Resize, @ev_data)
+                son\OnEvent(#PB_EventType_Resize, ev_data)
               CompilerEndIf
               If Not *Me\rowflags(c) : walk = #False : EndIf
             Next
@@ -1353,14 +1345,13 @@ Module ControlProperty
           Else
             son = *Me\children(c)
             *son = son
-            Debug *son\name + ": "+*son\class\name
             ev_data\width = *ev_data\width
             ev_data\x     = *son\posX
             ev_data\y     = *son\posY
             CompilerIf #PB_Compiler_Version <560
-              son\OnEvent(Control::#PB_EventType_Resize, @ev_data)
+              son\OnEvent(Control::#PB_EventType_Resize, ev_data)
             CompilerElse
-              son\OnEvent(#PB_EventType_Resize, @ev_data)
+              son\OnEvent(#PB_EventType_Resize, ev_data)
             CompilerEndIf
           EndIf
         Next
@@ -1380,9 +1371,9 @@ Module ControlProperty
         ev_data\yoff    = *son\posY
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-        VectorSourceColor(UIColor::COLORA_MAIN_BG )
+        VectorSourceColor(RGBA(Random(255), Random(255), Random(255), Random(255)));UIColor::COLORA_MAIN_BG )
         FillPath()
-        son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+        son\OnEvent( Control::#PB_EventType_Draw, ev_data )
         StopVectorDrawing()
   
       ; ------------------------------------------------------------------------
@@ -1739,7 +1730,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1693
-; FirstLine = 1466
+; CursorPosition = 410
+; FirstLine = 399
 ; Folding = --------
 ; EnableXP

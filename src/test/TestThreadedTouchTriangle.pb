@@ -11,13 +11,14 @@ Structure ThreadData_t
   threadID.i
   *positions
   *indices
+  *elements
   count.i
   *box.Geometry::Box_t
   *hits
 EndStructure
 
 Procedure ThreadedTriangleArrayTouchCell(*datas.ThreadData_t)
-  Triangle::TouchArray(*datas\positions, *datas\indices, *datas\count, *datas\box, *datas\hits)
+  Triangle::TouchArray(*datas\positions, *datas\indices, *datas\elements, *datas\count, *datas\box, *datas\hits)
 EndProcedure
 
 Procedure NumHits(*hits, nb)
@@ -42,6 +43,9 @@ Vector3::Set(box\extend, 10,10,10)
 
 Global *hits1 = AllocateMemory(*geom\nbtriangles)
 Global *hits2 = AllocateMemory(*geom\nbtriangles)
+Global *elements = AllocateMemory(*geom\nbtriangles * 4)
+Define i
+For i=0 To *geom\nbtriangles - 1 : PokeL(*elements + i*4, i) : Next
 
 ; BRUTE FORCE
 Define startT1.d = Time::Get()
@@ -61,7 +65,7 @@ Define startT1.d = Time::Get()
 ;     PokeB(*hits1 + i, #True)
 ;   EndIf
 ; Next
-Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *geom\nbtriangles, box, *hits1)
+Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *elements, *geom\nbtriangles, box, *hits1)
 Define elapsedT1.d = Time::Get() - startT1
 
 ; THREADED
@@ -79,7 +83,8 @@ For i=0 To ArraySize(threadDatas())-1
     \count = numTriPerThread
     \hits = *hits2 + i * numTriPerThread
     \positions = *geom\a_positions\data
-    \indices = *geom\a_triangleindices\data +(i * 12 * numTriPerThread)
+    \indices = *geom\a_triangleindices\data
+    \elements = *elements + (i*4*numTriPerThread)
   EndWith
   threads(i) = CreateThread(@ThreadedTriangleArrayTouchCell(), threadDatas(i))
 Next
@@ -105,7 +110,7 @@ MessageRequester("THREADED",
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 24
+; CursorPosition = 58
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

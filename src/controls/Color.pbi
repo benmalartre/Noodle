@@ -133,16 +133,16 @@ Module ControlColor
 ;     
     ; draw color
     If *Me\item = #ITEM_COLOR
-      Vector::RoundBoxPath(3*ch+4, 3*ch+4, 4,*Me\sizX - 3*ch + 8, 3+yoff, 2)
+      Vector::RoundBoxPath(*Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4, 2)
       VectorSourceColor(RGBA(122,122,122,255))
       FillPath()
     Else
-      Vector::RoundBoxPath( 3*ch+4, 3*ch+4, 4,*Me\sizX - 3*ch + 8, 3+yoff, 2)
+      Vector::RoundBoxPath( *Me\sizX - 3*ch + 8, 3+yoff, 3*ch+4, 3*ch+4,2)
       VectorSourceColor(RGBA(0,0,0,255))
       FillPath()
     EndIf
     
-    Vector::RoundBoxPath( 3*ch, 3*ch, 4,*Me\sizX - 3*ch + 10, 5+yoff, 2)
+    Vector::RoundBoxPath( *Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 2)
     VectorSourceColor(RGBA(*Me\red, *Me\green, *Me\blue,255))
     FillPath()
    
@@ -459,8 +459,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 109
+; CursorPosition = 144
+; FirstLine = 98
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

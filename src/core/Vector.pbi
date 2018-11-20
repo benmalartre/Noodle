@@ -22,7 +22,7 @@ DeclareModule Vector
   Declare WriteToFile(*icon.Icon_t, filename.s)
   Declare ReadFromFile(*icon.Icon_t, filename.s)
   Declare Draw(*icon.Icon_t)
-  Declare RoundBoxPath(width.f, height.f, radius.f=6, offsetx=0, offsety=0, stroke_width=2)
+  Declare RoundBoxPath(x.f, y.f, width.f, height.f, radius.f=6)
   Declare MoveCursorPathOnCircle(cx.f, cy.f, radius.f, angle.f)
 EndDeclareModule
 
@@ -154,12 +154,12 @@ Module Vector
   ;-----------------------------------------------------------------------------
   ; ROUND BOX PATH
   ;-----------------------------------------------------------------------------
-  Procedure RoundBoxPath(width.f, height.f, radius.f=6, offsetx=0, offsety=0, stroke_width=2)
-    MovePathCursor(offsetx + radius,offsety)
-    AddPathArc(offsetx+width,offsety,offsetx+width,offsety+height,radius)
-    AddPathArc(offsetx+width,offsety+height,offsetx,offsety+height,radius)
-    AddPathArc(offsetx,offsety+height,offsetx,offsety,radius)
-    AddPathArc(offsetx,offsety,offsetx+width,offsety,radius)
+  Procedure RoundBoxPath(x.f, y.f, width.f, height.f, radius.f=6)
+    MovePathCursor(x + radius,y)
+    AddPathArc(x+width,y,x+width,y+height,radius)
+    AddPathArc(x+width,y+height,x,y+height,radius)
+    AddPathArc(x,y+height,x,y,radius)
+    AddPathArc(x,y,x+width,y,radius)
     ClosePath()
   EndProcedure
   
@@ -204,7 +204,7 @@ Procedure Bulb()
   StartVectorDrawing(CanvasVectorOutput(canvas))
   ScaleCoordinates(10,10)
   BeginVectorLayer()
-    Vector::RoundBoxPath(size, size, radius, offsetx, offsety, stroke_width)
+    Vector::RoundBoxPath(offsetx, offsety, size, size, radius)
     color = RGBA(128,128,128,255)
     VectorSourceColor(color)
     Vector::AddItem(icon, 0,0,color,#False, #True, #True)
@@ -268,7 +268,7 @@ EndProcedure
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 159
+; CursorPosition = 206
+; FirstLine = 202
 ; Folding = ---
 ; EnableXP

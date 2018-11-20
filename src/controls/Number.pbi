@@ -287,7 +287,7 @@ Module ControlNumber
     
     ; ---[ Set Font ]-----------------------------------------------------------
     Protected tc.i = UIColor::COLOR_NUMBER_FG
-    VectorFont(FontID(Globals::#FONT_TEXT))
+    VectorFont(FontID(Globals::#FONT_HEADER))
   ;   raaSetFontEdit( raa_font_node )
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
@@ -369,109 +369,140 @@ Module ControlNumber
       
     EndIf
     
-    ; ---[ Reset Clipping ]-----------------------------------------------------
-    ;   raaResetClip()
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
       ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLORA_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
-      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+      Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
+      Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+      VectorSourceColor(RGBA(255,0,0,64))
+      FillPath()
       AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
-      VectorSourceColor(RGBA(255,0,0,255))
+      VectorSourceColor(RGBA(0,255,0,255))
       FillPath()
     Else
-      If slider_w > *Me\sizX * 0.5
-        Vector::RoundBoxPath( *Me\sizX , *Me\sizY , 3, xoff, yoff, 2)
+;       If slider_w > *Me\sizX * 0.5
+        Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
         FillPath()
-        Vector::RoundBoxPath( *Me\sizX-slider_w, *Me\sizY , 3, xoff+slider_w, yoff, 2)
-        VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(RGBA(0,0,0,64))
         FillPath()
         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
         VectorSourceColor(UIColor::COLORA_CARET)
         FillPath()
-      Else
-        Vector::RoundBoxPath( *Me\sizX-slider_w, *Me\sizY , 3, xoff+slider_w, yoff, 2)
-        VectorSourceColor(UIColor::COLORA_NUMBER_FG)
-        FillPath()
-        Vector::RoundBoxPath( *Me\sizX, *Me\sizY , 3, xoff, yoff, 2)
-        VectorSourceColor(UIColor::COLORA_NUMBER_BG)
-        FillPath()
-        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-        VectorSourceColor(RGBA(0,255,0,255))
-        FillPath()
-      EndIf
-      
-      AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
-      VectorSourceColor(RGBA(0,0,255,255))
-      FillPath()
-      
+;       Else
+;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+;         VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+;         FillPath()
+;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
+;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+;         FillPath()
+;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+;         VectorSourceColor(RGBA(0,255,0,255))
+;         FillPath()
+;       EndIf
     EndIf
     
     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
     VectorSourceColor(RGBA(255,222,255,255))
     FillPath()
     
-;     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
-;     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
-;     
-;     ; ---[ Handle Caret & Selection ]-------------------------------------------
-;     If *Me\focused
-;       ; ---[ Has Selection ]----------------------------------------------------
-;       If *Me\selected
-;         ; ---[ Draw Regular Text + Selection ]----------------------------------
-;         CompilerSelect #PB_Compiler_OS
-;           CompilerCase #PB_OS_Windows
+    ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
+    Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
+    
+    ; ---[ Handle Caret & Selection ]-------------------------------------------
+    If *Me\focused
+      ; ---[ Has Selection ]----------------------------------------------------
+      If *Me\selected
+        ; ---[ Draw Regular Text + Selection ]----------------------------------
+        CompilerSelect #PB_Compiler_OS
+          CompilerCase #PB_OS_Windows
+            AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
+            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            FillPath()
 ;             Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-;           CompilerCase #PB_OS_Linux
+          CompilerCase #PB_OS_Linux
+            AddPathBox(tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
+            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            FillPath()
 ;             Box( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-;           CompilerCase #PB_OS_MacOS
+          CompilerCase #PB_OS_MacOS
+            AddPathBox(tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
+            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            FillPath()
 ;             Box( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
-;         CompilerEndSelect
-;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-;         DrawText( tx + xoff, ty, dtext, UIColor::COLOR_SELECTED_FG )
-;       ; ---[ Just Caret ]-------------------------------------------------------
-;       Else
-;         ; ---[ Draw Value ]-----------------------------------------------------
-;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-;         DrawText( tx + xoff, ty, dtext, tc )
-;         ; ...[ Draw Caret ].....................................................
-;         If *Me\caret_switch > 0 Or Not *Me\timer_on
-;           CompilerSelect #PB_Compiler_OS
-;             CompilerCase #PB_OS_Windows
+        CompilerEndSelect
+        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+        MovePathCursor(tx + xoff, ty)
+        VectorSourceColor(UIColor::COLORA_TEXT)
+        DrawVectorText( dtext )
+      ; ---[ Just Caret ]-------------------------------------------------------
+      Else
+        ; ---[ Draw Value ]-----------------------------------------------------
+        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+        MovePathCursor(tx + xoff, ty)
+        VectorSourceColor(UIColor::COLORA_TEXT)
+        DrawVectorText(  dtext)
+        ; ...[ Draw Caret ].....................................................
+        If *Me\caret_switch > 0 Or Not *Me\timer_on
+          CompilerSelect #PB_Compiler_OS
+            CompilerCase #PB_OS_Windows
+              MovePathCursor(tx + posXL + xoff, ty)
+              AddPathLine(1, 13, #PB_Path_Relative)
+              VectorSourceColor(UIColor::COLORA_CARET)
+              StrokePath(2)
 ;               Line( tx + posXL + xoff, ty,   1, 13, UIColor::COLOR_CARET )
-;             CompilerCase #PB_OS_Linux
+            CompilerCase #PB_OS_Linux
+               MovePathCursor(tx + posXL + xoff, ty+1)
+              AddPathLine(1, 13, #PB_Path_Relative)
+              VectorSourceColor(UIColor::COLORA_CARET)
+              StrokePath(2)
 ;               Line( tx + posXL + xoff, ty+1, 1, 13, UIColor::COLOR_CARET )
-;             CompilerCase #PB_OS_MacOS
+            CompilerCase #PB_OS_MacOS
+               MovePathCursor(tx + posXL + xoff, ty+2)
+              AddPathLine(1, 13, #PB_Path_Relative)
+              VectorSourceColor(UIColor::COLORA_CARET)
+              StrokePath(2)
 ;               Line( tx + posXL + xoff, ty+2, 1, 13, UIColor::COLOR_CARET )
-;           CompilerEndSelect
-;         EndIf
-;       EndIf
-;     Else
-;       ; ---[ Draw Value ]-------------------------------------------------------
-;       CompilerSelect #PB_Compiler_OS
-;           CompilerCase #PB_OS_Windows
-;             RoundBox( -3 + tx + xoff, ty,   tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-;           CompilerCase #PB_OS_Linux
+          CompilerEndSelect
+        EndIf
+      EndIf
+    Else
+      ; ---[ Draw Value ]-------------------------------------------------------
+      CompilerSelect #PB_Compiler_OS
+          CompilerCase #PB_OS_Windows
+            Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
+            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            FillPath()
+          CompilerCase #PB_OS_Linux
+            Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
+            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            FillPath()
 ;             RoundBox( -3 + tx + xoff, ty+1, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-;           CompilerCase #PB_OS_MacOS
+          CompilerCase #PB_OS_MacOS
+            Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
+            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            FillPath()
 ;             RoundBox( -3 + tx + xoff, ty+2, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
-;         CompilerEndSelect
-;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-;         DrawText( tx + xoff, ty, dtext, tc )
-;     EndIf
+        CompilerEndSelect
+        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+        MovePathCursor(tx + xoff, ty)
+        VectorSourceColor(UIColor::COLORA_TEXT)
+        DrawVectorText( dtext)
+    EndIf
     
   EndProcedure
   ;}
@@ -1250,7 +1281,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 587
-; FirstLine = 539
+; CursorPosition = 545
+; FirstLine = 541
 ; Folding = ----
 ; EnableXP

@@ -107,13 +107,13 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   ; ---[ Label Color ]--------------------------------------------------------
   Protected tc.i = UIColor::COLORA_LABEL
   Protected bgc.i = UIColor::COLORA_MAIN_BG
+
+;   AddPathBox(xoff + *Me\posX, yoff+*Me\posY, *Me\sizX, *Me\sizY)
+;   VectorSourceColor(bgc)
+;   FillPath()
   
-  AddPathBox(xoff + *Me\posX, yoff+*Me\posY, *Me\sizX, *Me\sizY)
-  VectorSourceColor(bgc)
-  FillPath()
-  
-  Define cx.i = *Me\sizX * 0.5 + *Me\posX + xoff
-  Define cy.i = *Me\sizY * 0.5 + *Me\posY + yoff
+  Define cx.i = *Me\sizX * 0.5 + *Me\posX ;+ xoff
+  Define cy.i = *Me\sizY * 0.5 + *Me\posY ;+ yoff
   
   BeginVectorLayer() 
   ResetCoordinates()
@@ -288,12 +288,12 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
     CompilerEndIf
       ; ...[ Sanity Check ]...................................................
       If Not *ev_data : ProcedureReturn : EndIf
-      
       ; ...[ Update Topology ]................................................
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
       If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
       If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
-      If #PB_Ignore <> *ev_data\height : *Me\sizY = *ev_data\height : EndIf
+;       If #PB_Ignore <> *ev_data\height : *Me\sizY = *ev_data\height : EndIf
+      Control::Invalidate(*Me)
       ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
       
@@ -484,7 +484,7 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   *Me\onchanged_signal = Slot::New(*Me)
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
-  
+Debug "ADD KNOB : "+Str(*Me\posX)+", "+Str(*Me\posY)
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
@@ -500,7 +500,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 228
+; CursorPosition = 486
+; FirstLine = 443
 ; Folding = ---
 ; EnableXP

@@ -185,12 +185,10 @@ Module Octree
       Protected j
       For j=0 To 7
         If *cell\children[j]
-          *cell\children[j]\state = Octree::#DEFAULT_STATE
           ResetHits(*cell\children[j])
         EndIf
       Next j
     EndIf
-    *cell\state = Octree::#DEFAULT_STATE
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -811,7 +809,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 190
-; FirstLine = 175
+; CursorPosition = 194
+; FirstLine = 199
 ; Folding = ------
 ; EnableXP

@@ -132,15 +132,7 @@ If Time::Init()
       glUniform3f(glGetUniformLocation(shader,"color"),0,1,0)
 
       Polymesh::Draw(*bunny)
-      
-      ; Draw infos
-      FTGL::BeginDraw(*app\context\writer)
-      FTGL::SetColor(*app\context\writer,1,1,1,1)
-      Define ss.f = 0.85/w
-      Define ratio.f = w / h
-      FTGL::Draw(*app\context\writer,"FPS : "+Str(777),-0.9,0.9,ss,ss*ratio)
-      FTGL::Draw(*app\context\writer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
-      FTGL::EndDraw(*app\context\writer)
+    
       ;Draw(vao,nbp)
       ;       DrawKDTree(*tree,cube_vao,shader)
 ;       Vector3::Set(s,5,5,5)
@@ -157,8 +149,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 99
+; CursorPosition = 134
+; FirstLine = 92
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

@@ -16,6 +16,8 @@ Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 CArray::SetCount(*positions, numTris * 3)
 Define *indices.CArray::CArrayLong = CArray::newCArrayLong()
 CArray::SetCount(*indices, numTris*3)
+Define *elements.CArray::CArrayLong = CArray::newCArrayLong()
+CArray::SetCount(*elements, numTris)
 
 Define *hits = AllocateMemory(numTris)
 Global box.Geometry::Box_t
@@ -50,6 +52,7 @@ For i=0 To numTris - 1
   Vector3::Set(*p, Random(50)-25, Random(50)-25, Random(50)-25)
 ;   Vector3::Set(*p, 0.55, 0,-0.66)
   PokeL(*indices\data + (i*3+2)*4, i*3+2)
+  CArray::SetValueL(*elements, i, i)
 Next
 
 Procedure Divergence(*A, *B, nb)
@@ -118,7 +121,7 @@ Define T1.d = Time::Get() - T
 ; Define T2.d = Time::Get() - t
 
 T = Time::Get()
-hits2 = Triangle::TouchArray(*positions\data, *indices\data, *indices\data, numTris, box, *hits)
+hits2 = Triangle::TouchArray(*positions\data, *indices\data, *elements\data, numTris, box, *hits)
 Define T3.d = Time::Get() - T
 
 For i=0 To numTris - 1
@@ -138,7 +141,8 @@ MessageRequester("Touch",msg)
 ; Debug asms
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 23
+; CursorPosition = 123
+; FirstLine = 84
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

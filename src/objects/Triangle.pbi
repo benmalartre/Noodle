@@ -1565,10 +1565,41 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
              
     !   shufps xmm2,xmm2,00010010b        ; exchange 1 and 2 element (a)
     !   shufps xmm3,xmm3,00001001b        ; exchange 2 and 3 element (b)
-    !   mulps  xmm2,xmm3
-            
+    !   mulps  xmm2,xmm3    
     !   subps  xmm0,xmm2                  ; cross product triangle normal
     
+;     ; ---------------------------------------------------------------------------------
+;     ; check side
+;     ; ---------------------------------------------------------------------------------
+;     !   movaps xmm3, xmm12            ; copy boxhalfsize to xmm3
+;     !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
+;     
+;     !   movups xmm6, [r13]            ; load 1111 negate mask
+;     !   mulps xmm5, xmm6              ; negate boxhalfsize
+;     
+;     !   subps xmm3, xmm13             ; box - p0
+;     !   subps xmm5, xmm13             ; -box - p0
+;     
+;     !   xorps xmm2, xmm2
+;     !   cmpps xmm2, xmm0, 1           ; check zero < normal
+; 
+;     !   movaps xmm4, xmm3
+;     !   movaps xmm6, xmm5
+;     
+;     !   andps xmm4, xmm2
+;     !   andps xmm6, xmm2
+;     
+;     !   xorps xmm2, xmm2
+;     !   cmpps xmm2, xmm0, 5          ; check zero >= normal
+; 
+;     !   andps xmm3, xmm2
+;     !   andps xmm5, xmm2
+;     
+;     !   addps xmm4, xmm3
+;     !   addps xmm6, xmm5
+; 
+;     !   jmp array_normal_dot_min
+
     ; ---------------------------------------------------------------------------------
     ; check side
     ; ---------------------------------------------------------------------------------
@@ -1948,7 +1979,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 162
+; CursorPosition = 1750
+; FirstLine = 1712
 ; Folding = ----
 ; EnableXP

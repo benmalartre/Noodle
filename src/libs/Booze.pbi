@@ -643,6 +643,8 @@ Module Alembic
   EndProcedure
   
   Procedure.i LoadABCArchive(path.s)
+    Debug path
+    Debug FileSize(path)
     If FileSize(path)>0 And GetExtensionPart(path) = "abc"
       
       Protected manager.IArchiveManager = abc_manager
@@ -1451,7 +1453,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1257
-; FirstLine = 1245
+; CursorPosition = 646
+; FirstLine = 640
 ; Folding = --------
 ; EnableXP

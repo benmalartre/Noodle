@@ -102,7 +102,7 @@ Module AnimCurve
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 44
+; CursorPosition = 96
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

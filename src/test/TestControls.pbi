@@ -17,8 +17,11 @@ Controls::Init()
 Commands::Init()
 UIColor::Init()
 
+
+
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
-Controls::SetTheme(Globals::#GUI_THEME_DARK)
+; Controls::SetTheme(Globals::#GUI_THEME_DARK)
+Controls::SetTheme(Globals::#GUI_THEME_LIGHT)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*m\main, "Property", #Null)
 
@@ -31,6 +34,18 @@ For i=0 To 1
   
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
+  
+   ControlProperty::RowStart(*prop)
+  Define i
+  For i=0 To 2
+    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 64, 64)
+    ControlKnob::SetLimits(*knob, 1000,9000)
+;     ( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
+  Next
+  ControlProperty::RowEnd(*prop)
+  *prop\dy + 64
+  ;   
+  
   Object::SignalConnect(*ui, *head\ondelete_signal, 0)
   Object::SignalConnect(*ui, *head\onexpand_signal, 1)
   
@@ -52,7 +67,8 @@ For i=0 To 1
   
   Define q.q4f32
   ControlProperty::AddQuaternionControl(*prop, "Quaternion", "Quaternion", q, #Null)
-;   
+  
+ 
   
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
@@ -63,6 +79,7 @@ CloseGadgetList()
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
+; CursorPosition = 40
+; FirstLine = 21
 ; Folding = -
 ; EnableXP

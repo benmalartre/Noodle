@@ -77,7 +77,7 @@ Module ControlHead
     Protected *prop.Control::Control_t = *Me\parent
     Protected *n.Node::Node_t = *prop\object
     
-    VectorFont(FontID(Globals::#FONT_TEXT),14)
+    VectorFont(FontID(Globals::#FONT_TITLE),12)
     w = VectorTextWidth(*n\name)
     h = VectorTextHeight(*n\name)
 
@@ -124,7 +124,7 @@ Module ControlHead
 
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlHead_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-    
+    Debug "PROPERTY HEAD ON EVENT"
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
   
@@ -364,7 +364,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 203
+; CursorPosition = 126
+; FirstLine = 121
 ; Folding = ---
 ; EnableXP

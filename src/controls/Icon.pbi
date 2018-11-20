@@ -163,12 +163,12 @@ Module ControlIcon
     If Not *Me\enable 
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(255,128,64,255))
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(128,255,64,255))
         FillPath()
       EndIf
@@ -176,12 +176,12 @@ Module ControlIcon
     ElseIf *Me\over
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(64,255,255,255))
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(64,255,32,255))
         FillPath()
       EndIf
@@ -189,12 +189,12 @@ Module ControlIcon
     Else
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(255,255,128,255))
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(*Me\sizX, *Me\sizY, 2, xoff, yoff, 2)
+        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(RGBA(255,64,64,255))
         FillPath()
       EndIf
@@ -553,7 +553,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 195
+; CursorPosition = 196
+; FirstLine = 192
 ; Folding = ----
 ; EnableXP

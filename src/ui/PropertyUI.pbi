@@ -144,13 +144,11 @@ Module PropertyUI
           SetGadgetAttribute(*Me\container,#PB_ScrollArea_InnerHeight, ev_datas\y-2)
           
         Case #PB_Event_Gadget
+          Define currentGadget = EventGadget()
           If ListSize(*Me\props())
             ForEach *Me\props()
-              If ev_datas\x >= *Me\props()\posX And 
-                 ev_datas\x < *Me\props()\posX + *Me\props()\sizX And
-                 ev_datas\y >= *Me\props()\posY And 
-                 ev_datas\y < *Me\props()\posY + *Me\props()\sizY :
-                    ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+              If *Me\props()\gadgetID = currentGadget
+                 ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
               EndIf
               ev_datas\y + *Me\props()\sizY
             Next
@@ -185,15 +183,15 @@ Module PropertyUI
     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
     Protected *c.ControlProperty::ControlProperty_t = *h\parent
 
-;     If id = 0
-;       DeleteProperty(*Me, *c)
-;     ElseIf id = 1
-;       If *c\expanded
-;         CollapseProperty(*Me, *c)
-;       Else
-;         ExpandProperty(*Me, *c)
-;       EndIf
-;     EndIf
+    If id = 0
+      DeleteProperty(*Me, *c)
+    ElseIf id = 1
+      If *c\expanded
+        CollapseProperty(*Me, *c)
+      Else
+        ExpandProperty(*Me, *c)
+      EndIf
+    EndIf
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -467,8 +465,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 66
+; CursorPosition = 193
+; FirstLine = 176
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

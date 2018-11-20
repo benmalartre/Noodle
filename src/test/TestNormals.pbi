@@ -165,17 +165,19 @@ Procedure Draw(*app.Application::Application_t)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_NONE)
   Define *geom.Geometry::PolymeshGeometry_t = *bunny\geom
-  PolymeshGeometry::SphereTopology(*geom\topo, 4, 512, 256)
+  PolymeshGeometry::SphereTopology(*geom\topo, 4, 512 , 512)
   PolymeshGeometry::Set2(*geom, *geom\topo)
   
   Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
   Object3D::Freeze(*bunny)
   Object3D::SetShader(*bunny,*s_polymesh)
   Define i
+  Define S.d = Time::get()
   For i=0 To 12
     PolymeshGeometry::RecomputeNormals(*geom)
   Next
-  
+  Define E.d = Time::Get() - S
+  MessageRequester("COMPUTE NORMASl : ", StrD(E))
   Object3D::AddChild(*root,*bunny)
   
   Scene::AddModel(Scene::*current_scene,*root)
@@ -184,8 +186,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 125
+; CursorPosition = 167
+; FirstLine = 129
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
