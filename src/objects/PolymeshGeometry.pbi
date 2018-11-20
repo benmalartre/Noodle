@@ -426,6 +426,7 @@ Module PolymeshGeometry
       Define numPoints = *mesh\nbpoints
       Define numTris = *mesh\nbtriangles
       Define numPolygons = *mesh\nbpolygons
+      Define numSamples = *mesh\nbsamples
       Define *facecount = *mesh\a_facecount\data
       Define *faceindices = *mesh\a_faceindices\data
       Define *vertexpolygoncount = *mesh\a_vertexpolygoncount\data
@@ -617,7 +618,26 @@ Module PolymeshGeometry
       
       ! dec ecx
       ! jg set_average_point_normals
-
+      
+      ; ---------------------------------------------------------------------------------
+      ; display normal
+      ; ---------------------------------------------------------------------------------
+      ! init_display_normals:
+      !   mov ecx, [p.v_numSamples]
+      !   mov eax, [p.p_indices]
+      !   mov rsi, [p.p_pointnormals] 
+      !   mov rdi, [p.p_normals] 
+      
+      ! loop_display_normals:
+      !   mov r12d, [eax]                         ; load vertex index
+      !   add eax, 4
+      !   imul r12, 16
+      !   movups xmm0, [rsi + r12]                ; load point normal
+      !   movups [rdi], xmm0
+      !   add rdi, 16
+      
+      !   dec ecx
+      !   jg loop_display_normals
 
     CompilerElse
       For i=0 To *mesh\nbtriangles-1
@@ -683,15 +703,15 @@ Module PolymeshGeometry
         base + nbp
       Next
       
+      ; Display Normals
+      For i=0 To *mesh\nbsamples-1
+        *n = CArray::GetValue(*mesh\a_pointnormals, CArray::GetValueL(*mesh\a_triangleindices, i))
+        CArray::SetValue(*mesh\a_normals, i, *n)
+      Next
+
     CompilerEndIf
 
 
-    ; Display Normals
-    For i=0 To *mesh\nbsamples-1
-      *n = CArray::GetValue(*mesh\a_pointnormals, CArray::GetValueL(*mesh\a_triangleindices, i))
-      CArray::SetValue(*mesh\a_normals, i, *n)
-    Next
-    
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -2683,7 +2703,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 419
-; FirstLine = 383
+; CursorPosition = 640
+; FirstLine = 615
 ; Folding = -----g--f--
 ; EnableXP

@@ -165,7 +165,7 @@ Procedure Draw(*app.Application::Application_t)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_NONE)
   Define *geom.Geometry::PolymeshGeometry_t = *bunny\geom
-  PolymeshGeometry::SphereTopology(*geom\topo, 4, 512 , 512)
+  PolymeshGeometry::SphereTopology(*geom\topo, 4, 1024 , 512)
   PolymeshGeometry::Set2(*geom, *geom\topo)
   
   Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
@@ -177,7 +177,7 @@ Procedure Draw(*app.Application::Application_t)
     PolymeshGeometry::RecomputeNormals(*geom)
   Next
   Define E.d = Time::Get() - S
-  MessageRequester("COMPUTE NORMASl : ", StrD(E))
+  MessageRequester("COMPUTE NORMASl : ", "12 Time "+Str(*geom\nbtriangles)+" TRIANGLES TOOK "+StrD(E))
   Object3D::AddChild(*root,*bunny)
   
   Scene::AddModel(Scene::*current_scene,*root)
