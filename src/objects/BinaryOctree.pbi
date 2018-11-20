@@ -15,7 +15,7 @@ DeclareModule BinaryOctree
   
   Structure i2f_t
     StructureUnion
-      i.i
+      i.l
       f.f
     EndStructureUnion
   EndStructure
@@ -303,7 +303,7 @@ MessageRequester("MORTON", "NUM LEAVES : "+Str(BinaryOctree::NumLeaves(*o)))
 BinaryOctree::Delete(*o)
 MessageRequester("FUCKIN MORTON", "ALL IS FINE")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 217
+; CursorPosition = 282
+; FirstLine = 66
 ; Folding = ----
 ; EnableXP

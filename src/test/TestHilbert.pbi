@@ -513,7 +513,7 @@ Procedure DrawCells(*grid.Hilbert::Grid_t)
     index + 1
   Next
   
-  Protected *line.Drawer::Item_t = Drawer::NewColoredLines(*drawer, *positions, *colors)
+  Protected *line.Drawer::Item_t = Drawer::AddColoredLines(*drawer, *positions, *colors)
   Drawer::SetSize(*line, 2)
 
   CArray::Delete(*positions)
@@ -531,7 +531,7 @@ Procedure DrawCell(*cell.Hilbert::Cell_t)
       Matrix4::SetScale(@m, @s)
       Matrix4::SetTranslation(@m, *cell\pos)
       Color::Randomize(@c)
-      Protected *box.Drawer::Item_t = Drawer::NewBox(*drawer, @m)
+      Protected *box.Drawer::Item_t = Drawer::AddBox(*drawer, @m)
       Drawer::SetSize(*box, 3)
       Drawer::SetColor(*box, @c)
     EndIf
@@ -599,7 +599,7 @@ FTGL::Init()
   Matrix4::SetScale(@m, @s)
   Matrix4::SetTranslation(@m, @box\origin)
   
-  Drawer::NewBox(*drawer, @m)
+  Drawer::AddBox(*drawer, @m)
   Define *grid.Hilbert::Grid_t = Hilbert::New(@box,3)
   DrawCells(*grid)
   
@@ -608,7 +608,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 505
-; FirstLine = 500
+; CursorPosition = 582
+; FirstLine = 551
 ; Folding = ---
 ; EnableXP

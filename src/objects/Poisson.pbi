@@ -172,7 +172,7 @@ Module Poisson
       Next
     Next
     
-    Define *pnt.Drawer::Point_t = Drawer::NewColoredPoints(*drawer, *positions, *colors)
+    Define *pnt.Drawer::Point_t = Drawer::AddColoredPoints(*drawer, *positions, *colors)
     Drawer::SetSize(*pnt, 4)
     
     CArray::Delete(*positions)
@@ -248,7 +248,7 @@ Module Poisson
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 160
+; CursorPosition = 174
+; FirstLine = 170
 ; Folding = ---
 ; EnableXP

@@ -116,10 +116,16 @@ DeclareModule Math
     Data.f -1, -1, -1, -1
     sse_0101_negate_mask:
     Data.f 1, -1, 1, -1
-     sse_1010_negate_mask:
+    sse_1010_negate_mask:
     Data.f -1, 1, -1, 1
     sse_1100_negate_mask:
     Data.f -1, -1, 1, 1
+    sse_zero_vec:
+    Data.f 0, 0, 0, 0
+    sse_one_vec:
+    Data.f 1, 1, 1, 1
+    sse_pi_vec:
+    Data.f #F32_PI, #F32_PI, #F32_PI, #F32_PI
   EndDataSection
 
   ; ----------------------------------------------------------------------------
@@ -3555,8 +3561,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 913
-; FirstLine = 899
+; CursorPosition = 87
+; FirstLine = 85
 ; Folding = --------------------------------------------
 ; EnableXP
 ; EnableUnicode

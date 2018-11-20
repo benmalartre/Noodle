@@ -142,100 +142,161 @@ Module Triangle
   ; Closest Point
   ;------------------------------------------------------------------
   Procedure ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32, *uvw.v3f32)
-
     Protected edge0.v3f32
     Protected edge1.v3f32
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define.f a,b,c,d,e
+      
+      ! mov rsi, [p.p_pnt]              ; move pnt to cpu
+      ! movups xmm10, [rsi]             ; move datas to xmm10
+      ! mov rsi, [p.p_closest]          ; move closest to cpu
+      ! movups xmm11, [rsi]             ; move datas to xmm11
+      ! mov rsi, [p.p_uvw]              ; move uvw to cpu
+      ! movups xmm12, [rsi]             ; move datas to xmm12
+      
+      ! mov rsi, [p.p_a]                ; move a to cpu
+      ! movaps xmm13,[rsi]              ; move datas to xmm13
+      ! mov rsi, [p.p_b]                ; move b to cpu
+      ! movaps xmm14,[rsi]              ; move datas to xmm14
+      ! mov rsi, [p.p_c]                ; move c to cpu
+      ! movaps xmm15,[rsi]              ; move datas to xmm15
+      
+      ! movaps xmm8, xmm14              ; copy b in xmm8
+      ! movaps xmm9, xmm15              ; copy c in xmm9
+      ! subps xmm8, xmm13               ; compute edge0 : b - a
+      ! subps xmm9, xmm13               ; compute edge1 : c - a
+      ! movups [p.v_edge0], xmm8
+      ! movups [p.v_edge1], xmm9
+      
+      ! movaps xmm7, xmm10              ; copy pnt to xmm7
+      ! subps xmm7, xmm13               ; compute v0 : pnt - a
+      
+                                        ; dot product a : edge0 * edge0                  
+      ! movaps xmm0, xmm8
+      ! mulps xmm0, xmm8
+      ! haddps xmm0, xmm0
+      ! haddps xmm0, xmm0
+      ! movss [p.v_a], xmm0
+      
+                                        ; dot product a : edge0 * edge1                 
+      ! movaps xmm1, xmm8
+      ! mulps xmm1, xmm9
+      ! haddps xmm1, xmm1
+      ! haddps xmm1, xmm1
+      ! movss [p.v_b], xmm1
+      
+                                        ; dot product a : edge1 * edge1                 
+      ! movaps xmm2, xmm9
+      ! mulps xmm2, xmm9
+      ! haddps xmm2, xmm2
+      ! haddps xmm2, xmm2
+      ! movss [p.v_c], xmm2
+      
+                                        ; dot product a : edge0 * v0                 
+      ! movaps xmm3, xmm8
+      ! mulps xmm3, xmm13
+      ! haddps xmm3, xmm3
+      ! haddps xmm3, xmm3
+      ! movss [p.v_d], xmm3
+      
+                                        ; dot product a : edge1 * v0                 
+      ! movaps xmm4, xmm9
+      ! mulps xmm4, xmm13
+      ! haddps xmm4, xmm4
+      ! haddps xmm4, xmm4
+      ! movss [p.v_e], xmm4
+
+    CompilerElse
+      
+      Vector3::Sub(edge0, *b, *a)
+      Vector3::Sub(edge1, *c, *a)
+      
+      Protected v0.v3f32
+      Vector3::Sub(v0, *a, *pnt)
+      
+      Define.f a,b,c,d,e
+      a = Vector3::Dot(edge0, edge0)
+      b = Vector3::Dot(edge0, edge1)
+      c = Vector3::Dot(edge1, edge1)
+      d = Vector3::Dot(edge0, v0)
+      e = Vector3::Dot(edge1, v0)
+      
+    CompilerEndIf
     
-    Vector3::Sub(edge0, *b, *a)
-    Vector3::Sub(edge1, *c, *a)
-    
-    Protected v0.v3f32
-    Vector3::Sub(v0, *a, *pnt)
-    
-    Define.f a,b,c,d,e
-    a = Vector3::Dot(edge0, edge0)
-    b = Vector3::Dot(edge0, edge1)
-    c = Vector3::Dot(edge1, edge1)
-    d = Vector3::Dot(edge0, v0)
-    e = Vector3::Dot(edge1, v0)
-    
-    Define.f det, s, t
-    det = a*c - b*b
-    s = b*e - c*d
-    t = b*d - a*e
-    
-    If ( s + t < det )
-      If ( s < 0.0)
-        If ( t < 0.0 )
-          If ( d < 0.0 )
-            s = -d/a
-            CLAMP( s, 0.0, 1.0 )
-            t = 0.0
+      
+      Define.f det
+      det = a*c - b*b
+      *uvw\y = b*e - c*d
+      *uvw\z = b*d - a*e
+      
+      If ( *uvw\y + *uvw\z < det )
+        If ( *uvw\y < 0.0)
+          If ( *uvw\z < 0.0 )
+            If ( d < 0.0 )
+              *uvw\y = -d/a
+              CLAMP( *uvw\y, 0.0, 1.0 )
+              *uvw\z = 0.0
+            Else
+              *uvw\y = 0.0
+              *uvw\z = -e/c
+              CLAMP( *uvw\z, 0.0, 1.0 )
+            EndIf
           Else
-            s = 0.0
-            t = -e/c
-            CLAMP( t, 0.0, 1.0 )
-          EndIf
+            *uvw\y = 0.0
+            *uvw\z = -e/c
+            CLAMP( *uvw\z, 0.0, 1.0 )
+          EndIf 
+        ElseIf ( *uvw\z < 0.0 )
+          *uvw\y = -d/a
+          CLAMP( *uvw\y, 0.0, 1.0 )
+          *uvw\z = 0.0
         Else
-          s = 0.0
-          t = -e/c
-          CLAMP( t, 0.0, 1.0 )
-        EndIf 
-      ElseIf ( t < 0.0 )
-        s = -d/a
-        CLAMP( s, 0.0, 1.0 )
-        t = 0.0
+          Define invDet.f = 1.0 / det
+          *uvw\y * invDet
+          *uvw\z * invDet
+        EndIf
+     Else
+      If ( *uvw\y < 0.0 )
+        Define tmp0.f = b+d
+        Define tmp1.f = c+e
+        If ( tmp1 > tmp0 )
+          Define numer.f = tmp1 - tmp0
+          Define denom.f = a-2*b+c
+          *uvw\y = numer/denom
+          CLAMP( *uvw\y, 0.0, 1.0 )
+          *uvw\z = 1-*uvw\y
+        Else
+          *uvw\z = -e/c
+          CLAMP( *uvw\z, 0.0, 1.0 )
+          *uvw\y = 0.0
+        EndIf
+      ElseIf ( *uvw\z < 0.0 )
+        If ( a+d > b+e )
+          Define numer.f = c+e-b-d
+          Define denom.f = a-2*b+c
+          *uvw\y = numer/denom
+          CLAMP( *uvw\y, 0.0, 1.0)
+          *uvw\z = 1-*uvw\y
+        Else
+          *uvw\y = -e/c
+          CLAMP( *uvw\y, 0.0, 1.0 )
+          *uvw\z = 0.0
+        EndIf
       Else
-        Define invDet.f = 1.0 / det
-        s * invDet
-        t * invDet
-      EndIf
-   Else
-    If ( s < 0.0 )
-      Define tmp0.f = b+d
-      Define tmp1.f = c+e
-      If ( tmp1 > tmp0 )
-        Define numer.f = tmp1 - tmp0
-        Define denom.f = a-2*b+c
-        s = numer/denom
-        CLAMP( s, 0.0, 1.0 )
-        t = 1-s
-      Else
-        t = -e/c
-        CLAMP( t, 0.0, 1.0 )
-        s = 0.0
-      EndIf
-    ElseIf ( t < 0.0 )
-      If ( a+d > b+e )
         Define numer.f = c+e-b-d
         Define denom.f = a-2*b+c
-        s = numer/denom
-        CLAMP( s, 0.0, 1.0)
-        t = 1-s
-      Else
-        s = -e/c
-        CLAMP( s, 0.0, 1.0 )
-        t = 0.0
+        *uvw\y = numer/denom
+        CLAMP( *uvw\y, 0.0, 1.0 )
+        *uvw\z = 1.0 - *uvw\y
       EndIf
-    Else
-      Define numer.f = c+e-b-d
-      Define denom.f = a-2*b+c
-      s = numer/denom
-      CLAMP( s, 0.0, 1.0 )
-      t = 1.0 - s
     EndIf
-  EndIf
-  
-  Vector3::SetFromOther(*closest, *a)
-  Vector3::ScaleInPlace(edge0, s)
-  Vector3::ScaleInPlace(edge1, t)
-  Vector3::AddInPlace(*closest, edge0)
-  Vector3::AddInPlace(*closest, edge1)
-  
-  *uvw\y = s
-  *uvw\z = t
-  *uvw\x = 1.0-v-w
-
+    
+    *closest\x = *a\x + edge0\x * s + edge1\x * t
+    *closest\y = *a\y + edge0\y * s + edge1\y * t
+    *closest\z = *a\z + edge0\z * s + edge1\z * t
+    *uvw\x = 1.0-*uvw\y-*uvw\z
+    
+;   CompilerEndIf
 EndProcedure
 
 CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -1887,7 +1948,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 980
-; FirstLine = 968
+; CursorPosition = 206
+; FirstLine = 162
 ; Folding = ----
 ; EnableXP

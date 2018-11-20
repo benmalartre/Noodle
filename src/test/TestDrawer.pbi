@@ -64,7 +64,7 @@ Procedure RandomSpheres(numItems.i,y.f=0)
     Matrix4::SetTranslation(m,p)
 
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::NewSphere(*drawer, @m)
+    *item = Drawer::AddSphere(*drawer, @m)
     Drawer::SetColor(*item,  @color)
   Next
 EndProcedure
@@ -82,7 +82,7 @@ Procedure RandomCubes(numItems.i,y.f=0)
     Matrix4::SetTranslation(m,p)
 
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::NewBox(*drawer, @m)
+    *item = Drawer::AddBox(*drawer, @m)
     Drawer::SetColor(*item,  @color)
   Next
 EndProcedure
@@ -99,7 +99,7 @@ Procedure RandomStrips(numItems.i)
       CArray::SetValue(*positions, j, position)
     Next
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::NewStrip(*drawer, *positions)
+    *item = Drawer::AddStrip(*drawer, *positions)
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
   Next
@@ -117,7 +117,7 @@ Procedure RandomPoints(numItems.i)
       CArray::SetValue(*positions, j, position)
     Next
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::NewPoints(*drawer, *positions)
+    *item = Drawer::AddPoints(*drawer, *positions)
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
   Next
@@ -201,8 +201,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 112
+; CursorPosition = 119
+; FirstLine = 115
 ; Folding = --
 ; EnableThread
 ; EnableXP

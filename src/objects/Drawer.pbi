@@ -75,6 +75,7 @@ DeclareModule Drawer
     u_model.GLint
     u_proj.GLint
     u_view.GLint
+    u_offset.GLint
 ;     u_color.GLint
 ;     u_colored.GLint
     overlay.b
@@ -86,20 +87,20 @@ DeclareModule Drawer
   EndInterface
 
   Declare New( name.s = "Drawer")
-  Declare NewPoint(*Me.Drawer_t, *position.Math::v3f32)
+  Declare AddPoint(*Me.Drawer_t, *position.Math::v3f32)
 ;   Declare NewColoredPoint(*Me.Drawer_t, *position.v3f32, *color.c4f32)
-  Declare NewPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-  Declare NewLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
-  Declare NewLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-  Declare NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-  Declare NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-  Declare NewBox(*Me.Drawer_t, *m.Math::m4f32)
-  Declare NewSphere(*Me.Drawer_t, *m.Math::m4f32)
-  Declare NewMatrix(*Me.Drawer_t, *m.Math::m4f32)
-  Declare NewTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-  Declare NewColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  Declare AddPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare AddColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  Declare AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
+  Declare AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  Declare AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
+  Declare AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
+  Declare AddBox(*Me.Drawer_t, *m.Math::m4f32)
+  Declare AddSphere(*Me.Drawer_t, *m.Math::m4f32)
+  Declare AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
+  Declare AddTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare AddColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare Delete(*Me.Drawer_t)
   Declare DeletePoint(*Me.Point_t)
   Declare DeleteLine(*Me.Line_t)
@@ -110,6 +111,7 @@ DeclareModule Drawer
   Declare DeleteTriangle(*Me.Triangle_t)
   Declare SetColor(*Me.Item_t, *color.Math::c4f32)
   Declare SetSize(*Me.Item_t, size.f)
+  Declare SetWireframe(*Me.Item_t, wireframe.b)
   Declare Flush(*Me.Drawer_t)
   Declare Setup(*Me.Drawer_t,*shader.Program::Program_t)
   Declare Update(*Me.Drawer_t)
@@ -151,6 +153,14 @@ Module Drawer
   EndProcedure
   
   ;----------------------------------------------------------------------------
+  ; Set Wireframe
+  ;---------------------------------------------------------------------------- 
+  Procedure SetWireframe(*Me.Item_t,wireframe.b)
+    If Not *Me : ProcedureReturn : EndIf
+    *me\wireframe = wireframe
+  EndProcedure
+  
+  ;----------------------------------------------------------------------------
   ; Set Color
   ;---------------------------------------------------------------------------- 
   Procedure SetColor(*Me.Item_t,*color.Math::c4f32)
@@ -172,10 +182,9 @@ Module Drawer
     *Me\shader = *pgm
     
     *Me\u_model = glGetUniformLocation(*pgm\pgm,"model")
-;     *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
-;     *Me\u_colored = glGetUniformLocation(*pgm\pgm, "colored")
     *Me\u_proj = glGetUniformLocation(*pgm\pgm,"projection")
     *Me\u_view = glGetUniformLocation(*pgm\pgm,"view")
+    *Me\u_offset = glGetUniformLocation(*pgm\pgm, "offset")
   EndProcedure
   
   
@@ -192,11 +201,7 @@ Module Drawer
     Protected shader.i
     Protected plength.i, clength.i, tlength.i
     ; ---[ Assign Shader ]---------------------------
-    If *shader 
-      SetShader(*Me, *shader)
-      shader = *Me\shader\pgm
-      *Me\u_model = glGetUniformLocation(shader,"model")
-    EndIf
+    If *shader : SetShader(*Me, *shader) : EndIf
     
     Protected *item.Item_t
     ForEach *Me\items()
@@ -366,16 +371,25 @@ Module Drawer
   ; ---[ Draw Sphere Item ]--------------------------------------------------
   Procedure DrawSphere(*Me.Matrix_t, *pgm)
     glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"model"),1,#GL_FALSE,*Me\m)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
+    
     glLineWidth(2)
     Protected *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
     Protected offset.i = 8
-    glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+    If *Me\wireframe
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+    Else
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+    EndIf
+    
   EndProcedure
   
   ; ---[ Draw Matrix Item ]--------------------------------------------------
   Procedure DrawMatrix(*Me.Matrix_t, *pgm)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"model"),1,#GL_FALSE,*Me\m)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
     glLineWidth(2)
     Protected *indices = Shape::GetEdges(Shape::#SHAPE_AXIS)
     Protected offset.i = 8
@@ -413,7 +427,9 @@ Module Drawer
     EndIf
     
     
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
+    glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
+    glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
+    
     ForEach *Me\items()
       With *Me\items()
         glBindVertexArray(\vao)
@@ -574,8 +590,8 @@ Module Drawer
     
   EndProcedure
 
-  ; ---[ New Point Item ]------------------------------------------------------
-  Procedure NewPoint(*Me.Drawer_t, *position.Math::v3f32)
+  ; ---[ Add Point Item ]------------------------------------------------------
+  Procedure AddPoint(*Me.Drawer_t, *position.Math::v3f32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
@@ -592,8 +608,8 @@ Module Drawer
     ProcedureReturn *point
   EndProcedure
   
-  ; ---[ New Points Item ]------------------------------------------------------
-  Procedure NewPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  ; ---[ Add Points Item ]------------------------------------------------------
+  Procedure AddPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
@@ -611,8 +627,8 @@ Module Drawer
     ProcedureReturn *point
   EndProcedure
   
-  ; ---[ New Colored Points Item ]------------------------------------------------------
-  Procedure NewColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  ; ---[ Add Colored Points Item ]------------------------------------------------------
+  Procedure AddColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
     InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
@@ -629,8 +645,8 @@ Module Drawer
   EndProcedure
   
   
-  ; ---[ New Line Item ]-------------------------------------------------------
-  Procedure NewLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
+  ; ---[ Add Line Item ]-------------------------------------------------------
+  Procedure AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
@@ -647,8 +663,8 @@ Module Drawer
     ProcedureReturn *line
   EndProcedure
   
-  ; ---[ New Lines Item ]-------------------------------------------------------
-  Procedure NewLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  ; ---[ Add Lines Item ]-------------------------------------------------------
+  Procedure AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
@@ -665,8 +681,8 @@ Module Drawer
     ProcedureReturn *line
   EndProcedure
   
-  ; ---[ New Colored Lines Item ]-----------------------------------------------
-  Procedure NewColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  ; ---[ Add Colored Lines Item ]-----------------------------------------------
+  Procedure AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
@@ -682,8 +698,8 @@ Module Drawer
     ProcedureReturn *line
   EndProcedure
   
-  ; ---[ New Strip Item ]------------------------------------------------------
-  Procedure NewStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
+  ; ---[ Add Strip Item ]------------------------------------------------------
+  Procedure AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *strip.Strip_t = AllocateMemory(SizeOf(Strip_t))
     InitializeStructure(*strip, Strip_t)
     *strip\type = #ITEM_STRIP
@@ -705,8 +721,8 @@ Module Drawer
     ProcedureReturn *strip
   EndProcedure
   
-  ; ---[ New Loop Item ]-------------------------------------------------------
-  Procedure NewLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
+  ; ---[ Add Loop Item ]-------------------------------------------------------
+  Procedure AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
     InitializeStructure(*loop, Loop_t)
     *loop\type = #ITEM_LOOP
@@ -728,8 +744,8 @@ Module Drawer
     ProcedureReturn *loop
   EndProcedure
   
-  ; ---[ New Box Item ]--------------------------------------------------------
-  Procedure NewBox(*Me.Drawer_t, *m.Math::m4f32)
+  ; ---[ Add Box Item ]--------------------------------------------------------
+  Procedure AddBox(*Me.Drawer_t, *m.Math::m4f32)
     Protected *box.Box_t = AllocateMemory(SizeOf(Box_t))
     InitializeStructure(*box, Box_t)
     *box\type = #ITEM_BOX
@@ -755,8 +771,8 @@ Module Drawer
     ProcedureReturn *box
   EndProcedure
   
-  ; ---[ New Sphere Item ]-----------------------------------------------------
-  Procedure NewSphere(*Me.Drawer_t, *m.Math::m4f32)
+  ; ---[ Add Sphere Item ]-----------------------------------------------------
+  Procedure AddSphere(*Me.Drawer_t, *m.Math::m4f32)
     Protected *sphere.Sphere_t = AllocateMemory(SizeOf(Sphere_t))
     InitializeStructure(*sphere, Sphere_t)
     *sphere\type = #ITEM_SPHERE
@@ -767,21 +783,21 @@ Module Drawer
     CArray::SetCount(*sphere\colors, Shape::#SPHERE_NUM_VERTICES)
     CopyMemory(Shape::?shape_sphere_positions, CArray::GetPtr(*sphere\positions, 0), Shape::#SPHERE_NUM_VERTICES * CArray::GetItemSize(*sphere\positions))
     
-    ; Transform vertex positions
-    Protected i
-    Protected *p.Math::v3f32
-    For i=0 To Shape::#SPHERE_NUM_VERTICES-1
-      *p = CArray::GetValue(*sphere\positions, i)
-      Vector3::MulByMatrix4InPlace(*p,*sphere\m)
-    Next
+;     ; Transform vertex positions
+;     Protected i
+;     Protected *p.Math::v3f32
+;     For i=0 To Shape::#SPHERE_NUM_VERTICES-1
+;       *p = CArray::GetValue(*sphere\positions, i)
+;       Vector3::MulByMatrix4InPlace(*p,*sphere\m)
+;     Next
     AddElement(*Me\items())
     *Me\items() = *sphere
     *Me\dirty = #True
     ProcedureReturn *sphere
   EndProcedure
   
-  ; ---[ New Matrix Item ]-----------------------------------------------------
-  Procedure NewMatrix(*Me.Drawer_t, *m.Math::m4f32)
+  ; ---[ Add Matrix Item ]-----------------------------------------------------
+  Procedure AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
     Protected *matrix.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
     InitializeStructure(*matrix, Matrix_t)
     *matrix\type = #ITEM_MATRIX
@@ -796,8 +812,8 @@ Module Drawer
     ProcedureReturn *matrix
   EndProcedure
   
-  ; ---[ New Triangle Item ]------------------------------------------------------
-  Procedure NewTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  ; ---[ Add Triangle Item ]------------------------------------------------------
+  Procedure AddTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
     InitializeStructure(*triangle, Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
@@ -812,8 +828,8 @@ Module Drawer
     ProcedureReturn *triangle
   EndProcedure
   
-  ; ---[ New Colored Triangle Item ]------------------------------------------------------
-  Procedure NewColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  ; ---[ Add Colored Triangle Item ]------------------------------------------------------
+  Procedure AddColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
     InitializeStructure(*triangle, Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
@@ -836,7 +852,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 216
+; CursorPosition = 147
+; FirstLine = 109
 ; Folding = --------
 ; EnableXP

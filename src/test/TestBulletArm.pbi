@@ -173,19 +173,19 @@ Procedure DrawPivot(*A.Object3D::Object3D_t, *drawer.Drawer::Drawer_t)
   Protected color.c4f32
   Color::Set(color, 1,0,0,1)
   
-  Protected *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
+  Protected *axis.Drawer::Item_t = Drawer::AddLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,1,0)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
   Color::Set(color, 0,1,0,1)
-  *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
+  *axis.Drawer::Item_t = Drawer::AddLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
   Vector3::Set(*p,0,0,1)
   Vector3::MulByMatrix4InPlace(*p,*A\globalT\m)
   Color::Set(color, 0,0,1,1)
-  *axis.Drawer::Item_t = Drawer::NewLines(*drawer, *positions)
+  *axis.Drawer::Item_t = Drawer::AddLines(*drawer, *positions)
   Drawer::SetColor(*axis, @color)
   
 EndProcedure
@@ -384,8 +384,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 108
+; CursorPosition = 335
+; FirstLine = 327
 ; Folding = --
 ; EnableThread
 ; EnableXP

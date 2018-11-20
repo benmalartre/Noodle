@@ -92,13 +92,13 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   CArray::SetValue(*positions,0, *tr\start_pos)
   CArray::SetValue(*positions,1,*tr\end_pos)
   
-  Protected *pnts.Drawer::Item_t = Drawer::NewPoints(*tr\drawer, *positions)
+  Protected *pnts.Drawer::Item_t = Drawer::AddPoints(*tr\drawer, *positions)
   Drawer::SetSize(*pnts, 4)
   Protected color.c4f32
   Color::Set(color, 1,0,0,1)
   Drawer::SetColor(*pnts, color)
   
-  Protected *line.Drawer::Item_t = Drawer::NewLine(*tr\drawer, *tr\start_pos, *tr\end_pos)
+  Protected *line.Drawer::Item_t = Drawer::AddLine(*tr\drawer, *tr\start_pos, *tr\end_pos)
   Drawer::SetSize(*line, 2)
   Color::Set(color, 0,1,0,1)
   Drawer::SetColor(*line, color)
@@ -137,7 +137,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
       CArray::SetValue(*tri, 1, b)
       CArray::SetValue(*tri, 2, c)
       
-      *pnt = Drawer::NewLoop(*tr\drawer, *tri)
+      *pnt = Drawer::AddLoop(*tr\drawer, *tri)
       Drawer::SetSize(*pnt, 1)
       Drawer::SetColor(*pnt, Color::_MAGENTA())
       
@@ -146,7 +146,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
       Vector3::SetFromOther(*tr\location\uvw, *tr\uvw)
       *tr\location\tid = i
       
-;       *pnt = Drawer::NewPoint(*tr\drawer, Location::GetPosition(*tr\location))
+;       *pnt = Drawer::AddPoint(*tr\drawer, Location::GetPosition(*tr\location))
 ;       Drawer::SetSize(*pnt, 8)
 ;       Color::Set(color, 1,1,0,1)
 ;       Drawer::SetColor(*pnt, color)
@@ -245,8 +245,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 94
+; CursorPosition = 32
+; FirstLine = 28
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

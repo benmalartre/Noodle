@@ -126,7 +126,7 @@ Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t)
       Matrix4::SetScale(m,s)
       Matrix4::SetTranslation(m,c)
       
-      Define *box.Drawer::Box_t = Drawer::NewBox(*drawer, m)
+      Define *box.Drawer::Box_t = Drawer::AddBox(*drawer, m)
       Define color.c4f32
       Color::Set(color, *node\r,*node\g,*node\b, 1)
       Drawer::SetColor(*box, color)
@@ -154,7 +154,7 @@ Procedure DrawKDPoints(*tree.KDTree::KDTree_t)
   Next
   
 ;   CopyMemory(*tree\points(0), CArray::GetPtr(*positions, 0), *tree\m_nbp * SizeOf(KDTree::KDPoint_t))
-  Protected *PNT.Drawer::Point_t = Drawer::NewColoredPoints(*drawer, *positions, *colors)
+  Protected *PNT.Drawer::Point_t = Drawer::AddColoredPoints(*drawer, *positions, *colors)
   Drawer::SetSize(*PNT, 4)
   CArray::Delete(*positions)
   CArray::Delete(*colors)
@@ -171,7 +171,7 @@ Procedure DrawKDQuery(*tree.KDTree::KDTree_t)
   Vector3::Set(p, query\v[0], query\v[1], query\v[2])
   Matrix4::SetScale(m, s)
   Matrix4::SetTranslation(m, p)
-  *query_display = Drawer::NewSphere(*drawer, m)
+  *query_display = Drawer::AddSphere(*drawer, m)
   Drawer::SetColor(*query_display, Color::_GREEN())
 EndProcedure
 
@@ -320,8 +320,8 @@ If Time::Init()
   
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 280
-; FirstLine = 256
+; CursorPosition = 272
+; FirstLine = 263
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe
