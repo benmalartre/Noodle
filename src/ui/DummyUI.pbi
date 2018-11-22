@@ -90,25 +90,29 @@ Module DummyUI
   ; Draw
   ;-------------------------------
   Procedure Draw(*ui.DummyUI_t)
-    StartDrawing(CanvasOutput(*ui\gadgetID))
+    StartVectorDrawing(CanvasOutput(*ui\gadgetID))
     DrawingMode(#PB_2DDrawing_Default)
     If *ui\active
-      Box(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID),RGB(Random(255),Random(255),Random(255)))
+      AddPathBox(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID))
+      VectorSourceColor(RGBA(Random(255),Random(255),Random(255),255))
+      FillPath()
     Else
-      Box(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID),RGB(100,100,100))
+      AddPathBox(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID))
+      VectorSourceColor(RGBA(100,100,100,255))
+      FillPath()
     EndIf
     
     Protected txt.s = Str(*ui\width)+"x"+Str(*ui\height)
     Protected tx = GadgetWidth(*ui\gadgetID)/2 - TextWidth(txt)/2
     Protected ty = GadgetHeight(*ui\gadgetID)/2-6
-    DrawingMode(#PB_2DDrawing_Transparent)
-    DrawingFont(FontID(Globals::#FONT_LABEL))
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
+    MovePathCursor(tx,ty)
+    DrawVectorText(txt)
     
-    DrawText(tx,ty,txt)
-    
-    DrawingMode(#PB_2DDrawing_Outlined)
-    RoundBox(2,2,GadgetWidth(*ui\gadgetID)-4,GadgetHeight(*ui\gadgetID)-4,4,4,RGB(60,60,60))
-    StopDrawing()
+    Vector::RoundBoxPath(2,2,GadgetWidth(*ui\gadgetID)-4,GadgetHeight(*ui\gadgetID)-4,4)
+    VectorSourceColor(RGBA(60,60,60,255))
+    FillPath()
+    StopVectorDrawing()
   EndProcedure
   
   ; Init
@@ -158,8 +162,8 @@ Module DummyUI
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 121
-; FirstLine = 117
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 107
+; FirstLine = 103
 ; Folding = --
 ; EnableXP

@@ -75,7 +75,7 @@ Module ControlColor
     Protected tc.i = UIColor::COLORA_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    VectorFont(FontID(Globals::#FONT_LABEL ),16)
+    VectorFont(FontID(Globals::#FONT_DEFAULT ),GLobals::#FONT_SIZE_LABEL)
     Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )/2 + xoff
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     tx = Math::Max( tx, 3 + xoff )
@@ -459,8 +459,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 98
+; CursorPosition = 77
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

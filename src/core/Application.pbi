@@ -56,6 +56,7 @@ XIncludeFile "../layers/CascadedShadowMap.pbi"
 XIncludeFile "../layers/Toon.pbi"
 XIncludeFile "../layers/SSAO.pbi"
 XIncludeFile "../layers/Blur.pbi"
+; XIncludeFile "../layers/Strokes.pbi"
 
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
@@ -380,11 +381,9 @@ CompilerIf #USE_GLFW
             EndIf    
           
           Case #GLFW_MOUSE_BUTTON_MIDDLE
-            Debug "Middle Mouse Button!!"
             *app\mmb_p = #True
 
           Case #GLFW_MOUSE_BUTTON_RIGHT
-            Debug "Right Mouse Button!!"
             *app\rmb_p = #True
             
           EndSelect
@@ -561,7 +560,9 @@ CompilerEndIf
         Debug "UNSUPPORTED EVENT"
   EndSelect
   
-  EndProcedure
+EndProcedure
+
+
   
   ;-----------------------------------------------------------------------------
   ; Main Loop
@@ -638,8 +639,8 @@ CompilerEndIf
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 629
-; FirstLine = 577
+; CursorPosition = 582
+; FirstLine = 559
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

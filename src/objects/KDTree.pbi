@@ -17,6 +17,11 @@ DeclareModule KDTree
     ID.i
   EndStructure
   
+  Structure KDSearch_t
+    ID.i
+    distance.f
+  EndStructure
+  
   Structure KDNode_t
     ID.i
     level.i
@@ -54,9 +59,9 @@ DeclareModule KDTree
   Declare Build(*tree.KDTree_t,*pnts,nbp.i, max_levels=99,min_pnts=10)
   Declare.f Distance(*a.KDPoint_t,*b.KDPoint_t)
   Declare GetBoundingBox(*tree.KDTree_t,*node.KDNode_t,*min.KDPoint_t,*max.KDPoint_t)
-  Declare SearchAtNode(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, *retID, *retDist, *retNode)
-  Declare SearchAtNodeRange(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, range.f,*retID, *retDist)
-  Declare Search(*tree.KDTree_t,*query.KDPoint_t,*retID,*retDist)
+  Declare SearchAtNode(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, *search.KDSearch_t)
+  Declare SearchAtNodeRange(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, range.f,*search.KDSearch_t)
+  Declare Search(*tree.KDTree_t,*query.KDPoint_t,*search.KDSearch_t)
   Declare SearchN(*tree.KDTree_t, *query.KDPoint_t,max_distance,max_points)
   Declare ResetHit(*tree.KDTree_t)
 EndDeclareModule
@@ -218,23 +223,24 @@ Module KDTree
   
   ; Search At Node
   ;--------------------------------------------------------------------
-  Procedure SearchAtNode(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, *retID, *retDist, *retNode)
-    Protected best_idx.i=0
-    Protected best_dist.f = #KD_F32_MAX
+  Procedure SearchAtNode(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, *search.KDSearch_t)
+    *search\ID=0
+    *search\distance = #KD_F32_MAX
     Protected idx.i
     Protected dist.f
+    Protected *retNode.KDNode_t = #Null
     While #True
       Protected split_axis.i = *node\level % #KDTREE_DIM
       *tree\m_cmps +1
       If *node\left = #Null
-        PokeI(*retNode,*node)
+        *retNode = *node
         ForEach *node\indices()
           *tree\m_cmps +1
           idx = *node\indices()
           dist = Distance(*query,*tree\points(idx))
-          If(dist<best_dist)
-            best_dist = dist
-            best_idx = idx
+          If(dist<*search\distance)
+            *search\distance = dist
+            *search\ID = idx
           EndIf
         Next
         Break 
@@ -244,16 +250,13 @@ Module KDTree
         *node = *node\right
       EndIf
     Wend
-    PokeI(*retID,best_idx)
-    PokeF(*retDist,best_dist)
+    ProcedureReturn *retNode
   EndProcedure
   
   ; Search At Node Range
   ;--------------------------------------------------------------------
-  Procedure SearchAtNodeRange(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, range.f,*retID, *retDist)
-    Protected best_idx.i
-    Protected best_dist.f = #KD_F32_MAX
-    
+  Procedure SearchAtNodeRange(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, range.f, *search.KDSearch_t)
+
     Protected split_axis.i
     Protected idx.i
     Protected dist.f
@@ -276,10 +279,9 @@ Module KDTree
            
             idx = *node\indices()
             dist = Distance(*query,*tree\points(idx))
-            If dist<best_dist
-              best_dist = dist
-              best_idx = idx
-              *node\hit = #True
+            If dist<*search\distance
+              *search\distance = dist
+              *search\ID = idx
             EndIf
           Next
    
@@ -309,11 +311,8 @@ Module KDTree
         EndIf
       Wend
       CopyList(*next_search(),*to_visit())
-      
     Wend  
-    
-    PokeI(*retID,best_idx)
-    PokeF(*retDist,best_dist)
+   
   EndProcedure
   
   ; SearchN At Node Range
@@ -345,10 +344,9 @@ Module KDTree
             idx = *node\indices()
             dist = Distance(*query,*tree\points(idx))
             If dist<range
-              *node\hit = #True
               AddElement(*tree\closests())
               *tree\closests()\ID = idx
-              *tree\closests()\v = Sqr(dist)
+              *tree\closests()\v = dist
             EndIf
           Next
         ; recurse parent node 
@@ -383,52 +381,39 @@ Module KDTree
   
   ; Search
   ;--------------------------------------------------------------------
-  Procedure Search(*tree.KDTree_t, *query.KDPoint_t,*retID, *retDist)
+  Procedure Search(*tree.KDTree_t, *query.KDPoint_t,*search.KDSearch_t)
     ; Find the closest Node, this will be the upper bound for the next searches
-    Protected *best_node.KDNode_t = #Null
-    Protected best_idx = 0
-    Protected best_dist.f = #KD_F32_MAX
-    Protected radius.f = 0
     *tree\m_cmps = 0
     
-    SearchAtNode(*tree,*tree\root,*query,@best_idx,@best_dist,@*best_node)
-    radius = Sqr(best_dist)
+    *search\distance = #KD_F32_MAX
+    Protected *best_node.KDNode_t = SearchAtNode(*tree,*tree\root,*query,*search)
+    *best_node\hit = #True
     
     ; now find possible other candidates
     Protected *node.KDNode_t = *best_node
     Protected *parent.KDNode_t
     Protected split_axis.i
-     
-    While *node\parent
-      ; go up
-      *parent = *node\parent
-      split_axis = *parent\level % #KDTREE_DIM
-      
-      ; search the other node
-      Protected tmp_idx
-      Protected tmp_dist.f = #KD_F32_MAX
-      Protected *tmp_node.KDNode_t
-      Protected *search_node.KDNode_t
-      
-      If Abs(*parent\split_value - *query\v[split_axis]) <= radius
-        ; search opposite node
-        If Not *parent\left = *node
-          SearchAtNodeRange(*tree,*parent\left,*query,radius,@tmp_idx,@tmp_dist)
-        Else
-          SearchAtNodeRange(*tree,*parent\right,*query,radius,@tmp_idx,@tmp_dist)
-        EndIf
-      EndIf
-      
-      If tmp_dist<best_dist
-        best_dist = tmp_dist
-        best_idx = tmp_idx
-      EndIf
-      
-      *node = *parent
-    Wend  
-      
-    PokeI(*retID,best_idx)
-    PokeF(*retDist,best_dist)
+    
+;     While *node\parent
+;       ; go up
+;       *parent = *node\parent
+;       split_axis = *parent\level % #KDTREE_DIM
+; 
+;       ; search the other node      
+;       Protected *tmp_node.KDNode_t
+;       Protected *search_node.KDNode_t
+;       
+;       If Abs(*parent\split_value - *query\v[split_axis]) <= *search\distance
+;         ; search opposite node
+;         If Not *parent\left = *node
+;           SearchAtNodeRange(*tree,*parent\left,*query,*search\distance,*search)
+;         Else
+;           SearchAtNodeRange(*tree,*parent\right,*query,*search\distance,*search)
+;         EndIf
+;       EndIf
+;       
+;       *node = *parent
+;     Wend  
     
   EndProcedure
   
@@ -436,7 +421,7 @@ Module KDTree
   ;--------------------------------------------------------------------
   Procedure SearchN(*tree.KDTree_t, *query.KDPoint_t,max_distance,max_points)
     ; Find the closest Node, this will be the upper bound for the next searches
-    Protected *best_node.KDNode_t = #Null
+    
     Protected best_idx = 0
     Protected best_dist.f = #KD_F32_MAX
     Protected radius.f = 0
@@ -445,15 +430,16 @@ Module KDTree
     ResetHit(*tree)
     ClearList(*tree\closests())
     
-    SearchAtNode(*tree,*tree\root,*query,@best_idx,@best_dist,@*best_node)
-    radius = Sqr(best_dist)
+    Protected result.KDSearch_t
+    Protected *best_node.KDNode_t = SearchAtNode(*tree,*tree\root,*query,result)
+    radius = result\distance
     If radius > max_distance
       ProcedureReturn
     EndIf
     
     
     AddElement(*tree\closests())
-    *tree\closests()\ID = best_idx
+    *tree\closests()\ID = result\ID
     *tree\closests()\v = radius
     
     SearchNAtNodeRange(*tree,*best_node,*query,max_distance)
@@ -523,6 +509,7 @@ Module KDTree
     
     Protected *node.KDNode_t
     NewList *to_visit.KDNode_t()
+    
     AddElement(*to_visit())
     *to_visit() = *tree\root
     While ListSize(*to_visit())
@@ -563,89 +550,17 @@ Module KDTree
         
       Wend
       CopyList(*next_search(),*to_visit())
-
+      FreeList(*next_search())
     Wend
     
+    FreeList(*to_visit())
+    
+    
   EndProcedure
-  
-;   ; DrawKDNode
-;   ;--------------------------------------------
-;   Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t,shader.i,ID.i=-1)
-;     If *node\left
-;       DrawKDNode(*tree,*node\left,shader)
-;       DrawKDNode(*tree,*node\right,shader)
-;     Else
-;       If ID = -1 Or ID = *node\ID
-;       Protected m.m4f32
-;         Matrix4::SetIdentity(@m)
-;         Protected min.v3f32,max.v3f32, c.v3f32,s.v3f32
-;         KDTree::GetBoundingBox(*tree,*node,@min,@max)
-;         Vector3::Sub(@s,@max,@min)
-;     ;     Vector3::ScaleInPlace(@s,0.5)
-;         Vector3::LinearInterpolate(@c,@min,@max,0.5)
-;         
-;         Matrix4::SetScale(@m,@s)
-;         Matrix4::SetTranslation(@m,@c)
-;         glUniform4f(glGetUniformLocation(shader,"color"),*node\r,*node\g,*node\b,0.25)
-;         glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
-;         glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,#Null)
-;         EndIf
-;   
-;     EndIf
-;     
-;     
-;   EndProcedure
-;   
-;   ; DrawKDTree
-;   ;--------------------------------------------
-;   Procedure DrawKDTree(*tree.KDTree_t)
-;     glBindVertexArray(*tree\vao)
-;     DrawNode(*tree,*tree\root)
-;     glBindVertexArray(0)
-;   EndProcedure
-  
 EndModule
-
-
-;========================================================================
-; Test Code
-;========================================================================
-; Define nbp = 12000
-; Define pnt.KDTree::KDPoint_t
-; Define *pnt.KDTree::KDPoint_t
-; Define i
-; 
-; 
-; Define *pnts = AllocateMemory(nbp*SizeOf(pnt))
-; 
-; For i=0 To nbp-1
-;   *pnt = *pnts+i*SizeOf(pnt)
-;   *pnt\v[0] = Random(100)
-;   *pnt\v[1] = Random(100)
-;   *pnt\v[2] = Random(100)
-; Next
-; 
-; Define *tree.KDTree::KDTree_t = KDTree::New()
-; KDTree::Build(*tree,*pnts,nbp,12)
-; 
-; Define query.KDTree::KDPoint_t
-; query\v[0] = Random(100)*0.05
-; query\v[1] = Random(100)*0.05
-; query\v[2] = Random(100)*0.05
-; Define retID.i
-; Define retDist.f
-; KDTree::Search(*tree,@query,@retID,@retDist)
-; Define result.s
-; result = "Closest Point ID : "+Str(retID)+"\n"
-; result + "Closest Distance : "+StrF(retDist)+"\n"
-; result + "Num Queries : "+Str(*tree\m_cmps)+"\n"
-; MessageRequester("KDTree",result)
-; ; Define.KDTree::KDPoint_t min,max
-; ; KDTree::GetBoundingBox(*tree,,@min,@max)
-
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 159
+; CursorPosition = 552
+; FirstLine = 500
 ; Folding = ----
 ; EnableXP

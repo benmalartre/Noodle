@@ -273,21 +273,33 @@ Module Drawer
       glBindBuffer(#GL_ARRAY_BUFFER,*item\vbo)
       
       plength.i = CArray::GetItemSize(*item\positions) * CArray::GetCount(*item\positions)
-      clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
-      length = plength + clength
-      glBufferData(#GL_ARRAY_BUFFER,length,#Null,#GL_DYNAMIC_DRAW)
-      glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
-      glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
-        
-      glEnableVertexAttribArray(0)
-      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-      CompilerElse
-        glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-      CompilerEndIf
-      glEnableVertexAttribArray(1)
-      glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
-
+      If *item\colors
+        clength = CArray::GetItemSize(*item\colors) * CArray::GetCount(*item\colors)
+        length = plength + clength
+        glBufferData(#GL_ARRAY_BUFFER,length,#Null,#GL_DYNAMIC_DRAW)
+        glBufferSubData(#GL_ARRAY_BUFFER, 0, plength, CArray::GetPtr(*item\positions,0))
+        glBufferSubData(#GL_ARRAY_BUFFER, plength, clength, CArray::GetPtr(*item\colors,0))
+          
+        glEnableVertexAttribArray(0)
+        CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+          glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+        CompilerElse
+          glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+        CompilerEndIf
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
+      Else
+        length = plength 
+        glBufferData(#GL_ARRAY_BUFFER,length,#Null,#GL_DYNAMIC_DRAW)
+        glBufferSubData(#GL_ARRAY_BUFFER, 0, length, CArray::GetPtr(*item\positions,0))
+          
+        glEnableVertexAttribArray(0)
+        CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+          glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+        CompilerElse
+          glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+        CompilerEndIf
+      EndIf
     Next
   EndProcedure
   
@@ -323,18 +335,22 @@ Module Drawer
   ;---------------------------------------------------------------------------- 
   ; ---[ Draw Point Item ]-----------------------------------------------------
   Procedure DrawPoint(*Me.Point_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    
     glPointSize(*Me\size)
     glDrawArrays(#GL_POINTS,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   ; ---[ Draw Line Item ]------------------------------------------------------
   Procedure DrawLine(*Me.Line_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     glLineWidth(*Me\size)
     glDrawArrays(#GL_LINES,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   ; ---[ Draw Loop Item ]------------------------------------------------------
   Procedure DrawLoop(*Me.Loop_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     Protected i.i, cnt.i, base.i
     base = 0
     glLineWidth(*Me\size)
@@ -347,6 +363,7 @@ Module Drawer
   
   ; ---[ Draw Strip Item ]-----------------------------------------------------
   Procedure DrawStrip(*Me.Strip_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     Protected i.i, cnt.i, base.i
     base = 0
     glLineWidth(*Me\size)
@@ -359,6 +376,7 @@ Module Drawer
   
   ; ---[ Draw Box Item ]-----------------------------------------------------
   Procedure DrawBox(*Me.Box_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
     If *Me\wireframe
       glLineWidth(*Me\size)
       glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
@@ -404,6 +422,7 @@ Module Drawer
   
   ; ---[ Draw Triangle Item ]--------------------------------------------------
   Procedure DrawTriangle(*Me.Triangle_t)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     If *Me\wireframe
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
       glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
@@ -450,6 +469,8 @@ Module Drawer
             DrawMatrix(*Me\items(), *Me\shader\pgm)
           Case #ITEM_TRIANGLE
             DrawTriangle(*Me\items())
+          Case #ITEM_COMPOUND
+            Debug "[DRAWER] Compound Shape NOT Implemented"
         EndSelect
       EndWith
     Next
@@ -532,6 +553,13 @@ Module Drawer
     FreeMemory(*Me)
   EndProcedure
   
+  ; ---[ Delete Triangle Item ]--------------------------------------------------
+  Procedure DeleteTriangle(*Me.Triangle_t)
+    DeleteItem(*Me)
+    CArray::Delete(*Me\positions)
+    FreeMemory(*Me)
+  EndProcedure
+  
   ; ---[ Delete Drawer Item ]--------------------------------------------------
   Procedure Delete( *Me.Drawer_t )
     ForEach *Me\items()
@@ -552,7 +580,9 @@ Module Drawer
           DeleteMatrix(*Me\items())
         Case #ITEM_TRIANGLE
           DeleteTriangle(*Me\items())
-      EndSelect
+        Case #ITEM_COMPOUND
+          Debug "[DRAWER] Compound Shape NOT Implemented"
+;           DeleteCompound(*Me\items())
     Next
     ClearList(*Me\items())
     ClearStructure(*Me,Drawer_t)
@@ -852,7 +882,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 109
-; Folding = --------
+; CursorPosition = 583
+; FirstLine = 547
+; Folding = ---------
 ; EnableXP

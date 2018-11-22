@@ -59,10 +59,7 @@ Module Model
   EndProcedure
   
   Procedure Setup(*model.Model_t,*pgm)
-    If Not *model
-      MessageRequester("[MODEL]","INVALID MODEL")
-      ProcedureReturn 
-    EndIf
+    If Not *model : ProcedureReturn : EndIf
       
     Protected i
     Protected *child.Object3D::Object3D_t
@@ -73,8 +70,6 @@ Module Model
       *child = *model\children()
       child = *child
       *geom = *child\geom
-;       If *child\type = Object3D::#Object3D_PointCloud Or 
-;       Debug "[Model] Setup "+*child\name+" ---> "+Str(*geom\nbpoints)
       child\Setup(*pgm)
     Next
     
@@ -89,14 +84,12 @@ Module Model
       *child = *model\children()
       child = *child
       *geom = *child\geom
-;       Debug "[Model] Update "+*child\name+" ---> "+Str(*geom\nbpoints)
       child\Update()
     Next
     
   EndProcedure
   
   Procedure Draw(*model.Model_t,*shader.Program::Program_t)
-    Debug "MODEL DRAW CALLED!!!"
     Protected i
     Protected *child.Object3D::Object3D_t
     Protected child.Object3D::IObject3D
@@ -106,7 +99,6 @@ Module Model
       glUniformMatrix4fv(glGetUniformLocation(*shader\pgm,"model"),1,#GL_FALSE,*child\matrix)
       child = *child
       child\Draw()
-      Debug "--------------------------> DRAW :: "+ *child\name
     Next
   EndProcedure
   
@@ -118,7 +110,7 @@ Module Model
   Class::DEF( Model )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 58
+; CursorPosition = 73
+; FirstLine = 35
 ; Folding = --
 ; EnableXP

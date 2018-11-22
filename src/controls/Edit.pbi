@@ -353,9 +353,9 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   
   ; ---[ Set Font ]-----------------------------------------------------------
   Protected tc.i = UIColor::COLOR_TEXT
-  DrawingFont( FontID(Globals::#FONT_NODE) )
+  VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
-  Protected ty.i = ( *Me\sizY - TextHeight( *Me\value ) )/2 + yoff
+  Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
   
   ; ---[ Check Positions Lookup Table ]---------------------------------------
   If *Me\lookup_dirty
@@ -367,7 +367,7 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
     ; ...[ Update Positions ].................................................
     *Me\lookup(0) = 0
     For i=1 To *Me\lookup_count
-      *Me\lookup(i) = TextWidth( Left(*Me\value,i-1) )
+      *Me\lookup(i) = VectorTextWidth( Left(*Me\value,i-1) )
     Next
     ; ...[ Now Clean ]........................................................
     *Me\lookup_dirty = #False
@@ -428,25 +428,37 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
 ;   raaResetClip()
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    DrawImage( ImageID(s_gui_controls_edit_disabled_l),            0 + xoff, 0 + yoff                    )
-    DrawImage( ImageID(s_gui_controls_edit_disabled_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-    DrawImage( ImageID(s_gui_controls_edit_disabled_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+    MovePathCursor(0 + xoff, 0 + yoff )
+    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_l))
+    MovePathCursor(8 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_c), 255,*Me\sizX - 16, 18 )
+    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff )
+    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_r))
     ; ...[ Disabled Text ]....................................................
     tc = UIColor::COLOR_LABEL_DISABLED
   ; ---[ Check Focused ]------------------------------------------------------
   ElseIf *Me\focused
-    DrawImage( ImageID(s_gui_controls_edit_focused_l),            0 + xoff, 0 + yoff                    )
-    DrawImage( ImageID(s_gui_controls_edit_focused_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-    DrawImage( ImageID(s_gui_controls_edit_focused_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+    MovePathCursor(0 + xoff, 0 + yoff )
+    DrawVectorImage( ImageID(s_gui_controls_edit_focused_l))
+    MovePathCursor(8 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_focused_c), 255,*Me\sizX - 16, 18 )
+    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_focused_r))
   ; ---[ Check Over ]---------------------------------------------------------
   ElseIf *Me\over
-    DrawImage( ImageID(s_gui_controls_edit_over_l),            0 + xoff, 0 + yoff                    )
-    DrawImage( ImageID(s_gui_controls_edit_over_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-    DrawImage( ImageID(s_gui_controls_edit_over_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+    MovePathCursor(0 + xoff, 0 + yoff   )
+    DrawVectorImage( ImageID(s_gui_controls_edit_over_l))
+    MovePathCursor(8 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_over_c), 255,*Me\sizX - 16, 18 )
+    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff  )
+    DrawVectorImage( ImageID(s_gui_controls_edit_over_r))
   Else
-    DrawImage( ImageID(s_gui_controls_edit_normal_l),            0 + xoff, 0 + yoff                    )
-    DrawImage( ImageID(s_gui_controls_edit_normal_c),            8 + xoff, 0 + yoff, *Me\sizX - 16, 18 )
-    DrawImage( ImageID(s_gui_controls_edit_normal_r), *Me\sizX - 8 + xoff, 0 + yoff                    )
+    MovePathCursor(0 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_normal_l))
+    MovePathCursor(8 + xoff, 0 + yoff)
+    DrawVectorImage( ImageID(s_gui_controls_edit_normal_c), 255,*Me\sizX - 16, 18 )
+    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff )
+    DrawVectorImage( ImageID(s_gui_controls_edit_normal_r))
   EndIf
 
   ; ---[ Handle Caret & Selection ]-------------------------------------------
@@ -456,37 +468,52 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
       ; ...[ Draw Regular Text + Selection ]..................................
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
-          Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+          AddPathBox( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
+          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          FillPath()
         CompilerCase #PB_OS_Linux
-          Box( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+          AddPathBox( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
+          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          FillPath()
         CompilerCase #PB_OS_MacOS
-          Box( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
+          AddPathBox( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
+          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          FillPath()
       CompilerEndSelect
-      DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-      DrawText( tx + xoff, ty, Mid( *Me\value, *Me\posS, tlen ) , tc )
+      
+      MovePathCursor(tx + xoff, ty)
+      VectorSourceColor(tc)
+      DrawVectorText( Mid( *Me\value, *Me\posS, tlen ))
     ; 같�[ Just Caret ]같같같같같같같같같같같같같같같같같같같같같같같같같같같�  
     Else
-      DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
       ; ...[ Draw Value ].....................................................
-      DrawText( tx + xoff, ty, Mid( *Me\value, *Me\posS, tlen ) , tc )
+      MovePathCursor(tx + xoff, ty)
+      VectorSourceColor(tc)
+      DrawVectorText( Mid( *Me\value, *Me\posS, tlen ))
       ; ...[ Draw Caret ].....................................................
       If *Me\caret_switch > 0 Or Not *Me\timer_on
         CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
-            Line( tx + posXL + xoff, ty,   1, 13, UIColor::COLOR_CARET )
+            MovePathCursor(tx + posXL + xoff, ty)
+            AddPathLine( 1, 13, #PB_Path_Relative)
+            VectorSourceColor(UIColor::COLORA_CARET )
           CompilerCase #PB_OS_Linux
-            Line( tx + posXL + xoff, ty+1, 1, 13, UIColor::COLOR_CARET )
+            MovePathCursor(tx + posXL + xoff, ty+1)
+            AddPathLine( 1, 13, #PB_Path_Relative)
+            VectorSourceColor(UIColor::COLORA_CARET )
           CompilerCase #PB_OS_MacOS
-            Line( tx + posXL + xoff, ty+2, 1, 13, UIColor::COLOR_CARET )
+            MovePathCursor(tx + posXL + xoff, ty+2)
+            AddPathLine( 1, 13, #PB_Path_Relative)
+            VectorSourceColor(UIColor::COLORA_CARET )
         CompilerEndSelect
       EndIf
     EndIf
   Else
     ; ---[ Draw Value ]-------------------------------------------------------
-    DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
-    DrawText( tx + xoff, ty, Mid( *Me\value, *Me\posS, tlen ) , tc )
+    MovePathCursor(tx + xoff, ty)
+    VectorSourceColor(tc)
+    DrawVectorText( Mid( *Me\value, *Me\posS, tlen ) )
   EndIf
-  DrawingMode( #PB_2DDrawing_AlphaBlend )
 EndProcedure
 ;}
 
@@ -1249,7 +1276,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1042
-; FirstLine = 1038
+; CursorPosition = 491
+; FirstLine = 481
 ; Folding = -----
 ; EnableXP

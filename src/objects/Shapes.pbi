@@ -25664,6 +25664,7 @@ CompilerEndIf
   Declare Set(*Me.Shape_t,shape.i)
   Declare SetColor(*Me.Shape_t,*color.v3f32)
   Declare RandomizeColors(*Me.Shape_t,*color.v3f32,variance.f=0.5)
+  Declare RecomputeNormals(*Me.Shape_t,smooth.f=0.0)
   Declare SetUVWs(*Me.Shape_t)
   Declare GetVertices(shape.i)
   Declare GetFaces(shape.i)
@@ -25706,62 +25707,221 @@ Module Shape
   ;  Recompute Normals
   ; ----------------------------------------------------------------------------
   Procedure RecomputeNormals(*Me.Shape_t,smooth.f=0.0)
-    Protected i,a,b,c
-    Define.v3f32 *a,*b,*c
-    
-    Protected ab.v3f32, ac.v3f32, norm.v3f32, accum.v3f32
-    Protected *n.v3f32
-    Protected *n1.v3f32
-    Protected cnt = 0
-    
-    Define a
-    Vector3::Set(accum,0,0,0)
-    
-    For i=0 To CArray::GetCount(*Me\normals)-1
-      *n = CArray::GetValue(*Me\normals,i)
-      Vector3::Set(*n,0,0,0)
-    Next
- 
-    ; First Triangle Normals
-    Define l.l
-    For i=0 To *Me\nbt-1
-      a = CArray::GetValueL(*Me\indices,i*3+2)
-      b = CArray::GetValueL(*Me\indices,i*3+1)
-      c = CArray::GetValueL(*Me\indices,i*3)
-      
-      *a = CArray::GetValue(*Me\positions,a)
-      *b = CArray::GetValue(*Me\positions,b)
-      *c = CArray::GetValue(*Me\positions,c)
-      
-      Vector3::Sub(ab,*b,*a)
-      Vector3::Sub(ac,*c,*a)
-      
-      Vector3::NormalizeInPlace(ab)
-      Vector3::NormalizeInPlace(ac)
-  
-      Vector3::Cross(norm,ac,ab)
-      Vector3::NormalizeInPlace(norm)
+    If Not *Me\positions\itemCount Or Not *Me\indices\itemCount : ProcedureReturn : EndIf
 
-      *n1 = CArray::GetValue(*Me\normals,a)
-      Vector3::Add(accum,*n1,norm)
-      CArray::SetValue(*Me\normals,a,accum)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+Define *positions = *Me\positions\data
+      Define *normals = *Me\normals\data
+      Define *indices = *Me\indices\data
       
-      *n1 = CArray::GetValue(*Me\normals,b)
-      Vector3::Add(accum,*n1,norm)
-      CArray::SetValue(*Me\normals,b,accum)
+      Define numPositions = *Me\positions\itemCount
+      Define numNormals = *Me\normals\itemCount
+      Define numIndices = *Me\indices\itemCount
+      Define numTriangles = *Me\nbt
       
-      *n1 = CArray::GetValue(*Me\normals,c)
-      Vector3::Add(accum,*n1,norm)
-      CArray::SetValue(*Me\normals,c,accum)
+      Define indexed.b = *Me\indexed
       
-      cnt+3
-    Next i
+      ;---------------------------------------------------------------------------------------
+      ; reset normals
+      ;---------------------------------------------------------------------------------------
+      ! mov rdi, [p.p_normals]
+      ! mov ecx, [p.v_numNormals]
+      ! xorps xmm0, xmm0
+      ! loop_reset_normals:
+      !   movaps [rdi], xmm0
+      !   add rdi, 16
+      !   dec rcx
+      !   jg loop_reset_normals
+      
+      ;---------------------------------------------------------------------------------------
+      ; accumulate triangle normals
+      ;---------------------------------------------------------------------------------------
+      ! mov r14, [p.p_indices]
+      ! mov rdi, [p.p_normals]
+      ! mov rsi, [p.p_positions]
+      ! mov ecx, [p.v_numTriangles]
+      ! xor r8, r8
+      ! jmp check_indexed_mode
+      
+      ;---------------------------------------------------------------------------------------
+      ; check indexed mode
+      ;---------------------------------------------------------------------------------------
+      ! check_indexed_mode:
+      !   mov eax, [p.v_indexed]
+      !   cmp eax, 1
+      !   je  loop_accumulate_triangle_normals_indexed
+      !   jmp loop_accumulate_triangle_normals_unindexed
+      
+      ;---------------------------------------------------------------------------------------
+      ; indexed mode
+      ;---------------------------------------------------------------------------------------
+      ! loop_accumulate_triangle_normals_indexed:
+      !   mov r8d, [r14]                ; load vertex index
+      !   imul r8, 16                   ; compute offset in position array
+      !   movaps xmm0, [rsi + r8]       ; get position in xmm0
+      !   movaps xmm1, xmm0             ; make a copy in xmm1
+      
+      !   mov r9d, [r14+4]              ; get second point index
+      !   imul r9, 16                   ; compute offset in position array
+      !   movaps xmm2, [rsi + r9]       ; get position in xmm2
+      
+      !   mov r10d, [r14+8]             ; get third point index
+      !   imul r10, 16                  ; compute offset in position array
+      !   movaps xmm3, [rsi + r10]      ; get position in xmm3
+      !   add r14, 12                   ; increment vertex index
+      !   jmp compute_triangle_normal
+      
+      ;---------------------------------------------------------------------------------------
+      ; unindexed mode
+      ;---------------------------------------------------------------------------------------
+      ! loop_accumulate_triangle_normals_unindexed:
+      !   movaps xmm0, [rsi + r8]         ; load point A to xmm0
+      !   movaps xmm1, xmm0               ; make a copy in xmm1
+      !   movaps xmm2, [rsi + r8 + 16]    ; get position in xmm2
+      !   movaps xmm3, [rsi + r8 + 32]    ; get position in xmm3
+      !   add r8, 48
+      !   jmp compute_triangle_normal
+      
+      ;---------------------------------------------------------------------------------------
+      ; compute triangle normal
+      ;---------------------------------------------------------------------------------------
+      ! compute_triangle_normal:
+      !   subps xmm0, xmm2                  ; compute vector AB
+      !   subps xmm1, xmm3                  ; compute vector AC
+      
+      ; cross product
+      !   movaps xmm2,xmm0                  ; copy vec AB to xmm2
+      !   movaps xmm3,xmm1                  ; copy vec AC to xmm3
+        
+      !   shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
+      !   shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
+      !   mulps  xmm2,xmm3
+               
+      !   shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
+      !   shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
+      !   mulps  xmm0,xmm1
+              
+      !   subps  xmm0,xmm2                  ; cross product triangle normal
+      
+      ; normalize in place
+      !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
+      !   mulps xmm0, xmm0                  ; carré de chaque composante
+
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 01001110b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 00010001b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+
+      !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
+      !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      !   jmp accumulate_triangle_normal    
+      
+      ; accumulate in memory
+      ! accumulate_triangle_normal:
+      !   movaps xmm1, [rdi + r8]         ; load first point normal in xmm1
+      !   addps xmm1, xmm0
+      !   movaps [rdi + r8], xmm1
+      
+      !   movaps xmm1, [rdi + r9]         ; load second point normal in xmm1
+      !   addps xmm1, xmm0
+      !   movaps [rdi + r9], xmm1
+      
+      !   movaps xmm1, [rdi + r10]         ; load third point normal in xmm1
+      !   addps xmm1, xmm0
+      !   movaps [rdi + r10], xmm1
+
+      !   dec ecx
+      !   jg check_indexed_mode
+      !   jmp normalize_triangle_normals
+      
+      ;---------------------------------------------------------------------------------------
+      ; normalize final normal
+      ;---------------------------------------------------------------------------------------
+      ! normalize_triangle_normals:
+      !   mov rdi, [p.p_normals]
+      !   mov ecx, [p.v_numPositions]
+      
+      ! loop_normalize_final_normal:
+      !   movaps xmm0, [rdi]                ; load normal in xmm0
+      !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
+      !   mulps xmm0, xmm0                  ; carré de chaque composante
+
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 01001110b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+
+      !   movaps xmm7, xmm0
+      !   shufps xmm7, xmm7, 00010001b
+      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
+
+      !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
+      !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      !   movaps [rdi], xmm0                ; move back to memory
+      !   add rdi, 16                       ; next normal
+      !   dec ecx
+      !   jg loop_normalize_final_normal
+    CompilerElse
+      Protected i,a,b,c
+      Define.v3f32 *a,*b,*c
+      
+      Protected ab.v3f32, ac.v3f32, norm.v3f32, accum.v3f32
+      Protected *n.v3f32
+      Protected *n1.v3f32
+      Protected cnt = 0
+      
+      Define a
+      Vector3::Set(accum,0,0,0)
+      
+      For i=0 To CArray::GetCount(*Me\normals)-1
+        *n = CArray::GetValue(*Me\normals,i)
+        Vector3::Set(*n,0,0,0)
+      Next
+   
+      ; Accumulate Triangle Normals
+      Define l.l
+      For i=0 To *Me\nbt-1
+        a = CArray::GetValueL(*Me\indices,i*3)
+        b = CArray::GetValueL(*Me\indices,i*3+1)
+        c = CArray::GetValueL(*Me\indices,i*3+2)
+        
+        *a = CArray::GetValue(*Me\positions,a)
+        *b = CArray::GetValue(*Me\positions,b)
+        *c = CArray::GetValue(*Me\positions,c)
+        
+        Vector3::Sub(ab,*b,*a)
+        Vector3::Sub(ac,*c,*a)
+        
+        Vector3::NormalizeInPlace(ab)
+        Vector3::NormalizeInPlace(ac)
     
-    For i=0 To  CArray::GetCount(*Me\normals)-1
-      *n = CArray::GetValue(*Me\normals,i)
-      Vector3::NormalizeInPlace(*n)
-    Next i
-    
+        Vector3::Cross(norm,ac,ab)
+        Vector3::NormalizeInPlace(norm)
+  
+        *n1 = CArray::GetValue(*Me\normals,a)
+        Vector3::Add(accum,*n1,norm)
+        CArray::SetValue(*Me\normals,a,accum)
+        
+        *n1 = CArray::GetValue(*Me\normals,b)
+        Vector3::Add(accum,*n1,norm)
+        CArray::SetValue(*Me\normals,b,accum)
+        
+        *n1 = CArray::GetValue(*Me\normals,c)
+        Vector3::Add(accum,*n1,norm)
+        CArray::SetValue(*Me\normals,c,accum)
+        
+        cnt+3
+      Next i
+      
+      ; Normalize
+      For i=0 To  CArray::GetCount(*Me\normals)-1
+        *n = CArray::GetValue(*Me\normals,i)
+        Vector3::NormalizeInPlace(*n)
+      Next i
+    CompilerEndIf
+
   EndProcedure  
   
   ; ----------------------------------------------------------------------------
@@ -25796,7 +25956,7 @@ Module Shape
         CArray::SetCount(*Me\positions,*Me\nbp)
         CArray::SetCount(*Me\normals,*Me\nbp)
         CArray::SetCount(*Me\colors,*Me\nbp)
-        ;CArray::SetCount(*Me\indices,*Me\nbt*3)
+        CArray::SetCount(*Me\indices,0)
         
         CopyMemory(?shape_axis_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
 ;         CopyMemory(?shape_axis_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
@@ -26166,7 +26326,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25792
-; FirstLine = 25775
+; CursorPosition = 25667
+; FirstLine = 25664
 ; Folding = ----
 ; EnableXP

@@ -271,7 +271,6 @@ Module PointCloud
   ;-----------------------------------------------------
   ;{
   Procedure Update(*p.PointCloud_t)
-    Debug "Update PointCloud ---> "+Str(*p\geom\nbpoints)+" Nb Points"
     If *p\stack
       Stack::Update(*p\stack)
     EndIf
@@ -341,7 +340,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 55
-; FirstLine = 43
+; CursorPosition = 273
+; FirstLine = 266
 ; Folding = ---
 ; EnableXP

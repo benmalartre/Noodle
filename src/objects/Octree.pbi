@@ -181,14 +181,17 @@ Module Octree
   ;---------------------------------------------------------------------
   Procedure ResetHits(*cell.Cell_t)
     *cell\state = Octree::#DEFAULT_STATE
-    If *cell\children
-      Protected j
-      For j=0 To 7
-        If *cell\children[j]
-          ResetHits(*cell\children[j])
-        EndIf
-      Next j
+    If Not *cell\isLeaf
+      If *cell\children
+        Protected j
+        For j=0 To 7
+          If *cell\children[j]
+            ResetHits(*cell\children[j])
+          EndIf
+        Next j
+      EndIf
     EndIf
+    
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -761,6 +764,8 @@ Module Octree
            Drawer::SetColor(*box,Color::_RED())
         Case Octree::#NEARBY_STATE
           Drawer::SetColor(*box,Color::_YELLOW())
+        Default
+          Drawer::SetColor(*box,Color::_WHITE())
       EndSelect
       
       
@@ -809,7 +814,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 194
-; FirstLine = 199
+; CursorPosition = 767
+; FirstLine = 741
 ; Folding = ------
 ; EnableXP

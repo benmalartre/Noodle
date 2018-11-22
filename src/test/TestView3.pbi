@@ -42,9 +42,9 @@ EndStructure
 
 Procedure AddButton (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
-  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, *ui\height)
   ControlProperty::AppendStart(*prop)
-  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 64)
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 24)
   Object::SignalConnect(*prop, *btn\onleftclick_signal, @Callback())
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
@@ -60,10 +60,9 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   For i=0 To 3
      Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddknobControl(*prop, name, RGBA(128,128,128,255), *ui\width/4)
   Next
-  
   ControlProperty::RowEnd(*prop)
-;   Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 64)
-;   Object::SignalConnect(*prop, *btn\onleftclick_signal, @Callback())
+  *prop\dy + 128
+
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
   CloseGadgetList()
@@ -121,14 +120,19 @@ Scene::AddChild(Scene::*current_scene,*bunny)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
 Global *splitted.View::View_t = View::Split(*m\main, 0,75)
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
-; AddButton(*ui, "PUSH ME")
-AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
+
 
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
 *app\context = *viewport\context
 *viewport\camera = *app\camera
 ViewportUI::SetContext(*viewport)
+
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
+AddButton(*ui, "Button One")
+AddButton(*ui, "Button Two")
+AddButton(*ui, "Button Three")
+AddKnobs(*ui, "FUCK")
+; AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
 *default = LayerDefault::New(*viewport\width, *viewport\height, *app\context, *app\camera)
 ViewportUI::AddLayer(*viewport, *default)
@@ -136,8 +140,7 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 57
+; CursorPosition = 46
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

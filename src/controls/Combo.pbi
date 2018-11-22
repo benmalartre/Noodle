@@ -178,11 +178,11 @@ Module ControlCombo
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = RAA_COLORA_LABEL
+    Protected tc.i = UIColor::COLORA_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    DrawingFont( FontID(Globals::#FONT_LABEL ))
-    Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
+    VectorFont( FontID(Globals::#FONT_DEFAULT ))
+    Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
   ;   raaResetClip()
@@ -190,47 +190,62 @@ Module ControlCombo
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-      DrawImage( ImageID(s_gui_controls_combo_up_disabled_l),             0 + xoff, 0 + yoff )
-      DrawImage( ImageID(s_gui_controls_combo_up_disabled_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-      DrawImage( ImageID(s_gui_controls_combo_up_disabled_r), *Me\sizX - 19 + xoff, 0 + yoff )
+      MovePathCursor(0 + xoff, 0 + yoff)
+      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_l))
+      MovePathCursor(6 + xoff, 0 + yoff)
+      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_c), 255, *Me\sizX - 25, 21 )
+      MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
+      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_r))
       ; ...[ Disabled Text ]....................................................
       tc = RAA_COLORA_LABEL_DISABLED
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
       If *Me\down
-        DrawImage( ImageID(s_gui_controls_combo_down_over_l),             0 + xoff, 0 + yoff )
-        DrawImage( ImageID(s_gui_controls_combo_down_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-        DrawImage( ImageID(s_gui_controls_combo_down_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
+        MovePathCursor(0 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_l))
+        MovePathCursor(6 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_c), 255, *Me\sizX - 25, 21 )
+        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_r))
         ; ...[ Negate Text ]....................................................
         tc = RAA_COLORA_LABEL_NEG
       ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
       Else
-        DrawImage( ImageID(s_gui_controls_combo_up_over_l),             0 + xoff, 0 + yoff )
-        DrawImage( ImageID(s_gui_controls_combo_up_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-        DrawImage( ImageID(s_gui_controls_combo_up_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
+        MovePathCursor(0 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_l))
+        MovePathCursor(6 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_c), 255, *Me\sizX - 25, 21 )
+        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_r))
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
       If *Me\down
-        DrawImage( ImageID(s_gui_controls_combo_down_normal_l),             0 + xoff, 0 + yoff )
-        DrawImage( ImageID(s_gui_controls_combo_down_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-        DrawImage( ImageID(s_gui_controls_combo_down_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
+        MovePathCursor(0 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_l))
+        MovePathCursor(6 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_c), 255, *Me\sizX - 25, 21 )
+        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_r))
         ; ...[ Negate Text ]....................................................
         tc = RAA_COLORA_LABEL_NEG
       ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
       Else
-        DrawImage( ImageID(s_gui_controls_combo_up_normal_l),             0 + xoff, 0 + yoff )
-        DrawImage( ImageID(s_gui_controls_combo_up_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-        DrawImage( ImageID(s_gui_controls_combo_up_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
+        MovePathCursor(0 + xoff, 0 + yoff )
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_l))
+        MovePathCursor(6 + xoff, 0 + yoff)
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_c), 255, *Me\sizX - 25, 21 )
+        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff )
+        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_r))
       EndIf
     EndIf
       
     ; ---[ Draw Label ]---------------------------------------------------------
-    ;   raaClipBoxHole( 3 + xoff, 3 + yoff, *Me\sizX-6, *Me\sizY-6 )
-    DrawingMode(#PB_2DDrawing_Transparent)
-    DrawText( 10 + xoff, ty, *Me\label, tc )
+    MovePathCursor(10 + xoff, ty)
+    VectorSourceColor(tc)
+    DrawVectorText( *Me\label)
     
   EndProcedure
   ;}
@@ -630,7 +645,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 406
-; FirstLine = 402
+; CursorPosition = 208
+; FirstLine = 204
 ; Folding = ---
 ; EnableXP

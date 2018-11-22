@@ -2319,11 +2319,6 @@ DeclareModule Matrix4
   ; Compute the Projection Matrix
   ;-------------------------------------------
   Macro GetProjectionMatrix(_m,_fov,_aspect,_znear,_zfar)
-    Debug _m
-    Debug _fov
-    Debug _aspect
-    Debug _znear
-    Debug _zfar
     Define _m4_invf.f = 1 / Tan(Radian(_fov)*0.5)
     Maximum(_znear,0.000001)
     Matrix4::SetIdentity(_m)
@@ -2715,45 +2710,45 @@ Module Vector3
     ; ---------------------------------------------------------------
     Procedure Normalize(*v.v3f32, *o.v3f32)
       ! mov rax, [p.p_o]
-      ! movups xmm0, [rax]
+      ! movups xmm0, [rax]            ; load vector to normalize in xmm0
       
-      ! movaps xmm6, xmm0      ; effectue une copie du vecteur dans xmm6
-      ! mulps xmm0, xmm0       ; carré de chaque composante
+      ! movaps xmm6, xmm0             ; make a copy in xmm6
+      ! mulps xmm0, xmm0              ; square vector
       ; mix1
-      ! movaps xmm7, xmm0
-      ! shufps xmm7, xmm7, 01001110b
-      ! addps xmm0, xmm7       ; additionne les composantes mélangées
+      ! movaps xmm7, xmm0             ; make a copy in xmm7
+      ! shufps xmm7, xmm7, 01001110b  ; shuffle components :  z w x y
+      ! addps xmm0, xmm7              ; packed addition
       ; mix2
-      ! movaps xmm7, xmm0
-      ! shufps xmm7, xmm7, 00010001b
-      ! addps xmm0, xmm7       ; additionne les composantes mélangées
+      ! movaps xmm7, xmm0             ; make  a copy in xmm7
+      ! shufps xmm7, xmm7, 00010001b  ; shuffle components : y x y x
+      ! addps xmm0, xmm7              ; packed addition
       ; 1/sqrt
-      ! rsqrtps xmm0, xmm0     ; inverse de la racine carrée (= longueur)
-      ! mulps xmm0, xmm6       ; que multiplie le vecteur initial
+      ! rsqrtps xmm0, xmm0            ; inverse square root (length)
+      ! mulps xmm0, xmm6              ; multiply by initial vector
       
       ! mov rax, [p.p_v]
-      ! movups [rax], xmm0     ; send back to memory
+      ! movups [rax], xmm0            ; send back to memory
     EndProcedure
     
     Procedure NormalizeInPlace(*v.v3f32)
       ! mov rax, [p.p_v]
-      ! movups xmm0, [rax]
+      ! movups xmm0, [rax]            ; load vector to normalize in xmm0
       
-      ! movaps xmm6, xmm0      ; effectue une copie du vecteur dans xmm6
-      ! mulps xmm0, xmm0       ; carré de chaque composante
+      ! movaps xmm6, xmm0             ; make a copy in xmm6
+      ! mulps xmm0, xmm0              ; square vector
       ; mix1
-      ! movaps xmm7, xmm0
-      ! shufps xmm7, xmm7, 01001110b
-      ! addps xmm0, xmm7       ; additionne les composantes mélangées
+      ! movaps xmm7, xmm0             ; make a copy in xmm7
+      ! shufps xmm7, xmm7, 01001110b  ; shuffle components :  z w x y
+      ! addps xmm0, xmm7              ; packed addition
       ; mix2
-      ! movaps xmm7, xmm0
-      ! shufps xmm7, xmm7, 00010001b
-      ! addps xmm0, xmm7       ; additionne les composantes mélangées
+      ! movaps xmm7, xmm0             ; make  a copy in xmm7
+      ! shufps xmm7, xmm7, 00010001b  ; shuffle components : y x y x
+      ! addps xmm0, xmm7              ; packed addition
       ; 1/sqrt
-      ! rsqrtps xmm0, xmm0     ; inverse de la racine carrée (= longueur)
-      ! mulps xmm0, xmm6       ; que multiplie le vecteur initial
+      ! rsqrtps xmm0, xmm0            ; inverse square root (length)
+      ! mulps xmm0, xmm6              ; multiply by initial vector
       
-      ! movups [rax], xmm0     ; send back to memory
+      ! movups [rax], xmm0            ; send back to memory
     EndProcedure
     
     ; ---------------------------------------------------------------
@@ -3561,8 +3556,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 85
+; CursorPosition = 2727
+; FirstLine = 2631
 ; Folding = --------------------------------------------
 ; EnableXP
 ; EnableUnicode

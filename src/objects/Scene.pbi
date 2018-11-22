@@ -528,7 +528,6 @@ Module Scene
         child = *root\children()
         
         Object3D::UpdateTransform(child,*root\globalT)
-      
         child\Update()
         UpdateChildren( child)
       Next
@@ -810,8 +809,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 532
-; FirstLine = 486
+; CursorPosition = 530
+; FirstLine = 513
 ; Folding = -------
 ; EnableThread
 ; EnableXP

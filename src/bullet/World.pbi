@@ -64,7 +64,6 @@ Module BulletWorld
   ; Update ALL Rigid Bodies
   ;-----------------------------------------------
   Procedure hlpUpdate(*world.Bullet::btDynamicsWorld,time_step.f=0.1)
-   
     Bullet::BTStepSimulation(*world,time_step)
     Protected i
     Protected nbb = Bullet::BTGetNumCollideObjects(*world)
@@ -243,7 +242,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 61
+; CursorPosition = 38
+; FirstLine = 30
 ; Folding = --
 ; EnableXP

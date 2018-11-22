@@ -28,8 +28,8 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::SphereTopology(*topo, 1,32 ,16)
-  Protected numTopos.i = 2
+  PolymeshGeometry::SphereTopology(*topo, 1,256 ,128)
+  Protected numTopos.i = 12
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -60,7 +60,6 @@ Procedure PolygonSoup()
   CArray::Delete(*topos)
   Topology::Delete(*topo)
   ProcedureReturn *mesh
-  
 ;   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
 ;   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
 ;   
@@ -249,8 +248,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 212
-; FirstLine = 12
+; CursorPosition = 62
+; FirstLine = 23
 ; Folding = -
 ; EnableThread
 ; EnableXP

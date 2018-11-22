@@ -161,8 +161,6 @@ Module Layer
   ; Set Shader
   ;---------------------------------------------------
   Procedure SetShader(*layer.Layer_t,*shader.Program::Program_t)
-    ;Debug "------------------------------------------------------------------------"
-    ;Debug "Set Shader : "+Str(*shader\id)
     *layer\shader = *shader
   EndProcedure
   
@@ -696,7 +694,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 467
-; FirstLine = 446
+; CursorPosition = 162
+; FirstLine = 160
 ; Folding = -----
 ; EnableXP

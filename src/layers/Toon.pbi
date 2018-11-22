@@ -1,5 +1,5 @@
 ; ============================================================================
-;  Default Layer Module
+;  Toon Layer Module
 ; ============================================================================
 XIncludeFile "Layer.pbi"
 DeclareModule LayerToon
@@ -171,8 +171,8 @@ Module LayerToon
   
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 75
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 15
 ; Folding = --
 ; EnableXP

@@ -70,6 +70,7 @@ DeclareModule View
   Declare Split(*view,options.i=0,perc.i=50)
   Declare Resize(*view,x.i,y.i,width.i,height.i)
   Declare OnEvent(*view,event.i)
+  Declare InitSplitter(*view.View_t)
   Declare EventSplitter(*view.View_t,border.i)
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   
@@ -318,6 +319,9 @@ Module View
         
         
         *view\splitterID = CanvasGadget(#PB_Any,*view\x+mx-hs,*view\y,2*hs,*view\height)
+        StartDrawing(CanvasOutput(*view\splitterID))
+        Box(0,0,GadgetWidth(*view\splitterID), GadgetHeight(*view\splitterID), UIColor::COLOR_SPLITTER)
+        StopDrawing()
 
       If Not *view\fixed : SetGadgetAttribute(*view\splitterID,#PB_Canvas_Cursor,#PB_Cursor_LeftRight) : EndIf
       
@@ -343,14 +347,15 @@ Module View
         *view\right\parentID = *view\parentID
 
         *view\splitterID = CanvasGadget(#PB_Any,*view\x,*view\y+my-hs,*view \width,2*hs)
+        StartDrawing(CanvasOutput(*view\splitterID))
+        Box(0,0,GadgetWidth(*view\splitterID), GadgetHeight(*view\splitterID), UIColor::COLOR_SPLITTER)
+        StopDrawing()
         If Not *view\fixed : SetGadgetAttribute(*view\splitterID,#PB_Canvas_Cursor,#PB_Cursor_UpDown):EndIf
       EndIf
 
       *view\axis = Bool(options & #PB_Splitter_Vertical)
       *view\leaf = #False
       *view\perc = perc
-;       CloseGadgetList()
-      
        
       ProcedureReturn *view
     Else
@@ -420,6 +425,43 @@ Module View
     ;Bottom border
      If Abs((*view\y+*view\height) - y)<w     : ProcedureReturn #VIEW_BOTTOM : EndIf
     ProcedureReturn #VIEW_NONE
+    
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Init Splitter
+  ;------------------------------------------------------------------
+  Procedure InitSplitter(*view.View_t)
+    If *view And Not *view\fixed
+      Protected *affected.View_t
+      *affected = *view\tsplitter 
+      If *affected And *affected\splitterID
+        StartDrawing(CanvasOutput(*affected\splitterID  ))
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        StopDrawing() 
+      EndIf
+      
+      *affected = *view\lsplitter 
+      If *affected And *affected\splitterID
+        StartDrawing(CanvasOutput(*affected\splitterID  ))
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        StopDrawing() 
+      EndIf
+      
+      *affected = *view\rsplitter 
+      If *affected And *affected\splitterID
+        StartDrawing(CanvasOutput(*affected\splitterID  ))
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        StopDrawing() 
+      EndIf
+      
+      *affected = *view\bsplitter 
+      If *affected And *affected\splitterID
+        StartDrawing(CanvasOutput(*affected\splitterID  ))
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        StopDrawing() 
+      EndIf
+    EndIf
     
   EndProcedure
   
@@ -936,7 +978,8 @@ Module ViewManager
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 15
-; Folding = ------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 351
+; FirstLine = 303
+; Folding = -------
 ; EnableXP

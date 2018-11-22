@@ -1,6 +1,6 @@
 ﻿XIncludeFile "../core/Math.pbi"
 XIncludeFile "../objects/Geometry.pbi"
-XIncludeFile "../objects/Line.pbi"
+XIncludeFile "../objects/Segment.pbi"
 
 ; ============================================================================
 ;  Ray Module IMPLEMENTATION
@@ -69,14 +69,14 @@ Module Ray
   ; Find Closest Point
   ;---------------------------------------------------------
   Procedure.b FindClosestPoint(*ray.Geometry::Ray_t, *p.v3f32, *rayDistance=#Null, *io.v3f32=#Null)
-    Protected line.Geometry::Line_t
-    Protected l.f = Line::Set(@line, *ray\origin, *ray\direction)
+    Protected segment.Geometry::Segment_t
+    Protected l.f = Segment::Set(segment, *ray\origin, *ray\direction)
     Protected lrd.f
-    Line::FindClosestPoint(@line, *p, @lrd)
+    segment::FindClosestPoint(segment, *p, @lrd)
     If lrd < 0 : lrd = 0 : EndIf
     
     If *rayDistance : PokeF(*rayDistance, lrd/l) : EndIf
-    If *io : Line::GetPoint(@line, lrd, *io ): EndIf
+    If *io : Segment::GetPoint(segment, lrd, *io ): EndIf
     ProcedureReturn #True
 
   EndProcedure
@@ -362,8 +362,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 127
+; CursorPosition = 74
+; FirstLine = 55
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

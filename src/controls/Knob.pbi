@@ -12,8 +12,8 @@ DeclareModule ControlKnob
   ; ----------------------------------------------------------------------------
   #PB_GadgetType_Knob = 128
   
-  #KNOB_INNER_RADIUS = 24
-  #KNOB_OUTER_RADIUS = 32
+  #KNOB_INNER_RADIUS = 14
+  #KNOB_OUTER_RADIUS = 22
   #KNOB_MARKER_SIZE  = 5
   #KNOB_ZERO_SIZE    = 32
   #KNOB_MARKER_WIDTH = 2
@@ -236,7 +236,7 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
     Define max_s.s = Str(*Me\max_limit)
     Define min_w = VectorTextWidth(min_s)
     Define max_w = VectorTextWidth(max_s)
-    VectorFont(FontID(Globals::#FONT_LABEL), 8)
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
     VectorSourceColor(RGBA(0,0,0,128))
     Vector::MoveCursorPathOnCircle(cx - min_w, cy, #KNOB_OUTER_RADIUS*1.2, Radian(-260))
     DrawVectorText(min_s)
@@ -246,7 +246,7 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   EndIf
   
   ; display value
-  VectorFont(FontID(Globals::#FONT_MENU), 12)
+  VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
   Define value_s.s = StrF(*Me\value, 3)
   MovePathCursor(cx - VectorTextWidth(value_s) * 0.5, cy + #KNOB_OUTER_RADIUS * 1.4)
   VectorSourceColor(RGBA(255,0,128,128))
@@ -500,7 +500,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 486
-; FirstLine = 443
+; CursorPosition = 248
+; FirstLine = 232
 ; Folding = ---
 ; EnableXP

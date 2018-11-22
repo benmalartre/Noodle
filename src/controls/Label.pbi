@@ -69,7 +69,7 @@ Module ControlLabel
     EndIf
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    VectorFont( FontID(Globals::#FONT_LABEL ))
+    VectorFont( FontID(Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
@@ -372,7 +372,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 69
+; CursorPosition = 71
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

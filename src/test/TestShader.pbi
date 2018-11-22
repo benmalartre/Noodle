@@ -5,7 +5,10 @@ XIncludeFile "../core/Application.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -29,6 +32,8 @@ Global *buffer.Framebuffer::Framebuffer_t
 
 
 Global *app.Application::Application_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global *ctx.GLContext::GLcontext_t
 
 Procedure GetFPS()
  framecount +1
@@ -55,8 +60,9 @@ EndProcedure
 ;--------------------------------------------
 If Time::Init()
   Log::Init()
-   *app = Application::New("Shader",800,600)
-
+  *app = Application::New("Shader",800,600)
+  *viewport = ViewportUI::New(*app\manager\main, "Viewport")
+  *app\context = *viewport\context
   
   ; FTGL Drawer
   ;-----------------------------------------------------
@@ -79,15 +85,15 @@ If Time::Init()
   Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
   
   
-  ;Application::Loop(*app,@Draw())
+  Application::Loop(*app,@Draw())
 
 EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 11
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 87
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=1

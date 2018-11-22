@@ -304,33 +304,38 @@ Module ControlMenu
   Procedure.b DrawSubMenu(*menu.ControlSubMenu_t,down.b)
     
     Protected i
-    StartDrawing(CanvasOutput(*menu\gadgetID))
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
-    Box(0,0,*menu\width,*menu\height,UIColor::COLORA_NUMBER_BG)
+    StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
+    AddPathBox(0,0,*menu\width,*menu\height,UIColor::COLORA_NUMBER_BG)
 ;     DrawingMode(#PB_2DDrawing_Outlined)
 ;     RoundBox(0,0,*menu\width,*menu\height,3,3,UIColor::COLOR_GROUP_LABEL)
-    DrawingFont(FontID(Globals::#FONT_SUBMENU))
-    DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
     Protected a
     For a=0 To ArraySize(*menu\items())-1
       If *menu\items(a)\type = #MenuItemType_Separator
-        Line(10,a*#MenuItemHeight+0.5*#MenuItemHeight,*menu\width-20,0,UIColor::COLORA_TEXT)
+        MovePathCursor(10,a*#MenuItemHeight+0.5*#MenuItemHeight)
+        AddPathLine(*menu\width-20,0, #PB_Path_Relative)
+        VectorSourceColor(UIColor::COLORA_TEXT)
+        StrokePath(2)
       Else
         
         If a = *menu\selected
-          DrawingMode(#PB_2DDrawing_AllChannels)
-          RoundBox(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2,2,UIColor::COLORA_SELECTED_BG)
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLORA_SELECTED_FG)
+          Vector::RoundBoxPath(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2)
+          VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+          FillPath()
+          MovePathCursor(5,a*#MenuItemHeight)
+          VectorSourceColor(UIColor::COLORA_SELECTED_FG)
+          DrawVectorText(*menu\items(a)\name)
          ; DrawingMode(#PB_2DDrawing_Transparent)
         Else
-          DrawText(5,a*#MenuItemHeight,*menu\items(a)\name,UIColor::COLORA_TEXT)
+          MovePathCursor(5,a*#MenuItemHeight)
+          VectorSourceColor(UIColor::COLORA_TEXT)
+          DrawVectorText(*menu\items(a)\name)
         EndIf
       EndIf   
     
     Next a
   
-    StopDrawing()
+    StopVectorDrawing()
     *menu\dirty = #False
   
   EndProcedure
@@ -549,12 +554,13 @@ Module ControlMenu
   Procedure Draw(*menu.ControlMenu_t)
   
     If *menu\dirty
-      StartDrawing(CanvasOutput(*menu\gadgetID))
-      DrawingFont(FontID(Globals::#font_menu))
+      StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
+      VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
       
-      DrawingMode(#PB_2DDrawing_AlphaBlend)
       
-      Box(0,0,*menu\width,*menu\height,UIColor::COLORA_MAIN_BG)
+      AddPathBox(0,0,*menu\width,*menu\height)
+      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      FillPath()
       Protected x,y, a
       
       x = #MenuItemSpacing
@@ -562,16 +568,21 @@ Module ControlMenu
       
       For a=0 To ArraySize(*menu\submenus())-1
         If *menu\inspected = *menu\submenus(a)
-          Protected width.i = TextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
-          RoundBox(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2,2,UIColor::COLORA_NUMBER_BG)
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText( x,y,*menu\submenus(a)\name, UIColor::COLORA_LINE_DIMMED)
-          DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2,2,UIColor::COLORA_LINE_DIMMED)
-          DrawingMode(#PB_2DDrawing_Default)
+          Protected width.i = VectorTextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
+          Vector::RoundBoxPath(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2)
+          VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+          FillPath(#PB_Path_Preserve)
+          VectorSourceColor(UIColor::COLORA_LINE_DIMMED)
+          StrokePath(2)
+          
+          MovePathCursor(x, y)
+          VectorSourceColor(UIColor::COLORA_TEXT)
+          DrawVectorText(*menu\submenus(a)\name)
+     
         Else
-          DrawingMode(#PB_2DDrawing_Transparent|#PB_2DDrawing_AlphaBlend)
-          DrawText( x,y,*menu\submenus(a)\name, UIColor::COLORA_TEXT)
+          MovePathCursor(x, y)
+          VectorSourceColor(UIColor::COLORA_TEXT)
+          DrawVectorText(*menu\submenus(a)\name)
         EndIf
         
         With *menu\submenus(a)
@@ -580,12 +591,12 @@ Module ControlMenu
           \x = x + WindowX(*menu\windowID,#PB_Window_InnerCoordinate) - #MenuItemSpacing/2+GadgetX(*menu\parentID)
           \y = WindowY(*menu\windowID)+GadgetHeight(*menu\gadgetID)+GadgetY(*menu\parentID)
         EndWith
-        x+#MenuItemSpacing+TextWidth(*menu\submenus(a)\name)
+        x+#MenuItemSpacing+VectorTextWidth(*menu\submenus(a)\name)
       Next a
       
       ;DrawAlphaImage(ImageID(*menu\imageID),0,0,200)
     
-      StopDrawing()
+      StopVectorDrawing()
       *menu\dirty = #False
     EndIf
     
@@ -597,19 +608,23 @@ Module ControlMenu
   ; ----------------------------------------------------------------------------
   Procedure DrawPickImage(*menu.ControlMenu_t)
   
-    StartDrawing(ImageOutput(*menu\imageID))
-    DrawingMode(#PB_2DDrawing_Default)
-    DrawingFont(FontID(Globals::#font_menu))
-    Box(*menu\x,*menu\y,*menu\width,*menu\height,RGBA(60,60,60,255))
+    StartVectorDrawing(ImageVectorOutput(*menu\imageID))
+    VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
+    AddPathBox(*menu\x,*menu\y,*menu\width,*menu\height)
+    VectorSourceColor(RGBA(0,0,0,255))
+    FillPath()
+    
     Protected x,y, a,width,height
     
     x = #MenuItemSpacing/2
     y = 0
     height = GadgetHeight(*menu\gadgetID)
     For a=0 To ArraySize(*menu\submenus())-1
-      width = TextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
+      width = VectorTextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
       ;OControlSubMenu_GetWidth(*menu\submenus(a))
-      Box(x,y,width,height,RGBA(a+1,0,0,255))
+      AddPathBox(x,y,width,height)
+      VectorSourceColor(RGBA(a+1,0,0,255))
+      FillPath()
       x+width
     Next a
     
@@ -693,8 +708,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 567
-; FirstLine = 520
+; CursorPosition = 619
+; FirstLine = 572
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

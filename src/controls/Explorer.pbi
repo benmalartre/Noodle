@@ -363,18 +363,22 @@ Module ControlExplorer
     Protected shifty.i = #SHIFTY
     Protected x = 25 + shiftx * (*item\depth)
     Protected tc = RGBA(0,0,0,255)
-    DrawingFont(FontID(Globals::#FONT_NODE))
-    DrawingMode(#PB_2DDrawing_Default)
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
     ; Draw Background
     If Mod(*Me\itemcounter,2) = 1
-      Box(0,*Me\ioffsety,*Me\iwidth,shifty,UIColor::COLOR_MAIN_BG)
+      AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
+      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      FillPath()
     Else
-      Box(0,*Me\ioffsety,*Me\iwidth,shifty,UIColor::COLOR_SECONDARY_BG)
+      AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
+      VectorSourceColor(UIColor::COLORA_SECONDARY_BG)
+      FillPath()
     EndIf
     
     ;   ; Draw Selected
     If *item\selected = #True
-      Box(0,*Me\ioffsety,*Me\iwidth,shifty,UIColor::COLOR_SELECTED_BG)
+      AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
+      VectorSourceColor(UIColor::COLORA_SELECTED_BG)
     EndIf
     
     ;Draw Item
@@ -382,14 +386,16 @@ Module ControlExplorer
     If *parent
       Protected yoff = 0
       Protected xoff = #SHIFTX
-      DrawingMode(#PB_2DDrawing_Default)
       Repeat
         If *parent\parent And *parent\havenext
-          Line(x-shiftx+5-xoff,*Me\ioffsety-yoff,1,shifty,UIColor::COLOR_GROUP_FRAME)
+          MovePathCursor(x-shiftx+5-xoff,*Me\ioffsety-yoff)
+          AddPathLine(0,shifty, #PB_Path_Relative)
         EndIf
         xoff + #SHIFTX
         *parent = *parent\parent
       Until *parent = #Null
+      VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
+      StrokePath(2)
     EndIf
   
     ;Draw Connexions
@@ -401,68 +407,93 @@ Module ControlExplorer
     
     ;Vertical lines
     Protected i
+    VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
     For i=0 To depth-1
       If Globals::BitRead(*Me\linebinary,i)
-        Line(x-(i)*shiftx+5,*Me\ioffsety-shifty*0.5,1,shifty,UIColor::COLOR_GROUP_FRAME)
+        MovePathCursor(x-(i)*shiftx+5,*Me\ioffsety-shifty*0.5)
+        AddPathLine(0,shifty,#PB_Path_Relative)
+        StrokePath(2)
       EndIf
     Next
     
     ;Horizontal line
-    Line(x-shiftx+5,*Me\ioffsety+shifty/2,shiftx-5,1,UIColor::COLOR_GROUP_FRAME)
+    MovePathCursor(x-shiftx+5,*Me\ioffsety+shifty/2)
+    AddPathLine(shiftx-5,0, #PB_Path_Relative)
+    StrokePath(2)
     
     ;Expended button
     If Not *item\isleaf
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(x-shiftx+2,*Me\ioffsety+7,3,3,UIColor::COLOR_MAIN_BG)
+
+      AddPathBox(x-shiftx+2,*Me\ioffsety+7,3,3)
+      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      FillPath()
+      
+      VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
       If *item\expended
-        Line(x-shiftx+4,*Me\ioffsety+10,3,1,UIColor::COLOR_GROUP_FRAME)
+        MovePathCursor(x-shiftx+4,*Me\ioffsety+10)
+        AddPathLine(3,0,#PB_Path_Relative)
+        
+        StrokePath(2)
       Else
-        Line(x-shiftx+6,*Me\ioffsety+8,1,3,UIColor::COLOR_GROUP_FRAME)
-        Line(x-shiftx+4,*Me\ioffsety+10,3,1,UIColor::COLOR_GROUP_FRAME)
+        MovePathCursor(x-shiftx+6,*Me\ioffsety+8)
+        AddPathLine(0,3, #PB_Path_Relative)
+        StrokePath(2)
+        
+        MovePathCursor(x-shiftx+4,*Me\ioffsety+10)
+        AddPathLine(3,0, #PB_Path_Relative)
+        StrokePath(2)
       EndIf
     EndIf
     
     
     ;  Draw Icon
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
     Select *item\type  
-        
       Case #TYPE_3DOBJECT
         Protected *o.Object3D::Object3D_t = *item\object
-  
         Select *o\type
           Case Object3D::#Object3D_Model
             ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
-            DrawImage(ImageID(explorer_icon_model),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_model))
           Case Object3D::#Object3D_Light
             ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
-            DrawImage(ImageID(explorer_icon_light),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_light))
           Case Object3D::#Object3D_Camera
             ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
-            DrawImage(ImageID(explorer_icon_camera),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_camera))
           Case Object3D::#Object3D_Polymesh
-            DrawImage(ImageID(explorer_icon_polymesh),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_polymesh))
             ;raaBox(x,*Me\offsety,12,12,RGBA(255,0,120,255))
           Case Object3D::#Object3D_Null
             ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
-            DrawImage(ImageID(explorer_icon_null),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_null))
           Case Object3D::#Object3D_Curve
             ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
-            DrawImage(ImageID(explorer_icon_curve),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_curve))
           Case Object3D::#Object3D_PointCloud
-            DrawImage(ImageID(explorer_icon_pointcloud),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_pointcloud))
             ;raaBox(x,*Me\offsety,12,12,RGBA(255,255,120,255))
           Case Object3D::#Object3D_InstanceCloud
-            DrawImage(ImageID(explorer_icon_instancecloud),x,*Me\ioffsety+2)
+            MovePathCursor(x,*Me\ioffsety+2)
+            DrawVectorImage(ImageID(explorer_icon_instancecloud))
             
         EndSelect
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,*o\name,tc)
+        MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT+4)
+        VectorSourceColor(tc)
+        DrawVectorText(*o\name)
         
       Case #TYPE_GROUP
-        DrawImage(ImageID(explorer_icon_group),x,*Me\ioffsety+2)
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,"Fucking Group",tc)
+        MovePathCursor(x,*Me\ioffsety+2)
+        DrawVectorImage(ImageID(explorer_icon_group))
+        MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT)
+        VectorSourceColor(tc)
+        DrawVectorText("Fucking Group")
         
       Case #TYPE_LAYER
         Debug "Explorer Object Layer"
@@ -472,59 +503,61 @@ Module ControlExplorer
       Case #TYPE_PARAMETER
         
       Case #TYPE_FOLDER
-        DrawImage(ImageID(explorer_icon_folder),x,*Me\ioffsety+2)
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,"Attributes",RGBA(0,0,0,255))
+        MovePathCursor(x,*Me\ioffsety+2)
+        DrawVectorImage(ImageID(explorer_icon_folder))
+        MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT+4)
+        VectorSourceColor(RGBA(0,0,0,255))
+        DrawVectorText("Attributes")
         
-      Case #TYPE_PROPERTY
-        DrawImage(ImageID(explorer_icon_kinematics),x,*Me\ioffsety+2)
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,"Global",RGBA(0,0,0,255))
-        
-      Case #TYPE_ATTRIBUTE
-
-        Protected *a.Attribute::Attribute_t = *item\object
-        tc  =RGBA(255,0,0,255)
-        Select *a\datatype
-          Case Attribute::#ATTR_TYPE_BOOL
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-          Case Attribute::#ATTR_TYPE_FLOAT
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-  ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-          Case Attribute::#ATTR_TYPE_VECTOR3
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-  ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-          Case Attribute::#ATTR_TYPE_MATRIX4
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-          Case Attribute::#ATTR_TYPE_COLOR
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-          Case Attribute::#ATTR_TYPE_TOPOLOGY
-  ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-            Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,255))
-            DrawingMode(#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-            
-          Default 
-  ;           Box(x+1,*Me\ioffsety+5,8,8,RGBA(0,0,0,255))
-            Circle(x+2,*Me\ioffsety+6,4,RGBA(255,255,255,255))
-            DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-            DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-        EndSelect
+;       Case #TYPE_PROPERTY
+;         DrawImage(ImageID(explorer_icon_kinematics),x,*Me\ioffsety+2)
+;         DrawingMode(#PB_2DDrawing_Transparent)
+;         DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,"Global",RGBA(0,0,0,255))
+;         
+;       Case #TYPE_ATTRIBUTE
+; 
+;         Protected *a.Attribute::Attribute_t = *item\object
+;         tc  =RGBA(255,0,0,255)
+;         Select *a\datatype
+;           Case Attribute::#ATTR_TYPE_BOOL
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;           Case Attribute::#ATTR_TYPE_FLOAT
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;           Case Attribute::#ATTR_TYPE_VECTOR3
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;           Case Attribute::#ATTR_TYPE_MATRIX4
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;           Case Attribute::#ATTR_TYPE_COLOR
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;           Case Attribute::#ATTR_TYPE_TOPOLOGY
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
+;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,255))
+;             DrawingMode(#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;             
+;           Default 
+;   ;           Box(x+1,*Me\ioffsety+5,8,8,RGBA(0,0,0,255))
+;             Circle(x+2,*Me\ioffsety+6,4,RGBA(255,255,255,255))
+;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
+;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
+;         EndSelect
         
       
     EndSelect
@@ -550,14 +583,16 @@ Module ControlExplorer
     *Me\ioffsety = #TOPHEIGHT
     *Me\itemcounter = 1
 
-    StartDrawing(ImageOutput(*Me\imageID))
-    Box(0,0,*Me\iwidth,*Me\iheight,UIColor::COLOR_MAIN_BG)
+    StartVectorDrawing(ImageVectorOutput(*Me\imageID))
+    AddPathBox(0,0,*Me\iwidth,*Me\iheight)
+    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    FillPath()
     *Me\linebinary = 0
     ForEach *Me\visibles()
       DrawItem(*Me,*Me\visibles(),0)
     Next
   ;   *Me\grp\Event(#PB_EventType_Draw)
-    StopDrawing()
+    StopVectorDrawing()
   EndProcedure
   
   ; ----------------------------------------
@@ -567,7 +602,8 @@ Module ControlExplorer
     If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : ProcedureReturn : EndIf
     If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_uniforms : ProcedureReturn : EndIf
     
-    Box(0,*Me\ioffsety,*Me\iwidth,#LINEHEIGHT,*item\colorid)
+    AddPathBox(0,*Me\ioffsety,*Me\iwidth,#LINEHEIGHT)
+    VectorSourceColor(*item\colorid)
   ;   DrawText(0,*Me\ioffsety,Str(*item\colorid))
     *Me\ioffsety + #LINEHEIGHT
     Protected nbc.i = ListSize(*item\children())
@@ -591,14 +627,14 @@ Module ControlExplorer
     *Me\itemcounter = 1
     If *Me\iwidth And *Me\iheight
       ResizeImage(*Me\pickID,*Me\iwidth,*Me\iheight)
-      StartDrawing(ImageOutput(*Me\pickID))
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(0,0,*Me\iwidth,*Me\iheight,RGBA(0,255,0,255))
+      StartVectorDrawing(ImageVectorOutput(*Me\pickID))
+      AddPathBox(0,0,*Me\iwidth,*Me\iheight)
+      VectorSourceColor(RGBA(0,0,0,255))
       
        ForEach *Me\visibles()
         DrawPickItem(*Me,*Me\visibles(),0)
       Next
-      StopDrawing()
+      StopVectorDrawing()
     EndIf
     
     
@@ -1153,8 +1189,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 486
-; FirstLine = 409
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 391
+; FirstLine = 335
 ; Folding = fxXef-
 ; EnableXP

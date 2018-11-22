@@ -162,7 +162,7 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
@@ -194,7 +194,7 @@ Procedure Draw(*app.Application::Application_t)
     Location::GetPosition(*loc)
     Location::GetNormal(*loc)
     Matrix4::SetIdentity(m)
-    size = Random(5)+5
+    size = Random(50)+5
     Vector3::ScaleInPlace(*loc\n, size/2)
     Vector3::AddInPlace(*loc\p, *loc\n)
     Vector3::Randomize(pos, center, 12)
@@ -226,8 +226,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 217
-; FirstLine = 159
+; CursorPosition = 134
+; FirstLine = 130
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

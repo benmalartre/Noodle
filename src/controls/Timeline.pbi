@@ -137,7 +137,7 @@ Module ControlTimeline
   Procedure hlpDrawFrames( *Me.ControlTimeline_t )
     ;---[ Start Drawing ]-------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-    VectorFont(FontID(Globals::#FONT_SUBMENU))    
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)    
     
     ; ---[ Local Variables ]----------------------------------------------------
     Protected w.i = *Me\sizX 
@@ -150,7 +150,7 @@ Module ControlTimeline
     
     ;---[ Draw Frames ]---------------------------------------------------------
     AddPathBox(l,0,w,h)
-    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    VectorSourceColor(UIColor::COLORA_MAIN_BG)
     FillPath()
     
     MovePathCursor(l,h-1)
@@ -210,7 +210,7 @@ Module ControlTimeline
        son = *Me\children(i)
        *son = son
        If *son <> #Null
-        ev_data\xoff = *son\posX
+        ev_data\xoff =*son\posX
         ev_data\yoff = *son\posY
         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
        EndIf
@@ -225,18 +225,21 @@ Module ControlTimeline
   ; ----------------------------------------------------------------------------
   ;  hlpDrawPickingTags
   ; ----------------------------------------------------------------------------
-  Procedure hlpDrawPickingTags( *Me.ControlTimeline_t )
+  Procedure hlpDrawPickImage( *Me.ControlTimeline_t )
     Protected *son  .Control::Control_t
     Protected i
-    ResizeImage(*Me\imageID,*Me\sizX,*Me\sizY)
+
     ; ...[ Tag Picking Surface ]................................................
     StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
-    ;StartDrawing(CanvasOutput(*Me\gadgetID))
-    ;Box( 0, 0, *Me\sizX, *Me\sizY, RGB($00,$00,$00) )
+    AddPathBox(0,0,*Me\sizX, *Me\sizY)
+    VectorSourceColor(RGBA(0,0,0,255) )
+    FillPath()
+    
     For i=0 To *Me\controls - 1
       *son = *Me\children(i)
       AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
       VectorSourceColor(RGBA(i+1,0,0,255) )
+      FillPath()
     Next
     StopDrawing()
   EndProcedure
@@ -251,7 +254,7 @@ Module ControlTimeline
     hlpDrawFrames( *Me )
     
     ;---[ Draw Picking Tags ]---------------------------------------------------
-    hlpDrawPickingTags( *Me)
+    hlpDrawPickImage( *Me)
   EndProcedure
   
   ; ---[ Timer Event]-----------------------------------------------------------
@@ -274,15 +277,15 @@ Module ControlTimeline
   ; ----------------------------------------------------------------------------
   Procedure.i hlpResize( *Me.ControlTimeline_t,x.i,y.i,width.i, height.i)
     
-    ResizeGadget(*Me\gadgetID,0,0,width,height)
-    ResizeImage(*Me\imageID,*Me\sizX,*Me\sizY)
-  
     *Me\posX = x
     *Me\posY = y
     
     *Me\sizX = width
     *Me\sizY = height
     
+    ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
+    ResizeImage(*Me\imageID,*Me\sizX,*Me\sizY)
+
     Protected t = height-26
     Protected center.i = width/2
     Control::Resize(*Me\c_endframe,width-90,t,#PB_Ignore,#PB_Ignore)
@@ -304,6 +307,8 @@ Module ControlTimeline
     Control::Resize(*Me\c_currentframe,w+8*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
     
     Control::Resize(*Me\c_playbackrate,w-140,t,#PB_Ignore,#PB_Ignore)
+    
+    hlpDrawPickImage(*Me)
   
     
   ;    ; ---[ Number Controls ]------------------------------------------------------
@@ -333,7 +338,6 @@ Module ControlTimeline
   ;{
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlTimeline_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-    
     ; ---[ Local Variables ]----------------------------------------------------
     Protected Me.IControlTimeline = *Me
     Protected  ev_data.Control::EventTypeDatas_t
@@ -447,8 +451,9 @@ Module ControlTimeline
           xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
           ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
           StartDrawing( ImageOutput(*Me\imageID) )
-            Protected idx = Red(Point(xm,ym)) - 1
+          Protected idx = Red(Point(xm,ym)) - 1
           StopDrawing()
+            
           If idx < 0 And ( *Me\overchild <> #Null ) And  Not *Me\down
             *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
             *Me\overchild = #Null
@@ -1103,7 +1108,7 @@ Module ControlTimeline
     Object::SignalConnect(*Me,*ctrl\slot,@Me\SetEndRange())
   
     ; ---[ Draw ]---------------------------------------------------------------
-    hlpDrawPickingTags(*Me)
+    hlpDrawPickImage(*Me)
     hlpDraw( *Me )
     
     ; ---[ Return Initialized Object ]------------------------------------------
@@ -1120,7 +1125,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 116
+; CursorPosition = 230
+; FirstLine = 210
 ; Folding = ------
 ; EnableXP

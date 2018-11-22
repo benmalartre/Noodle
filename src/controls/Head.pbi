@@ -77,7 +77,7 @@ Module ControlHead
     Protected *prop.Control::Control_t = *Me\parent
     Protected *n.Node::Node_t = *prop\object
     
-    VectorFont(FontID(Globals::#FONT_TITLE),12)
+    VectorFont(FontID(Globals::#FONT_BOLD),Globals::#FONT_SIZE_TITLE)
     w = VectorTextWidth(*n\name)
     h = VectorTextHeight(*n\name)
 
@@ -364,7 +364,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 121
+; CursorPosition = 79
+; FirstLine = 63
 ; Folding = ---
 ; EnableXP

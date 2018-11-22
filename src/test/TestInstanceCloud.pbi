@@ -199,7 +199,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   
   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TORUS)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  PointCloudGeometry::PointsOnGrid(*cloud\geom,8,8)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,256,256)
   Define startP.v3f32, endP.v3f32
   Vector3::Set(startP, -10,0,0)
   Vector3::Set(endP, 10,0,0)
@@ -240,7 +240,7 @@ Procedure Draw(*app.Application::Application_t)
     CArray::SetValue(*cgeom\a_positions,i,*l\p)
     Location::GetNormal(*l)
     CArray::SetValue(*cgeom\a_normals,i,*l\n)
-    Vector3::Set(s,3,3,3)
+    Vector3::Set(s,0.25,0.25,0.25)
     CArray::SetValue(*cgeom\a_scale,i,s)
     CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
   Next
@@ -264,7 +264,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 242
-; FirstLine = 189
+; FirstLine = 194
 ; Folding = --
 ; EnableXP
 ; Executable = Test

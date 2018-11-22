@@ -72,7 +72,6 @@ Module TimelineUI
     CloseGadgetList()
     
     OnEvent(*Me,#PB_Event_SizeWindow)
-    
   
     ProcedureReturn *Me
   EndProcedure
@@ -101,12 +100,11 @@ Module TimelineUI
   ;-------------------------------
   Procedure OnEvent(*Me.TimelineUI_t,event.i)
     Protected Me.ITimelineUI = *Me
-    
     CompilerIf #PB_Compiler_Version < 560
       If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
     CompilerElse
       If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow  
-    CompilerEndIf
+      CompilerEndIf
       Protected ev_data.Control::EventTypeDatas_t
       Protected *top.View::View_t = *Me\top
       *Me\x = *top\x
@@ -127,7 +125,7 @@ Module TimelineUI
     EndIf
    
     ;Redraw Timeline
-  ;   Draw(*Me)
+    Draw(*Me)
     
    ;SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Image,ImageID(*e\imageID))
     ;SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Image,ImageID(*e\imageID))
@@ -149,7 +147,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 93
+; CursorPosition = 123
+; FirstLine = 78
 ; Folding = --
 ; EnableXP

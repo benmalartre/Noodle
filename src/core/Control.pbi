@@ -198,6 +198,7 @@ Module Control
 
     ; ---[ Send Event ]---------------------------------------------------------
     If Not Me\OnEvent( #PB_EventType_Resize, @ev_datas )
+      
       ; ...[ Update Status ]....................................................
       If #PB_Ignore <> x      : *Me\posX = x      : EndIf
       If #PB_Ignore <> y      : *Me\posY = y      : EndIf
@@ -274,8 +275,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 24
+; CursorPosition = 193
+; FirstLine = 146
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

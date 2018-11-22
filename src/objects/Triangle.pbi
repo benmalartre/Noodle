@@ -314,7 +314,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter 
-    
+
     ; ----------------------------------------------------
     ; load triangle
     ; ----------------------------------------------------
@@ -331,11 +331,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       
     ! build_edge:
     !   cmp r8, 3
-    !   jl edge0
+    !   jl edge0                              ; edge 0
     !   cmp r8, 6
-    !   jl edge1  
+    !   jl edge1                              ; edge 1
     !   cmp r8, 9
-    !   jl edge2
+    !   jl edge2                              ; edge 2
     
     ; ----------------------------------------------------
     ; edge0
@@ -346,6 +346,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp edge0_test
     
     ! edge0_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -370,6 +371,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp edge1_test
     
     ! edge1_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm15                  ; move p2 to xmm1
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -396,6 +398,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp edge2_test
     
     ! edge2_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -560,44 +563,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; compute radius and store it in xmm8
     ; ------------------------------------------------------------------
     ! compute_radius:
-    !   cmp r8, 3
-    !   jl compute_radius_e0
-    !   cmp r8, 6
-    !   jl compute_radius_e1
-    !   cmp r8, 9
-    !   jl compute_radius_e2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge0
-    ; ------------------------------------------------------------------
-    ! compute_radius_e0:
-    !   cmp r8, 0
+    !   cmp r15, 0
     !   je radius_0
-    !   cmp r8, 1
+    !   cmp r15, 1
     !   je radius_1
-    !   cmp r8, 2
-    !   je radius_2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge1
-    ; ------------------------------------------------------------------
-    ! compute_radius_e1:
-    !   cmp r8, 3
-    !   je radius_0
-    !   cmp r8, 4
-    !   je radius_1
-    !   cmp r8, 5
-    !   je radius_2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge2
-    ; ------------------------------------------------------------------
-    ! compute_radius_e2:
-    !   cmp r8, 6
-    !   je radius_0
-    !   cmp r8, 7
-    !   je radius_1
-    !   cmp r8, 8
+    !   cmp r15, 2
     !   je radius_2
     
     ; ------------------------------------------------------------------
@@ -632,6 +602,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; finalize compute radius
     ; ------------------------------------------------------------------
     ! finalize_radius:
+    !   inc r15                            ; increment axis counter
     !   movss xmm8, xmm6                   ; r0
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
@@ -764,165 +735,197 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; ---------------------------------------------------------------------------------
     ; check side
     ; ---------------------------------------------------------------------------------
-    !   xorps xmm6, xmm6
-    !   cmpps xmm6, xmm0 , 1          ; check 0 < normal
-    !   movmskps r12, xmm6
+    ! movaps xmm3, xmm12            ; copy boxhalfsize to xmm3
+    ! movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    !   movaps xmm4, xmm12            ; copy boxhalfsize to xmm7
-    !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
+    ! movups xmm6, [r13]            ; load 1111 negate mask
+    ! mulps xmm5, xmm6              ; negate boxhalfsize
     
-    !   movups  xmm6, [r13]           ; load 1111 negate mask
-    !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
+    ! subps xmm3, xmm13             ; box - p0
+    ! subps xmm5, xmm13             ; -box - p0
     
-    !   subps xmm4, xmm13             ; box - p0
-    !   subps xmm5, xmm13             ; -box - p0
-    !   movaps xmm6, xmm4             ; make a copy
+    ! xorps xmm2, xmm2
+    ! cmpps xmm2, xmm0, 1           ; check zero < normal
+  
+    ! movaps xmm4, xmm5
+    ! movaps xmm6, xmm3
     
-    !   cmp r12, 8
-    !   jbe case_low
-    !   jmp case_up
+    ! andps xmm4, xmm2
+    ! andps xmm6, xmm2
+  
+    ! xorps xmm2, xmm2
+    ! cmpps xmm2, xmm0, 5          ; check zero >= normal
+  
+    ! andps xmm3, xmm2
+    ! andps xmm5, xmm2
     
-    ; ---------------------------------------------------------------------------------
-    ; case 0-7
-    ; ---------------------------------------------------------------------------------
-    ! case_low:
-    !   cmp r12, 0
-    !   je case_0
+    ! addps xmm4, xmm3
+    ! addps xmm6, xmm5
     
-    !   cmp r12, 1
-    !   je case_1
-    
-    !   cmp r12, 2
-    !   je case_2
-    
-    !   cmp r12, 3
-    !   je case_3
-    
-    !   cmp r12, 4
-    !   je case_4
-    
-    !   cmp r12, 5
-    !   je case_5
-    
-    !   cmp r12, 6
-    !   je case_6
-    
-    !   cmp r12, 7
-    !   je case_7
-    
-    ; ---------------------------------------------------------------------------------
-    ; case 8-15
-    ; ---------------------------------------------------------------------------------
-    ! case_up:
-    !   cmp r12, 8
-    !   je case_8
-    
-    !   cmp r12, 9
-    !   je case_9
-    
-    !   cmp r12, 10
-    !   je case_10
-    
-    !   cmp r12, 11
-    !   je case_11
-    
-    !   cmp r12, 12
-    !   je case_12
-    
-    !   cmp r12, 13
-    !   je case_13
-    
-    !   cmp r12, 14
-    !   je case_14
-    
-    !   cmp r12, 15
-    !   je case_15
-    
-    ; ---------------------------------------------------------------------------------
-    ; cases
-    ; ---------------------------------------------------------------------------------
-    ! case_0:
-    !   blendps xmm4, xmm5, 0                    ; vmin = boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 15                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_1:
-    !   blendps xmm4, xmm5, 1                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 14                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_2:
-    !   blendps xmm4, xmm5, 2                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 13                   ; vmax =  -boxx-p0x, boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_3:
-    !   blendps xmm4, xmm5, 3                   ; vmin = -boxx-p0x, -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 12                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_4:
-    !   blendps xmm4, xmm5, 4                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 11                  ; vmax = -boxx-p0x, -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_5:
-    !   blendps xmm4, xmm5, 5                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 10                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_6:
-    !   blendps xmm4, xmm5, 6                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 9                   ; vmax = -boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_7:
-    !   blendps xmm4, xmm5, 7                   ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 8                   ; vmax = boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_8:
-    !   blendps xmm4, xmm5, 8                   ; vmin = boxx-p0x, boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 7                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_9:
-    !   blendps xmm4, xmm5, 9                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 6                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_10:
-    !   blendps xmm4, xmm5, 10                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 5                   ; vmax =  -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_11:
-    !   blendps xmm4, xmm5, 11                   ; vmin =-boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 4                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_12:
-    !   blendps xmm4, xmm5, 12                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 3                   ; vmax =  -boxx-p0x, -boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_13:
-    !   blendps xmm4, xmm5, 13                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 2                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_14:
-    !   blendps xmm4, xmm5, 14                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 1                   ; vmax =  -boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! case_15:
-    !   blendps xmm4, xmm5, 15                  ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 0                   ; vmax = boxx-p0x, boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp normal_dot
-    
-    ! normal_dot:
     !   jmp normal_dot_min
+    
+;     ; ---------------------------------------------------------------------------------
+;     ; check side
+;     ; ---------------------------------------------------------------------------------
+;     !   xorps xmm6, xmm6
+;     !   cmpps xmm6, xmm0 , 1          ; check 0 < normal
+;     !   movmskps r12, xmm6
+;     
+;     !   movaps xmm4, xmm12            ; copy boxhalfsize to xmm7
+;     !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
+;     
+;     !   movups  xmm6, [r13]           ; load 1111 negate mask
+;     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
+;     
+;     !   subps xmm4, xmm13             ; box - p0
+;     !   subps xmm5, xmm13             ; -box - p0
+;     !   movaps xmm6, xmm4             ; make a copy
+;     
+;     !   cmp r12, 8
+;     !   jbe case_low
+;     !   jmp case_up
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; case 0-7
+;     ; ---------------------------------------------------------------------------------
+;     ! case_low:
+;     !   cmp r12, 0
+;     !   je case_0
+;     
+;     !   cmp r12, 1
+;     !   je case_1
+;     
+;     !   cmp r12, 2
+;     !   je case_2
+;     
+;     !   cmp r12, 3
+;     !   je case_3
+;     
+;     !   cmp r12, 4
+;     !   je case_4
+;     
+;     !   cmp r12, 5
+;     !   je case_5
+;     
+;     !   cmp r12, 6
+;     !   je case_6
+;     
+;     !   cmp r12, 7
+;     !   je case_7
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; case 8-15
+;     ; ---------------------------------------------------------------------------------
+;     ! case_up:
+;     !   cmp r12, 8
+;     !   je case_8
+;     
+;     !   cmp r12, 9
+;     !   je case_9
+;     
+;     !   cmp r12, 10
+;     !   je case_10
+;     
+;     !   cmp r12, 11
+;     !   je case_11
+;     
+;     !   cmp r12, 12
+;     !   je case_12
+;     
+;     !   cmp r12, 13
+;     !   je case_13
+;     
+;     !   cmp r12, 14
+;     !   je case_14
+;     
+;     !   cmp r12, 15
+;     !   je case_15
+;     
+;     ; ---------------------------------------------------------------------------------
+;     ; cases
+;     ; ---------------------------------------------------------------------------------
+;     ! case_0:
+;     !   blendps xmm4, xmm5, 0                    ; vmin = boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 15                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z,  -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_1:
+;     !   blendps xmm4, xmm5, 1                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 14                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_2:
+;     !   blendps xmm4, xmm5, 2                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 13                   ; vmax =  -boxx-p0x, boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_3:
+;     !   blendps xmm4, xmm5, 3                   ; vmin = -boxx-p0x, -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 12                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_4:
+;     !   blendps xmm4, xmm5, 4                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 11                  ; vmax = -boxx-p0x, -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_5:
+;     !   blendps xmm4, xmm5, 5                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 10                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_6:
+;     !   blendps xmm4, xmm5, 6                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 9                   ; vmax = -boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_7:
+;     !   blendps xmm4, xmm5, 7                   ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   blendps xmm6, xmm5, 8                   ; vmax = boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_8:
+;     !   blendps xmm4, xmm5, 8                   ; vmin = boxx-p0x, boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 7                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_9:
+;     !   blendps xmm4, xmm5, 9                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 6                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_10:
+;     !   blendps xmm4, xmm5, 10                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 5                   ; vmax =  -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_11:
+;     !   blendps xmm4, xmm5, 11                   ; vmin =-boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 4                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_12:
+;     !   blendps xmm4, xmm5, 12                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 3                   ; vmax =  -boxx-p0x, -boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_13:
+;     !   blendps xmm4, xmm5, 13                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 2                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_14:
+;     !   blendps xmm4, xmm5, 14                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 1                   ; vmax =  -boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! case_15:
+;     !   blendps xmm4, xmm5, 15                  ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
+;     !   blendps xmm6, xmm5, 0                   ; vmax = boxx-p0x, boxy-p0y, boxz-p0z, boxw-p0w
+;     !   jmp normal_dot
+;     
+;     ! normal_dot:
+;     !   jmp normal_dot_min
     
     ; ---------------------------------------------------------------------------------
     ; normal dot vmin > 0 ?
@@ -1092,7 +1095,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! mov edi, [p.p_hits]
     ! mov ecx, [p.v_numTris]
     ! mov edx, [p.p_indices]            ; move indices to edx register
-    ! mov r14, [p.p_elements]           ; move indices to edx register
+    ! mov r14, [p.p_elements]           ; move indices to r14 register
     ! mov rsi, [p.p_center]             ; move center address to rsi
     ! movups xmm11, [rsi]               ; move center packed data to xmm11
     ! mov rsi, [p.p_boxhalfsize]        ; move boxhalfsize address to rsi
@@ -1103,8 +1106,8 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! mov r10, math.l_sse_1100_negate_mask    ; move 1100 negate mask to r10 register
     ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
     
-    ! xor r8, r8
-    ! xor r11, r11
+    ! xor r8, r8                              ; edge counter
+    ! xor r11, r11                            ; hits counter
 
     ; ----------------------------------------------------
     ; load triangle
@@ -1154,6 +1157,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge0_test
     
     ! array_edge0_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1178,6 +1182,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge1_test
     
     ! array_edge1_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm15                  ; move p2 to xmm1
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1204,6 +1209,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge2_test
     
     ! array_edge2_load:
+    !   xor r15, r15                        ; reset axis counter
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1368,44 +1374,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; compute radius and store it in xmm8
     ; ------------------------------------------------------------------
     ! array_compute_radius:
-    !   cmp r8, 3
-    !   jl array_compute_radius_e0
-    !   cmp r8, 6
-    !   jl array_compute_radius_e1
-    !   cmp r8, 9
-    !   jl array_compute_radius_e2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge0
-    ; ------------------------------------------------------------------
-    ! array_compute_radius_e0:
-    !   cmp r8, 0
+    !   cmp r15, 0
     !   je array_radius_0
-    !   cmp r8, 1
+    !   cmp r15, 1
     !   je array_radius_1
-    !   cmp r8, 2
-    !   je array_radius_2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge1
-    ; ------------------------------------------------------------------
-    ! array_compute_radius_e1:
-    !   cmp r8, 3
-    !   je array_radius_0
-    !   cmp r8, 4
-    !   je array_radius_1
-    !   cmp r8, 5
-    !   je array_radius_2
-    
-    ; ------------------------------------------------------------------
-    ; compute radius edge2
-    ; ------------------------------------------------------------------
-    ! array_compute_radius_e2:
-    !   cmp r8, 6
-    !   je array_radius_0
-    !   cmp r8, 7
-    !   je array_radius_1
-    !   cmp r8, 8
+    !   cmp r15, 2
     !   je array_radius_2
     
     ; ------------------------------------------------------------------
@@ -1440,6 +1413,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; finalize compute radius
     ; ------------------------------------------------------------------
     ! array_finalize_radius:
+    !   inc r15                            ; increment axis counter
     !   movss xmm8, xmm6                   ; r0
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
@@ -1568,201 +1542,36 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   mulps  xmm2,xmm3    
     !   subps  xmm0,xmm2                  ; cross product triangle normal
     
-;     ; ---------------------------------------------------------------------------------
-;     ; check side
-;     ; ---------------------------------------------------------------------------------
-;     !   movaps xmm3, xmm12            ; copy boxhalfsize to xmm3
-;     !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
-;     
-;     !   movups xmm6, [r13]            ; load 1111 negate mask
-;     !   mulps xmm5, xmm6              ; negate boxhalfsize
-;     
-;     !   subps xmm3, xmm13             ; box - p0
-;     !   subps xmm5, xmm13             ; -box - p0
-;     
-;     !   xorps xmm2, xmm2
-;     !   cmpps xmm2, xmm0, 1           ; check zero < normal
-; 
-;     !   movaps xmm4, xmm3
-;     !   movaps xmm6, xmm5
-;     
-;     !   andps xmm4, xmm2
-;     !   andps xmm6, xmm2
-;     
-;     !   xorps xmm2, xmm2
-;     !   cmpps xmm2, xmm0, 5          ; check zero >= normal
-; 
-;     !   andps xmm3, xmm2
-;     !   andps xmm5, xmm2
-;     
-;     !   addps xmm4, xmm3
-;     !   addps xmm6, xmm5
-; 
-;     !   jmp array_normal_dot_min
-
     ; ---------------------------------------------------------------------------------
     ; check side
     ; ---------------------------------------------------------------------------------
-    !   xorps xmm6, xmm6
-    !   cmpps xmm6, xmm0 , 1          ; check 0 < normal
-    !   movmskps r12, xmm6
+    ! movaps xmm9, xmm12            ; copy boxhalfsize to xmm9
+    ! movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    !   movaps xmm4, xmm12            ; copy boxhalfsize to xmm7
-    !   movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
+    ! movups xmm6, [r13]            ; load 1111 negate mask in r13
+    ! mulps xmm5, xmm6              ; negate boxhalfsize
     
-    !   movups  xmm6, [r13]           ; load 1111 negate mask
-    !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
+    ! subps xmm9, xmm13             ; box - p0
+    ! subps xmm5, xmm13             ; -box - p0
     
-    !   subps xmm4, xmm13             ; box - p0
-    !   subps xmm5, xmm13             ; -box - p0
-    !   movaps xmm6, xmm4             ; make a copy
+    ! xorps xmm2, xmm2
+    ! cmpps xmm2, xmm0, 1           ; check zero < normal
+  
+    ! movaps xmm4, xmm5
+    ! movaps xmm6, xmm9
     
-    !   cmp r12, 8
-    !   jbe array_case_low
-    !   jmp array_case_up
+    ! andps xmm4, xmm2
+    ! andps xmm6, xmm2
+  
+    ! xorps xmm2, xmm2
+    ! cmpps xmm2, xmm0, 5          ; check zero >= normal
+  
+    ! andps xmm9, xmm2
+    ! andps xmm5, xmm2
     
-    ; ---------------------------------------------------------------------------------
-    ; case 0-7
-    ; ---------------------------------------------------------------------------------
-    ! array_case_low:
-    !   cmp r12, 0
-    !   je array_case_0
-    
-    !   cmp r12, 1
-    !   je array_case_1
-    
-    !   cmp r12, 2
-    !   je array_case_2
-    
-    !   cmp r12, 3
-    !   je array_case_3
-    
-    !   cmp r12, 4
-    !   je array_case_4
-    
-    !   cmp r12, 5
-    !   je array_case_5
-    
-    !   cmp r12, 6
-    !   je array_case_6
-    
-    !   cmp r12, 7
-    !   je array_case_7
-    
-    ; ---------------------------------------------------------------------------------
-    ; case 8-15
-    ; ---------------------------------------------------------------------------------
-    ! array_case_up:
-    !   cmp r12, 8
-    !   je array_case_8
-    
-    !   cmp r12, 9
-    !   je array_case_9
-    
-    !   cmp r12, 10
-    !   je array_case_10
-    
-    !   cmp r12, 11
-    !   je array_case_11
-    
-    !   cmp r12, 12
-    !   je array_case_12
-    
-    !   cmp r12, 13
-    !   je array_case_13
-    
-    !   cmp r12, 14
-    !   je array_case_14
-    
-    !   cmp r12, 15
-    !   je array_case_15
-    
-    ; ---------------------------------------------------------------------------------
-    ; cases
-    ; ---------------------------------------------------------------------------------
-    ! array_case_0:
-    !   blendps xmm4, xmm5, 0                    ; vmin = boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 15                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_1:
-    !   blendps xmm4, xmm5, 1                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 14                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_2:
-    !   blendps xmm4, xmm5, 2                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 13                   ; vmax =  -boxx-p0x, boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_3:
-    !   blendps xmm4, xmm5, 3                   ; vmin = -boxx-p0x, -boxy-p0y, boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 12                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_4:
-    !   blendps xmm4, xmm5, 4                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 11                  ; vmax = -boxx-p0x, -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_5:
-    !   blendps xmm4, xmm5, 5                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 10                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_6:
-    !   blendps xmm4, xmm5, 6                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 9                   ; vmax = -boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_7:
-    !   blendps xmm4, xmm5, 7                   ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   blendps xmm6, xmm5, 8                   ; vmax = boxx-p0x,  boxy-p0y,  boxz-p0z, -boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_8:
-    !   blendps xmm4, xmm5, 8                   ; vmin = boxx-p0x, boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 7                   ; vmax = -boxx-p0x, -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_9:
-    !   blendps xmm4, xmm5, 9                   ; vmin = -boxx-p0x,  boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 6                   ; vmax = boxx-p0x,  -boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_10:
-    !   blendps xmm4, xmm5, 10                   ; vmin = boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 5                   ; vmax =  -boxx-p0x,  boxy-p0y, -boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_11:
-    !   blendps xmm4, xmm5, 11                   ; vmin =-boxx-p0x,  -boxy-p0y, boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 4                   ; vmax = boxx-p0x, boxy-p0y, -boxz-p0z,  boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_12:
-    !   blendps xmm4, xmm5, 12                   ; vmin = boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 3                   ; vmax =  -boxx-p0x, -boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_13:
-    !   blendps xmm4, xmm5, 13                   ; vmin = -boxx-p0x,  boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 2                   ; vmax = boxx-p0x,  -boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_14:
-    !   blendps xmm4, xmm5, 14                   ; vmin = boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 1                   ; vmax =  -boxx-p0x,  boxy-p0y,  boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_case_15:
-    !   blendps xmm4, xmm5, 15                  ; vmin = -boxx-p0x,  -boxy-p0y, -boxz-p0z, -boxw-p0w
-    !   blendps xmm6, xmm5, 0                   ; vmax = boxx-p0x, boxy-p0y, boxz-p0z, boxw-p0w
-    !   jmp array_normal_dot
-    
-    ! array_normal_dot:
-    !   jmp array_normal_dot_min
-    
+    ! addps xmm4, xmm9
+    ! addps xmm6, xmm5
+
     ; ---------------------------------------------------------------------------------
     ; normal dot vmin > 0 ?
     ; ---------------------------------------------------------------------------------
@@ -1820,7 +1629,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; exit
     ; ------------------------------------------------------------------
     ! array_exit:
-    ! mov [p.v_numHits], r11
+    !   mov [p.v_numHits], r11
     ProcedureReturn numHits
  
   EndProcedure
@@ -1979,7 +1788,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1750
-; FirstLine = 1712
+; CursorPosition = 1097
+; FirstLine = 1078
 ; Folding = ----
 ; EnableXP

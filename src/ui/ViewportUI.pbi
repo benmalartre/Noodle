@@ -303,7 +303,6 @@ Module ViewportUI
             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
             *Me\tool = Globals::#TOOL_ROTATE
           Case Globals::#SHORTCUT_TRANSLATE
-            MessageRequester("VIEWPORT", "TRANSLATE ACTIVE")
             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
             *Me\tool = Globals::#TOOL_TRANSLATE
           Case Globals::#SHORTCUT_CAMERA
@@ -643,7 +642,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 209
-; FirstLine = 190
+; CursorPosition = 305
+; FirstLine = 271
 ; Folding = -----
 ; EnableXP

@@ -1,22 +1,21 @@
 ﻿XIncludeFile "../core/Math.pbi"
 XIncludeFile "../objects/Geometry.pbi"
-XIncludeFile "../objects/Segment.pbi"
 
 ; ============================================================================
-;  Line Module IMPLEMENTATION
+;  Segment Module IMPLEMENTATION
 ; ============================================================================
-DeclareModule Line
+DeclareModule Segment
   UseModule Math
-  #Line_TOLERANCE = 0.0000000001
+  #Segment_TOLERANCE = 0.0000000001
   
-  Declare Set(*Me.Geometry::Line_t,*pnts.CArray::CArrayV3F32)
-  Declare AddPoint(*Line.Geometry::Line_t,*pos.v3f32)
-  Declare AddPoints(*Line.Geometry::Line_t,*pnts.CArray::CArrayV3F32)
+  Declare Set(*Me.Geometry::Segment_t,*start.v3f32,*end.v3f32)
+  Declare SetStart(*Segment.Geometry::Segment_t,*pos.v3f32)
+  Declare SetEnd(*Segment.Geometry::Segment_t,*pos.v3f32)
   
-  Declare GetPoint( *line.Geometry::Line_t, t.f , *io.v3f32)
-  Declare.b FindClosestPoint(*line.Geometry::Line_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
-  Declare.b FindClosestPoints(*line1.Geometry::Line_t,
-                              *line2.Geometry::Line_t,
+  Declare GetPoint( *segment.Geometry::Segment_t, t.f , *io.v3f32)
+  Declare.b FindClosestPoint(*segment.Geometry::Segment_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
+  Declare.b FindClosestPoints(*segment1.Geometry::Segment_t,
+                              *segment2 .Geometry::Segment_t,
                               *closest1.v3f32,
                               *closest2.v3f32,
                               *t1=#Null,
@@ -24,28 +23,21 @@ DeclareModule Line
   
 EndDeclareModule
 
-Module Line
+Module Segment
   UseModule Math
   
   ;---------------------------------------------------------
   ; Set Origin
   ;---------------------------------------------------------
-  Procedure Set(*line.Geometry::Line_t,*pnts.CArray::CArrayV3F32)
-    CArray::Copy(*line\positions, *pnts)
+  Procedure SetStart(*line.Geometry::Segment_t,*pos.v3f32)
+    Vector3::SetFromOther(*line\p1,*pos)
   EndProcedure
   
   ;---------------------------------------------------------
-  ; Add Point
+  ; Set Direction
   ;---------------------------------------------------------
-  Procedure AddPoint(*Line.Geometry::Line_t,*pos.v3f32)
-    CArray::Append(*line\positions, *pos)
-  EndProcedure
-  
-  ;---------------------------------------------------------
-  ; Add Points
-  ;---------------------------------------------------------
-  Procedure AddPoints(*Line.Geometry::Line_t,*pnts.CArray::CArrayV3F32)
-    CArray::AppendArray(*line\positions, *pnts)
+  Procedure SetEnd(*segment.Geometry::Segment_t,*pos.v3f32)
+    Vector3::SetFromOther(*segment\p2,*pos)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -53,35 +45,35 @@ Module Line
   ;---------------------------------------------------------
   ;Return the point on the line at \p ( p0 + t * dir ).
   ; Remember dir has been normalized so t represents a unit distance.
-  Procedure GetPoint( *line.Geometry::Line_t, t.f , *io.v3f32)
+  Procedure GetPoint( *segment.Geometry::Segment_t, t.f , *io.v3f32)
     Protected direction.v3f32
-    Vector3::Sub(direction, *line\p2, *line\p1)
+    Vector3::Sub(direction, *segment\p2, *segment\p1)
     Vector3::NormalizeInPlace(direction)
     Vector3::Scale(*io, direction, t)
-    Vector3::AddInPlace(*io, *line\p1)
+    Vector3::AddInPlace(*io, *segment\p1)
   EndProcedure
     
   ;---------------------------------------------------------
   ; Find Closest Point
   ;---------------------------------------------------------
-  Procedure.b FindClosestPoint(*line.Geometry::Line_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
+  Procedure.b FindClosestPoint(*segment.Geometry::Segment_t, *p.v3f32, *t=#Null, *io.v3f32=#Null)
     ; Compute the vector from the start point To the given point.
     Protected v.v3f32, d.v3f32
-    Vector3::Sub(v, *p, *line\p1)
-    Vector3::Sub(d, *line\p2, *line\p1)
+    Vector3::Sub(v, *p, *segment\p1)
+    Vector3::Sub(d, *segment\p2, *segment\p1)
     Vector3::NormalizeInPlace(d)
     ; Find the length of the projection of this vector onto the line.
     Protected lt.f = Vector3::Dot(v, d)
     
     If *t : PokeF(*t, lt) : EndIf
-    If *io : GetPoint(*line, lt, *io) : EndIf
+    If *io : GetPoint(*segment, lt, *io) : EndIf
   EndProcedure
   
   ;---------------------------------------------------------
   ; Find Closest Points
   ;---------------------------------------------------------
-  Procedure.b FindClosestPoints(*line1.Geometry::Line_t,
-                                *line2.Geometry::Line_t,
+  Procedure.b FindClosestPoints(*segment1.Geometry::Segment_t,
+                                *segment2.Geometry::Segment_t,
                                 *closest1.v3f32,
                                 *closest2.v3f32,
                                 *t1=#Null,
@@ -91,12 +83,12 @@ Module Line
     ;   d1 = line 1's direction
     ;   p2 = line 2's position
     ;   d2 = line 2's direction
-    Protected *p1.v3f32 = *line1\p1 
+    Protected *p1.v3f32 = *segment1\p1 
     Protected d1.v3f32
-    Vector3::Sub(d1, *line1\p2, *line1\p2)
-    Protected *p2.v3f32 = *line2\p1
+    Vector3::Sub(d1, *segment1\p2, *segment1\p2)
+    Protected *p2.v3f32 = *segment2\p1
     Protected d2.v3f32
-    Vector3::Sub(d2, *line2\p2, *line2\p2)
+    Vector3::Sub(d2, *segment2\p2, *segment2\p2)
     
     ; We want To find points closest1 And closest2 on each line.
     ; Their parametric definitions are:
@@ -147,9 +139,9 @@ Module Line
     Protected lt1.f = (c * d - a * f) / denom
     Protected lt2.f = (c * e - b * f) / denom
 
-    If ( *closest1 ) : GetPoint( *line1, lt1, *closest1 ) : EndIf
+    If ( *closest1 ) : GetPoint( *segment1, lt1, *closest1 ) : EndIf
 
-    If ( *closest2 ) : GetPoint(*line2, lt2, *closest2) : EndIf
+    If ( *closest2 ) : GetPoint(*segment2, lt2, *closest2) : EndIf
     
     If ( *t1 ) : PokeF(*t1, lt1) : EndIf
     If ( *t2 ) : PokeF(*t2, lt2) : EndIf
@@ -160,7 +152,7 @@ Module Line
   ;---------------------------------------------
   ;  Set
   ;---------------------------------------------
-  Procedure Set(*Me.Geometry::Line_t,*p1.v3f32,*p2.v3f32)
+  Procedure Set(*Me.Geometry::Segment_t,*p1.v3f32,*p2.v3f32)
     
     If *p1 : Vector3::SetFromOther(*Me\p1,*p1) : EndIf
     If *p2 : Vector3::SetFromOther(*Me\p2,*p2) : EndIf
@@ -174,8 +166,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 12
+; CursorPosition = 17
+; FirstLine = 17
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

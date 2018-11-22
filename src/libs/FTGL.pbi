@@ -146,7 +146,6 @@ Module FTGL
     If FindMapElement(*atlases(), "Arial32")
       *ftgl_atlas = *atlases()
     EndIf
-   
   EndProcedure
   
   Procedure SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
@@ -417,8 +416,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 212
+; CursorPosition = 393
+; FirstLine = 358
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

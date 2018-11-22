@@ -150,7 +150,7 @@ Module ControlCheck
     Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
-    VectorFont(FontID( Globals::#FONT_LABEL ))
+    VectorFont(FontID( Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
@@ -540,7 +540,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 230
+; CursorPosition = 152
+; FirstLine = 130
 ; Folding = ----
 ; EnableXP

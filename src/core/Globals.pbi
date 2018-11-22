@@ -37,15 +37,14 @@ DeclareModule Globals
   EndEnumeration
   
   Enumeration 
-    #FONT_TEXT = 1
-    #FONT_HEADER
-    #FONT_LABEL
-    #FONT_TITLE
-    #FONT_MENU
-    #FONT_SUBMENU
-    #FONT_NODE
-    #FONT_DIGITAL
+    #FONT_DEFAULT = 1
+    #FONT_BOLD
   EndEnumeration
+  
+  #FONT_SIZE_TEXT = 8
+  #FONT_SIZE_LABEL = 10
+  #FONT_SIZE_MENU = 11
+  #FONT_SIZE_TITLE = 13
   
   Enumeration
     #GUI_THEME_LIGHT
@@ -196,50 +195,27 @@ Module Globals
   
   Procedure Init()
      ; ---[ Init Once ]----------------------------------------------------
-    Protected lval.l = 0
-    If  RegisterFontFile("E:/Projects/RnD/Noodle/fonts/Digital/ds-digi.ttf")
-      LoadFont(#FONT_DIGITAL, "ds-digi", 32)
-    EndIf
-
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
-        
-        LoadFont( #FONT_TEXT,   "Arial",     8)
-        LoadFont( #FONT_HEADER, "Tahoma", 8, #PB_Font_Bold )
-        LoadFont( #FONT_LABEL,  "Tahoma",     8)
-        LoadFont(#FONT_TITLE,"Tahoma",10,#PB_Font_Bold)
-        LoadFont(#FONT_MENU,"Tahoma",9,#PB_Font_Bold)
-        LoadFont(#FONT_SUBMENU,"Tahoma",8,#PB_Font_Bold)
-        LoadFont(#FONT_NODE,"Tahoma",8)  
+        LoadFont( #FONT_DEFAULT, "Consolas", 8)
+        LoadFont( #FONT_BOLD,    "Consolas", 8, #PB_Font_Bold )
+
       CompilerCase #PB_OS_MacOS
-        LoadFont( #FONT_TEXT,   "Arial",     12)
-        LoadFont( #FONT_HEADER, "Tahoma", 12, #PB_Font_Bold )
-        LoadFont( #FONT_LABEL,  "Tahoma",     12)
-        LoadFont(#FONT_TITLE,"Tahoma",16,#PB_Font_Bold)
-        LoadFont(#FONT_MENU,"Tahoma",14,#PB_Font_Bold)
-        LoadFont(#FONT_SUBMENU,"Tahoma",12,#PB_Font_Bold)
-        LoadFont(#FONT_NODE,"Tahoma",12)  
+        LoadFont( #FONT_DEFAULT, "Verdana", 8)
+        LoadFont( #FONT_BOLD,    "Verdana", 8, #PB_Font_Bold )
+        
       CompilerCase #PB_OS_Linux
-        LoadFont( #FONT_TEXT,   "Arial",     8)
-        LoadFont( #FONT_HEADER, "Tahoma", 8, #PB_Font_Bold )
-        LoadFont( #FONT_LABEL,  "Tahoma",     8)
-        LoadFont(#FONT_TITLE,"Tahoma",10,#PB_Font_Bold)
-        LoadFont(#FONT_MENU,"Tahoma",9,#PB_Font_Bold)
-        LoadFont(#FONT_SUBMENU,"Tahoma",8,#PB_Font_Bold)
-        LoadFont(#FONT_NODE,"Tahoma",8)  
+        LoadFont( #FONT_DEFAULT, "Verdana", 8)
+        LoadFont( #FONT_BOLD,    "Verdana", 8, #PB_Font_Bold ) 
+        
     CompilerEndSelect
   EndProcedure
   
   Procedure Term()
     ; ---[ Term Once ]----------------------------------------------------------
-    If IsFont(#FONT_TEXT) : FreeFont( #FONT_TEXT  ) : EndIf
-    If IsFont(#FONT_HEADER) : FreeFont( #FONT_HEADER ) : EndIf
-    If IsFont(#FONT_LABEL) : FreeFont( #FONT_LABEL   ) : EndIf
-    If IsFont(#FONT_TITLE) : FreeFont( #FONT_TITLE  ) : EndIf
-    If IsFont(#FONT_MENU) : FreeFont( #FONT_MENU ) : EndIf
-    If IsFont(#FONT_SUBMENU) : FreeFont( #FONT_SUBMENU   ) : EndIf
-    If IsFont(#FONT_NODE) : FreeFont( #FONT_NODE   ) : EndIf
-;   CompilerEndIf
+    If IsFont(#FONT_DEFAULT) : FreeFont( #FONT_DEFAULT  ) : EndIf
+    If IsFont(#FONT_BOLD) : FreeFont( #FONT_BOLD ) : EndIf
+
   EndProcedure
 
 ;}
@@ -249,8 +225,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 191
+; CursorPosition = 44
+; FirstLine = 30
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

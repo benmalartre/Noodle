@@ -408,7 +408,7 @@ Module ControlProperty
 
     ; Check Row Status
     If Not *Me\row : ProcedureReturn( void ) : EndIf
-;     *Me\dy + *Me\children(*Me\chilcount-1)\sizY
+
     ; Update Status
     *Me\row = #False
   EndProcedure
@@ -448,19 +448,17 @@ Module ControlProperty
     Protected *btn.ControlButton::ControlButton_t
     *Me\dx =0
     Protected *Ctl.Control::Control_t
-    
-    OpenGadgetList(*Me\gadgetID)
+
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
       *btn = ControlButton::New(*obj,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       ControlGroup::Append(*Me\groups(),*btn)
-      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + 22 : EndIf
+      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
       *btn = ControlButton::New(*obj,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       Append( *Me, *btn)
-      If Not *Me\row : *Me\dy + 22 : EndIf
+      If Not *Me\row : *Me\dy + height : EndIf
     EndIf
-    CloseGadgetList()
     ProcedureReturn(*btn)
   
   EndProcedure
@@ -508,20 +506,20 @@ Module ControlProperty
       ControlGroup::RowStart(*Me\groups())
       ControlGroup::Append(*Me\groups(),ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append(*Me\groups(),ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      ControlGroup::Append(*Me\groups(),ControlCheck::New(*obj,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      *ctl = ControlGroup::Append(*Me\groups(),ControlCheck::New(*obj,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       ControlGroup::RowEnd(*Me\groups())
     Else
       RowStart(*Me)
       Append( *Me,ControlDivot::New(*obj,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append( *Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      Append( *Me,ControlCheck::New(*obj, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      *ctl = Append( *Me,ControlCheck::New(*obj, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       RowEnd(*Me)
     EndIf
     
     ; Connect Signal
     If *obj
       Protected *class.Class::Class_t = *obj\class
-      Object::SignalConnect(*obj,*Ctl\slot,0)
+      Object::SignalConnect(*obj,*ctl\slot,0)
     EndIf
     
     
@@ -547,15 +545,15 @@ Module ControlProperty
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append( *Me\groups(), ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      ControlGroup::Append( *Me\groups(), *Ctl  )
+      *ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      ControlGroup::Append( *Me\groups(), *ctl  )
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append(*Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *Ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      Append(*Me, *Ctl)
+      *ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
 
@@ -588,13 +586,15 @@ Module ControlProperty
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append( *Me\groups(), ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      ControlGroup::Append( *Me\groups(), ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+      *ctl =  ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
+      ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append(*Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      Append(*Me,ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+      *ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
     
@@ -1730,7 +1730,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 410
-; FirstLine = 399
+; CursorPosition = 596
+; FirstLine = 584
 ; Folding = --------
 ; EnableXP

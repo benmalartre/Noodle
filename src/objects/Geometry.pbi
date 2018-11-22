@@ -42,14 +42,24 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
-  ; Line
+  ; Segment
   ; ----------------------------------------------------------------------------
   ;{
-  Structure Line_t
+  Structure Segment_t
     ; Parametric description:
     ;  l(t) = _p0 + t * _length * _dir;
     p1.v3f32
     p2.v3f32    
+  EndStructure
+  ;}
+  
+  ; ----------------------------------------------------------------------------
+  ; Line_t
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Line_t
+    *positions.CArray::CArrayV3F32
+    degree.i  
   EndStructure
   ;}
   
@@ -579,7 +589,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 502
-; FirstLine = 471
+; CursorPosition = 62
+; FirstLine = 29
 ; Folding = -----
 ; EnableXP

@@ -12,7 +12,10 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -132,7 +135,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Protected i.i
     For i=0 To *geom\nbpoints - 1
       *p = CArray::GetValue(*geom\a_positions,i)
-      Vector3::AddInPlace(@sum, *p)
+      Vector3::AddInPlace(sum, *p)
     Next
     
     Protected inp.f = 1.0/*geom\nbpoints
@@ -142,11 +145,10 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
     CArray::SetCount(*positions, 1)
     CArray::SetValue(*positions, 0, centroid)
-    Protected *point.Drawer::Point_t = Drawer::NewPoint(*drawer, *positions)
+    Protected *point.Drawer::Point_t = Drawer::AddPoint(*drawer, *positions)
     *point\size = 4
     Drawer::SetColor(*point, Color::_RED())
 
-    
     ; calc full 3x3 covariance matrix, excluding symmetries:
     Define xx.f = 0.0
     Define xy.f = 0.0
@@ -156,9 +158,10 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Define zz.f = 0.0
     
     Define r.v3f32
-    
+    Define *p.v3f32
     For i=0 To *geom\nbpoints - 1
-      Vector3::Sub(@r, @centroid, CArray::GetValue(*geom\a_positions, i))
+      *p = CArray::GetValue(*geom\a_positions, i)
+      Vector3::Sub(r, centroid, *p)
       xx + r\x * r\x
       xy + r\x * r\y
       xz + r\x * r\z
@@ -194,17 +197,17 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     EndSelect
     
       
-    Vector3::NormalizeInPlace(@nrm)
-    Vector3::NormalizeInPlace(@upv)
+    Vector3::NormalizeInPlace(nrm)
+    Vector3::NormalizeInPlace(upv)
       
     Protected m.m4f32
     Protected scl.v3f32
     Protected rot.q4f32
     Protected t.Transform::Transform_t
-    Quaternion::LookAt(@rot, @nrm, @upv,#True)
-    Matrix4::SetFromQuaternion(@m, @rot)
+    Quaternion::LookAt(rot, nrm, upv,#True)
+    Matrix4::SetFromQuaternion(m, rot)
 ;     Matrix4::DirectionMatrix(@m, @nrm, @upv)
-    Matrix4::SetTranslation(@m, @centroid)
+    Matrix4::SetTranslation(m, centroid)
 ;     Vector3::Set(scl, 12,12,12)
 ;     Transform::SetScale(@t, @scl)
 ;     Quaternion::LookAt(@rot, @nrm, @upv)
@@ -212,7 +215,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
 ;     Transform::SetTranslation(@t,@centroid)
 ;     Transform::UpdateMatrixFromSRT(@t)
 
-    Protected *matrix.Drawer::Matrix_t = Drawer::NewMatrix(*drawer, @m)
+    Protected *matrix.Drawer::Matrix_t = Drawer::AddMatrix(*drawer, m)
     *matrix\size = 1
 
   EndIf
@@ -239,7 +242,7 @@ FTGL::Init()
   EndIf
   
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
 
@@ -261,12 +264,12 @@ FTGL::Init()
   Define q.q4f32
   Define upv.v3f32
   Vector3::Set(upv, 0,0,1)
-  Quaternion::LookAt(@q, @nrm, @upv)
-  Transform::SetTranslation(@t, @ctr)
-  Transform::SetRotationFromQuaternion(@t, @q)
-  Transform::SetScaleFromXYZValues(@t, 2,0.8,1.8)
+  Quaternion::LookAt(q, nrm, upv,#False)
+  Transform::SetTranslation(t, ctr)
+  Transform::SetRotationFromQuaternion(t, q)
+  Transform::SetScaleFromXYZValues(t, 2,0.8,1.8)
   
-  Transform::UpdateMatrixFromSRT(@t)
+  Transform::UpdateMatrixFromSRT(t)
   
   Define *cloud.PointCloud::PointCloud_t = RandomPointCloud(256, t\m)
   
@@ -286,7 +289,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 139
-; Folding = -
+; CursorPosition = 43
+; FirstLine = 15
+; Folding = --
 ; EnableXP

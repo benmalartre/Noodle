@@ -10,7 +10,7 @@ Time::Init()
 
 
 ; Define numTris = 4
-Define numTris = 12800000
+Define numTris = 10000000
 
 Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 CArray::SetCount(*positions, numTris * 3)
@@ -141,8 +141,7 @@ MessageRequester("Touch",msg)
 ; Debug asms
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 84
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

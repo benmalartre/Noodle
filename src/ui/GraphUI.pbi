@@ -202,6 +202,8 @@ Module GraphUI
   Procedure OnEvent(*Me.GraphUI_t,event.i)
     Protected Me.IGraphUI = *Me
     
+    Debug GadgetWidth(*Me\gadgetID)
+    Debug GadgetHeight(*Me\gadgetID)
     Select event
       Case #PB_Event_Menu
         Select EventMenu()
@@ -249,6 +251,7 @@ Module GraphUI
         
         *Me\width = width
         *Me\height = height
+
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         CanvasEvent(*Me,#PB_Event_SizeWindow)
@@ -847,7 +850,7 @@ Module GraphUI
     CompilerElse
       ; Vector Drawing
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-      VectorFont(FontID(Globals::#FONT_TEXT), 32)
+      VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TITLE)
       AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
       VectorSourceColor(RGBA(200,200,200,255))
       FillPath( #PB_Path_Default )
@@ -1659,7 +1662,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 875
-; FirstLine = 872
+; CursorPosition = 852
+; FirstLine = 830
 ; Folding = --------
 ; EnableXP

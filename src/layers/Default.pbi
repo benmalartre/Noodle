@@ -87,11 +87,9 @@ Module LayerDefault
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.LayerDefault_t,*ctx.GLContext::GLContext_t)
-    GLCheckError("Entering Layer Default Draw")
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
     
-  
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::BindOutput(*buffer)
     
@@ -224,7 +222,6 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
-    GLCheckError("DRAW NULLS")
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
   Protected basewidth = *layer\width
@@ -290,7 +287,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 242
-; FirstLine = 200
+; CursorPosition = 235
+; FirstLine = 207
 ; Folding = --
 ; EnableXP

@@ -54,6 +54,7 @@ Module ControlButton
 ;  hlpDraw
 ; ----------------------------------------------------------------------------
   Procedure hlpDraw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
+  
   ;---[ Check Visible ]-------------------------------------------------------
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
@@ -61,7 +62,7 @@ Module ControlButton
   Protected tc.i = UIColor::COLORA_LABEL
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  VectorFont(FontID(Globals::#FONT_LABEL), 16)
+  VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
   Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )*0.5 + xoff
   Protected ty = (*Me\sizY - VectorTextHeight( *Me\label ) )*0.5+ yoff
   tx = Math::Max( tx, 3 + xoff )
@@ -101,7 +102,7 @@ Module ControlButton
   
   ; ---[ Draw Label ]---------------------------------------------------------
   MovePathCursor(tx, ty )
-  VectorSourceColor(tc)
+  VectorSourceColor(UIColor::COLORA_TEXT)
   DrawVectorText(*Me\label)
   
 ;   ; ---[ Check Visible ]----------------------------------------------------
@@ -390,7 +391,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 39
+; CursorPosition = 56
+; FirstLine = 51
 ; Folding = ---
 ; EnableXP

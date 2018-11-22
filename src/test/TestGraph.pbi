@@ -83,7 +83,7 @@ AddPushTree(*tree)
 Scene::AddChild(Scene::*current_scene,*obj)
 
 Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
-
+Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Define *m.ViewManager::ViewManager_t = *app\manager
 Global *main.View::View_t = *m\main
 Global *view.View::View_t = View::Split(*main,0,50)
@@ -98,25 +98,23 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
 *app\context = *viewport\context
 *viewport\camera = *app\camera
-ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
-; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
+GraphUI::SetContent(*graph,*tree)
+
+; ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
-;View::SetContent(*s1\right,*graph)
-GraphUI::SetContent(*graph,*tree)
-ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 
+ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ViewportUI::AddLayer(*viewport, *layer)
 
 Scene::Setup(Scene::*current_scene,*app\context)
-
-ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
+; 
+; ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
 
 Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
@@ -144,21 +142,18 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
-  
-  CompilerIf Not #USE_GLFW
-    ViewportUI::FlipBuffer(*viewport)
-  CompilerEndIf
-  
+
+  ViewportUI::FlipBuffer(*viewport)
 
 EndProcedure
 
 
 Define e.i
-Controls::SetTheme(Globals::#GUI_THEME_DARK)
+
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 102
+; CursorPosition = 101
+; FirstLine = 84
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

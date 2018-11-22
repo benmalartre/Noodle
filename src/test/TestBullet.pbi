@@ -259,7 +259,8 @@ Procedure Draw(*app.Application::Application_t)
  
 ;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
   
- default_layer\Draw  (*app\context)
+  default_layer\Draw  (*app\context)
+
 ;   gbuffer\Draw(*app\context  )
 ;   shadowmap\Draw(*app\context)
   
@@ -390,8 +391,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 201
+; CursorPosition = 253
+; FirstLine = 237
 ; Folding = -
 ; EnableThread
 ; EnableXP

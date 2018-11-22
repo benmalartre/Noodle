@@ -101,6 +101,7 @@ Module Stack
       node = *level\nodes()
       node\Delete()
     Next
+    ClearList(*level\nodes())
   EndProcedure
   
   
@@ -157,14 +158,13 @@ Module Stack
     
   EndProcedure
   
-  
+  ;------------------------------------------------------------------------------------------
+  ; Clear Stack
+  ;------------------------------------------------------------------------------------------
   Procedure Clear(*stack.Stack_t)
     ForEach *stack\levels()
       ClearLevel(*stack\levels())
     Next
-    
-    
-    ClearList(*stack\levels())
   EndProcedure
   
   Class::DEF(Stack)
@@ -173,7 +173,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 113
+; CursorPosition = 103
+; FirstLine = 93
 ; Folding = ---
 ; EnableXP
