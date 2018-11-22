@@ -25804,19 +25804,16 @@ Define *positions = *Me\positions\data
       !   subps  xmm0,xmm2                  ; cross product triangle normal
       
       ; normalize in place
-      !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
-      !   mulps xmm0, xmm0                  ; carré de chaque composante
-
-      !   movaps xmm7, xmm0
-      !   shufps xmm7, xmm7, 01001110b
-      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-
-      !   movaps xmm7, xmm0
-      !   shufps xmm7, xmm7, 00010001b
-      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-
-      !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
-      !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      !   movaps xmm6, xmm0                 ; copy normal in xmm6
+      !   mulps xmm0, xmm0                  ; square it
+      !   movaps xmm7, xmm0                 ; copy in xmm7
+      !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+      !   addps xmm0, xmm7                  ; packed addition
+      !   movaps xmm7, xmm0                 ; copy in xmm7  
+      !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+      !   addps xmm0, xmm7                  ; packed addition
+      !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+      !   mulps xmm0, xmm6                  ; multiply by intila vector
       !   jmp accumulate_triangle_normal    
       
       ; accumulate in memory
@@ -25846,23 +25843,21 @@ Define *positions = *Me\positions\data
       
       ! loop_normalize_final_normal:
       !   movaps xmm0, [rdi]                ; load normal in xmm0
-      !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
-      !   mulps xmm0, xmm0                  ; carré de chaque composante
-
-      !   movaps xmm7, xmm0
-      !   shufps xmm7, xmm7, 01001110b
-      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-
-      !   movaps xmm7, xmm0
-      !   shufps xmm7, xmm7, 00010001b
-      !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-
-      !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
-      !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+      !   movaps xmm6, xmm0                 ; copy normal in xmm6
+      !   mulps xmm0, xmm0                  ; square it
+      !   movaps xmm7, xmm0                 ; copy in xmm7
+      !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+      !   addps xmm0, xmm7                  ; packed addition
+      !   movaps xmm7, xmm0                 ; copy in xmm7  
+      !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+      !   addps xmm0, xmm7                  ; packed addition
+      !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+      !   mulps xmm0, xmm6                  ; multiply by intila vector
       !   movaps [rdi], xmm0                ; move back to memory
       !   add rdi, 16                       ; next normal
       !   dec ecx
       !   jg loop_normalize_final_normal
+      
     CompilerElse
       Protected i,a,b,c
       Define.v3f32 *a,*b,*c
@@ -26326,7 +26321,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25667
-; FirstLine = 25664
+; CursorPosition = 25854
+; FirstLine = 25825
 ; Folding = ----
 ; EnableXP

@@ -79,19 +79,16 @@ Procedure SetPolygonNormals(numPolygons.l, *facecount, *normals, *polygonnormals
   ; ---------------------------------------------------------------------------------
   ; normalize in place
   ; ---------------------------------------------------------------------------------
-  !   movaps xmm6, xmm0                 ; effectue une copie du vecteur dans xmm6
-  !   mulps xmm0, xmm0                  ; carré de chaque composante
-  ; mix1
-  !   movaps xmm7, xmm0
-  !   shufps xmm7, xmm7, 01001110b
-  !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-  ; mix2
-  !   movaps xmm7, xmm0
-  !   shufps xmm7, xmm7, 00010001b
-  !   addps xmm0, xmm7                  ; additionne les composantes mélangées
-  ; 1/sqrt
-  !   rsqrtps xmm0, xmm0                ; inverse de la racine carrée (= longueur)
-  !   mulps xmm0, xmm6                  ; que multiplie le vecteur initial
+  !   movaps xmm6, xmm0                 ; copy normal in xmm6
+  !   mulps xmm0, xmm0                  ; square it
+  !   movaps xmm7, xmm0                 ; copy in xmm7
+  !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+  !   addps xmm0, xmm7                  ; packed addition
+  !   movaps xmm7, xmm0                 ; copy in xmm7  
+  !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+  !   addps xmm0, xmm7                  ; packed addition
+  !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+  !   mulps xmm0, xmm6                  ; multiply by intila vector
   
   !   movups [rdi], xmm0
   !   add rdi, 16
@@ -117,7 +114,7 @@ SetPolygonNormals(*geom\nbpolygons, *geom\a_facecount\data, *geom\a_normals\data
 Debug "OK"
 ; CArray::Echo(*geom\a_polygonnormals, "Polygon Normals")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 53
+; CursorPosition = 79
+; FirstLine = 45
 ; Folding = -
 ; EnableXP

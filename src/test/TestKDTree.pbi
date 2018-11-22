@@ -95,7 +95,7 @@ Procedure BuildPositionAndColorArray(*tree.KDTree::KDTree_t,*mem)
     *pnt\v[0] = Random(100)*0.05
     *pnt\v[1] = Random(100)*0.05
     *pnt\v[2] = Random(100)*0.05
-    Color::Randomize(*pnt\color)
+;     Color::Randomize(*pnt\color)
   Next
 EndProcedure
 
@@ -130,15 +130,15 @@ Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t)
       Matrix4::SetScale(m,s)
       Matrix4::SetTranslation(m,c)
       
-      Define *box.Drawer::Box_t = Drawer::AddBox(*drawer, m)
-      Define color.c4f32
-      If *node\hit
-        Color::Set(color, 1,1,1, 1)
-      Else
-        Color::Set(color, *node\r,*node\g,*node\b, 1)
-      EndIf
-      
-      Drawer::SetColor(*box, color)
+;       Define *box.Drawer::Box_t = Drawer::AddBox(*drawer, m)
+;       Define color.c4f32
+;       If *node\hit
+;         Color::Set(color, 1,1,1, 1)
+;       Else
+;         Color::Set(color, *node\r,*node\g,*node\b, 1)
+;       EndIf
+;       
+;       Drawer::SetColor(*box, color)
 ;     EndIf
   EndIf
 EndProcedure
@@ -159,10 +159,10 @@ Procedure DrawKDPoints(*tree.KDTree::KDTree_t)
     *p = CArray::GetValue(*positions, i)
     *c = CArray::GetValue(*colors, i)
     Vector3::Set(*p, *tree\points(i)\v[0], *tree\points(i)\v[1], *tree\points(i)\v[2])
-    Color::SetFromOther(*c, *tree\points(i)\color)
+;     Color::SetFromOther(*c, *tree\points(i)\color)
   Next
   
-;   CopyMemory(*tree\points(0), CArray::GetPtr(*positions, 0), *tree\m_nbp * SizeOf(KDTree::KDPoint_t))
+; ;   CopyMemory(*tree\points(0), CArray::GetPtr(*positions, 0), *tree\m_nbp * SizeOf(KDTree::KDPoint_t))
   Protected *PNT.Drawer::Point_t = Drawer::AddColoredPoints(*drawer, *positions, *colors)
   Drawer::SetSize(*PNT, 4)
   CArray::Delete(*positions)
@@ -297,15 +297,15 @@ Procedure KDTreeUpdate()
   Define T.d = Time::Get()
   KDTree::Search(*kdtree,query,search)
   TSearchKDTree = Time::Get() - T
-  KDTree::SearchN(*kdtree, @query,@max_distance,max_points)
+;   KDTree::SearchN(*kdtree, @query,@max_distance,max_points)
   Drawer::Flush(*drawer)
-;   
-; ;   DrawKDTree(*kdtree)
-;   DrawKDPoints(*kdtree)
+  
+;   DrawKDTree(*kdtree)
+  DrawKDPoints(*kdtree)
 ;   DrawKDSearch(*kdtree)
 ;   DrawKDQuery(*kdtree)
 ;   
-  BruteClosest(*kdtree)
+;   BruteClosest(*kdtree)
 
   
   ViewportUI::SetContext(*viewport)
@@ -316,18 +316,27 @@ Procedure KDTreeUpdate()
 ;   Octree::NumCells(*octree, @numCells)
   LayerDefault::Draw(*layer, *app\context)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*viewport\width
-  Define ratio.f = *viewport\width / *viewport\height
-  FTGL::Draw(*app\context\writer,"OCTREE : ",-0.9,1,ss,ss*ratio)
-  FTGL::SetColor(*app\context\writer,0,0,0,1)
-  FTGL::Draw(*app\context\writer,"Nb points : "+Str(nbp),-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Nb queries : "+Str(*kdtree\m_cmps),-0.9,0.85,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Time to Build KDTree : "+StrD(TBuild),-0.9,0.75,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Time to Search BruteForce : "+StrD(TSearchBruteForce),-0.9,0.7,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Time to Search Accelerated : "+StrD(TSearchKDTree),-0.9,0.6,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/*viewport\width
+;   Define ratio.f = *viewport\width / *viewport\height
+;   
+;   ; white first pass
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   FTGL::Draw(*app\context\writer,"OCTREE : ",-0.895,1,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb points : "+Str(nbp),-0.895,0.9,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb queries : "+Str(*kdtree\m_cmps),-0.895,0.85,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Build KDTree : "+StrD(TBuild),-0.895,0.75,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Search BruteForce : "+StrD(TSearchBruteForce),-0.895,0.7,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Search Accelerated : "+StrD(TSearchKDTree),-0.895,0.6,ss,ss*ratio)
+;   FTGL::SetColor(*app\context\writer,0,0,0,1)
+;   FTGL::Draw(*app\context\writer,"OCTREE : ",-0.9,1,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb points : "+Str(nbp),-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb queries : "+Str(*kdtree\m_cmps),-0.9,0.85,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Build KDTree : "+StrD(TBuild),-0.9,0.75,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Search BruteForce : "+StrD(TSearchBruteForce),-0.9,0.7,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Time to Search Accelerated : "+StrD(TSearchKDTree),-0.9,0.6,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
 EndProcedure
@@ -356,7 +365,7 @@ If Time::Init()
   Object3D::AddChild(*root, *drawer)
   Scene::AddModel(Scene::*current_scene, *root)
   
-  nbp = 1000000
+  nbp = 100000
   Define pnt.KDTree::KDPoint_t
   Define *pnt.KDTree::KDPoint_t
   Define *col.KDTree::KDPoint_t
@@ -397,8 +406,8 @@ If Time::Init()
   
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 300
-; FirstLine = 283
+; CursorPosition = 165
+; FirstLine = 162
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

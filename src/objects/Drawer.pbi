@@ -493,26 +493,25 @@ Module Drawer
     If *Me\vao : glDeleteVertexArrays(1, @*Me\vao) : EndIf
     If *Me\vbo : glDeleteBuffers(1,  @*Me\vbo) : EndIf
     If *me\eab : glDeleteBuffers(1,@*Me\eab) : EndIf
+    CArray::Delete(*Me\positions)
+    CArray::Delete(*Me\colors)
   EndProcedure
   
   ; ---[ Delete Point Item ]---------------------------------------------------
   Procedure DeletePoint(*Me.Point_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
   ; ---[ Delete Line Item ]----------------------------------------------------
-  Procedure DeleteLine(*Me.Point_t)
+  Procedure DeleteLine(*Me.Line_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
   ; ---[ Delete Strip Item ]---------------------------------------------------
   Procedure DeleteStrip(*Me.Strip_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     CArray::Delete(*Me\indices)
     FreeMemory(*Me)
   EndProcedure
@@ -520,7 +519,6 @@ Module Drawer
   ; ---[ Delete Loop Item ]----------------------------------------------------
   Procedure DeleteLoop(*Me.Loop_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     CArray::Delete(*Me\indices)
     FreeMemory(*Me)
   EndProcedure
@@ -528,35 +526,24 @@ Module Drawer
   ; ---[ Delete Box Item ]-----------------------------------------------------
   Procedure DeleteBox(*Me.Box_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
   ; ---[ Delete Sphere Item ]--------------------------------------------------
   Procedure DeleteSphere(*Me.Sphere_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
   ; ---[ Delete Matrix Item ]--------------------------------------------------
   Procedure DeleteMatrix(*Me.Matrix_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
   ; ---[ Delete Triangle Item ]--------------------------------------------------
   Procedure DeleteTriangle(*Me.Triangle_t)
     DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
-    FreeMemory(*Me)
-  EndProcedure
-  
-  ; ---[ Delete Triangle Item ]--------------------------------------------------
-  Procedure DeleteTriangle(*Me.Triangle_t)
-    DeleteItem(*Me)
-    CArray::Delete(*Me\positions)
     FreeMemory(*Me)
   EndProcedure
   
@@ -582,7 +569,8 @@ Module Drawer
           DeleteTriangle(*Me\items())
         Case #ITEM_COMPOUND
           Debug "[DRAWER] Compound Shape NOT Implemented"
-;           DeleteCompound(*Me\items())
+          ;           DeleteCompound(*Me\items())
+      EndSelect
     Next
     ClearList(*Me\items())
     ClearStructure(*Me,Drawer_t)
@@ -623,7 +611,6 @@ Module Drawer
   ; ---[ Add Point Item ]------------------------------------------------------
   Procedure AddPoint(*Me.Drawer_t, *position.Math::v3f32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
-    InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
     *point\positions = CArray::newCArrayV3F32()
     *point\colors = CArray::newCArrayC4F32()
@@ -641,7 +628,6 @@ Module Drawer
   ; ---[ Add Points Item ]------------------------------------------------------
   Procedure AddPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
-    InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
       *point\positions = CArray::newCArrayV3F32()
@@ -660,7 +646,6 @@ Module Drawer
   ; ---[ Add Colored Points Item ]------------------------------------------------------
   Procedure AddColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
-    InitializeStructure(*point, Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
       *point\positions = CArray::newCArrayV3F32()
@@ -678,7 +663,6 @@ Module Drawer
   ; ---[ Add Line Item ]-------------------------------------------------------
   Procedure AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
-    InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
     *line\positions = CArray::newCArrayV3F32()
     *line\colors = CArray::newCArrayC4F32()
@@ -696,7 +680,6 @@ Module Drawer
   ; ---[ Add Lines Item ]-------------------------------------------------------
   Procedure AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
-    InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
       *line\positions = CArray::newCArrayV3F32()
@@ -714,7 +697,6 @@ Module Drawer
   ; ---[ Add Colored Lines Item ]-----------------------------------------------
   Procedure AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
-    InitializeStructure(*line, Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
       *line\positions = CArray::newCArrayV3F32()
@@ -731,7 +713,6 @@ Module Drawer
   ; ---[ Add Strip Item ]------------------------------------------------------
   Procedure AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *strip.Strip_t = AllocateMemory(SizeOf(Strip_t))
-    InitializeStructure(*strip, Strip_t)
     *strip\type = #ITEM_STRIP
     If CArray::GetCount(*positions)
       *strip\positions = CArray::newCArrayV3F32()
@@ -754,7 +735,6 @@ Module Drawer
   ; ---[ Add Loop Item ]-------------------------------------------------------
   Procedure AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
     Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
-    InitializeStructure(*loop, Loop_t)
     *loop\type = #ITEM_LOOP
     If CArray::GetCount(*positions)
       *loop\positions = CArray::newCArrayV3F32()
@@ -777,7 +757,6 @@ Module Drawer
   ; ---[ Add Box Item ]--------------------------------------------------------
   Procedure AddBox(*Me.Drawer_t, *m.Math::m4f32)
     Protected *box.Box_t = AllocateMemory(SizeOf(Box_t))
-    InitializeStructure(*box, Box_t)
     *box\type = #ITEM_BOX
     *box\positions = CArray::newCArrayV3F32()
     *box\colors = CArray::newCArrayC4F32()
@@ -804,7 +783,6 @@ Module Drawer
   ; ---[ Add Sphere Item ]-----------------------------------------------------
   Procedure AddSphere(*Me.Drawer_t, *m.Math::m4f32)
     Protected *sphere.Sphere_t = AllocateMemory(SizeOf(Sphere_t))
-    InitializeStructure(*sphere, Sphere_t)
     *sphere\type = #ITEM_SPHERE
     *sphere\positions = CArray::newCArrayV3F32()
     *sphere\colors = CArray::newCArrayC4F32()
@@ -829,7 +807,6 @@ Module Drawer
   ; ---[ Add Matrix Item ]-----------------------------------------------------
   Procedure AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
     Protected *matrix.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
-    InitializeStructure(*matrix, Matrix_t)
     *matrix\type = #ITEM_MATRIX
     *matrix\positions = CArray::newCArrayV3F32()
     Matrix4::SetFromOther(*matrix\m, *m)
@@ -845,7 +822,6 @@ Module Drawer
   ; ---[ Add Triangle Item ]------------------------------------------------------
   Procedure AddTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
-    InitializeStructure(*triangle, Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::newCArrayV3F32()
     *triangle\colors = CArray::newCArrayC4F32()
@@ -861,7 +837,6 @@ Module Drawer
   ; ---[ Add Colored Triangle Item ]------------------------------------------------------
   Procedure AddColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
-    InitializeStructure(*triangle, Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::newCArrayV3F32()
     *triangle\colors = CArray::newCArrayC4F32()
@@ -882,7 +857,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 583
-; FirstLine = 547
+; CursorPosition = 495
+; FirstLine = 472
 ; Folding = ---------
 ; EnableXP

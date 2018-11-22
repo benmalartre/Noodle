@@ -1133,7 +1133,7 @@ Module CArray
     If *Array\type = #ARRAY_STR
       ClearStructure(*array,CArrayStr)
     EndIf
-    
+    FreeMemory(*array\data)
     FreeMemory(*array)
   EndProcedure
   
@@ -1141,7 +1141,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 466
-; FirstLine = 462
+; CursorPosition = 1135
+; FirstLine = 1081
 ; Folding = -----------
 ; EnableXP

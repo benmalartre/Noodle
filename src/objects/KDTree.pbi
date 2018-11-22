@@ -2,14 +2,18 @@
 ; DECLARATION
 ;=======================================================================
 DeclareModule KDTree
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    #KDTREE_POINT_SIZE = 4
+  CompilerElse
+    #KDTREE_POINT_SIZE = 3
+  CompilerEndIf
+  
   #KDTREE_DIM = 3
-
   #KD_F32_MAX = 3.402823466e+38
   #KD_F32_MIN = 1.175494351e-38
   
   Structure KDPoint_t
-    v.f[#KDTREE_DIM]
-    color.Math::c4f32
+    v.f[#KDTREE_POINT_SIZE]
   EndStructure
   
   Structure KDSort_t
@@ -75,7 +79,7 @@ Module KDTree
   Procedure.f Distance(*a.KDPoint_t,*b.KDPoint_t)
     Protected dist.f,d.f
     Protected i
-    For i=0 To #KDTREE_DIM-1
+    For i=0 To #KDTREE_POINT_SIZE-1
       d = *a\v[i] - *b\v[i]
       dist + d*d
     Next
@@ -143,9 +147,6 @@ Module KDTree
     *max\v[0] = #KD_F32_MIN
     *max\v[1] = #KD_F32_MIN
     *max\v[2] = #KD_F32_MIN
-    
-;     Vector3_Set(*min,#F32_MAX,#F32_MAX,#F32_MAX)
-;     Vector3_Set(*max,-#F32_MAX,-#F32_MAX,-#F32_MAX)
   
     ForEach *node\indices()
       *v = *tree\points(*node\indices())
@@ -210,12 +211,10 @@ Module KDTree
       If *tree\points(j)\v[*tree\m_currentaxis]<*node\split_value
         AddElement(*left\indices())
         *left\indices() = j
-        Color::Set(*tree\points(j)\color, *left\r, *left\g, *left\b, 1)
         lnb +1
       Else
         AddElement(*right\indices())
         *right\indices() = j
-        Color::Set(*tree\points(j)\color, *right\r, *right\g, *right\b, 1)
         rnb + 1
       EndIf
     Next 
@@ -531,7 +530,7 @@ Module KDTree
             *node\leftID = *left\ID
             *node\rightID = *right\ID
             
-            ;Clear current indices
+            ; clear current indices
             ClearList( *node\indices())
 
             If ListSize(*left\indices())
@@ -560,7 +559,7 @@ Module KDTree
 EndModule
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 552
-; FirstLine = 500
+; CursorPosition = 532
+; FirstLine = 499
 ; Folding = ----
 ; EnableXP
