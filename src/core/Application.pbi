@@ -56,7 +56,7 @@ XIncludeFile "../layers/CascadedShadowMap.pbi"
 XIncludeFile "../layers/Toon.pbi"
 XIncludeFile "../layers/SSAO.pbi"
 XIncludeFile "../layers/Blur.pbi"
-; XIncludeFile "../layers/Strokes.pbi"
+XIncludeFile "../layers/Strokes.pbi"
 
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
@@ -639,8 +639,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 582
-; FirstLine = 559
+; CursorPosition = 58
+; FirstLine = 38
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

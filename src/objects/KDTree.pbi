@@ -50,7 +50,7 @@ DeclareModule KDTree
     m_levels.i                    ; maximum level depth
     m_cmps.i                      ; count how many comparisons were made in the tree for a query
     m_id.i                        ; current node ID
-    Array *points.KDPoint_t(0)    ; array of point pointers
+    *points.CArray::CArrayV3F32   ; array of point pointers
     List closests.KDSort_t()
   EndStructure
   
@@ -61,7 +61,7 @@ DeclareModule KDTree
 
   Declare Split(*tree.KDTree_t,*node.KDNode_t,*left.KDNode_t,*right.KDNode_t)
   Declare Build(*tree.KDTree_t,*pnts,nbp.i, max_levels=99,min_pnts=10)
-  Declare.f Distance(*a.KDPoint_t,*b.KDPoint_t)
+  Declare.f SquaredDistance(*a.KDPoint_t,*b.KDPoint_t)
   Declare GetBoundingBox(*tree.KDTree_t,*node.KDNode_t,*min.KDPoint_t,*max.KDPoint_t)
   Declare SearchAtNode(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, *search.KDSearch_t)
   Declare SearchAtNodeRange(*tree.KDTree_t,*node.KDNode_t, *query.KDPoint_t, range.f,*search.KDSearch_t)
@@ -76,13 +76,28 @@ EndDeclareModule
 Module KDTree
   ; Distance Between Two Points
   ;-------------------------------------------------------------------
-  Procedure.f Distance(*a.KDPoint_t,*b.KDPoint_t)
-    Protected dist.f,d.f
-    Protected i
-    For i=0 To #KDTREE_POINT_SIZE-1
-      d = *a\v[i] - *b\v[i]
-      dist + d*d
-    Next
+  Procedure.f SquaredDistance(*a.KDPoint_t,*b.KDPoint_t)
+    
+    Protected dist.f = 0.0
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      ! mov rsi, [p.p_a]
+      ! movups xmm0, [rsi]
+      ! mov rsi, [p.p_b]
+      ! movups xmm1, [rsi]
+      
+      ! subps xmm0, xmm1
+      ! mulps xmm0, xmm0
+      ! haddps xmm0, xmm0
+      ! haddps xmm0, xmm0
+      ! movss [p.v_dist], xmm0
+    CompilerElse
+      
+      Protected i
+      For i=0 To #KDTREE_DIM - 1
+        dist + Pow(*a\v[i] - *b\v[i], 2)
+      Next
+    CompilerEndIf
+    
     ProcedureReturn dist
   EndProcedure
   
@@ -114,6 +129,7 @@ Module KDTree
   Procedure New()
     Protected *tree.KDTree_t = AllocateMemory(SizeOf(KDTree_t))
     InitializeStructure(*tree,KDTree_t)
+    *tree\points = CArray::newCArrayV3F32()
     *tree\root = #Null
     *tree\m_id = 0
     ProcedureReturn *tree
@@ -122,6 +138,7 @@ Module KDTree
   ; Destructor
   ;--------------------------------------------------------------------
   Procedure Delete(*tree.KDTree_t)
+    CArray::Delete(*tree\points)
     DeleteNode(*tree\root)
     ClearStructure(*tree,KDTree_t)
     FreeMemory(*tree)
@@ -130,8 +147,8 @@ Module KDTree
   ; Sort Points
   ;--------------------------------------------------------------------
   Procedure SortPoints(*tree.KDTree_t,a.i,b.i)
-    Protected *a.KDPoint_t = *tree\points(a)
-    Protected *b.KDPoint_t = *tree\points(b)
+    Protected *a.KDPoint_t = CArray::GetValue(*tree\points, a)
+    Protected *b.KDPoint_t = CARray::GetValue(*tree\points, b)
     
     ProcedureReturn Bool(*a\v[*tree\m_currentaxis]<*b\v[*tree\m_currentaxis])
   EndProcedure
@@ -149,7 +166,7 @@ Module KDTree
     *max\v[2] = #KD_F32_MIN
   
     ForEach *node\indices()
-      *v = *tree\points(*node\indices())
+      *v = CArray::GetValue(*tree\points, *node\indices())
       ;Vector3_MulByMatrix4InPlace(*v,*srt)
       If *v\v[0] < *min\v[0] : *min\v[0] = *v\v[0] : EndIf
       If *v\v[1] < *min\v[1] : *min\v[1] = *v\v[1] : EndIf
@@ -186,9 +203,10 @@ Module KDTree
     
     ; Sort Indices
     Dim v.KDSort_t(ListSize(*node\indices())-1)
-    
+    Protected *pnt.KDPoint_t
     ForEach *node\indices()
-      v(i)\v = *tree\points(*node\indices())\v[*tree\m_currentaxis]
+      *pnt = CArray::GetValue(*tree\points, *node\indices())
+      v(i)\v = *pnt\v[*tree\m_currentaxis]
       v(i)\ID = *node\indices() 
       i+1
     Next
@@ -202,13 +220,14 @@ Module KDTree
     Next
     
     SelectElement( *node\indices(),ListSize(*node\indices())/2)
-    *node\split_value = *tree\points(*node\indices())\v[*tree\m_currentaxis]
+    *pnt = CArray::GetValue(*tree\points, *node\indices())
+    *node\split_value = *pnt\v[*tree\m_currentaxis]
     Define lnb.i, rnb.i
     ForEach *node\indices()
         
       j = *node\indices()
-      
-      If *tree\points(j)\v[*tree\m_currentaxis]<*node\split_value
+      *pnt = CArray::GetValue(*tree\points, j)
+      If *pnt\v[*tree\m_currentaxis]<*node\split_value
         AddElement(*left\indices())
         *left\indices() = j
         lnb +1
@@ -236,7 +255,7 @@ Module KDTree
         ForEach *node\indices()
           *tree\m_cmps +1
           idx = *node\indices()
-          dist = Distance(*query,*tree\points(idx))
+          dist = SquaredDistance(*query,CArray::GetValue(*tree\points, idx))
           If(dist<*search\distance)
             *search\distance = dist
             *search\ID = idx
@@ -269,28 +288,34 @@ Module KDTree
       While ListSize(*to_visit())
         LastElement(*to_visit())
         *node = *to_visit()
+        *node\hit = #True
         DeleteElement(*to_visit())
         split_axis = *node\level % #KDTREE_DIM
         
-        If *node\left = #Null
+        ; leaf case
+        If *node\left = #Null And *node\right = #Null
           ForEach *node\indices()
             *tree\m_cmps +1
            
             idx = *node\indices()
-            dist = Distance(*query,*tree\points(idx))
+            dist = SquaredDistance(*query,CArray::GetValue(*tree\points, idx))
             If dist<*search\distance
               *search\distance = dist
               *search\ID = idx
             EndIf
           Next
-   
+          
+        ; recurse case
         Else
-          dist = *query\v[split_axis]- *node\split_value
+          Debug "SPLIT AXIS : "+StrF(split_axis)
+          Debug "SPLIT VALUE : "+StrF(*node\split_value)
+          dist = *query\v[split_axis] - *node\split_value
+          Debug "DISTANCE : "+StrF(dist)
           ; there are 3 possible scenarios
           ; the hypercircle only intersect the left region
           ; the hypercricle only intersect the right region
           ; the hypercircle intersects both
-          
+
           *tree\m_cmps + 1
           If(Abs(dist)>range)
             If dist<0
@@ -341,7 +366,7 @@ Module KDTree
           ForEach *node\indices()
             *tree\m_cmps +1
             idx = *node\indices()
-            dist = Distance(*query,*tree\points(idx))
+            dist = SquaredDistance(*query, CARray::GetValue(*tree\points, idx))
             If dist<range
               AddElement(*tree\closests())
               *tree\closests()\ID = idx
@@ -393,27 +418,27 @@ Module KDTree
     Protected *parent.KDNode_t
     Protected split_axis.i
     
-;     While *node\parent
-;       ; go up
-;       *parent = *node\parent
-;       split_axis = *parent\level % #KDTREE_DIM
-; 
-;       ; search the other node      
-;       Protected *tmp_node.KDNode_t
-;       Protected *search_node.KDNode_t
-;       
-;       If Abs(*parent\split_value - *query\v[split_axis]) <= *search\distance
-;         ; search opposite node
-;         If Not *parent\left = *node
-;           SearchAtNodeRange(*tree,*parent\left,*query,*search\distance,*search)
-;         Else
-;           SearchAtNodeRange(*tree,*parent\right,*query,*search\distance,*search)
-;         EndIf
-;       EndIf
-;       
-;       *node = *parent
-;     Wend  
-    
+    While *node\parent
+      ; go up
+      *parent = *node\parent
+      split_axis = *parent\level % #KDTREE_DIM
+
+      ; search the other node      
+      Protected *tmp_node.KDNode_t
+      Protected *search_node.KDNode_t
+      
+      If Abs(*parent\split_value - *query\v[split_axis]) <= *search\distance
+        ; search opposite node
+        If Not *parent\left = *node
+          SearchAtNodeRange(*tree,*parent\left,*query,*search\distance,*search)
+        Else
+          SearchAtNodeRange(*tree,*parent\right,*query,*search\distance,*search)
+        EndIf
+      EndIf
+      
+      *node = *parent
+    Wend  
+
   EndProcedure
   
   ; Search
@@ -487,7 +512,7 @@ Module KDTree
   
   ; Build
   ;--------------------------------------------------------------------
-  Procedure Build(*tree.KDTree_t,*pnts ,nbp.i, max_levels=99,min_pnts=10)
+  Procedure Build(*tree.KDTree_t,*pnts.CArray::CArrayV3F32 ,nbp.i, max_levels=99,min_pnts=10)
     *tree\m_nbp = nbp
     *tree\m_levels = max_levels
     *tree\root = NewNode(#Null,0,0)
@@ -495,11 +520,8 @@ Module KDTree
     *tree\m_id+1
    
     Protected pnt.KDPoint_t
-    ReDim *tree\points(nbp-1)
+    CArray::Copy(*tree\points, *pnts)
     Protected i
-    For i=0 To nbp-1
-      *tree\points(i) = *pnts+i*SizeOf(KDTree::KDPoint_t)
-    Next
 
     For i=0 To nbp-1
       AddElement(*tree\root\indices())
@@ -559,7 +581,7 @@ Module KDTree
 EndModule
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 532
-; FirstLine = 499
+; CursorPosition = 87
+; FirstLine = 63
 ; Folding = ----
 ; EnableXP

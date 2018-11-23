@@ -64,6 +64,18 @@ DeclareModule Geometry
   ;}
   
   ; ----------------------------------------------------------------------------
+  ; Stroke_t
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Stroke_t
+    *positions.CArray::CArrayV3F32
+    *radius.CArray::CArrayFloat
+    *colors.CArray::CArrayC4F32
+    degree.i  
+  EndStructure
+  ;}
+  
+  ; ----------------------------------------------------------------------------
   ; Sphere
   ; ----------------------------------------------------------------------------
   ;{
@@ -118,21 +130,6 @@ DeclareModule Geometry
   EndStructure
   ;}
   
-  ; ----------------------------------------------------------------------------
-  ; Shape
-  ; ----------------------------------------------------------------------------
-  ;{
-  Structure Shape_t
-    type.i
-    *position
-    *normals
-    *uvws
-    *indices
-    nbp.i
-    nbi.i
-  EndStructure
-  ;}
-  
   ; --------------------------------------------
   ; Sample
   ; --------------------------------------------
@@ -144,6 +141,21 @@ DeclareModule Geometry
     *uvs.v2f32
     *uvws.v3f32
     *color.v4f32
+  EndStructure
+  ;}
+  
+  ; ----------------------------------------------------------------------------
+  ; Shape
+  ; ----------------------------------------------------------------------------
+  ;{
+  Structure Shape_t
+    type.i
+    *position.CArray::CArrayV3F32
+    *normals.CArray::CArrayV3F32
+    *uvws.CArray::CArrayV3F32
+    *indices.CArray::CArrayLong
+    nbp.i
+    nbi.i
   EndStructure
   ;}
   
@@ -589,7 +601,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 29
+; CursorPosition = 154
+; FirstLine = 150
 ; Folding = -----
 ; EnableXP

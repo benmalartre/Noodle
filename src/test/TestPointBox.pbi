@@ -47,7 +47,7 @@ EndProcedure
 
 Time::Init()
 
-Define numTests = 12000000
+Define numTests = 1024
 Define i
 Define box.Geometry::Box_t
 Define *pnt.Math::v3f32
@@ -119,6 +119,6 @@ MessageRequester("POINT IN BOX: "+Str(numTests), "TIME : "+StrD(E1)+" vs "+StrD(
 
 ; MessageRequester("BOX", StrD(E1)+" vs "+StrD(E2)+" : "+CompareMemory(mem1, mem2, numTests )+"("+Str(numHits1)+","+Str(numHits2)+")")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 49
 ; Folding = -
 ; EnableXP

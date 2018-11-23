@@ -2,6 +2,8 @@
 ;  Strokes Layer Module
 ; ============================================================================
 XIncludeFile "Layer.pbi"
+XIncludeFile "../objects/Stroke.pbi"
+
 DeclareModule LayerStroke
   
     UseModule Math
@@ -10,8 +12,8 @@ DeclareModule LayerStroke
   ;---------------------------------------------------s
   Structure LayerStroke_t Extends Layer::Layer_t
     linewidth.f
-    *lines.CArray::CArrayPtr
-    *line.Geometry::Line_t
+    *strokes.CArray::CArrayPtr
+    *current.Geometry::Stroke_t
     nbp.i
   EndStructure
   
@@ -46,75 +48,70 @@ Module LayerStroke
   ; Update
   ;---------------------------------------------------
   Procedure Update(*layer.LayerStroke_t,*view.m4f32,*proj.m4f32)
-     Debug "Layer Stroke Update Caklled..."
-  Protected *line.Geometry::Line_t
-  Protected *pnt.Math::v3f32
-
-  Protected f.GLfloat
-  Protected i
-  *layer\nbp = 0
-  For i=0 To CArray::GetCount(*layer\lines)-1
-    *line = CArray::GetValuePtr(*layer\lines, i)
-   *layer\nbp+CArray::GetCount(*line\positions)
-  Next
-  Debug "Layer Nb Points : "+Str(*layer\nbp)
+    Debug "Layer Stroke Update Called..."
+    Protected *stroke.Geometry::Stroke_t
+    Protected *pnt.Math::v3f32
   
-  Protected v.v3f32
-  Protected c.c4f32
-  Protected size_i = 6*SizeOf(f)
-  Protected size_t = *layer\nbp*size_i
-  Debug "Size T : "+Str(size_t)
-  
-  If size_t
-    Protected *flatdata = AllocateMemory(size_t)
-    
-    
-    Protected x
-    Protected offset = 0
-    
-    Protected size_p = *layer\nbp * SizeOf(v)
-    Protected size_c = *layer\nbp * SizeOf(v)
-    For i=0 To CArray::GetCount(*layer\lines)-1
-      *line = CArray::GetValuePtr(*layer\lines, i)
-      
-      ForEach *line\points()
-        *pnt = *line\points()
-        With *pnt
-          Vector3::Set(@v,\position\x,\position\y,\radius)
-          CopyMemory(@v,*flatdata+offset*SizeOf(v),SizeOf(v))          
-          ;Vector3_Set(@v,Random(255)/255,Random(255)/255,Random(255)/255)
-          Vector3::Set(@v,\color\x,\color\y,\color\z)
-          CopyMemory(@v,*flatdata+offset*SizeOf(v)+size_p,SizeOf(v))
-          
-          offset+1
-        EndWith
-      
-        
-      Next
+    Protected f.GLfloat
+    Protected i
+    *layer\nbp = 0
+    For i=0 To CArray::GetCount(*layer\strokes)-1
+      *stroke = CArray::GetValuePtr(*layer\strokes, i)
+     *layer\nbp+CArray::GetCount(*stroke\positions)
     Next
+    Debug "Layer Nb Points : "+Str(*layer\nbp)
     
-    Protected shader.GLuint = *ctx\shaders("stroke2D")
-    ; Attribute Position
+    Protected v.v3f32
+    Protected c.c4f32
+    Protected size_p = SizeOf(v3f32) * *layer\nbp
+    Protected size_r = 4 * *layer\nbp
+    Protected size_c = SizeOf(c4f32) * *layer\nbp
+    Protected size_t = size_p + size_r + size_c
+    Debug "Size T : "+Str(size_t)
+    
+    If size_t
+      ; load shader
+      Protected shader.GLuint = *ctx\shaders("stroke2D")
+      glUseProgram(shader)
+      
 
-    glUseProgram(shader)
-    GLCheckError("Use Program Stroke 2D From Context")
-    Protected uPosition.GLint =   glGetAttribLocation(shader,"vps")
-    Debug"uPosition ---> "+Str( uPosition)
-    GLCheckError("Get ATtrib Location VPS")
-    glVertexAttribPointer(uPosition,3,#GL_FLOAT,#GL_FALSE,0,0)
-    GLCheckError("Enable Vertex Attr Pointer VPS")
-    ; Attribute Color
-    Protected uColor.GLint = glGetAttribLocation(shader,"vc")
-    Debug"uColor ---> "+Str( uColor)
-    GLCheckError("Get ATtrib Location VC")
-    glVertexAttribPointer(uColor,3  ,#GL_FLOAT,#GL_FALSE,0,size_p)
-    GLCheckError("Enable Vertex Attr Pointer VC")
-    ; Push Buffer to GPU
-    glBufferData(#GL_ARRAY_BUFFER,size_t,*flatdata,#GL_DYNAMIC_DRAW)
-    GLCheckError("Push Buffer Data to GPU")
-    FreeMemory(*flatdata)  
-    Debug "Layer Stroke GPU Updated!!!"
-  EndIf
+      
+       ; Push Buffer to GPU
+      glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_DYNAMIC_DRAW)
+      glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,CArray::GetPtr(*stroke\positions,0))
+      glBufferSubData(#GL_ARRAY_BUFFER,size_p,size_r,CArray::GetPtr(*stroke\radius,0))
+      glBufferSubData(#GL_ARRAY_BUFFER,size_p+size_r,size_c,CArray::GetPtr(*stroke\colors,0))
+      GLCheckError("Push Buffer Data to GPU")
+  
+       ; Attribute Position
+      GLCheckError("Use Program Stroke 2D From Context")
+      Protected uPosition.GLint =   glGetAttribLocation(shader,"vps")
+      Debug"uPosition ---> "+Str( uPosition)
+      GLCheckError("Get ATtrib Location VPS")
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+        glVertexAttribPointer(uPosition,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
+        glVertexAttribPointer(uPosition,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerEndIf
+      GLCheckError("Enable Vertex Attr Pointer VPS")
+      
+      ; Attribute Radius
+      Protected uRadius.GLint = glGetAttribLocation(shader,"vr")
+      Debug"uRadius ---> "+Str( uRadius)
+      GLCheckError("Get ATtrib Location VR")
+      glVertexAttribPointer(uRadius,1  ,#GL_FLOAT,#GL_FALSE,0,size_r)
+      GLCheckError("Enable Vertex Attr Pointer VR")
+      
+      ; Attribute Color
+      Protected uColor.GLint = glGetAttribLocation(shader,"vc")
+      Debug"uColor ---> "+Str( uColor)
+      GLCheckError("Get ATtrib Location VC")
+      glVertexAttribPointer(uColor,4  ,#GL_FLOAT,#GL_FALSE,0,size_c)
+      GLCheckError("Enable Vertex Attr Pointer VC")
+     
+  
+      Debug "Layer Stroke GPU Updated!!!"
+    EndIf
   EndProcedure
   
   
@@ -169,7 +166,7 @@ Module LayerStroke
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     glDisable(#GL_DEPTH_TEST)
    
-    Protected *line.CLine_t
+    Protected *line.Geometry::Line_t
     
     If *layer\nbp
       Protected i
@@ -250,8 +247,8 @@ Module LayerStroke
   ;---------------------------------------------------
   Procedure StartLine(*layer.LayerStroke_t)
     
-    Protected *line.Geometry::Line_t = AllocateMemory(SizeOf(CLine_t))
-    InitializeStructure(*line,CLine_t)
+    Protected *line.Geometry::Line_t = AllocateMemory(SizeOf(Geometry::Line_t))
+    InitializeStructure(*line,Geometry::Line_t)
     Vector3::Set(*line\color,0,0,0)
     *layer\lines\Append(*line)
     *layer\line = *line
@@ -318,7 +315,6 @@ Module LayerStroke
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 38
+; CursorPosition = 4
 ; Folding = ---
 ; EnableXP

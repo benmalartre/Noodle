@@ -1130,10 +1130,10 @@ Module CArray
   ; Destructor
   ;----------------------------------------------------------------
   Procedure Delete(*array.CArrayT)
+    If *array\data : Memory::FreeAlignedMemory(*array\data, *array\itemSize * *array\itemCount) : EndIf
     If *Array\type = #ARRAY_STR
       ClearStructure(*array,CArrayStr)
     EndIf
-    FreeMemory(*array\data)
     FreeMemory(*array)
   EndProcedure
   
@@ -1141,7 +1141,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1135
+; CursorPosition = 1132
 ; FirstLine = 1081
 ; Folding = -----------
 ; EnableXP
