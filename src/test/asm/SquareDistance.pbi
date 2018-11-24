@@ -35,7 +35,7 @@ Define b.v4f32
 a\x = -1
 b\x = 12.6
 
-Define numTests = 1000000
+Define numTests = 10000000
 Define i
 Define mem1 = AllocateMemory(numTests * 4)
 Define mem2 = AllocateMemory(numTests * 4)
@@ -55,6 +55,6 @@ Define E2.d = Time::Get() - T2
 
 MessageRequester("SquaredDistance", "PB : "+StrD(E1)+", SSE : "+StrD(E2)+", EQ = "+Str(CompareMemory(mem1, mem2, numTests * 4)))
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 55
+; CursorPosition = 37
 ; Folding = -
 ; EnableXP

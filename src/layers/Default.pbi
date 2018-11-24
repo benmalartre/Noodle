@@ -219,8 +219,8 @@ Module LayerDefault
  
     glDisable(#GL_DEPTH_TEST)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,proj)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,model)
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
@@ -287,7 +287,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 207
+; CursorPosition = 222
+; FirstLine = 206
 ; Folding = --
 ; EnableXP

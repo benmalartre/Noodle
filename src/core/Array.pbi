@@ -15,6 +15,7 @@ DeclareModule CArray
     #ARRAY_PTR
     #ARRAY_V2F32
     #ARRAY_V3F32
+    #ARRAY_V4F32
     #ARRAY_C4F32
     #ARRAY_C4U8
     #ARRAY_Q4F32
@@ -47,6 +48,7 @@ DeclareModule CArray
     #SIZE_TRF32 = 40
   CompilerEndIf  
   
+  #SIZE_V4F32 = 16
   #SIZE_C4F32 = 16
   #SIZE_C4U8  = 4
   #SIZE_Q4F32 = 16
@@ -80,6 +82,9 @@ DeclareModule CArray
   EndStructure
   
   Structure CArrayV3F32 Extends CArrayT
+  EndStructure
+  
+  Structure CArrayV4F32 Extends CArrayT
   EndStructure
   
   Structure CArrayC4F32 Extends CArrayT
@@ -309,6 +314,7 @@ DeclareModule CArray
   Declare newCArrayFloat()
   Declare newCArrayV2F32()
   Declare newCArrayV3F32()
+  Declare newCArrayV4F32()
   Declare newCArrayC4U8()
   Declare newCArrayC4F32()
   Declare newCArrayQ4F32()
@@ -898,6 +904,14 @@ Module CArray
           *v3 = GetValue(*array, i)
           datas+"("+StrF(*v3\x)+","+StrF(*v3\y)+","+StrF(*v3\z)+")"+Chr(10)
         Next
+      Case #ARRAY_V4F32
+        datas+"TYPE: VECTOR_4"+Chr(10)
+        datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
+        Protected *v4.Math::v4f32
+        For i=0 To *array\itemCount-1
+          *v4 = GetValue(*array, i)
+          datas+"("+StrF(*v4\x)+","+StrF(*v4\y)+","+StrF(*v4\z)+","+StrF(*v4\w)+")"+Chr(10)
+        Next
       Case #ARRAY_C4F32
         datas+"TYPE: COLOR"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
@@ -1037,6 +1051,18 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
+  ; CArrayV4F32
+  ;----------------------------------------------------------------
+  Procedure newCArrayV4F32()
+    Protected *array.CArrayV4F32 = AllocateMemory(SizeOf(CArrayV4F32))
+    *array\type = #ARRAY_V4F32
+    *array\itemCount = 0
+    *array\itemSize = #SIZE_V4F32
+    *array\data = #Null
+    ProcedureReturn *array
+  EndProcedure
+  
+  ;----------------------------------------------------------------
   ; CArrayC4U8
   ;----------------------------------------------------------------
   Procedure newCArrayC4U8()
@@ -1141,7 +1167,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1132
-; FirstLine = 1081
+; CursorPosition = 907
+; FirstLine = 868
 ; Folding = -----------
 ; EnableXP

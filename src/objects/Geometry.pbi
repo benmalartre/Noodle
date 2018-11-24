@@ -68,9 +68,10 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Stroke_t
-    *positions.CArray::CArrayV3F32
-    *radius.CArray::CArrayFloat
-    *colors.CArray::CArrayC4F32
+;     *positions.CArray::CArrayV3F32
+;     *radius.CArray::CArrayFloat
+;     *colors.CArray::CArrayC4F32
+    *datas.CArray::CArrayV4F32 
     degree.i  
   EndStructure
   ;}
@@ -601,7 +602,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 150
+; CursorPosition = 73
+; FirstLine = 57
 ; Folding = -----
 ; EnableXP

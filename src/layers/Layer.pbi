@@ -53,13 +53,14 @@ DeclareModule Layer
   EndInterface
   
   Enumeration
-    #RAA_LAYER_DEFAULT
-    #RAA_LAYER_GBUFFER
-    #RAA_LAYER_SELECTION
-    #RAA_LAYER_SSAO
-    #RAA_LAYER_STROKE
-    #RAA_LAYER_DEPTH
-    #RAA_LAYER_COMPONENT
+    #LAYER_DEFAULT
+    #LAYER_GBUFFER
+    #LAYER_SELECTION
+    #LAYER_SSAO
+    #LAYER_STROKE
+    #LAYER_DEPTH
+    #LAYER_COMPONENT
+    
   EndEnumeration
   
   ;---------------------------------------------------
@@ -694,7 +695,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 160
+; CursorPosition = 62
+; FirstLine = 22
 ; Folding = -----
 ; EnableXP

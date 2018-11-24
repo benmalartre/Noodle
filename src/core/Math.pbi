@@ -120,6 +120,8 @@ DeclareModule Math
     Data.f -1, 1, -1, 1
     sse_1100_negate_mask:
     Data.f -1, -1, 1, 1
+    sse_1110_negate_mask:
+    Data.f -1, -1, -1, 1
     sse_zero_vec:
     Data.f 0, 0, 0, 0
     sse_one_vec:
@@ -1316,18 +1318,24 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   ; QUATERNION CONJUGATE
   ;------------------------------------------------------------------
-  Macro Conjugate(_out,_q)
-    _out\x = -_q\x
-    _out\y = -_q\y
-    _out\z = -_q\z
-    _out\w = _q\w
-  EndMacro
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare Conjugate(*out.q4f32,*q.q4f32)
+    Declare ConjugateInPlace(*q.q4f32)
+  CompilerElse
+    Macro Conjugate(_out,_q)
+      _out\x = -_q\x
+      _out\y = -_q\y
+      _out\z = -_q\z
+      _out\w = _q\w
+    EndMacro
+    
+    Macro ConjugateInPlace(_q)
+      _q\x = -_q\x
+      _q\y = -_q\y
+      _q\z = -_q\z
+    EndMacro
+  CompilerEndIf
   
-  Macro ConjugateInPlace(_q)
-    _q\x = -_q\x
-    _q\y = -_q\y
-    _q\z = -_q\z
-  EndMacro
 
   ;------------------------------------------------------------------
   ; QUATERNION MULTIPLY
@@ -1509,32 +1517,37 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   ; QUATERNION SLERP
   ;------------------------------------------------------------------
-  Macro Slerp(_out,_q1,_q2,_blend)
-    If blend<0
-      Quaternion::SetFromOther(_out,_q1)
-    ElseIf blend>=1
-      Quaternion::SetFromOther(_out,_q2)
-    Else
-      Define _dotproduct.f = _q1\x * _q2\x + _q1\y * _q2\y + _q1\z * _q2\z + _q1\w * _q2\w
-      Define.f _theta, _st,_sut, _sout, _coeff1, _coeff2
-      
-      _blend * 0.5
-      
-      _theta = ACos(_dotproduct)
-      If _theta<0 : _theta * -1 :EndIf
-      
-      _st = Sin(_theta)
-      _sut = Sin(_blend*_theta)
-      _sout = Sin((1-_blend)*_theta)
-      _coeff1 = _sout/_st
-      _coeff2 = _sut/_st
-      
-      _out\x = _coeff1 * _q1\x + _coeff2 * _q2\x
-      _out\y = _coeff1 * _q1\y + _coeff2 * _q2\y
-      _out\z = _coeff1 * _q1\z + _coeff2 * _q2\z
-      _out\w = _coeff1 * _q1\w + _coeff2 * _q2\w
-    EndIf
-  EndMacro
+;   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;     Declare Slerp( *out.q4f32, *q1.q4f32, *q2.q4f32, blend.f)
+;   CompilerElse
+    Macro Slerp(_out,_q1,_q2,_blend)
+      If blend<0
+        Quaternion::SetFromOther(_out,_q1)
+      ElseIf blend>=1
+        Quaternion::SetFromOther(_out,_q2)
+      Else
+        Define _dotproduct.f = _q1\x * _q2\x + _q1\y * _q2\y + _q1\z * _q2\z + _q1\w * _q2\w
+        Define.f _theta, _st,_sut, _sout, _coeff1, _coeff2
+        
+        _blend * 0.5
+        
+        _theta = ACos(_dotproduct)
+        If _theta<0 : _theta * -1 :EndIf
+        
+        _st = Sin(_theta)
+        _sut = Sin(_blend*_theta)
+        _sout = Sin((1-_blend)*_theta)
+        _coeff1 = _sout/_st
+        _coeff2 = _sut/_st
+        
+        _out\x = _coeff1 * _q1\x + _coeff2 * _q2\x
+        _out\y = _coeff1 * _q1\y + _coeff2 * _q2\y
+        _out\z = _coeff1 * _q1\z + _coeff2 * _q2\z
+        _out\w = _coeff1 * _q1\w + _coeff2 * _q2\w
+      EndIf
+    EndMacro
+;   CompilerEndIf
+  
 
   ;------------------------------------------------------------------
   ; QUATERNION SLERP
@@ -1703,10 +1716,10 @@ DeclareModule Color
   ; COLOR RANDOMIZE
   ;------------------------------------------------------------------
   Macro Randomize(_c)
-    Define _invf.f = 1 / 255.0
-    _c\r = Random(255)*_invf
-    _c\g = Random(255)*_invf
-    _c\b = Random(255)*_invf
+    Define _invf.f = 1 / 65535.0
+    _c\r = Random(65535)*_invf
+    _c\g = Random(65535)*_invf
+    _c\b = Random(65535)*_invf
     _c\a = 1.0
   EndMacro
   
@@ -1772,6 +1785,11 @@ DeclareModule Color
       _c\a = ValF(StringField(_s,4,","))
     EndIf
   EndMacro
+  
+  Declare.l PackColor(*c.c4f32)
+  Declare.f PackColorAsFloat(*c.c4f32)
+  Declare UnpackColor(*c.c4f32, code.l)
+  Declare UnpackColorAsFloat(*c.c4f32, code.f)
  
 EndDeclareModule
 
@@ -3015,6 +3033,111 @@ Module Quaternion
     ProcedureReturn z
   EndProcedure
   
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    ;------------------------------------------------------------------
+    ; QUATERNION CONJUGATE
+    ;------------------------------------------------------------------
+    Procedure Conjugate(*out.q4f32,*q.q4f32)
+      ! mov rsi, [p.p_q]
+      ! movups xmm0, [rsi]
+      ! movups xmm1, [math.l_sse_1110_negate_mask]
+      ! mulps xmm0, xmm1
+      ! mov rdi, [p.p_out]
+      ! movups [rdi], xmm0
+    EndProcedure
+    
+    ;------------------------------------------------------------------
+    ; QUATERNION CONJUGATE IN PLACE
+    ;------------------------------------------------------------------
+    Procedure ConjugateInPlace(*q.q4f32)
+      ! mov rdi, [p.p_q]
+      ! movups xmm0, [rsi]
+      ! movups xmm1, [math.l_sse_1110_negate_mask]
+      ! mulps xmm0, xmm1
+      ! movups [rdi], xmm0
+    EndProcedure
+    
+;     ;------------------------------------------------------------------
+;     ; SLERP
+;     ;------------------------------------------------------------------
+;     Procedure Slerp( *out.q4f32, *q1.q4f32, *q2.q4f32, blend.f)
+;       ! mov rdi, [p.p_out]
+;       ! movss xmm0, [p.v_blend]
+;       ! xorps xmm1, xmm1
+;       ! comiss xmm0, xmm1
+;       ! jb output_quaternion1
+;       ! movss xmm1, [math.l_sse_1111_value]
+;       ! comiss xmm0, xmm1
+;       ! jge output_quaternion2
+;       
+;       ; spherical interpolation
+;       ! mov rsi, [p.p_q1]
+;       ! movups xmm2, [rsi]                  ; load q1 in xmm2
+;       ! mov rsi, [p.p_q1]
+;       ! movups xmm3, [rsi]                  ; load q2 in xmm3
+;       ! movaps xmm4, xmm2                   ; copy q1 in xmm4
+;       ! movaps xmm5, xmm3                   ; copy q2 in xmm5
+;       
+;       ; dot product
+;       ! mulps xmm4, xmm5                    ; q1 * q2
+;       ! haddps xmm4, xmm4                   ; horizontal add first pass  
+;       ! haddps xmm4, xmm4                   ; horizontal add second pass
+;       
+;       ! fld xmm4
+; ;       ; arc cos
+; ;       ! fld st(0)           ;Duplicate X on tos.
+; ;       ! fmul                    ;Compute X**2.
+; ;                 fld     st(0)           ;Duplicate X**2 on tos.
+; ;                 fld1                    ;Compute 1-X**2.
+; ;                 fsubr
+; ;                 fdivr                   ;Compute (1-x**2)/X**2.
+; ;                 fsqrt                   ;Compute sqrt((1-X**2)/X**2).
+; ;                 fld1                    ;To compute full arctangent.
+; ;                 fpatan                  ;Compute atan of the above.
+; ;       
+;       ; output quaternion 1
+;       ! output_quternion1:
+;       !   mov rsi, [p.p_q1]
+;       !   movups xmm2, [rsi]                ; load q1 in xmm2
+;       !   movups [rdi], xmm2                ; move back to memory
+;       ProcedureReturn
+;       
+;       ; output quaternion 2
+;       ! output_quternion2:
+;       !   mov rsi, [p.p_q2]
+;       !   movups xmm2, [rsi]                ; load q2 in xmm2
+;       !   movups [rdi], xmm2                ; move back to memory
+;       ProcedureReturn
+;       
+; ;       If blend<0
+; ;         Quaternion::SetFromOther(_out,_q1)
+; ;       ElseIf blend>=1
+; ;         Quaternion::SetFromOther(_out,_q2)
+; ;       Else
+; ;         Define _dotproduct.f = _q1\x * _q2\x + _q1\y * _q2\y + _q1\z * _q2\z + _q1\w * _q2\w
+; ;         Define.f _theta, _st,_sut, _sout, _coeff1, _coeff2
+; ;         
+; ;         _blend * 0.5
+; ;         
+; ;         _theta = ACos(_dotproduct)
+; ;         If _theta<0 : _theta * -1 :EndIf
+; ;         
+; ;         _st = Sin(_theta)
+; ;         _sut = Sin(_blend*_theta)
+; ;         _sout = Sin((1-_blend)*_theta)
+; ;         _coeff1 = _sout/_st
+; ;         _coeff2 = _sut/_st
+; ;         
+; ;         _out\x = _coeff1 * _q1\x + _coeff2 * _q2\x
+; ;         _out\y = _coeff1 * _q1\y + _coeff2 * _q2\y
+; ;         _out\z = _coeff1 * _q1\z + _coeff2 * _q2\z
+; ;         _out\w = _coeff1 * _q1\w + _coeff2 * _q2\w
+; ;       EndIf
+;     EndProcedure
+    
+    
+  CompilerEndIf
+  
 ; CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
 ;   ;------------------------------------------------------------------
 ;   ; QUATERNION MULTIPLICATION
@@ -3110,6 +3233,54 @@ EndModule
 ; Color Module Implementation
 ;====================================================================
 Module Color
+  ;------------------------------------------------------------------
+  ; PACK RGBA COLOR ---> uint32_t
+  ;------------------------------------------------------------------
+  Procedure.l PackColor(*c.c4f32)
+
+    Define code.l = 0;
+    code | (Int(*c\a * 255) & 255) << 24
+    code | (Int(*c\r * 255) & 255) << 16
+    code | (Int(*c\g * 255) & 255) << 8
+    code | (Int(*c\b * 255) & 255)
+    ProcedureReturn code
+  EndProcedure
+  
+  Procedure.f PackColorAsFloat(*c.c4f32)
+    Define code.l = 0;
+    code | (Int(*c\a * 255) & 255) << 24
+    code | (Int(*c\r * 255) & 255) << 16
+    code | (Int(*c\g * 255) & 255) << 8
+    code | (Int(*c\b * 255) & 255)
+    ProcedureReturn PeekF(@code)
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; UNPACK uint32_t  ---> RGBA COLOR
+  ;------------------------------------------------------------------
+  Procedure UnpackColor(*c.c4f32, code.l)
+    Define a.l = (code >> 24) & 255
+    Define r.l = (code >> 16) & 255
+    Define g.l = (code >> 8) & 255
+    Define b.l = code & 255
+    *c\a = a/255
+    *c\r = r/255
+    *c\g = g/255
+    *c\b = b/255
+  EndProcedure
+  
+  Procedure UnpackColorAsFloat(*c.c4f32, code.f)
+    Define tmp.l = PeekL(@code)
+    Define a.l = (tmp >> 24) & 255
+    Define r.l = (tmp >> 16) & 255
+    Define g.l = (tmp >> 8) & 255
+    Define b.l = tmp & 255
+    *c\a = a/255
+    *c\r = r/255
+    *c\g = g/255
+    *c\b = b/255
+  EndProcedure
+  
 EndModule
 
 ;====================================================================
@@ -3215,7 +3386,7 @@ Module Matrix4
       !   addps xmm0, xmm2               ; packed addition
       !   addps xmm0, xmm3               ; packed addition
       
-      !   movups [rdx], xmm0             ; move row back to memeory
+      !   movups [rdx], xmm0             ; move row back to memory
       !   add rdx, 16                    ; increment current io matrix row
       !   add rcx, 16                    ; increment current second matrix row
       !   inc r8                         ; increment counter
@@ -3556,8 +3727,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2727
-; FirstLine = 2631
-; Folding = --------------------------------------------
+; CursorPosition = 1548
+; FirstLine = 1517
+; Folding = ---------------------------------------------
 ; EnableXP
 ; EnableUnicode
