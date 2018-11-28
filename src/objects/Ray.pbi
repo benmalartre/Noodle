@@ -72,7 +72,7 @@ Module Ray
     Protected segment.Geometry::Segment_t
     Protected l.f = Segment::Set(segment, *ray\origin, *ray\direction)
     Protected lrd.f
-    segment::FindClosestPoint(segment, *p, @lrd)
+    Segment::FindClosestPoint(segment, *p, @lrd)
     If lrd < 0 : lrd = 0 : EndIf
     
     If *rayDistance : PokeF(*rayDistance, lrd/l) : EndIf
@@ -208,7 +208,7 @@ Module Ray
      
   EndProcedure
   
-    ;---------------------------------------------------------
+  ;---------------------------------------------------------
   ; Solve Quadratic
   ;---------------------------------------------------------
   Procedure.b SolveQuadratic(a.f, b.f, c.f, *enterDistance, *exitDistance)
@@ -362,8 +362,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 55
+; CursorPosition = 84
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

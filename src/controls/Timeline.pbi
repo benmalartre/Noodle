@@ -155,29 +155,37 @@ Module ControlTimeline
     
     MovePathCursor(l,h-1)
     AddPathLine(w,1, #PB_Path_Relative)
+    VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
     
-;     Line(l,h-1,w,1,UIColor::COLOR_GROUP_FRAME)
-;     For f=Time::startframe To Time::endframe
-;       If f%m = 0
-;         Line(l+(f-Time::startframe)*s,h/2,1,h/2,UIColor::COLOR_LABEL)
+    For f=Time::startframe To Time::endframe
+      If f%m = 0
+        MovePathCursor(l+(f-Time::startframe)*s,h/5)
+        AddPathLine(0,4*h/5, #PB_Path_Relative)
 ;         If Not f = Time::endframe
 ;           DrawText(l+(f-Time::startframe)*s+2,0,Str(f),UIColor::COLOR_LABEL)
 ;         EndIf
-;         
-;       ElseIf Mod(f, m/5) = 0
-;         Line(l+(f-Time::startframe)*s,h-6,1,6,UIColor::COLOR_LABEL)
-;       EndIf
-;     Next f
-;     
-;     ;---[ Draw Current Frame ]--------------------------------------------------
-;     Box(l+(Time::currentframe - Time::startframe)*s,0,3,h-1,RGB(255,100,50))
-;     
-;     
-;     ;---[ Draw Loop ]-----------------------------------------------------------
-;     If Time::loop
-;       Box(l+(Time::startloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
-;       Box(l+(Time::endloop - Time::startframe)*s-1,0,3,h-1,RGB(50,250,100))
-;     EndIf
+        
+      ElseIf Mod(f, m/5) = 0
+        MovePathCursor(l+(f-Time::startframe)*s,h-8)
+        AddPathLine(0,8, #PB_Path_Relative)
+      EndIf
+    Next f
+    
+    VectorSourceColor(UIColor::COLORA_LABEL)
+    StrokePath(1)
+    
+    ;---[ Draw Current Frame ]--------------------------------------------------
+    AddPathBox(l+(Time::currentframe - Time::startframe)*s,0,3,h-1)
+    VectorSourceColor(RGBA(255,100,50,128))
+    FillPath()
+    
+    ;---[ Draw Loop ]-----------------------------------------------------------
+    If Time::loop
+      AddPathBox(l+(Time::startloop - Time::startframe)*s-1,0,3,h-1)
+      AddPathBox(l+(Time::endloop - Time::startframe)*s-1,0,3,h-1)
+      VectorSourceColor(RGBA(50,250,100,255))
+      FillPath()
+    EndIf
     
     ;---[ Stop Drawing ]-----------------------------------------------------------
     StopVectorDrawing()
@@ -241,7 +249,7 @@ Module ControlTimeline
       VectorSourceColor(RGBA(i+1,0,0,255) )
       FillPath()
     Next
-    StopDrawing()
+    StopVectorDrawing()
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -1048,7 +1056,7 @@ Module ControlTimeline
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
-    *Me\sizY      = height
+    *Me\sizY       = height
     
     *Me\controls = 0
     
@@ -1125,7 +1133,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 210
+; CursorPosition = 168
+; FirstLine = 149
 ; Folding = ------
 ; EnableXP

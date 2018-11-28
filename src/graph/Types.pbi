@@ -32,9 +32,9 @@ DeclareModule Graph
   #Node_PortShiftX = 0
   #Node_PortSpacing = 20
   #Node_DrawShadow = #True
-  #Node_ShadowX = 4
-  #Node_ShadowY = 6
-  #Node_ShadowR = 12
+  #Node_ShadowX = -8
+  #Node_ShadowY = -8
+  #Node_ShadowR = 16
   #Node_CornerRadius = 4
   #Node_TitleHeight = 7
   #Node_BorderUnselected = $66333333
@@ -44,7 +44,7 @@ DeclareModule Graph
   #Node_EditButtonShiftY = 10
   #Node_EditButtonColor = $33999999
   
-  #NODE_BORDER_WIDTH = 12
+  #NODE_BORDER_WIDTH = 6
   #NODE_FONT_SIZE = 8
   #NODE_FONT_WIDTH = 32
   
@@ -569,7 +569,6 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 6
+; CursorPosition = 35
 ; Folding = ---
 ; EnableXP

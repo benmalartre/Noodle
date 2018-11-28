@@ -385,23 +385,33 @@ Module ControlNumber
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
-      Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-      VectorSourceColor(RGBA(255,0,0,64))
-      FillPath()
-      AddPathBox(xoff + slider_w-2, yoff, 4, *Me\sizY)
-      VectorSourceColor(RGBA(0,255,0,255))
-      FillPath()
-    Else
-;       If slider_w > *Me\sizX * 0.5
-        Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-        VectorSourceColor(UIColor::COLORA_NUMBER_BG)
-        FillPath()
+      If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-        VectorSourceColor(RGBA(0,0,0,64))
+        VectorSourceColor(RGBA(255,0,0,64))
         FillPath()
-        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-        VectorSourceColor(UIColor::COLORA_CARET)
+      EndIf
+      
+    Else
+      Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
+      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      FillPath()
+      If Not *Me\options & #NUMBER_NOSLIDER
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(RGBA(255,0,0,64))
         FillPath()
+      EndIf
+      
+
+;       If slider_w > *Me\sizX * 0.5
+;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
+;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+;         FillPath()
+;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+;         VectorSourceColor(RGBA(0,0,0,64))
+;         FillPath()
+;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+;         VectorSourceColor(UIColor::COLORA_CARET)
+;         FillPath()
 ;       Else
 ;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
 ;         VectorSourceColor(UIColor::COLORA_NUMBER_FG)
@@ -415,9 +425,9 @@ Module ControlNumber
 ;       EndIf
     EndIf
     
-    AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
-    VectorSourceColor(RGBA(255,222,255,255))
-    FillPath()
+;     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
+;     VectorSourceColor(RGBA(255,222,255,255))
+;     FillPath()
     
     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
@@ -532,7 +542,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If Not *ev_data : ProcedureReturn : EndIf
       
       ; ---[ Cancel Height ]--------------------------------------------------
-      *Me\sizY = 18
+      *Me\sizY = 20
       ; ---[ Update Topology ]------------------------------------------------
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
       If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
@@ -1215,7 +1225,7 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
-  *Me\sizY         = 18
+  *Me\sizY         = 20
   *Me\visible      = #True
   *Me\enable       = #True
   *Me\options      = options
@@ -1265,7 +1275,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 289
-; FirstLine = 343
+; CursorPosition = 503
+; FirstLine = 464
 ; Folding = ----
 ; EnableXP

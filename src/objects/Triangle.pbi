@@ -113,12 +113,45 @@ Module Triangle
   ; Get Center
   ;------------------------------------------------------------------
   Procedure GetCenter(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *center.v3f32)
-    Protected *a.v3f32 = CArray::GetPtr(*positions, *Me\vertices[0])
-    Protected *b.v3f32 = CArray::GetPtr(*positions, *Me\vertices[1])
-    Protected *c.v3f32 = CArray::GetPtr(*positions, *Me\vertices[2])
-    Vector3::Add(*center, *a, *b)
-    Vector3::AddInPlace(*center, *c)
-    Vector3::ScaleInPlace(*center,1.0/3.0)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      ; ---------------------------------------------------------------------------------
+      ; load datas
+      ; ---------------------------------------------------------------------------------
+      ! mov rcx, [p.p_Me]
+      ! add ecx, 16
+      ! mov rsi, [p.p_positions + CARRAY_DATA_OFFSET]
+      ! movups xmm0, [rsi + rcx]
+      ! add ecx, 4
+      ! movups xmm1, [rsi + rcx]
+      ! add ecx, 4
+      ! movups xmm2, [rsi + rcx]
+      
+      ; ---------------------------------------------------------------------------------
+      ; add together
+      ; ---------------------------------------------------------------------------------
+      ! addps xmm0, xmm1
+      ! addps xmm0, xmm2
+      
+      ; ---------------------------------------------------------------------------------
+      ; divide by three
+      ; ---------------------------------------------------------------------------------
+      ! movups xmm1, [math.l_sse_onethird_vec]
+      ! mulps xmm0, xmm1
+      
+      ; ---------------------------------------------------------------------------------
+      ; send back to memory
+      ; ---------------------------------------------------------------------------------
+      ! mov rdi, [p.p_center]
+      ! movups [rdi], xmm0
+    CompilerElse
+      Protected *a.v3f32 = CArray::GetPtr(*positions, *Me\vertices[0])
+      Protected *b.v3f32 = CArray::GetPtr(*positions, *Me\vertices[1])
+      Protected *c.v3f32 = CArray::GetPtr(*positions, *Me\vertices[2])
+      Vector3::Add(*center, *a, *b)
+      Vector3::AddInPlace(*center, *c)
+      Vector3::ScaleInPlace(*center,1.0/3.0)
+    CompilerEndIf
+    
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -126,62 +159,62 @@ Module Triangle
   ;------------------------------------------------------------------
   Procedure GetNormal(*Me.Triangle_t, *positions.CArray::CArrayV3f32, *normal.v3f32)
     
-;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-;       ; ---------------------------------------------------------------------------------
-;       ; load datas
-;       ; ---------------------------------------------------------------------------------
-;       ! mov rcx, [p.p_Me]
-;       ! add ecx, 16
-;       ! mov rsi, [p.p_positions + CARRAY_DATA_OFFSET]
-;       ! movups xmm0, [rsi + rcx]
-;       ! add ecx, 4
-;       ! movups xmm1, [rsi + rcx]
-;       ! add ecx, 4
-;       ! movups xmm2, [rsi + rcx]
-;       
-;       ; ---------------------------------------------------------------------------------
-;       ; compute edges
-;       ; ---------------------------------------------------------------------------------
-;       ! subps xmm0, xmm2                  ; compute vector AB
-;       ! subps xmm1, xmm3                  ; compute vector AC
-;       
-;       ; ---------------------------------------------------------------------------------
-;       ; cross product
-;       ; ---------------------------------------------------------------------------------
-;       ! movaps xmm2,xmm0                  ; copy vec AB to xmm2
-;       ! movaps xmm3,xmm1                  ; copy vec AC to xmm3
-;         
-;       ! shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
-;       ! shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
-;       ! mulps  xmm2,xmm3
-;                
-;       ! shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
-;       ! shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
-;       ! mulps  xmm0,xmm1
-;               
-;       ! subps  xmm0,xmm2                  ; cross product triangle normal
-;       
-;       ; ---------------------------------------------------------------------------------
-;       ; normalize in place
-;       ; ---------------------------------------------------------------------------------
-;       ! movaps xmm6, xmm0                 ; copy normal in xmm6
-;       ! mulps xmm0, xmm0                  ; square it
-;       ! movaps xmm7, xmm0                 ; copy in xmm7
-;       ! shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
-;       ! addps xmm0, xmm7                  ; packed addition
-;       ! movaps xmm7, xmm0                 ; copy in xmm7  
-;       ! shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
-;       ! addps xmm0, xmm7                  ; packed addition
-;       ! rsqrtps xmm0, xmm0                ; reciproqual root square (length)
-;       ! mulps xmm0, xmm6                  ; multiply by intila vector
-;       
-;       ; ---------------------------------------------------------------------------------
-;       ; send back to memory
-;       ; ---------------------------------------------------------------------------------
-;       ! mov rdi, [p.p_normal]             ; copy normal in xmm6
-;       ! movups [rdi], xmm0
-; 
-;     CompilerElse
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      ; ---------------------------------------------------------------------------------
+      ; load datas
+      ; ---------------------------------------------------------------------------------
+      ! mov rcx, [p.p_Me]
+      ! add ecx, 16
+      ! mov rsi, [p.p_positions + CARRAY_DATA_OFFSET]
+      ! movups xmm0, [rsi + rcx]
+      ! add ecx, 4
+      ! movups xmm1, [rsi + rcx]
+      ! add ecx, 4
+      ! movups xmm2, [rsi + rcx]
+      
+      ; ---------------------------------------------------------------------------------
+      ; compute edges
+      ; ---------------------------------------------------------------------------------
+      ! subps xmm0, xmm2                  ; compute vector AB
+      ! subps xmm1, xmm3                  ; compute vector AC
+      
+      ; ---------------------------------------------------------------------------------
+      ; cross product
+      ; ---------------------------------------------------------------------------------
+      ! movaps xmm2,xmm0                  ; copy vec AB to xmm2
+      ! movaps xmm3,xmm1                  ; copy vec AC to xmm3
+        
+      ! shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
+      ! shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
+      ! mulps  xmm2,xmm3
+               
+      ! shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
+      ! shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
+      ! mulps  xmm0,xmm1
+              
+      ! subps  xmm0,xmm2                  ; cross product triangle normal
+      
+      ; ---------------------------------------------------------------------------------
+      ; normalize in place
+      ; ---------------------------------------------------------------------------------
+      ! movaps xmm6, xmm0                 ; copy normal in xmm6
+      ! mulps xmm0, xmm0                  ; square it
+      ! movaps xmm7, xmm0                 ; copy in xmm7
+      ! shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+      ! addps xmm0, xmm7                  ; packed addition
+      ! movaps xmm7, xmm0                 ; copy in xmm7  
+      ! shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+      ! addps xmm0, xmm7                  ; packed addition
+      ! rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+      ! mulps xmm0, xmm6                  ; multiply by intila vector
+      
+      ; ---------------------------------------------------------------------------------
+      ; send back to memory
+      ; ---------------------------------------------------------------------------------
+      ! mov rdi, [p.p_normal]             ; copy normal in xmm6
+      ! movups [rdi], xmm0
+
+    CompilerElse
       ; get triangle edges
       Protected AB.v3f32, AC.v3f32
       Protected *a.v3f32 = CArray::GetPtr(*positions, *Me\vertices[0])
@@ -193,7 +226,7 @@ Module Triangle
       Vector3::Cross(*normal, AB, AC)
       ; normalize
       Vector3::NormalizeInPlace(*normal)
-;     CompilerEndIf
+    CompilerEndIf
     
   EndProcedure
   
@@ -1965,7 +1998,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 153
+; CursorPosition = 114
+; FirstLine = 85
 ; Folding = -----
 ; EnableXP

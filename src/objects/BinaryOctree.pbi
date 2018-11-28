@@ -1,3 +1,4 @@
+XIncludeFile "Geometry.pbi"
 ;=======================================================================
 ; DECLARATION
 ;=======================================================================
@@ -25,7 +26,6 @@ DeclareModule BinaryOctree
   EndStructure
   
   Structure BinaryOctree_t Extends Node_t
-    *root.Node_t
     posxyz.i[3]                     ; les coordonnées cartésiennes (avant passage à l'echelle)
     e.i                             ; l'exposant courant
     *tab.Node_t[#MAX_EXPONANT+1]    ; un pointeur sur la racine, un pointeur de pointeur sur la racine et les autres niveau
@@ -42,7 +42,7 @@ DeclareModule BinaryOctree
   Declare GetExponant(value.f)
   Declare NumLeaves(*o.Node_t)
   
-  Declare New(*root.Node_t, *box.Geometry::Box_t, n.i)
+  Declare New( *box.Geometry::Box_t, n.i)
   Declare Delete(*o.BinaryOctree_t)
   Declare.b GetNode( *o.BinaryOctree_t, x.i, y.i , z.i, e0.i)
   Declare.b GetNodeFromPos(*o.BinaryOctree_t, x.f, y.f, z.f, e0.i)
@@ -59,12 +59,11 @@ Module BinaryOctree
   ;---------------------------------------------------------------------
   ; CONSTRUCTOR (BinaryOctree)
   ;---------------------------------------------------------------------
-  Procedure New(*root.Node_t, *box.Geometry::Box_t, n.i)
+  Procedure New( *box.Geometry::Box_t, n.i)
     Protected *o.BinaryOctree_t = AllocateMemory(SizeOf(BinaryOctree_t))
     InitializeStructure(*o, BinaryOctree_t)
-    *o\root = *root
-    *o\scale
-    RecursiveSplitNode(*o\root, n)
+;     *o\scale
+    RecursiveSplitNode(*o, n)
     ProcedureReturn *o
   EndProcedure
   
@@ -298,15 +297,15 @@ Module BinaryOctree
   
 EndModule
 
-Define box.Feometry::Box_t 
+Define box.Geometry::Box_t 
 Vector3::Set(box\origin, 2,1.5,1.666)
 Vector3::Set(box\extend, 4,1,0.5)
-Define *o.BinaryOctree::BinaryOctree_t = BinaryOctree::New(*root,box,12)
+Define *o.BinaryOctree::BinaryOctree_t = BinaryOctree::New(box,12)
 MessageRequester("MORTON", "NUM LEAVES : "+Str(BinaryOctree::NumLeaves(*o)))
 BinaryOctree::Delete(*o)
 MessageRequester("FUCKIN MORTON", "ALL IS FINE")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 99
+; CursorPosition = 44
+; FirstLine = 6
 ; Folding = ----
 ; EnableXP

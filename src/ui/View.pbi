@@ -780,26 +780,6 @@ Module ViewManager
             View::OnEvent(*active,event)
           EndIf
         EndIf
-;         If *active
-;           Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
-;           If touch
-;             If type = #PB_EventType_LeftButtonDown
-;               Debug "TOUCH LEFT BUTTON DOWN"
-;             EndIf
-;             Protected *affected.View::View_t = View::EventSplitter(*active,touch)
-;             If *affected
-;               View::TouchBorderEvent(*affected)
-;             EndIf
-;           Else
-;             View::ClearBorderEvent(*active)
-;           EndIf
-;           View::OnEvent(*active,event)
-;         EndIf
-;         
-;         gadget = EventGadget()
-;         If FindMapElement(*manager\uis(), Str(gadget))
-;           View::OnEvent(*manager\uis()\top,event)
-;         EndIf
           
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
@@ -852,13 +832,10 @@ Module ViewManager
         
       Case #PB_Event_SizeWindow
         Resize(*manager)
-        DrawPickImage(*manager)
       Case #PB_Event_MaximizeWindow
         Resize(*manager)
-        DrawPickImage(*manager)
       Case #PB_Event_MoveWindow
         Resize(*manager)
-        DrawPickImage(*manager)
       Case #PB_Event_Menu
         ProcedureReturn
       Case #PB_Event_CloseWindow
@@ -979,7 +956,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 351
-; FirstLine = 303
+; CursorPosition = 837
+; FirstLine = 792
 ; Folding = -------
 ; EnableXP

@@ -2,7 +2,7 @@
 ;  Location Object Module Implementation
 ; ============================================================================
 XIncludeFile "Geometry.pbi"
-
+XIncludeFile "../core/Array.pbi"
 DeclareModule Location
   UseModule Geometry
   UseModule Math
@@ -17,6 +17,7 @@ DeclareModule Location
   Declare New(*geom.Geometry::PolymeshGeometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
   Declare Delete(*Me.Location_t)
   Declare ClosestPoint( *Me.Location_t, *A.v3f32, *B.v3f32, *C.v3f32, *P.v3f32, *distance, maxDistance.f=Math::#F32_MAX)
+  Declare BarycentricInterpolate(*Me.Location_t, *datas.CArray::CArrayT, *output)
   DataSection
     LocationVT:
   EndDataSection
@@ -25,6 +26,115 @@ EndDeclareModule
 
 Module Location
   UseModule Math
+  
+  ;---------------------------------------------------------
+  ; Barycentrix Interpolate
+  ;---------------------------------------------------------
+  Procedure BarycentricInterpolate(*Me.Geometry::Location_t, *datas.CArray::CarrayT, *output)
+
+  
+    Protected *geom.Geometry::PolymeshGeometry_t = *Me\geometry
+    Protected a,b,c
+    
+    a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
+    b = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+1)
+    c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
+    
+    Select *datas\type
+      Case CArray::#ARRAY_BOOL
+        Define.b ba, bb, bc
+        ba = Carray::GetValueB(*datas, a)
+        bb = CArray::GetValueB(*datas, b)
+        bc = CArray::GetValueB(*datas, c)
+        PokeB(*output, Bool(ba * *Me\uvw\x + bb * *Me\uvw\y + bc * *Me\uvw\z>0))
+        
+      Case CArray::#ARRAY_LONG
+        Define.l la, lb, lc
+        la = Carray::GetValueL(*datas, a)
+        lb = CArray::GetValueL(*datas, b)
+        lc = CArray::GetValueL(*datas, c)
+        
+        PokeL(*output, la * *Me\uvw\x + lb * *Me\uvw\y + lc * *Me\uvw\z)
+        
+      Case CArray::#ARRAY_INT
+        Define.i ia, ib, ic
+        ia = Carray::GetValueI(*datas, a)
+        ib = CArray::GetValueI(*datas, b)
+        ic = CArray::GetValueI(*datas, c)
+        
+        PokeI(*output, ia * *Me\uvw\x + ib * *Me\uvw\y + ic * *Me\uvw\z)
+        
+      Case CArray::#ARRAY_FLOAT
+        Define.f fa, fb, fc
+        fa = Carray::GetValueF(*datas, a)
+        fb = CArray::GetValueF(*datas, b)
+        fc = CArray::GetValueF(*datas, c)
+        
+        PokeF(*output, fa * *Me\uvw\x + fb * *Me\uvw\y + fc * *Me\uvw\z)
+        
+      Case CArray::#ARRAY_V2F32
+        Define.v2f32 *v2a, *v2b, *v2c
+        *v2a = Carray::GetValue(*datas, a)
+        *v2b = CArray::GetValue(*datas, b)
+        *v2c = CArray::GetValue(*datas, c)
+        
+        Define *v2o.v2f32 = *output
+        Vector2::Set(*v2o, 0, 0)
+        Vector2::ScaleAddInPlace(*v2o, *v2a, *Me\uvw\x)
+        Vector2::ScaleAddInPlace(*v2o, *v2b, *Me\uvw\y)
+        Vector2::ScaleAddInPlace(*v2o, *v2c, *Me\uvw\z)
+        
+      Case CArray::#ARRAY_V3F32
+        Define.v3f32 *v3a, *v3b, *v3c
+        *v3a = Carray::GetValue(*datas, a)
+        *v3b = CArray::GetValue(*datas, b)
+        *v3c = CArray::GetValue(*datas, c)
+        
+        Define *v3o.v3f32 = *output
+        Vector3::Set(*v3o, 0, 0, 0)
+        Vector3::ScaleAddInPlace(*v3o, *v3a, *Me\uvw\x)
+        Vector3::ScaleAddInPlace(*v3o, *v3b, *Me\uvw\y)
+        Vector3::ScaleAddInPlace(*v3o, *v3c, *Me\uvw\z)
+        
+      Case CArray::#ARRAY_V4F32
+        Define.v4f32 *v4a, *v4b, *v4c
+        *v4a = Carray::GetValue(*datas, a)
+        *v4b = CArray::GetValue(*datas, b)
+        *v4c = CArray::GetValue(*datas, c)
+        
+        Define *v4o.v4f32 = *output
+        Vector4::Set(*v4o, 0, 0, 0, 0)
+        Vector4::ScaleAddInPlace(*v4o, *v4a, *Me\uvw\x)
+        Vector4::ScaleAddInPlace(*v4o, *v4b, *Me\uvw\y)
+        Vector4::ScaleAddInPlace(*v4o, *v4c, *Me\uvw\z)
+        
+      Case CArray::#ARRAY_C4F32
+        Define.v4f32 *v4a, *v4b, *v4c
+        *v4a = Carray::GetValue(*datas, a)
+        *v4b = CArray::GetValue(*datas, b)
+        *v4c = CArray::GetValue(*datas, c)
+        
+        Define *v4o.v4f32 = *output
+        Vector4::Set(*v4o, 0, 0, 0, 0)
+        Vector4::ScaleAddInPlace(*v4o, *v4a, *Me\uvw\x)
+        Vector4::ScaleAddInPlace(*v4o, *v4b, *Me\uvw\y)
+        Vector4::ScaleAddInPlace(*v4o, *v4c, *Me\uvw\z)
+        
+      Case CArray::#ARRAY_Q4F32
+        Define.q4f32 *q4a, *q4b, *q4c
+        *q4a = Carray::GetValue(*datas, a)
+        *q4b = CArray::GetValue(*datas, b)
+        *q4c = CArray::GetValue(*datas, c)
+        
+        Define *q4o.q4f32 = *output
+        Vector4::Set(*q4o, 0, 0, 0, 0)
+        Quaternion::Slerp(*q4o, *q4a, *q4b, *Me\uvw\x)
+        Quaternion::Slerp(*q4o, *q4o, *q4c, *Me\uvw\y)
+
+    EndSelect
+
+  EndProcedure
+    
   ;---------------------------------------------------------
   ; Get Position
   ;---------------------------------------------------------
@@ -34,25 +144,77 @@ Module Location
   
     Protected *geom.Geometry::PolymeshGeometry_t = *Me\geometry
     Protected a,b,c
+    
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Define *indices = *geom\a_triangleindices\data
+      Define tid.i = *Me\tid
+      Define *positions = *geom\a_positions\data
+      Define *uvw = *Me\uvw
+      Define *out = *Me\p
+      
+      ! mov edx, [p.p_indices]            ; move indices to edx register
+      ! mov rsi, [p.p_positions]          ; move positions to rsi register
+      ! mov rdi, [p.p_out]                ; move output position to rdi register
+      
+      ! mov ecx, [p.v_tid]                ; move triangle index to edx register
+      ! imul rcx, 12                      ; offset to desired triangle
+      ! add rdx, rcx
+      
+      ! mov eax, [edx]                    ; get value for desired point A
+      ! imul rax, 16                      ; compute offset in position array
+      ! movaps xmm2, [rsi + rax]          ; load point A to xmm2
+      ! add edx, 4                        ; offset next item
+      
+      ! mov eax, [edx]                    ; get value for desired point B
+      ! imul rax, 16                      ; compute offset in position array
+      ! movaps xmm1, [rsi + rax]          ; load point B to xmm1
+      ! add edx, 4                        ; offset next item
+      
+      ! mov eax, [edx]                    ; get value for desired point B
+      ! imul rax, 16                      ; compute offset in position array
+      ! movaps xmm0, [rsi + rax]          ; load point C to xmm0
+      ! add edx, 4                        ; offset next item
+      
+      ! mov rsi, [p.p_uvw]                ; load barycentric weights
+      ! movups xmm3, [rsi]                
+      ! movaps xmm4, xmm3                 ; duplicate them 
+      ! movaps xmm5, xmm3                 ; duplicate them 
+      
+      ! shufps xmm3, xmm3, 00000000b      ; u u u u
+      ! shufps xmm4, xmm4, 01010101b      ; v v v v
+      ! shufps xmm5, xmm5, 10101010b      ; w w w w
+      
+      ! mulps xmm0, xmm3                  ; weight multiply vertex a posittion
+      ! mulps xmm1, xmm4                  ; weight multiply vertex b posittion
+      ! mulps xmm2, xmm5                  ; weight multiply vertex c posittion
+      
+      ! addps xmm0, xmm1                  ; add together
+      ! addps xmm0, xmm2                  ; add together
+      
+      ! movups [rdi], xmm0                ; send back to memory
+      
+    CompilerElse
+      a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
+      b = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+1)
+      c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
+      
+      *a = CArray::GetValue(*geom\a_positions,a)
+      *b = CArray::GetValue(*geom\a_positions,b)
+      *c = CArray::GetValue(*geom\a_positions,c)
+      
+      ; Position : P= wA + uB + vC
+      Vector3::Set(*Me\p,0,0,0)
+      Vector3::Scale(x,*a, *Me\uvw\x)
+      Vector3::AddInPlace(*Me\p,x)
+      Vector3::Scale(x,*b, *Me\uvw\y)
+      Vector3::AddInPlace(*Me\p,x)
+      Vector3::Scale(x,*c, *Me\uvw\z)
+      Vector3::AddInPlace(*Me\p,x)
 
-    a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
-    b = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+1)
-    c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
-    
-    *a = CArray::GetValue(*geom\a_positions,a)
-    *b = CArray::GetValue(*geom\a_positions,b)
-    *c = CArray::GetValue(*geom\a_positions,c)
-    
-    ; Position : P= wA + uB + vC
-    Vector3::Set(*Me\p,0,0,0)
-    Vector3::Scale(x,*a, *Me\uvw\x)
-    Vector3::AddInPlace(*Me\p,x)
-    Vector3::Scale(x,*b, *Me\uvw\y)
-    Vector3::AddInPlace(*Me\p,x)
-    Vector3::Scale(x,*c, *Me\uvw\z)
-    Vector3::AddInPlace(*Me\p,x)
+    CompilerEndIf
     
     Vector3::MulByMatrix4InPlace(*Me\p,*Me\t\m)
+    
 
   EndProcedure
   
@@ -340,7 +502,7 @@ EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 283
+; CursorPosition = 120
+; FirstLine = 96
 ; Folding = ---
 ; EnableXP

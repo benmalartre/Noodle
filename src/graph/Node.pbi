@@ -76,9 +76,13 @@ Module Node
   Protected limit = *n\height* *n\step1
   ; Draw shadow
   If Graph::#Node_DrawShadow
-    Vector::RoundBoxPath(*n\posx+Graph::#Node_ShadowX, *n\posy+Graph::#Node_ShadowY, *n\width, *n\height, Graph::#Node_CornerRadius)
-    VectorSourceColor(RGBA(0,0,0,32))
-    FillPath()
+    Vector::RoundBoxPath(*n\posx+Graph::#Node_ShadowX,
+                         *n\posy+Graph::#Node_ShadowY-24,
+                         *n\width+Graph::#Node_ShadowR,
+                         *n\height+Graph::#Node_ShadowR+24,
+                         Graph::#Node_CornerRadius)
+   VectorSourceColor(RGBA(0,0,0,32))
+   FillPath()
   EndIf
 
   ; Draw node
@@ -632,8 +636,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 74
+; CursorPosition = 80
+; FirstLine = 53
 ; Folding = ------
 ; EnableThread
 ; EnableXP

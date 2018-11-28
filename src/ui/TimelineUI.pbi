@@ -104,7 +104,7 @@ Module TimelineUI
       If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
     CompilerElse
       If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow  
-      CompilerEndIf
+    CompilerEndIf
       Protected ev_data.Control::EventTypeDatas_t
       Protected *top.View::View_t = *Me\top
       *Me\x = *top\x
@@ -147,7 +147,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 78
+; CursorPosition = 106
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

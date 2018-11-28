@@ -69,11 +69,8 @@ Define *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*s1\left,"ViewportUI
 Define viewport.UI::IUI = *viewport
 *app\context = *viewport\context
 Define shaders.UI::IUI = ShaderUI::New(*s2\left,"Shader",#Null)
-View::SetContent(*s2\left,shaders)
 Define log.UI::IUI = LogUI::New(*s3\left,"LogUI")
-View::SetContent(*s3\left,log)
 Define timeline.UI::IUI = TimelineUI::New(*s3\right,"TimelineUI")
-View::SetContent(*s3\right,timeline)
 
 ; FTGL Drawer
 ;-----------------------------------------------------
@@ -196,8 +193,8 @@ Repeat
   ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 110
+; CursorPosition = 71
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

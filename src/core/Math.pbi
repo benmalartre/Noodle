@@ -129,6 +129,8 @@ DeclareModule Math
       Data.f 1, 1, 1, 1
       sse_half_vec:
       Data.f 0.5, 0.5, 0.5, 0.5
+      sse_onethird_vec:
+      Data.f 0.333333333,0.333333333,0.333333333,0.333333333
       sse_minusone_vec:
       Data.f -1, -1, -1, -1
       sse_minushalf_vec:
@@ -453,6 +455,19 @@ DeclareModule Vector2
   Macro ScaleInPlace(_v,_mult)
     _v\x * _mult
     _v\y * _mult
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 SCALE ADD
+  ;------------------------------------------------------------------
+  Macro ScaleAdd(_v,_a,_b,_mult)
+    _v\x = _a\x + _b\x * _mult
+    _v\y = _a\y + _b\y * _mult
+  EndMacro
+  
+  Macro ScaleAddInPlace(_v,_o,_mult)
+    _v\x + _o\x * _mult
+    _v\y + _o\y * _mult
   EndMacro
   
   ;------------------------------------------------------------------
@@ -1161,6 +1176,51 @@ DeclareModule Vector4
     _v\y = _o\y
     _v\z = _o\z
   EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR4 SCALE
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare Scale(*v.v4f32, *o.v4f32, mult.f)
+    Declare ScaleInPlace(*v.v4f32, mult.f)
+  CompilerElse
+    Macro Scale(_v,_o,_mult)
+      _v\w = _o\w * _mult
+      _v\x = _o\x * _mult
+      _v\y = _o\y * _mult
+      _v\z = _o\z * _mult
+    EndMacro
+    
+    Macro ScaleInPlace(_v,_mult)
+      _v\w * _mult
+      _v\x * _mult
+      _v\y * _mult
+      _v\z * _mult
+    EndMacro
+  CompilerEndIf
+  
+  ;------------------------------------------------------------------
+  ; VECTOR4 SCALE Add
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare ScaleAdd(*v.v4f32, *a.v4f32, *b.v4f32, mult.f)
+    Declare ScaleAddInPlace(*v.v4f32, *o.v4f32, mult.f)
+  CompilerElse
+    Macro ScaleAdd(_v,_a,_b,_mult)
+      _v\w = _a\w + _b\w * _mult
+      _v\x = _o\x + _b\x * _mult
+      _v\y = _o\y + _b\y * _mult
+      _v\z = _o\z + _b\z * _mult
+    EndMacro
+    
+    Macro ScaleAddInPlace(_v,_o,_mult)
+      _v\w + _o\w * _mult
+      _v\x + _o\x * _mult
+      _v\y + _o\y * _mult
+      _v\z + _o\z * _mult
+    EndMacro
+  CompilerEndIf
+  
   
   ;------------------------------------------------------------------
   ; VECTOR4 MULTIPLY BY MATRIX
@@ -3168,6 +3228,58 @@ EndModule
 ; Vector4 Module Implementation
 ;====================================================================
 Module Vector4
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 SCALE
+    ; ---------------------------------------------------------------
+    Procedure ScaleInPlace(*v.v4f32, mult.f)
+      ! mov rax, [p.p_v]            ; move src to register
+      ! movups xmm0, [rax]          ; move packed float to xmm0
+      ! movlps xmm1, [p.v_mult]     ; move multiplier to low part of xmm1
+      ! shufps xmm1, xmm1, 0        ; fill xmm1 with multiplier
+      ! mulps xmm0, xmm1            ; packed multiplication
+      ! movups [rax], xmm0          ; send back to memory
+    EndProcedure
+    
+    Procedure Scale(*v.v4f32, *o.v4f32, mult.f)
+      ! mov rdx, [p.p_v]
+      ! mov rax, [p.p_o]
+      ! movups xmm0, [rax]
+      ! movlps xmm1, [p.v_mult]
+      ! shufps xmm1, xmm1, 0
+      ! mulps xmm0, xmm1
+      ! movups [rdx], xmm0
+    EndProcedure
+    
+    ; ---------------------------------------------------------------
+    ;  VECTOR4 SCALE ADD
+    ; ---------------------------------------------------------------
+    Procedure ScaleAddInPlace(*v.v4f32, *o.v4f32, mult.f)
+      ! mov rdi, [p.p_v]            ; move first vec to register
+      ! movups xmm0, [rdi]          ; move packed float to xmm0
+      ! mov rsi, [p.p_o]            ; move second vec to register
+      ! movups xmm1, [rsi]          ; move packed float to xmm0
+      ! movlps xmm2, [p.v_mult]     ; move multiplier to low part of xmm1
+      ! shufps xmm2, xmm2, 0        ; fill xmm1 with multiplier
+      ! mulps xmm1, xmm2            ; packed multiplication
+      ! addps xmm0, xmm1
+      ! movups [rdi], xmm0          ; send back to memory
+    EndProcedure
+    
+    Procedure ScaleAdd(*v.v4f32, *a.v4f32, *b.v4f32,mult.f)
+      ! mov rdi, [p.p_v]
+      ! mov rsi, [p.p_a]
+      ! movups xmm0, [rsi]
+      ! mov rsi, [p.p_b]
+      ! movups xmm1, [rsi]
+      ! movlps xmm2, [p.v_mult]
+      ! shufps xmm2, xmm2, 0
+      ! mulps xmm1, xmm2
+      ! addps xmm0, xmm1
+      ! movups [rdi], xmm0
+    EndProcedure
+  CompilerEndIf
+  
 EndModule
 
 ;====================================================================
@@ -3884,8 +3996,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2768
-; FirstLine = 2756
+; CursorPosition = 3254
+; FirstLine = 3218
 ; Folding = ------------------------------------------------
 ; EnableXP
 ; EnableUnicode
