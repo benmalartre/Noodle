@@ -41,21 +41,31 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *indices.CArray::CArrayV3F32 = CArray::newCArrayLong()
 Global *query.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 Global *closest.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 
 
-Global numQuery.i = 256
+Global numQuery.i = 1024
 Global queryMode.i
 Global worldPos.v3f32
+
+#CLOSEST_POINT_NUM_THREAD = 8
 
 Enumeration 
   #QUERY_MODE_RANDOM
   #QUERY_MODE_CIRCLE
+  #QUERY_MODE_SPHERE
 EndEnumeration
 
 Global ray.Geometry::Ray_t
 Global plane.Geometry::Plane_t
+Global *ground.Polymesh::Polymesh_t
+
+Global singleThreadT.d
+Global multiThreadT.d
+Global radius.f = 12
+Global numTriangles = 64
 
 Vector3::Set(plane\normal, 0,1,0)
 
@@ -500,6 +510,81 @@ Procedure ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32
 EndProcedure
 
 
+Structure ClosestPointsThreadDatas_t
+  *positions.CArray::CArrayV3F32
+  *indices.CArray::CArrayLong
+  *query.CArray::CArrayV3F32
+  *closest.CArray::CArrayV3F32
+  start_index.i
+  end_index.i
+EndStructure
+
+Procedure ThreadedClosestPoints(*datas.ClosestPointsThreadDatas_t)
+  Define i, j, a, b, c
+  Define uvw.v3f32, closest.v3f32, *q.v3f32
+  Define closestDistance.f 
+  Define distance.f
+  
+  For i=*datas\start_index To *datas\end_index-1
+    closestDistance = #F32_MAX
+    For j=0 To numTriangles - 1
+      a = CArray::GetValueL(*datas\indices, j*3)
+      b = CArray::GetValueL(*datas\indices, j*3+1)
+      c = CArray::GetValueL(*datas\indices, j*3+2)
+      *q = CArray::GetValue(*query, i)
+      ClosestPointSSE(CArray::GetValue(*datas\positions, a),
+                      CArray::GetValue(*datas\positions, b),
+                      CArray::GetValue(*datas\positions, c),
+                      *q,
+                      closest,
+                      uvw)
+      distance = Vector3::DistanceSquared(*q, closest)
+      If distance < closestDistance
+        closestDistance = distance
+        CArray::SetValue(*closest, i, closest)
+      EndIf  
+    Next
+    
+  Next
+  
+EndProcedure
+
+
+Procedure ThreadedHitTriangle()
+  Define sT.d = Time::Get()
+  Define chunckSize = numQuery / #CLOSEST_POINT_NUM_THREAD
+  Define chunckBase = 0
+  Define extra = numQuery- (#CLOSEST_POINT_NUM_THREAD*chunckSize)
+  Dim tDatas.ClosestPointsThreadDatas_t(#CLOSEST_POINT_NUM_THREAD)
+  Dim threads.i(#CLOSEST_POINT_NUM_THREAD)
+  Define i
+  For i=0 To #CLOSEST_POINT_NUM_THREAD-1
+    tDatas(i)\positions = *positions
+    tDatas(i)\indices = *indices
+    tDatas(i)\closest = *closest
+    tDatas(i)\query = *query
+    tDatas(i)\start_index = chunckBase
+    tDatas(i)\end_index = chunckBase + chunckSize
+    If i = #CLOSEST_POINT_NUM_THREAD - 1
+      tDatas(i)\end_index + extra
+    EndIf
+    chunckBase + chunckSize
+  Next
+  For i=0 To #CLOSEST_POINT_NUM_THREAD-1
+    threads(i) = CreateThread(@ThreadedClosestPoints(), tDatas(i))
+  Next
+  For i = 1 To #CLOSEST_POINT_NUM_THREAD - 1 
+     If IsThread(threads(i)) 
+       WaitThread(threads(i))
+     EndIf   
+   Next    
+   Define eT.d = Time::Get() - sT
+   multiThreadT = eT
+   
+EndProcedure
+
+
+
 Procedure UpdateQuery()
   
   Define *p.v3f32
@@ -508,15 +593,34 @@ Procedure UpdateQuery()
     Case #QUERY_MODE_RANDOM
       For i=0 To numQuery-1
         *p = CArray::GetValue(*query, i)
-        Vector3::RandomizeInPlace(*p, 12)
+        Vector3::Set(*p, 0, 0, 0)
+        Vector3::RandomizeInPlace(*p, radius)
         Vector3::AddInPlace(*p, worldPos)
       Next
     Case #QUERY_MODE_CIRCLE
-      Utils::BuildCircleSection(*query, CARray::GetCount(*query), 12)
+      Utils::BuildCircleSection(*query, CARray::GetCount(*query), radius)
       Define m.m4f32
       Matrix4::SetIdentity(m)
       Matrix4::SetTranslation(m, worldPos)
       Utils::TransformPositionArrayInPlace(*query, m)
+      
+    Case #QUERY_MODE_SPHERE
+      RandomSeed(256)
+      For i=0 To numQuery-1
+        *p = CArray::GetValue(*query, i)
+        Math::UniformPointOnSphere(*p, radius)
+        Vector3::AddInPlace(*p, worldPos)
+      Next
+      
+;       Define m.m4f32
+;       Matrix4::SetIdentity(m)
+;       Matrix4::SetTranslation(m, worldPos)
+;       Utils::TransformPositionArrayInPlace(*query, m)
+;       (*query, CARray::GetCount(*query), 12)
+;       Define m.m4f32
+;       Matrix4::SetIdentity(m)
+;       Matrix4::SetTranslation(m, worldPos)
+;       Utils::TransformPositionArrayInPlace(*query, m)
   EndSelect
   
 EndProcedure
@@ -531,61 +635,88 @@ Procedure Resize(window,gadget)
   glViewport(0,0,width,height)
 EndProcedure
 
-Procedure HitTriangle()
-
+Procedure DrawQuery()
   Drawer::AddTriangle(*drawer, *positions)
   
   Define *pnts.Drawer::Item_t = Drawer::AddPoints(*drawer, *query)
   Drawer::SetSize(*pnts, 12)
   Drawer::SetColor(*pnts, Color::_RED())
- 
   
-  Define closest2.v3f32, uvw2.v3f32
-  Define t2.d = Time::Get()
-  Define i
-  For i=0 To numQuery - 1
-    ClosestPoint(CArray::GetValue(*positions, 0),
-                 CArray::GetValue(*positions, 1),
-                 CArray::GetValue(*positions, 2),
-                 CArray::GetValue(*query, i),
-                 CArray::GetValue(*closest, i),
-                 uvw2)
-    
-  Next
+  Define *hit.Drawer::Item_t = Drawer::AddPoints(*drawer, *closest)
+  Drawer::SetSize(*hit, 3)
+  Drawer::SetColor(*hit, Color::_BLUE())
   
-  Define e2.d = Time::Get()- t2
+  Define *line.Drawer::Drawer_t = Drawer::AddLines2(*drawer, *query, *closest)
+  Drawer::SetColor(*line, Color::_WHITE())
   
-  
-  
-  Define *hit2.Drawer::Item_t = Drawer::AddPoints(*drawer, *closest)
-  Drawer::SetSize(*hit2, 3)
-  Drawer::SetColor(*hit2, Color::_BLUE())
-  
-  Define *line2.Drawer::Drawer_t = Drawer::AddLines2(*drawer, *query, *closest)
-  Drawer::SetColor(*line2, Color::_WHITE())
-  
-  Define closest1.v3f32, uvw1.v3f32
+EndProcedure
+
+Procedure HitTriangle()
   Define t1.d = Time::Get()
-  
-  For i=0 To numQuery - 1 
-    ClosestPointSSE(CArray::GetValue(*positions, 0),
-                    CArray::GetValue(*positions, 1),
-                    CArray::GetValue(*positions, 2),
-                    CArray::GetValue(*query, i),
-                    CArray::GetValue(*closest, i),
-                    uvw1)
+  Define i, j, a, b, c
+  Define uvw.v3f32
+  Define closest.v3f32
+  Define closestIndex = -1
+  Define closestDistance.f 
+  Define distance.f
+  Define *q.v3f32
+  For i=0 To numQuery - 1
+    closestDistance = #F32_MAX
+    For j=0 To numTriangles - 1
+      a = CArray::GetValueL(*indices, j*3)
+      b = CArray::GetValueL(*indices, j*3+1)
+      c = CArray::GetValueL(*indices, j*3+2)
+      *q = CArray::GetValue(*query, i)
+      ClosestPointSSE(CArray::GetValue(*positions, a),
+                      CArray::GetValue(*positions, b),
+                      CArray::GetValue(*positions, c),
+                      *q,
+                      closest,
+                      uvw)
+      distance = Vector3::DistanceSquared(*q, closest)
+      If distance < closestDistance
+        closestDistance = distance
+        closestIndex = i
+      EndIf  
+    Next
+    CArray::SetValue(*closest, closestIndex, closest)
   Next
-  
-  Define e1.d = Time::Get()- t1
-  
+    
+  singleThreadT = Time::Get()- t1
  
-  Define *hit1.Drawer::Item_t = Drawer::AddPoints(*drawer, *closest)
-  Drawer::SetSize(*hit1, 2)
-  Drawer::SetColor(*hit1, Color::_GREEN())
-  
-  Define *line1.Drawer::Drawer_t = Drawer::AddLines2(*drawer, *query, *closest)
-  Drawer::SetColor(*line1, Color::_WHITE())
-  diff = diff * 0.75 + (e2 - e1) * 0.25
+; ;   Define closest2.v3f32, uvw2.v3f32
+; ;   Define t2.d = Time::Get()
+;   Define i
+; ;   For i=0 To numQuery - 1
+; ;     ClosestPoint(CArray::GetValue(*positions, 0),
+; ;                  CArray::GetValue(*positions, 1),
+; ;                  CArray::GetValue(*positions, 2),
+; ;                  CArray::GetValue(*query, i),
+; ;                  CArray::GetValue(*closest, i),
+; ;                  uvw2)
+; ;     
+; ;   Next
+; ;   
+; ;   Define e2.d = Time::Get()- t2
+;   
+;   
+;   
+;   
+;   
+;   Define closest1.v3f32, uvw1.v3f32
+;   Define t1.d = Time::Get()
+;   For i=0 To numQuery - 1 
+;     ClosestPointSSE(CArray::GetValue(*positions, 0),
+;                     CArray::GetValue(*positions, 1),
+;                     CArray::GetValue(*positions, 2),
+;                     CArray::GetValue(*query, i),
+;                     CArray::GetValue(*closest, i),
+;                     uvw1)
+;   Next
+;   
+;   Define e1.d = Time::Get()- t1
+;   singleThreadT = e1
+ 
   
  EndProcedure
  
@@ -627,7 +758,9 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
+  If Event() = #PB_Event_CloseWindow
+    ProcedureReturn
+  ElseIf Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
     Define mx = GetGadgetAttribute(*viewport\gadgetID, #PB_OpenGL_MouseX)
     Define my = GetGadgetAttribute(*viewport\gadgetID, #PB_OpenGL_MouseY)
     ViewportUI::GetRay(*viewport, ray)
@@ -649,6 +782,9 @@ Procedure Draw(*app.Application::Application_t)
   Drawer::Flush(*drawer)
 ;   RandomSpheres(Random(64,16), Random(10)-5)
   HitTriangle()
+  ThreadedHitTriangle()
+  
+  DrawQuery()
 ;   RandomPoints(Random(256, 64))
   Scene::*current_scene\dirty= #True
   
@@ -663,6 +799,8 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer, "Difference : "+StrF(diff), -0.9, 0.8, ss, ss*ratio)
 ;   FTGL::Draw(*app\context\writer, "Side : "+StrF(side)+", Index : "+Str(index), -0.9, 0.7, ss, ss*ratio)
 ;   FTGL::Draw(*app\context\writer, "WOrld Pos : "+Vector3::ToString(worldPos), -0.9, 0.6, ss, ss*ratio)
+  FTGL::Draw(*app\context\writer, "Single Thread Time : "+StrF(singleThreadT), -0.9, 0.6, ss, ss*ratio)
+  FTGL::Draw(*app\context\writer, "Multi Thread Time : "+StrF(multiThreadT), -0.9, 0.5, ss, ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   glDisable(#GL_BLEND)
   
@@ -691,16 +829,21 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  queryMode = #QUERY_MODE_CIRCLE
+  queryMode = #QUERY_MODE_SPHERE
   RandomSeed(4)
-  CArray::SetCount(*positions, 3)
-  Define i
+  CArray::SetCount(*positions, numTriangles * 3)
+  CArray::SetCount(*indices, numTriangles * 3)
+  Define i, j
   Define *p.v3f32
-  For i=0 To 2 
-    *p = CArray::GetValue(*positions, i)
-    Vector3::RandomizeInPlace(*p, 12) 
-    *p\y = 0
+  For j=0 To numTriangles - 1
+    For i=0 To 2 
+      *p = CArray::GetValue(*positions, j*3+i)
+      Vector3::RandomizeInPlace(*p, radius/3) 
+      CArray::SetValueL(*indices, j*3+i, j*3+i)
+;       *p\y = 0
+    Next
   Next
+  
   
   CArray::SetCount(*query, numQuery)
   CArray::SetCount(*closest, numQuery)
@@ -735,7 +878,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 13
+; CursorPosition = 607
+; FirstLine = 603
 ; Folding = --
 ; EnableXP

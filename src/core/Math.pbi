@@ -648,6 +648,23 @@ DeclareModule Vector3
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR3 LENGTH
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare.f Distance(*a.v3f32, *b.v3f32)
+    Declare.f DistanceSquared(*a.v3f32, *b.v3f32)
+  CompilerElse
+    Macro DistanceSquared(_a, _b)
+      (Pow(_b\x-_a\x, 2) + Pow(_b\y - _a\y, 2) + Pow(_b\z - _a\z, 2))
+    EndMacro
+    
+    Macro Distance(_a, _b)
+      Sqr(Pow(_b\x-_a\x, 2) + Pow(_b\y - _a\y, 2) + Pow(_b\z - _a\z, 2))
+    EndMacro
+  CompilerEndIf
+  
+  
+  ;------------------------------------------------------------------
   ; VECTOR3 ABSOLUTE
   ;------------------------------------------------------------------
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -2737,6 +2754,45 @@ Module Vector3
 ;       ProcedureReturn d
 ;     EndProcedure
     
+    ; ---------------------------------------------------------------
+    ;  DISTANCE
+    ; ---------------------------------------------------------------
+    Procedure.f Distance(*a.v3f32, *b.v3f32)
+      Define distance.f
+      ! mov rsi, [p.p_a]
+      ! movups xmm1, [rsi]
+      ! mov rsi, [p.p_b]
+      ! movups xmm0, [rsi]
+      ! subps xmm0, xmm1
+      ! mulps xmm0, xmm0
+      ! movaps xmm1, xmm0
+      ! shufps xmm0, xmm1, 0x4e
+    	!	addps xmm0, xmm1
+    	!	movaps xmm1, xmm0
+    	!	shufps xmm1, xmm1, 0x11
+    	!	addps xmm0, xmm1
+      ! sqrtss xmm0, xmm0
+    	! movss [p.v_distance], xmm0
+    	ProcedureReturn distance
+    EndProcedure
+    
+    Procedure.f DistanceSquared(*a.v3f32, *b.v3f32)
+      Define distance.f
+      ! mov rsi, [p.p_a]
+      ! movups xmm1, [rsi]
+      ! mov rsi, [p.p_b]
+      ! movups xmm0, [rsi]
+      ! subps xmm0, xmm1
+      ! mulps xmm0, xmm0
+      ! movaps xmm1, xmm0
+      ! shufps xmm0, xmm1, 0x4e
+    	!	addps xmm0, xmm1
+    	!	movaps xmm1, xmm0
+    	!	shufps xmm1, xmm1, 0x11
+    	!	addps xmm0, xmm1
+    	! movss [p.v_distance], xmm0
+    	ProcedureReturn distance
+    EndProcedure
     
     ; ---------------------------------------------------------------
     ;  VECTOR3 CROSS
@@ -3828,8 +3884,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 369
-; FirstLine = 321
-; Folding = -----------------------------------------------
+; CursorPosition = 2768
+; FirstLine = 2756
+; Folding = ------------------------------------------------
 ; EnableXP
 ; EnableUnicode

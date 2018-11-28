@@ -1040,7 +1040,7 @@ Module PolymeshGeometry
     GetUVWSFromPosition(*mesh,#True)
     
     ; Tangents
-    RecomputeTangents(*mesh)
+;     RecomputeTangents(*mesh)
     
     ;Color
     Color::Set(color,0.33,0.33,0.33,1.0)
@@ -2680,7 +2680,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 668
-; FirstLine = 635
+; CursorPosition = 1042
+; FirstLine = 1038
 ; Folding = -----g--f--
 ; EnableXP

@@ -103,30 +103,17 @@ EndProcedure
 
 Procedure.f SSELength(*v.Vector3)
   Protected l.f
-;   ! mov rax, [p.p_v]
-;   ! movaps xmm0, [rax]
-;   ! movaps xmm2, xmm0
-;   ! mulps xmm0, xmm0
-;   ! movaps xmm1, xmm0
-;   ! shufps xmm0, xmm1, 0x4e
-; 	!	addps xmm0, xmm1
-; 	!	movaps xmm1, xmm0
-; 	!	shufps xmm1, xmm1, 0x11
-; 	!	addps xmm0, xmm1
-;   ! rsqrtps xmm0, xmm0 
-;  	! mulps xmm2, xmm0
-;  	! movss [p.v_l], xmm2
   ! mov rax, [p.p_v]
-  !movss xmm0, [rax] ; x from first point
-  !mulss xmm0, xmm0 ; x^2
-  !movss xmm1, [rax+4] ; y from first point
-  !mulss xmm1, xmm1 ; y^2
-  !movss xmm2, [rax+8] ; z from first point
-  !mulss xmm2, xmm2 ; z^2
-  !addss xmm0, xmm1 ; add x and y parts
-  !addss xmm0, xmm2 ; add z part
-  !sqrtss xmm0, xmm0
-  !movss [p.v_l], xmm0
+  ! movaps xmm0, [rax]
+  ! mulps xmm0, xmm0
+  ! movaps xmm1, xmm0
+  ! shufps xmm0, xmm1, 0x4e
+	!	addps xmm0, xmm1
+	!	movaps xmm1, xmm0
+	!	shufps xmm1, xmm1, 0x11
+	!	addps xmm0, xmm1
+  ! sqrtss xmm0, xmm0
+  ! movss [p.v_l], xmm0
   ProcedureReturn l
 EndProcedure
 
@@ -158,17 +145,15 @@ Procedure SSELength_Array(*v.Vector3, *lengths, nb.i)
 
   !sselength_array_loop:
   !   movaps xmm0, [rax]
-  !   movaps xmm2, xmm0
   !   mulps xmm0, xmm0
   !   movaps xmm1, xmm0
   !   shufps xmm0, xmm1, 0x4e
 	!	  addps xmm0, xmm1
-	! 	movaps xmm1, xmm0
+	!	  movaps xmm1, xmm0
 	!	  shufps xmm1, xmm1, 0x11
 	!	  addps xmm0, xmm1
-	!   rsqrtps xmm0, xmm0 
- 	!   mulps xmm2, xmm0
-	!   movss [rdx], xmm2
+  !   sqrtss xmm0, xmm0
+	!   movss [rdx], xmm0
   !   add rax, 16
   !   add rdx, 4
   !   dec ecx
@@ -221,7 +206,7 @@ MessageRequester("VECTOR LENGTH", "PB : "+Str(T1)+Chr(10)+
                             FloatArrayString(*o2A, nb)+Chr(10)+"-------------"+Chr(10)+
                             FloatArrayString(*o3A, nb)+Chr(10)+"-------------")
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 84
+; CursorPosition = 105
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

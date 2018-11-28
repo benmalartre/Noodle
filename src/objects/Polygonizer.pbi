@@ -523,9 +523,9 @@ Module Polygonizer
    
    Protected mu.f
    mu = (isolevel - *p1\d) / (*p2\d - *p1\d)
-   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0]) + Random(100)*0.001
-   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1]) + Random(100)*0.001
-   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2]) + Random(100)*0.001
+   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0]) ;+ Random(100)*0.001
+   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1]) ;+ Random(100)*0.001
+   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2]) ;+ Random(100)*0.001
 
    ProcedureReturn
    
@@ -544,25 +544,60 @@ Module Polygonizer
     Define *vertices.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
     Define *faces.CArray::CArrayLong = CArray::newCArrayLong()
     Define *t.Polygonizer::Triangle_t
-    Define i
+    Define i, j
     For c=0 To numCells - 1
       Define numTris = PolygonizeCell(*grid\cells(c), 0.1, *triangles)
       If numTris
-        CArray::SetCount(*vertices, numVertices + numTris * 3)
-        CArray::SetCount(*faces, numFaces + numTris * 4)
+;         CArray::SetCount(*vertices, numVertices + numTris * 3)
+;         CArray::SetCount(*faces, numFaces + numTris * 4)
+;         For i=0 To numTris - 1
+;           *t = *triangles + i * SizeOf(Polygonizer::Triangle_t)
+;           CArray::SetValue(*vertices, numVertices + i*3, *t\p[0])
+;           CArray::SetValue(*vertices, numVertices + i*3+1, *t\p[1])
+;           CArray::SetValue(*vertices, numVertices + i*3+2, *t\p[2])
+;           CArray::SetValueL(*faces, numFaces + i*4, numVertices + i*3+2)
+;           CArray::SetValueL(*faces, numFaces + i*4+1, numVertices + i*3+1)
+;           CArray::SetValueL(*faces, numFaces + i*4+2, numVertices + i*3)
+;           CArray::SetValueL(*faces, numFaces + i*4+3, -2)
+;         Next
+;         
+;         numVertices + numTris * 3
+;         numFaces + numTris * 4
+        
+        CArray::SetCount(*vertices, numVertices + numTris +2)
+        CArray::SetCount(*faces, numFaces + numTris + 3)
+        
         For i=0 To numTris - 1
           *t = *triangles + i * SizeOf(Polygonizer::Triangle_t)
-          CArray::SetValue(*vertices, numVertices + i*3, *t\p[0])
-          CArray::SetValue(*vertices, numVertices + i*3+1, *t\p[1])
-          CArray::SetValue(*vertices, numVertices + i*3+2, *t\p[2])
-          CArray::SetValueL(*faces, numFaces + i*4, numVertices + i*3+2)
-          CArray::SetValueL(*faces, numFaces + i*4+1, numVertices + i*3+1)
-          CArray::SetValueL(*faces, numFaces + i*4+2, numVertices + i*3)
-          CArray::SetValueL(*faces, numFaces + i*4+3, -2)
+          If i = 0
+            CArray::SetValue(*vertices, numVertices + i, *t\p[0])
+            CArray::SetValue(*vertices, numVertices + i+1, *t\p[1])
+            CArray::SetValue(*vertices, numVertices + i+2, *t\p[2])
+            CArray::SetValueL(*faces, numFaces + i, numVertices + i)
+            CArray::SetValueL(*faces, numFaces + i+1, numVertices + i+1)
+            CArray::SetValueL(*faces, numFaces + i+2, numVertices + i+2)
+            numVertices + 3
+            numFaces + 3
+          Else
+            CArray::SetValue(*vertices, numVertices , *t\p[2])
+            CArray::SetValueL(*faces, numFaces, numVertices)
+            numVertices + 1
+            numFaces + 1
+          EndIf
         Next
+        CArray::SetValueL(*faces, numFaces , -2)
+        numFaces + 1
         
-        numVertices + numTris * 3
-        numFaces + numTris * 4
+;           *t = *triangles + i * SizeOf(Polygonizer::Triangle_t)
+;           CArray::SetValue(*vertices, numVertices + i*3, *t\p[0])
+;           CArray::SetValue(*vertices, numVertices + i*3+1, *t\p[1])
+;           CArray::SetValue(*vertices, numVertices + i*3+2, *t\p[2])
+;           CArray::SetValueL(*faces, numFaces + i*4, numVertices + i*3+2)
+;           CArray::SetValueL(*faces, numFaces + i*4+1, numVertices + i*3+1)
+;           CArray::SetValueL(*faces, numFaces + i*4+2, numVertices + i*3)
+;           CArray::SetValueL(*faces, numFaces + i*4+3, -2)
+;         Next
+        
         
       EndIf
     Next
@@ -707,7 +742,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 527
-; FirstLine = 503
+; CursorPosition = 575
+; FirstLine = 549
 ; Folding = --
 ; EnableXP
