@@ -181,17 +181,19 @@ Module Octree
   ;---------------------------------------------------------------------
   Procedure ResetHits(*cell.Cell_t)
     *cell\state = Octree::#DEFAULT_STATE
-    If Not *cell\isLeaf
-      If *cell\children
-        Protected j
-        For j=0 To 7
-          If *cell\children[j]
-            ResetHits(*cell\children[j])
-          EndIf
-        Next j
-      EndIf
-    EndIf
     
+    If Not *cell\isLeaf
+      Protected i
+      For i=0 To 7
+        If *cell\children[i]
+          If *cell\children[i]\isLeaf
+            *cell\children[i]\state = Octree::#DEFAULT_STATE
+          Else
+            ResetHits(*cell\children[i])
+          EndIf
+        EndIf
+      Next
+    EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -814,7 +816,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 578
-; FirstLine = 525
+; CursorPosition = 195
+; FirstLine = 185
 ; Folding = ------
 ; EnableXP

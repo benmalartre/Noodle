@@ -248,8 +248,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 177
+; CursorPosition = 193
+; FirstLine = 151
 ; Folding = -
 ; EnableThread
 ; EnableXP

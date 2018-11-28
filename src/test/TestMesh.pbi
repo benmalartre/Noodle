@@ -129,7 +129,7 @@ Procedure Draw(*app.Application::Application_t)
  FTGL::Init()
 ;--------------------------------------------
  If Time::Init()
-   Define sT.d = Time::Get()
+   
    Log::Init()
    *app = Application::New("TestMesh",width,height)
 
@@ -211,7 +211,10 @@ Procedure Draw(*app.Application::Application_t)
   Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
   Topology::TransformArray(*topo,*matrices,*outtopo)
   Topology::MergeArray(*topo,*outtopo)
+  Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
+    MessageRequester("TIME", StrD(Time::Get() - sT))
+
   PolymeshGeometry::RandomColorByPolygon(*mgeom)
   Object3D::Freeze(*merged)
   
@@ -222,12 +225,12 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-  MessageRequester("TIME", StrD(Time::Get() - sT))
+  
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 134
-; FirstLine = 130
+; CursorPosition = 216
+; FirstLine = 170
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

@@ -814,12 +814,16 @@ Module PolymeshGeometry
   ;  Recompute Edges
   ; ----------------------------------------------------------------------------
   Procedure RecomputeEdges(*mesh.PolymeshGeometry_t)
-    ; Get Unique Edges
-    Protected NewMap uniqueEdges.i()
+    Structure EdgeIndices_t
+      a.i
+      b.i
+    EndStructure
+    
+    Protected NewMap uniqueEdges.EdgeIndices_t()
     Protected edgeKey.s
     Protected edgeID.i = 0
     Protected i, a, b, base
-    
+
     base=0
     For i=0 To *mesh\nbpolygons-1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
@@ -829,11 +833,16 @@ Module PolymeshGeometry
         
         If a>b
           edgeKey = Str(b)+","+Str(a)
+          AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
+          uniqueEdges()\a = b
+          uniqueEdges()\b = a
+          
         Else
           edgeKey = Str(a)+","+Str(b)
+          AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
+          uniqueEdges()\a = a
+          uniqueEdges()\b = b
         EndIf
-
-        AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
       Next j
       base+nbv
     Next i
@@ -843,9 +852,8 @@ Module PolymeshGeometry
     *mesh\nbedges = numUniqueEdges
     i=0
     ForEach uniqueEdges()
-      edgeKey = MapKey(uniqueEdges())
-      CArray::SetValueL(*mesh\a_edgeindices, i*2, Val(StringField(edgeKey,1,",")))
-      CArray::SetValueL(*mesh\a_edgeindices, i*2+1, Val(StringField(edgeKey,2,",")))
+      CArray::SetValueL(*mesh\a_edgeindices, i*2, uniqueEdges()\a)
+      CArray::SetValueL(*mesh\a_edgeindices, i*2+1, uniqueEdges()\b)
       i+1
     Next  
     ClearMap(uniqueEdges())
@@ -856,16 +864,28 @@ Module PolymeshGeometry
   ;  Recompute Vertex Polygons
   ; ----------------------------------------------------------------------------
   Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
-    Protected i, j, k, nbv, base, total
-    Protected Dim indices.s(*mesh\nbpoints)
+    Structure VertexPolygonIndices_t
+      Array polygons.l(0)
+    EndStructure
+    
+    Protected i, j, k, nbv, base, total, last
+    Protected Dim indices.VertexPolygonIndices_t(*mesh\nbpoints)
+    For i=0 To *mesh\nbpoints-1
+      InitializeStructure(indices(i), VertexPolygonIndices_t)
+    Next
+    
     base=0
     total = 0
 
     For i=0 To *mesh\nbpolygons-1
+      
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
+      
       For j=0 To nbv-1
         k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
-        indices(k) + Str(i)+","
+        last = ArraySize(indices(k)\polygons())
+        ReDim indices(k)\polygons(last+1)
+        indices(k)\polygons(last) = i
         total+1
       Next j
       base+nbv
@@ -877,14 +897,15 @@ Module PolymeshGeometry
     Protected nbp, index
     base = 0
     For i=0 To *mesh\nbpoints-1
-      nbp = CountString(indices(i),",")
+      nbp = ArraySize(indices(i)\polygons())
       CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
       For j=1 To nbp
-        index = Val(StringField(indices(i),j,","))
-        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j-1, index)
+        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j-1, indices(i)\polygons(j))
       Next
       base + nbp
+      ClearStructure(indices(i), VertexPolygonIndices_t)
     Next
+    FreeArray(indices())
 
   EndProcedure
   
@@ -2680,7 +2701,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1042
-; FirstLine = 1038
+; CursorPosition = 875
+; FirstLine = 969
 ; Folding = -----g--f--
 ; EnableXP
