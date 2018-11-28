@@ -31,9 +31,9 @@ DeclareModule Shader
   
   Else
     If OpenGL::#USE_LEGACY_OPENGL
-      Global GLSL_PATH.s = "glsl120/"
+      Global GLSL_PATH.s = "../../../glsl120/"
     Else
-      Global GLSL_PATH.s = "glsl/"
+      Global GLSL_PATH.s = "../../../glsl/"
     EndIf
   EndIf
 
@@ -335,8 +335,8 @@ Module Program
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 9
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 35
 ; FirstLine = 5
 ; Folding = ---
 ; EnableXP

@@ -56,330 +56,131 @@ Module Node
     *n\width = 120
     *n\step1 =   Graph::#Node_TitleHeight/*n\height
     *n\step2 =  ( Graph::#Node_TitleHeight +  Graph::#Node_PortSpacing * ListSize(*n\outputs()))/*n\height
-    
-    ForEach *n\outputs()
-      *n\outputs()\percx = (*n\viewx +*n\viewwidth - Graph::#Node_PortShiftX)/*n\width
-      *n\outputs()\percy = ( Graph::#Node_TitleHeight + Graph::#Node_PortSpacing * *n\outputs()\id)/*n\height
-    Next
-    
-    ForEach *n\inputs()
-      *n\inputs()\percx = (*n\viewx +Graph::#Node_PortShiftX)/*n\width
-      *n\inputs()\percy = (Graph::#Node_TitleHeight +*n\inputs()\id)*Graph::#Node_PortSpacing/*n\height
-    Next
-      
   EndProcedure
 
   ;------------------------------------
   ; Draw Node
   ;------------------------------------
-  Procedure Draw(*n.Node_t, zoom.f)
+  Procedure Draw(*n.Node_t)
 
-    Protected offset.i = Graph::#Node_ShadowY* zoom
-    Protected radius.i = Graph::#Node_CornerRadius * zoom
+    Protected offset.i = Graph::#Node_ShadowY
+    Protected radius.i = Graph::#Node_CornerRadius
     Protected border = Graph::#Node_BorderUnselected
     
-    CompilerIf Not Globals::#USE_VECTOR_DRAWING
-      ; -----------------------------------------------------------------------------------------------------
-      ; Pixel Drawing
-      ; -----------------------------------------------------------------------------------------------------
-      If *n\selected
-        border = Graph::#Node_BorderSelected
-      EndIf 
-      
-      If Graph::#Node_DrawShadow And z>0.33
-        ;Shadow Box
-        ;RoundBox(*n\viewx+offset, *n\viewy+offset, *n\viewwidth, *n\viewheight ,radius,radius,RGBA(0,0,0,50))
-         DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Gradient)
-         GradientColor(0,RGBA(66,66,66,255))
-      ;    GradientColor(0.5,RGBA(11,11,33,100))
-      ;    GradientColor(0.75,RGBA(11,11,33,30))
-         GradientColor(1,RGBA(66,66,66,0))
-         Protected ltx,lty,rtx,rty,lbx,lby,rbx,rby
-         Protected litx,lity,ritx,rity,libx,liby,ribx,riby
-         Protected s_width.f = Graph::#Node_ShadowR/2*zoom
-         
-         
-         ltx = *n\viewx + Graph::#Node_ShadowX * zoom - s_width 
-         lty = *n\viewy -20 * zoom + Graph::#Node_ShadowY * zoom - s_width
-         rtx = *n\viewx + *n\viewwidth + Graph::#Node_ShadowX * zoom + s_width 
-         rty = *n\viewy -20 * zoom + Graph::#Node_ShadowY * zoom - s_width
-         lbx = *n\viewx + Graph::#Node_ShadowX * zoom - s_width 
-         lby = *n\viewy + *n\viewheight + Graph::#Node_ShadowY * zoom + s_width 
-         rbx = *n\viewx + *n\viewwidth + Graph::#Node_ShadowX * zoom + s_width 
-         rby = *n\viewy + *n\viewheight + Graph::#Node_ShadowY * zoom + s_width 
-         
-         litx = ltx  + Graph::#Node_ShadowR
-         lity = lty  + Graph::#Node_ShadowR
-         ritx = rtx  - Graph::#Node_ShadowR
-         rity = rty  + Graph::#Node_ShadowR
-         libx = lbx  + Graph::#Node_ShadowR
-         liby = lby  - Graph::#Node_ShadowR
-         ribx = rbx  - Graph::#Node_ShadowR
-         riby = rby  - Graph::#Node_ShadowR
-        
-        ;Top Gradient
-         LinearGradient(litx,lity,litx,lty)
-         Box(litx,lty,ritx-litx,Graph::#Node_ShadowR)
-         
-         ;Bottom Gradient
-         LinearGradient(libx,liby,libx,lby)
-         Box(libx,liby,ribx-libx,Graph::#Node_ShadowR)
-         
-         ;Left Gradient
-         LinearGradient(litx,lity,lbx,lity)
-         Box(ltx,lity,Graph::#Node_ShadowR,liby-lity)
-         
-         ;Right Gradient
-         LinearGradient(ritx,lity,rtx,lity)
-         Box(ritx,lity,Graph::#Node_ShadowR,riby-rity)
-         
-         ;Left Top Corner
-         CircularGradient(litx,lity,Graph::#Node_ShadowR)
-         Box(ltx,lty,Graph::#Node_ShadowR,Graph::#Node_ShadowR)
-         
-         ;Right Top Corner
-         CircularGradient(ritx,rity,Graph::#Node_ShadowR)
-         Box(ritx,rty,Graph::#Node_ShadowR,Graph::#Node_ShadowR)
-         
-         ;Left Bottom Corner
-         CircularGradient(libx,liby,Graph::#Node_ShadowR)
-         Box(lbx,liby,Graph::#Node_ShadowR,Graph::#Node_ShadowR)
-         
-         ;Right Bottom Corner
-         CircularGradient(ribx,riby,Graph::#Node_ShadowR)
-         Box(ribx,riby,Graph::#Node_ShadowR,Graph::#Node_ShadowR)
-         
-         ; Center Rectangle
-        DrawingMode(#PB_2DDrawing_AlphaBlend)
-        Box(litx,lity,ribx-litx,riby-lity,RGBA(66,66,66,255))
-      EndIf
-      
-      ;Top Box
-      DrawingMode(#PB_2DDrawing_Default)
-      RoundBox(*n\viewx,*n\viewy-20 * zoom,*n\viewwidth,40 * zoom,radius,radius,RGB(200,200,200))
-      
-      ;Actual Box
-      
-      Protected limit = *n\viewheight* *n\step1
-      If *n\state = Graph::#Node_StateError
-        RoundBox(*n\viewx,*n\viewy, *n\viewwidth, *n\viewheight ,radius,radius,RGB(255,0,0))
-      Else
-        RoundBox(*n\viewx,*n\viewy, *n\viewwidth, *n\viewheight ,radius,radius,*n\color)
-      EndIf
+  ; -----------------------------------------------------------------------------------------------------
+  ; Vector Drawing
+  ; -----------------------------------------------------------------------------------------------------
+  If *n\selected
+    border = Graph::#Node_BorderSelected
+  EndIf 
+  Protected limit = *n\height* *n\step1
+  ; Draw shadow
+  If Graph::#Node_DrawShadow
+    Vector::RoundBoxPath(*n\posx+Graph::#Node_ShadowX, *n\posy+Graph::#Node_ShadowY, *n\width, *n\height, Graph::#Node_CornerRadius)
+    VectorSourceColor(RGBA(0,0,0,32))
+    FillPath()
+  EndIf
 
-      ;Contours
-      DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Outlined|#PB_2DDrawing_AlphaBlend)
-      RoundBox(*n\viewx,*n\viewy, *n\viewwidth, *n\viewheight ,radius,radius,border)
-      If Not *n\leaf And Not *n\isroot
-        Protected o.i = 3 * zoom
-        RoundBox(*n\viewx-o,*n\viewy-o, *n\viewwidth+2*o, *n\viewheight+2*o ,radius,radius,border)
-      EndIf
-      
-      ;Let some place for the node name
-      Protected y =  *n\viewy+(Graph::#Node_TitleHeight+Graph::#Node_PortSpacing/2) * zoom
-      DrawingMode(#PB_2DDrawing_Default)
-      
-      ;Load Title font
-      DrawingFont(FontID(Graph::font_port))
-      
-      Protected color = *n\color
+  ; Draw node
+  Vector::RoundBoxPath(*n\posx, *n\posy, *n\width, *n\height, Graph::#Node_CornerRadius)
+    ; Draw Contour
+  VectorSourceColor(border)
+  StrokePath(Graph::#NODE_BORDER_WIDTH,#PB_Path_RoundCorner|#PB_Path_Preserve)
+  If *n\state = Graph::#Node_StateError
+    VectorSourceColor(RGBA(255,122,0,255))
+    FillPath()
+  Else
+    VectorSourceColor(RGBA(Red(*n\color),Green(*n\color),Blue(*n\color),255))
+    FillPath()
+  EndIf
+  
 
-      ;Draw Outputs
-      radius = Graph::#Node_PortRadius * zoom
-      Protected x = *n\viewx+*n\viewwidth-(Graph::#Node_PortShiftX) * zoom
-      ForEach *n\outputs()
-        DrawingMode(#PB_2DDrawing_Default)
-        Circle(x,y,radius,*n\outputs()\color)
-        
-    ;     DrawingMode(#PB_2DDrawing_Outlined)
-    ;     If *n\outputs()\selected 
-    ;       Circle(x,y,radius,RGB(255,255,255))
-    ;     Else
-    ;       Circle(x,y,radius,RGB(66,66,66))
-    ;     EndIf
-        
-        
-        If zoom>0.33
-          DrawingMode(#PB_2DDrawing_Transparent)
-          Protected w = TextWidth(*n\outputs()\name)
-          DrawText(x-w-2*Graph::#Node_PortRadius * zoom,y-(Graph::#Node_PortSpacing/2 * zoom),*n\outputs()\name,Graph::#Node_BorderUnselected)
-        EndIf
-      
-        y + Graph::#Node_PortSpacing * zoom
-      Next
-      
-      ;Draw Inputs
-      x = *n\viewx+(Graph::#Node_PortShiftX) * zoom
-      ForEach *n\inputs()
-        If *n\inputs()\currenttype=Attribute::#ATTR_TYPE_NEW 
-          DrawingMode(#PB_2DDrawing_AlphaBlend)
-          Circle(x,y,radius,RGBA(Red(*n\inputs()\color),Green(*n\inputs()\color),Blue(*n\inputs()\color),66))
-        Else
-          DrawingMode(#PB_2DDrawing_Default)
-          Circle(x,y,radius,*n\inputs()\color)
-        EndIf
-        
-    ;     DrawingMode(#PB_2DDrawing_Outlined)
-    ;     If *n\inputs()\selected 
-    ;       Circle(x,y,radius,RGB(255,255,255))
-    ;     Else
-    ;       Circle(x,y,radius,RGB(66,66,66))
-    ;     EndIf
+;   If Not *n\leaf And Not *n\isroot
+;     Protected o.i = 3
+;     AddPathBox(*n\posx-o,*n\posy-o, *n\width+2*o, *n\height+2*o)
+;     StrokePath(Node::NODE_BORDER_WIDTH,#PB_Path_RoundCorner)
+;   EndIf
+
+  
+  
+   ;Let some place for the node name
+  Protected y =  *n\posy+(Graph::#Node_TitleHeight+Graph::#Node_PortSpacing/2)
+  
+  ;Load Title font
+  VectorFont(FontID(Graph::font_port),12)
+  Protected color = *n\color
+ 
+  
+  ;Draw Outputs
+  radius = Graph::#Node_PortRadius
+  Protected x = *n\posx+*n\width-(Graph::#Node_PortShiftX)
+  ForEach *n\outputs()
+    VectorSourceColor(RGBA(Red(*n\outputs()\color),Green(*n\outputs()\color),Blue(*n\outputs()\color),255))
+    AddPathCircle(x,y,radius,0,360)
+    FillPath()
     
-        If zoom>0.33
-          DrawingMode(#PB_2DDrawing_Transparent)
-          DrawText(x+2*Graph::#Node_PortRadius * zoom,y-(Graph::#Node_PortSpacing/2 * zoom),*n\inputs()\name,Graph::#Node_BorderUnselected)
-        EndIf
-        y + Graph::#Node_PortSpacing * zoom
-      Next
-     
-      ;Draw Node Name
-      If zoom>0.2
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawingFont(FontID(Graph::font_node))
-        
-        DrawText(*n\viewx+(10 * zoom),*n\viewy-(20 * zoom),*n\label,border)
-      EndIf
-      
-      ;Draw Edit Button
-      If Not *n\leaf And Not *n\isroot
-        
-        DrawingMode(#PB_2DDrawing_Default)
-        Protected ex,ey
-        ex = *n\viewx+*n\viewwidth-Graph::#Node_EditButtonShiftX * zoom
-        ey = *n\viewy-Graph::#Node_EditButtonShiftY * zoom
-        Circle(ex,ey,Graph::#Node_EditButtonRadius * zoom,Graph::#Node_EditButtonColor)
-        
-        DrawingMode(#PB_2DDrawing_Outlined)
-        Circle(ex,ey,Graph::#Node_EditButtonRadius * zoom,border)
-        
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawingFont(FontID(Graph::font_node))
-        
-        DrawText(ex-Graph::#Node_EditButtonShiftX * zoom+Graph::#Node_EditButtonRadius * zoom,ey-Graph::#Node_EditButtonShiftY * zoom,"e",border)
-      EndIf
-    CompilerElse
-      ; -----------------------------------------------------------------------------------------------------
-      ; Vector Drawing
-      ; -----------------------------------------------------------------------------------------------------
-      If *n\selected
-        border = Graph::#Node_BorderSelected
-      EndIf 
-      
-      ;Actual Box
-      Protected limit = *n\viewheight* *n\step1
-     
-      If *n\state = Graph::#Node_StateError
-        VectorSourceColor(RGBA(255,122,0,255))
-        ;Top Part
-        MovePathCursor(*n\viewx+Graph::#Node_CornerRadius* zoom,*n\viewy)
-        AddPathArc(*n\viewx+*n\viewwidth,*n\viewy,*n\viewx+*n\viewwidth,*n\viewy+*n\viewheight-Graph::#Node_CornerRadius* zoom,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx+*n\viewwidth,*n\viewy+*n\viewheight,*n\viewx,*n\viewy+*n\viewheight-1,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx,*n\viewy+*n\viewheight,*n\viewx,*n\viewy,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx,*n\viewy,*n\viewx+*n\viewwidth,*n\viewy,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        FillPath(#PB_Path_Preserve)
-      Else
-        VectorSourceColor(RGBA(Red(*n\color),Green(*n\color),Blue(*n\color),255))
-        MovePathCursor(*n\viewx+Graph::#Node_CornerRadius* zoom,*n\viewy)
-        AddPathArc(*n\viewx+*n\viewwidth,*n\viewy,*n\viewx+*n\viewwidth,*n\viewy+*n\viewheight-Graph::#Node_CornerRadius* zoom,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx+*n\viewwidth,*n\viewy+*n\viewheight,*n\viewx,*n\viewy+*n\viewheight-1,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx,*n\viewy+*n\viewheight,*n\viewx,*n\viewy,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        AddPathArc(*n\viewx,*n\viewy,*n\viewx+*n\viewwidth,*n\viewy,Graph::#Node_CornerRadius* zoom,#PB_Path_Default)
-        FillPath(#PB_Path_Preserve)
-      EndIf
+    ;DrawingMode(#PB_2DDrawing_Outlined)
+    If *n\outputs()\selected 
+      VectorSourceColor(RGBA(255,255,255,255))
+      AddPathCircle(x,y,radius)
+      StrokePath(1)
+    Else
+      VectorSourceColor(RGBA(66,66,66,255))
+      AddPathCircle(x,y,radius)
+      StrokePath(1)
+    EndIf
     
-      ;Contours
-      VectorSourceColor(border)
-      StrokePath(Node::NODE_BORDER_WIDTH,#PB_Path_RoundCorner)
-      If Not *n\leaf And Not *n\isroot
-        Protected o.i = 3 * zoom
-        AddPathBox(*n\viewx-o,*n\viewy-o, *n\viewwidth+2*o, *n\viewheight+2*o)
-        StrokePath(Node::NODE_BORDER_WIDTH,#PB_Path_RoundCorner)
-      EndIf
-      
-       ;Let some place for the node name
-      Protected y =  *n\viewy+(Graph::#Node_TitleHeight+Graph::#Node_PortSpacing/2)* zoom
-      
-      ;Load Title font
-      VectorFont(FontID(Graph::font_port),12 * zoom)
-      Protected color = *n\color
-     
-      
-      ;Draw Outputs
-      radius = Graph::#Node_PortRadius* zoom
-      Protected x = *n\viewx+*n\viewwidth-(Graph::#Node_PortShiftX) * zoom
-      ForEach *n\outputs()
-        VectorSourceColor(RGBA(Red(*n\outputs()\color),Green(*n\outputs()\color),Blue(*n\outputs()\color),255))
-        AddPathCircle(x,y,radius,0,360)
-        FillPath()
-        
-        ;DrawingMode(#PB_2DDrawing_Outlined)
-        If *n\outputs()\selected 
-          VectorSourceColor(RGBA(255,255,255,255))
-          AddPathCircle(x,y,radius)
-          StrokePath(1)
-        Else
-          VectorSourceColor(RGBA(66,66,66,255))
-          AddPathCircle(x,y,radius)
-          StrokePath(1)
-        EndIf
-        
-        
-        If zoom>0.33
-          Protected w = VectorTextWidth(*n\outputs()\name)
-          VectorSourceColor(UIColor::COLORA_LABEL)
-          MovePathCursor(x-w-2*Graph::#Node_PortRadius * zoom,y+4*zoom-(Graph::#Node_PortSpacing / 2 * zoom))
-          AddPathText(*n\outputs()\name)
-          FillPath()
-        EndIf
-      
-        y + Graph::#Node_PortSpacing* zoom
-      Next
-      
-      ;Draw Inputs
-      x = *n\viewx+(Graph::#Node_PortShiftX) * zoom
-      ForEach *n\inputs()
-        If *n\inputs()\currenttype=Attribute::#ATTR_TYPE_NEW 
-          VectorSourceColor(RGBA(Red(*n\inputs()\color),Green(*n\inputs()\color),Blue(*n\inputs()\color),120))
-          AddPathCircle(x,y,radius,0,360)
-          FillPath()
-          VectorSourceColor(RGBA(0,0,0,255))
-          StrokePath(1)
-          
-        Else
-          VectorSourceColor(RGBA(Red(*n\inputs()\color),Green(*n\inputs()\color),Blue(*n\inputs()\color),255))
-          AddPathCircle(x,y,radius,0,360)
-          FillPath()
-        EndIf
-        
-        ;DrawingMode(#PB_2DDrawing_Outlined)
-        If *n\inputs()\selected 
-          VectorSourceColor(RGBA(255,255,255,255))
-          AddPathCircle(x,y,radius)
-          StrokePath(1)
-        Else
-          VectorSourceColor(RGBA(66,66,66,255))
-          AddPathCircle(x,y,radius)
-          StrokePath(1)
-        EndIf
     
-        If zoom>0.33
-          VectorSourceColor(UIColor::COLORA_LABEL)
-          MovePathCursor(x+2*Graph::#Node_PortRadius * zoom,y+4* zoom-(Graph::#Node_PortSpacing/2* zoom))
-          AddPathText(*n\inputs()\name)
-          FillPath()
-        EndIf
-        y + Graph::#Node_PortSpacing* zoom
-      Next
+    Protected w = VectorTextWidth(*n\outputs()\name)
+    VectorSourceColor(UIColor::COLORA_LABEL)
+    MovePathCursor(x-w-2*Graph::#Node_PortRadius ,y+4-(Graph::#Node_PortSpacing / 2))
+    AddPathText(*n\outputs()\name)
+    FillPath()
+  
+    y + Graph::#Node_PortSpacing
+  Next
+  
+  ;Draw Inputs
+  x = *n\posx+(Graph::#Node_PortShiftX)
+  ForEach *n\inputs()
+    If *n\inputs()\currenttype=Attribute::#ATTR_TYPE_NEW 
+      VectorSourceColor(RGBA(Red(*n\inputs()\color),Green(*n\inputs()\color),Blue(*n\inputs()\color),120))
+      AddPathCircle(x,y,radius,0,360)
+      FillPath()
+      VectorSourceColor(RGBA(0,0,0,255))
+      StrokePath(1)
       
-      ;Draw Node Name
-      If zoom>0.2
-        VectorFont(FontID(Graph::FONT_NODE),12 * zoom)
-        VectorSourceColor(UIColor::COLORA_LABEL)
-        MovePathCursor(*n\viewx+(10 * zoom),*n\viewy-(20 * zoom))
-        AddPathText(*n\label)
-        FillPath()
-      EndIf
+    Else
+      VectorSourceColor(RGBA(Red(*n\inputs()\color),Green(*n\inputs()\color),Blue(*n\inputs()\color),255))
+      AddPathCircle(x,y,radius,0,360)
+      FillPath()
+    EndIf
+    
+    ;DrawingMode(#PB_2DDrawing_Outlined)
+    If *n\inputs()\selected 
+      VectorSourceColor(RGBA(255,255,255,255))
+      AddPathCircle(x,y,radius)
+      StrokePath(1)
+    Else
+      VectorSourceColor(RGBA(66,66,66,255))
+      AddPathCircle(x,y,radius)
+      StrokePath(1)
+    EndIf
+
+    VectorSourceColor(UIColor::COLORA_LABEL)
+    MovePathCursor(x+2*Graph::#Node_PortRadius,y+4-(Graph::#Node_PortSpacing/2))
+    AddPathText(*n\inputs()\name)
+    FillPath()
+    
+    y + Graph::#Node_PortSpacing
+  Next
+  
+  ;Draw Node Name
+  VectorFont(FontID(Graph::FONT_NODE),12 )
+  VectorSourceColor(UIColor::COLORA_LABEL)
+  MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
+  AddPathText(*n\label)
+  FillPath()
       
 ;       ;Draw Edit Button
 ;       If Not *n\leaf And Not *n\isroot
@@ -400,8 +201,7 @@ Module Node
 ;         
 ;         DrawText(ex-Graph::#Node_EditButtonShiftX* *n\z *0.01+Graph::#Node_EditButtonRadius* *n\z * 0.01,ey-Graph::#Node_EditButtonShiftY * *n\z*0.01,"e",border)
 ;       EndIf
-      
-    CompilerEndIf
+
     
     
     
@@ -410,43 +210,43 @@ Module Node
   ;------------------------------------
   ; Get Node ¨Position
   ;------------------------------------
-  Procedure ViewSize(*n.Node_t,z.i)
-    *n\width = Math::Max(TextWidth(*n\label)+50,80)
+  Procedure ViewSize(*n.Node_t)
+    *n\width = Math::Max(VectorTextWidth(*n\label)+50,80)
   EndProcedure
   
 
   ;------------------------------------
   ; Get Node ¨Position
   ;------------------------------------
-  Procedure ViewPosition(*n.Node_t,zoom.f,x.i,y.i)
+  Procedure ViewPosition(*n.Node_t,x.i,y.i)
     ; get position and size
-    *n\viewx = *n\posx * zoom + x
-    *n\viewy = *n\posy * zoom + y
-    
-    *n\viewwidth = *n\width * zoom
-    *n\viewheight = *n\height * zoom
+;     *n\viewx = *n\posx * zoom + x
+;     *n\viewy = *n\posy * zoom + y
+;     
+;     *n\viewwidth = *n\width * zoom
+;     *n\viewheight = *n\height * zoom
      
     ;update ports view position
-    y = *n\viewy+ (Graph::#Node_TitleHeight + Graph::#Node_PortSpacing/2) * zoom
-    x = *n\viewx +*n\viewwidth -Graph::#Node_PortShiftX * zoom
-    Protected r.i = Graph::#Node_PortRadius* zoom
+    y = *n\posy+ (Graph::#Node_TitleHeight + Graph::#Node_PortSpacing/2) 
+    x = *n\posx +*n\width -Graph::#Node_PortShiftX
+    Protected r.i = Graph::#Node_PortRadius
     
     If ListSize(*n\outputs())
       ForEach *n\outputs()
-        *n\outputs()\viewx = x
-        *n\outputs()\viewy = y
-        *n\outputs()\viewr = r
-        y + Graph::#Node_PortSpacing * zoom
+        *n\outputs()\posx = x
+        *n\outputs()\posy = y
+;         *n\outputs()\viewr = r
+        y + Graph::#Node_PortSpacing
       Next
     EndIf
     
     If ListSize(*n\inputs())
-      x = *n\viewx + Graph::#Node_PortShiftX * zoom
+      x = *n\posx + Graph::#Node_PortShiftX
       ForEach *n\inputs()
-        *n\inputs()\viewx = x
-        *n\inputs()\viewy = y
-        *n\inputs()\viewr = r
-        y + Graph::#Node_PortSpacing * zoom
+        *n\inputs()\posx = x
+        *n\inputs()\posy = y
+;         *n\inputs()\viewr = r
+        y + Graph::#Node_PortSpacing
       Next  
     EndIf
     
@@ -475,19 +275,18 @@ Module Node
   ;------------------------------------
   ; Drag Node
   ;------------------------------------
-  Procedure Drag(*n.Node_t,x.i,y.i,zoom.f)
-    *n\posx + (x*1.0/zoom)
-    *n\posy + (y*1.0/zoom)
-    ViewPosition(*n,zoom,x,y)
-    
+  Procedure Drag(*n.Node_t,x.i,y.i)
+    *n\posx + x
+    *n\posy + y
+    ViewPosition(*n,x,y) 
   EndProcedure
   
   ;------------------------------------
   ; Is Under Mouse
   ;------------------------------------
-  Procedure.i IsUnderMouse(*n.Node_t,x.l,y.l,zoom.f)
-    Protected margin.i = (Graph::#Node_PortSpacing/2) * zoom
-    If x>(*n\viewx-margin) And x<(*n\viewx+*n\viewwidth+margin) And y>(*n\viewy-margin) And (y<*n\viewy+*n\viewheight+margin)
+  Procedure.i IsUnderMouse(*n.Node_t,x.l,y.l)
+    Protected margin.i = (Graph::#Node_PortSpacing/2)
+    If x>(*n\posx-margin) And x<(*n\posx+*n\width+margin) And y>(*n\posy-margin) And (y<*n\posy+*n\height+margin)
       ProcedureReturn #True
     Else
       ProcedureReturn #False
@@ -509,15 +308,15 @@ Module Node
   ;------------------------------------
   ; Select Node
   ;------------------------------------
-  Procedure.i Pick(*n.Node_t,x.l,y.l,zoom.f,connect.b=#False)
-    Protected margin.i = (Graph::#Node_PortSpacing/2) * zoom
+  Procedure.i Pick(*n.Node_t,x.l,y.l,connect.b=#False)
+    Protected margin.i = (Graph::#Node_PortSpacing/2) 
 
     ;check if we are selecting the edit button
     If Not *n\leaf
-      Protected b1 = Bool(x>*n\viewx+*n\viewwidth-Graph::#Node_EditButtonShiftX* zoom )
-      Protected b2 = Bool(x<*n\viewx+*n\viewwidth-Graph::#Node_EditButtonShiftX* zoom + Graph::#Node_EditButtonRadius * zoom)
-      Protected b3 = Bool(y>*n\viewy-Graph::#Node_EditButtonShiftY* zoom )
-      Protected b4 = Bool(y<*n\viewy-Graph::#Node_EditButtonShiftY* zoom + Graph::#Node_EditButtonRadius * zoom)
+      Protected b1 = Bool(x>*n\posx+*n\width-Graph::#Node_EditButtonShiftX )
+      Protected b2 = Bool(x<*n\posx+*n\width-Graph::#Node_EditButtonShiftX + Graph::#Node_EditButtonRadius)
+      Protected b3 = Bool(y>*n\posy-Graph::#Node_EditButtonShiftY )
+      Protected b4 = Bool(y<*n\posy-Graph::#Node_EditButtonShiftY + Graph::#Node_EditButtonRadius)
       If b1 And b2 And b3 And b4
         ProcedureReturn Graph::#Graph_Selection_Dive
       EndIf
@@ -526,10 +325,10 @@ Module Node
       
     ;check if we are selecting a port for connexion
     ;if we are on the right of the node check for outputs port
-    If x>*n\viewx+*n\viewwidth - (Graph::#Node_PortShiftX +Graph::#Node_PortRadius)* zoom
+    If x>*n\posx+*n\width - (Graph::#Node_PortShiftX +Graph::#Node_PortRadius)
       Define i.i = 1
       ForEach *n\outputs()
-        If PickPort(*n,*n\outputs(),i,x,y,zoom) = #True
+        If PickPort(*n,*n\outputs(),i,x,y) = #True
           *n\port = *n\outputs() 
           ProcedureReturn Graph::#Graph_Selection_Port
         EndIf
@@ -537,10 +336,10 @@ Module Node
       Next
       
     ;if we are on the left of the node check for inputs port
-  ElseIf x<*n\viewx + (Graph::#Node_PortShiftX + Graph::#Node_PortRadius)* zoom
+  ElseIf x<*n\posx + (Graph::#Node_PortShiftX + Graph::#Node_PortRadius)
     Define i = ListSize(*n\outputs())+1
       ForEach *n\inputs()
-        If PickPort(*n,*n\inputs(),i,x,y,zoom) = #True
+        If PickPort(*n,*n\inputs(),i,x,y) = #True
           *n\port = *n\inputs() 
           ProcedureReturn Graph::#Graph_Selection_Port
         EndIf
@@ -560,19 +359,19 @@ Module Node
   ;------------------------------------
   ; Select Port
   ;------------------------------------
-  Procedure.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i, zoom.f)
-    Protected r.i = Graph::#Node_PortRadius * 4 * zoom
-    Protected py.i = *n\viewy+ (Graph::#Node_TitleHeight* zoom) + (id-1) *(Graph::#Node_PortSpacing * zoom)
+  Procedure.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i)
+    Protected r.i = Graph::#Node_PortRadius * 4 
+    Protected py.i = *n\posy+ (Graph::#Node_TitleHeight) + (id-1) *(Graph::#Node_PortSpacing)
     Protected px.i = 0
       
     
     ;input port
     If *p\io = #False
-      px = *n\viewx+Graph::#Node_PortShiftX
+      px = *n\posx+Graph::#Node_PortShiftX
       
     ;outputport
     Else
-      px = *n\viewx +*n\viewwidth - Graph::#Node_PortShiftX
+      px = *n\posx +*n\width - Graph::#Node_PortShiftX
     EndIf
     
     If x>px-r And x<px+r And y>py-r And y<py+r  
@@ -833,7 +632,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
+; CursorPosition = 86
+; FirstLine = 74
 ; Folding = ------
 ; EnableThread
 ; EnableXP

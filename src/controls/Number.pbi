@@ -278,17 +278,16 @@ Module ControlNumber
     ProcedureReturn( *Me\lookup_count )
     
   EndProcedure
+  
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
     Procedure hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
-    ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
-    ; ---[ Set Font ]-----------------------------------------------------------
     Protected tc.i = UIColor::COLOR_NUMBER_FG
     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
-  ;   raaSetFontEdit( raa_font_node )
+
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
     
@@ -433,26 +432,21 @@ Module ControlNumber
             AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
             VectorSourceColor(UIColor::COLORA_SELECTED_BG)
             FillPath()
-;             Box( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
           CompilerCase #PB_OS_Linux
             AddPathBox(tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
             VectorSourceColor(UIColor::COLORA_SELECTED_BG)
             FillPath()
-;             Box( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
           CompilerCase #PB_OS_MacOS
             AddPathBox(tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
             VectorSourceColor(UIColor::COLORA_SELECTED_BG)
             FillPath()
-;             Box( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14, UIColor::COLOR_SELECTED_BG )
         CompilerEndSelect
-        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLORA_TEXT)
         DrawVectorText( dtext )
       ; ---[ Just Caret ]-------------------------------------------------------
       Else
         ; ---[ Draw Value ]-----------------------------------------------------
-        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLORA_TEXT)
         DrawVectorText(  dtext)
@@ -464,19 +458,16 @@ Module ControlNumber
               AddPathLine(1, 13, #PB_Path_Relative)
               VectorSourceColor(UIColor::COLORA_CARET)
               StrokePath(2)
-;               Line( tx + posXL + xoff, ty,   1, 13, UIColor::COLOR_CARET )
             CompilerCase #PB_OS_Linux
                MovePathCursor(tx + posXL + xoff, ty+1)
               AddPathLine(1, 13, #PB_Path_Relative)
               VectorSourceColor(UIColor::COLORA_CARET)
               StrokePath(2)
-;               Line( tx + posXL + xoff, ty+1, 1, 13, UIColor::COLOR_CARET )
             CompilerCase #PB_OS_MacOS
                MovePathCursor(tx + posXL + xoff, ty+2)
               AddPathLine(1, 13, #PB_Path_Relative)
               VectorSourceColor(UIColor::COLORA_CARET)
               StrokePath(2)
-;               Line( tx + posXL + xoff, ty+2, 1, 13, UIColor::COLOR_CARET )
           CompilerEndSelect
         EndIf
       EndIf
@@ -491,14 +482,12 @@ Module ControlNumber
             Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
             VectorSourceColor( UIColor::COLORA_NUMBER_BG )
             FillPath()
-;             RoundBox( -3 + tx + xoff, ty+1, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
           CompilerCase #PB_OS_MacOS
             Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
             VectorSourceColor( UIColor::COLORA_NUMBER_BG )
             FillPath()
-;             RoundBox( -3 + tx + xoff, ty+2, tw+5, 12, 4, 4, UIColor::COLOR_NUMBER_BG )
         CompilerEndSelect
-        ;         DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_Transparent )
+
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLORA_TEXT)
         DrawVectorText( dtext)
@@ -632,7 +621,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If *Me\visible And *Me\enable
         ; ...[ Check Down ]...................................................
         If *Me\down
-          Debug "DOWN , EVDATAS = "+Str(*ev_data)
+
           ; ...[ Sanity Check ]...............................................
           If Not *ev_data : ProcedureReturn : EndIf
           ; ...[ Check Mouse Selecting ]......................................
@@ -1276,7 +1265,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 694
-; FirstLine = 652
+; CursorPosition = 289
+; FirstLine = 343
 ; Folding = ----
 ; EnableXP

@@ -93,6 +93,7 @@ DeclareModule Drawer
   Declare AddColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
   Declare AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
+  Declare AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CARray::CArrayV3F32)
   Declare AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
@@ -694,6 +695,29 @@ Module Drawer
     ProcedureReturn *line
   EndProcedure
   
+  ; ---[ Add Lines Item ]-------------------------------------------------------
+  Procedure AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CARray::CArrayV3F32)
+    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    *line\type = #ITEM_LINE
+    Define nbp = CArray::GetCount(*start)
+    If nbp And nbp = CArray::GetCount(*end)
+        *line\positions = CArray::newCArrayV3F32()
+        *line\colors = CArray::newCArrayC4F32()
+        CArray::SetCount(*line\positions, nbp*2)
+        CArray::SetCount(*line\colors, nbp*2)
+        Define i
+        For i=0 To nbp-1
+          CArray::SetValue(*line\positions, i*2, CArray::GetValue(*start,i))
+          CArray::SetValue(*line\positions, i*2+1, CArray::GetValue(*end,i))
+        Next
+    EndIf
+    SetColor(*line, Color::_BLACK())
+    AddElement(*Me\items())
+    *Me\items() = *line
+    *Me\dirty = #True
+    ProcedureReturn *line
+  EndProcedure
+  
   ; ---[ Add Colored Lines Item ]-----------------------------------------------
   Procedure AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
@@ -857,7 +881,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 495
-; FirstLine = 472
+; CursorPosition = 95
+; FirstLine = 83
 ; Folding = ---------
 ; EnableXP

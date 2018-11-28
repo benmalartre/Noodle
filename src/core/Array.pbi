@@ -63,6 +63,17 @@ DeclareModule CArray
     *data
   EndStructure
   
+  CompilerIf #PB_Compiler_Version = #PB_Processor_x86
+    Macro CARRAY_DATA_OFFSET
+      13
+    EndMacro
+  CompilerElse
+    Macro CARRAY_DATA_OFFSET
+      25
+    EndMacro
+  CompilerEndIf
+    
+  
   Structure CArrayBool Extends CArrayT
   EndStructure
   
@@ -1167,7 +1178,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 907
-; FirstLine = 868
-; Folding = -----------
+; CursorPosition = 71
+; FirstLine = 54
+; Folding = ------------
 ; EnableXP

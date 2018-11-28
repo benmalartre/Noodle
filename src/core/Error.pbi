@@ -11,7 +11,7 @@ EndDeclareModule
 ;========================================================================================
 ; Error Module Implementation
 ;========================================================================================
-Module Globals
+Module Error
   
   Procedure Init()
      OnErrorCall(@ErrorHandler())
@@ -70,6 +70,6 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP

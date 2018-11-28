@@ -259,8 +259,8 @@ DeclareModule Geometry
     dirty.b
     totalArea.f
     
-    *a_velocities.CArray::CArrayV3F32
-    *a_normals.CArray::CArrayV3F32
+    *a_velocities.CArray::CArrayV3F32 ; 54
+    *a_normals.CArray::CArrayV3F32    ; 62
     *a_tangents.CArray::CArrayV3F32
     *a_pointnormals.CArray::CArrayV3F32
     *a_polygonnormals.CArray::CArrayV3F32
@@ -602,7 +602,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 57
+; CursorPosition = 239
+; FirstLine = 234
 ; Folding = -----
 ; EnableXP

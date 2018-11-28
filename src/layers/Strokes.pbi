@@ -180,7 +180,7 @@ Module LayerStroke
     If *layer\current
       Protected pos.v3f32
       Protected color.c4f32
-      Protected radius.f = Random(255)/255 * 0.01
+      Protected radius.f = 0.02
       Vector3::Set(pos, (2*x/w)-1, (2*(1-y/h))-1, 0)
       Color::Randomize(color)
       Stroke::AddPoint(*layer\current, pos, color, radius)
@@ -260,7 +260,7 @@ Module LayerStroke
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 49
+; CursorPosition = 182
+; FirstLine = 171
 ; Folding = ---
 ; EnableXP

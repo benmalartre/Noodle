@@ -177,7 +177,7 @@ Procedure Draw(*app.Application::Application_t)
     PolymeshGeometry::RecomputeNormals(*geom)
   Next
   Define E.d = Time::Get() - S
-  MessageRequester("COMPUTE NORMASl : ", "12 Time "+Str(*geom\nbtriangles)+" TRIANGLES TOOK "+StrD(E))
+  MessageRequester("COMPUTE NORMALS : ", "12 Time "+Str(*geom\nbtriangles)+" TRIANGLES TOOK "+StrD(E))
   Object3D::AddChild(*root,*bunny)
   
   Scene::AddModel(Scene::*current_scene,*root)
@@ -186,7 +186,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
+; CursorPosition = 179
 ; FirstLine = 129
 ; Folding = -
 ; EnableXP

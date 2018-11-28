@@ -444,7 +444,7 @@ Module PolymeshGeometry
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi                      ; load positions array
       !   add r10, rax                      ; offset to desired item
-      !   movups xmm2, [r10]                ; load point A to xmm0
+      !   movaps xmm2, [r10]                ; load point A to xmm0
       !   movaps xmm3, xmm2                 ; copy point A to xmm1
       !   add edx, 4                        ; offset next item
       
@@ -452,14 +452,14 @@ Module PolymeshGeometry
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi
       !   add r10, rax                      ; offset to desired item
-      !   movups xmm0, [r10]                ; load point B to xmm2
+      !   movaps xmm0, [r10]                ; load point B to xmm2
       !   add edx, 4                        ; offset next item
       
       !   mov eax, [edx]                    ; get value for desired point B
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi
       !   add r10, rax                      ; offset to desired item
-      !   movups xmm1, [r10]                ; load point C to xmm3
+      !   movaps xmm1, [r10]                ; load point C to xmm3
       !   add edx, 4                        ; offset next item
       
       !   subps xmm0, xmm2                  ; compute vector AB
@@ -511,7 +511,7 @@ Module PolymeshGeometry
       ! set_triangle_normals:
       !   mov r11, 3                        ; reset triangle vertex counter
       !   loop_set_triangle_normals:
-      !     movups [rdi], xmm0              ; move memory
+      !     movaps [rdi], xmm0              ; move memory
       !     add rdi, r9                     ; offset in normals array
       !     dec r11                         ; decrement vertex counter
       !     jg loop_set_triangle_normals    ; loop triangle vertices
@@ -534,34 +534,34 @@ Module PolymeshGeometry
       !   xorps xmm0, xmm0                        ; reset xmm0
       
       ! loop_polygon_normals:
-      !   movups xmm1, [rsi]                      ; load triangle normal
+      !   movaps xmm1, [rsi]                      ; load triangle normal
       !   addps xmm0, xmm1                        ; accumulate in xmm0
       !   add rsi, 48                             ; next triangle normal
       !   dec r11                                 ; decrement tri counter
-      !   jg loop_polygon_normals            ; loop next triangle
+      !   jg loop_polygon_normals                 ; loop next triangle
       
       ; ---------------------------------------------------------------------------------
       ; normalize in place
       ; ---------------------------------------------------------------------------------
-      ! movaps xmm6, xmm0                 ; copy normal in xmm6
-      ! mulps xmm0, xmm0                  ; square it
-      ! movaps xmm7, xmm0                 ; copy in xmm7
-      ! shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
-      ! addps xmm0, xmm7                  ; packed addition
-      ! movaps xmm7, xmm0                 ; copy in xmm7  
-      ! shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
-      ! addps xmm0, xmm7                  ; packed addition
-      ! rsqrtps xmm0, xmm0                ; reciproqual root square (length)
-      ! mulps xmm0, xmm6                  ; multiply by intila vector
+      ! movaps xmm6, xmm0                         ; copy normal in xmm6
+      ! mulps xmm0, xmm0                          ; square it
+      ! movaps xmm7, xmm0                         ; copy in xmm7
+      ! shufps xmm7, xmm7, 01001110b              ; shuffle component z w x y
+      ! addps xmm0, xmm7                          ; packed addition
+      ! movaps xmm7, xmm0                         ; copy in xmm7  
+      ! shufps xmm7, xmm7, 00010001b              ; shuffle componennt y x y x
+      ! addps xmm0, xmm7                          ; packed addition
+      ! rsqrtps xmm0, xmm0                        ; reciproqual root square (length)
+      ! mulps xmm0, xmm6                          ; multiply by intila vector
        
       ; ---------------------------------------------------------------------------------
       ; set polygon normal
       ; ---------------------------------------------------------------------------------
-      ! movups [rdi], xmm0
-      ! add rdi, 16
+      ! movaps [rdi], xmm0                        ; send back polygon normal to memory
+      ! add rdi, 16                               ; next polygon normal
       
-      ! dec ecx
-      ! jg set_polygon_normals
+      ! dec ecx                                   ; decrement polygon counter
+      ! jg set_polygon_normals                    ; loop per polygon
       
       ; ---------------------------------------------------------------------------------
       ; average point normal
@@ -582,7 +582,7 @@ Module PolymeshGeometry
       !   mov r12d, [eax]                         ; load polygon index
       !   add eax, 4
       !   imul r12, 16
-      !   movups xmm1, [rsi + r12]                ; load polygon normal
+      !   movaps xmm1, [rsi + r12]                ; load polygon normal
       !   addps xmm0, xmm1                        ; accumulate in xmm0
       !   dec r11d                                ; decrement polygon counter
       !   jg loop_average_point_normals           ; loop next polygon
@@ -604,7 +604,7 @@ Module PolymeshGeometry
       ; ---------------------------------------------------------------------------------
       ; set point normal
       ; ---------------------------------------------------------------------------------
-      ! movups [rdi], xmm0
+      ! movaps [rdi], xmm0
       ! add rdi, 16
       
       ! dec ecx
@@ -623,14 +623,15 @@ Module PolymeshGeometry
       !   mov r12d, [eax]                         ; load vertex index
       !   add eax, 4
       !   imul r12, 16
-      !   movups xmm0, [rsi + r12]                ; load point normal
-      !   movups [rdi], xmm0
+      !   movaps xmm0, [rsi + r12]                ; load point normal
+      !   movaps [rdi], xmm0
       !   add rdi, 16
       
       !   dec ecx
       !   jg loop_display_normals
 
     CompilerElse
+      ; first compute triangle normals
       For i=0 To *mesh\nbtriangles-1
         *a = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3)))
         *b = CArray::GetValue(*mesh\a_positions,CArray::GetValueL(*mesh\a_triangleindices,(i*3+1)))
@@ -648,7 +649,7 @@ Module PolymeshGeometry
         cnt+3
       Next i
       
-      ; Then Polygons Normals
+      ; then polygons normals
       Define *n.v3f32
       CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
       For i=0 To*mesh\nbpolygons-1
@@ -664,7 +665,7 @@ Module PolymeshGeometry
         base+nbt*3
       Next
       
-      ; Average Point Normals
+      ; average point normals
       base = 0
       For i=0 To *mesh\nbpoints-1
         nbp = CArray::GetValueL(*mesh\a_vertexpolygoncount, i)
@@ -679,22 +680,7 @@ Module PolymeshGeometry
         base + nbp
       Next
       
-      ; Average Point Normals
-      base = 0
-      For i=0 To *mesh\nbpoints-1
-        nbp = CArray::GetValueL(*mesh\a_vertexpolygoncount, i)
-        Vector3::Set(n, 0,0,0)
-        For j=0 To nbp-1
-          index = CArray::GetValueL(*mesh\a_vertexpolygonindices, base+j)
-          *n = CArray::GetValue(*mesh\a_polygonnormals, index)
-          Vector3::AddInPlace(n, *n)
-        Next
-        Vector3::ScaleInPlace(n, 1/nbp)
-        CArray::SetValue(*mesh\a_pointnormals, i, n)
-        base + nbp
-      Next
-      
-      ; Display Normals
+      ; display normals ( per samples )
       For i=0 To *mesh\nbsamples-1
         *n = CArray::GetValue(*mesh\a_pointnormals, CArray::GetValueL(*mesh\a_triangleindices, i))
         CArray::SetValue(*mesh\a_normals, i, *n)
@@ -2694,7 +2680,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 607
-; FirstLine = 603
+; CursorPosition = 668
+; FirstLine = 635
 ; Folding = -----g--f--
 ; EnableXP

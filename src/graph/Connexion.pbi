@@ -18,7 +18,7 @@ Module Connexion
     Protected *c.Connexion_t = AllocateMemory(SizeOf(Connexion_t))
     Init(*c,*p\color)
     *c\start = *p
-    Set(*c,*p\viewx,*p\viewy,*p\viewx+4,*p\viewy)
+    Set(*c,*p\posx,*p\posy,*p\posx+4,*p\posy)
    
     *c\connected = #False
     ProcedureReturn *c
@@ -201,7 +201,7 @@ Module Connexion
     
     Protected *s.NodePort::NodePort_t = *c\start
     Protected *e.NodePort::NodePort_t = *c\end
-    Set(*c,*s\viewx,*s\viewy,*e\viewx-4,*e\viewy)
+    Set(*c,*s\posx,*s\posy,*e\posx-4,*e\posy)
     *e\connexion = #Null
     *e\connected = #False
     *e\source = #Null
@@ -378,7 +378,7 @@ Module Connexion
   ;---------------------------------------------------
   Procedure ViewPosition(*c.Connexion_t)
     If Not *c\start = #Null And Not *c\end = #Null
-      Set(*c,*c\start\viewx,*c\start\viewy,*c\end\viewx,*c\end\viewy)
+      Set(*c,*c\start\posx,*c\start\posy,*c\end\posx,*c\end\posy)
     EndIf
   EndProcedure
 
@@ -387,11 +387,11 @@ Module Connexion
   ;---------------------------------------------------
   Procedure Drag(*c.Connexion_t,x.i,y.i)
   
-    *c\a\x = *c\start\viewx
-    *c\a\y = *c\start\viewy
-    *c\b\x = (*c\start\viewx + x)/2
-    *c\b\y = *c\start\viewy
-    *c\c\x = (*c\start\viewx + x)/2
+    *c\a\x = *c\start\posx
+    *c\a\y = *c\start\posy
+    *c\b\x = (*c\start\posx + x)/2
+    *c\b\y = *c\start\posy
+    *c\c\x = (*c\start\posx + x)/2
     *c\c\y = y
     *c\d\x = x
     *c\d\y = y
@@ -559,7 +559,7 @@ Module Connexion
     If Possible(*c.Connexion_t,*p.NodePort::NodePort_t)
       ;Debug "Port "+*p\uniquename+" position :"+Str(*p\viewx)+","+Str(*p\viewy)
       ;Debug "Node "+*p\node\uniquename+" position : "+Str(*p\node\viewx)+","+Str(*p\node\viewx+*p\node\width)
-      Set(*c,*c\a\x,*c\a\y,*p\viewx,*p\viewy)
+      Set(*c,*c\a\x,*c\a\y,*p\posx,*p\posy)
     EndIf
       
   EndProcedure
@@ -577,8 +577,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 127
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 561
+; FirstLine = 514
 ; Folding = ----
 ; EnableXP

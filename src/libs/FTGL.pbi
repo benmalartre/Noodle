@@ -79,7 +79,7 @@ DeclareModule FTGL
   Global FONT_FILE_NAME.s = ""
   FONT_FILE_NAME = "../../fonts/Arial/arial.ttf"
   If FileSize(FONT_FILE_NAME) = -1
-    FONT_FILE_NAME = "fontsArial/arial.ttf"
+    FONT_FILE_NAME = "../../../fonts/Arial/arial.ttf"
   EndIf
    
   Global *ftgl_atlas.FTGL_FontAtlas = 0
@@ -395,7 +395,7 @@ Module FTGL
     Else
       *drawer\atlas = FT_CreateFontAtlas(FONT_FILE_NAME,32)
     EndIf
-
+    
     *drawer\color\r = 1
     *drawer\color\a = 1
     glGenVertexArrays(1,@*drawer\vao)
@@ -416,8 +416,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 393
-; FirstLine = 358
+; CursorPosition = 397
+; FirstLine = 359
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

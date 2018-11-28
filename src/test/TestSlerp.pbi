@@ -11,6 +11,23 @@ DataSection
 EndDataSection
 
 
+
+Procedure ACosASM(v.f)
+  Define result.f
+    ! fld dword [p.v_v]               ; load X into the fpu
+    ! fmul   st0, st0                 ;Compute X**2.
+    ! fld    st0                      ;Duplicate X**2 on tos.
+    ! fld1 
+    ! fsub st0, st1
+    ! fdiv st0, st2                  ;Compute (1-x**2)/X**2.
+    ! fsqrt                          ;Compute sqrt((1-X**2)/X**2).
+    ! fld1                           ;To compute full arctangent.
+    ! fpatan                         ;Compute atan of the above.
+    ! fst dword [p.v_result]               ; load X into the fpu
+    ProcedureReturn result
+EndProcedure
+
+
 Procedure SlerpSSE( *out.q4f32, *q1.q4f32, *q2.q4f32, blend.f)
   Define tetha.f
   ! fld [p.v_blend]
@@ -116,24 +133,48 @@ Procedure SlerpPB( *out.q4f32, *q1.q4f32, *q2.q4f32, blend.f)
 EndProcedure
 
 
-Define a.q4f32
-Define b.q4f32
-Define c.q4f32
-a\x = 0.25
-a\y = 0.5
-a\z = 0.25
-a\w = 0.333
+Define numACos = 1000000
+Define i
+Define mem1 = AllocateMemory(numACos * 4)
+Define mem2 = AllocateMemory(numACos * 4)
 
-b\x = 0.2
-b\y= -0.5
-b\z = -0.25
-b\w = 0.1
 
-SlerpPB(c, a,b, 0.5)
-Debug StrF(c\x)+","+StrF(c\y)+","+StrF(c\z)+","+StrF(c\w)
+ Define T1.q = ElapsedMilliseconds()
+For i=0 To numACos-1
+  PokeF(mem1+i*4, ACos(i))
+Next
 
-SlerpSSE(c, a,b,0.5)
-Debug StrF(c\x)+","+StrF(c\y)+","+StrF(c\z)+","+StrF(c\w)
+Define E1.q = ElapsedMilliseconds() - T1
+
+
+Define T2.q = ElapsedMilliseconds()
+For i=0 To numACos-1
+  PokeF(mem1+i*4, ACosASM(i))
+Next
+
+Define E2.q = ElapsedMilliseconds() - T2
+
+MessageRequester("ArcCos", StrD(E1)+" vs "+StrD(E2)+" = "+Str(CompareMemory(mem1, mem2, numTests * 4)))
+
+
+; Define a.q4f32
+; Define b.q4f32
+; Define c.q4f32
+; a\x = 0.25
+; a\y = 0.5
+; a\z = 0.25
+; a\w = 0.333
+; 
+; b\x = 0.2
+; b\y= -0.5
+; b\z = -0.25
+; b\w = 0.1
+; 
+; SlerpPB(c, a,b, 0.5)
+; Debug StrF(c\x)+","+StrF(c\y)+","+StrF(c\z)+","+StrF(c\w)
+; 
+; SlerpSSE(c, a,b,0.5)
+; Debug StrF(c\x)+","+StrF(c\y)+","+StrF(c\z)+","+StrF(c\w)
 
 ; Define numTests = 100000000
 ; 
@@ -168,7 +209,7 @@ Debug StrF(c\x)+","+StrF(c\y)+","+StrF(c\z)+","+StrF(c\w)
 ; MessageRequester("CONJUGATE", StrD(E1)+" vs "+StrD(E2)+" = "+Str(CompareMemory(mem1, mem2, numTests * SizeOf(Math::q4f32))))
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 3
+; CursorPosition = 151
+; FirstLine = 132
 ; Folding = -
 ; EnableXP

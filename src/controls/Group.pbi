@@ -412,7 +412,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     ;  DrawChild
     ; ------------------------------------------------------------------------
-  Case Control::#PB_EventType_DrawChild
+    Case Control::#PB_EventType_DrawChild
       *son = *ev_data
       son = *son
       ev_data\xoff    = *son\posX+*Me\posX
@@ -524,7 +524,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
           If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
-          Define *overchild.Control::Control_t = *Me\overchild
           ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
           ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
           ev_data\xoff = *Me\posX
@@ -947,7 +946,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 245
-; FirstLine = 241
+; CursorPosition = 525
+; FirstLine = 484
 ; Folding = ---0
 ; EnableXP

@@ -51,6 +51,8 @@ DeclareModule ViewportUI
   Declare SetHandleTool(*Me.ViewportUI_t, tool.i)
   Declare GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
   ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
+  Declare ViewToWorld(*v.ViewportUI_t,mx.d,my.d,*world_pos.Math::v3f32)
+  Declare ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.Math::v3f32)
   
   DataSection 
     ViewportUIVT: 
@@ -420,9 +422,9 @@ Module ViewportUI
     Vector3::ScaleInPlace(*world_pos,*v\camera\farplane)
     Vector3::AddInPlace(*world_pos,*v\camera\pos)
   EndProcedure
-  
+ 
   ;------------------------------------------------------------------
-  ; View To World
+  ; View To Ray
   ;------------------------------------------------------------------
   Procedure ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.v3f32)
     ; 3d normalized device coordinates
@@ -642,7 +644,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 305
-; FirstLine = 271
+; CursorPosition = 54
+; FirstLine = 49
 ; Folding = -----
 ; EnableXP

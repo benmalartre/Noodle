@@ -1,8 +1,5 @@
-﻿XIncludeFile "../core/Time.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../objects/Geometry.pbi"
-XIncludeFile "../objects/Triangle.pbi"
-
+﻿XIncludeFile "../core/Application.pbi"
+UseModule Math
 
 Global window
 Global canvas
@@ -12,18 +9,17 @@ Global numHits.i
 Global numRequests.i = 0
 
 Procedure PolygonSoup(numTris.i)
-  Define f.f
-  Define sf.i = SizeOf(f)
-	Define *positions = AllocateMemory(numTris * 9 * sf);
+
+  Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  CARray::SetCount(*positions, numTris * 3)
 	Define offset = 0
 	Define i, j
+	Define *p.Math::v3f32
 	For  i = 0 To numTris - 1
+	  
 	  For j = 0 To 2
-	    PokeF(*positions + offset * sf, Random(5000) /100 - 25)
-	    PokeF(*positions + (offset+1) * sf, Random(5000) /100 - 25)
-	    PokeF(*positions + (offset+2) * sf, Random(5000) /100 - 25)
-
-			offset + 3
+	    *p = CArray::GetValue(*positions, i *3 + j)
+	    Vector3::RandomizeInPlace(*p,1)
 		Next
 	Next
 	
@@ -47,9 +43,9 @@ EndProcedure
 
 Procedure Compute()
 
-  numTris = 1000000
+  numTris = 10000000
   numHits = 0
-	Define *soup = PolygonSoup(numTris)
+	Define *soup.CArray::CArrayV3F32 = PolygonSoup(numTris)
 	
 	Define f.f
 	Define sf.i = SizeOf(f)
@@ -58,18 +54,8 @@ Procedure Compute()
 	Define halfsize.Math::v3f32
 	Vector3::Set(center, 0, 7, 0)
 	Vector3::Set(halfsize,0.5, 0.5, 0.5)
-	Protected *boxhalfsize.Math::v3f32 = halfsize
-
 	
 	Define.Math::v3f32 *a, *b, *c
-	Define tri.Geometry::Triangle_t
-	Define *tri.Geometry::Triangle_t = tri
-	Define.f min,max,p0,p1,p2,rad,fex,fey,fez
-	Define.Math::v3f32 v0, v1, v2
-	Define.Math::v3f32 e0, e1, e2
-	Define normal.Math::v3f32
-	Define.Math::v3f32 vmin,vmax
-	Define.f v
 	Define box.Geometry::Box_t
 	Vector3::SetFromOther(box\origin, center)
 	Vector3::SetFromOther(box\extend, halfsize)
@@ -80,15 +66,10 @@ Procedure Compute()
   Define startT.d = Time::Get()
   
   For i = 0 To numTris - 1
-    tri\id = i
-    tri\vertices[0] = offset
-    tri\vertices[1] = offset + 1
-    tri\vertices[2] = offset + 2
-    
-    *a = *soup + i * 12
-    *b = *soup + i * 12 + 4
-    *c = *soup + i * 12 + 8
-    offset + 3
+
+    *a = CArray::GetValue(*soup, i*3)
+    *b = CArray::GetValue(*soup, i*3+1)
+    *c = CArray::GetValue(*soup, i*3+2)
     
     If Triangle::Touch(box, *a, *b, *c)
 		  numHits+1
@@ -98,7 +79,7 @@ Procedure Compute()
 	elapsed = Time::Get() - startT
 	Draw()
 	
-	FreeMemory(*soup)
+	CArray::Delete(*soup)
 EndProcedure
 
 
@@ -106,6 +87,7 @@ Time::Init()
 window = OpenWindow(#PB_Any, 0,0,800,600, "Test Triangle")
 canvas = CanvasGadget(#PB_Any, 0,0,800,600, #PB_Canvas_Keyboard)
 Compute()
+Define e
 Repeat
   e = WaitWindowEvent()
   If e = #PB_Event_Gadget 
@@ -122,7 +104,7 @@ Until e = #PB_Event_CloseWindow
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 57
+; CursorPosition = 45
+; FirstLine = 34
 ; Folding = -
 ; EnableXP

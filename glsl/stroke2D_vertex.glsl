@@ -7,17 +7,17 @@ out vData{
 	vec4 color;
 }vertex;
 
-vec4 unpackColor(int code)
+vec4 unpackColor(uint code)
 {
 	return vec4(
-        ((code >> 16) & 255) / 255,
-        ((code >> 8) & 255) / 255,
-        ((code) & 255) / 25,
-		1.0);
+        float((code & uint(0xff000000)) >> 16),
+		float((code & uint(0x00ff0000)) >> 8),
+		float((code & uint(0x0000ff00))),
+		1);
 }
 
 void main(){
-	vertex.color = unpackColor(int(datas.w));
+	vertex.color = unpackColor(uint(datas.w));
 	vertex.thickness = datas.z;
 	gl_PointSize = 1;
 	gl_Position = vec4(datas.xy, 0.0,1.0);

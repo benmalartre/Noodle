@@ -77,58 +77,69 @@ DeclareModule Math
   
   #RAND_MAX = 2147483647                ; according to help for Random()
   
-  #ECHO_PRECISION = 3                   ; precison on debug string
+  #ECHO_PRECISION = 9                   ; precison on debug string
   
-  DataSection
-    sse_0000_sign_mask:
-    Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
-    sse_0001_sign_mask:
-    Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
-    sse_0010_sign_mask:
-    Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
-    sse_0011_sign_mask:
-    Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
-    sse_0100_sign_mask:
-    Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
-    sse_0101_sign_mask:
-    Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
-    sse_0110_sign_mask:
-    Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
-    sse_0111_sign_mask:
-    Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
-    sse_1000_sign_mask:
-    Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
-    sse_1001_sign_mask:
-    Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
-    sse_1010_sign_mask:
-    Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
-    sse_1011_sign_mask:
-    Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
-    sse_1100_sign_mask:
-    Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
-    sse_1101_sign_mask:
-    Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
-    sse_1110_sign_mask:
-    Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
-    sse_1111_sign_mask:
-    Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
-    sse_1111_negate_mask:
-    Data.f -1, -1, -1, -1
-    sse_0101_negate_mask:
-    Data.f 1, -1, 1, -1
-    sse_1010_negate_mask:
-    Data.f -1, 1, -1, 1
-    sse_1100_negate_mask:
-    Data.f -1, -1, 1, 1
-    sse_1110_negate_mask:
-    Data.f -1, -1, -1, 1
-    sse_zero_vec:
-    Data.f 0, 0, 0, 0
-    sse_one_vec:
-    Data.f 1, 1, 1, 1
-    sse_pi_vec:
-    Data.f #F32_PI, #F32_PI, #F32_PI, #F32_PI
-  EndDataSection
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    DataSection
+      sse_0000_sign_mask:
+      Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+      sse_0001_sign_mask:
+      Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+      sse_0010_sign_mask:
+      Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+      sse_0011_sign_mask:
+      Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+      sse_0100_sign_mask:
+      Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+      sse_0101_sign_mask:
+      Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+      sse_0110_sign_mask:
+      Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+      sse_0111_sign_mask:
+      Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+      sse_1000_sign_mask:
+      Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+      sse_1001_sign_mask:
+      Data.l $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+      sse_1010_sign_mask:
+      Data.l $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+      sse_1011_sign_mask:
+      Data.l $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+      sse_1100_sign_mask:
+      Data.l $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+      sse_1101_sign_mask:
+      Data.l $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+      sse_1110_sign_mask:
+      Data.l $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
+      sse_1111_sign_mask:
+      Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
+      sse_1111_negate_mask:
+      Data.f -1, -1, -1, -1
+      sse_0101_negate_mask:
+      Data.f 1, -1, 1, -1
+      sse_1010_negate_mask:
+      Data.f -1, 1, -1, 1
+      sse_1100_negate_mask:
+      Data.f -1, -1, 1, 1
+      sse_1110_negate_mask:
+      Data.f -1, -1, -1, 1
+      sse_zero_vec:
+      Data.f 0, 0, 0, 0
+      sse_one_vec:
+      Data.f 1, 1, 1, 1
+      sse_half_vec:
+      Data.f 0.5, 0.5, 0.5, 0.5
+      sse_minusone_vec:
+      Data.f -1, -1, -1, -1
+      sse_minushalf_vec:
+      Data.f -0.5, -0.5, -0.5, -0.5
+      sse_pi_vec:
+      Data.f #F32_PI, #F32_PI, #F32_PI, #F32_PI
+      sse_epsilon_vec:
+      Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
+    EndDataSection
+  CompilerEndIf
+  
 
   ; ----------------------------------------------------------------------------
   ;  Maximum Macro
@@ -159,15 +170,13 @@ DeclareModule Math
       x = min 
     ElseIf (x>max)
       x=max 
-    Else 
-      x = x
     EndIf
   EndMacro
-  
+
   ; ----------------------------------------------------------------------------
   ;  PointInBox Macro
   ; ----------------------------------------------------------------------------
-  Macro POINTINBOX(x,y,vx,vy,vw,vh)
+  Macro POINTINBOX2D(x,y,vx,vy,vw,vh)
     If x>vx And x<vx+vw And y>vy And y<vy+vh
       #True
     Else
@@ -351,14 +360,23 @@ DeclareModule Math
     scl.v3f32
   EndStructure
   
+  ; -----------------------------------------------------------------
+  ;  Random 0 to 1
+  ; -----------------------------------------------------------------
+  Macro Random_0_1()
+    (Random(#RAND_MAX)/#RAND_MAX)
+  EndMacro
+  
+  Macro Random_Neg1_1()
+    (1 - (Random(#RAND_MAX)/#RAND_MAX * 2 ))
+  EndMacro
+  
   ; ----------------------------------------------------------------------------
   ;  MATH UTILS
   ; --------------------------------------------------------------------------
   Declare.f Max(a.f,b.f)
   Declare.f Min(a.f,b.f)
   Declare.b IsClose(value.f, root.f, tolerance.f)
-  Declare.f Random_0_1()
-  Declare.f Random_Neg1_1()
   Declare UniformPointOnCircle(*p.v2f32, radius.f=1.0)
   Declare.f UniformPointOnDisc(*p.v2f32, radius.f=1.0)
   Declare.f UniformPointOnDisc2(*p.v2f32, radius.f=1.0)
@@ -741,9 +759,9 @@ DeclareModule Vector3
   ;------------------------------------------------------------------
   ; VECTOR3 SCALE
   ;------------------------------------------------------------------
-  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-     Declare ScaleInPlace(*v.v3f32, mult.f)
+   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
      Declare Scale(*v.v3f32, *o.v3f32, mult.f)
+     Declare ScaleInPlace(*v.v3f32, mult.f)
   CompilerElse  
     Macro Scale(_v,_o,_mult)
       _v\x = _o\x * _mult
@@ -759,11 +777,31 @@ DeclareModule Vector3
   CompilerEndIf
   
   ;------------------------------------------------------------------
+  ; VECTOR3 SCALE ADD
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare ScaleAdd(*v.v3f32, *a.v3f32, *b.v3f32,mult.f)
+    Declare ScaleAddInPlace(*v.v3f32, *o.v3f32, mult.f)
+  CompilerElse  
+    Macro ScaleAdd(_v,_a,_b,_mult)
+      _v\x = _a\x + _b\x * _mult
+      _v\y = _a\y + _b\y * _mult
+      _v\z = _a\z + _b\z * _mult
+    EndMacro
+    
+    Macro ScaleAddInPlace(_v,_o,_mult)
+      _v\x + _o\x * _mult
+      _v\y + _o\y * _mult
+      _v\z + _o\z * _mult
+    EndMacro
+  CompilerEndIf
+  
+  ;------------------------------------------------------------------
   ; VECTOR3 INVERT
   ;------------------------------------------------------------------
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-     Declare InvertInPlace(*v.v3f32)
-     Declare Invert(*v.v3f32, *o.v3f32)
+    Declare Invert(*v.v3f32, *o.v3f32)
+    Declare InvertInPlace(*v.v3f32)
   CompilerElse  
     Macro Invert(_v,_o)
       If _o\x <> 0.0 : _v\x = 1.0 / _o\x : Else : _v\x = 0.0 : EndIf
@@ -1039,13 +1077,28 @@ DeclareModule Vector3
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR3 ARE EQUIVALENT
+  ;------------------------------------------------------------------
+  Declare.b Equivalent(*v.v3f32,*o.v3f32, eps.f=0.0000001)
+  
+  ;------------------------------------------------------------------
   ; VECTOR3 ECHO
   ;------------------------------------------------------------------
   Macro Echo(_v,_name)
-    Debug _name +":("+
-          StrF(_v\x, Math::#ECHO_PRECISION)+","+
-          StrF(_v\y, Math::#ECHO_PRECISION)+","+
-          StrF(_v\z, Math::#ECHO_PRECISION)+")"
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Debug _name +":("+
+            StrF(_v\x, Math::#ECHO_PRECISION)+","+
+            StrF(_v\y, Math::#ECHO_PRECISION)+","+
+            StrF(_v\z, Math::#ECHO_PRECISION)+","+
+            StrF(_v\_w, Math::#ECHO_PRECISION)+")"
+            
+    CompilerElse
+      Debug _name +":("+
+            StrF(_v\x, Math::#ECHO_PRECISION)+","+
+            StrF(_v\y, Math::#ECHO_PRECISION)+","+
+            StrF(_v\z, Math::#ECHO_PRECISION)+")"
+    CompilerEndIf
+    
   EndMacro
   
   ;------------------------------------------------------------------
@@ -2543,17 +2596,6 @@ Module Math
   EndProcedure
   
   ; -----------------------------------------------------------------
-  ;  Random 0 to 1
-  ; -----------------------------------------------------------------
-  Procedure.f Random_0_1()
-    ProcedureReturn Random(#RAND_MAX)/#RAND_MAX
-  EndProcedure
-  
-  Procedure.f Random_Neg1_1()
-    ProcedureReturn 1 - (Random(#RAND_MAX)/#RAND_MAX * 2 )
-  EndProcedure
-  
-  ; -----------------------------------------------------------------
   ;  Uniform Point On Circle
   ; -----------------------------------------------------------------
   Procedure UniformPointOnCircle(*p.v2f32, radius.f=1.0)
@@ -2792,6 +2834,34 @@ Module Vector3
     EndProcedure
     
     ; ---------------------------------------------------------------
+    ;  VECTOR3 SCALE ADD
+    ; ---------------------------------------------------------------
+    Procedure ScaleAddInPlace(*v.v3f32, *o.v3f32, mult.f)
+      ! mov rdi, [p.p_v]            ; move first vec to register
+      ! movups xmm0, [rdi]          ; move packed float to xmm0
+      ! mov rsi, [p.p_o]            ; move second vec to register
+      ! movups xmm1, [rsi]          ; move packed float to xmm0
+      ! movlps xmm2, [p.v_mult]     ; move multiplier to low part of xmm1
+      ! shufps xmm2, xmm2, 0        ; fill xmm1 with multiplier
+      ! mulps xmm1, xmm2            ; packed multiplication
+      ! addps xmm0, xmm1
+      ! movups [rdi], xmm0          ; send back to memory
+    EndProcedure
+    
+    Procedure ScaleAdd(*v.v3f32, *a.v3f32, *b.v3f32,mult.f)
+      ! mov rdi, [p.p_v]
+      ! mov rsi, [p.p_a]
+      ! movups xmm0, [rsi]
+      ! mov rsi, [p.p_b]
+      ! movups xmm1, [rsi]
+      ! movlps xmm2, [p.v_mult]
+      ! shufps xmm2, xmm2, 0
+      ! mulps xmm1, xmm2
+      ! addps xmm0, xmm1
+      ! movups [rdi], xmm0
+    EndProcedure
+    
+    ; ---------------------------------------------------------------
     ;  VECTOR3 INVERT
     ; ---------------------------------------------------------------
     Procedure InvertInPlace(*v.v3f32)
@@ -2885,126 +2955,157 @@ Module Vector3
     ;  VECTOR3 MUL BY MATRIX4
     ; ---------------------------------------------------------------
     Procedure MulByMatrix4(*v.v3f32,*o.v3f32,*m.m4f32)
-        ! mov rax, [p.p_v]
-        ! mov rcx, [p.p_o]
-        ! mov rdx, [p.p_m]
-        
-        ; load point
-        ! movups  xmm0, [rcx]               ; d c b a
-        ! movaps  xmm1, xmm0                ; d c b a       
-        ! movaps  xmm2, xmm0                ; d c b a
-        ! movaps  xmm3, xmm0                ; d c b a
-        
-        ; shuffle point
-        ! shufps  xmm0, xmm0,0              ; a a a a 
-        ! shufps  xmm1, xmm1,01010101b      ; b b b b
-        ! shufps  xmm2, xmm2,10101010b      ; c c c c
-        ! shufps  xmm3, xmm3,11111111b      ; d d d d
-        
-        ; load matrix
-        ! movups  xmm4, [rdx]               ; m04 m03 m02 m01
-        ! movups  xmm5, [rdx+16]            ; m14 m13 m12 m11
-        ! movups  xmm6, [rdx+32]            ; m24 m23 m22 m21
-        ! movups  xmm7, [rdx+48]            ; m34 m33 m32 m31
-        
-        ; packed multiplication
-        ! mulps   xmm0, xmm4                ; a * row1
-        ! mulps   xmm1, xmm5                ; b * row2
-        ! mulps   xmm2, xmm6                ; c * row3
-        
-        ; packed addition
-        ! addps   xmm0, xmm1                
-        ! addps   xmm0, xmm2
-        ! addps   xmm0, xmm7
-        
-        ; packed determinant division
-        ! movaps xmm1, xmm0
-        ! shufps xmm1, xmm1, 11111111b
-        ! divps xmm0, xmm1
+      ! mov rax, [p.p_v]
+      ! mov rcx, [p.p_o]
+      ! mov rdx, [p.p_m]
       
-        ! movups [rax], xmm0                ; back to memory
+      ; load point
+      ! movups  xmm0, [rcx]               ; d c b a
+      ! movaps  xmm1, xmm0                ; d c b a       
+      ! movaps  xmm2, xmm0                ; d c b a
+      ! movaps  xmm3, xmm0                ; d c b a
+      
+      ; shuffle point
+      ! shufps  xmm0, xmm0,0              ; a a a a 
+      ! shufps  xmm1, xmm1,01010101b      ; b b b b
+      ! shufps  xmm2, xmm2,10101010b      ; c c c c
+      ! shufps  xmm3, xmm3,11111111b      ; d d d d
+      
+      ; load matrix
+      ! movups  xmm4, [rdx]               ; m04 m03 m02 m01
+      ! movups  xmm5, [rdx+16]            ; m14 m13 m12 m11
+      ! movups  xmm6, [rdx+32]            ; m24 m23 m22 m21
+      ! movups  xmm7, [rdx+48]            ; m34 m33 m32 m31
+      
+      ; packed multiplication
+      ! mulps   xmm0, xmm4                ; a * row1
+      ! mulps   xmm1, xmm5                ; b * row2
+      ! mulps   xmm2, xmm6                ; c * row3
+      
+      ; packed addition
+      ! addps   xmm0, xmm1                
+      ! addps   xmm0, xmm2
+      ! addps   xmm0, xmm7
+      
+      ; packed determinant division
+      ! movaps xmm1, xmm0
+      ! shufps xmm1, xmm1, 11111111b
+      ! divps xmm0, xmm1
+    
+      ! movups [rax], xmm0                ; back to memory
     EndProcedure
     
     Procedure MulByMatrix4InPlace(*v.v3f32,*m.m4f32)
-        ! mov rax, [p.p_v]
-        ! mov rdx, [p.p_m]
-        
-        ! movups  xmm0, [rax]               ; d c b a
-        ! movaps  xmm1, xmm0                ; d c b a       
-        ! movaps  xmm2, xmm0                ; d c b a
-        ! movaps  xmm3, xmm0                ; d c b a
+      ! mov rax, [p.p_v]
+      ! mov rdx, [p.p_m]
       
-        ! shufps  xmm0, xmm0,0              ; a a a a 
-        ! shufps  xmm1, xmm1,01010101b      ; b b b b
-        ! shufps  xmm2, xmm2,10101010b      ; c c c c
-        ! shufps  xmm3, xmm3,11111111b      ; d d d d
+      ! movups  xmm0, [rax]               ; d c b a
+      ! movaps  xmm1, xmm0                ; d c b a       
+      ! movaps  xmm2, xmm0                ; d c b a
+      ! movaps  xmm3, xmm0                ; d c b a
+    
+      ! shufps  xmm0, xmm0,0              ; a a a a 
+      ! shufps  xmm1, xmm1,01010101b      ; b b b b
+      ! shufps  xmm2, xmm2,10101010b      ; c c c c
+      ! shufps  xmm3, xmm3,11111111b      ; d d d d
+    
+      ! movups  xmm4, [rdx]
+      ! movups  xmm5, [rdx+16]
+      ! movups  xmm6, [rdx+32]
+      ! movups  xmm7, [rdx+48]
+    
+      ! mulps   xmm0, xmm4
+      ! mulps   xmm1, xmm5
+      ! mulps   xmm2, xmm6
+    
+      ! addps   xmm0, xmm1
+      ! addps   xmm0, xmm2
+      ! addps   xmm0, xmm7
       
-        ! movups  xmm4, [rdx]
-        ! movups  xmm5, [rdx+16]
-        ! movups  xmm6, [rdx+32]
-        ! movups  xmm7, [rdx+48]
+      ! movaps xmm1, xmm0
+      ! shufps xmm1, xmm1, 11111111b
+      ! divps xmm0, xmm1
+    
+      ! movups [rax], xmm0
+    EndProcedure
       
-        ! mulps   xmm0, xmm4
-        ! mulps   xmm1, xmm5
-        ! mulps   xmm2, xmm6
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 MINIMUM
+    ; ---------------------------------------------------------------
+    Procedure Minimize(*v.v3f32, *a.v3f32, *b.v3f32)
+      ! mov rax, [p.p_v]
+      ! mov rcx, [p.p_a]
+      ! mov rdx, [p.p_b]
+      ! movups xmm0, [rcx]
+      ! movups xmm1, [rdx]
+      ! minps xmm0, xmm1
+      ! movups [rax]
+    EndProcedure
+    
+    Procedure MinimizeInPlace(*v.v3f32, *o.v3f32)
+      ! mov rax, [p.p_v]
+      ! mov rcx, [p.p_o]
+      ! movups xmm0, [rax]
+      ! movups xmm1, [rcx]
+      ! minps xmm0, xmm1
+      ! movups [rax]
+    EndProcedure
       
-        ! addps   xmm0, xmm1
-        ! addps   xmm0, xmm2
-        ! addps   xmm0, xmm7
-        
-        ! movaps xmm1, xmm0
-        ! shufps xmm1, xmm1, 11111111b
-        ! divps xmm0, xmm1
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 MUL BY MATRIX4
+    ; ---------------------------------------------------------------
+    Procedure Maximize(*v.v3f32, *a.v3f32, *b.v3f32)
+      ! mov rax, [p.p_v]
+      ! mov rcx, [p.p_a]
+      ! mov rdx, [p.p_b]
+      ! movups xmm0, [rcx]
+      ! movups xmm1, [rdx]
+      ! maxps xmm0, xmm1
+      ! movups [rax]
+    EndProcedure
+    
+    Procedure MaximizeInPlace(*v.v3f32, *o.v3f32)
+      ! mov rax, [p.p_v]
+      ! mov rcx, [p.p_o]
+      ! movups xmm0, [rax]
+      ! movups xmm1, [rcx]
+      ! maxps xmm0, xmm1
+      ! movups [rax]
+    EndProcedure
+    
+    Procedure.b Equivalent(*v.v3f32,*o.v3f32, eps.f=0.0000001)
+      ! mov rsi, [p.p_v]            ; load first point
+      ! movups xmm0, [rsi]
+      ! mov rsi, [p.p_o]            ; load second point
+      ! movups xmm1, [rsi]
+      ! subps xmm0, xmm1            ; compute delta
+      ! movss xmm2, [p.v_eps]       ; load epsilon
+      ! shufps xmm2, xmm2, 00000000b; fill vec with epsilon
+      ! movups xmm3, [math.l_sse_1111_sign_mask]
+      ! andps xmm0, xmm3            ; absolute delta
+      ! cmpps xmm0, xmm2, 1         ; compare delta < epsilon
+      ! movmskps r12, xmm0          ; move comparison mask to r12 register
+      ! cmp r12, 15                 ; if all check passed, 7 in r12
+      ! je vector_are_equivalents   ; and then vector are equivalent
+      ! jmp vector_are_differents   ; else vectors differs
       
-        ! movups [rax], xmm0
-      EndProcedure
+      ! vector_are_equivalents:     ; equivalents
+      ProcedureReturn #True
       
-      ; ---------------------------------------------------------------
-      ;  VECTOR3 MINIMUM
-      ; ---------------------------------------------------------------
-      Procedure Minimize(*v.v3f32, *a.v3f32, *b.v3f32)
-        ! mov rax, [p.p_v]
-        ! mov rcx, [p.p_a]
-        ! mov rdx, [p.p_b]
-        ! movups xmm0, [rcx]
-        ! movups xmm1, [rdx]
-        ! minps xmm0, xmm1
-        ! movups [rax]
-      EndProcedure
-      
-      Procedure MinimizeInPlace(*v.v3f32, *o.v3f32)
-        ! mov rax, [p.p_v]
-        ! mov rcx, [p.p_o]
-        ! movups xmm0, [rax]
-        ! movups xmm1, [rcx]
-        ! minps xmm0, xmm1
-        ! movups [rax]
-      EndProcedure
-      
-      ; ---------------------------------------------------------------
-      ;  VECTOR3 MUL BY MATRIX4
-      ; ---------------------------------------------------------------
-      Procedure Maximize(*v.v3f32, *a.v3f32, *b.v3f32)
-        ! mov rax, [p.p_v]
-        ! mov rcx, [p.p_a]
-        ! mov rdx, [p.p_b]
-        ! movups xmm0, [rcx]
-        ! movups xmm1, [rdx]
-        ! maxps xmm0, xmm1
-        ! movups [rax]
-      EndProcedure
-      
-      Procedure MaximizeInPlace(*v.v3f32, *o.v3f32)
-        ! mov rax, [p.p_v]
-        ! mov rcx, [p.p_o]
-        ! movups xmm0, [rax]
-        ! movups xmm1, [rcx]
-        ! maxps xmm0, xmm1
-        ! movups [rax]
-      EndProcedure
-      
+      ! vector_are_differents:      ; differents
+      ProcedureReturn #False
+    
+    EndProcedure
 
+  CompilerElse
+    Procedure.b Equivalent(*v.v3f32,*o.v3f32, eps.f=0.0000001)
+      If Abs(*v\x - *o\x) > eps Or Abs(*v\y - *o\y) Or Abs(*v\z - *o\z)
+        ProcedureReturn #False
+      EndIf
+      ProcedureReturn #True
+    EndProcedure
   CompilerEndIf
+    
 EndModule
 
 ;====================================================================
@@ -3727,8 +3828,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1548
-; FirstLine = 1517
-; Folding = ---------------------------------------------
+; CursorPosition = 369
+; FirstLine = 321
+; Folding = -----------------------------------------------
 ; EnableXP
 ; EnableUnicode

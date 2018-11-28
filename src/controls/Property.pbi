@@ -1280,12 +1280,10 @@ Module ControlProperty
     Protected  son.Control::IControl
     Protected idx,xm,ym
     Protected *overchild.Control::Control_t
-    Protected overchild.Control::IControl
     
     *Me\pickID = Pick(*Me)
     If *Me\pickID > -1 And *Me\pickID < *Me\chilcount 
       *overchild = *Me\children(*Me\pickID)
-      overchild = *overchild
     Else
       *overchild = #Null
     EndIf
@@ -1426,52 +1424,43 @@ Module ControlProperty
       ;  MouseMove
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseMove
-        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
-        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
+        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
         
-        xm = Min( Max( xm, 0 ), *Me\sizX - 1 )
-        ym = Min( Max( ym, 0 ), *Me\sizY - 1 )
-        
-        If *Me\overchild
-          If *Me\overchild <> *overchild
-            *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
+        xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+        ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+
+         If *Me\overchild <> *overchild And  Not *Me\down
+            If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
             *Me\overchild = *overchild
-            If *Me\overchild
-              *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
-            EndIf
-          Else
-            *Me\overchild\OnEvent(#PB_EventType_MouseMove)
-          EndIf
+            If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseEnter) : EndIf
+            SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
         ElseIf *overchild
           *Me\overchild = *overchild
-          *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
+          ev_data\x    = xm - *overchild\posX + *Me\posX
+          ev_data\y    = ym - *overchild\posY + *Me\posY
+          *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
         EndIf
-        
         
       ; ------------------------------------------------------------------------
       ;  LeftButtonDown
       ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonDown
       *Me\down = #True
-      If *overchild
-        If *Me\focuschild 
-          If *overchild <> *Me\focuschild
-            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          EndIf
-          
+      If *Me\overchild
+        If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
+          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
-        *Me\focuschild = *overchild
-        *Me\focuschild\OnEvent( #PB_EventType_Focus, #Null )
-        
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
-        ev_data\xoff = *overchild\posX
-        ev_data\yoff = *overchild\posY
+        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
+        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
+        ev_data\xoff = *Me\posX
+        ev_data\yoff = *Me\posY
         *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
       ElseIf *Me\focuschild
+        Define focuschild.Control::IControl = *Me\focuschild
         *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
       EndIf
-        
+      
       ; ------------------------------------------------------------------------
       ;  LeftButtonUp
       ; ------------------------------------------------------------------------
@@ -1730,7 +1719,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 596
-; FirstLine = 584
+; CursorPosition = 1434
+; FirstLine = 1406
 ; Folding = --------
 ; EnableXP

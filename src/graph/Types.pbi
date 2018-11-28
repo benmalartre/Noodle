@@ -44,6 +44,10 @@ DeclareModule Graph
   #Node_EditButtonShiftY = 10
   #Node_EditButtonColor = $33999999
   
+  #NODE_BORDER_WIDTH = 12
+  #NODE_FONT_SIZE = 8
+  #NODE_FONT_WIDTH = 32
+  
   Enumeration 
     #Node_StateOK
     #Node_StateError
@@ -116,9 +120,9 @@ DeclareModule NodePort
   ; GraphNodePort
   ;---------------------------------------------------------------------------
   Structure NodePort_t Extends Object::Object_t
-    viewx.i
-    viewy.i
-    viewr.i
+    posx.i
+    posy.i
+
     io.b
     connected.b
     selected.b
@@ -154,8 +158,7 @@ DeclareModule NodePort
     *value
 
     color.q
-    percx.i
-    percy.i
+
   EndStructure
   
   ;---------------------------------------------------------------------------
@@ -287,12 +290,6 @@ DeclareModule Node
     width.l
     height.l
     
-    ;Relative to view
-    viewx.i
-    viewy.i
-    viewwidth.i
-    viewheight.i
-    
     ;color
     red.i
     green.i
@@ -322,11 +319,6 @@ DeclareModule Node
     ;current port
     *port.NodePort::NodePort_t
   EndStructure
-  
-  Global NODE_BORDER_WIDTH.i
-  Global NODE_FONT_SIZE.i
-  Global NODE_ZOOM_CURRENT.i
-  Global NODE_FONT_WIDTH.i
   
   Interface INode
     Evaluate()
@@ -390,16 +382,16 @@ DeclareModule Node
   Declare Update(*node.Node_t)
   Declare.s GetName(*n.Node_t)
   Declare GetSize(*n.Node_t)
-  Declare Draw(*n.Node_t, zoom.f)
-  Declare ViewPosition(*n.Node_t,zoom.f,x.i,y.i)
-  Declare ViewSize(*n.Node_t,z.i)
+  Declare Draw(*n.Node_t)
+  Declare ViewPosition(*n.Node_t,x.i,y.i)
+  Declare ViewSize(*n.Node_t)
   Declare.b IsLeaf(*n.Node_t)
   Declare SetColor(*n.Node_t,r.i,g.i,b.i)
-  Declare Drag(*n.Node_t,x.i,y.i,zoom.f)
-  Declare.i IsUnderMouse(*n.Node_t,x.l,y.l, zoom.f)
+  Declare Drag(*n.Node_t,x.i,y.i)
+  Declare.i IsUnderMouse(*n.Node_t,x.l,y.l)
   Declare.b InsideNode(*node.Node_t,*parent.Node_t)
-  Declare.i Pick(*n.Node_t,x.l,y.l,zoom.f,connect.b=#False)
-  Declare.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i, zoom.f)
+  Declare.i Pick(*n.Node_t,x.l,y.l,connect.b=#False)
+  Declare.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i)
   Declare.i GetPortByID(*n.Node_t,id.i)
   Declare.i GetPortByName(*n.Node_t,name.s)
   Declare.i SetInputPortID(*n.Node_t,*p.NodePort::NodePort_t,id.i = -1)
@@ -577,7 +569,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 313
-; FirstLine = 292
+; CursorPosition = 48
+; FirstLine = 6
 ; Folding = ---
 ; EnableXP

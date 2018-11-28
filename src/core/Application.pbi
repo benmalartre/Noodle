@@ -583,7 +583,7 @@ EndProcedure
       ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
       *callback(*app)
       Repeat
-        event = WaitWindowEvent(1000/60)
+        event = WaitWindowEvent();1000/60)
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -639,8 +639,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 38
+; CursorPosition = 585
+; FirstLine = 564
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -157,6 +157,8 @@ Procedure Draw(*app.Application::Application_t)
   *gbuffer = LayerGBuffer::New(width,height,*app\context,*app\camera)
   *ssao = LayerSSAO::New(width,height,*app\context,*gbuffer\buffer,*app\camera)
   *blur = LayerBlur::New(width,height,*app\context,*ssao\buffer,*app\camera)
+  
+  ViewportUI::AddLayer(*viewport, *default)
 ;   
 ;   Debug "Size "+Str(*app\width)+","+Str(*app\height)
 ;   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -197,9 +199,9 @@ Procedure Draw(*app.Application::Application_t)
 ;     EndIf
 ;   Next
 ;   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TORUS)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TEAPOT)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  PointCloudGeometry::PointsOnGrid(*cloud\geom,256,256)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
   Define startP.v3f32, endP.v3f32
   Vector3::Set(startP, -10,0,0)
   Vector3::Set(endP, 10,0,0)
@@ -240,7 +242,7 @@ Procedure Draw(*app.Application::Application_t)
     CArray::SetValue(*cgeom\a_positions,i,*l\p)
     Location::GetNormal(*l)
     CArray::SetValue(*cgeom\a_normals,i,*l\n)
-    Vector3::Set(s,0.25,0.25,0.25)
+    Vector3::Set(s,5,5,5)
     CArray::SetValue(*cgeom\a_scale,i,s)
     CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
   Next
@@ -263,8 +265,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 242
-; FirstLine = 194
+; CursorPosition = 160
+; FirstLine = 131
 ; Folding = --
 ; EnableXP
 ; Executable = Test

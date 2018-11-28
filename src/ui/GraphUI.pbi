@@ -40,10 +40,12 @@ DeclareModule GraphUI
     r_expended.b
     
     ; Mouse Handling
-    posx.i             ; canvas position X
-    posy.i             ; canvas position Y
     mousex.i           ; Current Mouse X
     mousey.i           ; Current Mouse Y
+    
+    ; Translate and Scale
+    posx.i             ; canvas position X
+    posy.i             ; canvas position Y
   
     rectx1.i           ; Selection Rectangle LeftUpCornerX
     recty1.i           ; Selection Rectangle LeftUpCornerY
@@ -359,7 +361,7 @@ Module GraphUI
   ; Is Node Visible
   ;---------------------------------------------------------------------------
   Procedure.b IsNodeVisible(*Me.GraphUI_t,*n.Node::Node_t)
-    If (*n\viewx+*n\viewwidth)<0 Or *n\viewx>*Me\width Or (*n\viewy+*n\viewheight)<0 Or *n\viewy>*Me\height
+    If (*n\posx+*n\width)<0 Or *n\posx>*Me\width Or (*n\posy+*n\height)<0 Or *n\posy>*Me\height
       ProcedureReturn #False
     Else
       ProcedureReturn #True
@@ -378,18 +380,14 @@ Module GraphUI
     Protected *current.Node::Node_t
     *current = *Me\tree\current
     
-    Node::NODE_BORDER_WIDTH = *Me\zoom*0.5
-    MAXIMUM(Node::NODE_BORDER_WIDTH,1)
-    Node::NODE_FONT_WIDTH = *Me\zoom
-    MAXIMUM(Node::NODE_FONT_WIDTH,1)
-    StartDrawing(CanvasOutput(*Me\gadgetID))
+    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
     If *current And *current\isroot
-      Node::ViewSize(*current,*Me\zoom)
-      Node::ViewPosition(*current,*Me\zoom,*Me\posx,*Me\posy)
+      Node::ViewSize(*current)
+      Node::ViewPosition(*current,*Me\posx,*Me\posy)
       ; Check For Visibility
-       If IsNodeVisible(*Me,*current)
+;        If IsNodeVisible(*Me,*current)
          Graph::AttachListElement(*Me\a_visible(),*current)
-       EndIf
+;        EndIf
     EndIf
      
     
@@ -399,15 +397,15 @@ Module GraphUI
  
         *node = *current\nodes()
         
-        Node::ViewSize(*node,*Me\zoom)
-        Node::ViewPosition(*node,*Me\zoom,*Me\posx,*Me\posy)
+        Node::ViewSize(*node)
+        Node::ViewPosition(*node,*Me\posx,*Me\posy)
         ; Check Fo Visibility
-         If IsNodeVisible(*Me,*node)
+;          If IsNodeVisible(*Me,*node)
            Graph::AttachListElement(*Me\a_visible(),*node)
-        EndIf
+;         EndIf
       Next
     EndIf
-    StopDrawing()
+    StopVectorDrawing()
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -647,7 +645,7 @@ Module GraphUI
   Procedure TerminateConnecter(*Me.GraphUI_t)
     If *Me\focus
       ;Check For connection succeded
-      Protected s.i = Node::Pick(*Me\focus,*Me\mousex,*Me\mousey,*Me\zoom,#True)
+      Protected s.i = Node::Pick(*Me\focus,*Me\mousex,*Me\mousey,#True)
       If s.i = Graph::#Graph_Selection_Port
         If Connexion::Connect(*Me\connecter,*Me\focus\port,#True)
           Tree::ConnectNodes(*Me\tree,*Me\tree\current,*Me\connecter\start,*Me\connecter\end,#True)
@@ -873,129 +871,66 @@ Module GraphUI
   ;Draw All Nodes
   ;---------------------------------------------------------------------------
   Procedure DrawAllNodes(*Me.GraphUI_t)
-    CompilerIf Not Globals::#USE_VECTOR_DRAWING
-      LoadFont2(*Me)
-      ; Default Drawing
-      StartDrawing(CanvasOutput(*Me\gadgetID))
-      DrawingMode(#PB_2DDrawing_AlphaBlend)
-      Background(*Me)
-      DrawingMode(#PB_2DDrawing_Default)
-      If *Me\tree
-        Protected c
-        Protected *connexion.Connexion::Connexion_t
-        ForEach *Me\tree\current\connexions()
-          *connexion = *Me\tree\current\connexions()
-          ;Draw connexions
-          Connexion::ViewPosition(*connexion)
-          Connexion::Draw(*connexion,#False)
-        Next
-        
-        ForEach *Me\tree\current\exposers()
-          *connexion = *Me\tree\current\exposers()
-          ;Draw exposers
-          Connexion::ViewPosition(*connexion)
-          Connexion::Draw(*connexion,#True)
-        Next
-        
-        ;Draw visible nodes
-        Protected v
-        Protected *visible.Node::Node_t
-        ForEach *Me\a_visible()
-          *visible = *Me\a_visible()
-          ;Draw nodes
-          Node::Draw(*visible, *Me\zoom)
-        Next
-        
-        ;Draw Connector
-        If *Me\connect
-          Connexion::ViewPosition(*Me\connecter)
-          Connexion::Draw(*Me\connecter,#True)
-        EndIf
-        
-        ;Draw Rectangle Selection
-        If *Me\pick
-          DrawingMode(#PB_2DDrawing_Outlined)
-          RoundBox(*Me\rectx1,*Me\recty1,*Me\rectx2-*Me\rectx1,*Me\recty2-*Me\recty1,3,3,RGB(250,200,50))
-        EndIf
-        
-        ;Debug
-        DrawingFont(FontID(*Me\font_debug))
-        FrontColor(RGB(255,255,255))
-        DrawingMode(#PB_2DDrawing_Transparent)
-        DrawText(10,10,"Nb Nodes : "+Str(ListSize(*Me\tree\current\nodes())-1))
-        DrawText(10,40,"PositionX : "+Str(*Me\posx))
-        DrawText(10,50,"PositionY : "+Str(*Me\posy))
-        DrawText(10,60,"Zoom Factor : "+Str(*Me\zoom))
-        DrawText(10,70,"Nb Connexions : "+Str(ListSize(*Me\tree\current\connexions())))
-        DrawText(10,80,"Depth : "+Str(*Me\depth))
+   LoadFont2(*Me)
+   StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+   ResetCoordinates()
+   Background(*Me)
+   
+   TranslateCoordinates(*Me\posx, *Me\posy)
+   ScaleCoordinates(*Me\zoom, *Me\zoom)
+     If *Me\tree
+      Protected c
+      Protected *connexion.Connexion::Connexion_t
+      ForEach *Me\tree\current\connexions()
+        *connexion = *Me\tree\current\connexions()
+        ;Draw connexions
+        Connexion::ViewPosition(*connexion)
+        Connexion::Draw(*connexion,#False)
+      Next
+      
+      ;Draw visible nodes
+      Protected v
+      Protected *visible.Node::Node_t
+      ForEach *Me\a_visible()
+        *visible = *Me\a_visible()
+        ;Draw nodes
+        Node::Draw(*visible)
+      Next
+    
+      ;Draw Connector
+      If *Me\connect
+        Connexion::ViewPosition(*Me\connecter)
+        Connexion::Draw(*Me\connecter,#True)
       EndIf
-;       
-      DrawCompound(*Me)
-;       DrawZoom(*Me, 0.25)
-;       DrawZoom(*Me, 0.5)
-;       DrawZoom(*Me, 0.75)
-;       
-      StopDrawing()
       
-    CompilerElse
-     LoadFont2(*Me)
-     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-     Background(*Me)
-     
-       If *Me\tree
-        Protected c
-        Protected *connexion.Connexion::Connexion_t
-        ForEach *Me\tree\current\connexions()
-          *connexion = *Me\tree\current\connexions()
-          ;Draw connexions
-          Connexion::ViewPosition(*connexion)
-          Connexion::Draw(*connexion,#False)
-        Next
-        
-        ;Draw visible nodes
-        Protected v
-        Protected *visible.Node::Node_t
-        ForEach *Me\a_visible()
-          *visible = *Me\a_visible()
-          ;Draw nodes
-          Node::Draw(*visible, *Me\zoom)
-        Next
-      
-        ;Draw Connector
-        If *Me\connect
-          Connexion::ViewPosition(*Me\connecter)
-          Connexion::Draw(*Me\connecter,#True)
-        EndIf
-        
 ;         ;Draw Rectangle Selection
 ;         If *Me\pick
 ;           DrawingMode(#PB_2DDrawing_Outlined)
 ;           RoundBox(*Me\rectx1,*Me\recty1,*Me\rectx2-*Me\rectx1,*Me\recty2-*Me\recty1,3,3,RGB(250,200,50))
 ;         EndIf
 ;         
-        ;Debug
-        VectorFont(FontID(*Me\font_debug))
-        VectorSourceColor(RGBA(120,90,66,255))
-        MovePathCursor(10,10)
-        AddPathText("Nb Nodes : "+Str(ListSize(*Me\tree\current\nodes())-1))
-        MovePathCursor(10,40)
-        AddPathText("PositionX : "+Str(*Me\posx))
-        MovePathCursor(10,50)
-        AddPathText("PositionY : "+Str(*Me\posy))
-        MovePathCursor(10,70)
-        AddPathText("Zoom Factor : "+Str(*Me\zoom))
-        MovePathCursor(10,80)
-        AddPathText("Nb Connexions : "+Str(ListSize(*Me\tree\current\connexions())))
-        MovePathCursor(10,90)
-        AddPathText("Depth : "+Str(*Me\depth))        
-        FillPath()
-      EndIf
-      
+      ;Debug
+      VectorFont(FontID(*Me\font_debug))
+      VectorSourceColor(RGBA(120,90,66,255))
+      MovePathCursor(10,10)
+      AddPathText("Nb Nodes : "+Str(ListSize(*Me\tree\current\nodes())-1))
+      MovePathCursor(10,40)
+      AddPathText("PositionX : "+Str(*Me\posx))
+      MovePathCursor(10,50)
+      AddPathText("PositionY : "+Str(*Me\posy))
+      MovePathCursor(10,70)
+      AddPathText("Zoom Factor : "+Str(*Me\zoom))
+      MovePathCursor(10,80)
+      AddPathText("Nb Connexions : "+Str(ListSize(*Me\tree\current\connexions())))
+      MovePathCursor(10,90)
+      AddPathText("Depth : "+Str(*Me\depth))        
+      FillPath()
+    EndIf
+    
 ;       DrawCompound(*Me)
-      
-         
-     StopVectorDrawing()
-   CompilerEndIf
+    
+       
+   StopVectorDrawing()
     
     *Me\redraw = #False
   EndProcedure
@@ -1013,13 +948,13 @@ Module GraphUI
     EndIf
     
     
-    If Node::IsUnderMouse( *Me\tree\current,x,y,*Me\zoom)
+    If Node::IsUnderMouse( *Me\tree\current,x,y)
       *Me\focus = *Me\tree\current
       ProcedureReturn Graph::#Graph_Selection_Node
     ElseIf LastElement(*Me\tree\current\nodes())
       
       Repeat
-        If Node::IsUnderMouse( *Me\tree\current\nodes(),x,y, *Me\zoom)
+        If Node::IsUnderMouse( *Me\tree\current\nodes(),x,y)
           *Me\focus = *Me\tree\current\nodes()
           ProcedureReturn Graph::#Graph_Selection_Node
         EndIf
@@ -1197,7 +1132,7 @@ Module GraphUI
     MAXIMUM(*Me\zoom,0.01)
    
     ForEach *Me\tree\current\nodes()
-      Node::ViewPosition(*Me\tree\root\nodes(),*Me\zoom,*Me\posx,*Me\posy)
+      Node::ViewPosition(*Me\tree\root\nodes(),*Me\posx,*Me\posy)
     Next
     
     *Me\redraw = #True
@@ -1216,7 +1151,6 @@ Module GraphUI
     Protected i
     Protected *node.Node::Node_t
     Protected msg.s
-    msg = "Frame Selected : "+Str(CArray::GetCount(*Me\a_selected))+ " Nodes"+Chr(10)
     For i=0 To CArray::GetCount(*Me\a_selected)-1
       *node = CArray::GetValuePtr(*Me\a_selected,i)
       With *node
@@ -1234,7 +1168,7 @@ Module GraphUI
     *Me\zoom = 1.0
     ;MessageRequester("Frame Selected", msg)
     ForEach *Me\tree\root\nodes()
-      Node::ViewPosition(*Me\tree\root\nodes(),*Me\zoom,*Me\posx,*Me\posy)
+      Node::ViewPosition(*Me\tree\root\nodes(),*Me\posx,*Me\posy)
     Next
     
     *Me\redraw = #True 
@@ -1259,11 +1193,14 @@ Module GraphUI
     
     Define x,y ,out_value
     *Me\redraw = #False
-    x = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
-    y = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
-    *Me\mousex = x
-    *Me\mousey = y
-    
+    *Me\mousex = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+    *Me\mousey = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
+    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+    TranslateCoordinates(*Me\posx, *Me\posy)
+    ScaleCoordinates(*Me\zoom, *Me\zoom)
+    x = ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
+    y = ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
+    StopVectorDrawing()
     ; Return value(push the command stack)
     out_value = -1
     
@@ -1282,7 +1219,7 @@ Module GraphUI
           Case #PB_EventType_LeftDoubleClick
             GetNodeUnderMouse(*Me,x,y)
             If *Me\focus
-               Define mode = Node::Pick(*Me\focus,x,y,*Me\zoom,#False)
+               Define mode = Node::Pick(*Me\focus,x,y,#False)
                If mode = Graph::#Graph_Selection_Node
                  ;Inspect Current Node
                  InspectNode(*Me,*Me\focus)
@@ -1295,10 +1232,10 @@ Module GraphUI
 
           ;Wheel Event
           Case #PB_EventType_MouseWheel
-            Protected dx.i = (*Me\mousex - *Me\posx)
-            Protected dy.i = (*Me\mousey - *Me\posy)
-            Protected ox.i = dx * *Me\zoom
-            Protected oy.i = dy * *Me\zoom
+;             Protected dx.i = (*Me\mousex - *Me\posx)
+;             Protected dy.i = (*Me\mousey - *Me\posy)
+;             Protected ox.i = dx * *Me\zoom
+;             Protected oy.i = dy * *Me\zoom
         
             Protected wheel.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
             *Me\zoom + wheel*0.01
@@ -1343,7 +1280,7 @@ Module GraphUI
               Protected id=0
               Protected selected = #False
               ForEach *Me\tree\current\inputs()
-                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,x,y,*Me\zoom)
+                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,x,y)
                 If selected 
                   If *Me\tree\current\inputs()\connected
                     MessageRequester("GraphUI","Port Already Connected ---> Diconnect")
@@ -1361,7 +1298,7 @@ Module GraphUI
             EndIf
             
             If *Me\focus
-              Define mode.i = Node::Pick(*Me\focus,x,y,*Me\zoom,#False)
+              Define mode.i = Node::Pick(*Me\focus,x,y,#False)
               
               Select mode
                 Case Graph::#Graph_Selection_Dive
@@ -1485,7 +1422,7 @@ Module GraphUI
               
               If *me\focus
                 ; try to connect
-                mode = Node::Pick(*Me\focus,x,y,*Me\zoom,#True)
+                mode = Node::Pick(*Me\focus,x,y,#True)
                 
                ;Snap head of the connexion to the port
                Select mode
@@ -1513,7 +1450,7 @@ Module GraphUI
               For i=0 To CArray::GetCount(*Me\a_selected)-1
                 Protected *sel.Node::Node_t = CArray::GetValuePtr(*Me\a_selected,i)
                 If *sel
-                  Node::Drag(*sel,x-*Me\lastx,y-*Me\lasty,*Me\zoom)
+                  Node::Drag(*sel,x-*Me\lastx,y-*Me\lasty)
                 EndIf
               Next
               *Me\redraw = #True
@@ -1662,7 +1599,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 852
-; FirstLine = 830
+; CursorPosition = 381
+; FirstLine = 384
 ; Folding = --------
 ; EnableXP

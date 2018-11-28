@@ -542,41 +542,41 @@ Module Octree
       Next
 ;     CompilerEndIf
     
-    Define radius.f = closestDistance
-    Define *nearbyCells.CArray::CArrayPtr = CArray::newCArrayPtr()
-    If Not *octree\isLeaf
-      GetNearbyCells(*octree, *pnt, *nearbyCells, radius)
-    EndIf
-        
-    ; loop nearby cells
-    Define *nearbyCell.Octree::Cell_t
-    Define t
-    For i=0 To CArray::GetCount(*nearbyCells) - 1
-      *nearbyCell = CArray::GetValuePtr(*nearbyCells, i)
-      If *nearbyCell = *closestCell : Continue : EndIf
-      *nearbyCell\state = #NEARBY_STATE
-      If IntersectSphere(*nearbyCell, *pnt, closestDistance)
-        For j=0 To CArray::GetCount(*nearbyCell\elements) - 1
-          t = CArray::GetValueL(*nearbyCell\elements, j)
-          *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
-          *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
-          *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2)) 
-          Triangle::ClosestPoint(*a, *b, *c, *pnt, closest, uvw)
-          
-          Vector3::Sub(delta, *pnt, closest)
-          distance = Vector3::Length(delta)
-          If distance < closestDistance
-            closestDistance = distance
-            *loc\geometry = *octree\geom
-            *loc\tid = t
-            Vector3::SetFromOther(*loc\p, closest)
-            Vector3::SetFromOther(*loc\uvw, uvw)
-          EndIf
-        Next
-      EndIf
-    Next
-
-    CArray::Delete(*nearbyCells)
+;     Define radius.f = closestDistance
+;     Define *nearbyCells.CArray::CArrayPtr = CArray::newCArrayPtr()
+;     If Not *octree\isLeaf
+;       GetNearbyCells(*octree, *pnt, *nearbyCells, radius)
+;     EndIf
+;         
+;     ; loop nearby cells
+;     Define *nearbyCell.Octree::Cell_t
+;     Define t
+;     For i=0 To CArray::GetCount(*nearbyCells) - 1
+;       *nearbyCell = CArray::GetValuePtr(*nearbyCells, i)
+;       If *nearbyCell = *closestCell : Continue : EndIf
+;       *nearbyCell\state = #NEARBY_STATE
+;       If IntersectSphere(*nearbyCell, *pnt, closestDistance)
+;         For j=0 To CArray::GetCount(*nearbyCell\elements) - 1
+;           t = CArray::GetValueL(*nearbyCell\elements, j)
+;           *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
+;           *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
+;           *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2)) 
+;           Triangle::ClosestPoint(*a, *b, *c, *pnt, closest, uvw)
+;           
+;           Vector3::Sub(delta, *pnt, closest)
+;           distance = Vector3::Length(delta)
+;           If distance < closestDistance
+;             closestDistance = distance
+;             *loc\geometry = *octree\geom
+;             *loc\tid = t
+;             Vector3::SetFromOther(*loc\p, closest)
+;             Vector3::SetFromOther(*loc\uvw, uvw)
+;           EndIf
+;         Next
+;       EndIf
+;     Next
+; 
+;     CArray::Delete(*nearbyCells)
     ProcedureReturn radius
     
   EndProcedure  
@@ -814,7 +814,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 767
-; FirstLine = 741
+; CursorPosition = 578
+; FirstLine = 525
 ; Folding = ------
 ; EnableXP
