@@ -34,6 +34,7 @@ Global *box.Polymesh::Polymesh_t
 Global *null.Polymesh::Polymesh_t
 Global *cube.Polymesh::Polymesh_t
 Global *bunny.Polymesh::Polymesh_t
+Global *drawer.Drawer::Drawer_t
 
 Global *layer.LayerDefault::LayerDefault_t
 Global *shadows.LayerShadowMap::LayerShadowMap_t
@@ -89,9 +90,56 @@ Procedure Resize(window,gadget)
 ;   glViewport(0,0,width,height)
 EndProcedure
 
+Procedure RandomCubes(numItems.i,y.f=0)
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  Protected *item.Drawer::Item_t
+  Protected m.m4f32
+  Protected p.v3f32
+  Define i,j
+  For i=0 To numItems-1
+    Vector3::Set(p,i, y, (Random(10)-5)/10)
+    Matrix4::SetIdentity(m)
+    Matrix4::SetTranslation(m,p)
+
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
+    *item = Drawer::AddBox(*drawer, @m)
+    Drawer::SetColor(*item,  @color)
+  Next
+EndProcedure
+
+Procedure UpdateNormals()
+  Drawer::Flush(*drawer)
+  Define *offsetedNormals.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  CArray::SetCount(*offsetedNormals, *bunny\geom\nbpoints)
+  Define i
+  Define *n.v3f32, *p.v3f32, *o.v3f32
+  Define *geom.Geometry::PolymeshGeometry_t = *bunny\geom
+  For i=0 To *bunny\geom\nbpoints - 1
+    *n = CArray::GetValue(*geom\a_pointnormals, i)
+    *p = CArray::GetValue(*geom\a_positions, i)
+    *o = CArray::GetValue(*offsetedNormals, i)
+    Vector3::Add(*o, *p, *n)
+  Next
+  
+  Define *L.Drawer::Item_t = Drawer::AddLines2(*drawer, *bunny\geom\a_positions, *offsetedNormals)
+  Drawer::SetColor(*L, Color::_RED())
+  
+  CArray::Delete(*offsetedNormals)
+  
+  Define m.m4f32
+  Box::GetMatrixRepresentation(*geom\bbox, m)
+  Define *B.Drawer::Box_t = Drawer::AddBox(*drawer, m)
+  Matrix4::Echo(m, "BOX REPRESENTATION")
+  Drawer::SetColor(*B, Color::_MAGENTA())
+  
+  
+EndProcedure
+
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  ViewportUI::SetContext(*viewport)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
@@ -100,15 +148,19 @@ Procedure Draw(*app.Application::Application_t)
   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
   Object3D::SetLocalTransform(*light, *t)
   
-  ViewportUI::SetContext(*viewport)
+  UpdateNormals()
+  Scene::*current_scene\dirty= #True
   Scene::Update(Scene::*current_scene)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
   
+;   LayerDefault::Draw(*layer, *app\context)
   ViewportUI::Draw(*viewport, *app\context)
-
+  
+  
+  
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -119,6 +171,35 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
+
+; ; Draw
+; ;--------------------------------------------
+; Procedure Draw(*app.Application::Application_t)
+;   
+;   ViewportUI::SetContext(*viewport)
+;   Drawer::Flush(*drawer)
+; ;   RandomSpheres(Random(64,16), Random(10)-5)
+;   RandomCubes(Random(64,16), Random(10)-5)
+; ;   RandomStrips(32)
+; ;   RandomPoints(Random(256, 64))
+;   Scene::*current_scene\dirty= #True
+;   
+;   Scene::Update(Scene::*current_scene)
+;   LayerDefault::Draw(*layer, *app\context)
+;   
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
+;   glDisable(#GL_BLEND)
+;   
+;   ViewportUI::FlipBuffer(*viewport)
+; 
+; EndProcedure
+
+
  
  Define useJoystick.b = #False
  width = 800
@@ -130,7 +211,8 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("TestMesh",width,height)
+   Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
+   *app = Application::New("Test Normals", width, height, options)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
@@ -140,6 +222,7 @@ Procedure Draw(*app.Application::Application_t)
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
@@ -163,32 +246,34 @@ Procedure Draw(*app.Application::Application_t)
 ;   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
 ;   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_NONE)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TORUS)
   Define *geom.Geometry::PolymeshGeometry_t = *bunny\geom
-  PolymeshGeometry::SphereTopology(*geom\topo, 4, 1024 , 512)
-  PolymeshGeometry::Set2(*geom, *geom\topo)
+;   PolymeshGeometry::SphereTopology(*geom\topo, 4, 64 , 32)
+;   PolymeshGeometry::Set2(*geom, *geom\topo)
+;   
+;   Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
+;   Object3D::Freeze(*bunny)
+;   Object3D::SetShader(*bunny,*s_polymesh)
   
-  Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
-  Object3D::Freeze(*bunny)
-  Object3D::SetShader(*bunny,*s_polymesh)
-  Define i
-  Define S.d = Time::get()
-  For i=0 To 12
-    PolymeshGeometry::RecomputeNormals(*geom)
-  Next
-  Define E.d = Time::Get() - S
-  MessageRequester("COMPUTE NORMALS : ", "12 Time "+Str(*geom\nbtriangles)+" TRIANGLES TOOK "+StrD(E))
-  Object3D::AddChild(*root,*bunny)
-  
+  *drawer = Drawer::New("MeshNormals")
+;   Define i
+;   Define S.d = Time::get()
+;   For i=0 To 12
+;     PolymeshGeometry::RecomputeNormals(*geom)
+;   Next
+;   Define E.d = Time::Get() - S
+;   MessageRequester("COMPUTE NORMALS : ", "12 Time "+Str(*geom\nbtriangles)+" TRIANGLES TOOK "+StrD(E))
+  Object3D::AddChild(*root, *bunny)
+  Object3D::AddChild(*root, *drawer)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
 
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 129
-; Folding = -
+; CursorPosition = 248
+; FirstLine = 210
+; Folding = --
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone

@@ -102,7 +102,7 @@ Module BulletWorld
           Debug "Soft Body Nb Nodes : "+Str(Bullet::BTGetSoftBodyNbNodes(*sbody))
           
           Bullet::BTUpdateSoftBodyGeometry(*sbody,CArray::GetPtr(*geom\a_positions,0))
-          PolymeshGeometry::RecomputeNormals(*geom,0.0)
+          PolymeshGeometry::ComputeNormals(*geom,0.0)
           ;*mesh\topodirty = #True
           *mesh\deformdirty = #True
         Else
@@ -242,7 +242,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 30
+; CursorPosition = 104
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

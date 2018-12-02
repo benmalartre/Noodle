@@ -23,12 +23,12 @@ DeclareModule PolymeshGeometry
   Declare GetUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
   Declare GetUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
   Declare GetUVWSPerPolygons(*geom.PolymeshGeometry_t)
-  Declare RecomputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
-  Declare RecomputeTangents(*mesh.PolymeshGeometry_t)
+  Declare ComputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
+  Declare ComputeTangents(*mesh.PolymeshGeometry_t)
   Declare InvertNormals(*mesh.PolymeshGeometry_t)
-  Declare RecomputeTriangles(*mesh.PolymeshGeometry_t)
-  Declare RecomputeEdges(*mesh.PolymeshGeometry_t)
-  Declare RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
+  Declare ComputeTriangles(*mesh.PolymeshGeometry_t)
+  Declare ComputeEdges(*mesh.PolymeshGeometry_t)
+  Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
   Declare Clear(*mesh.PolymeshGeometry_t)
   Declare GetTopology(*mesh.PolymeshGeometry_t)
   Declare SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
@@ -58,6 +58,7 @@ DeclareModule PolymeshGeometry
   Declare Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
   Declare ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
   Declare.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *cp.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
+  Declare ComputeIslands(*mesh.PolymeshGeometry_t)
 EndDeclareModule
 
 ;========================================================================================
@@ -392,9 +393,9 @@ Module PolymeshGeometry
   
   
   ; ----------------------------------------------------------------------------
-  ;  Recompute Normals
+  ;  Compute Normals
   ; ----------------------------------------------------------------------------
-  Procedure RecomputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
+  Procedure ComputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
     If Not *mesh\nbpoints Or Not *mesh\nbtriangles : ProcedureReturn : EndIf
     
     Protected i,j,base
@@ -407,9 +408,9 @@ Module PolymeshGeometry
     Vector3::Set(n,0,0,0)
     CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
     
-    ; Recompute Vertex Polygons if necessary
+    ; Compute Vertex Polygons if necessary
     If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints     
-      RecomputeVertexPolygons(*mesh)
+      ComputeVertexPolygons(*mesh)
     EndIf
     
     ; First Triangle Normals
@@ -692,9 +693,9 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Recompute Tangents
+  ;  Compute Tangents
   ; ----------------------------------------------------------------------------
-  Procedure RecomputeTangents(*mesh.PolymeshGeometry_t)
+  Procedure ComputeTangents(*mesh.PolymeshGeometry_t)
     Protected i,a,b,c
     Protected ab.v3f32, ac.v3f32,t.v3f32, tan.v3f32
     Protected tab.v3f32,tac.v3f32
@@ -769,9 +770,9 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Recompute Triangles
+  ;  Compute Triangles
   ; ----------------------------------------------------------------------------
-  Procedure RecomputeTriangles(*mesh.PolymeshGeometry_t)
+  Procedure ComputeTriangles(*mesh.PolymeshGeometry_t)
     ; Rebuild triangle Data
     ;-----------------------------------
     Protected x,y,z, nbv, nbt
@@ -811,14 +812,9 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Recompute Edges
+  ;  Compute Edges
   ; ----------------------------------------------------------------------------
-  Procedure RecomputeEdges(*mesh.PolymeshGeometry_t)
-    Structure EdgeIndices_t
-      a.i
-      b.i
-    EndStructure
-    
+  Procedure ComputeEdges(*mesh.PolymeshGeometry_t)
     Protected NewMap uniqueEdges.EdgeIndices_t()
     Protected edgeKey.s
     Protected edgeID.i = 0
@@ -834,14 +830,14 @@ Module PolymeshGeometry
         If a>b
           edgeKey = Str(b)+","+Str(a)
           AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
-          uniqueEdges()\a = b
-          uniqueEdges()\b = a
+          uniqueEdges()\vertices[0] = b
+          uniqueEdges()\vertices[1] = a
           
         Else
           edgeKey = Str(a)+","+Str(b)
           AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
-          uniqueEdges()\a = a
-          uniqueEdges()\b = b
+          uniqueEdges()\vertices[0] = a
+          uniqueEdges()\vertices[1] = b
         EndIf
       Next j
       base+nbv
@@ -852,28 +848,22 @@ Module PolymeshGeometry
     *mesh\nbedges = numUniqueEdges
     i=0
     ForEach uniqueEdges()
-      CArray::SetValueL(*mesh\a_edgeindices, i*2, uniqueEdges()\a)
-      CArray::SetValueL(*mesh\a_edgeindices, i*2+1, uniqueEdges()\b)
-      i+1
+      CArray::SetValueL(*mesh\a_edgeindices, i, uniqueEdges()\vertices[0])
+      CArray::SetValueL(*mesh\a_edgeindices, i+1, uniqueEdges()\vertices[1])
+      i+2
     Next  
     ClearMap(uniqueEdges())
     FreeMap(uniqueEdges())
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Recompute Vertex Polygons
+  ;  Compute Vertex Polygons
   ; ----------------------------------------------------------------------------
-  Procedure RecomputeVertexPolygons(*mesh.PolymeshGeometry_t)
-    Structure VertexPolygonIndices_t
-      Array polygons.l(0)
-    EndStructure
+  Procedure ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
     
     Protected i, j, k, nbv, base, total, last
     Protected Dim indices.VertexPolygonIndices_t(*mesh\nbpoints)
-    For i=0 To *mesh\nbpoints-1
-      InitializeStructure(indices(i), VertexPolygonIndices_t)
-    Next
-    
+
     base=0
     total = 0
 
@@ -899,15 +889,16 @@ Module PolymeshGeometry
     For i=0 To *mesh\nbpoints-1
       nbp = ArraySize(indices(i)\polygons())
       CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
-      For j=1 To nbp
-        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j-1, indices(i)\polygons(j))
+      For j=0 To nbp-1
+        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, indices(i)\polygons(j))
       Next
       base + nbp
-      ClearStructure(indices(i), VertexPolygonIndices_t)
+      FreeArray(indices(i)\polygons())
     Next
     FreeArray(indices())
 
   EndProcedure
+
   
   ; ----------------------------------------------------------------------------
   ;  Implementation
@@ -1046,22 +1037,22 @@ Module PolymeshGeometry
     
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
     
-    ; Recompute Bounding Box
-    Geometry::RecomputeBoundingBox(*mesh)
+    ; Compute Bounding Box
+    Geometry::ComputeBoundingBox(*mesh)
     
-    ; Recompute Polymesh datas
-    RecomputeTriangles(*mesh)
-    RecomputeEdges(*mesh)
-    RecomputeVertexPolygons(*mesh)
+    ; Compute Polymesh datas
+    ComputeTriangles(*mesh)
+    ComputeEdges(*mesh)
+    ComputeVertexPolygons(*mesh)
     
     ; GetDualGraph(*mesh)
-    RecomputeNormals(*mesh,1)
+    ComputeNormals(*mesh,1)
 
     ; UVs
     GetUVWSFromPosition(*mesh,#True)
     
     ; Tangents
-;     RecomputeTangents(*mesh)
+;     ComputeTangents(*mesh)
     
     ;Color
     Color::Set(color,0.33,0.33,0.33,1.0)
@@ -1111,10 +1102,9 @@ Module PolymeshGeometry
     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
       Set2(*geom,*geom\base)
     Else
-;       If *geom\dirty
       SetPointsPosition(*geom,*geom\base\vertices)
-      ;SetPointsNormal(*geom,*geom\base\normals)
-      RecomputeNormals(*geom)
+      ComputeNormals(*geom)
+      *geom\dirty = #True
     EndIf 
 
   EndProcedure
@@ -1127,8 +1117,7 @@ Module PolymeshGeometry
     
     ; ---[ Check Nb Points ]--------------------------------
     If CArray::GetCount(*v) = nbp And nbp > 0
-      ; ---[ Set Point Position ]---------------------------
-      CArray::Copy(*mesh\a_positions,*v)
+      CArray::Copy(*mesh\a_positions, *v)
     EndIf
   EndProcedure
   
@@ -1441,6 +1430,13 @@ Module PolymeshGeometry
       z+nbv
     Next x
 
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Compute Islands
+  ;---------------------------------------------------------
+  Procedure ComputeIslands(*mesh.PolymeshGeometry_t)
+    ComputePolygonAreas(*mesh)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -1831,8 +1827,8 @@ Module PolymeshGeometry
     Protected color.c4f32
     Color::Set(color,1,0,0,1);
     SetColors(*geom,@color)
-    RecomputeTriangles(*geom)
-    RecomputeNormals(*geom,1)
+    ComputeTriangles(*geom)
+    ComputeNormals(*geom,1)
     GetTopology(*geom)
     
   EndProcedure
@@ -2020,8 +2016,8 @@ Module PolymeshGeometry
     Protected color.c4f32
     Color::Set(color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
    SetColors(*geom,@color)
-    RecomputeTriangles(*geom)
-    RecomputeNormals(*geom,1)
+    ComputeTriangles(*geom)
+    ComputeNormals(*geom,1)
   
     GetTopology(*geom)
     
@@ -2194,8 +2190,8 @@ Module PolymeshGeometry
     
     ; Update Geometry
     Protected color.c4f32
-    RecomputeTriangles(*geom)
-    RecomputeNormals(*geom,1)
+    ComputeTriangles(*geom)
+    ComputeNormals(*geom,1)
     GetTopology(*geom)
    
     ;Color
@@ -2352,8 +2348,8 @@ Module PolymeshGeometry
   ;     *geom\a_facecount\SetValue(x,4)  
   ;   Next x
   ;   
-  ;   OPolymeshGeometry_RecomputeTriangles(*geom)
-  ;   OPolymeshGeometry_RecomputeNormals(*geom)
+  ;   OPolymeshGeometry_ComputeTriangles(*geom)
+  ;   OPolymeshGeometry_ComputeNormals(*geom)
   EndProcedure
   
   ;--------------------------------------------------------------
@@ -2504,8 +2500,8 @@ Module PolymeshGeometry
     
     ; Update Geometry
     Protected color.c4f32
-    RecomputeTriangles(*geom)
-    RecomputeNormals(*geom,1)
+    ComputeTriangles(*geom)
+    ComputeNormals(*geom,1)
     GetTopology(*geom)
    
     ;Color
@@ -2539,8 +2535,8 @@ Module PolymeshGeometry
   ;     *geom\a_facecount\SetValue(x,4)  
   ;   Next x
   ;   
-  ;   OPolymeshGeometry_RecomputeTriangles(*geom)
-  ;   OPolymeshGeometry_RecomputeNormals(*geom)
+  ;   OPolymeshGeometry_ComputeTriangles(*geom)
+  ;   OPolymeshGeometry_ComputeNormals(*geom)
   EndProcedure
   
   Procedure DiscTopology(*topo.Topology_t,radius.f,u.i=8)
@@ -2576,6 +2572,7 @@ Module PolymeshGeometry
     CArray::Delete(*Me\a_vertexpolygonindices)
     CArray::Delete(*Me\a_polygonareas)
     CArray::Delete(*Me\a_triangleareas)
+    CArray::Delete(*Me\a_islands)
 ;     CArray::Delete(*Me\a_polygons)
 ;     CArray::Delete(*Me\a_edges)
 ;     CArray::Delete(*Me\a_vertices)
@@ -2656,8 +2653,8 @@ Module PolymeshGeometry
     *Me\a_vertexpolygonindices = CArray::newCArrayLong()
     *Me\a_polygonareas = CArray::newCArrayFloat()
     *Me\a_triangleareas = CArray::newCArrayFloat()
+    *Me\a_islands = CArray::newCArrayLong()
     
-  ;   *Me\base = newCPolymeshTopology()
     *Me\topo  = Topology::New()
     *Me\base = Topology::New()
     *Me\shapetype = shape
@@ -2701,7 +2698,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 875
-; FirstLine = 969
-; Folding = -----g--f--
+; CursorPosition = 2658
+; FirstLine = 2629
+; Folding = -----g---+-
 ; EnableXP

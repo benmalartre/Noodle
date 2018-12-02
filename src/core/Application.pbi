@@ -3,7 +3,7 @@ XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
 XIncludeFile "Slot.pbi"
-XIncludeFile "Perlin2.pbi"
+XIncludeFile "Perlin3.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
 XIncludeFile "Pose.pbi"
@@ -82,7 +82,8 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
-;XIncludeFile "../controls/PopupMenu.pbi"
+; XIncludeFile "../controls/PopupMenu.pbi"
+XIncludeFile "../controls/ColorWheel.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
 XIncludeFile "../commands/Graph.pbi"
@@ -615,6 +616,7 @@ EndProcedure
                 *app\tool = Globals::#TOOL_CAMERA
               Default 
                 *app\tool = Globals::#TOOL_MAX
+                If event : ViewManager::OnEvent(*app\manager,event) : EndIf
             EndSelect
             *callback(*app)
             
@@ -639,8 +641,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 585
-; FirstLine = 564
+; CursorPosition = 5
+; FirstLine = 2
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

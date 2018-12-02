@@ -124,7 +124,7 @@ CompilerEndIf
   XIncludeFile "SampleGeometryNode.pbi"
   
   ; Topology
-  XIncludeFile "PrimitiveMeshNode.pbi"
+  XIncludeFile "SimpleTopoNode.pbi"
   XIncludeFile "TransformTopoNode.pbi"
   XIncludeFile "MergeTopoNode.pbi"
   XIncludeFile "MergeTopoArrayNode.pbi"  
@@ -140,8 +140,8 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 86
+; CursorPosition = 126
+; FirstLine = 85
 ; Folding = --
 ; EnableThread
 ; EnableXP

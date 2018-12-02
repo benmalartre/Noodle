@@ -429,7 +429,7 @@ Module ControlColor
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = Control::#CONTROL_COLOR
+    *Me\type       = Control::#COLOR
     *Me\name       = name
     *Me\gadgetID   = #Null
     *Me\posX       = x
@@ -459,8 +459,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 73
+; CursorPosition = 431
+; FirstLine = 404
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

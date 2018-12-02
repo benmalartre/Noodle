@@ -988,13 +988,13 @@ Module AlembicIObject
       CompilerEndIf
       
 
-       PolymeshGeometry::RecomputeTriangles(*geom)
+       PolymeshGeometry::ComputeTriangles(*geom)
        
        
        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
-       If Not *infos\hasnormal : PolymeshGeometry::RecomputeNormals(*geom,1.0): EndIf
+       If Not *infos\hasnormal : PolymeshGeometry::ComputeNormals(*geom,1.0): EndIf
        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
-       If Not *infos\hastangent : PolymeshGeometry::RecomputeTangents(*geom):EndIf
+       If Not *infos\hastangent : PolymeshGeometry::ComputeTangents(*geom):EndIf
       
        PolymeshGeometry::GetTopology(*geom)
        
@@ -1453,7 +1453,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1215
-; FirstLine = 1198
+; CursorPosition = 996
+; FirstLine = 990
 ; Folding = --------
 ; EnableXP

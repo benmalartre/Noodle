@@ -1031,13 +1031,13 @@ Module AlembicObject
 ;       *infos\sampleindex = frame
 ;       update.i =  Alembic::ABC_UpdatePolymeshTopoSample(*o\ptr,*infos,*mesh_sample)
 ; 
-;        PolymeshGeometry::RecomputeTriangle(*geom)
+;        PolymeshGeometry::ComputeTriangle(*geom)
 ;        
 ;        
 ;        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
-;        If Not *infos\hasnormal : PolymeshGeometry::RecomputeNormals(*geom): EndIf
+;        If Not *infos\hasnormal : PolymeshGeometry::ComputeNormals(*geom): EndIf
 ;        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
-;        If Not *infos\hastangent : PolymeshGeometry::RecomputeTangents(*geom):EndIf
+;        If Not *infos\hastangent : PolymeshGeometry::ComputeTangents(*geom):EndIf
 ;       
 ;        PolymeshGeometry::GetTopology(*geom)
 ;        
@@ -1140,7 +1140,7 @@ Module AlembicObject
 
       Alembic::ABC_UpdatePolymeshTopoSample(*o\ptr,*infos,*mesh_sample)
 
-       PolymeshGeometry::RecomputeTriangles(*geom)
+       PolymeshGeometry::ComputeTriangles(*geom)
        
        
        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
@@ -1686,8 +1686,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 322
-; FirstLine = 299
+; CursorPosition = 1142
+; FirstLine = 1138
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

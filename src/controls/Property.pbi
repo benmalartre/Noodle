@@ -9,6 +9,7 @@ XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Head.pbi"
 XIncludeFile "Knob.pbi"
+XIncludeFile "ColorWheel.pbi"
 
 ;========================================================================================
 ; Property Module Declaration
@@ -74,6 +75,7 @@ DeclareModule ControlProperty
   Declare AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*obj.Object::Object_t)
   Declare AddMatrix4Control(*Me.ControlProperty_t,name.s,label.s,*value.m4f32,*obj.Object::Object_t)
   Declare AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Declare AddColorWheelControl( *Me.ControlProperty_t,name.s)
   Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
@@ -177,7 +179,7 @@ Module ControlProperty
     StopDrawing()
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
       Protected *overchild.Control::Control_t = *Me\children(*Me\pickID)
-      If *overchild\type = Control::#CONTROL_GROUP
+      If *overchild\type = Control::#GROUP
         ControlGroup::Pick(*overchild)
       EndIf
     EndIf
@@ -209,7 +211,7 @@ Module ControlProperty
         
         For i=0 To iBound
           *son = *Me\children(i)
-          If *son\type = Control::#CONTROL_GROUP
+          If *son\type = Control::#GROUP
             AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
             VectorSourceColor(RGBA(i+1,0,0,255))
             FillPath()
@@ -341,9 +343,6 @@ Module ControlProperty
       ; ...[ FAILED ]...........................................................
      ProcedureReturn #False
     EndIf
-    
-    ; ---[ Local Variables ]----------------------------------------------------
-    Protected Me.Control::IControl     = *Me
   
     ; ---[ Check Array Space ]--------------------------------------------------
     If *Me\chilcount > ArraySize( *Me\children() )
@@ -352,7 +351,7 @@ Module ControlProperty
     EndIf
     
     ; ---[ Set Me As Control Parent ]-------------------------------------------
-    *ctl\parent = Me
+    *ctl\parent = *Me
   
     ; ---[ Append Control ]-----------------------------------------------------
     *Me\children( *Me\chilcount ) = *ctl
@@ -364,7 +363,7 @@ Module ControlProperty
     *Me\chilcount + 1
   
     ; ---[ Return The Added Control ]-------------------------------------------
-    ProcedureReturn( ctl )
+    ProcedureReturn( *ctl )
   
   EndProcedure
   
@@ -1030,7 +1029,7 @@ Module ControlProperty
     ProcedureReturn(#True)
   EndProcedure
 
-  ; ---[ Add Matrix4 Control  ]------------------------------------------
+  ; ---[ Add Color Control  ]------------------------------------------
   ;--------------------------------------------------------------------
   Procedure AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
   
@@ -1051,6 +1050,48 @@ Module ControlProperty
     ;Append(*Me, newControl::IControlLabel(name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
     ;ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
     ControlGroup::Append(*group, *color)
+  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),0)
+  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Pick_Btn","Pick",#False,0,(width-60),*Me\dy,50,21))
+  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),1)
+  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Explore_Btn","...",#False,0,(width-30),*Me\dy,50,21))
+  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),2)
+    
+    ControlGroup::RowEnd(*group)
+    ControlGroup::AppendStop(*group)
+    
+    ; Add Group to PPG
+    ;---------------------------------
+;      AddElement(*Me\groups())
+;     *Me\groups() = *group
+    Append(*Me,*group)
+    
+    ; Offset for Next Control
+    ;---------------------------------
+    *Me\dy + *group\sizY 
+    ProcedureReturn(*color)
+  EndProcedure
+  
+  ; ---[ Add ColorWheel Control  ]------------------------------------------
+  ;--------------------------------------------------------------------
+  Procedure AddColorWheelControl(*Me.ControlProperty_t,name.s)
+  
+    ; ---[ Sanity Check ]-------------------------------------------------------
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.ControlProperty::IControlProperty = *Me
+    Protected Ctl.Control::IControl
+    Protected width = GadgetWidth(*Me\gadgetID)-10
+    
+    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*obj, name, name,*Me\gadgetID, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *wheel.ControlColorWheel::ControlColorWheel_t = ControlColorWheel::New(*Me\dx,*Me\dy+2,(width-110),256)
+    
+    ; ---[ Add Parameter ]--------------------------------------------
+    ControlGroup::AppendStart(*group)
+    ControlGroup::RowStart(*group)
+    ;Append(*Me, newControl::IControlLabel(name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
+    ;ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
+    ControlGroup::Append(*group, *wheel)
   ;   *obj\SignalConnect(Ctl\SignalOnChanged(),0)
   ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Pick_Btn","Pick",#False,0,(width-60),*Me\dy,50,21))
   ;   *obj\SignalConnect(Ctl\SignalOnChanged(),1)
@@ -1719,7 +1760,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1434
-; FirstLine = 1406
+; CursorPosition = 1086
+; FirstLine = 1050
 ; Folding = --------
 ; EnableXP

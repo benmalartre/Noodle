@@ -7,7 +7,7 @@ DeclareModule ControlPopupMenu
   ;  Object ( ControlPopUpMenu_t )
   ; ----------------------------------------------------------------------------
   Structure ControlPopupMenu_t Extends Control::Control_t
-    ; CControlMenu
+    ; ControlPopupMenu
     label.s
     over.i
     down.i
@@ -33,56 +33,53 @@ Procedure hlpDraw( *Me.ControlPopUpMenu_t, xoff.i = 0, yoff.i = 0 )
   Protected tc.i = RAA_COLORA_LABEL
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  DrawingFont(FontID(Globals::#FONT_LABEL))
+  DrawingFont(FontID(Globals::#FONT_DEFAULT))
   
   Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
   
-  ; ---[ Reset Clipping ]-----------------------------------------------------
-  ResetClip()
   
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
     ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     DrawImage( ImageID(s_gui_controls_combo_up_disabled_l),             0 + xoff, 0 + yoff )
-    raaDrawImage( ImageID(s_gui_controls_combo_up_disabled_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-    raaDrawImage( ImageID(s_gui_controls_combo_up_disabled_r), *Me\sizX - 19 + xoff, 0 + yoff )
+    DrawImage( ImageID(s_gui_controls_combo_up_disabled_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
+    DrawImage( ImageID(s_gui_controls_combo_up_disabled_r), *Me\sizX - 19 + xoff, 0 + yoff )
     ; ...[ Disabled Text ]....................................................
     tc = RAA_COLORA_LABEL_DISABLED
   ; ---[ Check Over ]---------------------------------------------------------
   ElseIf *Me\over
     ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     If *Me\down
-      raaDrawImage( ImageID(s_gui_controls_combo_down_over_l),             0 + xoff, 0 + yoff )
-      raaDrawImage( ImageID(s_gui_controls_combo_down_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-      raaDrawImage( ImageID(s_gui_controls_combo_down_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_down_over_l),             0 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_down_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
+      DrawImage( ImageID(s_gui_controls_combo_down_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
       ; ...[ Negate Text ]....................................................
       tc = RAA_COLORA_LABEL_NEG
     ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     Else
-      raaDrawImage( ImageID(s_gui_controls_combo_up_over_l),             0 + xoff, 0 + yoff )
-      raaDrawImage( ImageID(s_gui_controls_combo_up_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-      raaDrawImage( ImageID(s_gui_controls_combo_up_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_up_over_l),             0 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_up_over_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
+      DrawImage( ImageID(s_gui_controls_combo_up_over_r), *Me\sizX - 19 + xoff, 0 + yoff )
     EndIf
   ; ---[ Normal State ]-------------------------------------------------------
   Else
     ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     If *Me\down
-      raaDrawImage( ImageID(s_gui_controls_combo_down_normal_l),             0 + xoff, 0 + yoff )
-      raaDrawImage( ImageID(s_gui_controls_combo_down_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-      raaDrawImage( ImageID(s_gui_controls_combo_down_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_down_normal_l),             0 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_down_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
+      DrawImage( ImageID(s_gui_controls_combo_down_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
       ; ...[ Negate Text ]....................................................
       tc = RAA_COLORA_LABEL_NEG
     ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     Else
-      raaDrawImage( ImageID(s_gui_controls_combo_up_normal_l),             0 + xoff, 0 + yoff )
-      raaDrawImage( ImageID(s_gui_controls_combo_up_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
-      raaDrawImage( ImageID(s_gui_controls_combo_up_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_up_normal_l),             0 + xoff, 0 + yoff )
+      DrawImage( ImageID(s_gui_controls_combo_up_normal_c),             6 + xoff, 0 + yoff, *Me\sizX - 25, 21 )
+      DrawImage( ImageID(s_gui_controls_combo_up_normal_r), *Me\sizX - 19 + xoff, 0 + yoff )
     EndIf
   EndIf
     
   ; ---[ Draw Label ]---------------------------------------------------------
-  raaClipBoxHole( 3 + xoff, 3 + yoff, *Me\sizX-6, *Me\sizY-6 )
-  raaDrawText( 10 + xoff, ty, *Me\label, tc )
+  DrawText( 10 + xoff, ty, *Me\label, tc )
   
 EndProcedure
 ;}
@@ -93,10 +90,10 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ OnEvent ]--------------------------------------------------------------
-Procedure OControlCombo_OnEvent( *Me.CControlCombo_t, ev_code.i, *ev_data.EventTypeDatas_t = #Null )
+Procedure OnEvent( *Me.ControlPopupMenu_t, ev_code.i, *ev_data.EventTypeDatas_t = #Null )
   
   ; ---[ Retrieve Interface ]-------------------------------------------------
-  Protected Me.CControl = *Me
+  Protected Me.IControl = *Me
 
   ; ---[ Dispatch Event ]-----------------------------------------------------
   Select ev_code
@@ -596,10 +593,10 @@ EndProcedure
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 25
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 88
 ; Folding = ------
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

@@ -23,7 +23,9 @@ DeclareModule PropertyUI
   Declare OnEvent(*Me.PropertyUI_t,event.i)
   Declare Term(*Me.PropertyUI_t)
   Declare Clear(*Me.PropertyUI_t)
-  Declare SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
+  Declare.b CheckObject3DExists(*Me.PropertyUI_t, *object.Object3D::Object3D_t)
+  Declare SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
+  Declare.b CheckNodeExists(*Me.PropertyUI_t, *node.Node::Node_t)
   Declare SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
   Declare AppendStart(*Me.PropertyUI_t)
   Declare AppendStop(*Me.PropertyUI_t)
@@ -205,11 +207,18 @@ Module PropertyUI
       ControlProperty::Clear(*prop)
     EndIf
   EndProcedure
- 
+  
   ; ----------------------------------------------------------------------------
-  ;  Setup From 3D Object
+  ;  Check 3D Object Exists
   ; ----------------------------------------------------------------------------
-  Procedure SetupFrom3DObject(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
+  Procedure.b CheckObject3DExists(*Me.PropertyUI_t, *obj.Object3D::Object3D_t)
+    ProcedureReturn #False
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Setup From Object 3D
+  ; ----------------------------------------------------------------------------
+  Procedure SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
     Clear(*Me)
     Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*Me, *object\name, *object\name, *object)
@@ -253,6 +262,31 @@ Module PropertyUI
     Next
     
     ControlProperty::AppendStop(*p)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Check Node Exists
+  ; ----------------------------------------------------------------------------
+  Procedure.b CheckNodeExists(*Me.PropertyUI_t, *node.Node::Node_t)
+    Define index.i = 0
+    If ListSize(*Me\props())
+      FirstElement(*Me\props())
+      Define *first = @*Me\props()
+    EndIf
+    
+    ForEach *Me\props()
+      If *Me\props()\object = *node
+        If ListSize(*Me\props()) > 1 And index > 0
+          Define *current = @*Me\props()
+          SwapElements(*Me\props(), *current, *first)
+          OnEvent(*Me, #PB_Event_SizeWindow)
+        EndIf
+        
+        ProcedureReturn #True
+      EndIf
+      index + 1
+    Next
+    ProcedureReturn #False
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -357,7 +391,7 @@ Module PropertyUI
       SetupFromNode(*Me,*node)
     Else
       Protected *obj.Object3D::Object3D_t = *object
-       SetupFrom3DObject(*Me,*obj)
+       SetupFromObject3D(*Me,*obj)
     EndIf
     CloseGadgetList()
   EndProcedure
@@ -466,8 +500,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 52
+; CursorPosition = 308
+; FirstLine = 271
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

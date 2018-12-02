@@ -1,80 +1,12 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
+XIncludeFile "../core/Vector.pbi"
 XIncludeFile "../ui/View.pbi"
 ; ==============================================================================
 ;  CONTROL EDIT MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlEdit 
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  ;{
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_light_edit_disabled_l.i
-  Global s_gui_controls_light_edit_disabled_c.i
-  Global s_gui_controls_light_edit_disabled_r.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_edit_normal_l.i
-  Global s_gui_controls_light_edit_normal_c.i
-  Global s_gui_controls_light_edit_normal_r.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_edit_over_l.i
-  Global s_gui_controls_light_edit_over_c.i
-  Global s_gui_controls_light_edit_over_r.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_light_edit_focused_l.i
-  Global s_gui_controls_light_edit_focused_c.i
-  Global s_gui_controls_light_edit_focused_r.i
-  ;}
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_dark_edit_disabled_l.i
-  Global s_gui_controls_dark_edit_disabled_c.i
-  Global s_gui_controls_dark_edit_disabled_r.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_edit_normal_l.i
-  Global s_gui_controls_dark_edit_normal_c.i
-  Global s_gui_controls_dark_edit_normal_r.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_edit_over_l.i
-  Global s_gui_controls_dark_edit_over_c.i
-  Global s_gui_controls_dark_edit_over_r.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_dark_edit_focused_l.i
-  Global s_gui_controls_dark_edit_focused_c.i
-  Global s_gui_controls_dark_edit_focused_r.i
-  ;}
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-  ;{
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_edit_disabled_l.i
-  Global s_gui_controls_edit_disabled_c.i
-  Global s_gui_controls_edit_disabled_r.i
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_edit_normal_l.i
-  Global s_gui_controls_edit_normal_c.i
-  Global s_gui_controls_edit_normal_r.i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_edit_over_l.i
-  Global s_gui_controls_edit_over_c.i
-  Global s_gui_controls_edit_over_r.i
-  ; ...[ Focused ]..............................................................
-  Global s_gui_controls_edit_focused_l.i
-  Global s_gui_controls_edit_focused_c.i
-  Global s_gui_controls_edit_focused_r.i
-  ;}
-  ;}
-
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlEdit_t )
@@ -127,27 +59,6 @@ DeclareModule ControlEdit
     ControlEditVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
-    
-    ; Images
-    ; (Light)
-    VIControlEdit_light_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/light.edit.disabled.png"
-    VIControlEdit_light_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/light.edit.normal.png"
-    VIControlEdit_light_over: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/light.edit.over.png"
-    VIControlEdit_light_focused: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/light.edit.focused.png"
-    
-    ; (Dark)
-    VIControlEdit_dark_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/dark.edit.disabled.png"
-    VIControlEdit_dark_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/dark.edit.normal.png"
-    VIControlEdit_dark_over: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/dark.edit.over.png"
-    VIControlEdit_dark_focused: 
-    IncludeBinary "../../rsc/skins/grey/control_edit/dark.edit.focused.png"
     
   EndDataSection
   ;}
@@ -352,10 +263,23 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  Protected tc.i = UIColor::COLOR_TEXT
+  Protected tc.i = UIColor::COLORA_TEXT
   VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
-  Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
+  Protected ty.i
+  If Len(*Me\value)
+    ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
+  Else
+    ty.i = (*Me\sizY - Globals::#FONT_SIZE_LABEL)/2 + yoff
+  EndIf
+  
+  AddPathBox(xoff-1, yoff-1, *Me\sizX+2, *Me\sizY+2)
+  VectorSourceColor(UIColor::COLORA_MAIN_BG)
+  FillPath()
+  
+  Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, 4)
+  VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+  FillPath(#PB_Path_Preserve)
   
   ; ---[ Check Positions Lookup Table ]---------------------------------------
   If *Me\lookup_dirty
@@ -382,14 +306,14 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   Protected x_end  .i = *Me\lookup(*Me\posW)
   Protected tw     .i = x_end - x_start  
   Protected tlen   .i = *Me\posW - *Me\posS
-  ; 같�[ Right Overflow ]같같같같같같같같같같같같같같같같같같같같같같같같같같�
+  ; ---[ Right Overflow ]-----------------------------------------------------
   If tw > rof
     While tw > rof
       *Me\posS + 1
       tw = x_end - *Me\lookup(*Me\posS)
     Wend
     tlen = *Me\posW - *Me\posS
-  ; 같�[ Clip Text ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
+  ; ---[ Clip Text ]----------------------------------------------------------
   Else
     Protected i_end.i = *Me\posW
     While ( tw <= rof ) And ( i_end < *Me\lookup_count )
@@ -403,62 +327,54 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   
   ; ---[ Only If Focused ]----------------------------------------------------
   If *Me\focused
-    ; ...[ Retrieve Left/Right From Strong/Weak Cursor Positions ]............
+    ; ---[ Retrieve Left/Right From Strong/Weak Cursor Positions ]------------
     Protected posL.i, posR.i, posXL.i, posXR.i
     If *Me\posG > *Me\posW
       posL = *Me\posW : posR = *Me\posG
     Else
       posL = *Me\posG : posR = *Me\posW
     EndIf
-    ; ...[ Compute Left Cursor Coordinate ]...................................
+    ; ---[ Compute Left Cursor Coordinate ]-----------------------------------
     posXL = Math::Max( 0, *Me\lookup(posL) - *Me\lookup(*Me\posS) )
-    ; ...[ Check For Selection ]..............................................
+    ; ---[ Check For Selection ]----------------------------------------------
     If posL <> posR
-      ; ...[ Has Selection ]..................................................
+      ; ---[ Has Selection ]--------------------------------------------------
       *Me\selected = #True
-      ; ...[ Compute Right Cursor Coordinate ]................................
+      ; ---[ Compute Right Cursor Coordinate ]--------------------------------
       posXR = Math::Min( tw, *Me\lookup(posR) - *Me\lookup(*Me\posS) )
     Else
-      ; ...[ Just The Caret ].................................................
+      ; ---[ Just The Caret ]-------------------------------------------------
       *Me\selected = #False
     EndIf
   EndIf
   
-  ; ---[ Reset Clipping ]-----------------------------------------------------
-;   raaResetClip()
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    MovePathCursor(0 + xoff, 0 + yoff )
-    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_l))
-    MovePathCursor(8 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_c), 255,*Me\sizX - 16, 18 )
-    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff )
-    DrawVectorImage( ImageID(s_gui_controls_edit_disabled_r))
-    ; ...[ Disabled Text ]....................................................
-    tc = UIColor::COLOR_LABEL_DISABLED
+    VectorSourceColor(RGBA(255,255,255,32))
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(2)
+    
   ; ---[ Check Focused ]------------------------------------------------------
   ElseIf *Me\focused
-    MovePathCursor(0 + xoff, 0 + yoff )
-    DrawVectorImage( ImageID(s_gui_controls_edit_focused_l))
-    MovePathCursor(8 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_focused_c), 255,*Me\sizX - 16, 18 )
-    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_focused_r))
+    VectorSourceColor(RGBA(255,0,0,32))
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(2)
+
   ; ---[ Check Over ]---------------------------------------------------------
   ElseIf *Me\over
-    MovePathCursor(0 + xoff, 0 + yoff   )
-    DrawVectorImage( ImageID(s_gui_controls_edit_over_l))
-    MovePathCursor(8 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_over_c), 255,*Me\sizX - 16, 18 )
-    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff  )
-    DrawVectorImage( ImageID(s_gui_controls_edit_over_r))
+    VectorSourceColor(RGBA(0,255,0,32))
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(2)
+
   Else
-    MovePathCursor(0 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_normal_l))
-    MovePathCursor(8 + xoff, 0 + yoff)
-    DrawVectorImage( ImageID(s_gui_controls_edit_normal_c), 255,*Me\sizX - 16, 18 )
-    MovePathCursor(*Me\sizX - 8 + xoff, 0 + yoff )
-    DrawVectorImage( ImageID(s_gui_controls_edit_normal_r))
+    VectorSourceColor(RGBA(0,0,255,32))
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(RGBA(0,0,0,32))
+    StrokePath(2)
+
   EndIf
 
   ; ---[ Handle Caret & Selection ]-------------------------------------------
@@ -495,18 +411,19 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
         CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             MovePathCursor(tx + posXL + xoff, ty)
-            AddPathLine( 1, 13, #PB_Path_Relative)
+            AddPathLine( 0, 12, #PB_Path_Relative)
             VectorSourceColor(UIColor::COLORA_CARET )
           CompilerCase #PB_OS_Linux
             MovePathCursor(tx + posXL + xoff, ty+1)
-            AddPathLine( 1, 13, #PB_Path_Relative)
+            AddPathLine( 0, 12, #PB_Path_Relative)
             VectorSourceColor(UIColor::COLORA_CARET )
           CompilerCase #PB_OS_MacOS
             MovePathCursor(tx + posXL + xoff, ty+2)
-            AddPathLine( 1, 13, #PB_Path_Relative)
+            AddPathLine( 0, 12, #PB_Path_Relative)
             VectorSourceColor(UIColor::COLORA_CARET )
         CompilerEndSelect
       EndIf
+      StrokePath(1)
     EndIf
   Else
     ; ---[ Draw Value ]-------------------------------------------------------
@@ -1067,7 +984,7 @@ Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.
   *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type         = Control::#CONTROL_EDIT
+  *Me\type         = Control::#EDIT
   *Me\name         = name
   *Me\gadgetID     = #Null
   *Me\posX         = x
@@ -1112,41 +1029,11 @@ EndProcedure
         
       ; ---[ Light ]------------------------------------------------------------
       Case Globals::#GUI_THEME_LIGHT
-        ; ...[ Disabled ].......................................................
-        s_gui_controls_edit_disabled_l = s_gui_controls_light_edit_disabled_l
-        s_gui_controls_edit_disabled_c = s_gui_controls_light_edit_disabled_c
-        s_gui_controls_edit_disabled_r = s_gui_controls_light_edit_disabled_r
-        ; ...[ Normal ].........................................................
-        s_gui_controls_edit_normal_l   = s_gui_controls_light_edit_normal_l
-        s_gui_controls_edit_normal_c   = s_gui_controls_light_edit_normal_c
-        s_gui_controls_edit_normal_r   = s_gui_controls_light_edit_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_edit_over_l     = s_gui_controls_light_edit_over_l
-        s_gui_controls_edit_over_c     = s_gui_controls_light_edit_over_c
-        s_gui_controls_edit_over_r     = s_gui_controls_light_edit_over_r
-        ; ...[ Focused ]........................................................
-        s_gui_controls_edit_focused_l  = s_gui_controls_light_edit_focused_l
-        s_gui_controls_edit_focused_c  = s_gui_controls_light_edit_focused_c
-        s_gui_controls_edit_focused_r  = s_gui_controls_light_edit_focused_r
+        
   
       ; ---[ Dark ]-------------------------------------------------------------
       Case Globals::#GUI_THEME_DARK
-        ; ...[ Disabled ].......................................................
-        s_gui_controls_edit_disabled_l = s_gui_controls_dark_edit_disabled_l
-        s_gui_controls_edit_disabled_c = s_gui_controls_dark_edit_disabled_c
-        s_gui_controls_edit_disabled_r = s_gui_controls_dark_edit_disabled_r
-        ; ...[ Normal ].........................................................
-        s_gui_controls_edit_normal_l   = s_gui_controls_dark_edit_normal_l
-        s_gui_controls_edit_normal_c   = s_gui_controls_dark_edit_normal_c
-        s_gui_controls_edit_normal_r   = s_gui_controls_dark_edit_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_edit_over_l     = s_gui_controls_dark_edit_over_l
-        s_gui_controls_edit_over_c     = s_gui_controls_dark_edit_over_c
-        s_gui_controls_edit_over_r     = s_gui_controls_dark_edit_over_r
-        ; ...[ Focused ]........................................................
-        s_gui_controls_edit_focused_l  = s_gui_controls_dark_edit_focused_l
-        s_gui_controls_edit_focused_c  = s_gui_controls_dark_edit_focused_c
-        s_gui_controls_edit_focused_r  = s_gui_controls_dark_edit_focused_r
+       
         
     EndSelect
     
@@ -1158,66 +1045,6 @@ EndProcedure
   ;  InitOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Init( )
-
-    ; ---[ Local Variable ]-----------------------------------------------------
-    Protected img.i
-    
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  LIGHT
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_light_disabled )
-    s_gui_controls_light_edit_disabled_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_light_edit_disabled_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_light_edit_disabled_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_light_normal )
-    s_gui_controls_light_edit_normal_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_light_edit_normal_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_light_edit_normal_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_light_over )
-    s_gui_controls_light_edit_over_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_light_edit_over_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_light_edit_over_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Focused ]............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_light_focused )
-    s_gui_controls_light_edit_focused_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_light_edit_focused_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_light_edit_focused_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  DARK
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_dark_disabled )
-    s_gui_controls_dark_edit_disabled_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_dark_edit_disabled_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_dark_edit_disabled_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_dark_normal )
-    s_gui_controls_dark_edit_normal_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_dark_edit_normal_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_dark_edit_normal_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_dark_over )
-    s_gui_controls_dark_edit_over_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_dark_edit_over_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_dark_edit_over_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
-    ; ...[ Focused ]............................................................
-    img = CatchImage( #PB_Any, ?VIControlEdit_dark_focused )
-    s_gui_controls_dark_edit_focused_l = GrabImage( img, #PB_Any,   0, 0,   8, 18 )
-    s_gui_controls_dark_edit_focused_c = GrabImage( img, #PB_Any,   8, 0, 157, 18 )
-    s_gui_controls_dark_edit_focused_r = GrabImage( img, #PB_Any, 165, 0,   8, 18 )
-    FreeImage( img )
    
     SetTheme(Globals::#GUI_THEME_LIGHT)
     ; ---[ OK ]-----------------------------------------------------------------
@@ -1228,36 +1055,7 @@ EndProcedure
   ;  raaGuiControlsEditTermOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Term( )
-  
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; 같�[ Free Images ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ Dark ]...............................................................
-    FreeImage( s_gui_controls_dark_edit_focused_r  )
-    FreeImage( s_gui_controls_dark_edit_focused_c  )
-    FreeImage( s_gui_controls_dark_edit_focused_l  )
-    FreeImage( s_gui_controls_dark_edit_over_r     )
-    FreeImage( s_gui_controls_dark_edit_over_c     )
-    FreeImage( s_gui_controls_dark_edit_over_l     )
-    FreeImage( s_gui_controls_dark_edit_normal_r   )
-    FreeImage( s_gui_controls_dark_edit_normal_c   )
-    FreeImage( s_gui_controls_dark_edit_normal_l   )
-    FreeImage( s_gui_controls_dark_edit_disabled_r )
-    FreeImage( s_gui_controls_dark_edit_disabled_c )
-    FreeImage( s_gui_controls_dark_edit_disabled_l )
-
-    ; ...[ Light ]..............................................................
-    FreeImage( s_gui_controls_light_edit_focused_r  )
-    FreeImage( s_gui_controls_light_edit_focused_c  )
-    FreeImage( s_gui_controls_light_edit_focused_l  )
-    FreeImage( s_gui_controls_light_edit_over_r     )
-    FreeImage( s_gui_controls_light_edit_over_c     )
-    FreeImage( s_gui_controls_light_edit_over_l     )
-    FreeImage( s_gui_controls_light_edit_normal_r   )
-    FreeImage( s_gui_controls_light_edit_normal_c   )
-    FreeImage( s_gui_controls_light_edit_normal_l   )
-    FreeImage( s_gui_controls_light_edit_disabled_r )
-    FreeImage( s_gui_controls_light_edit_disabled_c )
-    FreeImage( s_gui_controls_light_edit_disabled_l )
+ 
 
     ; ---[ OK ]-----------------------------------------------------------------
     ProcedureReturn( #True )
@@ -1276,7 +1074,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 491
-; FirstLine = 481
-; Folding = -----
+; CursorPosition = 986
+; FirstLine = 982
+; Folding = ----
 ; EnableXP

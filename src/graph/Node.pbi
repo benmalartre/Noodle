@@ -111,7 +111,7 @@ Module Node
   Protected y =  *n\posy+(Graph::#Node_TitleHeight+Graph::#Node_PortSpacing/2)
   
   ;Load Title font
-  VectorFont(FontID(Graph::font_port),12)
+  VectorFont(FontID(Globals::#FONT_DEFAULT),12)
   Protected color = *n\color
  
   
@@ -180,7 +180,7 @@ Module Node
   Next
   
   ;Draw Node Name
-  VectorFont(FontID(Graph::FONT_NODE),12 )
+  VectorFont(FontID(Globals::#FONT_BOLD),14 )
   VectorSourceColor(UIColor::COLORA_LABEL)
   MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
   AddPathText(*n\label)
@@ -215,7 +215,21 @@ Module Node
   ; Get Node ¨Position
   ;------------------------------------
   Procedure ViewSize(*n.Node_t)
-    *n\width = Math::Max(VectorTextWidth(*n\label)+50,80)
+    VectorFont(FontID(Globals::#FONT_BOLD),14 )
+    *n\width = VectorTextWidth(*n\label)+32
+    
+    VectorFont(FontID(Globals::#FONT_DEFAULT),12 )
+    Define cw.i
+    ForEach *n\inputs()
+      cw = VectorTextWidth(*n\inputs()\name + 32)
+      If cw > *n\width : *n\width = cw : EndIf
+    Next
+    
+    ForEach *n\outputs()
+      cw = VectorTextWidth(*n\outputs()\name + 32)
+      If cw > *n\width : *n\width = cw : EndIf
+    Next
+    
   EndProcedure
   
 
@@ -636,8 +650,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 53
+; CursorPosition = 113
+; FirstLine = 103
 ; Folding = ------
 ; EnableThread
 ; EnableXP

@@ -399,7 +399,7 @@ Module ControlDivot
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#CONTROL_DIVOT
+    *Me\type     = Control::#DIVOT
     *Me\name     = name
     *Me\gadgetID = #Null
     *Me\posX     = x
@@ -539,7 +539,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 169
+; CursorPosition = 401
+; FirstLine = 397
 ; Folding = ---
 ; EnableXP

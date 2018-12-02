@@ -249,7 +249,6 @@ Module SetDataNode
             If *obj\type = Object3D::#Object3D_Polymesh
               *mesh = *obj
               Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
-              
             EndIf
             
           EndIf
@@ -370,8 +369,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 270
+; CursorPosition = 243
+; FirstLine = 228
 ; Folding = --
 ; EnableThread
 ; EnableXP

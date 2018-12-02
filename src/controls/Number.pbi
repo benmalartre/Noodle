@@ -569,6 +569,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ;RemoveWindowTimer( #MainWindow, #TIMER_CARET )
       ; ---[ Not Focused Anymore }--------------------------------------------
       *Me\focused = #False
+      *Me\down = #False
       ; ---[ Show Text From Start ]-------------------------------------------
       *Me\posG = 1 : *Me\posW = 1
       ; ---[ Redraw Me ]------------------------------------------------------
@@ -1219,7 +1220,7 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type         = Control::#CONTROL_NUMBER
+  *Me\type         = Control::#NUMBER
   *Me\name         = name
   *Me\gadgetID     = #Null
   *Me\posX         = x
@@ -1275,7 +1276,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 503
-; FirstLine = 464
+; CursorPosition = 1222
+; FirstLine = 1218
 ; Folding = ----
 ; EnableXP

@@ -172,7 +172,7 @@ Module RandomNode
             rz.f = -variance + (Random(100)/50)*variance
             *v = CArray::GetValue(*vOut,i);-variance+r
             Vector3::Set(v2,rx,ry,rz)
-            Vector3::AddInPlace(*v,@v2)
+            Vector3::AddInPlace(*v,v2)
             CArray::SetValue(*vOut,i,*v)
     
           Next i
@@ -185,7 +185,7 @@ Module RandomNode
             rz.f = -variance + (Random(100)/50)*variance
             *v = CArray::GetValue(*vOut,i);-variance+r
             Vector3::Set(v2,rx,ry,rz)
-            Vector3::AddInPlace(*v,@v2)
+            Vector3::AddInPlace(*v,v2)
             CArray::SetValue(*vOut,i,*v)
     
           Next i
@@ -241,7 +241,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 170
+; CursorPosition = 174
+; FirstLine = 110
 ; Folding = --
 ; EnableXP

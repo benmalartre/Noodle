@@ -2,6 +2,7 @@
 ; Log Module Declaration
 ; -----------------------------------------
 DeclareModule Log
+  #MAX_MESSAGE = 1024
   Enumeration 
     #LOG_INFOS
     #LOG_WARNING
@@ -46,6 +47,11 @@ Module Log
   EndProcedure
   
   Procedure Message(msg.s, severity.i=#LOG_INFOS)
+    If ListSize(*LOGMACHINE\msgs()) >= #MAX_MESSAGE
+      FirstElement(*LOGMACHINE\msgs())
+      DeleteElement(*LOGMACHINE\msgs())
+    EndIf
+    LastElement(*LOGMACHINE\msgs())
     AddElement(*LOGMACHINE\msgs())
     *LOGMACHINE\msgs()\msg = msg
     *LOGMACHINE\msgs()\severity = severity
@@ -54,7 +60,9 @@ Module Log
   
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 51
+; FirstLine = 5
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

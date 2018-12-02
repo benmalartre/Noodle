@@ -24,27 +24,27 @@ DeclareModule Control
   
   ; ---[ Gadget Types ]--------------------
   Enumeration
-    #CONTROL_CHECK
-    #CONTROL_ICON
-    #CONTROL_RADIO
-    #CONTROL_COMBO
-    #CONTROL_LABEL
-    #CONTROL_DIVOT
-    #CONTROL_EDIT
-    #CONTROL_NUMBER
-    #CONTROL_GROUP
-    #CONTROL_COLORWHEEL
-    #CONTROL_COLOR
-    #CONTROL_SHADERCODE
-    #CONTROL_EXPLORER
-    #CONTROL_HEAD
+    #CHECK
+    #ICON
+    #RADIO
+    #COMBO
+    #LABEL
+    #DIVOT
+    #EDIT
+    #NUMBER
+    #GROUP
+    #COLORWHEEL
+    #COLOR
+    #SHADERCODE
+    #EXPLORER
+    #HEAD
   EndEnumeration
   
   ; ---[ Gadget State ]--------------------
   Enumeration
-    #CONTROL_DEFAULT
-    #CONTROL_OVER
-    #CONTROL_PRESSED
+    #DEFAULT
+    #OVER
+    #PRESSED
   EndEnumeration
   
   Structure EventTypeDatas_t
@@ -275,8 +275,7 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 146
+; CursorPosition = 34
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

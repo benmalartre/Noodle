@@ -184,10 +184,7 @@ Module Vector
     MovePathCursor(cx + pcx, cy + pcy)
   EndProcedure
   
-  
-EndModule
-
-Procedure Bulb()
+  Procedure Bulb()
   Define window = OpenWindow(#PB_Any, 0,0,800,800, "VECTOR")
   Define canvas = CanvasGadget(#PB_Any, 0,0,800,800)
   Define size = 32
@@ -264,11 +261,13 @@ Procedure FromFile()
 EndProcedure
 
 
+EndModule
+
 
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 202
+; CursorPosition = 262
+; FirstLine = 207
 ; Folding = ---
 ; EnableXP

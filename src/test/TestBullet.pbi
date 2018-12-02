@@ -124,7 +124,7 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
 ;   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
 ;   BulletRigidBody::BTCreateRigidBodyFrom3DObject(*ground,Bullet::#GROUNDPLANE_SHAPE,0,Bullet::*bullet_world)
   
-  Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
+  *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
   Protected *mesh.Geometry::PolymeshGeometry_t = *ground\geom
   ;PolymeshGeometry::InvertNormals(*mesh)
   Object3D::SetShader(*ground,*shader)
@@ -139,10 +139,12 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
     CArray::SetValue(*mesh\a_positions,i,pos)
   Next
   
-
+  
   *ground\deformdirty = #True
   PolymeshGeometry::SetColors(*mesh)
-  PolymeshGeometry::RecomputeNormals(*mesh,1.0)
+  PolymeshGeometry::ComputeNormals(*mesh,1.0)
+  
+  Topology::Update(*mesh\topo, *mesh\a_positions )
   
   Object3D::Freeze(*ground)
   
@@ -166,6 +168,28 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
 ;     EndWith
   
 EndProcedure
+
+
+Procedure DeformGround()
+
+  Protected *mesh.Geometry::PolymeshGeometry_t = *ground\geom
+
+  Protected i
+  Protected pos.v3f32
+  Protected *p.v3f32
+  
+  For i=0 To CArray::GetCount(*mesh\a_positions)-1
+    *p = CArray::GetValue(*mesh\a_positions,i)
+  Next
+  
+  *ground\dirty = Object3D::#DIRTY_STATE_DEFORM
+  PolymeshGeometry::SetColors(*mesh)
+  PolymeshGeometry::ComputeNormals(*mesh,1)
+  
+  Topology::Update(*mesh\base, *mesh\a_positions )
+EndProcedure
+
+
 
 
 Procedure BulletScene(*s.Program::Program_t)
@@ -251,6 +275,7 @@ Procedure Draw(*app.Application::Application_t)
     EndIf
   EndIf
   
+  DeformGround()
   BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
   
   Scene::*current_scene\dirty = #True
@@ -391,9 +416,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 253
-; FirstLine = 237
-; Folding = -
+; CursorPosition = 169
+; FirstLine = 153
+; Folding = --
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

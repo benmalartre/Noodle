@@ -345,7 +345,7 @@ Module ControlLabel
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#CONTROL_LABEL
+    *Me\type     = Control::#LABEL
     *Me\name     = name
     *Me\gadgetID = #Null
     *Me\posX     = x
@@ -372,7 +372,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 52
+; CursorPosition = 347
+; FirstLine = 317
 ; Folding = --
 ; EnableXP

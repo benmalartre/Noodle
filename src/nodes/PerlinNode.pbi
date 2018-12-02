@@ -1,5 +1,5 @@
 XIncludeFile "../core/Attribute.pbi"
-XIncludeFile "../core/Perlin.pbi"
+XIncludeFile "../core/Perlin3.pbi"
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
@@ -12,6 +12,7 @@ XIncludeFile "../objects/Object3D.pbi"
 DeclareModule PerlinNode
   Structure PerlinNode_t Extends Node::Node_t
     mode.i
+    *noise.PerlinNoise::PerlinNoise_t
   EndStructure
   
   ;------------------------------
@@ -55,7 +56,7 @@ Module PerlinNode
     Node::AddInputPort(*node,"Time Fraquency",Attribute::#ATTR_TYPE_FLOAT)
     Node::AddInputPort(*node,"Space Fraquency",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddInputPort(*node,"Complexity",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddOutputPort(*node,"Result",Attribute::#ATTR_TYPE_VECTOR3)
+    Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_VECTOR3)
     
     ForEach *node\inputs()
       Node::PortAffectByName(*node, *node\inputs()\name, "Output")
@@ -97,8 +98,6 @@ Module PerlinNode
     EndIf
           
      
-    Protected *v.v3f32
-    Protected v2.v3f32
     Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
     Define.d rx,ry,rz
     *vOut = *output\value
@@ -106,16 +105,16 @@ Module PerlinNode
     CArray::Copy(*vOut,*vIn)
     
     Protected msg.s
-    Protected *p.v3f32
+    Protected *p.v3f32, *o.v3f32
     For i=0 To CArray::GetCount(*vIn)-1
       *p = CArray::GetValue(*vIn,i)
-      rx = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\x, 3, 12, 6))
-      ry = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\y, 3, 12, 6))
-      rz = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\z, 3, 12, 6))
+;       rx = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\x, 3, 12, 6))
+;       ry = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\y, 3, 12, 6))
+;       rz = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\z, 3, 12, 6))
       msg + StrF(rx)+","+StrF(ry)+","+StrF(rz)+Chr(10)
       
-      *v = CArray::GetValue(*vOut,i);-variance+r
-      Vector3::Set(*v,rx,ry,rz)
+      *o = CArray::GetValue(*vOut,i);-variance+r
+      PerlinNoise::Eval(*node\noise, *p, *o)
 
     Next i
    MessageRequester("Perlin Node" , msg)
@@ -143,7 +142,7 @@ Module PerlinNode
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(PerlinNode,*tree,type,x,y,w,h,c)
-    
+    *Me\noise = PerlinNoise::New()
     ; ---[ Return Node ]--------------------------------------------------------
     ProcedureReturn( *Me)
     
@@ -157,8 +156,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 56
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 39
 ; Folding = --
 ; EnableXP

@@ -14,7 +14,7 @@ Wend
 
 
 
-str = "*^5g66/gh"
+str = "2^4"
 y.f = Eval::i(str)
 Debug "########## "+StrF(y)
 
@@ -285,5 +285,5 @@ Debug "########## "+StrF(y)
 ;   Func::finish()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; ExecutableFormat = Console
-; CursorPosition = 9
+; CursorPosition = 16
 ; EnableXP

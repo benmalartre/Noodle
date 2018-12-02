@@ -122,11 +122,11 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   ; bottom part
   AddPathCircle(cx, cy, #KNOB_OUTER_RADIUS)
   Select *Me\state
-    Case Control::#CONTROL_DEFAULT
+    Case Control::#DEFAULT
       VectorSourceColor(RGBA(86,86,86,255))
-    Case Control::#CONTROL_OVER
+    Case Control::#OVER
       VectorSourceColor(RGBA(92,92,92,255))
-    Case Control::#CONTROL_PRESSED
+    Case Control::#PRESSED
       VectorSourceColor(RGBA(100,100,100,255))
   EndSelect
   
@@ -135,11 +135,11 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   ; top part
   AddPathCircle(cx, cy, #KNOB_INNER_RADIUS)
   Select *Me\state
-    Case Control::#CONTROL_DEFAULT
+    Case Control::#DEFAULT
       VectorSourceColor(RGBA(64,64,64,255))
-    Case Control::#CONTROL_OVER
+    Case Control::#OVER
       VectorSourceColor(RGBA(76,76,76,255))
-    Case Control::#CONTROL_PRESSED
+    Case Control::#PRESSED
       VectorSourceColor(RGBA(80,80,80,255))
   EndSelect
   
@@ -500,7 +500,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 232
+; CursorPosition = 141
+; FirstLine = 133
 ; Folding = ---
 ; EnableXP

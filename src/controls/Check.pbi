@@ -385,12 +385,12 @@ Module ControlCheck
 ;     
 ;     *Me\VT = ?ControlCheckVT
 ;     *Me\classname = "CONTROLCHECK"
-    Object::Ini(ControlCheck)
+    Object::INI(ControlCheck)
     
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#CONTROL_CHECK
+    *Me\type     = Control::#CHECK
     *Me\name     = name
     *Me\gadgetID = #Null
     *Me\posX     = x
@@ -540,7 +540,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 130
+; CursorPosition = 392
+; FirstLine = 388
 ; Folding = ----
 ; EnableXP

@@ -27,6 +27,7 @@ DeclareModule Stack
   
   Structure Stack_t Extends Object::Object_t 
     List *levels.StackLevel_t()
+    numNodes.i
   EndStructure
   
   Declare New()
@@ -38,7 +39,7 @@ DeclareModule Stack
   Declare AddNode(*stack.Stack_t,node.StackNode,level.i)
   Declare Clear(*stack.Stack_t)
   Declare ClearLevel(*level.StackLevel_t)
-  
+  Declare.b HasNodes(*stack.Stack_t)
   DataSection
     StackVT:
     StackLevelVT:
@@ -104,6 +105,17 @@ Module Stack
     ClearList(*level\nodes())
   EndProcedure
   
+  ;------------------------------------------------------------------------------------------
+  ; Has Nodes
+  ;------------------------------------------------------------------------------------------
+  Procedure.b HasNodes(*stack.Stack_t)
+    *stack\numNodes = 0
+    ForEach *stack\levels()
+      *stack\numNodes + ListSize(*stack\levels()\nodes())
+    Next
+    ProcedureReturn Bool(*stack\numNodes > 0)
+  EndProcedure
+  
   
   ;------------------------------------------------------------------------------------------
   ; Constructor
@@ -119,6 +131,8 @@ Module Stack
     Object::INI(Stack)
     ProcedureReturn *Me
   EndProcedure
+  
+  
   
   ;------------------------------------------------------------------------------------------
   ; Destructor
@@ -173,7 +187,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 93
+; CursorPosition = 115
+; FirstLine = 81
 ; Folding = ---
 ; EnableXP

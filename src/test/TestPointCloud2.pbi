@@ -24,9 +24,9 @@ Procedure AddPointsTree(*tree.Tree::Tree_t)
   Protected *f2v.Node::Node_t = Tree::AddNode(*tree,"FloatToVector3Node",200,30,100,20,RGB(160,160,160))
   Protected *a.Node::Node_t = Tree::AddNode(*tree,"AddPointNode",400,30,100,20,RGB(160,160,160))
   
-  Protected nb = 33
-  FirstElement(*bia\inputs())
-  NodePort::SetValue(*bia\inputs(),@nb)
+;   Protected nb = 33
+;   FirstElement(*bia\inputs())
+;   NodePort::SetValue(*bia\inputs(),@nb)
   
 ;   LastElement(*g1\inputs())
 ;   NodePort::SetReference(*g1\inputs(),"Self.PointPosition")
@@ -60,7 +60,7 @@ Define ps.v3f32, pe.v3f32
   Vector3::Set(pe,10,0,0)
   PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@ps,@pe)
-  PointCloudGeometry::RandomizeColor(*obj\geom)
+;   PointCloudGeometry::RandomizeColor(*obj\geom)
 ; InstanceCloud::Setup(*obj,*s_pointcloud)
   
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
@@ -110,9 +110,8 @@ Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Prope
 
 ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
-; 
-;View::SetContent(*s1\right,*graph)
-; GraphUI::SetContent(*graph,*tree)
+
+GraphUI::SetContent(*graph,*tree)
 
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 
@@ -126,36 +125,21 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\context\ID, "makeCurrentContext" )
-  CompilerEndIf
-  If EventGadget() = *viewport\gadgetID
-    Select EventType()
-      Case #PB_EventType_KeyDown
-        Protected key = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key)
-        If key = #PB_Shortcut_Space
-;           Tree::Evaluate(*tree)
-          Scene::Update(Scene::*current_scene)
-        EndIf
-    EndSelect
-  EndIf
+  ViewportUI::SetContext(*viewport)
   
   *layer\Draw( *app\context)
   
   Define width = *app\context\width
   Define height = *app\context\height
   
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Point CLoud",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+  FTGL::EndDraw(*app\context\writer)
   
 
   ViewportUI::FlipBuffer(*viewport)
@@ -165,11 +149,11 @@ EndProcedure
 
 
 Define e.i
-
+UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 50
+; CursorPosition = 151
+; FirstLine = 97
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

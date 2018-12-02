@@ -185,7 +185,6 @@ Module Polymesh
   ; Update GL Data (position & normals)
   ;-----------------------------------------------------
   Procedure UpdateGLData(*p.Polymesh_t)
-    
      ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     Protected nbs = *geom\nbsamples
@@ -453,9 +452,9 @@ Module Polymesh
   ;{
   Procedure Update(*p.Polymesh_t)
     
-    If *p\stack 
-;       PolymeshGeometry::Reset(*p\geom)
-;       Stack::Update(*p\stack)
+    If *p\stack And Stack::HasNodes(*p\stack)
+      PolymeshGeometry::Reset(*p\geom)
+      Stack::Update(*p\stack)
     EndIf
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
@@ -463,7 +462,7 @@ Module Polymesh
       p\Setup(*p\shader)
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
-        PolymeshGeometry::RecomputeNormals(*p\geom,1.0)
+        PolymeshGeometry::ComputeNormals(*p\geom,1.0)
         glBindVertexArray(*p\vao)
         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
         UpdateGLData(*p)
@@ -559,7 +558,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 455
-; FirstLine = 450
+; CursorPosition = 187
+; FirstLine = 182
 ; Folding = ----
 ; EnableXP

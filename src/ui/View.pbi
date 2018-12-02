@@ -756,8 +756,15 @@ Module ViewManager
     Protected mx = WindowMouseX(*manager\window)
     Protected my = WindowMouseY(*manager\window)
     
+    Protected *old.View::View_t = *manager\active
     Protected *active.View::View_t = Pick(*manager, mx, my)
-
+    If *old And *old <> *active
+      If *old\content And IsGadget(*old\content\gadgetID)
+        PostEvent(#PB_Event_Gadget, *manager\window, *old\content\gadgetID, #PB_EventType_LostFocus)
+      EndIf
+      ;View::OnEvent(*old, #PB_EventType_LostFocus)
+    EndIf
+    
     Select event
       Case #PB_Event_Gadget
         If *active
@@ -956,7 +963,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 837
-; FirstLine = 792
+; CursorPosition = 763
+; FirstLine = 744
 ; Folding = -------
 ; EnableXP

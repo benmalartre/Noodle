@@ -85,7 +85,7 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
 
   *ground\deformdirty = #True
   PolymeshGeometry::SetColors(*mesh)
-  PolymeshGeometry::RecomputeNormals(*mesh,1.0)
+  PolymeshGeometry::ComputeNormals(*mesh,1.0)
   
   Object3D::Freeze(*ground)
   
@@ -324,7 +324,7 @@ Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 87
-; FirstLine = 37
+; FirstLine = 83
 ; Folding = --
 ; EnableThread
 ; EnableXP

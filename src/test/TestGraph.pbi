@@ -119,19 +119,7 @@ Scene::Setup(Scene::*current_scene,*app\context)
 Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   
-    If EventGadget() = *viewport\gadgetID
-    Select EventType()
-      Case #PB_EventType_KeyDown
-        Protected key = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key)
-        If key = #PB_Shortcut_Space
-          Scene::Update(Scene::*current_scene)
-;           Tree::Evaluate(*tree)
-;           Scene::Setup(Scene::*current_scene,*app\context)
-;           Scene::Update(Scene::*current_scene)
-        EndIf
-    EndSelect
-  EndIf
-  
+  Scene::Update(Scene::*current_scene)
   *layer\Draw( *app\context)
   
   FTGL::BeginDraw(*app\context\writer)
@@ -152,7 +140,7 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 101
+; CursorPosition = 121
 ; FirstLine = 84
 ; Folding = -
 ; EnableXP

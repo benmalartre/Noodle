@@ -300,8 +300,11 @@ Module GraphUI
     If *node
       ForEach *manager\uis()
         If *manager\uis()\name = "Property"
-         Protected *property.PropertyUI::PropertyUI_t = *manager\uis()
-         PropertyUI::Setup(*manager\uis(),*node)
+          Protected *property.PropertyUI::PropertyUI_t = *manager\uis()
+          If Not PropertyUI::CheckNodeExists(*property, *node)
+            PropertyUI::Setup(*manager\uis(),*node)
+          EndIf
+          
          Break
        EndIf
      Next
@@ -644,8 +647,15 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   Procedure TerminateConnecter(*Me.GraphUI_t)
     If *Me\focus
+      StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+      TranslateCoordinates(*Me\posx, *Me\posy)
+      ScaleCoordinates(*Me\zoom, *Me\zoom)
+      x = ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
+      y = ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
+      StopVectorDrawing()
+      
       ;Check For connection succeded
-      Protected s.i = Node::Pick(*Me\focus,*Me\mousex,*Me\mousey,#True)
+      Protected s.i = Node::Pick(*Me\focus,x,y,#True)
       If s.i = Graph::#Graph_Selection_Port
         If Connexion::Connect(*Me\connecter,*Me\focus\port,#True)
           Tree::ConnectNodes(*Me\tree,*Me\tree\current,*Me\connecter\start,*Me\connecter\end,#True)
@@ -655,7 +665,7 @@ Module GraphUI
     Else
       If *Me\depth>0
         Protected *compound.CompoundNode::CompoundNode_t = *Me\tree\current
-        s = CompoundNode::Pick(*compound,*Me\gadgetID,*Me\mousex,*Me\mousey)
+        s = CompoundNode::Pick(*compound,*Me\gadgetID,x,y)
         If s = Graph::#Graph_Selection_ExposeOutput
           CompoundNode::ExposePort(*compound,*Me\connecter\start)
         ElseIf s = Graph::#Graph_Selection_ExposeInput
@@ -1599,7 +1609,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 381
-; FirstLine = 384
+; CursorPosition = 306
+; FirstLine = 291
 ; Folding = --------
 ; EnableXP

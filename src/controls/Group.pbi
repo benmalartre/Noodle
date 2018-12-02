@@ -344,7 +344,7 @@ Procedure hlpDrawPickImage( *Me.ControlGroup_t )
       
     *son = *Me\children(i)
     son = *son
-    If *son\type = Control::#CONTROL_GROUP
+    If *son\type = Control::#GROUP
       
     Else
       AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
@@ -906,7 +906,7 @@ EndProcedure
     If width < 50 : width = 50 : EndIf
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = Control::#CONTROL_GROUP
+    *Me\type       = Control::#GROUP
     *Me\name       = name
     If Not IsGadget(canvasID)
       *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
@@ -946,7 +946,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 525
-; FirstLine = 484
+; CursorPosition = 908
+; FirstLine = 886
 ; Folding = ---0
 ; EnableXP

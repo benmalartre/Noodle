@@ -419,7 +419,7 @@ Module ControlCombo
     *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type        = Control::#CONTROL_COMBO
+    *Me\type        = Control::#COMBO
     *Me\name        = name
     *Me\gadgetID    = #Null
     *Me\posX        = x
@@ -645,7 +645,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 208
-; FirstLine = 204
+; CursorPosition = 421
+; FirstLine = 417
 ; Folding = ---
 ; EnableXP

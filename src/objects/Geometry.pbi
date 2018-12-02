@@ -207,6 +207,24 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
+  ; Edge Indices 
+  ; --------------------------------------------
+  ;{
+  Structure EdgeIndices_t
+    vertices.l[2]
+  EndStructure
+  ;}
+  
+  ; --------------------------------------------
+  ; Vertex Polygons Indices
+  ; --------------------------------------------
+  ;{
+  Structure VertexPolygonIndices_t
+    Array polygons.l(0)
+  EndStructure
+  ;}
+  
+  ; --------------------------------------------
   ; Polygon
   ; --------------------------------------------
   ;{
@@ -274,6 +292,7 @@ DeclareModule Geometry
     *a_edgeindices.CArray::CArrayLong
     *a_triangleareas.CArray::CArrayFloat
     *a_polygonareas.CArray::CArrayFloat
+    *a_islands.CArray::CArrayLong
     
     *topo.Topology_t
     *base.Topology_t
@@ -417,7 +436,7 @@ DeclareModule Geometry
     
   EndStructure
   
-  Declare RecomputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
+  Declare ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
   Declare GetNbPoints(*geom.Geometry_t)
   Declare GetParentObject3D(*Me.Geometry_t)
   Declare ConstructPlaneFromThreePoints(*Me.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
@@ -429,7 +448,7 @@ EndDeclareModule
 ; Geometry Module Implementation
 ;========================================================================================
 Module Geometry
-  Procedure RecomputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
+  Procedure ComputeBoundingBox(*geom.Geometry_t, worldSpace.b=#False, *m.m4f32=#Null)
     If Not *geom Or Not *geom\nbpoints
       ProcedureReturn
     EndIf
@@ -602,7 +621,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 234
+; CursorPosition = 450
+; FirstLine = 447
 ; Folding = -----
 ; EnableXP

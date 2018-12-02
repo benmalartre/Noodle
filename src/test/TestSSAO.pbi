@@ -479,7 +479,7 @@ If Time::Init()
   CArray::SetCount(*noise,noise_size)
   Define *n.v3f32 
   For i=0 To noise_size-1
-    *n = CArray::GetPtr(*noise,i)
+    *n = CArray::GetValue(*noise,i)
     Vector3::Set(*n,Random(100)*0.02-1,Random(100)*0.02-1,0)
     Vector3::NormalizeInPlace(*n)
   Next i
@@ -505,8 +505,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 418
-; FirstLine = 378
+; CursorPosition = 468
+; FirstLine = 451
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

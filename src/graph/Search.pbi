@@ -137,11 +137,20 @@ Module NodeSearch
                     *Me\selected = *Me\nodes()
                   EndIf
                   quit = #True
-              EndSelect
-              
                   
+              EndSelect
+
             Case *Me\input
               UpdateList(*Me)
+              
+            Default
+              Select EventType()
+                Case #PB_EventType_LeftClick
+                  If EventWindow() <> *Me\window
+                    quit = #True
+                  EndIf
+              EndSelect
+              
           EndSelect
           
               
@@ -159,8 +168,8 @@ Module NodeSearch
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 45
+; CursorPosition = 152
+; FirstLine = 104
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

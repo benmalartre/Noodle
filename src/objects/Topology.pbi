@@ -20,6 +20,7 @@ DeclareModule Topology
   Declare MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
   Declare Extrusion(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,closed.b)
   Declare Cap(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,ID.i=0,reusepoints.b=#True,flip.b=#False)
+  Declare Update(*topo.Topology_t, *vertices.CArray::CArrayV3F32)
 EndDeclareModule
 
 ;========================================================================================
@@ -65,6 +66,15 @@ Module Topology
       CArray::Copy(*topo\faces,*faces)
     Else
       Clear(*topo)
+    EndIf
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Update
+  ; ----------------------------------------------------------------------------
+  Procedure Update(*topo.Topology_t,*vertices.CArray::CArrayV3F32) 
+    If CArray::GetCount(*vertices)>0 And *vertices\itemCount = *topo\vertices\itemCount
+      CArray::Copy(*topo\vertices,*vertices)
     EndIf
   EndProcedure
   
@@ -377,6 +387,7 @@ Module Topology
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
+; CursorPosition = 76
+; FirstLine = 26
 ; Folding = ---
 ; EnableXP

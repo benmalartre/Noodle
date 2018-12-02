@@ -22,7 +22,7 @@ DeclareModule Box
   Declare.b IntersectSphere(*Me.Box_t, *sphere.Sphere_t)
   Declare.b Union(*Me.Box_t, *other.Box_t)
   Declare.f SquareDistance(*Me.Box_t, *point.v3f32)
-
+  Declare GetMatrixRepresentation(*Me.Box_t, *m.m4f32)
 EndDeclareModule
 
 ; ============================================================================
@@ -339,10 +339,21 @@ Module Box
     
   EndProcedure
   
+  ;---------------------------------------------------------
+  ; Get Matrix Representation
+  ;---------------------------------------------------------
+  Procedure GetMatrixRepresentation(*Me.Geometry::Box_t, *m.m4f32)
+    Define s.v3f32
+    Matrix4::SetIdentity(*m)
+    Vector3::Scale(s, *Me\extend, 2)
+    Matrix4::SetScale(*m, s)
+    Matrix4::SetTranslation(*m, *Me\origin)
+  EndProcedure
+  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 82
+; CursorPosition = 344
+; FirstLine = 297
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

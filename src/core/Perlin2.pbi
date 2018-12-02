@@ -78,16 +78,16 @@ Module Perlin
 		ProcedureReturn u+v; // Use the last 2 bits to decide if u and v are positive or negative.  Then return their addition.
 	EndProcedure
 	
-	Procedure.d fade(t.d) 
+	Macro fade(_t) 
 		; Fade function As defined by Ken Perlin.  This eases coordinate values
 		; so that they will "ease" towards integral values.  This ends up smoothing
 		; the final output.
-		ProcedureReturn t * t * t * (t * (t * 6 - 15) + 10);			// 6t^5 - 15t^4 + 10t^3
-	EndProcedure
+		((_t) * (_t) * (_t) * ((_t) * ((_t) * 6 - 15) + 10));			// 6t^5 - 15t^4 + 10t^3
+	EndMacro
 	
-	Procedure.d lerp(a.d,b.d,x.d)
-		ProcedureReturn a + x * (b - a);
-	EndProcedure
+	Macro lerp(_a,_b,_x)
+		((_a) + (_x) * ((_b) - (_a)))
+	EndMacro
 	
 	Procedure.d perlin(x.d,y.d,z.d) 
 	  ; If we have any Repeat on, change the coordinates To their "local" repetitions
@@ -138,7 +138,7 @@ Module Perlin
   
   Procedure DoRepeat(inDR.i = -1) 
 	  Static DR.i
-		DR = inDR;
+		DR = inDR
 	EndProcedure
 	
 
@@ -172,8 +172,8 @@ Module Perlin
 	
 EndModule
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 98
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 87
+; FirstLine = 72
 ; Folding = --
 ; EnableXP
