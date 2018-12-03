@@ -82,8 +82,24 @@ DeclareModule Handle
   #CUBE_NUM_EDGES =12
   DataSection
     HandleVT:
-    
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   	shape_cube_positions:
+  	Data.GLfloat -0.5,-0.5,-0.5,0
+  	Data.GLfloat 0.5,-0.5,-0.5,0
+  	Data.GLfloat -0.5,0.5,-0.5,0
+  	Data.GLfloat 0.5,0.5,-0.5,0
+  	Data.GLfloat -0.5,-0.5,0.5,0
+  	Data.GLfloat 0.5,-0.5,0.5,0
+  	Data.GLfloat -0.5,0.5,0.5,0
+  	Data.GLfloat 0.5,0.5,0.5,0
+  	
+  	shape_cursor_positions:
+  	Data.GLfloat -1,0,0,0
+  	Data.GLfloat 1,0,0,0
+  	Data.GLfloat 0,-1,0,0
+  	Data.GLfloat 0,1,0,0
+  CompilerElse
+    shape_cube_positions:
   	Data.GLfloat -0.5,-0.5,-0.5
   	Data.GLfloat 0.5,-0.5,-0.5
   	Data.GLfloat -0.5,0.5,-0.5
@@ -92,6 +108,14 @@ DeclareModule Handle
   	Data.GLfloat 0.5,-0.5,0.5
   	Data.GLfloat -0.5,0.5,0.5
   	Data.GLfloat 0.5,0.5,0.5
+    
+    shape_cursor_positions:
+  	Data.GLfloat -1,0,0
+  	Data.GLfloat 1,0,0
+  	Data.GLfloat 0,-1,0
+  	Data.GLfloat 0,1,0
+  	
+ CompilerEndIf
   
   	shape_cube_indices:
   	Data.GLuint 0,2,3
@@ -120,13 +144,7 @@ DeclareModule Handle
   	Data.GLuint 3,7
   	Data.GLuint 7,5
   	Data.GLuint 6,7
-  	
-  	shape_cursor_positions:
-  	Data.GLfloat -1,0,0
-  	Data.GLfloat 1,0,0
-  	Data.GLfloat 0,-1,0
-  	Data.GLfloat 0,1,0
-  
+
   EndDataSection
   
   Declare Clean(*Me.Handle_t)
@@ -137,6 +155,8 @@ DeclareModule Handle
   Declare TranslateHandle(*Me.Handle_t)
   Declare RotateHandle(*Me.Handle_t)
   Declare DirectedHandle(*Me.Handle_t)
+  Declare PickScale(*Me.Handle_t, *ray.Geometry::Ray_t)
+  Declare PickRotate(*Me.Handle_t, *ray.Geometry::Ray_t)
   Declare PickTranslate(*Me.Handle_t, *ray.Geometry::Ray_t)
   Declare Resize(*Me.Handle_t,*camera.Camera::Camera_t)
   Declare SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
@@ -200,6 +220,12 @@ Module Handle
       Case Globals::#TOOL_TRANSLATE
         PickTranslate(*Me, *ray)
         
+      Case Globals::#TOOL_ROTATE
+        PickRotate(*Me, *ray)
+        
+      Case Globals::#TOOL_SCALE
+        PickScale(*Me, *ray)
+        
     EndSelect
     
   EndProcedure
@@ -237,7 +263,7 @@ Module Handle
       Protected v.v3f32
       
       Protected *datas = ?shape_cube_positions
-      Protected size_p.i = 12
+      Protected size_p.i = SizeOf(v3f32)
       For i=0 To nbp-3
         Vector3::Set(v,PeekF(*datas +i*size_p)+30,PeekF(*datas+i*size_p+4),PeekF(*datas+i*size_p+8))
         Vector3::MulByMatrix4InPlace(v,offset)
@@ -508,14 +534,19 @@ Module Handle
     glBindBuffer(#GL_ARRAY_BUFFER,vbo)
     Protected GLfloat_s.GLfloat
    
-    Protected size_t =*shape\nbp*SizeOf(GLfloat_s)*3
+    Protected size_t =*shape\nbp*SizeOf(v3f32)
 
     ; Push Buffer to GPU
     glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*shape\positions,0),#GL_DYNAMIC_DRAW)
     
     ; Attibute Position
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerElse
+      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerEndIf
+    
     
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(*Me\shader\pgm,"view")
@@ -1078,6 +1109,60 @@ Module Handle
   EndProcedure
   
   ;-----------------------------------------------------------------------------
+  ; Pick Scale
+  ;-----------------------------------------------------------------------------
+  Procedure PickScale(*Me.Handle_t, *ray.Geometry::ray_t)
+    Protected enterDistance.f, exitDistance.f
+    Protected cylinder.Geometry::Cylinder_t
+    Protected pos.v3f32
+    Vector3::SetFromOther(cylinder\position, *Me\globalT\t\pos)
+    Vector3::Set(cylinder\axis, 1,0,0)
+    cylinder\radius = 0.01
+    
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_X)
+    EndIf
+    
+    Vector3::Set(cylinder\axis, 0,1,0)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Y)
+    EndIf
+
+    Vector3::Set(cylinder\axis,0,0,1)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Z)
+    EndIf
+    
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Pick Rotate
+  ;-----------------------------------------------------------------------------
+  Procedure PickRotate(*Me.Handle_t, *ray.Geometry::ray_t)
+    Protected enterDistance.f, exitDistance.f
+    Protected cylinder.Geometry::Cylinder_t
+    Protected pos.v3f32
+    Vector3::SetFromOther(cylinder\position, *Me\globalT\t\pos)
+    Vector3::Set(cylinder\axis, 0.1,0,0)
+    cylinder\radius = 1
+    
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_X)
+    EndIf
+    
+    Vector3::Set(cylinder\axis, 0,0.1,0)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Y)
+    EndIf
+
+    Vector3::Set(cylinder\axis,0,0,0.1)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
+      SetActiveAxis(*Me, #Handle_Active_Z)
+    EndIf
+    
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
   ; Pick Translate
   ;-----------------------------------------------------------------------------
   Procedure PickTranslate(*Me.Handle_t, *ray.Geometry::ray_t)
@@ -1088,17 +1173,17 @@ Module Handle
     Vector3::Set(cylinder\axis, 1,0,0)
     cylinder\radius = 0.01
     
-    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
       SetActiveAxis(*Me, #Handle_Active_X)
     EndIf
     
     Vector3::Set(cylinder\axis, 0,1,0)
-    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
       SetActiveAxis(*Me, #Handle_Active_Y)
     EndIf
 
     Vector3::Set(cylinder\axis,0,0,1)
-    If Ray::CylinderIntersection(*ray, @cylinder, @enterDistance, @exitDistance)
+    If Ray::CylinderIntersection(*ray, cylinder, @enterDistance, @exitDistance)
       SetActiveAxis(*Me, #Handle_Active_Z)
     EndIf
     
@@ -1109,7 +1194,7 @@ Module Handle
   ;----------------------------------------------------------------
   Procedure OnEvent(*Me.Handle_t,gadget)
     
-;      
+     
 ;      Select EventType()
 ;       Case #PB_EventType_MouseMove
 ;         
@@ -1176,7 +1261,7 @@ Module Handle
 ;         delta = GetGadgetAttribute(gadget,#PB_OpenGL_WheelDelta)
 ;         Dolly(*Me,delta*10,delta*10,width,height)
 ;     EndSelect
-;    
+   
     
   EndProcedure
   
@@ -1233,7 +1318,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 610
-; FirstLine = 580
-; Folding = ------
+; CursorPosition = 158
+; FirstLine = 129
+; Folding = -------
 ; EnableXP

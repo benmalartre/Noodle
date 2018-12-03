@@ -197,18 +197,50 @@ Module ViewportUI
         height = GadgetHeight(*Me\gadgetID)
 
         Select EventType()
+          Case #PB_EventType_KeyDown
+            Select GetGadgetAttribute(*Me\gadgetID, #PB_OpenGL_Key)
+              Case #PB_Shortcut_S
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+                *Me\tool = Globals::#TOOL_SCALE
+              Case #PB_Shortcut_R
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+                *Me\tool = Globals::#TOOL_ROTATE
+              Case #PB_Shortcut_T
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+                *Me\tool = Globals::#TOOL_TRANSLATE
+            EndSelect
+            
+                
+;                 Case #PB_Event_Menu
+;         Select EventMenu()
+;           Case Globals::#SHORTCUT_SCALE
+;             Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_SCALE)
+;             *Me\tool = Globals::#TOOL_SCALE
+;           Case Globals::#SHORTCUT_ROTATE
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+;             *Me\tool = Globals::#TOOL_ROTATE
+;           Case Globals::#SHORTCUT_TRANSLATE
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+;             *Me\tool = Globals::#TOOL_TRANSLATE
+;           Case Globals::#SHORTCUT_CAMERA
+;             Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_CAMERA)
+;             *Me\tool = Globals::#TOOL_CAMERA
+;           Case Globals::#SHORTCUT_SELECT
+;             Handle::SetActiveTool(*Me\handle, 0)
+;             *Me\tool = Globals::#TOOL_SELECT
+;           EndSelect
           Case #PB_EventType_Focus
             *Me\context\focus = #True
-            AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
-            AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
-            AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
 ;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
                     
           Case #PB_EventType_LostFocus
             *Me\context\focus = #False
-            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
-            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
-            RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
+;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
+;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
+;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
                     
           Case #PB_EventType_MouseMove
@@ -296,24 +328,24 @@ Module ViewportUI
 
         EndSelect
         
-      Case #PB_Event_Menu
-        Select EventMenu()
-          Case Globals::#SHORTCUT_SCALE
-            Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_SCALE)
-            *Me\tool = Globals::#TOOL_SCALE
-          Case Globals::#SHORTCUT_ROTATE
-            Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
-            *Me\tool = Globals::#TOOL_ROTATE
-          Case Globals::#SHORTCUT_TRANSLATE
-            Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
-            *Me\tool = Globals::#TOOL_TRANSLATE
-          Case Globals::#SHORTCUT_CAMERA
-            Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_CAMERA)
-            *Me\tool = Globals::#TOOL_CAMERA
-          Case Globals::#SHORTCUT_SELECT
-            Handle::SetActiveTool(*Me\handle, 0)
-            *Me\tool = Globals::#TOOL_SELECT
-          EndSelect
+;       Case #PB_Event_Menu
+;         Select EventMenu()
+;           Case Globals::#SHORTCUT_SCALE
+;             Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_SCALE)
+;             *Me\tool = Globals::#TOOL_SCALE
+;           Case Globals::#SHORTCUT_ROTATE
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+;             *Me\tool = Globals::#TOOL_ROTATE
+;           Case Globals::#SHORTCUT_TRANSLATE
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+;             *Me\tool = Globals::#TOOL_TRANSLATE
+;           Case Globals::#SHORTCUT_CAMERA
+;             Handle::SetActiveTool(*Me\handle,  Globals::#TOOL_CAMERA)
+;             *Me\tool = Globals::#TOOL_CAMERA
+;           Case Globals::#SHORTCUT_SELECT
+;             Handle::SetActiveTool(*Me\handle, 0)
+;             *Me\tool = Globals::#TOOL_SELECT
+;           EndSelect
 
     EndSelect
   EndProcedure
@@ -644,7 +676,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 169
+; CursorPosition = 359
+; FirstLine = 351
 ; Folding = -----
 ; EnableXP

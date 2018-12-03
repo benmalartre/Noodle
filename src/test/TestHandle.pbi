@@ -78,8 +78,6 @@ Procedure Draw(*app.Application::Application_t)
   Light::Update(*light)
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
-  ViewportUI::SetHandleTool(*viewport, *app\tool)
-  *viewport\tool = *app\tool
   ViewportUI::Draw(*viewport, *app\context)
 
   FTGL::BeginDraw(*app\context\writer)
@@ -101,7 +99,7 @@ Procedure Draw(*app.Application::Application_t)
   
 
   FTGL::EndDraw(*app\context\writer)
-    ViewportUI::FlipBuffer(*viewport)
+  ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
  
@@ -116,7 +114,7 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("TestMesh",width,height)
+   *app = Application::New("Test Handle",width,height)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
@@ -158,8 +156,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 76
+; CursorPosition = 79
+; FirstLine = 55
 ; Folding = -
 ; EnableThread
 ; EnableXP

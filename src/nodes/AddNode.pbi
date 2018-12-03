@@ -137,7 +137,6 @@ Module AddNode
       ; Vector 3
       ;....................................................
       Case Attribute::#ATTR_TYPE_VECTOR3
-        Protected v.v3f32
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
         *vOut = *output\value
         *vIn = NodePort::AcquireInputData(*node\inputs())
@@ -153,13 +152,13 @@ Module AddNode
               For i=0 To CArray::GetCount(*vOut)-1
                 *p1 = CArray::GetValue(*vOut,i)
                 *p2 = CArray::GetValue(*vIn,0)
-                Vector3::Add(v,*p1,*p2)
+                Vector3::AddInPlace(*p1,*p2)
               Next i
             Else
               For i=0 To CArray::GetCount(*vIn)-1
                 *p1 = CArray::GetValue(*vOut,i)
                 *p2 = CArray::GetValue(*vIn,i)
-                Vector3::Add(v, *p1, *p2)
+                Vector3::AddInPlace(*p1, *p2)
                 If i=CArray::GetCount(*vOut)-1 : Break : EndIf
                 
               Next i
@@ -218,8 +217,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 99
+; CursorPosition = 138
+; FirstLine = 114
 ; Folding = --
 ; EnableThread
 ; EnableXP

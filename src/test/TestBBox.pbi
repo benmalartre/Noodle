@@ -27,7 +27,7 @@ Define T.d = Time::Get()
 Define i
 Define msg.s
 For i=0 To 12:
-  Geometry::RecomputeBoundingBox(*geom, #True, *worldSpace)
+  Geometry::ComputeBoundingBox(*geom, #True, *worldSpace)
   msg.s + StrD(Time::Get() - T)+Chr(10)
   msg + "ORIGIN : "+Vector3::ToString(*geom\bbox\origin)+Chr(10)
   msg + "EXTEND : "+Vector3::ToString(*geom\bbox\extend)+Chr(10)
@@ -40,8 +40,7 @@ MessageRequester("Time", msg)
 
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 16
-; FirstLine = 4
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 29
 ; EnableXP
 ; Constant = #USE_SSE=1

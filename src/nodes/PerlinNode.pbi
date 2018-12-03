@@ -91,10 +91,11 @@ Module PerlinNode
     
     Protected i.i
     Protected time.f = Time::currentframe
+    Protected seed.i = CArray::GetValueI(*seedArray,0)
     If CArray::GetValueB(*timeVaryingArray,0)
-      RandomSeed(CArray::GetValueI(*seedArray,0)+time+i)
+      *node\noise\seed = seed+time
     Else
-      RandomSeed(CArray::GetValueI(*seedArray,0)+i)
+      *node\noise\seed = seed
     EndIf
           
      
@@ -104,50 +105,37 @@ Module PerlinNode
     *vIn = NodePort::AcquireInputData(*positionPort)
     CArray::Copy(*vOut,*vIn)
     
-    Protected msg.s
-    Protected *p.v3f32, *o.v3f32
     For i=0 To CArray::GetCount(*vIn)-1
-      *p = CArray::GetValue(*vIn,i)
-;       rx = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\x, 3, 12, 6))
-;       ry = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\y, 3, 12, 6))
-;       rz = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise1D(*p\z, 3, 12, 6))
-      msg + StrF(rx)+","+StrF(ry)+","+StrF(rz)+Chr(10)
-      
-      *o = CArray::GetValue(*vOut,i);-variance+r
-      PerlinNoise::Eval(*node\noise, *p, *o)
-
+      PerlinNoise::Eval(*node\noise, CArray::GetValue(*vIn,i), CArray::GetValue(*vOut,i))
     Next i
-   MessageRequester("Perlin Node" , msg)
-  
+
   EndProcedure
   
   Procedure Terminate(*node.PerlinNode_t)
   
   EndProcedure
   
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
   Procedure Delete(*node.PerlinNode_t)
+    PerlinNoise::Delete(*node\noise)
     FreeMemory(*node)
   EndProcedure
   
   
   ; ============================================================================
-  ;  CONSTRUCTORS
+  ;  CONSTRUCTOR
   ; ============================================================================
-  ;{
-  ; ---[ Heap & stack]-----------------------------------------------------------------
   Procedure.i New(*tree.Tree::Tree_t,type.s="PerlinNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
-    ; ---[ Allocate Node Memory ]---------------------------------------------
     Protected *Me.PerlinNode_t = AllocateMemory(SizeOf(PerlinNode_t))
-    
-    ; ---[ Init Node]----------------------------------------------
     Node::INI(PerlinNode,*tree,type,x,y,w,h,c)
     *Me\noise = PerlinNoise::New()
-    ; ---[ Return Node ]--------------------------------------------------------
     ProcedureReturn( *Me)
     
   EndProcedure
-  ;}
+
   
   Class::DEF(PerlinNode)
 EndModule
@@ -157,7 +145,6 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 39
+; CursorPosition = 137
 ; Folding = --
 ; EnableXP
