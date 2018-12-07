@@ -11,7 +11,10 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -55,9 +58,9 @@ Procedure AddNull(*parent.Object3D::Object3D_t,name.s,x.f,y.f,z.f)
   Debug "###### SET TRANSLATION XYZ VALUES :  "+StrF(x)+","+StrF(y)+","+StrF(z)
   Object3D::AddChild(*parent,*n)
   Protected q.q4f32
-  Quaternion::SetIdentity(@q)
+  Quaternion::SetIdentity(q)
   Transform::SetTranslationFromXYZValues(*t,x,y,z)
-  Transform::SetRotationFromQuaternion(*t,@q)
+  Transform::SetRotationFromQuaternion(*t,q)
   Object3D::SetLocalTransform(*n,*t)
   Object3D::UpdateTransform(*n,*parent\globalT)
   ProcedureReturn *n
@@ -168,8 +171,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 115
+; CursorPosition = 62
+; FirstLine = 56
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

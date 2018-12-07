@@ -24,6 +24,7 @@ DeclareModule Utils
   Declare BuildMatrixArray(*io.CArray::CArrayM4F32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,*up.v3f32)
   Declare RotateVector(*v.v3f32,*q.q4f32,*io.v3f32)
   Declare DirectionToRotation(*io.m3f32,*dir.v3f32,*up.v3f32=#Null)
+  
 EndDeclareModule
 
 Module Utils
@@ -294,7 +295,7 @@ Module Utils
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 22
+; CursorPosition = 292
+; FirstLine = 235
 ; Folding = ---
 ; EnableXP

@@ -733,11 +733,11 @@ Module Light
     glBindVertexArray(*Me\vao)
     
     ; Set Wireframe Color
-    If *Me\selected
-      glUniform3f(*Me\u_color,1,1,1)
-    Else
+;     If *Me\selected
+;       glUniform3f(*Me\u_color,1,1,1)
+;     Else
       glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
-    EndIf
+;     EndIf
     
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
     
@@ -1069,7 +1069,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 777
-; FirstLine = 169
+; CursorPosition = 739
+; FirstLine = 127
 ; Folding = d+e--
 ; EnableXP

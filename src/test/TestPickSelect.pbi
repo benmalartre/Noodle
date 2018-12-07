@@ -69,16 +69,26 @@ Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
 EndProcedure
 
 
-; Draw
+; Update
 ;--------------------------------------------
-Procedure Draw(*app.Application::Application_t)
+Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
   *select\mouseX = *viewport\mx
   *select\mouseY = *viewport\height -*viewport\my
+  
+  
+  If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
+    If EventType() = #PB_EventType_LeftClick
+      LayerSelection::Pick(*select)
+    EndIf
+  EndIf
+  
+  LayerDefault::Draw(*layer, *app\context)
   LayerSelection::Draw(*select, *app\context)
+  
   
 ;   LayerDefault::Draw(*layer, *app\context)
   FTGL::BeginDraw(*app\context\writer)
@@ -86,6 +96,8 @@ Procedure Draw(*app.Application::Application_t)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  Define numSelected = MapSize(*select\selection\selected())
+  FTGL::Draw(*app\context\writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
@@ -120,9 +132,13 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   *select = LayerSelection::New(800,600,*app\context,*app\camera)
-
+  *select\selection = Scene::*current_scene\selection
+  
+  
   Global *root.Model::Model_t = Model::New("Model")
   RandomBunnies(2048, -2, *root)
+  
+  
     
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
@@ -137,11 +153,11 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   Scene::Update(Scene::*current_scene)
-  Application::Loop(*app, @Draw())
+  Application::Loop(*app, @Update())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 70
+; CursorPosition = 89
+; FirstLine = 63
 ; Folding = -
 ; EnableThread
 ; EnableXP

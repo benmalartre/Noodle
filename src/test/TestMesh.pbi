@@ -101,7 +101,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
   
   ViewportUI::SetContext(*viewport)
-  Scene::Update(Scene::*current_scene)
+;   Scene::Update(Scene::*current_scene)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
@@ -134,10 +134,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
      *app\context = *viewport\context
      
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -213,9 +212,9 @@ Procedure Draw(*app.Application::Application_t)
   Topology::MergeArray(*topo,*outtopo)
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
-    MessageRequester("TIME", StrD(Time::Get() - sT))
 
   PolymeshGeometry::RandomColorByPolygon(*mgeom)
+  PolymeshGeometry::ComputeHalfEdges(*mgeom)
   Object3D::Freeze(*merged)
   
   Object3D::AddChild(*root,*merged)
@@ -225,12 +224,12 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-  
+  ViewportUI::SetHandleTarget(*viewport, *merged)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 71
+; CursorPosition = 213
+; FirstLine = 173
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

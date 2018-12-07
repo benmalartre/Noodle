@@ -15,6 +15,7 @@ XIncludeFile "Scene.pbi"
 XIncludeFile "Polymesh.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "Light.pbi"
+XIncludeFile "Selection.pbi"
 
 DeclareModule Scene
   UseModule OpenGL
@@ -33,7 +34,7 @@ DeclareModule Scene
     *lights.CArray::CArrayPtr
     *cameras.CArray::CArrayPtr
     *camera.Camera::Camera_t
-    *selection.CArray::CArrayPtr
+    *selection.Selection::Selection_t
     *rayhit.Object3D::Object3D_t
     dirtycount.i
     
@@ -148,17 +149,17 @@ Module Scene
   ; Select Object
   ;---------------------------------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
-    Protected nbs = CArray::GetCount(*Me\selection)
-    Protected s
-    Protected *o.Object3D::Object3D_t
-    For s = 0 To nbs-1
-      *o = CArray::GetValue(*Me\selection,s)
-      If *o\selected : *o\selected = #False : EndIf
-    Next s
-    
-    *obj\selected = #True
-    CArray::SetCount(*Me\selection,0)
-    CArray::AppendPtr(*Me\selection,*obj)
+;     Protected nbs = CArray::GetCount(*Me\selection)
+;     Protected s
+;     Protected *o.Object3D::Object3D_t
+;     For s = 0 To nbs-1
+;       *o = CArray::GetValue(*Me\selection,s)
+;       If *o\selected : *o\selected = #False : EndIf
+;     Next s
+;     
+;     *obj\selected = #True
+;     CArray::SetCount(*Me\selection,0)
+;     CArray::AppendPtr(*Me\selection,*obj)
     ;Handle::SetTarget(*Me\handle,*obj)
   EndProcedure
   
@@ -166,7 +167,7 @@ Module Scene
   ; Add Object To Selection
   ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
-    CArray::AppendPtr(*Me\selection,*obj)  
+;     CArray::AppendPtr(*Me\selection,*obj)  
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -494,19 +495,15 @@ Module Scene
 
     Protected i
     Protected child.Object3D::IObject3D = *obj
-    Protected *local.Transform::Transform_t
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
         child\Setup(#Null)
       EndIf
-      
-      *local = *obj\children()\localT
 
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
       child\Update()
-      
-      *local = *obj\children()\localT
+
       UpdateChildren(*obj\children())
     Next
     
@@ -517,7 +514,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   Procedure Update(*scn.Scene_t)
     If Not *scn : ProcedureReturn : EndIf
-    If *scn\dirty
+;     If *scn\dirty
       Protected i
       Protected *root.Object3D::Object3D_t = *scn\root
       Protected child.Object3D::IObject3D
@@ -533,7 +530,7 @@ Module Scene
       Next
       
       *scn\dirty = #False
-    EndIf
+;     EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -647,7 +644,7 @@ Module Scene
     For i=0 To CArray::GetCount(*scn\objects)-1
       *object = CArray::GetValue(*scn\objects,i)
       If id = *object\uniqueID
-        *object\selected = #True
+;         *object\selected = #True
         *out = *object
         Break
       EndIf 
@@ -743,12 +740,13 @@ Module Scene
     Protected i
     
     Root::Delete(*Me\root)
+    Selection::Delete(*Me\selection)
     CArray::Delete(*Me\models)
     CArray::Delete(*Me\objects)
     CArray::Delete(*Me\helpers)
     CArray::Delete(*Me\lights)
     CArray::Delete(*Me\cameras)
-    CArray::Delete(*Me\selection)
+    
     
  
     ; Deallocate Memory
@@ -779,10 +777,10 @@ Module Scene
     *Me\objects = CArray::newCArrayPtr()
     *Me\cameras = CArray::newCArrayPtr()
     *Me\lights = CArray::newCArrayPtr()
-    *Me\selection = CArray::newCArrayPtr()
     *Me\helpers = CArray::newCArrayPtr()
 
     ; Create Root
+    *Me\selection = Selection::New()
     *Me\root = Root::New("SceneRoot")
     
     ; Create Camera
@@ -809,8 +807,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 517
-; FirstLine = 513
+; CursorPosition = 532
+; FirstLine = 473
 ; Folding = -------
 ; EnableThread
 ; EnableXP

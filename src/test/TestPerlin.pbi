@@ -1,7 +1,7 @@
 ;Test Perlin
 ;-----------------------------------------
 XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Perlin3.pbi"
+XIncludeFile "../core/Perlin.pbi"
 Global *perlin.PerlinNoise::PerlinNoise_t
 EnableExplicit
 Global time.d = 0.0
@@ -21,7 +21,7 @@ Procedure.i ShowTurbulence(img.i)
   For x = Width-1 To 1 Step -1
     For y = Height-1 To 1 Step -1
       ;       Protected noise.d = PerlinNoise::Unsigned(PerlinNoise::PerlinNoise3D((1 / Width) * x, (1 / Height) * y, time, 3, 12, 6))
-            Vector3::Set(p, (1 / Width) * x * 8, time, (1 / Height) * y * 8)
+            Vector3::Set(p, (1 / Width) * x * 32 - time, (1 / Height) * y * 32, time*2)
 ;       Vector3::Set(p, x * 0.01, y * 0.01, time)
             noise = PerlinNoise::Eval(*perlin,p, deriv)
           b = Int((noise*0.5+0.5) * 255)
@@ -40,7 +40,7 @@ EndProcedure
 PerlinNoise::Init(*perlin)
 #width = 1200
 #height = 1200
-Define image = CreateImage(#PB_Any,512,512,24)
+Define image = CreateImage(#PB_Any,128,128,24)
 Define display
 Define starttime.q = ElapsedMilliseconds()
 ShowTurbulence(image)
@@ -65,7 +65,7 @@ Repeat
 Until Event = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 23
+; CursorPosition = 42
 ; FirstLine = 10
 ; Folding = -
 ; EnableXP

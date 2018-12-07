@@ -264,6 +264,19 @@ DeclareModule Geometry
   ;}
   
   ; --------------------------------------------
+  ; HalfEdge
+  ; --------------------------------------------
+  Structure HalfEdge_t
+    vertex.i
+    face.i
+    edge.i
+    *opposite_he.HalfEdge_t
+    *next_he.HalfEdge_t
+    *prev_he.HalfEdge_t
+    ID.i
+  EndStructure
+  
+  ; --------------------------------------------
   ; Polymesh Geometry
   ; --------------------------------------------
   ;{
@@ -273,6 +286,7 @@ DeclareModule Geometry
     nbtriangles.i
     nbsamples.i
     nbindices.i
+    nbislands.i
     shapetype.i
     dirty.b
     totalArea.f
@@ -293,14 +307,11 @@ DeclareModule Geometry
     *a_triangleareas.CArray::CArrayFloat
     *a_polygonareas.CArray::CArrayFloat
     *a_islands.CArray::CArrayLong
-    
+    *a_vertexhalfedge.CArray::CArrayLong
     *topo.Topology_t
     *base.Topology_t
     
-    *a_vertices.CArray::CArrayPtr
-    *a_edges.CArray::CArrayPtr
-    *a_polygons.CArray::CArrayPtr
-    *a_samples.CArray::CArrayPtr
+    Array a_halfedges.HalfEdge_t(0)
 
   EndStructure
   ;}
@@ -382,16 +393,6 @@ DeclareModule Geometry
     c.c4f32
     *geometry.Geometry::CurveGeometry_t
     *t.Transform::Transform_t
-  EndStructure
-  
-  ; HalfEdge
-  ; --------------------------------------------
-  Structure HalfEdge_t
-    vertex.i
-    face.i
-    edge.i
-    opposite_he.i
-    next_he.i
   EndStructure
   
   ; Element
@@ -621,7 +622,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 450
-; FirstLine = 447
+; CursorPosition = 288
+; FirstLine = 277
 ; Folding = -----
 ; EnableXP

@@ -54,6 +54,9 @@ DeclareModule Camera
   Declare OnEvent(*Me.Camera_t,gadget.i)
   Declare Resize(*Me.Camera_t,window.i,gadget)
   Declare GetViewTransform(*Me.Camera_t, *m.m4f32)
+  Declare GetViewPlaneNormal(*Me.Camera_t, *n.v3f32)
+  Declare MousePositionToWorldPosition(*Me.Camera_t,mx.f,my.f,width.f, height.f,*world_pos.v3f32)
+  Declare MousePositionToRayDirection(*Me.Camera_t,mx.f,my.f,width.f, height.f,*ray_dir.v3f32)
   
   DataSection 
     CameraVT: 
@@ -74,9 +77,9 @@ EndDeclareModule
 Module Camera
   UseModule Math
   UseModule OpenGL
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Constructor
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure New(name.s,type.i)
     Protected *Me.Camera_t = AllocateMemory(SizeOf(Camera_t))
         InitializeStructure(*Me,Camera_t)
@@ -145,45 +148,45 @@ Module Camera
     ProcedureReturn *Me
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Destructor
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Delete(*Me.Camera_t)
     ClearStructure(*Me,Camera_t)
     FreeMemory(*Me)
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Setup
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Setup(*Me.Camera_t,*pgm.Program::Program_t)
 
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Update
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Update(*Me.Camera_t)
 
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Clean
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Clean(*Me.Camera_t)
 
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Draw
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Draw(*Me.Camera_t)
 
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; LookAt
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure LookAt(*Me.Camera_t)
     Protected dir.v3f32
     Protected scl.v3f32
@@ -201,9 +204,9 @@ Module Camera
     Matrix4::GetViewMatrix(*Me\view,*Me\pos,*Me\lookat,*Me\up)
   EndProcedure
 
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Update Projection
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure UpdateProjection(*Me.Camera_t)
     Select *Me\cameratype
       Case #Camera_Orthographic
@@ -215,9 +218,9 @@ Module Camera
      EndSelect
    EndProcedure
    
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Set Description
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure SetDescription(*Me.Camera_t,fov.f,aspect.f,znear.f,zfar.f)
     If Not fov = #PB_Ignore : *Me\fov = fov : EndIf
     If Not aspect = #PB_Ignore : *Me\aspect = aspect : EndIf
@@ -225,9 +228,9 @@ Module Camera
     If Not zfar = #PB_Ignore : *Me\farplane = zfar : EndIf
   EndProcedure
    
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Pan
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Pan(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
     Protected delta.v3f32
     Protected dist.v3f32
@@ -270,9 +273,9 @@ Module Camera
   
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Dolly
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Dolly(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
     Protected delta.f
     delta = (deltay/height + deltax/width) * 2
@@ -289,9 +292,9 @@ Module Camera
   
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Orbit
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Orbit(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
  
     Protected r.v3f32,axis.v3f32
@@ -326,9 +329,9 @@ Module Camera
     LookAt(*Me)
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Get Spherical Coordinates
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure GetSphericalCoordinates(*Me.Camera_t)
     Protected r.v3f32
     Vector3::Sub(r,*Me\pos,*Me\lookat)
@@ -337,39 +340,39 @@ Module Camera
     *Me\azimuth = ATan(r\x/r\z)*#F32_RAD2DEG
   EndProcedure
    
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Get Projection Matrix
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure GetProjectionMatrix(*Me.Camera_t)
    ProcedureReturn *Me\projection
   EndProcedure
   
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Get View Matrix
-  ;----------------------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure GetViewMatrix(*Me.Camera_t)
     ProcedureReturn *Me\view
   EndProcedure
   
-  ;----------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Zoom
-  ;-----------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Zoom(*Me.Camera_t,delta.f)
     Debug "Camera Zoom!!!"
   EndProcedure
   
-  ;----------------------------------------------------------------
+  ;------------------------------------------------------------------
   ; Camera MouseEvent
-  ;----------------------------------------------------------------
+  ;------------------------------------------------------------------
   Procedure OnEvent(*Me.Camera_t,gadget)
     
      Debug "Camera On Event !!!"
 
   EndProcedure
   
-  ;--------------------------------------------
+  ;------------------------------------------------------------------
   ; Resize
-  ;--------------------------------------------
+  ;------------------------------------------------------------------
   Procedure Resize(*camera.Camera_t,window,gadget)
     Protected width = WindowWidth(window,#PB_Window_InnerCoordinate)
     Protected height = WindowHeight(window,#PB_Window_InnerCoordinate)
@@ -380,9 +383,9 @@ Module Camera
     UpdateProjection(*camera)
   EndProcedure
   
-  ;--------------------------------------------
+  ;------------------------------------------------------------------
   ; Get View Transform
-  ;--------------------------------------------
+  ;------------------------------------------------------------------
   Procedure GetViewTransform(*camera.Camera_t, *m.m4f32)
     Protected tm.m4f32, rm.m4f32
     Protected inv_pos.v3f32
@@ -394,7 +397,94 @@ Module Camera
     Matrix4::Multiply(*m, rm, tm)
   EndProcedure
   
+  ;------------------------------------------------------------------
+  ; Get View Plane Normal
+  ;------------------------------------------------------------------
+  Procedure GetViewPlaneNormal(*Me.Camera_t, *n.v3f32)
+    Vector3::Sub(*n, *Me\lookat, *Me\pos)
+    Vector3::NormalizeInPlace(*n)
+  EndProcedure
   
+  ;------------------------------------------------------------------
+  ; Mouse Position To World Position
+  ;------------------------------------------------------------------
+  Procedure MousePositionToWorldPosition(*Me.Camera_t,mx.f,my.f,width.f, height.f,*world_pos.v3f32)
+    Protected view.v3f32
+    Vector3::Sub(view,*Me\lookat,*Me\pos)
+    Vector3::NormalizeInPlace(view)
+    
+    Protected h.v3f32
+    Vector3::Cross(h,view,*Me\up)
+    Vector3::NormalizeInPlace(h)
+    
+    Protected v.v3f32
+    Vector3::Cross(v,h,view)
+    Vector3::NormalizeInPlace(v)
+    
+    
+    Protected rad.f = *Me\fov * #F32_PI / 180
+    Protected vLength.f = Tan(rad/2) * *Me\nearplane
+    Protected hLength.f = vLength *(width/height)
+    
+    Vector3::ScaleInPlace(v,vLength)
+    Vector3::ScaleInPlace(h,hLength)
+    
+    ;Remap mouse coordinates
+    mx - width/2
+    my - height/2
+    
+    mx/(width*0.5)
+    my/(height*0.5)
+    
+  
+    Vector3::ScaleInPlace(h,mx)
+    Vector3::ScaleInPlace(v,-my)
+    
+    Protected ray.v3f32
+    
+    Vector3::ScaleInPlace(view,*Me\nearplane)
+    Vector3::AddInPlace(view,*Me\pos)
+    Vector3::Add(ray,h,v)
+    Vector3::AddInPlace(ray,view)
+    Vector3::Sub(*world_pos,ray,*Me\pos)
+    Vector3::ScaleInPlace(*world_pos,*Me\farplane)
+    Vector3::AddInPlace(*world_pos,*Me\pos)
+  EndProcedure
+ 
+  ;------------------------------------------------------------------
+  ; Mouse Position To Ray Direction
+  ;------------------------------------------------------------------
+  Procedure MousePositionToRayDirection(*Me.Camera_t,mx.f,my.f,width.f, height.f,*ray_dir.v3f32)
+    ; 3d normalized device coordinates
+    Define x.f = (2 * mx) / width - 1
+    Define y.f = 1 - (2 * my) / height
+    Define z.f = 1
+    Define ray_nds.v3f32
+    Vector3::Set(ray_nds, x, y, z)
+    
+    ; 4d Homogeneous Clip Coordinates
+    Define ray_clip.v4f32
+    Vector4::Set(ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
+    
+    ; 4d Eye (Camera) Coordinates
+    Define inv_proj.m4f32
+    Matrix4::Inverse(inv_proj,*Me\projection)
+    Define ray_eye.v4f32
+    Vector4::MulByMatrix4(ray_eye,ray_clip,inv_proj,#False)
+    ray_eye\z = -1
+    ray_eye\w = 0
+    
+    ; 4d World Coordinates
+    Define inv_view.m4f32
+    Define ray_world.v4f32
+    Matrix4::Inverse(inv_view,*Me\view)
+    Vector4::MulByMatrix4(ray_world,ray_eye,inv_view, #False)
+    
+    Vector3::Set(*ray_dir,ray_world\x,ray_world\y,ray_world\z)
+    Vector3::NormalizeInPlace(*ray_dir)
+
+  EndProcedure
+
   Class::DEF( Camera )
   
  EndModule
@@ -403,8 +493,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 170
-; Folding = ----
+; CursorPosition = 58
+; FirstLine = 4
+; Folding = -----
 ; EnableXP
 ; EnablePurifier

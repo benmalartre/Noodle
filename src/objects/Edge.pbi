@@ -43,15 +43,11 @@ Module Edge
     *Me\polygons = CArray::newCArrayPtr()
     *Me\id = index
     
-    CArray::SetCount(*Me\vertices, 2)
-    CArray::SetValuePtr(*Me\vertices, 0, CArray::GetValuePtr(*mesh\a_vertices, p1id))
-    CArray::SetValuePtr(*Me\vertices, 1, CArray::GetValuePtr(*mesh\a_vertices, p2id))
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 16
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 44
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

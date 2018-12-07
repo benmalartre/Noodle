@@ -146,40 +146,40 @@ DeclareModule Math
   ; ----------------------------------------------------------------------------
   ;  Maximum Macro
   ; ----------------------------------------------------------------------------
-  Macro MAXIMUM(a,b)
-    If a<b : a=b : EndIf
+  Macro MAXIMUM(_a,_b)
+    If _a<_b : _a=_b : EndIf
   EndMacro
   
   ; ----------------------------------------------------------------------------
   ;  Minimum Macro
   ; ----------------------------------------------------------------------------
-  Macro MINIMUM(a,b)
-    If a>b : a=b : EndIf
+  Macro MINIMUM(_a,_b)
+    If _a>_b : _a=_b : EndIf
   EndMacro
   
   ; ----------------------------------------------------------------------------
   ;  Percentage Macro
   ; ----------------------------------------------------------------------------
-  Macro PERCENTAGE(x,z)
-    100 / z * x
+  Macro PERCENTAGE(_x,_z)
+    100 / _z * _x
   EndMacro
   
   ; ----------------------------------------------------------------------------
   ;  Clamp Macro
   ; ----------------------------------------------------------------------------
-  Macro CLAMP(x,min,max)
-    If (x<min)
-      x = min 
-    ElseIf (x>max)
-      x=max 
+  Macro CLAMP(_x,_min,_max)
+    If (_x<_min)
+      _x = _min 
+    ElseIf (_x>_max)
+      _x=_max 
     EndIf
   EndMacro
 
   ; ----------------------------------------------------------------------------
   ;  PointInBox Macro
   ; ----------------------------------------------------------------------------
-  Macro POINTINBOX2D(x,y,vx,vy,vw,vh)
-    If x>vx And x<vx+vw And y>vy And y<vy+vh
+  Macro POINTINBOX2D(_x,_y,_vx,_vy,_vw,_vh)
+    If _x>_vx And _x<_vx+_vw And _y>_vy And _y<_vy+_vh
       #True
     Else
       #False
@@ -189,52 +189,52 @@ DeclareModule Math
   ; ----------------------------------------------------------------------------
   ;  Rescale Macro
   ; --------------------------------------------------------------------------
-  Macro RESCALE(x,inmin,inmax,outmin,outmax)
-    (x -inmin)*(outmax-outmin)/(inmax-inmin)+outmin
+  Macro RESCALE(_x,_inmin,_inmax,_outmin,_outmax)
+    (((_x) -(_inmin))*((_outmax)-(_outmin))/((_inmax)-(_inmin))+(_outmin))
   EndMacro
   
   ;------------------------------------------------
   ; Linear Interpolation Macro
   ;------------------------------------------------
-  Macro LINEAR_INTERPOLATE(io,y1,y2,mu)
-    io = y1*(1-mu)+y2*mu
+  Macro LINEAR_INTERPOLATE(_io,_y1,_y2,_mu)
+    _io = (_y1)*(1-(_mu))+(_y2)*(_mu)
   EndMacro
   
   ;------------------------------------------------
   ; Cubic Interpolation Macro
   ;------------------------------------------------
-  Macro CUBIC_INTERPOLATE(io,y0,y1,y2,y3,mu)
+  Macro CUBIC_INTERPOLATE(_io,_y0,_y1,_y2,_y3,_mu)
   
-     Define.f a0,a1,a2,a3,mu2;
+     Define.f _a0,_a1,_a2,_a3,_mu2
   
-     mu2 = (mu*mu);
-     a0 = y3 - y2 - y0 + y1;
-     a1 = y0 - y1 - a0;
-     a2 = y2 - y0;
-     a3 = y1;
+     _mu2 = Pow((_mu), 2)
+     _a0 = (_y3) - (_y2) - (_y0) + (_y1)
+     _a1 = (_y0) - (_y1) - (_a0)
+     _a2 = (_y2) - (_y0)
+     _a3 = (_y1)
   
-     io = a0*mu*mu2+a1*mu2+a2*mu+a3;
+     _io = _a0*(_mu)*mu2+_a1*_mu2+_a2*(_mu)+_a3
   EndMacro
   
   ;------------------------------------------------
   ; Hermite Interpolation
   ;------------------------------------------------
-  Macro HERMITE_INTERPOLATE(io,y0,y1,y2,y3,mu,tension,bias)
-    Define.f m0,m1,mu2,mu3;
-    Define.f a0,a1,a2,a3;
+  Macro HERMITE_INTERPOLATE(_io,_y0,_y1,_y2,_y3,_mu,_tension,_bias)
+    Define.f _m0,_m1,_mu2,_mu3
+    Define.f _a0,_a1,_a2,_a3
     
-    mu2 = mu * mu;
-    mu3 = mu2 * mu;
-    m0  = (y1-y0)*(1+bias)*(1-tension)/2;
-    m0 + (y2-y1)*(1-bias)*(1-tension)/2;
-    m1  = (y2-y1)*(1+bias)*(1-tension)/2;
-    m1 + (y3-y2)*(1-bias)*(1-tension)/2;
-    a0 =  2*mu3 - 3*mu2 + 1;
-    a1 =    mu3 - 2*mu2 + mu;
-    a2 =    mu3 -   mu2;
-    a3 = -2*mu3 + 3*mu2;
+    _mu2 = (_mu) * (_mu)
+    _mu3 = _mu2 * (_mu)
+    _m0  = ((_y1)-(_y0))*(1+(_bias))*(1-(_tension))/2
+    _m0 + ((_y2)-(_y1))*(1-(_bias))*(1-(_tension))/2
+    _m1  = ((_y2)-(_y1))*(1+(_bias))*(1-(_tension))/2
+    _m1 + ((_y3)-(_y2))*(1-(_bias))*(1-(_tension))/2
+    _a0 =  2*_mu3 - 3*_mu2 + 1
+    _a1 =    _mu3 - 2*_mu2 + (_mu)
+    _a2 =    _mu3 -   _mu2
+    _a3 = -2*_mu3 + 3*_mu2
   
-   io = a0*y1+a1*m0+a2*m1+a3*y2;
+   _io = _a0*(_y1)+_a1*_m0+_a2*_m1+_a3*(_y2)
  EndMacro
  
   ;------------------------------------------------
@@ -426,6 +426,14 @@ DeclareModule Vector2
   Macro SetFromOther(_v,_o)
     _v\x = _o\x
     _v\y = _o\y
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 RESET
+  ;------------------------------------------------------------------
+  Macro Reset(_v)
+    _v\x = 0
+    _v\y = 0
   EndMacro
   
   ;------------------------------------------------------------------
@@ -675,6 +683,15 @@ DeclareModule Vector3
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR3 RESET
+  ;------------------------------------------------------------------
+  Macro Reset(_v)
+    _v\x = 0
+    _v\y = 0
+    _v\z = 0
+  EndMacro
+  
+  ;------------------------------------------------------------------
   ; VECTOR3 LENGTH
   ;------------------------------------------------------------------
   Macro LengthSquared(_v)
@@ -686,7 +703,7 @@ DeclareModule Vector3
   EndMacro
   
   ;------------------------------------------------------------------
-  ; VECTOR3 LENGTH
+  ; VECTOR3 DISTANCE
   ;------------------------------------------------------------------
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     Declare.f Distance(*a.v3f32, *b.v3f32)
@@ -701,6 +718,24 @@ DeclareModule Vector3
     EndMacro
   CompilerEndIf
   
+  ;------------------------------------------------------------------
+  ; VECTOR3 PROJECTION
+  ;------------------------------------------------------------------
+  Macro Project(_v, _a, _b)
+    Vector3::Normalize(_v, _b)
+    _v\x = (_v\x - _a\x) * _v\x
+    _v\y = (_v\y - _a\y) * _v\y
+    _v\z = (_v\z - _a\z) * _v\z
+  EndMacro
+  
+  Macro ProjectInPlace(_v, _o)
+    Define _l.f = Vector3::Length(_o)
+    If _l <> 0.0
+      _v\x = ((_v\x - _o\x) * _v\x)/_l
+      _v\y = ((_v\y - _o\y) * _v\y)/_l
+      _v\z = ((_v\z - _o\z) * _v\z)/_l
+    EndIf
+  EndMacro
   
   ;------------------------------------------------------------------
   ; VECTOR3 ABSOLUTE
@@ -1191,6 +1226,16 @@ DeclareModule Vector4
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR4 RESET
+  ;------------------------------------------------------------------
+  Macro Reset(_v)
+    _v\w = 0
+    _v\x = 0
+    _v\y = 0
+    _v\z = 0
+  EndMacro
+  
+  ;------------------------------------------------------------------
   ; VECTOR4 SET FROM OTHER
   ;------------------------------------------------------------------
   Macro SetFromOther(_v,_o)
@@ -1340,6 +1385,16 @@ DeclareModule Quaternion
     _q\y = _y
     _q\z = _z
     _q\w = _w
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; QUATERNION RESET
+  ;------------------------------------------------------------------
+  Macro Reset(_q)
+    _q\x = 0
+    _q\y = 0
+    _q\z = 0
+    _q\w = 0
   EndMacro
 
   ;------------------------------------------------------------------
@@ -1821,6 +1876,16 @@ DeclareModule Color
     _io\g = _g
     _io\b = _b
     _io\a = _a
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; COLOR RESET
+  ;------------------------------------------------------------------
+  Macro Reset(_io,_r,_g,_b,_a)
+    _io\r = 0
+    _io\g = 0
+    _io\b = 0
+    _io\a = 1
   EndMacro
   
   ;------------------------------------------------------------------
@@ -4019,8 +4084,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 254
-; FirstLine = 222
-; Folding = --------------------------------------------------
+; CursorPosition = 733
+; FirstLine = 687
+; Folding = ----------------------------------------------------
 ; EnableXP
 ; EnableUnicode

@@ -28,7 +28,7 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::SphereTopology(*topo, 1,256 ,128)
+  PolymeshGeometry::SphereTopology(*topo, 1,64 ,32)
   Protected numTopos.i = 12
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
@@ -131,6 +131,8 @@ Procedure TestHit()
   Define S = Drawer::AddSphere(*drawer, m)
   Drawer::SetColor(S, Color::_PURPLE())
   Drawer::SetWireframe(S, #True)
+;   Octree::GetNodes(*octree)
+;   Octree::DrawLeaves(*octree, *drawer)
 EndProcedure
  
 Procedure Draw(*app.Application::Application_t)
@@ -139,6 +141,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Drawer::Flush(*drawer)
   TestHit()
+
   Scene::Update(Scene::*current_scene)
   Define numCells.l
 ;   Octree::NumCells(*octree, @numCells)
@@ -169,9 +172,8 @@ Log::Init()
 *app = Application::New("Octree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
 If Not #USE_GLFW
-  *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+  *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
   *app\context = *viewport\context
-  *viewport\camera = *app\camera
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
@@ -199,6 +201,7 @@ Octree::Draw(*octree, *drawer, *geom)
 Define drawOctreeT.d = Time::get() - T
 Define numCells.i = 0
 Octree::NumCells(*octree, @numCells)
+Octree::GetCells(*octree)
 
 Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
 buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
@@ -235,7 +238,7 @@ Scene::*current_scene = Scene::New()
 *layer = LayerDefault::New(800,800,*app\context,*app\camera)
 viewportUI::AddLayer(*viewport, *layer)
 Global *root.Model::Model_t = Model::New("Model")
-Object3D::AddChild(*root, *mesh)
+; Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 
 Scene::AddModel(Scene::*current_scene, *root)
@@ -248,8 +251,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 151
+; CursorPosition = 203
+; FirstLine = 191
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -3,7 +3,7 @@ XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
 XIncludeFile "Slot.pbi"
-XIncludeFile "Perlin3.pbi"
+XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
 XIncludeFile "Pose.pbi"
@@ -584,7 +584,7 @@ EndProcedure
       ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
       *callback(*app)
       Repeat
-        event = WaitWindowEvent(1000/60)
+        event = WaitWindowEvent();(1000/60)
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -638,11 +638,11 @@ EndProcedure
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
-  
+
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 5
-; FirstLine = 2
+; CursorPosition = 586
+; FirstLine = 557
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

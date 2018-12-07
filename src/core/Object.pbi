@@ -150,8 +150,8 @@ Module Object
     Slot::Disconnect(*slot,*Me )
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 141
-; FirstLine = 118
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP

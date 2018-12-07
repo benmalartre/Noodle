@@ -209,7 +209,12 @@ Module Null
     glBufferData(#GL_ARRAY_BUFFER,length,CArray::GetPtr(*positions,0),#GL_STATIC_DRAW)
     
     glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerElse
+      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerEndIf
+    
     
     CArray::Delete(*positions)
       
@@ -370,7 +375,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 142
+; CursorPosition = 265
+; FirstLine = 247
 ; Folding = ---
 ; EnableXP

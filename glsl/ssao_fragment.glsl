@@ -6,7 +6,7 @@ uniform sampler2D position_map;
 uniform sampler2D normal_map;
 uniform sampler2D noise_map;
 #define MAX_KERNEL_SIZE 64
-uniform vec3 kernel_samples[MAX_KERNEL_SIZE];
+uniform vec4 kernel_samples[MAX_KERNEL_SIZE];
 uniform vec2 noise_scale;
 uniform int kernel_size;
 uniform float occ_radius;
@@ -37,7 +37,7 @@ void main()
         for(int i = 0; i < kernel_size; ++i)
         {
             // get sample position
-            vec3 sample = TBN * kernel_samples[i]; // From tangent to view-space
+            vec3 sample = TBN * kernel_samples[i].xyz; // From tangent to view-space
             sample = fragPos + sample * occ_radius;
         
             // project sample position (to sample texture) (to get position on screen/texture)

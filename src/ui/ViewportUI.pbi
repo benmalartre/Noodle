@@ -22,6 +22,7 @@ DeclareModule ViewportUI
     *handle.Handle::Handle_t
     ray.Geometry::Ray_t
     *layer.Layer::Layer_t
+    *select.LayerSelection::LayerSelection_t
     List *layers.Layer::Layer_t()
     mx.f
     my.f
@@ -37,7 +38,7 @@ DeclareModule ViewportUI
   Interface IViewportUI Extends IUI
   EndInterface
 
-  Declare New(*parent.View::View_t,name.s)
+  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Init(*Me.ViewportUI_t)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
@@ -73,7 +74,7 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; New
   ;------------------------------------------------------------------
-  Procedure New(*parent.View::View_t,name.s)
+  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     InitializeStructure(*Me,ViewportUI_t)
     *Me\name = name
@@ -89,6 +90,7 @@ Module ViewportUI
     *Me\height = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\context = GLContext::New(w,h,#False)
+    *Me\camera = *camera
 
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       ; Allocate Pixel Format Object
@@ -131,6 +133,8 @@ Module ViewportUI
     GLContext::Setup(*Me\context)
     
     *Me\handle = Handle::New()
+    *Me\handle\camera = *Me\camera
+    *Me\select = LayerSelection::New(*Me\width, *Me\height, *Me\context, *Me\camera)
     Handle::Setup(*Me\handle, *Me\context)
   
     View::SetContent(*parent,*Me)
@@ -167,7 +171,7 @@ Module ViewportUI
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\top
     Protected *manager.ViewManager::ViewManager_t = *top\manager
-    
+    Protected ev_datas.Control::EventTypeDatas_t
     Select event
       Case #PB_Event_SizeWindow
         width = *top\width
@@ -266,18 +270,24 @@ Module ViewportUI
               Else
                 Select *Me\tool
                   Case Globals::#TOOL_TRANSLATE
-                    Handle::Translate(*Me\handle, deltax, deltay, width, height)
+                    ev_datas\x = *Me\mx
+                    ev_datas\y = *Me\my
+                    ev_datas\width = *Me\width
+                    ev_datas\height = *Me\height
+                    Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)
                 EndSelect
               EndIf
               
               *Me\oldX = *Me\mx
               *Me\oldY = *Me\my
             Else
-              Select *Me\tool
-                Case Globals::#TOOL_TRANSLATE
-                  GetRay(*Me, *Me\ray)
-                  Handle::PickTranslate(*Me\handle, *Me\ray)
-              EndSelect
+              If *Me\tool <> Globals::#TOOL_SELECT
+                ev_datas\x = *Me\mx
+                ev_datas\y = *Me\my
+                ev_datas\width = *Me\width
+                ev_datas\height = *Me\height
+                Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)                 
+              EndIf
               
             EndIf
 
@@ -296,10 +306,25 @@ Module ViewportUI
             *Me\down = #True
             *Me\oldX = *Me\mx
             *Me\oldY = *Me\my
+            If *Me\handle\tool <> Globals::#TOOL_SELECT
+              ev_datas\x = *Me\mx
+              ev_datas\y = *Me\my
+              ev_datas\width = *Me\width
+              ev_datas\height = *Me\height
+              Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonDown, ev_datas)
+            EndIf
+
           
           Case #PB_EventType_LeftButtonUp
             *Me\lmb_p = #False
             *Me\down = #False
+            If *Me\handle\tool <> Globals::#TOOL_SELECT
+              ev_datas\x = *Me\mx
+              ev_datas\y = *Me\my
+              ev_datas\width = *Me\width
+              ev_datas\height = *Me\height
+              Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonUp, ev_datas)
+            EndIf
         
           Case #PB_EventType_MiddleButtonDown
             *Me\mmb_p = #True
@@ -676,7 +701,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 359
-; FirstLine = 351
+; CursorPosition = 325
+; FirstLine = 285
 ; Folding = -----
 ; EnableXP

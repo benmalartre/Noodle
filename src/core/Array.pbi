@@ -313,7 +313,7 @@ DeclareModule CArray
   Declare SetCount(*array.CArrayT,count.i)
   Declare GetItemSize(*array.CArrayT)
   Declare Delete(*array.CArrayT)
-  Declare Find(*array,*value,*ID)
+  Declare Find(*array,*value)
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
   Declare Alert(*array.CArrayT, label.s="")
@@ -760,14 +760,14 @@ Module CArray
   ;----------------------------------------------------------------
   ; Find
   ;----------------------------------------------------------------
-  Procedure Find(*array.CArrayT,*value,*ID)
+  Procedure Find(*array.CArrayT,*value)
     Protected i
     If *array\type < #ARRAY_PTR
       Select *array\type
         Case #ARRAY_BOOL
           For i=0 To GetCount(*array)-1
             If GetValueB(*array,i) = PeekB(*value)
-              PokeI(*ID,i)
+              ProcedureReturn i
               Break
             EndIf
           Next
@@ -775,7 +775,7 @@ Module CArray
         Case #ARRAY_CHAR
           For i=0 To GetCount(*array)-1
             If GetValueC(*array,i) = PeekC(*value)
-              PokeI(*ID,i)
+              ProcedureReturn i
               Break
             EndIf
           Next
@@ -783,7 +783,7 @@ Module CArray
         Case #ARRAY_LONG
           For i=0 To GetCount(*array)-1
             If GetValueL(*array,i) = PeekL(*value)
-              PokeI(*ID,i)
+              ProcedureReturn i
               Break
             EndIf
           Next
@@ -791,7 +791,7 @@ Module CArray
         Case #ARRAY_INT
           For i=0 To GetCount(*array)-1
             If GetValueI(*array,i) = PeekI(*value)
-              PokeI(*ID,i)
+              ProcedureReturn i
               Break
             EndIf
           Next
@@ -799,7 +799,7 @@ Module CArray
         Case #ARRAY_FLOAT
           For i=0 To GetCount(*array)-1
             If GetValueF(*array,i) = PeekF(*value)
-              PokeI(*ID,i)
+              ProcedureReturn i
               Break
             EndIf
           Next
@@ -807,12 +807,13 @@ Module CArray
     Else
       For i=0 To GetCount(*array)-1
         If GetValuePtr(*array,i) = *value
-          PokeI(*ID,i)
+          ProcedureReturn i
           Break
         EndIf
       Next
     EndIf
     
+    ProcedureReturn -1
     
   EndProcedure
   
@@ -1178,7 +1179,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1020
-; FirstLine = 1017
+; CursorPosition = 815
+; FirstLine = 757
 ; Folding = ------------
 ; EnableXP

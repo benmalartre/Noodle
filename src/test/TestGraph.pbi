@@ -95,7 +95,7 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera)
 *app\context = *viewport\context
 *viewport\camera = *app\camera
 
@@ -140,8 +140,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 84
+; CursorPosition = 97
+; FirstLine = 85
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

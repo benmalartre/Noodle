@@ -349,6 +349,25 @@ EndDeclareModule
 ; Mortom Code Module Implementation
 ; -----------------------------------------------------------------------------------
 Module Morton
+  
+  ; method To seperate bits from a given integer 3 positions apart
+  Procedure SplitBy3(a.i)
+    Define x.i = a & $1fffff; // we only look at the first 21 bits
+    x = (x | x << 32) & $1f00000000ffff; // shift left 32 bits, OR with self, and 00011111000000000000000000000000000000001111111111111111
+    x = (x | x << 16) & $1f0000ff0000ff; // shift left 32 bits, OR with self, and 00011111000000000000000011111111000000000000000011111111
+    x = (x | x << 8) & $100f00f00f00f00f; // shift left 32 bits, OR with self, and 0001000000001111000000001111000000001111000000001111000000000000
+    x = (x | x << 4) & $10c30c30c30c30c3; // shift left 32 bits, OR with self, and 0001000011000011000011000011000011000011000011000011000100000000
+    x = (x | x << 2) & $1249249249249249;
+    ProcedureReturn x
+  EndProcedure
+
+  Procedure MagicBits(x, y, z)
+    Define answer = 0
+    answer | SplitBy3(x) | SplitBy3(y) << 1 | SplitBy3(z) << 2
+    ProcedureReturn answer;
+  EndProcedure
+
+  
   ;----------------------------------------------------------------------------------
   ; Morton 2D
   ;----------------------------------------------------------------------------------
@@ -366,7 +385,7 @@ Module Morton
     ProcedureReturn answer
   EndProcedure
   
-  	Procedure.l Decode2D_LUT256(m.i, *LUT, startshift.i)
+  Procedure.l Decode2D_LUT256(m.i, *LUT, startshift.i)
 	  Protected i.i, a.l = 0
 	  Protected loops.i = 8
 	  Protected index.l
@@ -386,16 +405,24 @@ Module Morton
   ; Morton 3D
   ;----------------------------------------------------------------------------------
 	Procedure.i Encode3D(*p.Point3D_t)
+; 	  Define answer = 0
+;     answer | SplitBy3(*p\x) | SplitBy3(*p\y) << 1 | SplitBy3(*p\z) << 2
+;     ProcedureReturn answer
+	  
 	  Protected answer.i = 0
 	  Protected index = 4
 	  Protected shift.i
 	  While  index > 0
 	    shift = (index - 1) * 8
+; 	    answer = answer << 24 | (PeekL(?MORTON_ENCODE_3D_Z_256 + ((*p\z >> shift) & #EIGHTBIT3DMASK)*4) | 
+; 	                             PeekL(?MORTON_ENCODE_3D_Y_256 + ((*p\y >> shift) & #EIGHTBIT3DMASK)*4) |
+; 	                             PeekL(?MORTON_ENCODE_3D_X_256 + ((*p\x >> shift) & #EIGHTBIT3DMASK)*4))
 	    answer = answer << 24 | (PeekL(?MORTON_ENCODE_3D_Z_256 + ((*p\z >> shift) & #EIGHTBIT3DMASK)*4) | 
 	                             PeekL(?MORTON_ENCODE_3D_Y_256 + ((*p\y >> shift) & #EIGHTBIT3DMASK)*4) |
 	                             PeekL(?MORTON_ENCODE_3D_X_256 + ((*p\x >> shift) & #EIGHTBIT3DMASK)*4))
 	    index - 1
 	  Wend
+	  answer | 1 << 63
 	  ProcedureReturn answer
 	EndProcedure
 	
@@ -413,6 +440,8 @@ Module Morton
 	  *p\y = Decode3D_LUT256(m, ?MORTOM_DECODE_3D_Y_512, 0)
 	  *p\z = Decode3D_LUT256(m, ?MORTOM_DECODE_3D_Z_512, 0)
 	EndProcedure
+	
+	
 	 
 EndModule
 
@@ -421,7 +450,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 387
-; FirstLine = 361
+; CursorPosition = 408
+; FirstLine = 390
 ; Folding = --
 ; EnableXP

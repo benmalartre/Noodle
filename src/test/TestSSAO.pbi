@@ -256,7 +256,12 @@ Procedure Draw(*app.Application::Application_t)
 ;         For i=0 To nbsamples-1
 ;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
 ;         Next
-  glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+  CompilerElse
+    glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+  CompilerEndIf
+  
   glUniform1i(u_ssao_kernel_size,nbsamples)
   glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
   ;       
@@ -505,8 +510,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 468
-; FirstLine = 451
+; CursorPosition = 258
+; FirstLine = 254
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

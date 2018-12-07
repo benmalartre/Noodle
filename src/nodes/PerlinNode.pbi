@@ -1,5 +1,5 @@
 XIncludeFile "../core/Attribute.pbi"
-XIncludeFile "../core/Perlin3.pbi"
+XIncludeFile "../core/Perlin.pbi"
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
@@ -145,6 +145,6 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
+; CursorPosition = 1
 ; Folding = --
 ; EnableXP

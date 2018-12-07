@@ -48,12 +48,13 @@ EndProcedure
 
 Procedure Draw(*app.Application::Application_t)
   GetFPS()
+  ViewportUI::SetContext(*viewport)
   Framebuffer::BindOutput(*buffer)
   glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
   
-  Framebuffer::BlitTo(*buffer,#Null,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
-
+  Framebuffer::BlitTo(*buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
+  ViewportUI::FlipBuffer(*viewport)
 EndProcedure
 
 ; Main
@@ -62,6 +63,7 @@ If Time::Init()
   Log::Init()
   *app = Application::New("Shader",800,600)
   *viewport = ViewportUI::New(*app\manager\main, "Viewport")
+  *viewport\camera = *app\camera
   *app\context = *viewport\context
   
   ; FTGL Drawer
@@ -92,8 +94,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 35
+; CursorPosition = 56
+; FirstLine = 32
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=1

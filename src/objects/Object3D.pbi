@@ -2,7 +2,7 @@ XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Attribute.pbi"
 XIncludeFile "../core/Object.pbi"
-XIncludeFile "../core/Perlin2.pbi"
+XIncludeFile "../core/Perlin.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Texture.pbi"
 XIncludeFile "../objects/Geometry.pbi"
@@ -539,7 +539,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 162
+; CursorPosition = 65
+; FirstLine = 18
 ; Folding = ------
 ; EnableXP

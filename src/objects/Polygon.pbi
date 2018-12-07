@@ -58,9 +58,7 @@ Module Polygon
     
     CArray::SetCount(*Me\vertices, CArray::GetCount(*indices))
     Protected i
-    For i=0 To CArray::GetCount(*indices)-1
-      CArray::SetValuePtr(*me\vertices, i, CArray::GetValuePtr(*mesh\a_vertices, CArray::GetValueL(*indices, i)))
-    Next
+
     
     
     ProcedureReturn *Me
@@ -164,9 +162,9 @@ Module Polygon
  
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 52
-; FirstLine = 28
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 39
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

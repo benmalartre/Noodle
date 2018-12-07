@@ -336,22 +336,18 @@ Module Drawer
   ;---------------------------------------------------------------------------- 
   ; ---[ Draw Point Item ]-----------------------------------------------------
   Procedure DrawPoint(*Me.Point_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
-    
     glPointSize(*Me\size)
     glDrawArrays(#GL_POINTS,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   ; ---[ Draw Line Item ]------------------------------------------------------
   Procedure DrawLine(*Me.Line_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     glLineWidth(*Me\size)
     glDrawArrays(#GL_LINES,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
   ; ---[ Draw Loop Item ]------------------------------------------------------
   Procedure DrawLoop(*Me.Loop_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     Protected i.i, cnt.i, base.i
     base = 0
     glLineWidth(*Me\size)
@@ -364,7 +360,6 @@ Module Drawer
   
   ; ---[ Draw Strip Item ]-----------------------------------------------------
   Procedure DrawStrip(*Me.Strip_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
     Protected i.i, cnt.i, base.i
     base = 0
     glLineWidth(*Me\size)
@@ -376,10 +371,9 @@ Module Drawer
   EndProcedure
   
   ; ---[ Draw Box Item ]-----------------------------------------------------
-  Procedure DrawBox(*Me.Box_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
+  Procedure DrawBox(*Me.Box_t, *pgm)
     If *Me\wireframe
-      glLineWidth(*Me\size)
+      glLineWidth(Math::Max(Int(*Me\size),1))
       glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
     Else
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
@@ -449,7 +443,6 @@ Module Drawer
     
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
     glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
-    
     ForEach *Me\items()
       With *Me\items()
         glBindVertexArray(\vao)
@@ -463,7 +456,7 @@ Module Drawer
           Case #ITEM_STRIP
             DrawStrip(*Me\items())
           Case #ITEM_BOX
-            DrawBox(*Me\items())
+            DrawBox(*Me\items(), *Me\shader\pgm)
           Case #ITEM_SPHERE
             DrawSphere(*Me\items(), *Me\shader\pgm)
           Case #ITEM_MATRIX
@@ -881,7 +874,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 83
+; CursorPosition = 361
+; FirstLine = 333
 ; Folding = ---------
 ; EnableXP

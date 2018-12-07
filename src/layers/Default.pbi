@@ -133,6 +133,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
+    GLCheckError("DRAW DRAWER")
     
     ;Draw Curve Objects
     ;-----------------------------------------------
@@ -142,13 +143,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
-    
-    *shader.Program::Program_t = *ctx\shaders("wireframe")
-    shader.GLuint =  *shader\pgm
-    glUseProgram(shader)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
-    Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
+    GLCheckError("DRAW CURVES")
 
     
 ;     ;Draw Wireframe Polymeshes 
@@ -287,7 +282,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 206
+; CursorPosition = 145
+; FirstLine = 116
 ; Folding = --
 ; EnableXP

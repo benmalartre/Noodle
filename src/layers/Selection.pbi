@@ -3,6 +3,7 @@
 ; ============================================================================
 XIncludeFile "Layer.pbi"
 XIncludeFile "../opengl/Context.pbi"
+XIncludeFile "../objects/Selection.pbi"
 
 DeclareModule LayerSelection
   UseModule Math
@@ -19,6 +20,7 @@ DeclareModule LayerSelection
     mouseY.i
     Array read_datas.GLubyte(4)
     *overchild.Object3D::Object3D_t
+    *selection.Selection::Selection_t
   EndStructure
   
   ;---------------------------------------------------
@@ -63,7 +65,7 @@ Module LayerSelection
   
   ForEach *obj\children()
     *child = *obj\children()
-    Object3D::EncodeID(@id,*child\uniqueID)
+    Object3D::EncodeID(id,*child\uniqueID)
     If *child\type = Object3D::#Object3D_Polymesh
       *t = *child\globalT
       glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
@@ -82,7 +84,6 @@ Module LayerSelection
   Next
   
 EndProcedure
-
 
 ;---------------------------------------------------
 ; Update
@@ -112,16 +113,8 @@ EndProcedure
 ; Pick
 ;---------------------------------------------------
 Procedure Pick(*layer.LayerSelection_t)
-
-  
-EndProcedure
-
-;---------------------------------------------------
-; Draw
-;---------------------------------------------------
-Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   Protected layer.Layer::ILayer = *layer
-;   layer\Update()
+
     ; ---[ Find Up View Point ]--------------------------
   Protected *view.m4f32 = Layer::GetViewMatrix(*layer)
   Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
@@ -129,13 +122,12 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   ; ---[ Bind Framebuffer and Clean ]-------------------
   Framebuffer::BindOutput(*layer\buffer)
   glViewport(0,0,*layer\width,*layer\height)
-  ;glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
+
   glClearColor(0,0,0,0)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
   
   glUseProgram(*layer\shader\pgm)
-;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 0)
-;   glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 0)
+
   glUniformMatrix4fv(*layer\uViewMatrix,1,#GL_FALSE,*view)
   glUniformMatrix4fv(*layer\uProjectionMatrix,1,#GL_FALSE,*proj)
   glUniform3f(*layer\uUniqueID,0,0,0)
@@ -145,47 +137,65 @@ Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   
   ; Recursive Draw
   DrawChildren(*layer,Scene::*current_scene\root,*ctx)
+
   
-;   glFlush()
-;   glFinish()
+  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+
+  Framebuffer::Unbind(*layer\buffer)
   
   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
   
-  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
-   ; Read the pixel at the center of the screen.
+  
+   ; Read the pixel at the mouse position
   glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
   Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
-  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  Define *selected.Object3D::Object3D_t
   If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
-    
-;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
-;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
-    Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
-    Protected obj.Object3D::IObject3D = *obj
-    glDisable(#GL_DEPTH_TEST)
-    glEnable(#GL_CULL_FACE)
-    glDisable(#GL_BLEND)
+    *selected = Scene::*current_scene\m_uuids()
+    Selection::AddObject(*layer\selection, *selected)
+  EndIf
+  
+EndProcedure
 
-    Define *t.Transform::Transform_t = *obj\globalT
-    glUniform3f(*layer\uUniqueID,1,1,1)
-    glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
-    *obj\selected = #True
-    obj\Draw()
-    If *obj <> *layer\overchild
-      If *layer\overchild : *layer\overchild\selected = #False : EndIf
-      *layer\overchild = *obj
-    EndIf
-  Else
-    If *layer\overchild
-      *layer\overchild\selected = #False
-      *layer\overchild = #Null
-    EndIf
+;---------------------------------------------------
+; Draw
+;---------------------------------------------------
+Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
+  
+  If MapSize(*layer\selection\selected())
+    Define *selected.Selection::SelectionItem_t 
+    ForEach *layer\selection\selected()
+      *selected = *layer\selection\selected()
+      If *selected\type = Selection::#ITEM_OBJECT
+        
+      EndIf
+      
+    Next
     
   EndIf
   
-  
-  Framebuffer::Unbind(*layer\buffer)
-  
+  ; ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
+; ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
+;     Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
+;     Protected obj.Object3D::IObject3D = *obj
+;     glDisable(#GL_DEPTH_TEST)
+;     glEnable(#GL_CULL_FACE)
+;     glDisable(#GL_BLEND)
+; 
+;     Define *t.Transform::Transform_t = *obj\globalT
+;     glUniform3f(*layer\uUniqueID,1,1,1)
+;     glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
+;     *obj\selected = #True
+;     obj\Draw()
+;     If *obj <> *layer\overchild
+;       If *layer\overchild : *layer\overchild\selected = #False : EndIf
+;       *layer\overchild = *obj
+;     EndIf
+;   Else
+;     If *layer\overchild
+;       *layer\overchild\selected = #False
+;       *layer\overchild = #Null
+;     EndIf
   
   
 
@@ -235,7 +245,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 153
+; CursorPosition = 182
+; FirstLine = 160
 ; Folding = --
 ; EnableXP

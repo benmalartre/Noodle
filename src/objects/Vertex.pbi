@@ -194,8 +194,8 @@ Module Vertex
   
 EndModule
 
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 11
-; FirstLine = 4
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 43
 ; Folding = ---
 ; EnableXP

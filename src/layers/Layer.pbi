@@ -434,6 +434,7 @@ Module Layer
   ; Draw Point Clouds
   ;---------------------------------------------------
   Procedure DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
+    GLCheckError("DRAW POINT CLOUD BEGIN")
     Protected i
     Protected obj.Object3D::IObject3D
     Protected *obj.Object3D::Object3D_t
@@ -442,10 +443,13 @@ Module Layer
       *obj = CArray::GetValuePtr(*objects,i)
       If *obj\type = Object3D::#Object3D_PointCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        GLCheckError("SET MODEL MATRIX")
         obj = *obj
         obj\Draw()
+        GLCheckError("DRAW POINT CLOUD")
       EndIf
     Next
+    GLCheckError("DRAW POINT CLOUD END")
   EndProcedure
   
   ;---------------------------------------------------
@@ -695,7 +699,6 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 22
+; CursorPosition = 448
 ; Folding = -----
 ; EnableXP

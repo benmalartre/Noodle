@@ -21,6 +21,7 @@ DeclareModule Ray
   Declare.b CylinderIntersection(*ray.Geometry::Ray_t, *cylinder.Geometry::Cylinder_t, *enterDistance=#Null, *exitDistance=#Null)
   Declare.b SphereIntersection(*ray.Geometry::Ray_t, *sphere.Geometry::Sphere_t, *enterDistance=#Null, *exitDistance=#Null)
   Declare.b TriangleIntersection(*ray.Geometry::Ray_t, *a.v3f32, *b.v3f32, *c.v3f32, *distance=#Null, *baryCoords.v3f32=#Null, *frontFacing=#Null, maxDist.f=#F32_MAX)
+  Declare GetIntersectionPoint(*ray.Geometry::Ray_t, distance.f, *io.v3f32)
 EndDeclareModule
 
 Module Ray
@@ -201,10 +202,12 @@ Module Ray
     Protected d.d = *sphere\radius * *sphere\radius - (c*c - v*v)
     
     ;if there was no intersection return -1
-    If(d<0.0) : ProcedureReturn -1.0 : EndIf
+    If(d<0.0) : ProcedureReturn #False : EndIf
     
     ;return the distance to the first intersecting point
-    ProcedureReturn (v- Sqr(d))
+    If *enterDistance : PokeF(*enterDistance, v-Sqr(d)) : EndIf
+    If *exitDistance : PokeF(*exitDistance, v+Sqr(d)) : EndIf
+    ProcedureReturn #True
      
   EndProcedure
   
@@ -355,6 +358,14 @@ Module Ray
     ProcedureReturn #True
     
   EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Intersection Point
+  ;---------------------------------------------------------
+  Procedure GetIntersectionPoint(*ray.Geometry::Ray_t, distance.f, *io.v3f32)
+    Vector3::ScaleAdd(*io, *ray\origin, *ray\direction, distance)  
+  EndProcedure
+  
 
 EndModule
 
@@ -362,8 +373,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 53
+; CursorPosition = 362
+; FirstLine = 313
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode
