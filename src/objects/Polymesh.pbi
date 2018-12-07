@@ -487,16 +487,16 @@ Module Polymesh
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-    *P\wireframe = #True
-    If *p\wireframe
-      glBindVertexArray(*p\vao)
-      glDisable (#GL_POLYGON_OFFSET_FILL)
-      glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-      ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+
+;     If *p\wireframe
+;       glBindVertexArray(*p\vao)
+;       glDisable (#GL_POLYGON_OFFSET_FILL)
 ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-      glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
-      GLCheckError("[Polymesh] Draw mesh Wireframe alled")
-    Else
+;       ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
+; ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+;       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+;       GLCheckError("[Polymesh] Draw mesh Wireframe alled")
+;     Else
       glBindVertexArray(*p\vao)
       glDisable (#GL_POLYGON_OFFSET_FILL)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
@@ -504,7 +504,7 @@ Module Polymesh
 ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
-    EndIf
+;     EndIf
       If *p\selected
         glEnable(#GL_BLEND)
         glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
@@ -557,7 +557,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 493
-; FirstLine = 489
+; CursorPosition = 496
+; FirstLine = 475
 ; Folding = ----
 ; EnableXP

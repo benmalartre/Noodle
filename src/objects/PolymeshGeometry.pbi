@@ -60,6 +60,8 @@ DeclareModule PolymeshGeometry
   Declare.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *cp.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
   Declare ComputeIslands(*mesh.PolymeshGeometry_t)
   Declare GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
+  Declare GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
+  Declare ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
 EndDeclareModule
 
 ;========================================================================================
@@ -1057,18 +1059,15 @@ Module PolymeshGeometry
   ; Random Color By Island
   ;---------------------------------------------------------
   Procedure RandomColorByIsland(*mesh.PolymeshGeometry_t)
-    Protected f
-    Protected nbv,v
-
+    Protected f,nbv,v,i
+    CArray::SetCount(*mesh\a_colors, *mesh\nbsamples)
     Protected *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
     CArray::SetCount(*colors, *mesh\nbislands)
-    Define i
     Define *c.c4f32
     For i=0 To *mesh\nbislands-1
       *c = CArray::GetValue(*colors, i)
       Color::Randomize(*c)  
     Next
-    
     
     Protected tid = 0
     Protected nbt = 0
@@ -1078,10 +1077,6 @@ Module PolymeshGeometry
       nbv = CArray::GetValueL(*mesh\a_facecount,f)
       nbt = nbv-2
       vid = CArray::GetValueL(*mesh\a_faceindices, offset)
-      Debug "VERTEX INDEX : "+Str(vid)
-      Debug "ISLAQND ARRAY : "+Str(*mesh\a_islands)
-      Debug "SIZE ILSNA D ARRAY : "+Str(CARray::GetCount(*mesh\a_islands))
-      Debug "ISLAND INDEX : "+Str(CArray::GetValueL(*mesh\a_islands, vid))
       *color = CArray::GetValue(*colors, CArray::GetValueL(*mesh\a_islands, vid))
       For v=0 To nbt-1
         CArray::SetValue(*mesh\a_colors,tid+2,*color)
@@ -1291,10 +1286,9 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure ComputeHalfEdges(*mesh.PolymeshGeometry_t)
     
-    Debug "NUM MAX HALF EDGES : "+Str(*mesh\nbedges * 2)
     ReDim *mesh\a_halfedges(*mesh\nbedges * 2)
-    Define i, j, k, nbv, offset = 0
-    Define x, y, a, b
+    Define i, j, nbv, offset = 0
+    Define x, a, b
     Define key.s
     Define index.i = 0
     Define *h.Geometry::HalfEdge_t
@@ -1319,10 +1313,8 @@ Module PolymeshGeometry
           *h\opposite_he = *o
           *o\opposite_he = *h
           DeleteMapElement(*openedges(), MapKey(*openedges()))
-          Debug "CONNECT OOPOOSIT hALF EDGE"
-        Else;If used(a)>0 
+        Else
           AddMapElement(*openedges(),Str(a)+","+Str(b))
-          Debug "ADD MAP ELEMENT "+Str(a)+","+Str(b)
           *openedges() = *h
         EndIf
        
@@ -1346,7 +1338,6 @@ Module PolymeshGeometry
     Define *first.Geometry::HalfEdge_t
     Define *last.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-    Define key.s
 
     If MapSize(*openedges())
       ResetMap(*openedges())
@@ -1417,42 +1408,68 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Grow Vertex Neighbors
   ;---------------------------------------------------------
-  Procedure GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *vertices.CArray::CArrayLong)
+  Procedure GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
     Define *neighbors.CArray::CArrayLong = CArray::newCArrayLong()
+    Dim selected.b(*mesh\nbpoints)
+    Define i, j, idx
+    For i=0 To CArray::GetCount(*vertices)-1
+      selected(CArray::GetValueL(*vertices, i)) = #True
+    Next
     
-    CArray::SetCount(*neighbors, 0)
-
-    *first = *mesh\a_halfedges(CArray::getValueL(*mesh\a_vertexhalfedge, index))
-    CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+    Define *extend.CArray::CarrayLong = CArray::newCArrayLong()
+    For i=0 To CArray::GetCount(*vertices)-1
+      GetVertexNeighbors(*mesh, CArray::GetValueL(*vertices, i), *neighbors)  
+      For j=0 To CArray::GetCount(*neighbors)-1
+        idx = CArray::GetValueL(*neighbors, j)
+        If Not selected(idx)
+          CArray::AppendUnique(*extend, @idx)
+        EndIf
+      Next
+    Next
     
-    *current = *first\opposite_he\next_he
-    While Not *first = *current
-      CArray::AppendL(*neighbors, *current\opposite_he\vertex)
-      *current = *current\opposite_he\next_he
-    Wend
-
+    If *extend\itemCount : CArray::AppendArray(*vertices, *extend) : EndIf
+    CArray::Delete(*extend)
+    CArray::Delete(*neighbors)
   EndProcedure
   
   ;---------------------------------------------------------
   ; Shrink Vertex Neighbors
   ;---------------------------------------------------------
-  Procedure ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *vertices.CArray::CArrayLong)
+  Procedure ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
     Define *neighbors.CArray::CArrayLong = CArray::newCArrayLong()
+    Dim selected.b(*mesh\nbpoints)
+    Define i, j, idx, n, x
+    For i=0 To CArray::GetCount(*vertices)-1
+      selected(CArray::GetValueL(*vertices, i)) = #True
+    Next
     
-    CArray::SetCount(*neighbors, 0)
-
-    *first = *mesh\a_halfedges(CArray::getValueL(*mesh\a_vertexhalfedge, index))
-    CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+    Define *remove.CArray::CarrayLong = CArray::newCArrayLong()
+    For i=0 To CArray::GetCount(*vertices)-1
+      idx = CArray::GetValueL(*vertices, i)
+      GetVertexNeighbors(*mesh, idx, *neighbors)  
+      n = CArray::GetCount(*neighbors)
+      x = 0
+      For j=0 To n-1
+        x + Selected(CArray::GetValueL(*neighbors, j))
+      Next
+      If n <> x
+        CArray::AppendL(*remove, i)
+      EndIf
+      
+    Next
     
-    *current = *first\opposite_he\next_he
-    While Not *first = *current
-      CArray::AppendL(*neighbors, *current\opposite_he\vertex)
-      *current = *current\opposite_he\next_he
-    Wend
+    If *remove\itemCount
+      For i=CArray::GetCount(*remove)-1 To 0 Step -1
+        CArray::Remove(*vertices, CArray::GetValueL(*remove, i))
+      Next
+    EndIf
+    
+    CArray::Delete(*remove)
+    CArray::Delete(*neighbors)
 
   EndProcedure
   
@@ -1464,6 +1481,7 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_islands, *mesh\nbpoints)
     CArray::FillL(*mesh\a_islands, 0)
     Dim visited.b(*mesh\nbpoints)
+    FillMemory(@visited(0), *mesh\nbpoints, 0, #PB_Byte)
     NewList seeds.i()
     NewList nexts.i()
     Define *neighbors.CArray::CArrayLong = CArray::newCArrayLong()
@@ -1496,7 +1514,8 @@ Module PolymeshGeometry
       EndIf
       
     Next
-    *mesh\nbislands = islandIndex - 1
+
+    *mesh\nbislands = islandIndex
     
 ;     Define i, j, nbp, offset = 0
 ;     Define islandIndex = 0
@@ -2886,7 +2905,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1082
-; FirstLine = 1043
+; CursorPosition = 1454
+; FirstLine = 1402
 ; Folding = ----fw---v--
 ; EnableXP

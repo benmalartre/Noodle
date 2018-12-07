@@ -167,6 +167,7 @@ Procedure Draw(*app.Application::Application_t)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
+  *merged\wireframe = #False
   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
   
   Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
@@ -213,8 +214,9 @@ Procedure Draw(*app.Application::Application_t)
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
 
-  PolymeshGeometry::RandomColorByPolygon(*mgeom)
   PolymeshGeometry::ComputeHalfEdges(*mgeom)
+  PolymeshGeometry::ComputeIslands(*mgeom)
+  PolymeshGeometry::RandomColorByIsland(*mgeom)
   Object3D::Freeze(*merged)
   
   Object3D::AddChild(*root,*merged)
@@ -228,8 +230,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 173
+; CursorPosition = 169
+; FirstLine = 153
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

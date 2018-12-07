@@ -59,7 +59,6 @@ DeclareModule CArray
     type.i
     itemSize.i
     itemCount.i
-    aligned.b
     *data
   EndStructure
   
@@ -1179,7 +1178,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 815
-; FirstLine = 757
+; CursorPosition = 584
+; FirstLine = 544
 ; Folding = ------------
 ; EnableXP

@@ -21,15 +21,17 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *drawer.Drawer::Drawer_t
 Global *root.Model::Model_t
+Global *selected.CArray::CArrayLong = CArray::newCArrayLong()
+Global rootIndex.i
 
 
 Procedure PolygonSoup(numTopos=9)
-  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_None)
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_BUNNY)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  Protected *topo.Geometry::Topology_t = Topology::New()
   
-  ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::SphereTopology(*topo, 1,64 ,32)
+  Protected *topo.Geometry::Topology_t = Topology::New()
+  PolymeshGeometry::BunnyTopology(*topo)
+  
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
@@ -40,7 +42,7 @@ Procedure PolygonSoup(numTopos=9)
   Define *m.m4f32
   Define *p.v3f32
   RandomSeed(666)
-  Utils::BuildCircleSection(*positions, numTopos, 8)
+  Utils::BuildCircleSection(*positions, numTopos+1, 8)
   For i=0 To numTopos-1
 ;     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
     *m = CArray::GetPtr(*matrices, i)
@@ -57,7 +59,7 @@ Procedure PolygonSoup(numTopos=9)
   
   PolymeshGeometry::Set2(*geom, *topo)
   Object3D::Freeze(*mesh)
-  
+;   
   For i=0 To numTopos-1
     Topology::Delete(CArray::GetValuePtr(*topos, i))
   Next
@@ -70,123 +72,50 @@ Procedure PolygonSoup(numTopos=9)
   ProcedureReturn *mesh
 EndProcedure
 
+Procedure DrawSelected(*geom.Geometry::PolymeshGeometry_t)
 
-
-Procedure GetNeighbors(*mesh.Geometry::PolymeshGeometry_t)
-  Define *first.Geometry::HalfEdge_t
-  Define *current.Geometry::HalfEdge_t
-  NewList neighbors.i()
-  Define i = 0
-
-  For i=0 To *mesh\nbpoints - 1
-    
-    ClearList(neighbors())
-    *first = *mesh\a_halfedges(CArray::getValueL(*mesh\a_vertexhalfedge, i))
-    AddElement(neighbors())
-    neighbors() = *first\opposite_he\vertex
-    
-    *current = *first\opposite_he\next_he
-
-    While Not *first = *current
-      AddElement(neighbors())
-      neighbors() = *current\opposite_he\vertex
-      *current = *current\opposite_he\next_he
-    Wend
-
-  Next
-
-EndProcedure
-
-
-Procedure DrawNeighbors(*geom.Geometry::PolymeshGeometry_t, *drawer.Drawer::Drawer_t, index.i)
-  index = Random(*geom\nbpoints-1)
-  Define *O = Drawer::AddPoint(*drawer, CArray::GetValue(*geom\a_positions, index))
+  Define *O = Drawer::AddPoint(*drawer, CArray::GetValue(*geom\a_positions, rootIndex))
   Drawer::SetSize(*O, 8)
   Drawer::SetColor(*O, Color::_RED())
-  Define *neighbors.CArray::CArrayLong = CArray::newCArrayLong()
   Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-  PolymeshGeometry::GetVertexNeighbors(*geom, index, *neighbors)
-  CArray::SetCount(*positions, CArray::GetCount(*neighbors))
+  CArray::SetCount(*positions, CArray::GetCount(*selected))
   Define i
-  For i = 0 To *neighbors\itemCount - 1
-    CopyMemory(CArray::GetValue(*geom\a_positions, CArray::GetValueL(*neighbors, i)), CArray::GetValue(*positions, i), SizeOf(Math::v3f32))
+  For i = 0 To *selected\itemCount - 1
+    CArray::SetValue(*positions, i, CArray::GetValue(*geom\a_positions, CArray::GetValueL(*selected, i)))
   Next
   
   Define *P = Drawer::AddPoints(*drawer, *positions)
   Drawer::SetSize(*P, 4)
   Drawer::SetColor(*P, Color::_GREEN())
   
-  CArray::Delete(*neighbors)
   CArray::Delete(*positions)
-EndProcedure
-
-
-Procedure ComputeIslands(*mesh.Geometry::PolymeshGeometry_t)
-  
-  Dim visitedPoly.b(*mesh\nbpolygons)
-  Dim visitedHalfEdge.b(*mesh\nbedges)
-  Dim polygonIslandIndex.i(*mesh\nbpolygons)
-  
-  Define islandIndex = 0
-  CArray::SetCount(*mesh\a_islands, *mesh\nbpoints)
-  Define i
-  Define *next.Geometry::HalfEdge_t
-  Define *first.Geometry::HalfEdge_t
-  NewList *queue.Geometry::HalfEdge_t()
-  Define walk.b
-  For i=0 To *mesh\nbedges-1
-    Define *he.Geometry::HalfEdge_t = *mesh\a_halfedges(i)
-    If Not visitedPoly(*he\face)
-      Debug "--------------------------------------------------------------------"
-      Debug "ADD POLYGON ISLAND : "+Str(islandIndex)
-      *first = *he
-      visitedPoly(*he\face) = #True
-      AddElement(*queue())
-      *queue() = *he
-      walk = #True
-      While walk
-        If *he\opposite_he\face >= 0 And Not visitedPoly(*he\opposite_he\face)
-          visitedPoly(*he\opposite_he\face) = #True
-          *he = *he\opposite_he\prev_he
-          AddElement(*queue())
-          *queue() = *he
-        Else
-          *he = *he\next_he
-          If *he = *queue()
-            DeleteElement(*queue())
-            If ListSize(*queue())
-              *he = *queue()
-            Else
-              walk = #False
-            EndIf
-          EndIf
-        EndIf
-      Wend  
-      islandIndex + 1
-    EndIf
-    
-  Next
-  
-EndProcedure
-
-Procedure PrintHalfdges(*geom.Geometry::PolymeshGeometry_t)
-  Define  e
-  Define *h.Geometry::HalfEdge_t
-  For e = 0 To ArraySize(*geom\a_halfedges())-1
-    *h = *geom\a_halfedges(e)
-    Debug Str(*h\ID)+" : v=("+Str(*h\vertex)+","+Str(*h\next_he\vertex)+"), f="+Str(*h\face)+", n="+Str(*h\next_he\ID)+", p="+Str(*h\prev_he\ID)+", o="+Str(*h\opposite_he\ID)
-;      Debug Str(*h\ID)+" : v=("+Str(*h\vertex)+"), f="+Str(*h\face)+", n="+Str(*h\next_he)+", p="+Str(*h\prev_he)+", o="+Str(*h\opposite_he)
-  Next
 EndProcedure
 
 
 ; Update
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
+  
+  If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
+    If EventType() = #PB_EventType_KeyDown
+      Define key = GetGadgetAttribute(*viewport\gadgetID, #PB_OpenGL_Key)
+      Select key
+        Case #PB_Shortcut_Add
+          PolymeshGeometry::GrowVertexNeighbors(*mesh\geom, *selected)
+        Case #PB_Shortcut_Subtract
+          PolymeshGeometry::ShrinkVertexNeighbors(*mesh\geom, *selected)
+        Case #PB_Shortcut_Return
+          rootIndex = Random(*mesh\geom\nbpoints - 1)
+          CArray::SetCount(*selected,1)
+          CARray::SetValueL(*selected, 0, rootIndex)
+      EndSelect
+    EndIf
+  EndIf
+  
   ViewportUI::SetContext(*viewport)
   
   Drawer::Flush(*drawer)
-  DrawNeighbors(*mesh\geom, *drawer,0)
+  DrawSelected(*mesh\geom)
 
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
@@ -232,7 +161,7 @@ FTGL::Init()
   
   
   *root = Model::New("ROOT")
-    *mesh = PolygonSoup();Polymesh::New("MESH", Shape::#SHAPE_SPHERE)
+    *mesh = PolygonSoup(32);Polymesh::New("MESH", Shape::#SHAPE_SPHERE)
 ;   *mesh = Polymesh::New("MESH", Shape::#SHAPE_BUNNY)
 ;   *mesh\wireframe = #True
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
@@ -240,10 +169,9 @@ FTGL::Init()
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
 
   PolymeshGeometry::ComputeHalfEdges(*mesh\geom)
-  PrintHalfdges(*mesh\geom)
   PolymeshGeometry::ComputeIslands(*mesh\geom)
   PolymeshGeometry::RandomColorByIsland(*mesh\geom)
-  GetNeighbors(*mesh\geom)
+;   GetNeighbors(*mesh\geom)
 ;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 ;   PolymeshGeometry::SphereTopology(*geom\topo, 2, 512, 256)
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
@@ -262,14 +190,16 @@ FTGL::Init()
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   
-  
+  ;   CArray::AppendL(*selected, 7)
+  rootIndex = 7
+  PolymeshGeometry::GetVertexNeighbors(*mesh\geom, rootIndex, *selected)
   Application::Loop(*app, @Update())
 
 EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 212
-; Folding = --
+; CursorPosition = 92
+; FirstLine = 70
+; Folding = -
 ; EnableXP
