@@ -22,6 +22,8 @@ DeclareModule Box
   Declare.b IntersectSphere(*Me.Box_t, *sphere.Sphere_t)
   Declare.b Union(*Me.Box_t, *other.Box_t)
   Declare.f SquareDistance(*Me.Box_t, *point.v3f32)
+  Declare.b InsideBox(*Me.Box_t, *other.Box_t)
+  Declare.b InsideSphere(*Me.Box_t, *sphere.Sphere_t)
   Declare GetMatrixRepresentation(*Me.Box_t, *m.m4f32)
 EndDeclareModule
 
@@ -350,10 +352,35 @@ Module Box
     Matrix4::SetTranslation(*m, *Me\origin)
   EndProcedure
   
+  ;---------------------------------------------------------
+  ; Is Inside Other Box
+  ;---------------------------------------------------------
+  Procedure.b InsideBox(*Me.Geometry::Box_t, *other.Geometry::Box_t)
+    Define delta.v3f32
+    Vector3::Sub(delta, *Me\origin, *other\origin)
+    Vector3::AbsoluteInPlace(delta)
+    ProcedureReturn Vector3::LessThan(delta, *other\extend)
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Is Inside Sphere
+  ;---------------------------------------------------------
+  Procedure.b InsideSphere(*Me.Geometry::Box_t, *sphere.Geometry::Sphere_t)
+    ; we exploit the symmetry To reduce the test To test
+    ; whether the farthest corner is inside the search ball
+    Define p.v3f32
+    Vector3::Sub(p, *sphere\center, *Me\origin)
+    Vector3::AbsoluteInPlace(p)
+
+    ; reminder: (x, y, z) - (-e, -e, -e) = (x, y, z) + (e, e, e)
+    Vector3::AddInPlace(p, *Me\extend)
+    ProcedureReturn Bool(Vector3::LengthSquared(p) < *sphere\radius * *sphere\radius)
+  EndProcedure
+  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 344
-; FirstLine = 297
+; CursorPosition = 343
+; FirstLine = 324
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

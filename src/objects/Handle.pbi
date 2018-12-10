@@ -14,17 +14,23 @@ DeclareModule Handle
   EndStructure
   
   Enumeration
-    #Handle_Active_None
-    #Handle_Active_X
-    #Handle_Active_Y
-    #Handle_Active_Z
-    #Handle_Active_XY
-    #Handle_Active_XZ
-    #Handle_Active_YZ
-    #Handle_Active_All
+    #AXIS_ACTIVE_NONE
+    #AXIS_ACTIVE_X
+    #AXIS_ACTIVE_Y
+    #AXIS_ACTIVE_Z
+    #AXIS_ACTIVE_XY
+    #AXIS_ACTIVE_XZ
+    #AXIS_ACTIVE_YZ
+    #AXIS_ACTIVE_ALL
   EndEnumeration
 
-
+  Enumeration 
+    #PLANE_NORMAL_X
+    #PLANE_NORMAL_Y
+    #PLANE_NORMAL_Z
+    #PLANE_NORMAL_CAMERA
+  EndEnumeration
+  
   ; ----------------------------------------------------------------------------
   ; Structure
   ; ----------------------------------------------------------------------------
@@ -167,12 +173,14 @@ DeclareModule Handle
   Declare Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
   Declare DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
   Declare Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
-  Declare Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  ;   Declare Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+  Declare Translate(*Me.Handle_t,mx.i,my.i,width.i,height.i)
   Declare Scale(*Me.Handle_t,deltax.i,deltay.i)
   Declare Rotate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   Declare Transform(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   Declare Directed(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i,*ray.Geometry::Ray_t)
   Declare InitTransform(*Me.Handle_t,*t.Transform::Transform_t)
+  Declare InitPickingPlane(*Me.Handle_t, normal_axis.i)
   Declare SetTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
   Declare AddTarget(*Me.Handle_t,*obj.Object3D::Object3D_t)
   Declare SetTargets(*Me.Handle_t,*objs)
@@ -639,6 +647,7 @@ Module Handle
     glEnable(#GL_POINT_SMOOTH)
   
     glDisable(#GL_CULL_FACE)
+    glLineWidth(2)
     Protected pos.v3f32
     Protected d.f = *Me\distance/20
     
@@ -731,7 +740,7 @@ Module Handle
       
     Else
       ; X Axis
-      If *Me\active_axis = #Handle_Active_X Or *Me\active_axis = #Handle_Active_XY Or *Me\active_axis = #Handle_Active_XZ Or *Me\active_axis = #Handle_Active_All
+      If *Me\active_axis = #AXIS_ACTIVE_X Or *Me\active_axis = #AXIS_ACTIVE_XY Or *Me\active_axis = #AXIS_ACTIVE_XZ Or *Me\active_axis = #AXIS_ACTIVE_All
         glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
         glUniform4f(*Me\u_color,1,0.33,0.33,1)
@@ -741,7 +750,7 @@ Module Handle
       DrawAxis(*Me,1,0,0)
       
       ; Y Axis
-      If *Me\active_axis = #Handle_Active_Y Or *Me\active_axis = #Handle_Active_XY Or *Me\active_axis = #Handle_Active_YZ Or *Me\active_axis = #Handle_Active_All
+      If *Me\active_axis = #AXIS_ACTIVE_Y Or *Me\active_axis = #AXIS_ACTIVE_XY Or *Me\active_axis = #AXIS_ACTIVE_YZ Or *Me\active_axis = #AXIS_ACTIVE_All
         glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
         glUniform4f(*Me\u_color,0.33,1,0.33,1)
@@ -753,7 +762,7 @@ Module Handle
       DrawAxis(*Me,0.33,1,0.33)
       
       ; Z Axis
-      If *Me\active_axis = #Handle_Active_Z Or *Me\active_axis = #Handle_Active_XZ Or *Me\active_axis = #Handle_Active_YZ Or *Me\active_axis = #Handle_Active_All
+      If *Me\active_axis = #AXIS_ACTIVE_Z Or *Me\active_axis = #AXIS_ACTIVE_XZ Or *Me\active_axis = #AXIS_ACTIVE_YZ Or *Me\active_axis = #AXIS_ACTIVE_All
         glUniform4f(*Me\u_color,1,1,0.33,1)
       Else
         glUniform4f(*Me\u_color,0.33,0.33,1,1)
@@ -818,54 +827,166 @@ Module Handle
   EndProcedure
  
   
+;   ;-----------------------------------------------------------------------------
+;   ; Translate
+;   ;-----------------------------------------------------------------------------
+;   Procedure Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
+;     Protected delta.f = (deltax/width +deltay/height) * *Me\scl * 0.5
+;     Select *Me\active_axis
+;       Case #AXIS_ACTIVE_X
+;         Protected x.f = *Me\localT\t\pos\x
+;         x+ delta
+;         *Me\localT\t\pos\x = x
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\x = x
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;         
+;       Case #AXIS_ACTIVE_Y
+;         Protected y.f = *Me\localT\t\pos\y
+;         y- delta
+;        *Me\localT\t\pos\y = y
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\y = y
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;       Case #AXIS_ACTIVE_Z
+;         Protected z.f = *Me\localT\t\pos\z
+;         z- delta
+;         *Me\localT\t\pos\z = z
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\z = z
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;       Case #AXIS_ACTIVE_All
+;         If *Me\camera
+;           Define plane.Geometry::Plane_t
+;           Define nrm.v3f32
+;           Camera::GetViewPlaneNormal(*Me\camera, nrm)
+;           Plane::Set(plane, nrm, *Me\localT\t\pos)
+;           
+;           Define ray.Geometry::Ray_t
+;           Define p.v3f32
+;           Vector3::Set(p, deltax/width, deltay/height, 0)
+;           Define view.m4f32 
+;           Camera::GetViewTransform(*Me\camera, view)
+;           Transform::SetTranslation(*Me\localT, p)
+;           Transform::SetTranslation(*Me\globalT, p)
+;           
+;           Transform::UpdateMatrixFromSRT(*Me\localT)
+;           Transform::UpdateMatrixFromSRT(*Me\globalT)
+;         EndIf
+;         
+;     EndSelect
+;     
+;     If *Me\target <> #Null
+;       Protected pos.v3f32 
+;       If *Me\target\type = Object3D::#Object3D_Light
+;         Protected *light.Light::Light_t = *Me\target
+;   
+;         Vector3::SetFromOther(*light\pos,*Me\localT\t\pos)
+;         Light::LookAt(*light)
+;       ElseIf *Me\target\type = Object3D::#Object3D_Camera
+;         Protected *camera.Camera::Camera_t = *Me\target
+;   
+;         Vector3::SetFromOther(*camera\pos,*Me\localT\t\pos)
+;         Camera::LookAt(*camera)
+;       Else
+;         Protected *parent.Object3D::Object3D_t = *Me\target\parent
+;         Protected *t.Transform::Transform_t = *parent\globalT
+;         Protected mat.m4f32
+;         Matrix4::Inverse(mat,*t\m)
+;      
+;         Vector3::MulByMatrix4(pos,*Me\localT\t\pos,mat)
+;         Transform::SetTranslationFromXYZValues(*Me\target\localT,pos\x,pos\y,pos\z)
+;         Transform::UpdateMatrixFromSRT(*Me\target\localT)
+;       EndIf
+;     EndIf
+;     
+;   EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Init Picking Plane
+  ;-----------------------------------------------------------------------------
+  Procedure InitPickingPlane(*Me.Handle_t, normal_axis.i)
+    If *Me\target
+      Camera::GetViewPlaneNormal(*Me\camera, *Me\plane\normal)
+      Plane::SetOrig(*Me\plane, *Me\target\globalT\t\pos)
+    EndIf  
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Project On Axis
+  ;-----------------------------------------------------------------------------
+  Procedure ProjectPickPoint(*Me.Handle_t, *pnt.v3f32)
+    Define axis.v3f32
+    Select *Me\active_axis
+      Case #AXIS_ACTIVE_X
+        Vector3::Set(axis, 1,0,0)
+        Vector3::ProjectInPlace(*pnt, axis)
+      Case #AXIS_ACTIVE_Y
+        Vector3::Set(axis, 0,1,0)
+        Vector3::ProjectInPlace(*pnt, axis)
+      Case #AXIS_ACTIVE_Z
+        Vector3::Set(axis, 0,0,1)
+        Vector3::ProjectInPlace(*pnt, axis)
+    EndSelect
+  EndProcedure
+  
   ;-----------------------------------------------------------------------------
   ; Translate
   ;-----------------------------------------------------------------------------
-  Procedure Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
-    Protected delta.f = (deltax/width +deltay/height) * *Me\scl * 0.5
-    Select *Me\active_axis
-      Case #Handle_Active_X
-         Protected x.f = *Me\localT\t\pos\x
-        x+ delta
-        *Me\localT\t\pos\x = x
-        Transform::UpdateMatrixFromSRT(*Me\localT)
-        *Me\globalT\t\pos\x = x
-        Transform::UpdateMatrixFromSRT(*Me\globalT)
-        
-      Case #Handle_Active_Y
-        Protected y.f = *Me\localT\t\pos\y
-        y- delta
-       *Me\localT\t\pos\y = y
-        Transform::UpdateMatrixFromSRT(*Me\localT)
-        *Me\globalT\t\pos\y = y
-        Transform::UpdateMatrixFromSRT(*Me\globalT)
-      Case #Handle_Active_Z
-        Protected z.f = *Me\localT\t\pos\z
-        z- delta
-        *Me\localT\t\pos\z = z
-        Transform::UpdateMatrixFromSRT(*Me\localT)
-        *Me\globalT\t\pos\z = z
-        Transform::UpdateMatrixFromSRT(*Me\globalT)
-      Case #Handle_Active_All
-        If *Me\camera
-          Define plane.Geometry::Plane_t
-          Define nrm.v3f32
-          Camera::GetViewPlaneNormal(*Me\camera, nrm)
-          Plane::Set(plane, nrm, *Me\localT\t\pos)
-          
-          Define ray.Geometry::Ray_t
-          Define p.v3f32
-          Vector3::Set(p, deltax/width, deltay/height, 0)
-          Define view.m4f32 
-          Camera::GetViewTransform(*Me\camera, view)
-          Transform::SetTranslation(*Me\localT, p)
-          Transform::SetTranslation(*Me\globalT, p)
-          
-          Transform::UpdateMatrixFromSRT(*Me\localT)
-          Transform::UpdateMatrixFromSRT(*Me\globalT)
-        EndIf
-        
-    EndSelect
+  Procedure Translate(*Me.Handle_t,mx.i,my.i,width.i,height.i)
+    Camera::MousePositionToRayDirection(*Me\camera, mx, my, width, height, *Me\ray\direction)
+    Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
+    Define distance.f = #F32_MAX
+    If Ray::PlaneIntersection(*Me\ray, *Me\plane, @distance)
+      Define hitPoint.v3f32
+      Ray::GetIntersectionPoint(*Me\ray, distance, hitPoint)
+      Transform::SetTranslation(*Me\localT, hitPoint)
+      Transform::SetTranslation(*Me\globalT, hitPoint)
+    EndIf
+;     
+;     Select *Me\active_axis
+;       Case #AXIS_ACTIVE_X
+;         Protected x.f = *Me\localT\t\pos\x
+;         x+ delta
+;         *Me\localT\t\pos\x = x
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\x = x
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;         
+;       Case #AXIS_ACTIVE_Y
+;         Protected y.f = *Me\localT\t\pos\y
+;         y- delta
+;        *Me\localT\t\pos\y = y
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\y = y
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;       Case #AXIS_ACTIVE_Z
+;         Protected z.f = *Me\localT\t\pos\z
+;         z- delta
+;         *Me\localT\t\pos\z = z
+;         Transform::UpdateMatrixFromSRT(*Me\localT)
+;         *Me\globalT\t\pos\z = z
+;         Transform::UpdateMatrixFromSRT(*Me\globalT)
+;       Case #AXIS_ACTIVE_All
+;         If *Me\camera
+;           Define plane.Geometry::Plane_t
+;           Define nrm.v3f32
+;           Camera::GetViewPlaneNormal(*Me\camera, nrm)
+;           Plane::Set(plane, nrm, *Me\localT\t\pos)
+;           
+;           Define ray.Geometry::Ray_t
+;           Define p.v3f32
+;           Vector3::Set(p, deltax/width, deltay/height, 0)
+;           Define view.m4f32 
+;           Camera::GetViewTransform(*Me\camera, view)
+;           Transform::SetTranslation(*Me\localT, p)
+;           Transform::SetTranslation(*Me\globalT, p)
+;           
+;           Transform::UpdateMatrixFromSRT(*Me\localT)
+;           Transform::UpdateMatrixFromSRT(*Me\globalT)
+;         EndIf
+;         
+;     EndSelect
     
     If *Me\target <> #Null
       Protected pos.v3f32 
@@ -902,20 +1023,20 @@ Module Handle
     Protected delta.f = Radian((deltax+deltay)/2)
     
     Select *Me\active_axis
-      Case #Handle_Active_X
+      Case #AXIS_ACTIVE_X
         Vector3::Set(s2,*s\x+delta,*s\y,*s\z)
         Transform::SetScaleFromXYZValues(*Me\localT,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\localT)
         Transform::SetScaleFromXYZValues(*Me\globalT,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\globalT)
 
-      Case #Handle_Active_Y
+      Case #AXIS_ACTIVE_Y
         Vector3::Set(s2,*s\x,*s\y+delta,*s\z)
         Transform::SetScaleFromXYZValues(*Me\localT,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\localT)
         Transform::SetScaleFromXYZValues(*Me\globalT,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\globalT)
-      Case #Handle_Active_Z
+      Case #AXIS_ACTIVE_Z
         Vector3::Set(s2,*s\x,*s\y,*s\z+delta)
         Transform::SetScaleFromXYZValues(*Me\localT,s2\x,s2\y,s2\z)
         Transform::UpdateMatrixFromSRT(*Me\localT)
@@ -955,7 +1076,7 @@ Module Handle
     Protected axis.v3f32
     
     Select *Me\active_axis
-      Case #Handle_Active_X
+      Case #AXIS_ACTIVE_X
         Quaternion::SetFromAxisAngleValues(q2,1,0,0,Radian((deltax+deltay)/2))
         Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\localT,q3)
@@ -963,7 +1084,7 @@ Module Handle
         Transform::SetRotationFromQuaternion(*Me\globalT,q3)
         Transform::UpdateMatrixFromSRT(*Me\globalT)
        
-      Case #Handle_Active_Y
+      Case #AXIS_ACTIVE_Y
        Quaternion::SetFromAxisAngleValues(q2,0,1,0,Radian((deltax+deltay)/2))
         Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\localT,q3)
@@ -971,7 +1092,7 @@ Module Handle
         Transform::SetRotationFromQuaternion(*Me\globalT,q3)
         Transform::UpdateMatrixFromSRT(*Me\globalT)
         
-      Case #Handle_Active_Z
+      Case #AXIS_ACTIVE_Z
         Quaternion::SetFromAxisAngleValues(q2,0,0,1,Radian((deltax+deltay)/2))
         Quaternion::Multiply(q3,*q,q2)
         Transform::SetRotationFromQuaternion(*Me\localT,q3)
@@ -1126,17 +1247,17 @@ Module Handle
     cylinder\radius = 0.01
     
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_X)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_X)
     EndIf
     
     Vector3::Set(cylinder\axis, 0,1,0)
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_Y)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_Y)
     EndIf
 
     Vector3::Set(cylinder\axis,0,0,1)
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_Z)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_Z)
     EndIf
     
   EndProcedure
@@ -1153,17 +1274,17 @@ Module Handle
     cylinder\radius = 1
     
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_X)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_X)
     EndIf
     
     Vector3::Set(cylinder\axis, 0,0.1,0)
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_Y)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_Y)
     EndIf
 
     Vector3::Set(cylinder\axis,0,0,0.1)
     If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-      SetActiveAxis(*Me, #Handle_Active_Z)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_Z)
     EndIf
     
   EndProcedure
@@ -1178,7 +1299,7 @@ Module Handle
     Vector3::SetFromOther(sphere\center, *Me\localT\t\pos)
     sphere\radius = 0.1
     If Ray::SphereIntersection(*Me\ray, sphere)
-      SetActiveAxis(*Me, #Handle_Active_All)
+      SetActiveAxis(*Me, #AXIS_ACTIVE_All)
       Debug "HANDLE : SPHERE INTERSECTION"
     Else
       
@@ -1189,20 +1310,20 @@ Module Handle
       cylinder\radius = 0.01
       
       If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-        SetActiveAxis(*Me, #Handle_Active_X)
-        Debug "HANDLE : AXIS X INTERSECTION"
+        SetActiveAxis(*Me, #AXIS_ACTIVE_X)
+        InitPickingPlane(*Me, #PLANE_NORMAL_Y)
       EndIf
       
       Vector3::Set(cylinder\axis, 0,1,0)
       If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-        SetActiveAxis(*Me, #Handle_Active_Y)
-        Debug "HANDLE : AXIS Y INTERSECTION"
+        SetActiveAxis(*Me, #AXIS_ACTIVE_Y)
+         InitPickingPlane(*Me, #PLANE_NORMAL_Z)
       EndIf
   
       Vector3::Set(cylinder\axis,0,0,1)
       If Ray::CylinderIntersection(*Me\ray, cylinder, @enterDistance, @exitDistance)
-        SetActiveAxis(*Me, #Handle_Active_Z)
-        Debug "HANDLE : AXIS Z INTERSECTION"
+        SetActiveAxis(*Me, #AXIS_ACTIVE_Z)
+         InitPickingPlane(*Me, #PLANE_NORMAL_X)
       EndIf
     EndIf
     
@@ -1212,13 +1333,34 @@ Module Handle
   ; On Event
   ;-----------------------------------------------------------------------------
   Procedure OnEvent(*Me.Handle_t, event.i,  *ev_data.Control::EventTypeDatas_t = #Null)
-    Select *Me\tool
-      Case Globals::#TOOL_TRANSLATE
-        Camera::MousePositionToRayDirection(*Me\camera, *ev_data\x, *ev_data\y, *ev_data\width, *ev_data\height, *Me\ray\direction)
-        Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
-        PickTranslate(*Me)
+    Select event
+      Case #PB_EventType_LeftButtonDown
+        *Me\down = #True
+        *Me\oldX = *ev_data\x
+        *Me\oldY = *ev_data\y
+        InitPickingPlane(*Me, #PLANE_NORMAL_CAMERA)
+        
+      Case #PB_EventType_LeftButtonUp
+        *Me\down = #False
+        
+      Case #PB_EventType_MouseMove
+        If *Me\down
+          Select *Me\tool
+            Case Globals::#TOOL_TRANSLATE
+              ;               Translate(*Me, *ev_data\x - *Me\oldX, *ev_data\y -*Me\oldY, *ev_data\width, *ev_data\height)
+              Translate(*Me, *ev_data\x, *ev_data\y, *ev_data\width, *ev_data\height)
+;               *Me\oldX = *ev_data\x
+;               *Me\oldY = *ev_data\y
+          EndSelect
+        Else
+          Select *Me\tool
+            Case Globals::#TOOL_TRANSLATE
+              Camera::MousePositionToRayDirection(*Me\camera, *ev_data\x, *ev_data\y, *ev_data\width, *ev_data\height, *Me\ray\direction)
+              Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
+              PickTranslate(*Me)
+          EndSelect
+        EndIf
     EndSelect
-    
   EndProcedure
   
   
@@ -1327,7 +1469,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1217
-; FirstLine = 1198
+; CursorPosition = 929
+; FirstLine = 889
 ; Folding = -------
 ; EnableXP

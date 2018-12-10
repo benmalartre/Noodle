@@ -72,9 +72,8 @@ Scene::AddChild(*scene, *sphere)
 ; Define *view.View::View_t = View::Split(*app\manager\main,#False)
 
 ; Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
-*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\manager\main, "Viewport");*manager\main\gadgetID,*manager\window)
+*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\manager\main, "Viewport", *app\camera);*manager\main\gadgetID,*manager\window)
 *app\context = *viewport\context
-*viewport\camera = *app\camera
 
 ; Define *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*view\right)
 ; ExplorerUI::Setup(*explorer)
@@ -103,7 +102,7 @@ Scene::Setup(Scene::*current_scene, *app\context)
 Application::Loop(*app,@Update())
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 26
+; CursorPosition = 76
+; FirstLine = 47
 ; Folding = -
 ; EnableXP

@@ -291,11 +291,148 @@ Module Utils
     
   EndProcedure
   ;}
+  
+  
+  ;-------------------------------------------------------------------
+  ; Orient2D
+  ;-------------------------------------------------------------------
+  ; If Orient2D(A, B, C) > 0, C lies to the left of the directed line AB. 
+  ; Equivalently, the triangle ABC is oriented counterclockwise
+  ; If ORIENT2D(A, B, C) < 0, C lies To the right of the directed line AB
+  ; And the triangle ABC is oriented clockwise
+  ; If ORIENT2D(A, B, C) = 0, the three points are collinear
+  ; The actual value returned by ORIENT2D(A, B, C) corresponds to twice the signed area of the triangle
+  ; ABC (positive If ABC is counterclockwise, otherwise negative)
+  ;-------------------------------------------------------------------
+  ;{
+  Procedure.f Orient2D(*a.v2f32, *b.v2f32, *c.v2f32)
+    Define.f acx, bcx, acy, bcy;
+  
+    acx = *a\x - *c\x
+    bcx = *b\x - *c\x
+    acy = *a\y - *c\y
+    bcy = *b\y - *c\y
+    ProcedureReturn acx * bcy - acy * bcx
+  EndProcedure
+  ;}
+  
+  ;-------------------------------------------------------------------
+  ; Orient3D
+  ;-------------------------------------------------------------------
+  ; If ORIENT3D(A, B, C, D) < 0, D lies above the supporting plane of triangle
+  ; ABC, in the sense that ABC appears in counterclockwise order when viewe from D
+  ; If ORIENT3D(A, B, C, D) > 0, D instead lies below the plane of ABC
+  ; If ORIENT3D(A, B, C, D) = 0, the four points are coplanar
+  ; The value returned by ORIENT3D(A, B, C, D) corresponds to six times the signed volume
+  ; of the tetrahedron formed by the four points
+  ;-------------------------------------------------------------------
+  ;{
+  Procedure.f Orient3D(*a.v3f32, *b.v3f32, *c.v3f32, *d.v3f32)
+    Define.f adx, bdx, cdx
+    Define.f ady, bdy, cdy
+    Define.f adz, bdz, cdz
+
+    adx = *a\x - *d\x
+    bdx = *b\x - *d\x
+    cdx = *c\x - *d\x
+    ady = *a\y - *d\y
+    bdy = *b\y - *d\y
+    cdy = *c\y - *d\y
+    adz = *a\z - *d\z
+    bdz = *b\z - *d\z
+    cdz = *c\z - *d\z
+
+    ProcedureReturn adx * (bdy * cdz - bdz * cdy) + bdx * (cdy * adz - cdz * ady) + cdx * (ady * bdz - adz * bdy)
+  EndProcedure
+  ;}
+  
+  ;-------------------------------------------------------------------
+  ; In Circle Test
+  ;-------------------------------------------------------------------
+  ; Return a positive value If the point pd lies inside the
+  ; circle passing through pa, pb, And pc; a negative value if
+  ; it lies outside; and zero if the four points are cocircular.
+  ; The points pa, pb, And pc must be in counterclockwise
+  ; order, Or the sign of the result will be reversed.
+  ;-------------------------------------------------------------------
+  Procedure.f InCircle(*a.v2f32, *b.v3f32, *c.v3f32, *d.v3f32)
+    Define.f adx, ady, bdx, bdy, cdx, cdy
+    Define.f abdet, bcdet, cadet
+    Define.f alift, blift, clift
+  
+    adx = *a\x - *d\x
+    ady = *a\y - *d\y
+    bdx = *b\x - *d\x
+    bdy = *b\y - *d\y
+    cdx = *c\x - *d\x
+    cdy = *c\y - *d\y
+  
+    abdet = adx * bdy - bdx * ady
+    bcdet = bdx * cdy - cdx * bdy
+    cadet = cdx * ady - adx * cdy
+    alift = adx * adx + ady * ady
+    blift = bdx * bdx + bdy * bdy
+    clift = cdx * cdx + cdy * cdy
+  
+    ProcedureReturn alift * bcdet + blift * cadet + clift * abdet
+  EndProcedure
+
+  ;-------------------------------------------------------------------
+  ; In Sphere Test
+  ;-------------------------------------------------------------------
+  ; Return a positive value if the point pe lies inside the
+  ; sphere passing through pa, pb, pc, And pd; a negative value
+  ; If it lies outside; and zero if the five points are
+  ; cospherical.  The points pa, pb, pc, And pd must be ordered
+  ; so that they have a positive orientation (As defined by
+  ; orient3d()), or the sign of the result will be reversed.
+  ;-------------------------------------------------------------------
+  Procedure.f InSphere(*a.v3f32, *b.v3f32, *c.v3f32, *d.v3f32, *e.v3f32)
+    Define.f aex, bex, cex, dex
+    Define.f aey, bey, cey, dey
+    Define.f aez, bez, cez, dez
+    Define.f alift, blift, clift, dlift
+    Define.f ab, bc, cd, da, ac, bd
+    Define.f abc, bcd, cda, dab
+  
+    aex = *a\x - *e\x
+    bex = *b\x - *e\x
+    cex = *c\x - *e\x
+    dex = *d\x - *e\x
+    aey = *a\y - *e\y
+    bey = *b\y - *e\y
+    cey = *c\y - *e\y
+    dey = *d\y - *e\y
+    aez = *a\z - *e\z
+    bez = *b\z - *e\z
+    cez = *c\z - *e\z
+    dez = *d\z - *e\z
+  
+    ab = aex * bey - bex * aey
+    bc = bex * cey - cex * bey
+    cd = cex * dey - dex * cey
+    da = dex * aey - aex * dey
+  
+    ac = aex * cey - cex * aey
+    bd = bex * dey - dex * bey
+  
+    abc = aez * bc - bez * ac + cez * ab
+    bcd = bez * cd - cez * bd + dez * bc
+    cda = cez * da + dez * ac + aez * cd
+    dab = dez * ab + aez * bd + bez * da
+  
+    alift = aex * aex + aey * aey + aez * aez
+    blift = bex * bex + bey * bey + bez * bez
+    clift = cex * cex + cey * cey + cez * cez
+    dlift = dex * dex + dey * dey + dez * dez
+  
+    ProcedureReturn (dlift * abc - clift * dab) + (blift * cda - alift * bcd)
+  EndProcedure
 
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 292
-; FirstLine = 235
-; Folding = ---
+; CursorPosition = 365
+; FirstLine = 361
+; Folding = ----
 ; EnableXP

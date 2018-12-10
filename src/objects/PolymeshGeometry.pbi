@@ -706,34 +706,6 @@ Module PolymeshGeometry
 
     Protected i
     Protected *vertex.Vertex_t
-;     If CArray::GetCount(*mesh\a_vertices)
-;       For i=0 To CArray::GetCount(*mesh\a_vertices)-1
-;         *vertex = CArray::GetValue(*mesh\a_vertices,i)
-;         If *vertex : Vertex::Delete(*vertex) : EndIf
-;       Next i
-;     EndIf
-    
-;     Protected *edge.CEdge
-;     For i=0 To *mesh\a_edges\GetCount()-1
-;       *edge = *mesh\a_edges\GetValue(i)
-;     Next i
-;     *mesh\a_edges\SetCount(0)
-;     
-;     Protected *polygon.CPolygon
-;     If *mesh\a_polygons\GetCount()
-;       For i=0 To *mesh\a_polygons\GetCount()-1
-;         *polygon = *mesh\a_polygons\GetValue(i)
-;       Next i
-;     EndIf
-;     *mesh\a_polygons\SetCount(0)
-;     
-;     Protected *sample.CSample
-;     If *mesh\a_samples\GetCount()
-;       For i=0 To *mesh\a_samples\GetCount()-1
-;         *sample = *mesh\a_samples\GetValue(i)
-;         *sample\InstanceDestroy()
-;       Next i
-;     EndIf
     
     CArray::SetCount(*mesh\a_edgeindices,0)
     CArray::SetCount(*mesh\a_colors,0)
@@ -753,6 +725,8 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_vertexpolygonindices,0)
     CArray::SetCount(*mesh\a_polygonareas,0)
     CArray::SetCount(*mesh\a_triangleareas,0)
+    CArray::SetCount(*mesh\a_islands, 0)
+    CArray::SetCount(*mesh\a_vertexhalfedge, 0)
   
   EndProcedure
   
@@ -1301,7 +1275,6 @@ Module PolymeshGeometry
         x = offset+j
 
         *h = *mesh\a_halfedges(x)
-        *h\ID = x
         a = CArray::GetValueL(*mesh\a_faceindices, offset + j)
         b = CArray::GetValueL(*mesh\a_faceindices, offset + ((j+1)%nbv))
         *h\vertex = a
@@ -1343,7 +1316,6 @@ Module PolymeshGeometry
       ResetMap(*openedges())
       NextMapElement(*openedges())
       *first = *openedges()
-      *mesh\a_halfedges(index)\ID = index
       *mesh\a_halfedges(index)\face = -1
       *mesh\a_halfedges(index)\vertex = *first\next_he\vertex
       *mesh\a_halfedges(index)\opposite_he = *first
@@ -1352,7 +1324,6 @@ Module PolymeshGeometry
       index + 1
       *current = GetNextOpenEdge(*openedges(), *first\vertex)
       While *current And *current <> *first
-        *mesh\a_halfedges(index)\ID = index
         *mesh\a_halfedges(index)\face = -1
         *mesh\a_halfedges(index)\vertex = *current\next_he\vertex
         *mesh\a_halfedges(index)\opposite_he = *current
@@ -2766,6 +2737,7 @@ Module PolymeshGeometry
     Clear(*Me)
   
     Topology::Delete(*Me\topo)
+    Topology::Delete(*Me\base)
     
     CArray::Delete(*Me\a_uvws)
     CArray::Delete(*Me\a_colors)
@@ -2905,7 +2877,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1454
-; FirstLine = 1402
+; CursorPosition = 2758
+; FirstLine = 2712
 ; Folding = ----fw---v--
 ; EnableXP

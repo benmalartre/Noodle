@@ -48,6 +48,17 @@ Module LayerStroke
   UseModule OpenGL
   UseModule OpenGLExt
   
+  Procedure ComputeNumPoints(*layer.LayerStroke_t)
+    Define i
+    Define nbp = 0
+    Define *stroke.Geometry::Stroke_t
+    For i=0 To CArray::GetCount(*layer\strokes)-1
+      *stroke = CArray::GetValuePtr(*layer\strokes, i)
+      nbp + CArray::GetCount(*stroke\datas)
+    Next
+    ProcedureReturn nbp
+  EndProcedure
+  
   ;---------------------------------------------------
   ; Update
   ;---------------------------------------------------
@@ -56,7 +67,8 @@ Module LayerStroke
     Protected *pnt.Math::v3f32
     Protected f.GLfloat
     Protected i
-
+    
+    *layer\nbp = ComputeNumPoints(*layer)
     Protected size_t = SizeOf(v4f32) * *layer\nbp
     If size_t 
       Define offset = 0
@@ -70,8 +82,6 @@ Module LayerStroke
         offset + size_s
       Next
       GLCheckError("Push Buffer Data to GPU")
-
-      Debug "Layer Stroke GPU Updated!!!"
     EndIf
     ; Attribute Packed position xy, radius , color
     glEnableVertexAttribArray(0)
@@ -101,9 +111,7 @@ Module LayerStroke
     GLCheckError("Use Program Stroke 2D From Context")
     
     Update(*layer)
-    
-    
-    
+
     glBindVertexArray(#GL_NONE)  
     
   EndProcedure
@@ -208,9 +216,11 @@ Module LayerStroke
   ;---------------------------------------------------
   Procedure EndStroke(*layer.LayerStroke_t)
     If *layer\current
+      Stroke::Resample(*layer\current, 0.1)
      ;CLine_Simplify(*layer\line,0.1)
      ;CLine_Relax(*layer\line,10)
-      ;OLayerStroke_Update(*layer)
+      
+      Update(*layer)
     EndIf
     
     *layer\current = #Null
@@ -260,7 +270,7 @@ Module LayerStroke
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 171
+; CursorPosition = 83
+; FirstLine = 61
 ; Folding = ---
 ; EnableXP

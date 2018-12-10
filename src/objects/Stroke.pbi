@@ -10,6 +10,7 @@ DeclareModule Stroke
   #Stroke_TOLERANCE = 0.0000000001
   
   Declare SetPoints(*Me.Geometry::Stroke_t,*pnts.CArray::CArrayV3F32)
+  Declare SetPackedPoints(*Me.Geometry::Stroke_t,*pnts.CArray::CArrayV4F32)
   Declare SetColors(*Me.Geometry::Stroke_t,*colors.CArray::CArrayC4F32)
   Declare SetRadius(*Me.Geometry::Stroke_t,*radius.CArray::CArrayFloat)
   Declare AddPoint(*Stroke.Geometry::Stroke_t,*pos.v3f32, *col.c4f32, radius.f)
@@ -23,7 +24,8 @@ DeclareModule Stroke
                               *closest2.v3f32,
                               *t1=#Null,
                               *t2=#Null)
-  
+  Declare.f AccumulatedLength(*stroke.Geometry::Stroke_t, *accumulated.CArray::CArrayFloat)
+  Declare Resample(*Stroke.Geometry::Stroke_t, size.f)
   Declare New()
   Declare Delete(*Me.Geometry::Stroke_t)
   
@@ -67,6 +69,13 @@ Module Stroke
   EndProcedure
   
   ;---------------------------------------------------------
+  ; Set Packed Points
+  ;---------------------------------------------------------
+  Procedure SetPackedPoints(*Stroke.Geometry::Stroke_t,*pnts.CArray::CArrayV4F32) 
+    CArray::Copy(*Stroke\datas, *pnts)
+  EndProcedure
+  
+  ;---------------------------------------------------------
   ; Set Points
   ;---------------------------------------------------------
   Procedure SetRadius(*Stroke.Geometry::Stroke_t,*radius.CArray::CArrayFloat)
@@ -78,7 +87,7 @@ Module Stroke
   ;---------------------------------------------------------
   Procedure AddPoint(*stroke.Geometry::Stroke_t,*pos.v3f32, *col.c4f32, radius.f)
     Protected datas.v4f32
-    Vector4::Set(datas, *pos\x, *pos\y, radius, Random(16581375));Color::PackColor(*col))
+    Vector4::Set(datas, *pos\x, *pos\y, radius, Random(MATH::#COLOR_MAX));Color::PackColor(*col))
     CArray::Append(*stroke\datas, datas)
   EndProcedure
   
@@ -118,6 +127,67 @@ Module Stroke
   ;---------------------------------------------------------
   Procedure AddPackedPoints(*Stroke.Geometry::Stroke_t,*datas.CArray::CArrayV4F32)
     CArray::AppendArray(*stroke\datas, *datas)
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Length
+  ;---------------------------------------------------------
+  Procedure.f AccumulatedLength(*stroke.Geometry::Stroke_t, *accumulated.CArray::CArrayFloat)
+    Define length.f
+    Define s.i
+    Define.v2f32 *a, *b, delta
+    Define nbp = CArray::GetCount(*stroke\datas)
+    CArray::SetCount(*accumulated, nbp)
+    If nbp > 1
+      CArray::SetValueF(*accumulated, 0, 0)
+      For s=1 To nbp-1
+        *a = CArray::GetValue(*stroke\datas, s-1)
+        *b = CArray::GetValue(*stroke\datas, s)
+        Vector2::Sub(delta, *a, *b)
+        length + Vector2::Length(delta)
+        CARray::SetValueF(*accumulated,s, length)
+      Next
+    EndIf
+    ProcedureReturn length
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Resample
+  ;---------------------------------------------------------
+  Procedure Resample(*Stroke.Geometry::Stroke_t, size.f)
+    Define initNb = CArray::GetCount(*stroke\datas)
+    Define *accumulated.CArray::CArrayFloat = CArray::newCArrayFloat()
+    Define *newdatas.CArray::CArrayV4f32 = CARray::newCArrayV4F32()
+    
+    Define initLen.f = AccumulatedLength(*stroke, *accumulated)
+    Define finalNb = Max(initLen / size, 2)
+    CArray::SetCount(*newdatas, finalNb)
+    Define segLen.f = initLen / finalNb
+    Define curLen.f
+    Define sAccumLen.f, eAccumLen.f
+    Define i, j
+    Define *p.v4f32, *s.v4f32, *e.v4f32
+    For i =0 To finalNb-1
+      curLen = i*segLen
+      While curLen > CArray::GetValueF(*accumulated, j)
+        j+1
+      Wend
+      sAccumLen = CArray::GetValueF(*accumulated, j)
+      eAccumLen = CArray::GetValueF(*accumulated, j+1)
+      
+      *p = CArray::GetValue(*newdatas, i)
+      *s = CArray::GetValue(*stroke\datas, j)
+      *e = CArray::GetValue(*stroke\datas, j+1)
+
+      *p\x = *s\x + (curLen - sAccumLen) * (*e\x - *s\x) / (eAccumLen - sAccumLen)
+      *p\y = *s\y + (curLen - sAccumLen) * (*e\y - *s\y) / (eAccumLen - sAccumLen)
+      *p\z = *s\z + (curLen - sAccumLen) * (*e\z - *s\z) / (eAccumLen - sAccumLen)
+      *p\w = *s\w + (curLen - sAccumLen) * (*e\w - *s\w) / (eAccumLen - sAccumLen)
+    Next
+
+    SetPackedPoints(*stroke, *newdatas)
+    CArray::Delete(*accumulated)
+    CArray::Delete(*newdatas)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -236,8 +306,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 74
+; CursorPosition = 89
+; FirstLine = 85
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -379,16 +379,28 @@ Module ViewportUI
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
-
+    
+    Dim shaderNames.s(3)
+    shaderNames(0) = "wireframe"
+    shaderNames(1) = "polymesh"
+    shaderNames(2) = "normal"
+    Define i
+    Define *pgm.Program::Program_t
+    For i=0 To 2
+      *pgm = *ctx\shaders(shaderNames(i))
+      glUseProgram(*pgm\pgm)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+    Next
+    
     Protected ilayer.Layer::ILayer = *Me\layer
     ilayer\Draw(*ctx)
     If *Me\tool
       Protected *wireframe.Program::Program_t = *ctx\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
-      Protected identity.m4f32
-      Matrix4::SetIdentity(identity)
 
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,@identity)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
       
@@ -701,7 +713,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 325
-; FirstLine = 285
+; CursorPosition = 400
+; FirstLine = 376
 ; Folding = -----
 ; EnableXP

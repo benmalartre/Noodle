@@ -23,6 +23,9 @@ DeclareModule Polymesh
     u.i
     v.i
     wireframe.b
+    eao.i
+    ebo.i
+    eea.i
   EndStructure
   
   Interface IPolymesh Extends Object3D::IObject3D
@@ -33,7 +36,7 @@ DeclareModule Polymesh
   Declare Setup(*Me.Polymesh_t,*shader.Program::Program_t)
   Declare Update(*Me.Polymesh_t)
   Declare Clean(*Me.Polymesh_t)
-  Declare Draw(*Me.Polymesh_t)
+  Declare Draw(*Me.Polymesh_t, *ctx.GLContext::GLContext_t)
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
   Declare TestClass(*Me.Polymesh_t)
   Declare OnMessage(id.i, *up)
@@ -324,35 +327,35 @@ Module Polymesh
     ;Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     
-;     ; Create or ReUse Vertex Array Object
-;     If Not *p\vao2
-;       glGenVertexArrays(1,@*p\vao2)
-;     EndIf
-;     glBindVertexArray(*p\vao2)
-;     
-;     ; Create or ReUse Vertex Buffer Object
-;     If Not *p\vbo2
-;       glGenBuffers(1,@*p\vbo2)
-;     EndIf
-;     glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
-;     
-;     ; Push Position Datas to GPU
-;     Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
-;     glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
-;     
-;     ; Attibute Position 0
-;     glEnableVertexAttribArray(0)
-;     glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    ; Create or ReUse Vertex Array Object
+    If Not *p\eao
+      glGenVertexArrays(1,@*p\eao)
+    EndIf
+    glBindVertexArray(*p\eao)
     
-;     ; Create or ReUse Edge Elements Buffer
-;     If Not *p\eab2
-;       glGenBuffers(1,@*p\eab2)
-;     EndIf 
-;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab2)
-;     
-;     ; Push Element Datas to GPU
-;     size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
-;     glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
+    ; Create or ReUse Vertex Buffer Object
+    If Not *p\ebo
+      glGenBuffers(1,@*p\ebo)
+    EndIf
+    glBindBuffer(#GL_ARRAY_BUFFER,*p\ebo)
+    
+    ; Push Position Datas to GPU
+    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
+    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+    
+    ; Attibute Position 0
+    glEnableVertexAttribArray(0)
+    glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    
+    ; Create or ReUse Edge Elements Buffer
+    If Not *p\eea
+      glGenBuffers(1,@*p\eea)
+    EndIf 
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eea)
+    
+    ; Push Element Datas to GPU
+    size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
     
 
   EndProcedure
@@ -418,16 +421,16 @@ Module Polymesh
     EndIf
 
     ; Create or ReUse Edge Elements Buffer
-;     If Not *p\eab
-;       glGenBuffers(1,@*p\eab)
-;     EndIf 
-; 
-;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
+    If Not *p\eab
+      glGenBuffers(1,@*p\eab)
+    EndIf 
 
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
+
+    BuildGLEdgeData(*p)
+    
     ; Unbind
     glBindVertexArray(0)
-    
-    ;BuildGLEdgeData(*p)
     
     *p\initialized = #True
     SetClean(*p)
@@ -441,7 +444,11 @@ Module Polymesh
 
     If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf 
     If *p\vbo: glDeleteBuffers(1,@*p\vbo) : EndIf
-;     If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
+    If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
+    
+    If *p\eao : glDeleteVertexArrays(1,@*p\eao) : EndIf 
+    If *p\ebo: glDeleteBuffers(1,@*p\ebo) : EndIf
+    If *p\eea: glDeleteBuffers(1,@*p\eea) : EndIf
 
   EndProcedure
   ;}
@@ -466,9 +473,9 @@ Module Polymesh
         glBindVertexArray(*p\vao)
         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
         UpdateGLData(*p)
-;         glBindVertexArray(*p\vao2)
-;         glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo2)
-;         UpdateGLEdgeData(*p)
+        glBindVertexArray(*p\eao)
+        glBindBuffer(#GL_ARRAY_BUFFER,*p\ebo)
+        UpdateGLEdgeData(*p)
         glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         SetClean(*p)
@@ -482,43 +489,38 @@ Module Polymesh
   ; Draw
   ;-----------------------------------------------------
   ;{
-  Procedure Draw(*p.Polymesh_t)
-
+  Procedure Draw(*p.Polymesh_t, *ctx.GLContext::GLContext_t)
+    Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
-    Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-
-;     If *p\wireframe
-;       glBindVertexArray(*p\vao)
-;       glDisable (#GL_POLYGON_OFFSET_FILL)
-;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-;       ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-; ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-;       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
-;       GLCheckError("[Polymesh] Draw mesh Wireframe alled")
-;     Else
+      
+    glUseProgram(*ctx\shaders("normal")\pgm)
       glBindVertexArray(*p\vao)
       glDisable (#GL_POLYGON_OFFSET_FILL)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
-      ;       glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
+      glBindVertexArray(0)
 ;     EndIf
-      If *p\selected
-        glEnable(#GL_BLEND)
-        glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
-        glEnable (#GL_POLYGON_OFFSET_LINE)
-        glPolygonOffset (4.0, 1.0)
-        glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-
-        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
-        glDisable(#GL_BLEND)
-        glDisable (#GL_POLYGON_OFFSET_LINE)
-        glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
-      EndIf
+  
+;     If *Me\selected
+;       
+;       glBindVertexArray(*Me\eao)
+;       glDrawElements(#GL_LINES, *geom\nbedges, #GL_UNSIGNED_INT,#Null)
+;       glBindVertexArray(0)
+; ;       glEnable(#GL_BLEND)
+; ;       glBlendFunc(#GL_ONE_MINUS_SRC_COLOR, #GL_ZERO)
+; ;       glEnable (#GL_POLYGON_OFFSET_LINE)
+; ;       glPolygonOffset (4.0, 1.0)
+; ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+; ; 
+; ;       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+; ;       glDisable(#GL_BLEND)
+; ;       glDisable (#GL_POLYGON_OFFSET_LINE)
+; ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+;     EndIf
       
-    glBindVertexArray(0)
+    
   EndProcedure
   ;}
   
@@ -558,6 +560,6 @@ EndModule
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 496
-; FirstLine = 475
+; FirstLine = 492
 ; Folding = ----
 ; EnableXP

@@ -11,6 +11,9 @@ CompilerEndIf
 
 UseModule OpenGLExt
 
+Global width = 800
+Global height = 600
+
 Global *s_simple.Program::Program_t
 Global *layer.LayerDefault::LayerDefault_t
 Global *drawer.Drawer::Drawer_t
@@ -20,7 +23,7 @@ Global *viewport.ViewportUI::ViewportUI_t
 Global *octree.Octree::Octree_t
 Global *mesh.Polymesh::Polymesh_t
 Global *geom.Geometry::PolymeshGeometry_t
-Global query.v3f32
+Global *query.Null::Null_t
 
 Procedure PolygonSoup()
   Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_None)
@@ -29,7 +32,7 @@ Procedure PolygonSoup()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
   PolymeshGeometry::SphereTopology(*topo, 1,64 ,32)
-  Protected numTopos.i = 12
+  Protected numTopos.i = 2
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -102,23 +105,24 @@ Procedure PolygonSoup()
 EndProcedure
 
 Procedure TestHit()
-  Vector3::RandomizeInPlace(query,0.5)
+  Protected *qp.v3f32 = *query\localT\t\pos
+  
   Define loc.Geometry::Location_t
   Define i
   
-  Define P = Drawer::AddPoint(*drawer, query)
+  Define P = Drawer::AddPoint(*drawer, *qp)
   
   Drawer::SetSize(P, 12)
   Drawer::SetColor(P, Color::_RED())
   
   Octree::ResetHits(*octree)
-  Define radius.f = Octree::GetClosestPoint(*octree, query, loc)
+  Define radius.f = Octree::GetClosestPoint(*octree, *qp, loc)
   If radius >= 0
     P = Drawer::AddPoint(*drawer, loc\p)
     Drawer::SetSize(P, 10)
     Drawer::SetColor(P, Color::_GREEN())
-    Define L = Drawer::AddLine(*drawer, query, loc\p)
-    Drawer::SetColor(L, Color::_WHITE())
+    Define L = Drawer::AddLine(*drawer, *qp, loc\p)
+    Drawer::SetColor(L, Color::_GREEN())
   EndIf
   Octree::Draw(*octree, *drawer, *geom)
   Define m.m4f32
@@ -127,12 +131,31 @@ Procedure TestHit()
 
   Vector3::Set(scl, radius*2, radius*2, radius*2)
   Matrix4::SetScale(m, scl)
-  Matrix4::SetTranslation(m, query)
+  Matrix4::SetTranslation(m, *qp)
   Define S = Drawer::AddSphere(*drawer, m)
   Drawer::SetColor(S, Color::_PURPLE())
   Drawer::SetWireframe(S, #True)
-;   Octree::GetNodes(*octree)
-;   Octree::DrawLeaves(*octree, *drawer)
+  
+;   Define radius.f = Octree::GetClosestPointBruteForce(*octree, *qp, loc)
+;   If radius >= 0
+;     P = Drawer::AddPoint(*drawer, loc\p)
+;     Drawer::SetSize(P, 10)
+;     Drawer::SetColor(P, Color::_GREEN())
+;     Define L = Drawer::AddLine(*drawer, *qp, loc\p)
+;     Drawer::SetColor(L, Color::_RED())
+;   EndIf
+;   Octree::Draw(*octree, *drawer, *geom)
+;   Define m.m4f32
+;   Matrix4::SetIdentity(m)
+;   Define scl.v3f32
+; 
+;   Vector3::Set(scl, radius*2, radius*2, radius*2)
+;   Matrix4::SetScale(m, scl)
+;   Matrix4::SetTranslation(m, *qp)
+;   Define S = Drawer::AddSphere(*drawer, m)
+;   Drawer::SetColor(S, Color::_YELLOW())
+;   Drawer::SetWireframe(S, #True)
+
 EndProcedure
  
 Procedure Draw(*app.Application::Application_t)
@@ -145,10 +168,8 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   Define numCells.l
 ;   Octree::NumCells(*octree, @numCells)
-  LayerDefault::Draw(*layer, *app\context)
+  ViewportUI::Draw(*viewport, *app\context)
   
-
-
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/*viewport\width
@@ -161,6 +182,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   
   ViewportUI::FlipBuffer(*viewport)
+
 EndProcedure
 
 
@@ -169,21 +191,22 @@ EndProcedure
 Time::Init()
 Log::Init()
 
-*app = Application::New("Octree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
+ *app = Application::New("Octree",width, height, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
-If Not #USE_GLFW
-  *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-  *app\context = *viewport\context
+ If Not #USE_GLFW
+   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+   *app\context = *viewport\context
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
+ 
 
 Define T.d = Time::Get()
-*mesh.Polymesh::Polymesh_t = PolygonSoup()
+*mesh.Polymesh::Polymesh_t = PolygonSoup();Polymesh::New("S", Shape::#SHAPE_SPHERE);
 Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
 *drawer = Drawer::New()
 Define polygonSoupT.d = Time::Get() - T
-
+*query = Null::New("QUERY")
 
 *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 
@@ -195,64 +218,45 @@ Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
 *octree = Octree::New(bmin.v3f32, bmax.v3f32, 0)
 T = Time::Get()
 Octree::Build(*octree, *geom, 6)
-Define buildOctreeT.d = Time::get() - T
-T = Time::Get()
-Octree::Draw(*octree, *drawer, *geom)
-Define drawOctreeT.d = Time::get() - T
-Define numCells.i = 0
-Octree::NumCells(*octree, @numCells)
-Octree::GetCells(*octree)
-
-Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
-buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
-buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
-buildMessage + "Num Leaves : "+Str(numCells)+Chr(10)
-buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
-
-Vector3::Set(query, 1,2,1)
-Define loc.Geometry::Location_t
-Define i
-Define numTests = 1024
-T = Time::Get()
-For i=0 To numTests-1
-  Define hit = Octree::GetClosestPoint(*octree, query, loc)
-Next
-Define hitT.d = Time::Get() - T
-
-Define P = Drawer::AddPoint(*drawer, query)
-
-Drawer::SetSize(P, 12)
-Drawer::SetColor(P, Color::_RED())
-; If hit
-  buildMessage + "HIT : "+Vector3::ToString(loc\p)+Chr(10)
-  buildMessage + Str(numTests)+" Tests took : "+StrD(hitT)
-  P = Drawer::AddPoint(*drawer, loc\p)
-  Drawer::SetSize(P, 10)
-  Drawer::SetColor(P, Color::_GREEN())
-; EndIf
+; Define buildOctreeT.d = Time::get() - T
+; T = Time::Get()
+; Octree::Draw(*octree, *drawer, *geom)
+; Define drawOctreeT.d = Time::get() - T
+; Define numCells.i = 0
+; Octree::NumCells(*octree, @numCells)
+; Octree::GetCells(*octree)
 
 
-MessageRequester("TEST OCTREE : USE SSE "+Str(Bool(Defined(USE_SSE, #PB_Constant) And #USE_SSE)), buildMessage)
+MessageRequester("OCTREE", Bin(*octree\morton)+Chr(10)+Bin(*octree\children[0]\morton))
+
+; Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
+; buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
+; buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
+; buildMessage + "Num Leaves : "+Str(numCells)+Chr(10)
+; buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
 
 Scene::*current_scene = Scene::New()
-*layer = LayerDefault::New(800,800,*app\context,*app\camera)
+*layer = LayerDefault::New(width,height,*app\context,*app\camera)
 viewportUI::AddLayer(*viewport, *layer)
 Global *root.Model::Model_t = Model::New("Model")
-; Object3D::AddChild(*root, *mesh)
+Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
+Object3D::AddChild(*root, *query)
 
 Scene::AddModel(Scene::*current_scene, *root)
 
 Define t.d = Time::Get()
 Scene::Setup(Scene::*current_scene, *app\context)
-
+Scene::SelectObject(Scene::*current_scene, *query)
+ViewportUI::SetHandleTarget(*viewport, *query)
 
 Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
+
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 203
-; FirstLine = 191
+; CursorPosition = 235
+; FirstLine = 195
 ; Folding = -
 ; EnableThread
 ; EnableXP

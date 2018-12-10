@@ -88,13 +88,13 @@ DeclareModule STK
   PrototypeC STKINIT()
   PrototypeC STKGETDEVICES()
     
-  PrototypeC STKGENERATORSTREAMSETUP(*DAC.RtAudio, type.i, frequency.f)
+  PrototypeC STKGENERATORSTREAMSETUP(*DAC.RtAudio, type.l, frequency.f)
   PrototypeC STKGENERATORSTREAMCLEAN(*generator.STKGeneratorStream)
   PrototypeC STKGENERATORSTREAMSTART(*generator.STKGeneratorStream)
   PrototypeC STKGENERATORSTREAMSTOP(*generator.STKGeneratorStream)
   PrototypeC STKGENERATORSTREAMSETFREQUENCY(*generator.STKGeneratorStream, frequency.f)
   
-  PrototypeC STKVOICERSTREAMSETUP(*DAC.RtAudio, nbInstruments.i)
+  PrototypeC STKVOICERSTREAMSETUP(*DAC.RtAudio, nbInstruments.l)
   PrototypeC STKVOICERSTREAMCLEAN(*voicer.STKVoicerStream)
   PrototypeC STKVOICERSTREAMSTART(*voicer.STKVoicerStream)
   PrototypeC STKVOICERSTREAMSTOP(*voicer.STKVoicerStream)
@@ -145,9 +145,9 @@ DeclareModule STK
     Global STKGetDevices.STKGETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
 
     Global STKGeneratorStreamSetup.STKGENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
-    Global STKGeneratorStreamClean.STKGENERATORSTREAMCLEAN      = GetFunction(STK_LIB, "STKGeneratorStreamClean")
-    Global STKGeneratorStreamStart.STKGENERATORSTREAMSTART  = GetFunction(STK_LIB, "STKGeneratorStreamStart")
-    Global STKGeneratorStreamStop.STKGENERATORSTREAMSTOP  = GetFunction(STK_LIB, "STKGeneratorStreamStop")
+    Global STKGeneratorStreamClean.STKGENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
+    Global STKGeneratorStreamStart.STKGENERATORSTREAMSTART = GetFunction(STK_LIB, "STKGeneratorStreamStart")
+    Global STKGeneratorStreamStop.STKGENERATORSTREAMSTOP = GetFunction(STK_LIB, "STKGeneratorStreamStop")
     Global STKGeneratorStreamSetFrequency.STKGENERATORSTREAMSETFREQUENCY  = GetFunction(STK_LIB, "STKGeneratorStreamSetFrequency")
     
     Global STKVoicerStreamSetup.STKVOICERSTREAMSETUP = GetFunction(STK_LIB, "STKVoicerStreamSetup")
@@ -260,6 +260,12 @@ generator_names(9)  = "BLITSAW_GENERATOR"
 generator_names(10) = "BLITSQUARE_GENERATOR"
 generator_names(11) = "GRANULATE_GENERATOR"
 
+Dim arythmetic_modes.s(3)
+arythmetic_modes(0)  = "ADD"
+arythmetic_modes(1)  = "SUBTRACT"
+arythmetic_modes(2)  = "MULTIPLY" 
+
+
 Global WIDTH = 800
 Global HEIGHT = 600
 
@@ -267,7 +273,7 @@ Global *DAC.STK::RtAudio = STK::STKInit()
 
 ; Global *adsr.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#ADSR_GENERATOR, 180)
 ; Global *blit.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLIT_GENERATOR, 180)
-Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 60)
+Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#SINEWAVE_GENERATOR, 440)
 ; Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 
@@ -299,11 +305,11 @@ If *generator
           key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
           If key = #PB_Shortcut_Space
             If running
-              Debug STK::STKGeneratorStreamStop(*generator)
+              STK::STKGeneratorStreamStop(*generator)
               running = #False  
               DrawCanvas()
             Else
-              Debug STK::STKGeneratorStreamStart(*generator)
+              Define result.b = STK::STKGeneratorStreamStart(*generator)
               running = #True
               DrawCanvas()
             EndIf
@@ -335,7 +341,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 244
+; CursorPosition = 311
+; FirstLine = 268
 ; Folding = --
 ; EnableXP

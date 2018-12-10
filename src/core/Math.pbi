@@ -72,6 +72,8 @@ DeclareModule Math
   #F32_DEG2RAD  =  0.0174533              ; pi/180
   #F32_RAD2DEG  = 57.2957795              ; 180/pi
   
+  #COLOR_MAX    = 16581375
+  
   #MIN_VECTOR_LENGTH = 1e-10
   #MIN_ORTHO_TOLERANCE = 1e-6
   
@@ -948,6 +950,38 @@ DeclareModule Vector3
     HERMITE_INTERPOLATE(_v\z,_a\z,_b\z,_c\z,_d\z,_mu,_tension,_bias)
   EndMacro
   
+  ;------------------------------------------------------------------
+  ; VECTOR3 COMPARISON
+  ;------------------------------------------------------------------
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    Declare.b Equal(*v.v3f32, *o.v3f32)
+    Declare.b LessThan(*v.v3f32, *o.v3f32)
+    Declare.b LessOrEqualThan(*v.v3f32, *o.v3f32)
+    Declare.b GreaterOrEqualThan(*v.v3f32, *o.v3f32)
+    Declare.b GreaterThan(*v.v3f32, *o.v3f32)
+  CompilerElse
+    Macro Equal(_v, _o)
+      Bool(_v\x = _o\x And _v\y = _o\y And _v\z = _o\z)
+    EndMacro
+    
+    Macro LessThan(_v, _o)
+      Bool(_v\x < _o\x And _v\y < _o\y And _v\z < _o\z)
+    EndMacro
+    
+    Macro LessThanOrEqual(_v, _o)
+      Bool(_v\x <= _o\x And _v\y <= _o\y And _v\z <= _o\z)
+    EndMacro
+    
+    Macro GreaterThanOrEqual(_v, _o)
+      Bool(_v\x >= _o\x And _v\y >= _o\y And _v\z >= _o\z)
+    EndMacro
+    
+    Macro GreaterThan(_v, _o)
+      Bool(_v\x > _o\x And _v\y > _o\y And _v\z > _o\z)
+    EndMacro
+  CompilerEndIf
+  
+    
   ;------------------------------------------------------------------
   ; CROSS
   ;------------------------------------------------------------------
@@ -3277,6 +3311,9 @@ Module Vector3
       ! movups [rax]
     EndProcedure
     
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 EQUIVALENT
+    ; ---------------------------------------------------------------
     Procedure.b Equivalent(*v.v3f32,*o.v3f32, eps.f=0.0000001)
       ! mov rsi, [p.p_v]            ; load first point
       ! movups xmm0, [rsi]
@@ -3300,6 +3337,49 @@ Module Vector3
       ProcedureReturn #False
     
     EndProcedure
+    
+    ; ---------------------------------------------------------------
+    ;  VECTOR3 COMPARISON
+    ; ---------------------------------------------------------------
+    Macro SSEVectorCompare(opcode, funcname)
+      ! mov rsi, [p.p_v]            ; load first point
+      ! movups xmm0, [rsi]
+      ! mov rsi, [p.p_o]            ; load second point
+      ! movups xmm1, [rsi]
+      ! cmpps xmm0, xmm2, opcode    ; compare according to opcode
+      ! movmskps r12, xmm0          ; move comparison mask to r12 register
+      ! and r12, 7                  ; keep only three first bits
+      ! cmp r12, 7                  ; if all check passed, 7 in r12
+      ! je vector_#funcname#_true   ; and then vector are equivalent
+      ! jmp vector_#funcname#_false ; else vectors differs
+      
+      ! vector_#funcname#_true:     ; equivalents
+      ProcedureReturn #True
+      
+      ! vector_#funcname#_false:      ; differents
+      ProcedureReturn #False
+    EndMacro
+    
+    Procedure.b Equal(*v.v3f32, *o.v3f32)
+      SSEVectorCompare(0, EQUAL)
+    EndProcedure
+    
+    Procedure.b LessThan(*v.v3f32, *o.v3f32)
+      SSEVectorCompare(1, LESSTHAN)
+    EndProcedure
+    
+    Procedure.b LessOrEqualThan(*v.v3f32, *o.v3f32)
+      SSEVectorCompare(2, LESSOREQUALTHAN)
+    EndProcedure
+    
+    Procedure.b GreaterOrEqualThan(*v.v3f32, *o.v3f32)
+      SSEVectorCompare(5, GREATEROREQUALTHAN)
+    EndProcedure
+    
+    Procedure.b GreaterThan(*v.v3f32, *o.v3f32)
+      SSEVectorCompare(5, GREATERTHAN)
+    EndProcedure
+    
 
   CompilerElse
     Procedure.b Equivalent(*v.v3f32,*o.v3f32, eps.f=0.0000001)
@@ -4079,13 +4159,12 @@ Module Transform
     *t\t\scl\z = *scl\z
     *t\srtdirty = #True
   EndProcedure
-  
-  
+ 
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 733
-; FirstLine = 687
-; Folding = ----------------------------------------------------
+; CursorPosition = 53
+; FirstLine = 36
+; Folding = ------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

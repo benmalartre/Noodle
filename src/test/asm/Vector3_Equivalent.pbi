@@ -83,6 +83,7 @@ Define check1 = CompareMemory(mem1, mem2, numTests)
 Define check2 = CompareMemory(mem2, mem3, numTests)
 MessageRequester("EQUALS", StrD(E1)+" vs "+StrD(E2)+" vs "+StrD(E3)+",  CHECK : "+Str(check1)+", "+Str(check2))
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
+; CursorPosition = 33
+; FirstLine = 21
 ; Folding = -
 ; EnableXP

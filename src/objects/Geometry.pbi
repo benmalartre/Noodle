@@ -68,9 +68,6 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Stroke_t
-;     *positions.CArray::CArrayV3F32
-;     *radius.CArray::CArrayFloat
-;     *colors.CArray::CArrayC4F32
     *datas.CArray::CArrayV4F32 
     degree.i  
   EndStructure
@@ -116,7 +113,6 @@ DeclareModule Geometry
   Structure Ray_t
     origin.v3f32
     direction.v3f32
-  ;   inv_origin.v3f32
     inv_direction.v3f32
   EndStructure
   ;}
@@ -273,7 +269,6 @@ DeclareModule Geometry
     *opposite_he.HalfEdge_t
     *next_he.HalfEdge_t
     *prev_he.HalfEdge_t
-    ID.i
   EndStructure
   
   ; --------------------------------------------
@@ -622,7 +617,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 277
+; CursorPosition = 270
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP

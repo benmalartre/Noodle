@@ -480,7 +480,7 @@ Module Loader
         *Me\numLoaded3DObject +1
     EndSelect
     
-  ;   ; Load Transform
+    ; Load Transform
     If *object<> #Null
       LoadTransform(node,*object)
       ;   ; Load Attributes
@@ -548,8 +548,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 538
-; FirstLine = 495
+; CursorPosition = 117
+; FirstLine = 170
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

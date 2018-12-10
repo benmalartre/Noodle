@@ -153,6 +153,7 @@ Procedure Pick(*layer.LayerSelection_t)
   If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
     *selected = Scene::*current_scene\m_uuids()
     Selection::AddObject(*layer\selection, *selected)
+    *selected\selected = #True
   EndIf
   
 EndProcedure
@@ -245,7 +246,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 160
+; CursorPosition = 155
+; FirstLine = 110
 ; Folding = --
 ; EnableXP

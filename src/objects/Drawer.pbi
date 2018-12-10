@@ -386,7 +386,7 @@ Module Drawer
     glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
     
-    glLineWidth(2)
+    glLineWidth(Math::Max(Int(*Me\size),1))
     Protected *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
     Protected offset.i = 8
     If *Me\wireframe
@@ -397,13 +397,14 @@ Module Drawer
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
     EndIf
-    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glLineWidth(1)
   EndProcedure
   
   ; ---[ Draw Matrix Item ]--------------------------------------------------
   Procedure DrawMatrix(*Me.Matrix_t, *pgm)
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
-    glLineWidth(2)
+    glLineWidth(Math::Max(Int(*Me\size),1))
     Protected *indices = Shape::GetEdges(Shape::#SHAPE_AXIS)
     Protected offset.i = 8
     Protected u_color = glGetUniformLocation(*pgm,"color")
@@ -413,6 +414,8 @@ Module Drawer
     glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + offset)
     glUniform4f(u_color,0.0,0.0,1.0,1.0)
     glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + 2 * offset)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glLineWidth(1)
   EndProcedure
   
   ; ---[ Draw Triangle Item ]--------------------------------------------------
@@ -426,7 +429,7 @@ Module Drawer
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
     EndIf
-    
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
   EndProcedure
   
   ; ---[ Draw Item ]-----------------------------------------------------------
@@ -874,7 +877,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 361
-; FirstLine = 333
+; CursorPosition = 406
+; FirstLine = 360
 ; Folding = ---------
 ; EnableXP

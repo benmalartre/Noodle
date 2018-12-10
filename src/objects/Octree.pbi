@@ -14,9 +14,9 @@ DeclareModule Octree
   #MAX_L        = ((1<<(#LONG_BITS))-1)
   
   Enumeration
-    #DEFAULT_STATE
-    #NEARBY_STATE
-    #HIT_STATE
+    #STATE_DEFAULT
+    #STATE_NEARBY
+    #STATE_HIT
   EndEnumeration
 
   Enumeration 
@@ -35,6 +35,7 @@ DeclareModule Octree
 	  bmax.v3f32
   
 	  isLeaf.b
+	  *parent.Cell_t
 	  *children.Cell_t[8]
   	*elements.CArray::CArrayLong
   	color.c4f32
@@ -88,12 +89,13 @@ DeclareModule Octree
   Declare GetNearbyCells(*cell.Cell_t, *point.v3f32, *cells.CArray::CArrayPtr, closestDistance.f)
   Declare RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
   Declare.f GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
-  
+  Declare.f GetClosestPointBruteForce(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
   Declare CartesianToReal(*octree.Octree_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
   Declare RealToCartesian(*octree.Octree_t, *real.Math::v3f32, *cartersian.Morton::Point3D_t)
   Declare ClampCartesian(*octree.Octree_t, *cartersian.Morton::Point3D_t)
   Declare EncodeMorton(*octree.Octree_t, *cell.Cell_t)
   Declare GetCells(*octree.Octree_t)
+  Declare GetCellsWithinRadius(*octree.Octree_t, *pnt.v3f32, radius.f, *cells.CArray::CArrayPtr)
   
   Declare Draw(*cell.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
   Declare DrawLeaves(*octree.Octree_t, *drawer.Drawer::Drawer_t)
@@ -112,7 +114,7 @@ Module Octree
     InitializeStructure(*octree, Octree_t)
     *octree\elements = CArray::newCArrayLong()
     *octree\depth = depth
-    *octree\state = #DEFAULT_STATE
+    *octree\state = #STATE_DEFAULT
     
     Define minv.f = *bmin\x
     If *bmin\y > minv : minv = *bmin\y : EndIf
@@ -143,6 +145,9 @@ Module Octree
     FreeMemory(*octree)
   EndProcedure
   
+  ;---------------------------------------------------------------------
+  ; ENCODE MORTON
+  ;---------------------------------------------------------------------
   Procedure EncodeMorton(*octree.Octree_t, *cell.Cell_t)
     Protected p.Morton::Point3D_t
     Protected center.v3f32
@@ -162,7 +167,7 @@ Module Octree
     InitializeStructure(*cell, Cell_t)
     *cell\elements = CArray::newCArrayLong()
     *cell\depth = depth
-    *cell\state = #DEFAULT_STATE
+    *cell\state = #STATE_DEFAULT
     Vector3::SetFromOther(*cell\bmin, *bmin)
     Vector3::SetFromOther(*cell\bmax, *bmax)
     Color::Randomize(*cell\color)
@@ -217,6 +222,7 @@ Module Octree
   ; LOOKUP CELL
   ;---------------------------------------------------------------------
   Procedure LookUpCell(*octree.Octree_t, morton.i)
+    
     If FindMapElement(*octree\cells(), Str(morton))
       ProcedureReturn *octree\cells()
     Else
@@ -225,7 +231,7 @@ Module Octree
   EndProcedure
   
   Procedure RecurseSetHit(*cell.Cell_t)
-    *cell\state = Octree::#HIT_STATE
+    *cell\state = Octree::#STATE_HIT
     If Not *cell\isLeaf
       Define i
       For i = 0 To 7
@@ -273,8 +279,11 @@ Module Octree
     Define depth.i = 60
     Define childCode, childIndex
     While Not *cell\isLeaf And depth > 0
+      Debug "MORTON : "+Bin(morton)
       childCode = (morton >> depth) & 7
+      Debug "CHILD CODE : "+Bin(childCode)
       childIndex = (childCode & 1) << 2+ ((childCode >> 1) & 1) << 1 +  ((childCode >> 2) & 1)
+      Debug "CHILD INDEX : "+Str(childIndex)
 ;       childIndex = (morton >> depth) & 7
       If *cell\children[childIndex]
         *cell = *cell\children[childIndex]
@@ -286,12 +295,17 @@ Module Octree
 
     If Not *cell\isLeaf
       Define closestDistance.f = Math::#F32_MAX
-      *cell = RecurseGetClosestCell(*cell, *pnt, @closestDistance)
-;       *cell = RecurseGetCell(*cell, morton, depth)
-;       RecurseSetHit(*cell)
+      ;       *cell = RecurseGetClosestCell(*cell, *pnt, @closestDistance)
+      RecurseSetHit(*cell)
+      ;       *cell = RecurseGetCell(*cell, morton, depth)
+      If *cell\parent
+        ProcedureReturn *cell\parent
+      Else
+        ProcedureReturn *cell
+      EndIf
+      
     EndIf
-    *cell\state = Octree::#HIT_STATE
-    
+    *cell\state = Octree::#STATE_HIT
     ProcedureReturn *cell
     
   EndProcedure
@@ -300,7 +314,7 @@ Module Octree
   ; GET PARENT CELL
   ;---------------------------------------------------------------------
   Procedure GetParentCell(*octree.Octree_t, *cell.Cell_t)
-    Define parentCode.l = *cell\morton >> 3
+    Define parentCode.i = (*cell\morton >> 3) << 3
     ProcedureReturn LookUpCell(*octree, parentCode)
   EndProcedure
   
@@ -324,14 +338,14 @@ Module Octree
   ; RESET HITS
   ;---------------------------------------------------------------------
   Procedure ResetHits(*cell.Cell_t)
-    *cell\state = Octree::#DEFAULT_STATE
+    *cell\state = Octree::#STATE_DEFAULT
     
     If Not *cell\isLeaf
       Protected i
       For i=0 To 7
         If *cell\children[i]
           If *cell\children[i]\isLeaf
-            *cell\children[i]\state = Octree::#DEFAULT_STATE
+            *cell\children[i]\state = Octree::#STATE_DEFAULT
           Else
             ResetHits(*cell\children[i])
           EndIf
@@ -498,39 +512,13 @@ Module Octree
     Vector3::Set(*octree\bmin, minv,minv, minv)
     Vector3::Set(*octree\bmax, maxv,maxv, maxv)
 
-;     Vector3::Sub(*octree\bmin, *geom\bbox\origin, *geom\bbox\extend)
-;     Vector3::Add(*octree\bmax, *geom\bbox\origin, *geom\bbox\extend)
     ComputeScale(*octree)
     
     *octree\eMax = maxDepth
     *octree\geom = *geom
+    *octree\morton = EncodeMorton(*octree, *octree)
     Split(*octree, *octree, *geom, maxDepth)
-    
-;     NumCells(*octree, @*octree\numCells)
-;     
-;     MessageRequester("OCTREE", Str(*octree\numCells))
-    
-;     *octree\numCells = 0
-;     
-;     Debug "################### OCTREE ######################"
-;     Debug "Num CELLS : "+Str(*octree\numCells)
-;     Debug "#################################################"
-;     Select *geom\type
-;       Case Geometry::#GEOMETRY_1D
-;         Debug "POINT CLOUD OCTREE"
-;       Case Geometry::#GEOMETRY_2D
-;         Debug "CURVE OCTREE"
-;       Case Geometry::#GEOMETRY_3D
-;         Protected *poly.Geometry::PolymeshGeometry_t = *geom
-;         Protected numTriangles = *poly\nbtriangles
-;         CArray::SetCount(*octree\triangles, numTriangles)
-;         Define i
-;         For i=0 To numTriangles - 1
-;           CArray::SetValueL(*octree\triangles, i, i)
-;         Next
-;         
-;         Split(*octree, *geom\a_positions)
-;     EndSelect
+   
   EndProcedure  
   
   ;---------------------------------------------------------------------
@@ -607,7 +595,7 @@ Module Octree
           If *currentCell : *closestCell = *currentCell : EndIf
         EndIf
       Next j
-      If *closestCell : *closestCell\state = Octree::#NEARBY_STATE: EndIf
+      If *closestCell : *closestCell\state = Octree::#STATE_NEARBY: EndIf
       ProcedureReturn *closestCell
     EndIf
   EndProcedure
@@ -616,9 +604,10 @@ Module Octree
   ; GET CLOSEST CELL MORTON
   ;---------------------------------------------------------------------
   Procedure GetClosestCellMorton(*octree.Octree_t, *point.v3f32)
-    Define m.Morton::Point3D_t
-    Octree::RealToCartesian(*octree, *point, m)
-    Octree::ClampCartesian(*octree, m)
+    Define p.Morton::Point3D_t
+    Octree::RealToCartesian(*octree, *point, p)
+    Octree::ClampCartesian(*octree, p)
+    Define m = Morton::Encode3D(p)
     Define *closestCell.Cell_t = Octree::GetCell(*octree, m, *point)
     ProcedureReturn *closestCell
   EndProcedure
@@ -676,6 +665,7 @@ Module Octree
     Define i, j
     Define.v3f32 *a, *b, *c
     Define.v3f32 closest, uvw, delta
+    *cell\state = #STATE_HIT
     Define distance.f
     For i=0 To *cell\elements\itemCount - 1
       j = CArray::GetValueL(*cell\elements, i)
@@ -704,11 +694,15 @@ Module Octree
       Define i
       For i=0 To 7
         If *cell\children[i]
-          RecurseCheckCellElements(*cell\children[i], *pnt, *loc, *closestDistance, *geom)
+          If IntersectSphere(*cell\children[i], *pnt, PeekF(*closestDistance))
+            RecurseCheckCellElements(*cell\children[i], *pnt, *loc, *closestDistance, *geom)
+          EndIf
         EndIf
       Next
     Else
-      CheckCellElements(*cell, *pnt, *loc, *closestDistance, *geom)
+      If IntersectSphere(*cell, *pnt, PeekF(*closestDistance))
+        CheckCellElements(*cell, *pnt, *loc, *closestDistance, *geom)
+      EndIf
     EndIf
   EndProcedure
   
@@ -720,7 +714,7 @@ Module Octree
     Protected *closestCell.Cell_t  = GetClosestCellMorton(*octree, *pnt)
     
     If Not *closestCell : ProcedureReturn -1.0 : EndIf
-    *closestCell\state = Octree::#HIT_STATE
+    *closestCell\state = Octree::#STATE_HIT
     
     Define closestDistance.f = #F32_MAX
     Define distance.f
@@ -735,44 +729,36 @@ Module Octree
     Else
       RecurseCheckCellElements(*closestCell, *pnt, *loc, @closestDistance, *geom)
     EndIf
+   
+    ProcedureReturn closestDistance
     
-;     CompilerEndIf
+  EndProcedure  
+  
+    ;---------------------------------------------------------------------
+  ; Get Closest Point
+  ;---------------------------------------------------------------------
+  Procedure.f GetClosestPointBruteForce(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
+    Protected closestDistance.f=#F32_MAX, distance.f
+    Protected *geom.Geometry::PolymeshGeometry_t = *octree\geom
+    Define t
+    Define.v3f32 *a, *b, *c
+    Define.v3f32 closest, uvw, delta
+    For t=0 To *geom\nbtriangles - 1
+      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
+      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
+      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2))
+      Triangle::ClosestPoint(*a, *b,*c, *pnt, closest, uvw)
+      Vector3::Sub(delta,*pnt, closest)
+      distance = Vector3::Length(delta)
+      If distance < closestDistance
+        closestDistance = distance
+        *loc\geometry = *geom
+        *loc\tid = t
+        Vector3::SetFromOther(*loc\p, closest)
+        Vector3::SetFromOther(*loc\uvw, uvw)
+      EndIf
+    Next
     
-;     Define radius.f = closestDistance
-;     Define *nearbyCells.CArray::CArrayPtr = CArray::newCArrayPtr()
-;     If Not *octree\isLeaf
-;       GetNearbyCells(*octree, *pnt, *nearbyCells, radius)
-;     EndIf
-;         
-;     ; loop nearby cells
-;     Define *nearbyCell.Octree::Cell_t
-;     Define t
-;     For i=0 To CArray::GetCount(*nearbyCells) - 1
-;       *nearbyCell = CArray::GetValuePtr(*nearbyCells, i)
-;       If *nearbyCell = *closestCell : Continue : EndIf
-;       *nearbyCell\state = #NEARBY_STATE
-;       If IntersectSphere(*nearbyCell, *pnt, closestDistance)
-;         For j=0 To CArray::GetCount(*nearbyCell\elements) - 1
-;           t = CArray::GetValueL(*nearbyCell\elements, j)
-;           *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
-;           *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
-;           *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2)) 
-;           Triangle::ClosestPoint(*a, *b, *c, *pnt, closest, uvw)
-;           
-;           Vector3::Sub(delta, *pnt, closest)
-;           distance = Vector3::Length(delta)
-;           If distance < closestDistance
-;             closestDistance = distance
-;             *loc\geometry = *octree\geom
-;             *loc\tid = t
-;             Vector3::SetFromOther(*loc\p, closest)
-;             Vector3::SetFromOther(*loc\uvw, uvw)
-;           EndIf
-;         Next
-;       EndIf
-;     Next
-; 
-;     CArray::Delete(*nearbyCells)
     ProcedureReturn closestDistance
     
   EndProcedure  
@@ -785,7 +771,7 @@ Module Octree
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
     *child = Octree::NewCell(*octree, bmin, bmax, *cell\depth + 1)
-
+    *child\parent = *cell
     GetCenter(*child, box\origin)
     GetHalfSize(*child, box\extend)
     
@@ -811,7 +797,12 @@ Module Octree
                                           *cell\elements\itemCount, 
                                           box, 
                                           *hits)
+    Debug "TRIANGLE TOUCH ARRAY NUM HITS : "+Str(numHits)
+    Debug "CHILD CELL : "+Str(*child)
+    Debug "CHILD ELEMENTS : "+Str(*child\elements)
+    Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*child\elements))
     CArray::SetCount(*child\elements, numHits)
+    Debug "PASSED... : "
     Define idx = 0
     For t=0 To tsz - 1
       If PeekB(*hits+t)
@@ -827,6 +818,8 @@ Module Octree
       DeleteCell(*child)
     Else
       *cell\children[m] = *child
+      Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*cell\children[m]\elements))
+      Debug "SPLIT..."
       Split(*octree, *cell\children[m], *geom, maxDepth)
     EndIf
   EndMacro
@@ -868,9 +861,13 @@ Module Octree
     CreateCell(1,0,1)
     CreateCell(1,1,0)
     CreateCell(1,1,1)
-
+    
+    Debug "CREATED CELLS"
+    Debug "CELL : "+Str(*cell)
+    Debug "ELEMENTS : "+Str(*cell\elements)
+    
     Carray::SetCount(*cell\elements, 0)
-   
+    Debug "PASSED"
   EndProcedure
   
   
@@ -915,6 +912,46 @@ Module Octree
 ;     SortStructuredList(*octree\leaves(), #PB_Sort_Ascending, OffsetOf(Cell_t\morton), TypeOf(Cell_t\morton))
   EndProcedure
   
+  ;---------------------------------------------------------------------
+  ; GET CELLS
+  ;---------------------------------------------------------------------
+  Procedure GetCellsWithinRadius(*octree.Octree_t, *pnt.v3f32, radius.f, *cells.CArray::CArrayPtr)
+    
+  EndProcedure
+  
+;   template <typename PointT, typename ContainerT>
+; template <typename Distance>
+; void Octree<PointT, ContainerT>::radiusNeighbors(const Octant* octant, const PointT& query, float radius,
+;                                                  float sqrRadius, std::vector<uint32_t>& resultIndices) const
+; {
+;   const ContainerT& points = *data_;
+; 
+;   // If search ball S(q,r) contains octant, simply add point indexes.
+;   If (contains<Distance>(query, sqrRadius, octant))
+;   {
+;     uint32_t idx = octant->start;
+;     For (uint32_t i = 0; i < octant->size; ++i)
+;     {
+;       resultIndices.push_back(idx);
+;       idx = successors_[idx];
+;     }
+; 
+;     Return;  // early pruning.
+;   }
+; 
+;   If (octant->isLeaf)
+;   {
+;     uint32_t idx = octant->start;
+;     For (uint32_t i = 0; i < octant->size; ++i)
+;     {
+;       const PointT& p = points[idx];
+;       float dist = Distance::compute(query, p);
+;       If (dist < sqrRadius) resultIndices.push_back(idx);
+;       idx = successors_[idx];
+;     }
+; 
+;     Return;
+;   }
   ;---------------------------------------------------------------------
   ; Conversion Utils
   ;---------------------------------------------------------------------
@@ -966,6 +1003,7 @@ Module Octree
     Protected p.v3f32
     Protected *a.v3f32, *b.v3f32, *c.v3f32
     Protected *col.c4f32
+    Protected *box.Drawer::Box_t
     Matrix4::SetIdentity(m)
     If *cell\isLeaf
       Vector3::Sub(s, *cell\bmax, *cell\bmin)
@@ -973,14 +1011,14 @@ Module Octree
       Vector3::ScaleInPlace(p, 0.5)
       Matrix4::SetScale(m, s)
       Matrix4::SetTranslation(m, p)
-      Protected *box.Drawer::Box_t = Drawer::AddBox(*drawer, m)
+      *box = Drawer::AddBox(*drawer, m)
       
       Select *cell\state
-        Case Octree::#DEFAULT_STATE
+        Case Octree::#STATE_DEFAULT
            Drawer::SetColor(*box,Color::_WHITE())
-        Case Octree::#HIT_STATE
+        Case Octree::#STATE_HIT
            Drawer::SetColor(*box,Color::_RED())
-        Case Octree::#NEARBY_STATE
+        Case Octree::#STATE_NEARBY
           Drawer::SetColor(*box,Color::_YELLOW())
         Default
           Drawer::SetColor(*box,Color::_WHITE())
@@ -1019,6 +1057,23 @@ Module Octree
 ;       CArray::Delete(*colors)
     Else
       Protected i
+      Vector3::Sub(s, *cell\bmax, *cell\bmin)
+      Vector3::Add(p, *cell\bmin, *cell\bmax)
+      Vector3::ScaleInPlace(p, 0.5)
+      Matrix4::SetScale(m, s)
+      Matrix4::SetTranslation(m, p)
+      *box = Drawer::AddBox(*drawer, m)
+      
+      Select *cell\state
+        Case Octree::#STATE_DEFAULT
+           Drawer::SetColor(*box,Color::_WHITE())
+        Case Octree::#STATE_HIT
+           Drawer::SetColor(*box,Color::_RED())
+        Case Octree::#STATE_NEARBY
+          Drawer::SetColor(*box,Color::_YELLOW())
+        Default
+          Drawer::SetColor(*box,Color::_WHITE())
+      EndSelect
       For i=0 To 7
         If *cell\children[i]
           Draw(*cell\children[i], *drawer, *geom)
@@ -1032,7 +1087,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 621
-; FirstLine = 617
+; CursorPosition = 867
+; FirstLine = 821
 ; Folding = --------
 ; EnableXP

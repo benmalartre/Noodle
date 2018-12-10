@@ -130,7 +130,6 @@ Procedure UpdateNormals()
   Define m.m4f32
   Box::GetMatrixRepresentation(*geom\bbox, m)
   Define *B.Drawer::Box_t = Drawer::AddBox(*drawer, m)
-  Matrix4::Echo(m, "BOX REPRESENTATION")
   Drawer::SetColor(*B, Color::_MAGENTA())
   
   
@@ -215,10 +214,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Normals", width, height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
      *app\context = *viewport\context
      
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -271,8 +269,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 210
+; CursorPosition = 124
+; FirstLine = 105
 ; Folding = --
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

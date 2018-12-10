@@ -10,6 +10,10 @@ DeclareModule Plane
   UseModule Geometry
   
   Declare Set(*plane.Plane_t, *normal.v3f32, *point.v3f32)
+  Declare SetOrig(*plane.Plane_t,*point.v3f32)
+  Declare SetNormal(*plane.Plane_t,*normal.v3f32)
+  Declare SetOrigFromValues(*plane.Plane_t,x.f, y.f, z.f)
+  Declare SetNormalFromValues(*plane.Plane_t,x.f,y.f,z.f)
   Declare SetFromThreePoints(*plane.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
   Declare Transform(*plane.Plane_t, *m.m4f32)
   Declare.b IntersectPositiveHalfSpace(*plane.Plane_t, *box.Box_t)
@@ -25,6 +29,25 @@ Module Plane
   Procedure Set(*plane.Plane_t, *normal.v3f32, *point.v3f32)
     Vector3::Normalize(*plane\normal, *normal)
     *plane\distance = Vector3::Dot(*plane\normal, *point)
+  EndProcedure
+  
+  Procedure SetOrig(*plane.Plane_t,*point.v3f32)
+    *plane\distance = Vector3::Dot(*plane\normal, *point)
+  EndProcedure
+  
+  Procedure SetNormal(*plane.Plane_t, *normal.v3f32)
+    Vector3::Normalize(*plane\normal, *normal)
+  EndProcedure
+  
+  Procedure SetOrigFromValues(*plane.Plane_t, x.f, y.f, z.f)
+    Define p.v3f32
+    Vector3::Set(p, x, y, z)
+    *plane\distance = Vector3::Dot(*plane\normal, p)
+  EndProcedure
+  
+  Procedure SetNormalFromValues(*plane.Plane_t, x.f, y.f, z.f)
+    Vector3::Set(*plane\normal, x, y, z)
+    Vector3::Normalize(*plane\normal, *normal)
   EndProcedure
   
   Procedure SetFromThreePoints(*plane.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
@@ -119,7 +142,7 @@ EndModule
 ; 
 ; } // End namespace BOB
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 26
+; CursorPosition = 47
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

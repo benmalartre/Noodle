@@ -441,7 +441,120 @@ Module Morton
 	  *p\z = Decode3D_LUT256(m, ?MORTOM_DECODE_3D_Z_512, 0)
 	EndProcedure
 	
+	; ----------------------------------------------------------------------------------------------------------
+  ; Minimum Morton Code
+	;-----------------------------------------------------------------------------------------------------------
+	Procedure Minimum3D(lhs.i, rhs.i) 
+	  
+	EndProcedure
 	
+;    // Isolate the encoded coordinates.
+;    unsigned int lhsX = lhs & 0x55555555; // lhsX = -f-e -d-c -b-a -9-8 -7-6 -5-4 -3-2 -1-0
+;    unsigned int rhsX = rhs & 0x55555555; // rhsX = -f-e -d-c -b-a -9-8 -7-6 -5-4 -3-2 -1-0
+;    unsigned int lhsY = lhs & 0xAAAAAAAA; // lhsY = f-e- d-c- b-a- 9-8- 7-6- 5-4- 3-2- 1-0-
+;    unsigned int rhsY = rhs & 0xAAAAAAAA; // rhsY = f-e- d-c- b-a- 9-8- 7-6- 5-4- 3-2- 1-0-
+; 
+;    // Find the minimum of the encoded coordinates And combine them into a single word.
+;    Return Min(lhsX, rhsX) + Min(lhsY, rhsY);
+; }
+	
+	Procedure NextPoint(*p.Point3D_t, *o.Point3D_t)
+	  Define b = 1
+	  *o\x = *p\x
+	  *o\y = *p\y
+	  *o\z = *p\z
+    While b
+      *o\x = Pow(*o\x,b)
+      b & ~*o\x
+      *o\y = Pow(*o\y,b)
+      b & ~*o\y
+      *o\z = Pow(*o\z,b)
+      b & ~*o\z
+      b << 1
+    Wend
+  EndProcedure
+  
+  Procedure PreviousPoint(*p.Point3D_t, *o.Point3D_t)
+	  Define b = 1
+	  *o\x = *p\x
+	  *o\y = *p\y
+	  *o\z = *p\z
+    While b
+      *o\x = Pow(*o\x,b)
+      b & *o\x
+      *o\y = Pow(*o\y,b)
+      b & *o\y
+      *o\z = Pow(*o\z,b)
+      b & *o\z
+      b << 1
+    Wend
+  EndProcedure
+  
+  Procedure Difference(code1, code2, axis)
+    
+  EndProcedure
+  
+  
+; 	;----------------------------------------------------------------------------------
+;   ; Morton 3D To Hilbert 3D
+;   ;----------------------------------------------------------------------------------
+; 	Procedure MortonToHilbert3D( morton.i, bits.i )
+;     Define hilbert.i = morton
+;     If bits > 1
+;       Define block.i = ( ( bits * 3 ) - 3 )
+;       Define hcode = ( ( hilbert >> block ) & 7 )
+;       Define mcode, shift, signs
+;       shift = 0
+;       signs = 0
+;       While block > 0
+;         block - 3
+;         hcode << 2
+;         mcode = ( $20212021 >> hcode ) & 3
+;         shift = ( $48 >> ( 7 - shift - mcode ) ) & 3 
+;         signs = ( signs | ( signs << 3 ) ) >> mcode 
+;         signs = ( Int(Pow(signs, ( $53560300 >> hcode ) )) & 7 
+;         mcode = ( hilbert >> block ) & 7 
+;         hcode = mcode
+;         hcode = ( ( hcode | ( hcode << 3 ) ) >> shift ) & 7 
+;         hcode = Int(Pow(hcode, signs))
+;         hilbert = Int(Pow(hilbert, Int(Pow( mcode, hcode)) ) << block ))
+;       Wend  
+;     EndIf
+;     
+;     hilbert = Int(Pow(hilbert,  ( hilbert >> 1 ) & $92492492 ))
+;     hilbert = Int(Pow(hilbert, ( hilbert & $92492492 ) >> 1 ))
+;     ProcedurReturn hilbert 
+;   EndProcedure
+;   
+;   ;----------------------------------------------------------------------------------
+;   ; Hilbert3D To Morton  3D
+;   ;----------------------------------------------------------------------------------
+;   Procedure HilbertToMorton3D( hilbert.i, bits.i )
+;       uint morton = hilbert
+;       morton = Int(Pow(morton, ( morton & $92492492 ) >> 1 ))
+;       morton = Int(Pow(morton, ( morton >> 1 ) & $92492492 ))
+;       If bits > 1
+;         Define block = ( bits * 3 ) - 3 
+;         Define hcode = ( morton >> block ) & 7
+;         Define mcode, shift, signs
+;         shift = 0
+;         signs = 0
+;         While block > 0
+;           block - 3
+;           hcode << 2
+;           mcode = ( ( $20212021 >> hcode ) & 3 )
+;           shift = ( ( $48 >> ( 4 - shift + mcode ) ) & 3 )
+;           signs = ( ( signs | ( signs << 3 ) ) >> mcode )
+;           signs = ( Int(Pow(signs, ( $53560300 >> hcode ) )) & 7 
+;           hcode = ( morton >> block ) & 7
+;           mcode = hcode
+;           mcode = Int(Pow(mcode, signs))
+;           mcode = ( ( ( mcode | ( mcode << 3 ) ) >> shift ) & 7 )
+;           morton = Int(Pow(morton, Int(Pow(hcode, mcode))  << block ))
+;         Wend
+;       EndIf
+;       ProcedureReturn morton 
+;   EndProcedure
 	 
 EndModule
 
@@ -450,7 +563,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 408
-; FirstLine = 390
-; Folding = --
+; CursorPosition = 449
+; FirstLine = 412
+; Folding = ---
 ; EnableXP

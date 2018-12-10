@@ -822,9 +822,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Drawer",width,height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -878,7 +877,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 399
-; FirstLine = 390
+; CursorPosition = 825
+; FirstLine = 820
 ; Folding = --
 ; EnableXP

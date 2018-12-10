@@ -9,7 +9,7 @@ Global *app.Application::Application_t = Application::New("Noodle",800,600)
 
   
 Global *main.View::View_t = *app\manager\main
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*main,"ViewportUI")
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*main,"ViewportUI", *app\camera)
 *app\context = *viewport\context
 
 ; Global *view.View::View_t = View::Split(*main,0,50)
@@ -131,7 +131,7 @@ Scene::Setup(*scene,*app\context)
 
 Application::Loop(*app,@Callback())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 18
+; CursorPosition = 11
+; FirstLine = 7
 ; Folding = -
 ; EnableXP
