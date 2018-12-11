@@ -494,7 +494,7 @@ Module Polymesh
     ;Skip invisible Object
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
       
-    glUseProgram(*ctx\shaders("normal")\pgm)
+;     glUseProgram(*ctx\shaders("normal")\pgm)
       glBindVertexArray(*p\vao)
       glDisable (#GL_POLYGON_OFFSET_FILL)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
@@ -560,6 +560,6 @@ EndModule
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 496
-; FirstLine = 492
+; FirstLine = 477
 ; Folding = ----
 ; EnableXP

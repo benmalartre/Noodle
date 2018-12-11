@@ -110,10 +110,7 @@ Module InstanceCloud
   ;----------------------------------------------------
   Procedure GetShapeDataSize(*Me.InstanceCloud_t)
     Protected *shape.Shape::Shape_t = *Me\shape
-    
-    Protected nbv = *shape\nbt * 3
-    Protected size_s = nbv * SizeOf(v3f32)
-    ProcedureReturn size_s
+    ProcedureReturn *shape\nbt * 3 * SizeOf(v3f32)
   EndProcedure
   
   ; Build Shape Flat Array Data
@@ -122,7 +119,24 @@ Module InstanceCloud
     If Not size_s : ProcedureReturn : EndIf
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-
+    
+    Debug *shape\positions
+    Debug *shape\normals
+    Debug *shape\uvws
+    Debug *shape\colors
+    
+    Debug CArray::GetCount(*shape\positions)
+    Debug CArray::GetCount(*shape\normals)
+    Debug CArray::GetCount(*shape\uvws)
+    Debug CArray::GetCount(*shape\colors)
+    
+    Debug CArray::GetPtr(*shape\positions,0)
+    Debug CArray::GetPtr(*shape\normals,0)
+    Debug CArray::GetPtr(*shape\uvws,0)
+    Debug CArray::GetPtr(*shape\colors,0)
+    
+    Debug "SIZE S : "+Str(size_s)
+    Debug "POSITION : "+Str(CARray::GetCount(*shape\positions) * CARray::GetItemSize(*shape\positions))
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s,CArray::GetPtr(*shape\positions,0))
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
@@ -139,9 +153,9 @@ Module InstanceCloud
     Protected sts.i = GetShapeDataSize(*Me)
     If sts
       ; Get Point Cloud Datas
-      Protected s_glfloat.GLfloat
-      Protected s_gluint.GLuint
-      Define st1.i = *geom\nbpoints * SizeOf(s_glfloat)
+      Protected f.f
+      Protected l.l
+      Define st1.i = *geom\nbpoints * SizeOf(f)
       Define st3.i = *geom\nbpoints * SizeOf(v3f32)
       Define st4.i = *geom\nbpoints * SizeOf(v4f32)
   
@@ -178,7 +192,7 @@ Module InstanceCloud
       glGenBuffers(1,@*Me\eab)
       glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
       glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
-                   CArray::GetCount(*Me\shape\indices)* SizeOf(s_gluint),
+                   CArray::GetCount(*Me\shape\indices)* SizeOf(l),
                    CArray::GetPtr(*Me\shape\indices,0),
                    #GL_DYNAMIC_DRAW)
       
@@ -373,8 +387,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 189
-; FirstLine = 181
+; CursorPosition = 138
+; FirstLine = 94
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

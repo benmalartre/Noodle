@@ -747,15 +747,15 @@ DeclareModule Vector3
     Declare AbsoluteInPlace(*v.v3f32)
   CompilerElse
     Macro Absolute(_v, _o)
-      _v\v[0] = Abs(_o\v[0])
-      _v\v[1] = Abs(_o\v[1])
-      _v\v[2] = Abs(_o\v[2])
+      _v\x = Abs(_o\x)
+      _v\y = Abs(_o\y)
+      _v\z = Abs(_o\z)
     EndMacro
     
-    Macro AbsoluteInPlace(_v, _o)
-      _v\v[0] = Abs(_v\v[0])
-      _v\v[1] = Abs(_v\v[1])
-      _v\v[2] = Abs(_v\v[2])
+    Macro AbsoluteInPlace(_v)
+      _v\x = Abs(_v\x)
+      _v\y = Abs(_v\y)
+      _v\z = Abs(_v\z)
     EndMacro
   CompilerEndIf
   
@@ -4163,8 +4163,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 36
-; Folding = ------------------------------------------------------
+; CursorPosition = 756
+; FirstLine = 743
+; Folding = -----------------------------------------------------
 ; EnableXP
 ; EnableUnicode

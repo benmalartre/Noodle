@@ -1,6 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Morton.pbi"
+XIncludeFile "../core/Thread.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Drawer.pbi"
@@ -50,8 +51,18 @@ DeclareModule Octree
 	  Map *cells.Cell_t()
 	  scl.v3f32
 	  inv_scl.v3f32
-  EndStructure
-  
+	  *pool.Thread::ThreadPool_t
+	EndStructure
+	
+	Structure ClosestPointsTaskDatas_t Extends Thread::TaskDatas_t
+	  *octree.Octree_t
+	  *queries.CArray::CArrayV3F32
+	  *locations.CArray::CArrayLocation
+	EndStructure
+	
+	Structure ClosestPointsThreadDatas_t Extends Thread::ThreadDatas_t 
+	EndStructure
+	
   DataSection
     CornerPermutation:
     Data.i 0,1,2,3,1,2,0,1,5,3,1,5
@@ -80,6 +91,7 @@ DeclareModule Octree
   Declare GetCell(*octree.Octree_t, morton.i, *pnt.v3f32)
   Declare GetParentCell(*octree.Octree_t, *cell.Cell_t)
   Declare LookUpCell(*octree.Octree_t, morton.i)
+  Declare CheckCellElements(*cell.Cell_t, *pnt.v3f32, *loc.Geometry::Location_t, *closestDistance, *geom.Geometry::PolymeshGeometry_t)
   
   Declare Split(*octree.Octree_t,*cell.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
   Declare ResetHits(*cell.Cell_t)
@@ -90,6 +102,10 @@ DeclareModule Octree
   Declare RecurseGetNearbyCells(*cell.Cell_t, *center.v3f32, radius.f, *cells.CArray::CArrayPtr)
   Declare.f GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
   Declare.f GetClosestPointBruteForce(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
+  Declare GetClosestPoints(*octree.Octree_t, *queries.CArray::CArrayV3F32, *results.CArray::CArrayPtr)
+  Declare GetClosestPointsBruteForce(*octree.Octree_t, *queries.CArray::CArrayV3F32, *results.CArray::CArrayPtr)
+  Declare GetClosestPointsThreadJob(*datas.ClosestPointsThreadDatas_t)
+  Declare GetClosestPointsThreadedTask(*octree.Octree_t, *queries.CArray::CArrayV3F32, *results.CArray::CArrayPtr)
   Declare CartesianToReal(*octree.Octree_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
   Declare RealToCartesian(*octree.Octree_t, *real.Math::v3f32, *cartersian.Morton::Point3D_t)
   Declare ClampCartesian(*octree.Octree_t, *cartersian.Morton::Point3D_t)
@@ -99,6 +115,9 @@ DeclareModule Octree
   
   Declare Draw(*cell.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
   Declare DrawLeaves(*octree.Octree_t, *drawer.Drawer::Drawer_t)
+  
+  
+  
 EndDeclareModule
 
 
@@ -115,6 +134,7 @@ Module Octree
     *octree\elements = CArray::newCArrayLong()
     *octree\depth = depth
     *octree\state = #STATE_DEFAULT
+    *octree\pool  = Thread::NewPool()
     
     Define minv.f = *bmin\x
     If *bmin\y > minv : minv = *bmin\y : EndIf
@@ -141,6 +161,7 @@ Module Octree
       If *octree\children[i] : DeleteCell(*octree\children[i]) : EndIf
     Next
     If *octree\elements: CArray::Delete(*octree\elements) : EndIf
+    Thread::DeletePool(*octree\pool)
     ClearStructure(*octree, Octree_t)
     FreeMemory(*octree)
   EndProcedure
@@ -152,11 +173,8 @@ Module Octree
     Protected p.Morton::Point3D_t
     Protected center.v3f32
     GetCenter(*cell, center)
-    Vector3::Echo(center, "Center")
     RealToCartesian(*octree, center, p)
-    Debug "CARTESIAN : "+Str(p\x)+","+Str(p\y)+","+Str(p\z)
     *cell\morton = Morton::Encode3D(p)  
-    Debug "MORTON : "+Bin(*cell\morton)
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -279,12 +297,8 @@ Module Octree
     Define depth.i = 60
     Define childCode, childIndex
     While Not *cell\isLeaf And depth > 0
-      Debug "MORTON : "+Bin(morton)
       childCode = (morton >> depth) & 7
-      Debug "CHILD CODE : "+Bin(childCode)
       childIndex = (childCode & 1) << 2+ ((childCode >> 1) & 1) << 1 +  ((childCode >> 2) & 1)
-      Debug "CHILD INDEX : "+Str(childIndex)
-;       childIndex = (morton >> depth) & 7
       If *cell\children[childIndex]
         *cell = *cell\children[childIndex]
       Else
@@ -294,16 +308,12 @@ Module Octree
     Wend
 
     If Not *cell\isLeaf
-      Define closestDistance.f = Math::#F32_MAX
-      ;       *cell = RecurseGetClosestCell(*cell, *pnt, @closestDistance)
       RecurseSetHit(*cell)
-      ;       *cell = RecurseGetCell(*cell, morton, depth)
       If *cell\parent
         ProcedureReturn *cell\parent
       Else
         ProcedureReturn *cell
       EndIf
-      
     EndIf
     *cell\state = Octree::#STATE_HIT
     ProcedureReturn *cell
@@ -729,13 +739,11 @@ Module Octree
     Else
       RecurseCheckCellElements(*closestCell, *pnt, *loc, @closestDistance, *geom)
     EndIf
-   
     ProcedureReturn closestDistance
-    
   EndProcedure  
   
-    ;---------------------------------------------------------------------
-  ; Get Closest Point
+  ;---------------------------------------------------------------------
+  ; Get Closest Point Brute Force
   ;---------------------------------------------------------------------
   Procedure.f GetClosestPointBruteForce(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
     Protected closestDistance.f=#F32_MAX, distance.f
@@ -758,10 +766,126 @@ Module Octree
         Vector3::SetFromOther(*loc\uvw, uvw)
       EndIf
     Next
-    
     ProcedureReturn closestDistance
+  EndProcedure  
+  
+  ;---------------------------------------------------------------------
+  ; Get Closest Points
+  ;---------------------------------------------------------------------
+  Procedure GetClosestPoints(*octree.Octree_t, *queries.CArray::CArrayV3F32, *locations.CArray::CArrayLocation)
+    CArray::SetCount(*locations, *queries\itemCount)
+    Define closestDistance.f = #F32_MAX
+    Define distance.f
+    Define.v3f32 closest, delta, uvw
+    Define closestTriangle.i = -1
+    Define *geom.Geometry::PolymeshGeometry_t = *octree\geom
+    Define.v3f32 *a, *b, *c, *pnt
+    Define i
+    Protected *closestCell.Cell_t
+    Protected *loc.Geometry::Location_t
+    
+    For i=0 To *queries\itemCount-1
+      closestDistance.f = #F32_MAX
+      *pnt = CArray::GetValue(*queries, i)
+      *loc = CArray::GetValue(*locations, i)
+      *loc\tid = -1
+      *closestCell = GetClosestCellMorton(*octree, *pnt)
+    
+      If Not *closestCell : Continue : EndIf
+      *closestCell\state = Octree::#STATE_HIT
+
+      If *closestCell\isLeaf
+        CheckCellElements(*closestCell, *pnt, *loc, @closestDistance, *geom)
+      Else
+        RecurseCheckCellElements(*closestCell, *pnt, *loc, @closestDistance, *geom)
+      EndIf
+    Next
     
   EndProcedure  
+  
+  ;---------------------------------------------------------------------
+  ; Get Closest Points Brute Force
+  ;---------------------------------------------------------------------
+  Procedure GetClosestPointsBruteForce(*octree.Octree_t, *queries.CArray::CArrayV3F32, *locations.CArray::CArrayLocation)
+    CArray::SetCount(*locations, *queries\itemCount)
+    Protected closestDistance.f=#F32_MAX, distance.f
+    Protected *geom.Geometry::PolymeshGeometry_t = *octree\geom
+    Define i, t
+    Define.v3f32 *a, *b, *c
+    Define.v3f32 closest, uvw, delta
+    Define *loc.Geometry::Location_t
+    Define *pn.v3f32
+    For i=0 To *queries\itemCount-1
+      For t=0 To *geom\nbtriangles - 1
+        *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
+        *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
+        *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2))
+        *pnt = CArray::GetValue(*queries, i)
+        *loc = CArray::GetValue(*locations, i)
+        Triangle::ClosestPoint(*a, *b,*c, *pnt, closest, uvw)
+        Vector3::Sub(delta,*pnt, closest)
+        distance = Vector3::Length(delta)
+        If distance < closestDistance
+          closestDistance = distance
+          *loc\geometry = *geom
+          *loc\tid = t
+          Vector3::SetFromOther(*loc\p, closest)
+          Vector3::SetFromOther(*loc\uvw, uvw)
+        EndIf
+      Next
+    Next
+
+  EndProcedure  
+  
+  ;---------------------------------------------------------------------
+  ; GET CLOSEST POINTS THREAD JOB
+  ;---------------------------------------------------------------------
+  Procedure GetClosestPointsThreadJob(*datas.ClosestPointsThreadDatas_t)
+    Protected closestDistance.f=#F32_MAX, distance.f
+    Protected *taskdatas.ClosestPointsTaskDatas_t = *datas\datas
+    Protected *geom.Geometry::PolymeshGeometry_t = *taskdatas\octree\geom
+    Define i, t
+    Define.v3f32 *a, *b, *c
+    Define.v3f32 closest, uvw, delta
+    Define *loc.Geometry::Location_t
+    Define *pnt.v3f32
+    For i=*datas\start_index To *datas\end_index-1
+      For t=0 To *geom\nbtriangles - 1
+        *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3))
+        *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+1))
+        *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, t*3+2))
+        *pnt = CArray::GetValue(*taskdatas\queries, i)
+        Triangle::ClosestPoint(*a, *b,*c, *pnt, closest, uvw)
+        Vector3::Sub(delta,*pnt, closest)
+        distance = Vector3::Length(delta)
+        If distance < closestDistance
+          closestDistance = distance
+          *loc = CArray::GetValuePtr(*taskdatas\locations, i)
+          *loc\geometry = *geom
+          *loc\tid = t
+          Vector3::SetFromOther(*loc\p, closest)
+          Vector3::SetFromOther(*loc\uvw, uvw)
+        EndIf
+      Next t
+    Next i
+  EndProcedure
+  
+  ;---------------------------------------------------------------------
+  ; GET CLOSEST POINTS THREAD TASK
+  ;---------------------------------------------------------------------
+  Procedure GetClosestPointsThreadedTask(*octree.Octree_t, *queries.CArray::CArrayV3F32, *locations.CArray::CArrayLocation)
+    CArray::SetCount(*locations, *queries\itemCount)
+    Define task.ClosestPointsTaskDatas_t
+    task\num_elements = CArray::GetCount(*queries)
+    task\octree = *octree
+    task\queries = *queries
+    task\locations = *locations
+    
+    Thread::SplitTask(*octree\pool, task, ClosestPointsThreadDatas_t, @GetClosestPointsThreadJob())
+  EndProcedure
+  
+
+  
   
   ;---------------------------------------------------------------------
   ; CREATE CELL
@@ -797,12 +921,8 @@ Module Octree
                                           *cell\elements\itemCount, 
                                           box, 
                                           *hits)
-    Debug "TRIANGLE TOUCH ARRAY NUM HITS : "+Str(numHits)
-    Debug "CHILD CELL : "+Str(*child)
-    Debug "CHILD ELEMENTS : "+Str(*child\elements)
-    Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*child\elements))
+
     CArray::SetCount(*child\elements, numHits)
-    Debug "PASSED... : "
     Define idx = 0
     For t=0 To tsz - 1
       If PeekB(*hits+t)
@@ -818,8 +938,6 @@ Module Octree
       DeleteCell(*child)
     Else
       *cell\children[m] = *child
-      Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*cell\children[m]\elements))
-      Debug "SPLIT..."
       Split(*octree, *cell\children[m], *geom, maxDepth)
     EndIf
   EndMacro
@@ -862,12 +980,8 @@ Module Octree
     CreateCell(1,1,0)
     CreateCell(1,1,1)
     
-    Debug "CREATED CELLS"
-    Debug "CELL : "+Str(*cell)
-    Debug "ELEMENTS : "+Str(*cell\elements)
-    
     Carray::SetCount(*cell\elements, 0)
-    Debug "PASSED"
+
   EndProcedure
   
   
@@ -908,8 +1022,6 @@ Module Octree
   Procedure GetCells(*octree.Octree_t)
     ClearMap(*octree\cells())
     RecurseGetCells(*octree, *octree\cells())
-    
-;     SortStructuredList(*octree\leaves(), #PB_Sort_Ascending, OffsetOf(Cell_t\morton), TypeOf(Cell_t\morton))
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -1087,7 +1199,7 @@ Module Octree
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1075
-; FirstLine = 1027
-; Folding = --------
+; CursorPosition = 308
+; FirstLine = 290
+; Folding = ---------
 ; EnableXP

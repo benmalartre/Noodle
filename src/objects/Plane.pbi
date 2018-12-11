@@ -47,13 +47,13 @@ Module Plane
   
   Procedure SetNormalFromValues(*plane.Plane_t, x.f, y.f, z.f)
     Vector3::Set(*plane\normal, x, y, z)
-    Vector3::Normalize(*plane\normal, *normal)
+    Vector3::NormalizeInPlace(*plane\normal)
   EndProcedure
   
   Procedure SetFromThreePoints(*plane.Plane_t, *a.v3f32, *b.v3f32, *c.v3f32)
     Define.v3f32 ab, ac
-    Vector3::Sub(ab, a, b)
-    Vector3::Sub(ac, a, c)
+    Vector3::Sub(ab, *a, *b)
+    Vector3::Sub(ac, *a, *c)
     Vector3::Cross(*plane\normal, ab, ac)
     Vector3::NormalizeInPlace(*plane\normal)
     *plane\distance = Vector3::Dot(*plane\normal, *a)
@@ -142,7 +142,7 @@ EndModule
 ; 
 ; } // End namespace BOB
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 43
+; CursorPosition = 55
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

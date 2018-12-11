@@ -31,8 +31,8 @@ Procedure PolygonSoup()
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::SphereTopology(*topo, 1,64 ,32)
-  Protected numTopos.i = 2
+  PolymeshGeometry::SphereTopology(*topo, 2,64 ,32)
+  Protected numTopos.i = 32
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -116,7 +116,8 @@ Procedure TestHit()
   Drawer::SetColor(P, Color::_RED())
   
   Octree::ResetHits(*octree)
-  Define radius.f = Octree::GetClosestPoint(*octree, *qp, loc)
+  Define radius.f 
+  radius = Octree::GetClosestPoint(*octree, *qp, loc)
   If radius >= 0
     P = Drawer::AddPoint(*drawer, loc\p)
     Drawer::SetSize(P, 10)
@@ -136,25 +137,24 @@ Procedure TestHit()
   Drawer::SetColor(S, Color::_PURPLE())
   Drawer::SetWireframe(S, #True)
   
-;   Define radius.f = Octree::GetClosestPointBruteForce(*octree, *qp, loc)
-;   If radius >= 0
-;     P = Drawer::AddPoint(*drawer, loc\p)
-;     Drawer::SetSize(P, 10)
-;     Drawer::SetColor(P, Color::_GREEN())
-;     Define L = Drawer::AddLine(*drawer, *qp, loc\p)
-;     Drawer::SetColor(L, Color::_RED())
-;   EndIf
-;   Octree::Draw(*octree, *drawer, *geom)
-;   Define m.m4f32
-;   Matrix4::SetIdentity(m)
-;   Define scl.v3f32
-; 
-;   Vector3::Set(scl, radius*2, radius*2, radius*2)
-;   Matrix4::SetScale(m, scl)
-;   Matrix4::SetTranslation(m, *qp)
-;   Define S = Drawer::AddSphere(*drawer, m)
-;   Drawer::SetColor(S, Color::_YELLOW())
-;   Drawer::SetWireframe(S, #True)
+  Define radius.f = Octree::GetClosestPointBruteForce(*octree, *qp, loc)
+  If radius >= 0
+    P = Drawer::AddPoint(*drawer, loc\p)
+    Drawer::SetSize(P, 10)
+    Drawer::SetColor(P, Color::_GREEN())
+    Define L = Drawer::AddLine(*drawer, *qp, loc\p)
+    Drawer::SetColor(L, Color::_RED())
+  EndIf
+  Define m.m4f32
+  Matrix4::SetIdentity(m)
+  Define scl.v3f32
+
+  Vector3::Set(scl, radius*2, radius*2, radius*2)
+  Matrix4::SetScale(m, scl)
+  Matrix4::SetTranslation(m, *qp)
+  Define S = Drawer::AddSphere(*drawer, m)
+  Drawer::SetColor(S, Color::_YELLOW())
+  Drawer::SetWireframe(S, #True)
 
 EndProcedure
  
@@ -218,16 +218,16 @@ Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
 *octree = Octree::New(bmin.v3f32, bmax.v3f32, 0)
 T = Time::Get()
 Octree::Build(*octree, *geom, 6)
-; Define buildOctreeT.d = Time::get() - T
-; T = Time::Get()
-; Octree::Draw(*octree, *drawer, *geom)
-; Define drawOctreeT.d = Time::get() - T
-; Define numCells.i = 0
-; Octree::NumCells(*octree, @numCells)
-; Octree::GetCells(*octree)
+Define buildOctreeT.d = Time::get() - T
+T = Time::Get()
+Octree::Draw(*octree, *drawer, *geom)
+Define drawOctreeT.d = Time::get() - T
+Define numCells.i = 0
+Octree::NumCells(*octree, @numCells)
+Octree::GetCells(*octree)
 
 
-MessageRequester("OCTREE", Bin(*octree\morton)+Chr(10)+Bin(*octree\children[0]\morton))
+MessageRequester("OCTREE", Bin(*octree\morton)+Chr(10)+"NUM CELLS : "+Str(numCells))
 
 ; Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
 ; buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
@@ -255,8 +255,8 @@ Application::Loop(*app, @Draw())
 Octree::Delete(*octree)
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 195
+; CursorPosition = 127
+; FirstLine = 90
 ; Folding = -
 ; EnableThread
 ; EnableXP

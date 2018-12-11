@@ -135,10 +135,9 @@ Procedure Draw(*app.Application::Application_t)
    ExamineDesktops()
    *app = Application::New("Test Instances",width,height)
    If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
     *app\context = *viewport\context
      
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
@@ -265,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 131
+; CursorPosition = 140
+; FirstLine = 133
 ; Folding = --
 ; EnableXP
 ; Executable = Test

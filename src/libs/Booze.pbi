@@ -594,7 +594,6 @@ Module Alembic
     deleteIArchive(archive)  
   EndProcedure
 
-
   Procedure AddIObject(archive.IArchive, index.i)
     Protected object.IObject = newIObject(archive, index)
     Debug "-----------------------------------------------------------------------------------------------------------------------"
@@ -643,8 +642,6 @@ Module Alembic
   EndProcedure
   
   Procedure.i LoadABCArchive(path.s)
-    Debug path
-    Debug FileSize(path)
     If FileSize(path)>0 And GetExtensionPart(path) = "abc"
       
       Protected manager.IArchiveManager = abc_manager
@@ -1045,15 +1042,12 @@ Module AlembicIObject
   Procedure UpdateSample(*o.AlembicIObject_t,frame.f)
     Select *o\iObj\GetType()
       Case Alembic::#ABC_OBJECT_XFORM
-        Debug "XFORM SAMPLE"
         GetXFormSampleAtFrame(*o,frame)
         
       Case Alembic::#ABC_OBJECT_POLYMESH
-        Debug "POLYMESH SAMPLE"
         GetPolymeshSampleAtFrame(*o,frame)
         
       Case Alembic::#ABC_OBJECT_POINTS
-        Debug "POINTS SAMPLE"
         GetPointCloudSampleAtFrame(*o,frame)
         
     EndSelect
@@ -1175,7 +1169,7 @@ Module AlembicIObject
         prop\GetSample(1, *infos, *sample)   
         If Defined(USE_SSE, #PB_Constant) And #USE_SSE
           If *infos\type = Alembic::#ABC_DataTraits_V3f
-            Memory::ShiftAlign(*attr\data, *infos\nbitems, 12, 16)
+            Memory::ShiftAlign(CArray::GetPtr(*attr\data, 0), *infos\nbitems, 12, 16)
           EndIf
         EndIf
       EndIf
@@ -1208,13 +1202,14 @@ Module AlembicIObject
        *attr = *Me\attributes()
        If CArray::GetCount(*attr\data)<>infos\nbitems
          CArray::SetCount(*attr\data,infos\nbitems)
+         CArray::SetCount(*attr\data,infos\nbitems)
        EndIf
        
        io_sample\datas = CArray::GetPtr(*attr\data,0)   
        prop\GetSample(infos\time, infos, io_sample)
        If Defined(USE_SSE, #PB_Constant) And #USE_SSE
           If infos\type = Alembic::#ABC_DataTraits_V3f
-            Memory::ShiftAlign(*attr\data, infos\nbitems, 12, 16)
+            Memory::ShiftAlign(CArray::GetPtr(*attr\data, 0), infos\nbitems, 12, 16)
           EndIf
         EndIf
        Break
@@ -1233,20 +1228,16 @@ Module AlembicIObject
     
     Protected *attr.Attribute::Attribute_t
     Protected x=0
-    
     infos\time = frame
     Protected prop.Alembic::IProperty
     For x=0 To *Me\iObj\GetNumProperties()-1
       prop = *Me\iObj\GetProperty(x)
       prop\GetSampleDescription(frame, @infos)
-
       SelectElement(*Me\attributes(),x)
       *attr = *Me\attributes()
       If CArray::GetCount(*attr\data)<>infos\nbitems
         CArray::SetCount(*attr\data,infos\nbitems)
-      Else
       EndIf
-    
       io_sample\datas = CArray::GetPtr(*attr\data,0)   
       prop\GetSample(frame, @infos, @io_sample)
       
@@ -1255,11 +1246,11 @@ Module AlembicIObject
            (infos\traits = Alembic::#ABC_DataTraits_P3f Or
             infos\traits = Alembic::#ABC_DataTraits_N3f Or
             infos\traits = Alembic::#ABC_DataTraits_V3f):
-          Memory::ShiftAlign(CArray::GetPtr(*attr\data,0), infos\nbitems, 12,16)
+          Memory::ShiftAlign(CArray::GetPtr(*attr\data, 0), infos\nbitems, 12,16)
         EndIf
       CompilerEndIf
     Next
-    
+
   EndProcedure
 
   ;---------------------------------------------------------
@@ -1269,6 +1260,7 @@ Module AlembicIObject
     Define x
     Define nbp
     Define *v.v3f32
+    
     If FindMapElement(*Me\obj\m_attributes(),name)
        If *Me\iObj\GetType() = Alembic::#ABC_OBJECT_POINTS
          Define *geom.Geometry::PointCloudGeometry_t = *Me\obj\geom
@@ -1276,20 +1268,20 @@ Module AlembicIObject
            Select name
              Case "Scale"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
-               
                CArray::SetCount(*geom\a_scale,nbp)
                CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),
                           CArray::GetPtr(*geom\a_scale,0),
                           CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
-              
+               
              Case "Orientation"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
                Define *tan.v3f32
                Define *nrm.v3f32
                Define *q.q4f32
-
+               
                CArray::SetCount(*geom\a_normals,nbp)
                CArray::SetCount(*geom\a_tangents,nbp)
+               
        
                For x=0 To nbp-1
                  *nrm = CArray::GetValue(*geom\a_normals,x)
@@ -1301,6 +1293,7 @@ Module AlembicIObject
                  Vector3::Set(*tan,1,0,0)
                  Vector3::MulByQuaternionInPlace(*tan,*q)
                Next
+               
              Case "Color"
                nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
                Define c.c4f32
@@ -1308,7 +1301,6 @@ Module AlembicIObject
                For x=0 To nbp-1
                  CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data, x), CArray::GetPtr(*geom\a_color,x), SizeOf(c))
                Next
-              
            EndSelect
          EndIf
        EndIf
@@ -1412,11 +1404,8 @@ Module AlembicIObject
       *o\obj = *cloud
       *o\initialized = #False
       Protected *cloud_geom.Geometry::PointCloudGeometry_t = *cloud\geom
-      Debug "Point Cloud Geometry : "+Str(*cloud_geom)
       GetProperties(*o)
-      Debug "Properties Updated"
       UpdateSample(*o,1)
-      Debug "Sample Updated"
       
   EndSelect
   
@@ -1453,7 +1442,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 996
-; FirstLine = 990
+; CursorPosition = 596
+; FirstLine = 559
 ; Folding = --------
 ; EnableXP

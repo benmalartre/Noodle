@@ -53,56 +53,190 @@ DeclareModule STK
     nativeFormats.Format      ; bit mask of supported Data formats.
   EndStructure
   
-  Macro STKGeneratorStreamType : l : EndMacro
+    
+  Macro STKGeneratorType : l : EndMacro
   Enumeration
-    #ENVELOPE_GENERATOR 
-	  #ADSR_GENERATOR
 	  #ASYMP_GENERATOR 
 	  #NOISE_GENERATOR
-	  #SUBNOISE_GENERATOR 
-	  #MODULATE_GENERATOR 
-	  #SINGWAVE_GENERATOR 
-	  #SINEWAVE_GENERATOR 
 	  #BLIT_GENERATOR
 	  #BLITSAW_GENERATOR  
 	  #BLITSQUARE_GENERATOR
-	  #GRANULATE_GENERATOR
+	  #SINEWAVE_GENERATOR 
+	  #SINGWAVE_GENERATOR 
+	  #MODULATE_GENERATOR 
+    #GRANULATE_GENERATOR
+	EndEnumeration
+	
+	Dim generator_names.s(9)
+  generator_names(0)  = "ASYMP_GENERATOR" 
+  generator_names(1)  = "NOISE_GENERATOR"
+  generator_names(2)  = "BLIT_GENERATOR"
+  generator_names(3)  = "BLITSAW_GENERATOR"  
+  generator_names(4)  = "BLITSQUARE_GENERATOR" 
+  generator_names(5)  = "SINEWAVE_GENERATOR"
+  generator_names(6)  = "SINGWAVE_GENERATOR"
+  generator_names(7)  = "GRANULATE_GENERATOR"
+  generator_names(8)  = "MODULATE_GENERATOR"
+  
+  Macro STKEnvelopeType : l : EndMacro
+  Enumeration
+	  #ENVELOPE_GENERATOR 
+    #ADSR_GENERATOR
 	EndEnumeration
   
+  Dim envelope_names.s(2)
+  envelope_names(0)  = "ENVELOPE_GENERATOR"
+  envelope_names(1)  = "ADSR_GENERATOR"
+  
+  Enumeration
+    #ENV_ATTACK_RATE
+		#ENV_ATTACK_TARGET
+		#ENV_ATTACK_TIME
+		#ENV_DECAY_RATE
+		#ENV_DECAY_TIME
+		#ENV_SUSTAIN_LEVEL
+		#ENV_RELEASE_RATE
+		#ENV_RELEASE_TIME
+		#ENV_TARGET
+		#ENV_VALUE
+		#ENV_RATE
+		#ENV_TIME
+	EndEnumeration
+	
+  
+  Macro STKArythmeticMode : l : EndMacro
+	Enumeration
+	  #ARYTHMETIC_ADD
+	  #ARYTHMETIC_SUBTRACT
+	  #ARYTHMETIC_MULTIPLY
+	  #ARYTHMETIC_SCALE
+	  #ARYTHMETIC_SCALEADD
+	  #ARYTHMETIC_SCALESUBTRACT
+	  #ARYTHMETIC_MIX
+	  #ARYTHMETIC_BLEND
+	  #ARYTHMETIC_SHIFT
+	EndEnumeration
+	
+	Dim arythmetic_modes.s(9)
+  arythmetic_modes(0)  = "ADD"
+  arythmetic_modes(1)  = "SUBTRACT"
+  arythmetic_modes(2)  = "MULTIPLY" 
+  arythmetic_modes(3)  = "SCALE"
+  arythmetic_modes(4)  = "SCALEADD"
+  arythmetic_modes(5)  = "SCALESUB" 
+  arythmetic_modes(6)  = "MIX"
+  arythmetic_modes(7)  = "BLEND"
+  arythmetic_modes(8)  = "SHIFT"
+  
+  Macro STKEffectType : l : EndMacro
+  Enumeration
+	  #EFFECT_ENVELOPE
+	  #EFFECT_PRCREV
+	  #EFFECT_JCREV
+	  #EFFECT_NREV
+	  #EFFECT_FREEVERB
+	  #EFFECT_ECHO
+	  #EFFECT_PITSHIFT
+	  #EFFECT_LENTPITSHIFT
+	  #EFFECT_CHORUS
+	EndEnumeration
+	
+	Dim effect_types.s(9)
+  effect_types(0)  = "ENVELOPE"
+  effect_types(1)  = "PRCREV"
+  effect_types(2)  = "JCREV" 
+  effect_types(3)  = "NREV"
+  effect_types(4)  = "FREEVERB"
+  effect_types(5)  = "ECHO" 
+  effect_types(6)  = "PITSHIFT"
+  effect_types(7)  = "LENTPITSHIFT"
+  effect_types(8)  = "CHORUS"
+  
+  Enumeration
+    #EFFECT_RATE              ; envelope rate
+    #EFFECT_TIME              ; envelope time
+    #EFFECT_TARGET            ; envelope target
+    #EFFECT_VALUE             ; envelope value
+    #EFFECT_T60               ; prcrev, jcrev, nrev T60
+    #EFFECT_MIX               ; effect mix
+    #EFFECT_ROOMSIZE          ; freeverb room size
+    #EFFECT_DAMPING           ; freeverb damping
+    #EFFECT_WIDTH             ; freeverb width
+    #EFFECT_MODE              ; freeverb mode
+    #EFFECT_DELAY             ; echo delay
+    #EFFECT_MAXIMUMDELAY      ; echo maximum delay
+    #EFFECT_SHIFT             ; pitshift and letpitshift shift
+    #EFFECT_MODDEPTH          ; chorus mod depth
+    #EFFECT_MODFREQUENCY      ; chorus mod frequency
+  EndEnumeration
+  
+
   Structure RtAudio                   ; opaque cpp structure
   EndStructure
   
-  Structure STKBufferStream
+  Structure Node
   EndStructure
   
-  Structure STKGeneratorStream
+  Structure Generator
   EndStructure
   
-  Structure STKVoicerStream
+  Structure Envelope
+  EndStructure
+  
+  Structure Arythmetic
+  EndStructure
+  
+  Structure Effect
+  EndStructure
+  
+  Structure BufferStream
+  EndStructure
+  
+  Structure GeneratorStream
+  EndStructure
+  
+  Structure VoicerStream
   EndStructure
   
   
   ;----------------------------------------------------------------------------------
   ; Prototypes
   ;----------------------------------------------------------------------------------
-  PrototypeC STKINIT()
-  PrototypeC STKGETDEVICES()
+  PrototypeC INIT()
+  PrototypeC GETDEVICES()
     
-  PrototypeC STKGENERATORSTREAMSETUP(*DAC.RtAudio, type.l, frequency.f)
-  PrototypeC STKGENERATORSTREAMCLEAN(*generator.STKGeneratorStream)
-  PrototypeC STKGENERATORSTREAMSTART(*generator.STKGeneratorStream)
-  PrototypeC STKGENERATORSTREAMSTOP(*generator.STKGeneratorStream)
-  PrototypeC STKGENERATORSTREAMSETFREQUENCY(*generator.STKGeneratorStream, frequency.f)
+  PrototypeC GENERATORSTREAMSETUP(*DAC.RtAudio)
+  PrototypeC GENERATORSTREAMCLEAN(*generator.GeneratorStream)
+  PrototypeC GENERATORSTREAMSTART(*generator.GeneratorStream)
+  PrototypeC GENERATORSTREAMSTOP(*generator.GeneratorStream)
+  PrototypeC GENERATORSTREAMSETFREQUENCY(*generator.GeneratorStream, frequency.f)
   
-  PrototypeC STKVOICERSTREAMSETUP(*DAC.RtAudio, nbInstruments.l)
-  PrototypeC STKVOICERSTREAMCLEAN(*voicer.STKVoicerStream)
-  PrototypeC STKVOICERSTREAMSTART(*voicer.STKVoicerStream)
-  PrototypeC STKVOICERSTREAMSTOP(*voicer.STKVoicerStream)
   
-  PrototypeC STKBUFFERSTREAMINIT(*DAC.RtAudio, *stream.STKBufferStream)
-  PrototypeC STKBUFFERSTREAMGET(*stream.STKBufferStream)
-  PrototypeC STKBUFFERSTREAMTERM(*stream.STKBufferStream)
-  PrototypeC STKBUFFERSTREAMSETFILE(*stream.STKBufferStream, filename.s)
+  PrototypeC ADDGENERATOR(*generator.GeneratorStream, type.l, frequency.f, asRoot.b=#True)
+  PrototypeC ADDENVELOPE(*generator.GeneratorStream, type.l, *source.Node, asRoot.b=#False)
+  PrototypeC ADDARYTHMETIC(*generator.GeneratorStream, mode.l, *lhs.Node, *rhs.Node, asRoot.b=#True)
+  PrototypeC ADDEFFECT(*generator.GeneratorStream, type.l, *source.Node, asRoot.b=#False)
+  
+  PrototypeC SETGENERATORTYPE(*generator.Generator, type.l)
+  PrototypeC SETGENERATORSCALAR(*generator.Generator, param.l, scalar.f)
+  PrototypeC SETENVELOPETYPE(*envelope.Envelope, type.l)
+  PrototypeC SETENVELOPESCALAR(*envelope.Envelope, param.l, scalar.f)
+  PrototypeC ENVELOPEKEYON(*envelope.Envelope)
+  PrototypeC ENVELOPEKEYOFF(*envelope.Envelope)
+  PrototypeC SETARYTHMETICMODE(*arythmetic.Arythmetic, mode.l)
+  PrototypeC SETARYTHMETICSCALAR(*arythmetic.Arythmetic, scalar.f)
+  PrototypeC SETEFFECTTYPE(*effect.Effect, type.l)
+  PrototypeC SETEFFECTSCALAR(*effect.Effect, param.l, scalar.f)
+  
+  PrototypeC VOICERSTREAMSETUP(*DAC.RtAudio, nbInstruments.l)
+  PrototypeC VOICERSTREAMCLEAN(*voicer.VoicerStream)
+  PrototypeC VOICERSTREAMSTART(*voicer.VoicerStream)
+  PrototypeC VOICERSTREAMSTOP(*voicer.VoicerStream)
+  
+  PrototypeC BUFFERSTREAMINIT(*DAC.RtAudio, *stream.BufferStream)
+  PrototypeC BUFFERSTREAMGET(*stream.BufferStream)
+  PrototypeC BUFFERSTREAMTERM(*stream.BufferStream)
+  PrototypeC BUFFERSTREAMSETFILE(*stream.BufferStream, filename.s)
   
   ;----------------------------------------------------------------------------------
   ; Import Functions
@@ -141,24 +275,40 @@ DeclareModule STK
   EndIf
   
   If STK_LIB
-    Global STKInit.STKINIT = GetFunction(STK_LIB, "STKInit")
-    Global STKGetDevices.STKGETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
+    Global Init.INIT = GetFunction(STK_LIB, "STKInit")
+    Global GetDevices.GETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
 
-    Global STKGeneratorStreamSetup.STKGENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
-    Global STKGeneratorStreamClean.STKGENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
-    Global STKGeneratorStreamStart.STKGENERATORSTREAMSTART = GetFunction(STK_LIB, "STKGeneratorStreamStart")
-    Global STKGeneratorStreamStop.STKGENERATORSTREAMSTOP = GetFunction(STK_LIB, "STKGeneratorStreamStop")
-    Global STKGeneratorStreamSetFrequency.STKGENERATORSTREAMSETFREQUENCY  = GetFunction(STK_LIB, "STKGeneratorStreamSetFrequency")
+    Global GeneratorStreamSetup.GENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
+    Global GeneratorStreamClean.GENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
+    Global GeneratorStreamStart.GENERATORSTREAMSTART = GetFunction(STK_LIB, "STKGeneratorStreamStart")
+    Global GeneratorStreamStop.GENERATORSTREAMSTOP = GetFunction(STK_LIB, "STKGeneratorStreamStop")
+    Global GeneratorStreamSetFrequency.GENERATORSTREAMSETFREQUENCY  = GetFunction(STK_LIB, "STKGeneratorStreamSetFrequency")
     
-    Global STKVoicerStreamSetup.STKVOICERSTREAMSETUP = GetFunction(STK_LIB, "STKVoicerStreamSetup")
-    Global STKVoicerStreamClean.STKVOICERSTREAMCLEAN = GetFunction(STK_LIB, "STKVoicerStreamClean")
-    Global STKVoicerStreamStart.STKVOICERSTREAMSTART = GetFunction(STK_LIB, "STKVoicerStreamStart")
-    Global STKVoicerStreamStop.STKVOICERSTREAMSTOP = GetFunction(STK_LIB, "STKVoicerStreamStop")
+    Global AddGenerator.ADDGENERATOR = GetFunction(STK_LIB, "STKAddGenerator")
+    Global AddEnvelope.ADDENVELOPE= GetFunction(STK_LIB, "STKAddEnvelope")
+    Global AddArythmetic.ADDARYTHMETIC = GetFunction(STK_LIB, "STKAddArythmetic")
+    Global AddEffect.ADDEFFECT = GetFunction(STK_LIB, "STKAddEffect")
     
-    Global STKBufferStreamInit.STKBUFFERSTREAMINIT = GetFunction(STK_LIB, "STKBufferStreamInit")
-    Global STKBufferStreamGet.STKBUFFERSTREAMGET = GetFunction(STK_LIB, "STKBufferStreamGet")
-    Global STKBufferStreamTerm.STKBUFFERSTREAMTERM = GetFunction(STK_LIB, "STKBufferStreamTerm")
-    Global STKBufferStreamSetFile.STKBUFFERSTREAMSETFILE = GetFunction(STK_LIB,"STKBufferStreamSetFile") 
+    Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
+    Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
+    Global SetEnvelopeType.SETENVELOPETYPE = GetFunction(STK_LIB, "STKSetEnvelopeType")
+    Global SetEnvelopeScalar.SETENVELOPESCALAR = GetFunction(STK_LIB, "STKSetEnvelopeScalar")
+    Global EnvelopeKeyOn.ENVELOPEKEYON = GetFunction(STK_LIB, "STKEnvelopeKeyOn")
+    Global EnvelopeKeyOff.ENVELOPEKEYOFF = GetFunction(STK_LIB, "STKEnvelopeKeyOff")
+    Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
+    Global SetArythmeticScalar.SETARYTHMETICSCALAR = GetFunction(STK_LIB, "STKSetArythmeticScalar")
+    Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
+    Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
+    
+    Global VoicerStreamSetup.VOICERSTREAMSETUP = GetFunction(STK_LIB, "STKVoicerStreamSetup")
+    Global VoicerStreamClean.VOICERSTREAMCLEAN = GetFunction(STK_LIB, "STKVoicerStreamClean")
+    Global VoicerStreamStart.VOICERSTREAMSTART = GetFunction(STK_LIB, "STKVoicerStreamStart")
+    Global VoicerStreamStop.VOICERSTREAMSTOP = GetFunction(STK_LIB, "STKVoicerStreamStop")
+    
+    Global BufferStreamInit.BUFFERSTREAMINIT = GetFunction(STK_LIB, "STKBufferStreamInit")
+    Global BufferStreamGet.BUFFERSTREAMGET = GetFunction(STK_LIB, "STKBufferStreamGet")
+    Global BufferStreamTerm.BUFFERSTREAMTERM = GetFunction(STK_LIB, "STKBufferStreamTerm")
+    Global BufferStreamSetFile.BUFFERSTREAMSETFILE = GetFunction(STK_LIB,"STKBufferStreamSetFile") 
         
   Else
     MessageRequester("STK Error","Can't Find STK Library!!")
@@ -246,36 +396,57 @@ Module STK
 ;   EndProcedure
 EndModule
 
-Dim generator_names.s(12)
-generator_names(0)  = "ENVELOPE_GENERATOR"
-generator_names(1)  = "ADSR_GENERATOR"
-generator_names(2)  = "ASYMP_GENERATOR" 
-generator_names(3)  = "NOISE_GENERATOR"
-generator_names(4)  = "SUBNOISE_GENERATOR" 
-generator_names(5)  = "MODULATE_GENERATOR"
-generator_names(6)  = "SINGWAVE_GENERATOR" 
-generator_names(7)  = "SINEWAVE_GENERATOR"
-generator_names(8)  = "BLIT_GENERATOR"
-generator_names(9)  = "BLITSAW_GENERATOR"  
-generator_names(10) = "BLITSQUARE_GENERATOR"
-generator_names(11) = "GRANULATE_GENERATOR"
-
-Dim arythmetic_modes.s(3)
-arythmetic_modes(0)  = "ADD"
-arythmetic_modes(1)  = "SUBTRACT"
-arythmetic_modes(2)  = "MULTIPLY" 
-
-
 Global WIDTH = 800
 Global HEIGHT = 600
 
-Global *DAC.STK::RtAudio = STK::STKInit()
+Global *DAC.STK::RtAudio = STK::Init()
+Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
+Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
+Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
 
-; Global *adsr.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#ADSR_GENERATOR, 180)
-; Global *blit.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLIT_GENERATOR, 180)
-Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#SINEWAVE_GENERATOR, 440)
-; Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
-; Global *generator.STK::STKGeneratorStream = STK::STKGeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 2)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.1)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.25)
+; Global *adsr.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#ADSR_GENERATOR, 180)
+; Global *blit.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLIT_GENERATOR, 180)
+; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
+; 
+; Global *wave1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 66, #False)
+; Global *wave2.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 120, #False)
+; Global *wave3.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 120, #False)
+
+; Global *lfo1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 0.5, #False)
+; 
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_SHIFT, *wave1, *lfo1, #False)
+; STK::SetArythmeticScalar(*adder1, 2)
+; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo1, #False)
+; STK::SetArythmeticScalar(*adder2, 8)
+; 
+; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_BLEND, *adder1, *adder2, #False)
+; STK::SetArythmeticScalar(*mixer, 0.5)
+; 
+; Global *effect.STK::Effect = STK::AddEffect(*generator, STK::#EFFECT_NREV, *mixer, #False)
+; 
+; Global *final.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_SCALEADD, *mixer, *effect, #True)
+; STK::SetArythmeticScalar(*final, 2)
+
+; Global *adder3.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave3, *lfo1, #False)
+; 
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY *wave1, *lfo1, #False)
+; STK::SetArythmeticScalar(*adder1, 32)
+
+; Global *lfo2.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 2, #False)
+; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo2, #False)
+; 
+; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MIX, *adder1, *adder2, #True)
+; STK::SetArythmeticScalar(*mixer, 0.5)
+
+; Global *wave1.STK::Generator = STK::AddGenerator(*generator, STK::#MODULATE_GENERATOR, 226, #False)
+; Global *lfo1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 8, #False)
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
+; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
+; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 
 
 Global event.i
@@ -295,44 +466,62 @@ Procedure DrawCanvas()
 EndProcedure
 
 DrawCanvas()
-
-If *generator
+Global down.b
+Define mx.i, v.f
+If *stream
   Repeat
     event = WaitWindowEvent()
     If event = #PB_Event_Gadget And EventGadget() = canvas
       Select EventType()
         Case #PB_EventType_KeyDown
           key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
-          If key = #PB_Shortcut_Space
+          If key = #PB_Shortcut_Return
             If running
-              STK::STKGeneratorStreamStop(*generator)
+              STK::GeneratorStreamStop(*stream)
               running = #False  
               DrawCanvas()
             Else
-              Define result.b = STK::STKGeneratorStreamStart(*generator)
+              Define result.b = STK::GeneratorStreamStart(*stream)
+              STK::EnvelopeKeyOn(*envelope)
               running = #True
               DrawCanvas()
             EndIf
+          ElseIf key = #PB_Shortcut_Space
+            STK::EnvelopeKeyOn(*envelope) 
           EndIf
+        Case #PB_EventType_LeftButtonDown
+          down = #True
+        Case #PB_EventType_LeftButtonUp
+          down=#False
+        Case #PB_EventType_MouseMove
+          If down
+            mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
+            v = mx / width
+;             STK::SetArythmeticScalar(*final, v)
+;             STK::SetEffectScalar(*rev, v, STK::#EFFECT_MIX)
+            ;STK::SetArythmeticScalar(*adder1, v)
+;             STK::SetArythmeticScalar(*adder1, v*4)
+          EndIf
+          
       EndSelect
     EndIf 
   Until event = #PB_Event_CloseWindow
 
-  STK::STKGeneratorStreamClean(*generator)
+  STK::GeneratorStreamClean(*stream)
 Else
-  MessageRequester("STK", "FAIL TO START GENERATOR")
+  MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
 
 
 ; 
 ; If *sine
-;   Debug "START : "+Str(STK::STKSineStreamStart(*sine))
+;   Debug "START : "+Str(STK::SineStreamStart(*sine))
 ;   Define N = 0
 ;   While N < 1024000000
 ;     N + 1
 ;   Wend
 ;   
-;   Debug "STOP : "+Str(STK::STKSineStreamStop(*sine))
+;   Debug "STOP : "+Str(STK::SineStreamStop(*sine))
 ;   Debug "CLEAN : "+Str(Stk::STKSineStreamClean(*sine))
 ; Else
 ;   Debug "FAIL TO START DAC"
@@ -341,7 +530,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 311
-; FirstLine = 268
+; CursorPosition = 414
+; FirstLine = 402
 ; Folding = --
 ; EnableXP

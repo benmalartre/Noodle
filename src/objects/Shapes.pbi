@@ -25709,156 +25709,156 @@ Module Shape
   Procedure RecomputeNormals(*Me.Shape_t,smooth.f=0.0)
     If Not *Me\positions\itemCount Or Not *Me\indices\itemCount : ProcedureReturn : EndIf
 
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-Define *positions = *Me\positions\data
-      Define *normals = *Me\normals\data
-      Define *indices = *Me\indices\data
-      
-      Define numPositions = *Me\positions\itemCount
-      Define numNormals = *Me\normals\itemCount
-      Define numIndices = *Me\indices\itemCount
-      Define numTriangles = *Me\nbt
-      
-      Define indexed.b = *Me\indexed
-      
-      ;---------------------------------------------------------------------------------------
-      ; reset normals
-      ;---------------------------------------------------------------------------------------
-      ! mov rdi, [p.p_normals]
-      ! mov ecx, [p.v_numNormals]
-      ! xorps xmm0, xmm0
-      ! loop_reset_normals:
-      !   movaps [rdi], xmm0
-      !   add rdi, 16
-      !   dec rcx
-      !   jg loop_reset_normals
-      
-      ;---------------------------------------------------------------------------------------
-      ; accumulate triangle normals
-      ;---------------------------------------------------------------------------------------
-      ! mov r14, [p.p_indices]
-      ! mov rdi, [p.p_normals]
-      ! mov rsi, [p.p_positions]
-      ! mov ecx, [p.v_numTriangles]
-      ! xor r8, r8
-      ! jmp check_indexed_mode
-      
-      ;---------------------------------------------------------------------------------------
-      ; check indexed mode
-      ;---------------------------------------------------------------------------------------
-      ! check_indexed_mode:
-      !   mov eax, [p.v_indexed]
-      !   cmp eax, 1
-      !   je  loop_accumulate_triangle_normals_indexed
-      !   jmp loop_accumulate_triangle_normals_unindexed
-      
-      ;---------------------------------------------------------------------------------------
-      ; indexed mode
-      ;---------------------------------------------------------------------------------------
-      ! loop_accumulate_triangle_normals_indexed:
-      !   mov r8d, [r14]                ; load vertex index
-      !   imul r8, 16                   ; compute offset in position array
-      !   movaps xmm0, [rsi + r8]       ; get position in xmm0
-      !   movaps xmm1, xmm0             ; make a copy in xmm1
-      
-      !   mov r9d, [r14+4]              ; get second point index
-      !   imul r9, 16                   ; compute offset in position array
-      !   movaps xmm2, [rsi + r9]       ; get position in xmm2
-      
-      !   mov r10d, [r14+8]             ; get third point index
-      !   imul r10, 16                  ; compute offset in position array
-      !   movaps xmm3, [rsi + r10]      ; get position in xmm3
-      !   add r14, 12                   ; increment vertex index
-      !   jmp compute_triangle_normal
-      
-      ;---------------------------------------------------------------------------------------
-      ; unindexed mode
-      ;---------------------------------------------------------------------------------------
-      ! loop_accumulate_triangle_normals_unindexed:
-      !   movaps xmm0, [rsi + r8]         ; load point A to xmm0
-      !   movaps xmm1, xmm0               ; make a copy in xmm1
-      !   movaps xmm2, [rsi + r8 + 16]    ; get position in xmm2
-      !   movaps xmm3, [rsi + r8 + 32]    ; get position in xmm3
-      !   add r8, 48
-      !   jmp compute_triangle_normal
-      
-      ;---------------------------------------------------------------------------------------
-      ; compute triangle normal
-      ;---------------------------------------------------------------------------------------
-      ! compute_triangle_normal:
-      !   subps xmm0, xmm2                  ; compute vector AB
-      !   subps xmm1, xmm3                  ; compute vector AC
-      
-      ; cross product
-      !   movaps xmm2,xmm0                  ; copy vec AB to xmm2
-      !   movaps xmm3,xmm1                  ; copy vec AC to xmm3
-        
-      !   shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
-      !   shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
-      !   mulps  xmm2,xmm3
-               
-      !   shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
-      !   shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
-      !   mulps  xmm0,xmm1
-              
-      !   subps  xmm0,xmm2                  ; cross product triangle normal
-      
-      ; normalize in place
-      !   movaps xmm6, xmm0                 ; copy normal in xmm6
-      !   mulps xmm0, xmm0                  ; square it
-      !   movaps xmm7, xmm0                 ; copy in xmm7
-      !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
-      !   addps xmm0, xmm7                  ; packed addition
-      !   movaps xmm7, xmm0                 ; copy in xmm7  
-      !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
-      !   addps xmm0, xmm7                  ; packed addition
-      !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
-      !   mulps xmm0, xmm6                  ; multiply by intila vector
-      !   jmp accumulate_triangle_normal    
-      
-      ; accumulate in memory
-      ! accumulate_triangle_normal:
-      !   movaps xmm1, [rdi + r8]         ; load first point normal in xmm1
-      !   addps xmm1, xmm0
-      !   movaps [rdi + r8], xmm1
-      
-      !   movaps xmm1, [rdi + r9]         ; load second point normal in xmm1
-      !   addps xmm1, xmm0
-      !   movaps [rdi + r9], xmm1
-      
-      !   movaps xmm1, [rdi + r10]         ; load third point normal in xmm1
-      !   addps xmm1, xmm0
-      !   movaps [rdi + r10], xmm1
-
-      !   dec ecx
-      !   jg check_indexed_mode
-      !   jmp normalize_triangle_normals
-      
-      ;---------------------------------------------------------------------------------------
-      ; normalize final normal
-      ;---------------------------------------------------------------------------------------
-      ! normalize_triangle_normals:
-      !   mov rdi, [p.p_normals]
-      !   mov ecx, [p.v_numPositions]
-      
-      ! loop_normalize_final_normal:
-      !   movaps xmm0, [rdi]                ; load normal in xmm0
-      !   movaps xmm6, xmm0                 ; copy normal in xmm6
-      !   mulps xmm0, xmm0                  ; square it
-      !   movaps xmm7, xmm0                 ; copy in xmm7
-      !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
-      !   addps xmm0, xmm7                  ; packed addition
-      !   movaps xmm7, xmm0                 ; copy in xmm7  
-      !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
-      !   addps xmm0, xmm7                  ; packed addition
-      !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
-      !   mulps xmm0, xmm6                  ; multiply by intila vector
-      !   movaps [rdi], xmm0                ; move back to memory
-      !   add rdi, 16                       ; next normal
-      !   dec ecx
-      !   jg loop_normalize_final_normal
-      
-    CompilerElse
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       Define *positions = *Me\positions\data
+;       Define *normals = *Me\normals\data
+;       Define *indices = *Me\indices\data
+;       
+;       Define numPositions = *Me\positions\itemCount
+;       Define numNormals = *Me\normals\itemCount
+;       Define numIndices = *Me\indices\itemCount
+;       Define numTriangles = *Me\nbt
+;       
+;       Define indexed.b = *Me\indexed
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; reset normals
+;       ;---------------------------------------------------------------------------------------
+;       ! mov rdi, [p.p_normals]
+;       ! mov ecx, [p.v_numNormals]
+;       ! xorps xmm0, xmm0
+;       ! loop_reset_normals:
+;       !   movaps [rdi], xmm0
+;       !   add rdi, 16
+;       !   dec rcx
+;       !   jg loop_reset_normals
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; accumulate triangle normals
+;       ;---------------------------------------------------------------------------------------
+;       ! mov r14, [p.p_indices]
+;       ! mov rdi, [p.p_normals]
+;       ! mov rsi, [p.p_positions]
+;       ! mov ecx, [p.v_numTriangles]
+;       ! xor r8, r8
+;       ! jmp check_indexed_mode
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; check indexed mode
+;       ;---------------------------------------------------------------------------------------
+;       ! check_indexed_mode:
+;       !   mov eax, [p.v_indexed]
+;       !   cmp eax, 1
+;       !   je  loop_accumulate_triangle_normals_indexed
+;       !   jmp loop_accumulate_triangle_normals_unindexed
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; indexed mode
+;       ;---------------------------------------------------------------------------------------
+;       ! loop_accumulate_triangle_normals_indexed:
+;       !   mov r8d, [r14]                ; load vertex index
+;       !   imul r8, 16                   ; compute offset in position array
+;       !   movaps xmm0, [rsi + r8]       ; get position in xmm0
+;       !   movaps xmm1, xmm0             ; make a copy in xmm1
+;       
+;       !   mov r9d, [r14+4]              ; get second point index
+;       !   imul r9, 16                   ; compute offset in position array
+;       !   movaps xmm2, [rsi + r9]       ; get position in xmm2
+;       
+;       !   mov r10d, [r14+8]             ; get third point index
+;       !   imul r10, 16                  ; compute offset in position array
+;       !   movaps xmm3, [rsi + r10]      ; get position in xmm3
+;       !   add r14, 12                   ; increment vertex index
+;       !   jmp compute_triangle_normal
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; unindexed mode
+;       ;---------------------------------------------------------------------------------------
+;       ! loop_accumulate_triangle_normals_unindexed:
+;       !   movaps xmm0, [rsi + r8]         ; load point A to xmm0
+;       !   movaps xmm1, xmm0               ; make a copy in xmm1
+;       !   movaps xmm2, [rsi + r8 + 16]    ; get position in xmm2
+;       !   movaps xmm3, [rsi + r8 + 32]    ; get position in xmm3
+;       !   add r8, 48
+;       !   jmp compute_triangle_normal
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; compute triangle normal
+;       ;---------------------------------------------------------------------------------------
+;       ! compute_triangle_normal:
+;       !   subps xmm0, xmm2                  ; compute vector AB
+;       !   subps xmm1, xmm3                  ; compute vector AC
+;       
+;       ; cross product
+;       !   movaps xmm2,xmm0                  ; copy vec AB to xmm2
+;       !   movaps xmm3,xmm1                  ; copy vec AC to xmm3
+;         
+;       !   shufps xmm2,xmm2,00001001b        ; exchange 2 and 3 element (a)
+;       !   shufps xmm3,xmm3,00010010b        ; exchange 1 and 2 element (b)
+;       !   mulps  xmm2,xmm3
+;                
+;       !   shufps xmm0,xmm0,00010010b        ; exchange 1 and 2 element (a)
+;       !   shufps xmm1,xmm1,00001001b        ; exchange 2 and 3 element (b)
+;       !   mulps  xmm0,xmm1
+;               
+;       !   subps  xmm0,xmm2                  ; cross product triangle normal
+;       
+;       ; normalize in place
+;       !   movaps xmm6, xmm0                 ; copy normal in xmm6
+;       !   mulps xmm0, xmm0                  ; square it
+;       !   movaps xmm7, xmm0                 ; copy in xmm7
+;       !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+;       !   addps xmm0, xmm7                  ; packed addition
+;       !   movaps xmm7, xmm0                 ; copy in xmm7  
+;       !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+;       !   addps xmm0, xmm7                  ; packed addition
+;       !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+;       !   mulps xmm0, xmm6                  ; multiply by intila vector
+;       !   jmp accumulate_triangle_normal    
+;       
+;       ; accumulate in memory
+;       ! accumulate_triangle_normal:
+;       !   movaps xmm1, [rdi + r8]         ; load first point normal in xmm1
+;       !   addps xmm1, xmm0
+;       !   movaps [rdi + r8], xmm1
+;       
+;       !   movaps xmm1, [rdi + r9]         ; load second point normal in xmm1
+;       !   addps xmm1, xmm0
+;       !   movaps [rdi + r9], xmm1
+;       
+;       !   movaps xmm1, [rdi + r10]         ; load third point normal in xmm1
+;       !   addps xmm1, xmm0
+;       !   movaps [rdi + r10], xmm1
+; 
+;       !   dec ecx
+;       !   jg check_indexed_mode
+;       !   jmp normalize_triangle_normals
+;       
+;       ;---------------------------------------------------------------------------------------
+;       ; normalize final normal
+;       ;---------------------------------------------------------------------------------------
+;       ! normalize_triangle_normals:
+;       !   mov rdi, [p.p_normals]
+;       !   mov ecx, [p.v_numPositions]
+;       
+;       ! loop_normalize_final_normal:
+;       !   movaps xmm0, [rdi]                ; load normal in xmm0
+;       !   movaps xmm6, xmm0                 ; copy normal in xmm6
+;       !   mulps xmm0, xmm0                  ; square it
+;       !   movaps xmm7, xmm0                 ; copy in xmm7
+;       !   shufps xmm7, xmm7, 01001110b      ; shuffle component z w x y
+;       !   addps xmm0, xmm7                  ; packed addition
+;       !   movaps xmm7, xmm0                 ; copy in xmm7  
+;       !   shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
+;       !   addps xmm0, xmm7                  ; packed addition
+;       !   rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+;       !   mulps xmm0, xmm6                  ; multiply by intila vector
+;       !   movaps [rdi], xmm0                ; move back to memory
+;       !   add rdi, 16                       ; next normal
+;       !   dec ecx
+;       !   jg loop_normalize_final_normal
+;       
+;     CompilerElse
       Protected i,a,b,c
       Define.v3f32 *a,*b,*c
       
@@ -25915,7 +25915,7 @@ Define *positions = *Me\positions\data
         *n = CArray::GetValue(*Me\normals,i)
         Vector3::NormalizeInPlace(*n)
       Next i
-    CompilerEndIf
+;     CompilerEndIf
 
   EndProcedure  
   
@@ -25956,7 +25956,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_axis_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
 ;         CopyMemory(?shape_axis_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_SPHERE
@@ -25970,7 +25970,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_sphere_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_sphere_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_GRID
@@ -25984,7 +25984,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_grid_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_grid_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_CUBE
@@ -25998,7 +25998,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_cube_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_cube_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_DISC
@@ -26012,7 +26012,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_disc_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_disc_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_CYLINDER
@@ -26028,7 +26028,7 @@ Define *positions = *Me\positions\data
         *Me\positions\data = ?shape_cylinder_positions
         *Me\indices\data = ?shape_cylinder_indices
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_NULL
@@ -26043,7 +26043,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_null_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
 
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
 ;       Case  #SHAPE_ARROW
@@ -26071,7 +26071,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_torus_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color,0.1)
+        RandomizeColors(*Me,color,0.1)
         SetUVWs(*Me)
         
       Case  #SHAPE_BUNNY
@@ -26085,7 +26085,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_bunny_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_bunny_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_TEAPOT
@@ -26099,7 +26099,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_teapot_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_teapot_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        RandomizeColors(*Me,@color)
+        RandomizeColors(*Me,color)
         SetUVWs(*Me)
         
       Case  #SHAPE_TOMATO
@@ -26113,7 +26113,7 @@ Define *positions = *Me\positions\data
         CopyMemory(?shape_tomatoship_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
         CopyMemory(?shape_tomatoship_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
         RecomputeNormals(*Me,1.0)
-        SetColor(*Me,@color)
+        SetColor(*Me,color)
         SetUVWs(*Me)
         
         
@@ -26321,7 +26321,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25854
-; FirstLine = 25825
+; CursorPosition = 26001
+; FirstLine = 25908
 ; Folding = ----
 ; EnableXP
