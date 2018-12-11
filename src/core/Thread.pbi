@@ -2,8 +2,8 @@
 ; Thread Module Declaration
 ;========================================================================================
 DeclareModule Thread
-  #NUM_THREADS = 7
-  #NUM_TASKS = 128
+  #NUM_THREADS = 8
+  #NUM_TASKS = 64
   Prototype PFNTHREADCALLBACK(*datas)
   
   Structure TaskDatas_t
@@ -14,6 +14,7 @@ DeclareModule Thread
     *datas.TaskDatas_t
     start_index.i
     end_index.i
+    job_done.b
   EndStructure
   
   Structure Thread_t
@@ -54,10 +55,15 @@ DeclareModule Thread
     Next
     
     ; wait for all worker threads to complete their work
-    For _i = 1 To Thread::#NUM_THREADS-1
-      WaitSemaphore(POOL\running_semaphore)
-    Next _i
-    Debug "FINISHED : WE CAN NOW DELETE ALL THIS SHIT"
+    Define _working.i
+    Repeat 
+      _working = 0
+      For _i=0 To ArraySize(_datas())-1 : _working + (1-_datas(_i)\job_done) : Next
+    Until _working = 0
+    
+    ; reset semaphore to max threads
+    For _i=0 To Thread::#NUM_THREADS - 1 : SignalSemaphore(POOL\running_semaphore) : Next
+
   EndMacro
 EndDeclareModule
 
@@ -107,7 +113,6 @@ Module Thread
   EndProcedure
   
   Procedure AddTask(*pool.ThreadPool_t, *datas.ThreadDatas_t, callback.PFNTHREADCALLBACK)
-    Debug "LAUNCH THREAD : "+Str(*datas\start_index)+"--->"+Str(*datas\end_index)
     LockMutex(*pool\mutex)
     If ListSize(*pool\pending())
       LastElement(*pool\pending())
@@ -176,6 +181,6 @@ EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 51
-; FirstLine = 29
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

@@ -65,7 +65,7 @@ DeclareModule STK
 	  #SINGWAVE_GENERATOR 
 	  #MODULATE_GENERATOR 
     #GRANULATE_GENERATOR
-	EndEnumeration
+  EndEnumeration
 	
 	Dim generator_names.s(9)
   generator_names(0)  = "ASYMP_GENERATOR" 
@@ -77,6 +77,19 @@ DeclareModule STK
   generator_names(6)  = "SINGWAVE_GENERATOR"
   generator_names(7)  = "GRANULATE_GENERATOR"
   generator_names(8)  = "MODULATE_GENERATOR"
+  
+  Enumeration
+    #GENERATOR_T60					; asymp t60
+		#GENERATOR_TARGET				; asymp target
+		#GENERATOR_TAU					; asymp tau
+		#GENERATOR_TIME         ; asymp time
+		#GENERATOR_VALUE        ; asymp value
+		#GENERATOR_FREQUENCY    ; waves frequency
+		#GENERATOR_HARMONICS    ; waves harmonics
+		#GENERATOR_PHASE        ; waves phase
+		#GENERATOR_PHASEOFFSET  ; sine wave phase offset
+		#GENERATOR_SEED					; noise seed
+	EndEnumeration
   
   Macro STKEnvelopeType : l : EndMacro
   Enumeration
@@ -219,12 +232,15 @@ DeclareModule STK
   
   PrototypeC SETGENERATORTYPE(*generator.Generator, type.l)
   PrototypeC SETGENERATORSCALAR(*generator.Generator, param.l, scalar.f)
+  
   PrototypeC SETENVELOPETYPE(*envelope.Envelope, type.l)
   PrototypeC SETENVELOPESCALAR(*envelope.Envelope, param.l, scalar.f)
   PrototypeC ENVELOPEKEYON(*envelope.Envelope)
   PrototypeC ENVELOPEKEYOFF(*envelope.Envelope)
+  
   PrototypeC SETARYTHMETICMODE(*arythmetic.Arythmetic, mode.l)
   PrototypeC SETARYTHMETICSCALAR(*arythmetic.Arythmetic, scalar.f)
+  
   PrototypeC SETEFFECTTYPE(*effect.Effect, type.l)
   PrototypeC SETEFFECTSCALAR(*effect.Effect, param.l, scalar.f)
   
@@ -402,51 +418,56 @@ Global HEIGHT = 600
 Global *DAC.STK::RtAudio = STK::Init()
 Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
 Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
+Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #False)
 
-; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
-; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 2)
-; STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.1)
-; STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.25)
+STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
+STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
+STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
+STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
+
+Global *effect.STK::Effect = STK::AddEffect(*stream, STK::#EFFECT_JCREV, *envelope, #True)
+STK::SetEffectScalar(*effect, STK::#EFFECT_MIX, 0.2)
+; STK::SetEffectScalar(*effect, STK::#EFFECT_T60, 0.5)
+; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_SCALEADD, *envelope, *effect, #True)
+; STK::SetArythmeticScalar(*mixer, 0.5)
 ; Global *adsr.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#ADSR_GENERATOR, 180)
 ; Global *blit.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLIT_GENERATOR, 180)
-; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
 ; 
-; Global *wave1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 66, #False)
-; Global *wave2.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 120, #False)
-; Global *wave3.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 120, #False)
+; Global *wave1.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 66, #False)
+; Global *wave2.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 120, #False)
+; Global *wave3.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 120, #False)
 
-; Global *lfo1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 0.5, #False)
+; Global *lfo1.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 0.5, #False)
 ; 
-; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_SHIFT, *wave1, *lfo1, #False)
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_SHIFT, *wave1, *lfo1, #False)
 ; STK::SetArythmeticScalar(*adder1, 2)
-; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo1, #False)
+; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo1, #False)
 ; STK::SetArythmeticScalar(*adder2, 8)
 ; 
-; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_BLEND, *adder1, *adder2, #False)
+; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_BLEND, *adder1, *adder2, #False)
 ; STK::SetArythmeticScalar(*mixer, 0.5)
 ; 
-; Global *effect.STK::Effect = STK::AddEffect(*generator, STK::#EFFECT_NREV, *mixer, #False)
+
 ; 
-; Global *final.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_SCALEADD, *mixer, *effect, #True)
+; Global *final.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_SCALEADD, *mixer, *effect, #True)
 ; STK::SetArythmeticScalar(*final, 2)
 
-; Global *adder3.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave3, *lfo1, #False)
+; Global *adder3.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave3, *lfo1, #False)
 ; 
-; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY *wave1, *lfo1, #False)
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY *wave1, *lfo1, #False)
 ; STK::SetArythmeticScalar(*adder1, 32)
 
-; Global *lfo2.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 2, #False)
-; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo2, #False)
+; Global *lfo2.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 2, #False)
+; Global *adder2.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave2, *lfo2, #False)
 ; 
-; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MIX, *adder1, *adder2, #True)
+; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MIX, *adder1, *adder2, #True)
 ; STK::SetArythmeticScalar(*mixer, 0.5)
 
-; Global *wave1.STK::Generator = STK::AddGenerator(*generator, STK::#MODULATE_GENERATOR, 226, #False)
-; Global *lfo1.STK::Generator = STK::AddGenerator(*generator, STK::#SINEWAVE_GENERATOR, 8, #False)
-; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*generator, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
-; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
-; Global *generator.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
+; Global *wave1.STK::Generator = STK::AddGenerator(*stream, STK::#MODULATE_GENERATOR, 226, #False)
+; Global *lfo1.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 8, #False)
+; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
+; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
+; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 
 
 Global event.i
@@ -497,6 +518,7 @@ If *stream
           If down
             mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
             v = mx / width
+            STK::SetGeneratorScalar(*wave, STK::#GENERATOR_FREQUENCY, v * 220 +60)
 ;             STK::SetArythmeticScalar(*final, v)
 ;             STK::SetEffectScalar(*rev, v, STK::#EFFECT_MIX)
             ;STK::SetArythmeticScalar(*adder1, v)
@@ -530,7 +552,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 414
-; FirstLine = 402
+; CursorPosition = 427
+; FirstLine = 405
 ; Folding = --
 ; EnableXP

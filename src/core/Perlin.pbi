@@ -1,9 +1,9 @@
-; ------------------------------------------------------------------------------
-; https://www.scratchapixel.com/code.php?id=57&origin=/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2
-; ------------------------------------------------------------------------------
 XIncludeFile "Math.pbi"
+
 ; ============================================================================================
 ; PERLIN NOISE MODULE DECLARATION
+; 
+; https://www.scratchapixel.com/code.php?id=57&origin=/lessons/procedural-generation-virtual-worlds/perlin-noise-part-2
 ; ============================================================================================
 DeclareModule PerlinNoise
   UseModule Math
@@ -40,12 +40,12 @@ DeclareModule PerlinNoise
         Case 15: _io = -_y - _z; // (0,-1,-1) 
       EndSelect
     EndMacro
-    
-  
+
   Declare New(seed.i=0)
   Declare Delete(*Me.PerlinNoise_t)
   Declare Init(*Me.PerlinNoise_t)
   Declare.f Eval(*Me.PerlinNoise_t, *p.v3f32, *deriv.v3f32)
+  
 EndDeclareModule
 
 ; ============================================================================================
@@ -171,7 +171,7 @@ Module PerlinNoise
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 84
+; CursorPosition = 73
+; FirstLine = 54
 ; Folding = --
 ; EnableXP

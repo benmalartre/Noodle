@@ -351,7 +351,6 @@ DeclareModule CArray
   Declare newCArrayM3F32()
   Declare newCArrayTRF32()
   Declare newCArrayM4F32()
-  Declare newCArrayLocation()
   Declare newCArrayPtr()
   Declare newCArrayStr()
   Declare newCArrayLocation()
@@ -1176,7 +1175,7 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; CArrayPLocation
+  ; CArrayLocation
   ;----------------------------------------------------------------
   Procedure newCArrayLocation()
     Protected *array.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
@@ -1201,7 +1200,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1154
-; FirstLine = 1127
+; CursorPosition = 1174
+; FirstLine = 1140
 ; Folding = ------------
 ; EnableXP
