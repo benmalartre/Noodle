@@ -37,6 +37,7 @@ DeclareModule Thread
   Declare AddTask(*pool.ThreadPool_t, *datas.TaskDatas_t, callback.PFNTHREADCALLBACK)
   
   Macro SplitTask(POOL, TASKDATAS, THREADDATASTYPE, CALLBACK)
+    ; split per thread datas and add them to the pending list
     Define _chunckSize = TASKDATAS\num_elements / Thread::#NUM_TASKS
     Define _chunckBase = 0
     Define _extra = TASKDATAS\num_elements- (Thread::#NUM_TASKS*_chunckSize)
@@ -61,7 +62,7 @@ DeclareModule Thread
       For _i=0 To ArraySize(_datas())-1 : _working + (1-_datas(_i)\job_done) : Next
     Until _working = 0
     
-    ; reset semaphore to max threads
+    ; reset semaphore to max threads for next batch
     For _i=0 To Thread::#NUM_THREADS - 1 : SignalSemaphore(POOL\running_semaphore) : Next
 
   EndMacro
@@ -180,7 +181,7 @@ EndModule
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 12
+; CursorPosition = 90
+; FirstLine = 121
 ; Folding = --
 ; EnableXP

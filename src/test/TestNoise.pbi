@@ -27,7 +27,7 @@ Procedure NewTurbulenceDatas(width.i, height.i, seed.i)
   *datas\width = width
   *datas\height = height
   *datas\positions = AllocateMemory(width * height * SizeOf(Math::v3f32))
-  *datas\result = AllocateMemory(width * height * 4)
+  *datas\result = AllocateMemory(width * height * SizeOf(Math::v3f32))
   *datas\num_elements = width * height
   *datas\perlin = PerlinNoise::New(seed)
   PerlinNoise::Init(*datas\perlin)
@@ -41,7 +41,7 @@ Procedure DeleteTurbulenceDatas(*datas.TurbulenceDatas_t)
 EndProcedure
 
 
-Procedure InitPositions(*datas.TurbulenceDatas_t, size.f=0.0333)
+Procedure InitPositions(*datas.TurbulenceDatas_t, size.f=0.01)
   Define x, y, idx
   Define *p.Math::v3f32
    For y=0 To *datas\height-1
@@ -68,12 +68,13 @@ EndProcedure
 Procedure MonoTurbulence(*datas.TurbulenceDatas_t)
   Define x, y, idx
   Define *p.Math::v3f32
-  Define deriv.Math::v3f32
+  Define *d.Math::v3f32
   For y=0 To *datas\height-1
     For x=0 To *datas\width-1
       idx = (y**datas\width+x)
       *p = *datas\positions + idx * SizeOf(Math::v3f32)
-      PokeF(*datas\result + idx * 4, PerlinNoise::Eval(*datas\perlin, *p, deriv))
+      *d = *datas\result + idx * SizeOf(Math::v3f32)
+      PerlinNoise::Eval(*datas\perlin, *p, *d)
     Next
   Next
 EndProcedure
@@ -81,11 +82,12 @@ EndProcedure
 Procedure ThreadedTurbulence(*datas.ThreadedTurbulenceDatas_t)
   Define i
   Define *p.Math::v3f32
-  Define deriv.Math::v3f32
+  Define *d.Math::v3f32
   Define *taskdatas.TurbulenceDatas_t = *datas\datas
   For i=*datas\start_index To *datas\end_index -1
     *p = *taskdatas\positions + i * SizeOf(Math::v3f32)
-    PokeF(*taskdatas\result + i * 4, PerlinNoise::Eval(*taskdatas\perlin, *p, deriv))
+    *d = *taskdatas\result + i * SizeOf(Math::v3f32)
+    PerlinNoise::Eval(*taskdatas\perlin, *p, *d)
   Next
   *datas\job_done = #True
 EndProcedure
@@ -98,19 +100,18 @@ Procedure.i ShowTurbulence(img.i, *datas.TurbulenceDatas_t)
 
   Thread::SplitTask(*pool, *datas, ThreadedTurbulenceDatas_t, @ThreadedTurbulence())
 
-  Define x, y, b
-  Define noise.f
+  Define x, y
+  Define *noise.Math::v3f32
   StartDrawing(ImageOutput(img))
   Define *buffer = DrawingBuffer()
   Define idx
   For x = 0 To width - 1
     For y = 0 To height -1
       idx = (y*width+x)
-      noise = PeekF(*datas\result + idx * 4)
-      b = Int((noise*0.5+0.5) * 255)
-      PokeB(*buffer + idx * 3, b)
-      PokeB(*buffer + idx * 3+1, b)
-      PokeB(*buffer + idx * 3+2, b)
+      *noise = *datas\result + idx * SizeOf(Math::v3f32)
+      PokeB(*buffer + idx * 3, Int((*noise\x*0.5+0.5) * 255))
+      PokeB(*buffer + idx * 3+1, Int((*noise\y*0.5+0.5) * 255))
+      PokeB(*buffer + idx * 3+2, Int((*noise\z*0.5+0.5) * 255))
     Next 
   Next
 
@@ -122,10 +123,10 @@ EndProcedure
 Time::Init()
 
 
-#width = 1024
-#height = 1024
+#width = 2048
+#height = 2048
 Define *turb.TurbulenceDatas_t = NewTurbulenceDatas(#width, #height, 0)
-InitPositions(*turb)
+InitPositions(*turb,0.05)
 Define image = CreateImage(#PB_Any,#width,#height,24)
 Define starttime.d = Time::Get()
 ; ShowTurbulence(image, *turb)
@@ -146,7 +147,7 @@ Repeat
 Until Event = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 68
+; CursorPosition = 98
+; FirstLine = 72
 ; Folding = --
 ; EnableXP

@@ -298,7 +298,6 @@ DeclareModule STK
     Global GeneratorStreamClean.GENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
     Global GeneratorStreamStart.GENERATORSTREAMSTART = GetFunction(STK_LIB, "STKGeneratorStreamStart")
     Global GeneratorStreamStop.GENERATORSTREAMSTOP = GetFunction(STK_LIB, "STKGeneratorStreamStop")
-    Global GeneratorStreamSetFrequency.GENERATORSTREAMSETFREQUENCY  = GetFunction(STK_LIB, "STKGeneratorStreamSetFrequency")
     
     Global AddGenerator.ADDGENERATOR = GetFunction(STK_LIB, "STKAddGenerator")
     Global AddEnvelope.ADDENVELOPE= GetFunction(STK_LIB, "STKAddEnvelope")
@@ -307,12 +306,15 @@ DeclareModule STK
     
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
+    
     Global SetEnvelopeType.SETENVELOPETYPE = GetFunction(STK_LIB, "STKSetEnvelopeType")
     Global SetEnvelopeScalar.SETENVELOPESCALAR = GetFunction(STK_LIB, "STKSetEnvelopeScalar")
     Global EnvelopeKeyOn.ENVELOPEKEYON = GetFunction(STK_LIB, "STKEnvelopeKeyOn")
     Global EnvelopeKeyOff.ENVELOPEKEYOFF = GetFunction(STK_LIB, "STKEnvelopeKeyOff")
+    
     Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticScalar.SETARYTHMETICSCALAR = GetFunction(STK_LIB, "STKSetArythmeticScalar")
+    
     Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
     Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
     
@@ -552,7 +554,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 427
-; FirstLine = 405
+; CursorPosition = 325
+; FirstLine = 276
 ; Folding = --
 ; EnableXP

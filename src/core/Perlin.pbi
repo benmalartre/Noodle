@@ -143,10 +143,11 @@ Module PerlinNoise
     k7 = (b + c + e + h - a - d - f - g) 
  
     *deriv\x = du *(k1 + k4 * v + k5 * w + k7 * v * w)
-    *deriv\y = dv *(k2 + k4 * u + k6 * w + k7 * v * w)
-    *deriv\z = dw *(k3 + k5 * u + k6 * v + k7 * v * w)
+    *deriv\y = dv *(k2 + k4 * u + k6 * w + k7 * u * w)
+    *deriv\z = dw *(k3 + k5 * u + k6 * v + k7 * u * v)
  
     ProcedureReturn k0 + k1 * u + k2 * v + k3 * w + k4 * u * v + k5 * u * w + k6 * v * w + k7 * u * v * w
+    
   EndProcedure
   
   ; ------------------------------------------------------------------------------------------
@@ -171,7 +172,7 @@ Module PerlinNoise
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 54
+; CursorPosition = 149
+; FirstLine = 112
 ; Folding = --
 ; EnableXP

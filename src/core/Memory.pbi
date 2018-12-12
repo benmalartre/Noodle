@@ -2,7 +2,7 @@
 ; Memory Module Declaration
 ;========================================================================================
 DeclareModule Memory
-  Global.q NOODLE_AVAILAIBLE_MEMORY
+
   #ALIGN_BITS =  16
   
   Macro AlignMemory(_memory, _alignment)
@@ -43,10 +43,9 @@ Module Memory
   ; REALLOCATE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure ReAllocateAlignedMemory(*memory, oldsize.i, size.i)
-    Define *oldmemory = *memory - PeekB(*memory + oldsize + 1)
-    *memory = ReAllocateMemory(*oldmemory, size + #ALIGN_BITS, #PB_Memory_NoClear)
+    *memory = ReAllocateMemory(*memory - PeekB(*memory + oldsize + 1), size + #ALIGN_BITS, #PB_Memory_NoClear)
     Protected *aligned
-    Define offset.i = *memory % #ALIGN_BITS
+    Protected offset.i = *memory % #ALIGN_BITS
     If offset <> 0
       *aligned = AlignMemory(*memory, #ALIGN_BITS)
       PokeB(*aligned + size + 1, #ALIGN_BITS - offset)
@@ -103,11 +102,11 @@ Module Memory
   EndProcedure
   
 EndModule
+
 ;========================================================================================
 ; EOF
 ;========================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 40
+; CursorPosition = 11
 ; Folding = --
 ; EnableXP
