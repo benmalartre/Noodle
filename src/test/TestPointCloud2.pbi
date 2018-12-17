@@ -98,9 +98,8 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,1
 
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D")
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera)
 *app\context = *viewport\context
-*viewport\camera = *app\camera
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 
@@ -152,8 +151,8 @@ Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 97
+; CursorPosition = 102
+; FirstLine = 91
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

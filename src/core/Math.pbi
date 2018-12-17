@@ -36,19 +36,15 @@ DeclareModule Math
     #U_MAX    = #U32_MAX
   CompilerEndIf
   
-  ; ----[ SCALARS 32 ]----------------------------------------------------------
-  #F32_EPS    = 1e-6
-  #F32_MAX    = 3.402823466e+38
-  #F32_MIN    = 1.175494351e-38
-  
   ; ----[ SCALARS 64 ]----------------------------------------------------------
-  #F64_EPS    = 2e-16
-  #F64_MAX    = 1.7976931348623158e+308
-  #F64_MIN    = 2.2250738585072014e-308
+  #F64_EPS      = 2e-16
+  #F64_MAX      = 1.7976931348623158e+308
+  #F64_MIN      = 2.2250738585072014e-308
 
-  #F32_EPS    = 1e-6
-  #F32_MAX    = 3.402823466e+38
-  #F32_MIN    = 1.175494351e-38
+  ; ----[ SCALARS 32 ]----------------------------------------------------------
+  #F32_EPS      =  1e-6
+  #F32_MAX      =  3.402823466e+38
+  #F32_MIN      =  1.175494351e-38
   #F32_E        =  2.7182818              ; e
   #F32_LOG2E    =  1.4426950              ; log2(e)
   #F32_LOG10E   =  0.4342945              ; Log10(e)
@@ -70,9 +66,9 @@ DeclareModule Math
   #F32_1_SQRT2  =  0.7071068              ; 1/sqrt(2)
   
   #F32_DEG2RAD  =  0.0174533              ; pi/180
-  #F32_RAD2DEG  = 57.2957795              ; 180/pi
+  #F32_RAD2DEG  =  57.2957795             ; 180/pi
   
-  #COLOR_MAX    = 16581375
+  #COLOR_MAX    =  16581375
   
   #MIN_VECTOR_LENGTH = 1e-10
   #MIN_ORTHO_TOLERANCE = 1e-6
@@ -391,11 +387,11 @@ DeclareModule Math
   ;  Random 0 to 1
   ; -----------------------------------------------------------------
   Macro Random_0_1()
-    (Random(#RAND_MAX)/#RAND_MAX)
+    (Random(Math::#RAND_MAX)/Math::#RAND_MAX)
   EndMacro
   
   Macro Random_Neg1_1()
-    (1 - (Random(#RAND_MAX)/#RAND_MAX * 2 ))
+    (1 - (Random(Math::#RAND_MAX)/Math::#RAND_MAX * 2 ))
   EndMacro
   
   ; ----------------------------------------------------------------------------
@@ -3832,17 +3828,14 @@ Module Matrix4
     EndProcedure
     
     Procedure MultiplyInPlace(*m.m4f32, *o.m4f32)
-      Protected tmp.m4f32
-      CopyMemory(*m\v, tmp\v, SizeOf(m4f32))
       ! mov rdx, [p.p_m]
-      ! mov rax, [p.v_tmp]
       ! mov rcx, [p.p_o]
       ! xor r8, r8
       
-      ! movups xmm4, [rax]
-      ! movups xmm5, [rax + 16]
-      ! movups xmm6, [rax + 32]
-      ! movups xmm7, [rax + 48]
+      ! movups xmm4, [rdx]
+      ! movups xmm5, [rdx + 16]
+      ! movups xmm6, [rdx + 32]
+      ! movups xmm7, [rdx + 48]
       
       ! m4f32_multiplyinplace_loop:
       !   movups xmm0, [rcx]
@@ -4163,8 +4156,8 @@ Module Transform
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 756
-; FirstLine = 218
+; CursorPosition = 65
+; FirstLine = 29
 ; Folding = ------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

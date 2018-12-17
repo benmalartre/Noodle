@@ -147,7 +147,7 @@ Repeat
 Until Event = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 72
+; CursorPosition = 102
+; FirstLine = 33
 ; Folding = --
 ; EnableXP

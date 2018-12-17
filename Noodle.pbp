@@ -8,7 +8,7 @@
   <section name="data">
     <explorer view="C:\Documents and Settings\Administrator\My Documents\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2018-12-10 21:07" user="benjamin" host="HATE_ROCKET"/>
+    <lastopen date="2018-12-16 09:54" user="benjamin" host="HATE_ROCKET"/>
   </section>
   <section name="files">
     <file name="src\bullet\Constraint.pbi">
@@ -137,7 +137,7 @@
     </file>
     <file name="src\core\Array.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="36d8ee3f359920281b2d0ecef82380ea"/>
+      <fingerprint md5="289e965c62c8158bc1645a4ae48d4b9f"/>
     </file>
     <file name="src\core\Attribute.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -177,11 +177,11 @@
     </file>
     <file name="src\core\Math.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="aca7007ef0aae9ffc03af0a98814eaad"/>
+      <fingerprint md5="a43cdd45d84a65a13234555e0119eb72"/>
     </file>
     <file name="src\core\Memory.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="3c8b022f4e2b68f6c98cdc45bf36548b"/>
+      <fingerprint md5="9a965e71737acccb24bfb31f0b05a450"/>
     </file>
     <file name="src\core\MersenneTwister.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -205,7 +205,7 @@
     </file>
     <file name="src\core\Perlin.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="9ef4901c80512840294164f68cdd01b5"/>
+      <fingerprint md5="29d6cf3efad2c2808fa2c550c4dc73f0"/>
     </file>
     <file name="src\core\Perlin2.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -230,6 +230,10 @@
     <file name="src\core\Source.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="ab5c90d5b59e05181d70e0685b0b165d"/>
+    </file>
+    <file name="src\core\Thread.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="235932850fe8daec2d311cf0043dbea9"/>
     </file>
     <file name="src\core\Time.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -352,7 +356,7 @@
       <fingerprint md5="e078e695e9dba804a1fbc9f119bb8414"/>
     </file>
     <file name="src\libs\Booze.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="af380c328dc8ec548039fe968af46b99"/>
     </file>
     <file name="src\libs\Bullet.pbi">
@@ -384,8 +388,8 @@
       <fingerprint md5="28bb9ea6b0729c859c7bcf378918163e"/>
     </file>
     <file name="src\libs\STK.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="744a59001fa143674528a991be01d7a4"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="76b27f7caa429a3ce6ea8de25229aef2"/>
     </file>
     <file name="src\nodes\AddNode.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
@@ -1069,7 +1073,7 @@
     </file>
     <file name="src\test\TestBullet.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="4c434e86c904420c4131e31cc2ab4da7"/>
+      <fingerprint md5="b2027c987f2959d23e89b26d90fa5afd"/>
     </file>
     <file name="src\test\TestBulletArm.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1195,6 +1199,10 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="431a0a0f8b83f379db79a7d965e8b52a"/>
     </file>
+    <file name="src\test\TestNoise.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <fingerprint md5="88e351817a183dc16b7ad3d320bba768"/>
+    </file>
     <file name="src\test\TestNormals.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="41357d3ae960ae1df5c2f7c6ff7edcb0"/>
@@ -1220,8 +1228,8 @@
       <fingerprint md5="dc256f3f194039f81d3b42b7f0f59f0f"/>
     </file>
     <file name="src\test\TestPointCloud2.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="5af1a40288f78b1d43a489168450c7aa"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="19104b4eefab7b71ba4c45179a3cd458"/>
     </file>
     <file name="src\test\TestPoisson.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1355,18 +1363,10 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="120512b07c2e4fed7f4fdcc165a70791"/>
     </file>
-    <file name="src\test\TestNoise.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="84ba7d68b423ce7f433e73436baff428"/>
-    </file>
-    <file name="src\core\Thread.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="dcb28add835c38ce15c4f11c7fb9d195"/>
-    </file>
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\libs\STK.pbi"/>
+      <inputfile value="src\test\TestPointCloud2.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 5.62 (Windows - x64)"/>
       <executable value="bin\SandBox.exe"/>
