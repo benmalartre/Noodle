@@ -1,5 +1,5 @@
 ﻿; ======================================================================================
-; N*N MATRIX MODULE DECLARATION
+; N*M MATRIX MODULE DECLARATION
 ; ======================================================================================
 XIncludeFile "Math.pbi"
 
@@ -65,7 +65,7 @@ DeclareModule Matrix
 EndDeclareModule
 
 ; ======================================================================================
-; N*N MATRIX MODULE IMPLEMENTATION
+; N*M MATRIX MODULE IMPLEMENTATION
 ; ======================================================================================
 Module Matrix
   ; ------------------------------------------------------------------------------------
@@ -787,8 +787,8 @@ EndModule
 ; ; TestColumn()
 ; TestInverse()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 502
-; FirstLine = 493
+; CursorPosition = 67
+; FirstLine = 660
 ; Folding = --------
 ; EnableXP
 ; Constant = #USE_SSE=1
