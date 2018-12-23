@@ -166,15 +166,15 @@ DeclareModule Globals
   EndMacro
   
   Macro BitSet(value,bit)
-    value | 1 << bit
+    ((value_ | 1 << (bit))
   EndMacro
   
   Macro BitClear(value,bit)
-    value & ~(1 << bit)
+    ((value) & ~(1 << (bit)))
   EndMacro
   
   Macro BitWrite(value,bit,bitValue)
-    If bitvalue : Globals::BitSet(value, bit) :Else : Globals::BitClear(value, bit):EndIf
+    If (bitvalue) : Globals::BitSet((value), (bit)) :Else : Globals::BitClear((value), (bit)):EndIf
   EndMacro
   
    ; ---[ Color Conversion ]-----------------------------------------------------
@@ -225,8 +225,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 30
+; CursorPosition = 176
+; FirstLine = 141
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

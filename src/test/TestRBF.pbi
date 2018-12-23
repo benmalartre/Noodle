@@ -122,11 +122,12 @@ Procedure TestRBF()
     *values\matrix(k*3+1) = *points(k)\color\g
     *values\matrix(k*3+2) = *points(k)\color\b
   Next
-
+  
+   Debug "CREATE"
   ; init the linear system
   *rbf.RBF::RBF_t = RBF::New()
-  *rbf\kernel = mode
   RBF::Init(*rbf, *keys, *values)
+  Debug "INIT"
   
   *query.Matrix::Matrix_t = Matrix::New(1,2)
   *result.Matrix::Matrix_t = Matrix::New(1,3)
@@ -134,7 +135,7 @@ Procedure TestRBF()
   ; get the interpolated value
   RBF::Interpolate(*rbf, *keys, *query, *result) 
   Matrix::Echo(*result, "RESULT")
-
+Debug" UPDATE"
   Define e
   Repeat
     e = WaitWindowEvent() 
@@ -150,8 +151,7 @@ Procedure TestRBF()
           If key = #PB_Shortcut_Space
             mode + 1
             If mode > RBF::#KERNEL_THINPLATE : mode = RBF::#KERNEL_LINEAR : EndIf
-            *rbf\kernel = mode
-            RBF::Init(*rbf, *keys, *values)
+            RBF::SetKernelType(*rbf, mode)
             Update()
             Draw()
           EndIf
@@ -169,7 +169,7 @@ EndProcedure
 
 TestRBF()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 108
+; CursorPosition = 127
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

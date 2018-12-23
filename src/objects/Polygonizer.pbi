@@ -564,41 +564,6 @@ Module Polygonizer
         numVertices + numTris * 3
         numFaces + numTris * 4
         
-;         CArray::SetCount(*vertices, numVertices + numTris +2)
-;         CArray::SetCount(*faces, numFaces + numTris + 3)
-;         
-;         For i=0 To numTris - 1
-;           *t = *triangles + i * SizeOf(Polygonizer::Triangle_t)
-;           If i = 0
-;             CArray::SetValue(*vertices, numVertices + i, *t\p[0])
-;             CArray::SetValue(*vertices, numVertices + i+1, *t\p[1])
-;             CArray::SetValue(*vertices, numVertices + i+2, *t\p[2])
-;             CArray::SetValueL(*faces, numFaces + i, numVertices + i)
-;             CArray::SetValueL(*faces, numFaces + i+1, numVertices + i+1)
-;             CArray::SetValueL(*faces, numFaces + i+2, numVertices + i+2)
-;             numVertices + 3
-;             numFaces + 3
-;           Else
-;             CArray::SetValue(*vertices, numVertices , *t\p[2])
-;             CArray::SetValueL(*faces, numFaces, numVertices)
-;             numVertices + 1
-;             numFaces + 1
-;           EndIf
-;         Next
-;         CArray::SetValueL(*faces, numFaces , -2)
-;         numFaces + 1
-        
-;           *t = *triangles + i * SizeOf(Polygonizer::Triangle_t)
-;           CArray::SetValue(*vertices, numVertices + i*3, *t\p[0])
-;           CArray::SetValue(*vertices, numVertices + i*3+1, *t\p[1])
-;           CArray::SetValue(*vertices, numVertices + i*3+2, *t\p[2])
-;           CArray::SetValueL(*faces, numFaces + i*4, numVertices + i*3+2)
-;           CArray::SetValueL(*faces, numFaces + i*4+1, numVertices + i*3+1)
-;           CArray::SetValueL(*faces, numFaces + i*4+2, numVertices + i*3)
-;           CArray::SetValueL(*faces, numFaces + i*4+3, -2)
-;         Next
-        
-        
       EndIf
     Next
    
@@ -742,7 +707,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 564
-; FirstLine = 543
+; CursorPosition = 411
+; FirstLine = 398
 ; Folding = --
 ; EnableXP

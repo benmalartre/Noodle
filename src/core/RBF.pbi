@@ -15,11 +15,14 @@ DeclareModule RBF
     #KERNEL_THINPLATE
   EndEnumeration
   
+    ; Prototype
+  Prototype.f PFNRBFKERNEL(r.f, eps.f)
   
   Structure RBF_t
     initialized.b
     epsilon.f
-    kernel.i
+    type.i
+    kernel.PFNRBFKERNEL
     *A.Matrix::Matrix_t           ; column vector
     *K.Matrix::Matrix_t           ; keys
     *V.Matrix::Matrix_t           ; values
@@ -53,11 +56,19 @@ DeclareModule RBF
   Macro THINPLATE(_r)
     ((Pow(_r, 2) * Log(_r)) * Bool(_r>0))
   EndMacro  
-
   
   Declare New()
   Declare Delete(*rbf.RBF_t)
-  Declare.f Distance(*rbf.RBF_t, r.f)
+  
+  Declare.f LinearKernel(r.f, eps.f)
+  Declare.f GaussianKernel(r.f, eps.f)
+  Declare.f CubicKernel(r.f, eps.f)
+  Declare.f QuinticKernel(r.f, eps.f)
+  Declare.f MultiQuadricKernel(r.f, eps.f)
+  Declare.f InverseKernel(r.f, eps.f)
+  Declare.f ThinPlateKernel(r.f, eps.f)
+  
+  Declare SetKernelType(*rbf.RBF_t, type.i)
   Declare ComputeEpsilon(*rbf.RBF_t, *m.Matrix::Matrix_t)
   Declare Init(*rbf.RBF_t, *xd.Matrix::Matrix_t, *f.Matrix::Matrix_t)
   Declare Interpolate(*rbf.RBF_t, *xd.Matrix::Matrix_t, *xi.Matrix::Matrix_t, *result.Matrix::Matrix_t)
@@ -74,7 +85,8 @@ Module RBF
     Protected *rbf.RBF_t = AllocateMemory(SizeOf(RBF_t))
     InitializeStructure(*rbf, RBF_t)
     *rbf\epsilon = -1
-    *rbf\kernel = #KERNEL_MULTIQUADRIC
+    *rbf\type = #KERNEL_MULTIQUADRIC
+    *rbf\kernel = @MultiQuadricKernel()
     *rbf\initialized = #False
     ProcedureReturn *rbf
   EndProcedure
@@ -86,6 +98,31 @@ Module RBF
       ClearStructure(*rbf, RBF_t)
       FreeMemory(*rbf)
     EndIf
+  EndProcedure
+  
+  ; change kernel type
+  Procedure SetKernelType(*rbf.RBF_t, type.i)
+    *rbf\type = type
+    Select *rbf\type
+      Case #KERNEL_LINEAR
+        *rbf\kernel = @LinearKernel()
+      Case #KERNEL_GAUSSIAN
+        *rbf\kernel = @GaussianKernel()
+      Case #KERNEL_CUBIC
+        *rbf\kernel = @CubicKernel()
+      Case #KERNEL_QUINTIC
+        *rbf\kernel = @QuinticKernel()
+      Case #KERNEL_MULTIQUADRIC
+        *rbf\kernel = @MultiQuadricKernel()
+      Case #KERNEL_INVERSE
+        *rbf\kernel = @InverseKernel()
+      Case #KERNEL_THINPLATE
+        *rbf\kernel = @ThinPlateKernel()
+    EndSelect
+    
+    ; recompute weights
+    If *rbf\K And *rbf\V : Init(*rbf, *rbf\K, *rbf\V) : EndIf
+
   EndProcedure
   
   ; automaticaly compute the best epsilon
@@ -110,27 +147,34 @@ Module RBF
   EndProcedure
   
   ; compute distance with active kernel
-  Procedure.f Distance(*rbf.RBF_t, r.f)
-    Define dist.f
-    Select *rbf\kernel
-      Case #KERNEL_LINEAR
-        dist = MULTIQUADRIC(r, *rbf\epsilon)
-      Case #KERNEL_GAUSSIAN
-        dist = GAUSSIAN(r, *rbf\epsilon)
-      Case #KERNEL_CUBIC
-        dist = CUBIC(r)
-      Case #KERNEL_QUINTIC
-        dist = QUINTIC(r)
-      Case #KERNEL_MULTIQUADRIC
-        dist = MULTIQUADRIC(r, *rbf\epsilon)
-      Case #KERNEL_INVERSE
-        dist = INVERSE(r, *rbf\epsilon)
-      Case #KERNEL_THINPLATE
-        dist = THINPLATE(r)
-      Default
-        dist = MULTIQUADRIC(r, *rbf\epsilon)
-    EndSelect
-    ProcedureReturn dist
+  Procedure.f LinearKernel(r.f, eps.f)
+    Debug "KERNELE LINEAR"
+    ProcedureReturn LINEAR(r)
+  EndProcedure
+  
+  Procedure.f GaussianKernel(r.f, eps.f)
+    Debug "KERNELE GAUSSIAN"
+    ProcedureReturn GAUSSIAN(r, f)
+  EndProcedure
+  
+  Procedure.f CubicKernel(r.f, eps.f)
+    ProcedureReturn CUBIC(r)
+  EndProcedure
+  
+  Procedure.f QuinticKernel(r.f, eps.f)
+    ProcedureReturn QUINTIC(r)
+  EndProcedure
+  
+  Procedure.f MultiQuadricKernel(r.f, eps.f)
+    ProcedureReturn MULTIQUADRIC(r, eps)
+  EndProcedure
+  
+  Procedure.f InverseKernel(r.f, eps.f)
+    ProcedureReturn INVERSE(r, eps)
+  EndProcedure
+  
+  Procedure.f ThinPlateKernel(r.f, eps.f)
+    ProcedureReturn THINPLATE(r)
   EndProcedure
   
   ; init
@@ -142,7 +186,7 @@ Module RBF
     *rbf\V = *values
     
     Define nbp = *keys\rows
-    Define d = *values\columns
+    Define d =  *keys\columns
     Define r.f
     
     If Not *rbf\A 
@@ -150,7 +194,7 @@ Module RBF
     Else
       Matrix::Resize(*rbf\A, nbp, nbp)  
     EndIf
-    
+
     Define i, j, k
     For i=0 To nbp-1
       For j=0 To nbp-1
@@ -159,7 +203,7 @@ Module RBF
           r + Pow(Matrix::Get(*keys, i, k) - Matrix::Get(*keys, j, k), 2)
         Next
         r = Sqr(r)
-        Matrix::Set(*rbf\A, i, j, Distance(*rbf, r))
+        Matrix::Set(*rbf\A, i, j, *rbf\kernel(r, *rbf\epsilon))
       Next
     Next
     
@@ -191,7 +235,7 @@ Module RBF
             r + Pow(Matrix::Get(*query, i, k) - Matrix::Get(*keys, j, k), 2)
           Next
           r = Sqr(r)
-          v(j) = Distance(*rbf, r)
+          v(j) = *rbf\kernel(r, *rbf\epsilon)
         Next
         results(i) = 0.0
         For j=0 To nd-1 : results(i) + v(j) * *AxV\matrix(j) : Next
@@ -244,7 +288,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 161
-; Folding = ---
+; CursorPosition = 238
+; FirstLine = 171
+; Folding = ----
 ; EnableXP

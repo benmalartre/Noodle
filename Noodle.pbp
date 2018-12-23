@@ -8,7 +8,7 @@
   <section name="data">
     <explorer view="C:\Documents and Settings\Administrator\My Documents\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2018-12-16 09:54" user="benjamin" host="HATE_ROCKET"/>
+    <lastopen date="2018-12-22 00:04" user="benjamin" host="HATE_ROCKET"/>
   </section>
   <section name="files">
     <file name="src\bullet\Constraint.pbi">
@@ -44,7 +44,7 @@
       <fingerprint md5="bfda461f2a479853e2c663a4eabe4cd3"/>
     </file>
     <file name="src\controls\ColorWheel.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="18b5b2e08c44d4ae8a121e503b7227d2"/>
     </file>
     <file name="src\controls\Combo.pbi">
@@ -176,8 +176,8 @@
       <fingerprint md5="837fe1c784e194e2ca7cef2371617eb3"/>
     </file>
     <file name="src\core\Math.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="a43cdd45d84a65a13234555e0119eb72"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="0d7f1b85338e6386a5316670ab009978"/>
     </file>
     <file name="src\core\Memory.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -248,7 +248,7 @@
       <fingerprint md5="3928c627f424d3a03606bfba65a2eb87"/>
     </file>
     <file name="src\core\Utils.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="c6296c3f188b20afdd0b8ee4e1d2050c"/>
     </file>
     <file name="src\core\Vector.pbi">
@@ -733,7 +733,7 @@
     </file>
     <file name="src\objects\Polygonizer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="a39329a8cd3a50b8549251ca66c8dac9"/>
+      <fingerprint md5="18c03fdd6917b7c389f043c44584f3e3"/>
     </file>
     <file name="src\objects\Polymesh.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1184,7 +1184,7 @@
       <fingerprint md5="52836316ba5019fbeaf566173365dc24"/>
     </file>
     <file name="src\test\TestMath.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="bcb482a056ab3803445a17de527d2830"/>
     </file>
     <file name="src\test\TestMemory.pbi">
@@ -1237,7 +1237,7 @@
     </file>
     <file name="src\test\TestPolygonizer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="aa204736a34cfa9254e5a1182c261180"/>
+      <fingerprint md5="6f1cd9eb9cb3106c091bb93176f3c3fd"/>
     </file>
     <file name="src\test\TestRayBox.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1366,7 +1366,7 @@
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\test\TestPointCloud2.pbi"/>
+      <inputfile value="src\test\asm\ClosestPoint.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 5.62 (Windows - x64)"/>
       <executable value="bin\SandBox.exe"/>
