@@ -318,7 +318,7 @@ Module PolymeshGeometry
       !   mov rdi, [p.p_polygonnormals] 
       
       ! set_polygon_normals:
-      !   mov eax, [rdx]                   ; get num vertices for this polygon
+      !   mov eax, [rdx]                          ; get num vertices for this polygon
       !   add rdx, 4                              ; increment face count for next polygon
       !   mov r11, -2                             ; load -2 value in r11
       !   add r11, rax                            ; compute num tris (num vertices - 2)
@@ -365,7 +365,7 @@ Module PolymeshGeometry
       !   mov rdi, [p.p_pointnormals] 
       
       ! set_average_point_normals:
-      !   mov r11d, [rdx]                  ; get num polygons for this vertex
+      !   mov r11d, [rdx]                         ; get num polygons for this vertex
       !   add rdx, 4                              ; increment vertex polygon count for next vertex
       !   xorps xmm0, xmm0                        ; reset xmm0
       
@@ -389,7 +389,7 @@ Module PolymeshGeometry
       ! movaps xmm7, xmm0                 ; copy in xmm7  
       ! shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
       ! addps xmm0, xmm7                  ; packed addition
-      ! rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+      ! rsqrtps xmm0, xmm0                ; reciproqual root square (inverse length)
       ! mulps xmm0, xmm6                  ; multiply by intila vector
       
       ; ---------------------------------------------------------------------------------
@@ -411,7 +411,7 @@ Module PolymeshGeometry
       !   mov rdi, [p.p_normals] 
       
       ! loop_display_normals:
-      !   mov r12d, [rax]                  ; load vertex index
+      !   mov r12d, [rax]                         ; load vertex index
       !   add rax, 4
       !   imul r12, 16
       !   movaps xmm0, [rsi + r12]                ; load point normal
@@ -728,12 +728,9 @@ Module PolymeshGeometry
     For i=0 To *mesh\nbpoints-1
       nbp = ArraySize(vertexPolygonIndices(i)\polygons())
       CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
-      Define indices.s = "Vertex "+Str(i)+" : "
       For j=0 To nbp-1
-        indices + Str(vertexPolygonIndices(i)\polygons(j))+","
         CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, vertexPolygonIndices(i)\polygons(j)) 
       Next
-      Debug indices
       base + nbp
       FreeArray(vertexPolygonIndices(i)\polygons())
     Next
@@ -745,7 +742,6 @@ Module PolymeshGeometry
     
     ; Compute Polymesh datas
     ComputeTriangles(*mesh)
-    ComputeHalfEdges(*mesh)
     
     ; GetDualGraph(*mesh)
     ComputeNormals(*mesh,1)
@@ -2685,7 +2681,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 601
-; FirstLine = 594
+; CursorPosition = 873
+; FirstLine = 870
 ; Folding = ----H9---8--
 ; EnableXP

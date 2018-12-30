@@ -685,10 +685,6 @@ Module Triangle
     ! movups xmm11, [rax]                     ; move center packed data to xmm11
     ! mov rax, [p.p_extend]                   ; move boxhalfsize address to rax
     ! movups xmm12, [rax]                     ; move boxhalfsize packed data to xmm12
-  
-    ! lea r9, [math.l_sse_1111_sign_mask]     ; move 1111 sign mask to r9 register 
-    ! lea r10, [math.l_sse_1100_negate_mask]  ; move 1100 negate mask to r10 register
-    ! lea r13, [math.l_sse_1111_negate_mask]  ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter 
 
@@ -727,7 +723,7 @@ Module Triangle
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask is stored in r9
+    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge0_test
     
@@ -753,7 +749,7 @@ Module Triangle
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
     
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask stored in r9
+    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge1_test
     
@@ -779,7 +775,7 @@ Module Triangle
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask stored in r9
+    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask stored in r9
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge2_test
   
@@ -828,7 +824,7 @@ Module Triangle
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -846,7 +842,7 @@ Module Triangle
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -895,7 +891,7 @@ Module Triangle
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -984,7 +980,7 @@ Module Triangle
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
     !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
-    !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r10
+    !   movups xmm4, [math.l_sse_1100_negate_mask]; load 1100 sign bit mask
     !   mulps xmm8, xmm4                   ; -rad -rad rad rad
     !   jmp check_side                     ; check side
     
@@ -1052,7 +1048,7 @@ Module Triangle
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movups  xmm6, [r13]           ; load 1111 negate mask
+    !   movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
 
     ; ---------------------------------------------------------------------------------
@@ -1115,7 +1111,7 @@ Module Triangle
     ! movaps xmm3, xmm12            ; copy boxhalfsize to xmm3
     ! movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    ! movups xmm6, [r13]            ; load 1111 negate mask
+    ! movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     ! mulps xmm5, xmm6              ; negate boxhalfsize
     
     ! subps xmm3, xmm13             ; box - p0
@@ -1300,19 +1296,15 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     Define *boxhalfsize.v3f32 = *box\extend
     Define numHits.i = 0
     
-    ! mov edi, [p.p_hits]
-    ! mov ecx, [p.v_numTris]
-    ! mov edx, [p.p_indices]            ; move indices to edx register
+    ! mov rdi, [p.p_hits]
+    ! mov rcx, [p.v_numTris]
+    ! mov rdx, [p.p_indices]            ; move indices to edx register
     ! mov r14, [p.p_elements]           ; move indices to r14 register
     ! mov rsi, [p.p_center]             ; move center address to rsi
     ! movups xmm11, [rsi]               ; move center packed data to xmm11
     ! mov rsi, [p.p_boxhalfsize]        ; move boxhalfsize address to rsi
     ! movups xmm12, [rsi]               ; move boxhalfsize packed data to xmm12
     ! mov rsi, [p.p_positions]          ; move positions address to rsi
-
-    ! lea r9, [math.l_sse_1111_sign_mask]       ; move 1111 sign mask to r9 register 
-    ! lea r10, [math.l_sse_1100_negate_mask]    ; move 1100 negate mask to r10 register
-    ! lea r13, [math.l_sse_1111_negate_mask]    ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter
     ! xor r11, r11                            ; hits counter
@@ -1321,21 +1313,21 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; load triangle
     ; ----------------------------------------------------
     ! array_load_triangle:
-    !   mov eax, [r14]             ; load triangle index
+    !   mov eax, [r14]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [rdx + rax]       ; get index for desired point A
+    !   mov eax, [rdx + rax]              ; get index for desired point A
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm13, [rsi + rax]         ; load point A to xmm13
     
-    !   mov eax, [r14]             ; load triangle index
+    !   mov eax, [r14]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [rdx + rax + 4]        ; get value for desired point B
+    !   mov eax, [rdx + rax + 4]          ; get value for desired point B
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm14, [rsi + rax]         ; load point B to xmm14
     
-    !   mov eax, [r14]             ; load triangle index
+    !   mov eax, [r14]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [rdx + rax + 8]   ; get value for desired point C
+    !   mov eax, [rdx + rax + 8]          ; get value for desired point C
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm15, [rsi + rax]         ; load point C to xmm15
     
@@ -1369,7 +1361,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask is stored in r9
+    !   movaps  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge0_test
     
@@ -1395,7 +1387,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
     
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask stored in r9
+    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge1_test
     
@@ -1421,7 +1413,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movdqu  xmm6, [r9]                  ; load sign bit mask stored in r9
+    !   movaps  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge2_test
   
@@ -1470,7 +1462,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movaps xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -1488,7 +1480,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -1537,7 +1529,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movups  xmm6, [r10]                 ; load 1100 negate mask stored in r10
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -1626,7 +1618,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
     !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
-    !   movups  xmm4, [r10]                ; load 1100 sign bit mask is stored in r10
+    !   movaps  xmm4, [math.l_sse_1100_negate_mask]; load 1100 sign bit mask
     !   mulps xmm8, xmm4                   ; -rad -rad rad rad
     !   jmp array_check_side               ; check side
     
@@ -1694,7 +1686,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movups  xmm6, [r13]           ; load 1111 negate mask
+    !   movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
 
     ; ---------------------------------------------------------------------------------
@@ -1756,7 +1748,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! movaps xmm9, xmm12            ; copy boxhalfsize to xmm9
     ! movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    ! movups xmm6, [r13]            ; load 1111 negate mask in r13
+    ! movups xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     ! mulps xmm5, xmm6              ; negate boxhalfsize
     
     ! subps xmm9, xmm13             ; box - p0
@@ -1827,7 +1819,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; next triangle
     ; ------------------------------------------------------------------
     ! array_next_triangle:
-    !   inc edi                                 ; incr hits
+    !   inc rdi                                 ; incr hits
     !   xor r8, r8                              ; reset edge counter
     !   dec rcx                                 ; decrement triangle counter
     !   jnz array_load_triangle                 ; loop
@@ -1995,8 +1987,8 @@ CompilerEndIf
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 572
-; FirstLine = 539
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 1317
+; FirstLine = 1314
 ; Folding = -----
 ; EnableXP

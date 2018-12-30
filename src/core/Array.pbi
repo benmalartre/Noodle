@@ -331,6 +331,7 @@ DeclareModule CArray
   Declare GetCount(*array.CArrayT)
   Declare SetCount(*array.CArrayT,count.i)
   Declare GetItemSize(*array.CArrayT)
+  Declare GetSize(*array.CArrayT)
   Declare Delete(*array.CArrayT)
   Declare Find(*array,*value)
   Declare Remove(*array,ID)
@@ -730,6 +731,13 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure GetCount(*array.CArrayT)
     ProcedureReturn *array\itemCount
+  EndProcedure
+  
+  ;----------------------------------------------------------------
+  ; GetSize
+  ;----------------------------------------------------------------
+  Procedure GetSize(*array.CArrayT)
+    ProcedureReturn *array\itemCount * *array\itemSize
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1202,8 +1210,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 388
-; FirstLine = 377
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 333
+; FirstLine = 327
 ; Folding = ------------
 ; EnableXP

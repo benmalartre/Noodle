@@ -54,13 +54,6 @@ DeclareModule Handle
     ray.Geometry::Ray_t
     plane.Geometry::Plane_t
     
-    scale_vao.GLuint
-    rotate_vao.GLuint
-    translate_vao.GLuint
-    transform_vao.GLuint
-    directed_vao.GLuint
-    cursor_vao.GLuint
-    
     *scale_handle.Shape::Shape_t
     *rotate_handle.Shape::Shape_t
     *translate_handle.Shape::Shape_t
@@ -80,6 +73,7 @@ DeclareModule Handle
     *target.Object3D::Object3D_t
     *targets.CArray::CArrayPtr
     *camera.Camera::Camera_t
+    *ctx.GLContext::GLContext_t
     
   EndStructure
   
@@ -173,7 +167,6 @@ DeclareModule Handle
   Declare Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
   Declare DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
   Declare Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
-  ;   Declare Translate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
   Declare Translate(*Me.Handle_t,mx.i,my.i,width.i,height.i)
   Declare Scale(*Me.Handle_t,deltax.i,deltay.i)
   Declare Rotate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
@@ -514,43 +507,34 @@ Module Handle
   Procedure SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
     *Me\shader = *ctx\shaders("wireframe")
     glUseProgram(*Me\shader\pgm)
+    If Not *Me\vao : glGenVertexArrays(1,@*Me\vao) : EndIf
+    glBindVertexArray(*Me\vao)
+    
     Protected *shape.Shape::Shape_t = #Null
     Select tool
       Case Globals::#TOOL_SCALE
-        glGenVertexArrays(1,@*Me\scale_vao)
-        glBindVertexArray(*Me\scale_vao)
         *shape = *Me\scale_handle
       Case Globals::#TOOL_ROTATE
-        glGenVertexArrays(1,@*Me\rotate_vao)
-        glBindVertexArray(*Me\rotate_vao)
         *shape = *Me\rotate_handle
       Case Globals::#TOOL_TRANSLATE
-        glGenVertexArrays(1,@*Me\translate_vao)
-        glBindVertexArray(*Me\translate_vao)
         *shape = *Me\translate_handle
       Case Globals::#TOOL_TRANSFORM
-        glGenVertexArrays(1,@*Me\transform_vao)
-        glBindVertexArray(*Me\transform_vao)
         *shape = *Me\transform_handle
       Case Globals::#TOOL_DIRECTED
-        glGenVertexArrays(1,@*Me\directed_vao)
-        glBindVertexArray(*Me\directed_vao)
         *shape = *Me\directed_handle
       Default
-        glGenVertexArrays(1,@*Me\transform_vao)
-        glBindVertexArray(*Me\transform_vao)
         *shape = *Me\transform_handle
     EndSelect
     
-    Protected vbo.GLint
-    glGenBuffers(1,@vbo)
-    glBindBuffer(#GL_ARRAY_BUFFER,vbo)
-    Protected GLfloat_s.GLfloat
-   
-    Protected size_t =*shape\nbp*SizeOf(v3f32)
-
-    ; Push Buffer to GPU
-    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*shape\positions,0),#GL_DYNAMIC_DRAW)
+    ; vertex buffer object
+    If Not *Me\vbo : glGenBuffers(1,@*Me\vbo) : EndIf
+    glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+    glBufferData(#GL_ARRAY_BUFFER,*shape\nbp*SizeOf(v3f32),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    
+    ; element array buffer
+    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
     
     ; Attibute Position
     glEnableVertexAttribArray(0)
@@ -576,23 +560,20 @@ Module Handle
   ; Setup
   ;-----------------------------------------------------------------------------
   Procedure Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
+    *Me\ctx = *ctx
     glUseProgram(*ctx\shaders("wireframe")\pgm)
     ;Setup GL
-    SetupHandle(*Me,Globals::#TOOL_SCALE,*ctx)
-    SetupHandle(*Me,Globals::#TOOL_ROTATE,*ctx)
     SetupHandle(*Me,Globals::#TOOL_TRANSLATE,*ctx)
-    SetupHandle(*Me,Globals::#TOOL_TRANSFORM,*ctx)
-    SetupHandle(*Me,Globals::#TOOL_DIRECTED,*ctx)
     
-    ; cursor
-    *Me\cursor_vao = glGenVertexArrays(1, @*Me\cursor_vao)
-    glBindVertexArray(*Me\cursor_vao)
-    Protected vbo.GLint
-    glGenBuffers(1, @vbo)
-    glBindBuffer(#GL_ARRAY_BUFFER, vbo)
-    
-    ; Push Buffer to GPU
-    glBufferData(#GL_ARRAY_BUFFER,48,?shape_cursor_positions,#GL_DYNAMIC_DRAW)
+;     ; cursor
+;     *Me\cursor_vao = glGenVertexArrays(1, @*Me\cursor_vao)
+;     glBindVertexArray(*Me\cursor_vao)
+;     Protected vbo.GLint
+;     glGenBuffers(1, @vbo)
+;     glBindBuffer(#GL_ARRAY_BUFFER, vbo)
+;     
+;     ; Push Buffer to GPU
+;     glBufferData(#GL_ARRAY_BUFFER,48,?shape_cursor_positions,#GL_DYNAMIC_DRAW)
     
   EndProcedure
   
@@ -603,23 +584,21 @@ Module Handle
     
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
-    
     Select *Me\tool
       Case Globals::#TOOL_TRANSLATE
         *shape = *Me\translate_handle
-        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
-        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
+        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0
+        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
       Case Globals::#TOOL_ROTATE
         *shape = *Me\rotate_handle
         glDrawArrays(#GL_LINE_LOOP,2,20)
         glDrawArrays(#GL_LINE_LOOP,22,20)
         glUniform4f(*Me\u_color,r,g,b,0.5)
-        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices),#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))
+        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
       Case Globals::#TOOL_SCALE
         *shape = *Me\scale_handle
-        glPointSize(3)
-        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,0))
-        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,CArray::GetPtr(*shape\indices,2))  
+        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0)
+        glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
     EndSelect  
   EndProcedure
   
@@ -629,18 +608,7 @@ Module Handle
   Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
 
     If Not *Me\target : ProcedureReturn : EndIf
-    Select *Me\tool
-      Case Globals::#TOOL_SCALE
-        glBindVertexArray(*Me\scale_vao)
-      Case Globals::#TOOL_ROTATE
-        glBindVertexArray(*Me\rotate_vao)
-      Case Globals::#TOOL_TRANSLATE
-        glBindVertexArray(*Me\translate_vao)
-      Case Globals::#TOOL_TRANSFORM
-        glBindVertexArray(*Me\transform_vao)
-      Case Globals::#TOOL_DIRECTED
-        glBindVertexArray(*Me\directed_vao)
-    EndSelect
+    glBindVertexArray(*me\vao)
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
@@ -1210,6 +1178,14 @@ Module Handle
 ;               Vector3::SetFromOther(*Me\head_sphere\center,*light\lookat)
           EndSelect
         EndIf
+      Case Globals::#TOOL_TRANSLATE
+        SetupHandle(*Me, Globals::#TOOL_TRANSLATE, *Me\ctx)
+      Case Globals::#TOOL_ROTATE
+        SetupHandle(*Me, Globals::#TOOL_ROTATE, *Me\ctx)
+      Case Globals::#TOOL_SCALE
+        SetupHandle(*Me, Globals::#TOOL_SCALE, *Me\ctx)
+      Case Globals::#TOOL_TRANSFORM
+        SetupHandle(*Me, Globals::#TOOL_TRANSFORM, *Me\ctx)
     EndSelect
     
   EndProcedure
@@ -1468,8 +1444,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 929
-; FirstLine = 889
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 600
+; FirstLine = 583
 ; Folding = -------
 ; EnableXP
