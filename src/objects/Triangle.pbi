@@ -118,12 +118,12 @@ Module Triangle
       ; load datas
       ; ---------------------------------------------------------------------------------
       ! mov rcx, [p.p_Me]
-      ! add ecx, 16
+      ! add rcx, 16
       ! mov rsi, [p.p_positions + CARRAY_DATA_OFFSET]
       ! movups xmm0, [rsi + rcx]
-      ! add ecx, 4
+      ! add rcx, 4
       ! movups xmm1, [rsi + rcx]
-      ! add ecx, 4
+      ! add rcx, 4
       ! movups xmm2, [rsi + rcx]
       
       ; ---------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ Module Triangle
       ; ---------------------------------------------------------------------------------
       ; divide by three
       ; ---------------------------------------------------------------------------------
-      ! movups xmm1, [math.l_sse_onethird_vec]
+      ! movaps xmm1, [math.l_sse_onethird_vec]
       ! mulps xmm0, xmm1
       
       ; ---------------------------------------------------------------------------------
@@ -164,12 +164,12 @@ Module Triangle
       ; load datas
       ; ---------------------------------------------------------------------------------
       ! mov rcx, [p.p_Me]
-      ! add ecx, 16
+      ! add rcx, 16
       ! mov rsi, [p.p_positions + CARRAY_DATA_OFFSET]
       ! movups xmm0, [rsi + rcx]
-      ! add ecx, 4
+      ! add rcx, 4
       ! movups xmm1, [rsi + rcx]
-      ! add ecx, 4
+      ! add rcx, 4
       ! movups xmm2, [rsi + rcx]
       
       ; ---------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ Module Triangle
       !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
       !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d2 d3)
       !   blendps xmm0, xmm1, 0100b       ; blend ( s t d3 d4)
-      !   movups xmm1, [math.l_sse_zero_vec]
+      !   movaps xmm1, [math.l_sse_zero_vec]
       !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
       !   movmskps r12, xmm0              ; move comparison mask to r12 register
       
@@ -374,7 +374,7 @@ Module Triangle
       ! closest_point_case1_output_one:
       !   movaps xmm0, xmm6             ; make a copy of (d0 d1 d2 d3)
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
-      !   movups xmm2, [math.l_sse_1111_negate_mask]
+      !   movaps xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 11111111b  ; shuffle (d3 d3 d3 d3)
       !   mulps xmm0, xmm2              ; negate it (-d3 -d3 -d3 -d3)
       !   divss xmm0, xmm1              ; s = -d3/d0
@@ -388,7 +388,7 @@ Module Triangle
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
       !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2 d2 d2 d2)
       !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-      !   movups xmm2, [math.l_sse_1111_negate_mask]
+      !   movaps xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
       !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
       !   divss xmm0, xmm1              ; t = -d4/d2
@@ -403,7 +403,7 @@ Module Triangle
       !   movaps xmm1, xmm5               ; make a copy of (d4 s t det)  
       !   shufps xmm1, xmm1, 11111111b    ; shuffle (det det det det)
     
-      !   movups xmm2, [math.l_sse_one_vec]
+      !   movaps xmm2, [math.l_sse_one_vec]
       !   divps xmm2, xmm1
       !   mulps xmm5, xmm2                ; multiply (d4 s t det) * invDet
       !   jmp closest_point_output
@@ -415,7 +415,7 @@ Module Triangle
       !   movaps xmm0, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm0
       !   movaps xmm1, xmm5               ; make a copy of (d4 s t det) in xmm1
       !   shufps xmm1, xmm1, 00000000b    ; fill with d4 ( d4 d4 d4 d4 )
-      !   movups xmm2, [math.l_sse_one_vec]
+      !   movaps xmm2, [math.l_sse_one_vec]
       !   addps xmm2, xmm2                ; add with itself : 2 2 2 2 
       !   mulps xmm0, xmm2                ; multiply by 2
       !   blendps xmm0, xmm6, 1101b       ; d0 2d1 d2 d3
@@ -438,7 +438,7 @@ Module Triangle
       !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
       !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d3 d2)
       !   blendps xmm0, xmm1, 0100b       ; blend (s t d3 d4)
-      !   movups xmm1, [math.l_sse_zero_vec]
+      !   movaps xmm1, [math.l_sse_zero_vec]
       !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
       !   movmskps r12, xmm0              ; move comparison mask to r12 register
       
@@ -489,7 +489,7 @@ Module Triangle
       !   divps xmm0, xmm1              ; s = numer / denom
       !   call clamp_0_to_1             ; clamp between 0 and 1
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (s s s s)
-      !   movups xmm1, [math.l_sse_one_vec]
+      !   movaps xmm1, [math.l_sse_one_vec]
       !   subps xmm1, xmm0              ; t = 1 - s
       !   blendps xmm0, xmm1, 0100b     ; set xmm0 to (s s t s)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
@@ -499,20 +499,20 @@ Module Triangle
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3) 
       !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2, d2, d2, d2)
       !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-      !   movups xmm2, [math.l_sse_1111_negate_mask]
+      !   movaps xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
       !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
       !   divss xmm0, xmm1              ; t = -d4/d2
       !   call clamp_0_to_1             ; clamp t between 0 and 1
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (t t t t)
-      !   movups xmm1, [math.l_sse_zero_vec]
+      !   movaps xmm1, [math.l_sse_zero_vec]
       !   blendps xmm0, xmm1, 1011b     ; set xmm0 to (0 0 t 0)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
       !   jmp closest_point_output
       
       ! closest_point_case2_output_three:
-      !   movups xmm0, [math.l_sse_one_vec]
-      !   movups xmm1, [math.l_sse_zero_vec]
+      !   movaps xmm0, [math.l_sse_one_vec]
+      !   movaps xmm1, [math.l_sse_zero_vec]
       !   blendps xmm0, xmm1, 1101b     ; set xmm0 to (0 1 0 0)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
       !   jmp closest_point_output
@@ -525,11 +525,11 @@ Module Triangle
       !   movaps xmm0, xmm5               ; make a copy of (d4 s t det) in xmm0
       !   shufps xmm0, xmm0, 10011001b    ; shuffle (s t s t)
       !   haddps xmm0, xmm0               ; horizontal subtraction ( s - t)
-      !   movups xmm1, [math.l_sse_one_vec]
+      !   movaps xmm1, [math.l_sse_one_vec]
       !   subps xmm1, xmm0                ; compute w : 1 - s - t
       !   shufps xmm1, xmm1, 00000000b    ; shuffle (w w w w)
       !   blendps xmm5, xmm1, 0001b       ; blend (w s t det)
-      !   movups xmm1, [math.l_sse_zero_vec]
+      !   movaps xmm1, [math.l_sse_zero_vec]
       !   blendps xmm5, xmm1, 1000b       ; reset fourth value
       !   mov rdi, [p.p_uvw]
       !   movups [rdi], xmm5              ; set back uvw
@@ -544,7 +544,7 @@ Module Triangle
       
       !   addps xmm8, xmm9                 ; edge0 * u + edge1 *v
       !   addps xmm8, xmm13                ; edge0 * u + edge1 *v + a
-      !   movups xmm0, [math.l_sse_zero_vec]
+      !   movaps xmm0, [math.l_sse_zero_vec]
       !   blendps xmm13, xmm0, 1000b
       !   mov rdi, [p.p_closest]
       !   movups [rdi], xmm8              ; set back closest
@@ -556,8 +556,8 @@ Module Triangle
       ; warning xmm1 and xmm2 will be destroyed
       ; --------------------------------------------------------------------------------------------
       ! clamp_0_to_1:
-      !   movups xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
-      !   movups xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
+      !   movaps xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
+      !   movaps xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
       !   comiss xmm0, xmm1                             ; compare value with 0000
       !   jb clamp_0_to_1_return_min                    ; if below return min
       !   comiss xmm2, xmm0                             ; compare value with 1111
@@ -686,9 +686,9 @@ Module Triangle
     ! mov rax, [p.p_extend]                   ; move boxhalfsize address to rax
     ! movups xmm12, [rax]                     ; move boxhalfsize packed data to xmm12
   
-    ! mov r9, math.l_sse_1111_sign_mask       ; move 1111 sign mask to r9 register 
-    ! mov r10, math.l_sse_1100_negate_mask    ; move 1100 negate mask to r10 register
-    ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
+    ! lea r9, [math.l_sse_1111_sign_mask]     ; move 1111 sign mask to r9 register 
+    ! lea r10, [math.l_sse_1100_negate_mask]  ; move 1100 negate mask to r10 register
+    ! lea r13, [math.l_sse_1111_negate_mask]  ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter 
 
@@ -1164,7 +1164,7 @@ Module Triangle
     !   haddps xmm7, xmm7
     !   haddps xmm7, xmm7                       ; dot 
     !   xorps xmm8, xmm8
-    !   comiss xmm8, xmm7                      ; packed compare
+    !   comiss xmm8, xmm7                      ; compare first value
     !   jb intersection                        ; 0 < vmax
     !   jmp no_intersection                    ; branch if lower
     
@@ -1293,8 +1293,6 @@ CompilerElse
   EndProcedure
 CompilerEndIf
 
-
- 
 CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   Procedure TouchArray(*positions, *indices, *elements, numTris.i, *box.Geometry::Box_t, *hits)
     
@@ -1312,9 +1310,9 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! movups xmm12, [rsi]               ; move boxhalfsize packed data to xmm12
     ! mov rsi, [p.p_positions]          ; move positions address to rsi
 
-    ! mov r9, math.l_sse_1111_sign_mask       ; move 1111 sign mask to r9 register 
-    ! mov r10, math.l_sse_1100_negate_mask    ; move 1100 negate mask to r10 register
-    ! mov r13, math.l_sse_1111_negate_mask    ; move 1111 negate mask to r13 register
+    ! lea r9, [math.l_sse_1111_sign_mask]       ; move 1111 sign mask to r9 register 
+    ! lea r10, [math.l_sse_1100_negate_mask]    ; move 1100 negate mask to r10 register
+    ! lea r13, [math.l_sse_1111_negate_mask]    ; move 1111 negate mask to r13 register
     
     ! xor r8, r8                              ; edge counter
     ! xor r11, r11                            ; hits counter
@@ -1323,21 +1321,21 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; load triangle
     ; ----------------------------------------------------
     ! array_load_triangle:
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r14]             ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [edx + eax]              ; get index for desired point A
+    !   mov eax, [rdx + rax]       ; get index for desired point A
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm13, [rsi + rax]         ; load point A to xmm13
     
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r14]             ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [edx + eax + 4]          ; get value for desired point B
+    !   mov eax, [rdx + rax + 4]        ; get value for desired point B
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm14, [rsi + rax]         ; load point B to xmm14
     
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r14]             ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
-    !   mov eax, [edx + eax + 8]          ; get value for desired point C
+    !   mov eax, [rdx + rax + 8]   ; get value for desired point C
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm15, [rsi + rax]         ; load point C to xmm15
     
@@ -1813,7 +1811,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; triangle intersect box
     ; ---------------------------------------------------------------------------------
     ! array_intersection:
-    !   mov [edi], byte 1                       ; set hit flag
+    !   mov [rdi], byte 1                     ; set hit flag
     !   inc r11                                 ; increment hits counter
     !   jmp array_next_triangle
 
@@ -1822,7 +1820,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; triangle does NOT intersect box
     ; ---------------------------------------------------------------------------------
     ! array_no_intersection:  
-    !   mov [edi], byte 0                      ; set hit flag
+    !   mov [rdi], byte 0                      ; set hit flag
     !   jmp array_next_triangle
     
     ; ------------------------------------------------------------------
@@ -1831,7 +1829,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! array_next_triangle:
     !   inc edi                                 ; incr hits
     !   xor r8, r8                              ; reset edge counter
-    !   dec ecx                                 ; decrement triangle counter
+    !   dec rcx                                 ; decrement triangle counter
     !   jnz array_load_triangle                 ; loop
     !   jmp array_exit                          ; exit
     
@@ -1997,8 +1995,8 @@ CompilerEndIf
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 85
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 572
+; FirstLine = 539
 ; Folding = -----
 ; EnableXP

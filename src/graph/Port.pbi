@@ -303,39 +303,30 @@ Module NodePort
 
   ;-----------------------------------------------------------------------------
   ; Acquire Input Data
-  ;------------------------------------------------s-----------------------------
+  ;-----------------------------------------------------------------------------
   Procedure AcquireInputData(*port.NodePort_t)
-    Debug "[NodePort] AcquireInputaDta Called for Port : "+ *port\name
     
     Protected *data.CArray::CArrayT
     Select *port\currentstructure
       Case Attribute::#ATTR_STRUCT_ARRAY
-        Debug ">>>>>>>>>>>>>>>>>>>>>>>>> Struct ARRAY"
         ;Case STRUCT_ARRAY
         ;-----------------------------------------------------
         If *port\connected
-          Debug *port\name+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CONNECTED!!!"
           *data = *port\source\value
         Else
-          Debug *port\name+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT CONNECTED!!!"
           *data = *port\value
           If Not *data : Init(*port) : *data = *port\value: EndIf
           *port\dirty = #False
         EndIf
         
       Case Attribute::#ATTR_STRUCT_SINGLE
-        Debug ">>>>>>>>>>>>>>>>>>>>>>>>> Struct SINGLE"
         ;Case STRUCT_SINGLE
         ;-----------------------------------------------------
         If *port\connected
-          Debug *port\name+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CONNECTED!!!"
-          Debug *port\source
           *data = *port\source\value
         Else
-          Debug *port\name+">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NOT CONNECTED!!!"
           *data = *port\value
           If Not *data : Init(*port) : *data = *port\value: EndIf
-          Debug "Data  = "+Str(*data) 
           *port\dirty = #False
         EndIf
         
@@ -368,15 +359,13 @@ Module NodePort
   ;-----------------------------------------------------------------------------
   Procedure AcquireOutputData(*port.NodePort_t)
     
-    Debug "[NodePort] AcquireOutputData Called for Port : "+ *port\name
     Protected *data.CArray::CArrayT
     
     Protected *target.NodePort_t
     If *port\connected
       Protected *connexion.Connexion::Connexion_t = *port\connexion
       *target = *connexion\end
-  ;     Debug "Acquire Output Node Data ---> "+*target\name
-      ProcedureReturn *target\value
+        ProcedureReturn *target\value
     Else
       ProcedureReturn *port\value
     EndIf
@@ -707,8 +696,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 528
-; FirstLine = 509
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 367
+; FirstLine = 340
 ; Folding = ----
 ; EnableXP

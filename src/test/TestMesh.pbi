@@ -129,7 +129,7 @@ Procedure Draw(*app.Application::Application_t)
  FTGL::Init()
 ;--------------------------------------------
  If Time::Init()
-   
+   Define startT.d = Time::Get ()
    Log::Init()
    *app = Application::New("TestMesh",width,height)
 
@@ -227,15 +227,18 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   ViewportUI::SetHandleTarget(*viewport, *merged)
+  MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 153
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 229
+; FirstLine = 196
 ; Folding = -
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
+; Constant = #USE_GLFW=0
+; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

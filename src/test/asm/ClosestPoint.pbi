@@ -6,6 +6,7 @@ XIncludeFile "../../libs/FTGL.pbi"
 XIncludeFile "../../opengl/Framebuffer.pbi"
 XIncludeFile "../../objects/Polymesh.pbi"
 XIncludeFile "../../ui/ViewportUI.pbi"
+XIncludeFile "../../core/Thread.pbi"
 
 
 UseModule Math
@@ -17,6 +18,8 @@ CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
+
+Global *pool.Thread::ThreadPool_t = Thread::NewPool()
 
 Global down.b
 Global lmb_p.b
@@ -177,7 +180,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
   !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d2 d3)
   !   blendps xmm0, xmm1, 0100b       ; blend ( s t d3 d4)
-  !   movups xmm1, [math.l_sse_zero_vec]
+  !   movaps xmm1, [math.l_sse_zero_vec]
   !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
   !   movmskps r12, xmm0              ; move comparison mask to r12 register
   
@@ -213,7 +216,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   ! .closest_point_case1_output_one:
   !   movaps xmm0, xmm6             ; make a copy of (d0 d1 d2 d3)
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
-  !   movups xmm2, [math.l_sse_1111_negate_mask]
+  !   movaps xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 11111111b  ; shuffle (d3 d3 d3 d3)
   !   mulps xmm0, xmm2              ; negate it (-d3 -d3 -d3 -d3)
   !   divss xmm0, xmm1              ; s = -d3/d0
@@ -227,7 +230,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
   !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2 d2 d2 d2)
   !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-  !   movups xmm2, [math.l_sse_1111_negate_mask]
+  !   movaps xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
   !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
   !   divss xmm0, xmm1              ; t = -d4/d2
@@ -242,7 +245,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm5               ; make a copy of (d4 s t det)  
   !   shufps xmm1, xmm1, 11111111b    ; shuffle (det det det det)
 
-  !   movups xmm2, [math.l_sse_one_vec]
+  !   movaps xmm2, [math.l_sse_one_vec]
   !   divps xmm2, xmm1
   !   mulps xmm5, xmm2                ; multiply (d4 s t det) * invDet
   !   jmp .closest_point_output
@@ -254,7 +257,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm0, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm0
   !   movaps xmm1, xmm5               ; make a copy of (d4 s t det) in xmm1
   !   shufps xmm1, xmm1, 00000000b    ; fill with d4 ( d4 d4 d4 d4 )
-  !   movups xmm2, [math.l_sse_one_vec]
+  !   movaps xmm2, [math.l_sse_one_vec]
   !   addps xmm2, xmm2                ; add with itself : 2 2 2 2 
   !   mulps xmm0, xmm2                ; multiply by 2
   !   blendps xmm0, xmm6, 1101b       ; d0 2d1 d2 d3
@@ -277,7 +280,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
   !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d3 d2)
   !   blendps xmm0, xmm1, 0100b       ; blend (s t d3 d4)
-  !   movups xmm1, [math.l_sse_zero_vec]
+  !   movaps xmm1, [math.l_sse_zero_vec]
   !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
   !   movmskps r12, xmm0              ; move comparison mask to r12 register
   
@@ -328,7 +331,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   divps xmm0, xmm1              ; s = numer / denom
   !   call .clamp_0_to_1             ; clamp between 0 and 1
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (s s s s)
-  !   movups xmm1, [math.l_sse_one_vec]
+  !   movaps xmm1, [math.l_sse_one_vec]
   !   subps xmm1, xmm0              ; t = 1 - s
   !   blendps xmm0, xmm1, 0100b     ; set xmm0 to (s s t s)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
@@ -338,20 +341,20 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3) 
   !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2, d2, d2, d2)
   !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-  !   movups xmm2, [math.l_sse_1111_negate_mask]
+  !   movaps xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
   !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
   !   divss xmm0, xmm1              ; t = -d4/d2
   !   call .clamp_0_to_1             ; clamp t between 0 and 1
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (t t t t)
-  !   movups xmm1, [math.l_sse_zero_vec]
+  !   movaps xmm1, [math.l_sse_zero_vec]
   !   blendps xmm0, xmm1, 1011b     ; set xmm0 to (0 0 t 0)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
   !   jmp .closest_point_output
   
   ! .closest_point_case2_output_three:
-  !   movups xmm0, [math.l_sse_one_vec]
-  !   movups xmm1, [math.l_sse_zero_vec]
+  !   movaps xmm0, [math.l_sse_one_vec]
+  !   movaps xmm1, [math.l_sse_zero_vec]
   !   blendps xmm0, xmm1, 1101b     ; set xmm0 to (0 1 0 0)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
   !   jmp .closest_point_output
@@ -364,11 +367,11 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm0, xmm5               ; make a copy of (d4 s t det) in xmm0
   !   shufps xmm0, xmm0, 10011001b    ; shuffle (s t s t)
   !   haddps xmm0, xmm0               ; horizontal subtraction ( s - t)
-  !   movups xmm1, [math.l_sse_one_vec]
+  !   movaps xmm1, [math.l_sse_one_vec]
   !   subps xmm1, xmm0                ; compute w : 1 - s - t
   !   shufps xmm1, xmm1, 00000000b    ; shuffle (w w w w)
   !   blendps xmm5, xmm1, 0001b       ; blend (w s t det)
-  !   movups xmm1, [math.l_sse_zero_vec]
+  !   movaps xmm1, [math.l_sse_zero_vec]
   !   blendps xmm5, xmm1, 1000b       ; reset fourth value
   !   mov rdi, [p.p_uvw]
   !   movups [rdi], xmm5              ; set back uvw
@@ -383,7 +386,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   
   !   addps xmm8, xmm9                 ; edge0 * u + edge1 *v
   !   addps xmm8, xmm13                ; edge0 * u + edge1 *v + a
-  !   movups xmm0, [math.l_sse_zero_vec]
+  !   movaps xmm0, [math.l_sse_zero_vec]
   !   blendps xmm13, xmm0, 1000b
   !   mov rdi, [p.p_closest]
   !   movups [rdi], xmm8              ; set back closest
@@ -395,8 +398,8 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   ; warning xmm1 and xmm2 will be destroyed
   ; --------------------------------------------------------------------------------------------
   ! .clamp_0_to_1:
-  !   movups xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
-  !   movups xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
+  !   movaps xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
+  !   movaps xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
   !   comiss xmm0, xmm1                             ; compare value with 0000
   !   jb .clamp_0_to_1_return_min                    ; if below return min
   !   comiss xmm2, xmm0                             ; compare value with 1111
@@ -509,77 +512,64 @@ Procedure ClosestPoint(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3f32
 
 EndProcedure
 
-
-Structure ClosestPointsThreadDatas_t
+Structure ClosestPointsDatas_t Extends Thread::TaskDatas_t
   *positions.CArray::CArrayV3F32
   *indices.CArray::CArrayLong
   *query.CArray::CArrayV3F32
   *closest.CArray::CArrayV3F32
-  start_index.i
-  end_index.i
 EndStructure
+
+Structure ClosestPointsThreadDatas_t Extends Thread::ThreadDatas_t
+EndStructure
+
 
 Procedure ThreadedClosestPoints(*datas.ClosestPointsThreadDatas_t)
   Define i, j, a, b, c
   Define uvw.v3f32, closest.v3f32, *q.v3f32
   Define closestDistance.f 
   Define distance.f
+  Define *taskdatas.ClosestPointsDatas_t = *datas\datas
   
   For i=*datas\start_index To *datas\end_index-1
     closestDistance = #F32_MAX
+    *q = CArray::GetValue(*taskdatas\query, i)
     For j=0 To numTriangles - 1
-      a = CArray::GetValueL(*datas\indices, j*3)
-      b = CArray::GetValueL(*datas\indices, j*3+1)
-      c = CArray::GetValueL(*datas\indices, j*3+2)
-      *q = CArray::GetValue(*query, i)
-      ClosestPointSSE(CArray::GetValue(*datas\positions, a),
-                      CArray::GetValue(*datas\positions, b),
-                      CArray::GetValue(*datas\positions, c),
+      a = CArray::GetValueL(*taskdatas\indices, j*3)
+      b = CArray::GetValueL(*taskdatas\indices, j*3+1)
+      c = CArray::GetValueL(*taskdatas\indices, j*3+2)
+      
+      Triangle::ClosestPoint(CArray::GetValue(*taskdatas\positions, a),
+                      CArray::GetValue(*taskdatas\positions, b),
+                      CArray::GetValue(*taskdatas\positions, c),
                       *q,
                       closest,
                       uvw)
+      
       distance = Vector3::DistanceSquared(*q, closest)
       If distance < closestDistance
         closestDistance = distance
-        CArray::SetValue(*closest, i, closest)
+        CArray::SetValue(*taskdatas\closest, i, closest)
       EndIf  
     Next
     
   Next
   
+  *datas\job_state = Thread::#THREAD_JOB_DONE
+  
 EndProcedure
 
 
 Procedure ThreadedHitTriangle()
+  Define datas.ClosestPointsDatas_t
+  datas\positions = *positions
+  datas\indices = *indices
+  datas\num_elements = CArray::GetCount(*query)
+  datas\query = *query
+  datas\closest = *closest
   Define sT.d = Time::Get()
-  Define chunckSize = numQuery / #CLOSEST_POINT_NUM_THREAD
-  Define chunckBase = 0
-  Define extra = numQuery- (#CLOSEST_POINT_NUM_THREAD*chunckSize)
-  Dim tDatas.ClosestPointsThreadDatas_t(#CLOSEST_POINT_NUM_THREAD)
-  Dim threads.i(#CLOSEST_POINT_NUM_THREAD)
-  Define i
-  For i=0 To #CLOSEST_POINT_NUM_THREAD-1
-    tDatas(i)\positions = *positions
-    tDatas(i)\indices = *indices
-    tDatas(i)\closest = *closest
-    tDatas(i)\query = *query
-    tDatas(i)\start_index = chunckBase
-    tDatas(i)\end_index = chunckBase + chunckSize
-    If i = #CLOSEST_POINT_NUM_THREAD - 1
-      tDatas(i)\end_index + extra
-    EndIf
-    chunckBase + chunckSize
-  Next
-  For i=0 To #CLOSEST_POINT_NUM_THREAD-1
-    threads(i) = CreateThread(@ThreadedClosestPoints(), tDatas(i))
-  Next
-  For i = 1 To #CLOSEST_POINT_NUM_THREAD - 1 
-     If IsThread(threads(i)) 
-       WaitThread(threads(i))
-     EndIf   
-   Next    
-   Define eT.d = Time::Get() - sT
-   multiThreadT = eT
+  Thread::SplitTask(*pool, datas, ClosestPointsThreadDatas_t, @ThreadedClosestPoints())
+  Define eT.d = Time::Get() - sT
+  multiThreadT = eT
    
 EndProcedure
 
@@ -875,9 +865,8 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 825
-; FirstLine = 820
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 371
+; FirstLine = 366
 ; Folding = --
 ; EnableXP

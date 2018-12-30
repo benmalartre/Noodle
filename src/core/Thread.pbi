@@ -2,8 +2,15 @@
 ; Thread Module Declaration
 ;========================================================================================
 DeclareModule Thread
-  #NUM_THREADS = 8
+  #NUM_THREADS = 3
   #NUM_TASKS = 64
+  
+  Enumeration
+    #THREAD_JOB_WAITING
+    #THREAD_JOB_WORKING
+    #THREAD_JOB_DONE
+  EndEnumeration
+  
   Prototype PFNTHREADCALLBACK(*datas)
   
   Structure TaskDatas_t
@@ -14,7 +21,7 @@ DeclareModule Thread
     *datas.TaskDatas_t
     start_index.i
     end_index.i
-    job_done.b
+    job_state.i
   EndStructure
   
   Structure Thread_t
@@ -24,7 +31,7 @@ DeclareModule Thread
 
   Structure ThreadPool_t
     workers.i[#NUM_THREADS]
-    List pending.Thread_t()
+    List *pending.Thread_t()
     running_semaphore.i
     start_semaphore.i
     mutex.i
@@ -44,10 +51,11 @@ DeclareModule Thread
     
     Dim _datas.THREADDATASTYPE(Thread::#NUM_TASKS)
     Define _i
-    For _i=0 To Thread::#NUM_TASKS-1
+    For _i=0 To Thread::#NUM_TASKS - 1
       _datas(_i)\start_index = _chunckBase
       _datas(_i)\end_index = _chunckBase + _chunckSize
       _datas(_i)\datas = TASKDATAS
+      _datas(_i)\job_state = Thread::#THREAD_JOB_WAITING
       If _i = Thread::#NUM_TASKS - 1
         _datas(_i)\end_index + _extra
       EndIf
@@ -55,15 +63,16 @@ DeclareModule Thread
       Thread::AddTask(POOL, _datas(_i), CALLBACK)
     Next
     
-    ; wait for all worker threads to complete their work
+    ; wait for all worker threads to complete their job
     Define _working.i
     Repeat 
       _working = 0
-      For _i=0 To ArraySize(_datas())-1 : _working + (1-_datas(_i)\job_done) : Next
+      For _i=0 To Thread::#NUM_TASKS-1 : _working + Bool(_datas(_i)\job_state <> Thread::#THREAD_JOB_DONE) : Next
     Until _working = 0
     
     ; reset semaphore to max threads for next batch
-    For _i=0 To Thread::#NUM_THREADS - 1 : SignalSemaphore(POOL\running_semaphore) : Next
+    Define _numSemaphore = TrySemaphore(POOL\running_semaphore)
+    For _i=_numSemaphore To Thread::#NUM_THREADS - 1 : SignalSemaphore(POOL\running_semaphore) : Next
 
   EndMacro
 EndDeclareModule
@@ -97,19 +106,18 @@ Module Thread
   
   Procedure Worker(*pool.ThreadPool_t)
     Define *t.Thread_t
-
     Repeat
       WaitSemaphore(*pool\start_semaphore)
       WaitSemaphore(*pool\running_semaphore)
-      If ListSize(*pool\pending())
-        LockMutex(*pool\mutex)
-        FirstElement(*pool\pending())
-        *t = *pool\pending()
-        DeleteElement(*pool\pending())
-        UnlockMutex(*pool\mutex)
-        *t\callback(*t\datas)                    ; threaded task
-        SignalSemaphore(*pool\running_semaphore)
-      EndIf
+      LockMutex(*pool\mutex)
+      FirstElement(*pool\pending())
+      *t = *pool\pending()
+      DeleteElement(*pool\pending())
+      UnlockMutex(*pool\mutex)
+      *t\datas\job_state = #THREAD_JOB_WORKING
+      *t\callback(*t\datas)                    ; threaded task
+      FreeMemory(*t)
+      SignalSemaphore(*pool\running_semaphore)
     ForEver
   EndProcedure
   
@@ -119,14 +127,16 @@ Module Thread
       LastElement(*pool\pending())
     EndIf
     
+    Define *thread.Thread_t = AllocateMemory(SizeOf(Thread_t))
+    *thread\datas = *datas
+    *thread\callback = callback
+    
     AddElement(*pool\pending())
-    *pool\pending()\datas = *datas
-    *pool\pending()\callback = callback
+    *pool\pending() = *thread
     UnlockMutex(*pool\mutex)
     
     SignalSemaphore(*pool\start_semaphore)
   EndProcedure
-
 EndModule
 
 ; -----------------------------------------------------------------------------------
@@ -179,9 +189,8 @@ EndModule
 ; window = OpenWindow(#PB_Any, 0,0,800,600,"TEST")
 ; Repeat
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 121
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 43
+; FirstLine = 38
 ; Folding = --
 ; EnableXP

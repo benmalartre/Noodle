@@ -89,7 +89,7 @@ Module PerlinNoise
   ; ------------------------------------------------------------------------------------------
   ; EVAL
   ; ------------------------------------------------------------------------------------------
-  Procedure.f Eval(*Me.PerlinNoise_t, *p.v3f32, *deriv.v3f32) 
+  Procedure.f Eval(*Me.PerlinNoise_t, *p.v3f32, *deriv.v3f32)
     Define.i xi0, yi0, zi0
     Define.i xi1, yi1, zi1
     xi0 = (Int(Round(*p\x, #PB_Round_Down))) & #TABLE_SIZE_MASK
@@ -111,7 +111,7 @@ Module PerlinNoise
     w = Math::QUINTIC(tz)
  
  
-    ;generate vectors going from the grid points To p
+    ; generate vectors going from the grid points To p
     Define.f x0, x1, y0, y1, z0, z1
     x0 = tx : x1 = tx - 1
     y0 = ty : y1 = ty - 1
@@ -141,7 +141,7 @@ Module PerlinNoise
     k5 = (a + f - b - e)
     k6 = (a + g - c - e)
     k7 = (b + c + e + h - a - d - f - g) 
- 
+    
     *deriv\x = du *(k1 + k4 * v + k5 * w + k7 * v * w)
     *deriv\y = dv *(k2 + k4 * u + k6 * w + k7 * u * w)
     *deriv\z = dw *(k3 + k5 * u + k6 * v + k7 * u * v)
@@ -170,9 +170,8 @@ Module PerlinNoise
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 112
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 144
+; FirstLine = 126
 ; Folding = --
 ; EnableXP

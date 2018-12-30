@@ -46,7 +46,7 @@ Procedure Draw(*app.Application::Application_t)
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"projection"),1,#GL_FALSE,*app\camera\projection)
   glUniform3f(glGetUniformLocation(*s_simple\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   glCheckError("Set Uniforms")
-  Polymesh::Draw(*torus)
+  Polymesh::Draw(*torus, *APP\context)
   glCheckError("Draw Mesh")
   glDepthMask(#GL_FALSE);
   
@@ -70,9 +70,8 @@ If Time::Init()
   *app = Application::New("Test",800,400)
 
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
     *app\context = *viewport\context
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -103,8 +102,8 @@ If Time::Init()
   Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 90
-; FirstLine = 65
+; CursorPosition = 74
+; FirstLine = 68
 ; Folding = -
 ; EnableThread
 ; EnableXP

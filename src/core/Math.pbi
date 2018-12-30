@@ -79,6 +79,7 @@ DeclareModule Math
   
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     DataSection
+      ! align 16
       sse_0000_sign_mask:
       Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
       sse_0001_sign_mask:
@@ -112,25 +113,27 @@ DeclareModule Math
       sse_1111_sign_mask:
       Data.l $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
       sse_1111_negate_mask:
-      Data.f -1, -1, -1, -1
+      Data.f -1.0, -1.0, -1.0, -1.0
       sse_0101_negate_mask:
-      Data.f 1, -1, 1, -1
+      Data.f 1.0, -1.0, 1.0, -1.0
       sse_1010_negate_mask:
-      Data.f -1, 1, -1, 1
+      Data.f -1.0, 1.0, -1.0, 1.0
       sse_1100_negate_mask:
-      Data.f -1, -1, 1, 1
+      Data.f -1.0, -1.0, 1.0, 1.0
       sse_1110_negate_mask:
-      Data.f -1, -1, -1, 1
+      Data.f -1.0, -1.0, -1.0, 1.0
+      sse_infinity_vec:
+      Data.l $7F800000, $7F800000, $7F800000, $7F800000
       sse_zero_vec:
-      Data.f 0, 0, 0, 0
+      Data.f 0.0, 0.0, 0.0, 0.0
       sse_one_vec:
-      Data.f 1, 1, 1, 1
+      Data.f 1.0, 1.0, 1.0, 1.0
       sse_half_vec:
       Data.f 0.5, 0.5, 0.5, 0.5
       sse_onethird_vec:
       Data.f 0.333333333,0.333333333,0.333333333,0.333333333
       sse_minusone_vec:
-      Data.f -1, -1, -1, -1
+      Data.f -1.0, -1.0, -1.0, -1.0
       sse_minushalf_vec:
       Data.f -0.5, -0.5, -0.5, -0.5
       sse_pi_vec:
@@ -138,6 +141,69 @@ DeclareModule Math
       sse_epsilon_vec:
       Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
     EndDataSection
+;     DataSection
+;       ! align 16
+;       ! sse_0000_sign_mask:
+;       ! dd $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+;       ! sse_0001_sign_mask:
+;       ! dd $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
+;       ! sse_0010_sign_mask:
+;       ! dd $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+;       ! sse_0011_sign_mask:
+;       ! dd $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
+;       ! sse_0100_sign_mask:
+;       ! dd $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+;       ! sse_0101_sign_mask:
+;       ! dd $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
+;       ! sse_0110_sign_mask:
+;       ! dd $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+;       ! sse_0111_sign_mask:
+;       ! dd $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
+;       ! sse_1000_sign_mask:
+;       ! dd $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+;       ! sse_1001_sign_mask:
+;       ! dd $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
+;       ! sse_1010_sign_mask:
+;       ! dd $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+;       ! sse_1011_sign_mask:
+;       ! dd $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
+;       ! sse_1100_sign_mask:
+;       ! dd $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+;       ! sse_1101_sign_mask:
+;       ! dd $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
+;       ! sse_1110_sign_mask:
+;       ! dd $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
+;       ! sse_1111_sign_mask:
+;       ! dd $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
+;       ! sse_1111_negate_mask:
+;       ! dd -1.0, -1.0, -1.0, -1.0
+;       ! sse_0101_negate_mask:
+;       ! dd 1.0, -1.0, 1.0, -1.0
+;       ! sse_1010_negate_mask:
+;       ! dd -1.0, 1.0, -1.0, 1.0
+;       ! sse_1100_negate_mask:
+;       ! dd -1.0, -1.0, 1.0, 1.0
+;       ! sse_1110_negate_mask:
+;       ! dd -1.0, -1.0, -1.0, 1.0
+;       ! sse_infinity_vec:
+;       ! dd $7F800000, $7F800000, $7F800000, $7F800000
+;       ! sse_zero_vec:
+;       ! dd 0.0, 0.0, 0.0, 0.0
+;       ! sse_one_vec:
+;       ! dd 1.0, 1.0, 1.0, 1.0
+;       ! sse_half_vec:
+;       ! dd 0.5, 0.5, 0.5, 0.5
+;       ! sse_onethird_vec:
+;       ! dd 0.333333333,0.333333333,0.333333333,0.333333333
+;       ! sse_minusone_vec:
+;       ! dd -1.0, -1.0, -1.0, -1.0
+;       ! sse_minushalf_vec:
+;       ! dd -0.5, -0.5, -0.5, -0.5
+;       ! sse_pi_vec:
+;       ! dd #F32_PI, #F32_PI, #F32_PI, #F32_PI
+;       ! sse_epsilon_vec:
+;       ! dd #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
+;     EndDataSection
   CompilerEndIf
   
 
@@ -1067,15 +1133,15 @@ DeclareModule Vector3
   ; VECTOR3 RANDOMIZE
   ;------------------------------------------------------------------
   Macro Randomize(_v,_o,_mult)
-    _v\x = _o\x + Random_Neg1_1() * _mult
-    _v\y = _o\y + Random_Neg1_1() * _mult
-    _v\z = _o\z + Random_Neg1_1() * _mult
+    _v\x = _o\x + Math::Random_Neg1_1() * _mult
+    _v\y = _o\y + Math::Random_Neg1_1() * _mult
+    _v\z = _o\z + Math::Random_Neg1_1() * _mult
   EndMacro
   
   Macro RandomizeInPlace(_v,_mult)
-    _v\x + Random_Neg1_1() * _mult
-    _v\y + Random_Neg1_1() * _mult
-    _v\z + Random_Neg1_1() * _mult
+    _v\x + Math::Random_Neg1_1() * _mult
+    _v\y + Math::Random_Neg1_1() * _mult
+    _v\z + Math::Random_Neg1_1() * _mult
   EndMacro
   
   ;------------------------------------------------------------------
@@ -1788,7 +1854,7 @@ DeclareModule Quaternion
   
 
   ;------------------------------------------------------------------
-  ; QUATERNION SLERP
+  ; QUATERNION ECHO
   ;------------------------------------------------------------------
   Macro Echo(_q,_prefix)
     Debug _prefix+"("+
@@ -2644,6 +2710,7 @@ DeclareModule Matrix4
   Macro GetQuaternion(_m,_q)
     Define.f _qx,_qy,_qz,_qw,_qw4
     Define _tr.f = _m\v[0] + _m\v[5] + _m\v[10]
+    
     Define _S.f
     If _tr > 0
       _S = Sqr(_tr+1.0) * 2
@@ -2670,13 +2737,13 @@ DeclareModule Matrix4
       _qy = (_m\v[6] + _m\v[9]) / _S
       _qz = 0.25 * _S
     EndIf
-  
+   
     ; set the rotation!
     _q\x = _qx
     _q\y = _qy
     _q\z = _qz
     _q\w = _qw
-  EndMacro
+   EndMacro
   
   ;-------------------------------------------
   ; Get Translation Matrix
@@ -2880,7 +2947,7 @@ Module Vector3
     EndProcedure
     
     ; ---------------------------------------------------------------
-    ;  VECTOR3 SUB
+    ; VECTOR3 SUB
     ; ---------------------------------------------------------------
     Procedure SubInPlace(*v.v3f32, *o.v3f32)
       ! mov rcx, [p.p_o]        ; move src to register
@@ -3016,8 +3083,21 @@ Module Vector3
       ! movaps xmm7, xmm0             ; make  a copy in xmm7
       ! shufps xmm7, xmm7, 00010001b  ; shuffle components : y x y x
       ! addps xmm0, xmm7              ; packed addition
+      
       ; 1/sqrt
-      ! rsqrtps xmm0, xmm0            ; inverse square root (length)
+      ! rsqrtps xmm0, xmm0            ; reciprocal square root (inverse length)
+      
+      ; fix infinity
+      ! movaps xmm1, xmm0
+      ! movaps xmm2, [math.l_sse_infinity_vec]
+
+      ! cmpps xmm1, xmm2, 0           ; compare result with infinity
+      ! xorps xmm0, xmm1              ; bitmask scale vec
+      
+      ! movaps xmm3, [math.l_sse_one_vec]
+      ! andps xmm3, xmm1              ; inverse bitmask on one vec
+      ! addps xmm0, xmm3              ; add together
+      
       ! mulps xmm0, xmm6              ; multiply by initial vector
       
       ! mov rax, [p.p_v]
@@ -3039,9 +3119,21 @@ Module Vector3
       ! shufps xmm7, xmm7, 00010001b  ; shuffle components : y x y x
       ! addps xmm0, xmm7              ; packed addition
       ; 1/sqrt
-      ! rsqrtps xmm0, xmm0            ; inverse square root (length)
+      ! rsqrtps xmm0, xmm0            ; reciprocal square root (inverse length)
+      
+      ! movaps xmm1, xmm0
+      ! movaps xmm2, [math.l_sse_infinity_vec]
+
+      ! cmpps xmm1, xmm2, 0 
+      ! xorps xmm0, xmm1
+      ! movaps xmm3, [math.l_sse_one_vec]
+  
+      ! andps xmm3, xmm1
+      ! addps xmm0, xmm3
+      
       ! mulps xmm0, xmm6              ; multiply by initial vector
       
+      ! mov rax, [p.p_v]
       ! movups [rax], xmm0            ; send back to memory
     EndProcedure
     
@@ -3124,8 +3216,7 @@ Module Vector3
     ; ---------------------------------------------------------------
     Procedure AbsoluteInPlace(*v.v3f32)
       ! mov rdx, [p.p_v]                    ; vector3 to data register
-      ! mov rax, qword math.l_sse_1111_sign_mask ; move sign mask to rsi register
-      ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
+      ! movaps xmm1, [math.l_sse_1111_sign_mask]; move sign mask to rsi register
       ! movups xmm0, [rdx]                  ; data register to sse register
       ! andps xmm0, xmm1                    ; bitmask removing sign
       ! movaps [rdx], xmm0                  ; mov back to memory
@@ -3134,8 +3225,7 @@ Module Vector3
     Procedure Absolute(*v.v3f32, *o.v3f32)
       ! mov rdx, [p.p_v]                    ; dst vector3 to data register
       ! mov rcx, [p.p_o]                    ; src vector3 to data register
-      ! mov rax, qword math.l_sse_1111_sign_mask ; move sign mask to rsi register
-      ! movdqu  xmm1, [rax]                 ; bitmask removing sign        
+      ! movaps xmm1, [math.l_sse_1111_sign_mask] ; move sign mask to rsi register
       ! movups xmm0, [rcx]                  ; data register to sse register
       ! andps xmm0, xmm1                    ; bitmask removing sign
       ! movups [rdx], xmm0                  ; move back to memory
@@ -3318,7 +3408,7 @@ Module Vector3
       ! subps xmm0, xmm1            ; compute delta
       ! movss xmm2, [p.v_eps]       ; load epsilon
       ! shufps xmm2, xmm2, 00000000b; fill vec with epsilon
-      ! movups xmm3, [math.l_sse_1111_sign_mask]
+      ! movaps xmm3, [math.l_sse_1111_sign_mask]
       ! andps xmm0, xmm3            ; absolute delta
       ! cmpps xmm0, xmm2, 1         ; compare delta < epsilon
       ! movmskps r12, xmm0          ; move comparison mask to r12 register
@@ -3473,7 +3563,7 @@ Module Quaternion
     Procedure Conjugate(*out.q4f32,*q.q4f32)
       ! mov rsi, [p.p_q]
       ! movups xmm0, [rsi]
-      ! movups xmm1, [math.l_sse_1110_negate_mask]
+      ! movaps xmm1, [math.l_sse_1110_negate_mask]
       ! mulps xmm0, xmm1
       ! mov rdi, [p.p_out]
       ! movups [rdi], xmm0
@@ -3485,7 +3575,7 @@ Module Quaternion
     Procedure ConjugateInPlace(*q.q4f32)
       ! mov rdi, [p.p_q]
       ! movups xmm0, [rsi]
-      ! movups xmm1, [math.l_sse_1110_negate_mask]
+      ! movaps xmm1, [math.l_sse_1110_negate_mask]
       ! mulps xmm0, xmm1
       ! movups [rdi], xmm0
     EndProcedure
@@ -4154,10 +4244,9 @@ Module Transform
   EndProcedure
  
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 29
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 123
+; FirstLine = 98
 ; Folding = ------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

@@ -108,7 +108,6 @@ Module PerlinNode
     For i=0 To CArray::GetCount(*vIn)-1
       PerlinNoise::Eval(*node\noise, CArray::GetValue(*vIn,i), CArray::GetValue(*vOut,i))
     Next i
-
   EndProcedure
   
   Procedure Terminate(*node.PerlinNode_t)
@@ -132,6 +131,7 @@ Module PerlinNode
     Protected *Me.PerlinNode_t = AllocateMemory(SizeOf(PerlinNode_t))
     Node::INI(PerlinNode,*tree,type,x,y,w,h,c)
     *Me\noise = PerlinNoise::New()
+    PerlinNoise::Init(*Me\noise)
     ProcedureReturn( *Me)
     
   EndProcedure
@@ -143,8 +143,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 110
+; FirstLine = 92
 ; Folding = --
 ; EnableXP

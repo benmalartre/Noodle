@@ -25,9 +25,7 @@ DeclareModule PolymeshGeometry
   Declare ComputeTangents(*mesh.PolymeshGeometry_t)
   Declare InvertNormals(*mesh.PolymeshGeometry_t)
   Declare ComputeTriangles(*mesh.PolymeshGeometry_t)
-  Declare ComputeEdges(*mesh.PolymeshGeometry_t)
   Declare ComputeHalfEdges(*mesh.PolymeshGeometry_t)
-  Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
   Declare Clear(*mesh.PolymeshGeometry_t)
   Declare GetTopology(*mesh.PolymeshGeometry_t)
   Declare SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
@@ -206,17 +204,11 @@ Module PolymeshGeometry
     Vector3::Set(n,0,0,0)
     CArray::SetCount(*mesh\a_polygonnormals, *mesh\nbpolygons)
     
-    ; Compute Vertex Polygons if necessary
-    If Carray::GetCount(*mesh\a_vertexpolygoncount) <> *mesh\nbpoints     
-      ComputeVertexPolygons(*mesh)
-    EndIf
-    
     ; First Triangle Normals
     Define.v3f32 *a, *b, *c
     Define nbv, nbt, nbp
 
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      
       Define *positions = *mesh\a_positions\data
       Define *indices = *mesh\a_triangleindices\data
       Define *normals = *mesh\a_normals\data
@@ -231,35 +223,35 @@ Module PolymeshGeometry
       Define *vertexpolygoncount = *mesh\a_vertexpolygoncount\data
       Define *vertexpolygonindices = *mesh\a_vertexpolygonindices\data
       
-      ! mov edx, [p.p_indices]                ; move indices to edx register
-      ! mov rsi, [p.p_positions]              ; move positions to rsi register
-      ! mov rdi, [p.p_normals]                ; move normals to rdi register
+      ! mov rdx, [p.p_indices]              ; move indices to edx register
+      ! mov rsi, [p.p_positions]            ; move positions to rsi register
+      ! mov rdi, [p.p_normals]              ; move normals to rdi register
       
       ! mov r9, 16                          ; move item size to eax register
-      ! mov ecx, [p.v_numTris]              ; move num triangles to edx register
+      ! mov rcx, [p.v_numTris]              ; move num triangles to edx register
 
       ! loop_compute_triangle_normal:
-      !   mov eax, [edx]                    ; get value for desired point A
+      !   mov eax, [rdx]             ; get value for desired point A
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi                      ; load positions array
       !   add r10, rax                      ; offset to desired item
       !   movaps xmm2, [r10]                ; load point A to xmm0
       !   movaps xmm3, xmm2                 ; copy point A to xmm1
-      !   add edx, 4                        ; offset next item
+      !   add rdx, 4                        ; offset next item
       
-      !   mov eax, [edx]                    ; get value for desired point B
+      !   mov eax, [rdx]             ; get value for desired point B
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi
       !   add r10, rax                      ; offset to desired item
       !   movaps xmm0, [r10]                ; load point B to xmm2
-      !   add edx, 4                        ; offset next item
+      !   add rdx, 4                        ; offset next item
       
-      !   mov eax, [edx]                    ; get value for desired point B
+      !   mov eax, [rdx]                    ; get value for desired point B
       !   imul rax, r9                      ; compute offset in position array
       !   mov r10, rsi
       !   add r10, rax                      ; offset to desired item
       !   movaps xmm1, [r10]                ; load point C to xmm3
-      !   add edx, 4                        ; offset next item
+      !   add rdx, 4                        ; offset next item
       
       !   subps xmm0, xmm2                  ; compute vector AB
       !   subps xmm1, xmm3                  ; compute vector AC
@@ -300,7 +292,7 @@ Module PolymeshGeometry
       ; next triangle
       ; ---------------------------------------------------------------------------------
       ! next_triangle:
-      !   dec ecx                           ; decrement triangle counter
+      !   dec rcx                           ; decrement triangle counter
       !   jg loop_compute_triangle_normal   ; loop next triangle
       ! jmp init_polygon_normals
       
@@ -320,14 +312,14 @@ Module PolymeshGeometry
       ; set polygon normals
       ; ---------------------------------------------------------------------------------
       ! init_polygon_normals:
-      !   mov ecx, [p.v_numPolygons]
-      !   mov edx, [p.p_facecount]
+      !   mov rcx, [p.v_numPolygons]
+      !   mov rdx, [p.p_facecount]
       !   mov rsi, [p.p_normals] 
       !   mov rdi, [p.p_polygonnormals] 
       
       ! set_polygon_normals:
-      !   mov eax, [edx]                          ; get num vertices for this polygon
-      !   add edx, 4                              ; increment face count for next polygon
+      !   mov eax, [rdx]                   ; get num vertices for this polygon
+      !   add rdx, 4                              ; increment face count for next polygon
       !   mov r11, -2                             ; load -2 value in r11
       !   add r11, rax                            ; compute num tris (num vertices - 2)
       !   xorps xmm0, xmm0                        ; reset xmm0
@@ -359,27 +351,27 @@ Module PolymeshGeometry
       ! movaps [rdi], xmm0                        ; send back polygon normal to memory
       ! add rdi, 16                               ; next polygon normal
       
-      ! dec ecx                                   ; decrement polygon counter
+      ! dec rcx                                   ; decrement polygon counter
       ! jg set_polygon_normals                    ; loop per polygon
       
       ; ---------------------------------------------------------------------------------
       ; average point normal
       ; ---------------------------------------------------------------------------------
       ! init_average_point_normals:
-      !   mov ecx, [p.v_numPoints]
-      !   mov edx, [p.p_vertexpolygoncount]
-      !   mov eax, [p.p_vertexpolygonindices]
+      !   mov rcx, [p.v_numPoints]
+      !   mov rdx, [p.p_vertexpolygoncount]
+      !   mov rax, [p.p_vertexpolygonindices]
       !   mov rsi, [p.p_polygonnormals] 
       !   mov rdi, [p.p_pointnormals] 
       
       ! set_average_point_normals:
-      !   mov r11d, [edx]                         ; get num polygons for this vertex
-      !   add edx, 4                              ; increment vertex polygon count for next vertex
+      !   mov r11d, [rdx]                  ; get num polygons for this vertex
+      !   add rdx, 4                              ; increment vertex polygon count for next vertex
       !   xorps xmm0, xmm0                        ; reset xmm0
       
       ! loop_average_point_normals:
-      !   mov r12d, [eax]                         ; load polygon index
-      !   add eax, 4
+      !   mov r12d, [rax]                         ; load polygon index
+      !   add rax, 4
       !   imul r12, 16
       !   movaps xmm1, [rsi + r12]                ; load polygon normal
       !   addps xmm0, xmm1                        ; accumulate in xmm0
@@ -406,27 +398,27 @@ Module PolymeshGeometry
       ! movaps [rdi], xmm0
       ! add rdi, 16
       
-      ! dec ecx
+      ! dec rcx
       ! jg set_average_point_normals
       
       ; ---------------------------------------------------------------------------------
       ; display normal
       ; ---------------------------------------------------------------------------------
       ! init_display_normals:
-      !   mov ecx, [p.v_numSamples]
-      !   mov eax, [p.p_indices]
+      !   mov rcx, [p.v_numSamples]
+      !   mov rax, [p.p_indices]
       !   mov rsi, [p.p_pointnormals] 
       !   mov rdi, [p.p_normals] 
       
       ! loop_display_normals:
-      !   mov r12d, [eax]                         ; load vertex index
-      !   add eax, 4
+      !   mov r12d, [rax]                  ; load vertex index
+      !   add rax, 4
       !   imul r12, 16
       !   movaps xmm0, [rsi + r12]                ; load point normal
       !   movaps [rdi], xmm0
       !   add rdi, 16
       
-      !   dec ecx
+      !   dec rcx
       !   jg loop_display_normals
 
     CompilerElse
@@ -610,96 +602,6 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Compute Edges
-  ; ----------------------------------------------------------------------------
-  Procedure ComputeEdges(*mesh.PolymeshGeometry_t)
-    Protected NewMap uniqueEdges.EdgeIndices_t()
-    Protected edgeKey.s
-    Protected edgeID.i = 0
-    Protected i, a, b, base
-
-    base=0
-    For i=0 To *mesh\nbpolygons-1
-      nbv = CArray::GetValueL(*mesh\a_facecount, i)
-      For j=0 To nbv-1
-        a = CArray::GetValueL(*mesh\a_faceindices,base+j)
-        b = CArray::GetValueL(*mesh\a_faceindices,base+((j+1)%nbv))
-        
-        If a>b
-          edgeKey = Str(b)+","+Str(a)
-          AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
-          uniqueEdges()\vertices[0] = b
-          uniqueEdges()\vertices[1] = a
-          
-        Else
-          edgeKey = Str(a)+","+Str(b)
-          AddMapElement(uniqueEdges(), edgeKey, #PB_Map_NoElementCheck)
-          uniqueEdges()\vertices[0] = a
-          uniqueEdges()\vertices[1] = b
-        EndIf
-      Next j
-      base+nbv
-    Next i
-    
-    Protected numUniqueEdges.i = MapSize(uniqueEdges())
-
-    CArray::SetCount(*mesh\a_edgeindices, numUniqueEdges*2)
-    *mesh\nbedges = numUniqueEdges
-    i=0
-    ForEach uniqueEdges()
-      CArray::SetValueL(*mesh\a_edgeindices, i, uniqueEdges()\vertices[0])
-      CArray::SetValueL(*mesh\a_edgeindices, i+1, uniqueEdges()\vertices[1])
-      i+2
-    Next  
-    ClearMap(uniqueEdges())
-    FreeMap(uniqueEdges())
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Compute Vertex Polygons
-  ; ----------------------------------------------------------------------------
-  Procedure ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
-    
-    Protected i, j, k, nbv, base, total, last
-    Protected Dim indices.VertexPolygonIndices_t(*mesh\nbpoints)
-
-    base=0
-    total = 0
-
-    For i=0 To *mesh\nbpolygons-1
-      
-      nbv = CArray::GetValueL(*mesh\a_facecount, i)
-      
-      For j=0 To nbv-1
-        k = CArray::GetValueL(*mesh\a_faceindices,(base+j))
-        last = ArraySize(indices(k)\polygons())
-        ReDim indices(k)\polygons(last+1)
-        indices(k)\polygons(last) = i
-        total+1
-      Next j
-      base+nbv
-    Next i
-        
-    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
-    CArray::SetCount(*mesh\a_vertexpolygonindices, total)
-    
-    Protected nbp, index
-    base = 0
-    For i=0 To *mesh\nbpoints-1
-      nbp = ArraySize(indices(i)\polygons())
-      CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
-      For j=0 To nbp-1
-        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, indices(i)\polygons(j))
-      Next
-      base + nbp
-      FreeArray(indices(i)\polygons())
-    Next
-    FreeArray(indices())
-
-  EndProcedure
-
-  
-  ; ----------------------------------------------------------------------------
   ;  Implementation
   ; ----------------------------------------------------------------------------
   Procedure Clear(*mesh.PolymeshGeometry_t)
@@ -793,6 +695,14 @@ Module PolymeshGeometry
     
     nbf=0
     nbi=0
+    *mesh\nbedges = 0
+    Protected Dim vertexPolygonIndices.VertexPolygonIndices_t(*mesh\nbpoints)
+    Define totalVertexPolygonIndices = 0
+    Define numVertexPolygonIndices
+    
+    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
+    CArray::FillL(*mesh\a_vertexpolygoncount, 0)
+    
     For i=0 To CArray::GetCount(*topo\faces)-1
       vid = CArray::GetValueL(*topo\faces,i)
       If  vid = -2
@@ -800,27 +710,48 @@ Module PolymeshGeometry
         nbf+1
         counter = 0
       Else
+        numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
+        ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
+        vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = nbf
+        totalVertexPolygonIndices + 1
         CArray::SetValueL(*mesh\a_faceindices,nbi,vid)
         nbi+1
         counter+1
+        *mesh\nbedges + 1
       EndIf
     Next i
     
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
+    CArray::SetCount(*mesh\a_vertexpolygonindices, totalVertexPolygonIndices)
+    
+    base = 0
+    For i=0 To *mesh\nbpoints-1
+      nbp = ArraySize(vertexPolygonIndices(i)\polygons())
+      CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
+      Define indices.s = "Vertex "+Str(i)+" : "
+      For j=0 To nbp-1
+        indices + Str(vertexPolygonIndices(i)\polygons(j))+","
+        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, vertexPolygonIndices(i)\polygons(j)) 
+      Next
+      Debug indices
+      base + nbp
+      FreeArray(vertexPolygonIndices(i)\polygons())
+    Next
+    FreeArray(vertexPolygonIndices())
+    
     
     ; Compute Bounding Box
     Geometry::ComputeBoundingBox(*mesh)
     
     ; Compute Polymesh datas
     ComputeTriangles(*mesh)
-    ComputeEdges(*mesh)
-    ComputeVertexPolygons(*mesh)
+    ComputeHalfEdges(*mesh)
     
     ; GetDualGraph(*mesh)
     ComputeNormals(*mesh,1)
 
     ; UVs
-    GetUVWSFromPosition(*mesh,#True)
+;     GetUVWSFromPosition(*mesh,#True)
     
     ; Tangents
 ;     ComputeTangents(*mesh)
@@ -1269,8 +1200,12 @@ Module PolymeshGeometry
     Define *o.Geometry::HalfEdge_t
     
     NewMap *openedges.Geometry::HalfEdge_t()
+    Define numUniqueEdges = 0
+    Dim uniqueEdges.Geometry::EdgeIndices_t(*mesh\nbedges)
+    
     For i=0 To *mesh\nbpolygons - 1
       nbv = CArray::GetValueL(*mesh\a_facecount, i)
+
       For j=0 To nbv-1
         x = offset+j
 
@@ -1287,6 +1222,9 @@ Module PolymeshGeometry
           *o\opposite_he = *h
           DeleteMapElement(*openedges(), MapKey(*openedges()))
         Else
+          uniqueEdges(numUniqueEdges)\vertices[0] = a
+          uniqueEdges(numUniqueEdges)\vertices[1] = b
+          numUniqueEdges + 1
           AddMapElement(*openedges(),Str(a)+","+Str(b))
           *openedges() = *h
         EndIf
@@ -1307,6 +1245,16 @@ Module PolymeshGeometry
       Next
       offset+nbv
     Next
+    
+    ; unique edges
+    *mesh\nbedges = numUniqueEdges
+    CArray::SetCount(*mesh\a_edgeindices, 2*numUniqueEdges)
+    For i =0 To numUniqueEdges-1
+      CArray::SetValueL(*mesh\a_edgeindices, i*2, uniqueEdges(i)\vertices[0])
+      CArray::SetValueL(*mesh\a_edgeindices, i*2+1, uniqueEdges(i)\vertices[1])
+      i+2
+    Next  
+    FreeArray(uniqueEdges())
     
     Define *first.Geometry::HalfEdge_t
     Define *last.Geometry::HalfEdge_t
@@ -1487,146 +1435,6 @@ Module PolymeshGeometry
     Next
 
     *mesh\nbislands = islandIndex
-    
-;     Define i, j, nbp, offset = 0
-;     Define islandIndex = 0
-;     Define polyIndex
-;     
-;     For i=0 To *mesh\nbpolygons - 1
-;       nbp = CArray::GetValueL(*mesh\a_facecount, i)
-;       faceVertexIndicesOffsets(i) = offset
-;       offset + nbp
-;     Next
-
-;     For i=0 To *mesh\nbpolygons- 1
-;       If Not polyVisited(i)
-;         nbp = CArray::GetValueL(*mesh\a_facecount, i)
-;         For j=0 To nbp-1
-;           polyIndex = CArray::GetValueL(*mesh\a_faceindices, offset+j)  
-;           If Not visited(polyIndex)
-;             visited(polyIndex) = #True
-;           EndIf
-;         Next
-;       EndIf
-;     Next
-    
-;     // GET VERTICES SHELLS
-; void Mesh::getShells(MObject& obj, MFnMesh& mesh)
-; {
-;     MStatus status;
-;     std::vector<bool> visited;
-;     visited.resize(mesh.numVertices());
-;     For(unsigned ii=0;ii<mesh.numVertices();ii++)visited[ii] = false;
-;     
-;     MItMeshVertex itVertex(obj, &status);
-;     itVertex.reset();
-;     MIntArray seeds;
-;     MIntArray neighbors;
-;     MIntArray Next;
-;     unsigned shellID = 0;
-;     int prevID;
-;     m_vertex_shell.resize(mesh.numVertices());
-;     For(unsigned ii=0;ii<mesh.numVertices();ii++)
-;     {
-;         If(!visited[ii])
-;         {
-;             std::vector<int> shell;
-;             seeds.clear();
-;             seeds.append(ii);
-;             While(seeds.length())
-;             {
-;                 Next.clear();
-;                 For(unsigned s=0;s<seeds.length();s++)
-;                 {
-;                     itVertex.setIndex(seeds[s], prevID);
-;                     itVertex.getConnectedVertices(neighbors);
-;                     
-;                     For(unsigned n=0; n<neighbors.length(); n++)
-;                     {
-;                         If(!visited[neighbors[n]])
-;                         {
-;                             shell.push_back(neighbors[n]);
-;                             m_vertex_shell[neighbors[n]] = shellID;
-;                             visited[neighbors[n]] = true;
-;                             Next.append(neighbors[n]);
-;                         }
-;                     }
-;                 }
-;                 seeds.copy(Next);
-;             }
-;             shellID++;
-;             m_shells.push_back(shell);
-;         }
-;     }
-; }
-    
-;     For i=0 To *mesh\nbpolygons - 1
-;       nbp = CArray::GetValueL(*mesh\a_facecount, i)
-;       faceVertexIndicesOffsets(i) = offset
-;       offset + nbp
-;     Next
-
-;     For i=0 To *mesh\nbpolygons- 1
-;       If Not polyVisited(i)
-;         nbp = CArray::GetValueL(*mesh\a_facecount, i)
-;         For j=0 To nbp-1
-;           polyIndex = CArray::GetValueL(*mesh\a_faceindices, offset+j)  
-;           If Not visited(polyIndex)
-;             visited(polyIndex) = #True
-;           EndIf
-;         Next
-;       EndIf
-;     Next
-    
-;     // GET VERTICES SHELLS
-; void Mesh::getShells(MObject& obj, MFnMesh& mesh)
-; {
-;     MStatus status;
-;     std::vector<bool> visited;
-;     visited.resize(mesh.numVertices());
-;     For(unsigned ii=0;ii<mesh.numVertices();ii++)visited[ii] = false;
-;     
-;     MItMeshVertex itVertex(obj, &status);
-;     itVertex.reset();
-;     MIntArray seeds;
-;     MIntArray neighbors;
-;     MIntArray Next;
-;     unsigned shellID = 0;
-;     int prevID;
-;     m_vertex_shell.resize(mesh.numVertices());
-;     For(unsigned ii=0;ii<mesh.numVertices();ii++)
-;     {
-;         If(!visited[ii])
-;         {
-;             std::vector<int> shell;
-;             seeds.clear();
-;             seeds.append(ii);
-;             While(seeds.length())
-;             {
-;                 Next.clear();
-;                 For(unsigned s=0;s<seeds.length();s++)
-;                 {
-;                     itVertex.setIndex(seeds[s], prevID);
-;                     itVertex.getConnectedVertices(neighbors);
-;                     
-;                     For(unsigned n=0; n<neighbors.length(); n++)
-;                     {
-;                         If(!visited[neighbors[n]])
-;                         {
-;                             shell.push_back(neighbors[n]);
-;                             m_vertex_shell[neighbors[n]] = shellID;
-;                             visited[neighbors[n]] = true;
-;                             Next.append(neighbors[n]);
-;                         }
-;                     }
-;                 }
-;                 seeds.copy(Next);
-;             }
-;             shellID++;
-;             m_shells.push_back(shell);
-;         }
-;     }
-; }
 
   EndProcedure
   
@@ -2876,8 +2684,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2758
-; FirstLine = 2712
-; Folding = ----fw---v--
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 601
+; FirstLine = 594
+; Folding = ----H9---8--
 ; EnableXP

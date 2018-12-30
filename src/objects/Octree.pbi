@@ -65,7 +65,6 @@ DeclareModule Octree
   Declare NewCell(*octree.Octree_t, *bmin.v3f32, *bmax.v3f32, depth=0)
   Declare DeleteCell(*cell.Cell_t)
   
-;   Declare NewCell(*bmin.v3f32, *bmax.v3f32, depth=0)
   Declare Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
   Declare ComputeScale(*octree.Octree_t)
   Declare NumCells(*octree.Octree_t, *numCells)
@@ -414,7 +413,7 @@ Module Octree
       ! andps xmm4, xmm6                  ; reset according to comparison mask
       ! andps xmm5, xmm7                  ; reset according to comparison mask
       
-      ! movups xmm8, [math.l_sse_zero_vec]
+      ! movaps xmm8, [math.l_sse_zero_vec]
       ! blendps xmm4, xmm8, 1000b         ; reset fourth bit
       ! blendps xmm5, xmm8, 1000b         ; reset fourth bit
       
@@ -490,9 +489,9 @@ Module Octree
 
   EndProcedure
   
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   ; BUILD
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   Procedure Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
     Clear(*octree)
     Protected numTriangles = *geom\nbtriangles
@@ -763,9 +762,9 @@ Module Octree
     
   EndProcedure  
   
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   ; CREATE CELL
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   Macro CreateCell(_i,_j,_k)
     m = 4*_i+2*_j+_k
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
@@ -775,18 +774,18 @@ Module Octree
     GetCenter(*child, box\origin)
     GetHalfSize(*child, box\extend)
     
-;     numHits = 0
-;     Define sT1.d = Time::Get()
-;     For t=0 To tsz - 1
-;       xt = CArray::GetValueL(*cell\elements, t)
-;       *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3))
-;       *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+1))
-;       *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+2))
-; 
-;       If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, xt) : numHits + 1 :EndIf
-;     Next
-;     Define eT1.d = Time::Get() - sT1
-;     Define msg.s = "LOOP : "+StrD(eT1)+" : "+Str(numHits)+Chr(10)
+    numHits = 0
+    Define sT1.d = Time::Get()
+    For t=0 To tsz - 1
+      xt = CArray::GetValueL(*cell\elements, t)
+      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3))
+      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+1))
+      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+2))
+
+      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, xt) : numHits + 1 :EndIf
+    Next
+    Define eT1.d = Time::Get() - sT1
+    Define msg.s = "LOOP : "+StrD(eT1)+" : "+Str(numHits)+Chr(10)
     
     
     Define *hits = AllocateMemory(*cell\elements\itemCount)
@@ -824,9 +823,9 @@ Module Octree
     EndIf
   EndMacro
   
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   ; SPLIT
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   Procedure Split(*octree.Octree_t, *cell.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
     Protected tsz = *cell\elements\itemCount
     If tsz <= #MAX_ELEMENTS Or *cell\depth >= maxDepth:
@@ -952,9 +951,9 @@ Module Octree
 ; 
 ;     Return;
 ;   }
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   ; Conversion Utils
-  ;---------------------------------------------------------------------
+  ; ---------------------------------------------------------------------
   Procedure CartesianToReal(*octree.Octree_t, *cartersian.Morton::Point3D_t, *real.Math::v3f32)
     *real\x = *octree\scl\x * *cartersian\x + *octree\bmin\x
     *real\y = *octree\scl\y * *cartersian\y + *octree\bmin\y
@@ -1085,9 +1084,8 @@ Module Octree
   EndProcedure
 
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1075
-; FirstLine = 1027
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 415
+; FirstLine = 411
 ; Folding = --------
 ; EnableXP

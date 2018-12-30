@@ -152,7 +152,7 @@ Module Location
       Define *uvw = *Me\uvw
       Define *out = *Me\p
       
-      ! mov edx, [p.p_indices]            ; move indices to edx register
+      ! mov rdx, [p.p_indices]            ; move indices to edx register
       ! mov rsi, [p.p_positions]          ; move positions to rsi register
       ! mov rdi, [p.p_out]                ; move output position to rdi register
       
@@ -160,20 +160,20 @@ Module Location
       ! imul rcx, 12                      ; offset to desired triangle
       ! add rdx, rcx
       
-      ! mov eax, [edx]                    ; get value for desired point A
+      ! mov eax, [rdx]                    ; get value for desired point A
       ! imul rax, 16                      ; compute offset in position array
       ! movaps xmm2, [rsi + rax]          ; load point A to xmm2
-      ! add edx, 4                        ; offset next item
+      ! add rdx, 4                        ; offset next item
       
-      ! mov eax, [edx]                    ; get value for desired point B
+      ! mov eax, [rdx]             ; get value for desired point B
       ! imul rax, 16                      ; compute offset in position array
       ! movaps xmm1, [rsi + rax]          ; load point B to xmm1
-      ! add edx, 4                        ; offset next item
+      ! add rdx, 4                        ; offset next item
       
-      ! mov eax, [edx]                    ; get value for desired point B
+      ! mov eax, [rdx]             ; get value for desired point B
       ! imul rax, 16                      ; compute offset in position array
       ! movaps xmm0, [rsi + rax]          ; load point C to xmm0
-      ! add edx, 4                        ; offset next item
+      ! add rdx, 4                        ; offset next item
       
       ! mov rsi, [p.p_uvw]                ; load barycentric weights
       ! movups xmm3, [rsi]                
@@ -501,8 +501,8 @@ EndProcedure
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 96
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 172
+; FirstLine = 168
 ; Folding = ---
 ; EnableXP

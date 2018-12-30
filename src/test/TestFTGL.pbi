@@ -44,7 +44,7 @@ If Time::Init()
   Global *scene = Scene::New()
   Scene::*current_scene = *scene
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"Viewport3D")
+    *viewport = ViewportUI::New(*app\manager\main,"Viewport3D", *app\camera)
     *app\context = *viewport\context
     *viewport\camera = *app\camera
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -73,9 +73,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 21
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 46
+; FirstLine = 41
 ; Folding = -
 ; EnableXP
 ; Executable = Test

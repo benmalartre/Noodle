@@ -1,8 +1,14 @@
 ﻿
 Structure Vector3 ;Align 16
-  v.f[3]
+  v.f[4]
 EndStructure
 
+DataSection
+  sse_infinity_vec:
+  Data.l $7F800000, $7F800000, $7F800000, $7F800000
+  sse_one_vec:
+  Data.f 1, 1, 1, 1
+EndDataSection
 
 Macro Vector3_Normalize(_v)
    Define _mag.f = Sqr(_v\v[0] * _v\v[0] + _v\v[1] * _v\v[1] + _v\v[2] * _v\v[2])
@@ -28,6 +34,17 @@ Procedure Vector3_Normalize_SIMD(*v.Vector3)
   ! shufps xmm7, xmm7, 00010001b      ; shuffle componennt y x y x
   ! addps xmm0, xmm7                  ; packed addition
   ! rsqrtps xmm0, xmm0                ; reciproqual root square (length)
+
+  ! movaps xmm1, xmm0
+  ! movups xmm2, [l_sse_infinity_vec]
+
+  ! cmpps xmm1, xmm2, 0               ; compare result with infinity
+  ! xorps xmm0, xmm1                  ; bitmask scale vec
+  
+  ! movups xmm3, [l_sse_one_vec]
+  ! andps xmm3, xmm1                  ; inverse bitmask on one vec
+  ! addps xmm0, xmm3                  ; add together
+  
   ! mulps xmm0, xmm6                  ; multiply by intila vector
   
   ! movups [rax], xmm0                ; send back to memory
@@ -54,7 +71,7 @@ Procedure Vector3_Normalize_SIMD_Array(*v.Vector3, nb.i)
   ! mulps xmm0, xmm6                  ; multiply by intila vector
   
   ! movups [rax], xmm0                ; send back to memory
-  ! add rax, 12                       
+  ! add rax, 16                       
   ! dec ecx
   ! jnz vector3_normalize_simd_array_loop
 EndProcedure
@@ -144,7 +161,8 @@ MessageRequester("COMPARE", "PB : "+Str(T1)+Chr(10)+
                             ArrayString(*v1A, nb)+Chr(10)+"-------------"+Chr(10)+
                             ArrayString(*v2A, nb)+Chr(10)+"-------------"+Chr(10)+
                             ArrayString(*v3A, nb)+Chr(10)+"-------------")
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 56
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 58
 ; Folding = -
 ; EnableXP

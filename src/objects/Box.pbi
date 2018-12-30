@@ -227,7 +227,7 @@ Module Box
       ! andps xmm4, xmm6                  ; reset according to comparison mask
       ! andps xmm5, xmm7                  ; reset according to comparison mask
       
-      ! movups xmm8, [math.l_sse_zero_vec]
+      ! movaps xmm8, [math.l_sse_zero_vec]
       ! blendps xmm4, xmm8, 1000b         ; reset fourth value
       ! blendps xmm5, xmm8, 1000b         ; reset fourth value
       
@@ -378,9 +378,9 @@ Module Box
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 343
-; FirstLine = 324
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 233
+; FirstLine = 226
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

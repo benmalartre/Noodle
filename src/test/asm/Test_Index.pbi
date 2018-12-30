@@ -36,15 +36,15 @@ EndProcedure
 
 Procedure PositionAtIndex(*positions, *indices, index.l, size.l)
   ! mov eax, [p.v_index]              ; load index value
-  ! mov edx, 4                        ; index item size
-  ! imul eax, edx                     ; compute offset (index * size)
+  ! mov rdx, 4                        ; index item size
+  ! imul rax, rdx                     ; compute offset (index * size)
   
-  ! mov esi, [p.p_indices]            ; load indices array
-  ! add esi, eax                      ; offset to desired item
+  ! mov rsi, [p.p_indices]            ; load indices array
+  ! add rsi, eax                      ; offset to desired item
   
-  ! mov ecx, [esi]                    ; get value for desired item
-  ! mov edx, [p.v_size]               ; load v3f32 size
-  ! imul ecx, edx                     ; compute offset in position array
+  ! mov ecx, [rsi]             ; get value for desired item
+  ! mov edx, [p.v_size]        ; load v3f32 size
+  ! imul rcx, rdx                     ; compute offset in position array
  
   ! mov rax, [p.p_positions]          ; load positions array
   ! add rax, rcx                      ; offset to desired item
@@ -54,17 +54,18 @@ EndProcedure
 Procedure SetPolygonNormals(numPolygons.l, *facecount, *normals, *polygonnormals)
   Define nbv.i
   Define nbt.i
+
   ; ---------------------------------------------------------------------------------
   ; set polygon normals
   ; ---------------------------------------------------------------------------------
-  ! mov ecx, [p.v_numPolygons]
-  ! mov edx, [p.p_facecount]
+  ! mov rcx, [p.v_numPolygons]
+  ! mov rdx, [p.p_facecount]
   ! mov rsi, [p.p_normals] 
   ! mov rdi, [p.p_polygonnormals] 
   
   ! loop_set_polygon_normals2:
-  !   mov eax, [edx]                          ; get num vertices for this polygon
-  !   add edx, 4                              ; increment face count for next polygon
+  !   mov eax, [rdx]                          ; get num vertices for this polygon
+  !   add rdx, 4                              ; increment face count for next polygon
   !   mov r11, -2
   !   add r11, rax                            ; compute num tris
   !   xorps xmm0, xmm0
@@ -93,7 +94,7 @@ Procedure SetPolygonNormals(numPolygons.l, *facecount, *normals, *polygonnormals
   !   movups [rdi], xmm0
   !   add rdi, 16
   
-  !   dec ecx
+  !   dec rcx
   !   jg loop_set_polygon_normals2
 EndProcedure
 
@@ -113,8 +114,8 @@ CArray::SetCount(*geom\a_polygonnormals, *geom\nbpolygons)
 SetPolygonNormals(*geom\nbpolygons, *geom\a_facecount\data, *geom\a_normals\data, *geom\a_polygonnormals\data)
 Debug "OK"
 ; CArray::Echo(*geom\a_polygonnormals, "Polygon Normals")
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 45
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 66
+; FirstLine = 62
 ; Folding = -
 ; EnableXP

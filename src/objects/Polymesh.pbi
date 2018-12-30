@@ -2,6 +2,7 @@ XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
+XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
@@ -420,14 +421,14 @@ Module Polymesh
       EndIf
     EndIf
 
-    ; Create or ReUse Edge Elements Buffer
-    If Not *p\eab
-      glGenBuffers(1,@*p\eab)
-    EndIf 
-
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
-
-    BuildGLEdgeData(*p)
+;     ; Create or ReUse Edge Elements Buffer
+;     If Not *p\eab
+;       glGenBuffers(1,@*p\eab)
+;     EndIf 
+; 
+;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
+; 
+;     BuildGLEdgeData(*p)
     
     ; Unbind
     glBindVertexArray(0)
@@ -558,8 +559,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 496
-; FirstLine = 477
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 430
+; FirstLine = 405
 ; Folding = ----
 ; EnableXP

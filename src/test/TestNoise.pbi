@@ -29,7 +29,7 @@ Procedure NewTurbulenceDatas(width.i, height.i, seed.i)
   *datas\positions = AllocateMemory(width * height * SizeOf(Math::v3f32))
   *datas\result = AllocateMemory(width * height * SizeOf(Math::v3f32))
   *datas\num_elements = width * height
-  *datas\perlin = PerlinNoise::New(seed)
+  *datas\perlin = PerlinNoise::New(0)
   PerlinNoise::Init(*datas\perlin)
   ProcedureReturn *datas
 EndProcedure
@@ -89,7 +89,7 @@ Procedure ThreadedTurbulence(*datas.ThreadedTurbulenceDatas_t)
     *d = *taskdatas\result + i * SizeOf(Math::v3f32)
     PerlinNoise::Eval(*taskdatas\perlin, *p, *d)
   Next
-  *datas\job_done = #True
+  *datas\job_state = Thread::#THREAD_JOB_DONE
 EndProcedure
 
 Procedure.i ShowTurbulence(img.i, *datas.TurbulenceDatas_t)
@@ -99,19 +99,42 @@ Procedure.i ShowTurbulence(img.i, *datas.TurbulenceDatas_t)
   ;MonoTurbulence(*datas)
 
   Thread::SplitTask(*pool, *datas, ThreadedTurbulenceDatas_t, @ThreadedTurbulence())
-
+  
   Define x, y
   Define *noise.Math::v3f32
   StartDrawing(ImageOutput(img))
+  
+  Define pixelFormat = DrawingBufferPixelFormat()
+  Define offsetPixel = 3
+  Define offsetRed = 0
+  Define offsetGreen = 1
+  Define offsetBlue = 2
+  
+  Select (pixelFormat & ~#PB_PixelFormat_ReversedY)
+    Case #PB_PixelFormat_8Bits      ; 1 byte per pixel, palletised
+    Case #PB_PixelFormat_15Bits     ; 2 bytes per pixel 
+    Case #PB_PixelFormat_16Bits     ; 2 bytes per pixel
+    Case #PB_PixelFormat_24Bits_RGB ; 3 bytes per pixel (RRGGBB)
+    Case #PB_PixelFormat_24Bits_BGR ; 3 bytes per pixel (BBGGRR)
+      offsetRed = 2
+      offsetBlue = 0
+    Case #PB_PixelFormat_32Bits_RGB ; 4 bytes per pixel (RRGGBB)
+      offsetPixel = 4
+    Case #PB_PixelFormat_32Bits_BGR ; 4 bytes per pixel (BBGGRR)
+      offsetPixel = 4
+      offsetRed = 2
+      offsetBlue = 0
+  EndSelect
+  
   Define *buffer = DrawingBuffer()
   Define idx
   For x = 0 To width - 1
     For y = 0 To height -1
       idx = (y*width+x)
       *noise = *datas\result + idx * SizeOf(Math::v3f32)
-      PokeB(*buffer + idx * 3, Int((*noise\x*0.5+0.5) * 255))
-      PokeB(*buffer + idx * 3+1, Int((*noise\y*0.5+0.5) * 255))
-      PokeB(*buffer + idx * 3+2, Int((*noise\z*0.5+0.5) * 255))
+      PokeB(*buffer + idx * offsetPixel+offsetRed, Int((*noise\x*0.5+0.5) * 255))
+      PokeB(*buffer + idx * offsetPixel+offsetGreen, Int((*noise\y*0.5+0.5) * 255))
+      PokeB(*buffer + idx * offsetPixel+offsetBlue, Int((*noise\z*0.5+0.5) * 255))
     Next 
   Next
 
@@ -123,11 +146,14 @@ EndProcedure
 Time::Init()
 
 
-#width = 2048
-#height = 2048
+#width = 1024
+#height = 1024
 Define *turb.TurbulenceDatas_t = NewTurbulenceDatas(#width, #height, 0)
-InitPositions(*turb,0.05)
+InitPositions(*turb,0.02)
 Define image = CreateImage(#PB_Any,#width,#height,24)
+
+
+
 Define starttime.d = Time::Get()
 ; ShowTurbulence(image, *turb)
 Define TotalSeconds.d = (Time::Get() - starttime)
@@ -145,9 +171,8 @@ Repeat
     SetGadgetState(0, ImageID(image))
   EndIf  
 Until Event = #PB_Event_CloseWindow
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 33
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 100
+; FirstLine = 84
 ; Folding = --
 ; EnableXP

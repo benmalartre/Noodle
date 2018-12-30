@@ -380,12 +380,15 @@ Module CArray
   ; Copy
   ;----------------------------------------------------------------
   Procedure Copy(*array.CArray::CArrayT,*src.CArray::CArrayT)
-    If Not *array\itemCount = *src\itemCount Or Not *array\itemSize = *src\itemSize
-      *array\itemSize = *src\itemSize
-      CArray::SetCount(*array,*src\itemCount)
+    If *src\itemCount = 0
+      CArray::SetCount(*array, 0)
+    Else
+      If Not *array\itemCount = *src\itemCount Or Not *array\itemSize = *src\itemSize
+        *array\itemSize = *src\itemSize
+        CArray::SetCount(*array,*src\itemCount)
+      EndIf
+      CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
     EndIf
-    
-    CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1199,8 +1202,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1174
-; FirstLine = 1140
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 388
+; FirstLine = 377
 ; Folding = ------------
 ; EnableXP

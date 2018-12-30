@@ -25,43 +25,59 @@ Module Memory
   ; ALLOCATE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure AllocateAlignedMemory(size.i)
-    Protected *memory = AllocateMemory(size + #ALIGN_BITS)
-    Protected *aligned
-    Define offset.i = *memory % #ALIGN_BITS
-    If offset <> 0
-      *aligned = AlignMemory(*memory, #ALIGN_BITS)
-      PokeB(*aligned + size + 1, #ALIGN_BITS - offset)
-    Else
-      *aligned = *memory
-      PokeB(*aligned + size + 1, 0)
-    EndIf
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      Protected *memory = AllocateMemory(size + #ALIGN_BITS)
+      Protected *aligned
+      Define offset.i = *memory % #ALIGN_BITS
+      If offset <> 0
+        *aligned = AlignMemory(*memory, #ALIGN_BITS)
+        PokeB(*aligned + size + 1, #ALIGN_BITS - offset)
+      Else
+        *aligned = *memory
+        PokeB(*aligned + size + 1, 0)
+      EndIf
+      
+      ProcedureReturn *aligned
+    CompilerElse
+      Protected *memory =   AllocateMemory(size)
+      ProcedureReturn *memory
+    CompilerEndIf
     
-    ProcedureReturn *aligned
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; REALLOCATE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure ReAllocateAlignedMemory(*memory, oldsize.i, size.i)
-    *memory = ReAllocateMemory(*memory - PeekB(*memory + oldsize + 1), size + #ALIGN_BITS, #PB_Memory_NoClear)
-    Protected *aligned
-    Protected offset.i = *memory % #ALIGN_BITS
-    If offset <> 0
-      *aligned = AlignMemory(*memory, #ALIGN_BITS)
-      PokeB(*aligned + size + 1, #ALIGN_BITS - offset)
-    Else
-      *aligned = *memory
-      PokeB(*aligned + size + 1, 0)
-    EndIf
-
-    ProcedureReturn *aligned 
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      *memory = ReAllocateMemory(*memory - PeekB(*memory + oldsize + 1), size + #ALIGN_BITS, #PB_Memory_NoClear)
+      Protected *aligned
+      Protected offset.i = *memory % #ALIGN_BITS
+      If offset <> 0
+        *aligned = AlignMemory(*memory, #ALIGN_BITS)
+        PokeB(*aligned + size + 1, #ALIGN_BITS - offset)
+      Else
+        *aligned = *memory
+        PokeB(*aligned + size + 1, 0)
+      EndIf
+  
+      ProcedureReturn *aligned 
+    CompilerElse
+      *memory = ReAllocateMemory(*memory, size, #PB_Memory_NoClear)
+      ProcedureReturn *memory
+    CompilerEndIf
+    
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; FREE ALIGNED MEMORY
   ;--------------------------------------------------------------------------------------
   Procedure FreeAlignedMemory(*memory, size.i)
-    FreeMemory(*memory - PeekB(*memory + size + 1))
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      FreeMemory(*memory - PeekB(*memory + size + 1))
+    CompilerElse
+      FreeMemory(*memory)
+    CompilerEndIf
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
@@ -106,7 +122,8 @@ EndModule
 ;========================================================================================
 ; EOF
 ;========================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 80
 ; Folding = --
 ; EnableXP

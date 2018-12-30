@@ -1,7 +1,7 @@
-﻿XIncludeFile "E:/Projects/RnD/Noodle/src/core/Math.pbi"
-XIncludeFile "E:/Projects/RnD/Noodle/src/core/Time.pbi"
-XIncludeFile "E:/Projects/RnD/Noodle/src/objects/Geometry.pbi"
-XIncludeFile "E:/Projects/RnD/Noodle/src/objects/Triangle.pbi"
+﻿XIncludeFile "../../core/Math.pbi"
+XIncludeFile "../../core/Time.pbi"
+XIncludeFile "../../objects/Geometry.pbi"
+XIncludeFile "../../objects/Triangle.pbi"
 
 UseModule Math
 ; UseModule Geometry
@@ -139,9 +139,8 @@ MessageRequester("Touch",msg)
 ; Debug pbs
 ; Debug "-----------------------------------------------------"
 ; Debug asms
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 12
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP
 ; DisableDebugger

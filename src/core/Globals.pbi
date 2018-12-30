@@ -161,20 +161,24 @@ DeclareModule Globals
 
   
   ; ---[ Bits Manipulation]-----------------------------------------------------
-  Macro BitRead(value,bit)
-    Bool((value>>bit)& #True)
+  Macro BitRead(_number,_bit)
+    Bool((_number>>_bit)& #True)
   EndMacro
   
-  Macro BitSet(value,bit)
-    ((value_ | 1 << (bit))
+  Macro BitSet(_number,_bit)
+    _number | 1 << _bit
   EndMacro
   
-  Macro BitClear(value,bit)
-    ((value) & ~(1 << (bit)))
+  Macro BitClear(_number,_bit)
+    _number & ~(1 << _bit)
   EndMacro
   
-  Macro BitWrite(value,bit,bitValue)
-    If (bitvalue) : Globals::BitSet((value), (bit)) :Else : Globals::BitClear((value), (bit)):EndIf
+  Macro BitWrite(_number,_bit,_value)
+    If (_value) 
+      Globals::BitSet(_number, _bit)
+    Else
+      Globals::BitClear(_number, _bit)
+    EndIf
   EndMacro
   
    ; ---[ Color Conversion ]-----------------------------------------------------
@@ -224,9 +228,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 176
-; FirstLine = 141
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 164
+; FirstLine = 160
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

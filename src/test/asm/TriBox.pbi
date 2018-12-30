@@ -16,7 +16,7 @@ Procedure WithAdd(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *result.v3
   ! movups xmm14, [rsi]
   ! mov rsi, [p.p_c]
   ! movups xmm15, [rsi]
-  ! mov r13, math.l_sse_1111_negate_mask
+  ! lea r13, [math.l_sse_1111_negate_mask]
   
   ; ---------------------------------------------------------------------------------
   ; triangle-box intersection
@@ -97,7 +97,7 @@ Procedure WithMask(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32, *result.v
   ! movups xmm14, [rsi]
   ! mov rsi, [p.p_c]
   ! movups xmm15, [rsi]
-  ! mov r13, math.l_sse_1111_negate_mask
+  ! lea r13, [math.l_sse_1111_negate_mask]
   
   ; ---------------------------------------------------------------------------------
   ; triangle-box intersection
@@ -307,7 +307,8 @@ Vector3::ScaleInPlace(c, 0.1)
 
 WithAdd(box, a, b, c, result)
 WithMask(box, a, b, c, result)
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 99
+; FirstLine = 72
 ; Folding = -
 ; EnableXP

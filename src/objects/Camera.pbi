@@ -232,9 +232,10 @@ Module Camera
   ; Pan
   ;------------------------------------------------------------------
   Procedure Pan(*Me.Camera_t,deltax.f,deltay.f,width.f,height.f)
+    
     Protected delta.v3f32
     Protected dist.v3f32
-  
+    
     Vector3::Sub(dist,*Me\pos,*Me\lookat)
     Protected d.f = Vector3::Length(dist)
     delta\x = -deltax/(width/2)*d
@@ -245,7 +246,6 @@ Module Camera
     Matrix4::GetQuaternion(*Me\view,q)
     Vector3::MulByQuaternionInPlace(delta,q)
 
-    
     Vector3::AddInPlace(*Me\pos,delta)
     Vector3::AddInPlace(*Me\lookat,delta)
     
@@ -492,9 +492,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 4
+; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; CursorPosition = 189
+; FirstLine = 185
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier
