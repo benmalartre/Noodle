@@ -587,7 +587,7 @@ Module Handle
     Select *Me\tool
       Case Globals::#TOOL_TRANSLATE
         *shape = *Me\translate_handle
-        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0
+        glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0)
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
       Case Globals::#TOOL_ROTATE
         *shape = *Me\rotate_handle
@@ -1445,7 +1445,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 600
-; FirstLine = 583
+; CursorPosition = 589
+; FirstLine = 585
 ; Folding = -------
 ; EnableXP

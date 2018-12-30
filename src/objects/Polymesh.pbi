@@ -341,8 +341,7 @@ Module Polymesh
     glBindBuffer(#GL_ARRAY_BUFFER,*p\ebo)
     
     ; Push Position Datas to GPU
-    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
-    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+    glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*geom\a_positions),CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
     
     ; Attibute Position 0
     glEnableVertexAttribArray(0)
@@ -355,8 +354,7 @@ Module Polymesh
     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eea)
     
     ; Push Element Datas to GPU
-    size_t = CArray::GetItemSize(*geom\a_edgeindices) * 2 * *geom\nbedges
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*geom\a_edgeindices),CArray::GetPtr(*geom\a_edgeindices, 0),#GL_STATIC_DRAW)
     
 
   EndProcedure
@@ -366,9 +364,16 @@ Module Polymesh
   ;-----------------------------------------------------
   Procedure UpdateGLEdgeData(*p.Polymesh_t)
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
-    ; Push Position Datas to GPU
-    Protected size_t = CArray::GetItemSize(*geom\a_positions) * *geom\nbpoints
-    glBufferData(#GL_ARRAY_BUFFER,size_t,CArray::GetPtr(*geom\a_positions, 0),#GL_STATIC_DRAW)
+    
+    glBufferData(#GL_ARRAY_BUFFER,
+                 CArray::GetSize(*geom\a_positions),
+                 CArray::GetPtr(*geom\a_positions, 0),
+                 #GL_STATIC_DRAW)
+    
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
+                 CArray::GetSize(*geom\a_edgeindices), 
+                 CArray::GetPtr(*geom\a_edgeindices), 
+                 #GL_STATIC_DRAW)
   EndProcedure
   
    
@@ -403,6 +408,9 @@ Module Polymesh
     
     ; Fill Buffer
     BuildGLData(*p)
+
+    ; Create Edge Elements Buffer
+    BuildGLEdgeData(*p)
     
     If *p\shader
       glLinkProgram(*p\shader\pgm);
@@ -420,15 +428,6 @@ Module Polymesh
         ;MessageRequester("Error Setup Shader Program for Polymesh",PeekS(*pLinkInfoLog))
       EndIf
     EndIf
-
-;     ; Create or ReUse Edge Elements Buffer
-;     If Not *p\eab
-;       glGenBuffers(1,@*p\eab)
-;     EndIf 
-; 
-;     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*p\eab)
-; 
-;     BuildGLEdgeData(*p)
     
     ; Unbind
     glBindVertexArray(0)
@@ -559,8 +558,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 430
-; FirstLine = 405
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 411
+; FirstLine = 402
 ; Folding = ----
 ; EnableXP

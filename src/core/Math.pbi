@@ -141,69 +141,6 @@ DeclareModule Math
       sse_epsilon_vec:
       Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
     EndDataSection
-;     DataSection
-;       ! align 16
-;       ! sse_0000_sign_mask:
-;       ! dd $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
-;       ! sse_0001_sign_mask:
-;       ! dd $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
-;       ! sse_0010_sign_mask:
-;       ! dd $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
-;       ! sse_0011_sign_mask:
-;       ! dd $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $FFFFFFFF
-;       ! sse_0100_sign_mask:
-;       ! dd $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
-;       ! sse_0101_sign_mask:
-;       ! dd $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $FFFFFFFF
-;       ! sse_0110_sign_mask:
-;       ! dd $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
-;       ! sse_0111_sign_mask:
-;       ! dd $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $FFFFFFFF
-;       ! sse_1000_sign_mask:
-;       ! dd $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
-;       ! sse_1001_sign_mask:
-;       ! dd $7FFFFFFF, $FFFFFFFF, $FFFFFFFF, $7FFFFFFF
-;       ! sse_1010_sign_mask:
-;       ! dd $FFFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
-;       ! sse_1011_sign_mask:
-;       ! dd $7FFFFFFF, $7FFFFFFF, $FFFFFFFF, $7FFFFFFF
-;       ! sse_1100_sign_mask:
-;       ! dd $FFFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
-;       ! sse_1101_sign_mask:
-;       ! dd $7FFFFFFF, $FFFFFFFF, $7FFFFFFF, $7FFFFFFF
-;       ! sse_1110_sign_mask:
-;       ! dd $FFFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
-;       ! sse_1111_sign_mask:
-;       ! dd $7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF
-;       ! sse_1111_negate_mask:
-;       ! dd -1.0, -1.0, -1.0, -1.0
-;       ! sse_0101_negate_mask:
-;       ! dd 1.0, -1.0, 1.0, -1.0
-;       ! sse_1010_negate_mask:
-;       ! dd -1.0, 1.0, -1.0, 1.0
-;       ! sse_1100_negate_mask:
-;       ! dd -1.0, -1.0, 1.0, 1.0
-;       ! sse_1110_negate_mask:
-;       ! dd -1.0, -1.0, -1.0, 1.0
-;       ! sse_infinity_vec:
-;       ! dd $7F800000, $7F800000, $7F800000, $7F800000
-;       ! sse_zero_vec:
-;       ! dd 0.0, 0.0, 0.0, 0.0
-;       ! sse_one_vec:
-;       ! dd 1.0, 1.0, 1.0, 1.0
-;       ! sse_half_vec:
-;       ! dd 0.5, 0.5, 0.5, 0.5
-;       ! sse_onethird_vec:
-;       ! dd 0.333333333,0.333333333,0.333333333,0.333333333
-;       ! sse_minusone_vec:
-;       ! dd -1.0, -1.0, -1.0, -1.0
-;       ! sse_minushalf_vec:
-;       ! dd -0.5, -0.5, -0.5, -0.5
-;       ! sse_pi_vec:
-;       ! dd #F32_PI, #F32_PI, #F32_PI, #F32_PI
-;       ! sse_epsilon_vec:
-;       ! dd #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
-;     EndDataSection
   CompilerEndIf
   
 
@@ -4244,9 +4181,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 123
-; FirstLine = 98
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 142
+; FirstLine = 115
 ; Folding = ------------------------------------------------------
 ; EnableXP
 ; EnableUnicode
