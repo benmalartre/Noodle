@@ -155,9 +155,7 @@ Module Tree
         *branch\filter_nodes() = *current
       EndIf
     Until Not PreviousElement(*branch\nodes())
-    Debug "NUM Nodes In BRANCH : "+Str(ListSize(*branch\nodes()))
     ForEach *branch\filter_nodes()
-      Debug "Evaluate "+*branch\filter_nodes()\name
       current = *branch\filter_nodes()
       current\Evaluate()
     Next
@@ -169,10 +167,8 @@ Module Tree
   ; Evaluate
   ;-----------------------------------------------------------------------------
   Procedure Evaluate(*Me.Tree_t)
-    Debug "### EVALUATE GRAPH >>> DIRTY ? "+Str(*Me\dirty)
     If *Me\dirty
       GetAllBranches(*Me)
-      Debug "Num Branches : "+Str(ListSize(*Me\all_branches()))
       ForEach *Me\all_branches()
         GetBranchState(*Me\all_branches()) 
       Next
@@ -551,8 +547,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 171
 ; Folding = -----
 ; EnableThread
 ; EnableXP

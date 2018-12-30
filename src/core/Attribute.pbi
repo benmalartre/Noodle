@@ -384,8 +384,6 @@ Module Attribute
   ;-----------------------------------------------------
   Procedure.s GetAsBase64(*attribute.Attribute_t)
     
-    Debug "Get Attribute As Base64 "+*attribute\name
-    
    Protected it.i
    Protected out_string.s
    Protected size_t.i
@@ -610,8 +608,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 294
-; FirstLine = 373
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 385
+; FirstLine = 386
 ; Folding = ---
 ; EnableXP

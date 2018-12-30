@@ -238,7 +238,6 @@ Module Utils
   ;-------------------------------------------------------------------
   ; Rotate Vector
   ;-------------------------------------------------------------------
-  ;{
   Procedure RotateVector(*v.v3f32,*q.q4f32,*io.v3f32)
     Protected len.f = Vector3::Length(*v)
     Protected vn.v3f32
@@ -256,7 +255,6 @@ Module Utils
     Vector3::Set(*io,resQuat\x,resQuat\y,resQuat\z)
     Vector3::SetLength(*io,len)
   EndProcedure
-  ;}
   
   ;-------------------------------------------------------------------
   ; Direction To Rotation
@@ -431,8 +429,8 @@ Module Utils
 
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 365
-; FirstLine = 361
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 256
+; FirstLine = 238
 ; Folding = ----
 ; EnableXP

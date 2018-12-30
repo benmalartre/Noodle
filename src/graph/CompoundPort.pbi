@@ -25,7 +25,6 @@ Module CompoundNodePort
     *Me\io = io
     
     Init(*Me)
-    ;*p\value = #Null
     ProcedureReturn *Me
   EndProcedure
   
@@ -46,7 +45,6 @@ Module CompoundNodePort
     *Me\io = *port \io
     
     Init(*Me)
-    ;*p\value = #Null
     ProcedureReturn *Me
   EndProcedure
   
@@ -75,10 +73,8 @@ Module CompoundNodePort
     Protected *port.NodePort::NodePort_t = *sig\rcv_inst
     Select *port\currenttype
       Case Attribute::#ATTR_TYPE_REFERENCE
-;         Protected ctrl.Control::IControlEdit = *c
         *port\reference = ControlEdit::GetValue(*c)
         *port\refchanged = #True
-        Debug "New REFERENCE Value : "+*port\reference
         Protected *node.Node::Node_t = *port\node
 
 ;         If *node\type = "GetDataNode"
@@ -100,14 +96,11 @@ Module CompoundNodePort
         Protected *bCtrl.ControlCheck::ControlCheck_t = *c
         Protected *bVal.CArray::CArrayBool = *port\value
         CArray::SetValueB(*bVal,0,ControlCheck::GetValue(*bCtrl))
-        ;bVal\SetValue(0,bCtrl\GetValue())
-;         Debug "New BOOL Value : "+Str(bVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *iCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected *iVal.CArray::CArrayInt = *port\value
         CArray::SetValueI(*iVal,0,*iCtrl\value_n)
-;         Debug "New LONG Value : "+Str(iVal\GetValue(0))
         
       Case Attribute::#ATTR_TYPE_FLOAT
         
@@ -115,10 +108,8 @@ Module CompoundNodePort
         Protected fv.f = *fCtrl\value_n
         Debug "Recieved FLOAT port "+StrF(fv)
         Protected *fVal.CArray::CArrayFloat = *port\value
-        CArray::SetValueF(*fVal,0,fv);*fCtrl\value_n)
-        
-;         Debug "New FLOAT Value : "+StrF(fVal\GetValue(0))
-        
+        CArray::SetValueF(*fVal,0,fv)
+                
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal.CArray::CArrayV3F32 = *port\value
         Protected v.v3f32
@@ -128,7 +119,6 @@ Module CompoundNodePort
         Protected f.f = *vCtrl\value_n
         Select *sig\rcv_slot
           Case 0;X
-            Debug "X Parameter Vector Update..."
             Vector3::Set(v,f,v\y,v\z)
           Case 1;Y
             Vector3::Set(v,v\x,f,v\z)
@@ -137,7 +127,6 @@ Module CompoundNodePort
         EndSelect
         
         CArray::SetValue(*vVal,0,v)
-        ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
       Case Attribute::#ATTR_TYPE_Quaternion
         Protected *qVal.CArray::CArrayQ4F32 = *port\value
@@ -149,7 +138,6 @@ Module CompoundNodePort
         f.f = *qCtrl\value_n
         Select *sig\rcv_slot
           Case 0;X
-            Debug "X Parameter Vector Update..."
             Quaternion::Set(q,f,q\y,q\z,q\w)
           Case 1;Y
             Quaternion::Set(q,q\x,f,q\z,q\w)
@@ -160,7 +148,6 @@ Module CompoundNodePort
         EndSelect
         
         CArray::SetValue(*qVal,0,q)
-        ;vVal\SetValue(0,@v);*fCtrl\value_n)
         
        Case Attribute::#ATTR_TYPE_COLOR
         Protected *cVal.CArray::CArrayC4F32 = *port\value
@@ -214,9 +201,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 157
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 110
+; FirstLine = 161
 ; Folding = --
 ; EnableXP

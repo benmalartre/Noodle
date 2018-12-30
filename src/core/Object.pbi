@@ -2,27 +2,19 @@
 ; Class Module Declaration
 ;======================================================================
 DeclareModule Class
-  ; ---[ Class Message Protoype ]-----------------------------------------------
   Prototype ClassMessage( type.i, *up )
-  ; ---[ Class Destructor Prototype ]-------------------------------------------
   Prototype ClassDestructor( *Me )
 
-  ; ---[ Generic Class 'Instance' ]---------------------------------------------
   Structure Class_t
     name .s
     isize.i
     cmsg .ClassMessage
     dtor .ClassDestructor
-    ;stats.THREADS_STATS
   EndStructure
   
   Declare ClassOnMessage()
   
-  ; ---[ Class Definition Macro ]-----------------------------------------------
-  Macro DEF( cls )
-  
-;     Global Class.Class::Class_t
-    
+  Macro DEF( cls )    
     CLASS\name   = Globals::GUILLEMETS#cls#Globals::GUILLEMETS
     CLASS\isize  = SizeOf(cls#_t)
     
@@ -33,7 +25,6 @@ DeclareModule Class
     CompilerEndIf
     
     CLASS\dtor = @Delete()
-
   EndMacro
 
 EndDeclareModule
@@ -135,23 +126,21 @@ EndDeclareModule
 ;======================================================================
 Module Object
   Procedure SignalConnect( *Me.Object_t, *slot.Slot::Slot_t, slot.i )  
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me Or Not *slot : ProcedureReturn :EndIf
 
-    ; ---[ Connect Me To Signal ]-----------------------------------------------
+    ; Connect To Signal
     Slot::Connect(*slot,*Me, slot )
   EndProcedure
   
   Procedure SignalDisconnect( *Me.Object_t, *slot.Slot::Slot_t)  
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me Or Not *slot : ProcedureReturn :EndIf
   
-    ; ---[ Connect Me To Signal ]-----------------------------------------------
+    ; Connect To Signal
     Slot::Disconnect(*slot,*Me )
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 73
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 137
+; FirstLine = 109
 ; Folding = ---
 ; EnableXP

@@ -122,6 +122,10 @@ DeclareModule Math
       Data.f -1.0, -1.0, 1.0, 1.0
       sse_1110_negate_mask:
       Data.f -1.0, -1.0, -1.0, 1.0
+      sse_0001_negate_mask:
+      Data.f 1.0, 1.0, 1.0, -1.0
+      sse_0111_negate_mask:
+      Data.f 1.0, -1.0, -1.0, -1.0
       sse_infinity_vec:
       Data.l $7F800000, $7F800000, $7F800000, $7F800000
       sse_zero_vec:
@@ -1719,7 +1723,11 @@ DeclareModule Quaternion
     _x = Random(255)/255.0
     _y = Random(255)/255.0
     _z = Random(255)/255.0
-    Quaternion::Set(_q, Sqr(_x*Cos(#F32_2PI*_z)), Sqr(1-_x*Sin(#F32_2PI*_y)), Sqr(1-_x*Cos(#F32_2PI*_y)), Sqr(_x*Sin(#F32_2PI*_z)))
+    Quaternion::Set(_q,
+                    Sqr(_x*Cos(#F32_2PI*_z)),
+                    Sqr(1-_x*Sin(#F32_2PI*_y)),
+                    Sqr(1-_x*Cos(#F32_2PI*_y)), 
+                    Sqr(_x*Sin(#F32_2PI*_z)))
   EndMacro
   
   ;------------------------------------------------------------------
@@ -3603,87 +3611,96 @@ Module Quaternion
 ;   ; QUATERNION MULTIPLICATION
 ;   ;------------------------------------------------------------------
 ;   Procedure Multiply(*out.q4f32,*q1.q4f32, *q2.q4f32)
-;     
-;     ; x = (q1\w * q2\x) + (q1\x * q2\w) + (q1\y * q2\z) - (q1\z * q2\y)
-;     ; y = (q1\w * q2\y) + (q1\y * q2\w) + (q1\z * q2\x) - (q1\x * q2\z)
-;     ; z = (q1\w * q2\z) + (q1\z * q2\w) + (q1\x * q2\y) - (q1\y * q2\x)
-;     ; w = (q1\w * q2\w) - (q1\x * q2\x) - (q1\y * q2\y) - (q1\z * q2\z)
-  
-  ; x = (q1\x * q2\w) + (q1\y * q2\z) + (q1\z * q2\y) + (q1\w * q2\x)
-  ; y = -(q1\x * q2\z) + (q1\y * q2\w) + (q1\z * q2\x) + (q1\w * q2\y)
-  ; z = (q1\x * q2\y) - (q1\y * q2\x) + (q1\z * q2\w) + (q1\w * q2\z)
-  ; w = -(q1\x * q2\x) - (q1\y * q2\y) - (q1\z * q2\z) + (q1\w * q2\w)
-;     
-;     ! mov rax, [p.p_out]
+; ;   _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
+; ;   _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
+; ;   _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
+; ;   _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
+; 
+;     ! mov rdi, [p.p_out]
 ;     ! mov rcx, [p.p_q1]
 ;     ! mov rdx, [p.p_q2]
 ;     
-;     ! movups xmm0, [rcx]              ; load q1
-;     ! movups xmm1, [rdx]              ; load q2
-;     
-;     ! xorps xmm2, xmm2                ; reset output register
-;     
-;     ! movaps xmm2, xmm0               ; copy q1 to xmm2
+;     ! movups xmm0, [rcx]              ; load q1 
+;     ! movaps xmm1, xmm0               ; copy to xmm1
+;     ! movaps xmm2, xmm0               ; and xmm2
 ;     ! movaps xmm3, xmm0               ; and xmm3
-;     ! movaps xmm4, xmm1               ; copy q2 to xmm4
-;     ! movaps xmm5, xmm1               ; and xmm5
 ;     
-;     ! shufps xmm2, xmm0, 229
-;     ! shufps xmm4, xmm1, 158
-;     ! shufps  xmm3, xmm0, 122
-;     ! shufps  xmm5, xmm1, 1
-;     ! mulps   xmm3, xmm4
-;     ! movaps  xmm4, xmm1
-;     ! mulps   xmm2, xmm5
-;     ! shufps  xmm4, xmm1, 123
-;     ! addps   xmm2, xmm3
-;     ! movaps  xmm3, xmm0
-;     ! shufps  xmm3, xmm0, 159
-;     ! shufps  xmm0, xmm0, 0
-;     ! xorps   xmm2, XMMWORD PTR .LC0[rip]
-;     ! mulps   xmm3, xmm4
-;     ! mulps   xmm0, xmm1
-;     ! subps   xmm0, xmm3
-;     ! addps   xmm0, xmm2
-;     ! movups [rax], xmm0
-    
-;     movaps  xmm2, xmm0
-;     movaps  xmm3, xmm0
-;     movaps  xmm5, xmm1
-;     movaps  xmm4, xmm1
-;     shufps  xmm2, xmm0, 229
-;     shufps  xmm4, xmm1, 158
-;     shufps  xmm3, xmm0, 122
-;     shufps  xmm5, xmm1, 1
-;     mulps   xmm3, xmm4
-;     movaps  xmm4, xmm1
-;     mulps   xmm2, xmm5
-;     shufps  xmm4, xmm1, 123
-;     addps   xmm2, xmm3
-;     movaps  xmm3, xmm0
-;     shufps  xmm3, xmm0, 159
-;     shufps  xmm0, xmm0, 0
-;     xorps   xmm2, XMMWORD PTR .LC0[rip]
-;     mulps   xmm3, xmm4
-;     mulps   xmm0, xmm1
-;     subps   xmm0, xmm3
-;     addps   xmm0, xmm2
-
-
+;     ! shufps xmm0, xmm0, 11111111b    ; q1 ( w, w, w, w)
+;     ! shufps xmm1, xmm1, 00100100b    ; q1 ( x, y, z, x)
+;     ! shufps xmm2, xmm2, 01001001b    ; q1 ( y, z, x, y)
+;     ! shufps xmm3, xmm3, 10010010b    ; q1 ( z, x, y, z)
+;     
+;     ! movups xmm4, [rcx]              ; load q2
+;     ! movaps xmm5, xmm4               ; copy to xmm5
+;     ! movaps xmm6, xmm4               ; and xmm6
+;     ! movaps xmm7, xmm4               ; and xmm7
+;     
+;     ! shufps xmm5, xmm5, 00111111b    ; q2 ( w, w, w, x)
+;     ! shufps xmm6, xmm6, 01010010b    ; q2 ( z, x, y, y)
+;     ! shufps xmm7, xmm7, 10001001b    ; q2 ( y, z, x, z)
+;     
+;     ! mulps xmm0, xmm4              
+;     ! mulps xmm1, xmm5
+;     ! mulps xmm2, xmm6
+;     ! mulps xmm3, xmm7
+;     
+;     ! movaps xmm8, [math.l_sse_0001_negate_mask]
+;     ! mulps xmm1, xmm8
+;     ! mulps xmm2, xmm8
+;     ! movaps xmm8, [math.l_sse_1111_negate_mask]
+;     ! mulps xmm3, xmm8
+;     
+;     ! addps xmm0, xmm1
+;     ! addps xmm0, xmm2
+;     ! addps xmm0, xmm3
+;     
+;     ! movups [rdi], xmm0
 ;   EndProcedure
 ;     
 ;   Procedure MultiplyInPlace(*q1.q4f32, *q2.q4f32)
 ;     
-;     
-; ;     Define.f _x,_y,_z,_w
 ; ;     _x = (_q1\w * _q2\x) + (_q1\x * _q2\w) + (_q1\y * _q2\z) - (_q1\z * _q2\y)
 ; ;     _y = (_q1\w * _q2\y) + (_q1\y * _q2\w) + (_q1\z * _q2\x) - (_q1\x * _q2\z)
 ; ;     _z = (_q1\w * _q2\z) + (_q1\z * _q2\w) + (_q1\x * _q2\y) - (_q1\y * _q2\x)
 ; ;     _w = (_q1\w * _q2\w) - (_q1\x * _q2\x) - (_q1\y * _q2\y) - (_q1\z * _q2\z)
-; ;     _q1\x = _x
-; ;     _q1\y = _y
-; ;     _q1\z = _z
-; ;     _q1\w = _w
+;     ! mov rdi, [p.p_q1]
+;     ! mov rsi, [p.p_q2]
+;     
+;     ! movups xmm0, [rdi]              ; load q1 
+;     ! movaps xmm1, xmm0               ; copy to xmm1
+;     ! movaps xmm2, xmm0               ; and xmm2
+;     ! movaps xmm3, xmm0               ; and xmm3
+;     
+;     ! shufps xmm0, xmm0, 11111111b    ; q1 ( w, w, w, w)
+;     ! shufps xmm1, xmm1, 00100100b    ; q1 ( x, y, z, x)
+;     ! shufps xmm2, xmm2, 01001001b    ; q1 ( y, z, x, y)
+;     ! shufps xmm3, xmm3, 10010010b    ; q1 ( z, x, y, z)
+;     
+;     ! movups xmm4, [rsi]              ; load q2
+;     ! movaps xmm5, xmm4               ; copy to xmm5
+;     ! movaps xmm6, xmm4               ; and xmm6
+;     ! movaps xmm7, xmm4               ; and xmm7
+;     
+;     ! shufps xmm5, xmm5, 00111111b    ; q2 ( w, w, w, x)
+;     ! shufps xmm6, xmm6, 01010010b    ; q2 ( z, x, y, y)
+;     ! shufps xmm7, xmm7, 10001001b    ; q2 ( y, z, x, z)
+;     
+;     ! mulps xmm0, xmm4              
+;     ! mulps xmm1, xmm5
+;     ! mulps xmm2, xmm6
+;     ! mulps xmm3, xmm7
+;     
+;     ! movaps xmm8, [math.l_sse_0001_negate_mask]
+;     ! mulps xmm1, xmm8
+;     ! mulps xmm2, xmm8
+;     ! movaps xmm8, [math.l_sse_1111_negate_mask]
+;     ! mulps xmm3, xmm8
+;     
+;     ! addps xmm0, xmm1
+;     ! addps xmm0, xmm2
+;     ! addps xmm0, xmm3
+;     
+;     ! movups [rdi], xmm0
 ;   EndProcedure
 ; CompilerEndIf
   
@@ -4182,8 +4199,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 142
-; FirstLine = 115
-; Folding = ------------------------------------------------------
+; CursorPosition = 1614
+; FirstLine = 1601
+; Folding = -----------------------------------------------------
 ; EnableXP
 ; EnableUnicode

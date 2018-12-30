@@ -529,13 +529,13 @@ DeclareModule Nodes
   ;----------------------------------------------------------------------------
   ; Node Description
   ;----------------------------------------------------------------------------
-  Prototype GRAPHNODECONSTRUCTOR(*tree.Node::Node_t,name.s,x.i,y.i,w.i,h.i,c.i)
+  Prototype PFNGRAPHNODECONSTRUCTOR(*tree.Node::Node_t,name.s,x.i,y.i,w.i,h.i,c.i)
   
   Structure NodeDescription_t
     name.s
     label.s
     category.s
-    constructor.GRAPHNODECONSTRUCTOR
+    constructor.PFNGRAPHNODECONSTRUCTOR
     color_id.i
     selected.b
   EndStructure
@@ -568,7 +568,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 537
+; FirstLine = 530
 ; Folding = ---
 ; EnableXP
