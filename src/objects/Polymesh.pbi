@@ -385,15 +385,12 @@ Module Polymesh
     
     If *pgm : *p\shader = *pgm : EndIf
     
-    ;---[ Get Underlying Geometry ]--------------------
+    ; Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     
     Protected nbs = CArray::GetCount(*geom\a_triangleindices)
     If nbs <3 : ProcedureReturn : EndIf
-    
-    ; Setup Static Kinematic STate
-    ;ResetStaticKinematicState(*p)nbs
-
+   
     ; Create or ReUse Vertex Array Object
     If Not *p\vao
       glGenVertexArrays(1,@*p\vao)
@@ -412,20 +409,17 @@ Module Polymesh
     ; Create Edge Elements Buffer
     BuildGLEdgeData(*p)
     
+    ; Link Shader
     If *p\shader
       glLinkProgram(*p\shader\pgm);
-      ; Check For Errors
       Protected linked.i
       If Not glGetProgramiv(*p\shader\pgm, #GL_LINK_STATUS, @linked);
-        ;Make sure linked==TRUE
-        ;If linked==FALSE, the log contains information on what went wrong
         Protected maxLength.i
         glGetProgramiv(*p\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
         maxLength = maxLength + 1                                  ;
         Protected uchar.c
         Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
         glGetProgramInfoLog(*p\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-        ;MessageRequester("Error Setup Shader Program for Polymesh",PeekS(*pLinkInfoLog))
       EndIf
     EndIf
     
@@ -439,7 +433,6 @@ Module Polymesh
   ;-----------------------------------------------------
   ; Clean
   ;-----------------------------------------------------
-  ;{
   Procedure Clean(*p.Polymesh_t)
 
     If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf 
@@ -451,12 +444,10 @@ Module Polymesh
     If *p\eea: glDeleteBuffers(1,@*p\eea) : EndIf
 
   EndProcedure
-  ;}
   
   ;-----------------------------------------------------
   ; Update
   ;-----------------------------------------------------
-  ;{
   Procedure Update(*p.Polymesh_t)
     
     If *p\stack And Stack::HasNodes(*p\stack)
@@ -483,12 +474,10 @@ Module Polymesh
     EndIf
 
   EndProcedure
-  ;}
   
   ;-----------------------------------------------------
   ; Draw
   ;-----------------------------------------------------
-  ;{
   Procedure Draw(*p.Polymesh_t, *ctx.GLContext::GLContext_t)
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     ;Skip invisible Object
@@ -519,10 +508,7 @@ Module Polymesh
 ; ;       glDisable (#GL_POLYGON_OFFSET_LINE)
 ; ;       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
 ;     EndIf
-      
-    
   EndProcedure
-  ;}
   
   ; Set From Shape
   ;----------------------------------------------------
@@ -559,7 +545,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 411
-; FirstLine = 402
+; CursorPosition = 387
+; FirstLine = 370
 ; Folding = ----
 ; EnableXP

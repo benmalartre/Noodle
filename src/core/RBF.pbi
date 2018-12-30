@@ -148,13 +148,11 @@ Module RBF
   
   ; compute distance with active kernel
   Procedure.f LinearKernel(r.f, eps.f)
-    Debug "KERNELE LINEAR"
     ProcedureReturn LINEAR(r)
   EndProcedure
   
   Procedure.f GaussianKernel(r.f, eps.f)
-    Debug "KERNELE GAUSSIAN"
-    ProcedureReturn GAUSSIAN(r, f)
+    ProcedureReturn GAUSSIAN(r, eps)
   EndProcedure
   
   Procedure.f CubicKernel(r.f, eps.f)
@@ -286,9 +284,8 @@ Module RBF
   
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 238
-; FirstLine = 171
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 154
+; FirstLine = 136
 ; Folding = ----
 ; EnableXP
