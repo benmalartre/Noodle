@@ -164,7 +164,6 @@ Module Attribute
   ; Get Size
   ;---------------------------------------------------------------------------
   Procedure GetSize(*attribute.Attribute_t)
-    Debug "Get Size for Attribute "+*attribute\name
     Protected *a.CArray::CArrayT
     Select *attribute\datastructure
       Case #ATTR_STRUCT_SINGLE
@@ -250,9 +249,9 @@ Module Attribute
             Case #ATTR_TYPE_FLOAT
               out_string =StrF(PeekF(*attribute\data))
             Case #ATTR_TYPE_VECTOR2
-;               Protected v2.v2f32
-;               CopyMemory(*attribute\data,@v2,SizeOf(v2))
-;               out_string = "("+StrF(v2\x)+","+StrF(v2\y)+")"
+              Protected v2.v2f32
+              CopyMemory(*attribute\data,@v2,SizeOf(v2))
+              out_string = "("+StrF(v2\x)+","+StrF(v2\y)+")"
             Case #ATTR_TYPE_VECTOR3
               Protected v3.v3f32
               CopyMemory(*attribute\data,v3,SizeOf(v3))
@@ -295,12 +294,12 @@ Module Attribute
               out_string +StrF(CArray::GetValueF(*f_datas,it))+","
             Next
           Case #ATTR_TYPE_VECTOR2
-;             Protected v2_datas.CArrayV2F32 = *attribute\data
-;             Protected *v2.v2f32
-;             For it=0 To v2_datas\GetCount()-1
-;               *v2 = v2_datas\GetValue(it)
-;               out_string +"("+StrF(*v2\x)+","+StrF(*v2\y)+"),"
-;             Next
+            Protected *v2_datas.CArray::CArrayV2F32 = *attribute\data
+            Protected *v2.v2f32
+            For it=0 To CArray::GetCount(*v2_datas)-1
+              *v2 = CArray::GetValue(*v2_datas, it)
+              out_string +"("+StrF(*v2\x)+","+StrF(*v2\y)+"),"
+            Next
             
           Case #ATTR_TYPE_VECTOR3
             Protected *v3_datas.CArray::CArrayV3F32 = *attribute\data
@@ -401,9 +400,9 @@ Module Attribute
             Case #ATTR_TYPE_FLOAT
               out_string =StrF(PeekF(*attribute\data))
             Case #ATTR_TYPE_VECTOR2
-;               Protected v2.v2f32
-;               CopyMemory(*attribute\data,@v2,SizeOf(v2))
-;               out_string = "("+StrF(v2\x)+","+StrF(v2\y)+")"
+              Protected v2.v2f32
+              CopyMemory(*attribute\data,@v2,SizeOf(v2))
+              out_string = "("+StrF(v2\x)+","+StrF(v2\y)+")"
             Case #ATTR_TYPE_VECTOR3
               Protected v3.v3f32
               CopyMemory(*attribute\data,@v3,SizeOf(v3))
@@ -609,7 +608,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 385
-; FirstLine = 386
+; CursorPosition = 299
+; FirstLine = 287
 ; Folding = ---
 ; EnableXP
