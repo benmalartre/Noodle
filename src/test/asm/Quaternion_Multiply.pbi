@@ -65,8 +65,6 @@ Procedure QuaternionMultiplySSE(*out.q4f32,*q1.q4f32, *q2.q4f32)
 EndProcedure
 
 Define q1.Math::q4f32
-
-MessageRequester("QUAT", Str(SizeOf(q1)))
 Define q2.Math::q4f32
 Define out.q4f32
 Time::Init()
@@ -92,7 +90,6 @@ CArray::SetCount(*O2, nb)
 Define startT.d = Time::Get()
 For i=0 To nb-1 
   *q = CArray::GetValue(*O1, i)
-  Debug *q
   QuaternionMultiplyMacro(*q,q1,q2)
 Next
 Define E1.d = Time::Get() - startT
@@ -108,7 +105,7 @@ Define E2.d = Time::Get() - startT
 MessageRequester("QUATERNION MULTIPLY", "PB : "+StrD(E1)+" vs SSE : "+StrD(E2)+Chr(10)+
                                         "COMPARE : "+Str(CompareMemory(*O1\data, *O2\data, CArray::GetSize(*O1))))
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 108
-; FirstLine = 77
+; CursorPosition = 91
+; FirstLine = 74
 ; Folding = -
 ; EnableXP

@@ -3833,7 +3833,7 @@ Module Matrix4
     EndProcedure
     
     Procedure Multiply(*m.m4f32, *f.m4f32, *s.m4f32)
-      ! mov rdx, [p.p_m]                 ; move io matrix to rdx register
+      ! mov rdi, [p.p_m]                 ; move io matrix to rdx register
       ! mov rax, [p.p_f]                 ; move first matrix to rax register
       ! mov rcx, [p.p_s]                 ; move second matrix to rcx register
       ! xor r8, r8                       ; reset counter
@@ -3863,7 +3863,7 @@ Module Matrix4
       !   addps xmm0, xmm2               ; packed addition
       !   addps xmm0, xmm3               ; packed addition
       
-      !   movups [rdx], xmm0             ; move row back to memory
+      !   movups [rdi], xmm0             ; move row back to memory
       !   add rdx, 16                    ; increment current io matrix row
       !   add rcx, 16                    ; increment current second matrix row
       !   inc r8                         ; increment counter
@@ -3872,17 +3872,17 @@ Module Matrix4
     EndProcedure
     
     Procedure MultiplyInPlace(*m.m4f32, *o.m4f32)
-      ! mov rdx, [p.p_m]
-      ! mov rcx, [p.p_o]
+      ! mov rdi, [p.p_m]
+      ! mov rsi, [p.p_o]
       ! xor r8, r8
       
-      ! movups xmm4, [rdx]
-      ! movups xmm5, [rdx + 16]
-      ! movups xmm6, [rdx + 32]
-      ! movups xmm7, [rdx + 48]
+      ! movups xmm4, [rdi]
+      ! movups xmm5, [rdi + 16]
+      ! movups xmm6, [rdi + 32]
+      ! movups xmm7, [rdi + 48]
       
       ! m4f32_multiplyinplace_loop:
-      !   movups xmm0, [rcx]
+      !   movups xmm0, [rsi]
       !   movaps xmm1, xmm0
       !   movaps xmm2, xmm0
       !   movaps xmm3, xmm0
@@ -3901,7 +3901,7 @@ Module Matrix4
       !   addps xmm0, xmm2
       !   addps xmm0, xmm3
       
-      !   movups [rdx], xmm0
+      !   movups [rdi], xmm0
       !   add rdx, 16
       !   add rcx, 16
       !   inc r8
@@ -3938,7 +3938,6 @@ Module Matrix4
           If Abs(fSys(i,j)<#F32_EPS) : cnt+1 : EndIf
         Next i 
         If cnt = 4 
-          Debug "Singular Matrix!!"
           ProcedureReturn #False
         Else
           For k = 0 To 7
@@ -4199,8 +4198,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 3656
-; FirstLine = 3678
+; CursorPosition = 3865
+; FirstLine = 3843
 ; Folding = ------------------------------------------------------
 ; EnableXP
 ; EnableUnicode
