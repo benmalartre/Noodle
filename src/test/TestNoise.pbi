@@ -171,8 +171,8 @@ Repeat
     SetGadgetState(0, ImageID(image))
   EndIf  
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 100
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 98
 ; FirstLine = 84
 ; Folding = --
 ; EnableXP

@@ -636,7 +636,7 @@ DeclareModule OpenCL
     clCreateProgramWithBuiltInKernels(context, num_devices, *device_list, *kernel_names, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2;
     clRetainProgram(program) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseProgram(program) ; CL_API_SUFFIX__VERSION_1_0;
-    clBuildProgram(program, num_devices, *device_list, *options, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
+    _clBuildProgram(program, num_devices, *device_list, *options, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
     clCompileProgram(program, num_devices, *device_list, *options, num_input_headers, *input_headers, header_include_names, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
     clLinkProgram(context, num_devices, *device_list, *options, num_input_programs, *input_programs, *pfn_notify, *user_data, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2
     clUnloadPlatformCompiler(platform) ; CL_API_SUFFIX__VERSION_1_2;
@@ -715,7 +715,7 @@ DeclareModule OpenCL
     clUnloadCompiler() ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
   EndImport
   Debug "OPENCL LOADED"
-  Debug clGetPlatformInfo
+  Debug clCreateImage2D
 EndDeclareModule
 
 ; ===============================================================================
@@ -913,6 +913,6 @@ EndModule
 
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 717
-; FirstLine = 713
+; FirstLine = 696
 ; Folding = -
 ; EnableXP

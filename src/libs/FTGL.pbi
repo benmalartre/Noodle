@@ -6,12 +6,12 @@
 ; Copyright 1996-2001, 2006 by                                           
 ; David Turner, Robert Wilhelm, And Werner Lemberg.                     
 ;                                                                        
-; This file is part of the FreeType project, And may only be used,
-; odified, And distributed under the terms of the FreeType project
-; license, LICENSE.TXT.  By continuing To use, modify, Or distribute
-; this file you indicate that you have Read the license And
-; understand And accept it fully
-; 
+; This file is part of the FreeType project, &nd may only be used,
+; modified, and distributed under the terms of the FreeType project
+; license, LICENSE.TXT.  By continuing to use, modify, or distribute
+; this file you indicate that you have read the license And
+; understand and accept it fully
+; ============================================================================
 
 XIncludeFile "OpenGL.pbi"
 XIncludeFile "OpenGLExt.pbi"
@@ -415,9 +415,9 @@ Module FTGL
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 397
-; FirstLine = 359
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 8
+; FirstLine = 155
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

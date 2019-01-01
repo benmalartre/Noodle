@@ -1404,7 +1404,6 @@ DeclareModule OpenGL
   ; ============================================================================
   ;  IMPORT OpenGL API
   ; ============================================================================
-  ;{
   CompilerSelect #PB_Compiler_OS
     ;___________________________________________________________________________
     ;  Windows
@@ -1525,10 +1524,8 @@ DeclareModule OpenGL
   glPushName                          ( name.GLuint )
   glLoadName                          ( name.GLuint ) 
   glPopName                 .GLuint    ()
-  
-  
+
   EndImport
-  ;}
   
 ;   CompilerSelect #PB_Compiler_OS
 ;     CompilerCase #PB_OS_Windows
@@ -1549,7 +1546,7 @@ DeclareModule OpenGL
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
     ; ** Attribute names For [NSOpenGLPixelFormat initWithAttributes]
     ; ** And [NSOpenGLPixelFormat getValues:forAttribute:forVirtualScreen].
-    Enumeration ;{
+    Enumeration
       #NSOpenGLPFAAllRenderers       =   1 ;,   /* choose from all available renderers          */
       #NSOpenGLPFATripleBuffer       =   3 ;,   /* choose a triple buffered pixel format        */
       #NSOpenGLPFADoubleBuffer       =   5 ;,   /* choose a double buffered pixel format        */
@@ -1578,10 +1575,10 @@ DeclareModule OpenGL
       #NSOpenGLPFAAcceleratedCompute =  97 ;,   /* choose a hardware accelerated compute device */
       #NSOpenGLPFAVirtualScreenCount = 128 ;,   /* number of virtual screens in this format     */
       #NSOpenGLPFAOpenGLProfile      =  99 ;,   /* specify an OpenGL Profile To use             */
-    EndEnumeration ;}
+    EndEnumeration
     
     ;/* NSOpenGLPFAOpenGLProfile values */
-    Enumeration ;{
+    Enumeration
       #NSOpenGLProfileVersionLegacy  = $1000 ;,   /* choose a Legacy/Pre-OpenGL 3.0 Implementation */
       #NSOpenGLProfileVersion3_2Core = $3200 ;,   /* choose an OpenGL 3.2 Core Implementation      */
       #NSOpenGLProfileVersion4_1Core = $4100 ;    /* choose an OpenGL 4.1 Core Implementation      */
@@ -1602,16 +1599,16 @@ DeclareModule OpenGL
     ; ...[ NSOpenGLContext ]................................................
     Macro NSOpenGLContext
       i
-    EndMacro;}
+    EndMacro
   CompilerEndIf
 
 EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1477
-; FirstLine = 1473
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 1405
+; FirstLine = 1184
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

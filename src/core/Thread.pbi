@@ -2,7 +2,7 @@
 ; Thread Module Declaration
 ;========================================================================================
 DeclareModule Thread
-  #NUM_THREADS = 3
+  #NUM_THREADS = 12
   #NUM_TASKS = 64
   
   Enumeration
@@ -189,8 +189,7 @@ EndModule
 ; window = OpenWindow(#PB_Any, 0,0,800,600,"TEST")
 ; Repeat
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 43
-; FirstLine = 38
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = --
 ; EnableXP
