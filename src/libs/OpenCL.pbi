@@ -557,59 +557,58 @@ DeclareModule OpenCL
   #CL_PROFILING_COMMAND_END = $1283
 
   Declare.s clErrorMessage(ErrorID)
-    
-    
+      
   ; -----------------------------------------------------------------------------
   ; Function imports
   ; -----------------------------------------------------------------------------
   CompilerSelect #PB_Compiler_OS
      
     CompilerCase #PB_OS_Windows
-      ImportC "OpenCL.lib"
-
+      Import "OpenCL.lib"
+  
     CompilerCase #PB_OS_Linux
-      ImportC "/usr/lib/libOpenCL.so"
-
+      ImportC "-l OpenCL"
+  
     CompilerCase #PB_OS_MacOS
       ImportC "/System/Library/Frameworks/OpenCL.framework/OpenCL"
-
+  
   CompilerEndSelect
    
-    ; ----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Platform API
     ; ---------------------------------------------------------------------------
     clGetPlatformIDs(num_entries, *platforms, *num_platforms) ; CL_API_SUFFIX__VERSION_1_0;
     clGetPlatformInfo(platform, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Device APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clGetDeviceIDs(platform, device_type.q, num_entries, *devices, *num_devices) ; CL_API_SUFFIX__VERSION_1_0;
     clGetDeviceInfo(device, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clCreateSubDevices(in_device, *properties, num_devices, *out_devices, *num_devices_ret) ; CL_API_SUFFIX__VERSION_1_2;
     clRetainDevice(device) ; CL_API_SUFFIX__VERSION_1_2;
     clReleaseDevice(device) ; CL_API_SUFFIX__VERSION_1_2;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Context APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateContext(*properties, num_devices, *devices, *pfn_notify, *user_data, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0
     clCreateContextFromType(*properties, device_type.q, *pfn_notify, *user_data, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0
     clRetainContext(context) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseContext(context) ; CL_API_SUFFIX__VERSION_1_0;
     clGetContextInfo(context, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Command Queue APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateCommandQueue(context, device, properties.q, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clRetainCommandQueue(command_queue) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseCommandQueue(command_queue) ; CL_API_SUFFIX__VERSION_1_0;
     clGetCommandQueueInfo(command_queue, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Memory Object APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateBuffer(context, flags.q, size, *host_ptr, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clCreateSubBuffer(buffer, flags.q, buffer_create_type, *buffer_create_info, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_1;
     clCreateImage(context, flags.q, *image_format, *image_desc, *host_ptr, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2;
@@ -620,33 +619,33 @@ DeclareModule OpenCL
     clGetImageInfo(image, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clSetMemObjectDestructorCallback(memobj, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_1
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Sampler APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateSampler(context, normalized_coords, addressing_mode, filter_mode, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clRetainSampler(sampler) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseSampler(sampler) ; CL_API_SUFFIX__VERSION_1_0;
     clGetSamplerInfo(sampler, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Program Object APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateProgramWithSource(context, count, strings, *lengths, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clCreateProgramWithBinary(context, num_devices, *device_list, *lengths, binaries, *binary_status, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
-    clCreateProgramWithBuiltInKernels(context, num_devices, *device_list, *kernel_names, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2;
+    clCreateProgramWithBuiltInKernels(context, num_devices, *device_list, kernel_names.p-ascii, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2;
     clRetainProgram(program) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseProgram(program) ; CL_API_SUFFIX__VERSION_1_0;
-    _clBuildProgram(program, num_devices, *device_list, *options, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
-    clCompileProgram(program, num_devices, *device_list, *options, num_input_headers, *input_headers, header_include_names, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
-    clLinkProgram(context, num_devices, *device_list, *options, num_input_programs, *input_programs, *pfn_notify, *user_data, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2
+    clBuildProgram(program, num_devices, *device_list, options.p-ascii, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
+    clCompileProgram(program, num_devices, *device_list, options.p-ascii, num_input_headers, *input_headers, header_include_names, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_0
+    clLinkProgram(context, num_devices, *device_list, options.p-ascii, num_input_programs, *input_programs, *pfn_notify, *user_data, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_2
     clUnloadPlatformCompiler(platform) ; CL_API_SUFFIX__VERSION_1_2;
     clGetProgramInfo(program, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clGetProgramBuildInfo(program, device, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Kernel Object APIs
-    ; -----------------------------------------------------------------------------
-    clCreateKernel(program, *kernel_name, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
+    ; ---------------------------------------------------------------------------
+    clCreateKernel(program, kernel_name.p-ascii, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clCreateKernelsInProgram(program, num_kernels, *kernels, *num_kernels_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clRetainKernel(kernel) ; CL_API_SUFFIX__VERSION_1_0;
     clReleaseKernel(kernel) ; CL_API_SUFFIX__VERSION_1_0;
@@ -655,9 +654,9 @@ DeclareModule OpenCL
     clGetKernelArgInfo(kernel, arg_indx, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_2;
     clGetKernelWorkGroupInfo(kernel, device, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Event Object APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clWaitForEvents(num_events, *event_list) ; CL_API_SUFFIX__VERSION_1_0;
     clGetEventInfo(event, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
     clCreateUserEvent(context, *errcode_ret) ; CL_API_SUFFIX__VERSION_1_1;
@@ -666,20 +665,20 @@ DeclareModule OpenCL
     clSetUserEventStatus(event, execution_status) ; CL_API_SUFFIX__VERSION_1_1;
     clSetEventCallback(event, command_exec_callback_type, *pfn_notify, *user_data) ; CL_API_SUFFIX__VERSION_1_1;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Profiling APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clGetEventProfilingInfo(event, param_name, param_value_size, *param_value, *param_value_size_ret) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Flush and Finish APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clFlush(command_queue) ; CL_API_SUFFIX__VERSION_1_0;
     clFinish(command_queue) ; CL_API_SUFFIX__VERSION_1_0;
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Enqueued Commands APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, size, *ptr, num_events_in_wait_list, *event_wait_list, *event) ; CL_API_SUFFIX__VERSION_1_0;
     clEnqueueReadBufferRect(command_queue, buffer, blocking_read, *buffer_offset, *host_offset, *region, buffer_row_pitch, buffer_slice_pitch, host_row_pitch, host_slice_pitch, *ptr, num_events_in_wait_list, *event_wait_list, *event) ; CL_API_SUFFIX__VERSION_1_1;
     clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, size, *ptr, num_events_in_wait_list, *event_wait_list, *event) ; CL_API_SUFFIX__VERSION_1_0;
@@ -704,18 +703,17 @@ DeclareModule OpenCL
     clEnqueueBarrierWithWaitList(command_queue, num_events_in_wait_list, *event_wait_list, *event) ; CL_API_SUFFIX__VERSION_1_2;
     clSetPrintfCallback(context, *pfn_notify, *user_data); CL_API_SUFFIX__VERSION_1_2
    
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     ; Deprecated OpenCL 1.1 APIs
-    ; -----------------------------------------------------------------------------
+    ; ---------------------------------------------------------------------------
     clCreateImage2D(context, flags.q, *image_format, image_width, image_height, image_row_pitch, *host_ptr, *errcode_ret) ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
     clCreateImage3D(context, flags.q, *image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, *host_ptr, *errcode_ret) ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
     clEnqueueMarker(command_queue, *event) ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
     clEnqueueWaitForEvents(command_queue, num_events, *event_list) ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
     clEnqueueBarrier(command_queue) ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
     clUnloadCompiler() ; CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+   
   EndImport
-  Debug "OPENCL LOADED"
-  Debug clCreateImage2D
 EndDeclareModule
 
 ; ===============================================================================
@@ -910,9 +908,8 @@ Module OpenCL
     ProcedureReturn OutputMessage
   EndProcedure
 EndModule
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 717
-; FirstLine = 696
+; CursorPosition = 573
+; FirstLine = 554
 ; Folding = -
 ; EnableXP
