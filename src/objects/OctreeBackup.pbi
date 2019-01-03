@@ -424,7 +424,7 @@ Module Octree
       ! andps xmm4, xmm6                  ; reset according to comparison mask
       ! andps xmm5, xmm7                  ; reset according to comparison mask
       
-      ! movaps xmm8, [math.l_sse_zero_vec]
+      ! movups xmm8, [math.l_sse_zero_vec]
       ! blendps xmm4, xmm8, 1000b         ; reset fourth bit
       ! blendps xmm5, xmm8, 1000b         ; reset fourth bit
       
@@ -1197,7 +1197,7 @@ Module Octree
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 426
 ; FirstLine = 422
 ; Folding = ---------

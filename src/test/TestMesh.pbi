@@ -101,7 +101,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
   
   ViewportUI::SetContext(*viewport)
-;   Scene::Update(Scene::*current_scene)
+  Scene::Update(Scene::*current_scene)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
@@ -161,7 +161,7 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,32,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
@@ -230,12 +230,12 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 195
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 75
 ; Folding = -
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

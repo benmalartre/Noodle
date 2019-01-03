@@ -32,7 +32,7 @@ Procedure PolygonSoup()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
   PolymeshGeometry::SphereTopology(*topo, 2,64 ,32)
-  Protected numTopos.i = 3
+  Protected numTopos.i = 12
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   CArray::SetCount(*matrices, numTopos)
@@ -227,8 +227,6 @@ Octree::NumCells(*octree, @numCells)
 Octree::GetCells(*octree)
 
 
-MessageRequester("OCTREE", Bin(*octree\morton)+Chr(10)+"NUM CELLS : "+Str(numCells))
-
 ; Define buildMessage.s = "Polygon Soup : "+StrD(polygonSoupT)+Chr(10)
 ; buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
 ; buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
@@ -253,9 +251,9 @@ ViewportUI::SetHandleTarget(*viewport, *query)
 Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 34
-; FirstLine = 22
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 192
 ; Folding = -
 ; EnableThread
 ; EnableXP

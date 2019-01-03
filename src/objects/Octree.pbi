@@ -41,6 +41,7 @@ DeclareModule Octree
   	color.c4f32
   	morton.i
   	state.i
+  	elemType.i
   EndStructure
   
   Structure Octree_t Extends Cell_t
@@ -59,7 +60,7 @@ DeclareModule Octree
   EndDataSection
   
   
-  Declare New(*bmin.v3f32, *bmax.v3f32, depth=0)
+  Declare New(*bmin.v3f32, *bmax.v3f32, depth=0, elemType=#ELEMENT_3D)
   Declare Delete(*octree.Octree_t)
   
   Declare NewCell(*octree.Octree_t, *bmin.v3f32, *bmax.v3f32, depth=0)
@@ -95,6 +96,7 @@ DeclareModule Octree
   Declare EncodeMorton(*octree.Octree_t, *cell.Cell_t)
   Declare GetCells(*octree.Octree_t)
   Declare GetCellsWithinRadius(*octree.Octree_t, *pnt.v3f32, radius.f, *cells.CArray::CArrayPtr)
+  Declare GetAdjacentCells(*octree.Octree_t, *cell.Cell_t, *cells.CArray::CArrayPtr)
   
   Declare Draw(*cell.Cell_t, *drawer.Drawer::Drawer_t, *geom.Geometry::PolymeshGeometry_t)
   Declare DrawLeaves(*octree.Octree_t, *drawer.Drawer::Drawer_t)
@@ -108,12 +110,13 @@ Module Octree
   ;---------------------------------------------------------------------
   ; CONSTRUCTOR
   ;---------------------------------------------------------------------
-  Procedure New(*bmin.v3f32, *bmax.v3f32, depth=0)
+  Procedure New(*bmin.v3f32, *bmax.v3f32, depth=0, elemType=#ELEMENT_3D)
     Protected *octree.Octree_t = AllocateMemory(SizeOf(Octree_t))
     InitializeStructure(*octree, Octree_t)
     *octree\elements = CArray::newCArrayLong()
     *octree\depth = depth
     *octree\state = #STATE_DEFAULT
+    *octree\elemType = elemType
     
     Define minv.f = *bmin\x
     If *bmin\y > minv : minv = *bmin\y : EndIf
@@ -151,11 +154,8 @@ Module Octree
     Protected p.Morton::Point3D_t
     Protected center.v3f32
     GetCenter(*cell, center)
-    Vector3::Echo(center, "Center")
     RealToCartesian(*octree, center, p)
-    Debug "CARTESIAN : "+Str(p\x)+","+Str(p\y)+","+Str(p\z)
     *cell\morton = Morton::Encode3D(p)  
-    Debug "MORTON : "+Bin(*cell\morton)
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -278,12 +278,8 @@ Module Octree
     Define depth.i = 60
     Define childCode, childIndex
     While Not *cell\isLeaf And depth > 0
-      Debug "MORTON : "+Bin(morton)
       childCode = (morton >> depth) & 7
-      Debug "CHILD CODE : "+Bin(childCode)
       childIndex = (childCode & 1) << 2+ ((childCode >> 1) & 1) << 1 +  ((childCode >> 2) & 1)
-      Debug "CHILD INDEX : "+Str(childIndex)
-;       childIndex = (morton >> depth) & 7
       If *cell\children[childIndex]
         *cell = *cell\children[childIndex]
       Else
@@ -413,7 +409,7 @@ Module Octree
       ! andps xmm4, xmm6                  ; reset according to comparison mask
       ! andps xmm5, xmm7                  ; reset according to comparison mask
       
-      ! movaps xmm8, [math.l_sse_zero_vec]
+      ! movups xmm8, [math.l_sse_zero_vec]
       ! blendps xmm4, xmm8, 1000b         ; reset fourth bit
       ! blendps xmm5, xmm8, 1000b         ; reset fourth bit
       
@@ -492,13 +488,43 @@ Module Octree
   ; ---------------------------------------------------------------------
   ; BUILD
   ; ---------------------------------------------------------------------
-  Procedure Build(*octree.Octree_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
+  Procedure Build(*octree.Octree_t, *geom.Geometry::Geometry_t, maxDepth.i)
     Clear(*octree)
-    Protected numTriangles = *geom\nbtriangles
-    CArray::SetCount(*octree\elements, numTriangles)
-
     Define i
-    For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+    Select *octree\elemType
+      Case #ELEMENT_1D
+        Define numPoints = *geom\nbpoints
+        CArray::SetCount(*octree\elements, numPoints)
+        For i=0 To numPoints - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+        
+      Case #ELEMENT_2D
+        Select *geom\type   
+          Case Geometry::#Geometry_Curve
+            Define *curve.Geometry::CurveGeometry_t = *geom
+            Define numSegments = *curve\nbsegments
+             CArray::SetCount(*octree\elements, numSegments)
+             For i=0 To numSegments - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+             
+          Case Geometry::#Geometry_Polymesh
+            Define *mesh.Geometry::PolymeshGeometry_t = *geom
+            Define numEdges = *mesh\nbedges
+             CArray::SetCount(*octree\elements, numEdges)
+             For i=0 To numEdges - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+             
+          Default
+            MessageRequester("[OCTREE]", "Element Type 2D Not supported For "+Str(*geom\type))
+            
+        EndSelect
+
+      Case #ELEMENT_3D
+        Define *mesh.Geometry::PolymeshGeometry_t = *geom
+        Define numTriangles = *mesh\nbtriangles
+        CArray::SetCount(*octree\elements, numTriangles)
+        For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
+        
+    EndSelect
+    
+    
     
     Define minv.f = *geom\bbox\origin\x - *geom\bbox\extend\x
     If  *geom\bbox\origin\y - *geom\bbox\extend\y < minv :  minv = *geom\bbox\origin\y - *geom\bbox\extend\y : EndIf
@@ -763,9 +789,9 @@ Module Octree
   EndProcedure  
   
   ; ---------------------------------------------------------------------
-  ; CREATE CELL
+  ; CREATE CELL ELEMENT TYPE 1D (points)
   ; ---------------------------------------------------------------------
-  Macro CreateCell(_i,_j,_k)
+  Macro CreateCellElementType1D(_i,_j,_k)
     m = 4*_i+2*_j+_k
     Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
@@ -774,36 +800,18 @@ Module Octree
     GetCenter(*child, box\origin)
     GetHalfSize(*child, box\extend)
     
-    numHits = 0
-    Define sT1.d = Time::Get()
-    For t=0 To tsz - 1
-      xt = CArray::GetValueL(*cell\elements, t)
-      *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3))
-      *b = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+1))
-      *c = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, xt*3+2))
-
-      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, xt) : numHits + 1 :EndIf
-    Next
-    Define eT1.d = Time::Get() - sT1
-    Define msg.s = "LOOP : "+StrD(eT1)+" : "+Str(numHits)+Chr(10)
-    
-    
     Define *hits = AllocateMemory(*cell\elements\itemCount)
+    Define numHits = Box::ContainsPoints(box, 
+                                         *geom\a_positions\data,
+                                         *cell\elements\data,
+                                         *cell\elements\itemCount,
+                                         *hits)
+    
 
-    Define numHits = Triangle::TouchArray(*geom\a_positions\data,
-                                          *geom\a_triangleindices\data,
-                                          *cell\elements\data,
-                                          *cell\elements\itemCount, 
-                                          box, 
-                                          *hits)
-    Debug "TRIANGLE TOUCH ARRAY NUM HITS : "+Str(numHits)
-    Debug "CHILD CELL : "+Str(*child)
-    Debug "CHILD ELEMENTS : "+Str(*child\elements)
-    Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*child\elements))
     CArray::SetCount(*child\elements, numHits)
-    Debug "PASSED... : "
+
     Define idx = 0
-    For t=0 To tsz - 1
+    For t=0 To numElements - 1
       If PeekB(*hits+t)
         PokeL(*child\elements\data + idx*4, PeekL(*cell\elements\data + t * 4))  
         idx + 1
@@ -817,18 +825,111 @@ Module Octree
       DeleteCell(*child)
     Else
       *cell\children[m] = *child
-      Debug "NUM ELEMENTS : "+Str(CArray::GetCount(*cell\children[m]\elements))
-      Debug "SPLIT..."
       Split(*octree, *cell\children[m], *geom, maxDepth)
+    EndIf
+  EndMacro
+  
+  ; ---------------------------------------------------------------------
+  ; CREATE CELL ELEMENT TYPE 2D (segments)
+  ; ---------------------------------------------------------------------
+  Macro CreateCellElementType2D(_i,_j,_k)
+    m = 4*_i+2*_j+_k
+    Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
+    Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
+    *child = Octree::NewCell(*octree, bmin, bmax, *cell\depth + 1)
+    *child\parent = *cell
+    GetCenter(*child, box\origin)
+    GetHalfSize(*child, box\extend)
+    
+;     Define *hits = AllocateMemory(*cell\elements\itemCount)
+; 
+;     Define numHits = Box::IntersectSegments(*geom\a_positions\data,
+;                                             *geom\a_triangleindices\data,
+;                                             *cell\elements\data,
+;                                             *cell\elements\itemCount, 
+;                                             box, 
+;                                             *hits)
+; 
+;     CArray::SetCount(*child\elements, numHits)
+; 
+;     Define idx = 0
+;     For t=0 To numElements - 1
+;       If PeekB(*hits+t)
+;         PokeL(*child\elements\data + idx*4, PeekL(*cell\elements\data + t * 4))  
+;         idx + 1
+;       EndIf
+;     Next
+; 
+;     FreeMemory(*hits)
+;     
+;     If Not *child\elements\itemCount
+;       *cell\children[m] = #Null
+;       DeleteCell(*child)
+;     Else
+;       *cell\children[m] = *child
+;       Split(*octree, *cell\children[m], *geom, maxDepth)
+;     EndIf
+  EndMacro
+  
+  ; ---------------------------------------------------------------------
+  ; CREATE CELL ELEMENT TYPE 3D (triangles)
+  ; ---------------------------------------------------------------------
+  Macro CreateCellElementType3D(_i,_j,_k)
+    m = 4*_i+2*_j+_k
+    Vector3::Set(bmin, xx\v[_i], yy\v[_j], zz\v[_k])
+    Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
+    *child = Octree::NewCell(*octree, bmin, bmax, *cell\depth + 1)
+    *child\parent = *cell
+    GetCenter(*child, box\origin)
+    GetHalfSize(*child, box\extend)
+    
+    numHits = 0
+    For t=0 To numElements - 1
+      xt = CArray::GetValueL(*cell\elements, t)
+      *a = CArray::GetValue(*mesh\a_positions, CArray::GetValueL(*mesh\a_triangleindices, xt*3))
+      *b = CArray::GetValue(*mesh\a_positions, CArray::GetValueL(*mesh\a_triangleindices, xt*3+1))
+      *c = CArray::GetValue(*mesh\a_positions, CArray::GetValueL(*mesh\a_triangleindices, xt*3+2))
+
+      If Triangle::Touch(  box, *a, *b, *c) : CArray::AppendL(*child\elements, xt) : numHits + 1 :EndIf
+    Next
+    
+    
+    Define *hits = AllocateMemory(*cell\elements\itemCount)
+
+    Define numHits = Triangle::TouchArray(*mesh\a_positions\data,
+                                          *mesh\a_triangleindices\data,
+                                          *cell\elements\data,
+                                          *cell\elements\itemCount, 
+                                          box, 
+                                          *hits)
+
+    CArray::SetCount(*child\elements, numHits)
+
+    Define idx = 0
+    For t=0 To numElements - 1
+      If PeekB(*hits+t)
+        PokeL(*child\elements\data + idx*4, PeekL(*cell\elements\data + t * 4))  
+        idx + 1
+      EndIf
+    Next
+
+    FreeMemory(*hits)
+    
+    If Not *child\elements\itemCount
+      *cell\children[m] = #Null
+      DeleteCell(*child)
+    Else
+      *cell\children[m] = *child
+      Split(*octree, *cell\children[m], *mesh, maxDepth)
     EndIf
   EndMacro
   
   ; ---------------------------------------------------------------------
   ; SPLIT
   ; ---------------------------------------------------------------------
-  Procedure Split(*octree.Octree_t, *cell.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
-    Protected tsz = *cell\elements\itemCount
-    If tsz <= #MAX_ELEMENTS Or *cell\depth >= maxDepth:
+  Procedure Split(*octree.Octree_t, *cell.Cell_t, *geom.Geometry::Geometry_t, maxDepth.i)
+    Protected numElements = *cell\elements\itemCount
+    If numElements <= #MAX_ELEMENTS Or *cell\depth >= maxDepth:
       *cell\isLeaf = #True
       ProcedureReturn
     EndIf
@@ -848,25 +949,45 @@ Module Octree
     
     Define.v3f32 center, halfsize
     Define.v3f32 bmin, bmax
-    Define tri.Geometry::Triangle_t
     Define box.Geometry::Box_t
     Define *a.Math::v3f32, *b.Math::v3f32, *c.Math::v3f32
     
-    CreateCell(0,0,0)
-    CreateCell(0,0,1)
-    CreateCell(0,1,0)
-    CreateCell(0,1,1)
-    CreateCell(1,0,0)
-    CreateCell(1,0,1)
-    CreateCell(1,1,0)
-    CreateCell(1,1,1)
+    Select *octree\elemType
+      Case #ELEMENT_1D
+        CreateCellElementType1D(0,0,0)
+        CreateCellElementType1D(0,0,1)
+        CreateCellElementType1D(0,1,0)
+        CreateCellElementType1D(0,1,1)
+        CreateCellElementType1D(1,0,0)
+        CreateCellElementType1D(1,0,1)
+        CreateCellElementType1D(1,1,0)
+        CreateCellElementType1D(1,1,1)
+        
+      Case #ELEMENT_2D
+        CreateCellElementType2D(0,0,0)
+        CreateCellElementType2D(0,0,1)
+        CreateCellElementType2D(0,1,0)
+        CreateCellElementType2D(0,1,1)
+        CreateCellElementType2D(1,0,0)
+        CreateCellElementType2D(1,0,1)
+        CreateCellElementType2D(1,1,0)
+        CreateCellElementType2D(1,1,1)
+        
+      Case #ELEMENT_3D
+        Define *mesh.Geometry::PolymeshGeometry_t = *geom
+        CreateCellElementType3D(0,0,0)
+        CreateCellElementType3D(0,0,1)
+        CreateCellElementType3D(0,1,0)
+        CreateCellElementType3D(0,1,1)
+        CreateCellElementType3D(1,0,0)
+        CreateCellElementType3D(1,0,1)
+        CreateCellElementType3D(1,1,0)
+        CreateCellElementType3D(1,1,1)
+        
+    EndSelect
     
-    Debug "CREATED CELLS"
-    Debug "CELL : "+Str(*cell)
-    Debug "ELEMENTS : "+Str(*cell\elements)
     
     Carray::SetCount(*cell\elements, 0)
-    Debug "PASSED"
   EndProcedure
   
   
@@ -915,8 +1036,21 @@ Module Octree
   ; GET CELLS
   ;---------------------------------------------------------------------
   Procedure GetCellsWithinRadius(*octree.Octree_t, *pnt.v3f32, radius.f, *cells.CArray::CArrayPtr)
+    CArray::SetCount(*cells, 0)
+    ForEach *octree\cells()
+      If IntersectSphere(*octree\cells(), *pnt, radius)
+        CArray::AppendPtr(*cells, *octree\cells())
+      EndIf
+    Next
+  EndProcedure
+  
+  Procedure GetAdjacentCells(*octree.Octree_t, *cell.Cell_t, *cells.CArray::CArrayPtr)
+    ForEach *octree\cells()
+      
+    Next
     
   EndProcedure
+  
   
 ;   template <typename PointT, typename ContainerT>
 ; template <typename Distance>
@@ -1084,8 +1218,8 @@ Module Octree
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 415
-; FirstLine = 411
-; Folding = --------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 987
+; FirstLine = 953
+; Folding = ---------
 ; EnableXP

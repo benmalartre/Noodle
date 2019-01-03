@@ -135,7 +135,7 @@ Module Triangle
       ; ---------------------------------------------------------------------------------
       ; divide by three
       ; ---------------------------------------------------------------------------------
-      ! movaps xmm1, [math.l_sse_onethird_vec]
+      ! movups xmm1, [math.l_sse_onethird_vec]
       ! mulps xmm0, xmm1
       
       ; ---------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ Module Triangle
       !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
       !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d2 d3)
       !   blendps xmm0, xmm1, 0100b       ; blend ( s t d3 d4)
-      !   movaps xmm1, [math.l_sse_zero_vec]
+      !   movups xmm1, [math.l_sse_zero_vec]
       !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
       !   movmskps r12, xmm0              ; move comparison mask to r12 register
       
@@ -374,7 +374,7 @@ Module Triangle
       ! closest_point_case1_output_one:
       !   movaps xmm0, xmm6             ; make a copy of (d0 d1 d2 d3)
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
-      !   movaps xmm2, [math.l_sse_1111_negate_mask]
+      !   movups xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 11111111b  ; shuffle (d3 d3 d3 d3)
       !   mulps xmm0, xmm2              ; negate it (-d3 -d3 -d3 -d3)
       !   divss xmm0, xmm1              ; s = -d3/d0
@@ -388,7 +388,7 @@ Module Triangle
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
       !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2 d2 d2 d2)
       !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-      !   movaps xmm2, [math.l_sse_1111_negate_mask]
+      !   movups xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
       !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
       !   divss xmm0, xmm1              ; t = -d4/d2
@@ -403,7 +403,7 @@ Module Triangle
       !   movaps xmm1, xmm5               ; make a copy of (d4 s t det)  
       !   shufps xmm1, xmm1, 11111111b    ; shuffle (det det det det)
     
-      !   movaps xmm2, [math.l_sse_one_vec]
+      !   movups xmm2, [math.l_sse_one_vec]
       !   divps xmm2, xmm1
       !   mulps xmm5, xmm2                ; multiply (d4 s t det) * invDet
       !   jmp closest_point_output
@@ -415,7 +415,7 @@ Module Triangle
       !   movaps xmm0, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm0
       !   movaps xmm1, xmm5               ; make a copy of (d4 s t det) in xmm1
       !   shufps xmm1, xmm1, 00000000b    ; fill with d4 ( d4 d4 d4 d4 )
-      !   movaps xmm2, [math.l_sse_one_vec]
+      !   movups xmm2, [math.l_sse_one_vec]
       !   addps xmm2, xmm2                ; add with itself : 2 2 2 2 
       !   mulps xmm0, xmm2                ; multiply by 2
       !   blendps xmm0, xmm6, 1101b       ; d0 2d1 d2 d3
@@ -438,7 +438,7 @@ Module Triangle
       !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
       !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d3 d2)
       !   blendps xmm0, xmm1, 0100b       ; blend (s t d3 d4)
-      !   movaps xmm1, [math.l_sse_zero_vec]
+      !   movups xmm1, [math.l_sse_zero_vec]
       !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
       !   movmskps r12, xmm0              ; move comparison mask to r12 register
       
@@ -489,7 +489,7 @@ Module Triangle
       !   divps xmm0, xmm1              ; s = numer / denom
       !   call clamp_0_to_1             ; clamp between 0 and 1
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (s s s s)
-      !   movaps xmm1, [math.l_sse_one_vec]
+      !   movups xmm1, [math.l_sse_one_vec]
       !   subps xmm1, xmm0              ; t = 1 - s
       !   blendps xmm0, xmm1, 0100b     ; set xmm0 to (s s t s)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
@@ -499,20 +499,20 @@ Module Triangle
       !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3) 
       !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2, d2, d2, d2)
       !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-      !   movaps xmm2, [math.l_sse_1111_negate_mask]
+      !   movups xmm2, [math.l_sse_1111_negate_mask]
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
       !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
       !   divss xmm0, xmm1              ; t = -d4/d2
       !   call clamp_0_to_1             ; clamp t between 0 and 1
       !   shufps xmm0, xmm0, 00000000b  ; shuffle (t t t t)
-      !   movaps xmm1, [math.l_sse_zero_vec]
+      !   movups xmm1, [math.l_sse_zero_vec]
       !   blendps xmm0, xmm1, 1011b     ; set xmm0 to (0 0 t 0)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
       !   jmp closest_point_output
       
       ! closest_point_case2_output_three:
-      !   movaps xmm0, [math.l_sse_one_vec]
-      !   movaps xmm1, [math.l_sse_zero_vec]
+      !   movups xmm0, [math.l_sse_one_vec]
+      !   movups xmm1, [math.l_sse_zero_vec]
       !   blendps xmm0, xmm1, 1101b     ; set xmm0 to (0 1 0 0)
       !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
       !   jmp closest_point_output
@@ -525,11 +525,11 @@ Module Triangle
       !   movaps xmm0, xmm5               ; make a copy of (d4 s t det) in xmm0
       !   shufps xmm0, xmm0, 10011001b    ; shuffle (s t s t)
       !   haddps xmm0, xmm0               ; horizontal subtraction ( s - t)
-      !   movaps xmm1, [math.l_sse_one_vec]
+      !   movups xmm1, [math.l_sse_one_vec]
       !   subps xmm1, xmm0                ; compute w : 1 - s - t
       !   shufps xmm1, xmm1, 00000000b    ; shuffle (w w w w)
       !   blendps xmm5, xmm1, 0001b       ; blend (w s t det)
-      !   movaps xmm1, [math.l_sse_zero_vec]
+      !   movups xmm1, [math.l_sse_zero_vec]
       !   blendps xmm5, xmm1, 1000b       ; reset fourth value
       !   mov rdi, [p.p_uvw]
       !   movups [rdi], xmm5              ; set back uvw
@@ -544,7 +544,7 @@ Module Triangle
       
       !   addps xmm8, xmm9                 ; edge0 * u + edge1 *v
       !   addps xmm8, xmm13                ; edge0 * u + edge1 *v + a
-      !   movaps xmm0, [math.l_sse_zero_vec]
+      !   movups xmm0, [math.l_sse_zero_vec]
       !   blendps xmm13, xmm0, 1000b
       !   mov rdi, [p.p_closest]
       !   movups [rdi], xmm8              ; set back closest
@@ -556,8 +556,8 @@ Module Triangle
       ; warning xmm1 and xmm2 will be destroyed
       ; --------------------------------------------------------------------------------------------
       ! clamp_0_to_1:
-      !   movaps xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
-      !   movaps xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
+      !   movups xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
+      !   movups xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
       !   comiss xmm0, xmm1                             ; compare value with 0000
       !   jb clamp_0_to_1_return_min                    ; if below return min
       !   comiss xmm2, xmm0                             ; compare value with 1111
@@ -723,7 +723,7 @@ Module Triangle
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge0_test
     
@@ -749,7 +749,7 @@ Module Triangle
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
     
-    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge1_test
     
@@ -775,7 +775,7 @@ Module Triangle
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask stored in r9
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask stored in r9
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge2_test
   
@@ -1048,7 +1048,7 @@ Module Triangle
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
 
     ; ---------------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ Module Triangle
     ! movaps xmm3, xmm12            ; copy boxhalfsize to xmm3
     ! movaps xmm5, xmm12            ; copy boxhalfsize to xmm5 
     
-    ! movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    ! movups xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     ! mulps xmm5, xmm6              ; negate boxhalfsize
     
     ! subps xmm3, xmm13             ; box - p0
@@ -1361,7 +1361,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movaps  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
+    !   movups  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge0_test
     
@@ -1387,7 +1387,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
     
-    !   movaps xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge1_test
     
@@ -1413,7 +1413,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movaps  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
+    !   movups  xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp array_edge2_test
   
@@ -1462,7 +1462,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm2, xmm0                   ; make a copy of e in xmm2
     !   shufps xmm2, xmm2, 00001010b        ; ez ez ex ex
     
-    !   movaps xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
+    !   movups xmm6, [math.l_sse_1100_negate_mask]; load 1100 negate mask
     !   mulps xmm2, xmm6                    ; -ez -ez ex ex
     
     !   movaps xmm3, xmm13                  ; copy p0 to xmm3 (a)
@@ -1618,7 +1618,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
     !   shufps xmm8, xmm8, 00000000b       ; rad rad rad rad 
-    !   movaps  xmm4, [math.l_sse_1100_negate_mask]; load 1100 sign bit mask
+    !   movups  xmm4, [math.l_sse_1100_negate_mask]; load 1100 sign bit mask
     !   mulps xmm8, xmm4                   ; -rad -rad rad rad
     !   jmp array_check_side               ; check side
     
@@ -1686,7 +1686,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   movaps xmm4, xmm12            ; copy box extend to xmm4
     !   movaps xmm5, xmm12            ; copy box extend to xmm5
     
-    !   movaps xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
+    !   movups xmm6, [math.l_sse_1111_negate_mask]; load 1111 negate mask
     !   mulps xmm5, xmm6              ; -x -y -z -w (-boxhalfsize)
 
     ; ---------------------------------------------------------------------------------
@@ -1987,8 +1987,8 @@ CompilerEndIf
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 1317
-; FirstLine = 1314
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1389
+; FirstLine = 1386
 ; Folding = -----
 ; EnableXP

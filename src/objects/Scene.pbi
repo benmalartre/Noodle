@@ -500,7 +500,6 @@ Module Scene
       If Not *obj\children()\initialized
         child\Setup(#Null)
       EndIf
-
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
       child\Update()
 
@@ -807,8 +806,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 532
-; FirstLine = 473
+; CursorPosition = 501
+; FirstLine = 489
 ; Folding = -------
 ; EnableThread
 ; EnableXP

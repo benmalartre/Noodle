@@ -337,6 +337,7 @@ DeclareModule Geometry
     *a_colors.CArray::CArrayV3F32
     
     nbsamples.i
+    nbsegments.i
     curvetype.l
     wrap.l
     ubasis.l
@@ -617,7 +618,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 270
-; FirstLine = 216
+; CursorPosition = 339
+; FirstLine = 294
 ; Folding = -----
 ; EnableXP
