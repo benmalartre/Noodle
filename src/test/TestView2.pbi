@@ -65,7 +65,7 @@ Define *s2.View::View_t = View::Split(*s1\left,#PB_Splitter_Vertical)
 Define *s3.View::View_t = View::Split(*s1\right,#PB_Splitter_SecondFixed,80)
 
 ViewManager::OnEvent(*m,#PB_Event_SizeWindow)
-Define *viewport.UI::IUI = ViewportUI::New(*s2\left,"ViewportUI")
+Define *viewport.UI::IUI = ViewportUI::New(*s2\left,"ViewportUI", *app\camera)
 Define *shaders.UI::IUI = ShaderUI::New(*s2\right,"ShaderUI",#Null)
 Define *graph.UI::IUI = GraphUI::New(*s3\left,"GraphUI")
 Define *timeline.UI::IUI = TimelineUI::New(*s3\right)
@@ -187,8 +187,8 @@ Repeat
   ViewManager::OnEvent(*m,e)
 Until e = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 41
+; CursorPosition = 67
+; FirstLine = 63
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -146,6 +146,8 @@ DeclareModule Math
       Data.f #F32_PI, #F32_PI, #F32_PI, #F32_PI
       sse_epsilon_vec:
       Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
+      sse_minusonei_vec:
+      Data.l -1.0, -1.0, -1.0, -1.0
     EndDataSection
   CompilerEndIf
   
@@ -4207,8 +4209,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 704
-; FirstLine = 678
-; Folding = ------------------------------------------------------
+; CursorPosition = 138
+; FirstLine = 93
+; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

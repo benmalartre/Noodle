@@ -8,7 +8,7 @@
   <section name="data">
     <explorer view="C:\Documents and Settings\Administrator\My Documents\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2019-01-02 03:09" user="benjamin" host="HATE_ROCKET"/>
+    <lastopen date="2019-01-03 15:13" user="benjamin" host="HATE_ROCKET"/>
   </section>
   <section name="files">
     <file name="src\bullet\Constraint.pbi">
@@ -177,7 +177,7 @@
     </file>
     <file name="src\core\Math.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="aedded0d4731666f39edb14029acb3c7"/>
+      <fingerprint md5="bf65d168f16fa9e7e975176d2affd933"/>
     </file>
     <file name="src\core\Matrix.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -625,7 +625,7 @@
     </file>
     <file name="src\objects\Box.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="f5769bb6b92169ae209b763fb5479bb8"/>
+      <fingerprint md5="ee747d895c6001eb809f958e0e7802cb"/>
     </file>
     <file name="src\objects\Camera.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -649,7 +649,7 @@
     </file>
     <file name="src\objects\Geometry.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="b4b3684eda16f920c8d07019988d7a27"/>
+      <fingerprint md5="8f632aa2b18791058266830bb8e40820"/>
     </file>
     <file name="src\objects\Grid3D.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -701,11 +701,11 @@
     </file>
     <file name="src\objects\Object3D.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="e7a09d306bc2c8425f64ece1d8388aab"/>
+      <fingerprint md5="ddb3dc5025be472cd3e55637ecf7dde2"/>
     </file>
     <file name="src\objects\Octree.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="655efb7f5ec21a369f4664328dc026df"/>
+      <fingerprint md5="f04e0a56fa3b5620dd9c671b42a23a85"/>
     </file>
     <file name="src\objects\Plane.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1017,7 +1017,7 @@
     </file>
     <file name="src\test\ConvertHtoPB.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="115f9b6008d2387a11c70aebcc4be889"/>
+      <fingerprint md5=""/>
     </file>
     <file name="src\test\EvalFunction.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>

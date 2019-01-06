@@ -229,7 +229,7 @@ Module Box
         
         If st > fst : fst = st : EndIf
         If et < fet : fet = et : EndIf
-        If fet < fst : ProcedureReturn #False
+        If fet < fst : ProcedureReturn #False : EndIf
        Next
       
        PokeF(*distance, fst)  
@@ -486,8 +486,8 @@ Module Box
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 204
-; FirstLine = 199
+; CursorPosition = 231
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
