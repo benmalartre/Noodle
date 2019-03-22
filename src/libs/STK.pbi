@@ -32,7 +32,7 @@ DeclareModule STK
   
   Macro StreamFlags : l :EndMacro
   #NONINTERLEAVED     = 1     ; use non-interleaved buffers (Default = interleaved).
-  #MINIMIZE_LATENCY   = 2     ; attempt To set stream parameters For lowest possible latency.
+  #MINIMIZE_LATENCY   = 2     ; attempt To set stream parameters for lowest possible latency.
   #HOG_DEVICE         = 4     ; attempt grab device And prevent use by others.
   #SCHEDULE_REALTIME  = 8     ; try To Select realtime scheduling For callback thread.
   #ALSA_USE_DEFAULT   = 16    ; use the "default" PCM device (ALSA only).
@@ -54,7 +54,7 @@ DeclareModule STK
   EndStructure
   
     
-  Macro STKGeneratorType : l : EndMacro
+  Macro GeneratorType : l : EndMacro
   Enumeration
 	  #ASYMP_GENERATOR 
 	  #NOISE_GENERATOR
@@ -91,7 +91,7 @@ DeclareModule STK
 		#GENERATOR_SEED					; noise seed
 	EndEnumeration
   
-  Macro STKEnvelopeType : l : EndMacro
+  Macro EnvelopeType : l : EndMacro
   Enumeration
 	  #ENVELOPE_GENERATOR 
     #ADSR_GENERATOR
@@ -117,7 +117,7 @@ DeclareModule STK
 	EndEnumeration
 	
   
-  Macro STKArythmeticMode : l : EndMacro
+  Macro ArythmeticMode : l : EndMacro
 	Enumeration
 	  #ARYTHMETIC_ADD
 	  #ARYTHMETIC_SUBTRACT
@@ -141,7 +141,7 @@ DeclareModule STK
   arythmetic_modes(7)  = "BLEND"
   arythmetic_modes(8)  = "SHIFT"
   
-  Macro STKEffectType : l : EndMacro
+  Macro EffectType : l : EndMacro
   Enumeration
 	  #EFFECT_ENVELOPE
 	  #EFFECT_PRCREV
@@ -414,9 +414,8 @@ Module STK
 ;   EndProcedure
 EndModule
 
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 415
-; FirstLine = 385
+; CursorPosition = 143
+; FirstLine = 207
 ; Folding = --
 ; EnableXP

@@ -71,10 +71,9 @@ Module AddNode
     Protected i.i
     
     Select *output\currenttype
-        ;....................................................
-        ;
+        ;----------------------------------------------------
         ; Long
-        ;....................................................
+        ;----------------------------------------------------
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
@@ -101,10 +100,9 @@ Module AddNode
           EndIf
         Wend
         
-        ;....................................................
-        ;
+        ;----------------------------------------------------
         ; Float
-        ;....................................................
+        ;----------------------------------------------------
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
@@ -132,10 +130,9 @@ Module AddNode
           EndIf
         Wend
         
-      ;....................................................
-      ;
+      ;----------------------------------------------------
       ; Vector 3
-      ;....................................................
+      ;----------------------------------------------------
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
         *vOut = *output\value
@@ -145,7 +142,7 @@ Module AddNode
         Protected *p1.v3f32, *p2.v3f32
         While NextElement(*node\inputs())
           *input = *node\inputs()
-          If *input\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
+          If *input\currenttype = Attribute::#ATTR_TYPE_NEW : Break : EndIf
           *vIn = NodePort::AcquireInputData(*input)
           If *vIn
             If CArray::GetCount(*vIn) = 1
@@ -169,7 +166,7 @@ Module AddNode
         Wend
         
       Case Attribute::#ATTR_TYPE_UNDEFINED
-        Debug *output\name + "DataType UNDEFIEND"
+        Debug *output\name + "DataType UNDEFINED"
         
       Case Attribute::#ATTR_TYPE_POLYMORPH
         Debug *output\name + "DataType POLYMORPH"
@@ -216,9 +213,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 114
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 168
+; FirstLine = 149
 ; Folding = --
 ; EnableThread
 ; EnableXP

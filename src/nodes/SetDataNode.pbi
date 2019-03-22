@@ -60,11 +60,12 @@ Module SetDataNode
       Protected base.s = StringField(refname, 1,".")
       
       If base ="Self" Or base ="This"
+        Debug "Got a good base"
         Protected *obj.Object3D::Object3D_t = *node\parent3dobject
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
         If FindMapElement(*obj\m_attributes(),name)
-          
+          Debug "Found the attribute"
           *node\attribute = *obj\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
   
@@ -73,9 +74,12 @@ Module SetDataNode
           *node\errorstr = ""
         ; If Attribute NOT Exist Create It
         Else
+          Debug "Create the attribute"
           *input = Node::GetPortByName(*node,"Data")
           If *input\connected
+            Debug "Input is connected"
             With *input\source
+              Debug "The source is OK"
               Protected *datas.CArray::CArrayT
               Select \datatype
                 Case Attribute::#ATTR_TYPE_BOOL
@@ -208,7 +212,6 @@ Module SetDataNode
     Protected *mesh.Polymesh::Polymesh_t
     
     If *node\state = Graph::#Node_StateOK And *in_data And *node\attribute
-      Debug "All is fine baby..."
       size_t = Carray::GetCount(*in_data)
       Select *input\currenttype
         Case Attribute::#ATTR_TYPE_BOOL
@@ -227,14 +230,12 @@ Module SetDataNode
           EndIf
           
         Case Attribute::#ATTR_TYPE_FLOAT
-          Debug "SetDataNode Current Type FLOAT"
           Protected *fIn.Carray::CArrayFloat = *in_data
           For x=0 To CArray::GetCount(*fIn)-1
             Debug "SetDataNode Array Item ["+Str(x)+"]: "+StrF(CArray::GetValueF(*fIn,x))
           Next x
           
         Case Attribute::#ATTR_TYPE_VECTOR3
-  
           Protected *vIn.Carray::CArrayV3F32 = *in_data
           Protected *vOut.Carray::CArrayV3F32 = *node\attribute\data
           Protected m_max = CArray::GetCount(*vIn)
@@ -250,30 +251,24 @@ Module SetDataNode
               *mesh = *obj
               Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
             EndIf
-            
           EndIf
-          
-          
+
         Case Attribute::#ATTR_TYPE_QUATERNION
-  
           Protected *qIn.Carray::CArrayQ4F32 = *in_data
           Protected *qOut.Carray::CArrayQ4F32 = *node\attribute\data
           CArray::Copy(*qOut,*qIn)
           
         Case Attribute::#ATTR_TYPE_COLOR
-          
           Protected *cIn.Carray::CArrayC4F32 = *in_data
           Protected *cOut.Carray::CArrayC4F32 = *node\attribute\data
           CArray::Copy(*cOut,*cIn)
           
         Case Attribute::#ATTR_TYPE_MATRIX3
-  
           Protected *m3In.Carray::CArrayM3F32 = *in_data
           Protected *m3Out.Carray::CArrayM3F32 = *node\attribute\data
           CArray::Copy(*m3Out,*m3In)
           
         Case Attribute::#ATTR_TYPE_MATRIX4
-          
           Protected *m4In.Carray::CArrayM4F32 = *in_data
           Protected *m4.m4f32 = CArray::GetValue(*m4In,0)
           ;           Protected *m4Out.Carray::CArrayM4F32 = *node\attribute\data
@@ -295,15 +290,12 @@ Module SetDataNode
             If *parent
               Transform::UpdateSRTFromMatrix(*parent\localT)
               Object3D::UpdateTransform(*parent,#Null)
-            EndIf
-            
+            EndIf 
           EndIf
-          
-          
-          
+
         Case Attribute::#ATTR_TYPE_TOPOLOGY
           If *node\attribute\name = "Topology"
-            Debug "[SetDataNode] TOPOLOGY"
+            Debug "SET TOPO CALLED..."
             Protected *tIn.Carray::CArrayPtr = *in_data
             Protected *tOut.Carray::CArrayPtr = *node\attribute\data
            
@@ -311,22 +303,23 @@ Module SetDataNode
             *parent = *node\parent3dobject
             
             If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
+              Debug "OBJECT IS A POLYMESH"
               Protected *geom.Geometry::PolymeshGeometry_t = *parent\geom
-               ;If *iTopo\dirty
-                 PolymeshGeometry::Set2(*geom,*iTopo)
-                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
-                 *iTopo\dirty = #False
-;                Else
-;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-;                EndIf
+              If *iTopo\dirty
+                Debug "TOPOLOGY DIRTY"
+                PolymeshGeometry::Set2(*geom,*iTopo)
+                Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
+                *iTopo\dirty = #False
+              Else
+                Debug "DEFORM DIRTY"
+                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+               EndIf
               Log::Message("[SetDataNode] Update Polymesh Topology")
             Else
               Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
             EndIf
-            
           EndIf
-          
       EndSelect
       
           
@@ -368,9 +361,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 243
-; FirstLine = 228
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 101
+; FirstLine = 17
 ; Folding = --
 ; EnableThread
 ; EnableXP

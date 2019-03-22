@@ -1,18 +1,22 @@
-﻿Global WIDTH = 800
+﻿XIncludeFile "../libs/STK.pbi"
+
+Global WIDTH = 800
 Global HEIGHT = 600
+
+
 
 Global *DAC.STK::RtAudio = STK::Init()
 Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
 Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #False)
+Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
 
 STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
 STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
 STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
 STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
 
-Global *effect.STK::Effect = STK::AddEffect(*stream, STK::#EFFECT_JCREV, *envelope, #True)
-STK::SetEffectScalar(*effect, STK::#EFFECT_MIX, 0.2)
+;Global *effect.STK::Effect = STK::AddEffect(*stream, STK::#EFFECT_JCREV, *envelope, #True)
+;STK::SetEffectScalar(*effect, STK::#EFFECT_MIX, 0.2)
 ; STK::SetEffectScalar(*effect, STK::#EFFECT_T60, 0.5)
 ; Global *mixer.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_SCALEADD, *envelope, *effect, #True)
 ; STK::SetArythmeticScalar(*mixer, 0.5)
@@ -83,18 +87,19 @@ If *stream
         Case #PB_EventType_KeyDown
           key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
           If key = #PB_Shortcut_Return
+            Debug "ENTER PRESSED"
             If running
               STK::GeneratorStreamStop(*stream)
               running = #False  
               DrawCanvas()
             Else
               Define result.b = STK::GeneratorStreamStart(*stream)
-              STK::EnvelopeKeyOn(*envelope)
+              ;STK::EnvelopeKeyOn(*envelope)
               running = #True
               DrawCanvas()
             EndIf
           ElseIf key = #PB_Shortcut_Space
-            STK::EnvelopeKeyOn(*envelope) 
+            ;STK::EnvelopeKeyOn(*envelope) 
           EndIf
         Case #PB_EventType_LeftButtonDown
           down = #True
@@ -134,8 +139,7 @@ EndIf
 ; Else
 ;   Debug "FAIL TO START DAC"
 ; EndIf
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 136
+; CursorPosition = 10
 ; Folding = -
 ; EnableXP
