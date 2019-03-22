@@ -116,14 +116,15 @@ XIncludeFile "Saver.pbi"
 XIncludeFile "Loader.pbi"
 
 ; ============================================================================
-;  Application Module Declaration
+;  Screen Module Declaration
 ; ============================================================================
-DeclareModule Application
+DeclareModule Screen
 CompilerIf (#USE_GLFW = #True)
   UseModule GLFW
 CompilerEndIf
+  
 
-  Structure Application_t
+  Structure Screen_t
     name.s
     glfw.b
     *window.GLFWwindow
@@ -147,34 +148,34 @@ CompilerEndIf
     dirty.b
   EndStructure
   
-;   Enumeration 
-;     #TOOL_SELECT = 0
-;     #TOOL_CAMERA
-;     #TOOL_PAN
-;     #TOOL_DOLLY
-;     #TOOL_ORBIT
-;     #TOOL_ROLL
-;     #TOOL_ZOOM
-;     #TOOL_DRAW
-;     #TOOL_PAINT
-;     
-;     #TOOL_SCALE
-;     #TOOL_ROTATE
-;     #TOOL_TRANSLATE
-;     #TOOL_TRANSFORM
-;     #TOOL_DIRECTED
-;     
-;     #TOOL_PREVIEW
-;     
-;     #TOOL_MAX
-;   EndEnumeration
+  Enumeration 
+    #TOOL_SELECT = 0
+    #TOOL_CAMERA
+    #TOOL_PAN
+    #TOOL_DOLLY
+    #TOOL_ORBIT
+    #TOOL_ROLL
+    #TOOL_ZOOM
+    #TOOL_DRAW
+    #TOOL_PAINT
+    
+    #TOOL_SCALE
+    #TOOL_ROTATE
+    #TOOL_TRANSLATE
+    #TOOL_TRANSFORM
+    #TOOL_DIRECTED
+    
+    #TOOL_PREVIEW
+    
+    #TOOL_MAX
+  EndEnumeration
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-  Declare Delete(*app.Application_t)
-  Declare Loop(*app.Application_t,*callback)
+  Declare Delete(*app.Screen_t)
+  Declare Loop(*app.Screen_t,*callback)
   
 CompilerIf (#USE_GLFW = #True)
-  Declare RegisterCallbacks(*app.Application_t)
+  Declare RegisterCallbacks(*app.Screen_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -184,17 +185,17 @@ CompilerIf (#USE_GLFW = #True)
   Declare OnScroll(*window.GLFWwindow,x.d,y.d)
 CompilerEndIf
 
-  Declare.f GetFPS(*app.Application_t)
+  Declare.f GetFPS(*app.Screen_t)
   Prototype PFNDRAWFN(*app)
   
-  Global *running.Application::Application_t
+  Global *running.Screen::Screen_t
 
 EndDeclareModule
 
 ; ============================================================================
-;  Application Module Implementation
+;  Screen Module Implementation
 ; ============================================================================
-Module Application
+Module Screen
   UseModule OpenGL
 CompilerIf #USE_GLFW
   UseModule GLFW
@@ -212,8 +213,8 @@ CompilerEndIf
   ; Constructor
   ;-----------------------------------------------------------------------------
   Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-    Protected *app.Application_t = AllocateMemory(SizeOf(Application_t))
-    InitializeStructure(*app,Application_t)
+    Protected *app.Screen_t = AllocateMemory(SizeOf(Screen_t))
+    InitializeStructure(*app,Screen_t)
     *app\name = name
     *running = *app
     Protected w.i, h.i
@@ -262,7 +263,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Delete
   ;-----------------------------------------------------------------------------
-  Procedure Delete(*app.Application_t)
+  Procedure Delete(*app.Screen_t)
     Protected i
     CompilerIf #USE_GLFW
       glfwDestroyWindow(*app\window)
@@ -271,7 +272,7 @@ CompilerEndIf
       ViewManager::Delete(*app\manager)
     CompilerEndIf
     
-    ClearStructure(*app,Application_t)
+    ClearStructure(*app,Screen_t)
     FreeMemory(*app)
   EndProcedure
   
@@ -280,7 +281,7 @@ CompilerIf #USE_GLFW
   ; Key Changed Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *app.Screen_t = glfwGetWindowUserPointer(*window)
   
     If action = #GLFW_PRESS
       Select key
@@ -327,7 +328,7 @@ CompilerIf #USE_GLFW
   ; Mouse Move Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnMouseMove(*window.GLFWwindow,x.d,y.d)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *app.Screen_t = glfwGetWindowUserPointer(*window)
     
     If *app\down
      Protected *c.Camera::Camera_t = *app\camera
@@ -366,7 +367,7 @@ CompilerIf #USE_GLFW
   ; Mouse Button Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *app.Screen_t = glfwGetWindowUserPointer(*window)
 
     Select action
       Case #GLFW_PRESS
@@ -450,7 +451,7 @@ CompilerIf #USE_GLFW
     ; Cursor Scroll Callback (GLFW)
     ;-----------------------------------------------------------------------------
     Procedure OnScroll(*window.GLFWwindow,x.d,y.d)
-      Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+      Protected *app.Screen_t = glfwGetWindowUserPointer(*window)
       Protected *c.Camera::Camera_t = *app\camera
      
       If *c
@@ -485,7 +486,7 @@ CompilerIf #USE_GLFW
   ;-----------------------------------------------------------------------------
   ; Register Callbacks (GLFW)
   ;-----------------------------------------------------------------------------
-  Procedure RegisterCallbacks(*Me.Application_t)
+  Procedure RegisterCallbacks(*Me.Screen_t)
     ;Register Callbacks
     glfwSetKeyCallback(*Me\window,@OnKeyChanged())
     glfwSetCursorPosCallback(*Me\window,@OnMouseMove())
@@ -501,7 +502,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Get FPS
   ;-----------------------------------------------------------------------------
-  Procedure.f GetFPS(*app.Application_t)
+  Procedure.f GetFPS(*app.Screen_t)
 
    *app\framecount +1
     Protected current.l = Time::Get()*1000
@@ -567,7 +568,7 @@ EndProcedure
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*app.Application_t,*callback.PFNDRAWFN)
+  Procedure Loop(*app.Screen_t,*callback.PFNDRAWFN)
     Define event
     
     CompilerIf #USE_GLFW
@@ -640,8 +641,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 110
+; CursorPosition = 543
+; FirstLine = 87
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

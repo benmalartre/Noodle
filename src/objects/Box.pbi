@@ -17,6 +17,7 @@ DeclareModule Box
   Declare Transform(*Me.Box_t, *m.m4f32)
   Declare Reset(*Me.Box_t)
   Declare.b ContainsPoint(*Me.Box_t, *p.v3f32)
+  Declare.b ContainsPoints(*Me.Box_t, *positions, *indices, numIndices, *hits)
   Declare.b IntersectBox(*Me.Box_t, *other.Box_t)
   Declare.b IntersectPlane(*Me.Box_t, *plane.Plane_t)
   Declare.b IntersectSphere(*Me.Box_t, *sphere.Sphere_t)
@@ -132,6 +133,112 @@ Module Box
   EndProcedure
   
   ;---------------------------------------------------------
+  ; Contains Points
+  ;---------------------------------------------------------
+  Procedure.b ContainsPoints(*Me.Geometry::Box_t,*positions, *indices, numIndices, *hits)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      ! mov rsi, [p.p_Me]
+      ! mov rdi, [p.p_hits]
+      ! mov rcx, [p.v_numIndices]
+      ! mov r14, [p.p_indices]
+      ! mov rdx, [p.p_positions]
+      
+      ! movups xmm0, [rsi]                ; load box origin in xmm0
+      ! movaps xmm1, xmm0                 ; make a copy in xmm1
+      ! movups xmm2, [rsi + 16]           ; load box extend in xmm2
+      ! subps xmm0, xmm2                  ; compute box min
+      ! addps xmm1, xmm2                  ; compute box max
+      
+      ! loop_box_contains_points:
+      !   mov eax, [r14]                  ; load point index
+      !   imul rax, 16                    ; compute offset in position array
+      !   movaps xmm3, [rdx + rax]        ; load pnt in xmm3
+      !   movaps xmm4, xmm3               ; make a copy in xmm4
+      
+      !   cmpps xmm3, xmm0, 5             ; compare p >= bmin
+      !   cmpps xmm4, xmm1, 2             ; compare p <= bmax
+      
+      !   movmskps r8, xmm3               ; move comparison mask to r8 register
+      !   movmskps r9, xmm4               ; move comparison mask to r9 register
+    
+      !   add r8, r9                      ; if all the comparison test succeeded
+      !   cmp r8, 30                      ; we should have 30 in r8
+      !   je box_contains_points_true     ; point in box  
+      !   jmp box_contains_points_false   ; point outside of box
+      
+      ! box_contains_points_true:         ; point in box  
+      !   mov [rdi], byte 1               ; set point as inside box
+      !   jmp box_contains_points_next    ; next point
+      
+      ! box_contains_points_false:        ; point outside of box
+      !   mov [rdi], byte 0               ; set point as outside box
+      !   jmp box_contains_points_next    ; next point
+      
+      ! box_contains_points_next:         ; next point
+      !   add rax, 4                      ; offset indices buffer
+      !   dec rcx                         ; decrement point counter
+      !   jnz loop_box_contains_points    ; loop
+      ProcedureReturn #True
+    CompilerElse
+      Define i, j
+      Define *p.v3f32
+      Define inside.b
+      For i=0 To numIndices-1
+        j = PeekL(*indices + i * 4)
+        *p = *positions + j * SizeOf(Math::v3f32)
+        inside = Bool(*p\x>=*Me\origin\x-*Me\extend\x And *p\x <= *Me\origin\x+*Me\extend\x And
+                      *p\y>=*Me\origin\y-*Me\extend\y And *p\y <= *Me\origin\y+*Me\extend\y And
+                      *p\z>=*Me\origin\z-*Me\extend\z And *p\z <= *Me\origin\z+*Me\extend\z)
+        PokeB(*hits + i, inside)
+      Next
+      ProcedureReturn #True
+    CompilerEndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Intersect Segment
+  ;---------------------------------------------------------
+  Procedure.b IntersectSegment(*Me.Geometry::Box_t,*a.v3f32, *b.v3f32, *distance)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      
+    CompilerElse
+      Define.f st,et,fst = 0,fet = 1
+      Define bmin.f
+      Define bmax.f
+  
+      Define si.f
+      Define ei.f
+      Define i
+      For i=0 To 2
+        bmin = Vector3::At(*Me\origin, i)-Vector3::At(*Me\extend, i)
+        bmax = Vector3::At(*Me\origin, i)+Vector3::At(*Me\extend, i)
+        si = Vector3::At(*a, i)
+        ei = Vector3::At(*b, i)
+
+        If si < ei
+          If si > bmax Or ei < bmin : ProcedureReturn #False : EndIf
+          Define di.f = ei - si
+          If si < bmin : st = ( bmin - si ) / di : Else : st = 0 : EndIf
+          If ei > bmax : et = ( bmax - si ) / di : Else : et = 1 : EndIf
+        Else
+          If ei > bmax Or si < bmin : ProcedureReturn #False : EndIf
+          Define di.f = ei - si
+          If si > bmax : st = ( bmax - si ) / di : Else : st = 0 : EndIf
+          If ei < bmin : et = ( bmin - si ) / di : Else : et = 1 : EndIf
+        EndIf
+        
+        If st > fst : fst = st : EndIf
+        If et < fet : fet = et : EndIf
+        If fet < fst : ProcedureReturn #False : EndIf
+       Next
+      
+       PokeF(*distance, fst)  
+       ProcedureReturn #True
+    CompilerEndIf
+    
+  EndProcedure
+  
+  ;---------------------------------------------------------
   ; Intersect Box
   ;---------------------------------------------------------
   Procedure.b IntersectBox(*Me.Geometry::Box_t,*other.Geometry::Box_t)
@@ -227,7 +334,7 @@ Module Box
       ! andps xmm4, xmm6                  ; reset according to comparison mask
       ! andps xmm5, xmm7                  ; reset according to comparison mask
       
-      ! movaps xmm8, [math.l_sse_zero_vec]
+      ! movups xmm8, [math.l_sse_zero_vec]
       ! blendps xmm4, xmm8, 1000b         ; reset fourth value
       ! blendps xmm5, xmm8, 1000b         ; reset fourth value
       
@@ -378,9 +485,9 @@ Module Box
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 233
-; FirstLine = 226
-; Folding = ----
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 231
+; FirstLine = 216
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

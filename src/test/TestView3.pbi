@@ -122,9 +122,8 @@ Global *main.View::View_t = *m\main
 Global *splitted.View::View_t = View::Split(*m\main, 0,75)
 
 
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport", *app\camera)
 *app\context = *viewport\context
-*viewport\camera = *app\camera
 ViewportUI::SetContext(*viewport)
 
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
@@ -140,7 +139,8 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
+; CursorPosition = 126
+; FirstLine = 79
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

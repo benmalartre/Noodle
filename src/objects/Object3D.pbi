@@ -398,7 +398,6 @@ Module Object3D
     If Not *attribute : ProcedureReturn : EndIf
     
     If *obj\m_attributes(*attribute\name)
-      Debug "C3DObject ["+*obj\name+"]: Attribute "+*attribute\name+" Already exists !! "
       ProcedureReturn #Null
     Else
       Object3D::AttachMapElement(*obj\m_attributes(),*attribute\name,*attribute)
@@ -539,7 +538,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 170
-; FirstLine = 162
+; CursorPosition = 410
+; FirstLine = 397
 ; Folding = ------
 ; EnableXP

@@ -63,10 +63,10 @@ EndProcedure
 Procedure RandomGround()
   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_NONE)
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
-  Protected *topo.Geometry::Topology_t = *geom\topo
+
+  PolymeshGeometry::GridTopology(*geom, 100,100,100)
   
-  PolymeshGeometry::GridTopology(*topo, 100,100,100)
-  
+    Protected *topo.Geometry::Topology_t = *geom\topo
   Define i
   Define *p.v3f32
   For i=0 To CArray::GetCount(*topo\vertices)-1
@@ -101,7 +101,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
   
   ViewportUI::SetContext(*viewport)
-;   Scene::Update(Scene::*current_scene)
+  Scene::Update(Scene::*current_scene)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
@@ -161,9 +161,9 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,2,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_CUBE)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
@@ -230,12 +230,12 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 195
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 165
+; FirstLine = 144
 ; Folding = -
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

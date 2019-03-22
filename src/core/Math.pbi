@@ -79,7 +79,9 @@ DeclareModule Math
   
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     DataSection
-      ! align 16
+      CompilerIf #PB_Compiler_OS   = #PB_OS_MacOS
+        ! align 16
+      CompilerEndIf
       sse_0000_sign_mask:
       Data.l $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF
       sse_0001_sign_mask:
@@ -144,6 +146,8 @@ DeclareModule Math
       Data.f #F32_PI, #F32_PI, #F32_PI, #F32_PI
       sse_epsilon_vec:
       Data.f #F32_EPS, #F32_EPS, #F32_EPS, #F32_EPS
+      sse_minusonei_vec:
+      Data.l -1.0, -1.0, -1.0, -1.0
     EndDataSection
   CompilerEndIf
   
@@ -694,6 +698,13 @@ DeclareModule Vector3
     _v\x = 0
     _v\y = 0
     _v\z = 0
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR3 AT (element accessor)
+  ;------------------------------------------------------------------
+  Macro At(_v, _index)
+    PeekF(_v + (_index) * 4)
   EndMacro
   
   ;------------------------------------------------------------------
@@ -2481,7 +2492,7 @@ DeclareModule Matrix4
       
       _m\v[3]   = _s\v[0] * _f\v[3] + _s\v[1] * _f\v[7]+ _s\v[2] * _f\v[11] + _s\v[3] * _f\v[15]
       _m\v[7]   = _s\v[4] * _f\v[3] + _s\v[5] * _f\v[7]+ _s\v[6] * _f\v[11] + _s\v[7] * _f\v[15]
-      _m\v[11]   = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
+      _m\v[11]  = _s\v[8] * _f\v[3] + _s\v[9] * _f\v[7]+ _s\v[10]* _f\v[11]  + _s\v[11]* _f\v[15]
       _m\v[15]  = _s\v[12]* _f\v[3] + _s\v[13]* _f\v[7]+ _s\v[14]* _f\v[11]  + _s\v[15]* _f\v[15]  
     EndMacro
   CompilerEndIf
@@ -3034,12 +3045,12 @@ Module Vector3
       
       ; fix infinity
       ! movaps xmm1, xmm0
-      ! movaps xmm2, [math.l_sse_infinity_vec]
+      ! movups xmm2, [math.l_sse_infinity_vec]
 
       ! cmpps xmm1, xmm2, 0           ; compare result with infinity
       ! xorps xmm0, xmm1              ; bitmask scale vec
       
-      ! movaps xmm3, [math.l_sse_one_vec]
+      ! movups xmm3, [math.l_sse_one_vec]
       ! andps xmm3, xmm1              ; inverse bitmask on one vec
       ! addps xmm0, xmm3              ; add together
       
@@ -3067,11 +3078,11 @@ Module Vector3
       ! rsqrtps xmm0, xmm0            ; reciprocal square root (inverse length)
       
       ! movaps xmm1, xmm0
-      ! movaps xmm2, [math.l_sse_infinity_vec]
+      ! movups xmm2, [math.l_sse_infinity_vec]
 
       ! cmpps xmm1, xmm2, 0 
       ! xorps xmm0, xmm1
-      ! movaps xmm3, [math.l_sse_one_vec]
+      ! movups xmm3, [math.l_sse_one_vec]
   
       ! andps xmm3, xmm1
       ! addps xmm0, xmm3
@@ -3161,7 +3172,7 @@ Module Vector3
     ; ---------------------------------------------------------------
     Procedure AbsoluteInPlace(*v.v3f32)
       ! mov rdx, [p.p_v]                    ; vector3 to data register
-      ! movaps xmm1, [math.l_sse_1111_sign_mask]; move sign mask to rsi register
+      ! movups xmm1, [math.l_sse_1111_sign_mask]; move sign mask to rsi register
       ! movups xmm0, [rdx]                  ; data register to sse register
       ! andps xmm0, xmm1                    ; bitmask removing sign
       ! movaps [rdx], xmm0                  ; mov back to memory
@@ -3170,7 +3181,7 @@ Module Vector3
     Procedure Absolute(*v.v3f32, *o.v3f32)
       ! mov rdx, [p.p_v]                    ; dst vector3 to data register
       ! mov rcx, [p.p_o]                    ; src vector3 to data register
-      ! movaps xmm1, [math.l_sse_1111_sign_mask] ; move sign mask to rsi register
+      ! movups xmm1, [math.l_sse_1111_sign_mask] ; move sign mask to rsi register
       ! movups xmm0, [rcx]                  ; data register to sse register
       ! andps xmm0, xmm1                    ; bitmask removing sign
       ! movups [rdx], xmm0                  ; move back to memory
@@ -3353,7 +3364,7 @@ Module Vector3
       ! subps xmm0, xmm1            ; compute delta
       ! movss xmm2, [p.v_eps]       ; load epsilon
       ! shufps xmm2, xmm2, 00000000b; fill vec with epsilon
-      ! movaps xmm3, [math.l_sse_1111_sign_mask]
+      ! movups xmm3, [math.l_sse_1111_sign_mask]
       ! andps xmm0, xmm3            ; absolute delta
       ! cmpps xmm0, xmm2, 1         ; compare delta < epsilon
       ! movmskps r12, xmm0          ; move comparison mask to r12 register
@@ -3508,7 +3519,7 @@ Module Quaternion
     Procedure Conjugate(*out.q4f32,*q.q4f32)
       ! mov rsi, [p.p_q]
       ! movups xmm0, [rsi]
-      ! movaps xmm1, [math.l_sse_1110_negate_mask]
+      ! movups xmm1, [math.l_sse_1110_negate_mask]
       ! mulps xmm0, xmm1
       ! mov rdi, [p.p_out]
       ! movups [rdi], xmm0
@@ -3520,7 +3531,7 @@ Module Quaternion
     Procedure ConjugateInPlace(*q.q4f32)
       ! mov rdi, [p.p_q]
       ! movups xmm0, [rsi]
-      ! movaps xmm1, [math.l_sse_1110_negate_mask]
+      ! movups xmm1, [math.l_sse_1110_negate_mask]
       ! mulps xmm0, xmm1
       ! movups [rdi], xmm0
     EndProcedure
@@ -3644,10 +3655,10 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! mulps xmm2, xmm6
     ! mulps xmm3, xmm7
     
-    ! movaps xmm8, [math.l_sse_0001_negate_mask]
+    ! movups xmm8, [math.l_sse_0001_negate_mask]
     ! mulps xmm1, xmm8
     ! mulps xmm2, xmm8
-    ! movaps xmm8, [math.l_sse_1111_negate_mask]
+    ! movups xmm8, [math.l_sse_1111_negate_mask]
     ! mulps xmm3, xmm8
     
     ! addps xmm0, xmm1
@@ -3690,10 +3701,10 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ! mulps xmm2, xmm6
     ! mulps xmm3, xmm7
     
-    ! movaps xmm8, [math.l_sse_0001_negate_mask]
+    ! movups xmm8, [math.l_sse_0001_negate_mask]
     ! mulps xmm1, xmm8
     ! mulps xmm2, xmm8
-    ! movaps xmm8, [math.l_sse_1111_negate_mask]
+    ! movups xmm8, [math.l_sse_1111_negate_mask]
     ! mulps xmm3, xmm8
     
     ! addps xmm0, xmm1
@@ -3833,7 +3844,7 @@ Module Matrix4
     EndProcedure
     
     Procedure Multiply(*m.m4f32, *f.m4f32, *s.m4f32)
-      ! mov rdi, [p.p_m]                 ; move io matrix to rdx register
+      ! mov rdx, [p.p_m]                 ; move io matrix to rdx register
       ! mov rax, [p.p_f]                 ; move first matrix to rax register
       ! mov rcx, [p.p_s]                 ; move second matrix to rcx register
       ! xor r8, r8                       ; reset counter
@@ -3863,7 +3874,7 @@ Module Matrix4
       !   addps xmm0, xmm2               ; packed addition
       !   addps xmm0, xmm3               ; packed addition
       
-      !   movups [rdi], xmm0             ; move row back to memory
+      !   movups [rdx], xmm0             ; move row back to memory
       !   add rdx, 16                    ; increment current io matrix row
       !   add rcx, 16                    ; increment current second matrix row
       !   inc r8                         ; increment counter
@@ -3902,8 +3913,8 @@ Module Matrix4
       !   addps xmm0, xmm3
       
       !   movups [rdi], xmm0
-      !   add rdx, 16
-      !   add rcx, 16
+      !   add rdi, 16
+      !   add rsi, 16
       !   inc r8
       !   cmp r8, 4
       !   jl m4f32_multiplyinplace_loop
@@ -4197,9 +4208,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 3527
-; FirstLine = 3514
-; Folding = ------------------------------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 138
+; FirstLine = 93
+; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

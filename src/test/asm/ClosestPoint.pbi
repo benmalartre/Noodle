@@ -180,7 +180,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
   !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d2 d3)
   !   blendps xmm0, xmm1, 0100b       ; blend ( s t d3 d4)
-  !   movaps xmm1, [math.l_sse_zero_vec]
+  !   movups xmm1, [math.l_sse_zero_vec]
   !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
   !   movmskps r12, xmm0              ; move comparison mask to r12 register
   
@@ -216,7 +216,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   ! .closest_point_case1_output_one:
   !   movaps xmm0, xmm6             ; make a copy of (d0 d1 d2 d3)
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
-  !   movaps xmm2, [math.l_sse_1111_negate_mask]
+  !   movups xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 11111111b  ; shuffle (d3 d3 d3 d3)
   !   mulps xmm0, xmm2              ; negate it (-d3 -d3 -d3 -d3)
   !   divss xmm0, xmm1              ; s = -d3/d0
@@ -230,7 +230,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3)
   !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2 d2 d2 d2)
   !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-  !   movaps xmm2, [math.l_sse_1111_negate_mask]
+  !   movups xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
   !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
   !   divss xmm0, xmm1              ; t = -d4/d2
@@ -245,7 +245,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm5               ; make a copy of (d4 s t det)  
   !   shufps xmm1, xmm1, 11111111b    ; shuffle (det det det det)
 
-  !   movaps xmm2, [math.l_sse_one_vec]
+  !   movups xmm2, [math.l_sse_one_vec]
   !   divps xmm2, xmm1
   !   mulps xmm5, xmm2                ; multiply (d4 s t det) * invDet
   !   jmp .closest_point_output
@@ -257,7 +257,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm0, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm0
   !   movaps xmm1, xmm5               ; make a copy of (d4 s t det) in xmm1
   !   shufps xmm1, xmm1, 00000000b    ; fill with d4 ( d4 d4 d4 d4 )
-  !   movaps xmm2, [math.l_sse_one_vec]
+  !   movups xmm2, [math.l_sse_one_vec]
   !   addps xmm2, xmm2                ; add with itself : 2 2 2 2 
   !   mulps xmm0, xmm2                ; multiply by 2
   !   blendps xmm0, xmm6, 1101b       ; d0 2d1 d2 d3
@@ -280,7 +280,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6               ; make a copy of (d0 d1 d2 d3) in xmm1
   !   shufps xmm1, xmm1, 10110100b    ; shuffle it (d0 d1 d3 d2)
   !   blendps xmm0, xmm1, 0100b       ; blend (s t d3 d4)
-  !   movaps xmm1, [math.l_sse_zero_vec]
+  !   movups xmm1, [math.l_sse_zero_vec]
   !   cmpps xmm0, xmm1, 1             ; packed compare (s t d3 d4) < (0,0,0,0)
   !   movmskps r12, xmm0              ; move comparison mask to r12 register
   
@@ -331,7 +331,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   divps xmm0, xmm1              ; s = numer / denom
   !   call .clamp_0_to_1             ; clamp between 0 and 1
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (s s s s)
-  !   movaps xmm1, [math.l_sse_one_vec]
+  !   movups xmm1, [math.l_sse_one_vec]
   !   subps xmm1, xmm0              ; t = 1 - s
   !   blendps xmm0, xmm1, 0100b     ; set xmm0 to (s s t s)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
@@ -341,20 +341,20 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm1, xmm6             ; make a copy of (d0 d1 d2 d3) 
   !   shufps xmm1, xmm1, 10101010b  ; shuffle (d2, d2, d2, d2)
   !   movaps xmm0, xmm5             ; make a copy of (d4 s t det)
-  !   movaps xmm2, [math.l_sse_1111_negate_mask]
+  !   movups xmm2, [math.l_sse_1111_negate_mask]
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (d4 d4 d4 d4)
   !   mulps xmm0, xmm2              ; negate it (-d4 -d4 -d4 -d4)
   !   divss xmm0, xmm1              ; t = -d4/d2
   !   call .clamp_0_to_1             ; clamp t between 0 and 1
   !   shufps xmm0, xmm0, 00000000b  ; shuffle (t t t t)
-  !   movaps xmm1, [math.l_sse_zero_vec]
+  !   movups xmm1, [math.l_sse_zero_vec]
   !   blendps xmm0, xmm1, 1011b     ; set xmm0 to (0 0 t 0)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
   !   jmp .closest_point_output
   
   ! .closest_point_case2_output_three:
-  !   movaps xmm0, [math.l_sse_one_vec]
-  !   movaps xmm1, [math.l_sse_zero_vec]
+  !   movups xmm0, [math.l_sse_one_vec]
+  !   movups xmm1, [math.l_sse_zero_vec]
   !   blendps xmm0, xmm1, 1101b     ; set xmm0 to (0 1 0 0)
   !   blendps xmm5, xmm0, 0110b     ; set s and t back to xmm5
   !   jmp .closest_point_output
@@ -367,11 +367,11 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   !   movaps xmm0, xmm5               ; make a copy of (d4 s t det) in xmm0
   !   shufps xmm0, xmm0, 10011001b    ; shuffle (s t s t)
   !   haddps xmm0, xmm0               ; horizontal subtraction ( s - t)
-  !   movaps xmm1, [math.l_sse_one_vec]
+  !   movups xmm1, [math.l_sse_one_vec]
   !   subps xmm1, xmm0                ; compute w : 1 - s - t
   !   shufps xmm1, xmm1, 00000000b    ; shuffle (w w w w)
   !   blendps xmm5, xmm1, 0001b       ; blend (w s t det)
-  !   movaps xmm1, [math.l_sse_zero_vec]
+  !   movups xmm1, [math.l_sse_zero_vec]
   !   blendps xmm5, xmm1, 1000b       ; reset fourth value
   !   mov rdi, [p.p_uvw]
   !   movups [rdi], xmm5              ; set back uvw
@@ -386,7 +386,7 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   
   !   addps xmm8, xmm9                 ; edge0 * u + edge1 *v
   !   addps xmm8, xmm13                ; edge0 * u + edge1 *v + a
-  !   movaps xmm0, [math.l_sse_zero_vec]
+  !   movups xmm0, [math.l_sse_zero_vec]
   !   blendps xmm13, xmm0, 1000b
   !   mov rdi, [p.p_closest]
   !   movups [rdi], xmm8              ; set back closest
@@ -398,8 +398,8 @@ Procedure ClosestPointSSE(*a.v3f32, *b.v3f32, *c.v3f32, *pnt.v3f32 , *closest.v3
   ; warning xmm1 and xmm2 will be destroyed
   ; --------------------------------------------------------------------------------------------
   ! .clamp_0_to_1:
-  !   movaps xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
-  !   movaps xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
+  !   movups xmm1, [math.l_sse_zero_vec]            ; load 0000 vec (min)
+  !   movups xmm2, [math.l_sse_one_vec]             ; load 1111 vec (max)
   !   comiss xmm0, xmm1                             ; compare value with 0000
   !   jb .clamp_0_to_1_return_min                    ; if below return min
   !   comiss xmm2, xmm0                             ; compare value with 1111
@@ -865,8 +865,8 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 371
-; FirstLine = 366
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 196
+; FirstLine = 178
 ; Folding = --
 ; EnableXP

@@ -44,14 +44,14 @@ DeclareModule PolymeshGeometry
   Declare SetPointsPosition(*mesh.PolymeshGeometry_t,*io_pos.CArray::CArrayV3F32)
   Declare SetPointsNormal(*mesh.PolymeshGeometry_t,*io_pos.CArray::CArrayV3F32)
   Declare ToShape(*Me.PolymeshGeometry_t,*shape.Shape::Shape_t)
-  Declare BunnyTopology(*topo.Topology_t)
-  Declare TeapotTopology(*topo.Topology_t)
-  Declare TorusTopology(*topo.Topology_t)
-  Declare CubeTopology(*topo.Topology_t,radius.f,u.i,v.i,w.i)
-  Declare CylinderTopology(*topo.Topology_t,radius.f,u.i=8,v.i=1,w.i=0,captop.b=#True,capbottom.b=#True)
-  Declare DiscTopology(*topo.Topology_t,radius.f,u.i=8)
-  Declare SphereTopology(*topo.Topology_t,radius.f=1,lats.i=8,longs.i=8)
-  Declare GridTopology(*topo.Topology_t,radius.f,u.i,v.i)
+  Declare BunnyTopology(*Me.PolymeshGeometry_t)
+  Declare TeapotTopology(*Me.PolymeshGeometry_t)
+  Declare TorusTopology(*Me.PolymeshGeometry_t)
+  Declare CubeTopology(*Me.PolymeshGeometry_t,radius.f=1,u.i=1,v.i=1,w.i=1)
+  Declare CylinderTopology(*Me.PolymeshGeometry_t,radius.f,u.i=8,v.i=1,w.i=0,captop.b=#True,capbottom.b=#True)
+  Declare DiscTopology(*Me.PolymeshGeometry_t,radius.f,u.i=8)
+  Declare SphereTopology(*Me.PolymeshGeometry_t,radius.f=1,lats.i=8,longs.i=8)
+  Declare GridTopology(*Me.PolymeshGeometry_t,radius.f=1,u.i=12,v.i=12)
   Declare InitSampling(*mesh.PolymeshGeometry_t)
   Declare Sample(*mesh.PolymeshGeometry_t, *t.Transform::Transform_t, numSamples, *io.CArray::CArrayV3F32)
   Declare ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
@@ -1572,68 +1572,15 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Bunny Primitive
   ;---------------------------------------------------------
-  Procedure BunnyTopology(*topo.Topology_t)
-   
-    Define v=0
-    Define p.v3f32
-    CArray::SetCount(*topo\vertices,Shape::#BUNNY_NUM_VERTICES)
-  
-    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_BUNNY),CArray::GetPtr(*topo\vertices,0),Shape::#BUNNY_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
-  
-    
-    Define i.i
-    Define l.l
-    CArray::SetCount(*topo\faces,Shape::#BUNNY_NUM_INDICES+Shape::#BUNNY_NUM_TRIANGLES)
-    Define id=0
-    Define t
-    For t=0 To Shape::#BUNNY_NUM_TRIANGLES-1
-      For i=0 To 2
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+t*3*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+(t*3+1)*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+1,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_BUNNY)+(t*3+2)*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+2,l)
-      Next i
-      CArray::SetValueL(*topo\faces,id+3,-2)
-      id+4
-    Next t
-    *topo\dirty = #True
+  Procedure BunnyTopology(*geom.PolymeshGeometry_t)
+    Topology::Bunny(*geom\topo)
   EndProcedure
   
   ;---------------------------------------------------------
   ; Teapot Primitive
   ;---------------------------------------------------------
-  Procedure TeapotTopology(*topo.Topology_t)
-
-    Define v=0
-    Define p.v3f32
-    CArray::SetCount(*topo\vertices,Shape::#TEAPOT_NUM_VERTICES)
-  
-    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TEAPOT),
-               CArray::GetPtr(*topo\vertices,0),
-               Shape::#TEAPOT_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
-  
-    
-    Define i.i
-    Define l.l
-    CArray::SetCount(*topo\faces,Shape::#TEAPOT_NUM_TRIANGLES*4)
-    Define id=0
-    Define t
-    For t=0 To Shape::#TEAPOT_NUM_TRIANGLES-1
-      For i=0 To 2
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TEAPOT)+t*3*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+2,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TEAPOT)+t*3*SizeOf(l)+SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+1,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TEAPOT)+t*3*SizeOf(l)+2*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id,l)
-      Next i
-      
-      CArray::SetValueL(*topo\faces,id+3,-2)
-      id+4
-    Next t
-    *topo\dirty = #True
+  Procedure TeapotTopology(*geom.PolymeshGeometry_t)
+    Topology::Teapot(*geom\topo)
   EndProcedure
   
   
@@ -1678,36 +1625,8 @@ Module PolymeshGeometry
     CArray::Delete(*indices)
   EndProcedure
   
-  Procedure TorusTopology(*topo.Topology_t)
-  
-   Define v=0
-    Define p.v3f32
-    CArray::SetCount(*topo\vertices,Shape::#TORUS_NUM_VERTICES)
-  
-    CopyMemory(SHAPE::GetVertices(Shape::#SHAPE_TORUS),
-               CArray::GetPtr(*topo\vertices,0),
-               Shape::#TORUS_NUM_VERTICES * CArray::GetItemSize(*topo\vertices))
-  
-    
-    Define i.i
-    Define l.l
-    CArray::SetCount(*topo\faces,Shape::#TORUS_NUM_INDICES+Shape::#TORUS_NUM_TRIANGLES)
-    Define id=0
-    Define t
-    For t=0 To Shape::#TORUS_NUM_TRIANGLES-1
-      For i=0 To 2
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TORUS)+t*3*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+2,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TORUS)+t*3*SizeOf(l)+SizeOf(l))
-        CArray::SetValueL(*topo\faces,id+1,l)
-        l = PeekL(SHAPE::GetFaces(Shape::#SHAPE_TORUS)+t*3*SizeOf(l)+2*SizeOf(l))
-        CArray::SetValueL(*topo\faces,id,l)
-      Next i
-      
-      CArray::SetValueL(*topo\faces,id+3,-2)
-      id+4
-    Next t
-    *topo\dirty = #True
+  Procedure TorusTopology(*geom.PolymeshGeometry_t)
+    Topology::Torus(*geom\topo)
   EndProcedure
   
   
@@ -1827,80 +1746,15 @@ Module PolymeshGeometry
     
   EndProcedure
   
-  Procedure CubeTopology(*topo.Topology_t,radius.f,u.i,v.i,w.i)
-  
-    Protected x = 0
-    CArray::SetCount(*topo\vertices,8)
-    CArray::SetCount(*topo\faces,30)
-  
-    Protected p.v3f32
-    Protected l.f = radius*0.5
-  
-    Vector3::Set(p,l,l,l)
-    CArray::SetValue(*topo\vertices,0,p)
-    Vector3::Set(p,l,l,-l)
-    CArray::SetValue(*topo\vertices,1,p)
-    Vector3::Set(p,-l,l,-l)
-    CArray::SetValue(*topo\vertices,2,p)
-    Vector3::Set(p,-l,l,l)
-    CArray::SetValue(*topo\vertices,3,p)
-    Vector3::Set(p,l,-l,l)
-    CArray::SetValue(*topo\vertices,4,p)
-    Vector3::Set(p,l,-l,-l)
-    CArray::SetValue(*topo\vertices,5,p)
-    Vector3::Set(p,-l,-l,-l)
-    CArray::SetValue(*topo\vertices,6,p)
-    Vector3::Set(p,-l,-l,l)
-    CArray::SetValue(*topo\vertices,7,p)
-    
-    
-    ;Face
-    CArray::SetValueL(*topo\faces,0,3)
-    CArray::SetValueL(*topo\faces,1,2)
-    CArray::SetValueL(*topo\faces,2,1)
-    CArray::SetValueL(*topo\faces,3,0)
-    CArray::SetValueL(*topo\faces,4,-2)
-    
-    CArray::SetValueL(*topo\faces,5,2)
-    CArray::SetValueL(*topo\faces,6,6)
-    CArray::SetValueL(*topo\faces,7,5)
-    CArray::SetValueL(*topo\faces,8,1)
-    CArray::SetValueL(*topo\faces,9,-2)
-    
-    CArray::SetValueL(*topo\faces,10,6)
-    CArray::SetValueL(*topo\faces,11,7)
-    CArray::SetValueL(*topo\faces,12,4)
-    CArray::SetValueL(*topo\faces,13,5)
-    CArray::SetValueL(*topo\faces,14,-2)
-    
-    CArray::SetValueL(*topo\faces,15,7)
-    CArray::SetValueL(*topo\faces,16,3)
-    CArray::SetValueL(*topo\faces,17,0)
-    CArray::SetValueL(*topo\faces,18,4)
-    CArray::SetValueL(*topo\faces,19,-2)
-    
-    CArray::SetValueL(*topo\faces,20,1)
-    CArray::SetValueL(*topo\faces,21,5)
-    CArray::SetValueL(*topo\faces,22,4)
-    CArray::SetValueL(*topo\faces,23,0)
-    CArray::SetValueL(*topo\faces,24,-2)
-    
-    CArray::SetValueL(*topo\faces,25,7)
-    CArray::SetValueL(*topo\faces,26,6)
-    CArray::SetValueL(*topo\faces,27,2)
-    CArray::SetValueL(*topo\faces,28,3)
-    CArray::SetValueL(*topo\faces,29,-2)
-    
-    *topo\dirty = #True
+  Procedure CubeTopology(*geom.PolymeshGeometry_t,radius.f=1,u.i=1,v.i=1,w.i=1)
+    Topology::Cube(*geom\topo)
   EndProcedure
   
   
-  ;---------------------------------------------------------
-  ; Sphere Shape Primitive
-  ;---------------------------------------------------------
+  ; ---------------------------------------------------------
+  ;   SPHERE
+  ; ---------------------------------------------------------
   Procedure Sphere(*geom.PolymeshGeometry_t,radius.f=1,lats.i=8,longs.i=8)
-  
-    
     Protected nbp = (longs-2)*lats+2
     
     CArray::SetCount(*geom\a_positions,nbp)
@@ -1935,7 +1789,6 @@ Module PolymeshGeometry
         Next j
       EndIf
     Next i
-    
     
     ; Face Indices
     CArray::SetCount(*geom\a_facecount,(longs-1)*lats)
@@ -2005,8 +1858,6 @@ Module PolymeshGeometry
     CArray::SetCount(*geom\a_uvws,*geom\nbsamples)
     *geom\nbtriangles = *geom\nbsamples/3
     
-  
-    
     Protected color.c4f32
     Color::Set(color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
    SetColors(*geom,@color)
@@ -2021,111 +1872,8 @@ Module PolymeshGeometry
   
   EndProcedure
   
-  Procedure SphereTopology(*topo.Topology_t,radius.f=1,lats.i=8,longs.i=8)
-  
-    Protected nbp = (longs-2)*lats+2
-    
-    CArray::SetCount(*topo\vertices,nbp)
-    ; Vertices Position
-    Protected i, j, k
-    Protected p.v3f32
-    Define.f lat,y,yr,lng,x,z
-    
-    For i = 0 To longs-1
-      lng = #F32_PI *(-0.5 + i/(longs-1))
-      y = radius * Sin(lng)
-      yr = radius * Cos(lng)
-      If i=0
-        Vector3::Set(p,0,-radius,0)
-        CArray::SetValue(*topo\vertices,0,p)
-  
-  
-      ElseIf i = longs-1
-        Vector3::Set(p,0,radius,0)
-        CArray::SetValue(*topo\vertices,nbp-1,p)
-  
-  
-      Else
-        For j = 0 To lats-1
-          lat = 2*#F32_PI * ((j-1)*(1/lats))
-          x = Cos(lat)
-          z = Sin(lat)
-          Vector3::Set(p,x*yr,y,z*yr)
-          k = (i-1)*lats+j+1
-          CArray::SetValue(*topo\vertices,k,p)
-  
-        Next j
-      EndIf
-    Next i
-    
-    
-    ; Face Indices
-    Protected nbf = (longs-1)*lats
-    Protected nbi = (longs-3)*lats*4 + 2*lats*3
-    
-    Define counter = 0
-    CArray::SetCount(*topo\faces,nbf+nbi)
-    
-    Define.i i1,i2,i3,i4,offset
-  
-    For i=0 To longs-2
-      For j=0 To lats-1
-        If i=0
-          i1 = 0
-          i2 = j+1
-          i3 = (j+1)%lats+1
-          CArray::SetValueL(*topo\faces,offset,i3)
-          CArray::SetValueL(*topo\faces,offset+1,i2)
-          CArray::SetValueL(*topo\faces,offset+2,i1)
-          CArray::SetValueL(*topo\faces,offset+3,-2)
-  
-          offset+4
-          counter +4
-        ElseIf i= longs-2
-          i1 = nbp-1
-          i2 = nbp - lats +j-1
-          If j=lats-1
-            i3 = nbp - lats-1
-          Else
-            i3 = nbp - lats+j
-          EndIf
-          
-          CArray::SetValueL(*topo\faces,offset,i1)
-          CArray::SetValueL(*topo\faces,offset+1,i2)
-          CArray::SetValueL(*topo\faces,offset+2,i3)
-          CArray::SetValueL(*topo\faces,offset+3,-2)
-  
-          offset+4
-          counter+4
-  
-        Else
-          i1 = (i-1)*lats+j+1
-          i4 = i1+lats
-          
-          If j=lats-1
-            i2 = i1-lats+1
-            i3 = i1+1
-          Else
-            i2 = i1+1
-            i3 = i1+lats+1
-          EndIf
-          
-          CArray::SetValueL(*topo\faces,offset,i1)
-          CArray::SetValueL(*topo\faces,offset+1,i2)
-          CArray::SetValueL(*topo\faces,offset+2,i3)
-          CArray::SetValueL(*topo\faces,offset+3,i4)
-          CArray::SetValueL(*topo\faces,offset+4,-2)
-          
-          offset+5
-          counter+5
-  
-        EndIf
-        
-        
-      Next j
-    Next i
-   
-    *topo\dirty = #True
+  Procedure SphereTopology(*geom.PolymeshGeometry_t,radius.f=1,lats.i=8,longs.i=8)
+    Topology::Sphere(*geom\topo, radius, lats, longs)
   EndProcedure
   
   
@@ -2197,44 +1945,8 @@ Module PolymeshGeometry
    
   EndProcedure
   
-  Procedure GridTopology(*topo.Topology_t,radius.f,u.i,v.i)
-    Math::MAXIMUM(u,2)
-    Math::MAXIMUM(v,2)
-    
-    Protected nbp = (u-1)*(v-1)
-  
-    CArray::SetCount(*topo\vertices,u*v)
-    CArray::SetCount(*topo\faces,nbp*5)
-    
-    Protected x,z
-    Define.f stepx, stepz
-    stepx = radius*1/(u-1)
-    stepz = radius*1/(v-1)
-    
-    Protected pos.v3f32
-    For z=0 To v-1
-      For x=0 To u-1
-        Vector3::Set(pos,-0.5*radius+x*stepx,0,-0.5*radius+z*stepz)
-        CArray::SetValue(*topo\vertices,z*u+x,pos)
-      Next x
-    Next z
-    
-    Protected index = 0
-    Protected offset=0
-
-    For z=0 To v-2
-      For x=0 To u-2
-        index = z*u+x
-        CArray::SetValueL(*topo\faces,offset+0,index)
-        CArray::SetValueL(*topo\faces,offset+1,index+1)
-        CArray::SetValueL(*topo\faces,offset+2,index+u+1)
-        CArray::SetValueL(*topo\faces,offset+3,index+u)
-        CArray::SetValueL(*topo\faces,offset+4,-2)
-        offset + 5
-      Next x
-    Next z
-    *topo\dirty = #True
-
+  Procedure GridTopology(*geom.PolymeshGeometry_t,radius.f=1,u.i=12,v.i=12)
+    Topology::Grid(*geom\topo, radius, u, v)
   EndProcedure
   
   Procedure GridUVWs(*mesh.PolymeshGeometry_t,radius.f,u.i,v.i)
@@ -2341,110 +2053,9 @@ Module PolymeshGeometry
   ;--------------------------------------------------------------
   ; Cylinder Topology
   ;--------------------------------------------------------------
-  Procedure CylinderTopology(*topo.Topology_t,radius.f,u.i=8,v.i=1,w.i=0,captop.b=#True,capbottom.b=#True)
-
-    CArray::SetCount(*topo\vertices,0)
-    CArray::SetCount(*topo\faces,0)
-    
-    Protected p.v3f32
-    Protected c.v3f32
-    Protected q.q4f32
-    Protected s.f = 360 / u
-    Protected t.f = 1/v
-    Protected nbp = u* (v+1)
-    Protected bc.v3f32
-    Protected tc.v3f32
-    Protected i,j
-    Vector3::Set(bc,0,-1,0)
-    Vector3::Set(tc,0,1,0)
-    
-
-    For i=0 To v
-      
-      Vector3::LinearInterpolate(c,bc,tc,i*t)
-      For j=0 To u-1
-          
-        Quaternion::SetFromAxisAngleValues(q,0,1,0,Radian(j*s))
-        Vector3::Set(p,0,0,1)
-        Vector3::MulByQuaternionInPlace(p,q)
-        Vector3::AddInPlace(p,c)
-        CArray::Append(*topo\vertices,p)
-      Next
-      
-    Next
-    
-    
-    Protected nbf = u*v
-    Protected base.i
-    Protected p1.l,p2.l,p3.l,p4.l
-    For i=0 To v-1
-      For j=0 To u-1
-        If j <= u-2
-          p1 = base+j+u
-          p2 = base+(j+1)+u
-          p3 = base+(j+1)
-          p4 = base+j
-        Else
-          p1 = base+j+u
-          p2 = base+u
-          p3 = base
-          p4 = base+j
-        EndIf
-        
-        CArray::AppendL(*topo\faces,p1)
-        CArray::AppendL(*topo\faces,p2)
-        CArray::AppendL(*topo\faces,p3)
-        CArray::AppendL(*topo\faces,p4)
-        CArray::AppendL(*topo\faces,-2)
-        
-      Next j
-      base + u
-    Next i
-    
-    If captop
-;       Vector3::SetFromOther(  
-    EndIf
-    
-    *topo\dirty = #True
-  
+  Procedure CylinderTopology(*geom.PolymeshGeometry_t,radius.f,u.i=8,v.i=1,w.i=0,captop.b=#True,capbottom.b=#True)
+    Topology::Cylinder(*geom\topo, radius, u, v, w, captop, capbottom)
   EndProcedure
-  
-  ; Procedure OPolymeshGeometry_GridTopology(*topo.CTopology_t,radius.f,u.i,v.i)
-  ;   u = Max(u,2)
-  ;   v = Max(v,2)
-  ;   
-  ;   Protected nbp = (u-1)*(v-1)
-  ;   Protected nbs = nbp *4
-  ; 
-  ;   *topo\vertices\SetCount(u*v)
-  ;   *topo\faces\SetCount(nbp+nbs)
-  ;   
-  ;   Protected x,z
-  ;   Define.f stepx, stepz
-  ;   stepx = radius*1/(u-1)
-  ;   stepz = radius*1/(v-1)
-  ;   
-  ;   Protected pos.v3f32
-  ;   For x=0 To u-1
-  ;     For z=0 To v-1
-  ;       Vector3_Set(@pos,-0.5*radius+x*stepx,0,-0.5*radius+z*stepz)
-  ;       *topo\vertices\SetValue(x*u+z,@pos)
-  ;     Next z
-  ;   Next x
-  ;   
-  ;   Protected column, row
-  ;   Protected offset
-  ;   For x=0 To nbp-1
-  ;     column = x/(u-1)*u
-  ;     row = x%(u-1)
-  ;     *topo\faces\SetValue(offset+3,column+row)
-  ;     *topo\faces\SetValue(offset+2,column+row+1)
-  ;     *topo\faces\SetValue(offset+1,column+row+u+1)
-  ;     *topo\faces\SetValue(offset+0,column+row+u)
-  ;     *topo\faces\SetValue(offset+4,-2)
-  ;     offset + 5
-  ;   Next x
-  ; EndProcedure
   
   ;--------------------------------------------------------------
   ; Disc Shape
@@ -2489,40 +2100,7 @@ Module PolymeshGeometry
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
     GetTopology(*geom)
-   
-    ;Color
-  ;   Color4_Set(@color,1,Random(255)/255,Random(255)/255,Random(255)/255);
-  ;   OPolymeshGeometry_SetColors(*geom,@color)
-  ;   
-  ;   UVWs
-    
-  ;   
-  ;   Protected x,z
-  ;   Define.f stepx, stepz
-  ;   stepx = sizX*1/(u-1)
-  ;   stepz = sizZ*1/(v-1)
-  ;   
-  ;   Protected pos.v3f32
-  ;   For x=0 To u-1
-  ;     For z=0 To v-1
-  ;       Vector3_Set(@pos,-0.5*sizX+x*stepx,Random(4)-2,-0.5*sizZ+z*stepz)
-  ;       *geom\a_positions\SetValue(x*u+z,@pos)
-  ;     Next z
-  ;   Next x
-  ;   
-  ;   Protected column, row
-  ;   For x=0 To *geom\nbpolygons-1
-  ;     column = x/(u-1)*u
-  ;     row = x%(u-1)
-  ;     *geom\a_faceindices\SetValue(x*4+3,column+row)
-  ;     *geom\a_faceindices\SetValue(x*4+2,column+row+1)
-  ;     *geom\a_faceindices\SetValue(x*4+1,column+row+u+1)
-  ;     *geom\a_faceindices\SetValue(x*4+0,column+row+u)
-  ;     *geom\a_facecount\SetValue(x,4)  
-  ;   Next x
-  ;   
-  ;   OPolymeshGeometry_ComputeTriangles(*geom)
-  ;   OPolymeshGeometry_ComputeNormals(*geom)
+ 
   EndProcedure
   
   Procedure DiscTopology(*topo.Topology_t,radius.f,u.i=8)
@@ -2653,21 +2231,21 @@ Module PolymeshGeometry
     
       Select shape
         Case Shape::#SHAPE_GRID
-          GridTopology(*Me\base,10,10,10)
+          Topology::Grid(*Me\base,10,10,10)
         Case Shape::#SHAPE_CYLINDER
-          CylinderTopology(*Me\base,1,6,1,10)
+          Topology::Cylinder(*Me\base,1,6,1,10)
         Case Shape::#SHAPE_CUBE
-          CubeTopology(*Me\base,1,10,10,10)
+          Topology::Cube(*Me\base,1,10,10,10)
         Case Shape::#SHAPE_SPHERE
-          SphereTopology(*Me\base,0.5,12,8)
+          Topology::Sphere(*Me\base,0.5,12,8)
         Case Shape::#SHAPE_GRID
-          GridTopology(*Me\base,1,10,10)
+          Topology::Grid(*Me\base,1,10,10)
         Case Shape::#SHAPE_TORUS
-          TorusTopology(*Me\base)
+          Topology::Torus(*Me\base)
         Case Shape::#SHAPE_BUNNY
-          BunnyTopology(*Me\base)
+          Topology::Bunny(*Me\base)
         Case Shape::#SHAPE_TEAPOT
-          TeapotTopology(*Me\base)
+          Topology::Teapot(*Me\base)
       EndSelect
       
       Set2(*Me,*Me\base)
@@ -2680,8 +2258,8 @@ Module PolymeshGeometry
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 873
-; FirstLine = 870
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1947
+; FirstLine = 1917
 ; Folding = ----H9---8--
 ; EnableXP

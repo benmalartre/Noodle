@@ -214,11 +214,11 @@ Procedure Draw(*app.Application::Application_t)
   ;         Vector3::Set(p,*bunnies()\model\v[12],Sin(Time::Get()+i)+2,*bunnies()\model\v[14])
   ;         Matrix4::SetTranslation(*bunnies()\model,@p)
     glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*bunnies()\matrix)
-    Polymesh::Draw(*bunnies())
+    Polymesh::Draw(*bunnies(), *app\context)
     
   Next
   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*ground\matrix)
-  Polymesh::Draw(*ground)
+  Polymesh::Draw(*ground, *app\context)
   
   
   Define bw = vwidth/5
@@ -338,7 +338,7 @@ If Time::Init()
    *app = Application::New("SSAO",800,600)
    CompilerIf Not #USE_GLFW
      Define *view.View::View_t = View::Split(*app\manager\main,#PB_Splitter_Vertical,75)
-     *viewport = ViewportUI::New(*view\left,"ViewportUI")
+     *viewport = ViewportUI::New(*view\left,"ViewportUI", *app\camera)
      *app\context = *viewport\context
      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
      
@@ -510,8 +510,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 258
-; FirstLine = 254
+; CursorPosition = 340
+; FirstLine = 336
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe
