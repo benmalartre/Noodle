@@ -216,6 +216,7 @@ DeclareModule STK
   ; Prototypes
   ;----------------------------------------------------------------------------------
   PrototypeC INIT()
+  PrototypeC TERM(*DAC.RtAudio)
   PrototypeC GETDEVICES()
     
   PrototypeC GENERATORSTREAMSETUP(*DAC.RtAudio)
@@ -292,6 +293,7 @@ DeclareModule STK
   
   If STK_LIB
     Global Init.INIT = GetFunction(STK_LIB, "STKInit")
+    Global Term.TERM = GetFunction(STK_LIB, "STKTerm")
     Global GetDevices.GETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
 
     Global GeneratorStreamSetup.GENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
@@ -413,9 +415,8 @@ Module STK
 ;     FreeMemory(*audio\mem)
 ;   EndProcedure
 EndModule
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 143
-; FirstLine = 207
+; CursorPosition = 218
+; FirstLine = 211
 ; Folding = --
 ; EnableXP

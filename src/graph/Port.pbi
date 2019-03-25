@@ -254,7 +254,7 @@ Module NodePort
         
       Case Attribute::#ATTR_TYPE_AUDIO
         *audio.CArray::CArrayPtr = CArray::newCArrayPtr()
-        CArray::AppendPtr(*data,#Null)
+        ;CArray::AppendPtr(*data,#Null)
         *port\value = *audio
        
       Case Attribute::#ATTR_TYPE_3DOBJECT
@@ -705,7 +705,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 255
-; FirstLine = 251
+; CursorPosition = 256
+; FirstLine = 250
 ; Folding = ----
 ; EnableXP

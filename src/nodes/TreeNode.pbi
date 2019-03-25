@@ -43,7 +43,6 @@ EndDeclareModule
 ; ==================================================================================================
 Module TreeNode 
   Procedure Init(*node.TreeNode_t)
-    Protected datatype.i = Attribute::#ATTR_TYPE_FLOAT|Attribute::#ATTR_TYPE_INTEGER|Attribute::#ATTR_TYPE_VECTOR2|Attribute::#ATTR_TYPE_VECTOR3
     Node::AddInputPort(*node,"Port1",Attribute::#ATTR_TYPE_EXECUTE)
     Node::AddInputPort(*node,"New(Port1)...",Attribute::#ATTR_TYPE_NEW)
     *node\label = "Tree"
@@ -73,8 +72,7 @@ Module TreeNode
     RecurseNodes(*node,*port\source\node)
     Protected *current.Node::Node_t
     Protected current.Node::INode
-    Debug "Port : "+*port\name
-    Debug "Nb Nodes in Branch : "+Str(ListSize(*node\nodes()))
+
     Protected i = ListSize(*node\nodes())-1
     LastElement(*node\nodes())
     While i>=0
@@ -134,11 +132,10 @@ Module TreeNode
 EndModule
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 37
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 42
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

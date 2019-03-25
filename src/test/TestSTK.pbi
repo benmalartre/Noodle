@@ -6,7 +6,9 @@ Global HEIGHT = 600
 
 
 Global *DAC.STK::RtAudio = STK::Init()
+Debug *DAC
 Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
+Debug *stream
 Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
 Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
 
@@ -94,12 +96,12 @@ If *stream
               DrawCanvas()
             Else
               Define result.b = STK::GeneratorStreamStart(*stream)
-              ;STK::EnvelopeKeyOn(*envelope)
+              ; STK::EnvelopeKeyOn(*envelope)
               running = #True
               DrawCanvas()
             EndIf
           ElseIf key = #PB_Shortcut_Space
-            ;STK::EnvelopeKeyOn(*envelope) 
+            ; STK::EnvelopeKeyOn(*envelope) 
           EndIf
         Case #PB_EventType_LeftButtonDown
           down = #True
@@ -110,9 +112,10 @@ If *stream
             mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
             v = mx / width
             STK::SetGeneratorScalar(*wave, STK::#GENERATOR_FREQUENCY, v * 220 +60)
+            Debug "FREQUENCY : "+Str(v *220 + 60)
 ;             STK::SetArythmeticScalar(*final, v)
 ;             STK::SetEffectScalar(*rev, v, STK::#EFFECT_MIX)
-            ;STK::SetArythmeticScalar(*adder1, v)
+;             STK::SetArythmeticScalar(*adder1, v)
 ;             STK::SetArythmeticScalar(*adder1, v*4)
           EndIf
           
@@ -121,6 +124,7 @@ If *stream
   Until event = #PB_Event_CloseWindow
 
   STK::GeneratorStreamClean(*stream)
+  STK::STK
 Else
   MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
@@ -140,6 +144,7 @@ EndIf
 ;   Debug "FAIL TO START DAC"
 ; EndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 10
+; CursorPosition = 126
+; FirstLine = 110
 ; Folding = -
 ; EnableXP

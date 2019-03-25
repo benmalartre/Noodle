@@ -60,12 +60,10 @@ Module SetDataNode
       Protected base.s = StringField(refname, 1,".")
       
       If base ="Self" Or base ="This"
-        Debug "Got a good base"
         Protected *obj.Object3D::Object3D_t = *node\parent3dobject
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
         If FindMapElement(*obj\m_attributes(),name)
-          Debug "Found the attribute"
           *node\attribute = *obj\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
   
@@ -74,12 +72,9 @@ Module SetDataNode
           *node\errorstr = ""
         ; If Attribute NOT Exist Create It
         Else
-          Debug "Create the attribute"
           *input = Node::GetPortByName(*node,"Data")
           If *input\connected
-            Debug "Input is connected"
             With *input\source
-              Debug "The source is OK"
               Protected *datas.CArray::CArrayT
               Select \datatype
                 Case Attribute::#ATTR_TYPE_BOOL
@@ -113,8 +108,6 @@ Module SetDataNode
           
           
         EndIf
-        
-        Debug "Search Attribute Named : "+StringField(refname, 2,".")+" ---> "+Str(*node\attribute)
       EndIf
     Else
       *node\state = Graph::#Node_StateError
@@ -295,7 +288,6 @@ Module SetDataNode
 
         Case Attribute::#ATTR_TYPE_TOPOLOGY
           If *node\attribute\name = "Topology"
-            Debug "SET TOPO CALLED..."
             Protected *tIn.Carray::CArrayPtr = *in_data
             Protected *tOut.Carray::CArrayPtr = *node\attribute\data
            
@@ -303,15 +295,12 @@ Module SetDataNode
             *parent = *node\parent3dobject
             
             If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
-              Debug "OBJECT IS A POLYMESH"
               Protected *geom.Geometry::PolymeshGeometry_t = *parent\geom
               If *iTopo\dirty
-                Debug "TOPOLOGY DIRTY"
                 PolymeshGeometry::Set2(*geom,*iTopo)
                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
                 *iTopo\dirty = #False
               Else
-                Debug "DEFORM DIRTY"
                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
                EndIf
@@ -362,8 +351,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 17
+; CursorPosition = 284
+; FirstLine = 275
 ; Folding = --
 ; EnableThread
 ; EnableXP

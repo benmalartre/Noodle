@@ -107,15 +107,15 @@ Module Node
 
   
   
-   ;Let some place for the node name
+  ; Let some place for the node name
   Protected y =  *n\posy+(Graph::#Node_TitleHeight+Graph::#Node_PortSpacing/2)
   
-  ;Load Title font
+  ; Load Title font
   VectorFont(FontID(Globals::#FONT_DEFAULT),12)
   Protected color = *n\color
  
   
-  ;Draw Outputs
+  ; Draw Outputs
   radius = Graph::#Node_PortRadius
   Protected x = *n\posx+*n\width-(Graph::#Node_PortShiftX)
   ForEach *n\outputs()
@@ -123,7 +123,7 @@ Module Node
     AddPathCircle(x,y,radius,0,360)
     FillPath()
     
-    ;DrawingMode(#PB_2DDrawing_Outlined)
+    ; DrawingMode(#PB_2DDrawing_Outlined)
     If *n\outputs()\selected 
       VectorSourceColor(RGBA(255,255,255,255))
       AddPathCircle(x,y,radius)
@@ -144,7 +144,7 @@ Module Node
     y + Graph::#Node_PortSpacing
   Next
   
-  ;Draw Inputs
+  ; Draw Inputs
   x = *n\posx+(Graph::#Node_PortShiftX)
   ForEach *n\inputs()
     If *n\inputs()\currenttype=Attribute::#ATTR_TYPE_NEW 
@@ -160,7 +160,7 @@ Module Node
       FillPath()
     EndIf
     
-    ;DrawingMode(#PB_2DDrawing_Outlined)
+    ; DrawingMode(#PB_2DDrawing_Outlined)
     If *n\inputs()\selected 
       VectorSourceColor(RGBA(255,255,255,255))
       AddPathCircle(x,y,radius)
@@ -179,7 +179,7 @@ Module Node
     y + Graph::#Node_PortSpacing
   Next
   
-  ;Draw Node Name
+  ; Draw Node Name
   VectorFont(FontID(Globals::#FONT_BOLD),14 )
   VectorSourceColor(UIColor::COLORA_LABEL)
   MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
@@ -649,9 +649,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 103
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 181
+; FirstLine = 158
 ; Folding = ------
 ; EnableThread
 ; EnableXP
