@@ -67,6 +67,8 @@ Module NodePort
         datatype = "[Vector2]"
       Case Attribute::#ATTR_TYPE_VECTOR3
         datatype = "[Vector3]"
+      Case Attribute::#ATTR_TYPE_AUDIO
+        datatype = "[Audio]"
       Case Attribute::#ATTR_TYPE_UNDEFINED
         datatype = "[Undefined]"
     EndSelect
@@ -129,6 +131,8 @@ Module NodePort
         *port\color = Attribute::#ATTR_COLOR_TEXTURE
       Case Attribute::#ATTR_TYPE_SHADER
         *port\color = Attribute::#ATTR_COLOR_SHADER
+      Case Attribute::#ATTR_TYPE_AUDIO
+        *port\color = Attribute::#ATTR_COLOR_AUDIO
         
     EndSelect
     
@@ -245,10 +249,14 @@ Module NodePort
         
       Case Attribute::#ATTR_TYPE_GEOMETRY
         *data.CArray::CArrayPtr = CArray::newCArrayPtr()
-        ;       *data\Append(newCAttributePolymeshTopology())
         CArray::AppendPtr(*data,#Null)
         *port\value = *data
         
+      Case Attribute::#ATTR_TYPE_AUDIO
+        *audio.CArray::CArrayPtr = CArray::newCArrayPtr()
+        ;CArray::AppendPtr(*data,#Null)
+        *port\value = *audio
+       
       Case Attribute::#ATTR_TYPE_3DOBJECT
 ;         Debug "Init Port :  AttributeType_3DObject"
   ;       Protected *obj.C3DObject_t = #Null
@@ -339,7 +347,6 @@ Module NodePort
         
           *data = *port\value
           If Not *data : Init(*port) : *data = *port\value: EndIf
-          Debug "Data  = "+Str(*data) 
         EndIf
     EndSelect
     
@@ -428,6 +435,7 @@ Module NodePort
       If *Me\datatype & Attribute::#ATTR_TYPE_VECTOR2 : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_VECTOR3 : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_VECTOR4 : nbDataType+1 : EndIf
+      If *Me\datatype & Attribute::#ATTR_TYPE_AUDIO : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_EXECUTE : nbDataType+1 : EndIf
       
       If nbDataType = 1
@@ -696,8 +704,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 367
-; FirstLine = 340
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 256
+; FirstLine = 250
 ; Folding = ----
 ; EnableXP

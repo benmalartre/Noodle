@@ -123,6 +123,10 @@ CompilerEndIf
   XIncludeFile "AddPointNode.pbi"
   XIncludeFile "SampleGeometryNode.pbi"
   
+  ; Audio
+  XIncludeFile "AudioDACNode.pbi"
+  XIncludeFile "AudioGeneratorNode.pbi"
+  
   ; Topology
   XIncludeFile "SimpleTopoNode.pbi"
   XIncludeFile "TransformTopoNode.pbi"
@@ -139,9 +143,9 @@ CompilerEndIf
   
 ;   
   IncludePath "../"
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 85
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 127
+; FirstLine = 109
 ; Folding = --
 ; EnableThread
 ; EnableXP

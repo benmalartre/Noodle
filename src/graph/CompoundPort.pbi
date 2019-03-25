@@ -106,7 +106,6 @@ Module CompoundNodePort
         
         Protected *fCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
         Protected fv.f = *fCtrl\value_n
-        Debug "Recieved FLOAT port "+StrF(fv)
         Protected *fVal.CArray::CArrayFloat = *port\value
         CArray::SetValueF(*fVal,0,fv)
                 
@@ -200,9 +199,8 @@ EndModule
 ;  End Of File
 ; ============================================================================
 
-
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 110
-; FirstLine = 161
+; CursorPosition = 108
+; FirstLine = 104
 ; Folding = --
 ; EnableXP

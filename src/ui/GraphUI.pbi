@@ -204,8 +204,6 @@ Module GraphUI
   Procedure OnEvent(*Me.GraphUI_t,event.i)
     Protected Me.IGraphUI = *Me
     
-    Debug GadgetWidth(*Me\gadgetID)
-    Debug GadgetHeight(*Me\gadgetID)
     Select event
       Case #PB_Event_Menu
         Select EventMenu()
@@ -1608,8 +1606,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 306
-; FirstLine = 291
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 205
+; FirstLine = 202
 ; Folding = --------
 ; EnableXP

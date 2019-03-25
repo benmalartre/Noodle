@@ -619,9 +619,6 @@ Module Scene
   ;---------------------------------------------------------------------------
   Procedure Save(*scn.Scene_t)
     Debug "------------------------ SAVE SCENE ------------------------------"
-    Debug *scn
-    Debug CArray::GetCount(*scn\models)
-    Debug CArray::GetCount(*scn\lights)
     
     Debug "Scene Save Called"
   EndProcedure
@@ -802,13 +799,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; ============================================================================
-;  EOF
-; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 501
-; FirstLine = 489
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 800
 ; Folding = -------
-; EnableThread
 ; EnableXP
-; EnableUnicode

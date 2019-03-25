@@ -11,30 +11,31 @@ DeclareModule Attribute
   UseModule Math
   ; Node Data IO Types
   Enumeration
-    #ATTR_TYPE_UNDEFINED        = %0000000000000000000000
-    #ATTR_TYPE_NEW              = %0000000000000000000001
-    #ATTR_TYPE_BOOL             = %0000000000000000000010
-    #ATTR_TYPE_LONG             = %0000000000000000000100
-    #ATTR_TYPE_INTEGER          = %0000000000000000001000
-    #ATTR_TYPE_FLOAT            = %0000000000000000010000
-    #ATTR_TYPE_VECTOR2          = %0000000000000000100000
-    #ATTR_TYPE_VECTOR3          = %0000000000000001000000
-    #ATTR_TYPE_VECTOR4          = %0000000000000010000000
-    #ATTR_TYPE_COLOR            = %0000000000000100000000
-    #ATTR_TYPE_ROTATION         = %0000000000001000000000
-    #ATTR_TYPE_QUATERNION       = %0000000000010000000000
-    #ATTR_TYPE_MATRIX3          = %0000000000100000000000
-    #ATTR_TYPE_MATRIX4          = %0000000001000000000000
-    #ATTR_TYPE_STRING           = %0000000010000000000000
-    #ATTR_TYPE_SHAPE            = %0000000100000000000000
-    #ATTR_TYPE_TOPOLOGY         = %0000001000000000000000
-    #ATTR_TYPE_GEOMETRY         = %0000010000000000000000
-    #ATTR_TYPE_LOCATION         = %0000100000000000000000
-    #ATTR_TYPE_EXECUTE          = %0001000000000000000000
-    #ATTR_TYPE_GROUP            = %0010000000000000000000
-    #ATTR_TYPE_REFERENCE        = %0100000000000000000000
-    #ATTR_TYPE_CUSTOM           = %1000000000000000000000
-    #ATTR_TYPE_POLYMORPH        = %0001111111111111111110
+    #ATTR_TYPE_UNDEFINED        = %00000000000000000000000
+    #ATTR_TYPE_NEW              = %00000000000000000000001
+    #ATTR_TYPE_BOOL             = %00000000000000000000010
+    #ATTR_TYPE_LONG             = %00000000000000000000100
+    #ATTR_TYPE_INTEGER          = %00000000000000000001000
+    #ATTR_TYPE_FLOAT            = %00000000000000000010000
+    #ATTR_TYPE_VECTOR2          = %00000000000000000100000
+    #ATTR_TYPE_VECTOR3          = %00000000000000001000000
+    #ATTR_TYPE_VECTOR4          = %00000000000000010000000
+    #ATTR_TYPE_COLOR            = %00000000000000100000000
+    #ATTR_TYPE_ROTATION         = %00000000000001000000000
+    #ATTR_TYPE_QUATERNION       = %00000000000010000000000
+    #ATTR_TYPE_MATRIX3          = %00000000000100000000000
+    #ATTR_TYPE_MATRIX4          = %00000000001000000000000
+    #ATTR_TYPE_STRING           = %00000000010000000000000
+    #ATTR_TYPE_SHAPE            = %00000000100000000000000
+    #ATTR_TYPE_TOPOLOGY         = %00000001000000000000000
+    #ATTR_TYPE_GEOMETRY         = %00000010000000000000000
+    #ATTR_TYPE_LOCATION         = %00000100000000000000000
+    #ATTR_TYPE_EXECUTE          = %00001000000000000000000
+    #ATTR_TYPE_GROUP            = %00010000000000000000000
+    #ATTR_TYPE_REFERENCE        = %00100000000000000000000
+    #ATTR_TYPE_AUDIO            = %01000000000000000000000
+    #ATTR_TYPE_CUSTOM           = %10000000000000000000000
+    #ATTR_TYPE_POLYMORPH        = %00001111111111111111110
   EndEnumeration
   
   Enumeration
@@ -44,7 +45,6 @@ DeclareModule Attribute
     #ATTR_TYPE_SHADER
     #ATTR_TYPE_3DOBJECT
   EndEnumeration
-  
   
   ; Node Data Structure
   Enumeration
@@ -89,6 +89,7 @@ DeclareModule Attribute
   #ATTR_COLOR_UNIFORM           = $FFCCAA 
   #ATTR_COLOR_SHADER            = $FFFFCC
   #ATTR_COLOR_3DOBJECT          = $00DDFF 
+  #ATTR_COLOR_AUDIO             = $FF99DD
   #ATTR_COLOR_CUSTOM            = $DDDDDD
   
   #ATTR_COLOR_BACKGROUND        = $666666
@@ -130,10 +131,7 @@ DeclareModule Attribute
       Case #ATRT_TYPE_DOUBLE
         CArray::GetValueD(_attribute\data,0)
     EndSelect
-    
   EndMacro
-  
-  
   
   Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,read_only.b,constant.b,writable.b=#True)
   Declare Delete(*attribute.Attribute_t)
@@ -267,6 +265,8 @@ Module Attribute
                            StrF(m4\v[4])+","+StrF(m4\v[5])+","+StrF(m4\v[6])+","+StrF(m4\v[7])+","+
                            StrF(m4\v[8])+","+StrF(m4\v[9])+","+StrF(m4\v[10])+","+StrF(m4\v[11])+","+
                            StrF(m4\v[12])+","+StrF(m4\v[13])+","+StrF(m4\v[14])+","+StrF(m4\v[15])+")"
+            Case #ATTR_TYPE_AUDIO
+              out_string = "(Audio Attribute is NOT serializable)"
               
           EndSelect
         Else
@@ -608,7 +608,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 299
-; FirstLine = 287
+; CursorPosition = 268
 ; Folding = ---
 ; EnableXP

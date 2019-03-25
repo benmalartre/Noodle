@@ -34,7 +34,6 @@ Module Graph
   Procedure ResolveSetReference(*port.NodePort::NodePort_t)
     Protected *node.Node::Node_t = *port\node
     Protected refname.s = NodePort::AcquireReferenceData(*ref)
-    Debug "[SetDataNode] Reference Name : "+refname
     
     If refname
       Protected fields.i = CountString(refname, ".")+1
@@ -130,8 +129,9 @@ Module Graph
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 33
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 36
+; FirstLine = 33
 ; Folding = -
 ; EnableXP
 ; EnableUnicode
