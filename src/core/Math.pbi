@@ -378,11 +378,24 @@ DeclareModule Math
     v.f[9]
   EndStructure
   
+  Structure m3f32_b
+    m00.f : m01.f : m02.f
+    m10.f : m11.f : m12.f
+    m20.f : m21.f : m22.f
+  EndStructure
+  
   ; ----------------------------------------------------------------------------
   ;  m4f32 Structure
   ; --------------------------------------------------------------------------
   Structure m4f32
     v.f[16]
+  EndStructure
+  
+  Structure m4f32_b
+    m00.f : m01.f : m02.f : m03.f
+    m10.f : m11.f : m12.f : m13.f
+    m20.f : m21.f : m22.f : m23.f
+    m30.f : m31.f : m32.f : m33.f
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -2214,7 +2227,7 @@ DeclareModule Matrix3
     _tmp_m3\v[7] = _m\v[6] * _o\v[1] + _m\v[7] * _o\v[4] + _m\v[8] * _o\v[7]
     _tmp_m3\v[8] = _m\v[6] * _o\v[2] + _m\v[7] * _o\v[5] + _m\v[8] * _o\v[8]
     
-    Matrix3::Set(*m,_tmp_m3\v[0],_tmp_m3\v[1],_tmp_m3\v[2],
+    Matrix3::Set(_m,_tmp_m3\v[0],_tmp_m3\v[1],_tmp_m3\v[2],
                     _tmp_m3\v[3],_tmp_m3\v[4],_tmp_m3\v[5],
                     _tmp_m3\v[6],_tmp_m3\v[7],_tmp_m3\v[8])
   EndMacro
@@ -2305,6 +2318,9 @@ DeclareModule Matrix3
       EndIf
     EndIf  
   EndMacro
+  
+  Declare.b Inverse(*m.m3f32, *o.m3f32)
+  Declare.b InverseInPlace(*m.m3f32)
 
 EndDeclareModule
 
@@ -3775,6 +3791,46 @@ EndModule
 ; Matrix3 Module Implementation
 ;====================================================================
 Module Matrix3
+  ; -----------------------------------------------------------------
+  ;   INVERSE MATRIX
+  ; -----------------------------------------------------------------
+  Procedure.b Inverse(*m.m3f32_b, *o.m3f32_b)
+
+    Define det.f = 0
+    det + *o\m00 * (*o\m11 * *o\m22 - *o\m12 * *o\m21)
+    det + *o\m01 * (*o\m12 * *o\m20 - *o\m10 * *o\m22)
+    det + *o\m02 * (*o\m10 * *o\m21 - *o\m11 * *o\m20)
+    
+    If determinant <> 0
+      Define invdet.f = 1 / det
+      *m\m00 = (*o\m11 * *o\m22 - *o\m12 * *o\m21) * invdet
+      *m\m01 = (*o\m21 * *o\m02 - *o\m22 * *o\m01) * invdet
+      *m\m02 = (*o\m01 * *o\m12 - *o\m02 * *o\m11) * invdet
+      *m\m10 = (*o\m12 * *o\m20 - *o\m10 * *o\m22) * invdet
+      *m\m11 = (*o\m22 * *o\m00 - *o\m20 * *o\m02) * invdet
+      *m\m12 = (*o\m02 * *o\m10 - *o\m00 * *o\m12) * invdet
+      *m\m20 = (*o\m10 * *o\m21 - *o\m11 * *o\m20) * invdet
+      *m\m21 = (*o\m20 * *o\m01 - *o\m21 * *o\m00) * invdet
+      *m\m22 = (*o\m00 * *o\m11 - *o\m01 * *o\m10) * invdet
+      ProcedureReturn #True
+    Else
+      ProcedureReturn #False
+    EndIf
+   
+  EndProcedure
+  
+  ; -----------------------------------------------------------------
+  ;   INVERSE MATRIX IN PLACE
+  ; -----------------------------------------------------------------
+  Procedure.b InverseInPlace(*m.m3f32_b)
+    Define tmp.m3f32_b
+    If Inverse(tmp, *m)
+      CopyMemory(tmp, *m, SizeOf(m3f32_b))
+      ProcedureReturn #True
+    Else
+      ProcedureReturn #False
+    EndIf
+  EndProcedure
 EndModule
 
 
@@ -4209,8 +4265,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 93
+; CursorPosition = 2234
+; FirstLine = 2196
 ; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

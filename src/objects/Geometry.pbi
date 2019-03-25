@@ -100,9 +100,9 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Capsule_t
-    *cylinder.Cylinder_t
-    *head.Sphere_t
-    *tail.Sphere_t
+    cylinder.Cylinder_t
+    head.Sphere_t
+    tail.Sphere_t
   EndStructure
   ;}
   
@@ -618,7 +618,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 339
-; FirstLine = 294
+; CursorPosition = 270
+; FirstLine = 261
 ; Folding = -----
 ; EnableXP

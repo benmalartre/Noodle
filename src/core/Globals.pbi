@@ -123,6 +123,7 @@ DeclareModule Globals
   ; ============================================================================
   Declare Init()
   Declare Term()
+  Declare.s RandomName(len)
   
   ; ============================================================================
   ;  MACROS
@@ -221,16 +222,29 @@ Module Globals
     If IsFont(#FONT_BOLD) : FreeFont( #FONT_BOLD ) : EndIf
 
   EndProcedure
-
-;}
   
+  Procedure.s RandomName(len.i)
+    Define name.s
+    For i=0 To len-1
+      Select Random(2) 
+        Case 0  ; (a ---> z)
+          name + Chr(Random(25) + 97)
+        Case 1  ; (A ---> Z)
+          name + Chr(Random(25) + 65)
+        Default ; (0 ---> 9)
+          name + Chr(Random(9) + 48)
+      EndSelect
+    Next
+    ProcedureReturn name
+  EndProcedure
+
   
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 164
-; FirstLine = 160
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 225
+; FirstLine = 172
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

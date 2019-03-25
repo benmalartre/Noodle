@@ -179,14 +179,14 @@ Module Vertex
   ;---------------------------------------------------------
   ; Get Edges
   ;---------------------------------------------------------
-  Procedure OVertex_GetEdges(*v.Vertex_t)
+  Procedure GetEdges(*v.Vertex_t)
     ProcedureReturn *v\edges
   EndProcedure
   
   ;---------------------------------------------------------
   ; Get Faces
   ;---------------------------------------------------------
-  Procedure OVertex_GetPolygons(*v.Vertex_t)
+  Procedure GetPolygons(*v.Vertex_t)
     ProcedureReturn *v\polygons
   EndProcedure
   
@@ -195,7 +195,6 @@ Module Vertex
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 43
+; CursorPosition = 181
 ; Folding = ---
 ; EnableXP

@@ -1,8 +1,8 @@
 ﻿XIncludeFile "Object.pbi"
 
-; -----------------------------------------
-; Control Module Declaration
-; -----------------------------------------
+; ==============================================================================
+;  CONTROL MODULE DECLARATION
+; ==============================================================================
 DeclareModule Control
   ; ---[ Event Types ]---------------------
   Enumeration
@@ -61,7 +61,7 @@ DeclareModule Control
   
   
   ; ----------------------------------------------------------------------------
-  ;  CControl Instance
+  ;   Control Instance
   ; ----------------------------------------------------------------------------
   Structure Control_t  Extends Object::Object_t
     *parent    .Control_t
@@ -80,9 +80,8 @@ DeclareModule Control
   EndStructure
   
   ; ----------------------------------------------------------------------------
-  ;  CControl Interface
+  ;   Control Interface
   ; ----------------------------------------------------------------------------
-  ; ---[ Overided in Extension Classes ]-----------------------
   Interface IControl
     OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
@@ -103,9 +102,9 @@ DeclareModule Control
   Declare SetCursor( *Me.Control_t, cursor_id.i )
 EndDeclareModule
 
-; ============================================================================
+; ==============================================================================
 ;  CONTROL MODULE IMPLEMENTATION
-; ============================================================================
+; ==============================================================================
 Module Control
   
   ; ---[ GetGadgetID ]----------------------------------------------------------
@@ -275,7 +274,7 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 34
+; CursorPosition = 13
 ; Folding = H5--
 ; EnableXP
 ; EnableUnicode

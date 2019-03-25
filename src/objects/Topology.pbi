@@ -304,6 +304,7 @@ Module Topology
     Protected Dim v_offsets.l(nbt)
     Protected Dim f_offsets.l(nbt)
     Protected Dim f_counts.l(nbt)
+
     Protected v_offset = 0
     Protected f_offset = 0
     Protected t
@@ -337,27 +338,26 @@ Module Topology
         CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
       Next
      
-      ! mov rcx, [p.v_nbt]
-      ! mov rax, [p.a_v_offsets]
-      ! mov rdx, [p.a_f_counts]
-      ! mov rdi, [p.p_outfaces]
+      ! mov rcx, [p.v_nbt]                      ; load topo count
+      ! mov rax, [p.a_v_offsets]                ; load topo vertices offset
+      ! mov rdx, [p.a_f_counts]                 ; load topo faces count
+      ! mov rdi, [p.p_outfaces]                 ; load output faces
       
-      ! mov r8, [p.v_offsetdata]
-      ! mov r9, [p.v_offsetvertices]
-      ! mov r10, [p.v_offsetfaces]
+      ! mov r8, [p.v_offsetdata]                ; load offset to array data
+      ! mov r9, [p.v_offsetvertices]            ; load offset to topology vertices
+      ! mov r10, [p.v_offsetfaces]              ; load offset to topology faces
       
-      EnableASM 
-      MOV r11, *topos\data
-      DisableASM
+      ! mov r11, [p.p_topos]                    ; mov topos to r11 register
+      ! add r11, r8                             ; offset to datas
+      ! mov r12, [r11]                          ; topos\data to r12 register
       
       ! movdqu xmm1, [math.l_sse_minusonei_vec] ; load -1, -1, -1, -1 in xmm1
-      ! movdqu xmm7, [math.l_sse_1111_sign_mask]; load sign mask for absolute value
 
       ! loop_merge_topo_array:
-      !   mov r13, [r11]
-      !   mov r12, [r13 + r10]
-      !   add r12, r8
-      !   mov rsi, [r12]
+      !   mov r13, [r12]                        ; load current topo in r13 register
+      !   mov r11, [r13 + r10]                  ; load current topo faces in r11 register
+      !   add r11, r8                           ; offset to datas
+      !   mov rsi, [r11]                        ; topo\faces\data to src register
       !   mov r14d, [rdx]                       ; load current topo face count
       
       !   movss xmm0, [eax]                     ; load current topo vertices offset in xmm0
@@ -368,23 +368,22 @@ Module Topology
       !   movdqa xmm3, xmm2                     ; make a copy in xmm3
       !   pcmpgtd xmm3, xmm1                    ; packed compare indices > 0 
       !   pmulld xmm3, xmm0                     ; inverted masked offsets
-      !   pmulld xmm3, xmm7                     ; negate offset
+      !   pmulld xmm3, xmm1                     ; negate offset
       !   paddd xmm2, xmm3                      ; add offset to original values
       !   movdqu [rdi], xmm2                    ; send back to memory
        
       !   add rdi, 4                            ; increment destination
       !   add rsi, 4                            ; increment source
       
-      !   dec r14
-      !   jnz loop_merge_topo_array_one_topo
+      !   dec r14                               ; decrement current topo indices counter
+      !   jnz loop_merge_topo_array_one_topo    ; next indices
       
       ! loop_merge_topo_array_next_topo:
       !   add rax, 4                            ; offset in face offsets array
       !   add rdx, 4                            ; offset in face count array
+      !   add r12, 8                            ; next topo address
       !   dec rcx                               ; decrement counter
       !   jnz loop_merge_topo_array             ; next topo
-      
-      CArray::Echo(*o\faces, "MERGED")
     CompilerElse
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
@@ -915,7 +914,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 337
-; FirstLine = 334
+; CursorPosition = 404
+; FirstLine = 361
 ; Folding = -----
 ; EnableXP

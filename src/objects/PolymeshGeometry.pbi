@@ -1310,13 +1310,30 @@ Module PolymeshGeometry
     CArray::SetCount(*neighbors, 0)
 
     *first = *mesh\a_halfedges(CArray::getValueL(*mesh\a_vertexhalfedge, index))
-    CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+    If *first\opposite_he
+      CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+      
+      *current = *first\opposite_he\next_he
+      Define closed.b = #False
+      While Not *first = *current
+        If *current\opposite_he
+          CArray::AppendL(*neighbors, *current\opposite_he\vertex)
+          *current = *current\opposite_he\next_he
+          If *current = *first : closed = #True : EndIf
+        Else
+          *current = *first
+        EndIf
+      Wend
+      
+      If Not closed
+        *current = *first\prev_he\opposite_he
+        While *current
+          CArray::AppendL(*neighbors, *current\vertex)
+          *current = *current\prev_he\opposite_he
+        Wend  
+      EndIf
+    EndIf
     
-    *current = *first\opposite_he\next_he
-    While Not *first = *current
-      CArray::AppendL(*neighbors, *current\opposite_he\vertex)
-      *current = *current\opposite_he\next_he
-    Wend
 
   EndProcedure
   
@@ -1565,6 +1582,11 @@ Module PolymeshGeometry
       Next i
     EndIf
     
+    Define res.c = Mod(CArray::GetCount(*topo\faces), 4)
+    If res <> 0
+      For i=0 To (3-res) : CArray::AppendL(*topo\faces, -2) : Next
+    EndIf
+
     ProcedureReturn *topo
       
   EndProcedure
@@ -2259,7 +2281,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1947
-; FirstLine = 1917
+; CursorPosition = 275
+; FirstLine = 306
 ; Folding = ----H9---8--
 ; EnableXP

@@ -1,6 +1,6 @@
-;======================================================================
-; Class Module Declaration
-;======================================================================
+; ======================================================================
+;   Class Module Declaration
+; ======================================================================
 DeclareModule Class
   Prototype ClassMessage( type.i, *up )
   Prototype ClassDestructor( *Me )
@@ -29,18 +29,18 @@ DeclareModule Class
 
 EndDeclareModule
 
-;======================================================================
-; Object Module Implementation
-;======================================================================
+; ======================================================================
+;   Object Module Implementation
+; ======================================================================
 Module Class
   Procedure ClassOnMessage()
   EndProcedure
   
 EndModule
 
-;======================================================================
-; Signal Module Declaration
-;======================================================================
+; ======================================================================
+;   Signal Module Declaration
+; ======================================================================
 DeclareModule Signal
   Macro SIGNAL_TYPE
     i
@@ -69,9 +69,9 @@ DeclareModule Signal
   
 EndDeclareModule
 
-;======================================================================
-; Slot Module Declaration
-;======================================================================
+; ======================================================================
+;   Slot Module Declaration
+; ======================================================================
 DeclareModule Slot
   
   Prototype ClassMessage( type.i, *up )
@@ -94,9 +94,9 @@ DeclareModule Slot
   Declare Trigger( *Me.Slot_t, type.Signal::SIGNAL_TYPE, *sig_data )
 EndDeclareModule
 
-;======================================================================
-; Object Module Declaration
-;======================================================================
+; ======================================================================
+;   Object Module Declaration
+; ======================================================================
 DeclareModule Object
   Structure Object_t
     *VT
@@ -104,15 +104,18 @@ DeclareModule Object
     *class.Class::Class_t
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;  CObject_INI
-  ; ----------------------------------------------------------------------------
+  ; ------------------------------------------------------------------
+  ;   INI
+  ; ------------------------------------------------------------------
   Macro INI( cls )
     *Me\VT = ?cls#VT
     *Me\class  = @CLASS
     *Me\slot = Slot::New(*Me)
   EndMacro
   
+  ; ------------------------------------------------------------------
+  ;   TERM
+  ; ------------------------------------------------------------------
   Macro TERM( cls )
     Slot::Delete(*Me\slot)
   EndMacro
@@ -121,9 +124,9 @@ DeclareModule Object
   Declare SignalDisconnect( *Me.Object_t, *sig.Slot::Slot_t)  
 EndDeclareModule
 
-;======================================================================
-; Object Module Implementation
-;======================================================================
+; ======================================================================
+;   Object Module Implementation
+; ======================================================================
 Module Object
   Procedure SignalConnect( *Me.Object_t, *slot.Slot::Slot_t, slot.i )  
     If Not *Me Or Not *slot : ProcedureReturn :EndIf
@@ -139,8 +142,8 @@ Module Object
     Slot::Disconnect(*slot,*Me )
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 137
-; FirstLine = 109
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 109
+; FirstLine = 57
 ; Folding = ---
 ; EnableXP

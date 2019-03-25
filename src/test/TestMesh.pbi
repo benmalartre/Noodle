@@ -161,9 +161,9 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,2,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_CUBE)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
@@ -214,9 +214,9 @@ Procedure Draw(*app.Application::Application_t)
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
   
-  PolymeshGeometry::ComputeHalfEdges(*mgeom)
-  PolymeshGeometry::ComputeIslands(*mgeom)
-  PolymeshGeometry::RandomColorByIsland(*mgeom)
+;   PolymeshGeometry::ComputeHalfEdges(*mgeom)
+;   PolymeshGeometry::ComputeIslands(*mgeom)
+;   PolymeshGeometry::RandomColorByIsland(*mgeom)
   Object3D::Freeze(*merged)
   
   Object3D::AddChild(*root,*merged)
@@ -231,8 +231,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 144
+; CursorPosition = 218
+; FirstLine = 174
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
