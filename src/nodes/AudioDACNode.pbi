@@ -77,13 +77,15 @@ Module AudioDACNode
     
     *node\DAC = STK::Init()
     Protected *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*node\DAC)
-    Protected *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-    Protected *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
+    Protected *wave1.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+    Protected *wave2.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 256, #True)
     
-    STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
-    STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
-    STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
-    STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
+;     Protected *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
+;     
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
     
     STK::GeneratorStreamStart(*stream)
     Debug   " GENERATOR STREAM STARTED..."
@@ -134,8 +136,7 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 88
-; FirstLine = 66
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 80
 ; Folding = --
 ; EnableXP

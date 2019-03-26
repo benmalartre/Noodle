@@ -9,13 +9,13 @@ Global *DAC.STK::RtAudio = STK::Init()
 Debug *DAC
 Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
 Debug *stream
-Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
-
-STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
-STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
-STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
-STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
+Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+; Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
+; 
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
+; STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
 
 ;Global *effect.STK::Effect = STK::AddEffect(*stream, STK::#EFFECT_JCREV, *envelope, #True)
 ;STK::SetEffectScalar(*effect, STK::#EFFECT_MIX, 0.2)
@@ -124,7 +124,7 @@ If *stream
   Until event = #PB_Event_CloseWindow
 
   STK::GeneratorStreamClean(*stream)
-  STK::STK
+  STK::Term(*DAC)
 Else
   MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
@@ -143,8 +143,7 @@ EndIf
 ; Else
 ;   Debug "FAIL TO START DAC"
 ; EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 110
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 17
 ; Folding = -
 ; EnableXP
