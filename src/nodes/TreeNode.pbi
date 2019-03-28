@@ -19,9 +19,12 @@ DeclareModule TreeNode
   Declare New(*tree.Tree::Tree_t,type.s="Tree",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
   Declare Delete(*node.TreeNode_t)
   Declare Init(*node.TreeNode_t)
+  Declare Terminate(*node.TreeNode_t)
   Declare RecurseNodes(*node.TreeNode_t,*current.Node::Node_t)
   Declare Evaluate(*node.TreeNode_t)
-  
+  Declare OnConnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
+  Declare OnDisconnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
+
   ; ============================================================================
   ;  ADMINISTRATION
   ; ============================================================================
@@ -98,6 +101,18 @@ Module TreeNode
   
   EndProcedure
   
+   Procedure OnConnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
+    MessageRequester("TREE NODE", "OnConnect called on port ---> "+*port\name)
+    If *port\name = "Input0" And *port\connectioncallback
+      *port\connectioncallback(*port)
+    EndIf
+    
+  EndProcedure
+  
+  Procedure OnDisconnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
+    MessageRequester("TREE NODE", "OnDisconnect called on port ---> "+*port\name)
+  EndProcedure
+  
   ; ============================================================================
   ;  DESTRUCTOR
   ; ============================================================================
@@ -132,10 +147,10 @@ Module TreeNode
 EndModule
 
 
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 42
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 68
+; Folding = ---
 ; EnableThread
 ; EnableXP
 ; EnableUnicode

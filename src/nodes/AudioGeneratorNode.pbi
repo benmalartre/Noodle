@@ -11,6 +11,7 @@ DeclareModule AudioGeneratorNode
   Structure AudioGeneratorNode_t Extends Node::Node_t
     playing.b
     mute.b
+    *node.STKNode
     mode.STK::GeneratorType
     frequency.f
     t60.f
@@ -147,8 +148,7 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 106
-; FirstLine = 102
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 13
 ; Folding = --
 ; EnableXP

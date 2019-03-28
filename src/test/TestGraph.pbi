@@ -4,7 +4,7 @@ Procedure ErrorHandler()
   MessageRequester("OnError test", "The following error happened: " + ErrorMessage()+Chr(10)+ErrorLine()+Chr(10)+ErrorFile())
 EndProcedure
 
-OnErrorCall(@ErrorHandler())
+;OnErrorCall(@ErrorHandler())
 
 EnableExplicit
 UseModule Math
@@ -140,8 +140,7 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 85
+; CursorPosition = 6
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

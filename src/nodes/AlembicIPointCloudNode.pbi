@@ -179,8 +179,7 @@ Module AlembicIPointCloudNode
 
   EndProcedure
   
-
- Procedure Terminate(*node.AlembicIPointCloudNode_t)
+  Procedure Terminate(*node.AlembicIPointCloudNode_t)
   
   EndProcedure
   
@@ -211,7 +210,7 @@ Module AlembicIPointCloudNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 151
+; CursorPosition = 29
+; FirstLine = 9
 ; Folding = --
 ; EnableXP

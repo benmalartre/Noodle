@@ -116,8 +116,15 @@ EndDeclareModule
 DeclareModule NodePort
   UseModule Math
   UseModule Graph
+  
+    ;---------------------------------------------------------------------------
+  ; Prototypes
   ;---------------------------------------------------------------------------
-  ; GraphNodePort
+  Prototype ONCONNECTPORT(*port)
+  Prototype ONDISCONNECTPORT(*port)
+
+  ;---------------------------------------------------------------------------
+  ; NodePort
   ;---------------------------------------------------------------------------
   Structure NodePort_t Extends Object::Object_t
     posx.i
@@ -125,6 +132,8 @@ DeclareModule NodePort
 
     io.b
     connected.b
+    connectioncallback.ONCONNECTPORT
+    disconnectioncallback.ONCONNECTPORT
     selected.b
     id.i
     name.s
@@ -182,6 +191,8 @@ DeclareModule NodePort
   Declare SetValue(*Me.NodePort_t,*value)
   Declare SetReference(*Me.NodePort_t,ref.s)
   Declare GetValue(*Me.NodePort_t)
+  Declare SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
+  Declare SetupDisconnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
   DataSection
     NodePortVT:
   EndDataSection
@@ -323,10 +334,14 @@ DeclareModule Node
   Interface INode
     Evaluate()
     Delete()
+    Init()
+    Terminate()
+    OnConnect(*port.NodePort::NodePort_t)
+    OnDisconnect(*port.NodePort::NodePort_t)
   EndInterface
   
   ; ============================================================================
-  ;  Constructor Macro
+  ;  Macros
   ; ============================================================================
   Macro INI(cls,p,t,x,y,w,h,c)
     
@@ -355,6 +370,21 @@ DeclareModule Node
      cls#VT:
      Data.i @Evaluate()
      Data.i @Delete()
+     Data.i @Init()
+     Data.i @Terminate()
+     
+     CompilerIf Defined(cls#::OnConnect, #PB_Procedure)
+       Data.i cls#::@OnConnect()
+     CompilerElse
+       Data.i Node::@OnConnect()
+     CompilerEndIf
+     
+     CompilerIf Defined(cls#::OnDisconnect, #PB_Procedure)
+       Data.i cls#::@OnDisconnect()
+     CompilerElse
+       Data.i Node::@OnDisconnect()
+     CompilerEndIf
+     
   EndMacro
   
   Macro DEL(cls)
@@ -408,6 +438,8 @@ DeclareModule Node
   Declare PortAffectByPort(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
   Declare UpdateAffects(*n.Node_t)
   Declare SetClean(*n.Node_t)
+  Declare OnConnect(*n.Node_t, *port.NodePort::NodePort_t)
+  Declare OnDisconnect(*n.Node_t, *port.NodePort::NodePort_t)
   
   Global CLASS.Class::Class_t
   
@@ -568,8 +600,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 537
-; FirstLine = 530
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 381
+; FirstLine = 365
 ; Folding = ---
 ; EnableXP

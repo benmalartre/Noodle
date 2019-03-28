@@ -26,7 +26,7 @@ Module Node
   ;  Destructor
   ; ----------------------------------------------------------------------------
   Procedure Delete( *Me.Node_t )
-    ; ---[ Deallocate Underlying Arrays ]------------------------------------
+    ; ---[ Deallocate Underlying Arrays ]---------------------------------------
     FreeList(*Me\outputs())
     FreeList(*Me\inputs())
     ; ---[ Deallocate Memory ]--------------------------------------------------
@@ -38,7 +38,7 @@ Module Node
   ; UPDATE
   ;------------------------------------
   Procedure Update(*node.Node_t)
-    Debug "Node Update Called..."
+
   EndProcedure
   
   ;------------------------------------
@@ -642,6 +642,21 @@ Module Node
   Procedure Inspect(*n.Node_t)
     Debug "Hohoho what a funny joke"
   EndProcedure
+  
+  ;----------------------------------------------
+  ; On Connection
+  ;----------------------------------------------
+  Procedure OnConnect(*n.Node_t, *port.NodePort::NodePort_t)
+    MessageRequester("XXX", "Hohoho this is a dummy connection callback on port ---> "+*port\name)
+    
+  EndProcedure
+  
+  ;----------------------------------------------
+  ; On Disconnection
+  ;----------------------------------------------
+  Procedure OnDisconnect(*n.Node_t, *port.NodePort::NodePort_t)
+    Debug "Hohoho this is a dummy disconnection callback"
+  EndProcedure
 
   Class::DEF(Node)
 EndModule
@@ -649,9 +664,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 181
-; FirstLine = 158
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 8
 ; Folding = ------
 ; EnableThread
 ; EnableXP

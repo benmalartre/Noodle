@@ -23,6 +23,8 @@ DeclareModule AlembicNode
   Declare Init(*node.AddNode_t)
   Declare Evaluate(*node.AddNode_t)
   Declare Terminate(*node.AddNode_t)
+  Declare OnConnect(*node.AddNode_t, *port.NodePort_t)
+  Declare OnDisconnect(*node.AddNode_t, *port.NodePort_t)
   
   ;------------------------------
   ;  ADMINISTRATION
@@ -58,6 +60,12 @@ Module AlembicNode
     Node::DEL(AlembicNode)
   EndProcedure
   
+  Procedure OnConnect(*node.AlembicNode_t, *port.NodePort_t)
+  EndProcedure
+  
+  Procedure OnDisconnect(*node.AlembicNode_t, *port.NodePort_t) 
+  EndProcedure
+  
   Procedure Update(*node.AlembicNode_t)
     Debug "(((((((((((((((((((((((((( Node Update Called ))))))))))))))))))))))))))))))))))))))))))"
     Alembic::UpdateSample(*node\abc,Time::current_frame)
@@ -65,6 +73,7 @@ Module AlembicNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 57
+; FirstLine = 11
 ; Folding = --
 ; EnableXP

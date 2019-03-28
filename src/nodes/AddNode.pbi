@@ -184,6 +184,7 @@ Module AddNode
   
   EndProcedure
   
+  
   Procedure Delete(*node.AddNode_t)
     Node::DEL(AddNode)
   EndProcedure
@@ -213,9 +214,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 168
-; FirstLine = 149
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 26
+; FirstLine = 4
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -232,7 +232,7 @@ Module AlembicIPolymeshTopoNode
   EndProcedure
   
 
- Procedure Terminate(*node.AlembicIPolymeshTopoNode_t)
+  Procedure Terminate(*node.AlembicIPolymeshTopoNode_t)
   
   EndProcedure
   
@@ -263,7 +263,7 @@ Module AlembicIPolymeshTopoNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 137
+; CursorPosition = 236
+; FirstLine = 204
 ; Folding = --
 ; EnableXP

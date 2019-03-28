@@ -218,6 +218,10 @@ DeclareModule STK
   PrototypeC INIT()
   PrototypeC TERM(*DAC.RtAudio)
   PrototypeC GETDEVICES()
+  
+  PrototypeC.b ISROOT(*node.Node)
+  PrototypeC SETASROOT(*node.Node, isRoot.b)
+  PrototypeC GETSTREAM(*node.Node)
     
   PrototypeC GENERATORSTREAMSETUP(*DAC.RtAudio)
   PrototypeC GENERATORSTREAMCLEAN(*generator.GeneratorStream)
@@ -295,6 +299,10 @@ DeclareModule STK
     Global Init.INIT = GetFunction(STK_LIB, "STKInit")
     Global Term.TERM = GetFunction(STK_LIB, "STKTerm")
     Global GetDevices.GETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
+    
+    Global.b IsRoot.ISROOT = GetFunction(STK_LIB, "STKIsRoot")
+    Global SetAsRoot.SETASROOT = GetFunction(STK_LIB, "STKSetAsRoot")
+    Global GetStream.GETSTREAM = GetFunction(STK_LIB, "STKGetStream")
 
     Global GeneratorStreamSetup.GENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
     Global GeneratorStreamClean.GENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
@@ -416,7 +424,7 @@ Module STK
 ;   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 303
-; FirstLine = 297
+; CursorPosition = 220
+; FirstLine = 195
 ; Folding = --
 ; EnableXP

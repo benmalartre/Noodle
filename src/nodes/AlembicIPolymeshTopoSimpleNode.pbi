@@ -164,8 +164,7 @@ Module AlembicIPolymeshTopoSimpleNode
 
   EndProcedure
   
-
- Procedure Terminate(*node.AlembicIPolymeshTopoSimpleNode_t)
+  Procedure Terminate(*node.AlembicIPolymeshTopoSimpleNode_t)
   
   EndProcedure
   
@@ -196,8 +195,8 @@ Module AlembicIPolymeshTopoSimpleNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 108
+; CursorPosition = 168
+; FirstLine = 136
 ; Folding = --
 ; EnableThread
 ; EnableXP

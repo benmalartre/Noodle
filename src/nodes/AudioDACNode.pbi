@@ -12,6 +12,7 @@ DeclareModule AudioDACNode
     mute.b
     playing.b
     *DAC.STK::RtAudio
+    *stream.STK::GeneratorStream
     nbStreams.i
   EndStructure
   
@@ -26,6 +27,8 @@ DeclareModule AudioDACNode
   Declare Init(*node.AudioDACNode_t)
   Declare Evaluate(*node.AudioDACNode_t)
   Declare Terminate(*node.AudioDACNode_t)
+  Declare OnConnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
+  Declare OnDisconnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
   
   ; ================================================================================================
   ;  ADMINISTRATION
@@ -44,6 +47,35 @@ DeclareModule AudioDACNode
 EndDeclareModule
 
 Module AudioDACNode
+  ; --------------------------------------------------------------------------------------------------
+  ;   Callbacks
+  ; --------------------------------------------------------------------------------------------------
+  Procedure OnConnectInput(*port.NodePort::NodePort_t)
+    Define *node.AudioDACNode_t = *port\node
+
+  EndProcedure
+  
+  Procedure OnConnectOutput(*port.NodePort::NodePort_t)
+    Define *node.AudioDACNode_t = *port\node
+    
+      
+;       Define *stream1.STK::GeneratorStream = STK::GeneratorStreamSetup(*node\DAC)
+;      
+;       Protected *wave1.STK::Generator = STK::AddGenerator(*node\stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+;       Protected *wave2.STK::Generator = STK::AddGenerator(*node\stream, STK::#SINEWAVE_GENERATOR, 256, #True)
+    
+;     Protected *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
+;     
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
+;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
+    
+    STK::GeneratorStreamStart(*node\stream)
+    
+    MessageRequester("CONNECTION CALLBACK", "WE JUST DID IT WITH NODE AND OUTPUT PORT : "+*node\name+" , "+*port\name)
+  EndProcedure
+  
   ; --------------------------------------------------------------------------------------------------
   ;   Implementation
   ; --------------------------------------------------------------------------------------------------
@@ -71,24 +103,19 @@ Module AudioDACNode
                                                                   Attribute::#ATTR_STRUCT_SINGLE)
     
     Node::PortAffectByName(*node, "Input0", "Execute")
+    Node::PortAffectByName(*node, "New(Input1)...", "Execute")
     Node::PortAffectByName(*node, "Mute", "Execute")
+    
+    
     
     *node\label = "AudioDAC"
     
     *node\DAC = STK::Init()
-    Protected *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*node\DAC)
-    Protected *wave1.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
-    Protected *wave2.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 256, #True)
+      
+    *node\stream = STK::GeneratorStreamSetup(*node\DAC)
     
-;     Protected *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
-;     
-;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
-;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TARGET, 1)
-;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
-;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
-    
-    STK::GeneratorStreamStart(*stream)
-    Debug   " GENERATOR STREAM STARTED..."
+    NodePort::SetupConnectionCallback(*input0, @OnConnectInput())
+    NodePort::SetupConnectionCallback(*execute, @OnConnectOutput())
   EndProcedure
   
   Procedure Evaluate(*node.AudioDACNode_t)
@@ -100,14 +127,25 @@ Module AudioDACNode
       *input = *node\inputs()
     Wend  
     
-    
-    
 ;     Protected *aInputs.CArray::CArrayPtr = *inputs\value
 ;     Protected *aMute.CArray::CArrayBool = *mute\value
   EndProcedure
   
   Procedure Terminate(*node.AudioDACNode_t)
+    *node\DAC = STK::Term(*node\DAC)
+  EndProcedure
   
+  Procedure OnConnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
+    If *port\name = "Input0"
+      *port\connectioncallback(*port)
+    ElseIf *port\name = "Execute"
+      *port\connectioncallback(*port)
+    EndIf
+    
+  EndProcedure
+  
+  Procedure OnDisconnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
+    MessageRequester("AUDIO DAC", "OnDisconnect called on port ---> "+*port\name)
   EndProcedure
   
   Procedure Delete(*node.AudioDACNode_t)
@@ -137,6 +175,7 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; Folding = --
+; CursorPosition = 140
+; FirstLine = 99
+; Folding = ---
 ; EnableXP

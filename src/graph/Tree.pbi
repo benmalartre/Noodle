@@ -419,8 +419,7 @@ Module Tree
                 EndIf
               Next
             Else
-              Debug "----------------------------------------- Create Compound -----------------------------------"
-              Debug "Shared Connexion we have to Recreate It!!!"
+
             EndIf
             
           EndIf
@@ -547,9 +546,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 421
-; FirstLine = 418
+; FirstLine = 403
 ; Folding = -----
 ; EnableThread
 ; EnableXP

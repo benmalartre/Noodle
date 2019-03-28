@@ -692,7 +692,15 @@ Module NodePort
     Scene::*current_scene\dirty = #True
   EndProcedure
   
+  Procedure SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
+    Define *node.Node::Node_t = *Me\node
+    MessageRequester("SETUP CONNECTION CALLBACK", *node\name +" ---> "+ *Me\name +" : "+Str(*callback))
+    *Me\connectioncallback = *callback
+  EndProcedure
   
+  Procedure SetupDisconnectionCallback(*Me.NodePort_t, *callback.ONDISCONNECTPORT)
+    *Me\disconnectioncallback = *callback
+  EndProcedure
 
 
   Class::DEF(NodePort)
@@ -704,8 +712,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 256
-; FirstLine = 250
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 697
+; FirstLine = 654
 ; Folding = ----
 ; EnableXP

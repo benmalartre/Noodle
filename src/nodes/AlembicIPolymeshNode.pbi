@@ -145,7 +145,7 @@ Module AlembicIPolymeshNode
   EndProcedure
   
 
- Procedure Terminate(*node.AlembicIPolymeshNode_t)
+  Procedure Terminate(*node.AlembicIPolymeshNode_t)
   
   EndProcedure
   
@@ -196,7 +196,7 @@ Module AlembicIPolymeshNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 108
+; CursorPosition = 149
+; FirstLine = 133
 ; Folding = --
 ; EnableXP

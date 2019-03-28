@@ -585,10 +585,13 @@ Module GraphUI
     EndIf
     
     Protected *node.Node::Node_t
+    Protected inode.Node::INode
   
     ForEach *Me\tree\current\nodes()
       *node = *Me\tree\current\nodes()
       If *node\selected And Not *node\isroot
+        inode = *node
+        inode\Terminate()
         Tree::RemoveNode(*Me\tree,*node)
         *Me\focus = #Null
         *Me\dirty = #True
@@ -1606,8 +1609,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 205
-; FirstLine = 202
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 593
+; FirstLine = 576
 ; Folding = --------
 ; EnableXP
