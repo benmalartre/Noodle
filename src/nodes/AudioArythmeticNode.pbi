@@ -43,7 +43,7 @@ DeclareModule AudioArythmeticNode
   ;------------------------------
   ;Interface
   ;------------------------------
-  Interface IAudioArythmeticNode Extends Node::INode 
+  Interface IAudioArythmeticNode Extends Node::INode
   EndInterface
   
   Declare New(*tree.Tree::Tree_t,type.s="AudioArythmetic",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
@@ -115,14 +115,15 @@ Module AudioArythmeticNode
     Protected *aMode.CArray::CArrayInt = *mode\value
     Protected *aScalar.CArray::CArrayFloat = *scalar\value
     
-    *node\mode = CArray::GetValueF(*aMode, 0)
-    *node\scalar = CArray::GetValueF(*aScalar, 0)
-    
-    STK::SetArythmeticMode(*node\node, *node\mode)
-    STK::SetArythmeticScalar(*node\node, *node\scalar)
-    
-    *node\label = "Arythmetic : "+STK::arythmetic_modes(*node\mode)
-    
+    If *node\node
+      *node\mode = CArray::GetValueF(*aMode, 0)
+      *node\scalar = CArray::GetValueF(*aScalar, 0)
+      
+      STK::SetArythmeticMode(*node\node, *node\mode)
+      STK::SetArythmeticScalar(*node\node, *node\scalar)
+      
+      *node\label = "Arythmetic : "+STK::arythmetic_modes(*node\mode)
+    EndIf
   EndProcedure
   
   ; -----------------------------------------------------------------------------------------------
@@ -136,19 +137,51 @@ Module AudioArythmeticNode
   ;   ON CONNECT
   ; -----------------------------------------------------------------------------------------------
   Procedure OnConnect(*node.AudioArythmeticNode_t, *port.NodePort::NodePort_t)
-    If *port\name = "Output"
-     
+    Define *cnx.Connexion::Connexion_t
+    Define *src.NodePort::NodePort_t
+    Define *audio.AudioNode::AudioNode_t
+     Define *stk_node.STK::Node
+    
+    If *port\name = "LHS"
+      If *port\connected
+        *cnx = *port\connexion
+        *src = *cnx\start
+        *audio = *src\node 
+        *stk_node = *audio\node
+        STK::SetArythmeticLHS(*node\node, *stk_node)
+      EndIf
+      
+    ElseIf *port\name = "RHS"
+      If *port\connected
+        *cnx = *port\connexion
+        *src = *cnx\start
+        *audio = *src\node 
+        *stk_node = *audio\node
+        STK::SetArythmeticRHS(*node\node, *stk_node)
+      EndIf
+      
+    ElseIf *port\name = "Output"
+      Define *stream.STK::GeneratorStream
+      
       Define *target.NodePort::NodePort_t = *port\targets()
       Define *dst.Node::Node_t = *target\node
       If *dst\class\name = "AudioDACNode"
         Define *DAC.AudioDACNode::AudioDACNode_t = *dst
-        Define *stream.STK::GeneratorStream = *DAC\stream
-        *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+        *stream = *DAC\node
+        *node\node = STK::AddArythmetic(*stream, #Null, #Null, #True)
       Else
-;          Define *target.AudioNode::AudioNode_t = *dst
+        Define *audio.AudioNode::AudioNode_t = *dst
+        If *audio And *audio\node
+          *stream = STK::GetStream(*audio\node)
+          If *stream
+            *node\node = STK::AddArythmetic(*stream, #Null, #Null, #False)
+            MessageRequester("AUDIO SINE", "ADD GENERATOR :)")
+          EndIf
+        Else
+          MessageRequester("AUDIO", "NO AUDIO NODE For THIS ITEM")  
+        EndIf
+        
       EndIf
-      
-;       *port\connectioncallback(*port)
     EndIf
     
   EndProcedure
@@ -157,7 +190,18 @@ Module AudioArythmeticNode
   ;   ON DISCONNECT
   ; -----------------------------------------------------------------------------------------------
   Procedure OnDisconnect(*node.AudioArythmeticNode_t, *port.NodePort::NodePort_t)
-    MessageRequester("AUDIO SINE WAVE", "OnDisconnect called on port ---> "+*port\name)
+    If *port\name = "LHS"
+      If *port\connected
+        MessageRequester("AUDIO Arythmetic", "OnDisconnect called on port ---> "+*port\name)
+      EndIf
+      
+    ElseIf *port\name = "RHS"
+      If *port\connected
+        MessageRequester("AUDIO Arythmetic", "OnDisconnect called on port ---> "+*port\name)
+      EndIf
+      
+    EndIf
+    
   EndProcedure
   
   ; -----------------------------------------------------------------------------------------------
@@ -193,7 +237,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 134
+; CursorPosition = 169
+; FirstLine = 146
 ; Folding = --
 ; EnableXP

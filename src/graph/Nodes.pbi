@@ -124,6 +124,7 @@ CompilerEndIf
   XIncludeFile "SampleGeometryNode.pbi"
   
   ; Audio
+  XIncludeFile "AudioNode.pbi"
   XIncludeFile "AudioDACNode.pbi"
   XIncludeFile "AudioArythmeticNode.pbi"
   XIncludeFile "AudioGeneratorNode.pbi"
@@ -148,7 +149,7 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 127
+; CursorPosition = 121
 ; FirstLine = 85
 ; Folding = --
 ; EnableThread

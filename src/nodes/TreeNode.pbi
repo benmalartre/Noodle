@@ -102,7 +102,6 @@ Module TreeNode
   EndProcedure
   
    Procedure OnConnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
-    MessageRequester("TREE NODE", "OnConnect called on port ---> "+*port\name)
     If *port\name = "Input0" And *port\connectioncallback
       *port\connectioncallback(*port)
     EndIf
@@ -110,7 +109,6 @@ Module TreeNode
   EndProcedure
   
   Procedure OnDisconnect(*node.TreeNode_t, *port.NodePort::NodePort_t)
-    MessageRequester("TREE NODE", "OnDisconnect called on port ---> "+*port\name)
   EndProcedure
   
   ; ============================================================================
@@ -148,8 +146,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 68
+; CursorPosition = 111
+; FirstLine = 87
 ; Folding = ---
 ; EnableThread
 ; EnableXP

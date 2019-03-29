@@ -245,6 +245,8 @@ DeclareModule STK
   
   PrototypeC SETARYTHMETICMODE(*arythmetic.Arythmetic, mode.l)
   PrototypeC SETARYTHMETICSCALAR(*arythmetic.Arythmetic, scalar.f)
+  PrototypeC SETARYTHMETICLHS(*arythmetic.Arythmetic, *node.Node)
+  PrototypeC SETARYTHMETICRHS(*arythmetic.Arythmetic, *node.Node)
   
   PrototypeC SETEFFECTTYPE(*effect.Effect, type.l)
   PrototypeC SETEFFECTSCALAR(*effect.Effect, param.l, scalar.f)
@@ -324,6 +326,8 @@ DeclareModule STK
     
     Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticScalar.SETARYTHMETICSCALAR = GetFunction(STK_LIB, "STKSetArythmeticScalar")
+    Global SetArythmeticLHS.SETARYTHMETICLHS = GetFunction(STK_LIB, "STKSetArythmeticLHS")
+    Global SetArythmeticRHS.SETARYTHMETICRHS = GetFunction(STK_LIB, "STKSetArythmeticRHS")
     
     Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
     Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
@@ -341,6 +345,12 @@ DeclareModule STK
   Else
     MessageRequester("STK Error","Can't Find STK Library!!")
   EndIf 
+  
+  Declare Initialize()
+  Declare Terminate()
+  
+  Global *DAC.RTAudio
+  Global initialized.b
   
 EndDeclareModule
 
@@ -422,9 +432,18 @@ Module STK
 ;     RTAudio_TermBuffer(*audio\buffer)
 ;     FreeMemory(*audio\mem)
 ;   EndProcedure
+  
+  Procedure Initialize()
+    *DAC = STK::Init()
+  EndProcedure
+  
+  Procedure Terminate()  
+    STK::Term(*DAC)
+  EndProcedure
+  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 220
-; FirstLine = 195
-; Folding = --
+; CursorPosition = 352
+; FirstLine = 319
+; Folding = ---
 ; EnableXP

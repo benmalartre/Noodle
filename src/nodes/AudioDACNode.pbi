@@ -11,8 +11,7 @@ DeclareModule AudioDACNode
   Structure AudioDACNode_t Extends Node::Node_t
     mute.b
     playing.b
-    *DAC.STK::RtAudio
-    *stream.STK::GeneratorStream
+    *node.STK::GeneratorStream
     nbStreams.i
   EndStructure
   
@@ -71,9 +70,8 @@ Module AudioDACNode
 ;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
 ;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
     
-    STK::GeneratorStreamStart(*node\stream)
+    STK::GeneratorStreamStart(*node\node)
     
-    MessageRequester("CONNECTION CALLBACK", "WE JUST DID IT WITH NODE AND OUTPUT PORT : "+*node\name+" , "+*port\name)
   EndProcedure
   
   ; --------------------------------------------------------------------------------------------------
@@ -105,14 +103,15 @@ Module AudioDACNode
     Node::PortAffectByName(*node, "Input0", "Execute")
     Node::PortAffectByName(*node, "New(Input1)...", "Execute")
     Node::PortAffectByName(*node, "Mute", "Execute")
-    
-    
-    
+
     *node\label = "AudioDAC"
     
-    *node\DAC = STK::Init()
+    If Not STK::*DAC
+      STK::Initialize()
+    EndIf
+    
       
-    *node\stream = STK::GeneratorStreamSetup(*node\DAC)
+    *node\node = STK::GeneratorStreamSetup(STK::*DAC)
     
     NodePort::SetupConnectionCallback(*input0, @OnConnectInput())
     NodePort::SetupConnectionCallback(*execute, @OnConnectOutput())
@@ -132,7 +131,7 @@ Module AudioDACNode
   EndProcedure
   
   Procedure Terminate(*node.AudioDACNode_t)
-    *node\DAC = STK::Term(*node\DAC)
+    STK::GeneratorStreamClean(*node\node)
   EndProcedure
   
   Procedure OnConnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
@@ -175,7 +174,7 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 99
+; CursorPosition = 132
+; FirstLine = 115
 ; Folding = ---
 ; EnableXP

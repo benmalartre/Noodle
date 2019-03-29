@@ -3,6 +3,7 @@ XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../libs/STK.pbi"
+XIncludeFile "../nodes/AudioNode.pbi"
 
 ; ==================================================================================================
 ; AUDIO SINEWAVE NODE MODULE DECLARATION
@@ -107,10 +108,12 @@ Module AudioSineWaveNode
     *node\phase = CArray::GetValueF(*aPhase, 0)
     *node\phaseoffset = CArray::GetValueF(*aPhaseOffset, 0)
     
-    STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_FREQUENCY, *node\frequency)
-    STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_TIME, *node\time)
-    STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASE, *node\phase)
-    STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASEOFFSET, *node\phaseoffset)
+    If *node\node
+      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_FREQUENCY, *node\frequency)
+      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_TIME, *node\time)
+      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASE, *node\phase)
+      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASEOFFSET, *node\phaseoffset)
+    EndIf
     
   EndProcedure
   
@@ -133,26 +136,20 @@ Module AudioSineWaveNode
       Define *dst.Node::Node_t = *target\node
       If *dst\class\name = "AudioDACNode"
         Define *DAC.AudioDACNode::AudioDACNode_t = *dst
-        *stream = *DAC\stream
+        *stream = *DAC\node
         *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
       Else
-        Select *dst\class\name
-          Case "AudioNoiseNode"
-            Define *noise.AudioNoiseNode::AudioNoiseNode_t = *dst
-            
-          Case "AudioSineWaveNode"
-            Define *sine.AudioSineWaveNode::AudioSineWaveNode_t = *dst
-            
-          Case "AudioArythmeticNode"
-            Define *arythmetic.AudioArythmeticNode::AudioArythmeticNode_t = *dst
-            *stream = STK::GetStream(*arythmetic\node)
+        Define *audio.AudioNode::AudioNode_t = *dst
+        If *audio And *audio\node
+          *stream = STK::GetStream(*audio\node)
+          If *stream
             *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-        EndSelect
+            MessageRequester("AUDIO SINE", "ADD GENERATOR :)")
+          EndIf
+        Else
+          MessageRequester("AUDIO", "NO AUDIO NODE For THIS ITEM")  
+        EndIf
         
-;         Define *node.Node::Node_t = *dst
-;         Define *stream.STK::GeneratorStream = STK::GetStream(*node\
-;         *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
-;         MessageRequester("SINE WAVE NODE", "OUTPUT CONNECTED TO OTHER NODE")
       EndIf
       
 ;       *port\connectioncallback(*port)
@@ -200,7 +197,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 132
+; CursorPosition = 146
+; FirstLine = 99
 ; Folding = --
 ; EnableXP
