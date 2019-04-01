@@ -1,4 +1,5 @@
 ﻿XIncludeFile "Object.pbi"
+XIncludeFile "Signal.pbi"
 
 ; ==============================================================================
 ;  CONTROL MODULE DECLARATION
@@ -28,6 +29,7 @@ DeclareModule Control
     #ICON
     #RADIO
     #COMBO
+    #ENUM
     #LABEL
     #DIVOT
     #EDIT
@@ -77,6 +79,7 @@ DeclareModule Control
     enable     .i
     options    .i
     state      .i
+    *on_change .Signal::Signal_t 
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -85,7 +88,14 @@ DeclareModule Control
   Interface IControl
     OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
+    Pick(*Me.Control_t, mx, my)
+    
   EndInterface
+  
+  Declare Delete(*Me.Control_t)
+  Declare Draw(*Me.Control_t)
+  Declare DrawPickImage(*Me.Control_t, id.i)
+  Declare Pick(*Me.Control_t, mx, my)
   
   Declare GetGadgetID(*Me.Control_t)
   Declare GetType(*Me.Control_t)
@@ -100,6 +110,7 @@ DeclareModule Control
   Declare Focused( *Me.Control_t )
   Declare DeFocused( *Me.Control_t )
   Declare SetCursor( *Me.Control_t, cursor_id.i )
+  
 EndDeclareModule
 
 ; ==============================================================================
@@ -107,6 +118,33 @@ EndDeclareModule
 ; ==============================================================================
 Module Control
   
+  ; ---[ Generic Draw Routine ]--------------------------------------------------
+  Procedure Draw(*Me.Control_t)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::RANDOMIZED)
+    FillPath()
+  EndProcedure
+  
+  ; ---[ Generic Draw Pick Image ]-----------------------------------------------
+  Procedure DrawPickImage(*Me.Control_t, id.i)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(RGBA(id, 0,0,255))
+    FillPath()
+  EndProcedure
+  
+  ; ---[ Generic Pick Image ]----------------------------------------------------
+  Procedure Pick(*Me.Control_t, mx, my)
+    If mx > *Me\posX And mx<*Me\posX + *Me\sizX And my > *Me\posY And my <*Me\posY + *Me\sizY
+      ProcedureReturn #True
+    EndIf
+    ProcedureReturn #False
+  EndProcedure
+  
+  ; ---[ Delete ]---------------------------------------------------------------
+  Procedure Delete(*Me.Control_t)
+    Object::TERM(Control)
+  EndProcedure
+
   ; ---[ GetGadgetID ]----------------------------------------------------------
   Procedure.i GetGadgetID( *Me.Control_t )
     
@@ -274,7 +312,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
-; Folding = H5--
+; CursorPosition = 230
+; FirstLine = 188
+; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

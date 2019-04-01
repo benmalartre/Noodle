@@ -250,12 +250,12 @@ Module Curve
   ;----------------------------------------------------
   Procedure OnMessage(id.i,*up)
     Protected *sig.Signal::Signal_t = *up
-    Protected *snd.Object::Object_t = *sig\snd_inst
-    Protected *rcv.Object::Object_t = *sig\rcv_inst
-    
-    Debug "Curve Recieved Message"
-    Debug "Sender Class Name : "+*snd\class\name
-    Debug "Reciever Class Name : "+*rcv\class\name
+;     Protected *snd.Object::Object_t = *sig\snd_inst
+;     Protected *rcv.Object::Object_t = *sig\rcv_inst
+;     
+;     Debug "Curve Recieved Message"
+;     Debug "Sender Class Name : "+*snd\class\name
+;     Debug "Reciever Class Name : "+*rcv\class\name
     
   EndProcedure
   
@@ -322,7 +322,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 107
+; CursorPosition = 257
+; FirstLine = 248
 ; Folding = ---
 ; EnableXP

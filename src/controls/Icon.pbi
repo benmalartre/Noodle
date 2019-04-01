@@ -70,6 +70,7 @@ DeclareModule ControlIcon
     value.i
     over.i
     down.i
+    *on_click.Signal::Signal_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -308,7 +309,7 @@ Module ControlIcon
           Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OVER : "+Str(*Me\over)
           If *Me\over
             PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+            Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
             ; TODO : >>> TRIGGER ACTION <<<
 ;             Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
 ;             Protected *slot.CSlot = *Me\sig_onchanged
@@ -393,6 +394,9 @@ Module ControlIcon
     *Me\label      = name
     *Me\icon       = icon 
     If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
+    
+    ; ---[ Signals ]------------------------------------------------------------
+    *Me\on_click = Object::NewSignal(*Me, "OnClick")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -553,7 +557,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 192
+; CursorPosition = 399
+; FirstLine = 363
 ; Folding = ----
 ; EnableXP

@@ -217,10 +217,13 @@ Module GetDataNode
     
   EndProcedure
   
-  Procedure OnMessage(id.i,*up)
-    Protected *signal.Signal::Signal_t = *up
-    Protected *node.Object::Object_t = *signal\rcv_inst
-    If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
+  Procedure OnMessage(id.i, *up)
+  EndProcedure
+  
+  Procedure OnChange(*node.GetDataNode_t)
+;     Protected *signal.Signal::Signal_t = *up
+;     Protected *node.Object::Object_t = *signal\rcv_inst
+;     If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
   EndProcedure
   
   Runtime Procedure GetNodeAttribute(*node.GetDataNode_t)
@@ -253,9 +256,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 105
-; FirstLine = 100
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 221
+; FirstLine = 195
 ; Folding = --
 ; EnableThread
 ; EnableXP

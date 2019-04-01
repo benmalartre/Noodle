@@ -528,44 +528,44 @@ Module Attribute
   ;-----------------------------------------------------
   Procedure OnMessage( id.i, *up)
     
-    Protected *sig.Signal::Signal_t = *up
-    Protected *attr.Attribute::Attribute_t = *sig\rcv_inst
-;     If *attr\datastructure = #ATTR_STRUCT_SINGLE And *attr\datacontext = #ATTR_CTXT_SINGLETON
-      Select *attr\datatype
-        Case #ATTR_TYPE_BOOL
-          Protected b.b = PeekB(*sig\sigdata)
-          PokeB(*attr\data,b)
-          Debug "Boolean Value : "+Str(b)
-          *attr\dirty = #True
-        Case #ATTR_TYPE_INTEGER
-          MessageRequester("Attribute","Attribute Integer")
-          Protected i.i = PeekI(*sig\sigdata)
-          PokeI(*attr\data,i)
-          Debug "Integer Value : "+Str(i)
-          *attr\dirty = #True
-        Case #ATTR_TYPE_LONG
-          MessageRequester("Attribute","Attribute Long")
-          Protected l.l = PeekL(*sig\sigdata)
-          PokeL(*attr\data,l)
-          Debug "Long Value : "+Str(l)
-          *attr\dirty = #True
-        Case #ATTR_TYPE_FLOAT
-          MessageRequester("Attribute","Attribute Float")
-          Protected f.f = PeekF(*sig\sigdata)
-          PokeF(*attr\data,f)
-          Debug "Float Value : "+Str(f)
-          *attr\dirty = #True
-        Case #ATTR_TYPE_VECTOR2
-          Protected *v2.v2f32 = *sig\sigdata
-          CopyMemory(*attr\data,*v2,SizeOf(v2f32))
-          Vector2::Echo(*v2,"Vector2 Value")
-          *attr\dirty = #True
-        Case #ATTR_TYPE_VECTOR3
-          Protected *v3.v3f32 = *sig\sigdata
-          CopyMemory(*attr\data,*v3,SizeOf(v3f32))
-          Vector3::Echo(*v3,"Vector3 Value")
-          *attr\dirty = #True
-      EndSelect
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *attr.Attribute::Attribute_t = *sig\rcv_inst
+; ;     If *attr\datastructure = #ATTR_STRUCT_SINGLE And *attr\datacontext = #ATTR_CTXT_SINGLETON
+;       Select *attr\datatype
+;         Case #ATTR_TYPE_BOOL
+;           Protected b.b = PeekB(*sig\sigdata)
+;           PokeB(*attr\data,b)
+;           Debug "Boolean Value : "+Str(b)
+;           *attr\dirty = #True
+;         Case #ATTR_TYPE_INTEGER
+;           MessageRequester("Attribute","Attribute Integer")
+;           Protected i.i = PeekI(*sig\sigdata)
+;           PokeI(*attr\data,i)
+;           Debug "Integer Value : "+Str(i)
+;           *attr\dirty = #True
+;         Case #ATTR_TYPE_LONG
+;           MessageRequester("Attribute","Attribute Long")
+;           Protected l.l = PeekL(*sig\sigdata)
+;           PokeL(*attr\data,l)
+;           Debug "Long Value : "+Str(l)
+;           *attr\dirty = #True
+;         Case #ATTR_TYPE_FLOAT
+;           MessageRequester("Attribute","Attribute Float")
+;           Protected f.f = PeekF(*sig\sigdata)
+;           PokeF(*attr\data,f)
+;           Debug "Float Value : "+Str(f)
+;           *attr\dirty = #True
+;         Case #ATTR_TYPE_VECTOR2
+;           Protected *v2.v2f32 = *sig\sigdata
+;           CopyMemory(*attr\data,*v2,SizeOf(v2f32))
+;           Vector2::Echo(*v2,"Vector2 Value")
+;           *attr\dirty = #True
+;         Case #ATTR_TYPE_VECTOR3
+;           Protected *v3.v3f32 = *sig\sigdata
+;           CopyMemory(*attr\data,*v3,SizeOf(v3f32))
+;           Vector3::Echo(*v3,"Vector3 Value")
+;           *attr\dirty = #True
+;       EndSelect
 ;     EndIf
   EndProcedure
   
@@ -602,12 +602,8 @@ Module Attribute
   
   Class::DEF( Attribute )
 EndModule
-
-
-; ============================================================================
-;  EOF
-; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 268
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 567
+; FirstLine = 515
 ; Folding = ---
 ; EnableXP

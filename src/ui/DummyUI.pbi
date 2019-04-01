@@ -36,7 +36,7 @@ EndDeclareModule
 Module DummyUI
   
   Procedure DummyCallback(*args.Arguments::Arguments_t)
-    MessageRequester( "DUMMY CALLBACK","Nb Arguments : "+Str(*args\nb))
+    MessageRequester( "DUMMY CALLBACK","Nb Arguments : "+Str(ArraySize(*args\args())))
   EndProcedure
   
   ; New
@@ -163,7 +163,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 103
+; CursorPosition = 38
+; FirstLine = 34
 ; Folding = --
 ; EnableXP

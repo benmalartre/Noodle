@@ -46,8 +46,8 @@ For i=0 To 1
   *prop\dy + 64
   ;   
   
-  Object::SignalConnect(*ui, *head\ondelete_signal, 0)
-  Object::SignalConnect(*ui, *head\onexpand_signal, 1)
+;   Object::SignalConnect(*ui, *head\ondelete_signal, 0)
+;   Object::SignalConnect(*ui, *head\onexpand_signal, 1)
   
   Define v.Math::v3f32
   ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
@@ -78,7 +78,7 @@ CloseGadgetList()
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 21
+; CursorPosition = 49
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

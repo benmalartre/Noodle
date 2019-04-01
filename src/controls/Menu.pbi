@@ -233,12 +233,12 @@ Module ControlMenu
     InitializeStructure(*item,ControlMenuItem_t)
     *item\name = name
     *item\callback = callback
-    *item\args = Arguments::New();*args
+    *item\args = Arguments::New(ArraySize(*args\args()));*args
     If Not *args = #Null
       Protected a.i
-      ForEach *args\args()
-        Arguments::AddPtr(*item\args,"default",#Null)
-        Arguments::Copy(*item\args\args(),*args\args())
+      For i=0 To ArraySize( *args\args())-1
+        
+        ;Arguments::Copy(*item\args\args(i),*args\args(i))
         ;muv2muv(*args\m[a],*item\args\m[a])
   ;     Debug "Copied Argument : "+muv2str(*args\m[a]) +" ---> "+muv2str(*item\args\m[a])
       Next
@@ -356,8 +356,7 @@ Module ControlMenu
     If down.b
       If Not *menu\items(id)\type = #MenuItemType_Separator 
         If *menu\items(id)\callback
-          FirstElement(*menu\items(id)\args\args())
-          Protected *view = *menu\items(id)\args\args()\ptr
+          Protected *view = *menu\items(id)\args\args(0)\p
           
          *menu\items(id)\callback(*menu\items(id)\args)
         EndIf
@@ -708,8 +707,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 619
-; FirstLine = 572
+; CursorPosition = 240
+; FirstLine = 217
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

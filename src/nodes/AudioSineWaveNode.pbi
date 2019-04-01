@@ -144,10 +144,8 @@ Module AudioSineWaveNode
           *stream = STK::GetStream(*audio\node)
           If *stream
             *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
-            MessageRequester("AUDIO SINE", "ADD GENERATOR :)")
           EndIf
         Else
-          MessageRequester("AUDIO", "NO AUDIO NODE For THIS ITEM")  
         EndIf
         
       EndIf
@@ -197,7 +195,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 99
+; CursorPosition = 147
+; FirstLine = 110
 ; Folding = --
 ; EnableXP

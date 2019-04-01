@@ -330,7 +330,7 @@ Module GraphUI
       *Me\tree = *tree
       *Me\tree\current = *tree\root
       *Me\redraw = #True
-      Object::SignalConnect(*Me,*Me\tree\slot,0)
+;       Object::SignalConnect(*Me,*Me\tree\slot,0)
     Else
       *Me\tree = #Null
        *Me\redraw = #True
@@ -432,109 +432,110 @@ Module GraphUI
   ; PopUp Menu
   ;---------------------------------------------------------------------------
   Procedure PopUpMenu(*Me.GraphUI_t)
+; ;     Protected *top.View::View_t = *Me\top
+; ;     Protected *manager.ViewManager::ViewManager_t = *top\manager
+; ;     Protected menu = CreatePopupMenu(#PB_Any)
+; ;     
+; ;     MenuItem(Globals::#MENU_IMPLODENODES,"Implode Nodes")
+; ;     MenuItem(Globals::#MENU_EXPLODENODES,"Explode Nodes")
+; ;     MenuBar()
+; ;     MenuItem(Globals::#MENU_ADDINPUTPORT,"Add Input Port")
+; ;     MenuItem(Globals::#MENU_REMOVEINPUTPORT,"Add Input Port")
+; ;     MenuItem(Globals::#MENU_ADDOUTPUTPORT,"Add Output Port")
+; ;     MenuItem(Globals::#MENU_REMOVEOUTPUTPORT,"Add Output Port")
+; ;     
+; ;     DisplayPopupMenu(menu,WindowID(*manager\window),WindowMouseX(*manager\window),WindowMouseY(*manager\window))
+; 
+;     
+;     
 ;     Protected *top.View::View_t = *Me\top
 ;     Protected *manager.ViewManager::ViewManager_t = *top\manager
-;     Protected menu = CreatePopupMenu(#PB_Any)
+;     Protected window = *manager\window
+;    
 ;     
-;     MenuItem(Globals::#MENU_IMPLODENODES,"Implode Nodes")
-;     MenuItem(Globals::#MENU_EXPLODENODES,"Explode Nodes")
-;     MenuBar()
-;     MenuItem(Globals::#MENU_ADDINPUTPORT,"Add Input Port")
-;     MenuItem(Globals::#MENU_REMOVEINPUTPORT,"Add Input Port")
-;     MenuItem(Globals::#MENU_ADDOUTPUTPORT,"Add Output Port")
-;     MenuItem(Globals::#MENU_REMOVEOUTPUTPORT,"Add Output Port")
+;     Protected mx = WindowMouseX(window)
+;     Protected my = WindowMouseY(window)
 ;     
-;     DisplayPopupMenu(menu,WindowID(*manager\window),WindowMouseX(*manager\window),WindowMouseY(*manager\window))
-
-    
-    
-    Protected *top.View::View_t = *Me\top
-    Protected *manager.ViewManager::ViewManager_t = *top\manager
-    Protected window = *manager\window
-    
-    Protected mx = WindowMouseX(window)
-    Protected my = WindowMouseY(window)
-    
-    Protected *node.Node::Node_t = *Me\focus
-    If *node
-      Protected *menu.ControlMenu::ControlSubMenu_t = ControlMenu::NewSubMenu(#Null,mx,my,"File")
-      Protected *args.Arguments::Arguments_t = Arguments::New()
-      
-      Arguments::AddPtr(*args,"Tree",*Me\tree)
-      Arguments::AddPtr(*args,"Selected Nodes",*Me\a_selected)
-      Arguments::AddPtr(*args,"Parent Node",*Me\tree\current)
-      
-      ControlMenu::AddItem(*menu,"Create Compound",ImplodeNodesCmd::@Do(),*args)
-      ControlMenu::AddSeparator(*menu)
-      
-      
-      Arguments::SetPtr(*args,"Node",*node,1)
-      Arguments::SetString(*args,"TypeName","Bool",2)
-      Arguments::SetLong(*args,"Type",Attribute::#ATTR_TYPE_BOOL,3)
-      ControlMenu::AddItem(*menu,"Add Bool",@Dummy(),*args)
-      
-      Arguments::SetPtr(*args,"Node",*node,1)
-      Arguments::SetString(*args,"TypeName","Float",2)
-      Arguments::SetLong(*args,"Type",Attribute::#ATTR_TYPE_FLOAT,3)
-      ControlMenu::AddItem(*menu,"Add Float",@Dummy(),*args)
-      
-      Arguments::SetPtr(*args,"Node",*node,1)
-      Arguments::SetString(*args,"TypeName","Vector2",2)
-      Arguments::SetLong(*args,"Type",Attribute::#ATTR_TYPE_VECTOR2,3)
-      ControlMenu::AddItem(*menu,"Add Vector2",@Dummy(),*args)
-      
-      Arguments::SetPtr(*args,"Node",*node,1)
-      Arguments::SetString(*args,"TypeName","Vector3",2)
-      Arguments::SetLong(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
-      ControlMenu::AddItem(*menu,"Add Vector3",@Dummy(),*args)
-      
-      Arguments::Delete(*args)
-      
-;       args\m[1]\type = #MU_TYPE_PTR
-;       args\m[1]\value\vPTR = *node
-;       args\m[2]\type = #MU_TYPE_STR
-;       args\m[2]\value\vSTR = "Bool"
-;       args\m[3]\type = #MU_TYPE_U32
-;       args\m[3]\value\vU32 = #ATTR_TYPE_BOOL
+;     Protected *node.Node::Node_t = *Me\focus
+;     If *node
+;       Protected *menu.ControlMenu::ControlSubMenu_t = ControlMenu::NewSubMenu(#Null,mx,my,"File")
+;       Protected *args.Arguments::Arguments_t = Arguments::New()
 ;       
-;       *menu\AddItem("Add Bool",@Dumy(),@args)
-;       args\m[2]\value\vSTR = "Integer"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_INTEGER
-;       *menu\AddItem("Add Integer",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Float"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_FLOAT
-;       *menu\AddItem("Add Float",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Vector2"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR2
-;       *menu\AddItem("Add Vector2",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Vector3"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR3
-;       *menu\AddItem("Add Vector3",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Vector4"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR4
-;       *menu\AddItem("Add Vector4",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "quaternion"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_QUATERNION
-;       *menu\AddItem("Add Quaternion",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Matrix3"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_MATRIX3
-;       *menu\AddItem("Add Matrix3",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Matrix4"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_MATRIX4
-;       *menu\AddItem("Add Matrix4",@OViewGraph_AddInputPort(),@args)
-;       args\m[2]\value\vSTR = "Texture"
-;       args\m[3]\value\vU32 = #ATTR_TYPE_TEXTURE
-;       *menu\AddItem("Add Texture",@OViewGraph_AddInputPort(),@args)
-      
-
-      *menu\windowID = window
-      
-      ControlMenu::InitSubMenu(*menu)
-      ControlMenu::InspectSubMenu(*menu)
-      MessageRequester("GraphUI","Inspect Menu Ended")
-      ControlMenu::DeleteSubMenu(*menu)
+;       Arguments::ADD(*args,*Me\tree)
+;       Arguments::ADD(*args,*Me\a_selected)
+;       Arguments::ADD(*args,*Me\tree\current)
+;       
+;       ControlMenu::AddItem(*menu,"Create Compound",ImplodeNodesCmd::@Do(),*args)
+;       ControlMenu::AddSeparator(*menu)
+;       
+;       
+;       Arguments::SET(*args\args(1),*node)
+;       Arguments::SET(*args\args(2),"Bool",2)
+;       Arguments::SET(*args\args(3),Attribute::#ATTR_TYPE_BOOL)
+;       ControlMenu::AddItem(*menu,"Add Bool",@Dummy(),*args)
+;       
+;       Arguments::SET(*args\args(1),*node,1)
+;       Arguments::SET(*args,"Float",2)
+;       Arguments::SET(*args,Attribute::#ATTR_TYPE_FLOAT,3)
+;       ControlMenu::AddItem(*menu,"Add Float",@Dummy(),*args)
+;       
+;       Arguments::SET(*args\args(1),*node)
+;       Arguments::SET(*args\args(2),"Vector2")
+;       Arguments::SET(*args\args(3),Attribute::#ATTR_TYPE_VECTOR2)
+;       ControlMenu::AddItem(*menu,"Add Vector2",@Dummy(),*args)
+;       
+;       Arguments::SET(*args,"Node",*node,1)
+;       Arguments::SET(*args,"TypeName","Vector3",2)
+;       Arguments::SET(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
+;       ControlMenu::AddItem(*menu,"Add Vector3",@Dummy(),*args)
+;       
+;       Arguments::Delete(*args)
+;       
+; ;       args\m[1]\type = #MU_TYPE_PTR
+; ;       args\m[1]\value\vPTR = *node
+; ;       args\m[2]\type = #MU_TYPE_STR
+; ;       args\m[2]\value\vSTR = "Bool"
+; ;       args\m[3]\type = #MU_TYPE_U32
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_BOOL
+; ;       
+; ;       *menu\AddItem("Add Bool",@Dumy(),@args)
+; ;       args\m[2]\value\vSTR = "Integer"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_INTEGER
+; ;       *menu\AddItem("Add Integer",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Float"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_FLOAT
+; ;       *menu\AddItem("Add Float",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Vector2"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR2
+; ;       *menu\AddItem("Add Vector2",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Vector3"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR3
+; ;       *menu\AddItem("Add Vector3",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Vector4"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_VECTOR4
+; ;       *menu\AddItem("Add Vector4",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "quaternion"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_QUATERNION
+; ;       *menu\AddItem("Add Quaternion",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Matrix3"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_MATRIX3
+; ;       *menu\AddItem("Add Matrix3",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Matrix4"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_MATRIX4
+; ;       *menu\AddItem("Add Matrix4",@OViewGraph_AddInputPort(),@args)
+; ;       args\m[2]\value\vSTR = "Texture"
+; ;       args\m[3]\value\vU32 = #ATTR_TYPE_TEXTURE
+; ;       *menu\AddItem("Add Texture",@OViewGraph_AddInputPort(),@args)
+;       
+; 
+;       *menu\windowID = window
+;       
+;       ControlMenu::InitSubMenu(*menu)
+;       ControlMenu::InspectSubMenu(*menu)
+;       MessageRequester("GraphUI","Inspect Menu Ended")
+;       ControlMenu::DeleteSubMenu(*menu)
   
-    EndIf
+;     EndIf
     
   
   
@@ -1587,22 +1588,22 @@ Module GraphUI
   ; On Message
   ;-----------------------------------------------------
   Procedure OnMessage( id.i, *up)
-     Protected *sig.Signal::Signal_t = *up
-     Protected *obj.Object::Object_t = *sig\snd_inst
-     Protected *ui.GraphUI::GraphUI_t = *sig\rcv_inst
-     Protected slot.i = *sig\rcv_slot
-     
-     If slot =0
-       Select *obj\class\name
-         Case "Tree"
-          SetContent(*ui,*sig\sigdata) 
-      EndSelect
-    ElseIf slot = 1
-      MessageRequester("GraphUI","On Message From Refresh Button...")
-      Protected *scene.Scene::Scene_t = Scene::*current_scene
-      Protected *selection.Selection::Selection_t = *scene\selection
-    EndIf
-    
+;      Protected *sig.Signal::Signal_t = *up
+;      Protected *obj.Object::Object_t = *sig\snd_inst
+;      Protected *ui.GraphUI::GraphUI_t = *sig\rcv_inst
+;      Protected slot.i = *sig\rcv_slot
+;      
+;      If slot =0
+;        Select *obj\class\name
+;          Case "Tree"
+;           SetContent(*ui,*sig\sigdata) 
+;       EndSelect
+;     ElseIf slot = 1
+;       MessageRequester("GraphUI","On Message From Refresh Button...")
+;       Protected *scene.Scene::Scene_t = Scene::*current_scene
+;       Protected *selection.Selection::Selection_t = *scene\selection
+;     EndIf
+;     
      
   EndProcedure
   
@@ -1610,7 +1611,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 593
-; FirstLine = 576
+; CursorPosition = 1605
+; FirstLine = 1552
 ; Folding = --------
 ; EnableXP

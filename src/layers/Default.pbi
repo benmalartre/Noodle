@@ -254,7 +254,6 @@ Module LayerDefault
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
     Protected *Me.LayerDefault_t = AllocateMemory(SizeOf(LayerDefault_t))
-    InitializeStructure(*Me,LayerDefault_t)
     Object::INI(LayerDefault)
     
     *Me\type = Object3D::#Object3D_Layer
@@ -282,7 +281,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 116
+; CursorPosition = 256
+; FirstLine = 222
 ; Folding = --
 ; EnableXP

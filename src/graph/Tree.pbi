@@ -279,7 +279,7 @@ Module Tree
       
     EndIf
     
-    Connexion::Connect(*connexion,*connexion\end,interactive.b)
+    Connexion::Connect(*connexion,*connexion\end,interactive)
     *connexion\end\connected = #True
     *connexion\start\connected = #True
     LastElement(*parent\connexions())
@@ -486,7 +486,7 @@ Module Tree
 
     ; ---[ Deallocate Underlying Arrays ]---------------------------------------
     Protected *root.Node::Node_t = *Me\root
-    Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#Null)
+    Signal::Trigger(*Me\on_delete,Signal::#SIGNAL_TYPE_PING)
     ForEach *Me\root\connexions()
       Connexion::Delete(*Me\root\connexions())
     Next
@@ -512,7 +512,6 @@ Module Tree
     Protected *Me.Tree_t = AllocateMemory( SizeOf(Tree_t) )
     
     ; ---[ Initialize Structures ]---------------------------------------------
-    InitializeStructure(*Me,Tree_t)
     Object::INI(Tree)
     
     ; ---[ Init Object ]-------------------------------------------------------
@@ -533,6 +532,7 @@ Module Tree
     *Me\current = *Me\root
     
     ; ---[ Push Parent Object Stack ]------------------------------------------
+    If Not *obj\stack : *obj\stack = Stack::New() : EndIf
     Stack::AddNode(*obj\stack,*Me,0)
     
     ProcedureReturn( *Me)
@@ -547,8 +547,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 421
-; FirstLine = 403
+; CursorPosition = 514
+; FirstLine = 488
 ; Folding = -----
 ; EnableThread
 ; EnableXP

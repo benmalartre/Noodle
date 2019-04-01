@@ -325,7 +325,6 @@ Module LayerGBuffer
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
     Protected *Me.LayerGBuffer_t = AllocateMemory(SizeOf(LayerGBuffer_t))
-    InitializeStructure(*Me,LayerGBuffer_t)
     Object::INI( LayerGBuffer )
     
     *Me\width = width
@@ -351,7 +350,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 135
+; CursorPosition = 327
+; FirstLine = 291
 ; Folding = --
 ; EnableXP

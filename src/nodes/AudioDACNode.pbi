@@ -144,7 +144,6 @@ Module AudioDACNode
   EndProcedure
   
   Procedure OnDisconnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
-    MessageRequester("AUDIO DAC", "OnDisconnect called on port ---> "+*port\name)
   EndProcedure
   
   Procedure Delete(*node.AudioDACNode_t)
@@ -174,7 +173,7 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 115
+; CursorPosition = 137
+; FirstLine = 114
 ; Folding = ---
 ; EnableXP

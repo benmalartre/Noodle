@@ -344,17 +344,17 @@ Module ControlColor
   ;}
   
   Procedure OnMessage(type.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
-    Protected Me.ControlColor::IControlColor = *Me
-    Select *sig\rcv_slot
-      Case 0:
-        SetRed(*Me)
-      Case 1:
-        SetGreen(*Me)
-      Case 2:
-        SetBlue(*Me)
-    EndSelect
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
+;     Protected Me.ControlColor::IControlColor = *Me
+;     Select *sig\rcv_slot
+;       Case 0:
+;         SetRed(*Me)
+;       Case 1:
+;         SetGreen(*Me)
+;       Case 2:
+;         SetBlue(*Me)
+;     EndSelect
     
   EndProcedure
 
@@ -459,8 +459,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 404
+; CursorPosition = 356
+; FirstLine = 343
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

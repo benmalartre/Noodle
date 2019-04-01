@@ -46,6 +46,7 @@ DeclareModule Time
   Global forward.b
   Global framerate.f = 25
   Global fps.i
+  Global NewList *affectednodes()
   
   ;-----------------------------------------------------------------------------
   ;  GLOBALS
@@ -135,8 +136,8 @@ Module Time
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 54
+; CursorPosition = 48
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

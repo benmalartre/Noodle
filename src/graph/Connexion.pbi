@@ -477,7 +477,7 @@ Module Connexion
   ; Connect
   ;---------------------------------------------------
   Procedure.b Connect(*c.Connexion_t,*p.NodePort::NodePort_t,interactive.b)
-
+    
     If Not Possible(*c,*p)
       *c\start\selected = #False
       *p\selected = #False
@@ -533,24 +533,24 @@ Module Connexion
       If *p\connected
         ; Reuse Existing connexion
         Protected *connexion.Connexion_t = *p\connexion
-        Define *oldsrc.NodePort::NodePort_t = *connexion\end\source
-        
-        ; Remove target from old source
-        ForEach *oldsrc\targets()
-          If *oldsrc\targets() = *connexion\start
-            DeleteElement(*oldsrc\targets())
-            Break
-          EndIf
-        Next
-            
-        *connexion\start\connected = #False
-        *connexion\start = *c\start
-        *connexion\color = *c\start\color
-        *connexion\end\source = *connexion\start
+;         Define *oldsrc.NodePort::NodePort_t = *connexion\end\source
+;         
+;         ; Remove target from old source
+;         ForEach *oldsrc\targets()
+;           If *oldsrc\targets() = *connexion\start
+;             DeleteElement(*oldsrc\targets())
+;             Break
+;           EndIf
+;         Next
+;             
+;         *connexion\start\connected = #False
+;         *connexion\start = *c\start
+;         *connexion\color = *c\start\color
+;         *connexion\end\source = *connexion\start
         
         AddElement(*connexion\start\targets())
         *connexion\start\targets() = *connexion\end
-
+        
         ProcedureReturn #False
       Else
         AddElement(*c\start\targets())
@@ -563,10 +563,6 @@ Module Connexion
     EndIf
     
     ; connection callback
-;     If *p\connectioncallback
-;       MessageRequester("CONNEXIOn CALLBACK", "We've GOT a Connection")
-;       *p\connectioncallback(*p)
-;     EndIf
     Define inode.Node::INode = *p\node
     inode\OnConnect(*p)
     inode = *c\start\node
@@ -580,10 +576,7 @@ Module Connexion
   ; Set Head
   ;---------------------------------------------------
   Procedure SetHead(*c.Connexion_t,*p.NodePort::NodePort_t)
-    Debug "Graph Connexion Set Head Called..."
     If Possible(*c.Connexion_t,*p.NodePort::NodePort_t)
-      ;Debug "Port "+*p\uniquename+" position :"+Str(*p\viewx)+","+Str(*p\viewy)
-      ;Debug "Node "+*p\node\uniquename+" position : "+Str(*p\node\viewx)+","+Str(*p\node\viewx+*p\node\width)
       Set(*c,*c\a\x,*c\a\y,*p\posx,*p\posy)
     EndIf
       
@@ -603,7 +596,7 @@ Module Connexion
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 538
-; FirstLine = 513
+; CursorPosition = 552
+; FirstLine = 516
 ; Folding = ----
 ; EnableXP

@@ -5,6 +5,7 @@ XIncludeFile "Label.pbi"
 XIncludeFile "Check.pbi"
 XIncludeFile "Edit.pbi"
 XIncludeFile "Number.pbi"
+XIncludeFile "Enum.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Head.pbi"
@@ -105,6 +106,31 @@ EndDeclareModule
 ; ============================================================================
 Module ControlProperty
   UseModule Math
+  
+  Procedure OnChange(*ctrl.Control::Control_t, *slot.Slot::Slot_t)    
+    Select *ctrl\type
+      Case Control::#NUMBER
+        Define *input.ControlEdit::ControlEdit_t = *ctrl
+        Select *slot\type
+          Case Slot::#SLOT_INT
+            PokeI(*slot\datas, Val(*input\value))
+          Case Slot::#SLOT_FLOAT
+            PokeF(*slot\datas, ValF(*input\value))
+          Case Slot::#SLOT_STRING
+            ;         PokeS(*slot\datas
+        EndSelect
+        
+      Case Control::#CHECK  
+       Define *check.ControlCheck::ControlCheck_t = *ctrl
+       PokeB(*slot\datas, *check\down)
+        
+     Case Control::#ENUM
+       Define *enum.ControlEnum::ControlEnum_t = *ctrl
+       PokeI(*slot\datas, *enum\items(*enum\current)\value)
+       
+   EndSelect
+  EndProcedure
+  Callback::DECLARECALLBACK(OnChange, #PB_Structure, #PB_Structure)
 
 
   ; ----------------------------------------------------------------------------
@@ -518,7 +544,12 @@ Module ControlProperty
     ; Connect Signal
     If *obj
       Protected *class.Class::Class_t = *obj\class
-      Object::SignalConnect(*obj,*ctl\slot,0)
+;        Define *check.Check::Check_t = Check::New(*Me\gadgetID,x,y,width,16, MapKey(*obj\attributes()))
+;           *check\checked = PeekB(*obj\attributes()\datas)
+;           *Me\items(index) = *check
+;           Signal::CONNECTCALLBACK(*check\on_change, OnChange, *check, *obj\attributes())
+;       Signal::CONNECTCALLBACK(*ctl\on_change, OnChange, *ctl, *obj\slots())
+;       Object::SignalConnect(*obj,*ctl\slot,0)
     EndIf
     
     
@@ -558,7 +589,10 @@ Module ControlProperty
 
     ; Connect Signal
     If *obj
-      Object::SignalConnect(*obj,*Ctl\slot,0)
+      Define slot.Slot::Slot_t
+;       slot\
+;       Signal::CONNECTCALLBACK(*ctl\on_change, OnChange, *slot)
+;       ;Object::SignalConnect(*obj,*Ctl\slot,0)
     EndIf
     
     ; Offset for Next Control
@@ -571,7 +605,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Float Control 
   ;-----------------------------------------------------------------------------
-  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*obj.Object::Object_t)
+  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*slot.Slot::Slot_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -598,8 +632,9 @@ Module ControlProperty
     EndIf
     
     ; Connect Signal
-    If *obj
-       Object::SignalConnect(*obj,*Ctl\slot,0)
+    If *slot
+;       Signal::CONNECTCALLBACK(*ctl\on_change, OnChange, *ctl, *slot)
+       ;Object::SignalConnect(*obj,*Ctl\slot,0)
     EndIf
     
     ; Offset for Next Control
@@ -654,8 +689,8 @@ Module ControlProperty
     
     ; Connect Signals
     If *obj
-      Object::SignalConnect(*obj,*xCtl\slot,0)
-      Object::SignalConnect(*obj,*yCtl\slot,1)
+;       Signal::CONNECTCALLBACK(*obj, OnChange, *xCtl, *xSlot)
+;       Signal::CONNECTCALLBACK(*obj, OnChange, *yCtl, *ySlot)
     EndIf
     
     ; Offset for Next Control
@@ -716,9 +751,9 @@ Module ControlProperty
 
     ; Connect Signals
     If *obj
-      Object::SignalConnect(*obj,*xCtl\slot,0)
-      Object::SignalConnect(*obj,*yCtl\slot,1)
-      Object::SignalConnect(*obj,*zCtl\slot,2)
+;       Object::SignalConnect(*obj,*xCtl\slot,0)
+;       Object::SignalConnect(*obj,*yCtl\slot,1)
+;       Object::SignalConnect(*obj,*zCtl\slot,2)
     EndIf
     
     ; Offset for Next Control
@@ -857,10 +892,10 @@ Module ControlProperty
     ;---------------------------------
     ; ---[ Connect Signal ]-------------------------------------------
     If *obj
-      Object::SignalConnect(*obj,*xCtl\slot,0)
-      Object::SignalConnect(*obj,*yCtl\slot,1)
-      Object::SignalConnect(*obj,*zCtl\slot,2)
-      Object::SignalConnect(*obj,*aCtl\slot,3)
+;       Object::SignalConnect(*obj,*xCtl\slot,0)
+;       Object::SignalConnect(*obj,*yCtl\slot,1)
+;       Object::SignalConnect(*obj,*zCtl\slot,2)
+;       Object::SignalConnect(*obj,*aCtl\slot,3)
     EndIf
     
     ; Offset for Next Control
@@ -969,12 +1004,12 @@ Module ControlProperty
     ; Connect Signal
     ;---------------------------------
     If *obj
-      Object::SignalConnect(*obj,*Ctl\slot,0)
-      If *obj\class\name = "NodePort"
-        Protected *port.NodePort::NodePort_t = *obj
-        Protected *node.Node::Node_t = *port\node
-        Object::SignalConnect(*node,*Ctl\slot,0)
-      EndIf
+;       Object::SignalConnect(*obj,*Ctl\slot,0)
+;       If *obj\class\name = "NodePort"
+;         Protected *port.NodePort::NodePort_t = *obj
+;         Protected *node.Node::Node_t = *port\node
+;         Object::SignalConnect(*node,*Ctl\slot,0)
+;       EndIf
       
     EndIf
     
@@ -1019,7 +1054,7 @@ Module ControlProperty
     ; Connect Signal
     ;---------------------------------
     If *obj
-       Object::SignalConnect(*obj,*Ctl\slot,0)
+;        Object::SignalConnect(*obj,*Ctl\slot,0)
     EndIf
     
     
@@ -1760,7 +1795,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1086
-; FirstLine = 1050
+; CursorPosition = 692
+; FirstLine = 687
 ; Folding = --------
 ; EnableXP

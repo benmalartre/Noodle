@@ -10,6 +10,8 @@ XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../core/Morton.pbi"
 XIncludeFile "../core/Application.pbi"
 
+XIncludeFile "../core/Application.pbi"
+
 UseModule Math
 Global width = 800
 Global height = 600
@@ -26,12 +28,12 @@ Global rootIndex.i
 
 
 Procedure PolygonSoup(numTopos=9)
-  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_BUNNY)
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_TEAPOT)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   
-  Protected *topo.Geometry::Topology_t = Topology::New()
-  PolymeshGeometry::BunnyTopology(*topo)
-  
+  PolymeshGeometry::BunnyTopology(*geom)
+  Define *topo = Topology::New()
+  Topology::Bunny(*topo)
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
@@ -59,13 +61,15 @@ Procedure PolygonSoup(numTopos=9)
   
   PolymeshGeometry::Set2(*geom, *topo)
   Object3D::Freeze(*mesh)
-;   
-  For i=0 To numTopos-1
-    Topology::Delete(CArray::GetValuePtr(*topos, i))
-  Next
-  CArray::Delete(*topos)
   Topology::Delete(*topo)
-  
+;   For i=0 To numTopos-1
+;     Topology::Delete(CArray::GetValuePtr(*topos, i))
+;   Next
+;   
+;   CArray::Delete(*topos)
+;   
+;   
+  Debug "TOPO : "+Str(*topo)
   CArray::Delete(*matrices)
   CArray::Delete(*positions)
   
@@ -199,7 +203,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 70
+; CursorPosition = 63
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

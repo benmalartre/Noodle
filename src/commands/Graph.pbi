@@ -226,15 +226,9 @@ Module ImplodeNodesCmd
   EndProcedure
   
   Procedure Do(*args.Arguments::Arguments_t)
-
-    FirstElement(*args\args())
-    Protected *tree.Tree::Tree_t = *args\args()\ptr
-
-    NextElement(*args\args())
-    Protected *nodes.CArray::CArrayPtr = *args\args()\ptr
-
-    NextElement(*args\args())
-    Protected *parent.Node::Node_t = *args\args()\ptr
+    Protected *tree.Tree::Tree_t = *args\args(0)\p
+    Protected *nodes.CArray::CArrayPtr = *args\args(1)\p
+    Protected *parent.Node::Node_t = *args\args(2)\p
     
     Protected *info = hlpGetInfo(*tree,*nodes,*parent)
     Commands::Add(Commands::*manager,@hlpDo(),@hlpUndo(),@hlpClear(),*info)
@@ -244,7 +238,8 @@ Module ImplodeNodesCmd
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 230
+; FirstLine = 179
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

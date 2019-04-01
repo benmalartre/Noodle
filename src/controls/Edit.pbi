@@ -648,7 +648,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
           ; ---[ Redraw Me ]--------------------------------------------------
           Control::Invalidate(*Me)
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
 ;           Sig = *Me\sig_onchanged
 ;           Sig\Trigger( #RAA_SIGNAL_TYPE_PING, 0)
           ; ---[ Processed ]--------------------------------------------------
@@ -1012,6 +1012,9 @@ Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.
   ; ---[ Init Array ]---------------------------------------------------------
   InitializeStructure( *Me, ControlEdit_t )
   
+  ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
+  
   
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
@@ -1074,7 +1077,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 986
-; FirstLine = 982
+; CursorPosition = 32
+; FirstLine = 28
 ; Folding = ----
 ; EnableXP

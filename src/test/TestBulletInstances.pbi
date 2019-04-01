@@ -265,9 +265,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestBullet",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -323,8 +322,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 83
+; CursorPosition = 268
+; FirstLine = 263
 ; Folding = --
 ; EnableThread
 ; EnableXP

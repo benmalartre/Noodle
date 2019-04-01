@@ -213,6 +213,7 @@ Procedure Draw(*app.Application::Application_t)
   Topology::MergeArray(*topo,*outtopo)
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
+  Topology::Delete(*topo)
   
 ;   PolymeshGeometry::ComputeHalfEdges(*mgeom)
 ;   PolymeshGeometry::ComputeIslands(*mgeom)
@@ -231,8 +232,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 218
-; FirstLine = 174
+; CursorPosition = 216
+; FirstLine = 172
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

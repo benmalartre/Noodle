@@ -434,6 +434,7 @@ DeclareModule Node
   Declare OnMessage(id.i,*up)
   Declare IsDirty(*n.Node_t)
   Declare UpdateDirty(*n.Node_t)
+  Declare PortAffectByTime(*n.Node_t, affect.b, targetName.s)
   Declare PortAffectByName(*n.Node_t, sourceName.s, targetNames.s)
   Declare PortAffectByPort(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
   Declare UpdateAffects(*n.Node_t)
@@ -519,6 +520,10 @@ DeclareModule Tree
     ; ---[ current evaluate dbranch nodes ]------------------
     List *evaluation.NodePort::NodePort_t()
     
+    ; ---[ callbacks ]---------------------------------------
+    *on_delete.Signal::Signal_t
+    *on_change.Signal::Signal_t
+    
   EndStructure
 
 
@@ -601,7 +606,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 381
-; FirstLine = 365
+; CursorPosition = 524
+; FirstLine = 495
 ; Folding = ---
 ; EnableXP

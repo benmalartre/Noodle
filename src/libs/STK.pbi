@@ -152,9 +152,10 @@ DeclareModule STK
 	  #EFFECT_PITSHIFT
 	  #EFFECT_LENTPITSHIFT
 	  #EFFECT_CHORUS
+	  #EFFECT_MOOG
 	EndEnumeration
 	
-	Dim effect_types.s(9)
+	Dim effect_types.s(10)
   effect_types(0)  = "ENVELOPE"
   effect_types(1)  = "PRCREV"
   effect_types(2)  = "JCREV" 
@@ -164,7 +165,9 @@ DeclareModule STK
   effect_types(6)  = "PITSHIFT"
   effect_types(7)  = "LENTPITSHIFT"
   effect_types(8)  = "CHORUS"
+  effect_types(9)  = "MOOG"
   
+  Macro Attributes : l : EndMacro
   Enumeration
     #EFFECT_RATE              ; envelope rate
     #EFFECT_TIME              ; envelope time
@@ -179,8 +182,8 @@ DeclareModule STK
     #EFFECT_DELAY             ; echo delay
     #EFFECT_MAXIMUMDELAY      ; echo maximum delay
     #EFFECT_SHIFT             ; pitshift and letpitshift shift
-    #EFFECT_MODDEPTH          ; chorus mod depth
-    #EFFECT_MODFREQUENCY      ; chorus mod frequency
+    #EFFECT_MODDEPTH          ; chorus/moog mod depth
+    #EFFECT_MODFREQUENCY      ; chorus/moog mod frequency
   EndEnumeration
   
 
@@ -443,7 +446,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 352
-; FirstLine = 319
+; CursorPosition = 161
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP

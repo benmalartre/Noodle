@@ -1,6 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Morton.pbi"
+XIncludeFile "../objects/Box.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Drawer.pbi"
@@ -1219,7 +1220,6 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 987
-; FirstLine = 953
+; CursorPosition = 3
 ; Folding = ---------
 ; EnableXP

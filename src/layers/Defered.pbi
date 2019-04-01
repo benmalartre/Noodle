@@ -222,7 +222,6 @@ Module LayerDefered
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
     Protected *Me.LayerDefered_t = AllocateMemory(SizeOf(LayerDefered_t))
-    InitializeStructure(*Me,LayerDefered_t)
     Object::INI( LayerDefered )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
 
@@ -249,7 +248,7 @@ Module LayerDefered
   Class::DEF(LayerDefered)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 119
+; CursorPosition = 224
+; FirstLine = 189
 ; Folding = --
 ; EnableXP

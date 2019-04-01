@@ -214,7 +214,6 @@ EndProcedure
 ;---------------------------------------------------
 Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
-  InitializeStructure(*Me,LayerSelection_t)
   Object::INI( LayerSelection )
   Color::Set(*Me\background_color,0.5,1.0,0.5,1)
   *Me\width = width
@@ -246,7 +245,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 110
+; CursorPosition = 216
+; FirstLine = 186
 ; Folding = --
 ; EnableXP

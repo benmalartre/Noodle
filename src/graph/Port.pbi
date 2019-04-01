@@ -16,7 +16,6 @@ Module NodePort
   ;------------------------------------------------------------
   Procedure New(*parent,name.s,io.b=#False,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
     Protected *Me.NodePort_t = AllocateMemory(SizeOf(NodePort_t))
-    InitializeStructure(*Me,NodePort_t)
     Object::INI(NodePort)
     *Me\node = *parent
     *Me\name = name
@@ -557,138 +556,138 @@ Module NodePort
   ;-----------------------------------------------------------------------------
   Procedure OnMessage(id.i, *up)
 
-    Protected *sig.Signal::Signal_t = *up
-    Protected *c.Control::Control_t = *sig\snd_inst
-    Protected *port.NodePort::NodePort_t = *sig\rcv_inst
-    Protected *node.Node::Node_t = *port\node
-    Select *port\currenttype
-      Case Attribute::#ATTR_TYPE_REFERENCE
-;         Protected ctrl.Control::IControlEdit = *c
-        *port\reference = ControlEdit::GetValue(*c)
-        *port\refchanged = #True
-        *port\dirty = #True
-        Debug "New REFERENCE Value : "+*port\reference
-        
-
-;         If *node\type = "GetDataNode"
-;           ResolveGetReference(*node)
-;         ElseIf *node\type = "SetDataNode"
-;          ResolveSetReference(*node)
-;         EndIf
-        
-  ;       ; Output Port
-  ;       If *port\io
-  ;         OSetDataNode_ResolveReference(*port\node)
-  ;       ; Input Port
-  ;       Else
-  ;         OGetDataNode_ResolveReference(*port\node)
-  ;       EndIf
-        
-        
-      Case Attribute::#ATTR_TYPE_BOOL
-        Protected *bCtrl.ControlCheck::ControlCheck_t = *c
-        Protected *bVal.CArray::CArrayBool = *port\value
-        CArray::SetValueB(*bVal,0,ControlCheck::GetValue(*bCtrl))
-        *port\dirty = #True
-        ;bVal\SetValue(0,bCtrl\GetValue())
-;         Debug "New BOOL Value : "+Str(bVal\GetValue(0))
-        
-      Case Attribute::#ATTR_TYPE_INTEGER
-        Protected *iCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
-        Protected *iVal.CArray::CArrayInt = *port\value
-        CArray::SetValueI(*iVal,0,*iCtrl\value_n)
-        *port\dirty = #True
-        
-      Case Attribute::#ATTR_TYPE_FLOAT
-        
-        Protected *fCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
-        Protected fv.f = *fCtrl\value_n
-        Protected *fVal.CArray::CArrayFloat = *port\value
-        CArray::SetValueF(*fVal,0,fv);*fCtrl\value_n)
-        *port\dirty = #True
-        
-      Case Attribute::#ATTR_TYPE_VECTOR3
-        Protected *vVal.CArray::CArrayV3F32 = *port\value
-        Protected *v.v3f32 = CArray::GetValue(*vVal, 0)
-        
-        Protected *vCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
-        Protected f.f = *vCtrl\value_n
-        Select *sig\rcv_slot
-          Case 0;X
-            *v\x = f
-          Case 1;Y
-            *v\y = f
-          Case 2;Z
-            *v\z = f
-        EndSelect
-        
-        *port\dirty = #True
-        
-      Case Attribute::#ATTR_TYPE_Quaternion
-        Protected *qVal.CArray::CArrayQ4F32 = *port\value
-        Protected *q.q4f32 = CArray::GetValue(*qVal,0)
-        
-        Protected *qCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
-        f.f = *qCtrl\value_n
-        Select *sig\rcv_slot
-          Case 0;X
-            *q\x = f
-          Case 1;Y
-            *q\y = f
-          Case 2;Z
-            *q\z = f
-          Case 3;Angle
-            *q\w = Radian(f)
-        EndSelect
-
-        *port\dirty = #True
-        
-      Case Attribute::#ATTR_TYPE_STRING
-        
-        Protected *sVal.CArray::CArrayStr = *port\value
-        Protected s.s = ControlEdit::GetValue(*c)
-    
-        
-        CArray::SetValueStr(*sVal,0,s)
-        MessageRequester("Port String On Message",CArray::GetValueStr(*sVal,0))
-        *port\dirty = #True
-        ;vVal\SetValue(0,@v);*fCtrl\value_n)
-        
-       Case Attribute::#ATTR_TYPE_COLOR
-        Protected *cVal.CArray::CArrayC4F32 = *port\value
-        Protected c.c4f32
-        
-  ;       Vector3_SetFromOther(@c,cVal\GetValue(0))
-  ;       
-  ;       Protected *vCtrl.CControlNumber_t = *sig\snd_inst
-  ;       Protected f.f = *vCtrl\value_n
-  ;       Select *sig\rcv_slot
-  ;         Case 0;X
-  ;           Debug "X Parameter Vector Update..."
-  ;           Vector3_Set(@v,f,v\y,v\z)
-  ;         Case 1;Y
-  ;           Vector3_Set(@v,v\x,f,v\z)
-  ;         Case 2;Z
-  ;           Vector3_Set(@v,v\x,v\y,f)
-  ;       EndSelect
-        
-  ;       vVal\SetValue(0,@v);*fCtrl\value_n)
-        
-        
-            
-        
-  ;       Debug ""+Str(*sig\
-        Debug "Vector 3 Message Slot : "+Str(*sig\rcv_slot)
-  ;       Protected *fCtrl.CControlNumber_t = *sig\snd_inst
-  ;       Protected fv.f = *fCtrl\value_n
-  ;       Debug "Recieved FLOAT port "+StrF(fv)
-  ;       Protected fVal.CArrayF32 = *port\value
-  ;       fVal\SetValue(0,fv);*fCtrl\value_n)
-  ; 
-  ;       Debug "New FLOAT Value : "+StrF(fVal\GetValue(0))
-  ;       
-    EndSelect
-    
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *c.Control::Control_t = *sig\snd_inst
+;     Protected *port.NodePort::NodePort_t = *sig\rcv_inst
+;     Protected *node.Node::Node_t = *port\node
+;     Select *port\currenttype
+;       Case Attribute::#ATTR_TYPE_REFERENCE
+; ;         Protected ctrl.Control::IControlEdit = *c
+;         *port\reference = ControlEdit::GetValue(*c)
+;         *port\refchanged = #True
+;         *port\dirty = #True
+;         Debug "New REFERENCE Value : "+*port\reference
+;         
+; 
+; ;         If *node\type = "GetDataNode"
+; ;           ResolveGetReference(*node)
+; ;         ElseIf *node\type = "SetDataNode"
+; ;          ResolveSetReference(*node)
+; ;         EndIf
+;         
+;   ;       ; Output Port
+;   ;       If *port\io
+;   ;         OSetDataNode_ResolveReference(*port\node)
+;   ;       ; Input Port
+;   ;       Else
+;   ;         OGetDataNode_ResolveReference(*port\node)
+;   ;       EndIf
+;         
+;         
+;       Case Attribute::#ATTR_TYPE_BOOL
+;         Protected *bCtrl.ControlCheck::ControlCheck_t = *c
+;         Protected *bVal.CArray::CArrayBool = *port\value
+;         CArray::SetValueB(*bVal,0,ControlCheck::GetValue(*bCtrl))
+;         *port\dirty = #True
+;         ;bVal\SetValue(0,bCtrl\GetValue())
+; ;         Debug "New BOOL Value : "+Str(bVal\GetValue(0))
+;         
+;       Case Attribute::#ATTR_TYPE_INTEGER
+;         Protected *iCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
+;         Protected *iVal.CArray::CArrayInt = *port\value
+;         CArray::SetValueI(*iVal,0,*iCtrl\value_n)
+;         *port\dirty = #True
+;         
+;       Case Attribute::#ATTR_TYPE_FLOAT
+;         
+;         Protected *fCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
+;         Protected fv.f = *fCtrl\value_n
+;         Protected *fVal.CArray::CArrayFloat = *port\value
+;         CArray::SetValueF(*fVal,0,fv);*fCtrl\value_n)
+;         *port\dirty = #True
+;         
+;       Case Attribute::#ATTR_TYPE_VECTOR3
+;         Protected *vVal.CArray::CArrayV3F32 = *port\value
+;         Protected *v.v3f32 = CArray::GetValue(*vVal, 0)
+;         
+;         Protected *vCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
+;         Protected f.f = *vCtrl\value_n
+;         Select *sig\rcv_slot
+;           Case 0;X
+;             *v\x = f
+;           Case 1;Y
+;             *v\y = f
+;           Case 2;Z
+;             *v\z = f
+;         EndSelect
+;         
+;         *port\dirty = #True
+;         
+;       Case Attribute::#ATTR_TYPE_Quaternion
+;         Protected *qVal.CArray::CArrayQ4F32 = *port\value
+;         Protected *q.q4f32 = CArray::GetValue(*qVal,0)
+;         
+;         Protected *qCtrl.ControlNumber::ControlNumber_t = *sig\snd_inst
+;         f.f = *qCtrl\value_n
+;         Select *sig\rcv_slot
+;           Case 0;X
+;             *q\x = f
+;           Case 1;Y
+;             *q\y = f
+;           Case 2;Z
+;             *q\z = f
+;           Case 3;Angle
+;             *q\w = Radian(f)
+;         EndSelect
+; 
+;         *port\dirty = #True
+;         
+;       Case Attribute::#ATTR_TYPE_STRING
+;         
+;         Protected *sVal.CArray::CArrayStr = *port\value
+;         Protected s.s = ControlEdit::GetValue(*c)
+;     
+;         
+;         CArray::SetValueStr(*sVal,0,s)
+;         MessageRequester("Port String On Message",CArray::GetValueStr(*sVal,0))
+;         *port\dirty = #True
+;         ;vVal\SetValue(0,@v);*fCtrl\value_n)
+;         
+;        Case Attribute::#ATTR_TYPE_COLOR
+;         Protected *cVal.CArray::CArrayC4F32 = *port\value
+;         Protected c.c4f32
+;         
+;   ;       Vector3_SetFromOther(@c,cVal\GetValue(0))
+;   ;       
+;   ;       Protected *vCtrl.CControlNumber_t = *sig\snd_inst
+;   ;       Protected f.f = *vCtrl\value_n
+;   ;       Select *sig\rcv_slot
+;   ;         Case 0;X
+;   ;           Debug "X Parameter Vector Update..."
+;   ;           Vector3_Set(@v,f,v\y,v\z)
+;   ;         Case 1;Y
+;   ;           Vector3_Set(@v,v\x,f,v\z)
+;   ;         Case 2;Z
+;   ;           Vector3_Set(@v,v\x,v\y,f)
+;   ;       EndSelect
+;         
+;   ;       vVal\SetValue(0,@v);*fCtrl\value_n)
+;         
+;         
+;             
+;         
+;   ;       Debug ""+Str(*sig\
+;         Debug "Vector 3 Message Slot : "+Str(*sig\rcv_slot)
+;   ;       Protected *fCtrl.CControlNumber_t = *sig\snd_inst
+;   ;       Protected fv.f = *fCtrl\value_n
+;   ;       Debug "Recieved FLOAT port "+StrF(fv)
+;   ;       Protected fVal.CArrayF32 = *port\value
+;   ;       fVal\SetValue(0,fv);*fCtrl\value_n)
+;   ; 
+;   ;       Debug "New FLOAT Value : "+StrF(fVal\GetValue(0))
+;   ;       
+;     EndSelect
+;     
     Scene::*current_scene\dirty = #True
   EndProcedure
   
@@ -713,7 +712,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 697
-; FirstLine = 654
+; CursorPosition = 18
+; FirstLine = 15
 ; Folding = ----
 ; EnableXP

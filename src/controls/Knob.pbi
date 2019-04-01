@@ -360,7 +360,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
             *Me\value = *Me\last_value - Radian(angle + *Me\angle_offset) 
           EndIf
 
-          Slot::Trigger(*Me\onchanged_signal, Signal::#SIGNAL_TYPE_PING, @*Me\value)
+          Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
           PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
         EndIf
         Control::Invalidate(*Me)
@@ -449,7 +449,6 @@ EndProcedure
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlKnob_t )
-  Slot::Delete(*Me\onchanged_signal)
   Object::TERM(ControlKnob)
   ; ---[ Deallocate Memory ]--------------------------------------------------
   ClearStructure(*Me,ControlKnob_t)
@@ -481,7 +480,7 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 0
-  *Me\onchanged_signal = Slot::New(*Me)
+  *Me\on_change  = Object::NewSignal(*Me, "OnChange")
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
 Debug "ADD KNOB : "+Str(*Me\posX)+", "+Str(*Me\posY)
@@ -500,7 +499,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 133
+; CursorPosition = 482
+; FirstLine = 440
 ; Folding = ---
 ; EnableXP

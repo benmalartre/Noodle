@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../core/Globals.pbi"
+XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/UIColor.pbi"
 XIncludeFile "Types.pbi"
 
@@ -596,6 +597,16 @@ Module Node
   EndProcedure
   
   ;------------------------------------
+  ; Port Affect By Time
+  ;------------------------------------
+  Procedure PortAffectByTime(*n.Node_t, affect.b, targetName.s)
+;     Time::AddAffectedNode(*n)
+;     Protected *target.NodePort::NodePort_t = GetPortByName(*n, targetName)
+;     AddElement(*target\affects())
+;     *target\affects() = *source
+  EndProcedure
+  
+  ;------------------------------------
   ; Port Affect
   ;------------------------------------
   Procedure PortAffectByName(*n.Node_t, sourceName.s, targetName.s)
@@ -640,22 +651,18 @@ Module Node
   ; Inspect Node
   ;----------------------------------------------
   Procedure Inspect(*n.Node_t)
-    Debug "Hohoho what a funny joke"
   EndProcedure
   
   ;----------------------------------------------
   ; On Connection
   ;----------------------------------------------
-  Procedure OnConnect(*n.Node_t, *port.NodePort::NodePort_t)
-    MessageRequester("XXX", "Hohoho this is a dummy connection callback on port ---> "+*port\name)
-    
+  Procedure OnConnect(*n.Node_t, *port.NodePort::NodePort_t)  
   EndProcedure
   
   ;----------------------------------------------
   ; On Disconnection
   ;----------------------------------------------
   Procedure OnDisconnect(*n.Node_t, *port.NodePort::NodePort_t)
-    Debug "Hohoho this is a dummy disconnection callback"
   EndProcedure
 
   Class::DEF(Node)
@@ -665,8 +672,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 8
+; CursorPosition = 605
+; FirstLine = 598
 ; Folding = ------
 ; EnableThread
 ; EnableXP

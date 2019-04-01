@@ -880,15 +880,6 @@ EndProcedure
   Procedure.i DrawTagImage( *Me.ControlGroup_t)
     hlpDrawPickImage( *Me )
   EndProcedure
-
-  ; ---[ On Message ]----------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *c.Controlgroup::Controlgroup_t = *sig\snd_inst
-    
-    
-  EndProcedure
-  
   
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -946,7 +937,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 908
-; FirstLine = 886
+; CursorPosition = 881
+; FirstLine = 866
 ; Folding = ---0
 ; EnableXP

@@ -123,12 +123,12 @@ Module Stack
   Procedure New()
     
     Protected *Me.Stack_t = AllocateMemory(SizeOf(Stack_t))
-    InitializeStructure(*Me,Stack_t)
+    Object::INI(Stack)
     NewLevel(*Me,"Modeling",RGB(255,200,200))
     NewLevel(*Me,"Shape",RGB(200,255,200))
     NewLevel(*Me,"Animation",RGB(200,200,255))
     NewLevel(*Me,"Secondary",RGB(255,255,200))
-    Object::INI(Stack)
+    
     ProcedureReturn *Me
   EndProcedure
   
@@ -187,7 +187,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 81
+; CursorPosition = 126
+; FirstLine = 118
 ; Folding = ---
 ; EnableXP

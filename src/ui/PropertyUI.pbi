@@ -181,20 +181,20 @@ Module PropertyUI
   ;  On Message
   ; ----------------------------------------------------------------------------
   Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
-    Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
-    Protected *c.ControlProperty::ControlProperty_t = *h\parent
-
-    If id = 0
-      DeleteProperty(*Me, *c)
-    ElseIf id = 1
-      If *c\expanded
-        CollapseProperty(*Me, *c)
-      Else
-        ExpandProperty(*Me, *c)
-      EndIf
-    EndIf
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
+;     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
+;     Protected *c.ControlProperty::ControlProperty_t = *h\parent
+; 
+;     If id = 0
+;       DeleteProperty(*Me, *c)
+;     ElseIf id = 1
+;       If *c\expanded
+;         CollapseProperty(*Me, *c)
+;       Else
+;         ExpandProperty(*Me, *c)
+;       EndIf
+;     EndIf
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -364,8 +364,8 @@ Module PropertyUI
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
     
     Protected *head.ControlHead::ControlHead_t = *p\head
-    Object::SignalConnect(*Me, *head\ondelete_signal, 0)
-    Object::SignalConnect(*Me, *head\onexpand_signal, 1)
+;     Object::SignalConnect(*Me, *head\ondelete_signal, 0)
+;     Object::SignalConnect(*Me, *head\onexpand_signal, 1)
 
   EndProcedure
   
@@ -500,8 +500,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 308
-; FirstLine = 271
+; CursorPosition = 367
+; FirstLine = 362
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

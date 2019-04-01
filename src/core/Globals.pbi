@@ -107,6 +107,15 @@ DeclareModule Globals
     #TOOL_MAX
   EndEnumeration
   
+  #Color_ButtonSize = 24
+  #Color_ButtonSpacing = 6
+  #Corner_Rounding = 4
+  
+  #MARGIN = 12
+  #COLORS_HEIGHT = 200
+  #OUTPUT_HEIGHT = 128
+  #SELECTION_BORDER = 2
+  
   ; ----------------------------------------------------------------------------
   ; Vector Drawing
   ; ----------------------------------------------------------------------------
@@ -190,6 +199,57 @@ DeclareModule Globals
   Macro RGBA2RGB(color)
     RGB(Red(color),Green(color),Blue(color))  
   EndMacro
+  
+  ;---------------------------------------------------------
+  ; GLOBALS
+  ;---------------------------------------------------------
+  
+  Global font_label = LoadFont(#PB_Any,"Consolas",8)
+  Global font_title = LoadFont(#PB_Any,"Consolas",12)
+  
+  ;---------------------------------------------------------
+  ; MACROS
+  ;---------------------------------------------------------
+  Macro MAXIMIZE(a,b)
+    If a<b : a=b : EndIf
+  EndMacro
+  
+  Macro MINIMIZE(a,b)
+    If a>b : a=b : EndIf
+  EndMacro
+  
+  Macro CLAMPIZE(v,a,b)
+    If v<a : v=a : ElseIf v>b : v=b : EndIf
+  EndMacro
+  
+  #EMPTYSTRING = ""
+  Macro QUOTE()
+    "
+  EndMacro
+  
+  Macro DOT()
+    .
+  EndMacro
+  
+  Macro TOSTRING(_arg)
+    Globals::QUOTE()_arg#Globals::QUOTE()
+  EndMacro
+  
+  ;---------------------------------------------------------
+  ; STRUCTURE
+  ;---------------------------------------------------------
+  Structure Resolution_t
+    x.i
+    y.i
+  EndStructure
+  
+  ;---------------------------------------------------------
+  ; KEY VALUE
+  ;---------------------------------------------------------
+  Structure KeyValue_t
+    key.s
+    value.i
+  EndStructure
 
 EndDeclareModule
 
@@ -243,8 +303,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 172
-; Folding = ----
+; CursorPosition = 234
+; FirstLine = 231
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -17,6 +17,7 @@ DeclareModule ControlExplorer
   EndEnumeration
   
   Enumeration
+    #TYPE_UNKNOWN
     #TYPE_MODEL
     #TYPE_GROUP
     #TYPE_LAYER
@@ -63,7 +64,7 @@ DeclareModule ControlExplorer
   ; ----------------------------------------------------------------------------
   ;  CExplorerObject Instance
   ; ----------------------------------------------------------------------------
-  Structure ControlExplorerItem_t
+  Structure ControlExplorerItem_t Extends Object::Object_t
     *object.Object::Object_t
     List *children.ControlExplorerItem_t()
     *parent.ControlExplorerItem_t
@@ -181,6 +182,14 @@ DeclareModule ControlExplorer
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
   Declare OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
   
+   DataSection 
+    ControlExplorerVT: 
+    Data.i @OnEvent()
+    Data.i @Delete()
+    ControlExplorerItemVT: 
+    Data.i @OnEvent()
+    Data.i @Delete()
+  EndDataSection 
   
   Global CLASS.Class::Class_t
   
@@ -215,11 +224,12 @@ Module ControlExplorer
   ; ----------------------------------------------------------------------------
   Procedure NewItem(*object.Object::Object_t,*parent.ControlExplorerItem_t,id,depth.i,havenext.b)
     Protected *Me.ControlExplorerItem_t = AllocateMemory(SizeOf(ControlExplorerItem_t))
-    InitializeStructure(*Me,ControlExplorerItem_t)
-    
+    Object::INI(ControlExplorerItem)
+
     *Me\object = *object
     *Me\depth = depth
-    *Me\isroot = Bool(*Me\object And *Me\object\class\name = "Model")
+
+    *Me\isroot = Bool(*Me\object And *Me\object\class And *Me\object\class\name = "Model")
     *Me\expended = #False
     *Me\havechildren = *Me
     *Me\parent = *parent
@@ -229,30 +239,35 @@ Module ControlExplorer
     ItemEncodeID(*Me,id)
     
     If *object <> #Null
-      ;*Me\type = #TYPE_3DOBJECT
-      Select *object\class\name
-        Case "Model"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Polymesh"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "PointCloud"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Light"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Camera"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Curve"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Null"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Attribute"
-          *Me\type = #TYPE_ATTRIBUTE
-        Case "Transform"
-          *Me\type = #TYPE_PROPERTY
-        Case ""
-          *Me\type = #TYPE_FOLDER
-          
-      EndSelect
+      If *object\class
+        ;*Me\type = #TYPE_3DOBJECT
+        Select *object\class\name
+          Case "Model"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Polymesh"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "PointCloud"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Light"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Camera"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Curve"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Null"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Attribute"
+            *Me\type = #TYPE_ATTRIBUTE
+          Case "Transform"
+            *Me\type = #TYPE_PROPERTY
+          Case ""
+            *Me\type = #TYPE_FOLDER
+            
+        EndSelect
+      Else 
+        *Me\type = #TYPE_UNKNOWN
+      EndIf
+      
     Else
       *Me\type = #TYPE_FOLDER
     EndIf
@@ -1048,11 +1063,11 @@ Module ControlExplorer
   
   
   Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *explorer.ControlExplorer_t = *sig\rcv_inst
-    Debug "Explorer Signal Recieved..."
-    Debug "Slot : "+Str(*sig\rcv_slot)
-    Debug "Sender Class : "+Str(*sig\snd_class)
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *explorer.ControlExplorer_t = *sig\rcv_inst
+;     Debug "Explorer Signal Recieved..."
+;     Debug "Slot : "+Str(*sig\rcv_slot)
+;     Debug "Sender Class : "+Str(*sig\snd_class)
   ;   *explorer\SendEvent(#PB_Event_Repaint)
   ;     Protected *sig.CSignal_t = *up
   ;   Protected *c.CControlNumber_t = *sig\snd_inst
@@ -1088,7 +1103,7 @@ Module ControlExplorer
   ;---------------------------------------------
   Procedure.i New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
     Protected *Me.ControlExplorer_t = AllocateMemory(SizeOf(ControlExplorer_t))
-    Object::INI( Explorer )
+    Object::INI( ControlExplorer )
     
     *Me\posX = x
     *Me\posY = y
@@ -1190,7 +1205,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 391
-; FirstLine = 335
-; Folding = fxXef-
+; CursorPosition = 267
+; FirstLine = 262
+; Folding = f2Xef-
 ; EnableXP

@@ -26,6 +26,8 @@ DeclareModule AudioNoiseNode
   Declare Init(*node.AudioNoiseNode_t)
   Declare Evaluate(*node.AudioNoiseNode_t)
   Declare Terminate(*node.AudioNoiseNode_t)
+   Declare OnConnect(*node.AudioNoiseNode_t, *port.NodePort::NodePort_t)
+  Declare OnDisconnect(*node.AudioNoiseNode_t, *port.NodePort::NodePort_t)
   
   ; ============================================================================
   ;  ADMINISTRATION
@@ -70,13 +72,54 @@ Module AudioNoiseNode
     SelectElement(*node\inputs(), 1)
     Protected *seed.NodePort::NodePort_t = *node\inputs()
     
-    
     Protected *aMute.CArray::CArrayBool = *mute\value
     Protected *aSeed.CArray::CArrayFloat = *seed\value
-    CArray::SetCount(*aOutput,1)
+     
+    *node\seed = CArray::GetValue(*aSeed, 0)
     
-    *node\label = "Noise Seed : "+Str(CArray::GetValue(*aSeed, 0))
+    If *node\node
+      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_SEED, *node\seed)
+    EndIf
     
+    *node\label = "Noise Seed : "+Str(*node\seed)
+    
+  EndProcedure
+  
+  ; -----------------------------------------------------------------------------------------------
+  ;   ON CONNECT
+  ; -----------------------------------------------------------------------------------------------
+  Procedure OnConnect(*node.AudioNoiseNode_t, *port.NodePort::NodePort_t)
+    If *port\name = "Output"
+      
+      Define *stream.STK::GeneratorStream
+      
+      Define *target.NodePort::NodePort_t = *port\targets()
+      Define *dst.Node::Node_t = *target\node
+      If *dst\class\name = "AudioDACNode"
+        Define *DAC.AudioDACNode::AudioDACNode_t = *dst
+        *stream = *DAC\node
+        *node\node = STK::AddGenerator(*stream, STK::#NOISE_GENERATOR, 128, #True)
+      Else
+        Define *audio.AudioNode::AudioNode_t = *dst
+        If *audio And *audio\node
+          *stream = STK::GetStream(*audio\node)
+          If *stream
+            *node\node = STK::AddGenerator(*stream, STK::#NOISE_GENERATOR, 128, #False)
+          EndIf
+        EndIf
+        
+      EndIf
+      
+;       *port\connectioncallback(*port)
+    EndIf
+    
+  EndProcedure
+  
+  ; -----------------------------------------------------------------------------------------------
+  ;   ON DISCONNECT
+  ; -----------------------------------------------------------------------------------------------
+  Procedure OnDisconnect(*node.AudioNoiseNode_t, *port.NodePort::NodePort_t)
+    MessageRequester("AUDIO SINE WAVE", "OnDisconnect called on port ---> "+*port\name)
   EndProcedure
   
   Procedure Terminate(*node.AudioNoiseNode_t)
@@ -115,7 +158,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 2
+; CursorPosition = 100
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

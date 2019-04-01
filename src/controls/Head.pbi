@@ -20,8 +20,8 @@ DeclareModule ControlHead
     value.i
     touch_l.i
     touch_r.i
-    *ondelete_signal.Slot::Slot_t
-    *onexpand_signal.Slot::Slot_t
+    *on_delete.Slot::Slot_t
+    *on_expand.Slot::Slot_t
   EndStructure
 
   ; ----------------------------------------------------------------------------
@@ -224,7 +224,7 @@ Module ControlHead
         If *Me\visible And *Me\enable And *Me\over
           *Me\down = #False
           If *Me\over And *Me\touch_l 
-            Slot::Trigger(*Me\onexpand_signal,Signal::#SIGNAL_TYPE_PING,#Null)
+            Signal::Trigger(*Me\on_expand,Signal::#SIGNAL_TYPE_PING)
           ElseIf *Me\over And *Me\touch_r
 ;             Slot::Trigger(*Me\ondelete_signal,Signal::#SIGNAL_TYPE_PING,#Null)
           EndIf
@@ -286,8 +286,8 @@ Module ControlHead
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlHead_t )
-    Slot::Delete(*Me\ondelete_signal)
-    Slot::Delete(*Me\onexpand_signal)
+    ; ---[ Terminate Object ]---------------------------------------------------
+    Object::TERM(ControlHead)
     ; ---[ Deallocate Memory ]--------------------------------------------------
     FreeMemory( *Me )
   EndProcedure
@@ -323,8 +323,9 @@ Module ControlHead
     *Me\touch_l  = #False
     *Me\touch_r  = #False
     
-    *Me\ondelete_signal = Slot::New(*Me)
-    *Me\onexpand_signal = Slot::New(*Me)
+    *Me\on_change = Object::NewSignal(*me, "OnChange")
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    *Me\on_expand = Object::NewSignal(*Me, "OnExpand")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -364,7 +365,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 308
-; FirstLine = 304
+; CursorPosition = 288
+; FirstLine = 284
 ; Folding = ---
 ; EnableXP

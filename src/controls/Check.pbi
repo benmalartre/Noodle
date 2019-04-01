@@ -53,10 +53,10 @@ DeclareModule ControlCheck
   ;  Object ( ControlCheck_t )
   ; ----------------------------------------------------------------------------
   Structure ControlCheck_t Extends Control::Control_t
-  label.s
-  value.i
-  over .i
-  down.i
+    label.s
+    value.i
+    over .i
+    down.i
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -296,7 +296,7 @@ Module ControlCheck
           If *Me\over
             Debug "TRIGGER FROM CHECK"
             PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+            Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
 ;             Protected sig.CSlot = *Me\sig_onchanged
 ;             sig\Trigger( #RAA_SIGNAL_TYPE_PING, @*Me\value )
           EndIf
@@ -540,7 +540,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 392
-; FirstLine = 388
+; CursorPosition = 59
+; FirstLine = 18
 ; Folding = ----
 ; EnableXP

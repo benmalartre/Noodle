@@ -322,13 +322,13 @@ Module PointCloud
   ;----------------------------------------------------
   Procedure OnMessage(id.i,*up)
     
-    Protected *sig.Signal::Signal_t = *up
-    Protected *snd.Object::Object_t = *sig\snd_inst
-    Protected *rcv.Object::Object_t = *sig\rcv_inst
-    
-    Debug "PointCloud Recieved Message"
-    Debug "Sender Class Name : "+*snd\class\name
-    Debug "Reciever Class Name : "+*rcv\class\name
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *snd.Object::Object_t = *sig\snd_inst
+;     Protected *rcv.Object::Object_t = *sig\rcv_inst
+;     
+;     Debug "PointCloud Recieved Message"
+;     Debug "Sender Class Name : "+*snd\class\name
+;     Debug "Reciever Class Name : "+*rcv\class\name
     
   EndProcedure
   
@@ -340,7 +340,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 273
-; FirstLine = 266
+; CursorPosition = 330
+; FirstLine = 281
 ; Folding = ---
 ; EnableXP

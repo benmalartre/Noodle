@@ -2,12 +2,16 @@
 XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
-XIncludeFile "Slot.pbi"
+XIncludeFile "Arguments.pbi"
+XIncludeFile "Callback.pbi"
+XIncludeFile "Signal.pbi"
+;XIncludeFile "Slot.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
 XIncludeFile "Pose.pbi"
 XIncludeFile "Image.pbi"
+
 
 
 
@@ -640,8 +644,7 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 585
-; FirstLine = 581
+; CursorPosition = 6
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -79,6 +79,7 @@ DeclareModule Object3D
   
   
   Macro Object3D_ATTR()
+    *Me\stack = Stack::New()
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected *global = Attribute::New("GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#False,#True)
     Object3D::AddAttribute(*Me,*global)
@@ -538,7 +539,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 410
-; FirstLine = 397
+; CursorPosition = 81
+; FirstLine = 48
 ; Folding = ------
 ; EnableXP

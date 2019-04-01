@@ -164,7 +164,6 @@ Module LayerShadowDefered
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
     Protected *Me.LayerShadowDefered_t = AllocateMemory(SizeOf(LayerShadowDefered_t))
-    InitializeStructure(*Me,LayerShadowDefered_t)
     Object::INI( LayerShadowDefered )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\width = width
@@ -193,7 +192,7 @@ Module LayerShadowDefered
   Class::DEF(LayerShadowDefered)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 107
+; CursorPosition = 166
+; FirstLine = 133
 ; Folding = --
 ; EnableXP

@@ -59,6 +59,43 @@ Procedure AddPushTree(*tree.Tree::Tree_t)
   *r\posy = 200
 EndProcedure
 
+Procedure AddAudioTree(*tree.Tree::Tree_t)
+  Protected *r.Node::Node_t = *tree\root
+  Protected *dac.Node::Node_t = Tree::AddNode(*tree,"AudioDACNode",0,0,100,20,RGB(160,160,160))
+  Protected *sine.Node::Node_t = Tree::AddNode(*tree,"AudioSineWaveNode",0,0,120,30,RGB(160,160,160))
+  
+  SelectElement(*r\inputs(), 1)
+  Tree::ConnectNodes(*tree,*tree\root,*dac\outputs(),*r\inputs(),#False)
+  SelectElement(*dac\inputs(), 1)
+  Tree::ConnectNodes(*tree,*tree\root,*sine\outputs(),*dac\inputs(),#False)
+;   Protected *g2.Node::Node_t = Tree::AddNode(*tree,"GetDataNode",0,120,100,20,RGB(160,160,160))
+;   Protected *m.Node::Node_t = Tree::AddNode(*tree,"MultiplyByScalarNode",200,30,100,20,RGB(160,160,160))
+;   Protected *a.Node::Node_t = Tree::AddNode(*tree,"AddNode",400,30,100,20,RGB(160,160,160))
+;   Protected *s.Node::Node_t = Tree::AddNode(*tree,"SetDataNode",600,30,100,20,RGB(160,160,160))
+  
+;   LastElement(*g1\inputs())
+;   NodePort::SetReference(*g1\inputs(),"Self.PointPosition")
+;   LastElement(*g2\inputs())
+;   NodePort::SetReference(*g2\inputs(),"Self.PointNormal")
+;   LastElement(*s\inputs())
+;   NodePort::SetReference(*s\Inputs(),"Self.PointPosition")
+;   
+; 
+;   FirstElement(*M\inputs())
+;   Tree::ConnectNodes(*tree,*tree\root,*g2\outputs(),*m\inputs(),#False)
+;   FirstElement(*a \inputs())
+;   Tree::ConnectNodes(*tree,*tree\root,*g1\outputs(),*a\inputs(),#False)
+;   SelectElement(*a\inputs(),1)
+;   Tree::ConnectNodes(*tree,*tree\root,*m\outputs(),*a\inputs(),#False)
+;   FirstElement(*s\inputs())
+;   Tree::ConnectNodes(*tree,*tree\root,*a\outputs(),*s\inputs(),#False)
+;   FirstElement(*r\inputs())
+;   Tree::ConnectNodes(*tree,*tree\root,*s\outputs(),*r\inputs(),#False)
+  
+  *r\posx = 800
+  *r\posy = 200
+EndProcedure
+
 Scene::*current_scene = Scene::New()
 Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_CYLINDER)
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
@@ -78,7 +115,7 @@ Log::Message("Hello User : Beginning session "+FormatDate("%hh:%ii:%ss", Date())
 Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 
 AddPushTree(*tree)
-
+; AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
 
@@ -108,7 +145,7 @@ GraphUI::SetContent(*graph,*tree)
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 
-ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
+;ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ViewportUI::AddLayer(*viewport, *layer)
 
@@ -140,7 +177,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 6
+; CursorPosition = 116
+; FirstLine = 100
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

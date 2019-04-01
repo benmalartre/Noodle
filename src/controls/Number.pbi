@@ -656,7 +656,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf 
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
           PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
           ; ...[ Redraw Me ]..................................................
@@ -715,7 +715,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
         
-        Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
+        Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
         PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
         
         ; ...[ Processed ]....................................................
@@ -864,7 +864,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
           
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
           PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
           ; ...[ Processed ]....................................................
@@ -1259,6 +1259,9 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   ; ---[ Init Array ]---------------------------------------------------------
   InitializeStructure( *Me, ControlNumber_t )
   
+  ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
+  
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
@@ -1276,7 +1279,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1222
-; FirstLine = 1218
+; CursorPosition = 48
+; FirstLine = 44
 ; Folding = ----
 ; EnableXP
