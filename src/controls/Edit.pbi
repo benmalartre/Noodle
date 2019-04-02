@@ -649,8 +649,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
           Control::Invalidate(*Me)
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
           Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-;           Sig = *Me\sig_onchanged
-;           Sig\Trigger( #RAA_SIGNAL_TYPE_PING, 0)
+
           ; ---[ Processed ]--------------------------------------------------
           ProcedureReturn( #True )
         ;_____________________________________________________________________
@@ -1077,7 +1076,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 261
+; CursorPosition = 650
+; FirstLine = 647
 ; Folding = ----
 ; EnableXP

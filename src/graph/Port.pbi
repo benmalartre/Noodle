@@ -168,12 +168,11 @@ Module NodePort
         *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *iVal, *port\readonly, *port\constant, *port\writable)
 
       Case Attribute::#ATTR_TYPE_VECTOR2
-  ;       Protected vVal2.CArrayV2F32 = newCArrayV2F32()
-  ;       Protected v2.v2f32
-  ;       ;Vector2_Set(@v2,0,0)
-  ;       vVal2\Append(v2)
-  ;       *port\value = vVal2
-  ;       Debug "Array Size :  "+Str(vVal2\GetCount())
+        Protected *vVal2.CArray::CArrayV2F32 = CArray::newCArrayV2F32()
+        Protected v2.v2f32
+        Vector2::Set(v2,0,0)
+        CArray::Append(*vVal2,v2)
+        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal2, *port\readonly, *port\constant, *port\writable)
         
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal3.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
@@ -306,7 +305,7 @@ Module NodePort
     Protected *data.CArray::CArrayT
     Select *port\currentstructure
       Case Attribute::#ATTR_STRUCT_ARRAY
-        ;Case STRUCT_ARRAY
+        ; Case STRUCT_ARRAY
         ;-----------------------------------------------------
         If *port\connected
           *data = *port\source\attribute\data
@@ -317,7 +316,7 @@ Module NodePort
         EndIf
         
       Case Attribute::#ATTR_STRUCT_SINGLE
-        ;Case STRUCT_SINGLE
+        ; Case STRUCT_SINGLE
         ;-----------------------------------------------------
         If *port\connected
           *data = *port\source\attribute\data
@@ -328,7 +327,7 @@ Module NodePort
         EndIf
         
       Case Attribute::#ATTR_STRUCT_ANY
-        ;Case STRUCT_ANY
+        ; Case STRUCT_ANY
         ;-----------------------------------------------------
         If *port\connected
           *data = *port\source\attribute\data
@@ -336,6 +335,7 @@ Module NodePort
         
           *data = *port\attribute\data
           If Not *data : Init(*port) : *data = *port\attribute\data: EndIf
+          *port\dirty = #False
         EndIf
     EndSelect
     
@@ -703,7 +703,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 191
+; CursorPosition = 325
+; FirstLine = 296
 ; Folding = ----
 ; EnableXP

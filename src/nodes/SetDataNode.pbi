@@ -54,7 +54,6 @@ Module SetDataNode
   Procedure ResolveReference(*node.SetDataNode_t)
     Protected *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
     Protected refname.s = NodePort::AcquireReferenceData(*ref)
-    
     If refname
       Protected fields.i = CountString(refname, ".")+1
       Protected base.s = StringField(refname, 1,".")
@@ -66,7 +65,6 @@ Module SetDataNode
         If FindMapElement(*obj\m_attributes(),name)
           *node\attribute = *obj\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
-  
           NodePort::InitFromReference(*input,*node\attribute)
           *node\state = Graph::#Node_StateOK
           *node\errorstr = ""
@@ -95,6 +93,8 @@ Module SetDataNode
                   *datas = CArray::newCArrayM3F32()
                 Case Attribute::#ATTR_TYPE_MATRIX4
                   *datas = CArray::newCArrayM4F32()
+                Case Attribute::#ATTR_TYPE_TOPOLOGY
+                  *datas = CArray::newCArrayPtr()
               EndSelect
               
               *node\attribute = Attribute::New(name,\datatype,\datastructure,\datacontext,*datas,#False,#True)
@@ -234,7 +234,6 @@ Module SetDataNode
 
         Case Attribute::#ATTR_TYPE_TOPOLOGY
           If *node\attribute\name = "Topology"
-            Debug "TOPOLOGY SET DATA .............................."
             Protected *tIn.Carray::CArrayPtr = *in_data
             Protected *tOut.Carray::CArrayPtr = *node\attribute\data
            
@@ -243,14 +242,14 @@ Module SetDataNode
             
             If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
               Protected *geom.Geometry::PolymeshGeometry_t = *parent\geom
-              If *iTopo\dirty
+              ;If *iTopo\dirty
                 PolymeshGeometry::Set2(*geom,*iTopo)
                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
                 *iTopo\dirty = #False
-              Else
-                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-               EndIf
+;               Else
+;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+;                EndIf
               Log::Message("[SetDataNode] Update Polymesh Topology")
             Else
               Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
@@ -298,8 +297,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 119
+; CursorPosition = 240
+; FirstLine = 236
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -92,7 +92,7 @@ Module SimpleTopoNode
     Protected *parent.Object3D::Object3D_t = *node\parent3dobject
     If Not *parent Or *parent\type <>Object3D::#Object3D_Polymesh
       *node\state = Graph::#Node_StateError
-      *node\errorstr =  "[ERROR]SimpleTopoNode only works on Polymesh..."
+      *node\errorstr =  "[ERROR]Simple Topo only works on Polymesh..."
       ProcedureReturn
     EndIf
   
@@ -124,8 +124,8 @@ Module SimpleTopoNode
     Protected *oVal.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
 
     Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
+    Debug "SHAPE : "+Str(shape)
     Select shape
-        ; Box Shape
       Case 0
         Topology::Cube(*topo,radius,u,v,w)
       Case 1
@@ -145,6 +145,8 @@ Module SimpleTopoNode
         EndIf
           
     EndSelect
+    CArray::SetValuePtr(*oVal, 0, *topo)
+    Debug "SIMPLE TOPO NODE : "+*topo\vertices\itemCount +" PNTS"
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
@@ -184,7 +186,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 77
+; CursorPosition = 148
+; FirstLine = 96
 ; Folding = --
 ; EnableXP

@@ -26,7 +26,12 @@ CompilerIf #USE_ALEMBIC
   Alembic::Init()
 CompilerEndIf
 
+Procedure AddEmptyTree(*tree.Tree::Tree_t)
+  Protected *r.Node::Node_t = *tree\root
 
+  *r\posx = 800
+  *r\posy = 200
+EndProcedure
 
 Procedure AddPushTree(*tree.Tree::Tree_t)
   Protected *r.Node::Node_t = *tree\root
@@ -97,7 +102,7 @@ Procedure AddAudioTree(*tree.Tree::Tree_t)
 EndProcedure
 
 Scene::*current_scene = Scene::New()
-Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_CYLINDER)
+Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_NONE)
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
 ; 
 ; PolymeshGeometry::SetFromOther(*obj\geom,*teapot\geom)
@@ -114,7 +119,8 @@ Log::Message("Hello User : Beginning session "+FormatDate("%hh:%ii:%ss", Date())
 
 Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 
-AddPushTree(*tree)
+AddEmptyTree(*tree)
+; AddPushTree(*tree)
 ; AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
@@ -177,8 +183,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 100
-; Folding = -
+; CursorPosition = 104
+; FirstLine = 76
+; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

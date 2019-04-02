@@ -148,18 +148,19 @@ Module ControlProperty
   Callback::DECLARECALLBACK(OnLongChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
   Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)   
+    Debug "INTEGER CHANGED..."
     Select *obj\class\name
       Case "Attribute"
         Define *attribute.Attribute::Attribute_t = *obj
         Define *array.CArray::CArrayInt = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
         *attribute\dirty = #True
         
       Case "NodePort"
         Define *port.NodePort::NodePort_t = *obj
         Define *attribute.Attribute::Attribute_t  = *port\attribute
         Define *array.CArray::CArrayInt = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
         *port\dirty = #True
         *attribute\dirty = #True
 
@@ -173,7 +174,6 @@ Module ControlProperty
         Define *attribute.Attribute::Attribute_t = *obj
         Define *array.CArray::CArrayFloat = *attribute\data
         PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value)) 
-        Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
         *attribute\dirty = #True
         
       Case "NodePort"
@@ -183,7 +183,6 @@ Module ControlProperty
         PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
         *port\dirty = #True
         *attribute\dirty = #True
-        Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
         
     EndSelect
   EndProcedure
@@ -193,25 +192,25 @@ Module ControlProperty
     Select *obj\class\name
       Case "Attribute"
         Define *attribute.Attribute::Attribute_t = *obj
+        
         If *attribute
           Define *array.CArray::CArrayStr = *attribute\data
-  ;         PokeF(*array\data + id * *array\itemSize + offset, *ctl\value 
-  ;         Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
           *attribute\dirty = #True
         EndIf
         
       Case "NodePort"
         Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t  = *port\attribute
-        If *attribute
-          Define *array.CArray::CArrayStr = *attribute\data
-  ;         PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
-  ;         *port\dirty = #True
-  ;         *attribute\dirty = #True
-          Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
-        EndIf
-        
-        
+        Define *node.Node::Node_t = *port\node
+        Select *node\type 
+          Case "SetDataNode"
+            NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
+            *port\dirty = #True
+            
+          Case "GetDataNode"
+            NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
+            *port\dirty = #True
+            
+        EndSelect
     EndSelect
   EndProcedure
   Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
@@ -1942,7 +1941,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 153
+; CursorPosition = 212
+; FirstLine = 166
 ; Folding = ---------
 ; EnableXP
