@@ -78,7 +78,11 @@ Module SampleGeometryNode
       Protected *rate.CArray::CArrayInt = NodePort::AcquireInputData(*rateIn)
       Protected *seed.CArray::CArrayInt = NodePort::AcquireInputData(*seedIn)
       If *geom
-        Sampler::SamplePolymesh(*geom,*output\value,CArray::GetValueI(*rate,0),CArray::GetValueI(*seed,0))
+        Sampler::SamplePolymesh(*geom,
+                                NodePort::AcquireOutputData(*output),
+                                CArray::GetValueI(*rate,0),
+                                CArray::GetValueI(*seed,0))
+        
 ;         PolymeshGeometry::BunnyTopology(*geom\topo)
 ;         PolymeshGeometry::Set2(*geom,*geom\topo)
 ;         Protected *parent.Object3D::Object3D_t = *geom\parent
@@ -127,8 +131,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 84
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

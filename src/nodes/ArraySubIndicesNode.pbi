@@ -76,7 +76,7 @@ Module ArraySubIndicesNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *iIn.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
-    Protected *iOut.CArray::CArrayInt = *node\outputs()\value
+    Protected *iOut.CArray::CArrayInt = *node\outputs()\attribute\data
     
     Protected nbp.i = CArray::GetCount(*iIn)
     CArray::SetCount(*iOut,nbp)
@@ -127,6 +127,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 31
+; CursorPosition = 78
+; FirstLine = 68
 ; Folding = --
 ; EnableXP

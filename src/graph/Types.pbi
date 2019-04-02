@@ -140,6 +140,8 @@ DeclareModule NodePort
     decoratedname.s
     
     polymorph.b
+    writable.b
+    readonly.b
     datatype.i
     datacontext.i
     datastructure.i
@@ -164,7 +166,7 @@ DeclareModule NodePort
     
     ;Parent Node
     *node       
-    *value
+    *attribute.Attribute::Attribute_t
 
     color.q
 
@@ -317,12 +319,12 @@ DeclareModule Node
     leaf.b
     isroot.b
     dirty.b
-  
-    ;ports
+
+    ; ports
     List *inputs.NodePort::NodePort_t()
     List *outputs.NodePort::NodePort_t()
   
-    ;embedded nodes
+    ; embedded nodes
     List *nodes.Node::Node_t()
     List *connexions.Connexion::Connexion_t()
     List *exposers.Connexion::Connexion_t()
@@ -606,7 +608,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 524
-; FirstLine = 495
+; CursorPosition = 143
+; FirstLine = 126
 ; Folding = ---
 ; EnableXP

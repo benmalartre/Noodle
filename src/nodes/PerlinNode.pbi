@@ -85,7 +85,7 @@ Module PerlinNode
     Protected variancei.f
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
+    If *output\attribute\data = #Null
       NodePort::Init(*output)
     EndIf
     
@@ -101,7 +101,7 @@ Module PerlinNode
      
     Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
     Define.d rx,ry,rz
-    *vOut = *output\value
+    *vOut = *output\attribute\data
     *vIn = NodePort::AcquireInputData(*positionPort)
     CArray::Copy(*vOut,*vIn)
     
@@ -143,8 +143,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 110
-; FirstLine = 92
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 83
 ; Folding = --
 ; EnableXP

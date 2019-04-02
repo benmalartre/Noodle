@@ -1179,8 +1179,7 @@ Procedure.s GetValue( *Me.ControlNumber_t )
 EndProcedure
 ; ---[ Free ]-----------------------------------------------------------------
 Procedure Delete( *Me.ControlNumber_t )
- 
-  
+  Object::TERM(ControlNumber)
   ; ---[ Deallocate Memory ]--------------------------------------------------
   FreeMemory( *Me )
   
@@ -1200,10 +1199,6 @@ EndProcedure
 Procedure SetTheme(theme.i)
 EndProcedure
 
-
-
-
-
 ; ============================================================================
 ;  CONSTRUCTORS
 ; ============================================================================
@@ -1214,8 +1209,6 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlNumber_t = AllocateMemory( SizeOf(ControlNumber_t) )
   
-;   *Me\VT = ?ControlNumberVT
-;   *Me\classname = "CONTROLNUMBER"
   Object::INI(ControlNumber)
   *Me\object = *object
   
@@ -1279,7 +1272,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 44
+; CursorPosition = 658
+; FirstLine = 655
 ; Folding = ----
 ; EnableXP

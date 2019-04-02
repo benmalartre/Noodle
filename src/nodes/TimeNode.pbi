@@ -58,7 +58,7 @@ Module TimeNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *value.CArray::CArrayFloat = NodePort::AcquireInputData(*input)
     
-    Protected *outdata.CArray::CArrayFloat = *output\value
+    Protected *outdata.CArray::CArrayFloat = *output\attribute\data
     Protected i
   
     CArray::SetValueF(*outdata,0,time)
@@ -103,7 +103,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 32
+; CursorPosition = 60
+; FirstLine = 44
 ; Folding = --
 ; EnableXP

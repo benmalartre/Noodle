@@ -180,7 +180,7 @@ Module AudioEffectNode
   ; ===============================================================================================
   ;{
   ; ---[ Heap & stack]-----------------------------------------------------------------------------
-  Procedure.i New(*tree.Tree::Tree_t,type.s="AudioArythmetic",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
+  Procedure.i New(*tree.Tree::Tree_t,type.s="AudioEffect",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]------------------------------------------------------------------
     Protected *Me.AudioEffectNode_t = AllocateMemory(SizeOf(AudioEffectNode_t))
@@ -201,7 +201,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 51
+; CursorPosition = 182
+; FirstLine = 142
 ; Folding = --
 ; EnableXP

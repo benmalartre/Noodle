@@ -64,7 +64,7 @@ Module AddNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
+    If *output\attribute\data = #Null
       NodePort::Init(*output)
     EndIf
     
@@ -77,7 +77,7 @@ Module AddNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\value
+        *iOut = *output\attribute\data
         *iIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*iOut,CArray::GetCount(*iIn))
         CArray::Copy(*iOut,*iIn)
@@ -106,7 +106,7 @@ Module AddNode
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         *fIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*fOut,CArray::GetCount(*fIn))
         CArray::Copy(*fOut,*fIn)
@@ -135,7 +135,7 @@ Module AddNode
       ;----------------------------------------------------
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
-        *vOut = *output\value
+        *vOut = *output\attribute\data
         *vIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*vOut,CArray::GetCount(*vIn))
         CArray::Copy(*vOut,*vIn)
@@ -215,8 +215,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 4
+; CursorPosition = 137
+; FirstLine = 140
 ; Folding = --
 ; EnableThread
 ; EnableXP

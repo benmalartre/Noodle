@@ -111,9 +111,9 @@ Module AudioArythmeticNode
     SelectElement(*node\inputs(), 4)
     Protected *scalar.NodePort::NodePort_t = *node\inputs()
     
-    Protected *aMute.CArray::CArrayBool = *mute\value
-    Protected *aMode.CArray::CArrayInt = *mode\value
-    Protected *aScalar.CArray::CArrayFloat = *scalar\value
+    Protected *aMute.CArray::CArrayBool = NodePort::AcquireInputData(*mute)
+    Protected *aMode.CArray::CArrayInt = NodePort::AcquireInputData(*mode)
+    Protected *aScalar.CArray::CArrayFloat =  NodePort::AcquireInputData(*scalar)
     
     If *node\node
       *node\mode = CArray::GetValueF(*aMode, 0)
@@ -235,7 +235,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 53
+; CursorPosition = 115
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

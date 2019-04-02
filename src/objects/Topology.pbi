@@ -163,6 +163,7 @@ Module Topology
     Protected *t.Topology_t
     Protected *m.m4f32
     Protected i
+    Debug "NUM MATRICES : "+CArray::GetCount(*matrices)
     For i=0 To CArray::GetCount(*matrices)-1
       *t = New(*topo)
       *m = CArray::GetValue(*matrices,i)
@@ -300,7 +301,6 @@ Module Topology
   ; --------------------------------------------------------------------------------- 
   Procedure MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
     Protected nbt = CArray::GetCount(*topos)
-
     Protected Dim v_offsets.l(nbt)
     Protected Dim f_offsets.l(nbt)
     Protected Dim f_counts.l(nbt)
@@ -332,7 +332,7 @@ Module Topology
       Define offsetcount = OffsetOf(CArray::CArrayT\itemCount)
       Define offsetvertices = OffsetOf(Geometry::Topology_t\vertices)
       Define offsetfaces = OffsetOf(Geometry::Topology_t\faces)
-      Define *outfaces = *o\faces\data
+      Define *outfaces = *o\faces
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
         CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
@@ -343,10 +343,13 @@ Module Topology
       ! mov rdx, [p.a_f_counts]                 ; load topo faces count
       ! mov rdi, [p.p_outfaces]                 ; load output faces
       
+      
       ! mov r8, [p.v_offsetdata]                ; load offset to array data
       ! mov r9, [p.v_offsetvertices]            ; load offset to topology vertices
       ! mov r10, [p.v_offsetfaces]              ; load offset to topology faces
       
+      
+      ! add rdi, r8                             ; offset to datas
       ! mov r11, [p.p_topos]                    ; mov topos to r11 register
       ! add r11, r8                             ; offset to datas
       ! mov r12, [r11]                          ; topos\data to r12 register
@@ -384,7 +387,9 @@ Module Topology
       !   add r12, 8                            ; next topo address
       !   dec rcx                               ; decrement counter
       !   jnz loop_merge_topo_array             ; next topo
+      
     CompilerElse
+      
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
         CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
@@ -914,7 +919,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 404
-; FirstLine = 361
+; CursorPosition = 391
+; FirstLine = 351
 ; Folding = -----
 ; EnableXP

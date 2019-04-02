@@ -59,7 +59,7 @@ Module MergeTopoNode
   
   Procedure Evaluate(*node.MergeTopoNode_t)
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = *output\value
+    Protected *oVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*output)
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
     
     FirstElement(*node\inputs())
@@ -108,8 +108,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 55
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 61
 ; FirstLine = 50
 ; Folding = --
 ; EnableXP

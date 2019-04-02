@@ -240,23 +240,24 @@ Module PropertyUI
           Case Attribute::#ATTR_TYPE_INTEGER
             ControlProperty::AddIntegerControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_FLOAT
+            MessageRequester("ATTRIBUTE", *attr\name)
             ControlProperty::AddFloatControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR2
             Protected v2.v2f32
-            ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,@v2,*attr)
+            ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,v2,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR3
             Protected v3.v3f32
-            ControlProperty::AddVector3Control(*p,*attr\name,*attr\name,@v3,*attr)
+            ControlProperty::AddVector3Control(*p,*attr\name,*attr\name,v3,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR4
             Protected c4.c4f32
-            ControlProperty::AddColorControl(*p,*attr\name,*attr\name,@c4,*attr)
+            ControlProperty::AddColorControl(*p,*attr\name,*attr\name,c4,*attr)
           Case Attribute::#ATTR_TYPE_QUATERNION
             Protected q.q4f32
-            ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,@q,*attr)
+            ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,q,*attr)
           Case Attribute::#ATTR_TYPE_MATRIX4
             Protected m.m4f32
             Matrix4::SetIdentity(m)
-            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,@m,*attr) 
+            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,m,*attr) 
         EndSelect
       EndIf
     Next
@@ -307,6 +308,7 @@ Module PropertyUI
 
     Protected *attr.Attribute::Attribute_t
     Define i
+    Define *port.NodePort::NodePort_t
     ; Add Input Ports 
     ForEach *node\inputs()
       With *node\inputs()
@@ -315,35 +317,39 @@ Module PropertyUI
           Select \currenttype
             Case Attribute::#ATTR_TYPE_BOOL
               Protected *bVal.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),*node\inputs())
+              ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_FLOAT
               Protected *fVal.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddFloatControl(*p,\name,\name,CArray::GetValueF(*fVal,0),*node\inputs())
+              ControlProperty::AddFloatControl(*p,\name,\name,CArray::GetValueF(*fVal,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_INTEGER
               Protected *iVal.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddIntegerControl(*p,\name,\name,CArray::GetValueI(*iVal,0),*node\inputs())
+              ControlProperty::AddIntegerControl(*p,\name,\name,CArray::GetValueI(*iVal,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR2
               Protected *vVal2.CArray::CArrayV2F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddVector2Control(*p,\name,\name,CArray::GetValue(*vVal2,0),*node\inputs())
+              ControlProperty::AddVector2Control(*p,\name,\name,CArray::GetValue(*vVal2,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR3
               Protected *vVal3.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddVector3Control(*p,\name,\name,CArray::GetValue(*vVal3,0),*node\inputs())
+              ControlProperty::AddVector3Control(*p,\name,\name,CArray::GetValue(*vVal3,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR4
               Protected *vVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*vVal4,0),*node\inputs())
+              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*vVal4,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_QUATERNION
               Protected *qVal4.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddQuaternionControl(*p,\name,\name,CArray::GetValue(*qVal4,0),*node\inputs())
+              ControlProperty::AddQuaternionControl(*p,\name,\name,CArray::GetValue(*qVal4,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_COLOR
               Protected *cVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),*node\inputs())
+              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),\attribute)
+              
+            Case Attribute::#ATTR_TYPE_MATRIX4
+              Protected *mVal4.CArray::CArrayM4F32 = NodePort::AcquireInputData(*node\inputs())
+              ControlProperty::AddMatrix4Control(*p,\name,\name,CArray::GetValue(*mVal4,0),\attribute)
               
             Case Attribute::#ATTR_TYPE_REFERENCE
               ControlProperty::AddReferenceControl(*p,\name,\reference,*node\inputs())
@@ -379,7 +385,6 @@ Module PropertyUI
     *Me\anchorY + *prop\dy
   EndProcedure
 
-  
   ; ----------------------------------------------------------------------------
   ;  Setup
   ; ----------------------------------------------------------------------------
@@ -462,12 +467,9 @@ Module PropertyUI
     Protected dirty.b  =#False
     Protected offY.i = 0
     
-    Debug "Delete Property : "+Str(*prop)
-    
     ForEach *Me\props()
       Debug *Me\props()
       If *Me\props() = *prop
-        Debug "FOUND"
         offY = *Me\props()\sizY
         ControlProperty::Delete(*Me\props())
         DeleteElement(*Me\props())
@@ -500,8 +502,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 367
-; FirstLine = 362
+; CursorPosition = 351
+; FirstLine = 312
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

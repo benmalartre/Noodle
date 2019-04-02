@@ -238,13 +238,7 @@ Module Node
   ; Get Node ¨Position
   ;------------------------------------
   Procedure ViewPosition(*n.Node_t,x.i,y.i)
-    ; get position and size
-;     *n\viewx = *n\posx * zoom + x
-;     *n\viewy = *n\posy * zoom + y
-;     
-;     *n\viewwidth = *n\width * zoom
-;     *n\viewheight = *n\height * zoom
-     
+    
     ;update ports view position
     y = *n\posy+ (Graph::#Node_TitleHeight + Graph::#Node_PortSpacing/2) 
     x = *n\posx +*n\width -Graph::#Node_PortShiftX
@@ -672,8 +666,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 605
-; FirstLine = 598
+; CursorPosition = 240
+; FirstLine = 183
 ; Folding = ------
 ; EnableThread
 ; EnableXP

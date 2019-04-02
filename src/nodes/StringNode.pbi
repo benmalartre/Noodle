@@ -61,7 +61,7 @@ Module StringNode
     Protected *value.CArray::CArrayStr = NodePort::AcquireInputData(*input)
     
     If *value
-      Protected *outdata.CArray::CArrayStr = *output\value
+      Protected *outdata.CArray::CArrayStr = *output\attribute\data
       Protected i
       CArray::SetCount(*outData,CArray::GetCount(*value))
   
@@ -111,7 +111,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 41
+; CursorPosition = 63
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

@@ -91,8 +91,6 @@ DeclareModule Signal
     *_slot#_callback\datas = *_datas#_callback
 
   EndMacro
-  
-  
 EndDeclareModule
 
 ; ======================================================================
@@ -137,12 +135,11 @@ Module Signal
       Callback::Delete(*callback)
       DeleteElement(*signal\slots())
     EndIf
-    
   EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 60
+; CursorPosition = 116
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

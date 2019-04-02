@@ -90,7 +90,7 @@ UseModule Math
       attr = CreateXMLNode(parentnode,"input_port")
       SetXMLAttribute(attr,"Name",*port\name)
       SetXMLAttribute(attr,"Type",Str(*port\currenttype))
-      Protected *array.CArray::CArrayT = *port\value
+      Protected *array.CArray::CArrayT = NodePort::AcquireInputData(*port)
       Select *port\currenttype
         Case Attribute::#ATTR_TYPE_BOOL
           SetXMLAttribute(attr,"Value",Str(CArray::GetValueB(*array, 0)))
@@ -577,8 +577,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 80
+; CursorPosition = 92
+; FirstLine = 79
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

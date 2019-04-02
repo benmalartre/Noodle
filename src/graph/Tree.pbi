@@ -334,7 +334,7 @@ Module Tree
     ForEach *Me\current\connexions()
       If *Me\current\connexions()\start\node = *n Or *Me\current\connexions()\end\node = *n
         *Me\current\connexions()\end\connected = #False
-        *Me\current\connexions()\end\value = #Null
+        *Me\current\connexions()\end\attribute = #Null
         Graph::ExtractListElement(*Me\current\connexions(),*connexion)
         FreeMemory(*connexion)
         *Me\dirty = #True
@@ -547,8 +547,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 514
-; FirstLine = 488
+; CursorPosition = 329
+; FirstLine = 320
 ; Folding = -----
 ; EnableThread
 ; EnableXP

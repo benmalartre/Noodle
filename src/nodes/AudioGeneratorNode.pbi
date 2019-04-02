@@ -103,10 +103,10 @@ Module AudioGeneratorNode
     Protected *frequency.NodePort::NodePort_t = *node\inputs()
     
     
-    Protected *aMute.CArray::CArrayBool = *mute\value
-    Protected *aFrequency.CArray::CArrayFloat = *frequency\value
-    Protected *aMode.CArray::CArrayInt = *mode\value
-    Protected *aOutput.CArray::CArrayPtr = *output\value
+    Protected *aMute.CArray::CArrayBool =  NodePort::AcquireInputData(*mute)
+    Protected *aFrequency.CArray::CArrayFloat =  NodePort::AcquireInputData(*frequency)
+    Protected *aMode.CArray::CArrayInt =  NodePort::AcquireInputData(*mode)
+    Protected *aOutput.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
     CArray::SetCount(*aOutput,1)
     
     *node\label = STK::generator_names(CArray::GetValueI(*aMode, 0))
@@ -149,6 +149,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
+; CursorPosition = 108
+; FirstLine = 90
 ; Folding = --
 ; EnableXP

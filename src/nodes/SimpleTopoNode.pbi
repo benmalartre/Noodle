@@ -121,7 +121,7 @@ Module SimpleTopoNode
     
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = *output\value
+    Protected *oVal.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
     ;   Protected *topo.CAttributePolymeshTopology_t = oVal\GetValue(0)
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
     Select shape
@@ -193,7 +193,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 100
+; CursorPosition = 123
+; FirstLine = 119
 ; Folding = --
 ; EnableXP

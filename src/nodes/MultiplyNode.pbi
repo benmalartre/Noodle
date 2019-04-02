@@ -61,11 +61,11 @@ Module MultiplyNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
+    If *output\attribute\data = #Null
       NodePort::Init(*output)
     EndIf
     
-    If *output\value = #Null : ProcedureReturn : EndIf
+    If *output\attribute\data = #Null : ProcedureReturn : EndIf
     
     Protected i.i
     
@@ -77,7 +77,7 @@ Module MultiplyNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
-        *lOut = *output\value
+        *lOut = *output\attribute\data
         *lIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*lOut,CArray::GetCount(*lIn))
         CArray::Copy(*lOut,*lIn)
@@ -100,7 +100,7 @@ Module MultiplyNode
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
   
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         *fIn = NodePort::AcquireInputData(*node\inputs())
         
         CArray::Copy(*fOut,*fIn)
@@ -130,7 +130,7 @@ Module MultiplyNode
         Protected v.v3f32
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
   
-        *vOut = *output\value
+        *vOut = *output\attribute\data
         *vIn = NodePort::AcquireInputData(*node\inputs())
         
         CArray::Copy(*vOut,*vIn)
@@ -208,7 +208,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 78
+; CursorPosition = 132
+; FirstLine = 132
 ; Folding = --
 ; EnableXP

@@ -177,7 +177,7 @@ Procedure Draw(*app.Application::Application_t)
       
   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
   
-  Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
   Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
   Define m.m4f32
   Define pos.v3f32
@@ -208,9 +208,13 @@ Procedure Draw(*app.Application::Application_t)
 ;     CArray::SetValue(*matrices, i, m)
  Next
   
-  Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
-  Topology::TransformArray(*topo,*matrices,*outtopo)
-  Topology::MergeArray(*topo,*outtopo)
+ Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
+ Debug "NUM MATRICES : "+Str(CArray::GetCount(*matrices))
+ 
+ Topology::TransformArray(*topo,*matrices,*topos)
+  Debug "NUM TOPOS : "+Str(CArray::GetCount(*topos))
+  Topology::MergeArray(*topo,*topos)
+ 
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
   Topology::Delete(*topo)
@@ -232,7 +236,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 216
+; CursorPosition = 214
 ; FirstLine = 172
 ; Folding = -
 ; EnableXP

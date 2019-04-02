@@ -130,6 +130,7 @@ CompilerEndIf
   XIncludeFile "AudioGeneratorNode.pbi"
   XIncludeFile "AudioNoiseNode.pbi"
   XIncludeFile "AudioSineWaveNode.pbi"
+  XIncludeFile "AudioEffectNode.pbi"
 
   
   ; Topology
@@ -149,8 +150,8 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 85
+; CursorPosition = 118
+; FirstLine = 90
 ; Folding = --
 ; EnableThread
 ; EnableXP

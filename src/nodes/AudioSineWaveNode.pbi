@@ -83,30 +83,29 @@ Module AudioSineWaveNode
   ; ------------------------------------------------------------------------------------------------
   Procedure Evaluate(*node.AudioSineWaveNode_t)
     
-    Protected *output.NodePort::NodePort_t = *node\outputs()
+    Protected *output.NodePort::NodePort_t      = *node\outputs()
     SelectElement(*node\inputs(), 0)
-    Protected *mute.NodePort::NodePort_t = *node\inputs()
+    Protected *mute.NodePort::NodePort_t        = *node\inputs()
     SelectElement(*node\inputs(), 1)
-    Protected *frequency.NodePort::NodePort_t = *node\inputs()
+    Protected *frequency.NodePort::NodePort_t   = *node\inputs()
     SelectElement(*node\inputs(), 2)
-    Protected *time.NodePort::NodePort_t = *node\inputs()
+    Protected *time.NodePort::NodePort_t        = *node\inputs()
     SelectElement(*node\inputs(), 3)
-    Protected *phase.NodePort::NodePort_t = *node\inputs()
+    Protected *phase.NodePort::NodePort_t       = *node\inputs()
     SelectElement(*node\inputs(), 4)
     Protected *phaseoffset.NodePort::NodePort_t = *node\inputs()
     
-    Protected *aMute.CArray::CArrayBool = *mute\value
-    Protected *aFrequency.CArray::CArrayFloat = *frequency\value
-    Protected *aTime.CArray::CArrayInt = *time\value
-    Protected *aPhase.CArray::CArrayFloat = *phase\value
-    Protected *aPhaseOffset.CArray::CArrayFloat = *phaseoffset\value
-    Protected *aOutput.CArray::CArrayPtr = *output\value
-    CArray::SetCount(*aOutput,1)
+    Protected *aMute.CArray::CArrayBool         =  NodePort::AcquireInputData(*mute)
+    Protected *aFrequency.CArray::CArrayFloat   =  NodePort::AcquireInputData(*frequency)
+    Protected *aTime.CArray::CArrayInt          =  NodePort::AcquireInputData(*time)
+    Protected *aPhase.CArray::CArrayFloat       =  NodePort::AcquireInputData(*phase)
+    Protected *aPhaseOffset.CArray::CArrayFloat =  NodePort::AcquireInputData(*phaseoffset)
+    Protected *aOutput.CArray::CArrayPtr        =  NodePort::AcquireOutputData(*output)
     
-    *node\frequency = CArray::GetValueF(*aFrequency, 0)
-    *node\time = CArray::GetValueF(*aTime, 0)
-    *node\phase = CArray::GetValueF(*aPhase, 0)
-    *node\phaseoffset = CArray::GetValueF(*aPhaseOffset, 0)
+    *node\frequency                             = CArray::GetValueF(*aFrequency, 0)
+    *node\time                                  = CArray::GetValueF(*aTime, 0)
+    *node\phase                                 = CArray::GetValueF(*aPhase, 0)
+    *node\phaseoffset                           = CArray::GetValueF(*aPhaseOffset, 0)
     
     If *node\node
       STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_FREQUENCY, *node\frequency)
@@ -195,7 +194,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 110
+; CursorPosition = 102
+; FirstLine = 75
 ; Folding = --
 ; EnableXP

@@ -62,7 +62,7 @@ Module FloatNode
     Protected *value.CArray::CArrayFloat = NodePort::AcquireInputData(*input)
     
     If *value
-      Protected *outdata.CArray::CArrayFloat = *output\value
+      Protected *outdata.CArray::CArrayFloat = *output\attribute\data
       Protected i
     
       CArray::SetCount(*outdata,CArray::GetCount(*value))
@@ -112,9 +112,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 51
-; FirstLine = 47
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 64
+; FirstLine = 54
 ; Folding = --
 ; EnableThread
 ; EnableXP

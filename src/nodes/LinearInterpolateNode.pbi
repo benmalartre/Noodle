@@ -95,7 +95,7 @@ Module LinearInterpolateNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn1.CArray::CArrayInt,*iIn2.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\value
+        *iOut = NodePort::AcquireOutputData(*output)
         
         *iIn1 = NodePort::AcquireInputData(*inFirst)
         *iIn2 = NodePort::AcquireInputData(*inSecond)
@@ -120,7 +120,7 @@ Module LinearInterpolateNode
       Case Attribute::#ATTR_TYPE_FLOAT
        Protected float.f
         Protected *fIn1.CArray::CArrayFloat,*fIn2.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-        *fOut = *output\value
+        *fOut = NodePort::AcquireOutputData(*output)
         
         *fIn1 = NodePort::AcquireInputData(*inFirst)
         *fIn2 = NodePort::AcquireInputData(*inSecond)
@@ -144,7 +144,7 @@ Module LinearInterpolateNode
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected v3.v3f32
         Protected *v3In1.CArray::CArrayV3F32,*v3In2.CArray::CArrayV3F32,*v3Out.CArray::CArrayV3F32
-        *v3Out = *output\value
+        *v3Out = NodePort::AcquireOutputData(*output)
         
         *v3In1 = NodePort::AcquireInputData(*inFirst)
         *v3In2 = NodePort::AcquireInputData(*inSecond)
@@ -209,8 +209,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 156
+; CursorPosition = 97
+; FirstLine = 85
 ; Folding = --
 ; EnableThread
 ; EnableXP

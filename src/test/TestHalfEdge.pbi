@@ -25,9 +25,10 @@ Global *drawer.Drawer::Drawer_t
 Global *root.Model::Model_t
 Global *selected.CArray::CArrayLong = CArray::newCArrayLong()
 Global rootIndex.i
-
+Global numTopos = 7
 
 Procedure PolygonSoup(numTopos=9)
+  Debug "POLYGON SOUP : "+Str(numTopos)
   Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_TEAPOT)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   
@@ -55,8 +56,11 @@ Procedure PolygonSoup(numTopos=9)
     Matrix4::SetTranslation(*m,   *p)
   Next
   
+  Debug "UM MATRICES : "+Str(numTopos)
+  
   Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
   Topology::TransformArray(*topo, *matrices, *topos)
+  
   Topology::MergeArray(*topo, *topos)
   
   PolymeshGeometry::Set2(*geom, *topo)
@@ -203,7 +207,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 26
+; CursorPosition = 30
+; FirstLine = 25
 ; Folding = -
 ; EnableXP

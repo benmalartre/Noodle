@@ -379,9 +379,9 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
 
   ; ---[ Handle Caret & Selection ]-------------------------------------------
   If *Me\focused
-    ; °°°[ Has Selection ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+    ; ---[ Has Selection ]----------------------------------------------------
     If *Me\selected
-      ; ...[ Draw Regular Text + Selection ]..................................
+      ; ---[ Draw Regular Text + Selection ]----------------------------------
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
           AddPathBox( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
@@ -400,7 +400,7 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
       MovePathCursor(tx + xoff, ty)
       VectorSourceColor(tc)
       DrawVectorText( Mid( *Me\value, *Me\posS, tlen ))
-    ; °°°[ Just Caret ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°  
+    ; ---[ Just Caret ]-------------------------------------------------------  
     Else
       ; ...[ Draw Value ].....................................................
       MovePathCursor(tx + xoff, ty)
@@ -1077,7 +1077,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 28
+; CursorPosition = 383
+; FirstLine = 261
 ; Folding = ----
 ; EnableXP

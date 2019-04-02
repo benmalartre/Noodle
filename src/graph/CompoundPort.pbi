@@ -57,7 +57,7 @@ Module CompoundNodePort
   Procedure Init(*Me.CompoundNodePort_t)
     
     NodePort::GetColor(*Me)
-    If *Me\port : *Me\value = *Me\port\value : EndIf
+    If *Me\port : *Me\attribute\data = *Me\port\attribute\data : EndIf
   EndProcedure
   
 
@@ -198,7 +198,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 29
+; CursorPosition = 59
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

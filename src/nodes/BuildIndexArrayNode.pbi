@@ -67,7 +67,7 @@ Module BuildIndexArrayNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *iIn.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
-    Protected *iOut.CArray::CArrayInt = *node\outputs()\value
+    Protected *iOut.CArray::CArrayInt = *node\outputs()\attribute\data
     
     Protected nbp.i = CArray::GetValueI(*iIn,0)
     CArray::SetCount(*iOut,nbp)
@@ -115,9 +115,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 56
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 57
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -11,7 +11,6 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   ;  Light
   ; ----------------------------------------------------------------------------
-  
   Global s_gui_controls_light_check_disabled_checked     .i
   Global s_gui_controls_light_check_disabled_unchecked   .i
   Global s_gui_controls_light_check_disabled_undetermined.i
@@ -48,7 +47,6 @@ DeclareModule ControlCheck
   Global s_gui_controls_check_over_unchecked       .i
   Global s_gui_controls_check_over_undetermined    .i
 
-  
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlCheck_t )
   ; ----------------------------------------------------------------------------
@@ -405,8 +403,8 @@ Module ControlCheck
     *Me\over     = #False
     *Me\down     = #False
     
-    ; ---[ Init 'OnChanged' Slot ]----------------------------------------------
-;     *Me\sig_onchanged = newCSlot( *Me )
+    ; ---[ Signals ]------------------------------------------------------------
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -540,7 +538,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 18
+; CursorPosition = 12
 ; Folding = ----
 ; EnableXP

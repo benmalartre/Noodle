@@ -67,7 +67,7 @@ Module FileExistsNode
     Protected *filenameArray.CArray::CArrayStr = NodePort::AcquireInputData(*filenamePort)
 
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *outputArray.CArray::CArrayBool = *output\value
+    Protected *outputArray.CArray::CArrayBool = *output\attribute\data
     
     Protected name.s = CArray::GetValueStr(*filenameArray,0)
     MessageRequester("FileExistsNode","Input : "+name)
@@ -117,8 +117,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 46
+; CursorPosition = 69
+; FirstLine = 58
 ; Folding = --
 ; EnableThread
 ; EnableXP

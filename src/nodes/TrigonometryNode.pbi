@@ -79,12 +79,12 @@ Module TrigonometryNode
 ;       Debug "Initialized Output Port "+Str(*output\currenttype)
 ;     EndIf
     
-    If *output\value = #Null : ProcedureReturn : EndIf
+    If *output\attribute\data = #Null : ProcedureReturn : EndIf
     
     Protected i.i
     Protected float.f
     Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-    *fOut = *output\value
+    *fOut = *output\attribute\data
     *fIn = NodePort::AcquireInputData(*input)
     ;fOut\SetCount(fIn\GetCount())
     CArray::SetCount(*fOut,CArray::GetCount(*fIn))
@@ -152,8 +152,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 55
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

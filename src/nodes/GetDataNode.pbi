@@ -68,7 +68,7 @@ Module GetDataNode
         *output\currentcontext = *node\attribute\datacontext
         *output\currentstructure = *node\attribute\datastructure
         NodePort::Init(*output)
-        *output\value = *node\attribute\data
+        *output\attribute = *node\attribute
         *output\dirty = #True
       EndIf
       
@@ -81,7 +81,7 @@ Module GetDataNode
           *output\currentcontext = *node\attribute\datacontext
           *output\currentstructure = *node\attribute\datastructure
           NodePort::Init(*output)
-          *output\value = *node\attribute\data
+          *output\attribute = *node\attribute
           *output\dirty = #True
           MessageRequester("GET DATA NODE", "RESOLVE REFERENCE CALLED")
         EndIf
@@ -119,28 +119,28 @@ Module GetDataNode
     FirstElement(*node\outputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     
-    If *output\value = #Null
+    If *output\attribute = #Null
       *output\currenttype = *node\attribute\datatype
       NodePort::Init(*output)
     EndIf
   
-    If *output\value = #Null :Debug "[GetDataNode] Cannot resolve Output": ProcedureReturn : EndIf
+    If *output\attribute = #Null :Debug "[GetDataNode] Cannot resolve Output": ProcedureReturn : EndIf
   
     Select *node\attribute\datatype
      Case Attribute::#ATTR_TYPE_BOOL
         Protected bool.b
         Protected *bIn.CArray::CArrayBool,*bOut.CArray::CArrayBool
-        *bOut = *output\value
+        *bOut = NodePort::AcquireOutputData(*output)
         *bIn = *node\attribute\data
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\value
+        *iOut = NodePort::AcquireOutputData(*output)
         *iIn = *node\attribute\data
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-        *fOut = *output\value
+        *fOut = NodePort::AcquireOutputData(*output)
         *fIn = *node\attribute\data
         If CArray::GetCount(*fIn)
           CArray::Copy(*fOut,*fIn)
@@ -148,7 +148,7 @@ Module GetDataNode
       Case Attribute::#ATTR_TYPE_COLOR
         Protected color.c4f32
         Protected *cIn.CArray::CArrayC4F32,*cOut.CArray::CArrayC4F32
-        *cOut = *output\value
+        *cOut = NodePort::AcquireOutputData(*output)
         *cIn = *node\attribute\data
 ;         
 ;         Debug "[GetDataNode] Output Data Size : "+Str(CArray::GetCount(*cOut))
@@ -164,7 +164,7 @@ Module GetDataNode
     Case Attribute::#ATTR_TYPE_VECTOR3
         Protected v.v3f32
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
-        *vOut = *output\value
+        *vOut = NodePort::AcquireOutputData(*output)
         *vIn = *node\attribute\data
 ;         Debug "[GetDataNode] Output Data Size : "+Str(CArray::GetCount(*vOut))
 ;         Debug "[GetDataNode] Attribute Data Size : "+Str(CArray::GetCount(*vIn))
@@ -188,7 +188,7 @@ Module GetDataNode
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *topo.Geometry::Topology_t
         Protected *tIn.CArray::CArrayPtr,*tOut.CArray::CArrayPtr
-        *tOut = *output\value
+        *tOut = NodePort::AcquireOutputData(*output)
         *tIn = *node\attribute\data
         If CArray::GetCount(*tIn)
           ;vOut\SetCount(vIn\GetCount())
@@ -257,9 +257,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 195
-; Folding = --
+; CursorPosition = 190
+; FirstLine = 161
+; Folding = ---
 ; EnableThread
 ; EnableXP
 ; EnableUnicode

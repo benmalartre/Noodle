@@ -24,7 +24,7 @@ Module Graph
         *output\currentcontext = *attribute\datacontext
         *output\currentstructure = *attribute\datastructure
         NodePort::Init(*output)
-        *output\value = *attribute\data
+        *output\attribute = *attribute
       EndIf
       
     EndIf
@@ -129,9 +129,9 @@ Module Graph
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 33
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 13
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

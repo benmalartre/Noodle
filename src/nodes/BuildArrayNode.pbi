@@ -83,7 +83,7 @@ Module BuildArrayNode
     Select *output\currenttype
       Case Attribute::#ATTR_TYPE_BOOL
         Protected *bIn.CArray::CArrayInt,*bOut.CArray::CArrayInt
-        *bOut = *output\value
+        *bOut = *output\attribute\data
         If Not *bOut : *bOut = CArray::newCArrayBool() : Else : CArray::SetCount(*bOut,0) : EndIf
         
         ForEach *node \inputs()
@@ -91,11 +91,11 @@ Module BuildArrayNode
           *bIn = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*bOut,*bIn)
         Next
-        *output\value = *bOut
+        *output\attribute\data = *bOut
         
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
-        *lOut = *output\value
+        *lOut = *output\attribute\data
         If Not *lOut : *lOut = CArray::newCArrayInt() : Else : CArray::SetCount(*lOut,0) : EndIf
         
         ForEach *node \inputs()
@@ -103,11 +103,11 @@ Module BuildArrayNode
           *lIn = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*lOut,*lIn)
         Next
-        *output\value = *lOut
+        *output\attribute\data = *lOut
         
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         If Not *fOut : *fOut = CArray::newCArrayFloat() : Else : CArray::SetCount(*fOut,0) : EndIf
         
         ForEach *node \inputs()
@@ -115,11 +115,11 @@ Module BuildArrayNode
           fIn = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*fOut,*fIn)
         Next
-        *output\value = fOut
+        *output\attribute\data = fOut
         
       Case Attribute::#ATTR_TYPE_VECTOR2
         Protected *v2f32In.CArray::CArrayV2F32,*v2f32Out.CArray::CArrayV2F32
-        *v2f32Out = *output\value
+        *v2f32Out = *output\attribute\data
         If Not *v2f32Out : *v2f32Out = CArray::newCArrayV2F32() : Else : CArray::SetCount(*v2f32Out,0) : EndIf
         
         ForEach *node \inputs()
@@ -127,11 +127,11 @@ Module BuildArrayNode
           *v2f32In = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*v2f32Out,*v2f32In)
         Next
-        *output\value = *v2f32Out
+        *output\attribute\data = *v2f32Out
         
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *v3f32In.CArray::CArrayV3F32,*v3f32Out.CArray::CArrayV3F32
-        *v3f32Out = *output\value
+        *v3f32Out = *output\attribute\data
         If Not *v3f32Out : *v3f32Out = CArray::newCArrayV3F32() : Else : CArray::SetCount(*v3f32Out,0) : EndIf
         
         ForEach *node \inputs()
@@ -139,11 +139,11 @@ Module BuildArrayNode
           *v3f32In = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*v3f32Out,*v3f32In)
         Next
-        *output\value = *v3f32Out
+        *output\attribute\data = *v3f32Out
         
       Case Attribute::#ATTR_TYPE_QUATERNION
         Protected *q4f32In.CArray::CArrayQ4F32,*q4f32Out.CArray::CArrayQ4F32
-        *q4f32Out = *output\value
+        *q4f32Out = *output\attribute\data
         If Not *q4f32Out : *q4f32Out = CArray::newCArrayQ4F32() : Else : CArray::SetCount(*q4f32Out,0) : EndIf
         
         ForEach *node \inputs()
@@ -151,11 +151,11 @@ Module BuildArrayNode
           *q4f32In = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*q4f32Out,*q4f32In)
         Next
-        *output\value = *q4f32Out
+        *output\attribute\data = *q4f32Out
         
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *c4f32In.CArray::CArrayC4F32,*c4f32Out.CArray::CArrayC4F32
-        *c4f32Out = *output\value
+        *c4f32Out = *output\attribute\data
         If Not *c4f32Out : *c4f32Out = CArray::newCArrayC4F32() : Else : CArray::SetCount(*c4f32Out,0) : EndIf
         
         ForEach *node \inputs()
@@ -163,11 +163,11 @@ Module BuildArrayNode
           *c4f32In = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*c4f32Out,*c4f32In)
         Next
-        *output\value = *c4f32Out
+        *output\attribute\data = *c4f32Out
         
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *topoIn.CArray::CArrayPtr,*topoOut.CArray::CArrayPtr
-        *topoOut = *output\value
+        *topoOut = *output\attribute\data
         If Not *topoOut : *topoOut = CArray::newCArrayPtr() : Else : CArray::SetCount(*topoOut,0) : EndIf
         
         ForEach *node \inputs()
@@ -175,7 +175,7 @@ Module BuildArrayNode
           *topoIn = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*topoOut,*topoIn)
         Next
-        *output\value = *topoOut
+        *output\attribute\data = *topoOut
         
   
     EndSelect 
@@ -220,9 +220,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 62
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 177
+; FirstLine = 129
 ; Folding = --
 ; EnableThread
 ; EnableXP

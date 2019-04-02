@@ -72,8 +72,8 @@ Module AudioNoiseNode
     SelectElement(*node\inputs(), 1)
     Protected *seed.NodePort::NodePort_t = *node\inputs()
     
-    Protected *aMute.CArray::CArrayBool = *mute\value
-    Protected *aSeed.CArray::CArrayFloat = *seed\value
+    Protected *aMute.CArray::CArrayBool = NodePort::AcquireInputData(*mute)
+    Protected *aSeed.CArray::CArrayFloat = NodePort::AcquireInputData(*seed)
      
     *node\seed = CArray::GetValue(*aSeed, 0)
     
@@ -158,7 +158,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 76
+; CursorPosition = 75
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

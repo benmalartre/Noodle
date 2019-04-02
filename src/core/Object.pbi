@@ -53,7 +53,7 @@ DeclareModule Object
   Structure Object_t
     *VT                                      ; interface virtual table
     Map *signals.Signal::Signal_t()   
-    Map slots.Slot::Slot_t()
+    Map *slots.Slot::Slot_t()
     *class.Class::Class_t
   EndStructure
   
@@ -302,7 +302,6 @@ EndModule
 ;   EndProcedure
 ; EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 27
+; CursorPosition = 48
 ; Folding = ---
 ; EnableXP

@@ -63,7 +63,7 @@ If Time::Init()
    Scene::*current_scene = Scene::New()
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
     *app\context = *viewport\context
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
@@ -133,8 +133,8 @@ Scene::AddModel(Scene::*current_scene,*model)
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 69
+; CursorPosition = 65
+; FirstLine = 74
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

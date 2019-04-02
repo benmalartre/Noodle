@@ -60,12 +60,12 @@ Module SRTToMatrixNode
     FirstElement(*node\inputs())
     Protected scl.v3f32
     Vector3::Set(scl,1,1,1)
-    Protected *a.CArray::CArrayT = *node\inputs()\value
+    Protected *a.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
     CArray::SetValue(*a,0,scl)
     NextElement(*node\inputs())
     Protected quat.q4f32
     Quaternion::SetIdentity(quat)
-    *a.CArray::CArrayT = *node\inputs()\value
+    *a.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
     CArray::SetValue(*a,0,quat)
     
     *node\label = "SRT To Matrix"
@@ -93,7 +93,7 @@ Module SRTToMatrixNode
       
       SelectElement(*node\outputs(),0)
       Protected *output.NodePort::NodePort_t = *node\outputs()
-      Protected *m_out.CArray::CArrayM4F32 = *output\value
+      Protected *m_out.CArray::CArrayM4F32 = NodePort::AcquireOutputData(*output)
       CArray::SetCount(*m_out,nb)
       
       Protected i
@@ -157,7 +157,7 @@ EndModule
 ; ==============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 59
+; CursorPosition = 95
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

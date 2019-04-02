@@ -63,7 +63,7 @@ Module NormalizeNode
    
     Protected v.v3f32, *v.v3f32
     Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
-    *vOut = *output\value
+    *vOut = NodePort::AcquireOutputData(*output)
     *vIn = NodePort::AcquireInputData(*node\inputs())
     CArray::Copy(*vOut,*vIn)
     
@@ -110,7 +110,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 57
+; CursorPosition = 60
+; FirstLine = 42
 ; Folding = --
 ; EnableXP

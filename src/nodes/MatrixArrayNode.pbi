@@ -59,7 +59,7 @@ Module MatrixArrayNode
       Protected nb = 12
       SelectElement(*node\outputs(),0)
       Protected *output.NodePort::NodePort_t = *node\outputs()
-      Protected *m_out.CArray::CArrayM4F32 = *output\value
+      Protected *m_out.CArray::CArrayM4F32 = *output\attribute\data
       CArray::SetCount(*m_out,nb)
       
       Protected i
@@ -136,7 +136,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 65
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

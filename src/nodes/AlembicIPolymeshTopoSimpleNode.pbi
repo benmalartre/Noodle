@@ -130,7 +130,7 @@ Module AlembicIPolymeshTopoSimpleNode
       ; Topology
       FirstElement(*node\outputs())
       Protected *topoPort.NodePort::NodePort_t = *node\outputs()
-      Protected *topoVal.CArray::CArrayPtr = *topoPort\value
+      Protected *topoVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*topoPort)
       Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoVal,0)
       
       CArray::Copy(*topo\vertices,*node\positions)
@@ -195,8 +195,8 @@ Module AlembicIPolymeshTopoSimpleNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 136
+; CursorPosition = 132
+; FirstLine = 128
 ; Folding = --
 ; EnableThread
 ; EnableXP

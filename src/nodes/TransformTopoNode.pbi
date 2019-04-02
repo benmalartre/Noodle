@@ -64,7 +64,7 @@ Module TransformTopoNode
     Protected *inTopoArray.CArray::CArrayPtr = NodePort::AcquireInputData(*inTopo)
     Protected *inTsArray.CArray::CArrayM4F32 = NodePort::AcquireInputData(*inTs)
     
-    Protected *outTopoArray.CArray::CArrayPtr = *outTopo\value
+    Protected *outTopoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*outTopo)
     
     ;Clear old Data
     Protected i
@@ -122,8 +122,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 45
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
