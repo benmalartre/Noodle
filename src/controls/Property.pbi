@@ -107,35 +107,114 @@ EndDeclareModule
 Module ControlProperty
   UseModule Math
   
-  Procedure OnCheckChange(*ctl.ControlCheck::ControlCheck_t, *attribute.Attribute::Attribute_t, id.i=0, offset.i=0)    
-    Protected *array.CArray::CArrayBool = *attribute\data
-    PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-    *attribute\dirty = #True
+  Procedure OnCheckChange(*ctl.ControlCheck::ControlCheck_t, *obj.Object::Object_t, id.i=0, offset.i=0)    
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Define *array.CArray::CArrayBool = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *attribute\dirty = #True
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t  = *port\attribute
+        Define *array.CArray::CArrayBool = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *port\dirty = #True
+        *attribute\dirty = #True
+
+    EndSelect
   EndProcedure
   Callback::DECLARECALLBACK(OnCheckChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *attribute.Attribute::Attribute_t, id.i=0, offset.i=0)    
-    Protected *array.CArray::CArrayLong = *attribute\data
-    PokeL(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
-    *attribute\dirty = #True
+  Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)    
+     Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Define *array.CArray::CArrayLong = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *attribute\dirty = #True
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t  = *port\attribute
+        Define *array.CArray::CArrayLong = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *port\dirty = #True
+        *attribute\dirty = #True
+
+    EndSelect
   EndProcedure
   Callback::DECLARECALLBACK(OnLongChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *attribute.Attribute::Attribute_t, id.i=0, offset.i=0)    
-    Protected *array.CArray::CArrayInt = *attribute\data
-    PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
-    Debug "NEW INT VALUE : "+Str(PeekI(*array\data + id * *array\itemSize + offset))
-    *attribute\dirty = #True
+  Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)   
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Define *array.CArray::CArrayInt = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *attribute\dirty = #True
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t  = *port\attribute
+        Define *array.CArray::CArrayInt = *attribute\data
+        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+        *port\dirty = #True
+        *attribute\dirty = #True
+
+    EndSelect
   EndProcedure
   Callback::DECLARECALLBACK(OnIntegerChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *attribute.Attribute::Attribute_t, id.i=0, offset.i=0)
-    Protected *array.CArray::CArrayFloat = *attribute\data
-    PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value)) 
-    Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
-    *attribute\dirty = #True
+  Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Define *array.CArray::CArrayFloat = *attribute\data
+        PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value)) 
+        Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
+        *attribute\dirty = #True
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t  = *port\attribute
+        Define *array.CArray::CArrayFloat = *attribute\data
+        PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
+        *port\dirty = #True
+        *attribute\dirty = #True
+        Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
+        
+    EndSelect
   EndProcedure
   Callback::DECLARECALLBACK(OnFloatChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  
+  Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *obj.Object::Object_t, id.i=0, offset.i=0)
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        If *attribute
+          Define *array.CArray::CArrayStr = *attribute\data
+  ;         PokeF(*array\data + id * *array\itemSize + offset, *ctl\value 
+  ;         Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
+          *attribute\dirty = #True
+        EndIf
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t  = *port\attribute
+        If *attribute
+          Define *array.CArray::CArrayStr = *attribute\data
+  ;         PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
+  ;         *port\dirty = #True
+  ;         *attribute\dirty = #True
+          Debug "NEW FLOAT VALUE : "+StrF(PeekF(*array\data + id * *array\itemSize + offset))
+        EndIf
+        
+        
+    EndSelect
+  EndProcedure
+  Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
 
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
@@ -517,7 +596,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Bool Control
   ;-----------------------------------------------------------------------------
-  Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attribute.Attribute::Attribute_t)
+  Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -542,9 +621,17 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
     
-    ; Connect Signal
-    If *attribute
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attribute, 0, 0)
+     ; Connect Signal
+    If *obj
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attribute, 0, 0)
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *port, 0, 0)
+      EndSelect
+      
     EndIf
     
     
@@ -556,7 +643,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Long Control
   ;-----------------------------------------------------------------------------
-  Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attribute.Attribute::Attribute_t)
+  Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
     ; Sanity Check
     If Not*Me : ProcedureReturn : EndIf
     
@@ -582,9 +669,16 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
 
-    ; Connect Signal
-    If *attribute
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attribute, 0, 0)
+     ; Connect Signal
+    If *obj
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attribute, 0, 0)
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *port, 0, 0)
+      EndSelect
     EndIf
     
     ; Offset for Next Control
@@ -595,7 +689,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Float Control 
   ;-----------------------------------------------------------------------------
-  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f, *attribute.Attribute::Attribute_t)
+  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f, *obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -620,9 +714,17 @@ Module ControlProperty
       Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
+    
     ; Connect Signal
-    If *attribute
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attribute, 0, 0)
+    If *obj
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attribute, 0, 0)
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *port, 0, 0)
+      EndSelect
     EndIf
     
     ; Offset for Next Control
@@ -634,7 +736,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Vector2 Control
   ;-----------------------------------------------------------------------------
-  Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*attribute.Attribute::Attribute_t)
+  Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -675,10 +777,19 @@ Module ControlProperty
       Append(*Me,*group)
     EndIf
     
-    ; Connect Signals
-    If *attribute
-      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute,0,0)
-      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute,0,4)
+    ; Connect Signal
+    If *obj
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
+          
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
+      EndSelect
     EndIf
     
     ; Offset for Next Control
@@ -689,7 +800,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Vector3 Control
   ;-----------------------------------------------------------------------------
-  Procedure AddVector3Control(*Me.ControlProperty_t, name.s, label.s, *value.v3f32,*attribute.Attribute::Attribute_t)
+  Procedure AddVector3Control(*Me.ControlProperty_t, name.s, label.s, *value.v3f32,*obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -737,11 +848,22 @@ Module ControlProperty
       Append(*Me,*group)
     EndIf
 
-    ; Connect Signals
-    If *attribute
-      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute,0,0)
-      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute,0,4)
-      Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute,0,8)
+    ; Connect Signal
+    If *obj
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
+          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
+          
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
+          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
+          
+      EndSelect
     EndIf
     
     ; Offset for Next Control
@@ -752,7 +874,7 @@ Module ControlProperty
 ;--------------------------------------------------------------------
 ;  Add Vector4 Control
 ;--------------------------------------------------------------------
-Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*attr.Attribute::Attribute_t)
+Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*obj.Object::Object_t)
   ; Sanity Check
   ;------------------------------
   If Not *Me : ProcedureReturn : EndIf
@@ -774,26 +896,22 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*a
   ; X
   ControlGroup::Append(*group, ControlDivot::New(*attr, "XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("XLabel","X",#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-  Ctl = ControlGroup::Append(*group, ControlNumber::New(*attr, "XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-  ;If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),0) : EndIf
+  Define *xCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; Y
   ControlGroup::Append(*group, ControlDivot::New(*attr, "YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("YLabel","Y",#False,0,*Me\dx+width+20,*Me\dy,(width-20)*0.25,21 ))
-  Ctl = ControlGroup::Append(*group, ControlNumber::New(*attr, "YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-  ;If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),1) : EndIf
+  Define *yCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; Z
   ControlGroup::Append(*group, ControlDivot::New(*attr, "ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("ZLabel","Z",#False,0,*Me\dx+2*width+20,*Me\dy,(width-20)*0.25,21 ))
-  Ctl = ControlGroup::Append(*group, ControlNumber::New(*attr, "ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-  ;If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),2) : EndIf
+  Define *zCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; W
   ControlGroup::Append(*group, ControlDivot::New(*attr, "WDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("ZLabel","Z",#False,0,*Me\dx+2*width+20,*Me\dy,(width-20)*0.25,21 ))
-  Ctl = ControlGroup::Append(*group, ControlNumber::New(*attr, ">Number",*value\w,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
-  ;If *obj : *obj\SignalConnect(Ctl\SignalOnChanged(),3) : EndIf
+  Define *wCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, ">Number",*value\w,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ControlGroup::RowEnd(*group)
   ControlGroup::AppendStop(*group)
@@ -803,6 +921,26 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*a
     ControlGroup::Append(*Me\groups(),*group)
   Else
     Append(*Me,*group)
+  EndIf
+  
+  ; Connect Signal
+  If *obj
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
+        Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
+        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
+        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *wCtl, *attribute, 0, 12)
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
+        Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
+        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
+        Signal::CONNECTCALLBACK(*wCtl\on_change, OnFloatChange, *wCtl, *port, 0, 12)
+        
+    EndSelect
   EndIf
   
   
@@ -816,7 +954,7 @@ EndProcedure
   ;-----------------------------------------------------------------------------
   ; Add Quaternion Control
   ;-----------------------------------------------------------------------------
-  Procedure AddQuaternionControl(*Me.ControlProperty_t, name.s, label.s, *value.q4f32, *attr.Attribute::Attribute_t)
+  Procedure AddQuaternionControl(*Me.ControlProperty_t, name.s, label.s, *value.q4f32, *obj.Object::Object_t)
     ; Sanity Check
     ;------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -874,14 +1012,24 @@ EndProcedure
       Append(*Me,*group)
     EndIf
     
-    ; Connect Signals
-    ;---------------------------------
-    ; ---[ Connect Signal ]-------------------------------------------
+    ; Connect Signal
     If *obj
-;       Object::SignalConnect(*obj,*xCtl\slot,0)
-;       Object::SignalConnect(*obj,*yCtl\slot,1)
-;       Object::SignalConnect(*obj,*zCtl\slot,2)
-;       Object::SignalConnect(*obj,*aCtl\slot,3)
+      Select *obj\class\name
+        Case "Attribute"
+          Define *attribute.Attribute::Attribute_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
+          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
+          Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *attribute, 0, 12)
+          
+        Case "NodePort"
+          Define *port.NodePort::NodePort_t = *obj
+          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
+          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
+          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
+          Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *port, 0, 12)
+          
+      EndSelect
     EndIf
     
     ; Offset for Next Control
@@ -998,6 +1146,19 @@ EndProcedure
 ;       EndIf
       
     EndIf
+    ; Connect Signal
+  If *obj
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attribute, 0, 0)
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *port, 0, 0)
+        
+    EndSelect
+  EndIf
     
     ; Add Group to PPG
     ;---------------------------------
@@ -1781,7 +1942,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 546
-; FirstLine = 533
+; CursorPosition = 195
+; FirstLine = 153
 ; Folding = ---------
 ; EnableXP

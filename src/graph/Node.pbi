@@ -3,13 +3,12 @@ XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/UIColor.pbi"
 XIncludeFile "Types.pbi"
 
-;====================================================================
+;===============================================================================
 ; NODE MODULE IMPLEMENTATION
-;====================================================================
+;===============================================================================
 Module Node
-  
   ; ----------------------------------------------------------------------------
-  ;  Constructor
+  ;   Constructor
   ; ----------------------------------------------------------------------------
   Procedure.i New(*tree.Node::Node_t,name.s="",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     Protected *n.Node_t
@@ -24,7 +23,7 @@ Module Node
   EndProcedure
     
   ; ----------------------------------------------------------------------------
-  ;  Destructor
+  ;    Destructor
   ; ----------------------------------------------------------------------------
   Procedure Delete( *Me.Node_t )
     ; ---[ Deallocate Underlying Arrays ]---------------------------------------
@@ -35,23 +34,23 @@ Module Node
   
   EndProcedure
   
-  ;------------------------------------
-  ; UPDATE
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Update
+  ; ----------------------------------------------------------------------------
   Procedure Update(*node.Node_t)
 
   EndProcedure
   
-  ;------------------------------------
-  ; Return Node Name
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Return Node Name
+  ; ----------------------------------------------------------------------------
   Procedure.s GetName(*n.Node_t)
     ProcedureReturn(*n\type)
   EndProcedure
   
-  ;------------------------------------
-  ; Get Node Size
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Get Node Size
+  ; ----------------------------------------------------------------------------
   Procedure GetSize(*n.Node_t)
     *n\height =  Graph::#Node_TitleHeight + Graph::#Node_PortSpacing * ListSize(*n\inputs())+Graph::#Node_PortSpacing * ListSize(*n\outputs())+6
     *n\width = 120
@@ -59,18 +58,18 @@ Module Node
     *n\step2 =  ( Graph::#Node_TitleHeight +  Graph::#Node_PortSpacing * ListSize(*n\outputs()))/*n\height
   EndProcedure
 
-  ;------------------------------------
-  ; Draw Node
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Draw Node
+  ; ----------------------------------------------------------------------------
   Procedure Draw(*n.Node_t)
 
     Protected offset.i = Graph::#Node_ShadowY
     Protected radius.i = Graph::#Node_CornerRadius
     Protected border = Graph::#Node_BorderUnselected
     
-  ; -----------------------------------------------------------------------------------------------------
-  ; Vector Drawing
-  ; -----------------------------------------------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Vector Drawing
+  ; ----------------------------------------------------------------------------
   If *n\selected
     border = Graph::#Node_BorderSelected
   EndIf 
@@ -212,9 +211,9 @@ Module Node
     
   EndProcedure
   
-  ;------------------------------------
-  ; Get Node ¨Position
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Get Node Position
+  ; ----------------------------------------------------------------------------
   Procedure ViewSize(*n.Node_t)
     VectorFont(FontID(Globals::#FONT_BOLD),14 )
     *n\width = VectorTextWidth(*n\label)+32
@@ -234,9 +233,9 @@ Module Node
   EndProcedure
   
 
-  ;------------------------------------
-  ; Get Node ¨Position
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Get Node Position
+  ; ----------------------------------------------------------------------------
   Procedure ViewPosition(*n.Node_t,x.i,y.i)
     
     ;update ports view position
@@ -266,9 +265,9 @@ Module Node
     
   EndProcedure
   
-  ;------------------------------------
-  ; Is Leaf
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Is Leaf
+  ; ----------------------------------------------------------------------------
   Procedure.b IsLeaf(*n.Node_t)
     ForEach *n\inputs()
       If *n\inputs()\connected 
@@ -278,25 +277,25 @@ Module Node
     ProcedureReturn #True
   EndProcedure
   
-  ;------------------------------------
-  ;Set Color
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Set Color
+  ; ----------------------------------------------------------------------------
   Procedure SetColor(*n.Node_t,r.i,g.i,b.i)
     *n\color = RGB(r,g,b)
   EndProcedure
   
-  ;------------------------------------
-  ; Drag Node
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Drag Node
+  ; ----------------------------------------------------------------------------
   Procedure Drag(*n.Node_t,x.i,y.i)
     *n\posx + x
     *n\posy + y
     ViewPosition(*n,x,y) 
   EndProcedure
   
-  ;------------------------------------
-  ; Is Under Mouse
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Is Under Mouse
+  ; ----------------------------------------------------------------------------
   Procedure.i IsUnderMouse(*n.Node_t,x.l,y.l)
     Protected margin.i = (Graph::#Node_PortSpacing/2)
     If x>(*n\posx-margin) And x<(*n\posx+*n\width+margin) And y>(*n\posy-margin) And (y<*n\posy+*n\height+margin)
@@ -306,9 +305,9 @@ Module Node
     EndIf
   EndProcedure
   
-  ;------------------------------------
-  ; Is Inside Node
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Is Inside Node
+  ; ----------------------------------------------------------------------------
   Procedure.b InsideNode(*node.Node_t,*parent.Node_t)
     ForEach *parent\nodes()
       If *parent\nodes() = *node
@@ -318,9 +317,9 @@ Module Node
     ProcedureReturn #False
   EndProcedure
 
-  ;------------------------------------
-  ; Select Node
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Select Node
+  ; ----------------------------------------------------------------------------
   Procedure.i Pick(*n.Node_t,x.l,y.l,connect.b=#False)
     Protected margin.i = (Graph::#Node_PortSpacing/2) 
 
@@ -369,9 +368,9 @@ Module Node
   
   EndProcedure
 
-  ;------------------------------------
-  ; Select Port
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Select Port
+  ; ----------------------------------------------------------------------------
   Procedure.b PickPort(*n.Node_t,*p.NodePort::NodePort_t,id.i,x.i,y.i)
     Protected r.i = Graph::#Node_PortRadius * 4 
     Protected py.i = *n\posy+ (Graph::#Node_TitleHeight) + (id-1) *(Graph::#Node_PortSpacing)
@@ -398,9 +397,9 @@ Module Node
     
   EndProcedure
 
-  ;------------------------------------
-  ; Get Port By ID
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Get Port By ID
+  ; ----------------------------------------------------------------------------
   Procedure.i GetPortByID(*n.Node_t,id.i)
     Protected nbOutputs.i = ListSize(*n\outputs())
     If id<=nbOutputs
@@ -411,9 +410,9 @@ Module Node
     
   EndProcedure
 
-  ;------------------------------------
-  ; Get Port By Name
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Get Port By Name
+  ; ----------------------------------------------------------------------------
   Procedure.i GetPortByName(*n.Node_t,name.s)
     ForEach *n\inputs()
       If *n\inputs()\name = name : ProcedureReturn *n\inputs() :EndIf  
@@ -423,9 +422,9 @@ Module Node
     Next
   EndProcedure
 
-  ;------------------------------------
-  ; Set Ports IDs
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Set Ports IDs
+  ; ----------------------------------------------------------------------------
   Procedure.i SetInputPortID(*n.Node_t,*p.NodePort::NodePort_t,id.i = -1)
     ;if id = -1 append it at the end of the list
     Protected nb.i = ListSize(*n\outputs())+ListSize(*n\inputs())-1
@@ -449,9 +448,9 @@ Module Node
     ProcedureReturn *p\id
   EndProcedure
 
-  ;------------------------------------
-  ; Set Output Port ID
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Set Output Port ID
+  ; ----------------------------------------------------------------------------
   Procedure SetOutputPortID(*n.Node_t,*p.nodePort::NodePort_t,id.i = -1)
     ;if id = -1 append it at the end of the list
     Protected nb.i = ListSize(*n\outputs())-1
@@ -485,9 +484,9 @@ Module Node
     ProcedureReturn *p\id
   EndProcedure
 
-  ;------------------------------------
-  ; Update Ports
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Update Ports
+  ; ----------------------------------------------------------------------------
   Procedure UpdatePorts(*n.Node_t,datatype.i,datacontext.i,datastructure.i)
     ForEach *n\inputs()
       If *n\inputs()\polymorph
@@ -512,9 +511,9 @@ Module Node
     
   EndProcedure
 
-  ;------------------------------------
-  ;AddInput Port
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   AddInput Port
+  ; ----------------------------------------------------------------------------
   Procedure AddInputPort(*n.Node_t,name.s,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
     Protected *p.NodePort::NodePort_t = NodePort::New(*n,name,#False,datatype,datacontext,datastructure)
     If ListSize(*n\inputs()) : LastElement(*n\inputs()) : EndIf
@@ -524,9 +523,9 @@ Module Node
     ProcedureReturn *p
   EndProcedure
 
-  ;------------------------------------
-  ;Remove Input Port
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Remove Input Port
+  ; ----------------------------------------------------------------------------
   Procedure RemoveInputPort(*n.Node_t,id.i)
     If ListSize(*n\inputs())>1:
       SelectElement(*n\inputs(),id)
@@ -542,16 +541,16 @@ Module Node
     EndIf
   EndProcedure
   
-  ;------------------------------------
-  ;On Message
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   On Message
+  ; ----------------------------------------------------------------------------
   Procedure OnMessage(*n.Node_t,id.i)
     
   EndProcedure
 
-  ;------------------------------------
-  ;AddOutput Port
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   AddOutput Port
+  ; ----------------------------------------------------------------------------
   Procedure AddOutputPort(*n.Node_t,name.s,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
     Protected *p.NodePort::NodePort_t = NodePort::New(*n,name,#True,datatype,datacontext,datastructure)
     LastElement(*n\outputs())
@@ -561,9 +560,9 @@ Module Node
     ProcedureReturn *p
   EndProcedure
   
-  ;------------------------------------
-  ; Is Node Dirty
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Is Node Dirty
+  ; ----------------------------------------------------------------------------
   Procedure IsDirty(*n.Node_t)
     ForEach(*n\outputs())
       If *n\outputs()\dirty
@@ -572,9 +571,9 @@ Module Node
     Next
   EndProcedure
   
-  ;------------------------------------
-  ; Update Dirty
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Update Dirty
+  ; ----------------------------------------------------------------------------
   Procedure UpdateDirty(*n.Node_t)
     ForEach(*n\inputs())
       If *n\inputs()\connected
@@ -590,9 +589,9 @@ Module Node
     
   EndProcedure
   
-  ;------------------------------------
-  ; Port Affect By Time
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Port Affect By Time
+  ; ----------------------------------------------------------------------------
   Procedure PortAffectByTime(*n.Node_t, affect.b, targetName.s)
 ;     Time::AddAffectedNode(*n)
 ;     Protected *target.NodePort::NodePort_t = GetPortByName(*n, targetName)
@@ -600,9 +599,9 @@ Module Node
 ;     *target\affects() = *source
   EndProcedure
   
-  ;------------------------------------
-  ; Port Affect
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Port Affect
+  ; ----------------------------------------------------------------------------
   Procedure PortAffectByName(*n.Node_t, sourceName.s, targetName.s)
     Protected *source.NodePort::NodePort_t = GetPortByName(*n, sourceName)
     Protected *target.NodePort::NodePort_t = GetPortByName(*n, targetName)
@@ -610,17 +609,17 @@ Module Node
     *target\affects() = *source
   EndProcedure
   
-  ;------------------------------------
-  ; Port Affect
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Port Affect
+  ; ----------------------------------------------------------------------------
   Procedure PortAffectByPort(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
     AddElement(*target\affects())
     *target\affects() = *source
   EndProcedure
   
-  ;------------------------------------
-  ; Update Affects
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Update Affects
+  ; ----------------------------------------------------------------------------
   Procedure UpdateAffects(*n.Node_t)
     ForEach *n\outputs()
       ForEach *n\outputs()\affects()
@@ -633,41 +632,41 @@ Module Node
     
   EndProcedure
   
-  ;------------------------------------
-  ; Set Clean
-  ;------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Set Clean
+  ; ----------------------------------------------------------------------------
   Procedure SetClean(*n.Node_t)
     ForEach *n\inputs() : *n\inputs()\dirty = #False : Next
     ForEach *n\outputs() : *n\outputs()\dirty = #False : Next
   EndProcedure
   
-  ;----------------------------------------------
-  ; Inspect Node
-  ;----------------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   Inspect Node
+  ; ----------------------------------------------------------------------------
   Procedure Inspect(*n.Node_t)
   EndProcedure
   
-  ;----------------------------------------------
-  ; On Connection
-  ;----------------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   On Connection
+  ; ----------------------------------------------------------------------------
   Procedure OnConnect(*n.Node_t, *port.NodePort::NodePort_t)  
   EndProcedure
   
-  ;----------------------------------------------
-  ; On Disconnection
-  ;----------------------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   On Disconnection
+  ; ----------------------------------------------------------------------------
   Procedure OnDisconnect(*n.Node_t, *port.NodePort::NodePort_t)
   EndProcedure
 
   Class::DEF(Node)
 EndModule
 
-; ============================================================================
+; ==============================================================================
 ;  EOF
-; ============================================================================
+; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 183
+; CursorPosition = 632
+; FirstLine = 606
 ; Folding = ------
 ; EnableThread
 ; EnableXP

@@ -122,28 +122,22 @@ Module SimpleTopoNode
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *oVal.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
-    ;   Protected *topo.CAttributePolymeshTopology_t = oVal\GetValue(0)
-    Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
+
+    Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
     Select shape
         ; Box Shape
       Case 0
-        ;PolymeshGeometry::Cube(*mesh\geometry,radius,u,v,w)
-        PolymeshGeometry::CubeTopology(*topo,radius,u,v,w)
+        Topology::Cube(*topo,radius,u,v,w)
       Case 1
-        ;PolymeshGeometry::Sphere(*mesh\geometry,radius,u,v)
-        PolymeshGeometry::SphereTopology(*topo,radius,u,v)
+        Topology::Sphere(*topo,radius,u,v)
       Case 2
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::GridTopology(*topo,radius,u,v)
+        Topology::Grid(*topo,radius,u,v)
       Case 3
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::CylinderTopology(*topo,radius,u,v,w,#False,#False)
+        Topology::Cylinder(*topo,radius,u,v,w,#False,#False)
       Case 4
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::BunnyTopology(*topo)
+        Topology::Bunny(*topo)
       Case 5
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::TorusTopology(*topo)
+        Topology::Torus(*topo)
       Default
         *input = Node::GetPortByName(*node,"Geometry")
         If *input\connected
@@ -154,9 +148,6 @@ Module SimpleTopoNode
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
-    
-    
-    ;MessageRequester("PRIMITIVE MESH NODE", "EAVALUATE CALLED >>> "+Str(CArray::GetCount(*topo\vertices)))
   EndProcedure
   
   Procedure Terminate(*node.SimpleTopoNode_t)
@@ -193,7 +184,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 119
+; CursorPosition = 98
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

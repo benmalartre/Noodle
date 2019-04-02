@@ -10,7 +10,6 @@ XIncludeFile "../graph/Compound.pbi"
 ; ============================================================================
 Module Connexion
   UseModule Graph
-  
   ;---------------------------------------------------
   ; Constructor
   ;---------------------------------------------------
@@ -596,7 +595,6 @@ Module Connexion
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 552
-; FirstLine = 516
+; CursorPosition = 13
 ; Folding = ----
 ; EnableXP

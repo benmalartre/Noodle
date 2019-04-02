@@ -10,7 +10,6 @@ XIncludeFile "Types.pbi"
 ;  NODE PORT MODULE IMPLEMENTATION
 ; ============================================================================
 Module NodePort
-  
   ;------------------------------------------------------------
   ; Constructor
   ;------------------------------------------------------------
@@ -232,10 +231,9 @@ Module NodePort
         
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *data.CArray::CArrayPtr = CArray::newCArrayPtr()
-        ;       *data\Append(newCAttributePolymeshTopology())
         Protected *topo.Geometry::Topology_t = Topology::New()
         CArray::AppendPtr(*data,*topo)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *topo, *port\readonly, *port\constant, *port\writable)
+        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *data, *port\readonly, *port\constant, *port\writable)
         
       Case Attribute::#ATTR_TYPE_LOCATION
         *data.CArray::CArrayPtr = CArray::newCArrayPtr()
@@ -705,7 +703,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 254
-; FirstLine = 218
+; CursorPosition = 235
+; FirstLine = 191
 ; Folding = ----
 ; EnableXP

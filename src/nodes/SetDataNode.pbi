@@ -115,60 +115,6 @@ Module SetDataNode
       *node\attribute = #Null
     EndIf
     
-    
-  ;   Protected *obj.C3DObject_t = *node\parent3dobject
-  ;   Protected *data.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
-  ;   Protected *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
-  ;   Protected refname.s = NodePort::AcquireReferenceData(*ref)
-  ;   
-  ;   If refname = ""
-  ;     *node\state = #RAA_GraphNode_StateUndefined
-  ;     *node\errorstr = ""
-  ;     *node\attribute = #Null
-  ;     ProcedureReturn
-  ;   Else
-  ;     Debug "[SetDataNode] Reference Name : "+refname
-  ;   EndIf
-  ;   
-  ;   Protected fields.i = CountString(refname, ".")+1
-  ;   Protected base.s = StringField(refname, 1,".")
-  ; 
-  ;   If base ="Self" Or base ="This"
-  ;     *node\attribute = *obj\m_attributes(StringField(refname, 2,"."))
-  ;     Debug "Search Attribute Named : "+StringField(refname, 2,".")+" ---> "+Str(*node\attribute)
-  ;     
-  ;     If Not *node\attribute
-  ;       ; Here we create a nex Attribute
-  ;       *node\state = #RAA_GraphNode_StateInvalid
-  ;     Else
-  ;       *data\currenttype = *node\attribute\datatype    
-  ;       Debug "Attribute Name : "+*node\attribute\name
-  ;       Debug "Input Current Type : "+Str(*data\currenttype)
-  ;       Debug "Attribute Current Type : "+Str(*node\attribute \datatype)
-  ;       
-  ;       If *data\connected
-  ;         If Not *data\source\currenttype = *node\attribute\datatype
-  ;           *node\state = #RAA_GraphNode_StateError
-  ;           *node\errorstr = "[SetDataNode] input data type doesn't match output data type"
-  ;           Debug "[SetDataNode] failed get attribute"
-  ;         Else
-  ;           *node\state = #RAA_GraphNode_StateOK
-  ;           *node\errorstr = ""
-  ;           Debug "[SetDataNode] succesfully get attribute"
-  ;         EndIf
-  ;       Else
-  ;         *node\state = #RAA_GraphNode_StateOK
-  ;       EndIf
-  ;       
-  ;       
-  ;     EndIf
-  ;     
-  ;   Else
-  ;     *node\attribute = #Null
-  ;     *node\state = #RAA_GraphNode_StateUndefined
-  ;     *node\errorstr = "[SetDataNode] input data is undefined"
-  ;   EndIf
-    
   EndProcedure
 
   
@@ -185,7 +131,7 @@ Module SetDataNode
   
   Procedure Evaluate(*node.SetDataNode_t)
     FirstElement(*node\inputs())
-    Protected *input.NodePort::NodePort_t = *node\inputs();Node::GetPortByName(*node,"Data")
+    Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected x, i, size_t
     Protected v.v3f32
     ;NodePort::Echo(*input)
@@ -288,6 +234,7 @@ Module SetDataNode
 
         Case Attribute::#ATTR_TYPE_TOPOLOGY
           If *node\attribute\name = "Topology"
+            Debug "TOPOLOGY SET DATA .............................."
             Protected *tIn.Carray::CArrayPtr = *in_data
             Protected *tOut.Carray::CArrayPtr = *node\attribute\data
            
@@ -350,9 +297,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 284
-; FirstLine = 275
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 119
 ; Folding = --
 ; EnableThread
 ; EnableXP
