@@ -60,6 +60,7 @@ DeclareModule ControlNumber
   
   Declare New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlNumber_t)
+  Declare Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlNumber_t, value.s )
   Declare.s GetValue( *Me.ControlNumber_t )
@@ -84,6 +85,9 @@ DeclareModule ControlNumber
     ControlNumberVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
    
   EndDataSection
   
@@ -280,9 +284,9 @@ Module ControlNumber
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
-    Procedure hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
@@ -526,7 +530,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If Not *ev_data : ProcedureReturn : EndIf
       
       ; ---[ Draw Control ]---------------------------------------------------
-      hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+      Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
@@ -573,7 +577,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ; ---[ Show Text From Start ]-------------------------------------------
       *Me\posG = 1 : *Me\posW = 1
       ; ---[ Redraw Me ]------------------------------------------------------
-      ;Me\Invalidate()
       Control::Invalidate(*Me)
       
       ; ---[ Processed ]------------------------------------------------------
@@ -657,7 +660,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
           Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
           ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
@@ -716,7 +718,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         Control::Invalidate(*Me)
         
         Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-        PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
         
         ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -865,7 +866,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           Control::Invalidate(*Me)
           
           Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
           
           ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -1180,9 +1180,6 @@ EndProcedure
 ; ---[ Free ]-----------------------------------------------------------------
 Procedure Delete( *Me.ControlNumber_t )
   Object::TERM(ControlNumber)
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  FreeMemory( *Me )
-  
 EndProcedure
 ;}
 
@@ -1204,18 +1201,17 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+Procedure.i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlNumber_t = AllocateMemory( SizeOf(ControlNumber_t) )
   
   Object::INI(ControlNumber)
-  *Me\object = *object
-  
+
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type         = Control::#NUMBER
   *Me\name         = name
-  *Me\gadgetID     = #Null
+  *Me\gadgetID     = gadgetID
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
@@ -1272,7 +1268,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 658
-; FirstLine = 655
+; CursorPosition = 578
+; FirstLine = 562
 ; Folding = ----
 ; EnableXP

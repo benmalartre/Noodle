@@ -31,8 +31,10 @@ DeclareModule Control
     #COMBO
     #ENUM
     #LABEL
+    #SLIDER
     #DIVOT
     #EDIT
+    #INPUT
     #NUMBER
     #GROUP
     #COLORWHEEL
@@ -67,7 +69,6 @@ DeclareModule Control
   ; ----------------------------------------------------------------------------
   Structure Control_t  Extends Object::Object_t
     *parent    .Control_t
-    *object    .Object::Object_t
     type       .i
     name       .s
     gadgetID   .i
@@ -312,8 +313,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 188
+; CursorPosition = 36
+; FirstLine = 4
 ; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

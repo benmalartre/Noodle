@@ -58,8 +58,6 @@ Module Nodes
   EndProcedure
 EndModule
 
-
-
 ;----------------------------------------------------------------------------
 ; Nodes
 ;----------------------------------------------------------------------------
@@ -84,6 +82,7 @@ CompilerEndIf
   XIncludeFile "TimeNode.pbi"
   
   ; Arrays
+  XIncludeFile "SelectInArrayNode.pbi"
   XIncludeFile "BuildArrayNode.pbi"
   XIncludeFile "BuildArrayFromConstantNode.pbi"
   XIncludeFile "BuildIndexArrayNode.pbi"
@@ -128,11 +127,11 @@ CompilerEndIf
   XIncludeFile "AudioDACNode.pbi"
   XIncludeFile "AudioArythmeticNode.pbi"
   XIncludeFile "AudioGeneratorNode.pbi"
+  XIncludeFile "AudioReaderNode.pbi"
   XIncludeFile "AudioNoiseNode.pbi"
   XIncludeFile "AudioSineWaveNode.pbi"
   XIncludeFile "AudioEffectNode.pbi"
 
-  
   ; Topology
   XIncludeFile "SimpleTopoNode.pbi"
   XIncludeFile "TransformTopoNode.pbi"
@@ -150,8 +149,8 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 90
+; CursorPosition = 129
+; FirstLine = 89
 ; Folding = --
 ; EnableThread
 ; EnableXP

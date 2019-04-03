@@ -197,7 +197,6 @@ Module ImplodeNodesCmd
     *info\tree = *tree
     *info\nodes = CArray::newCArrayPtr()
     Protected i
-    Debug "Create Compound Get Infos.............................................."
     Protected *node.Node::Node_t
     If *nodes
       For i=0 To CArray::GetCount(*nodes)-1
@@ -206,7 +205,6 @@ Module ImplodeNodesCmd
         CArray::AppendPtr(*info\nodes,*node)
       Next
     EndIf
-    Debug "Done ..................................................................."
     *info\parent = *parent
     ProcedureReturn *info
   EndProcedure
@@ -238,8 +236,8 @@ Module ImplodeNodesCmd
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 179
+; CursorPosition = 207
+; FirstLine = 161
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -1,20 +1,22 @@
-﻿XIncludeFile "Globals.pbi"
+﻿; ============================================================================
+;   CORE MODULES
+; ============================================================================
+XIncludeFile "Globals.pbi"
 XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
 XIncludeFile "Arguments.pbi"
 XIncludeFile "Callback.pbi"
 XIncludeFile "Signal.pbi"
-;XIncludeFile "Slot.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
 XIncludeFile "Pose.pbi"
 XIncludeFile "Image.pbi"
 
-
-
-
+; ============================================================================
+;   OPENGL MODULES
+; ============================================================================
 XIncludeFile "../libs/OpenGL.pbi"
 CompilerIf #USE_GLFW
   XIncludeFile "../libs/GLFW.pbi"
@@ -29,6 +31,9 @@ XIncludeFile "../opengl/ScreenQuad.pbi"
 XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../opengl/CubeMap.pbi"
 
+; ============================================================================
+;   OBJECT MODULES
+; ============================================================================
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
@@ -47,6 +52,9 @@ XIncludeFile "../objects/Poisson.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Octree.pbi"
 
+; ============================================================================
+;   LAYER MODULES
+; ============================================================================
 XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
 XIncludeFile "../layers/Bitmap.pbi"
@@ -62,6 +70,9 @@ XIncludeFile "../layers/SSAO.pbi"
 XIncludeFile "../layers/Blur.pbi"
 XIncludeFile "../layers/Strokes.pbi"
 
+; ============================================================================
+;   GRAPH MODULES
+; ============================================================================
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/CompoundPort.pbi"
@@ -72,6 +83,9 @@ XIncludeFile "../graph/Connexion.pbi"
 XIncludeFile "../graph/Graph.pbi"
 XIncludeFile "../graph/Tree.pbi"
 
+; ============================================================================
+;   CONTROL MODULES
+; ============================================================================
 XIncludeFile "../controls/Dummy.pbi"
 XIncludeFile "../controls/Button.pbi"
 XIncludeFile "../controls/Check.pbi"
@@ -89,9 +103,15 @@ XIncludeFile "../controls/Knob.pbi"
 ; XIncludeFile "../controls/PopupMenu.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
 
+; ============================================================================
+;   COMMAND MODULES
+; ============================================================================
 XIncludeFile "../commands/Scene.pbi"
 XIncludeFile "../commands/Graph.pbi"
 
+; ============================================================================
+;   UI MODULES
+; ============================================================================
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
@@ -644,7 +664,6 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 6
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

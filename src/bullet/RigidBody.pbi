@@ -353,6 +353,67 @@ Module BulletRigidBody
     
   EndProcedure
   
+  ;-----------------------------------------------
+  ; Create Rigid Body From Instance Cloud
+  ;-----------------------------------------------
+  Procedure BTCreateRigidBodyFromInstanceCloud(*cloud.InstanceCloud::InstanceCloud_t,shapetype.i,mass.f,*world.Bullet::btDynamicsWorld=#Null)
+    Protected *shape.Bullet::btCollisionShape = #Null
+    Protected *s.Geometry::Shape_t = *cloud\shape
+    Select shapetype
+      Case Bullet::#GROUNDPLANE_SHAPE
+          Protected norm.Math::v3f32
+          Vector3::Set(norm,0,1,0)
+        *shape = Bullet::BTNewGroundPlaneShape(norm,1)
+        
+      Case Bullet::#BOX_SHAPE
+        *shape = Bullet::BTNewBoxShape(0.5,0.5,0.5)
+    
+      Case Bullet::#SPHERE_SHAPE
+        *shape = Bullet::BTNewSphereShape(0.5)
+      Case Bullet::#CYLINDER_SHAPE
+        *shape = Bullet::BTNewCylinderShape(0.5,1)
+      Case Bullet::#CAPSULE_SHAPE
+        *shape = Bullet::BTNewCapsuleShape(0.5,1)
+      Case Bullet::#CONE_SHAPE
+        *shape = Bullet::BTNewConeShape(0.5,1)
+     Case Bullet::#CONVEXHULL_SHAPE
+        ; only works on Polymesh
+        If Not *cloud\type = Object3D::#Object3D_InstanceCloud : ProcedureReturn :EndIf
+        *shape = BTConvexHullCollisionShape(*obj)
+       Case Bullet::#CONVEXDECOMPOSITION_SHAPE
+        ; only works on Polymesh
+        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+       *shape =  BTConvexDecompositionCollisionShape(*obj)
+        
+      Case Bullet::#TRIANGLEMESH_SHAPE
+        ; only works on Polymesh
+        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+        
+        *shape = BTTriangleMeshCollisionShape(*obj)
+  
+      Case Bullet::#GIMPACT_SHAPE
+        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+        Protected *mesh.Polymesh::Polymesh_t = *obj
+        Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+        *shape = BTGImpactCollisionShape(*obj)
+
+    EndSelect 
+    
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       CArray::ShiftAlign(*obj\geom\a_positions\data, *obj\geom\nbpoints, 12, 16) 
+;     CompilerEndIf
+    
+    If *shape
+      Define nbp = *cloud\geom\nbpoints
+      
+      Protected *body.Bullet::btRigidBody = BTAddRigidBodyFromShape(*obj,*shape,mass,*world)
+;       ProcedureReturn *body
+    Else
+      MessageRequester("BULLET", "Can Not Create Rigid Body Shape For Instance Cloud "+*cloud\name)
+    EndIf
+
+  EndProcedure
+  
   
   ;-----------------------------------------------
   ; Create Soft Body From 3D Object
@@ -407,7 +468,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 8
+; CursorPosition = 358
+; FirstLine = 354
 ; Folding = ---
 ; EnableXP

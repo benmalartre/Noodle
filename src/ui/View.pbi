@@ -963,7 +963,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 763
-; FirstLine = 744
+; CursorPosition = 588
+; FirstLine = 584
 ; Folding = -------
 ; EnableXP

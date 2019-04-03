@@ -31,7 +31,7 @@ DeclareModule ControlLabel
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
+  Declare New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
   Declare Delete(*Me.ControlLabel_t)
   Declare OnEvent( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -334,7 +334,7 @@ Module ControlLabel
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
+  Procedure.i New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlLabel_t = AllocateMemory( SizeOf(ControlLabel_t) )
@@ -342,12 +342,11 @@ Module ControlLabel
 ;     *Me\VT = ?ControlLabelVT
 ;     *Me\classname = "CONTROLLABEL"
     Object::INI(ControlLabel)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#LABEL
     *Me\name     = name
-    *Me\gadgetID = #Null
+    *Me\gadgetID = gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -372,7 +371,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 347
-; FirstLine = 317
+; CursorPosition = 33
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

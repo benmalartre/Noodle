@@ -35,6 +35,8 @@ DeclareModule PropertyUI
   Declare ExpandProperty(*Me.PropertyUI_t, index.i)
   Declare DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
   Declare DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+  Declare OnDeleteProperty(*Me.PropertyUI_t, index.i)
+  Declare OnExpandProperty(*Me.PropertyUI_t, expand.b, index.i)
   
   DataSection 
     PropertyUIVT: 
@@ -153,7 +155,6 @@ Module PropertyUI
               If *Me\props()\gadgetID = currentGadget
                  ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
               EndIf
-              ev_datas\y + *Me\props()\sizY
             Next
           EndIf
 
@@ -168,7 +169,19 @@ Module PropertyUI
     EndIf
     
   EndProcedure
-
+  
+  ; ----------------------------------------------------------------------------
+  ;   CALLBACKS
+  ; ----------------------------------------------------------------------------
+  Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
+    PropertyUI::DeleteProperty(*Me, *prop)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteProperty, Arguments::#PTR, Arguments::#PTR)
+  
+  Procedure OnExpandProperty( *Me.PropertyUI_t, expand.b, index.i)
+    ;PropertyUI::DeletePropertyByIndex(*Me, index)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnExpandProperty, Arguments::#PTR, Arguments::#BOOL, Arguments::#INT)
   
   ; ----------------------------------------------------------------------------
   ;  Terminate
@@ -275,18 +288,18 @@ Module PropertyUI
       Define *first = @*Me\props()
     EndIf
     
-    ForEach *Me\props()
-      If *Me\props()\object = *node
-        If ListSize(*Me\props()) > 1 And index > 0
-          Define *current = @*Me\props()
-          SwapElements(*Me\props(), *current, *first)
-          OnEvent(*Me, #PB_Event_SizeWindow)
-        EndIf
-        
-        ProcedureReturn #True
-      EndIf
-      index + 1
-    Next
+;     ForEach *Me\props()
+;       If *Me\props()\object = *node
+;         If ListSize(*Me\props()) > 1 And index > 0
+;           Define *current = @*Me\props()
+;           SwapElements(*Me\props(), *current, *first)
+;           OnEvent(*Me, #PB_Event_SizeWindow)
+;         EndIf
+;         
+;         ProcedureReturn #True
+;       EndIf
+;       index + 1
+;     Next
     ProcedureReturn #False
   EndProcedure
   
@@ -354,6 +367,9 @@ Module PropertyUI
             Case Attribute::#ATTR_TYPE_REFERENCE
               ControlProperty::AddReferenceControl(*p,\name,\reference,*node\inputs())
               
+            Case Attribute::#ATTR_TYPE_FILE
+              ControlProperty::AddFileControl(*p,\name,\reference,*node\inputs())
+              
             Case Attribute::#ATTR_TYPE_STRING
               Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddStringControl(*p,\name,CArray::GetValueStr(*sVal,0),*node\inputs())
@@ -369,9 +385,7 @@ Module PropertyUI
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\width)
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
     
-    Protected *head.ControlHead::ControlHead_t = *p\head
-;     Object::SignalConnect(*Me, *head\ondelete_signal, 0)
-;     Object::SignalConnect(*Me, *head\onexpand_signal, 1)
+    ProcedureReturn *p
 
   EndProcedure
   
@@ -382,7 +396,11 @@ Module PropertyUI
     AddElement(*Me\props())
     *Me\props() = *prop
     *Me\prop = *prop
-    *Me\anchorY + *prop\dy
+    If *prop\head
+      Define idx = ListSize(*Me\props())-1
+      Signal::CONNECTCALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
+    EndIf
+    
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -393,7 +411,9 @@ Module PropertyUI
     Protected cName.s = *object\class\name
     If Right(cName,4) = "Node"
       Protected *node.Node::Node_t = *object
-      SetupFromNode(*Me,*node)
+      Protected *prop.ControlProperty::ControlProperty_t = SetupFromNode(*Me,*node)
+      PropertyUI::AddProperty(*Me, *prop)
+      
     Else
       Protected *obj.Object3D::Object3D_t = *object
        SetupFromObject3D(*Me,*obj)
@@ -466,23 +486,29 @@ Module PropertyUI
   Procedure DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY.i = 0
-    
+    Protected toRemove = -1
+    Protected idx = 0
     ForEach *Me\props()
-      Debug *Me\props()
+      
       If *Me\props() = *prop
         offY = *Me\props()\sizY
-        ControlProperty::Delete(*Me\props())
-        DeleteElement(*Me\props())
+        toRemove = idx
         dirty = #True
-        Break
       Else
         If dirty
           *Me\props()\posY - offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+          ResizeGadget(*Me\props()\gadgetID,*Me\props()\posX,*Me\props()\posY,*Me\width, *Me\props()\sizY)
         EndIf
       EndIf
+      idx + 1
     Next
     
+    If toRemove > -1 
+      SelectElement(*Me\props(), toRemove)
+      DeleteElement(*Me\props())
+      ControlProperty::Delete(*prop)
+    EndIf
+
     If dirty
       If ListSize(*Me\props())
         *Me\anchorY - offY
@@ -496,14 +522,21 @@ Module PropertyUI
   ;  Structure
   ; ----------------------------------------------------------------------------
   Procedure DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+    SelectElement(*Me\props(), index)
+    Define offY = *Me\props()\sizY
+    ControlProperty::Delete(*Me\props())
+    DeleteElement(*Me\props())
+    While NextElement(*Me\props())
+      *Me\props()\posY - offY
+    Wend
   EndProcedure
   
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 350
-; FirstLine = 307
-; Folding = ----
+; CursorPosition = 517
+; FirstLine = 476
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

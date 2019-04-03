@@ -38,6 +38,7 @@ DeclareModule ControlColor
   
   Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
+  Declare Draw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetRed(*Me.ControlColor_t)
   Declare SetGreen(*Me.ControlColor_t)
@@ -51,6 +52,9 @@ DeclareModule ControlColor
     ControlColorVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
   EndDataSection
 
   
@@ -66,7 +70,7 @@ Module ControlColor
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
   
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
@@ -200,7 +204,7 @@ Module ControlColor
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -409,10 +413,6 @@ Module ControlColor
   ; ============================================================================
   Procedure Delete( *Me.ControlColor_t )
     Object::TERM(ControlColor)
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,ControlColor_t)
-    FreeMemory( *Me )
-    
   EndProcedure
   
   
@@ -425,9 +425,7 @@ Module ControlColor
     Protected *Me.ControlColor_t = AllocateMemory( SizeOf(ControlColor_t) )
     
     Object::INI(ControlColor)
-    
-    *Me\object = *object
-    
+
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#COLOR
     *Me\name       = name
@@ -459,8 +457,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 356
-; FirstLine = 343
+; CursorPosition = 56
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

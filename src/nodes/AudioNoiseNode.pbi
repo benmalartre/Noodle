@@ -3,22 +3,20 @@ XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../libs/STK.pbi"
+XIncludeFile "AudioNode.pbi"
 
 ; ==================================================================================================
 ; AUDIO NOISE GENERATOR NODE MODULE DECLARATION
 ; ==================================================================================================
 DeclareModule AudioNoiseNode
-  Structure AudioNoiseNode_t Extends Node::Node_t
-    playing.b
-    mute.b
-    *node.STK::GeneratorStream
+  Structure AudioNoiseNode_t Extends AudioNode::AudioNode_t
     seed.i
   EndStructure
   
   ;------------------------------
   ;Interface
   ;------------------------------
-  Interface IAudioNoiseNode Extends Node::INode 
+  Interface IAudioNoiseNode Extends AudioNode::IAudioNode 
   EndInterface
   
   Declare New(*tree.Tree::Tree_t,type.s="AudioNoise",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
@@ -51,14 +49,12 @@ Module AudioNoiseNode
   ;------------------------------
   Procedure Init(*node.AudioNoiseNode_t)
     ; input ports
-    Protected *mute.NodePort::NodePort_t = Node::AddInputPort(*node,"Mute",Attribute::#ATTR_TYPE_BOOL)
+    AudioNode::Init(*node)
     Protected *seed.NodePort::NodePort_t = Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
-    
-    ; output port
-    Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_AUDIO)
     
     ; attributes affects
     Node::PortAffectByName(*node, "Mute", "Output")
+    Node::PortAffectByName(*node, "Volume", "Output")
     Node::PortAffectByName(*node, "Seed", "Output")
     
     *node\label = "AudioNoise"
@@ -70,15 +66,20 @@ Module AudioNoiseNode
     SelectElement(*node\inputs(), 0)
     Protected *mute.NodePort::NodePort_t = *node\inputs()
     SelectElement(*node\inputs(), 1)
+    Protected *volume.NodePort::NodePort_t = *node\inputs()
+    SelectElement(*node\inputs(), 2)
     Protected *seed.NodePort::NodePort_t = *node\inputs()
     
     Protected *aMute.CArray::CArrayBool = NodePort::AcquireInputData(*mute)
+    Protected *aVolume.CArray::CArrayFloat = NodePort::AcquireInputData(*volume)
     Protected *aSeed.CArray::CArrayFloat = NodePort::AcquireInputData(*seed)
      
     *node\seed = CArray::GetValue(*aSeed, 0)
+    *node\volume = CArray::GetValue(*aVolume, 0)
     
     If *node\node
-      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_SEED, *node\seed)
+      STK::SetNodeVolume(*node\node, *node\volume)
+      STK::SetGeneratorScalar(*node\node, STK::#GEN_SEED, *node\seed)
     EndIf
     
     *node\label = "Noise Seed : "+Str(*node\seed)
@@ -91,20 +92,20 @@ Module AudioNoiseNode
   Procedure OnConnect(*node.AudioNoiseNode_t, *port.NodePort::NodePort_t)
     If *port\name = "Output"
       
-      Define *stream.STK::GeneratorStream
+      Define *stream.STK::Stream
       
       Define *target.NodePort::NodePort_t = *port\targets()
       Define *dst.Node::Node_t = *target\node
       If *dst\class\name = "AudioDACNode"
         Define *DAC.AudioDACNode::AudioDACNode_t = *dst
         *stream = *DAC\node
-        *node\node = STK::AddGenerator(*stream, STK::#NOISE_GENERATOR, 128, #True)
+        *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
       Else
         Define *audio.AudioNode::AudioNode_t = *dst
         If *audio And *audio\node
           *stream = STK::GetStream(*audio\node)
           If *stream
-            *node\node = STK::AddGenerator(*stream, STK::#NOISE_GENERATOR, 128, #False)
+            *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #False)
           EndIf
         EndIf
         
@@ -158,7 +159,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 64
+; CursorPosition = 81
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

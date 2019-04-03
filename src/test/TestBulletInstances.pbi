@@ -142,36 +142,40 @@ Protected *t.Transform::Transform_t
 Protected color.c4f32
 Protected factor.v3f32
 
- *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("RigidBodies",Shape::#SHAPE_SPHERE)
+*cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("RigidBodies",Shape::#SHAPE_TEAPOT)
+Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
+;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
+Object3D::AddChild(*root,*mesh)
+
+Object3D::SetShader(*mesh,*s)
 Vector3::Set(factor,1,1,1)
 Color::Set(color,1.0,0.5,0.4,1)
   For x=0 To 7
     For y=0 To 1
       For z=0 To 7
-        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
-        Object3D::SetShader(*mesh,*s)
-        ;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
-        Object3D::AddChild(*root,*mesh)
-
-        ;*mesh\Sphere()
-        ;OPolymeshGeometry_Sphere(*mesh\GetGeometry(),1,12,12)
-        *t.Transform::Transform_t = *mesh\localT
-        Vector3::Set(p,x*2-10,10*2+y,z*2-10)
-        Vector3::SetFromOther(*t\t\pos,p)
-
-        Quaternion::SetFromAxisAngleValues(q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
-        Quaternion::SetFromOther(*t\t\rot,q)
         
-        Vector3::Set(*t\t\scl,3,3,3)
-        *t\srtdirty = #True
-        Object3D::SetGlobalTransform(*mesh,*t)
-        Object3D::UpdateTransform(*mesh,*root\globalT)
-        BulletRigidBody::BTCreateRigidBodyFrom3DObject(*mesh,Bullet::#CONVEXHULL_SHAPE,1.0,Bullet::*bullet_world)
-        Protected *body.Bullet::btRigidBody = *mesh\rigidbody
-        Bullet::BTSetAngularFactorF(*body,0.5)
-        Bullet::BTSetFriction(*body,10)
-        Color::Randomize(color)
-        PolymeshGeometry::SetColors(*mesh\geom,color)
+        
+        
+
+;         ;*mesh\Sphere()
+;         ;OPolymeshGeometry_Sphere(*mesh\GetGeometry(),1,12,12)
+;         *t.Transform::Transform_t = *mesh\localT
+;         Vector3::Set(p,x*2-10,10*2+y,z*2-10)
+;         Vector3::SetFromOther(*t\t\pos,p)
+; 
+;         Quaternion::SetFromAxisAngleValues(q,Random(255)/255,Random(255)/255,Random(255)/255,Random(360))
+;         Quaternion::SetFromOther(*t\t\rot,q)
+;         
+;         Vector3::Set(*t\t\scl,3,3,3)
+;         *t\srtdirty = #True
+;         Object3D::SetGlobalTransform(*mesh,*t)
+;         Object3D::UpdateTransform(*mesh,*root\globalT)
+;         BulletRigidBody::BTCreateRigidBodyFrom3DObject(*mesh,Bullet::#CONVEXHULL_SHAPE,1.0,Bullet::*bullet_world)
+;         Protected *body.Bullet::btRigidBody = *mesh\rigidbody
+;         Bullet::BTSetAngularFactorF(*body,0.5)
+;         Bullet::BTSetFriction(*body,10)
+;         Color::Randomize(color)
+;         PolymeshGeometry::SetColors(*mesh\geom,color)
       Next z
     Next y
   Next x
@@ -322,8 +326,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 268
-; FirstLine = 263
+; CursorPosition = 177
+; FirstLine = 128
 ; Folding = --
 ; EnableThread
 ; EnableXP

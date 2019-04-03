@@ -127,7 +127,7 @@ Module AudioEffectNode
       EndIf
       
     ElseIf *port\name = "Output"
-      Define *stream.STK::GeneratorStream
+      Define *stream.STK::Stream
       
       Define *target.NodePort::NodePort_t = *port\targets()
       Define *dst.Node::Node_t = *target\node
@@ -201,7 +201,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 182
-; FirstLine = 142
+; CursorPosition = 129
+; FirstLine = 125
 ; Folding = --
 ; EnableXP

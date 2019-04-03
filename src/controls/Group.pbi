@@ -31,7 +31,7 @@ DeclareModule ControlGroup
     OnClick()
   EndInterface
   
-  Declare New( *object.Object::Object_t,name.s, label.s,canvasID=-1, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Declare New( gadgetID.i, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
   Declare Pick(*Me.ControlGroup_t)
@@ -884,14 +884,13 @@ EndProcedure
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(*object.Object::Object_t, name.s, label.s,canvasID=-1, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Procedure.i New(gadgetID.i, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlGroup_t = AllocateMemory( SizeOf(ControlGroup_t) )
   
     
     Object::INI(ControlGroup)
-    *Me\object = *object
     
     ; ---[ Minimum Width ]------------------------------------------------------
     If width < 50 : width = 50 : EndIf
@@ -899,10 +898,10 @@ EndProcedure
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#GROUP
     *Me\name       = name
-    If Not IsGadget(canvasID)
+    If Not IsGadget(gadgetID)
       *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
     Else
-      *Me\gadgetID = canvasID
+      *Me\gadgetID = gadgetID
     EndIf
     
     *Me\imageID    = CreateImage( #PB_Any, width, height )
@@ -937,7 +936,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 881
-; FirstLine = 866
+; CursorPosition = 33
+; FirstLine = 22
 ; Folding = ---0
 ; EnableXP

@@ -37,7 +37,7 @@ DeclareModule ControlTimeline
     down.b
     
     ; timer
-    timer.i
+    timer.Time::Timeable_t
     window.i
     
     ; Nb Controls
@@ -84,7 +84,7 @@ DeclareModule ControlTimeline
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New(*object.Object::Object_t, windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
+  Declare New( windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
   Declare Delete(*Me.ControlTimeline_t)
   Declare OnEvent( *Me.ControlTimeline_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare Draw( *Me.ControlTimeline_t)
@@ -102,7 +102,7 @@ DeclareModule ControlTimeline
   Declare SetStartRange( *Me.ControlTimeline_t, frame.i)
   Declare SetEndRange( *Me.ControlTimeline_t,frame.i)
   Declare SetCurrentFrame( *Me.ControlTimeline_t,frame)
-  
+  Declare OnTimer(*Me.ControlTimeline_t)
   DataSection
     ControlTimelineVT:
     Data.i @OnEvent() ; mandatory override
@@ -265,19 +265,21 @@ Module ControlTimeline
     hlpDrawPickImage( *Me)
   EndProcedure
   
-  ; ---[ Timer Event]-----------------------------------------------------------
-  Procedure OnTimer(*Me.ControlTimeline_t)
-    Protected Me.IControlTimeline = *Me
-    If Time::play = #True
-      If Time::forward
-        NextFrame(*Me)
-      Else
-        PreviousFrame(*Me)
+  Procedure OnTimer(*Me.Time::Timeable_t)
+    Define *timeline.ControlTimeline_t = *Me\obj
+    Repeat
+      Delay(*Me\delay)
+      If Time::play = #True
+        If Time::forward
+          NextFrame(*timeline)
+        Else
+          PreviousFrame(*timeline)
+        EndIf
       EndIf
-  
-      PostEvent(Globals::#EVENT_TIME_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
       
-    EndIf
+      PostEvent(Globals::#EVENT_TIME_CHANGED,EventWindow(),*timeline,#Null,@*timeline\name)  
+      
+    ForEver
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -843,7 +845,7 @@ Module ControlTimeline
       ;--- [ Start Playback / Create Timer Event ]------------------------------
       Time::play = #True
       Time::forward = forward
-      *Me\timer = AddWindowTimer(*Me\window, #TIMER, 1000/Time::framerate)
+      Time::StartTimer(*Me\timer, @OnTimer(), 1000/Time::framerate)
   
       If forward
         NextFrame(*Me)
@@ -875,8 +877,7 @@ Module ControlTimeline
         EndIf
         If *Me\timer <> #Null :
   ;         raaDeleteTimer(*Me\timer) : EndIf
-          RemoveWindowTimer(*Me\window,#TIMER)
-          *Me\timer = #Null
+          Time::StopTimer(*Me\timer)
         EndIf
         
       EndIf
@@ -1052,13 +1053,12 @@ Module ControlTimeline
   ; ============================================================================
   ;{
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New(*object.Object::Object_t,windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
+  Procedure.i New(windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
     
     Object::INI(ControlTimeline)
-    *Me\object = *object
     
     *Me\window = windowID
     ; ---[ Minimum Width ]------------------------------------------------------
@@ -1075,6 +1075,9 @@ Module ControlTimeline
     *Me\sizY       = height
     
     *Me\controls = 0
+    *Me\timer\callback = @OnTimer()
+    *Me\timer\obj = *Me
+    *Me\timer\delay = 1000 / Time::FRAMERATE
     
     ; ---[ Init Structure ]-----------------------------------------------------
     InitializeStructure( *Me, ControlTimeline_t ) ; Arrays
@@ -1155,7 +1158,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 857
-; FirstLine = 832
+; CursorPosition = 86
+; FirstLine = 70
 ; Folding = ------
 ; EnableXP

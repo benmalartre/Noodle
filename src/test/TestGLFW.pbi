@@ -3,7 +3,9 @@
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
@@ -51,10 +53,11 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 47
+; CursorPosition = 7
+; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = \Volumes\STORE N GO\TestGLFW.app
+; Executable = E:\Volumes\STORE N GO\TestGLFW.app
 ; DisableDebugger
 ; Debugger = Standalone
 ; EnablePurifier

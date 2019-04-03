@@ -115,9 +115,12 @@ Module Signal
   EndProcedure
   
   Procedure Trigger(*signal.Signal_t, type.i=#SIGNAL_TYPE_PING)
-    ForEach(*signal\slots())
-      *signal\slots()\callback(*signal\slots()\datas)
+    Define NewList *tmpSlots.Callback::Callback_t()
+    CopyList(*signal\slots(), *tmpSlots())
+    ForEach(*tmpSlots())
+      *tmpSlots()\callback(*signal\slots()\datas)
     Next
+    FreeList(*tmpSlots())
   EndProcedure
   
   Procedure AddSlot(*signal.Signal_t, callback.Callback::PFNARGUMENTSCALLBACK)
@@ -139,7 +142,7 @@ Module Signal
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 36
+; CursorPosition = 117
+; FirstLine = 83
 ; Folding = --
 ; EnableXP

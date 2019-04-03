@@ -24,7 +24,7 @@ DeclareModule ControlButton
     
   EndStructure
   
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
+  Declare New( gadgetID.i,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
   Declare Draw(*Me.ControlButton_t, xoff.i = 0, yoff.i = 0)
   Declare Init()
   Declare Term()
@@ -37,14 +37,13 @@ DeclareModule ControlButton
   ; ============================================================================
   DataSection
     ControlButtonVT:
+    Data.i @OnEvent()
     Data.i @Delete()
     Data.i @Draw()
     Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
-    Data.i @OnEvent()
+    
   EndDataSection
-  
-  
   
   Global CLASS.Class::Class_t
 
@@ -250,7 +249,6 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         Control::Invalidate(*Me)
         If *Me\over
           Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
-          PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
         EndIf
       EndIf
       
@@ -343,30 +341,23 @@ EndProcedure
 Procedure Delete( *Me.ControlButton_t )
   ; ---[ Terminate Object (deallocate signals) ]------------------------------
   Object::TERM(ControlButton)
-  
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  ClearStructure(*Me,ControlButton_t)
-  FreeMemory( *Me )
-  
 EndProcedure
 
 
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
+Procedure.i New( gadgetID.i,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
   
   Object::INI(ControlButton)
-  
-  *Me\object = *object
-  
+    
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type       = #PB_GadgetType_Button
   *Me\name       = name
-  *Me\gadgetID   = #Null
+  *Me\gadgetID   = gadgetID
   *Me\posX       = x
   *Me\posY       = y
   *Me\sizX       = width
@@ -382,6 +373,7 @@ Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
   
   ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
   *Me\on_click = Object::NewSignal(*Me, "OnClick")
   
   ; ---[ Return Initialized Object ]------------------------------------------
@@ -399,6 +391,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 41
+; CursorPosition = 46
+; FirstLine = 36
 ; Folding = ---
 ; EnableXP

@@ -77,10 +77,10 @@ Module SimpleTopoNode
     *node\label = "Primitive Mesh"
     Reset(*node)
     
-    Node::PortAffectByName(*node, "Shape", "Topology")
-    Node::PortAffectByName(*node, "U", "Topology")
-    Node::PortAffectByName(*node, "V", "Topology")
-    Node::PortAffectByName(*node, "W", "Topology")
+    Node::PortAffectByName(*node, "Shape" , "Topology")
+    Node::PortAffectByName(*node, "U"     , "Topology")
+    Node::PortAffectByName(*node, "V"     , "Topology")
+    Node::PortAffectByName(*node, "W"     , "Topology")
     Node::PortAffectByName(*node, "Radius", "Topology")
   EndProcedure
   
@@ -122,6 +122,8 @@ Module SimpleTopoNode
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *oVal.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
+    
+    Debug "TOPO ID : "+Str(*oVal)
 
     Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
     Debug "SHAPE : "+Str(shape)
@@ -186,7 +188,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 96
+; CursorPosition = 79
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

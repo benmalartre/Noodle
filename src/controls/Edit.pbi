@@ -42,8 +42,9 @@ DeclareModule ControlEdit
   ;  Declares 
   ; ----------------------------------------------------------------------------
   
-  Declare New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New(gadgetID.i ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlEdit_t)
+  Declare Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare.s GetValue( *Me.ControlEdit_t )
   Declare SetValue( *Me.ControlEdit_t, value.s )
@@ -59,6 +60,10 @@ DeclareModule ControlEdit
     ControlEditVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+    Data.i @OnEvent()
     
   EndDataSection
   ;}
@@ -256,9 +261,9 @@ Procedure.i hlpCharPosFromMousePos( *Me.ControlEdit_t, xpos.i )
   
 EndProcedure
 ; ----------------------------------------------------------------------------
-;  hlpDraw
+;  Draw
 ; ----------------------------------------------------------------------------
-Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
+Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   ; ---[ Check Visible ]------------------------------------------------------
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
@@ -455,7 +460,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       If Not( *ev_data ):ProcedureReturn : EndIf
       
       ; ---[ Draw Control ]---------------------------------------------------
-      hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+      Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
@@ -637,6 +642,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
     Case #PB_EventType_KeyDown
       ; ---[ Dispatch Key ]---------------------------------------------------
       Select *ev_data\key
+          
         ;_____________________________________________________________________
         ;  Return
         ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -645,11 +651,10 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
           *Me\focused = #False : Control::DeFocused(*Me)
           ; ---[ Show Text From Start ]---------------------------------------
           *Me\posG = 1 : *Me\posW = 1
-          ; ---[ Redraw Me ]--------------------------------------------------
-          Control::Invalidate(*Me)
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
           Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-
+          ; ---[ Redraw Me ]--------------------------------------------------
+          Control::Invalidate(*Me)
           ; ---[ Processed ]--------------------------------------------------
           ProcedureReturn( #True )
         ;_____________________________________________________________________
@@ -972,7 +977,7 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+Procedure.i New(gadgetID.i ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlEdit_t = AllocateMemory( SizeOf(ControlEdit_t) )
@@ -980,12 +985,11 @@ Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.
 ;   *Me\VT = ?ControlEditVT
 ;   *Me\classname = "CONTROLEDIT"
   Object::INI(ControlEdit)
-  *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type         = Control::#EDIT
   *Me\name         = name
-  *Me\gadgetID     = #Null
+  *Me\gadgetID     = gadgetID
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
@@ -1076,7 +1080,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 650
-; FirstLine = 647
+; CursorPosition = 654
+; FirstLine = 448
 ; Folding = ----
 ; EnableXP

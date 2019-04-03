@@ -120,23 +120,6 @@ Module InstanceCloud
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     
-    Debug *shape\positions
-    Debug *shape\normals
-    Debug *shape\uvws
-    Debug *shape\colors
-    
-    Debug CArray::GetCount(*shape\positions)
-    Debug CArray::GetCount(*shape\normals)
-    Debug CArray::GetCount(*shape\uvws)
-    Debug CArray::GetCount(*shape\colors)
-    
-    Debug CArray::GetPtr(*shape\positions,0)
-    Debug CArray::GetPtr(*shape\normals,0)
-    Debug CArray::GetPtr(*shape\uvws,0)
-    Debug CArray::GetPtr(*shape\colors,0)
-    
-    Debug "SIZE S : "+Str(size_s)
-    Debug "POSITION : "+Str(CARray::GetCount(*shape\positions) * CARray::GetItemSize(*shape\positions))
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s,CArray::GetPtr(*shape\positions,0))
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
@@ -387,8 +370,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 94
+; CursorPosition = 120
+; FirstLine = 113
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -3,6 +3,144 @@
 ; ===================================================================================
 DeclareModule STK
   
+  #C0	  = 16.35
+  #Db0  = 17.32
+  #D0	  = 18.35
+  #Eb0  = 19.45
+  #E0	  = 20.60
+  #F0	  = 21.83
+  #Gb0  = 23.12
+  #G0	  = 24.50
+  #Ab0  = 25.96
+  #A0	  = 27.50
+  #Bb0  = 29.14
+  #B0	  = 30.87
+
+  #C1	  = 32.70
+  #Db1  = 34.65	
+  #D1	  = 36.71
+  #Eb1  = 38.89	
+  #E1	  = 41.20
+  #F1	  = 43.65
+  #Gb1  = 46.25	
+  #G1	  = 49.00
+  #Ab1  = 51.91	
+  #A1	  = 55.00
+  #Bb1  = 58.27	
+  #B1	  = 61.74
+
+  #C2   = 65.41
+  #Db2  = 69.30
+  #D2	  = 73.42
+  #Eb2	= 77.78
+  #E2   = 82.41
+  #F2	  = 87.31
+  #Gb2  = 92.50
+  #G2	  = 98.00
+  #Ab2  = 103.83
+  #A2   = 110.00
+  #Bb2  = 116.54
+  #B2   = 123.47
+
+  #C3	  = 130.81
+  #Db3  = 138.59
+  #D3	  = 146.83
+  #Eb3  = 155.56
+  #E3	  = 164.81
+  #F3	  = 174.61
+  #Gb3  = 185.00
+  #G3	  = 196.00
+  #Ab3  = 207.65
+  #A3	  = 220.00
+  #Bb3  = 233.08
+  #B3	  = 246.94
+
+  #C4	  = 261.63
+  #Db4  = 277.18
+  #D4	  = 293.66
+  #Eb4  = 311.13
+  #E4	  = 329.63
+  #F4	  = 349.23
+  #Gb4  = 369.99
+  #G4	  = 392.00
+  #Ab4  = 415.30
+  #A4	  = 440.00
+  #Bb4  = 466.16
+  #B4	  = 493.88
+
+  #C5	  = 523.25
+  #Db5  = 554.37
+  #D5	  = 587.33
+  #Eb5  = 622.25
+  #E5	  = 659.25
+  #F5	  = 698.46
+  #Gb5  = 739.99
+  #G5	  = 783.99
+  #Ab5  = 830.61
+  #A5	  = 880.00
+  #Bb5  = 932.33
+  #B5	  = 987.77
+
+  #C6	  = 1046.50
+  #Db6  = 1108.73
+  #D6	  = 1174.66
+  #Eb6  = 1244.51
+  #E6	  = 1318.51
+  #F6	  = 1396.91
+  #Gb6  = 1479.98
+  #G6	  = 1567.98
+  #Ab6  = 1661.22
+  #A6	  = 1760.00
+  #Bb6  = 1864.66
+  #B6	  = 1975.53
+
+  #C7	  = 2093.00
+  #Db7  = 2217.46
+  #D7	  = 2349.32
+  #Eb7  = 2489.02
+  #E7	  = 2637.02
+  #F7	  = 2793.83
+  #Gb7  = 2959.96
+  #G7	  = 3135.96
+  #Ab7  = 3322.44
+  #A7	  = 3520.00
+  #Bb7  = 3729.31
+  #B7	  = 3951.07
+
+  #C8	  = 4186.01
+  #Db8  = 4434.92
+  #D8	  = 4698.63
+  #Eb8  = 4978.03
+  #E8	  = 5274.04
+  #F8	  = 5587.65
+  #Gb8  = 5919.91
+  #G8	  = 6271.93
+  #Ab8  = 6644.88
+  #A8	  = 7040.00
+  #Bb8  = 7458.62
+  #B8	  = 7902.13
+
+
+  #NUM_NOTES  = 12
+  #NUM_OCTAVES = 9
+  
+  DataSection
+    NOTES: 
+	  Data.f #C0, #Db0, #D0, #Eb0, #E0, #F0, #Gb0, #G0, #Ab0, #A0, #Bb0, #B0
+	  Data.f #C1, #Db1, #D1, #Eb1, #E1, #F1, #Gb1, #G1, #Ab1, #A1, #Bb1, #B1
+  	Data.f #C2, #Db2, #D2, #Eb2, #E2, #F2, #Gb2, #G2, #Ab2, #A2, #Bb2, #B2 
+  	Data.f #C3, #Db3, #D3, #Eb3, #E3, #F3, #Gb3, #G3, #Ab3, #A3, #Bb3, #B3 
+  	Data.f #C4, #Db4, #D4, #Eb4, #E4, #F4, #Gb4, #G4, #Ab4, #A4, #Bb4, #B4 
+  	Data.f #C5, #Db5, #D5, #Eb5, #E5, #F5, #Gb5, #G5, #Ab5, #A5, #Bb5, #B5 
+  	Data.f #C6, #Db6 ,#D6, #Eb6, #E6, #F6, #Gb6, #G6, #Ab6, #A6, #Bb6, #B6 
+  	Data.f #C7, #Db7, #D7, #Eb7, #E7, #F7, #Gb7, #G7, #Ab7, #A7, #Bb7, #B7 
+  	Data.f #C8, #Db8, #D8, #Eb8, #E8, #F8, #Gb8, #G8, #Ab8, #A8, #Bb8, #B8 
+  EndDataSection
+  
+  Macro NoteAt(_octave, _note)
+    PeekF(STK::?NOTES + (_octave * STK::#NUM_NOTES + _note) * 4)
+  EndMacro
+  
   Macro Error : l : EndMacro
   Enumeration
     #ERROR_STATUS
@@ -56,15 +194,15 @@ DeclareModule STK
     
   Macro GeneratorType : l : EndMacro
   Enumeration
-	  #ASYMP_GENERATOR 
-	  #NOISE_GENERATOR
-	  #BLIT_GENERATOR
-	  #BLITSAW_GENERATOR  
-	  #BLITSQUARE_GENERATOR
-	  #SINEWAVE_GENERATOR 
-	  #SINGWAVE_GENERATOR 
-	  #MODULATE_GENERATOR 
-    #GRANULATE_GENERATOR
+	  #GENERATOR_ASYMP
+	  #GENERATOR_NOISE
+	  #GENERATOR_BLIT
+	  #GENERATOR_BLITSAW
+	  #GENERATOR_BLITSQUARE
+	  #GENERATOR_SINEWAVE
+	  #GENERATOR_SINGWAVE
+	  #GENERATOR_MODULATE
+    #GENERATOR_GRANULATE
   EndEnumeration
 	
 	Dim generator_names.s(9)
@@ -79,16 +217,16 @@ DeclareModule STK
   generator_names(8)  = "MODULATE_GENERATOR"
   
   Enumeration
-    #GENERATOR_T60					; asymp t60
-		#GENERATOR_TARGET				; asymp target
-		#GENERATOR_TAU					; asymp tau
-		#GENERATOR_TIME         ; asymp time
-		#GENERATOR_VALUE        ; asymp value
-		#GENERATOR_FREQUENCY    ; waves frequency
-		#GENERATOR_HARMONICS    ; waves harmonics
-		#GENERATOR_PHASE        ; waves phase
-		#GENERATOR_PHASEOFFSET  ; sine wave phase offset
-		#GENERATOR_SEED					; noise seed
+    #GEN_T60					; asymp t60
+		#GEN_TARGET				; asymp target
+		#GEN_TAU					; asymp tau
+		#GEN_TIME         ; asymp time
+		#GEN_VALUE        ; asymp value
+		#GEN_FREQUENCY    ; waves frequency
+		#GEN_HARMONICS    ; waves harmonics
+		#GEN_PHASE        ; waves phase
+		#GEN_PHASEOFFSET  ; sine wave phase offset
+		#GEN_SEED					; noise seed
 	EndEnumeration
   
   Macro EnvelopeType : l : EndMacro
@@ -187,7 +325,7 @@ DeclareModule STK
   EndEnumeration
   
 
-  Structure RtAudio                   ; opaque cpp structure
+  Structure RtAudio           ; opaque cpp structure
   EndStructure
   
   Structure Node
@@ -205,15 +343,11 @@ DeclareModule STK
   Structure Effect
   EndStructure
   
-  Structure BufferStream
+  Structure Buffer
   EndStructure
   
-  Structure GeneratorStream
+  Structure Stream
   EndStructure
-  
-  Structure VoicerStream
-  EndStructure
-  
   
   ;----------------------------------------------------------------------------------
   ; Prototypes
@@ -225,21 +359,25 @@ DeclareModule STK
   PrototypeC.b ISROOT(*node.Node)
   PrototypeC SETASROOT(*node.Node, isRoot.b)
   PrototypeC GETSTREAM(*node.Node)
+  PrototypeC SETHASNOEFFECTS(*node.Node)
+  PrototypeC SETNODEVOLUME(*node.Node, volume.f=1.0)
+  PrototypeC NODERESET(*node.Node)
     
-  PrototypeC GENERATORSTREAMSETUP(*DAC.RtAudio)
-  PrototypeC GENERATORSTREAMCLEAN(*generator.GeneratorStream)
-  PrototypeC GENERATORSTREAMSTART(*generator.GeneratorStream)
-  PrototypeC GENERATORSTREAMSTOP(*generator.GeneratorStream)
-  PrototypeC GENERATORSTREAMSETFREQUENCY(*generator.GeneratorStream, frequency.f)
+  PrototypeC STREAMSETUP(*DAC.RtAudio)
+  PrototypeC STREAMCLEAN(*stream.Stream)
+  PrototypeC STREAMSTART(*stream.Stream)
+  PrototypeC STREAMSTOP(*stream.Stream)
+  PrototypeC STREAMSETFREQUENCY(*stream.Stream, frequency.f)
+   
+  PrototypeC ADDGENERATOR(*stream.Stream, type.l, frequency.f, asRoot.b=#True)
+  PrototypeC ADDENVELOPE(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
+  PrototypeC ADDARYTHMETIC(*stream.Stream, mode.l, *lhs.Node, *rhs.Node, asRoot.b=#True)
+  PrototypeC ADDEFFECT(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
+  PrototypeC ADDFILTER(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
+  PrototypeC ADDBUFFER(*stream.Stream, *source.Node, asRoot.b=#False)
   
-  
-  PrototypeC ADDGENERATOR(*generator.GeneratorStream, type.l, frequency.f, asRoot.b=#True)
-  PrototypeC ADDENVELOPE(*generator.GeneratorStream, type.l, *source.Node, asRoot.b=#False)
-  PrototypeC ADDARYTHMETIC(*generator.GeneratorStream, mode.l, *lhs.Node, *rhs.Node, asRoot.b=#True)
-  PrototypeC ADDEFFECT(*generator.GeneratorStream, type.l, *source.Node, asRoot.b=#False)
-  
-  PrototypeC SETGENERATORTYPE(*generator.Generator, type.l)
-  PrototypeC SETGENERATORSCALAR(*generator.Generator, param.l, scalar.f)
+  PrototypeC SETGENERATORTYPE(*stream.Generator, type.l)
+  PrototypeC SETGENERATORSCALAR(*stream.Generator, param.l, scalar.f)
   
   PrototypeC SETENVELOPETYPE(*envelope.Envelope, type.l)
   PrototypeC SETENVELOPESCALAR(*envelope.Envelope, param.l, scalar.f)
@@ -253,16 +391,6 @@ DeclareModule STK
   
   PrototypeC SETEFFECTTYPE(*effect.Effect, type.l)
   PrototypeC SETEFFECTSCALAR(*effect.Effect, param.l, scalar.f)
-  
-  PrototypeC VOICERSTREAMSETUP(*DAC.RtAudio, nbInstruments.l)
-  PrototypeC VOICERSTREAMCLEAN(*voicer.VoicerStream)
-  PrototypeC VOICERSTREAMSTART(*voicer.VoicerStream)
-  PrototypeC VOICERSTREAMSTOP(*voicer.VoicerStream)
-  
-  PrototypeC BUFFERSTREAMINIT(*DAC.RtAudio, *stream.BufferStream)
-  PrototypeC BUFFERSTREAMGET(*stream.BufferStream)
-  PrototypeC BUFFERSTREAMTERM(*stream.BufferStream)
-  PrototypeC BUFFERSTREAMSETFILE(*stream.BufferStream, filename.s)
   
   ;----------------------------------------------------------------------------------
   ; Import Functions
@@ -308,16 +436,21 @@ DeclareModule STK
     Global.b IsRoot.ISROOT = GetFunction(STK_LIB, "STKIsRoot")
     Global SetAsRoot.SETASROOT = GetFunction(STK_LIB, "STKSetAsRoot")
     Global GetStream.GETSTREAM = GetFunction(STK_LIB, "STKGetStream")
+    Global SetHasNoEffects.SETHASNOEFFECTS = GetFunction(STK_LIB, "STKSetHasNoEffects")
+    Global SetNodeVolume.SETNODEVOLUME = GetFunction(STK_LIB, "STKSetNodeVolume")
+    Global NodeReset.NODERESET = GetFunction(STK_LIB, "STKNodeReset")
 
-    Global GeneratorStreamSetup.GENERATORSTREAMSETUP = GetFunction(STK_LIB, "STKGeneratorStreamSetup")
-    Global GeneratorStreamClean.GENERATORSTREAMCLEAN = GetFunction(STK_LIB, "STKGeneratorStreamClean")
-    Global GeneratorStreamStart.GENERATORSTREAMSTART = GetFunction(STK_LIB, "STKGeneratorStreamStart")
-    Global GeneratorStreamStop.GENERATORSTREAMSTOP = GetFunction(STK_LIB, "STKGeneratorStreamStop")
+    Global StreamSetup.STREAMSETUP = GetFunction(STK_LIB, "STKStreamSetup")
+    Global StreamClean.STREAMCLEAN = GetFunction(STK_LIB, "STKStreamClean")
+    Global StreamStart.STREAMSTART = GetFunction(STK_LIB, "STKStreamStart")
+    Global StreamStop.STREAMSTOP = GetFunction(STK_LIB, "STKStreamStop")
     
     Global AddGenerator.ADDGENERATOR = GetFunction(STK_LIB, "STKAddGenerator")
     Global AddEnvelope.ADDENVELOPE= GetFunction(STK_LIB, "STKAddEnvelope")
     Global AddArythmetic.ADDARYTHMETIC = GetFunction(STK_LIB, "STKAddArythmetic")
     Global AddEffect.ADDEFFECT = GetFunction(STK_LIB, "STKAddEffect")
+    Global AddFilter.ADDFILTER = GetFunction(STK_LIB, "STKAddFilter")
+    Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKAddBuffer")
     
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
@@ -334,26 +467,21 @@ DeclareModule STK
     
     Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
     Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
-    
-    Global VoicerStreamSetup.VOICERSTREAMSETUP = GetFunction(STK_LIB, "STKVoicerStreamSetup")
-    Global VoicerStreamClean.VOICERSTREAMCLEAN = GetFunction(STK_LIB, "STKVoicerStreamClean")
-    Global VoicerStreamStart.VOICERSTREAMSTART = GetFunction(STK_LIB, "STKVoicerStreamStart")
-    Global VoicerStreamStop.VOICERSTREAMSTOP = GetFunction(STK_LIB, "STKVoicerStreamStop")
-    
-    Global BufferStreamInit.BUFFERSTREAMINIT = GetFunction(STK_LIB, "STKBufferStreamInit")
-    Global BufferStreamGet.BUFFERSTREAMGET = GetFunction(STK_LIB, "STKBufferStreamGet")
-    Global BufferStreamTerm.BUFFERSTREAMTERM = GetFunction(STK_LIB, "STKBufferStreamTerm")
-    Global BufferStreamSetFile.BUFFERSTREAMSETFILE = GetFunction(STK_LIB,"STKBufferStreamSetFile") 
         
   Else
     MessageRequester("STK Error","Can't Find STK Library!!")
   EndIf 
   
-  Declare Initialize()
-  Declare Terminate()
-  
+
   Global *DAC.RTAudio
   Global initialized.b
+  
+  Global RAWWAVEPATH.s = "E:/Projects/RnD/STK/rawwaves"
+  
+  Declare Initialize()
+  Declare Terminate()
+  Declare InitRawWaves()
+  Global NewList RAWWAVEFILES.s()
   
 EndDeclareModule
 
@@ -361,6 +489,16 @@ EndDeclareModule
 ;  RTAUDIO MODULE IMPLEMENTATION
 ; ===================================================================================
 Module STK
+  Procedure InitRawWaves()
+    Define dir = ExamineDirectory(#PB_Any, RAWWAVEPATH, "*.raw")
+    While NextDirectoryEntry(dir)
+      AddElement(RAWWAVEFILES())
+      RAWWAVEFILES() = DirectoryEntryName(dir)
+
+    Wend
+    FinishDirectory(dir)
+  EndProcedure
+  
 ;   ;----------------------------------------------------------------------------------
 ;   ; Get Buffer
 ;   ;----------------------------------------------------------------------------------
@@ -438,6 +576,7 @@ Module STK
   
   Procedure Initialize()
     *DAC = STK::Init()
+    STK::InitRawWaves()
   EndProcedure
   
   Procedure Terminate()  
@@ -446,7 +585,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 137
+; CursorPosition = 496
+; FirstLine = 491
 ; Folding = ---
 ; EnableXP

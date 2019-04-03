@@ -1,38 +1,43 @@
 ﻿XIncludeFile "../core/Arguments.pbi"
 XIncludeFile "../core/Control.pbi"
-
+XIncludeFile "../core/Math.pbi"
 
 DeclareModule ControlSlider
+  ; ----------------------------------------------------------------------------
+  ;  Object ( ControlNumber_t )
+  ; ----------------------------------------------------------------------------
   Structure ControlSlider_t Extends Control::Control_t
-    
+    color.i
+    value.f
+    down.b
+    drag.b
+    offset.i
+    min_value.f
+    max_value.f
   EndStructure
-    
-  Declare New(name.s,x.i,y.i,width.i,height.i)
-  Declare Delete(*Me.ControlSlider_t)
   
+  ; ----------------------------------------------------------------------------
+  ;  Interface
+  ; ----------------------------------------------------------------------------
+  Interface IControlSlider Extends Control::IControl
+  EndInterface
+    
+  Declare .i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare Delete(*Me.ControlSlider_t)
+  Declare OnEvent( *Me.ControlSlider_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare Draw(*Me.ControlSlider_t)
   DataSection 
     ControlSliderVT: 
-    Data.i @Event()
+    Data.i @OnEvent()
     Data.i @Delete()
   EndDataSection 
+  
+  Global CLASS.Class::Class_t
+  
   
 EndDeclareModule
 
 Module ControlSlider
-  
-  ; CONSTRUCTOR
-  ;--------------------------------------------------------------------------
-  Procedure New(name.s,x.i,y.i,width.i,height.i)
-    Protected *Me.ControlSlider_t = AllocateMemory(SizeOf(ControlSlider_t))
-    InitializeStructure(*Me,ControlSlider_t)
-    *Me\name = name
-    *Me\posX = x
-    *Me\posY = y
-    *Me\sizX = width
-    *Me\sizY = height
-    *Me\VT = ?ControlSliderVT
-    ProcedureReturn *Me
-  EndProcedure
   
   ; DESTRUCTOR
   ;--------------------------------------------------------------------------
@@ -41,22 +46,150 @@ Module ControlSlider
     FreeMemory(*Me)
   EndProcedure
   
- 
-  
- 
-  
-  Procedure Callback(*Me.ControlSliderItem_t)
-    MessageRequester("[CONTROl MENU]","Callback Called!!!")
+  Procedure.f GetPercentageFromValue(*Me.ControlSlider_t)
+    Define perc.f = (*Me\value - *Me\min_value) / (*Me\max_value - *Me\min_value)
+    ProcedureReturn perc
   EndProcedure
   
-  Procedure OnEvent(*Me.ControlSliderItem_t,event.i,*ev_data.EventTypeDatas_t = #Null )
+  Procedure.f GetPercentageFromMouse(*Me.ControlSlider_t, mx.i, my.i)
+    Define perc.f = mx / *Me\sizX
+    ProcedureReturn perc
   EndProcedure
   
+  Procedure PercentageToValue(*Me.ControlSlider_t, perc.f)
+    *Me\value = (*Me\max_value - *Me\min_value) * perc + *Me\min_value
+  EndProcedure
   
+ 
+  Procedure Draw(*Me.ControlSlider_t)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(*Me\color)
+    FillPath()
+    
+    Define perc.f = GetPercentageFromValue(*Me)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX*perc, *Me\sizY)
+    VectorSourceColor(RGBA(25,25,25,60))
+    FillPath()
+    
+    MovePathCursor(*Me\posX + perc * *Me\sizX, *Me\posY)
+    AddPathLine(0, *Me\sizY, #PB_Path_Relative)
+    VectorSourceColor(UIColor::WHITE)
+    StrokePath(4)
+    
+  EndProcedure
+  
+  ; ============================================================================
+  ;  OVERRIDE ( CControl )
+  ; ============================================================================
+  ; ---[ OnEvent ]--------------------------------------------------------------
+  Procedure.i OnEvent( *Me.ControlSlider_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+    Select ev_code
+      ; ------------------------------------------------------------------------
+      ;  Draw
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_Draw
+        ; ---[ Sanity Check ]---------------------------------------------------
+        If Not *ev_data : ProcedureReturn : EndIf
+        
+        ; ---[ Draw Control ]---------------------------------------------------
+        Draw(*Me)
+        
+      ; ------------------------------------------------------------------------
+      ;  Left Button Down
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonDown
+        *Me\down = #True
+        
+        Define mx.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX) - *Me\posX
+        Define my.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY) - *Me\posY
+        Define perc.f = GetPercentageFromMouse(*Me, mx, my)
+        
+        If Abs(perc * *Me\sizX - mx) < 4 
+          *Me\color = UIColor::RANDOMIZED
+          *Me\drag = #True
+        Else
+          PercentageToValue(*Me, perc)
+          Control::Invalidate(*Me)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  Left Button Up
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonUp
+        *Me\down = #False
+        *Me\drag = #False
+        
+        
+      ; ------------------------------------------------------------------------
+      ;  Mouse Move
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_MouseMove
+        If *Me\drag
+          Define mx.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX) - *Me\posX
+          Define my.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY) - *Me\posY
+          Define perc.f = GetPercentageFromMouse(*Me, mx, my)
+          PercentageToValue(*Me, perc)
+          Control::Invalidate(*Me)
+        EndIf
+
+    EndSelect
+    
+  EndProcedure
+
+
+  
+  ; ============================================================================
+  ;  CONSTRUCTORS
+  ; ============================================================================
+  Procedure.i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+    
+    ; ---[ Allocate Object Memory ]---------------------------------------------
+    Protected *Me.ControlSlider_t = AllocateMemory( SizeOf(ControlSlider_t) )
+    
+    Object::INI(ControlSlider)
+    
+    ; ---[ Init Members ]-------------------------------------------------------
+    *Me\type         = Control::#SLIDER
+    *Me\name         = name
+    *Me\gadgetID     = gadgetID
+    *Me\posX         = x
+    *Me\posY         = y
+    *Me\sizX         = width
+    *Me\sizY         = 20
+    *Me\visible      = #True
+    *Me\enable       = #True
+    *Me\options      = options
+    *Me\value        = value
+    *Me\min_value    = hard_min
+    *Me\max_value    = hard_max
+    *Me\color        = UIColor::RANDOMIZED
+    
+    If *Me\options & ControlNumber::#NUMBER_INTEGER
+      *Me\value      = Int(value)
+    Else
+      *Me\value      =  value
+    EndIf
+    
+    ; ---[ Init Array ]---------------------------------------------------------
+    InitializeStructure( *Me, ControlSlider_t )
+    
+    ; ---[ Signals ]------------------------------------------------------------
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    
+    ; ---[ Return Initialized Object ]------------------------------------------
+    ProcedureReturn( *Me )
+    
+  EndProcedure
+
+  
+  ; ---[ Reflection ]-----------------------------------------------------------
+  Class::DEF( ControlSlider )
 EndModule
 
+
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 117
+; FirstLine = 81
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

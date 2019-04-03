@@ -44,7 +44,7 @@ Module NodePort
   EndProcedure
 
   ;-----------------------------------------------------------------------------
-  ; Log
+  ; Echo Port
   ;-----------------------------------------------------------------------------
   Procedure Echo(*port.NodePort_t)
     Protected datatype.s,datastructure.s,datacontext.s
@@ -67,6 +67,8 @@ Module NodePort
         datatype = "[Vector3]"
       Case Attribute::#ATTR_TYPE_AUDIO
         datatype = "[Audio]"
+      Case Attribute::#ATTR_TYPE_FILE
+        datatype = "[File]"
       Case Attribute::#ATTR_TYPE_UNDEFINED
         datatype = "[Undefined]"
     EndSelect
@@ -131,7 +133,8 @@ Module NodePort
         *port\color = Attribute::#ATTR_COLOR_SHADER
       Case Attribute::#ATTR_TYPE_AUDIO
         *port\color = Attribute::#ATTR_COLOR_AUDIO
-        
+      Case Attribute::#ATTR_TYPE_FILE
+        *port\color = Attribute::#ATTR_COLOR_FILE
     EndSelect
     
     ProcedureReturn *port\color
@@ -248,6 +251,10 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_AUDIO
         *audio.CArray::CArrayPtr = CArray::newCArrayPtr()
         *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *audio, *port\readonly, *port\constant, *port\writable)
+        
+      Case Attribute::#ATTR_TYPE_FILE
+        *file.CArray::CArrayStr = CArray::newCArrayStr()
+        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *file, *port\readonly, *port\constant, *port\writable)
        
       Case Attribute::#ATTR_TYPE_3DOBJECT
         *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, *port\readonly, *port\constant, *port\writable)
@@ -325,7 +332,7 @@ Module NodePort
           If Not *data : Init(*port) : *data = *port\attribute\data: EndIf
           *port\dirty = #False
         EndIf
-        
+
       Case Attribute::#ATTR_STRUCT_ANY
         ; Case STRUCT_ANY
         ;-----------------------------------------------------
@@ -356,18 +363,39 @@ Module NodePort
   Procedure AcquireOutputData(*port.NodePort_t)
     
     Protected *data.CArray::CArrayT
+    Select *port\currentstructure
+      Case Attribute::#ATTR_STRUCT_ARRAY
+        ; Case STRUCT_ARRAY
+        ;-----------------------------------------------------
+        *data = *port\attribute\data
+        If Not *data : Init(*port) : *data = *port\attribute\data: EndIf
+        *port\dirty = #False
+        
+      Case Attribute::#ATTR_STRUCT_SINGLE
+        ; Case STRUCT_SINGLE
+        ;-----------------------------------------------------
+        *data = *port\attribute\data
+        If Not *data : Init(*port) : *data = *port\attribute\data: EndIf
+        *port\dirty = #False
+        
+      Case Attribute::#ATTR_STRUCT_ANY
+        ; Case STRUCT_ANY
+        ;-----------------------------------------------------
+        *data = *port\attribute\data
+        If Not *data : Init(*port) : *data = *port\attribute\data: EndIf
+        *port\dirty = #False
+
+    EndSelect
     
-    Protected *target.NodePort_t
-    If *port\connected
-      Protected *connexion.Connexion::Connexion_t = *port\connexion
-      *target = *connexion\end
-        ProcedureReturn *target\attribute\data
-    Else
-      ProcedureReturn *port\attribute\data
+    If *data
+      If CArray::GetCount(*data) <= 1
+        *port\constant = #True
+      Else
+        *port\constant = #False
+      EndIf
+      ProcedureReturn *data
     EndIf
-    
-      
-         
+
   EndProcedure
 
 
@@ -375,8 +403,6 @@ Module NodePort
   ; Update
   ;-----------------------------------------------------------------------------
   Procedure Update(*port.NodePort_t,type.i=Attribute::#ATTR_TYPE_UNDEFINED,context.i=Attribute::#ATTR_CTXT_ANY,struct.i=Attribute::#ATTR_STRUCT_ANY)
-    
-
     ;Delete Old Data
     If *port\attribute\data : 
       Protected *v.CArray::CArrayT = *port\attribute\data
@@ -426,6 +452,7 @@ Module NodePort
       If *Me\datatype & Attribute::#ATTR_TYPE_VECTOR3 : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_VECTOR4 : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_AUDIO : nbDataType+1 : EndIf
+      If *Me\datatype & Attribute::#ATTR_TYPE_FILE : nbDataType+1 : EndIf
       If *Me\datatype & Attribute::#ATTR_TYPE_EXECUTE : nbDataType+1 : EndIf
       
       If nbDataType = 1
@@ -491,8 +518,6 @@ Module NodePort
     Else
       ProcedureReturn 1
     EndIf
-    
-    
   EndProcedure
   
   
@@ -515,8 +540,6 @@ Module NodePort
       Default
         CArray::SetValuePtr(*array,0,*value)
     EndSelect
-    
-    
   EndProcedure
   
   
@@ -684,7 +707,6 @@ Module NodePort
   
   Procedure SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
     Define *node.Node::Node_t = *Me\node
-    MessageRequester("SETUP CONNECTION CALLBACK", *node\name +" ---> "+ *Me\name +" : "+Str(*callback))
     *Me\connectioncallback = *callback
   EndProcedure
   
@@ -703,7 +725,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 325
-; FirstLine = 296
+; CursorPosition = 454
+; FirstLine = 449
 ; Folding = ----
 ; EnableXP

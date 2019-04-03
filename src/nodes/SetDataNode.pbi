@@ -93,8 +93,6 @@ Module SetDataNode
                   *datas = CArray::newCArrayM3F32()
                 Case Attribute::#ATTR_TYPE_MATRIX4
                   *datas = CArray::newCArrayM4F32()
-                Case Attribute::#ATTR_TYPE_TOPOLOGY
-                  *datas = CArray::newCArrayPtr()
               EndSelect
               
               *node\attribute = Attribute::New(name,\datatype,\datastructure,\datacontext,*datas,#False,#True)
@@ -297,8 +295,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 236
+; CursorPosition = 137
+; FirstLine = 119
 ; Folding = --
 ; EnableThread
 ; EnableXP

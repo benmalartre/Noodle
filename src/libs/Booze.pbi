@@ -455,7 +455,6 @@ DeclareModule Alembic
     CompilerSelect #PB_Compiler_OS
       CompilerCase  #PB_OS_Windows
         Global alembic_lib = OpenLibrary(#PB_Any, "..\..\libs\x64\windows\Alembic.dll")
-        ;Global alembic_lib = OpenLibrary(#PB_Any, "E:\Projects\RnD\Noodle\libs\x64\windows\Alembic.dll")
       CompilerCase #PB_OS_MacOS
         Global alembic_lib = OpenLibrary(#PB_Any, "../../libs/x64/macosx/PBAlembic.so")
       CompilerCase #PB_OS_Linux
@@ -465,7 +464,6 @@ DeclareModule Alembic
     CompilerSelect #PB_Compiler_OS
       CompilerCase  #PB_OS_Windows
         Global alembic_lib = OpenLibrary(#PB_Any, "libs\x64\windows\Alembic.dll")
-;         Global alembic_lib = OpenLibrary(#PB_Any, "E:\Projects\RnD\Noodle\libs\x64\windows\Alembic.dll")
       CompilerCase #PB_OS_MacOS
         Global alembic_lib = OpenLibrary(#PB_Any, "libs/x64/macosx/PBAlembic.so")
       CompilerCase #PB_OS_Linux
@@ -984,9 +982,9 @@ Module AlembicIObject
         Memory::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
       CompilerEndIf
       
-
+       PolymeshGeometry::GetTopology(*geom)
        PolymeshGeometry::ComputeTriangles(*geom)
-       
+       PolymeshGeometry::ComputeVertexPolygons(*geom, *geom\topo)
        
        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
        If Not *infos\hasnormal : PolymeshGeometry::ComputeNormals(*geom,1.0): EndIf
@@ -1405,7 +1403,7 @@ Module AlembicIObject
       *o\initialized = #False
       Protected *cloud_geom.Geometry::PointCloudGeometry_t = *cloud\geom
       GetProperties(*o)
-      UpdateSample(*o,1)
+      UpdateSample(*o,0)
       
   EndSelect
   
@@ -1442,7 +1440,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 596
-; FirstLine = 559
+; CursorPosition = 617
+; FirstLine = 558
 ; Folding = --------
 ; EnableXP

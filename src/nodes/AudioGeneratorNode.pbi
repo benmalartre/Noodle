@@ -3,15 +3,13 @@ XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../libs/STK.pbi"
+XIncludeFile "AudioNode.pbi"
 
 ; ==================================================================================================
 ; AUDIO GENERATOR NODE MODULE DECLARATION
 ; ==================================================================================================
 DeclareModule AudioGeneratorNode
-  Structure AudioGeneratorNode_t Extends Node::Node_t
-    playing.b
-    mute.b
-    *node.STKNode
+  Structure AudioGeneratorNode_t Extends AudioNode::AudioNode_t
     mode.STK::GeneratorType
     frequency.f
     t60.f
@@ -28,7 +26,7 @@ DeclareModule AudioGeneratorNode
   ;------------------------------
   ;Interface
   ;------------------------------
-  Interface IAudioGeneratorNode Extends Node::INode 
+  Interface IAudioGeneratorNode Extends AudioNode::IAudioNode 
   EndInterface
   
   Declare New(*tree.Tree::Tree_t,type.s="AudioGenerator",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
@@ -58,8 +56,8 @@ Module AudioGeneratorNode
   ;Implementation
   ;------------------------------
   Procedure Init(*node.AudioGeneratorNode_t)
+    AudioNode::Init(*node)
     ; input ports
-    Protected *mute.NodePort::NodePort_t = Node::AddInputPort(*node,"Mute",Attribute::#ATTR_TYPE_BOOL)
     Protected *mode.NodePort::NodePort_t = Node::AddInputPort(*node,"Mode",Attribute::#ATTR_TYPE_INTEGER)
     Protected *frequency.NodePort::NodePort_t = Node::AddInputPort(*node,"Frequency",Attribute::#ATTR_TYPE_FLOAT)
     Protected *t60.NodePort::NodePort_t = Node::AddInputPort(*node,"T60",Attribute::#ATTR_TYPE_FLOAT)
@@ -71,10 +69,7 @@ Module AudioGeneratorNode
     Protected *phase.NodePort::NodePort_t = Node::AddInputPort(*node,"Phase",Attribute::#ATTR_TYPE_FLOAT)
     Protected *phaseoffset.NodePort::NodePort_t = Node::AddInputPort(*node,"PhaseOffset",Attribute::#ATTR_TYPE_FLOAT)
     Protected *seed.NodePort::NodePort_t = Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
-    
-    ; output port
-    Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_AUDIO)
-    
+
     ; attributes affects
     Node::PortAffectByName(*node, "Mute", "Output")
     Node::PortAffectByName(*node, "Mode", "Output")
@@ -149,7 +144,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 90
+; CursorPosition = 18
 ; Folding = --
 ; EnableXP

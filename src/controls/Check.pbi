@@ -66,8 +66,9 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Declare New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
   Declare Delete(*Me.ControlCheck_t)
+  Declare Draw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetTheme( theme.i)
   Declare SetValue( *Me.ControlCheck_t, value.i )
@@ -82,6 +83,10 @@ DeclareModule ControlCheck
     ControlCheckVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+
     ; Images
     ; (Light)
     VIControlCheck_light_disabled_checked:      
@@ -139,7 +144,7 @@ Module ControlCheck
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
     
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
@@ -209,7 +214,7 @@ Module ControlCheck
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlCheck_t, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me.ControlCheck_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -292,8 +297,6 @@ Module ControlCheck
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
-            Debug "TRIGGER FROM CHECK"
-            PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
             Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
 ;             Protected sig.CSlot = *Me\sig_onchanged
 ;             sig\Trigger( #RAA_SIGNAL_TYPE_PING, @*Me\value )
@@ -376,7 +379,7 @@ Module ControlCheck
   ; ============================================================================
   ;{
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Procedure.i New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCheck_t = AllocateMemory( SizeOf(ControlCheck_t) )
@@ -385,12 +388,10 @@ Module ControlCheck
 ;     *Me\classname = "CONTROLCHECK"
     Object::INI(ControlCheck)
     
-    *Me\object = *object
-    
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#CHECK
     *Me\name     = name
-    *Me\gadgetID = #Null
+    *Me\gadgetID = gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -538,6 +539,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 88
+; FirstLine = 44
 ; Folding = ----
 ; EnableXP

@@ -24,6 +24,7 @@ DeclareModule PolymeshGeometry
   Declare ComputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
   Declare ComputeTangents(*mesh.PolymeshGeometry_t)
   Declare InvertNormals(*mesh.PolymeshGeometry_t)
+  Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
   Declare ComputeTriangles(*mesh.PolymeshGeometry_t)
   Declare ComputeHalfEdges(*mesh.PolymeshGeometry_t)
   Declare Clear(*mesh.PolymeshGeometry_t)
@@ -560,6 +561,51 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
+  ;  Compute Vertex Polygons
+  ; ----------------------------------------------------------------------------
+  Procedure ComputeVertexPolygons(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
+    Protected Dim vertexPolygonIndices.VertexPolygonIndices_t(*mesh\nbpoints)
+    Define totalVertexPolygonIndices = 0
+    Define numVertexPolygonIndices
+    
+    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
+    CArray::FillL(*mesh\a_vertexpolygoncount, 0)
+    
+    For i=0 To CArray::GetCount(*topo\faces)-1
+      vid = CArray::GetValueL(*topo\faces,i)
+      If  vid = -2
+        CArray::SetValueL(*mesh\a_facecount,nbf,counter)
+        nbf+1
+        counter = 0
+      Else
+        numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
+        ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
+        vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = nbf
+        totalVertexPolygonIndices + 1
+        CArray::SetValueL(*mesh\a_faceindices,nbi,vid)
+        nbi+1
+        counter+1
+        *mesh\nbedges + 1
+      EndIf
+    Next i
+    
+    *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
+    CArray::SetCount(*mesh\a_vertexpolygonindices, totalVertexPolygonIndices)
+    
+    base = 0
+    For i=0 To *mesh\nbpoints-1
+      nbp = ArraySize(vertexPolygonIndices(i)\polygons())
+      CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
+      For j=0 To nbp-1
+        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, vertexPolygonIndices(i)\polygons(j)) 
+      Next
+      base + nbp
+      FreeArray(vertexPolygonIndices(i)\polygons())
+    Next
+    FreeArray(vertexPolygonIndices())  
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
   ;  Compute Triangles
   ; ----------------------------------------------------------------------------
   Procedure ComputeTriangles(*mesh.PolymeshGeometry_t)
@@ -696,45 +742,8 @@ Module PolymeshGeometry
     nbf=0
     nbi=0
     *mesh\nbedges = 0
-    Protected Dim vertexPolygonIndices.VertexPolygonIndices_t(*mesh\nbpoints)
-    Define totalVertexPolygonIndices = 0
-    Define numVertexPolygonIndices
     
-    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
-    CArray::FillL(*mesh\a_vertexpolygoncount, 0)
-    
-    For i=0 To CArray::GetCount(*topo\faces)-1
-      vid = CArray::GetValueL(*topo\faces,i)
-      If  vid = -2
-        CArray::SetValueL(*mesh\a_facecount,nbf,counter)
-        nbf+1
-        counter = 0
-      Else
-        numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
-        ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
-        vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = nbf
-        totalVertexPolygonIndices + 1
-        CArray::SetValueL(*mesh\a_faceindices,nbi,vid)
-        nbi+1
-        counter+1
-        *mesh\nbedges + 1
-      EndIf
-    Next i
-    
-    *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
-    CArray::SetCount(*mesh\a_vertexpolygonindices, totalVertexPolygonIndices)
-    
-    base = 0
-    For i=0 To *mesh\nbpoints-1
-      nbp = ArraySize(vertexPolygonIndices(i)\polygons())
-      CArray::SetValueL(*mesh\a_vertexpolygoncount, i, nbp)
-      For j=0 To nbp-1
-        CArray::SetValueL(*mesh\a_vertexpolygonindices, base+j, vertexPolygonIndices(i)\polygons(j)) 
-      Next
-      base + nbp
-      FreeArray(vertexPolygonIndices(i)\polygons())
-    Next
-    FreeArray(vertexPolygonIndices())
+    ComputeVertexPolygons(*mesh, *topo)
     
     
     ; Compute Bounding Box
@@ -2281,7 +2290,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 275
-; FirstLine = 306
-; Folding = ----H9---8--
+; CursorPosition = 745
+; FirstLine = 708
+; Folding = ----P5---4--
 ; EnableXP

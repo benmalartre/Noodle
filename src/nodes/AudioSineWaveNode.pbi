@@ -4,15 +4,13 @@ XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../libs/STK.pbi"
 XIncludeFile "../nodes/AudioNode.pbi"
+XIncludeFile "AudioNode.pbi"
 
 ; ==================================================================================================
 ; AUDIO SINEWAVE NODE MODULE DECLARATION
 ; ==================================================================================================
 DeclareModule AudioSineWaveNode
-  Structure AudioSineWaveNode_t Extends Node::Node_t
-    playing.b
-    mute.b
-    *node.STK::Generator
+  Structure AudioSineWaveNode_t Extends AudioNode::AudioNode_t
     frequency.f
     time.f
     phase.f
@@ -58,18 +56,18 @@ Module AudioSineWaveNode
   ;   INIT
   ; ------------------------------------------------------------------------------------------------
   Procedure Init(*node.AudioSineWaveNode_t)
+    
+    AudioNode::Init(*node)
+    
     ; input ports
-    Protected *mute.NodePort::NodePort_t = Node::AddInputPort(*node,"Mute",Attribute::#ATTR_TYPE_BOOL)
     Protected *frequency.NodePort::NodePort_t = Node::AddInputPort(*node,"Frequency",Attribute::#ATTR_TYPE_FLOAT)
     Protected *time.NodePort::NodePort_t = Node::AddInputPort(*node,"Time",Attribute::#ATTR_TYPE_FLOAT)
     Protected *phase.NodePort::NodePort_t = Node::AddInputPort(*node,"Phase",Attribute::#ATTR_TYPE_FLOAT)
     Protected *phaseoffset.NodePort::NodePort_t = Node::AddInputPort(*node,"PhaseOffset",Attribute::#ATTR_TYPE_FLOAT)
     
-    ; output port
-    Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_AUDIO)
-    
     ; attributes affects
     Node::PortAffectByName(*node, "Mute", "Output")
+    Node::PortAffectByName(*node, "Volume", "Output")
     Node::PortAffectByName(*node, "Frequency", "Output")
     Node::PortAffectByName(*node, "Time", "Output")
     Node::PortAffectByName(*node, "Phase", "Output")
@@ -87,31 +85,36 @@ Module AudioSineWaveNode
     SelectElement(*node\inputs(), 0)
     Protected *mute.NodePort::NodePort_t        = *node\inputs()
     SelectElement(*node\inputs(), 1)
-    Protected *frequency.NodePort::NodePort_t   = *node\inputs()
+    Protected *volume.NodePort::NodePort_t      = *node\inputs()
     SelectElement(*node\inputs(), 2)
-    Protected *time.NodePort::NodePort_t        = *node\inputs()
+    Protected *frequency.NodePort::NodePort_t   = *node\inputs()
     SelectElement(*node\inputs(), 3)
-    Protected *phase.NodePort::NodePort_t       = *node\inputs()
+    Protected *time.NodePort::NodePort_t        = *node\inputs()
     SelectElement(*node\inputs(), 4)
+    Protected *phase.NodePort::NodePort_t       = *node\inputs()
+    SelectElement(*node\inputs(), 5)
     Protected *phaseoffset.NodePort::NodePort_t = *node\inputs()
     
     Protected *aMute.CArray::CArrayBool         =  NodePort::AcquireInputData(*mute)
+    Protected *aVolume.CArray::CArrayFloat      =  NodePort::AcquireInputData(*volume)
     Protected *aFrequency.CArray::CArrayFloat   =  NodePort::AcquireInputData(*frequency)
     Protected *aTime.CArray::CArrayInt          =  NodePort::AcquireInputData(*time)
     Protected *aPhase.CArray::CArrayFloat       =  NodePort::AcquireInputData(*phase)
     Protected *aPhaseOffset.CArray::CArrayFloat =  NodePort::AcquireInputData(*phaseoffset)
     Protected *aOutput.CArray::CArrayPtr        =  NodePort::AcquireOutputData(*output)
     
+    *node\volume                                = CArray::GetValueF(*aVolume, 0)
     *node\frequency                             = CArray::GetValueF(*aFrequency, 0)
     *node\time                                  = CArray::GetValueF(*aTime, 0)
     *node\phase                                 = CArray::GetValueF(*aPhase, 0)
     *node\phaseoffset                           = CArray::GetValueF(*aPhaseOffset, 0)
     
     If *node\node
-      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_FREQUENCY, *node\frequency)
-      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_TIME, *node\time)
-      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASE, *node\phase)
-      STK::SetGeneratorScalar(*node\node, STK::#GENERATOR_PHASEOFFSET, *node\phaseoffset)
+      STK::SetNodeVolume(*node\node, *node\volume)
+      STK::SetGeneratorScalar(*node\node, STK::#GEN_FREQUENCY, *node\frequency)
+      STK::SetGeneratorScalar(*node\node, STK::#GEN_TIME, *node\time)
+      STK::SetGeneratorScalar(*node\node, STK::#GEN_PHASE, *node\phase)
+      STK::SetGeneratorScalar(*node\node, STK::#GEN_PHASEOFFSET, *node\phaseoffset)
     EndIf
     
   EndProcedure
@@ -129,20 +132,20 @@ Module AudioSineWaveNode
   Procedure OnConnect(*node.AudioSineWaveNode_t, *port.NodePort::NodePort_t)
     If *port\name = "Output"
       
-      Define *stream.STK::GeneratorStream
+      Define *stream.STK::Stream
       
       Define *target.NodePort::NodePort_t = *port\targets()
       Define *dst.Node::Node_t = *target\node
       If *dst\class\name = "AudioDACNode"
         Define *DAC.AudioDACNode::AudioDACNode_t = *dst
         *stream = *DAC\node
-        *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+        *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 64, #True)
       Else
         Define *audio.AudioNode::AudioNode_t = *dst
         If *audio And *audio\node
           *stream = STK::GetStream(*audio\node)
           If *stream
-            *node\node = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #False)
+            *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 64, #False)
           EndIf
         Else
         EndIf
@@ -194,7 +197,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 75
+; CursorPosition = 112
+; FirstLine = 69
 ; Folding = --
 ; EnableXP

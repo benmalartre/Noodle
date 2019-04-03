@@ -361,7 +361,6 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
           EndIf
 
           Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
         EndIf
         Control::Invalidate(*Me)
       EndIf
@@ -450,10 +449,6 @@ EndProcedure
 ; ============================================================================
 Procedure Delete( *Me.ControlKnob_t )
   Object::TERM(ControlKnob)
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  ClearStructure(*Me,ControlKnob_t)
-  FreeMemory( *Me )
-  
 EndProcedure
 
 
@@ -468,7 +463,6 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   Object::INI(ControlKnob)
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\object     = #Null
   *Me\type       = #PB_GadgetType_Knob
   *Me\name       = name
   *Me\gadgetID   = gadgetID
@@ -499,7 +493,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 482
-; FirstLine = 440
+; CursorPosition = 450
+; FirstLine = 434
 ; Folding = ---
 ; EnableXP

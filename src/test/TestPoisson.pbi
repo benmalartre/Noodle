@@ -45,9 +45,8 @@ Log::Init()
 *app = Application::New("Test Poisson Sampling",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
 
  If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
    *app\context = *viewport\context
-  *viewport\camera = *app\camera
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
@@ -137,8 +136,8 @@ Application::Loop(*app, @Draw())
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 66
+; CursorPosition = 49
+; FirstLine = 43
 ; Folding = -
 ; EnableThread
 ; EnableXP

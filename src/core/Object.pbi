@@ -62,7 +62,6 @@ DeclareModule Object
   ; ------------------------------------------------------------------
   Declare NewSignal(*obj.Object_t, name.s)
   Declare DeleteSignal(*obj.Object_t, *signal.Signal::Signal_t)
-  Declare SetValueB(*obj.Object_t, value.b, *mem)
   
   ; ------------------------------------------------------------------
   ;   INI
@@ -302,6 +301,7 @@ EndModule
 ;   EndProcedure
 ; EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
+; CursorPosition = 64
+; FirstLine = 78
 ; Folding = ---
 ; EnableXP

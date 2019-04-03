@@ -161,7 +161,7 @@ Module AudioArythmeticNode
       EndIf
       
     ElseIf *port\name = "Output"
-      Define *stream.STK::GeneratorStream
+      Define *stream.STK::Stream
       
       Define *target.NodePort::NodePort_t = *port\targets()
       Define *dst.Node::Node_t = *target\node
@@ -235,7 +235,7 @@ EndModule
 ;  EOF
 ; =================================================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 100
+; CursorPosition = 163
+; FirstLine = 159
 ; Folding = --
 ; EnableXP

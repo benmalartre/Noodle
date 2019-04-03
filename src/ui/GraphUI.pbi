@@ -46,6 +46,8 @@ DeclareModule GraphUI
     ; Translate and Scale
     posx.i             ; canvas position X
     posy.i             ; canvas position Y
+    realx.i
+    realy.i
   
     rectx1.i           ; Selection Rectangle LeftUpCornerX
     recty1.i           ; Selection Rectangle LeftUpCornerY
@@ -952,7 +954,6 @@ Module GraphUI
   ; Get Node Under Mouse
   ;---------------------------------------------------------------------------
   Procedure.i GetNodeUnderMouse(*Me.GraphUI_t,x.i,y.i)
-    
     If Not *Me\tree : ProcedureReturn Graph::#Graph_Selection_None: EndIf
     
     If *Me\depth >0 And x<Graph::#Graph_Compound_Border And y< Graph::#Graph_Compound_Border
@@ -1197,22 +1198,26 @@ Module GraphUI
     *Me\pan = #True  
   EndProcedure
   
+  Procedure Pick(*Me.GraphUI_t)
+    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+    TranslateCoordinates(*Me\posx, *Me\posy)
+    ScaleCoordinates(*Me\zoom, *Me\zoom)
+    PokeI(@*Me\realx, ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User))
+    PokeI(@*Me\realy, ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User))
+    StopVectorDrawing()
+  EndProcedure
+  
  
   ;---------------------------------------------------------------------------
   ;Graph View Events
   ;---------------------------------------------------------------------------
   Procedure.i CanvasEvent(*Me.GraphUI_t,eventID.i)
     
-    Define x,y ,out_value
+    Define x.d,y.d ,out_value
     *Me\redraw = #False
     *Me\mousex = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
     *Me\mousey = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
-    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-    TranslateCoordinates(*Me\posx, *Me\posy)
-    ScaleCoordinates(*Me\zoom, *Me\zoom)
-    x = ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
-    y = ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
-    StopVectorDrawing()
+    
     ; Return value(push the command stack)
     out_value = -1
     
@@ -1229,9 +1234,10 @@ Module GraphUI
             
           ;Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
-            GetNodeUnderMouse(*Me,x,y)
+            Pick(*Me)
+            GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
             If *Me\focus
-               Define mode = Node::Pick(*Me\focus,x,y,#False)
+               Define mode = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#False)
                If mode = Graph::#Graph_Selection_Node
                  ;Inspect Current Node
                  InspectNode(*Me,*Me\focus)
@@ -1265,7 +1271,8 @@ Module GraphUI
             *Me\redraw = #True
 
           ;Left Button Down Event
-          Case #PB_EventType_LeftButtonDown      
+          Case #PB_EventType_LeftButtonDown     
+            Pick(*Me)
             Protected modifiers.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)  
             If modifiers & #PB_Canvas_Alt
               If *me\pan :ProcedureReturn : EndIf
@@ -1277,7 +1284,7 @@ Module GraphUI
               ProcedureReturn
             EndIf
               
-            Define s.i = GetNodeUnderMouse(*Me,x,y)
+            Define s.i = GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
             If s = Graph::#Graph_Selection_Climb
               If *Me\depth>0
                 *Me\tree\current = *Me\tree\current\parent
@@ -1292,7 +1299,7 @@ Module GraphUI
               Protected id=0
               Protected selected = #False
               ForEach *Me\tree\current\inputs()
-                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,x,y)
+                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,*Me\realx,*Me\realy)
                 If selected 
                   If *Me\tree\current\inputs()\connected
                     MessageRequester("GraphUI","Port Already Connected ---> Diconnect")
@@ -1310,7 +1317,7 @@ Module GraphUI
             EndIf
             
             If *Me\focus
-              Define mode.i = Node::Pick(*Me\focus,x,y,#False)
+              Define mode.i = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#False)
               
               Select mode
                 Case Graph::#Graph_Selection_Dive
@@ -1320,7 +1327,7 @@ Module GraphUI
                   *Me\depth +1
                  ; selection 
                 Case Graph::#Graph_Selection_Node
-                  Selection(*Me,x,y,#False)
+                  Selection(*Me,*Me\realx,*Me\realy,#False)
                   *Me\drag = #True               
                 ; Connexion 
                 Case Graph::#Graph_Selection_Port
@@ -1330,10 +1337,10 @@ Module GraphUI
               EndSelect
             Else
               ;Rectangle Selection  
-              *Me\rectx1 = x
-              *Me\recty1 = y
-              *Me\rectx2 = x
-              *Me\recty2 = y
+              *Me\rectx1 = *Me\realx
+              *Me\recty1 = *Me\realy
+              *Me\rectx2 = *Me\realx
+              *Me\recty2 = *Me\realy
               *Me\pick = #True
             EndIf 
             
@@ -1341,6 +1348,7 @@ Module GraphUI
 
           ;Left Button Up Event
           Case #PB_EventType_LeftButtonUp
+            Pick(*Me)
             If *Me\drag
               *Me\drag = #False
             EndIf 
@@ -1354,21 +1362,22 @@ Module GraphUI
               ;Do nothing as we are panning
               *Me\pan = #False
             ElseIf *Me\pick
-              *Me\rectx2 = x
-              *Me\recty2 = y
+              *Me\rectx2 = *Me\realx
+              *Me\recty2 = *Me\realy
               RectangleSelect(*Me)
               *Me\pick = #False
               *Me\redraw = #True
             Else
               *Me\down = #False
-              *Me\lastx = x
-              *Me\lasty = y
+              *Me\lastx = *Me\realx
+              *Me\lasty = *Me\realy
               *Me\drag = #False
               *Me\redraw = #False
             EndIf
             
           ;Right Button Down Event
           Case #PB_EventType_RightButtonDown
+            Pick(*Me)
             PopUpMenu(*Me)
             If *Me\focus
                 
@@ -1379,8 +1388,9 @@ Module GraphUI
            PopUpMenu(*Me)
             
           ; Middle Button Button Event 
-          Case #PB_EventType_MiddleButtonDown
-            Define s.i = GetNodeUnderMouse(*Me,x,y)
+         Case #PB_EventType_MiddleButtonDown
+           Pick(*Me)
+            Define s.i = GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
             If *Me\focus
               SelectBranch(*Me,*Me\focus)
               *Me\redraw = #True
@@ -1428,13 +1438,13 @@ Module GraphUI
           ; Mouse Move Event
           Case #PB_EventType_MouseMove
             If *Me\connect = #True
-  
-              Connexion::Drag(*Me\connecter,x,y)
-              GetNodeUnderMouse(*Me,x,y)
+              Pick(*Me)
+              Connexion::Drag(*Me\connecter,*Me\realx,*Me\realy)
+              GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
               
               If *me\focus
                 ; try to connect
-                mode = Node::Pick(*Me\focus,x,y,#True)
+                mode = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#True)
                 
                ;Snap head of the connexion to the port
                Select mode
@@ -1449,20 +1459,23 @@ Module GraphUI
              
              *Me\redraw = #True
              
-            ElseIf *Me\pick = #True
-              *Me\rectx2 = x
-              *Me\recty2 = y
+           ElseIf *Me\pick = #True
+             Pick(*Me)
+              *Me\rectx2 = *Me\realx
+              *Me\recty2 = *Me\realy
               *Me\redraw = #True
             ElseIf *Me\pan = #True
+              Pick(*Me)
               *Me\posx = - (*Me\offsetx -*Me\mousex)
               *Me\posy = - (*Me\offsety -*Me\mousey)
               *Me\redraw = #True
             ElseIf *Me\drag = #True
+              Pick(*Me)
               Protected i
               For i=0 To CArray::GetCount(*Me\a_selected)-1
                 Protected *sel.Node::Node_t = CArray::GetValuePtr(*Me\a_selected,i)
                 If *sel
-                  Node::Drag(*sel,x-*Me\lastx,y-*Me\lasty)
+                  Node::Drag(*sel,*Me\realx-*Me\lastx,*Me\realy-*Me\lasty)
                 EndIf
               Next
               *Me\redraw = #True
@@ -1470,9 +1483,10 @@ Module GraphUI
           
           ; Lost Focus Event
           Case #PB_EventType_LostFocus
+            Pick(*Me)
             If *Me\pick
-              *Me\rectx2 = x
-              *Me\recty2 = y
+              *Me\rectx2 = *Me\realx
+              *Me\recty2 = *Me\realy
               RectangleSelect(*Me)
               *Me\pick = #False
               *Me\redraw = #True
@@ -1513,8 +1527,8 @@ Module GraphUI
     Else
       DrawEmpty(*Me)
     EndIf
-    *Me\lastx = x
-    *Me\lasty = y
+    *Me\lastx = *Me\realx
+    *Me\lasty = *Me\realy
     
     ; Don't push command stack
     ProcedureReturn out_value
@@ -1611,7 +1625,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1605
-; FirstLine = 1552
+; CursorPosition = 1472
+; FirstLine = 1435
 ; Folding = --------
 ; EnableXP

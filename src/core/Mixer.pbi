@@ -69,7 +69,7 @@ DeclareModule Mixer
     #TYPE_MOVIE
     #TYPE_SEQUENCE
   EndEnumeration
-  
+   
   Structure Mixer_t
     name.s
     List *tracks.Track::Track_t()
@@ -165,9 +165,9 @@ EndModule
   Until WaitWindowEvent() = #PB_Event_CloseWindow
   
 
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 61
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 71
 ; FirstLine = 71
 ; Folding = ---
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

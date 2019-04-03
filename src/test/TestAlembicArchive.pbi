@@ -112,7 +112,7 @@ Repeat
     If EventGadget() = load And EventType() = #PB_EventType_LeftClick 
       ClearGadgetItems(explorer)
       Define path.s = OpenFileRequester("Alembic Archive","","Alembic (*.abc)|*.abc",0)
-      Define *archive.AlembicArchive::AlembicArchive_t = LogABCArchive(path)
+      Define *archive.Alembic::IAlembicArchive = LogABCArchive(path)
   
       If *archive <> #Null
         Debug AlembicManager::GetNumOpenArchives(*manager)
@@ -131,7 +131,7 @@ Alembic::Terminate()
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 114
-; FirstLine = 73
+; FirstLine = 71
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -1,5 +1,5 @@
 ﻿; ======================================================================================
-; RADIAL BASIS FUNCTION (RBF) MODULE DECLARATION
+;   RADIAL BASIS FUNCTION (RBF) MODULE DECLARATION
 ; ======================================================================================
 XIncludeFile "Matrix.pbi"
 
@@ -284,8 +284,7 @@ Module RBF
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 154
-; FirstLine = 136
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1
 ; Folding = ----
 ; EnableXP

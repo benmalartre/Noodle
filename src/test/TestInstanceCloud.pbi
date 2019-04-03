@@ -59,7 +59,7 @@ EndProcedure
 Procedure CreateGround()
   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground",Shape::#SHAPE_NONE)
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
-  PolymeshGeometry::GridTopology(*geom\topo,1000,10,10)
+  Topology::Grid(*geom\topo,1000,10,10)
   PolymeshGeometry::Set2(*geom,*geom\topo)
   Object3D::Freeze(*ground)
   Protected *p.v3f32
@@ -198,7 +198,7 @@ Procedure Draw(*app.Application::Application_t)
 ;     EndIf
 ;   Next
 ;   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TEAPOT)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
   Define startP.v3f32, endP.v3f32
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 133
+; CursorPosition = 200
+; FirstLine = 154
 ; Folding = --
 ; EnableXP
 ; Executable = Test

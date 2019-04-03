@@ -78,8 +78,9 @@ DeclareModule ControlDivot
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New( gadgetID.i ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlDivot_t)
+  Declare Draw( *Me.ControlDivot_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlDivot_t, value.i )
   Declare GetValue( *Me.ControlDivot_t)
@@ -92,8 +93,12 @@ DeclareModule ControlDivot
   ; ----------------------------------------------------------------------------
   DataSection 
     ControlDivotVT: 
+    Data.i @OnEvent() ; mandatory override
+    Data.i @Delete()  ; mandatory override
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
     Data.i @OnEvent()
-    Data.i @Delete()
     
     VIControlDivot_light_over: 
     IncludeBinary "../../rsc/skins/grey/control_divot/light.divot.over.png"
@@ -165,7 +170,7 @@ Module ControlDivot
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlDivot_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlDivot_t, xoff.i = 0, yoff.i = 0 )
 
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn : EndIf
@@ -237,7 +242,7 @@ Module ControlDivot
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlDivot_t, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me.ControlDivot_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -388,7 +393,7 @@ Module ControlDivot
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( *object.Object::Object_t,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( gadgetID.i ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlDivot_t = AllocateMemory( SizeOf(ControlDivot_t) ) 
@@ -396,12 +401,11 @@ Module ControlDivot
 ;     *Me\VT = ?ControlDivotVT
 ;     *Me\classname = "CONTROLDIVOT"
     Object::INI(ControlDivot)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#DIVOT
     *Me\name     = name
-    *Me\gadgetID = #Null
+    *Me\gadgetID = gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -539,7 +543,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 397
+; CursorPosition = 244
+; FirstLine = 240
 ; Folding = ---
 ; EnableXP

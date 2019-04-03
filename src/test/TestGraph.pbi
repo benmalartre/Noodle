@@ -69,10 +69,10 @@ Procedure AddAudioTree(*tree.Tree::Tree_t)
   Protected *dac.Node::Node_t = Tree::AddNode(*tree,"AudioDACNode",0,0,100,20,RGB(160,160,160))
   Protected *sine.Node::Node_t = Tree::AddNode(*tree,"AudioSineWaveNode",0,0,120,30,RGB(160,160,160))
   
-  SelectElement(*r\inputs(), 1)
-  Tree::ConnectNodes(*tree,*tree\root,*dac\outputs(),*r\inputs(),#False)
-  SelectElement(*dac\inputs(), 1)
-  Tree::ConnectNodes(*tree,*tree\root,*sine\outputs(),*dac\inputs(),#False)
+;   SelectElement(*r\inputs(), 1)
+;   Tree::ConnectNodes(*tree,*tree\root,*dac\outputs(),*r\inputs(),#False)
+;   SelectElement(*dac\inputs(), 1)
+;   Tree::ConnectNodes(*tree,*tree\root,*sine\outputs(),*dac\inputs(),#False)
 ;   Protected *g2.Node::Node_t = Tree::AddNode(*tree,"GetDataNode",0,120,100,20,RGB(160,160,160))
 ;   Protected *m.Node::Node_t = Tree::AddNode(*tree,"MultiplyByScalarNode",200,30,100,20,RGB(160,160,160))
 ;   Protected *a.Node::Node_t = Tree::AddNode(*tree,"AddNode",400,30,100,20,RGB(160,160,160))
@@ -102,7 +102,7 @@ Procedure AddAudioTree(*tree.Tree::Tree_t)
 EndProcedure
 
 Scene::*current_scene = Scene::New()
-Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_NONE)
+Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_SPHERE)
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
 ; 
 ; PolymeshGeometry::SetFromOther(*obj\geom,*teapot\geom)
@@ -119,9 +119,9 @@ Log::Message("Hello User : Beginning session "+FormatDate("%hh:%ii:%ss", Date())
 
 Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 
-AddEmptyTree(*tree)
-; AddPushTree(*tree)
-; AddAudioTree(*tree)
+;AddEmptyTree(*tree)
+ AddPushTree(*tree)
+ AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
 
@@ -183,8 +183,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 76
+; CursorPosition = 74
+; FirstLine = 57
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

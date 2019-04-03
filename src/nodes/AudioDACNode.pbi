@@ -3,22 +3,20 @@ XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../libs/STK.pbi"
+XIncludeFile "AudioNode.pbi"
 
 ; ==================================================================================================
 ; RTAUDIO DAC NODE MODULE DECLARATION
 ; ==================================================================================================
 DeclareModule AudioDACNode
-  Structure AudioDACNode_t Extends Node::Node_t
-    mute.b
-    playing.b
-    *node.STK::GeneratorStream
+  Structure AudioDACNode_t Extends AudioNode::AudioNode_t
     nbStreams.i
   EndStructure
   
   ; ------------------------------
   ;   Interface
   ; ------------------------------
-  Interface IAudioDACNode Extends Node::INode 
+  Interface IAudioDACNode Extends AudioNode::IAudioNode 
   EndInterface
   
   Declare New(*tree.Tree::Tree_t, type.s="AudioDAC", x.i=0, y.i=0, w.i=100, h.i=50, c.i=0)
@@ -70,7 +68,7 @@ Module AudioDACNode
 ;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_DECAY_TIME, 0.02)
 ;     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
     
-    STK::GeneratorStreamStart(*node\node)
+    STK::StreamStart(*node\node)
     
   EndProcedure
   
@@ -78,11 +76,18 @@ Module AudioDACNode
   ;   Implementation
   ; --------------------------------------------------------------------------------------------------
   Procedure Init(*node.AudioDACNode_t)
+    
     Protected *mute.NodePort::NodePort_t = Node::AddInputPort(*node,
                                                               "Mute",
                                                               Attribute::#ATTR_TYPE_BOOL, 
                                                               Attribute::#ATTR_CTXT_SINGLETON,
                                                               Attribute::#ATTR_STRUCT_SINGLE)
+    
+    Protected *time.NodePort::NodePort_t = Node::AddInputPort(*node,
+                                                                "Time",
+                                                                Attribute::#ATTR_TYPE_FLOAT, 
+                                                                Attribute::#ATTR_CTXT_SINGLETON,
+                                                                Attribute::#ATTR_STRUCT_SINGLE)
     
     Protected *input0.NodePort::NodePort_t = Node::AddInputPort(*node,
                                                                 "Input0",
@@ -111,7 +116,7 @@ Module AudioDACNode
     EndIf
     
       
-    *node\node = STK::GeneratorStreamSetup(STK::*DAC)
+    *node\node = STK::StreamSetup(STK::*DAC)
     
     NodePort::SetupConnectionCallback(*input0, @OnConnectInput())
     NodePort::SetupConnectionCallback(*execute, @OnConnectOutput())
@@ -120,7 +125,14 @@ Module AudioDACNode
   Procedure Evaluate(*node.AudioDACNode_t)
     Protected *execute.NodePort::NodePort_t = *node\outputs()
     FirstElement(*node\inputs())
+    FirstElement(*node\inputs())
     Protected *mute.NodePort::NodePort_t = *node\inputs()
+    NextElement(*node\inputs())
+    Protected *volume.NodePort::NodePort_t = *node\inputs()
+    Protected *aVolume.CArray::CArrayBool  =  NodePort::AcquireInputData(*volume)
+    
+    STK::SetNodeVolume(*node\node, CArray::GetValueF(*aVolume, 0))
+    
     Protected *input.NodePort::NodePort_t
     While NextElement(*node\inputs())
       *input = *node\inputs()
@@ -131,7 +143,7 @@ Module AudioDACNode
   EndProcedure
   
   Procedure Terminate(*node.AudioDACNode_t)
-    STK::GeneratorStreamClean(*node\node)
+    STK::StreamClean(*node\node)
   EndProcedure
   
   Procedure OnConnect(*node.AudioDACNode_t, *port.NodePort::NodePort_t)
@@ -173,7 +185,7 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 114
+; CursorPosition = 77
+; FirstLine = 42
 ; Folding = ---
 ; EnableXP

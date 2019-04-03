@@ -1,5 +1,6 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
+XIncludeFile "../core/Callback.pbi"
 
 ; ==============================================================================
 ;  CONTROL HEAD MODULE DECLARATION
@@ -71,15 +72,12 @@ Module ControlHead
     AddPathBox(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     VectorSourceColor(UIColor::COLORA_MAIN_BG)
     FillPath()
-    
-    Protected *obj.Object::Object_t = *Me\object
-    
+        
     Protected *prop.Control::Control_t = *Me\parent
-    Protected *n.Node::Node_t = *prop\object
     
     VectorFont(FontID(Globals::#FONT_BOLD),Globals::#FONT_SIZE_TITLE)
-    w = VectorTextWidth(*n\name)
-    h = VectorTextHeight(*n\name)
+    w = VectorTextWidth("TARACE")
+    h = VectorTextHeight("TARACE")
 
     AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
     VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
@@ -107,7 +105,7 @@ Module ControlHead
     
     VectorSourceColor(UIColor::COLORA_LABEL)
     MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5)
-    DrawVectorText(*n\name)
+    DrawVectorText("TARACE")
     MovePathCursor(*Me\posX+2,*Me\posY+8)
     AddPathLine(12,0, #PB_Path_Relative)
     StrokePath(2)
@@ -226,10 +224,11 @@ Module ControlHead
           If *Me\over And *Me\touch_l 
             Signal::Trigger(*Me\on_expand,Signal::#SIGNAL_TYPE_PING)
           ElseIf *Me\over And *Me\touch_r
-;             Slot::Trigger(*Me\ondelete_signal,Signal::#SIGNAL_TYPE_PING,#Null)
+            Signal::Trigger(*Me\on_delete,Signal::#SIGNAL_TYPE_PING)
           EndIf
-          
         EndIf
+        ; ...[ Processed ]......................................................
+        ProcedureReturn( #True )
         
       ; ------------------------------------------------------------------------
       ;  Enable
@@ -259,8 +258,8 @@ Module ControlHead
     ProcedureReturn( #False )
     
   EndProcedure
-
-  ; ---[ SetValue ]-------------------------------------------------------------
+  
+   ; ---[ SetValue ]-------------------------------------------------------------
   Procedure SetValue( *Me.ControlHead_t, value.i )
     
     ; ---[ Sanity Check ]-------------------------------------------------------
@@ -283,32 +282,30 @@ Module ControlHead
     ProcedureReturn( *Me\value )
     
   EndProcedure
-  
-  ; ---[ Free ]-----------------------------------------------------------------
+
+  ; ----------------------------------------------------------------------------
+  ;   DESTRUCTOR
+  ; ----------------------------------------------------------------------------
   Procedure Delete( *Me.ControlHead_t )
     ; ---[ Terminate Object ]---------------------------------------------------
     Object::TERM(ControlHead)
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
   EndProcedure
-
 
   ; ----------------------------------------------------------------------------
   ;  CONSTRUCTOR
   ; ----------------------------------------------------------------------------
-  Procedure.i New( *obj.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( gadgetID.i, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlHead_t = AllocateMemory( SizeOf(ControlHead_t) ) 
     
     Object::INI(ControlHead)
-    *Me\object = *obj
     Protected *parent.Control::Control_t = *obj
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#HEAD
     *Me\name     = name
-    *Me\gadgetID = *parent\gadgetID
+    *Me\gadgetID = gadgetID
     *Me\parent   = *parent
     *Me\posX     = x
     *Me\posY     = y
@@ -365,7 +362,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 284
+; CursorPosition = 224
+; FirstLine = 220
 ; Folding = ---
 ; EnableXP

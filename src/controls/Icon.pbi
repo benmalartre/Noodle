@@ -82,7 +82,7 @@ DeclareModule ControlIcon
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Declare New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
   Declare Delete(*Me.ControlIcon_t)
   Declare OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -308,7 +308,6 @@ Module ControlIcon
           Control::Invalidate(*Me)
           Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OVER : "+Str(*Me\over)
           If *Me\over
-            PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
             Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
             ; TODO : >>> TRIGGER ACTION <<<
 ;             Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
@@ -369,7 +368,7 @@ Module ControlIcon
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Procedure.i New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlIcon_t = AllocateMemory( SizeOf(ControlIcon_t) )
@@ -377,12 +376,11 @@ Module ControlIcon
 ;     *Me\VT = ?ControlIconVT
 ;     *Me\classname = "CONTROLICON"
     Object::INI(ControlIcon)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = #PB_GadgetType_Button
     *Me\name       = name
-    *Me\gadgetID   = #Null
+    *Me\gadgetID   = gadgetID
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -557,7 +555,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 399
-; FirstLine = 363
+; CursorPosition = 84
+; FirstLine = 42
 ; Folding = ----
 ; EnableXP

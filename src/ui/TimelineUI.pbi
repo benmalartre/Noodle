@@ -68,7 +68,7 @@ Module TimelineUI
     ; ---[ Time line Control ]------------------
     *Me\container = ContainerGadget(#PB_Any,*Me\x,*Me\y,*Me\width,*Me\height)
     Protected *m.ViewManager::ViewManager_t = *parent\manager
-    *Me\timeline = ControlTimeline::New(#Null,*m\window,0,0,*Me\width,*Me\height)
+    *Me\timeline = ControlTimeline::New(*m\window,0,0,*Me\width,*Me\height)
     CloseGadgetList()
     
     OnEvent(*Me,#PB_Event_SizeWindow)
@@ -147,7 +147,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 21
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

@@ -11,6 +11,7 @@ DeclareModule AudioNode
   Structure AudioNode_t Extends Node::Node_t
     playing.b
     mute.b
+    volume.f
     *node.STK::Node
   EndStructure
   
@@ -47,7 +48,13 @@ Module AudioNode
   ;Implementation
   ;------------------------------
   Procedure Init(*node.AudioNode_t)
+
+    ; COMMON input ports
+    Protected *mute.NodePort::NodePort_t = Node::AddInputPort(*node,"Mute",Attribute::#ATTR_TYPE_BOOL)
+    Protected *volume.NodePort::NodePort_t = Node::AddInputPort(*node,"Volume",Attribute::#ATTR_TYPE_FLOAT)
     
+    ; COMMON output port
+    Protected *output.NodePort::NodePort_t = Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_AUDIO)
   EndProcedure
   
   Procedure Evaluate(*node.AudioNode_t)
@@ -88,7 +95,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 29
+; CursorPosition = 14
+; FirstLine = 1
 ; Folding = --
 ; EnableXP

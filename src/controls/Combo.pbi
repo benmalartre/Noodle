@@ -10,98 +10,17 @@ DeclareModule ControlCombo
   ; ============================================================================
   ;  GLOBALS
   ; ============================================================================
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  ; ---[ Button Up ]------------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_combo_up_normal_l .i
-  Global s_gui_controls_light_combo_up_normal_c .i
-  Global s_gui_controls_light_combo_up_normal_r .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_combo_up_over_l .i
-  Global s_gui_controls_light_combo_up_over_c .i
-  Global s_gui_controls_light_combo_up_over_r .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_light_combo_up_disabled_l .i
-  Global s_gui_controls_light_combo_up_disabled_c .i
-  Global s_gui_controls_light_combo_up_disabled_r .i
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_light_combo_down_normal_l .i
-  Global s_gui_controls_light_combo_down_normal_c .i
-  Global s_gui_controls_light_combo_down_normal_r .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_light_combo_down_over_l .i
-  Global s_gui_controls_light_combo_down_over_c .i
-  Global s_gui_controls_light_combo_down_over_r .i
-
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  ; ---[ Button Up ]------------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_combo_up_normal_l .i
-  Global s_gui_controls_dark_combo_up_normal_c .i
-  Global s_gui_controls_dark_combo_up_normal_r .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_combo_up_over_l .i
-  Global s_gui_controls_dark_combo_up_over_c .i
-  Global s_gui_controls_dark_combo_up_over_r .i
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_dark_combo_up_disabled_l .i
-  Global s_gui_controls_dark_combo_up_disabled_c .i
-  Global s_gui_controls_dark_combo_up_disabled_r .i
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_dark_combo_down_normal_l .i
-  Global s_gui_controls_dark_combo_down_normal_c .i
-  Global s_gui_controls_dark_combo_down_normal_r .i
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_dark_combo_down_over_l .i
-  Global s_gui_controls_dark_combo_down_over_c .i
-  Global s_gui_controls_dark_combo_down_over_r .i
-
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-
-  ; ---[ Button Up ]------------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_combo_up_normal_l
-  Global s_gui_controls_combo_up_normal_c
-  Global s_gui_controls_combo_up_normal_r
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_combo_up_over_l
-  Global s_gui_controls_combo_up_over_c
-  Global s_gui_controls_combo_up_over_r
-  ; ...[ Disabled ].............................................................
-  Global s_gui_controls_combo_up_disabled_l
-  Global s_gui_controls_combo_up_disabled_c
-  Global s_gui_controls_combo_up_disabled_r
-  ; ---[ Button Down ]----------------------------------------------------------
-  ; ...[ Normal ]...............................................................
-  Global s_gui_controls_combo_down_normal_l
-  Global s_gui_controls_combo_down_normal_c
-  Global s_gui_controls_combo_down_normal_r
-  ; ...[ Over ].................................................................
-  Global s_gui_controls_combo_down_over_l
-  Global s_gui_controls_combo_down_over_c
-  Global s_gui_controls_combo_down_over_r
-
-
-
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlCombo_t )
   ; ----------------------------------------------------------------------------
-  
   Structure ControlCombo_t Extends Control::Control_t
     ; CControlCombo
     label.s
     over.i
     down.i
     Array items.s(0)
+    *on_press.Signal::Signal_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -113,10 +32,11 @@ DeclareModule ControlCombo
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New(*object.Object::Object_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
+  Declare New(gadgetID.i, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
   Declare Delete(*Me.ControlCombo_t)
+  Declare Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  
+  Declare OnPress(*Me.ControlCombo_t)
   Declare SetTheme( theme.i )
   Declare.b Init()
   Declare.b Term()
@@ -129,32 +49,11 @@ DeclareModule ControlCombo
   DataSection
     ControlComboVT:
     Data.i @OnEvent() ; mandatory override
-    Data.i @Delete() ; mandatory override
-
-    ; Images
-    ; (Light)
-    VIControlCombo_light_up_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/light.combo.up.normal.png"
-    VIControlCombo_light_up_over:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/light.combo.up.over.png"
-    VIControlCombo_light_up_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/light.combo.up.disabled.png"
-    VIControlCombo_light_down_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/light.combo.down.normal.png"
-    VIControlCombo_light_down_over:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/light.combo.down.over.png"
-    
-    ; (Dark)
-    VIControlCombo_dark_up_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/dark.combo.up.normal.png"
-    VIControlCombo_dark_up_over:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/dark.combo.up.over.png"
-    VIControlCombo_dark_up_disabled:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/dark.combo.up.disabled.png"
-    VIControlCombo_dark_down_normal:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/dark.combo.down.normal.png"
-    VIControlCombo_dark_down_over:  
-    IncludeBinary "../../rsc/skins/grey/control_combo/dark.combo.down.over.png"
+    Data.i @Delete()  ; mandatory override
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+    Data.i @OnEvent()
     
   EndDataSection
   ;}
@@ -170,9 +69,9 @@ Module ControlCombo
   
   ;{
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
   
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
@@ -184,61 +83,43 @@ Module ControlCombo
     VectorFont( FontID(Globals::#FONT_DEFAULT ))
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
-    ; ---[ Reset Clipping ]-----------------------------------------------------
-  ;   raaResetClip()
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-      MovePathCursor(0 + xoff, 0 + yoff)
-      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_l))
-      MovePathCursor(6 + xoff, 0 + yoff)
-      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_c), 255, *Me\sizX - 25, 21 )
-      MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
-      DrawVectorImage( ImageID(s_gui_controls_combo_up_disabled_r))
-      ; ...[ Disabled Text ]....................................................
-      tc = RAA_COLORA_LABEL_DISABLED
+      AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
+      VectorSourceColor(UIColor::RANDOMIZED)
+      FillPath()
+     
+      ; ---[ Disabled Text ]----------------------------------------------------
+      tc = UIColor::COLORA_LABEL_DISABLED
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+      ; ---[ Down ]-------------------------------------------------------------
       If *Me\down
-        MovePathCursor(0 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_l))
-        MovePathCursor(6 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_c), 255, *Me\sizX - 25, 21 )
-        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_over_r))
-        ; ...[ Negate Text ]....................................................
-        tc = RAA_COLORA_LABEL_NEG
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+        AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(UIColor::RANDOMIZED)
+        FillPath()
+        ; ---[ Negate Text ]----------------------------------------------------
+        tc = UIColor::COLORA_LABEL_NEG
+      ; ---[ Up ]---------------------------------------------------------------
       Else
-        MovePathCursor(0 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_l))
-        MovePathCursor(6 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_c), 255, *Me\sizX - 25, 21 )
-        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_over_r))
+        AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(UIColor::RANDOMIZED)
+        FillPath()
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
-      ; °°°[ Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+      ; ---[ Down ]-------------------------------------------------------------
       If *Me\down
-        MovePathCursor(0 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_l))
-        MovePathCursor(6 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_c), 255, *Me\sizX - 25, 21 )
-        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_down_normal_r))
-        ; ...[ Negate Text ]....................................................
-        tc = RAA_COLORA_LABEL_NEG
-      ; °°°[ Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+        AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(UIColor::RANDOMIZED)
+        FillPath()
+        ; ---[ Negate Text ]----------------------------------------------------
+        tc = UIColor::COLORA_LABEL_NEG
+      ; °°°[ Up ]---------------------------------------------------------------
       Else
-        MovePathCursor(0 + xoff, 0 + yoff )
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_l))
-        MovePathCursor(6 + xoff, 0 + yoff)
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_c), 255, *Me\sizX - 25, 21 )
-        MovePathCursor(*Me\sizX - 19 + xoff, 0 + yoff )
-        DrawVectorImage( ImageID(s_gui_controls_combo_up_normal_r))
+        AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
+        VectorSourceColor(UIColor::RANDOMIZED)
+        FillPath()
       EndIf
     EndIf
       
@@ -249,6 +130,11 @@ Module ControlCombo
     
   EndProcedure
   ;}
+  
+  
+  Procedure OnPress(*Me.ControlCombo_t)
+    MessageRequester("COMBO", "PRESSED")
+  EndProcedure
   
   
   ; ============================================================================
@@ -269,7 +155,7 @@ Module ControlCombo
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -341,7 +227,8 @@ Module ControlCombo
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
-            PostEvent(Globals::#EVENT_COMBO_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
+            Signal::Trigger(*Me\on_press, Signal::#SIGNAL_TYPE_PING)
+            ;PostEvent(Globals::#EVENT_COMBO_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
           EndIf
         EndIf
         
@@ -408,7 +295,7 @@ Module ControlCombo
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(*object.Object::Object_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
+  Procedure.i New(gadgetID.i, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCombo_t = AllocateMemory( SizeOf(ControlCombo_t) )
@@ -416,12 +303,11 @@ Module ControlCombo
 ;     *Me\VT = ControlComboVT
 ;     *Me\classname = "CONTROLCOMBO"
     Object::INI(ControlCombo)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type        = Control::#COMBO
     *Me\name        = name
-    *Me\gadgetID    = #Null
+    *Me\gadgetID    = gadgetID
     *Me\posX        = x
     *Me\posY        = y
     *Me\sizX        = width
@@ -429,6 +315,8 @@ Module ControlCombo
     *Me\visible     = #True
     *Me\enable      = #True
     *Me\options     = options
+    
+    *Me\on_press    = Object::NewSignal(*Me, "OnPress")
 
     If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
     
@@ -448,53 +336,11 @@ Module ControlCombo
         
       ; ---[ Light ]------------------------------------------------------------
       Case Globals::#GUI_THEME_LIGHT
-        ; °°°[ Button Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-        ; ...[ Normal ].........................................................
-        s_gui_controls_combo_up_normal_l = s_gui_controls_light_combo_up_normal_l
-        s_gui_controls_combo_up_normal_c = s_gui_controls_light_combo_up_normal_c
-        s_gui_controls_combo_up_normal_r = s_gui_controls_light_combo_up_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_combo_up_over_l = s_gui_controls_light_combo_up_over_l
-        s_gui_controls_combo_up_over_c = s_gui_controls_light_combo_up_over_c
-        s_gui_controls_combo_up_over_r = s_gui_controls_light_combo_up_over_r
-        ; ...[ Disabled ].......................................................
-        s_gui_controls_combo_up_disabled_l = s_gui_controls_light_combo_up_disabled_l
-        s_gui_controls_combo_up_disabled_c = s_gui_controls_light_combo_up_disabled_c
-        s_gui_controls_combo_up_disabled_r = s_gui_controls_light_combo_up_disabled_r
-        ; °°°[ Button Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-        ; ...[ Normal ].........................................................
-        s_gui_controls_combo_down_normal_l = s_gui_controls_light_combo_down_normal_l
-        s_gui_controls_combo_down_normal_c = s_gui_controls_light_combo_down_normal_c
-        s_gui_controls_combo_down_normal_r = s_gui_controls_light_combo_down_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_combo_down_over_l = s_gui_controls_light_combo_down_over_l
-        s_gui_controls_combo_down_over_c = s_gui_controls_light_combo_down_over_c
-        s_gui_controls_combo_down_over_r = s_gui_controls_light_combo_down_over_r
+      
         
       ; ---[ Dark ]-------------------------------------------------------------
       Case Globals::#GUI_THEME_DARK
-        ; °°°[ Button Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-        ; ...[ Normal ].........................................................
-        s_gui_controls_combo_up_normal_l = s_gui_controls_dark_combo_up_normal_l
-        s_gui_controls_combo_up_normal_c = s_gui_controls_dark_combo_up_normal_c
-        s_gui_controls_combo_up_normal_r = s_gui_controls_dark_combo_up_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_combo_up_over_l = s_gui_controls_dark_combo_up_over_l
-        s_gui_controls_combo_up_over_c = s_gui_controls_dark_combo_up_over_c
-        s_gui_controls_combo_up_over_r = s_gui_controls_dark_combo_up_over_r
-        ; ...[ Disabled ].......................................................
-        s_gui_controls_combo_up_disabled_l = s_gui_controls_dark_combo_up_disabled_l
-        s_gui_controls_combo_up_disabled_c = s_gui_controls_dark_combo_up_disabled_c
-        s_gui_controls_combo_up_disabled_r = s_gui_controls_dark_combo_up_disabled_r
-        ; °°°[ Button Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-        ; ...[ Normal ].........................................................
-        s_gui_controls_combo_down_normal_l = s_gui_controls_dark_combo_down_normal_l
-        s_gui_controls_combo_down_normal_c = s_gui_controls_dark_combo_down_normal_c
-        s_gui_controls_combo_down_normal_r = s_gui_controls_dark_combo_down_normal_r
-        ; ...[ Over ]...........................................................
-        s_gui_controls_combo_down_over_l = s_gui_controls_dark_combo_down_over_l
-        s_gui_controls_combo_down_over_c = s_gui_controls_dark_combo_down_over_c
-        s_gui_controls_combo_down_over_r = s_gui_controls_dark_combo_down_over_r
+        
 
     EndSelect
     
@@ -502,88 +348,10 @@ Module ControlCombo
   ;}
   
   ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsComboInitOnce
+  ;  ControlsComboInitOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Init(  )
 
-    
-    ; ---[ Local Variable ]-----------------------------------------------------
-    Protected img.i
-    
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ;  LIGHT
-    ; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-
-    ; °°°[ Button Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_light_up_normal )
-    s_gui_controls_light_combo_up_normal_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_light_combo_up_normal_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_light_combo_up_normal_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_light_up_over )
-    s_gui_controls_light_combo_up_over_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_light_combo_up_over_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_light_combo_up_over_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_light_up_disabled )
-    s_gui_controls_light_combo_up_disabled_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_light_combo_up_disabled_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_light_combo_up_disabled_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; °°°[ Button Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_light_down_normal )
-    s_gui_controls_light_combo_down_normal_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_light_combo_down_normal_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_light_combo_down_normal_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_light_down_over )
-    s_gui_controls_light_combo_down_over_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_light_combo_down_over_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_light_combo_down_over_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-
-    ; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ;  DARK
-    ; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; °°°[ Button Up ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_dark_up_normal )
-    s_gui_controls_dark_combo_up_normal_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_dark_combo_up_normal_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_dark_combo_up_normal_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_dark_up_over )
-    s_gui_controls_dark_combo_up_over_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_dark_combo_up_over_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_dark_combo_up_over_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Disabled ]...........................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_dark_up_disabled )
-    s_gui_controls_dark_combo_up_disabled_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_dark_combo_up_disabled_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_dark_combo_up_disabled_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; °°°[ Button Down ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; ...[ Normal ].............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_dark_down_normal )
-    s_gui_controls_dark_combo_down_normal_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_dark_combo_down_normal_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_dark_combo_down_normal_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    ; ...[ Over ]...............................................................
-    img = CatchImage( #PB_Any, ?VIControlCombo_dark_down_over )
-    s_gui_controls_dark_combo_down_over_l = GrabImage( img, #PB_Any,   0, 0,   6, 21 )
-    s_gui_controls_dark_combo_down_over_c = GrabImage( img, #PB_Any,   6, 0, 146, 21 )
-    s_gui_controls_dark_combo_down_over_r = GrabImage( img, #PB_Any, 152, 0,  19, 21 )
-    FreeImage( img )
-    
     SetTheme(Globals::#GUI_THEME_LIGHT)
     
     ; ---[ OK ]-----------------------------------------------------------------
@@ -591,47 +359,9 @@ Module ControlCombo
     
   EndProcedure
   ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsComboTermOnce
+  ;  ControlsComboTermOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Term( )
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; °°°[ Free Images ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-    ; ...[ Dark ]...............................................................
-    FreeImage( s_gui_controls_dark_combo_down_over_r )
-    FreeImage( s_gui_controls_dark_combo_down_over_c )
-    FreeImage( s_gui_controls_dark_combo_down_over_l )
-    FreeImage( s_gui_controls_dark_combo_down_normal_r )
-    FreeImage( s_gui_controls_dark_combo_down_normal_c )
-    FreeImage( s_gui_controls_dark_combo_down_normal_l )
-    FreeImage( s_gui_controls_dark_combo_up_disabled_r )
-    FreeImage( s_gui_controls_dark_combo_up_disabled_c )
-    FreeImage( s_gui_controls_dark_combo_up_disabled_l )
-    FreeImage( s_gui_controls_dark_combo_up_over_r )
-    FreeImage( s_gui_controls_dark_combo_up_over_c )
-    FreeImage( s_gui_controls_dark_combo_up_over_l )
-    FreeImage( s_gui_controls_dark_combo_up_normal_r )
-    FreeImage( s_gui_controls_dark_combo_up_normal_c )
-    FreeImage( s_gui_controls_dark_combo_up_normal_l )
-
-    ; ...[ Light ]..............................................................
-    FreeImage( s_gui_controls_light_combo_down_over_r )
-    FreeImage( s_gui_controls_light_combo_down_over_c )
-    FreeImage( s_gui_controls_light_combo_down_over_l )
-    FreeImage( s_gui_controls_light_combo_down_normal_r )
-    FreeImage( s_gui_controls_light_combo_down_normal_c )
-    FreeImage( s_gui_controls_light_combo_down_normal_l )
-    FreeImage( s_gui_controls_light_combo_up_disabled_r )
-    FreeImage( s_gui_controls_light_combo_up_disabled_c )
-    FreeImage( s_gui_controls_light_combo_up_disabled_l )
-    FreeImage( s_gui_controls_light_combo_up_over_r )
-    FreeImage( s_gui_controls_light_combo_up_over_c )
-    FreeImage( s_gui_controls_light_combo_up_over_l )
-    FreeImage( s_gui_controls_light_combo_up_normal_r )
-    FreeImage( s_gui_controls_light_combo_up_normal_c )
-    FreeImage( s_gui_controls_light_combo_up_normal_l )
-
-    
 
     ; ---[ OK ]-----------------------------------------------------------------
     ProcedureReturn #True
@@ -645,7 +375,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 421
-; FirstLine = 417
+; CursorPosition = 51
+; FirstLine = 10
 ; Folding = ---
 ; EnableXP

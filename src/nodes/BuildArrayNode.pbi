@@ -81,6 +81,8 @@ Module BuildArrayNode
     
   
     Select *output\currenttype
+      ; BOOLEAN ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_BOOL
         Protected *bIn.CArray::CArrayInt,*bOut.CArray::CArrayInt
         *bOut = *output\attribute\data
@@ -93,6 +95,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *bOut
         
+      ; INTEGER ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
         *lOut = *output\attribute\data
@@ -105,6 +109,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *lOut
         
+      ; FLOAT ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
         *fOut = *output\attribute\data
@@ -112,11 +118,13 @@ Module BuildArrayNode
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
-          fIn = NodePort::AcquireInputData(*node\inputs())
+          *fIn = NodePort::AcquireInputData(*node\inputs())
           CArray::AppendArray(*fOut,*fIn)
         Next
-        *output\attribute\data = fOut
+        *output\attribute\data = *fOut
         
+      ; VECTOR2 ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_VECTOR2
         Protected *v2f32In.CArray::CArrayV2F32,*v2f32Out.CArray::CArrayV2F32
         *v2f32Out = *output\attribute\data
@@ -129,6 +137,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *v2f32Out
         
+      ; VECTOR3 ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *v3f32In.CArray::CArrayV3F32,*v3f32Out.CArray::CArrayV3F32
         *v3f32Out = *output\attribute\data
@@ -141,6 +151,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *v3f32Out
         
+      ; VECTOR4 ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_QUATERNION
         Protected *q4f32In.CArray::CArrayQ4F32,*q4f32Out.CArray::CArrayQ4F32
         *q4f32Out = *output\attribute\data
@@ -153,6 +165,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *q4f32Out
         
+      ; COLOR ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *c4f32In.CArray::CArrayC4F32,*c4f32Out.CArray::CArrayC4F32
         *c4f32Out = *output\attribute\data
@@ -165,6 +179,8 @@ Module BuildArrayNode
         Next
         *output\attribute\data = *c4f32Out
         
+      ; TOPOLOGY ATTRIBUTE
+      ; ------------------------------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *topoIn.CArray::CArrayPtr,*topoOut.CArray::CArrayPtr
         *topoOut = *output\attribute\data
@@ -221,8 +237,8 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 129
+; CursorPosition = 123
+; FirstLine = 82
 ; Folding = --
 ; EnableThread
 ; EnableXP

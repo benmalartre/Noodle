@@ -571,9 +571,6 @@ EndProcedure
 ; ============================================================================
 Procedure Delete( *Me.ControlButton_t )
   Object::TERM(ControlButton)
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  ClearStructure(*Me,ControlButton_t)
-  FreeMemory( *Me )
   
 EndProcedure
 
@@ -1075,7 +1072,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 192
+; CursorPosition = 572
+; FirstLine = 568
 ; Folding = ---+-
 ; EnableXP
