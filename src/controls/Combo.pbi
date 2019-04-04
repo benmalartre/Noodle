@@ -32,7 +32,7 @@ DeclareModule ControlCombo
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New(gadgetID.i, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
+  Declare New(*parent.Control::Control_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
   Declare Delete(*Me.ControlCombo_t)
   Declare Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -295,7 +295,7 @@ Module ControlCombo
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(gadgetID.i, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCombo_t = AllocateMemory( SizeOf(ControlCombo_t) )
@@ -307,7 +307,8 @@ Module ControlCombo
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type        = Control::#COMBO
     *Me\name        = name
-    *Me\gadgetID    = gadgetID
+    *Me\parent      = *parent
+    *Me\gadgetID    = *parent\gadgetID
     *Me\posX        = x
     *Me\posY        = y
     *Me\sizX        = width
@@ -375,7 +376,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 10
+; CursorPosition = 310
+; FirstLine = 265
 ; Folding = ---
 ; EnableXP

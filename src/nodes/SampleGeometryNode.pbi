@@ -51,12 +51,12 @@ Module SampleGeometryNode
     Node::AddInputPort(*node,"Mode",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddInputPort(*node,"Rate",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddOutputPort(*node,"Points",Attribute::#ATTR_TYPE_LOCATION)
+    Node::AddOutputPort(*node,"Location",Attribute::#ATTR_TYPE_LOCATION)
     
-    Node::PortAffectByName(*node, "Geometry", "Points")
-    Node::PortAffectByName(*node, "Mode", "Points")
-    Node::PortAffectByName(*node, "Rate", "Points")
-    Node::PortAffectByName(*node, "Seed", "Points")
+    Node::PortAffectByName(*node, "Geometry", "Location")
+    Node::PortAffectByName(*node, "Mode", "Location")
+    Node::PortAffectByName(*node, "Rate", "Location")
+    Node::PortAffectByName(*node, "Seed", "Location")
     *node\label = "SampleGeometry"
   EndProcedure
   
@@ -82,13 +82,6 @@ Module SampleGeometryNode
                                 NodePort::AcquireOutputData(*output),
                                 CArray::GetValueI(*rate,0),
                                 CArray::GetValueI(*seed,0))
-        
-;         PolymeshGeometry::BunnyTopology(*geom\topo)
-;         PolymeshGeometry::Set2(*geom,*geom\topo)
-;         Protected *parent.Object3D::Object3D_t = *geom\parent
-;         *parent\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
-      Else
-        MessageRequester("SampleGeometryNode","No Input Geometry")
       EndIf
     EndIf
     
@@ -102,9 +95,6 @@ Module SampleGeometryNode
 
     FreeMemory(*node)
   EndProcedure
-  
-  
-  
   
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -132,7 +122,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 69
+; CursorPosition = 96
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

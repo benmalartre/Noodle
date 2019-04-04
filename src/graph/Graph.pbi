@@ -18,7 +18,7 @@ Module Graph
     ;*node\label = refname
     Protected *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
     If base ="Self" Or base ="This"
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(StringField(refname, 2,"."))
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(StringField(refname, 2,"."))
       If *attribute
         *output\currenttype = *attribute\datatype
         *output\currentcontext = *attribute\datacontext
@@ -43,9 +43,9 @@ Module Graph
         Protected *obj.Object3D::Object3D_t = *node\parent3dobject
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
-        If FindMapElement(*obj\m_attributes(),name)
+        If FindMapElement(*obj\geom\m_attributes(),name)
           
-          Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(name)
+          Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
   
           NodePort::InitFromReference(*input,*attribute)
@@ -130,8 +130,8 @@ Module Graph
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 13
+; CursorPosition = 47
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

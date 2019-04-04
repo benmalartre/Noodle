@@ -34,8 +34,9 @@ DeclareModule ControlHead
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New( *parent.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlHead_t)
+  Declare Draw( *Me.ControlHead_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlHead_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetTheme( theme.i )
   Declare.b Init()
@@ -48,6 +49,9 @@ DeclareModule ControlHead
     ControlHeadVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
   EndDataSection
  
   
@@ -62,7 +66,7 @@ Module ControlHead
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlHead_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlHead_t, xoff.i = 0, yoff.i = 0 )
     ; Check Visible
     If Not *Me\visible : ProcedureReturn : EndIf
     
@@ -131,7 +135,7 @@ Module ControlHead
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlHead_t, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me.ControlHead_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -294,18 +298,17 @@ Module ControlHead
   ; ----------------------------------------------------------------------------
   ;  CONSTRUCTOR
   ; ----------------------------------------------------------------------------
-  Procedure.i New( gadgetID.i, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( *parent.Control::Control_t, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlHead_t = AllocateMemory( SizeOf(ControlHead_t) ) 
     
     Object::INI(ControlHead)
-    Protected *parent.Control::Control_t = *obj
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#HEAD
     *Me\name     = name
-    *Me\gadgetID = gadgetID
+    *Me\gadgetID = *parent\gadgetID
     *Me\parent   = *parent
     *Me\posX     = x
     *Me\posY     = y
@@ -362,7 +365,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 224
-; FirstLine = 220
+; CursorPosition = 36
+; FirstLine = 11
 ; Folding = ---
 ; EnableXP

@@ -359,8 +359,8 @@ UseModule Math
     Protected a
     Protected *a.Attribute::Attribute_t
     Protected attrs = CreateXMLNode(node,"Attributes")
-    ForEach *item\m_attributes()
-      *a = *item\m_attributes()
+    ForEach *item\geom\m_attributes()
+      *a = *item\geom\m_attributes()
       Protected attr = CreateXMLNode(attrs,*a\name)
       
       SetXMLAttribute(attr,"Type",Str(*a\datatype))
@@ -577,8 +577,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 79
+; CursorPosition = 362
+; FirstLine = 357
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

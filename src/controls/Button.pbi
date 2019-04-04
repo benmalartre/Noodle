@@ -24,7 +24,7 @@ DeclareModule ControlButton
     
   EndStructure
   
-  Declare New( gadgetID.i,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
+  Declare New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
   Declare Draw(*Me.ControlButton_t, xoff.i = 0, yoff.i = 0)
   Declare Init()
   Declare Term()
@@ -347,7 +347,7 @@ EndProcedure
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( gadgetID.i,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
+Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
@@ -357,7 +357,8 @@ Procedure.i New( gadgetID.i,name.s, label.s = "", value.i = #False, options.i = 
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type       = #PB_GadgetType_Button
   *Me\name       = name
-  *Me\gadgetID   = gadgetID
+  *Me\parent     = *parent
+  *Me\gadgetID   = *parent\gadgetID
   *Me\posX       = x
   *Me\posY       = y
   *Me\sizX       = width
@@ -391,7 +392,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 36
+; CursorPosition = 359
+; FirstLine = 332
 ; Folding = ---
 ; EnableXP

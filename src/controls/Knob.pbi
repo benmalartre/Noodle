@@ -44,7 +44,7 @@ DeclareModule ControlKnob
     *onchanged_signal.Slot::Slot_t
   EndStructure
   
-  Declare New(*object.Object::Object_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
+  Declare New(*parent.Control::Control_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
   Declare Init()
   Declare Term()
   Declare SetTheme(theme.i)
@@ -455,7 +455,7 @@ EndProcedure
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
+Procedure.i New( *parent.Control::Control_t, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlKnob_t = AllocateMemory( SizeOf(ControlKnob_t) )
@@ -465,7 +465,8 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type       = #PB_GadgetType_Knob
   *Me\name       = name
-  *Me\gadgetID   = gadgetID
+  *Me\parent     = *parent
+  *Me\gadgetID   = *parent\gadgetID
   *Me\posX       = x
   *Me\posY       = y
   *Me\sizX       = width
@@ -477,7 +478,7 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   *Me\on_change  = Object::NewSignal(*Me, "OnChange")
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
-Debug "ADD KNOB : "+Str(*Me\posX)+", "+Str(*Me\posY)
+
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
@@ -493,7 +494,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 450
-; FirstLine = 434
+; CursorPosition = 46
+; FirstLine = 12
 ; Folding = ---
 ; EnableXP

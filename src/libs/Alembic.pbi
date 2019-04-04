@@ -1297,8 +1297,8 @@ Module AlembicObject
     EndSelect
     
     If *attribute
-      Debug "Add Atribute ; "+*Me\obj\name+" >>> "+*attribute\name
-      Object3D::AddAttribute(*Me\obj,*attribute)
+      Debug "Add Atribute ; "+*obj\name+" >>> "+*attribute\name
+      Object3D::AddAttribute(*obj,*attribute)
     EndIf
     
     
@@ -1463,27 +1463,27 @@ Module AlembicObject
     Define nbp
     Define *v.v3f32
     Define *array.CArray::CArrayT
-    If FindMapElement(*Me\obj\m_attributes(),name)
+    If FindMapElement(*Me\obj\geom\m_attributes(),name)
        If *Me\type = Alembic::#ABC_OBJECT_POINTCLOUD
          Define *geom.Geometry::PointCloudGeometry_t = *Me\obj\geom
          If *geom
            Select name
              Case "Scale"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
                CArray::SetCount(*geom\a_scale,nbp)
-               CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*geom\a_scale,0),CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
+               CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),CArray::GetPtr(*geom\a_scale,0),CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
 
                
              Case "Orientation"
                Debug "################# APPLY ORIENTATION ##############################"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
                Define *tan.v3f32
                Define *nrm.v3f32
                Define *q.q4f32
 
                CArray::SetCount(*geom\a_normals,nbp)
                CArray::SetCount(*geom\a_tangents,nbp)
-               *array = *Me\obj\m_attributes()\data
+               *array = *Me\obj\geom\m_attributes()\data
                For x=0 To nbp-1
                  *nrm = CArray::GetValue(*geom\a_normals,x)
                  *tan = CArray::GetValue(*geom\a_tangents,x)
@@ -1495,8 +1495,8 @@ Module AlembicObject
                  Vector3::MulByQuaternionInPlace(*tan,*q)
                Next
              Case "Color"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
-               *array = *Me\obj\m_attributes()\data
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
+               *array = *Me\obj\geom\m_attributes()\data
                Define *c.c4f32
                Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
@@ -1535,8 +1535,8 @@ Module AlembicObject
     ;If FindMapElement(*Me\attributes(),name)
       
        nbp = CArray::GetCount(*arr)
-;        CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
-;        CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
+;        CArray::SetCount(*Me\obj\geom\m_attributes()\data,nbp)
+;        CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
         CArray::Copy(*arr,*array)
         Break
 ;        Else
@@ -1545,11 +1545,11 @@ Module AlembicObject
      Next
      
 
-;     If FindMapElement(*Me\obj\m_attributes(),name)
+;     If FindMapElement(*Me\obj\geom\m_attributes(),name)
 ;       
 ;        nbp = CArray::GetCount(*arr)
-;        CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
-;        CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
+;        CArray::SetCount(*Me\obj\geom\m_attributes()\data,nbp)
+;        CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
 ; 
 ;                
 ;      Else
@@ -1686,8 +1686,8 @@ Module AlembicObject
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1142
-; FirstLine = 1138
+; CursorPosition = 1300
+; FirstLine = 1296
 ; Folding = ----------
 ; EnableXP
 ; Executable = bin\Alembic.app

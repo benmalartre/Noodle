@@ -36,7 +36,7 @@ DeclareModule ControlColor
     SetBlue()
   EndInterface
   
-  Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
+  Declare New( *parent.Control::Control_t, name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
   Declare Draw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -419,7 +419,7 @@ Module ControlColor
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  Procedure.i New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
+  Procedure.i New( *parent.Control::Control_t, name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlColor_t = AllocateMemory( SizeOf(ControlColor_t) )
@@ -429,7 +429,8 @@ Module ControlColor
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#COLOR
     *Me\name       = name
-    *Me\gadgetID   = #Null
+    *Me\parent     = *parent
+    *Me\gadgetID   = *parent\gadgetID
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -457,7 +458,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 56
+; CursorPosition = 431
+; FirstLine = 398
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

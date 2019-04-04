@@ -61,6 +61,13 @@ DeclareModule PolymeshGeometry
   Declare GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
   Declare GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
   Declare ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
+  
+  DataSection 
+    PolymeshGeometryVT: 
+    Data.i @Delete()
+  EndDataSection 
+  
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 ;========================================================================================
@@ -2138,59 +2145,10 @@ Module PolymeshGeometry
     *topo\dirty = #True
   EndProcedure
   
-  
-  
-  ;------------------------------------------------------------------
-  ; Destuctor
-  ;------------------------------------------------------------------
-  Procedure Delete(*Me.PolymeshGeometry_t)
-
-    
-    ;---[ Clean all geometry datas ]---------------------------------
-    Clear(*Me)
-  
-    Topology::Delete(*Me\topo)
-    Topology::Delete(*Me\base)
-    
-    CArray::Delete(*Me\a_uvws)
-    CArray::Delete(*Me\a_colors)
-    CArray::Delete(*Me\a_pointnormals)
-    CArray::Delete(*Me\a_polygonnormals)
-    CArray::Delete(*Me\a_tangents)
-    CArray::Delete(*Me\a_normals)
-    CArray::Delete(*Me\a_velocities)
-    CArray::Delete(*Me\a_positions)
-    CArray::Delete(*Me\a_edgeindices)
-    CArray::Delete(*Me\a_triangleindices)
-    CArray::Delete(*Me\a_facecount)
-    CArray::Delete(*Me\a_faceindices)
-    CArray::Delete(*Me\a_vertexpolygoncount)
-    CArray::Delete(*Me\a_vertexpolygonindices)
-    CArray::Delete(*Me\a_polygonareas)
-    CArray::Delete(*Me\a_triangleareas)
-    CArray::Delete(*Me\a_islands)
-    CArray::Delete(*Me\a_vertexhalfedge)
-
-    ;---[ Deallocate Memory ]----------------------------------------
-    ClearStructure(*Me,PolymeshGeometry_t)
-    FreeMemory(*Me)
-  EndProcedure
-  
-  ;---------------------------------------------
+  ;-------------------------------------------------------------------------------
   ;  To Shape
-  ;---------------------------------------------
+  ;-------------------------------------------------------------------------------
   Procedure ToShape(*Me.PolymeshGeometry_t,*shape.Shape::Shape_t)
-;     *shape\nbp = *Me\nbpoints
-;     *shape\nbt = *Me\nbtriangles
-;     
-;     CArray::Copy(*shape\positions,*Me\a_positions)
-;     CArray::Copy(*shape\normals,*Me\a_pointnormals)
-;     CArray::SetCount(*shape\colors,*shape\nbt)
-;     Shape::SetUVWs(*shape)
-;     CArray::Copy(*shape\indices,*Me\a_triangleindices)
-;     CArray::Copy(*shape\uvws,*Me\a_uvws)
-;     CArray::Copy(*Shape\colors,*Me\a_colors)
-    
     *shape\nbp = *Me\nbtriangles*3
     *shape\nbt = *Me\nbtriangles
     CArray::SetCount(*shape\positions,*shape\nbp)
@@ -2217,7 +2175,41 @@ Module PolymeshGeometry
     *shape\indexed = #False
   EndProcedure
   
+  
+  
+  ;------------------------------------------------------------------
+  ; Destuctor
+  ;------------------------------------------------------------------
+  Procedure Delete(*Me.PolymeshGeometry_t)
+
+    ;---[ Clean all geometry datas ]---------------------------------
+    Clear(*Me)
+  
+    Topology::Delete(*Me\topo)
+    Topology::Delete(*Me\base)
     
+    CArray::Delete(*Me\a_uvws)
+    CArray::Delete(*Me\a_colors)
+    CArray::Delete(*Me\a_pointnormals)
+    CArray::Delete(*Me\a_polygonnormals)
+    CArray::Delete(*Me\a_tangents)
+    CArray::Delete(*Me\a_normals)
+    CArray::Delete(*Me\a_velocities)
+    CArray::Delete(*Me\a_positions)
+    CArray::Delete(*Me\a_edgeindices)
+    CArray::Delete(*Me\a_triangleindices)
+    CArray::Delete(*Me\a_facecount)
+    CArray::Delete(*Me\a_faceindices)
+    CArray::Delete(*Me\a_vertexpolygoncount)
+    CArray::Delete(*Me\a_vertexpolygonindices)
+    CArray::Delete(*Me\a_polygonareas)
+    CArray::Delete(*Me\a_triangleareas)
+    CArray::Delete(*Me\a_islands)
+    CArray::Delete(*Me\a_vertexhalfedge)
+
+    Object::TERM(PolymeshGeometry)
+  EndProcedure
+
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
@@ -2225,7 +2217,7 @@ Module PolymeshGeometry
   Procedure.i New(*parent,shape.i=Shape::#Shape_Cube)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.PolymeshGeometry_t = AllocateMemory(SizeOf(PolymeshGeometry_t))
-    InitializeStructure(*Me,PolymeshGeometry_t)
+    Object::INI(PolymeshGeometry)
     *Me\parent = *parent
 
     *Me\a_faceindices = CArray::newCArrayLong()
@@ -2259,7 +2251,6 @@ Module PolymeshGeometry
       *Me\nbpolygons = 0
     Else
       ; ----[ Initial Topology ]--------------------------------------------------
-    
       Select shape
         Case Shape::#SHAPE_GRID
           Topology::Grid(*Me\base,10,10,10)
@@ -2284,13 +2275,12 @@ Module PolymeshGeometry
 
     ProcedureReturn *Me
   EndProcedure
-  ;}
-  
-  
+
+  Class::DEF( PolymeshGeometry )
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 745
-; FirstLine = 708
+; CursorPosition = 65
+; FirstLine = 21
 ; Folding = ----P5---4--
 ; EnableXP

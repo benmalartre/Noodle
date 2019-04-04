@@ -31,8 +31,9 @@ DeclareModule ControlGroup
     OnClick()
   EndInterface
   
-  Declare New( gadgetID.i, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
+  Declare Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
@@ -48,6 +49,9 @@ DeclareModule ControlGroup
     ControlGroupVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
     Data.i @OnClick()
   EndDataSection
   
@@ -234,9 +238,9 @@ Module ControlGroup
   ;}
 
 ; ----------------------------------------------------------------------------
-;  hlpDraw
+;  Draw
 ; ----------------------------------------------------------------------------
-Procedure hlpDraw( *Me.ControlGroup_t )
+Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
   
   Protected label.s = *Me\label
   Protected lalen.i = Len(label)
@@ -428,7 +432,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ;  Draw
     ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
-      hlpDraw( *Me )
+      Draw( *Me )
 
     ; ------------------------------------------------------------------------
     ;  Focus
@@ -603,6 +607,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     Case #PB_EventType_Input
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
+        Debug "GROUP SEND TO FOCUS CHILD"
         ; ...[ Retrieve Character ]...........................................
         ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
         ; ...[ Send Character To Focused Child ]..............................
@@ -884,7 +889,7 @@ EndProcedure
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(gadgetID.i, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlGroup_t = AllocateMemory( SizeOf(ControlGroup_t) )
@@ -898,10 +903,11 @@ EndProcedure
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#GROUP
     *Me\name       = name
-    If Not IsGadget(gadgetID)
+    *Me\parent     = *parent
+    If Not *Me\parent Or Not IsGadget(*Me\parent\gadgetID)
       *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
     Else
-      *Me\gadgetID = gadgetID
+      *Me\gadgetID = *Me\parent\gadgetID
     EndIf
     
     *Me\imageID    = CreateImage( #PB_Any, width, height )
@@ -936,7 +942,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 22
+; CursorPosition = 912
+; FirstLine = 877
 ; Folding = ---0
 ; EnableXP

@@ -73,8 +73,6 @@ DeclareModule Object3D
     *model.Object3D_t
     List *children.Object3D_t()
     *stack.Stack::Stack_t
-    Map *m_attributes.Attribute::Attribute_t()
-    
   EndStructure
   
   
@@ -383,10 +381,10 @@ Module Object3D
   ; Get Attribute
   ;-----------------------------------------------
   Procedure GetAttribute(*obj.Object3D_t,name.s)
-    If Not *obj\m_attributes(name)
+    If Not *obj\geom\m_attributes(name)
       ProcedureReturn #Null
     Else
-      ProcedureReturn *obj\m_attributes(name)
+      ProcedureReturn *obj\geom\m_attributes(name)
     EndIf
     
   EndProcedure
@@ -394,14 +392,14 @@ Module Object3D
   ;-----------------------------------------------
   ; Add Attribute
   ;-----------------------------------------------
-  Procedure AddAttribute(*obj.Object3d_t,*attribute.Attribute::Attribute_t)
+  Procedure AddAttribute(*obj.Object3D::Object3D_t,*attribute.Attribute::Attribute_t)
     If Not *obj : ProcedureReturn : EndIf
     If Not *attribute : ProcedureReturn : EndIf
     
-    If *obj\m_attributes(*attribute\name)
+    If *obj\geom\m_attributes(*attribute\name)
       ProcedureReturn #Null
     Else
-      Object3D::AttachMapElement(*obj\m_attributes(),*attribute\name,*attribute)
+      Object3D::AttachMapElement(*obj\geom\m_attributes(),*attribute\name,*attribute)
     EndIf
 
   EndProcedure
@@ -412,9 +410,9 @@ Module Object3D
   Procedure DeleteAttribute(*obj.Object3D_t,name.s)
     If Not *obj : ProcedureReturn : EndIf
   
-    If *obj\m_attributes(name)
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(name)
-      DeleteMapElement(*obj\m_attributes(),name)
+    If *obj\geom\m_attributes(name)
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(name)
+      DeleteMapElement(*obj\geom\m_attributes(),name)
       Attribute::Delete(*attribute)
     EndIf
     
@@ -426,13 +424,13 @@ Module Object3D
   Procedure DeleteAllAttributes(*obj.Object3D_t)
     If Not *obj : ProcedureReturn : EndIf
     
-    ForEach *obj\m_attributes()
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes()
-      DeleteMapElement(*obj\m_attributes())
+    ForEach *obj\geom\m_attributes()
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes()
+      DeleteMapElement(*obj\geom\m_attributes())
       Attribute::Delete(*attribute)
     Next
     
-    FreeMap(*obj\m_attributes())
+    FreeMap(*obj\geom\m_attributes())
     
   EndProcedure
   
@@ -440,7 +438,7 @@ Module Object3D
   ; Check Attribute Exists
   ;-----------------------------------------------
   Procedure.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
+    If *obj\geom\m_attributes(attrname)
       ProcedureReturn #True
     Else
       ProcedureReturn #False
@@ -452,8 +450,8 @@ Module Object3D
   ; Set Attribute Dirty
   ;-----------------------------------------------
   Procedure SetAttributeDirty(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
-      *obj\m_attributes(attrname)\dirty = #True
+    If *obj\geom\m_attributes(attrname)
+      *obj\geom\m_attributes(attrname)\dirty = #True
     EndIf
   EndProcedure
   
@@ -461,8 +459,8 @@ Module Object3D
   ; Set Attribute Clean
   ;-----------------------------------------------
   Procedure SetAttributeClean(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
-      *obj\m_attributes(attrname)\dirty = #False
+    If *obj\geom\m_attributes(attrname)
+      *obj\geom\m_attributes(attrname)\dirty = #False
     EndIf
   EndProcedure
   
@@ -539,7 +537,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 33
+; CursorPosition = 395
+; FirstLine = 388
 ; Folding = ------
 ; EnableXP

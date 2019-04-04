@@ -901,14 +901,14 @@ Module ControlExplorer
     Protected *attributes.ControlExplorerItem_t = AddObject(*Me,*item,#Null,"Attributes",depth+2,#TYPE_PROPERTY)
     *attributes\expended = #True
     *attributes\havenext = #False
-    Protected nb = MapSize(*obj\m_attributes())
+    Protected nb = MapSize(*obj\geom\m_attributes())
     Protected a
     Protected *attr.Attribute::Attribute_t
 
     Protected cnt
     
-    ForEach  *obj\m_attributes()
-      *attr = *obj\m_attributes();\GetValue(a) 
+    ForEach  *obj\geom\m_attributes()
+      *attr = *obj\geom\m_attributes();\GetValue(a) 
       *o = AddObject(*Me,*attributes,*attr,*attr\name,depth+3,#TYPE_ATTRIBUTE)
 
       If cnt < nbo-1
@@ -1205,7 +1205,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 262
+; CursorPosition = 910
+; FirstLine = 856
 ; Folding = f2Xef-
 ; EnableXP

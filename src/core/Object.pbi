@@ -6,29 +6,16 @@ XIncludeFile "Slot.pbi"
 ;   Class Module Declaration
 ; ======================================================================
 DeclareModule Class
-  Prototype ClassMessage( type.i, *up )
-  Prototype ClassDestructor( *Me )
-
   Structure Class_t
     name .s
     isize.i
-    cmsg .ClassMessage
-    dtor .ClassDestructor
+    cnt.i
   EndStructure
-  
-  Declare ClassOnMessage()
   
   Macro DEF( cls )    
     CLASS\name   = Globals::GUILLEMETS#cls#Globals::GUILLEMETS
     CLASS\isize  = SizeOf(cls#_t)
-    
-    CompilerIf Defined( OnMessage, #PB_Procedure )
-      CLASS\cmsg = @OnMessage()
-    CompilerElse
-      CLASS\cmsg = Class::@ClassOnMessage()
-    CompilerEndIf
-    
-    CLASS\dtor = @Delete()
+    CLASS\cnt    + 1
   EndMacro
 
 EndDeclareModule
@@ -37,9 +24,6 @@ EndDeclareModule
 ;   Class Module Implementation
 ; ======================================================================
 Module Class
-  Procedure ClassOnMessage()
-  EndProcedure
-  
 EndModule
 
 
@@ -301,7 +285,6 @@ EndModule
 ;   EndProcedure
 ; EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 78
+; CursorPosition = 17
 ; Folding = ---
 ; EnableXP

@@ -78,7 +78,7 @@ DeclareModule ControlDivot
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( gadgetID.i ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New( *parent.Control::Control_t ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlDivot_t)
   Declare Draw( *Me.ControlDivot_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -393,7 +393,7 @@ Module ControlDivot
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( gadgetID.i ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( *parent.Control::Control_t ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlDivot_t = AllocateMemory( SizeOf(ControlDivot_t) ) 
@@ -405,7 +405,8 @@ Module ControlDivot
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#DIVOT
     *Me\name     = name
-    *Me\gadgetID = gadgetID
+    *Me\parent   = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -543,7 +544,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 240
+; CursorPosition = 408
+; FirstLine = 370
 ; Folding = ---
 ; EnableXP

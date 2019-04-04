@@ -192,6 +192,7 @@ Module ViewportUI
           *Me\context\height = *Me\height
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+        
       Case #PB_Event_Gadget
         Protected deltax.d, deltay.d
         Protected modifiers.i
@@ -293,7 +294,6 @@ Module ViewportUI
               
             EndIf
 
-      
           Case #PB_EventType_LeftButtonDown
 ;               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
 ;               If modifiers = #PB_OpenGL_Alt
@@ -316,7 +316,6 @@ Module ViewportUI
               Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonDown, ev_datas)
             EndIf
 
-          
           Case #PB_EventType_LeftButtonUp
             *Me\lmb_p = #False
             *Me\down = #False
@@ -714,8 +713,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 270
-; FirstLine = 247
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 317
+; FirstLine = 274
 ; Folding = -----
 ; EnableXP

@@ -4,6 +4,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "Object3D.pbi"
+XIncludeFile "CameraGeometry.pbi"
 
 DeclareModule Camera
   UseModule Math
@@ -90,6 +91,7 @@ Module Camera
     *Me\cameratype = type
     *Me\type = Object3D::#Object3D_Camera
     *Me\name = name
+    *Me\geom = CameraGeometry::New(*Me)
     
     Select *Me\cameratype
       Case #Camera_Perspective
@@ -492,9 +494,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 185
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 68
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

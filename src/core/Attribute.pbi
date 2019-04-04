@@ -82,7 +82,7 @@ DeclareModule Attribute
   #ATTR_COLOR_SHAPE             = $9933FF
   #ATTR_COLOR_TOPOLOGY          = $CCCCCC
   #ATTR_COLOR_GEOMETRY          = $6633FF
-  #ATTR_COLOR_LOCATION          = $3366FF
+  #ATTR_COLOR_LOCATION          = $77DD77
   #ATTR_COLOR_EXECUTE           = $777777
   #ATTR_COLOR_REFERENCE         = $CC6611
   #ATTR_COLOR_FRAMEBUFFER       = $FF6600
@@ -608,7 +608,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 75
+; CursorPosition = 84
+; FirstLine = 60
 ; Folding = ---
 ; EnableXP

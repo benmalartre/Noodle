@@ -72,8 +72,9 @@ Module PropertyUI
     *Me\width = w
     *Me\height = h
     
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,#PB_ScrollArea_BorderLess|#PB_ScrollArea_Center)
+    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,10,#PB_ScrollArea_BorderLess)
     *Me\gadgetID = *Me\container
+    
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
     
     *Me\prop = #Null
@@ -125,13 +126,16 @@ Module PropertyUI
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
-      ev_datas\width = *top\width - 20
+      ev_datas\width = *top\width 
       Select event
         Case #PB_Event_SizeWindow
+          *Me\width = *top\width
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\width)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\height)
          
-          ev_datas\x = 0
-          ev_datas\y = 0
+          ev_datas\x = #PB_Ignore
+          ev_datas\y = #PB_Ignore
           ev_datas\height = #PB_Ignore
 
           If ListSize(*Me\props())
@@ -141,14 +145,11 @@ Module PropertyUI
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               CompilerEndIf
-              If *Me\props() : ev_datas\y + *Me\props()\sizY : EndIf
             Next
           EndIf
 
-          SetGadgetAttribute(*Me\container,#PB_ScrollArea_InnerWidth, *top\width-2)
-          SetGadgetAttribute(*Me\container,#PB_ScrollArea_InnerHeight, ev_datas\y-2)
-          
         Case #PB_Event_Gadget
+          Debug "PROPERTYUI : ON EVENT , NUM PROPS : "+Str(ListSize(*Me\props()))
           Define currentGadget = EventGadget()
           If ListSize(*Me\props())
             ForEach *Me\props()
@@ -244,8 +245,8 @@ Module PropertyUI
     Protected v.Math::v3f32
     Protected *attr.Attribute::Attribute_t
     Define i
-    ForEach *object\m_attributes()
-      *attr = *object\m_attributes()
+    ForEach *object\geom\m_attributes()
+      *attr = *object\geom\m_attributes()
       If Not *attr\readonly And *attr\constant
         Select *attr\datatype
           Case Attribute::#ATTR_TYPE_BOOL
@@ -253,7 +254,6 @@ Module PropertyUI
           Case Attribute::#ATTR_TYPE_INTEGER
             ControlProperty::AddIntegerControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_FLOAT
-            MessageRequester("ATTRIBUTE", *attr\name)
             ControlProperty::AddFloatControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR2
             Protected v2.v2f32
@@ -311,9 +311,6 @@ Module PropertyUI
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
     Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\width, *Me\height) 
-    AddElement(*Me\props())
-    *Me\props() = *p
-    *Me\prop = *p
     *p\label = *node\type
     
     ControlProperty::AppendStart(*p)
@@ -393,6 +390,9 @@ Module PropertyUI
   ;  Add Property
   ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
+    ;check if already in list
+    ForEach *Me\props() : If *prop = *Me\props() :  ProcedureReturn : EndIf : Next
+    
     AddElement(*Me\props())
     *Me\props() = *prop
     *Me\prop = *prop
@@ -486,36 +486,39 @@ Module PropertyUI
   Procedure DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY.i = 0
-    Protected toRemove = -1
-    Protected idx = 0
+    Protected idx.i=0
+    Protected toRemove.i = -1
+    
     ForEach *Me\props()
-      
       If *Me\props() = *prop
         offY = *Me\props()\sizY
+        
         toRemove = idx
-        dirty = #True
+        dirty=#True
       Else
         If dirty
-          *Me\props()\posY - offY
-          ResizeGadget(*Me\props()\gadgetID,*Me\props()\posX,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+         
+          ResizeGadget(*Me\props()\gadgetID, #PB_Ignore, *Me\props()\posY-offY, *Me\width, #PB_Ignore)
+           *Me\props()\posY - offY
         EndIf
       EndIf
-      idx + 1
+      idx+1
     Next
     
-    If toRemove > -1 
+    If toRemove > -1
       SelectElement(*Me\props(), toRemove)
       DeleteElement(*Me\props())
       ControlProperty::Delete(*prop)
     EndIf
-
-    If dirty
-      If ListSize(*Me\props())
-        *Me\anchorY - offY
-      Else
-        *Me\anchorY = 0
-      EndIf
-    EndIf    
+    
+    If ListSize(*Me\props())
+      *Me\anchorY - offY
+    Else
+      *Me\anchorY = 0
+    EndIf
+    
+   
+    ;PostEvent(#PB_EventType_Resize, EventWindow(), *Me\gadgetID)  
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -535,8 +538,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 517
-; FirstLine = 476
+; CursorPosition = 312
+; FirstLine = 293
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

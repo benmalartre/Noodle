@@ -1,5 +1,6 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
+XIncludeFile "../core/Object.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 
 ; ==============================================================================
@@ -250,12 +251,14 @@ DeclareModule Geometry
   ; Geometry Base
   ; --------------------------------------------
   ;{
-   Structure Geometry_t
+   Structure Geometry_t Extends Object::Object_t
     bbox.Box_t
     nbpoints.i
     type.i
     *parent
     *a_positions.CArray::CArrayV3F32
+    Map *m_attributes.Attribute::Attribute_t()
+
   EndStructure
   ;}
   
@@ -272,9 +275,22 @@ DeclareModule Geometry
   EndStructure
   
   ; --------------------------------------------
+  ; Camera Geometry
+  ; --------------------------------------------
+  Structure CameraGeometry_t Extends Geometry_t
+
+  EndStructure
+  
+  ; --------------------------------------------
+  ; Light Geometry
+  ; --------------------------------------------
+  Structure LightGeometry_t Extends Geometry_t
+
+  EndStructure
+  
+  ; --------------------------------------------
   ; Polymesh Geometry
   ; --------------------------------------------
-  ;{
   Structure PolymeshGeometry_t Extends Geometry_t
     nbedges.i
     nbpolygons.i
@@ -309,7 +325,6 @@ DeclareModule Geometry
     Array a_halfedges.HalfEdge_t(0)
 
   EndStructure
-  ;}
   
   
   ;  PointCloud Geometry
@@ -618,7 +633,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 270
-; FirstLine = 261
+; CursorPosition = 256
+; FirstLine = 228
 ; Folding = -----
 ; EnableXP

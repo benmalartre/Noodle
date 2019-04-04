@@ -8,15 +8,22 @@ DeclareModule PointCloudGeometry
   UseModule Math
   UseModule Geometry
   Declare New(*parent,nbp.i)
-  Declare Delete(*geom.PointCloudGeometry_t)
-  Declare Init(*geom.PointCloudGeometry_t)
-  Declare Update(*geom.PointCloudGeometry_t)
-  Declare PointsOnSphere(*geom.PointCloudGeometry_t, radius.f)
-  Declare PointsOnGrid(*geom.PointCloudGeometry_t, nx.i, nz.i)
-  Declare PointsOnLine(*geom.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
-  Declare RandomizeColor(*geom.PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
+  Declare Delete(*Me.PointCloudGeometry_t)
+  Declare Init(*Me.PointCloudGeometry_t)
+  Declare Update(*Me.PointCloudGeometry_t)
+  Declare PointsOnSphere(*Me.PointCloudGeometry_t, radius.f)
+  Declare PointsOnGrid(*Me.PointCloudGeometry_t, nx.i, nz.i)
+  Declare PointsOnLine(*Me.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
+  Declare RandomizeColor(*Me.PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
   Declare AddPoints(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32 )
   Declare Reset(*p.PointCloudGeometry_t)
+  
+  DataSection 
+    PointCloudGeometryVT: 
+    Data.i @Delete()
+  EndDataSection 
+  
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 ;========================================================================================
@@ -25,68 +32,24 @@ EndDeclareModule
 Module PointCloudGeometry
   UseModule Geometry
   UseModule Math
-  ; Constructor
-  ;-----------------------------------------------------------
-  Procedure New(*parent,nbp.i)
-    Protected *geom.PointCloudGeometry_t = AllocateMemory(SizeOf(PointCloudGeometry_t))
-    *geom\nbpoints = nbp
-    *geom\parent = *parent
-    *geom\a_positions = CArray::newCArrayV3F32()
-    *geom\a_velocities = CArray::newCArrayV3F32()
-    *geom\a_normals = CArray::newCArrayV3F32()
-    *geom\a_tangents = CArray::newCArrayV3F32()
-    *geom\a_color = CArray::newCArrayC4F32()
-    *geom\a_indices = CArray::newCArrayLong()
-    *geom\a_scale = CArray::newCArrayV3F32()
-    *geom\a_size = CArray::newCArrayFloat()
-    *geom\a_uvws = CArray::newCArrayV3F32()
-    
-    CArray::SetCount(*geom\a_positions,nbp)
-    CArray::SetCount(*geom\a_velocities,nbp)
-    CArray::SetCount(*geom\a_normals,nbp)
-    CArray::SetCount(*geom\a_tangents,nbp)
-    CArray::SetCount(*geom\a_color,nbp)
-    CArray::SetCount(*geom\a_indices,nbp)
-    CArray::SetCount(*geom\a_scale,nbp)
-    CArray::SetCount(*geom\a_size,nbp)
-    CArray::SetCount(*geom\a_uvws,nbp)
-    
-    Init(*geom)
-    ProcedureReturn *geom
-  EndProcedure
-  
-  ; Destructor
-  ;-----------------------------------------------------------
-  Procedure Delete(*geom.PointCloudGeometry_t)
-    CArray::Delete(*geom\a_positions )
-    CArray::Delete(*geom\a_velocities )
-    CArray::Delete(*geom\a_normals)
-    CArray::Delete(*geom\a_tangents )
-    CArray::Delete(*geom\a_color)
-    CArray::Delete(*geom\a_indices)
-    CArray::Delete(*geom\a_scale)
-    CArray::Delete(*geom\a_size)
-    CArray::Delete(*geom\a_uvws)
-    FreeMemory(*geom)
-  EndProcedure
-  
+
   ; Init
   ;-----------------------------------------------------------
-  Procedure Init(*geom.PointCloudGeometry_t)
+  Procedure Init(*Me.PointCloudGeometry_t)
     Protected i
     Protected *pos.v3f32,*norm.v3f32,*tan.v3f32
     Protected *col.c4f32
     Protected size.f = 1.0
-    For i=0 To *geom\nbpoints-1
-      *pos = CArray::GetValue(*geom\a_positions,i)
+    For i=0 To *Me\nbpoints-1
+      *pos = CArray::GetValue(*Me\a_positions,i)
       Vector3::Set(*pos,(Random(100)*0.01-0.5)*10000,(Random(100)*0.01-0.5)*10000,(Random(100)*0.01-0.5)*10000)
-      *norm = CArray::GetValue(*geom\a_normals,i)
+      *norm = CArray::GetValue(*Me\a_normals,i)
       Vector3::Set(*norm,0,1,0)
-      *tan = CArray::GetValue(*geom\a_tangents,i)
+      *tan = CArray::GetValue(*Me\a_tangents,i)
       Vector3::Set(*tan,0,0,1)
       size = 2
-      CArray::SetValueF(*geom\a_size,i,size)
-      *col = CArray::GetValue(*geom\a_color,i)
+      CArray::SetValueF(*Me\a_size,i,size)
+      *col = CArray::GetValue(*Me\a_color,i)
       Color::RandomLuminosity(*col,0,1)
     Next
     
@@ -94,23 +57,23 @@ Module PointCloudGeometry
   
   ; Update
   ;-----------------------------------------------------------
-  Procedure Update(*geom.PointCloudGeometry_t)
+  Procedure Update(*Me.PointCloudGeometry_t)
     
   EndProcedure
   
   ; Points  On Sphere
   ;-----------------------------------------------------------
-  Procedure PointsOnSphere(*geom.PointCloudGeometry_t, radius.f)
+  Procedure PointsOnSphere(*Me.PointCloudGeometry_t, radius.f)
     
-    CArray::SetCount(*geom\a_positions,*geom\nbpoints)
-    CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
-    CArray::SetCount(*geom\a_normals,*geom\nbpoints)
-    CArray::SetCount(*geom\a_tangents,*geom\nbpoints)
-    CArray::SetCount(*geom\a_color,*geom\nbpoints)
-    CArray::SetCount(*geom\a_scale,*geom\nbpoints)
-    CArray::SetCount(*geom\a_size,*geom\nbpoints)
-    CArray::SetCount(*geom\a_indices,*geom\nbpoints)
-    CArray::SetCount(*geom\a_uvws,*geom\nbpoints)
+    CArray::SetCount(*Me\a_positions,*Me\nbpoints)
+    CArray::SetCount(*Me\a_velocities,*Me\nbpoints)
+    CArray::SetCount(*Me\a_normals,*Me\nbpoints)
+    CArray::SetCount(*Me\a_tangents,*Me\nbpoints)
+    CArray::SetCount(*Me\a_color,*Me\nbpoints)
+    CArray::SetCount(*Me\a_scale,*Me\nbpoints)
+    CArray::SetCount(*Me\a_size,*Me\nbpoints)
+    CArray::SetCount(*Me\a_indices,*Me\nbpoints)
+    CArray::SetCount(*Me\a_uvws,*Me\nbpoints)
     
     Protected i
     Protected v.v3f32
@@ -122,7 +85,7 @@ Module PointCloudGeometry
     
     Define.f r,g,b, x,y ,z
     
-    For i=0 To *geom\nbPoints-1
+    For i=0 To *Me\nbPoints-1
       ;Set Position
       x = Random(255)/255 - 0.5
       y = Random(255)/255 - 0.5
@@ -132,30 +95,30 @@ Module PointCloudGeometry
       Vector3::NormalizeInPlace(v)
       Vector3::ScaleInPlace(v,radius)
       
-      CArray::SetValue(*geom\a_positions,i,v)
+      CArray::SetValue(*Me\a_positions,i,v)
 
       ; Set Normals
       Vector3::NormalizeInPlace(v)
-      CArray::SetValue(*geom\a_normals,i,v)
+      CArray::SetValue(*Me\a_normals,i,v)
       
       ; Set Tangents
       Vector3::Set(c,0,1,0)
       Vector3::Cross(t,v,c)
-      CArray::SetValue(*geom\a_tangents,i,t)
+      CArray::SetValue(*Me\a_tangents,i,t)
 
       ; Set Color
       r = (120+Random(50))/255
       g = (20+Random(5))/255
       b = (10+Random(4))/255
       Color::Set(c,r,g,b,1.0)
-      CArray::SetValue(*geom\a_color,i,c)
+      CArray::SetValue(*Me\a_color,i,c)
 
       ; Set Scale
       Vector3::Set(s,1,1,1)
-      CArray::SetValue(*geom\a_scale,i,s)
+      CArray::SetValue(*Me\a_scale,i,s)
       
       ; Set Size
-      CArray::SetValueF(*geom\a_size,i,1)
+      CArray::SetValueF(*Me\a_size,i,1)
       
     Next 
 
@@ -163,18 +126,18 @@ Module PointCloudGeometry
   
   ; Point On Grid
    ;-----------------------------------------------------------
-  Procedure PointsOnGrid(*geom.PointCloudGeometry_t, nx.i, nz.i)
+  Procedure PointsOnGrid(*Me.PointCloudGeometry_t, nx.i, nz.i)
     
-    *geom\nbpoints = nx * nz
-    CArray::SetCount(*geom\a_positions,*geom\nbpoints)
-    CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
-    CArray::SetCount(*geom\a_normals,*geom\nbpoints)
-    CArray::SetCount(*geom\a_tangents,*geom\nbpoints)
-    CArray::SetCount(*geom\a_color,*geom\nbpoints)
-    CArray::SetCount(*geom\a_scale,*geom\nbpoints)
-    CArray::SetCount(*geom\a_size,*geom\nbpoints)
-    CArray::SetCount(*geom\a_indices,*geom\nbpoints)
-    CArray::SetCount(*geom\a_uvws,*geom\nbpoints)
+    *Me\nbpoints = nx * nz
+    CArray::SetCount(*Me\a_positions,*Me\nbpoints)
+    CArray::SetCount(*Me\a_velocities,*Me\nbpoints)
+    CArray::SetCount(*Me\a_normals,*Me\nbpoints)
+    CArray::SetCount(*Me\a_tangents,*Me\nbpoints)
+    CArray::SetCount(*Me\a_color,*Me\nbpoints)
+    CArray::SetCount(*Me\a_scale,*Me\nbpoints)
+    CArray::SetCount(*Me\a_size,*Me\nbpoints)
+    CArray::SetCount(*Me\a_indices,*Me\nbpoints)
+    CArray::SetCount(*Me\a_uvws,*Me\nbpoints)
     
     Protected i
     Protected v.v3f32
@@ -194,29 +157,29 @@ Module PointCloudGeometry
       For z=0 To nz-1
         ; position
         Vector3::Set(v,x*incrx,0,z*incrz)
-        CArray::SetValue(*geom\a_positions,i,v)
+        CArray::SetValue(*Me\a_positions,i,v)
         
        ; Set Normals
         Vector3::Set(v, 0,1,0)
-        CArray::SetValue(*geom\a_normals,i,v)
+        CArray::SetValue(*Me\a_normals,i,v)
         
         ; Set Tangents
         Vector3::Set(t,1,0,0)
-        CArray::SetValue(*geom\a_tangents,i,t)
+        CArray::SetValue(*Me\a_tangents,i,t)
   
         ; Set Color
         r = (120+Random(50))/255
         g = (20+Random(5))/255
         b = (10+Random(4))/255
         Color::Set(c,r,g,b,1.0)
-        CArray::SetValue(*geom\a_color,i,c)
+        CArray::SetValue(*Me\a_color,i,c)
   
         ; Set Scale
         Vector3::Set(s,1,1,1)
-        CArray::SetValue(*geom\a_scale,i,s)
+        CArray::SetValue(*Me\a_scale,i,s)
         
         ; Set Size
-        CArray::SetValueF(*geom\a_size,i,1)
+        CArray::SetValueF(*Me\a_size,i,1)
         
         ; increment counter
         i + 1
@@ -228,17 +191,17 @@ Module PointCloudGeometry
   
   ; Points  On Line
   ;-----------------------------------------------------------
-  Procedure PointsOnLine(*geom.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
+  Procedure PointsOnLine(*Me.PointCloudGeometry_t,*start.v3f32,*end.v3f32)
     
-    CArray::SetCount(*geom\a_positions,*geom\nbpoints)
-    CArray::SetCount(*geom\a_velocities,*geom\nbpoints)
-    CArray::SetCount(*geom\a_normals,*geom\nbpoints)
-    CArray::SetCount(*geom\a_tangents,*geom\nbpoints)
-    CArray::SetCount(*geom\a_color,*geom\nbpoints)
-    CArray::SetCount(*geom\a_scale,*geom\nbpoints)
-    CArray::SetCount(*geom\a_size,*geom\nbpoints)
-    CArray::SetCount(*geom\a_indices,*geom\nbpoints)
-    CArray::SetCount(*geom\a_uvws,*geom\nbpoints)
+    CArray::SetCount(*Me\a_positions,*Me\nbpoints)
+    CArray::SetCount(*Me\a_velocities,*Me\nbpoints)
+    CArray::SetCount(*Me\a_normals,*Me\nbpoints)
+    CArray::SetCount(*Me\a_tangents,*Me\nbpoints)
+    CArray::SetCount(*Me\a_color,*Me\nbpoints)
+    CArray::SetCount(*Me\a_scale,*Me\nbpoints)
+    CArray::SetCount(*Me\a_size,*Me\nbpoints)
+    CArray::SetCount(*Me\a_indices,*Me\nbpoints)
+    CArray::SetCount(*Me\a_uvws,*Me\nbpoints)
     
     Protected i
     Protected *v.v3f32
@@ -253,47 +216,47 @@ Module PointCloudGeometry
     Vector3::Sub(delta,*end,*start)
     
     Define l.f = Vector3::Length(delta)
-    Define st.f = l/(*geom\nbPoints-1.0)
+    Define st.f = l/(*Me\nbPoints-1.0)
     Define stc.f
     
-    For i=0 To *geom\nbPoints-1
+    For i=0 To *Me\nbPoints-1
       ; step
       stc = st * i / l
       
       ;Set Position
-      *v = CArray::GetValue(*geom\a_positions,i)
+      *v = CArray::GetValue(*Me\a_positions,i)
       Vector3::LinearInterpolate(*v,*start,*end,stc)
       
       ; Set Normal
-      *v = CArray::GetValue(*geom\a_normals,i)
+      *v = CArray::GetValue(*Me\a_normals,i)
       Vector3::NormalizeInPlace(*v)
       
       ; Set Tangent
-      *t = CArray::GetValue(*geom\a_tangents,i)
+      *t = CArray::GetValue(*Me\a_tangents,i)
       Vector3::Set(*t,0,1,0)
       Vector3::Cross(tmp,*v,*t)
       Vector3::SetFromOther(*t,@tmp)
       
       ;Set Color
-      *c = CArray::GetValue(*geom\a_color,i)
+      *c = CArray::GetValue(*Me\a_color,i)
       r = (120+Random(50))/255
       g = (20+Random(5))/255
       b = (10+Random(4))/255
       Color::Set(*c,r,g,b,1.0)
 
       ;Set Scale
-      *s = CArray::GetValue(*geom\a_scale,i)
+      *s = CArray::GetValue(*Me\a_scale,i)
       Vector3::Set(*s,0.1,0.1,0.1)
       
       ;Set Size
-      CArray::SetValueF(*geom\a_size,i,1)
+      CArray::SetValueF(*Me\a_size,i,1)
       
     Next 
   EndProcedure
   
   ; Randomize Colors
   ;----------------------------------------------
-  Procedure RandomizeColor(*geom.Geometry::PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
+  Procedure RandomizeColor(*Me.Geometry::PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
     Protected i.i
     Protected *c.c4f32
     Protected r.f,g.f,b.f,a.f
@@ -304,8 +267,8 @@ Module PointCloudGeometry
       *base = base
     EndIf
     
-    For i=0 To CArray::GetCount(*geom\a_color)-1
-      *c = CArray::GetValue(*geom\a_color,i)
+    For i=0 To CArray::GetCount(*Me\a_color)-1
+      *c = CArray::GetValue(*Me\a_color,i)
       r = (Random(255)/255 - 0.5) * randomize
       g = (Random(255)/255 - 0.5) * randomize
       b = (Random(255)/255 - 0.5) * randomize
@@ -364,33 +327,80 @@ Module PointCloudGeometry
   ;---------------------------------------------------------
   ; Reset
   ;---------------------------------------------------------
-  Procedure Reset(*geom.PointCloudGeometry_t)
-    *geom\nbpoints = 0
-    CArray::SetCount(*geom\a_positions,0)
-    CArray::SetCount(*geom\a_velocities,0)
-    CArray::SetCount(*geom\a_normals,0)
-    CArray::SetCount(*geom\a_tangents,0)
-    CArray::SetCount(*geom\a_indices,0)
-    CArray::SetCount(*geom\a_size,0)
-    CArray::SetCount(*geom\a_scale,0)
-    CArray::SetCount(*geom\a_uvws,0)
-    CArray::SetCount(*geom\a_color,0)
-;     If Not CArray::GetCount(*geom\topo\vertices) = CArray::GetCount(*geom\base\vertices) Or Not CArray::GetCount(*geom\topo\faces) = CArray::GetCount(*geom\base\faces)
-;       Set2(*geom,*geom\base)
+  Procedure Reset(*Me.PointCloudGeometry_t)
+    *Me\nbpoints = 0
+    CArray::SetCount(*Me\a_positions,0)
+    CArray::SetCount(*Me\a_velocities,0)
+    CArray::SetCount(*Me\a_normals,0)
+    CArray::SetCount(*Me\a_tangents,0)
+    CArray::SetCount(*Me\a_indices,0)
+    CArray::SetCount(*Me\a_size,0)
+    CArray::SetCount(*Me\a_scale,0)
+    CArray::SetCount(*Me\a_uvws,0)
+    CArray::SetCount(*Me\a_color,0)
+;     If Not CArray::GetCount(*Me\topo\vertices) = CArray::GetCount(*Me\base\vertices) Or Not CArray::GetCount(*Me\topo\faces) = CArray::GetCount(*Me\base\faces)
+;       Set2(*Me,*Me\base)
 ;     Else
-;       SetPointsPosition(*geom,*geom\base\vertices)
-;       ;SetPointsNormal(*geom,*geom\base\normals)
-;       ;RecomputeNormals(*geom)
+;       SetPointsPosition(*Me,*Me\base\vertices)
+;       ;SetPointsNormal(*Me,*Me\base\normals)
+;       ;RecomputeNormals(*Me)
 ;     EndIf 
 ;     
 ;       
 
   EndProcedure
+  
+  ; Destructor
+  ;-----------------------------------------------------------
+  Procedure Delete(*Me.PointCloudGeometry_t)
+    CArray::Delete(*Me\a_positions )
+    CArray::Delete(*Me\a_velocities )
+    CArray::Delete(*Me\a_normals)
+    CArray::Delete(*Me\a_tangents )
+    CArray::Delete(*Me\a_color)
+    CArray::Delete(*Me\a_indices)
+    CArray::Delete(*Me\a_scale)
+    CArray::Delete(*Me\a_size)
+    CArray::Delete(*Me\a_uvws)
+    Object::TERM(PointCloudGeometry)
+  EndProcedure
+  
+  ; Constructor
+  ;-----------------------------------------------------------
+  Procedure New(*parent,nbp.i)
+    Protected *Me.PointCloudGeometry_t = AllocateMemory(SizeOf(PointCloudGeometry_t))
+    Object::INI(PointCloudGeometry)
+    *Me\nbpoints = nbp
+    *Me\parent = *parent
+    *Me\a_positions = CArray::newCArrayV3F32()
+    *Me\a_velocities = CArray::newCArrayV3F32()
+    *Me\a_normals = CArray::newCArrayV3F32()
+    *Me\a_tangents = CArray::newCArrayV3F32()
+    *Me\a_color = CArray::newCArrayC4F32()
+    *Me\a_indices = CArray::newCArrayLong()
+    *Me\a_scale = CArray::newCArrayV3F32()
+    *Me\a_size = CArray::newCArrayFloat()
+    *Me\a_uvws = CArray::newCArrayV3F32()
+    
+    CArray::SetCount(*Me\a_positions,nbp)
+    CArray::SetCount(*Me\a_velocities,nbp)
+    CArray::SetCount(*Me\a_normals,nbp)
+    CArray::SetCount(*Me\a_tangents,nbp)
+    CArray::SetCount(*Me\a_color,nbp)
+    CArray::SetCount(*Me\a_indices,nbp)
+    CArray::SetCount(*Me\a_scale,nbp)
+    CArray::SetCount(*Me\a_size,nbp)
+    CArray::SetCount(*Me\a_uvws,nbp)
+    
+    Init(*Me)
+    ProcedureReturn *Me
+  EndProcedure
+  
+  
 
-
+  Class::DEF( PointCloudGeometry )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 385
-; FirstLine = 331
+; CursorPosition = 21
 ; Folding = ---
 ; EnableXP

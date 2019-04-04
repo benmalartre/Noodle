@@ -62,8 +62,8 @@ Module SetDataNode
         Protected *obj.Object3D::Object3D_t = *node\parent3dobject
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
-        If FindMapElement(*obj\m_attributes(),name)
-          *node\attribute = *obj\m_attributes(name)
+        If FindMapElement(*obj\geom\m_attributes(),name)
+          *node\attribute = *obj\geom\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
           NodePort::InitFromReference(*input,*node\attribute)
           *node\state = Graph::#Node_StateOK
@@ -295,8 +295,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 119
+; CursorPosition = 98
+; FirstLine = 94
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -12,6 +12,7 @@ XIncludeFile "../objects/Object3D.pbi"
 DeclareModule PerlinNode
   Structure PerlinNode_t Extends Node::Node_t
     mode.i
+    seed.i
     *noise.PerlinNoise::PerlinNoise_t
   EndStructure
   
@@ -61,8 +62,7 @@ Module PerlinNode
     ForEach *node\inputs()
       Node::PortAffectByName(*node, *node\inputs()\name, "Output")
     Next
-    
-    
+
     *node\label = "Perlin"
   EndProcedure
   
@@ -72,8 +72,8 @@ Module PerlinNode
     NextElement(*node\inputs())
     Protected *timeVaryingArray.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs())
     NextElement(*node\inputs())
-    Protected *positionPort.NodePort::NodePort_t = *node\inputs()
-    Protected *positionArray.CArray::CArrayV3F32 = NodePort::AcquireInputData(*positionPort)
+    Protected *position.NodePort::NodePort_t = *node\inputs()
+    Protected *positionArray.CArray::CArrayV3F32 = NodePort::AcquireInputData(*position)
     NextElement(*node\inputs())
     Protected *timeFrequencyArray.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs())
     NextElement(*node\inputs())
@@ -85,28 +85,25 @@ Module PerlinNode
     Protected variancei.f
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
     
     Protected i.i
     Protected time.f = Time::currentframe
     Protected seed.i = CArray::GetValueI(*seedArray,0)
     If CArray::GetValueB(*timeVaryingArray,0)
-      *node\noise\seed = seed+time
+      *node\noise\seed = seed+time*CArray::GetValueF(*timeFrequencyArray,0)
     Else
       *node\noise\seed = seed
     EndIf
           
      
-    Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
-    Define.d rx,ry,rz
-    *vOut = *output\attribute\data
-    *vIn = NodePort::AcquireInputData(*positionPort)
-    CArray::Copy(*vOut,*vIn)
+    Protected *outputArray.CArray::CArrayV3F32
+    *outputArray = NodePort::AcquireOutputData(*output)
     
-    For i=0 To CArray::GetCount(*vIn)-1
-      PerlinNoise::Eval(*node\noise, CArray::GetValue(*vIn,i), CArray::GetValue(*vOut,i))
+    CArray::Copy(*outputArray,*positionArray)
+    Protected v.v3f32
+    For i=0 To CArray::GetCount(*positionArray)-1
+      Vector3::Multiply(v, CArray::GetValue(*positionArray,i), CArray::GetValue(*spaceFrequencyArray,0))
+      PerlinNoise::Eval(*node\noise,v , CArray::GetValue(*outputArray,i))
     Next i
   EndProcedure
   
@@ -144,7 +141,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 83
+; CursorPosition = 14
 ; Folding = --
 ; EnableXP

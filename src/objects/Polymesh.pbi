@@ -39,8 +39,6 @@ DeclareModule Polymesh
   Declare Clean(*Me.Polymesh_t)
   Declare Draw(*Me.Polymesh_t, *ctx.GLContext::GLContext_t)
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
-  Declare TestClass(*Me.Polymesh_t)
-  Declare OnMessage(id.i, *up)
   Declare SetDirtyState(*Me.Polymesh_t, state.i)
   Declare SetClean(*Me.Polymesh_t)
   DataSection 
@@ -180,8 +178,8 @@ Module Polymesh
   ;-----------------------------------------------------
   Procedure SetClean(*Me.Polymesh_t)
     *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
-    ForEach *Me\m_attributes()
-      *Me\m_attributes()\dirty = #False
+    ForEach *Me\geom\m_attributes()
+      *Me\geom\m_attributes()\dirty = #False
     Next
   EndProcedure
   
@@ -515,27 +513,7 @@ Module Polymesh
   Procedure SetFromShape(*Me.Polymesh_t,shape.i)
 
   EndProcedure
-  
-  
-  Procedure OnMessage(id.i,*up)
-;     Protected *sig.Signal::Signal_t = *up
-;     Protected *snd.Object::Object_t = *sig\snd_inst
-;     Protected *rcv.Object::Object_t = *sig\rcv_inst
-;     
-;     Debug "Polymesh Recieved Message"
-;     Debug "Sender Class Name : "+*snd\class\name
-;     Debug "Reciever Class Name : "+*rcv\class\name
-    
-  EndProcedure
-  
-  Procedure TestClass(*Me.Polymesh_t)
-    Debug ">>>>>>>>>>> "+Class\name
-    Protected *cls.Class::Class_t = *Me\class
-    Debug *cls
-    Debug *cls\name
-    Debug *cls\cmsg
-    *cls\cmsg(0,#Null)
-  EndProcedure
+
   
   Class::DEF( Polymesh )
 
@@ -545,7 +523,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 526
-; FirstLine = 486
-; Folding = ----
+; CursorPosition = 41
+; FirstLine = 38
+; Folding = ---
 ; EnableXP

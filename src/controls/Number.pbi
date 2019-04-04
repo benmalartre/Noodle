@@ -58,7 +58,7 @@ DeclareModule ControlNumber
   ;  Declares 
   ; ----------------------------------------------------------------------------
   
-  Declare New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlNumber_t)
   Declare Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -1201,7 +1201,7 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlNumber_t = AllocateMemory( SizeOf(ControlNumber_t) )
@@ -1211,7 +1211,8 @@ Procedure.i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Mat
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type         = Control::#NUMBER
   *Me\name         = name
-  *Me\gadgetID     = gadgetID
+  *Me\parent       = *parent
+  *Me\gadgetID     = *parent\gadgetID
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
@@ -1268,7 +1269,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 578
-; FirstLine = 562
+; CursorPosition = 1214
+; FirstLine = 1166
 ; Folding = ----
 ; EnableXP

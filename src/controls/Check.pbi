@@ -66,7 +66,7 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Declare New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
   Declare Delete(*Me.ControlCheck_t)
   Declare Draw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -379,7 +379,7 @@ Module ControlCheck
   ; ============================================================================
   ;{
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( gadgetID.i ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Procedure.i New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCheck_t = AllocateMemory( SizeOf(ControlCheck_t) )
@@ -391,7 +391,8 @@ Module ControlCheck
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#CHECK
     *Me\name     = name
-    *Me\gadgetID = gadgetID
+    *Me\parent   = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -539,7 +540,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 44
+; CursorPosition = 394
+; FirstLine = 356
 ; Folding = ----
 ; EnableXP

@@ -76,6 +76,10 @@ DeclareModule Control
     posY       .i
     sizX       .i
     sizY       .i
+    percX      .i
+    percY      .i
+    fixedX     .i
+    fixedY     .i
     visible    .i
     enable     .i
     options    .i
@@ -313,8 +317,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 4
+; CursorPosition = 81
+; FirstLine = 40
 ; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

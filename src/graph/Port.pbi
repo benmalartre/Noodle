@@ -287,6 +287,30 @@ Module NodePort
     *port\attribute = *attr
     GetColor(*port)
   EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Init From Name
+  ;-----------------------------------------------------------------------------
+  Procedure InitFromName(*port.NodePort_t,name.s)
+    If *port\connected
+      Define *locationArray.CArray::CArrayLocation = NodePort::AcquireInputData(*port)
+      Define numLocations = CARray::GetCount(*locationArray)
+      If numLocations > 0
+        Define *location.Geometry::Location_t = CArray::GetValuePtr(*locationArray, 0)
+        If *location
+          Define *geom.Geometry::Geometry_t = *location\geometry
+;           *port\currentcontext = *attr\datacontext
+;           *port\currentstructure = *attr\datastructure
+;           *port\currenttype = *attr\datatype
+;           *port\attribute = *attr
+;            GetColor(*port)
+        EndIf
+      EndIf
+    EndIf
+    
+
+
+  EndProcedure
 
   ;-----------------------------------------------------------------------------
   ; Acquire Reference Data
@@ -725,7 +749,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 454
-; FirstLine = 449
+; CursorPosition = 309
+; FirstLine = 288
 ; Folding = ----
 ; EnableXP

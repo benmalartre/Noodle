@@ -199,7 +199,7 @@ Module Loader
       Wend
       If Not datasize : Continue : EndIf
       
-      *attr = *obj\m_attributes(attrName)
+      *attr = *obj\geom\m_attributes(attrName)
       If Not *attr
         ; Create Attribute as it doesn't exists!!!
         MessageRequester("Noodle","Attribute "+GetXMLNodeName(attr)+" doesn't exists!!!")
@@ -548,8 +548,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 170
+; CursorPosition = 199
+; FirstLine = 197
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

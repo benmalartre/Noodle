@@ -3,6 +3,7 @@ XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "Object3D.pbi"
 XIncludeFile "Shapes.pbi"
+XIncludeFile "LightGeometry.pbi"
 
 DeclareModule Light
   UseModule Math
@@ -1024,6 +1025,8 @@ Module Light
     *Me\heightplane = 6
     *Me\depthplane = 6
     
+    *Me\geom = LightGeometry::New(*Me)
+    
     LookAt(*Me)
     GetSphericalCoordinates(*Me)
     UpdateProjection(*Me)
@@ -1069,7 +1072,6 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 739
-; FirstLine = 127
+; CursorPosition = 5
 ; Folding = d+e--
 ; EnableXP

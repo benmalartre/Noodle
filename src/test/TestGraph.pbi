@@ -102,6 +102,7 @@ Procedure AddAudioTree(*tree.Tree::Tree_t)
 EndProcedure
 
 Scene::*current_scene = Scene::New()
+Define *teapot.Object3D::Object3D_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
 Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_SPHERE)
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
 ; 
@@ -124,6 +125,7 @@ Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator
  AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
+Scene::AddChild(Scene::*current_scene,*teapot)
 
 Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
@@ -183,8 +185,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 57
+; CursorPosition = 128
+; FirstLine = 84
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

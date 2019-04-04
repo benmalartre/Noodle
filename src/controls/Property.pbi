@@ -37,6 +37,7 @@ DeclareModule ControlProperty
     append    .i
     row       .i
     down      .i
+    *object.Object::Object_t
     *head.ControlHead::ControlHead_t
     overchild .Control::IControl
     focuschild.Control::IControl
@@ -99,6 +100,7 @@ DeclareModule ControlProperty
     ControlPropertyVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -213,6 +215,7 @@ Module ControlProperty
             
           Case "GetDataNode"
             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
+            ;InitFromReference(*port.NodePort_t,*attr.Attribute::Attribute_t)
             *port\dirty = #True
             
         EndSelect
@@ -221,7 +224,28 @@ Module ControlProperty
   Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
   Procedure OnFileChange(*ctl.ControlEdit::ControlEdit_t, *obj.Object::Object_t, id.i=0, offset.i=0)
-    MessageRequester("ON FILE CHANGE", "WTF???")
+    Select *obj\class\name
+      Case "Attribute"
+        Define *attribute.Attribute::Attribute_t = *obj
+        
+        If *attribute
+          Define *array.CArray::CArrayStr = *attribute\data
+          CArray::SetCount(*array, 1)
+          CArray::SetValueStr(*array, 0, *ctl\value)
+          *attribute\dirty = #True
+        EndIf
+        
+      Case "NodePort"
+        Define *port.NodePort::NodePort_t = *obj
+        Define *attribute.Attribute::Attribute_t = *port\attribute
+        If *attribute
+          Define *array.CArray::CArrayStr = *attribute\data
+          CArray::SetCount(*array, 1)
+          CArray::SetValueStr(*array, 0, *ctl\value)
+          *attribute\dirty = #True
+        EndIf
+    EndSelect
+
   EndProcedure
   Callback::DECLARECALLBACK(OnFileChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
 
@@ -565,11 +589,11 @@ Module ControlProperty
 
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
-      *btn = ControlButton::New(*Me\gadgetID,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       ControlGroup::Append(*Me\groups(),*btn)
       If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
-      *btn = ControlButton::New(*Me\gadgetID,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       Append( *Me, *btn)
       If Not *Me\row : *Me\dy + height : EndIf
     EndIf
@@ -594,7 +618,7 @@ Module ControlProperty
       ControlGroup::Append(*Me\groups(),*knob)
       If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
-      *knob = ControlKnob::New(*Me\gadgetID,name,0, 0,*Me\dx,*Me\dy,width,height, color )
+      *knob = ControlKnob::New(*Me,name,0, 0,*Me\dx,*Me\dy,width,height, color )
       Append( *Me, *knob)
       If *Me\row  : *Me\dx + width : Else : *Me\dy + height : EndIf
     EndIf
@@ -619,15 +643,15 @@ Module ControlProperty
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
       ControlGroup::RowStart(*Me\groups())
-      ControlGroup::Append(*Me\groups(),ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append(*Me\groups(),ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlGroup::Append(*Me\groups(),ControlCheck::New(*obj,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      ControlGroup::Append(*Me\groups(),ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append(*Me\groups(),ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlGroup::Append(*Me\groups(),ControlCheck::New(*Me,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       ControlGroup::RowEnd(*Me\groups())
     Else
       RowStart(*Me)
-      Append( *Me,ControlDivot::New(*obj,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      Append( *Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = Append( *Me,ControlCheck::New(*obj, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      Append( *Me,ControlDivot::New(*Me,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      Append( *Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = Append( *Me,ControlCheck::New(*Me, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       RowEnd(*Me)
     EndIf
     
@@ -665,16 +689,16 @@ Module ControlProperty
     ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
-      ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlNumber::New(*Me,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       ControlGroup::Append( *Me\groups(), *ctl  )
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
-      Append(*Me,ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      Append(*Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlNumber::New(*obj,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlNumber::New(*Me,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
@@ -711,12 +735,12 @@ Module ControlProperty
     ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
-      *ctl =  ControlSlider::New(*Me\gadgetID, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width-20,32) 
+      *ctl =  ControlSlider::New(*Me, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width-20,32) 
       ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
-      *ctl = ControlSlider::New(*Me\gadgetID, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width,32)
+      *ctl = ControlSlider::New(*Me, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width,32)
       Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
@@ -755,16 +779,16 @@ Module ControlProperty
     ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
-      ControlGroup::Append( *Me\groups(), ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl =  ControlNumber::New(*obj, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
+      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl =  ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
       ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
-      Append(*Me,ControlDivot::New(*obj,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      Append(*Me,ControlLabel::New(*obj,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlNumber::New(*obj, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
+      Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
@@ -809,15 +833,15 @@ Module ControlProperty
     ControlGroup::RowStart(*group)
   
     ; Add X Parameter
-    ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
-    *xCtl = ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
+    ControlGroup::Append(*group,ControlDivot::New(*Me,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
+    *xCtl = ControlNumber::New(*Me,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
     ControlGroup::Append(*group, *xCtl )
     
     ; Add Y Parameter
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
-    ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
-    *yCtl = ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
+    ControlGroup::Append(*group, ControlDivot::New(*Me,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+    ControlGroup::Append(*group,ControlLabel::New(*Me,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
+    *yCtl = ControlNumber::New(*Me,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *yCtl )
     
     ; Terminate Group
@@ -874,21 +898,21 @@ Module ControlProperty
     ControlGroup::RowStart(*group)
   
     ; Add X Parameter
-;     ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
-    *xCtl = ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
+;     ControlGroup::Append(*group,ControlDivot::New(*Me,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
+    *xCtl = ControlNumber::New(*Me,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18)
     ControlGroup::Append(*group, *xCtl )
     
     ; Add Y Parameter
-;     ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
-    ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
-    *yCtl = ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
+;     ControlGroup::Append(*group, ControlDivot::New(*Me,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+    ControlGroup::Append(*group,ControlLabel::New(*Me,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
+    *yCtl = ControlNumber::New(*Me,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *yCtl )
     
     ; Add Z Parameter
-;     ControlGroup::Append(*group, ControlDivot::New(*obj,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
-    *zCtl = ControlNumber::New(*obj,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18)
+;     ControlGroup::Append(*group, ControlDivot::New(*Me,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
+    *zCtl = ControlNumber::New(*Me,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18)
     ControlGroup::Append(*group, *zCtl)
     
     ; Terminate Group
@@ -948,24 +972,24 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*o
   ControlGroup::RowStart(*Me)
   
   ; X
-  ControlGroup::Append(*group, ControlDivot::New(*attr, "XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+  ControlGroup::Append(*group, ControlDivot::New(*Me, "XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("XLabel","X",#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-  Define *xCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+  Define *xCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*Me, "XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; Y
-  ControlGroup::Append(*group, ControlDivot::New(*attr, "YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,*Me\dy+2,18,18 ))
+  ControlGroup::Append(*group, ControlDivot::New(*Me, "YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("YLabel","Y",#False,0,*Me\dx+width+20,*Me\dy,(width-20)*0.25,21 ))
-  Define *yCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+  Define *yCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*Me, "YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; Z
-  ControlGroup::Append(*group, ControlDivot::New(*attr, "ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
+  ControlGroup::Append(*group, ControlDivot::New(*Me, "ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("ZLabel","Z",#False,0,*Me\dx+2*width+20,*Me\dy,(width-20)*0.25,21 ))
-  Define *zCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, "ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+  Define *zCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*Me, "ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ; W
-  ControlGroup::Append(*group, ControlDivot::New(*attr, "WDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
+  ControlGroup::Append(*group, ControlDivot::New(*Me, "WDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,*Me\dy+2,18,18 ))
   ;ControlGroup::Append(*group, newControl::IControlLabel("ZLabel","Z",#False,0,*Me\dx+2*width+20,*Me\dy,(width-20)*0.25,21 ))
-  Define *wCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*attr, ">Number",*value\w,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
+  Define *wCtl.Control::Control_t = ControlGroup::Append(*group, ControlNumber::New(*Me, ">Number",*value\w,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) )
   
   ControlGroup::RowEnd(*group)
   ControlGroup::AppendStop(*group)
@@ -1034,24 +1058,24 @@ EndProcedure
   
     Protected w= *Me\sizX/4
     ;X
-    ControlGroup::Append(*group,ControlDivot::New(*obj,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
-    *xCtl = ControlGroup::Append(*group, ControlNumber::New(*obj,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18) )
+    ControlGroup::Append(*group,ControlDivot::New(*Me,"XDivot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"XLabel","X",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
+    *xCtl = ControlGroup::Append(*group, ControlNumber::New(*Me,"XNumber",*value\x,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18) )
     
     ;Y
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
-    ControlGroup::Append(*group,ControlLabel::New(*obj,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
-    *yCtl = ControlGroup::Append(*group,ControlNumber::New(*obj,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18) )
+    ControlGroup::Append(*group, ControlDivot::New(*Me,"YDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+    ControlGroup::Append(*group,ControlLabel::New(*Me,"YLabel","Y",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
+    *yCtl = ControlGroup::Append(*group,ControlNumber::New(*Me,"YNumber",*value\y,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18) )
     
     ;Z
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
-    *zCtl = ControlGroup::Append(*group, ControlNumber::New(*obj,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18) )
+    ControlGroup::Append(*group, ControlDivot::New(*Me,"ZDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"ZLabel","Z",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
+    *zCtl = ControlGroup::Append(*group, ControlNumber::New(*Me,"ZNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18) )
     
     ;Angle
-    ControlGroup::Append(*group, ControlDivot::New(*obj,"AngleDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
-    ControlGroup::Append(*group, ControlLabel::New(*obj,"AngleLabel","Angle",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
-    *aCtl = ControlGroup::Append(*group, ControlNumber::New(*obj,"AngleNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+3*width,12,(width-20)*0.75,18) )
+    ControlGroup::Append(*group, ControlDivot::New(*Me,"AngleDivot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+    ControlGroup::Append(*group, ControlLabel::New(*Me,"AngleLabel","Angle",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
+    *aCtl = ControlGroup::Append(*group, ControlNumber::New(*Me,"AngleNumber",*value\z,ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+3*width,12,(width-20)*0.75,18) )
   
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
@@ -1120,24 +1144,24 @@ EndProcedure
     
       Protected w= *Me\sizX/4
       ;Mi0
-      ControlGroup::Append(*group,ControlDivot::New(*obj,"M"+Str(i)+"0Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
-      ControlGroup::Append(*group, ControlLabel::New(*obj,"M"+Str(i)+"0Label","M"+Str(i)+"0",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
-      ControlGroup::Append(*group, ControlNumber::New(*obj,"M"+Str(i)+"0Number",*value\v[i*4],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18) )
+      ControlGroup::Append(*group,ControlDivot::New(*Me,"M"+Str(i)+"0Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,14,18,18 ))
+      ControlGroup::Append(*group, ControlLabel::New(*Me,"M"+Str(i)+"0Label","M"+Str(i)+"0",#False,0,*Me\dx+20,14,(width-20)*0.25,21 ))
+      ControlGroup::Append(*group, ControlNumber::New(*Me,"M"+Str(i)+"0Number",*value\v[i*4],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+40,12,(width-40),18) )
       
       ;Mi1
-      ControlGroup::Append(*group, ControlDivot::New(*obj,"M"+Str(i)+"1Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
-      ControlGroup::Append(*group,ControlLabel::New(*obj,"M"+Str(i)+"1Label","M"+Str(i)+"1",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
-      ControlGroup::Append(*group,ControlNumber::New(*obj,"M"+Str(i)+"1Number",*value\v[i*4+1],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18) )
+      ControlGroup::Append(*group, ControlDivot::New(*Me,"M"+Str(i)+"1Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+width,14,18,18 ))
+      ControlGroup::Append(*group,ControlLabel::New(*Me,"M"+Str(i)+"1Label","M"+Str(i)+"1",#False,0,*Me\dx+width+20,14,(width-20)*0.25,21 ))
+      ControlGroup::Append(*group,ControlNumber::New(*Me,"M"+Str(i)+"1Number",*value\v[i*4+1],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+width,12,(width-20)*0.75,18) )
       
       ;Mi2
-      ControlGroup::Append(*group, ControlDivot::New(*obj,"M"+Str(i)+"2Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
-      ControlGroup::Append(*group, ControlLabel::New(*obj,"M"+Str(i)+"2Label","M"+Str(i)+"2",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
-      ControlGroup::Append(*group, ControlNumber::New(*obj,"M"+Str(i)+"2Number",*value\v[i*4+2],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18) )
+      ControlGroup::Append(*group, ControlDivot::New(*Me,"M"+Str(i)+"2Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+      ControlGroup::Append(*group, ControlLabel::New(*Me,"M"+Str(i)+"2Label","M"+Str(i)+"2",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
+      ControlGroup::Append(*group, ControlNumber::New(*Me,"M"+Str(i)+"2Number",*value\v[i*4+2],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+2*width,12,(width-20)*0.75,18) )
       
       ;Mi3
-      ControlGroup::Append(*group, ControlDivot::New(*obj,"M"+Str(i)+"3Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
-      ControlGroup::Append(*group, ControlLabel::New(*obj,"M"+Str(i)+"3Label","M"+Str(i)+"3",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
-      ControlGroup::Append(*group, ControlNumber::New(*obj,"M"+Str(i)+"3Number",*value\v[i*4+3],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+3*width,12,(width-20)*0.75,18) )
+      ControlGroup::Append(*group, ControlDivot::New(*Me,"M"+Str(i)+"3Divot",ControlDivot::#ANIM_NONE,0,*Me\dx+2*width,14,18,18 ))
+      ControlGroup::Append(*group, ControlLabel::New(*Me,"M"+Str(i)+"3Label","M"+Str(i)+"3",#False,0,*Me\dx+2*width+20,14,(width-20)*0.25,21 ))
+      ControlGroup::Append(*group, ControlNumber::New(*Me,"M"+Str(i)+"3Number",*value\v[i*4+3],ControlNumber::#NUMBER_SCALAR,-1000,1000,-10,10,*Me\dx+3*width,12,(width-20)*0.75,18) )
     
       ControlGroup::RowEnd(*group)
       *Me\posY +50
@@ -1170,14 +1194,16 @@ EndProcedure
     Protected *Ctl.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    ; Create Group
+    ;------------------------------
+    Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width, 200 ,options)
 
     
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    *Ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
+    *Ctl = ControlEdit::New(*Me,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
     ControlGroup::Append( *group,*Ctl)
     
     ControlGroup::RowEnd(*group)
@@ -1225,8 +1251,8 @@ EndProcedure
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    *ctl = ControlInput::New(*Me\gadgetID,*Me\dx,*Me\dy+2,(width-110),18, "File") 
-    *ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
+    *ctl = ControlInput::New(*Me\gadgetID,*Me\dx,*Me\dy+2,(width-110),32, "File") 
+;     *ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
     ;New(gadgetID.i,x.i, y.i, width.i, height.i, name.s, options.i=0)
     ControlGroup::Append( *group,*ctl)
     *btn = ControlButton::New(*Me\gadgetID, "Pick", "...",#False,0,0)
@@ -1304,7 +1330,7 @@ EndProcedure
   ;--------------------------------------------------------------------
   Procedure AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
   
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; ---[ Sanity Check ]----------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -1312,41 +1338,30 @@ EndProcedure
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
-    Define *color.ControlColor::ControlColor_t = ControlColor::New(name+"_Color",name+"_Color",*value,*Me\dx,*Me\dy+2,(width-110),18)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *color.ControlColor::ControlColor_t = ControlColor::New(*Me, name+"_Color",name+"_Color",*value,*Me\dx,*Me\dy+2,(width-110),18)
     
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    ;Append(*Me, newControl::IControlLabel(name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
-    ;ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
     ControlGroup::Append(*group, *color)
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),0)
-  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Pick_Btn","Pick",#False,0,(width-60),*Me\dy,50,21))
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),1)
-  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Explore_Btn","...",#False,0,(width-30),*Me\dy,50,21))
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),2)
+
     
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
     
-    ; Add Group to PPG
-    ;---------------------------------
-;      AddElement(*Me\groups())
-;     *Me\groups() = *group
+    ; ---[ Add Group to PPG ]-----------------------------------------
     Append(*Me,*group)
     
-    ; Offset for Next Control
-    ;---------------------------------
+    ; ---[ Offset for Next Control ]----------------------------------
     *Me\dy + *group\sizY 
     ProcedureReturn(*color)
   EndProcedure
   
-  ; ---[ Add ColorWheel Control  ]------------------------------------------
-  ;--------------------------------------------------------------------
+  ; ---[ Add ColorWheel Control  ]-------------------------------------
   Procedure AddColorWheelControl(*Me.ControlProperty_t,name.s)
   
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; ---[ Sanity Check ]----------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -1354,21 +1369,15 @@ EndProcedure
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
-    Define *wheel.ControlColorWheel::ControlColorWheel_t = ControlColorWheel::New(*Me\dx,*Me\dy+2,(width-110),256)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *wheel.ControlColorWheel::ControlColorWheel_t = ControlColorWheel::New(*Me,*Me\dx,*Me\dy+2,(width-110),256)
     
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    ;Append(*Me, newControl::IControlLabel(name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
-    ;ControlGroup::Append(*group, ControlEdit::New(*obj,name+"_Edit","",5,*Me\dx,*Me\dy+2,(width-110),18) )
-    ControlGroup::Append(*group, *wheel)
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),0)
-  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Pick_Btn","Pick",#False,0,(width-60),*Me\dy,50,21))
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),1)
-  ;   Ctl = ControlGroup::Append(*group, newControl::IControlButton(name+"Explore_Btn","...",#False,0,(width-30),*Me\dy,50,21))
-  ;   *obj\SignalConnect(Ctl\SignalOnChanged(),2)
     
+    ControlGroup::Append(*group, *wheel)
+
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
     
@@ -1386,7 +1395,6 @@ EndProcedure
 
   
   ; ---[ Add Group Control  ]------------------------------------------
-  ;--------------------------------------------------------------------
   Procedure AddGroup( *Me.ControlProperty_t,name.s)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -1396,7 +1404,7 @@ EndProcedure
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
     AddElement(*Me\groups())
     *Me\groups() = *group
     Append(*Me,*group)
@@ -1418,8 +1426,7 @@ EndProcedure
     Protected *group.ControlGroup::ControlGroup_t = *Me\groups()
     If Not *group : ProcedureReturn : EndIf
     
-    ; Offset for Next Control
-    ;---------------------------------
+    ; ---[ Offset for Next Control ]------------------------------------------
     *Me\dy + *group\sizY-20
    
     ; ---[ Add Parameter ]--------------------------------------------
@@ -1430,7 +1437,6 @@ EndProcedure
   EndProcedure
   
   ; ---[ Add Head Control  ]------------------------------------------
-  ;--------------------------------------------------------------------
   Procedure AddHead( *Me.ControlProperty_t)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -1442,15 +1448,13 @@ EndProcedure
     *Me\head = ControlHead::New(*Me,*Me\name+"_Head",options,*Me\dx,*Me\dy+2,width,18) 
     Append(*Me,*Me\head)
     
-    ; Offset for Next Control
-    ;---------------------------------
+    ; ---[ Offset for Next Control ---------------------------------------
     *Me\dy + *Me\head\sizY
 
     ProcedureReturn(*head)
   EndProcedure
   
   ; ---[ Get Width ]-----------------------------------------------
-  ;---------------------------------------
   Procedure GetWidth( *Me.ControlProperty_t)
     
     ; ---[ Sanity Check ]-------------------------------------------------------
@@ -1460,10 +1464,9 @@ EndProcedure
   EndProcedure
   
   ; ---[ Get Height ]-----------------------------------------------
-  ;---------------------------------------
   Procedure GetHeight( *Me.ControlProperty_t)
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
+    ; ---[ Sanity Check ]-----------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected *son.Control::Control_t
@@ -1485,7 +1488,6 @@ EndProcedure
 
   
   ; ---[ On Init ]-----------------------------------------------
-  ;---------------------------------------
   Procedure Init( *Me.ControlProperty_t)
     
     ; ---[ Sanity Check ]-------------------------------------------------------
@@ -1501,7 +1503,6 @@ EndProcedure
   EndProcedure
 
   ; ---[ Refresh ]-----------------------------------------------
-  ;---------------------------------------
   Procedure Refresh( *Me.ControlProperty_t)
     
     ; ---[ Sanity Check ]--------------
@@ -1512,7 +1513,6 @@ EndProcedure
   EndProcedure
   
   ; ---[ Send Event To Filtered Child ]-----------------------------------------------
-  ;---------------------------------------
   Procedure EventWithFilter(*Me.ControlProperty_t,filter.i,ev_type.i)
     Protected *son.Control::IControl
     Protected i
@@ -1584,17 +1584,11 @@ EndProcedure
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
         *Me\sizX = *ev_data\width 
-        
-        ; restore background
-        ResizeGadget(*Me\gadgetID,*ev_data\x,*ev_data\y,*Me\sizX,*Me\sizY)
-        StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-        AddPathBox(0,0,*Me\sizX,*Me\sizY)
-        VectorSourceColor(UIColor::COLORA_MAIN_BG)
-        FillPath()
-        StopVectorDrawing()
+
+        ResizeGadget(*Me\gadgetID,#PB_Ignore,#PB_Ignore,*Me\sizX,#PB_Ignore)
  
         ev_data\x = 0
-        ev_data\y = 0
+        ev_data\y = #PB_Ignore
         ev_data\width = *ev_data\width
         ev_data\height = #PB_Ignore
 
@@ -1613,7 +1607,7 @@ EndProcedure
               *son = son
               ev_data\width = wi
               ev_data\x     = *Me\posX + wi * d
-              ev_data\y     = *son\posY
+              ev_data\y     = #PB_Ignore
               CompilerIf #PB_Compiler_Version <560
                 son\OnEvent(Control::#PB_EventType_Resize, ev_data)
               CompilerElse
@@ -1982,6 +1976,7 @@ EndProcedure
     Object::INI(ControlProperty)
     
     ; Init Members
+    *Me\object     = *object
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
@@ -2021,7 +2016,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1227
-; FirstLine = 1209
+; CursorPosition = 1970
+; FirstLine = 1958
 ; Folding = ----------
 ; EnableXP
