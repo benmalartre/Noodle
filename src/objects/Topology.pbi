@@ -232,7 +232,6 @@ Module Topology
         EndIf
       Next
     CompilerEndIf
-   
   EndProcedure
   
   ; -------------------------------------------------------------------------------
@@ -919,7 +918,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 409
-; FirstLine = 369
+; CursorPosition = 179
+; FirstLine = 174
 ; Folding = -----
 ; EnableXP

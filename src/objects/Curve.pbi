@@ -283,7 +283,7 @@ Module Curve
     *Me\geom = CurveGeometry::New(*Me)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Curve
+    *Me\type = Object3D::#Curve
     
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
@@ -322,7 +322,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 302
+; CursorPosition = 285
 ; FirstLine = 263
 ; Folding = ---
 ; EnableXP

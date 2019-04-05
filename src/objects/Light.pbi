@@ -981,7 +981,7 @@ Module Light
     
     *Me\linear = 0.5
     *Me\quadratic = 0.75
-    *Me\type = Object3D::#Object3D_Light
+    *Me\type = Object3D::#Light
     *Me\name     = name
     *Me\lighttype = type
     
@@ -1072,7 +1072,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1048
-; FirstLine = 398
+; CursorPosition = 983
+; FirstLine = 368
 ; Folding = d+e--
 ; EnableXP

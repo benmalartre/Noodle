@@ -43,7 +43,7 @@ Module Model
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\name = name
     *Me\geom = ModelGeometry::New(*Me)
-    *Me\type = Object3D::#Object3D_Model
+    *Me\type = Object3D::#Model
     Matrix4::SetIdentity(*Me\matrix)
     
     Object3D::ResetGlobalKinematicState(*Me)
@@ -111,7 +111,7 @@ Module Model
   Class::DEF( Model )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 45
+; CursorPosition = 45
+; FirstLine = 41
 ; Folding = --
 ; EnableXP

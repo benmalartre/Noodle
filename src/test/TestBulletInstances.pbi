@@ -196,7 +196,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
   BulletWorld::AddGroundPlane(Bullet::*bullet_world)
-;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
+;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
  default_layer\Draw  (*app\context)
 ;   gbuffer\Draw(*app\context  )
@@ -326,8 +326,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 128
+; CursorPosition = 198
+; FirstLine = 194
 ; Folding = --
 ; EnableThread
 ; EnableXP

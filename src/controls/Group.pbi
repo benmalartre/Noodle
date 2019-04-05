@@ -247,7 +247,7 @@ Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
   Protected maxW .i = *Me\sizX - 21
   Protected curW .i
   
-  VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_TITLE)
+  VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_LABEL)
   
   curW = VectorTextWidth(label)
   While Len(label) And ( curW > maxW )
@@ -941,7 +941,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 901
-; FirstLine = 877
+; CursorPosition = 249
+; FirstLine = 246
 ; Folding = ---0
 ; EnableXP

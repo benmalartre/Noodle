@@ -568,7 +568,7 @@ Module ViewportUI
     Protected *body.Bullet::btRigidBody
     For  i= 0 To CArray::GetCount(*scn\objects)-1
       *obj = CArray::GetValuePtr(*scn\objects,i)
-      If *obj\type = Object3D::#Object3D_Polymesh
+      If *obj\type = Object3D::#Polymesh
         *body = BulletRigidBody::BTCreateRigidBodyFrom3DObject(*obj,Bullet::#TRIANGLEMESH_SHAPE,0.0,Bullet::*pick_world)
         CArray::AppendPtr(*bodies,*body)
       EndIf
@@ -714,7 +714,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 317
-; FirstLine = 274
+; CursorPosition = 570
+; FirstLine = 566
 ; Folding = -----
 ; EnableXP

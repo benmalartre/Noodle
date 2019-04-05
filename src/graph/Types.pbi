@@ -505,6 +505,7 @@ DeclareModule Tree
     dirty.b
     List *nodes.Node::Node_t()
     List *filter_nodes.Node::Node_t()
+    Map *unique_nodes.Node::Node_t()
   EndStructure
    
   Structure Tree_t Extends Node::Node_t
@@ -520,6 +521,7 @@ DeclareModule Tree
     List *data_modifiers.Node::Node_t()
     List *all_branches.Branch_t()
     List *filtered_branches.Branch_t()
+    Map *unique_nodes.Node::Node_t()
     
     ; ---[ current evaluate dbranch nodes ]------------------
     List *evaluation.NodePort::NodePort_t()
@@ -536,8 +538,8 @@ DeclareModule Tree
   ; ----------------------------------------------------------------------------
   Declare New(*obj,name.s="Tree",context.i=Graph::#Graph_Context_Operator)
   Declare Delete(*tree.Tree_t)
-  Declare RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
-  Declare EvaluateBranch(*branch.Branch_t)
+  Declare RecurseNodes(*Me.Tree_t, *branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
+  Declare EvaluateBranch(*Me.Tree_t, *branch.Branch_t)
   Declare Evaluate(*Me.Tree_t)
   Declare AddNode(*Me.Tree_t,name.s,x.i,y.i,w.i,h.i,c.i)  
   Declare RemoveNode(*Me.Tree_t,*other.Node::Node_t)
@@ -552,6 +554,8 @@ DeclareModule Tree
   Declare GetDataProviders(*current.Node::Node_t,List *gets.Node::Node_t())
   Declare GetAllDataModifiers(*tree.Tree::Tree_t)
   Declare GetDataModifiers(*current.Node::Node_t,List *sets.Node::Node_t())
+  Declare.b CheckUniqueNode(*Me.Tree_t, *node.Node::Node_t)
+  Declare.b CheckUniqueBranchNode(*Me.Tree_t, *branch.Branch_t, *node.Node::Node_t)
  
   DataSection
     TreeVT:
@@ -610,7 +614,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 144
+; CursorPosition = 541
+; FirstLine = 508
 ; Folding = ---
 ; EnableXP

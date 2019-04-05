@@ -344,7 +344,7 @@ Module Null
     InitializeStructure(*Me,Null_t)
     
     ; ---[ Init Members ]------------------------------------------------------
-    *Me\type     = Object3D::#Object3D_Null
+    *Me\type     = Object3D::#Locator
     *Me\name     = name
     *Me\size     = 1.0
     *Me\icon     = #Icon_Sphere
@@ -373,7 +373,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 360
+; CursorPosition = 346
 ; FirstLine = 314
 ; Folding = ---
 ; EnableXP

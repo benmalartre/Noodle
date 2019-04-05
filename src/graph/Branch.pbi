@@ -95,8 +95,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 24
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 37
+; FirstLine = 26
 ; Folding = --
 ; EnableXP

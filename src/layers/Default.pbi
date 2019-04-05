@@ -256,7 +256,7 @@ Module LayerDefault
     Protected *Me.LayerDefault_t = AllocateMemory(SizeOf(LayerDefault_t))
     Object::INI(LayerDefault)
     
-    *Me\type = Object3D::#Object3D_Layer
+    *Me\type = Object3D::#Layer
     *Me\name = "LayerDefault"
 
     
@@ -281,7 +281,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 256
+; CursorPosition = 258
 ; FirstLine = 222
 ; Folding = --
 ; EnableXP

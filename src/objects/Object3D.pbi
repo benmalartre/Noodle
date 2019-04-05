@@ -14,19 +14,19 @@ DeclareModule Object3D
   UseModule Math
   UseModule OpenGL
   Enumeration
-    #Object3D_None
-    #Object3D_Camera
-    #Object3D_Light
-    #Object3D_Null
-    #Object3D_Polymesh
-    #Object3D_Curve
-    #Object3D_PointCloud
-    #Object3D_InstanceCloud
-    #Object3D_Grid
-    #Object3D_Model
-    #Object3D_Root
-    #Object3D_Layer
-    #Object3D_Drawer
+    #None
+    #Camera
+    #Light
+    #Locator
+    #Polymesh
+    #Curve
+    #PointCloud
+    #InstanceCloud
+    #Grid
+    #Model
+    #Root
+    #Layer
+    #Drawer
   EndEnumeration
 
   #DIRTY_STATE_CLEAN = 0
@@ -164,7 +164,7 @@ Module Object3D
   ; Freeze
   ; ----------------------------------------------------------------------------
   Procedure Freeze(*obj.Object3D_t)
-    If *obj\type = Object3D::#Object3D_Polymesh
+    If *obj\type = Object3D::#Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
       Topology::Copy(*geom\base,*geom\topo)
       Stack::Clear(*obj\stack)
@@ -235,7 +235,7 @@ Module Object3D
     EndIf
     *child\parent = *parent
     
-    If *parent\type = Object3D::#Object3D_Model
+    If *parent\type = Object3D::#Model
       *child\model = *parent
     Else
       *child\model = *parent\model
@@ -537,7 +537,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 45
+; CursorPosition = 237
+; FirstLine = 178
 ; Folding = ------
 ; EnableXP

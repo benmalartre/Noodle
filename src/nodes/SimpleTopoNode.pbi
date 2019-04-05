@@ -88,13 +88,7 @@ Module SimpleTopoNode
     FirstElement(*node\inputs())
     Protected *shapeData.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
     Protected shape.i = CArray::GetValueI(*shapeData,0)
-    
-    Protected *parent.Object3D::Object3D_t = *node\parent3dobject
-    If Not *parent Or *parent\type <>Object3D::#Object3D_Polymesh
-      *node\state = Graph::#Node_StateError
-      *node\errorstr =  "[ERROR]Simple Topo only works on Polymesh..."
-      ProcedureReturn
-    EndIf
+
   
     ; Get Inputs
     Protected *input.NodePort::NodePort_t
@@ -121,7 +115,6 @@ Module SimpleTopoNode
     Protected *topoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
 
     Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoArray,0)
-    Debug "TOPOLOGY : "+Str(*topo)
     Select shape
       Case 0
         Topology::Cube(*topo,radius,u,v,w)
@@ -135,14 +128,8 @@ Module SimpleTopoNode
         Topology::Bunny(*topo)
       Case 5
         Topology::Torus(*topo)
-      Default
-        *input = Node::GetPortByName(*node,"Geometry")
-        If *input\connected
-
-        EndIf
           
     EndSelect
-    Debug "TOPOLOGY PASSED: "
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
@@ -182,7 +169,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 90
+; CursorPosition = 113
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

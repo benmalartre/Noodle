@@ -390,35 +390,11 @@ Module NodePort
   ; Acquire Input Attribute
   ;-----------------------------------------------------------------------------
   Procedure AcquireInputAttribute(*port.NodePort_t)
-    
-    Select *port\currentstructure
-      Case Attribute::#ATTR_STRUCT_ARRAY
-        ; Case STRUCT_ARRAY
-        ;-----------------------------------------------------------------------
-        If *port\connected
-          ProcedureReturn *port\source\attribute
-        Else
-          ProcedureReturn *port\attribute
-        EndIf
-        
-      Case Attribute::#ATTR_STRUCT_SINGLE
-        ; Case STRUCT_SINGLE
-        ;-----------------------------------------------------------------------
-        If *port\connected
-          ProcedureReturn *port\source\attribute
-        Else
-          ProcedureReturn *port\attribute
-        EndIf
-
-      Case Attribute::#ATTR_STRUCT_ANY
-        ; Case STRUCT_ANY
-        ;-----------------------------------------------------------------------
-        If *port\connected
-          ProcedureReturn *port\source\attribute
-        Else
-          ProcedureReturn *port\attribute
-        EndIf
-    EndSelect
+    If *port\connected
+      ProcedureReturn *port\source\attribute
+    Else
+      ProcedureReturn *port\attribute
+    EndIf
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -460,6 +436,13 @@ Module NodePort
       ProcedureReturn *data
     EndIf
 
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Acquire Output Attribute
+  ;-----------------------------------------------------------------------------
+  Procedure AcquireOutputAttribute(*port.NodePort_t)
+    ProcedureReturn *port\attribute
   EndProcedure
 
 
@@ -539,7 +522,7 @@ Module NodePort
   ; Is Atomic
   ;-----------------------------------------------------------------------------
   Procedure IsAtomic(*Me.NodePort_t)
-    If Not *Me\io And *Me\connected
+    If *Me\io And *Me\connected
       ProcedureReturn *Me\source\attribute\atomic
     Else
       ProcedureReturn *Me\attribute\atomic
@@ -814,7 +797,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 542
-; FirstLine = 536
+; CursorPosition = 433
+; FirstLine = 397
 ; Folding = -----
 ; EnableXP

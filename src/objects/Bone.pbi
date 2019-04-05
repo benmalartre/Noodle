@@ -79,7 +79,7 @@ Module Bone
     *Me\primitive = Primitive::New(*Me,Primitive::#PRIMITIVE_BOX)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Polymesh
+    *Me\type = Object3D::#Polymesh
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
@@ -568,7 +568,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 90
+; CursorPosition = 81
+; FirstLine = 77
 ; Folding = ----
 ; EnableXP

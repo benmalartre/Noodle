@@ -57,7 +57,7 @@ Module AddPointNode
     
     Protected *obj.Object3D::Object3D_t = *node\parent3dobject
     
-    If *obj\type = Object3D::#Object3D_PointCloud  Or *obj\type = Object3D::#Object3D_InstanceCloud
+    If *obj\type = Object3D::#PointCloud  Or *obj\type = Object3D::#InstanceCloud
       Protected *pc.PointCloud::PointCloud_t = *obj
       *node\geom = *pc\geom
       *node\errorstr = ""
@@ -146,7 +146,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 71
+; CursorPosition = 59
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

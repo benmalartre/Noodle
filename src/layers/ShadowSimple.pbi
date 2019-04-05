@@ -120,7 +120,7 @@ Module LayerShadowSimple
     ForEach *obj\children()
       *child = *obj\children()
       Object3D::EncodeID(@id,*child\uniqueID)
-      If *child\type = Object3D::#Object3D_Polymesh
+      If *child\type = Object3D::#Polymesh
         *t = *child\globalT
         ;glUniform3f(uUniqueID,id\x,id\y,id\z)
         glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*child\matrix)
@@ -280,7 +280,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 153
+; CursorPosition = 122
+; FirstLine = 118
 ; Folding = --
 ; EnableXP

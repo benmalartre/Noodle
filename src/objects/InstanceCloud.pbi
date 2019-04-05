@@ -61,7 +61,7 @@ Module InstanceCloud
     *Me\visible = #True
     *Me\shape = Shape::New(shape)
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_InstanceCloud
+    *Me\type = Object3D::#InstanceCloud
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::OBJECT3DATTR()
     Object3D::ResetGlobalKinematicState(*Me)
@@ -373,8 +373,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 52
+; CursorPosition = 63
+; FirstLine = 59
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

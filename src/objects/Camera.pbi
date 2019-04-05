@@ -89,7 +89,7 @@ Module Camera
         Object::INI(Camera)
         
     *Me\cameratype = type
-    *Me\type = Object3D::#Object3D_Camera
+    *Me\type = Object3D::#Camera
     *Me\name = name
     *Me\geom = CameraGeometry::New(*Me)
     
@@ -495,8 +495,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 120
+; CursorPosition = 91
+; FirstLine = 87
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

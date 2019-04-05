@@ -71,7 +71,7 @@ Module Polymesh
     *Me\geom = PolymeshGeometry::New(*Me,shape)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Polymesh
+    *Me\type = Object3D::#Polymesh
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
@@ -521,7 +521,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 77
+; CursorPosition = 73
+; FirstLine = 69
 ; Folding = ---
 ; EnableXP

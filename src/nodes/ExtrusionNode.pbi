@@ -97,7 +97,7 @@ Module ExtrusionNode
     Debug "[ExtrusionNode] Curent Selected Shape : "+Str(shape)
     
     Protected *parent.Object3D::Object3D_t = *node\parent3dobject
-    If Not *parent Or *parent\type <>Object3D::#Object3D_Polymesh
+    If Not *parent Or *parent\type <>Object3D::#Polymesh
       *node\state = Graph::#Node_StateError
       *node\errorstr =  "[ERROR]ExtrusionNode only works on Polymesh..."
       ProcedureReturn
@@ -192,8 +192,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 54
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 99
+; FirstLine = 95
 ; Folding = --
 ; EnableXP

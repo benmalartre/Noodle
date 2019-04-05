@@ -585,7 +585,7 @@ Module Drawer
     Object::INI(Drawer)
     
     ; Init Members
-    *Me\type = Object3D::#Object3D_Drawer
+    *Me\type = Object3D::#Drawer
     *Me\name = name
   
     *Me\wireframe_r = Random(255)/255
@@ -875,7 +875,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 592
-; FirstLine = 569
+; CursorPosition = 587
+; FirstLine = 583
 ; Folding = ---------
 ; EnableXP

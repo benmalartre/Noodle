@@ -193,10 +193,10 @@ Module Layer
   ; Get View Matrix
   ;---------------------------------------------------
   Procedure GetViewMatrix(*layer.Layer_t)
-    If *layer\pov\type = Object3D::#Object3D_Camera
+    If *layer\pov\type = Object3D::#Camera
       Protected *camera.Camera::Camera_t = *layer\pov
       ProcedureReturn *camera\view
-    ElseIf *layer\pov\type = Object3D::#Object3D_Light
+    ElseIf *layer\pov\type = Object3D::#Light
       Protected *light.Light::Light_t = *layer\pov
       ProcedureReturn *light\view
     EndIf
@@ -206,10 +206,10 @@ Module Layer
   ; Get Projection Matrix
   ;---------------------------------------------------
   Procedure GetProjectionMatrix(*layer.Layer_t)
-    If *layer\pov\type = Object3D::#Object3D_Camera
+    If *layer\pov\type = Object3D::#Camera
       Protected *camera.Camera::Camera_t = *layer\pov
       ProcedureReturn *camera\projection
-    ElseIf *layer\pov\type = Object3D::#Object3D_Light
+    ElseIf *layer\pov\type = Object3D::#Light
       Protected *light.Light::Light_t = *layer\pov
       ProcedureReturn *light\projection
     EndIf
@@ -383,7 +383,7 @@ Module Layer
     
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_Drawer        
+      If *obj\type = Object3D::#Drawer        
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         Drawer::Draw(*obj)
       EndIf
@@ -401,7 +401,7 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_Polymesh
+      If *obj\type = Object3D::#Polymesh
         *mesh = *obj
         *mesh\wireframe = wireframe
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
@@ -422,7 +422,7 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_InstanceCloud
+      If *obj\type = Object3D::#InstanceCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
         obj\Draw()
@@ -441,7 +441,7 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_PointCloud
+      If *obj\type = Object3D::#PointCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         GLCheckError("SET MODEL MATRIX")
         obj = *obj
@@ -461,7 +461,7 @@ Module Layer
     Protected *obj.Object3D::Object3D_t
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_Null
+      If *obj\type = Object3D::#Locator
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         glUniform4f(glGetUniformLocation(shader,"color"),*obj\wireframe_r, *obj\wireframe_g, *obj\wireframe_b, 1.0)
         obj = *obj
@@ -479,7 +479,7 @@ Module Layer
     Protected *obj.Object3D::Object3D_t
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Object3D_Curve
+      If *obj\type = Object3D::#Curve
         obj = *obj
         obj\Draw()
       EndIf
@@ -587,7 +587,7 @@ Module Layer
 ;     
 ;     For i=0 To nbo-1
 ;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
-;       If *obj\type = Object3D::#Object3D_InstanceCloud
+;       If *obj\type = Object3D::#InstanceCloud
 ;         *cloud = *obj
 ;         If *cloud\texture
 ;           glActiveTexture(#GL_TEXTURE0)
@@ -623,10 +623,10 @@ Module Layer
 ; ;       *obj = CArray::GetValue(Scene::*current_scene\helpers,i)
 ; ;       *t = *obj\globalT
 ; ;       glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*t\m)
-; ;       If *obj\type = Object3D::#Object3D_Null
+; ;       If *obj\type = Object3D::#Null
 ; ;         obj = *obj
 ; ;         obj\Draw()
-; ;       ElseIf *obj\type =  Object3D::#Object3D_Curve
+; ;       ElseIf *obj\type =  Object3D::#Curve
 ; ;         obj = *obj
 ; ;         obj\Draw()
 ; ;       EndIf 
@@ -699,7 +699,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 395
-; FirstLine = 391
+; CursorPosition = 463
+; FirstLine = 459
 ; Folding = -----
 ; EnableXP

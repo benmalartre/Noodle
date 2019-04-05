@@ -139,165 +139,128 @@ Module SetDataNode
     Define *obj.Object3D::Object3D_t
     Define *parent.Object3D::Object3D_t
     Define *mesh.Polymesh::Polymesh_t
+    Define *cloud.PointCloud::PointCloud_t
     
-    If NodePort::IsAtomic(*input)
-      Define *inAttr.Attribute::Attribute_t = NodePort::AcquireInputAttribute(*input)
-      Define *outAttr.Attribute::Attribute_t = *node\attribute
-
-      If *node\state = Graph::#Node_StateOK And *inAttr And*outAttr
-        Attribute::PassThrough(*inAttr, *outAttr)
-        Select *input\currenttype
-          Case Attribute::#ATTR_TYPE_MATRIX4
-            Define *m4fin.m4f32 = *inAttr\data
-            Define *m4fout.m4f32 = *outAttr\data
-            Matrix4::SetFromOther(*m4fout,*m4fin)
-            
-            If *outAttr\name = "GlobalTransform"
-              *parent = *node\parent3dobject
-              If *parent
-                Transform::UpdateSRTFromMatrix(*parent\globalT)
-                Object3D::UpdateLocalTransform(*parent)
-                ;Object3D::UpdateTransform(*parent,#Null)
-              EndIf
-              
-            ElseIf *outAttr\name = "LocalTransform"
-              *parent = *node\parent3dobject
-              If *parent
-                Transform::UpdateSRTFromMatrix(*parent\localT)
-                Object3D::UpdateTransform(*parent,#Null)
-              EndIf 
-            EndIf
-  
-          Case Attribute::#ATTR_TYPE_TOPOLOGY
-            If *outAttr\name = "Topology"
-              Define *iTopo.Geometry::Topology_t = *inAttr\data
-              *parent = *node\parent3dobject
-              If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
-                Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
-                If *iTopo\dirty
-                PolymeshGeometry::Set2(*geom,*iTopo)
-                Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
-                *iTopo\dirty = #False
-              Else
-                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-               EndIf
-              Log::Message("[SetDataNode] Update Polymesh Topology")
+    Define *in_data.CArray::CArrayT = NodePort::AcquireInputData(*input)
+    If *node\state = Graph::#Node_StateOK And *in_data And *node\attribute
+      If CArray::GetCount(*in_data) = 0 : ProcedureReturn : EndIf
+      size_t = Carray::GetCount(*in_data)
+      Select *input\currenttype
+      Case Attribute::#ATTR_TYPE_BOOL
+        Define *bIn.Carray::CArrayBool = *in_data
+        If *input\currentcontext =Attribute::#ATTR_CTXT_SINGLETON
+          PokeB(*node\attribute\data,CArray::GetValueB(*bIn,0))
+        Else
+          For x=0 To CArray::GetCount(*bIn)-1
+            If CArray::GetValueB(*bIn,x)
+              Debug "SetDataNode Array Item ["+Str(x)+"]: True"
             Else
-              Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
+              Debug "SetDataNode Array Item ["+Str(x)+"]: False"
             EndIf
-          EndIf
-        EndSelect  
-      EndIf
-    Else
-      Define *in_data.CArray::CArrayT = NodePort::AcquireInputData(*input)
-      If *node\state = Graph::#Node_StateOK And *in_data And *node\attribute
-        size_t = Carray::GetCount(*in_data)
-        Select *input\currenttype
-        Case Attribute::#ATTR_TYPE_BOOL
-          Define *bIn.Carray::CArrayBool = *in_data
-          If *input\currentcontext =Attribute::#ATTR_CTXT_SINGLETON
-            PokeB(*node\attribute\data,CArray::GetValueB(*bIn,0))
-          Else
-            For x=0 To CArray::GetCount(*bIn)-1
-              If CArray::GetValueB(*bIn,x)
-                Debug "SetDataNode Array Item ["+Str(x)+"]: True"
-              Else
-                Debug "SetDataNode Array Item ["+Str(x)+"]: False"
-              EndIf
-              
-            Next x
-          EndIf
-          
-        Case Attribute::#ATTR_TYPE_FLOAT
-          Define *fIn.Carray::CArrayFloat = *in_data
-          For x=0 To CArray::GetCount(*fIn)-1
-            Debug "SetDataNode Array Item ["+Str(x)+"]: "+StrF(CArray::GetValueF(*fIn,x))
           Next x
-          
-        Case Attribute::#ATTR_TYPE_VECTOR3
-          Define *vIn.Carray::CArrayV3F32 = *in_data
-          Define *vOut.Carray::CArrayV3F32 = *node\attribute\data
-          Define m_max = CArray::GetCount(*vIn)
+        EndIf
+        
+      Case Attribute::#ATTR_TYPE_FLOAT
+        Define *fIn.Carray::CArrayFloat = *in_data
+        For x=0 To CArray::GetCount(*fIn)-1
+          Debug "SetDataNode Array Item ["+Str(x)+"]: "+StrF(CArray::GetValueF(*fIn,x))
+        Next x
+        
+      Case Attribute::#ATTR_TYPE_VECTOR3
+        Define *vIn.Carray::CArrayV3F32 = *in_data
+        Define *vOut.Carray::CArrayV3F32 = *node\attribute\data
+        Define m_max = CArray::GetCount(*vIn)
 
-          For i=0 To CArray::GetCount(*vOut)-1
-            CArray::SetValue(*vOut,i,CArray::GetValue(*vIn,Min(i,m_max-1)))
-          Next
-          
-          If *node\attribute\name = "PointPosition"
-            *obj = *node\parent3dobject
-       
-            If *obj\type = Object3D::#Object3D_Polymesh
-              *mesh = *obj
-              Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
-            EndIf
-          EndIf
-
-        Case Attribute::#ATTR_TYPE_QUATERNION
-          Define *qIn.Carray::CArrayQ4F32 = *in_data
-          Define *qOut.Carray::CArrayQ4F32 = *node\attribute\data
-          CArray::Copy(*qOut,*qIn)
-          
-        Case Attribute::#ATTR_TYPE_COLOR
-          Define *cIn.Carray::CArrayC4F32 = *in_data
-          Define *cOut.Carray::CArrayC4F32 = *node\attribute\data
-          CArray::Copy(*cOut,*cIn)
-          
-        Case Attribute::#ATTR_TYPE_MATRIX3
-          Define *m3In.Carray::CArrayM3F32 = *in_data
-          Define *m3Out.Carray::CArrayM3F32 = *node\attribute\data
-          CArray::Copy(*m3Out,*m3In)
-          
-        Case Attribute::#ATTR_TYPE_MATRIX4
-          Define *m4In.Carray::CArrayM4F32 = *in_data
-          Define *m4.m4f32 = CArray::GetValue(*m4In,0)
-          Define *m4Out.m4f32 = *node\attribute\data
-          Matrix4::SetFromOther(*m4Out,*m4)
-          
-          ;CArray::Copy(*m4Out,*m4In)
-          
-          If *node\attribute\name = "GlobalTransform"
-            *parent = *node\parent3dobject
-            If *parent
-              Transform::UpdateSRTFromMatrix(*parent\globalT)
-              Object3D::UpdateLocalTransform(*parent)
-              ;Object3D::UpdateTransform(*parent,#Null)
-            EndIf
+        For i=0 To CArray::GetCount(*vOut)-1
+          CArray::SetValue(*vOut,i,CArray::GetValue(*vIn,Min(i,m_max-1)))
+        Next
+        
+        If *node\attribute\name = "PointPosition"
+          *obj = *node\parent3dobject
+     
+          If *obj\type = Object3D::#Polymesh
+            *mesh = *obj
+            Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
+          ElseIf *obj\type = Object3D::#PointCloud Or *obj\type = Object3D::#InstanceCloud
             
-          ElseIf *node\attribute\name = "LocalTransform"
-            *parent = *node\parent3dobject
-            If *parent
-              Transform::UpdateSRTFromMatrix(*parent\localT)
-              Object3D::UpdateTransform(*parent,#Null)
-            EndIf 
+            *cloud = *obj
+            Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
           EndIf
+        EndIf
 
-        Case Attribute::#ATTR_TYPE_TOPOLOGY
-          If *node\attribute\name = "Topology"
-            Define *tIn.Carray::CArrayPtr = *in_data
-            Define *tOut.Carray::CArrayPtr = *node\attribute\data
-           
-            Define *iTopo.Geometry::Topology_t = CArray::GetValuePtr(*tIn,0)
-            Topology::Torus(*iTopo)
-            *parent = *node\parent3dobject
-            
-            If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
-              Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
-              If *iTopo\dirty
-                PolymeshGeometry::Set2(*geom,*iTopo)
-                Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
-                *iTopo\dirty = #False
-              Else
-                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-               EndIf
-              Log::Message("[SetDataNode] Update Polymesh Topology")
-            Else
-              Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
-            EndIf
+      Case Attribute::#ATTR_TYPE_QUATERNION
+        Define *qIn.Carray::CArrayQ4F32 = *in_data
+        Define *qOut.Carray::CArrayQ4F32 = *node\attribute\data
+        CArray::Copy(*qOut,*qIn)
+        
+        If *node\attribute\name = "Orientation"
+          *obj = *node\parent3dobject
+     
+          If *obj\type = Object3D::#PointCloud
+            *mesh = *obj
+            PointCloud::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_TOPOLOGY)
           EndIf
-        EndSelect
-      EndIf
+        EndIf
+        
+      Case Attribute::#ATTR_TYPE_COLOR
+        Define *cIn.Carray::CArrayC4F32 = *in_data
+        Define *cOut.Carray::CArrayC4F32 = *node\attribute\data
+        CArray::Copy(*cOut,*cIn)
+        
+      Case Attribute::#ATTR_TYPE_MATRIX3
+        Define *m3In.Carray::CArrayM3F32 = *in_data
+        Define *m3Out.Carray::CArrayM3F32 = *node\attribute\data
+        CArray::Copy(*m3Out,*m3In)
+        
+      Case Attribute::#ATTR_TYPE_MATRIX4
+        Define *m4In.Carray::CArrayM4F32 = *in_data
+        Define *m4.m4f32 = CArray::GetValue(*m4In,0)
+        Define *m4Out.m4f32 = *node\attribute\data
+        Matrix4::SetFromOther(*m4Out,*m4)
+        
+        ;CArray::Copy(*m4Out,*m4In)
+        
+        If *node\attribute\name = "GlobalTransform"
+          *parent = *node\parent3dobject
+          If *parent
+            Transform::UpdateSRTFromMatrix(*parent\globalT)
+            Object3D::UpdateLocalTransform(*parent)
+            ;Object3D::UpdateTransform(*parent,#Null)
+          EndIf
+          
+        ElseIf *node\attribute\name = "LocalTransform"
+          *parent = *node\parent3dobject
+          If *parent
+            Transform::UpdateSRTFromMatrix(*parent\localT)
+            Object3D::UpdateTransform(*parent,#Null)
+          EndIf 
+        EndIf
+
+      Case Attribute::#ATTR_TYPE_TOPOLOGY
+        If *node\attribute\name = "Topology"
+          Define *tIn.Carray::CArrayPtr = *in_data
+
+           Define *iTopo.Geometry::Topology_t = CArray::GetValuePtr(*tIn,0)
+          *parent = *node\parent3dobject
+;           
+;           If *parent And Object3D::IsA(*parent,Object3D::#Polymesh)
+            Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
+;             ;If *iTopo\dirty
+              PolymeshGeometry::Set2(*geom,*iTopo)
+              Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
+            
+;               *iTopo\dirty = #False
+; ;               Else
+; ;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+; ;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+; ;                EndIf
+;             Log::Message("[SetDataNode] Update Polymesh Topology")
+;           Else
+;             Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
+;           EndIf       
+          
+        EndIf
+      EndSelect
     EndIf
 
     *node\outputs()\dirty = #False
@@ -338,8 +301,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 119
+; CursorPosition = 142
+; FirstLine = 133
 ; Folding = --
 ; EnableThread
 ; EnableXP

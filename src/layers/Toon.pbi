@@ -146,7 +146,7 @@ Module LayerToon
     InitializeStructure(*Me,LayerToon_t)
     Object::INI(LayerToon)
     
-    *Me\type = Object3D::#Object3D_Layer
+    *Me\type = Object3D::#Layer
     *Me\name = "LayerToon"
 
     *Me\gbuffer = *gbuffer
@@ -172,7 +172,7 @@ Module LayerToon
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 15
+; CursorPosition = 148
+; FirstLine = 113
 ; Folding = --
 ; EnableXP

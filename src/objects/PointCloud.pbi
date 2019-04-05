@@ -28,6 +28,8 @@ DeclareModule PointCloud
   Declare Clean(*Me.PointCloud_t)
   Declare Draw(*Me.PointCloud_t)
   Declare SetFromShape(*Me.PointCloud_t,shape.i)
+  Declare SetDirtyState(*Me.PointCloud_t, state.i)
+  Declare SetClean(*Me.PointCloud_t)
   Declare OnMessage(id.i,*up)
   DataSection 
     PointCloudVT: 
@@ -51,7 +53,7 @@ Module PointCloud
     Protected *Me.PointCloud_t = AllocateMemory(SizeOf(PointCloud_t))
     InitializeStructure(*Me,PointCloud_t)
     *Me\name = name
-    *Me\type = Object3D::#Object3D_PointCloud
+    *Me\type = Object3D::#PointCloud
     Object::INI(PointCloud)
     *Me\geom = PointCloudGeometry::New(*Me,shape)
     *Me\visible = #True
@@ -83,9 +85,9 @@ Module PointCloud
     Object3D::AddAttribute(*Me,*pointsize)
     Protected *pointscale = Attribute::New("PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#False,#False,#False)
     Object3D::AddAttribute(*Me,*pointscale)
-    Protected *pointindices = Attribute::New("PointIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#False,#False,#False)
+    Protected *pointindices = Attribute::New("PointID",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#False,#False,#False)
     Object3D::AddAttribute(*Me,*pointindices)
-    Protected *pointuvws = Attribute::New("PointUVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#False,#False,#False)
+    Protected *pointuvws = Attribute::New("PointUVW",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#False,#False,#False)
     Object3D::AddAttribute(*Me,*pointuvws)
   
     ProcedureReturn *Me
@@ -321,6 +323,48 @@ Module PointCloud
 
   EndProcedure
   
+  ;-----------------------------------------------------
+  ; Set Dirty State
+  ;-----------------------------------------------------
+  Procedure SetDirtyState(*Me.PointCloud_t, state)
+    If state = Object3D::#DIRTY_STATE_TOPOLOGY
+      *Me\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
+      Object3D::SetAttributeDirty(*Me,"Geometry")
+      Object3D::SetAttributeDirty(*Me,"NbPoints")
+      Object3D::SetAttributeDirty(*Me,"PointPosition")
+      Object3D::SetAttributeDirty(*Me,"PointVelocity")
+      Object3D::SetAttributeDirty(*Me,"PointNormal")
+      Object3D::SetAttributeDirty(*Me,"PointTangent")
+      Object3D::SetAttributeDirty(*Me,"PointColor")
+      Object3D::SetAttributeDirty(*Me,"PointSize")
+      Object3D::SetAttributeDirty(*Me,"PointScale")
+      Object3D::SetAttributeDirty(*Me,"PointID")
+      Object3D::SetAttributeDirty(*Me,"PointUVW")
+    ElseIf state = Object3D::#DIRTY_STATE_DEFORM
+      If *me\dirty = Object3D::#DIRTY_STATE_CLEAN
+        *Me\dirty = Object3D::#DIRTY_STATE_DEFORM
+        Object3D::SetAttributeDirty(*Me,"Geometry")
+        Object3D::SetAttributeDirty(*Me,"PointPosition")
+        Object3D::SetAttributeDirty(*Me,"PointVelocity")
+        Object3D::SetAttributeDirty(*Me,"PointNormal")
+        Object3D::SetAttributeDirty(*Me,"PointTangent")
+        Object3D::SetAttributeDirty(*Me,"PointColor")
+        Object3D::SetAttributeDirty(*Me,"PointSize")
+        Object3D::SetAttributeDirty(*Me,"PointScale")
+      EndIf
+    EndIf
+  EndProcedure
+  
+  ;-----------------------------------------------------
+  ; Set Clean
+  ;-----------------------------------------------------
+  Procedure SetClean(*Me.PointCloud_t)
+    *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
+    ForEach *Me\geom\m_attributes()
+      *Me\geom\m_attributes()\dirty = #False
+    Next
+  EndProcedure
+  
   ; On Message
   ;----------------------------------------------------
   Procedure OnMessage(id.i,*up)
@@ -343,7 +387,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 44
+; CursorPosition = 360
+; FirstLine = 328
 ; Folding = ---
 ; EnableXP

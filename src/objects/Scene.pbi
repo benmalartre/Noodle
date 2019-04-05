@@ -202,23 +202,23 @@ Module Scene
     *scn\nbobjects  + 1
     *obj\uniqueID = GetUniqueID(*scn, *obj)
     Select *obj\type
-      Case Object3D::#Object3D_Drawer
+      Case Object3D::#Drawer
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Null
+      Case Object3D::#Locator
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Model
+      Case Object3D::#Model
         CArray::AppendUnique(*scn\models,*obj)
-      Case Object3D::#Object3D_Curve
+      Case Object3D::#Curve
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_PointCloud        
+      Case Object3D::#PointCloud        
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_InstanceCloud        
+      Case Object3D::#InstanceCloud        
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_Light 
+      Case Object3D::#Light 
         CArray::AppendUnique(*scn\lights,*obj)
-      Case Object3D::#Object3D_Camera
+      Case Object3D::#Camera
         CArray::AppendUnique(*scn\cameras,*obj)
     EndSelect
   
@@ -230,21 +230,21 @@ Module Scene
   Procedure RemoveObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
 
     Select *obj\type
-      Case Object3D::#Object3D_Null
+      Case Object3D::#Locator
         CArray::Remove(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Model
+      Case Object3D::#Model
         CArray::Remove(*scn\models,*obj)
-      Case Object3D::#Object3D_Curve
+      Case Object3D::#Curve
         CArray::Remove(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_PointCloud        
+      Case Object3D::#PointCloud        
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_InstanceCloud        
+      Case Object3D::#InstanceCloud        
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_Light 
+      Case Object3D::#Light 
         CArray::Remove(*scn\lights,*obj)
-      Case Object3D::#Object3D_Camera
+      Case Object3D::#Camera
         CArray::Remove(*scn\cameras,*obj)
     EndSelect
   
@@ -265,7 +265,7 @@ Module Scene
     
     ForEach *obj\children()
       *child = *obj\children()
-      If *obj\type = Object3D::#Object3D_Model
+      If *obj\type = Object3D::#Model
         *child\model = *obj
       Else
         *child\model = *obj\model
@@ -398,18 +398,18 @@ Module Scene
       child = *obj\children()
       If Not *obj\children()\initialized
         Select *obj\children()\type
-          Case Object3D::#Object3D_Polymesh
+          Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
-          Case Object3D::#Object3D_PointCloud
+          Case Object3D::#PointCloud
             MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
-          Case Object3D::#Object3D_InstanceCloud
+          Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
-          Case Object3D::#Object3D_Null
+          Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
-          Case Object3D::#Object3D_Curve
+          Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
-          Case Object3D::#Object3D_Drawer
+          Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
         EndSelect
       EndIf
@@ -430,17 +430,17 @@ Module Scene
       child = *root\children()
       If Not *root\children()\initialized
         Select *root\children()\type
-          Case Object3D::#Object3D_Polymesh
+          Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
-          Case Object3D::#Object3D_PointCloud
+          Case Object3D::#PointCloud
             child\Setup(*ctx\shaders("cloud"))
-          Case Object3D::#Object3D_InstanceCloud
+          Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
-          Case Object3D::#Object3D_Null
+          Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
-          Case Object3D::#Object3D_Curve
+          Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
-          Case Object3D::#Object3D_Drawer
+          Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
       EndSelect
       EndIf
@@ -592,7 +592,7 @@ Module Scene
     Protected *geom.Geometry::PolymeshGeometry_t
     For i=0 To CArray::GetCount(*scn\objects)-1
       *o = CArray::GetValuePtr(*scn\objects,i)
-      If *o\type = Object3D::#Object3D_Polymesh
+      If *o\type = Object3D::#Polymesh
         *m = *o
         *geom = *m\geom
         *scn\nbpolygons + *geom\nbpolygons
@@ -613,7 +613,7 @@ Module Scene
     Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
     For i=0 To CArray::GetCount(*scn\objects)-1
       *o = CArray::GetValuePtr(*scn\objects,i)
-      If *o\type = Object3D::#Object3D_Polymesh
+      If *o\type = Object3D::#Polymesh
         *m = *o
          *geom = *m\geom
         *scn\nbtriangles + *geom\nbtriangles
@@ -835,7 +835,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 614
-; FirstLine = 564
+; CursorPosition = 438
+; FirstLine = 403
 ; Folding = -------
 ; EnableXP

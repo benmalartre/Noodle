@@ -40,7 +40,7 @@ CompilerEndIf
 
 Global *model.Model::Model_t = Alembic::LoadABCArchive("../../abc/Skeleton.abc")
 Global *meshes.CArray::CArrayPtr = CArray::newCArrayPtr()
-Object3D::FindChildren(*model,"",Object3D::#Object3D_Polymesh,*meshes,#True)
+Object3D::FindChildren(*model,"",Object3D::#Polymesh,*meshes,#True)
 
 Define i
 Define *mesh.Object3D::Object3D_t
@@ -201,8 +201,8 @@ EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 77
-; FirstLine = 54
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 38
 ; Folding = -
 ; EnableXP

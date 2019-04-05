@@ -265,21 +265,21 @@ Module BulletRigidBody
         *shape = Bullet::BTNewConeShape(0.5,1)
      Case Bullet::#CONVEXHULL_SHAPE
         ; only works on Polymesh
-        If Not *obj\type = Object3D::#Object3D_Polymesh : ProcedureReturn :EndIf
+        If Not *obj\type = Object3D::#Polymesh : ProcedureReturn :EndIf
         *shape = BTConvexHullCollisionShape(*obj)
        Case Bullet::#CONVEXDECOMPOSITION_SHAPE
         ; only works on Polymesh
-        If Not *obj\type = Object3D::#Object3D_Polymesh : ProcedureReturn :EndIf
+        If Not *obj\type = Object3D::#Polymesh : ProcedureReturn :EndIf
        *shape =  BTConvexDecompositionCollisionShape(*obj)
         
       Case Bullet::#TRIANGLEMESH_SHAPE
         ; only works on Polymesh
-        If Not *obj\type = Object3D::#Object3D_Polymesh : ProcedureReturn :EndIf
+        If Not *obj\type = Object3D::#Polymesh : ProcedureReturn :EndIf
         
         *shape = BTTriangleMeshCollisionShape(*obj)
   
       Case Bullet::#GIMPACT_SHAPE
-        If Not *obj\type = Object3D::#Object3D_Polymesh : ProcedureReturn :EndIf
+        If Not *obj\type = Object3D::#Polymesh : ProcedureReturn :EndIf
         Protected *mesh.Polymesh::Polymesh_t = *obj
         Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
         *shape = BTGImpactCollisionShape(*obj)
@@ -330,14 +330,14 @@ Module BulletRigidBody
         Case Bullet::#CONE_SHAPE
           *cshape = Bullet::BTNewConeShape(0.5,1)
         Case Bullet::#CONVEXHULL_SHAPE      ; only works on Polymesh
-          If Not *child\type = Object3D::#Object3D_Polymesh : Return :EndIf
+          If Not *child\type = Object3D::#Polymesh : Return :EndIf
 
         Case Bullet::#TRIANGLEMESH_SHAPE    ; only works on Polymesh
-          If Not *child\type = Object3D::#Object3D_Polymesh : Return :EndIf
+          If Not *child\type = Object3D::#Polymesh : Return :EndIf
           *cshape = BTTriangleMeshCollisionShape(*child)
           
         Case Bullet::#GIMPACT_SHAPE         ; only works on Polymesh
-          If Not *child\type  = Object3D::#Object3D_Polymesh : Return :EndIf
+          If Not *child\type  = Object3D::#Polymesh : Return :EndIf
           *cshape = BTGImpactCollisionShape(*child)
 
       EndSelect 
@@ -378,21 +378,21 @@ Module BulletRigidBody
         *shape = Bullet::BTNewConeShape(0.5,1)
      Case Bullet::#CONVEXHULL_SHAPE
         ; only works on Polymesh
-        If Not *cloud\type = Object3D::#Object3D_InstanceCloud : ProcedureReturn :EndIf
+        If Not *cloud\type = Object3D::#InstanceCloud : ProcedureReturn :EndIf
         *shape = BTConvexHullCollisionShape(*obj)
        Case Bullet::#CONVEXDECOMPOSITION_SHAPE
         ; only works on Polymesh
-        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+        If Not *cloud\type = Object3D::#InstanceCloud  : ProcedureReturn :EndIf
        *shape =  BTConvexDecompositionCollisionShape(*obj)
         
       Case Bullet::#TRIANGLEMESH_SHAPE
         ; only works on Polymesh
-        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+        If Not *cloud\type = Object3D::#InstanceCloud  : ProcedureReturn :EndIf
         
         *shape = BTTriangleMeshCollisionShape(*obj)
   
       Case Bullet::#GIMPACT_SHAPE
-        If Not *cloud\type = Object3D::#Object3D_InstanceCloud  : ProcedureReturn :EndIf
+        If Not *cloud\type = Object3D::#InstanceCloud  : ProcedureReturn :EndIf
         Protected *mesh.Polymesh::Polymesh_t = *obj
         Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
         *shape = BTGImpactCollisionShape(*obj)
@@ -424,7 +424,7 @@ Module BulletRigidBody
     Protected *geom.Geometry::PolymeshGeometry_t
     
     
-    If Not *obj\type = Object3D::#Object3D_Polymesh : Return :EndIf
+    If Not *obj\type = Object3D::#Polymesh : Return :EndIf
     Protected *t.Transform::Transform_t = *obj\globalT
     *mesh = *obj
     *geom = *mesh\geom
@@ -438,19 +438,19 @@ Module BulletRigidBody
   ;      BTTranslate(*sbd,0,Random(100),0)
        Case Bullet::#CONVEXDECOMPOSITION_SHAPE
         ; only works on Polymesh
-        If Not *obj\type = Object3D::#Object3D_Polymesh : Return :EndIf
+        If Not *obj\type = Object3D::#Polymesh : Return :EndIf
         
       Case Bullet::#TRIANGLEMESH_SHAPE
         ; only works on Polymesh
-        If Not *obj\type = Object3D::#Object3D_Polymesh : Return :EndIf
+        If Not *obj\type = Object3D::#Polymesh : Return :EndIf
         
         *sbd = Bullet::BTCreateSoftBodyFromTriMesh(*obj,Bullet::*bullet_sdk,CArray::GetPtr(*geom\a_positions,0),CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbtriangles)
   
       Case Bullet::#GIMPACT_SHAPE
-        If Not *obj\type = Object3D::#Object3D_Polymesh : Return :EndIf
+        If Not *obj\type = Object3D::#Polymesh : Return :EndIf
         
       Case Bullet::#CLUSTERED_SHAPE
-        If Not *obj\type = Object3D::#Object3D_Polymesh : Return :EndIf
+        If Not *obj\type = Object3D::#Polymesh : Return :EndIf
         *sbd = Bullet::BTCreateClusterSoftBodyFromTriMesh(*obj,Bullet::*bullet_sdk,CArray::GetPtr(*geom\a_positions,0),CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbtriangles,12)
     EndSelect 
     
@@ -468,7 +468,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 358
-; FirstLine = 354
+; CursorPosition = 452
+; FirstLine = 393
 ; Folding = ---
 ; EnableXP

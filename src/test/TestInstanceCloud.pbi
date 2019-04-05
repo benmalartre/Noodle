@@ -191,7 +191,7 @@ Procedure Draw(*app.Application::Application_t)
 
   
 ;   ForEach *abc\children()
-;     If *abc\children()\type = Object3D::#Object3D_Polymesh
+;     If *abc\children()\type = Object3D::#Polymesh
 ;       *mesh = *abc\children()
 ;       PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
 ;       Break
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 259
-; FirstLine = 205
+; CursorPosition = 193
+; FirstLine = 189
 ; Folding = --
 ; EnableXP
 ; Executable = Test

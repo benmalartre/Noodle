@@ -524,6 +524,7 @@ Module Attribute
   ; Copy
   ;-----------------------------------------------------
   Procedure PassThrough(*src.Attribute_t, *dst.Attribute_t)
+    Debug "PASS THROUGH CALLED : "+*src\name +" ---> "+*dst\name
     If *src\atomic And *dst\atomic
       Select *src\datatype
         Case Attribute::#ATTR_TYPE_BOOL
@@ -550,14 +551,6 @@ Module Attribute
           CopyMemory(*src\data, *dst\data, SizeOf(Math::m4f32))
         Case Attribute::#ATTR_TYPE_LOCATION
           CopyMemory(*src\data, *dst\data, SizeOf(Math::locf32))
-        Case Attribute::#ATTR_TYPE_TOPOLOGY
-          
-          Define *itopo.Math::topof32 = *src\data
-          Define *otopo.Math::topof32 = *dst\data
-          Define *vertices.CArray::CArrayV3f32 = *itopo\vertices
-
-          CArray::Copy(*otopo\vertices, *itopo\vertices)
-          CArray::Copy(*otopo\faces, *itopo\faces)
         Default
           CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
             CopyMemory(*src\data, *dst\data, 4)
@@ -616,7 +609,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 525
+; CursorPosition = 526
 ; FirstLine = 521
 ; Folding = ----
 ; EnableXP

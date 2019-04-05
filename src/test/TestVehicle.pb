@@ -277,7 +277,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   Scene::Update(Scene::*current_scene)
-  Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
+  Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
 ;   Polymesh::Draw(*teapot)
 ;   Polymesh::Draw(*ground)
@@ -374,7 +374,7 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 148
+; CursorPosition = 279
+; FirstLine = 275
 ; Folding = --
 ; EnableXP

@@ -282,7 +282,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   
  
-;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
+;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
   default_layer\Draw  (*app\context)
 
@@ -415,8 +415,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 195
+; CursorPosition = 284
+; FirstLine = 280
 ; Folding = --
 ; EnableThread
 ; EnableXP

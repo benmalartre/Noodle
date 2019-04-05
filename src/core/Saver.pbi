@@ -405,40 +405,40 @@ UseModule Math
   Procedure Save3DObject(*Me.Saver_t,parent.i,*item.Object3D::Object3D_t)
     Protected object = CreateXMLNode(parent,*item\name,-1)
     Select *item\type
-      Case Object3D::#Object3D_Camera
+      Case Object3D::#Camera
         SetXMLAttribute(object,"Type","Camera")
-      Case Object3D::#Object3D_Light
+      Case Object3D::#Light
         SetXMLAttribute(object,"Type","Light")
-      Case Object3D::#Object3D_Null
+      Case Object3D::#Locator
         SetXMLAttribute(object,"Type","Null")
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         SetXMLAttribute(object,"Type","Polymesh")
-      Case Object3D::#Object3D_Curve
+      Case Object3D::#Curve
         SetXMLAttribute(object,"Type","Curve")
-      Case Object3D::#Object3D_PointCloud
+      Case Object3D::#PointCloud
         SetXMLAttribute(object,"Type","PointCloud")
-      Case Object3D::#Object3D_InstanceCloud
+      Case Object3D::#InstanceCloud
         SetXMLAttribute(object,"Type","InstanceCloud")
-      Case Object3D::#Object3D_Grid
+      Case Object3D::#Grid
         SetXMLAttribute(object,"Type","Grid")
-      Case Object3D::#Object3D_Model
+      Case Object3D::#Model
         SetXMLAttribute(object,"Type","Model")
-      Case Object3D::#Object3D_Root
+      Case Object3D::#Root
         SetXMLAttribute(object,"Type","Root")
-      Case Object3D::#Object3D_Layer
+      Case Object3D::#Layer
         SetXMLAttribute(object,"Type","Layer")
     EndSelect
     
     
     Select *item\type
-      Case Object3D::#Object3D_Camera
-      Case Object3D::#Object3D_Curve
-      Case Object3D::#Object3D_Grid
-      Case Object3D::#Object3D_Layer
-      Case Object3D::#Object3D_Light
-      Case Object3D::#Object3D_Model
-      Case Object3D::#Object3D_Null
-      Case Object3D::#Object3D_PointCloud
+      Case Object3D::#Camera
+      Case Object3D::#Curve
+      Case Object3D::#Grid
+      Case Object3D::#Layer
+      Case Object3D::#Light
+      Case Object3D::#Model
+      Case Object3D::#Locator
+      Case Object3D::#PointCloud
         Protected *cloud.PointCloud::PointCloud_t = *item
         Protected *geo.Geometry::PointCloudGeometry_t = *cloud\geom
         Protected geometrynode = CreateXMLNode(object,"Geometry")
@@ -447,7 +447,7 @@ UseModule Math
         SetXMLAttribute(geometrynode,"NbPoints",Str(CArray::GetCount(*geo\a_positions)))
   
         
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         Protected *mesh.Polymesh::Polymesh_t = *item
         Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
         Protected geom = CreateXMLNode(object,"Geometry")
@@ -576,8 +576,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 568
-; FirstLine = 509
+; CursorPosition = 439
+; FirstLine = 407
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
