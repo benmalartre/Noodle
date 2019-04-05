@@ -1032,21 +1032,21 @@ Module Light
     UpdateProjection(*Me)
     
      ; ---[ Attributes ]---------------------------------------------------------
-    Object3D::Object3D_ATTR()
+    Object3D::OBJECT3DATTR()
     
-    Protected *position = Attribute::New("Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#False,#True)
+    Protected *position = Attribute::New("Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#True,#False,#True)
     Object3D::AddAttribute(*Me,*position)
-    Protected *lookat = Attribute::New("LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#False,#True)
+    Protected *lookat = Attribute::New("LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#True,#False,#True)
     Object3D::AddAttribute(*Me,*lookat)
-    Protected *up = Attribute::New("UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#False,#True)
+    Protected *up = Attribute::New("UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#True,#False,#True)
     Object3D::AddAttribute(*Me,*up)
-    Protected *fov = Attribute::New("FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#False,#True)
+    Protected *fov = Attribute::New("FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#True,#False,#True)
     Object3D::AddAttribute(*Me,*fov)
-    Protected *near = Attribute::New("nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#False,#True)
+    Protected *near = Attribute::New("nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*near)
-    Protected *far = Attribute::New("farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#False,#True)
+    Protected *far = Attribute::New("farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*far)
-    Protected *focus = Attribute::New("focus",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\focus,#False,#True)
+    Protected *focus = Attribute::New("focus",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\focus,#True,#False,#True)
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -1072,6 +1072,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 1048
+; FirstLine = 398
 ; Folding = d+e--
 ; EnableXP

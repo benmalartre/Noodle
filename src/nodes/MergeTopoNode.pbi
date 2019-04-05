@@ -51,26 +51,55 @@ Module MergeTopoNode
   Procedure Init(*node.MergeTopoNode_t)
     Node::AddInputPort(*node,"Topo1",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
     Node::AddInputPort(*node,"Topo2",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
-    Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
-    Node::PortAffectByName(*node, "Topo1", "Topology")
-    Node::PortAffectByName(*node, "Topo2", "Topology")
+    Node::AddOutputPort(*node,"TopologyX",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_CTXT_SINGLETON,Attribute::#ATTR_STRUCT_SINGLE)
+    Node::PortAffectByName(*node, "Topo1", "TopologyX")
+    Node::PortAffectByName(*node, "Topo2", "TopologyX")
     *node\label = "Merge Topo"
   EndProcedure
   
+  Procedure AcquireInputTopology(*port.NodePort::NodePort_t)
+    If NodePort::IsAtomic(*port)
+      ProcedureReturn *port\attribute\data  
+    Else
+      Define *topologyArray.CArray::CArrayPtr = NodePort::AcquireInputData(*port)
+      ProcedureReturn CArray::GetValuePtr(*topologyArray, 0)
+    EndIf
+  EndProcedure
+  
+  Procedure AcquireOutputTopology(*port.NodePort::NodePort_t)
+    Define *topologyArray.CArray::CArrayPtr = NodePort::AcquireOutputData(*port)
+    ProcedureReturn CArray::GetValuePtr(*topologyArray, 0)
+  EndProcedure
+  
+  
   Procedure Evaluate(*node.MergeTopoNode_t)
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*output)
-    Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
+    Protected *topo.Geometry::Topology_t = AcquireOutputTopology(*output)
     
     FirstElement(*node\inputs())
-    Protected *input1.NodePort::NodePort_t = *node\inputs()
-    Protected *iVal1.CArray::CArrayPtr = NodePort::AcquireInputData(*input1)
+    Protected *iTopo1.Geometry::Topology_t = AcquireInputTopology(*node\inputs())
+    Debug *iTopo1\vertices\itemCount
     NextElement(*node\inputs())
-    Protected *input2.NodePort::NodePort_t = *node\inputs()
-    Protected *iVal2.CArray::CArrayPtr = NodePort::AcquireInputData(*input2)
+    Protected *iTopo2.Geometry::Topology_t = AcquireInputTopology(*node\inputs())
+    Debug *iTopo2\vertices\itemCount
     
-    Topology::Merge(*topo,CArray::GetValuePtr(*iVal1,0),CArray::GetValuePtr(*iVal2,0))
+    Topology::Merge(*topo,*iTopo1,*iTopo2)
   EndProcedure
+  
+;    Procedure Evaluate(*node.MergeTopoNode_t)
+;     Protected *output.NodePort::NodePort_t = *node\outputs()
+;     Protected *oVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*output)
+;     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
+;     
+;     FirstElement(*node\inputs())
+;     Protected *input1.NodePort::NodePort_t = *node\inputs()
+;     Protected *iVal1.CArray::CArrayPtr = NodePort::AcquireInputData(*input1)
+;     NextElement(*node\inputs())
+;     Protected *input2.NodePort::NodePort_t = *node\inputs()
+;     Protected *iVal2.CArray::CArrayPtr = NodePort::AcquireInputData(*input2)
+;     
+;     Topology::Merge(*topo,CArray::GetValuePtr(*iVal1,0),CArray::GetValuePtr(*iVal2,0))
+;   EndProcedure
   
   Procedure Terminate(*node.MergeTopoNode_t)
   
@@ -109,7 +138,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 50
+; CursorPosition = 68
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

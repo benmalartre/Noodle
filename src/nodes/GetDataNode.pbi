@@ -55,10 +55,12 @@ EndDeclareModule
 Module GetDataNode
   UseModule Math
   Procedure ResolveReference(*node.GetDataNode_t)
+
     Protected refname.s
     Protected *p.Object3D::Object3D_t = *node\parent3dobject
     FirstElement(*Node\inputs())
     Define *location.NodePort::NodePort_t = *node\inputs()
+    Define *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
     If *location\connected
       refname = NodePort::AcquireReferenceData(*node\inputs())
       If refname = "" : ProcedureReturn : EndIf
@@ -66,8 +68,9 @@ Module GetDataNode
       Define numLocations = CArray::GetCount(*locationArray)
       Define *loc.Geometry::Location_t
       Define *geom.Geometry::Geometry_t
+      
       For i=0 To numLocations - 1
-        *loc = CArray::GetValuePtr(*locationArray, i)
+        *loc = CArray::GetValue(*locationArray, i)
         Debug "LOCATION "+Str(i)+" : "+Str(*loc)
         If *loc
           *geom = *loc\geometry
@@ -83,7 +86,6 @@ Module GetDataNode
       Protected fields.i = CountString(refname, ".")+1
       Protected base.s = StringField(refname, 1,".")
       *node\label = refname
-      Protected *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
       If base ="Self" Or base ="This"
         *node\attribute = *p\geom\m_attributes(StringField(refname, 2,"."))
         If *node\attribute
@@ -97,8 +99,11 @@ Module GetDataNode
         
       Else
         Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(Scene::*current_scene,base)
+        Debug "OPERATING ON OBJECT : "+*o\name
         If *o
           *node\attribute = *o\geom\m_attributes(StringField(refname, 2,"."))
+          Debug "OPERATING ON OBJECT : "+*o\name
+          Debug "ATTRIBUTE : "+*node\attribute
           If *node\attribute
             *output\currenttype = *node\attribute\datatype
             *output\currentcontext = *node\attribute\datacontext
@@ -150,13 +155,7 @@ Module GetDataNode
   
     If *output\attribute = #Null : ProcedureReturn : EndIf
     
-    Protected *tIn.CArray::CArrayT,*tOut.CArray::CArrayT
-    *tOut = NodePort::AcquireOutputData(*output)
-    *tIn = *node\attribute\data
-    
-    If CArray::GetCount(*tIn)
-      CArray::Copy(*tOut,*tIn)
-    EndIf
+    Attribute::PassThrough(*node\attribute, *output\attribute)
 
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
@@ -221,8 +220,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 83
+; CursorPosition = 157
+; FirstLine = 153
 ; Folding = --
 ; EnableThread
 ; EnableXP

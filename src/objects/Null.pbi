@@ -353,14 +353,12 @@ Module Null
     *Me\wireframe_g = Random(255)/255;
     *Me\wireframe_b = Random(255)/255;
     
+    Object3D::OBJECT3DATTR()
+    
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
-   
-    ;*Me\bbox      = newCBox()
-    
-    Object3D::Object3D_ATTR()
-  
+
     ; ---[ Return Initialized Object ]-----------------------------------------
     ProcedureReturn *Me 
     
@@ -375,7 +373,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 265
-; FirstLine = 247
+; CursorPosition = 360
+; FirstLine = 314
 ; Folding = ---
 ; EnableXP

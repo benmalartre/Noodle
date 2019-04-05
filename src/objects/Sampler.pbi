@@ -11,7 +11,7 @@ DeclareModule Sampler
     #Sample_Poisson
   EndEnumeration
   
-  Declare SamplePolymesh(*mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayPtr, nb.i,seed)
+  Declare SamplePolymesh(*mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayLocation, nb.i,seed)
 EndDeclareModule
 
 Module Sampler
@@ -19,18 +19,12 @@ Module Sampler
   ;-----------------------------------------------------
   ; Sample Geometry
   ;-----------------------------------------------------
-  ;{
-  Procedure SamplePolymesh( *mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayPtr, nb.i,seed.i)
+  Procedure SamplePolymesh( *mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayLocation, nb.i,seed.i)
     
-    If CArray::GetCount(*locations)
-      Protected x
-      For x=nb To CArray::GetCount(*locations)-1
-        Protected *l.Geometry::Location_t = CArray::GetValuePtr(*locations,x)
-        If *l : Location::Delete(*l) : EndIf
-      Next
-      CArray::SetCount(*locations,0)
-    EndIf
-   
+    CArray::SetCount(*locations, nb)
+    Debug "NUM POINTS : "+ Str(*mesh\nbpoints)
+    Debug "NUM FACES : "+ Str(*mesh\nbpolygons)
+    Debug "NUM TRIS : "+ Str(*mesh\nbtriangles)
     Protected i
     Protected tid
     Define.v3f32 *a,*b,*c
@@ -43,6 +37,8 @@ Module Sampler
     Define uvw.v3f32
     
     Protected *parent.Object3D::Object3D_t = *mesh\parent
+    Protected *loc.Geometry::Location_t 
+    CArray::SetCount(*locations, nb)
     
     RandomSeed(seed)
     For i=0 To nb-1
@@ -74,8 +70,8 @@ Module Sampler
       s = 1;Random(10)*0.1
       Vector3::Set(scl,s,s,s)
       
-      Protected *loc.Geometry::Location_t  = Location::New(*mesh,*parent\globalT)
-      CArray::AppendPtr(*locations,*loc)
+      *loc = CArray::GetValue(*locations, i)
+      Location::Init(*loc, *mesh, *parent\globalT, tid, u, v, 1-(u+v))
       
       Vector3::Set(*loc\uvw, u, v, 1-(u+v))
       *loc\tid = tid
@@ -103,14 +99,14 @@ Module Sampler
       Color::Set(color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
       ;*pc\a_color\SetValue(i,@color)
       Color::SetFromOther(*loc\c,color)
-
+ 
     Next
-    
+    Debug "SAMPLED "+CArray::GetCount(*locations)+" POINTS"   
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 50
+; CursorPosition = 26
+; FirstLine = 14
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -1,5 +1,3 @@
-
-
 XIncludeFile "../core/Log.pbi"
 XIncludeFile "../controls/Icon.pbi"
 XIncludeFile "../controls/Property.pbi"
@@ -7,13 +5,10 @@ XIncludeFile "../controls/Explorer.pbi"
 XIncludeFile "UI.pbi"
 XIncludeFile "View.pbi"
 
-; -----------------------------------------
-; ExplorerUI Module Declaration
-; -----------------------------------------
+; ======================================================================================
+;   EXPLORER UI MODULE DECLARATION
+; ======================================================================================
 DeclareModule ExplorerUI
-  
-
-
 
   Structure ExplorerUI_t Extends UI::UI_t
     
@@ -24,12 +19,13 @@ DeclareModule ExplorerUI
   
   Declare New(*parent.View::View_t,name.s="Explorer")
   Declare Delete(*Me.ExplorerUI_t)
-  ;   Declare Draw(*Me.ExplorerUI_t)
+  Declare Draw(*Me.ExplorerUI_t)
   Declare Init()
   Declare OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term()
   Declare Clear(*Me.ExplorerUI_t)
   Declare Setup(*Me.ExplorerUI_t)
+  Declare Connect(*Me.ExplorerUI_t, *scene.Scene::Scene_t)
   
   DataSection 
     ExplorerUIVT: 
@@ -40,34 +36,51 @@ DeclareModule ExplorerUI
   
   Global CLASS.Class::Class_t
 
-  ; ----------------------------------------------------------------------------
-  ;  FORWARD DECLARATION
-  ; ----------------------------------------------------------------------------
-  Declare OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  Declare ConnectSignalsSlots(*Me.ExplorerUI_t)
-
-
 EndDeclareModule
 
-; -----------------------------------------
-; ExplorerUI Module Implementation
-; -----------------------------------------
+; ======================================================================================
+;   EXPLORER UI MODULE IMPLEMENTATION
+; ======================================================================================
 Module ExplorerUI
-
   
+  ; ====================================================================================
+  ;   CALLBACKS
+  ; ====================================================================================
+  Procedure OnDeleteScene(*Me.ExplorerUI_t)
+    ControlExplorer::Clear(*Me\explorer)
+    ControlExplorer::Draw(*Me\explorer)
+    Draw(*Me)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteScene, Arguments::#PTR)
   
+  Procedure OnNewScene(*Me.ExplorerUI_t)
+    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Draw(*Me\explorer)
+    Draw(*Me)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnNewScene, Arguments::#PTR)
   
-  ; ----------------------------------------------------------------------------
-  ;  IMPLEMENTATION
-  ; ----------------------------------------------------------------------------
+  Procedure OnHierarchyChange(*Me.ExplorerUI_t)
+    ControlExplorer::Clear(*Me\explorer)
+    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Draw(*Me\explorer)
+    Draw(*Me)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
   
+  ; --------------------------------------------------------
   ;  Setup
-  ; ----------------------------------------
+  ; --------------------------------------------------------
   Procedure Setup(*Me.ExplorerUI_t)
   
   EndProcedure
   
-  
+  ; --------------------------------------------------------
+  ;  Connect
+  ; --------------------------------------------------------
+  Procedure Connect(*Me.ExplorerUI_t, *scn.Scene::Scene_t)
+    Signal::CONNECTCALLBACK(*scn\on_delete, OnDeleteScene, *Me)
+  EndProcedure
   
   ;---------------------------------------------------------
   ; Get Size
@@ -109,56 +122,62 @@ Module ExplorerUI
       
   EndProcedure 
   
-  ;----------------------------------------
+  ;---------------------------------------------------------
   ;  OnEvent
-  ;---------------------------------------------------
+  ;---------------------------------------------------------
   Procedure OnEvent(*e.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
     ;   GetItems(*e)
     
-    If event = Globals::#EVENT_GRAPH_CHANGED
-      ControlExplorer::Fill(*e\explorer,Scene::*current_scene) 
-    EndIf
+    Select event
+      Case Globals::#EVENT_NEW_SCENE
+        ControlExplorer::Fill(*e\explorer,Scene::*current_scene) 
+      CompilerIf #PB_Compiler_Version < 560
+        Case  Control::#PB_EventType_Resize 
+      CompilerElse
+        Case #PB_EventType_Resize
+      CompilerEndIf
+        If *e\top
+          Resize(*e)
+          Define ev_datas.Control::EventTypeDatas_t
+          ev_datas\width = *e\width
+          ev_datas\height = *e\height
+          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
+        EndIf
+        
+      Case #PB_Event_SizeWindow
+        If *e\top
+          Resize(*e)
+          Define ev_datas.Control::EventTypeDatas_t
+          ev_datas\width = *e\width
+          ev_datas\height = *e\height
+          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
+        EndIf
     
-    CompilerIf #PB_Compiler_Version < 560
-      If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
-    CompilerElse
-      If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow
-    CompilerEndIf
-      ;If *ev_data = #Null : ProcedureReturn #Null : EndIf
-      If *e\top
-        Resize(*e)
-        Define ev_datas.Control::EventTypeDatas_t
-        ev_datas\width = *e\width
-        ev_datas\height = *e\height
-        ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
-
-      EndIf
-    
-    ElseIf event = #PB_Event_Gadget
-      ControlExplorer::OnEvent(*e\explorer,event,#Null)
-      If EventType() = #PB_EventType_MouseWheel
-        UI::Scroll(*e,#True)
-      EndIf
-      
-    EndIf
+      Case #PB_Event_Gadget
+        ControlExplorer::OnEvent(*e\explorer,event,#Null)
+        If EventType() = #PB_EventType_MouseWheel
+          UI::Scroll(*e,#True)
+        EndIf
+    EndSelect
     
     Draw(*e)
     
   EndProcedure
   
-  Procedure ConnectSignalsSlots(*Me.ExplorerUI_t)
-    
-  EndProcedure
-  
-  
+  ; ======================================================================================
+  ;   DESTRUCTOR
+  ; ======================================================================================
   Procedure Delete(*Me.ExplorerUI_t)
-    
+    ControlExplorer::Delete(*Me\explorer)
+    FreeGadget(*Me\container)
+    Object::TERM(ExplorerUI)
   EndProcedure
   
-  
+  ; ======================================================================================
+  ;   CONSTRUCTOR
+  ; ======================================================================================
   Procedure New(*view.View::View_t,name.s="Explorer")
     Protected *Me.ExplorerUI_t = AllocateMemory(SizeOf(ExplorerUI_t))
-    InitializeStructure(*Me,ExplorerUI_t)
     Object::INI(ExplorerUI)
     
     *Me\container = ContainerGadget(#PB_Any,*view\x,*view\y,*view\width,*view\height)
@@ -179,13 +198,11 @@ Module ExplorerUI
   
   Class::DEF(ExplorerUI)
 EndModule
-
-
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 164
-; FirstLine = 152
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 133
+; FirstLine = 129
 ; Folding = ---
 ; EnableXP

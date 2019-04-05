@@ -80,6 +80,7 @@ Module TreeNode
     LastElement(*node\nodes())
     While i>=0
       *current = *node\nodes()
+      Debug "EVALUATE : "+*current\name
       current = *current
       current\Evaluate()
       PreviousElement(*node\nodes())
@@ -146,8 +147,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 87
+; CursorPosition = 82
+; FirstLine = 63
 ; Folding = ---
 ; EnableThread
 ; EnableXP

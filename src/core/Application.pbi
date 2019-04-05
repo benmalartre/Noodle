@@ -230,7 +230,8 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   Procedure SizeWindowCallback()
       ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
-  EndProcedure
+    EndProcedure
+    
   
   ;-----------------------------------------------------------------------------
   ; Constructor
@@ -587,7 +588,6 @@ CompilerEndIf
 EndProcedure
 
 
-  
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
@@ -664,6 +664,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 588
+; FirstLine = 549
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

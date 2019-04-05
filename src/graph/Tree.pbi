@@ -157,6 +157,7 @@ Module Tree
     Until Not PreviousElement(*branch\nodes())
     ForEach *branch\filter_nodes()
       current = *branch\filter_nodes()
+      *current = current
       current\Evaluate()
     Next
     
@@ -535,6 +536,10 @@ Module Tree
     If Not *obj\stack : *obj\stack = Stack::New() : EndIf
     Stack::AddNode(*obj\stack,*Me,0)
     
+    ; --- [ Create Signals ] --------------------------------------------------
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    
     ProcedureReturn( *Me)
     
   EndProcedure
@@ -547,8 +552,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 329
-; FirstLine = 320
+; CursorPosition = 376
+; FirstLine = 373
 ; Folding = -----
 ; EnableThread
 ; EnableXP

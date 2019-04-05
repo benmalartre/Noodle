@@ -233,15 +233,9 @@ Module ControlMenu
     InitializeStructure(*item,ControlMenuItem_t)
     *item\name = name
     *item\callback = callback
-    *item\args = Arguments::New(ArraySize(*args\args()));*args
+    *item\args = Arguments::New(ArraySize(*args\args()))
     If Not *args = #Null
-      Protected a.i
-      For i=0 To ArraySize( *args\args())-1
-        
-        ;Arguments::Copy(*item\args\args(i),*args\args(i))
-        ;muv2muv(*args\m[a],*item\args\m[a])
-  ;     Debug "Copied Argument : "+muv2str(*args\m[a]) +" ---> "+muv2str(*item\args\m[a])
-      Next
+      Arguments::Copy(*item\args,*args)
     EndIf
     
     *item\type = #MenuItemType_Command
@@ -305,9 +299,10 @@ Module ControlMenu
     
     Protected i
     StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
-    AddPathBox(0,0,*menu\width,*menu\height,UIColor::COLORA_NUMBER_BG)
-;     DrawingMode(#PB_2DDrawing_Outlined)
-;     RoundBox(0,0,*menu\width,*menu\height,3,3,UIColor::COLOR_GROUP_LABEL)
+    AddPathBox(0,0,*menu\width,*menu\height)
+    VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+    FillPath()
+    
     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
     Protected a
     For a=0 To ArraySize(*menu\items())-1
@@ -707,8 +702,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 217
+; CursorPosition = 230
+; FirstLine = 228
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

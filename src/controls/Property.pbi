@@ -132,6 +132,7 @@ Module ControlProperty
         *attribute\dirty = #True
 
     EndSelect
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnCheckChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
@@ -152,6 +153,7 @@ Module ControlProperty
         *attribute\dirty = #True
 
     EndSelect
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnLongChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
@@ -170,8 +172,8 @@ Module ControlProperty
         PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
         *port\dirty = #True
         *attribute\dirty = #True
-
     EndSelect
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnIntegerChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
@@ -190,8 +192,8 @@ Module ControlProperty
         PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
         *port\dirty = #True
         *attribute\dirty = #True
-        
     EndSelect
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnFloatChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
@@ -220,6 +222,7 @@ Module ControlProperty
             
         EndSelect
     EndSelect
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
@@ -245,7 +248,7 @@ Module ControlProperty
           *attribute\dirty = #True
         EndIf
     EndSelect
-
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnFileChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
 
@@ -651,7 +654,7 @@ Module ControlProperty
       RowStart(*Me)
       Append( *Me,ControlDivot::New(*Me,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append( *Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = Append( *Me,ControlCheck::New(*Me, name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      *ctl = Append( *Me,ControlCheck::New(*Me, name+"Check",name, value, 0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       RowEnd(*Me)
     EndIf
     
@@ -828,7 +831,7 @@ Module ControlProperty
     ; Create Group
     Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
     Protected width = GadgetWidth(*Me\gadgetID)/2
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
   
@@ -893,7 +896,7 @@ Module ControlProperty
     ; Create Group
     Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
     Protected width = GadgetWidth(*Me\gadgetID)/3
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
   
@@ -964,7 +967,7 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*o
   ;------------------------------
   Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
   Protected width = GadgetWidth(*Me\gadgetID)/3
-  Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me\gadgetID,name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+  Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
   
   ; Add X,Y,Z,W parameters
   ;------------------------------
@@ -1044,7 +1047,7 @@ EndProcedure
     ;------------------------------
     Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
     Protected width = GadgetWidth(*Me\gadgetID)/4
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me\gadgetID,name, name, *Me\dx, *Me\dy, width*4, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 50 ,options)
     
     Protected *xCtl.Control::Control_t
     Protected *yCtl.Control::Control_t
@@ -1132,7 +1135,7 @@ EndProcedure
     ;------------------------------
     Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
     Protected width = GadgetWidth(*Me\gadgetID)/4
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me\gadgetID,name, name, *Me\dx, *Me\dy, width*4, 200 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 200 ,options)
     
     ; Add Row Parameters
     ;------------------------------
@@ -1246,16 +1249,16 @@ EndProcedure
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
 
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    *ctl = ControlInput::New(*Me\gadgetID,*Me\dx,*Me\dy+2,(width-110),32, "File") 
+    *ctl = ControlInput::New(*Me,*Me\dx,*Me\dy+2,(width-110),32, "File") 
 ;     *ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
     ;New(gadgetID.i,x.i, y.i, width.i, height.i, name.s, options.i=0)
     ControlGroup::Append( *group,*ctl)
-    *btn = ControlButton::New(*Me\gadgetID, "Pick", "...",#False,0,0)
+    *btn = ControlButton::New(*Me, "Pick", "...",#False,0,0)
     ControlGroup::Append( *group,*btn)
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
@@ -1296,7 +1299,7 @@ EndProcedure
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me\gadgetID, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
    
     
     ; ---[ Add Parameter ]--------------------------------------------
@@ -1480,7 +1483,7 @@ EndProcedure
         EndIf
       Next
     Else
-      *Me\sizY = ControlHead::#HEAD_HEIGHT
+      *Me\sizY = ControlHead::#HEAD_BUTTON_SIZE
     EndIf
     
     ProcedureReturn *Me\sizY
@@ -1645,7 +1648,7 @@ EndProcedure
         ev_data\yoff    = *son\posY
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-        VectorSourceColor(RGBA(Random(255), Random(255), Random(255), Random(255)));UIColor::COLORA_MAIN_BG )
+        VectorSourceColor(UIColor::COLORA_MAIN_BG )
         FillPath()
         son\OnEvent( Control::#PB_EventType_Draw, ev_data )
         StopVectorDrawing()
@@ -1922,7 +1925,7 @@ EndProcedure
     AddReferenceControl(*prop,"reference3","ref3",*mesh)
     *group = AddGroup(*prop,"BUTTON")
     
-    ControlGroup::Append(*group,ControlButton::New(*mesh,"button","button",#True,#PB_Button_Toggle))
+    ControlGroup::Append(*group,ControlButton::New(*prop,"button","button",#True,#PB_Button_Toggle))
     EndGroup(*prop)
     
     
@@ -1980,7 +1983,7 @@ EndProcedure
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
-    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard)
+    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus) 
     *Me\imageID    = CreateImage(#PB_Any,width,height)
     *Me\pickID     = CreateImage(#PB_Any,width,height)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
@@ -2016,7 +2019,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1970
-; FirstLine = 1958
+; CursorPosition = 250
+; FirstLine = 221
 ; Folding = ----------
 ; EnableXP

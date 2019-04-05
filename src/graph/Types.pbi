@@ -179,13 +179,15 @@ DeclareModule NodePort
   Declare Delete(*port.NodePort_t)
   Declare Echo(*port.NodePort_t)
   Declare GetColor(*port.NodePort_t)
-  Declare Init(*port.NodePort_t)
+  Declare Init(*port.NodePort_t, *geom.Geometry::Geometry_t=#Null)
   Declare InitFromReference(*port.NodePort_t,*attr.Attribute::Attribute_t)
   Declare.s AcquireReferenceData(*port.NodePort_t)
+  Declare AcquireInputAttribute(*port.NodePort_t)
   Declare AcquireInputData(*port.NodePort_t)
   Declare AcquireOutputData(*port.NodePort_t)
   Declare Update(*port.NodePort_t,type.i=Attribute::#ATTR_TYPE_UNDEFINED,context.i=Attribute::#ATTR_CTXT_ANY,struct.i=Attribute::#ATTR_STRUCT_ANY)
   Declare GetDataType(*Me.NodePort_t)
+  Declare IsAtomic(*Me.NodePort_t)
   Declare IsConnectable(*Me.NodePort_t,*Other.NodePort_t)
   Declare DecorateName(*Me.NodePort_t,width.i)
   Declare AcceptConnexion(*Me.NodePort_t,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
@@ -608,7 +610,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 126
+; CursorPosition = 184
+; FirstLine = 144
 ; Folding = ---
 ; EnableXP

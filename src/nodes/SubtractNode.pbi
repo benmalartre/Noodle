@@ -69,11 +69,6 @@ Module SubtractNode
       NodePort::Init(*output)
     EndIf
     
-    If *output\attribute\data = #Null
-      Debug "Cannot Init Port For Add Node"
-      ProcedureReturn 
-    EndIf
-    
     Protected i.i
     
     Select *output\currenttype
@@ -84,7 +79,7 @@ Module SubtractNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\attribute\data
+        *iOut = NodePort::AcquireInputData(*output)
         *iIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*iOut,CArray::GetCount(*iIn))
         CArray::Copy(*iOut,*iIn)
@@ -181,12 +176,12 @@ Module SubtractNode
         Wend
         
       Case Attribute::#ATTR_TYPE_UNDEFINED
-        Debug *output\name + "DataType UNDEFIEND"
+        Debug *output\name + " : DataType UNDEFINED"
         
       Case Attribute::#ATTR_TYPE_POLYMORPH
-        Debug *output\name + "DataType POLYMORPH"
+        Debug *output\name + " : DataType POLYMORPH"
          Default
-        Debug *output\name + ": DataType OTHER"
+        Debug *output\name + " : DataType OTHER"
     EndSelect
   
   EndProcedure
@@ -226,8 +221,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 150
+; CursorPosition = 171
+; FirstLine = 141
 ; Folding = --
 ; EnableThread
 ; EnableXP

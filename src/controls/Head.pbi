@@ -10,7 +10,9 @@ DeclareModule ControlHead
   ;  GLOBALS
   ; ============================================================================
   ;{
-  #HEAD_HEIGHT = 18
+  #HEAD_BUTTON_SIZE = 12
+  #HEAD_STROKE_WIDTH = 1
+  #HEAD_MARGIN = 12
    
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlHead_t )
@@ -21,6 +23,7 @@ DeclareModule ControlHead
     value.i
     touch_l.i
     touch_r.i
+    title.s
     *on_delete.Slot::Slot_t
     *on_expand.Slot::Slot_t
   EndStructure
@@ -80,53 +83,53 @@ Module ControlHead
     Protected *prop.Control::Control_t = *Me\parent
     
     VectorFont(FontID(Globals::#FONT_BOLD),Globals::#FONT_SIZE_TITLE)
-    w = VectorTextWidth("TARACE")
-    h = VectorTextHeight("TARACE")
-
-    AddPathBox(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1)
+    w = VectorTextWidth(*Me\title)
+    h = VectorTextHeight(*Me\title)
+    
+    MovePathCursor(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3)
+    AddPathLine(*Me\sizX-(w+70),0, #PB_Path_Relative)
     VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
-    FillPath()
+    StrokePath(#HEAD_STROKE_WIDTH)
     
     If *Me\touch_l
-      AddPathBox(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      AddPathBox(*Me\posX,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
     Else
-      AddPathBox(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      AddPathBox(*Me\posX,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
       VectorSourceColor(UIColor::COLORA_NUMBER_FG)
       FillPath()
     EndIf
     
     If *Me\touch_r
-      AddPathBox(*Me\posX+*Me\sizX-#HEAD_HEIGHT-4,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      AddPathBox(*Me\posX+*Me\sizX-#HEAD_BUTTON_SIZE,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
       VectorSourceColor(UIColor::COLORA_NUMBER_BG)
       FillPath()
     Else
-      AddPathBox(*Me\posX+*Me\sizX-#HEAD_HEIGHT-4,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT)
+      AddPathBox(*Me\posX+*Me\sizX-#HEAD_BUTTON_SIZE,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
       VectorSourceColor(UIColor::COLORA_NUMBER_FG)
       FillPath()
     EndIf
     
     VectorSourceColor(UIColor::COLORA_LABEL)
-    MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5)
-    DrawVectorText("TARACE")
-    MovePathCursor(*Me\posX+2,*Me\posY+8)
-    AddPathLine(12,0, #PB_Path_Relative)
-    StrokePath(2)
+    MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.75)
+    DrawVectorText(*Me\title)
+    MovePathCursor(*Me\posX+3,*Me\posY+6)
+    AddPathLine(6,0, #PB_Path_Relative)
+    StrokePath(#HEAD_STROKE_WIDTH)
     
-    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT+10,*Me\posY+4)
-    AddPathLine(-10,10, #PB_Path_Relative)
-    StrokePath(2)
-    MovePathCursor(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY+4)
-    AddPathLine(10,10, #PB_Path_Relative)
-    StrokePath(2)
+    MovePathCursor(*Me\posX+*Me\sizX-3.5,*Me\posY+2.5)
+    AddPathLine(-6,6, #PB_Path_Relative)
+    StrokePath(#HEAD_STROKE_WIDTH)
+    MovePathCursor(*Me\posX+*Me\sizX-9.5,*Me\posY+2.5)
+    AddPathLine(6,6, #PB_Path_Relative)
+    StrokePath(#HEAD_STROKE_WIDTH)
     
   EndProcedure
   ;}
 
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlHead_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-    Debug "PROPERTY HEAD ON EVENT"
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
   
@@ -153,7 +156,7 @@ Module ControlHead
         
         ; ...[ Cancel Width & Height Resize ]...................................
         *Me\sizX = *ev_data\width
-        *Me\sizY = #HEAD_HEIGHT
+        *Me\sizY = #HEAD_BUTTON_SIZE
         *Me\posX = 0
         *Me\posY = 0
 
@@ -279,14 +282,19 @@ Module ControlHead
     Control::Invalidate(*Me)
     
   EndProcedure
-  ; ---[ GetValue ]-------------------------------------------------------------
+  ; ---[ Get Value ]------------------------------------------------------------
   Procedure.i GetValue( *Me.ControlHead_t )
     
     ; ---[ Return Value ]-------------------------------------------------------
     ProcedureReturn( *Me\value )
     
   EndProcedure
-
+  
+  ; ---[ Set Title ]------------------------------------------------------------
+  Procedure SetTitle(*Me.ControlHead_t, title.s)
+    *Me\title = title
+  EndProcedure
+ 
   ; ----------------------------------------------------------------------------
   ;   DESTRUCTOR
   ; ----------------------------------------------------------------------------
@@ -307,6 +315,7 @@ Module ControlHead
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#HEAD
+    *Me\title = "Property"
     *Me\name     = name
     *Me\gadgetID = *parent\gadgetID
     *Me\parent   = *parent
@@ -365,7 +374,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 11
+; CursorPosition = 90
+; FirstLine = 63
 ; Folding = ---
 ; EnableXP

@@ -111,6 +111,7 @@ CompilerEndIf
   XIncludeFile "LinearInterpolateNode.pbi"
   XIncludeFile "Vector3ToFloatNode.pbi"
   XIncludeFile "SRTToMatrixNode.pbi"
+  XIncludeFile "MatrixToSRTNode.pbi"
   XIncludeFile "AxisAngleToRotationNode.pbi"
   
   ; Operators
@@ -149,8 +150,8 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 89
+; CursorPosition = 113
+; FirstLine = 60
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -326,69 +326,69 @@ Module Topology
     CArray::SetCount(*o\vertices,v_offset)
     CArray::SetCount(*o\faces,f_offset)
     
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      
-      Define offsetdata = OffsetOf(CArray::CArrayT\data)
-      Define offsetcount = OffsetOf(CArray::CArrayT\itemCount)
-      Define offsetvertices = OffsetOf(Geometry::Topology_t\vertices)
-      Define offsetfaces = OffsetOf(Geometry::Topology_t\faces)
-      Define *outfaces = *o\faces
-      For t=0 To nbt-1
-        *topo = CArray::GetValuePtr(*topos,t)
-        CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
-      Next
-     
-      ! mov rcx, [p.v_nbt]                      ; load topo count
-      ! mov rax, [p.a_v_offsets]                ; load topo vertices offset
-      ! mov rdx, [p.a_f_counts]                 ; load topo faces count
-      ! mov rdi, [p.p_outfaces]                 ; load output faces
-      
-      
-      ! mov r8, [p.v_offsetdata]                ; load offset to array data
-      ! mov r9, [p.v_offsetvertices]            ; load offset to topology vertices
-      ! mov r10, [p.v_offsetfaces]              ; load offset to topology faces
-      
-      
-      ! add rdi, r8                             ; offset to datas
-      ! mov r11, [p.p_topos]                    ; mov topos to r11 register
-      ! add r11, r8                             ; offset to datas
-      ! mov r12, [r11]                          ; topos\data to r12 register
-      
-      ! movdqu xmm1, [math.l_sse_minusonei_vec] ; load -1, -1, -1, -1 in xmm1
-
-      ! loop_merge_topo_array:
-      !   mov r13, [r12]                        ; load current topo in r13 register
-      !   mov r11, [r13 + r10]                  ; load current topo faces in r11 register
-      !   add r11, r8                           ; offset to datas
-      !   mov rsi, [r11]                        ; topo\faces\data to src register
-      !   mov r14d, [rdx]                       ; load current topo face count
-      
-      !   movss xmm0, [eax]                     ; load current topo vertices offset in xmm0
-      !   pshufd xmm0, xmm0, 0                  ; shuffle offset, offset, offset, offset
-   
-      ! loop_merge_topo_array_one_topo:
-      !   movdqu	xmm2, [rsi]                   ; move four indices to xmm2
-      !   movdqa xmm3, xmm2                     ; make a copy in xmm3
-      !   pcmpgtd xmm3, xmm1                    ; packed compare indices > 0 
-      !   pmulld xmm3, xmm0                     ; inverted masked offsets
-      !   pmulld xmm3, xmm1                     ; negate offset
-      !   paddd xmm2, xmm3                      ; add offset to original values
-      !   movdqu [rdi], xmm2                    ; send back to memory
-       
-      !   add rdi, 4                            ; increment destination
-      !   add rsi, 4                            ; increment source
-      
-      !   dec r14                               ; decrement current topo indices counter
-      !   jnz loop_merge_topo_array_one_topo    ; next indices
-      
-      ! loop_merge_topo_array_next_topo:
-      !   add rax, 4                            ; offset in face offsets array
-      !   add rdx, 4                            ; offset in face count array
-      !   add r12, 8                            ; next topo address
-      !   dec rcx                               ; decrement counter
-      !   jnz loop_merge_topo_array             ; next topo
-      
-    CompilerElse
+;     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;       
+;       Define offsetdata = OffsetOf(CArray::CArrayT\data)
+;       Define offsetcount = OffsetOf(CArray::CArrayT\itemCount)
+;       Define offsetvertices = OffsetOf(Geometry::Topology_t\vertices)
+;       Define offsetfaces = OffsetOf(Geometry::Topology_t\faces)
+;       Define *outfaces = *o\faces
+;       For t=0 To nbt-1
+;         *topo = CArray::GetValuePtr(*topos,t)
+;         CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
+;       Next
+;      
+;       ! mov rcx, [p.v_nbt]                      ; load topo count
+;       ! mov rax, [p.a_v_offsets]                ; load topo vertices offset
+;       ! mov rdx, [p.a_f_counts]                 ; load topo faces count
+;       ! mov rdi, [p.p_outfaces]                 ; load output faces
+;       
+;       
+;       ! mov r8, [p.v_offsetdata]                ; load offset to array data
+;       ! mov r9, [p.v_offsetvertices]            ; load offset to topology vertices
+;       ! mov r10, [p.v_offsetfaces]              ; load offset to topology faces
+;       
+;       
+;       ! add rdi, r8                             ; offset to datas
+;       ! mov r11, [p.p_topos]                    ; mov topos to r11 register
+;       ! add r11, r8                             ; offset to datas
+;       ! mov r12, [r11]                          ; topos\data to r12 register
+;       
+;       ! movdqu xmm1, [math.l_sse_minusonei_vec] ; load -1, -1, -1, -1 in xmm1
+; 
+;       ! loop_merge_topo_array:
+;       !   mov r13, [r12]                        ; load current topo in r13 register
+;       !   mov r11, [r13 + r10]                  ; load current topo faces in r11 register
+;       !   add r11, r8                           ; offset to datas
+;       !   mov rsi, [r11]                        ; topo\faces\data to src register
+;       !   mov r14d, [rdx]                       ; load current topo face count
+;       
+;       !   movss xmm0, [eax]                     ; load current topo vertices offset in xmm0
+;       !   pshufd xmm0, xmm0, 0                  ; shuffle offset, offset, offset, offset
+;    
+;       ! loop_merge_topo_array_one_topo:
+;       !   movdqu	xmm2, [rsi]                   ; move four indices to xmm2
+;       !   movdqa xmm3, xmm2                     ; make a copy in xmm3
+;       !   pcmpgtd xmm3, xmm1                    ; packed compare indices > 0 
+;       !   pmulld xmm3, xmm0                     ; inverted masked offsets
+;       !   pmulld xmm3, xmm1                     ; negate offset
+;       !   paddd xmm2, xmm3                      ; add offset to original values
+;       !   movdqu [rdi], xmm2                    ; send back to memory
+;        
+;       !   add rdi, 4                            ; increment destination
+;       !   add rsi, 4                            ; increment source
+;       
+;       !   dec r14                               ; decrement current topo indices counter
+;       !   jnz loop_merge_topo_array_one_topo    ; next indices
+;       
+;       ! loop_merge_topo_array_next_topo:
+;       !   add rax, 4                            ; offset in face offsets array
+;       !   add rdx, 4                            ; offset in face count array
+;       !   add r12, 8                            ; next topo address
+;       !   dec rcx                               ; decrement counter
+;       !   jnz loop_merge_topo_array             ; next topo
+;       
+;     CompilerElse
       
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
@@ -407,7 +407,7 @@ Module Topology
           Next
         EndIf
       Next
-    CompilerEndIf
+;     CompilerEndIf
     
   EndProcedure
   
@@ -919,7 +919,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 887
-; FirstLine = 860
+; CursorPosition = 409
+; FirstLine = 369
 ; Folding = -----
 ; EnableXP

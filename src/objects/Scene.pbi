@@ -46,9 +46,15 @@ DeclareModule Scene
     
     Map *m_objects.Object3D::Object3D_t()
     Map *m_uuids.Object3D::Object3D_t()
+    
+    *on_new.Signal::Signal_t
+    *on_delete.Signal::Signal_t
+    *on_change.Signal::Signal_t
+    *on_time.Signal::Signal_t
+    *on_edit.Signal::Signal_t
+    *on_create.Signal::Signal_t
 
   EndStructure
-  
   
   Interface IScene Extends Object3D::IObject3D
   EndInterface
@@ -75,7 +81,8 @@ DeclareModule Scene
   Declare Save(*scn.Scene_t)
   Declare SaveAs(*scn.Scene_t, filename.s)
   Declare GetUniqueID(*scn.Scene_t, *o.Object3D::Object3D_t)
-  
+  Declare.s GetInfos(*scn.Scene_t)
+
   DataSection 
     SceneVT: 
     Data.i @Delete()
@@ -93,6 +100,9 @@ EndDeclareModule
 ; ============================================================================
 Module Scene
   
+  ;---------------------------------------------------------------------------
+  ; Create Unique ID
+  ;---------------------------------------------------------------------------
   Procedure GetUniqueID(*s.Scene_t, *o.Object3D::Object3D_t)
     Protected uuid.i = Random(1<<24)
     If FindMapElement(*s\m_uuids(), Str(uuid))
@@ -106,6 +116,20 @@ Module Scene
       Protected decoded = Object3D::DecodeID(v\x*255, v\y*255, v\z*255)
       ProcedureReturn uuid
     EndIf  
+  EndProcedure
+  
+  ;---------------------------------------------------------------------------
+  ; Get Infos
+  ;---------------------------------------------------------------------------
+  Procedure.s GetInfos(*Me.Scene_t)
+    Define infos.s 
+    infos + "Cameras : "+Str(*Me\cameras\itemCount)+Chr(10)
+    infos + "Lights : "+Str(*Me\lights\itemCount)+Chr(10)
+    infos + "Objects : "+Str(*Me\objects\itemCount)+Chr(10)
+    infos + "Helpers : "+Str(*Me\helpers\itemCount)+Chr(10)
+    
+    ProcedureReturn infos
+    
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -543,10 +567,12 @@ Module Scene
   ; Get Object By Name
   ;---------------------------------------------------------------------------
   Procedure GetObjectByName(*scn.Scene_t,name.s)
+    Debug "GET OBJECT BY NAME : "+name
     Protected i
     Protected *o.Object3D::Object3D_t
     For i =0 To CArray::GetCount(*scn\objects)-1
       *o = CArray::GetValuePtr(*scn\objects,i)
+      Debug "---> "+*o\name
       If *o\name = name
         ProcedureReturn *o
       EndIf
@@ -565,7 +591,7 @@ Module Scene
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t
     For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValue(*scn\objects,i)
+      *o = CArray::GetValuePtr(*scn\objects,i)
       If *o\type = Object3D::#Object3D_Polymesh
         *m = *o
         *geom = *m\geom
@@ -586,7 +612,7 @@ Module Scene
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
     For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValue(*scn\objects,i)
+      *o = CArray::GetValuePtr(*scn\objects,i)
       If *o\type = Object3D::#Object3D_Polymesh
         *m = *o
          *geom = *m\geom
@@ -735,6 +761,7 @@ Module Scene
     Protected *model.Model::Model_t
     Protected i
     
+    Signal::Trigger(*Me\on_delete, Signal::#SIGNAL_TYPE_PING)
     Root::Delete(*Me\root)
     Selection::Delete(*Me\selection)
     CArray::Delete(*Me\models)
@@ -750,7 +777,7 @@ Module Scene
     FreeMemory( *Me )
     
     Scene::*current_scene = #Null
-    PostEvent(Globals::#EVENT_GRAPH_CHANGED)
+   
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -791,6 +818,14 @@ Module Scene
     CArray::AppendPtr(*Me\lights,*light)
     Object3D::AddChild(*Me\root,*light)
     
+    ; ---[ Signals ] ---------------------------------------------------------
+    *Me\on_new = Object::NewSignal(*Me, "OnNew")
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_time = Object::NewSignal(*Me, "OnTime")
+    *Me\on_edit = Object::NewSignal(*Me, "OnEdit")
+    *Me\on_create = Object::NewSignal(*Me, "OnCreate")
+    
     ProcedureReturn( *Me )
   EndProcedure
   
@@ -799,7 +834,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 800
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 614
+; FirstLine = 564
 ; Folding = -------
 ; EnableXP

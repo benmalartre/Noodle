@@ -25,7 +25,6 @@ DeclareModule Saver
   ; ----------------------------------------------------------------------------
   ;  Structure
   ; ----------------------------------------------------------------------------
-
   Structure Saver_t Extends Object::Object_t
     *obj.Object::Object_t
     path.s
@@ -42,9 +41,14 @@ DeclareModule Saver
     Map *m_compounds.CompoundNode::CompoundNode_t()
   EndStructure
   
+  DataSection
+    SaverVT:  
+  EndDataSection
+  
+  
   Declare New(*obj.Object::Object_t,path.s)
-  Declare Delete(*saver.Saver_t)
-  Declare Save(*saver.Saver_t)
+  Declare Delete(*Me.Saver_t)
+  Declare Save(*Me.Saver_t)
   
   Global CLASS.Class::Class_t
  
@@ -63,15 +67,15 @@ UseModule Math
   ;------------------------------------------------------------------
   ; Set Path
   ;------------------------------------------------------------------
-  Procedure SetPath(*saver.Saver_t,folder.S,name.s)
-    Select *saver\obj\class\name
+  Procedure SetPath(*Me.Saver_t,folder.S,name.s)
+    Select *Me\obj\class\name
       
       Case "Compound"
-          *saver\path = folder+SLASH+name+"."+extensions(0)
+          *Me\path = folder+SLASH+name+"."+extensions(0)
       Case "Scene"
-         *saver\path = folder+SLASH+name+"."+extensions(1)
+         *Me\path = folder+SLASH+name+"."+extensions(1)
       Case "Model"
-        *saver\path = folder+SLASH+name+"."+extensions(2)
+        *Me\path = folder+SLASH+name+"."+extensions(2)
                         
       
         
@@ -82,7 +86,7 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Node Ports
   ;----------------------------------------------------------------------------
-  Procedure SavePorts(*saver.Saver_t,parentnode.i,*node.Node::Node_t)
+  Procedure SavePorts(*Me.Saver_t,parentnode.i,*node.Node::Node_t)
     Protected *port.NodePort::NodePort_t
     Protected attr.i
     ForEach *node\inputs()
@@ -131,7 +135,7 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Exposed Node Ports
   ;----------------------------------------------------------------------------
-  Procedure SaveExposedPorts(*saver.Saver_t,parentnode.i,*compound.CompoundNode::CompoundNode_t)
+  Procedure SaveExposedPorts(*Me.Saver_t,parentnode.i,*compound.CompoundNode::CompoundNode_t)
     Protected *attr.CompoundNodePort::CompoundNodePort_t
     Protected attr.i
     ForEach *compound\exposed_inputs()
@@ -153,11 +157,11 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Get Node ID
   ;----------------------------------------------------------------------------
-  Procedure.s GetNodeID(*saver.Saver_t,*node.Node::Node_t)
+  Procedure.s GetNodeID(*Me.Saver_t,*node.Node::Node_t)
     Protected ID.s = "-1"
-    ForEach *saver\m_nodes()
-      If *saver\m_nodes() = *node
-          ID = MapKey(*saver\m_nodes())
+    ForEach *Me\m_nodes()
+      If *Me\m_nodes() = *node
+          ID = MapKey(*Me\m_nodes())
         Break
       EndIf
     Next
@@ -169,7 +173,7 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Node Ports
   ;----------------------------------------------------------------------------
-  Procedure SaveConnexions(*saver.Saver_t,parentnode.i,*node.Node::Node_t)
+  Procedure SaveConnexions(*Me.Saver_t,parentnode.i,*node.Node::Node_t)
     Protected *cnx.Connexion::Connexion_t
     Protected cnx
     Protected *start.Node::Node_t
@@ -181,10 +185,10 @@ UseModule Math
       *start = *cnx\start\node
       *end = *cnx\end\node
       SetXMLAttribute(cnx,"From_Name",*start\name)
-      SetXMLAttribute(cnx,"From_Node",GetNodeID(*saver,*start))
+      SetXMLAttribute(cnx,"From_Node",GetNodeID(*Me,*start))
       SetXMLAttribute(cnx,"From_Port",*cnx\start\name)
       SetXMLAttribute(cnx,"To_Name",*end\name)
-      SetXMLAttribute(cnx,"To_Node",GetNodeID(*saver,*end))
+      SetXMLAttribute(cnx,"To_Node",GetNodeID(*Me,*end))
       SetXMLAttribute(cnx,"To_Port",*cnx\end\name)
     Next
   EndProcedure
@@ -192,19 +196,19 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Check Node
   ;----------------------------------------------------------------------------
-  Procedure CheckNode(*saver.Saver_t,*node.Node::Node_t,ID.i)
-    AddMapElement(*saver\m_nodes(),Str(ID))
-    *saver\m_nodes() = *node
+  Procedure CheckNode(*Me.Saver_t,*node.Node::Node_t,ID.i)
+    AddMapElement(*Me\m_nodes(),Str(ID))
+    *Me\m_nodes() = *node
     
     If *node\class\name = "CompoundNode"
-      Protected name.s = "[Embedded"+Str(*saver\compounds_counter)+"]"
-      AddMapElement(*saver\m_compounds(),name)
-      *saver\m_compounds() = *node
+      Protected name.s = "[Embedded"+Str(*Me\compounds_counter)+"]"
+      AddMapElement(*Me\m_compounds(),name)
+      *Me\m_compounds() = *node
       
-      *saver\compounds_counter + 1
+      *Me\compounds_counter + 1
       
       ForEach *node\nodes()
-        CheckNode(*saver,*node\nodes(),ID)
+        CheckNode(*Me,*node\nodes(),ID)
         ID+1
       Next
       
@@ -219,13 +223,13 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Node
   ;----------------------------------------------------------------------------
-  Procedure SaveNode(*saver.Saver_t,parentnode.i,*node.Node::Node_t,ID.i)
+  Procedure SaveNode(*Me.Saver_t,parentnode.i,*node.Node::Node_t,ID.i)
     
     Protected node = CreateXMLNode(parentnode,"node")
 
     If *node\class\name = "CompoundNode"
       
-      Protected name.s = "Embedded"+Str(*saver\compounds_counter)
+      Protected name.s = "Embedded"+Str(*Me\compounds_counter)
       SetXMLAttribute(node,"Type","["+name+"]")
       SetXMLAttribute(node,"ID",Str(ID))
       
@@ -233,7 +237,7 @@ UseModule Math
       
       SetXMLAttribute(attr,"PosX",Str(*node\posx))
       SetXMLAttribute(attr,"PosY",Str(*node\posy))
-      *saver\compounds_counter + 1
+      *Me\compounds_counter + 1
     Else
       
       SetXMLAttribute(node,"Type",*node\type)
@@ -244,19 +248,19 @@ UseModule Math
       SetXMLAttribute(attr,"PosX",Str(*node\posx))
       SetXMLAttribute(attr,"PosY",Str(*node\posy))
       
-      SavePorts(*saver,node,*node)
+      SavePorts(*Me,node,*node)
   
       ForEach *node\nodes()
-        SaveNode(*saver,node,*node\nodes(),ID)
+        SaveNode(*Me,node,*node\nodes(),ID)
         
       Next
       
-      SaveConnexions(*saver,parentnode,*node)
+      SaveConnexions(*Me,parentnode,*node)
     EndIf 
   
     
     
-;     SaveConnexions(*saver,node,*node)
+;     SaveConnexions(*Me,node,*node)
 
     
     
@@ -266,11 +270,11 @@ UseModule Math
     ;----------------------------------------------------------------------------
   ; Save Compound Nodes
   ;----------------------------------------------------------------------------
-  Procedure SaveCompounds(*saver.Saver_t,parentnode.i)
+  Procedure SaveCompounds(*Me.Saver_t,parentnode.i)
     Protected ID.i=0
     
     Protected x
-    ForEach(*saver\m_compounds())
+    ForEach(*Me\m_compounds())
       Protected name.s = "Embedded"+Str(x)
       x+1
       compound = CreateXMLNode(parentnode,"compound_node")
@@ -279,18 +283,18 @@ UseModule Math
       
       attr = CreateXMLNode(compound,"UI")
       
-      SetXMLAttribute(attr,"PosX",Str(*saver\m_compounds()\posx))
-      SetXMLAttribute(attr,"PosY",Str(*saver\m_compounds()\posy))
+      SetXMLAttribute(attr,"PosX",Str(*Me\m_compounds()\posx))
+      SetXMLAttribute(attr,"PosY",Str(*Me\m_compounds()\posy))
       
-      SavePorts(*saver,compound,*saver\m_compounds())
+      SavePorts(*Me,compound,*Me\m_compounds())
       
-      ForEach *saver\m_compounds()\nodes()
+      ForEach *Me\m_compounds()\nodes()
         
-        SaveNode(*saver,compound,*saver\m_compounds()\nodes(),ID)
+        SaveNode(*Me,compound,*Me\m_compounds()\nodes(),ID)
         ID+1
       Next
-      SaveConnexions(*saver,compound,*saver\m_compounds())
-      SaveExposedPorts(*saver,compound,*saver\m_compounds())
+      SaveConnexions(*Me,compound,*Me\m_compounds())
+      SaveExposedPorts(*Me,compound,*Me\m_compounds())
       
     Next
     
@@ -300,31 +304,31 @@ UseModule Math
    ;----------------------------------------------------------------------------
   ; Save Tree
   ;----------------------------------------------------------------------------
-  Procedure SaveTree(*saver.Saver_t,parentnode.i,*tree.Tree::Tree_t)
+  Procedure SaveTree(*Me.Saver_t,parentnode.i,*tree.Tree::Tree_t)
     
-    ClearMap(*saver\m_nodes())
-    ClearMap(*saver\m_compounds())
-;     ClearMap(*saver\m_embeddeds())
+    ClearMap(*Me\m_nodes())
+    ClearMap(*Me\m_compounds())
+;     ClearMap(*Me\m_embeddeds())
     Protected op = CreateXMLNode(parentnode,"Tree")
     SetXMLAttribute(op,"Name",*tree\name)
     SetXMLAttribute(op,"Type","Tree")
     
     Protected ID.i
-    AddMapElement(*saver\m_nodes(),Str(0))
-    *saver\m_nodes() = *tree\root
+    AddMapElement(*Me\m_nodes(),Str(0))
+    *Me\m_nodes() = *tree\root
     ID +1
     
     
     ForEach *tree\root\nodes()
-      CheckNode(*saver,*tree\root\nodes(),ID)
+      CheckNode(*Me,*tree\root\nodes(),ID)
       ID+1
     Next
     
-    *saver\compounds_counter = 0
-;     AddMapElement(*saver\m_nodes(),Str(ID))
-;     *saver\m_nodes() = *tree\root
-    SaveNode(*saver,op,*tree\root,0)
-    SaveCompounds(*saver,op)
+    *Me\compounds_counter = 0
+;     AddMapElement(*Me\m_nodes(),Str(ID))
+;     *Me\m_nodes() = *tree\root
+    SaveNode(*Me,op,*tree\root,0)
+    SaveCompounds(*Me,op)
     
       
   EndProcedure
@@ -333,19 +337,16 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Stack
   ;----------------------------------------------------------------------------
-  Procedure SaveStack(*saver.Saver_t,node.i,*item.Object3D::Object3D_t)
-    Debug "---------------------------------- SAVE STACK ---------------------------------"
-    Debug "3DObject ---> "+*item\fullname
+  Procedure SaveStack(*Me.Saver_t,node.i,*item.Object3D::Object3D_t)
     Protected op
     Protected stack = CreateXMLNode(node,"Stack")
     Protected *stack.Stack::Stack_t = *item\stack 
     ForEach *stack\levels()
       Select *stack\levels()\class\name
         Case "Tree"
-          Debug "Save Tree"
           Protected *t.Stack::StackLevel_t = *stack\levels()
 ;           op = CreateXMLNode(stack,*gt\name)
-          SaveTree(*saver,stack,*t)
+          SaveTree(*Me,stack,*t)
   
       EndSelect
     Next
@@ -355,7 +356,7 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save Attributes
   ;----------------------------------------------------------------------------
-  Procedure SaveAttributes(*saver.Saver_t,node.i,*item.Object3D::Object3D_t)
+  Procedure SaveAttributes(*Me.Saver_t,node.i,*item.Object3D::Object3D_t)
     Protected a
     Protected *a.Attribute::Attribute_t
     Protected attrs = CreateXMLNode(node,"Attributes")
@@ -401,7 +402,7 @@ UseModule Math
   ;----------------------------------------------------------------------------
   ; Save 3D Object
   ;----------------------------------------------------------------------------
-  Procedure Save3DObject(*saver.Saver_t,parent.i,*item.Object3D::Object3D_t)
+  Procedure Save3DObject(*Me.Saver_t,parent.i,*item.Object3D::Object3D_t)
     Protected object = CreateXMLNode(parent,*item\name,-1)
     Select *item\type
       Case Object3D::#Object3D_Camera
@@ -487,18 +488,18 @@ UseModule Math
     SaveTransform(object,*item)
     
 ;     If MapSize(*item\m_attributes())
-;       SaveAttributes(*saver,object,*item)
+;       SaveAttributes(*Me,object,*item)
 ;     EndIf
     
-    SaveStack(*saver,object,*item)
-    *saver\numSaved3DObject +1
+    SaveStack(*Me,object,*item)
+    *Me\numSaved3DObject +1
     
     ; Recursive Save
     ;-------------------------------------------------------------
     If ListSize(*item\children())
       Protected c
       ForEach *item\children()
-        Save3DObject(*saver,object,*item\children())
+        Save3DObject(*Me,object,*item\children())
       Next
     EndIf
     
@@ -509,29 +510,28 @@ UseModule Math
   ;------------------------------------------------------------------
   ; Save
   ;------------------------------------------------------------------
-  Procedure Save(*saver.Saver_t)
-    Protected *obj.Object::Object_t = *saver\obj
+  Procedure Save(*Me.Saver_t)
+    Protected *obj.Object::Object_t = *Me\obj
   
     Select *obj\class\name
       Case "Scene"
         
         Protected *scene.Scene::Scene_t = *obj
-        
-        *saver\root = CreateXMLNode(RootXMLNode(*saver\xml),*scene\filename)
+        ; ---[ Create XML node] -------------------------------------
+        *Me\root = CreateXMLNode(RootXMLNode(*Me\xml),*scene\filename)
         Protected *objs.CArray::CArrayPtr = *scene\objects
         Protected *o.Object3D::Object3D_t
         Protected i
         For i =0 To CArray::GetCount(*scene\objects)-1
           *o = CArray::GetValuePtr(*scene\objects,i)
-          Save3DObject(*saver,*saver\root,*o)
+          Save3DObject(*Me,*Me\root,*o)
         Next
-        MessageRequester("SAVER", "NUM SAVED 3D OBJECTS : "+Str(*saver\numSaved3DObject))
-        FormatXML(*saver\xml,#PB_XML_LinuxNewline|#PB_XML_ReFormat|#PB_XML_ReIndent)
-        ;Save the xml tree into a xml file
-        ;MessageRequester("Save XML ",*saver\path)
-        SaveXML(*saver\xml, *saver\path)
+        ; ---[ format XML ] -----------------------------------------
+        FormatXML(*Me\xml,#PB_XML_LinuxNewline|#PB_XML_ReFormat|#PB_XML_ReIndent)
+        ; ---[ Save XML ] -------------------------------------------
+        SaveXML(*Me\xml, *Me\path)
         
-;         Protected s.s = ComposeXML(*saver\xml)
+;         Protected s.s = ComposeXML(*Me\xml)
 ;         MessageRequester("Save Tree",s)
   
       Default
@@ -539,35 +539,34 @@ UseModule Math
     EndSelect
     
   EndProcedure
-  ;------------------------------------------------------------------
-  ; Destuctor
-  ;------------------------------------------------------------------
+  ; ==================================================================
+  ;  DESTRUCTOR
+  ; ==================================================================
   Procedure Delete(*Me.Saver_t)
-    ClearStructure(*Me,Saver_t)
     FreeXML(*Me\xml)
-    FreeMemory(*Me)
+    Object::TERM(Saver)
   EndProcedure
   
-  ;---------------------------------------------
-  ;  Constructor
-  ;---------------------------------------------
+  ; ==================================================================
+  ;  CONSTRUCTOR
+  ; ==================================================================
   Procedure.i New(*obj.Object::Object_t,path.s)
-    Protected *saver.Saver_t = AllocateMemory(SizeOf(Saver_t))
-    InitializeStructure(*saver,Saver_t)
-    *saver\obj = *obj
-    *saver\numSaved3DObject = 0
+    Protected *Me.Saver_t = AllocateMemory(SizeOf(Saver_t))
+    Object::INI(Saver)
+    *Me\obj = *obj
+    *Me\numSaved3DObject = 0
     If Not path = ""
-      *saver\path = path
+      *Me\path = path
     Else
       Protected defaultFile$ = GetCurrentDirectory()+"scene.scene"
       Protected pattern$ = "Noodle Scene File | *.scene"
-      *saver\path = SaveFileRequester("Noodle Saver",defaultFile$,pattern$,0)
+      *Me\path = SaveFileRequester("Noodle Saver",defaultFile$,pattern$,0)
     EndIf
-    If *saver\path
-      *saver\xml = CreateXML(#PB_Any,#PB_UTF8)
-      ProcedureReturn *saver
+    If *Me\path
+      *Me\xml = CreateXML(#PB_Any,#PB_UTF8)
+      ProcedureReturn *Me
     Else
-      Delete(*saver)
+      Delete(*Me)
       ProcedureReturn #Null
     EndIf
     
@@ -577,8 +576,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 362
-; FirstLine = 357
+; CursorPosition = 568
+; FirstLine = 509
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

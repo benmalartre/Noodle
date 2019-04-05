@@ -48,25 +48,14 @@ Module SRTToMatrixNode
     Protected sdata.i = Attribute::#ATTR_TYPE_VECTOR3
     Protected rdata.i = Attribute::#ATTR_TYPE_QUATERNION
     Protected tdata.i = Attribute::#ATTR_TYPE_VECTOR3
-    Node::AddInputPort(*node,"S",Attribute::#ATTR_TYPE_VECTOR3)
-    Node::AddInputPort(*node,"R", Attribute::#ATTR_TYPE_QUATERNION)
-    Node::AddInputPort(*node,"T",Attribute::#ATTR_TYPE_VECTOR3)
+    Node::AddInputPort(*node,"Scale",Attribute::#ATTR_TYPE_VECTOR3)
+    Node::AddInputPort(*node,"Rotate", Attribute::#ATTR_TYPE_QUATERNION)
+    Node::AddInputPort(*node,"Translate",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Matrix",Attribute::#ATTR_TYPE_MATRIX4)
     
-    Node::PortAffectByName(*node, "S", "Matrix")
-    Node::PortAffectByName(*node, "R", "Matrix")
-    Node::PortAffectByName(*node, "T", "Matrix")
-    
-    FirstElement(*node\inputs())
-    Protected scl.v3f32
-    Vector3::Set(scl,1,1,1)
-    Protected *a.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
-    CArray::SetValue(*a,0,scl)
-    NextElement(*node\inputs())
-    Protected quat.q4f32
-    Quaternion::SetIdentity(quat)
-    *a.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
-    CArray::SetValue(*a,0,quat)
+    Node::PortAffectByName(*node, "Scale", "Matrix")
+    Node::PortAffectByName(*node, "Rotate", "Matrix")
+    Node::PortAffectByName(*node, "Translate", "Matrix")
     
     *node\label = "SRT To Matrix"
   EndProcedure
@@ -157,7 +146,7 @@ EndModule
 ; ==============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 79
+; CursorPosition = 57
+; FirstLine = 28
 ; Folding = --
 ; EnableXP

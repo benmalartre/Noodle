@@ -607,7 +607,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     Case #PB_EventType_Input
       ; ---[ Do We Have A Focused Child ? ]-----------------------------------
       If *Me\focuschild
-        Debug "GROUP SEND TO FOCUS CHILD"
         ; ...[ Retrieve Character ]...........................................
         ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
         ; ...[ Send Character To Focused Child ]..............................
@@ -942,7 +941,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 912
+; CursorPosition = 901
 ; FirstLine = 877
 ; Folding = ---0
 ; EnableXP

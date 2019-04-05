@@ -14,8 +14,7 @@ DeclareModule Location
   Declare Update(*Me.Location_t)
   Declare SetTriangleID(*Me.Location_t,ID.i=-1)
   Declare SetUVW(*Me.Location_t,u.f=0.0,v.f=0.0,w.f=0.0)
-  Declare New(*geom.Geometry::PolymeshGeometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
-  Declare Delete(*Me.Location_t)
+  Declare Init(*Me.Location_t, *geom.Geometry::Geometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
   Declare ClosestPoint( *Me.Location_t, *A.v3f32, *B.v3f32, *C.v3f32, *P.v3f32, *distance, maxDistance.f=Math::#F32_MAX)
   Declare BarycentricInterpolate(*Me.Location_t, *datas.CArray::CArrayT, *output)
   DataSection
@@ -414,79 +413,67 @@ Module Location
         s * invDet
         t * invDet
       EndIf
-   Else
-    If ( s < 0.0 )
-      Define tmp0.f = b+d
-      Define tmp1.f = c+e
-      If ( tmp1 > tmp0 )
-        Define numer.f = tmp1 - tmp0
-        Define denom.f = a-2*b+c
-        s = numer/denom
-        CLAMP( s, 0.0, 1.0 )
-        t = 1-s
+     Else
+      If ( s < 0.0 )
+        Define tmp0.f = b+d
+        Define tmp1.f = c+e
+        If ( tmp1 > tmp0 )
+          Define numer.f = tmp1 - tmp0
+          Define denom.f = a-2*b+c
+          s = numer/denom
+          CLAMP( s, 0.0, 1.0 )
+          t = 1-s
+        Else
+          t = -e/c
+          CLAMP( t, 0.0, 1.0 )
+          s = 0.0
+        EndIf
+      ElseIf ( t < 0.0 )
+        If ( a+d > b+e )
+          Define numer.f = c+e-b-d
+          Define denom.f = a-2*b+c
+          s = numer/denom
+          CLAMP( s, 0.0, 1.0)
+          t = 1-s
+        Else
+          s = -e/c
+          CLAMP( s, 0.0, 1.0 )
+          t = 0.0
+        EndIf
       Else
-        t = -e/c
-        CLAMP( t, 0.0, 1.0 )
-        s = 0.0
-      EndIf
-    ElseIf ( t < 0.0 )
-      If ( a+d > b+e )
         Define numer.f = c+e-b-d
         Define denom.f = a-2*b+c
         s = numer/denom
-        CLAMP( s, 0.0, 1.0)
-        t = 1-s
-      Else
-        s = -e/c
         CLAMP( s, 0.0, 1.0 )
-        t = 0.0
+        t = 1.0 - s
       EndIf
-    Else
-      Define numer.f = c+e-b-d
-      Define denom.f = a-2*b+c
-      s = numer/denom
-      CLAMP( s, 0.0, 1.0 )
-      t = 1.0 - s
     EndIf
-  EndIf
-
-  Protected closest.v3f32, delta.v3f32
-  Vector3::SetFromOther(closest, *A)
-  Vector3::ScaleInPlace(edge0, s)
-  Vector3::ScaleInPlace(edge1, t)
-  Vector3::AddInPlace(closest, edge0)
-  Vector3::AddInPlace(closest, edge1)
   
-  Vector3::Sub(delta, *p, closest)
-  d.f = Vector3::Length(delta)
+    Protected closest.v3f32, delta.v3f32
+    Vector3::SetFromOther(closest, *A)
+    Vector3::ScaleInPlace(edge0, s)
+    Vector3::ScaleInPlace(edge1, t)
+    Vector3::AddInPlace(closest, edge0)
+    Vector3::AddInPlace(closest, edge1)
+    
+    Vector3::Sub(delta, *p, closest)
+    d.f = Vector3::Length(delta)
+    
+    If d < maxDistance And d < PeekF(*distance)
+      Vector3::SetFromOther(*Me\p, closest)
+      Vector3::Set(*Me\uvw, 1.0- s - t, s, t)
+      PokeF(*distance, d)
+      ProcedureReturn #True
+    EndIf
+    ProcedureReturn #False
   
-  If d < maxDistance And d < PeekF(*distance)
-    Vector3::SetFromOther(*Me\p, closest)
-    Vector3::Set(*Me\uvw, 1.0- s - t, s, t)
-    PokeF(*distance, d)
-    ProcedureReturn #True
-  EndIf
-  ProcedureReturn #False
-
-EndProcedure
-
-  
-  ;------------------------------------------------------------------
-  ; Destuctor
-  ;------------------------------------------------------------------
-  Procedure Delete(*Me.Location_t)
-   If Not *Me : ProcedureReturn : EndIf
-    ClearStructure(*Me,Location_t)
-    FreeMemory(*Me)
   EndProcedure
   
   
   ;---------------------------------------------
-  ;  Constructor
+  ;  INIT
   ;---------------------------------------------
-  Procedure.i New(*geom.Geometry::Geometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
-    ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Location_t = AllocateMemory(SizeOf(Location_t))
+  Procedure.i Init(*Me.Location_t, *geom.Geometry::Geometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
     
     ; ----[ Initialize ]--------------------------------------------------------
     *Me\tid = tid
@@ -496,13 +483,10 @@ EndProcedure
     If *Me\geometry And *Me\tid>-1
       Update(*Me)
     EndIf
-    
-    ProcedureReturn *Me
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 172
-; FirstLine = 168
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 16
 ; Folding = ---
 ; EnableXP

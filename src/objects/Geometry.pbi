@@ -1,6 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Object.pbi"
+XIncludeFile "../core/Attribute.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 
 ; ==============================================================================
@@ -278,14 +279,18 @@ DeclareModule Geometry
   ; Camera Geometry
   ; --------------------------------------------
   Structure CameraGeometry_t Extends Geometry_t
-
   EndStructure
   
   ; --------------------------------------------
   ; Light Geometry
   ; --------------------------------------------
   Structure LightGeometry_t Extends Geometry_t
-
+  EndStructure
+  
+  ; --------------------------------------------
+  ; Model Geometry
+  ; --------------------------------------------
+  Structure ModelGeometry_t Extends Geometry_t
   EndStructure
   
   ; --------------------------------------------
@@ -633,7 +638,6 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 228
+; CursorPosition = 3
 ; Folding = -----
 ; EnableXP

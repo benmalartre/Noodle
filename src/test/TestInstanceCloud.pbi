@@ -226,7 +226,7 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *locs.CArray::CArrayLocation = CArray::newCArrayLocation()
   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
   
@@ -236,7 +236,7 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(s,13,13,13)
   Define *l.Geometry::Location_t
   For i=0 To *cgeom\nbpoints-1
-    *l = CArray::GetValuePtr(*locs,i)
+    *l = CArray::GetValue(*locs,i)
     Location::GetPosition(*l)
     CArray::SetValue(*cgeom\a_positions,i,*l\p)
     Location::GetNormal(*l)
@@ -249,12 +249,12 @@ Procedure Draw(*app.Application::Application_t)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
   
-  
-;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
-; 
-;   glActiveTexture(#GL_TEXTURE0)
-;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
-  
+;   
+; ;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
+; ; 
+; ;   glActiveTexture(#GL_TEXTURE0)
+; ;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
+;   
   Scene::AddChild(Scene::*current_scene,*cloud)
   Scene::AddChild(Scene::*current_scene,*mesh)
   Scene::Setup(Scene::*current_scene,*app\context)
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 154
+; CursorPosition = 259
+; FirstLine = 205
 ; Folding = --
 ; EnableXP
 ; Executable = Test

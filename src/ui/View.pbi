@@ -791,7 +791,9 @@ Module ViewManager
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
         View::OnEvent(*manager\main,#PB_Event_Timer)
-      
+        
+      Case Globals::#EVENT_NEW_SCENE
+        View::OnEvent(*manager\main, Globals::#EVENT_NEW_SCENE)
       Case Globals::#EVENT_BUTTON_PRESSED
         
       Case Globals::#EVENT_COMMAND_CALLED
@@ -963,7 +965,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 588
-; FirstLine = 584
+; CursorPosition = 795
+; FirstLine = 757
 ; Folding = -------
 ; EnableXP

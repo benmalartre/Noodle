@@ -170,6 +170,15 @@ Module TopMenuUI
   Procedure Delete(*e.TopMenuUI_t)
     FreeMemory(*e)
   EndProcedure
+  
+;   Procedure OnCreatePolymesh(shape.i)
+;     Define args.Arguments::Arguments_t
+;     args\args[0]\type = Arguments::#INT
+;     args\args[0]\i = shape
+;     CreatePolymeshCmd::Do(args)
+;   EndProcedure
+;   Callback::DECLARECALLBACK(OnCreatePolymesh, Arguments::#INT
+  
 
   ;---------------------------------------------
   ;  Constructor
@@ -197,34 +206,37 @@ Module TopMenuUI
     *Me\gadgetID = *Me\menu\gadgetID
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
-    Protected *args.Arguments::Arguments_t = Arguments::New()
-    Arguments::ADD(*args,Scene::*current_scene)
+    Protected *args.Arguments::Arguments_t = Arguments::New(1)
+    *args\args(0)\type = Arguments::#PTR
+    *args\args(0)\p = Scene::*current_scene
+    Debug "CURRENT SCENE : "+*args
     ControlMenu::AddItem(*submenu,"Save Scene",SaveSceneCmd::@Do(),*args)
     ControlMenu::AddItem(*submenu,"Load Scene",LoadSceneCmd::@Do(),*args)
     ControlMenu::AddSeparator(*submenu)
     ControlMenu::AddItem(*submenu,"New Scene",NewSceneCmd::@Do(),*args)
     
-;     *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Edit")
-;     Arguments::SET(*args\args(0),Shape::#SHAPE_CUBE)
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Cube",CreatePolymeshCmd::@Do(),*args)
-;     
-;     Arguments::Set(*args\args(0),Shape::#SHAPE_GRID)
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Grid",CreatePolymeshCmd::@Do(),*args)
-;     
-;     Arguments::Set(*args\args(0),Shape::#SHAPE_SPHERE)
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Sphere",CreatePolymeshCmd::@Do(),*args)
-;     
-;     Arguments::Set(*args\args(0),Shape::#SHAPE_BUNNY)
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Bunny",CreatePolymeshCmd::@Do(),*args)
-;     
-;     Arguments::Set(*args\args(0),Shape::#SHAPE_Torus)
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Torus",CreatePolymeshCmd::@Do(),*args)
-;     
-;     ControlMenu::AddSeparator(*submenu)
-;     Arguments::Clear(*args)
-; 
-;     ControlMenu::AddItem(*submenu,"Create Tree on Selected Object",CreateTreeCmd::@Do(),#Null)
+    *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Edit")
+    *args\args(0)\type = Arguments::#INT
+    *args\args(0)\i = Shape::#SHAPE_CUBE
+    ControlMenu::AddItem(*submenu,"Create Polymesh Cube",CreatePolymeshCmd::@Do(),*args)
+ 
+    *args\args(0)\i = Shape::#SHAPE_GRID
+    ControlMenu::AddItem(*submenu,"Create Polymesh Grid",CreatePolymeshCmd::@Do(),*args)
     
+    *args\args(0)\i = Shape::#SHAPE_SPHERE
+    ControlMenu::AddItem(*submenu,"Create Polymesh Sphere",CreatePolymeshCmd::@Do(),*args)
+    
+    *args\args(0)\i = Shape::#SHAPE_BUNNY
+    ControlMenu::AddItem(*submenu,"Create Polymesh Bunny",CreatePolymeshCmd::@Do(),*args)
+    
+    *args\args(0)\i = Shape::#SHAPE_Torus
+    ControlMenu::AddItem(*submenu,"Create Polymesh Torus",CreatePolymeshCmd::@Do(),*args)
+    
+    ControlMenu::AddSeparator(*submenu)
+; ;     Arguments::Clear(*args)
+; 
+    ControlMenu::AddItem(*submenu,"Create Tree on Selected Object",CreateTreeCmd::@Do(),*args)
+;     
 ;   
 ;     
 ;     *submenu = newCControlSubMenu(*Me\menu,50,0,"Edit")
@@ -275,7 +287,7 @@ Module TopMenuUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 188
+; CursorPosition = 237
+; FirstLine = 204
 ; Folding = ---
 ; EnableXP

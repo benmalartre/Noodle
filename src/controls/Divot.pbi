@@ -324,8 +324,7 @@ Module ControlDivot
           If *Me\over
             If *Me\value : *Me\value = #ANIM_NONE : Else : *Me\value = #ANIM_KEYFRAME : EndIf
             Control::Invalidate(*Me)
-            ; TODO : >>> TRIGGER ACTION <<<
-            Debug ">> Trigger ["+ *Me\name +"]/["+ Str(*Me\value) +"]"
+            Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
           EndIf
         EndIf
         
@@ -544,7 +543,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 408
-; FirstLine = 370
+; CursorPosition = 185
+; FirstLine = 433
 ; Folding = ---
 ; EnableXP

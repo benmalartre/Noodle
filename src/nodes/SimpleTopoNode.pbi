@@ -67,13 +67,13 @@ Module SimpleTopoNode
   EndProcedure
   
   Procedure Init(*node.SimpleTopoNode_t)
-    Node::AddInputPort(*node,"Shape",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"U",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"V",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"W",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"Radius",Attribute::#ATTR_TYPE_FLOAT)
-    Node::AddInputPort(*node,"Geometry", Attribute::#ATTR_TYPE_GEOMETRY)
-    Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
+    Node::AddInputPort(*node,"Shape"    , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"U"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"V"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"W"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"Radius"   , Attribute::#ATTR_TYPE_FLOAT)
+    Node::AddInputPort(*node,"Geometry" , Attribute::#ATTR_TYPE_GEOMETRY)
+    Node::AddOutputPort(*node,"Topology", Attribute::#ATTR_TYPE_TOPOLOGY)
     *node\label = "Primitive Mesh"
     Reset(*node)
     
@@ -95,9 +95,6 @@ Module SimpleTopoNode
       *node\errorstr =  "[ERROR]Simple Topo only works on Polymesh..."
       ProcedureReturn
     EndIf
-  
-    ; Get Parent Objectts
-    Protected *mesh.Polymesh::Polymesh_t = *node\parent3dobject
   
     ; Get Inputs
     Protected *input.NodePort::NodePort_t
@@ -121,12 +118,10 @@ Module SimpleTopoNode
     
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
-    
-    Debug "TOPO ID : "+Str(*oVal)
+    Protected *topoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
 
-    Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
-    Debug "SHAPE : "+Str(shape)
+    Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoArray,0)
+    Debug "TOPOLOGY : "+Str(*topo)
     Select shape
       Case 0
         Topology::Cube(*topo,radius,u,v,w)
@@ -147,8 +142,7 @@ Module SimpleTopoNode
         EndIf
           
     EndSelect
-    CArray::SetValuePtr(*oVal, 0, *topo)
-    Debug "SIMPLE TOPO NODE : "+*topo\vertices\itemCount +" PNTS"
+    Debug "TOPOLOGY PASSED: "
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
@@ -188,7 +182,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 60
+; CursorPosition = 141
+; FirstLine = 90
 ; Folding = --
 ; EnableXP

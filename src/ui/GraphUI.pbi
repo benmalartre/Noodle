@@ -322,6 +322,13 @@ Module GraphUI
     
   EndProcedure
   
+  Procedure OnDeleteTree(*Me.GraphUI_t)
+    *Me\tree = #Null
+    CArray::SetCount(*Me\a_selected, 0)
+    ClearList(*Me\a_visible())
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteTree, Arguments::#PTR)
+  
   
   ;---------------------------------------------------------------------------
   ;  Set Content
@@ -332,7 +339,7 @@ Module GraphUI
       *Me\tree = *tree
       *Me\tree\current = *tree\root
       *Me\redraw = #True
-;       Object::SignalConnect(*Me,*Me\tree\slot,0)
+      Signal::CONNECTCALLBACK(*Me\tree\on_delete, OnDeleteTree, *Me)
     Else
       *Me\tree = #Null
        *Me\redraw = #True
@@ -1598,34 +1605,12 @@ Module GraphUI
 ;     
   EndProcedure
   
-  ;-----------------------------------------------------
-  ; On Message
-  ;-----------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-;      Protected *sig.Signal::Signal_t = *up
-;      Protected *obj.Object::Object_t = *sig\snd_inst
-;      Protected *ui.GraphUI::GraphUI_t = *sig\rcv_inst
-;      Protected slot.i = *sig\rcv_slot
-;      
-;      If slot =0
-;        Select *obj\class\name
-;          Case "Tree"
-;           SetContent(*ui,*sig\sigdata) 
-;       EndSelect
-;     ElseIf slot = 1
-;       MessageRequester("GraphUI","On Message From Refresh Button...")
-;       Protected *scene.Scene::Scene_t = Scene::*current_scene
-;       Protected *selection.Selection::Selection_t = *scene\selection
-;     EndIf
-;     
-     
-  EndProcedure
   
  
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1472
-; FirstLine = 1435
+; CursorPosition = 343
+; FirstLine = 321
 ; Folding = --------
 ; EnableXP

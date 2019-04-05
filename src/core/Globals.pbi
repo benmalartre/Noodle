@@ -13,8 +13,6 @@ DeclareModule Globals
     #SHORTCUT_ENTER
     #SHORTCUT_DELETE
     #SHORTCUT_RESET
-    #SHORTCUT_NEXT
-    #SHORTCUT_PREVIOUS
     #SHORTCUT_QUIT
     #SHORTCUT_TAB
     #SHORTCUT_SCALE
@@ -22,6 +20,10 @@ DeclareModule Globals
     #SHORTCUT_TRANSLATE
     #SHORTCUT_CAMERA
     #SHORTCUT_SELECT
+    #SHORTCUT_UP
+    #SHORTCUT_DOWN
+    #SHORTCUT_PREVIOUS
+    #SHORTCUT_NEXT
   EndEnumeration
   
   Enumeration #PB_Event_FirstCustomValue
@@ -34,17 +36,8 @@ DeclareModule Globals
     #EVENT_COMMAND_CALLED
     #EVENT_GRAPH_CHANGED
     #EVENT_TREE_CREATED
+    #EVENT_NEW_SCENE
   EndEnumeration
-  
-  Enumeration 
-    #FONT_DEFAULT = 1
-    #FONT_BOLD
-  EndEnumeration
-  
-  #FONT_SIZE_TEXT = 8
-  #FONT_SIZE_LABEL = 10
-  #FONT_SIZE_MENU = 11
-  #FONT_SIZE_TITLE = 13
   
   Enumeration
     #GUI_THEME_LIGHT
@@ -201,11 +194,20 @@ DeclareModule Globals
   EndMacro
   
   ;---------------------------------------------------------
-  ; GLOBALS
+  ; FONTS
   ;---------------------------------------------------------
-  
   Global font_label = LoadFont(#PB_Any,"Consolas",8)
   Global font_title = LoadFont(#PB_Any,"Consolas",12)
+  
+  Enumeration 
+    #FONT_DEFAULT = 1
+    #FONT_BOLD
+  EndEnumeration
+  
+  #FONT_SIZE_TEXT = 10
+  #FONT_SIZE_LABEL = 12
+  #FONT_SIZE_MENU = 13
+  #FONT_SIZE_TITLE = 14
   
   ;---------------------------------------------------------
   ; MACROS
@@ -303,8 +305,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 234
-; FirstLine = 231
+; CursorPosition = 38
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

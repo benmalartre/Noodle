@@ -407,6 +407,28 @@ DeclareModule Math
     scl.v3f32
   EndStructure
   
+  ; ----------------------------------------------------------------------------
+  ;  locf32 Structure ( predeclaration of Location_t)
+  ; --------------------------------------------------------------------------
+   Structure locf32
+      tid.i
+      p.v3f32
+      n.v3f32
+      uvw.v3f32
+      c.c4f32
+      *geometry
+      *t
+    EndStructure
+    
+  ; ----------------------------------------------------------------------------
+  ;  topof32 Structure ( predeclaration of Topology_t)
+  ; --------------------------------------------------------------------------
+  Structure topof32
+    *vertices
+    *faces
+    dirty.i
+  EndStructure
+  
   ; -----------------------------------------------------------------
   ;  Random 0 to 1
   ; -----------------------------------------------------------------
@@ -2401,7 +2423,7 @@ DeclareModule Matrix4
     Else
       Define _i
       For _i=0 To 15
-        _m\v[_i] = ValF(StringField(_s,i+1,","))
+        _m\v[_i] = ValF(StringField(_s,_i+1,","))
       Next
     EndIf
   EndMacro
@@ -4265,8 +4287,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2234
-; FirstLine = 2196
+; CursorPosition = 427
+; FirstLine = 392
 ; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

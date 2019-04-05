@@ -317,8 +317,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 40
+; CursorPosition = 128
+; FirstLine = 124
 ; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

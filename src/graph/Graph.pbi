@@ -7,11 +7,11 @@ XIncludeFile "../objects/Object3D.pbi"
 ;====================================================================================
 Module Graph
   Procedure ResolveGetReference(*port.NodePort::NodePort_t)
-    
+    Protected refname.s
     Protected *node.Node::Node_t = *port\node
     Protected *obj.Object3D::Object3D_t = *node\parent3dobject
-  
-    Protected refname.s = NodePort::AcquireReferenceData(*port)
+
+    refname.s = NodePort::AcquireReferenceData(*port)
 
     Protected fields.i = CountString(refname, ".")+1
     Protected base.s = StringField(refname, 1,".")
@@ -26,8 +26,8 @@ Module Graph
         NodePort::Init(*output)
         *output\attribute = *attribute
       EndIf
-      
     EndIf
+  
     
   EndProcedure  
   
@@ -130,8 +130,8 @@ Module Graph
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 43
+; CursorPosition = 27
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

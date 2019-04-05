@@ -382,8 +382,6 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   
 EndProcedure
 
-
-  
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlButton )
 EndModule
@@ -392,7 +390,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 359
-; FirstLine = 332
+; CursorPosition = 383
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

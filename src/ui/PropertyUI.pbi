@@ -149,7 +149,6 @@ Module PropertyUI
           EndIf
 
         Case #PB_Event_Gadget
-          Debug "PROPERTYUI : ON EVENT , NUM PROPS : "+Str(ListSize(*Me\props()))
           Define currentGadget = EventGadget()
           If ListSize(*Me\props())
             ForEach *Me\props()
@@ -431,8 +430,8 @@ Module PropertyUI
       If *Me\props() = *prop
         *Me\props()\expanded = #False
         *Me\props()\sizX = *Me\width
-        offY = *Me\props()\sizY - ControlHead::#HEAD_HEIGHT
-        *Me\props()\sizY = ControlHead::#HEAD_HEIGHT
+        offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
+        *Me\props()\sizY = ControlHead::#HEAD_BUTTON_SIZE
         ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
         dirty = #True
       Else
@@ -462,7 +461,7 @@ Module PropertyUI
         *Me\props()\sizX = *Me\width
         *Me\props()\sizY = ControlProperty::GetHeight(*Me\props())
         ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
-        offY = *Me\props()\sizY - ControlHead::#HEAD_HEIGHT
+        offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
         dirty = #True
       Else
         If dirty
@@ -516,9 +515,7 @@ Module PropertyUI
     Else
       *Me\anchorY = 0
     EndIf
-    
-   
-    ;PostEvent(#PB_EventType_Resize, EventWindow(), *Me\gadgetID)  
+  
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -538,8 +535,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 312
-; FirstLine = 293
+; CursorPosition = 506
+; FirstLine = 481
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

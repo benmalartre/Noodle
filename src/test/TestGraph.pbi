@@ -122,7 +122,7 @@ Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator
 
 ;AddEmptyTree(*tree)
  AddPushTree(*tree)
- AddAudioTree(*tree)
+;  AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
 Scene::AddChild(Scene::*current_scene,*teapot)
@@ -148,7 +148,7 @@ Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Prope
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 GraphUI::SetContent(*graph,*tree)
-
+ExplorerUI::Connect(*explorer, Scene::*current_scene)
 ; ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
@@ -158,7 +158,8 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 ViewportUI::AddLayer(*viewport, *layer)
 
 Scene::Setup(Scene::*current_scene,*app\context)
-; 
+PostEvent(Globals::#EVENT_NEW_SCENE)
+
 ; ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
 
 Procedure Update(*app.Application::Application_t)
@@ -185,8 +186,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 84
+; CursorPosition = 123
+; FirstLine = 103
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

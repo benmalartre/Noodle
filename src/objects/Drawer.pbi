@@ -588,17 +588,15 @@ Module Drawer
     *Me\type = Object3D::#Object3D_Drawer
     *Me\name = name
   
-    *Me\wireframe_r = Random(255)/255;
-    *Me\wireframe_g = Random(255)/255;
-    *Me\wireframe_b = Random(255)/255;
+    *Me\wireframe_r = Random(255)/255
+    *Me\wireframe_g = Random(255)/255
+    *Me\wireframe_b = Random(255)/255
     
+    Object3D::OBJECT3DATTR()
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
-   
-    ;*Me\bbox      = newCBox()
     
-    Object3D::Object3D_ATTR()
     
     ; Return Initialized Object
     ProcedureReturn *Me 
@@ -877,7 +875,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 406
-; FirstLine = 360
+; CursorPosition = 592
+; FirstLine = 569
 ; Folding = ---------
 ; EnableXP

@@ -774,7 +774,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
-  Callback::DECLARECALLBACK(NextFrame, #PB_Structure)
+  Callback::DECLARECALLBACK(NextFrame, Arguments::#PTR)
   
   ; ---[ Go to Previous Frame ]-------------------------------------------------
   Procedure PreviousFrame( *Me.ControlTimeline_t)
@@ -801,7 +801,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
-  Callback::DECLARECALLBACK(PreviousFrame, #PB_Structure)
+  Callback::DECLARECALLBACK(PreviousFrame, Arguments::#PTR)
   
   ; ---[ Play Forward ]---------------------------------------------------------
   Procedure PlayForward( *Me.ControlTimeline_t)
@@ -818,7 +818,7 @@ Module ControlTimeline
       EndIf
     EndIf   
   EndProcedure
-  Callback::DECLARECALLBACK(PlayForward, #PB_Structure)
+  Callback::DECLARECALLBACK(PlayForward, Arguments::#PTR)
   
   ; ---[ Play Backward ]---------------------------------------------------------
   Procedure PlayBackward( *Me.ControlTimeline_t)
@@ -836,7 +836,7 @@ Module ControlTimeline
       EndIf
     EndIf   
   EndProcedure
-  Callback::DECLARECALLBACK(PlayBackward, #PB_Structure)
+  Callback::DECLARECALLBACK(PlayBackward, Arguments::#PTR)
   
   ; ---[ Start Playback ]-------------------------------------------------------
   Procedure StartPlayback( *Me.ControlTimeline_t, forward.b)
@@ -857,7 +857,7 @@ Module ControlTimeline
       StopPlayback(*Me)
     EndIf   
   EndProcedure
-  Callback::DECLARECALLBACK(StartPlayback, #PB_Structure, #PB_Byte)
+  Callback::DECLARECALLBACK(StartPlayback, Arguments::#PTR, Arguments::#BOOL)
   
   
   ; ---[ Stop Playback ]--------------------------------------------------------
@@ -883,7 +883,7 @@ Module ControlTimeline
       EndIf
       SetCurrentFrame(*Me,Time::currentframe)
   EndProcedure
-  Callback::DECLARECALLBACK(StopPlayback, #PB_Structure)
+  Callback::DECLARECALLBACK(StopPlayback, Arguments::#PTR)
   
   
   ; ---[ Play Loop ]--------------------------------------------------------
@@ -895,7 +895,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
-  Callback::DECLARECALLBACK(PlayLoop, #PB_Structure)
+  Callback::DECLARECALLBACK(PlayLoop, Arguments::#PTR)
   
   
   ; ---[ Set Start Frame ]------------------------------------------------------
@@ -906,7 +906,7 @@ Module ControlTimeline
       Time::startframe = frame
     EndIf
   EndProcedure
-  Callback::DECLARECALLBACK(SetStartFrame, #PB_Structure, #PB_Integer)
+  Callback::DECLARECALLBACK(SetStartFrame, Arguments::#PTR, Arguments::#INT)
   
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndFrame( *Me.ControlTimeline_t,frame.i)
@@ -917,7 +917,7 @@ Module ControlTimeline
     EndIf  
   
   EndProcedure
-  Callback::DECLARECALLBACK(SetEndFrame, #PB_Structure, #PB_Integer)
+  Callback::DECLARECALLBACK(SetEndFrame, Arguments::#PTR, Arguments::#INT)
   
   ; ---[ Set Start Range ]------------------------------------------------------
   Procedure SetStartRange( *Me.ControlTimeline_t, frame.i)
@@ -929,7 +929,7 @@ Module ControlTimeline
     EndIf
     Time::startloop = Time::startrange
   EndProcedure
-  Callback::DECLARECALLBACK(SetStartRange, #PB_Structure, #PB_Integer)
+  Callback::DECLARECALLBACK(SetStartRange, Arguments::#PTR, Arguments::#INT)
   
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndRange( *Me.ControlTimeline_t,frame.i)
@@ -940,7 +940,7 @@ Module ControlTimeline
     EndIf  
     Time::endloop = Time::endrange
   EndProcedure
-  Callback::DECLARECALLBACK(SetEndRange, #PB_Structure, #PB_Integer)
+  Callback::DECLARECALLBACK(SetEndRange, Arguments::#PTR, Arguments::#INT)
   
   ; ---[ Set Current Frame ]----------------------------------------------------
   Procedure SetCurrentFrame( *Me.ControlTimeline_t,frame)
@@ -966,8 +966,7 @@ Module ControlTimeline
       ControlNumber::SetValue(*Me\c_currentframe,Str(Time::currentframe))
     EndIf
   EndProcedure
-  
-  Callback::DECLARECALLBACK(SetCurrentFrame, #PB_Structure, #PB_Integer)
+  Callback::DECLARECALLBACK(SetCurrentFrame, Arguments::#PTR, Arguments::#INT)
   
   ; ---[ Append Control ]---------------------------------------------------------------
   Procedure.i Append( *Me.ControlTimeline_t, *ctl.Control::Control_t )
@@ -993,28 +992,6 @@ Module ControlTimeline
     ProcedureReturn( ctl )
   
   EndProcedure
-  
-;   ; ---[ On Message ]----------------------------------------------------
-;   Procedure OnMessage( id.i, *up)
-;     Protected *sig.Signal::Signal_t = *up
-;     Protected *c.ControlNumber::ControlNumber_t = *sig\snd_inst
-;     Protected *t.ControlTimeline::ControlTimeline_t = *c\parent
-;     Protected v.i = *c\value_n
-; 
-;     Select *c\name
-;       Case "CurrentFrame"
-;         SetCurrentFrame(*t,v)
-;       Case "StartFrame"
-;         SetStartFrame(*t,v)
-;       Case "EndFrame"
-;         SetEndFrame(*t,v)
-;       Case "StartRange"
-;         SetStartRange(*t,v)
-;       Case "EndRange"
-;         SetEndRange(*t,v)
-;     EndSelect
-;     hlpDrawFrames( *t )
-;   EndProcedure
 
   
   ; ---[ Free ]-----------------------------------------------------------------
@@ -1158,7 +1135,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 70
+; CursorPosition = 993
+; FirstLine = 1074
 ; Folding = ------
 ; EnableXP

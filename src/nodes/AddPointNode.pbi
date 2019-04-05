@@ -30,10 +30,8 @@ DeclareModule AddPointNode
   ;------------------------------
   ;  ADMINISTRATION
   ;------------------------------
-  ;{
   Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("AddPointNode","Generators",@New())
   Nodes::AppendDescription(*desc)
-  ;}
   
   DataSection
     Node::DAT(AddPointNode)
@@ -62,17 +60,16 @@ Module AddPointNode
     If *obj\type = Object3D::#Object3D_PointCloud  Or *obj\type = Object3D::#Object3D_InstanceCloud
       Protected *pc.PointCloud::PointCloud_t = *obj
       *node\geom = *pc\geom
-      *node\errorstr = "Add Point Node valid!!"
+      *node\errorstr = ""
     Else
       *node\errorstr = "Add Point only works on Point Cloud"
       *node\geom = #Null
     EndIf
     
-    Debug "Error STr AddPointNode : "+*node\errorstr
-    
   EndProcedure
   
   Procedure Evaluate(*node.AddPointNode_t)    
+    Debug "EVALUATE ADD POINT NODE...."
     FirstElement(*node\inputs())
     If *node\geom
       
@@ -87,16 +84,20 @@ Module AddPointNode
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
         EndIf
       ElseIf *inP\currenttype = Attribute::#ATTR_TYPE_LOCATION
-        Protected *loc_data.CArray::CArrayPtr = NodePort::AcquireInputData(*node\inputs())
+        Protected *loc_data.CArray::CArrayLocation = NodePort::AcquireInputData(*node\inputs())
         Protected *pos_data.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-        Protected *loc.Geometry::Location_t
-        If CArray::GetCount(*loc_data)
+        Define numLocations= CArray::GetCount(*loc_data)
+        If numLocations
+          CArray::SetCount(*pos_data, numLocations)
+          Protected *loc.Geometry::Location_t
+
           Protected j
           Protected *pos.v3f32
-          For j=0 To CArray::GetCount(*loc_data)-1
-            *loc = CArray::GetValuePtr(*loc_data,j)
-            *pos = Location::GetPosition(*loc)
-            CArray::Append(*pos_data,*pos)
+          For j=0 To numLocations-1
+            *loc = CArray::GetValue(*loc_data,j)
+            Debug *loc
+            Location::GetPosition(*loc)
+            CArray::SetValue(*pos_data, j, *loc\p)
           Next
           
           PointCloudGeometry::AddPoints(*node\geom,*pos_data)
@@ -106,8 +107,6 @@ Module AddPointNode
           CArray::Delete(*pos_data)
         EndIf
       EndIf
-    Else
-      MessageRequester("AddPointNode","No Point Cloud Geometry")
     EndIf
     
   EndProcedure
@@ -119,7 +118,6 @@ Module AddPointNode
   Procedure Delete(*node.AddPointNode_t)
     FreeMemory(*node)
   EndProcedure
-  
   
   
   ; ============================================================================
@@ -148,7 +146,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 89
+; CursorPosition = 97
+; FirstLine = 71
 ; Folding = --
 ; EnableXP

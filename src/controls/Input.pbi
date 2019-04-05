@@ -19,7 +19,7 @@ DeclareModule ControlInput
     timer.i
   EndStructure
  
-  Declare New(gadgetID.i,x.i, y.i, width.i, height.i, name.s, options.i=0)
+  Declare New(*parent.Control::Control_t,x.i, y.i, width.i, height.i, name.s, options.i=0)
   Declare Delete(*Me.ControlInput_t)
   Declare Draw( *Me.ControlInput_t, xoff.i = 0, yoff.i = 0 )
   Declare DrawPickImage(*Me.ControlInput_t, id.i)
@@ -142,20 +142,21 @@ Module ControlInput
   ; -------------------------------------------------------------
   ;   CONSTRUCTOR
   ; -------------------------------------------------------------
-  Procedure New(gadgetID.i,x.i,y.i,width.i,height.i,name.s, options.i=0)
+  Procedure New(*parent.Control::Control_t, x.i,y.i,width.i,height.i,name.s, options.i=0)
     Protected *Me.ControlInput_t = AllocateMemory(SizeOf(ControlInput_t))
     Object::INI(ControlInput)
-    *Me\gadgetID = gadgetID
-    *Me\posX=x
-    *Me\posY=y
-    *Me\caret_l = -1
-    *Me\caret_r = -1
-    *Me\sizX=width
-    *Me\sizY=height
-    *Me\name=name
-    *Me\label=name
-    *Me\type = Control::#INPUT
-    *Me\options = options
+    *Me\parent    = *parent
+    *Me\gadgetID  = *parent\gadgetID
+    *Me\posX      = x
+    *Me\posY      = y
+    *Me\caret_l   = -1
+    *Me\caret_r   = -1
+    *Me\sizX      = width
+    *Me\sizY      = height
+    *Me\name      = name
+    *Me\label     = name
+    *Me\type      = Control::#INPUT
+    *Me\options   = options
     *Me\on_change = Object::NewSignal(*Me, "OnChange")
     ProcedureReturn *Me
   EndProcedure
@@ -250,7 +251,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 179
+; CursorPosition = 153
+; FirstLine = 127
 ; Folding = --
 ; EnableXP

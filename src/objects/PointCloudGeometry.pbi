@@ -317,9 +317,6 @@ Module PointCloudGeometry
   
       ;Increment Counter
       *p\incrementID + 1
-      
-      
-      
     Next i
     
   EndProcedure
@@ -401,6 +398,7 @@ Module PointCloudGeometry
   Class::DEF( PointCloudGeometry )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 21
+; CursorPosition = 318
+; FirstLine = 277
 ; Folding = ---
 ; EnableXP

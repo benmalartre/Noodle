@@ -11,32 +11,33 @@ DeclareModule Attribute
   UseModule Math
   ; Node Data IO Types
   Enumeration
-    #ATTR_TYPE_UNDEFINED        = %000000000000000000000000
-    #ATTR_TYPE_NEW              = %000000000000000000000001
-    #ATTR_TYPE_BOOL             = %000000000000000000000010
-    #ATTR_TYPE_LONG             = %000000000000000000000100
-    #ATTR_TYPE_INTEGER          = %000000000000000000001000
-    #ATTR_TYPE_FLOAT            = %000000000000000000010000
-    #ATTR_TYPE_VECTOR2          = %000000000000000000100000
-    #ATTR_TYPE_VECTOR3          = %000000000000000001000000
-    #ATTR_TYPE_VECTOR4          = %000000000000000010000000
-    #ATTR_TYPE_COLOR            = %000000000000000100000000
-    #ATTR_TYPE_ROTATION         = %000000000000001000000000
-    #ATTR_TYPE_QUATERNION       = %000000000000010000000000
-    #ATTR_TYPE_MATRIX3          = %000000000000100000000000
-    #ATTR_TYPE_MATRIX4          = %000000000001000000000000
-    #ATTR_TYPE_STRING           = %000000000010000000000000
-    #ATTR_TYPE_SHAPE            = %000000000100000000000000
-    #ATTR_TYPE_TOPOLOGY         = %000000001000000000000000
-    #ATTR_TYPE_GEOMETRY         = %000000010000000000000000
-    #ATTR_TYPE_LOCATION         = %000000100000000000000000
-    #ATTR_TYPE_EXECUTE          = %000001000000000000000000
-    #ATTR_TYPE_GROUP            = %000010000000000000000000
-    #ATTR_TYPE_REFERENCE        = %000100000000000000000000
-    #ATTR_TYPE_FILE             = %001000000000000000000000
-    #ATTR_TYPE_AUDIO            = %010000000000000000000000
-    #ATTR_TYPE_CUSTOM           = %100000000000000000000000
-    #ATTR_TYPE_POLYMORPH        = %000001111111111111111110
+    #ATTR_TYPE_UNDEFINED        = %0000000000000000000000000
+    #ATTR_TYPE_NEW              = %0000000000000000000000001
+    #ATTR_TYPE_BOOL             = %0000000000000000000000010
+    #ATTR_TYPE_LONG             = %0000000000000000000000100
+    #ATTR_TYPE_INTEGER          = %0000000000000000000001000
+    #ATTR_TYPE_ENUM             = %0000000000000000000010000
+    #ATTR_TYPE_FLOAT            = %0000000000000000000100000
+    #ATTR_TYPE_VECTOR2          = %0000000000000000001000000
+    #ATTR_TYPE_VECTOR3          = %0000000000000000010000000
+    #ATTR_TYPE_VECTOR4          = %0000000000000000100000000
+    #ATTR_TYPE_COLOR            = %0000000000000001000000000
+    #ATTR_TYPE_ROTATION         = %0000000000000010000000000
+    #ATTR_TYPE_QUATERNION       = %0000000000000100000000000
+    #ATTR_TYPE_MATRIX3          = %0000000000001000000000000
+    #ATTR_TYPE_MATRIX4          = %0000000000010000000000000
+    #ATTR_TYPE_STRING           = %0000000000100000000000000
+    #ATTR_TYPE_SHAPE            = %0000000001000000000000000
+    #ATTR_TYPE_TOPOLOGY         = %0000000010000000000000000
+    #ATTR_TYPE_GEOMETRY         = %0000000100000000000000000
+    #ATTR_TYPE_LOCATION         = %0000001000000000000000000
+    #ATTR_TYPE_EXECUTE          = %0000010000000000000000000
+    #ATTR_TYPE_GROUP            = %0000100000000000000000000
+    #ATTR_TYPE_REFERENCE        = %0001000000000000000000000
+    #ATTR_TYPE_FILE             = %0010000000000000000000000
+    #ATTR_TYPE_AUDIO            = %0100000000000000000000000
+    #ATTR_TYPE_CUSTOM           = %1000000000000000000000000
+    #ATTR_TYPE_POLYMORPH        = %0000011111111111111111100
   EndEnumeration
   
   Enumeration
@@ -69,6 +70,7 @@ DeclareModule Attribute
   #ATTR_COLOR_UNDEFINED         = $000000
   #ATTR_COLOR_BOOL              = $0066FF
   #ATTR_COLOR_INTEGER           = $116633
+  #ATTR_COLOR_ENUM              = $119933
   #ATTR_COLOR_FLOAT             = $33CC33
   #ATTR_COLOR_VECTOR2           = $00CCFF
   #ATTR_COLOR_VECTOR3           = $00FFFF
@@ -82,7 +84,7 @@ DeclareModule Attribute
   #ATTR_COLOR_SHAPE             = $9933FF
   #ATTR_COLOR_TOPOLOGY          = $CCCCCC
   #ATTR_COLOR_GEOMETRY          = $6633FF
-  #ATTR_COLOR_LOCATION          = $77DD77
+  #ATTR_COLOR_LOCATION          = $775555
   #ATTR_COLOR_EXECUTE           = $777777
   #ATTR_COLOR_REFERENCE         = $CC6611
   #ATTR_COLOR_FRAMEBUFFER       = $FF6600
@@ -90,7 +92,7 @@ DeclareModule Attribute
   #ATTR_COLOR_UNIFORM           = $FFCCAA 
   #ATTR_COLOR_SHADER            = $FFFFCC
   #ATTR_COLOR_3DOBJECT          = $00DDFF 
-  #ATTR_COLOR_AUDIO             = $FF99DD
+  #ATTR_COLOR_AUDIO             = $AA22CC
   #ATTR_COLOR_FILE              = $FF9933
   #ATTR_COLOR_CUSTOM            = $DDDDDD
   
@@ -112,10 +114,11 @@ DeclareModule Attribute
     datastructure.i
     datacontext.i
     *data     ; Pointer to data
+    atomic.b
     constant.b
     readonly.b
-    dirty.b
     writable.b
+    dirty.b
   EndStructure
   
   Macro GetValue(_attribute)
@@ -135,7 +138,7 @@ DeclareModule Attribute
     EndSelect
   EndMacro
   
-  Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,read_only.b,constant.b,writable.b=#True)
+  Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,atomic.b,read_only.b,constant.b,writable.b=#True)
   Declare Delete(*attribute.Attribute_t)
   Declare GetSize(*attribute.Attribute_t)
   Declare Get(*attribute.Attribute_t,*out_datas)
@@ -145,6 +148,7 @@ DeclareModule Attribute
   Declare SetFromString(*attribute.Attribute_t,in_string.s)
   Declare SetFromBase64(*attribute.Attribute_t,in_base64.s)
   Declare ReadOnly(*attribute.Attribute_t)
+  Declare PassThrough(*src.Attribute_t, *dst.Attribute_t)
 ;   Declare GetValue(*attribute.Attribute_t)
   Global CLASS.Class::Class_t
   
@@ -515,69 +519,71 @@ Module Attribute
   Procedure ReadOnly(*attribute.Attribute_t)
     ProcedureReturn *attribute\readonly
   EndProcedure
-  
-  ; ;-----------------------------------------------------
-  ; ; Get Size
-  ; ;-----------------------------------------------------
-  ; Procedure OGraphAttribute_GetSize(*attribute.Attribute_t)
-  ;   Select *attribute\datacontext
-  ;     Case #ATTR_STRUCT_SINGLE
-  ;       n
-  ;     Case #ATTR_STRUCT_ARRAY
-  ;   EndSelect
-  ;   
-  ; EndProcedure
-  
+
   ;-----------------------------------------------------
-  ; On Message
+  ; Copy
   ;-----------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-    
-;     Protected *sig.Signal::Signal_t = *up
-;     Protected *attr.Attribute::Attribute_t = *sig\rcv_inst
-; ;     If *attr\datastructure = #ATTR_STRUCT_SINGLE And *attr\datacontext = #ATTR_CTXT_SINGLETON
-;       Select *attr\datatype
-;         Case #ATTR_TYPE_BOOL
-;           Protected b.b = PeekB(*sig\sigdata)
-;           PokeB(*attr\data,b)
-;           Debug "Boolean Value : "+Str(b)
-;           *attr\dirty = #True
-;         Case #ATTR_TYPE_INTEGER
-;           MessageRequester("Attribute","Attribute Integer")
-;           Protected i.i = PeekI(*sig\sigdata)
-;           PokeI(*attr\data,i)
-;           Debug "Integer Value : "+Str(i)
-;           *attr\dirty = #True
-;         Case #ATTR_TYPE_LONG
-;           MessageRequester("Attribute","Attribute Long")
-;           Protected l.l = PeekL(*sig\sigdata)
-;           PokeL(*attr\data,l)
-;           Debug "Long Value : "+Str(l)
-;           *attr\dirty = #True
-;         Case #ATTR_TYPE_FLOAT
-;           MessageRequester("Attribute","Attribute Float")
-;           Protected f.f = PeekF(*sig\sigdata)
-;           PokeF(*attr\data,f)
-;           Debug "Float Value : "+Str(f)
-;           *attr\dirty = #True
-;         Case #ATTR_TYPE_VECTOR2
-;           Protected *v2.v2f32 = *sig\sigdata
-;           CopyMemory(*attr\data,*v2,SizeOf(v2f32))
-;           Vector2::Echo(*v2,"Vector2 Value")
-;           *attr\dirty = #True
-;         Case #ATTR_TYPE_VECTOR3
-;           Protected *v3.v3f32 = *sig\sigdata
-;           CopyMemory(*attr\data,*v3,SizeOf(v3f32))
-;           Vector3::Echo(*v3,"Vector3 Value")
-;           *attr\dirty = #True
-;       EndSelect
-;     EndIf
+  Procedure PassThrough(*src.Attribute_t, *dst.Attribute_t)
+    If *src\atomic And *dst\atomic
+      Select *src\datatype
+        Case Attribute::#ATTR_TYPE_BOOL
+          PokeB(*dst\data, PeekB(*dst\data))
+        Case Attribute::#ATTR_TYPE_LONG
+          PokeL(*dst\data, PeekL(*dst\data))
+        Case Attribute::#ATTR_TYPE_INTEGER
+          PokeI(*dst\data, PeekI(*dst\data))
+        Case Attribute::#ATTR_TYPE_FLOAT
+          PokeF(*dst\data, PeekF(*dst\data))
+        Case Attribute::#ATTR_TYPE_VECTOR2
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::v2f32))
+        Case Attribute::#ATTR_TYPE_VECTOR3
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::v3f32))
+        Case Attribute::#ATTR_TYPE_VECTOR4
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::v4f32))
+        Case Attribute::#ATTR_TYPE_COLOR
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::c4f32))
+        Case Attribute::#ATTR_TYPE_QUATERNION
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::q4f32))
+        Case Attribute::#ATTR_TYPE_MATRIX3
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::m3f32))
+        Case Attribute::#ATTR_TYPE_MATRIX4
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::m4f32))
+        Case Attribute::#ATTR_TYPE_LOCATION
+          CopyMemory(*src\data, *dst\data, SizeOf(Math::locf32))
+        Case Attribute::#ATTR_TYPE_TOPOLOGY
+          
+          Define *itopo.Math::topof32 = *src\data
+          Define *otopo.Math::topof32 = *dst\data
+          Define *vertices.CArray::CArrayV3f32 = *itopo\vertices
+
+          CArray::Copy(*otopo\vertices, *itopo\vertices)
+          CArray::Copy(*otopo\faces, *itopo\faces)
+        Default
+          CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
+            CopyMemory(*src\data, *dst\data, 4)
+          CompilerElse
+            CopyMemory(*src\data, *dst\data, 8)
+          CompilerEndIf 
+      EndSelect
+    ElseIf Not *src\atomic And Not *dst\atomic
+      If CArray::GetCount(*src\data) : CArray::Copy(*dst\data,*src\data) : EndIf
+    Else
+      If *src\atomic
+        Define *dstArray.CArray::CArrayT = *dst\data
+        CopyMemory(*src\data,*dstArray\data, *dstArray\itemSize)
+      Else
+        Define *srcArray.CArray::CArrayT = *src\data
+        CopyMemory(*srcArray\data,*dst\data, *srcArray\itemSize)
+      EndIf
+
+    EndIf
+
   EndProcedure
   
   
-  ;-----------------------------------------------------
+  ;-----------------------------------------------------------------------------
   ; Destructor
-  ;-----------------------------------------------------
+  ;-----------------------------------------------------------------------------
   Procedure Delete(*Me.Attribute_t)
     ClearStructure(*Me,Attribute_t)
     FreeMemory(*Me)
@@ -587,19 +593,21 @@ Module Attribute
   ;  CONSTRUCTORS
   ; ============================================================================
   ;{
-  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,read_only.b,constant.b,writable.b=#True)
+  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True)
+    ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
-    
     Object::INI(Attribute)
+    
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\datatype = datatype
+    *Me\datatype      = datatype
     *Me\datastructure = datastructure
-    *Me\datacontext = datacontext
-    *Me\data = *ptr
-    *Me\name = name
-    *Me\constant = constant
-    *Me\readonly = read_only
-    *Me\writable = writable
+    *Me\datacontext   = datacontext
+    *Me\data          = *ptr
+    *Me\name          = name
+    *Me\atomic        = atomic
+    *Me\constant      = constant
+    *Me\readonly      = read_only
+    *Me\writable      = writable
    
     ProcedureReturn *Me
     
@@ -608,7 +616,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 60
-; Folding = ---
+; CursorPosition = 526
+; FirstLine = 523
+; Folding = ----
 ; EnableXP

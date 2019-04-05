@@ -43,15 +43,17 @@ Module Loader
     Protected *m.Math::m4f32 = *t\m
     Protected localTransform.i = ChildXMLNode(kinematics, 1)
     value.s = GetXMLAttribute(localTransform,"Value")
-    MessageRequester("LOADER","MATRIX : "+value)
+    Debug "VALUE : "+value
     Matrix4::FromString(*m, value)
+    Matrix4::Echo(*m, "HOUHOU OO : ")
 ;     Protected bufferLength.i = Len(lm)+2
 ;     Protected *mem = AllocateMemory(bufferLength)
 ;     PokeS(*mem,lm,bufferLength)
 ;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
-    Transform::UpdateSRTFromMatrix(*t)
-    Object3D::SetLocalTransform(*obj,*t)
-    Object3D::UpdateTransform(*obj,#Null)
+;     Transform::UpdateSRTFromMatrix(*t)
+;     Vector3::Echo(*t\t\pos, "TRANSFORM POSITION")
+;     Object3D::SetLocalTransform(*obj,*t)
+;     Object3D::UpdateTransform(*obj,#Null)
     
   
      
@@ -454,11 +456,11 @@ Module Loader
       Case "PointCloud"
         name.s= GetXMLNodeName(node)
         Protected *cloud.PointCloud::PointCloud_t = PointCloud::New(name,0)
-        Object3D::AddChild(*parent,*cloud)
-        Scene::AddObject(*scene,*cloud)
         Protected *pcgeom.Geometry::PointCloudGeometry_t = *cloud\geom
         *object = *cloud
         LoadAttributes(*Me,node,*cloud)
+        Object3D::AddChild(*parent,*cloud)
+        Scene::AddObject(*scene,*cloud)
         *cloud\dirty = #True
         *parent = cloud
         *Me\numLoaded3DObject +1
@@ -468,13 +470,11 @@ Module Loader
       Case "Polymesh"
         Debug "THIS IS A POLYMESH..."
         name.s = GetXMLNodeName(node)
-        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_NONE)
-        Object3D::AddChild(*parent,*mesh)
-        Scene::AddChild(*scene,*mesh)
-        Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-        *object = *mesh
-        ;PolymeshGeometry::BunnyTopology(*geom\base)
+        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_None)
         LoadPolymesh(*Me,node,*mesh)
+        *object = *mesh
+        Object3D::AddChild(*parent,*mesh)
+        Scene::AddObject(*scene,*mesh)
         
         *parent = *mesh
         *Me\numLoaded3DObject +1
@@ -505,7 +505,7 @@ Module Loader
   ;------------------------------------------------------------------
   Procedure Load(*Me.Loader_t)
     If Scene::*current_scene : Scene::Delete(Scene::*current_scene) : EndIf
-    
+
     Scene::*current_scene = Scene::New("Clone")
     Protected root.i = ChildXMLNode(RootXMLNode(*Me\xml))
     Protected name.s = GetXMLNodeName(root)
@@ -515,9 +515,7 @@ Module Loader
       n = ChildXMLNode(root,o)
       Load3DObject(*Me,n,Scene::*current_scene,Scene::*current_scene\root)
     Next
-    
-    MessageRequester("LOADER","NUM LOADED 3D OBEJCTS : "+Str(*Me\numLoaded3DObject))
-    
+    PostEvent(Globals::#EVENT_NEW_SCENE)
     ProcedureReturn Scene::*current_scene
   EndProcedure
   ;------------------------------------------------------------------
@@ -548,8 +546,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 197
+; CursorPosition = 517
+; FirstLine = 487
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
