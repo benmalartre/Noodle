@@ -540,7 +540,7 @@ Module NodePort
   ;-----------------------------------------------------------------------------
   Procedure IsAtomic(*Me.NodePort_t)
     If Not *Me\io And *Me\connected
-      ProcedureReturn *Me\attribute\atomic
+      ProcedureReturn *Me\source\attribute\atomic
     Else
       ProcedureReturn *Me\attribute\atomic
     EndIf
@@ -814,7 +814,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 545
+; CursorPosition = 542
 ; FirstLine = 536
 ; Folding = -----
 ; EnableXP

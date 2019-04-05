@@ -125,18 +125,15 @@ Module SetDataNode
   EndProcedure
   
   Procedure Evaluate(*node.SetDataNode_t)
-    Debug "SET DATA 0"
     FirstElement(*node\inputs())
     Define *input.NodePort::NodePort_t = *node\inputs()
     Define x, i, size_t
     Define v.v3f32
-    Debug "SET DATA 1"
     Define *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
     If Not *node\attribute Or *ref\refchanged
       ResolveReference(*node.SetDataNode_t)
       *ref\refchanged = #False
     EndIf
-    Debug "SET DATA 2"
     If Not *node\attribute : ProcedureReturn : EndIf
     
     Define *obj.Object3D::Object3D_t
@@ -144,12 +141,10 @@ Module SetDataNode
     Define *mesh.Polymesh::Polymesh_t
     
     If NodePort::IsAtomic(*input)
-      Debug "SET DATA ATOMIC 1"
       Define *inAttr.Attribute::Attribute_t = NodePort::AcquireInputAttribute(*input)
       Define *outAttr.Attribute::Attribute_t = *node\attribute
 
       If *node\state = Graph::#Node_StateOK And *inAttr And*outAttr
-        Debug "SET DATA ATOMIC 2"
         Attribute::PassThrough(*inAttr, *outAttr)
         Select *input\currenttype
           Case Attribute::#ATTR_TYPE_MATRIX4
@@ -174,20 +169,19 @@ Module SetDataNode
             EndIf
   
           Case Attribute::#ATTR_TYPE_TOPOLOGY
-            Debug "SET DATA ATOMIC 3"
             If *outAttr\name = "Topology"
               Define *iTopo.Geometry::Topology_t = *inAttr\data
               *parent = *node\parent3dobject
               If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
                 Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
-                ;If *iTopo\dirty
+                If *iTopo\dirty
                 PolymeshGeometry::Set2(*geom,*iTopo)
                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
                 *iTopo\dirty = #False
-;               Else
-;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-;                EndIf
+              Else
+                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+               EndIf
               Log::Message("[SetDataNode] Update Polymesh Topology")
             Else
               Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
@@ -196,11 +190,8 @@ Module SetDataNode
         EndSelect  
       EndIf
     Else
-      Debug "SET DATA ARRAY 1"
       Define *in_data.CArray::CArrayT = NodePort::AcquireInputData(*input)
       If *node\state = Graph::#Node_StateOK And *in_data And *node\attribute
-        Debug "SET DATA ARRAY 2"
-
         size_t = Carray::GetCount(*in_data)
         Select *input\currenttype
         Case Attribute::#ATTR_TYPE_BOOL
@@ -292,14 +283,14 @@ Module SetDataNode
             
             If *parent And Object3D::IsA(*parent,Object3D::#Object3D_Polymesh)
               Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
-              ;If *iTopo\dirty
+              If *iTopo\dirty
                 PolymeshGeometry::Set2(*geom,*iTopo)
                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
                 *iTopo\dirty = #False
-;               Else
-;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-;                EndIf
+              Else
+                 PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+                 Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+               EndIf
               Log::Message("[SetDataNode] Update Polymesh Topology")
             Else
               Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
@@ -347,8 +338,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 176
-; FirstLine = 158
+; CursorPosition = 147
+; FirstLine = 119
 ; Folding = --
 ; EnableThread
 ; EnableXP
