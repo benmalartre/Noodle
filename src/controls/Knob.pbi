@@ -105,8 +105,8 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_LABEL
-  Protected bgc.i = UIColor::COLORA_MAIN_BG
+  Protected tc.i = UIColor::COLOR_LABEL
+  Protected bgc.i = UIColor::COLOR_MAIN_BG
 
 ;   AddPathBox(xoff + *Me\posX, yoff+*Me\posY, *Me\sizX, *Me\sizY)
 ;   VectorSourceColor(bgc)
@@ -494,7 +494,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 12
+; CursorPosition = 108
+; FirstLine = 103
 ; Folding = ---
 ; EnableXP

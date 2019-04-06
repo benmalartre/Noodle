@@ -22,7 +22,7 @@ DeclareModule ControlSlider
   Interface IControlSlider Extends Control::IControl
   EndInterface
     
-  Declare .i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare .i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlSlider_t)
   Declare OnEvent( *Me.ControlSlider_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare Draw(*Me.ControlSlider_t)
@@ -129,6 +129,7 @@ Module ControlSlider
           Define my.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY) - *Me\posY
           Define perc.f = GetPercentageFromMouse(*Me, mx, my)
           PercentageToValue(*Me, perc)
+          Signal::Trigger(*Me\on_change, SIgnal::#SIGNAL_TYPE_PING)
           Control::Invalidate(*Me)
         EndIf
 
@@ -141,7 +142,7 @@ Module ControlSlider
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(gadgetID.i, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlSlider_t = AllocateMemory( SizeOf(ControlSlider_t) )
@@ -151,7 +152,8 @@ Module ControlSlider
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type         = Control::#SLIDER
     *Me\name         = name
-    *Me\gadgetID     = gadgetID
+    *Me\parent       = *parent
+    *Me\gadgetID     = *parent\gadgetID
     *Me\posX         = x
     *Me\posY         = y
     *Me\sizX         = width
@@ -188,8 +190,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 81
+; CursorPosition = 131
+; FirstLine = 98
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -52,7 +52,6 @@ Module ControlInput
   ;   DRAW
   ; -------------------------------------------------------------
   Procedure Draw(*Me.ControlInput_t, xoff.i=0, yoff.i=0)
-    Debug "CONTROL INPUT DRAW ..................................................................."
     ; background
     AddPathBox(*Me\posX+#INPUT_BORDER, *Me\posY+#INPUT_BORDER+xoff, *Me\sizX-2*#INPUT_BORDER+yoff, *Me\sizY-2*#INPUT_BORDER)
     VectorSourceColor(UIColor::RANDOMIZED)
@@ -251,7 +250,6 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 127
+; CursorPosition = 54
 ; Folding = --
 ; EnableXP

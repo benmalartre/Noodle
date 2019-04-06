@@ -77,7 +77,7 @@ Module ControlCombo
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = UIColor::COLORA_LABEL
+    Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont( FontID(Globals::#FONT_DEFAULT ))
@@ -90,7 +90,7 @@ Module ControlCombo
       FillPath()
      
       ; ---[ Disabled Text ]----------------------------------------------------
-      tc = UIColor::COLORA_LABEL_DISABLED
+      tc = UIColor::COLOR_LABEL_DISABLED
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       ; ---[ Down ]-------------------------------------------------------------
@@ -99,7 +99,7 @@ Module ControlCombo
         VectorSourceColor(UIColor::RANDOMIZED)
         FillPath()
         ; ---[ Negate Text ]----------------------------------------------------
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       ; ---[ Up ]---------------------------------------------------------------
       Else
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
@@ -114,7 +114,7 @@ Module ControlCombo
         VectorSourceColor(UIColor::RANDOMIZED)
         FillPath()
         ; ---[ Negate Text ]----------------------------------------------------
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       ; °°°[ Up ]---------------------------------------------------------------
       Else
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
@@ -376,7 +376,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 310
-; FirstLine = 265
+; CursorPosition = 116
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP

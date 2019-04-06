@@ -66,7 +66,7 @@ Module TransformTopoNode
     
     Protected *outTopoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*outTopo)
     
-    ;Clear old Data
+    ; Clear old Data
     Protected i
     For i=0 To CArray::GetCount(*outTopoArray)-1
       Topology::Delete(CArray::GetValuePtr(*outTopoArray,i))
@@ -74,13 +74,15 @@ Module TransformTopoNode
     CArray::SetCount(*outTopoArray,0)
        
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*inTopoArray,0)
-
+          
     If *topo And CArray::GetCount(*inTsArray)>1
       Topology::TransformArray(*topo,*inTsArray,*outTopoArray)
     ElseIf *topo And CArray::GetCount(*inTsArray)=1
       Protected *out = Topology::New(*topo)
       Topology::Transform(*out,CArray::GetValue(*inTsArray,0))
       CArray::AppendPtr(*outTopoArray,*out)
+    Else
+
     EndIf
     
 
@@ -123,7 +125,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 41
+; CursorPosition = 84
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

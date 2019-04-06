@@ -51,8 +51,8 @@ Procedure Resize(window,gadget)
 ;   glViewport(0,0,width,height)
 EndProcedure
 
-Procedure AddNull(*parent.Object3D::Object3D_t,name.s,x.f,y.f,z.f)
-  Protected *n.Null::Null_t = Null::New(name.s)
+Procedure AddLocator(*parent.Object3D::Object3D_t,name.s,x.f,y.f,z.f)
+  Protected *n.Locator::Locator_t = Locator::New(name.s)
   Protected *t.Transform::Transform_t = *n\localT
   ;   Vector3::Set(*t\t\pos,x,y,z)
   Debug "###### SET TRANSLATION XYZ VALUES :  "+StrF(x)+","+StrF(y)+","+StrF(z)
@@ -77,15 +77,15 @@ Procedure AddGridNull(*root.Model::Model_t,*shader.Program::Program_t,i,j,k,widt
   zs = depth/k
   
   Protected ii,jj,kk
-  Protected *n.Null::Null_t
+  Protected *n.Locator::Locator_t
   For ii=0 To i-1
     For jj=0 To j-1
       For kk=0 To k-1
         Debug "Null"+Str(i)+Str(j)+Str(k)+" ---> "+StrF(x+ii*xs)+","+StrF(y+jj*ys)+","+StrF(z+kk*zs)
         *n = AddNull(*root,"Null"+Str(i)+Str(j)+Str(k),x+ii*xs,y+jj*ys,z+kk*zs)
-        *n\icon = Null::#Icon_Default
+        *n\icon = Locator::#Icon_Default
         
-        Null::SetShader(*n,*shader)
+        Locator::SetShader(*n,*shader)
         
       Next
     Next
@@ -171,8 +171,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 56
+; CursorPosition = 87
+; FirstLine = 83
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -88,6 +88,9 @@ CompilerEndIf
   XIncludeFile "BuildIndexArrayNode.pbi"
   XIncludeFile "ArraySubIndicesNode.pbi"
   XIncludeFile "MatrixArrayNode.pbi"
+  XIncludeFile "ArraySizeNode.pbi"
+  XIncludeFile "ArrayMinimumNode.pbi"
+  XIncludeFile "ArrayMaximumNode.pbi"
   
   ; Utils
   XIncludeFile "IfNode.pbi"
@@ -138,6 +141,7 @@ CompilerEndIf
   XIncludeFile "TransformTopoNode.pbi"
   XIncludeFile "MergeTopoNode.pbi"
   XIncludeFile "MergeTopoArrayNode.pbi"  
+  XIncludeFile "ExtrusionNode.pbi"  
   
   ; Alembic
   CompilerIf #USE_ALEMBIC 
@@ -150,8 +154,8 @@ CompilerEndIf
 ;   
   IncludePath "../"
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 60
+; CursorPosition = 139
+; FirstLine = 89
 ; Folding = --
 ; EnableThread
 ; EnableXP

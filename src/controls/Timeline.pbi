@@ -150,12 +150,12 @@ Module ControlTimeline
     
     ;---[ Draw Frames ]---------------------------------------------------------
     AddPathBox(l,0,w,h)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     MovePathCursor(l,h-1)
     AddPathLine(w,1, #PB_Path_Relative)
-    VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
+    VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
     
     For f=Time::startframe To Time::endframe
       If f%m = 0
@@ -171,7 +171,7 @@ Module ControlTimeline
       EndIf
     Next f
     
-    VectorSourceColor(UIColor::COLORA_LABEL)
+    VectorSourceColor(UIColor::COLOR_LABEL)
     StrokePath(1)
     
     ;---[ Draw Current Frame ]--------------------------------------------------
@@ -209,7 +209,7 @@ Module ControlTimeline
     ;---[ Start Drawing ]-------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     AddPathBox(0,*Me\sizY-30,*Me\sizX,30)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ; ---[ Redraw Children ]----------------------------------------------------
@@ -414,7 +414,7 @@ Module ControlTimeline
           ev_data\yoff    = *son\posY
           StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
           AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-          VectorSourceColor(UIColor::COLORA_MAIN_BG )
+          VectorSourceColor(UIColor::COLOR_MAIN_BG )
           FillPath()
           son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
           StopVectorDrawing()
@@ -1135,7 +1135,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 993
-; FirstLine = 1074
+; CursorPosition = 416
+; FirstLine = 357
 ; Folding = ------
 ; EnableXP

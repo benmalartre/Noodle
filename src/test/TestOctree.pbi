@@ -23,7 +23,7 @@ Global *viewport.ViewportUI::ViewportUI_t
 Global *octree.Octree::Octree_t
 Global *mesh.Polymesh::Polymesh_t
 Global *geom.Geometry::PolymeshGeometry_t
-Global *query.Null::Null_t
+Global *query.Locator::Locator_t
 
 Procedure PolygonSoup()
   Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_None)
@@ -206,7 +206,7 @@ Define T.d = Time::Get()
 Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
 *drawer = Drawer::New()
 Define polygonSoupT.d = Time::Get() - T
-*query = Null::New("QUERY")
+*query = Locator::New("QUERY")
 
 *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 
@@ -252,8 +252,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 29
+; CursorPosition = 208
+; FirstLine = 193
 ; Folding = -
 ; EnableThread
 ; EnableXP

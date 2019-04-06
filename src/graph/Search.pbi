@@ -16,7 +16,7 @@ DeclareModule NodeSearch
     List *nodes.Nodes::NodeDescription_t()
   EndStructure
   
-  Declare New(x.i,y.i)
+  Declare New(window.i,x.i,y.i)
   Declare Delete(*Me.NodeSearch_t)
   Declare Update(*Me.NodeSearch_t)
   Declare UpdateList(*Me.NodeSearch_t,force.b=#False)
@@ -25,10 +25,10 @@ EndDeclareModule
 Module NodeSearch
   ; CONSTRUCTOR
   ; -----------------------------------------------------------------
-  Procedure New(x.i,y.i)
+  Procedure New(window.i,x.i,y.i)
     Protected *Me.NodeSearch_t = AllocateMemory(SizeOf(NodeSearch_t))
     InitializeStructure(*Me,NodeSearch_t)
-    *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess)
+    *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess,WindowID(window))
     SetWindowColor(*Me\window,UIColor::COLOR_MAIN_BG)
     *Me\input = StringGadget(#PB_Any,0,0,WindowWidth(*Me\window),30,"")
     SetGadgetColor(*Me\input,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
@@ -175,8 +175,8 @@ Module NodeSearch
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 68
+; CursorPosition = 18
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

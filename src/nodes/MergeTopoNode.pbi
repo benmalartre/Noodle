@@ -61,15 +61,10 @@ Module MergeTopoNode
     Define *topologyArray.CArray::CArrayPtr = NodePort::AcquireInputData(*port)
     ProcedureReturn CArray::GetValuePtr(*topologyArray, 0)
   EndProcedure
-  
-  Procedure AcquireOutputTopology(*port.NodePort::NodePort_t)
-    Define *topologyArray.CArray::CArrayPtr = NodePort::AcquireOutputData(*port)
-    ProcedureReturn CArray::GetValuePtr(*topologyArray, 0)
-  EndProcedure
-  
-  
+ 
   Procedure Evaluate(*node.MergeTopoNode_t)
-    Protected *topo.Geometry::Topology_t = AcquireOutputTopology(*node\outputs())
+    Protected *oVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*node\outputs())
+    Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
 
     FirstElement(*node\inputs())
     Protected *iTopo1.Geometry::Topology_t = AcquireInputTopology(*node\inputs())
@@ -115,7 +110,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 40
+; CursorPosition = 72
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

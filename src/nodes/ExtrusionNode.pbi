@@ -31,7 +31,7 @@ DeclareModule ExtrusionNode
   ;------------------------------
   ;  ADMINISTRATION
   ;------------------------------
-  Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("Extrusion","Topology",@New())
+  Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("ExtrusionNode","Topology",@New())
   Nodes::AppendDescription(*desc)
   
   
@@ -47,116 +47,33 @@ EndDeclareModule
 ; EXTRUSION NODE MODULE IMPLEMENTATION
 ; ==================================================================================================
 Module ExtrusionNode
-  ;------------------------------
-  ;Implementation
-  ;------------------------------
-  Procedure Reset(*node.ExtrusionNode_t)
-    Protected *iVal.CArray::CArrayInt
-    Protected *fVal.CArray::CArrayFloat
-    Protected *port.NodePort::NodePort_t = Node::GetPortByName(*node,"Shape")
-    *iVal = NodePort::AcquireInputData(*port)
-    CArray::SetValueI(*iVal,0,1)
-    *port.NodePort::NodePort_t = Node::GetPortByName(*node,"U")
-    *iVal = NodePort::AcquireInputData(*port)
-    CArray::SetValueI(*iVal,0,32)
-    *port.NodePort::NodePort_t = Node::GetPortByName(*node,"V")
-    *iVal = NodePort::AcquireInputData(*port)
-    CArray::SetValueI(*iVal,0,32)
-    *port.NodePort::NodePort_t = Node::GetPortByName(*node,"Radius")
-    *fVal = NodePort::AcquireInputData(*port)
-    CArray::SetValueF(*fVal,0,5)
-    
-    
-  EndProcedure
-  
+  ; ---[ INIT ]-----------------------------------------------------------------
   Procedure Init(*node.ExtrusionNode_t)
-    Node::AddInputPort(*node,"Shape",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"U",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"V",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"W",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"Radius",Attribute::#ATTR_TYPE_FLOAT)
+    Node::AddInputPort(*node,"Points",Attribute::#ATTR_TYPE_MATRIX4)
+    Node::AddInputPort(*node,"Section",Attribute::#ATTR_TYPE_VECTOR3)
     Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
     
-    Node::PortAffect(*node, "Shape", "Topology")
-    Node::PortAffect(*node, "U", "Topology")
-    Node::PortAffect(*node, "V", "Topology")
-    Node::PortAffect(*node, "W", "Topology")
-    Node::PortAffect(*node, "Radius", "Topology")
-    *node\label = "Primitive Mesh"
-    Reset(*node)
+    Node::PortAffectByName(*node, "Points", "Topology")
+    Node::PortAffectByName(*node, "Section", "Topology")
+    *node\label = "Extrusion Mesh"
   EndProcedure
   
+  ; ---[ EVALUATE ]-----------------------------------------------------------------
   Procedure Evaluate(*node.ExtrusionNode_t)
+    Define *topoArray.CArray::CArrayPtr = NodePort::AcquireOutputData(*node\outputs())
+    Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoArray, 0)
     
-    Protected time.f = raa_time_currentframe
     FirstElement(*node\inputs())
-    Debug "[ExtrusionNode] Begin Evaluate"
-    Protected *shapeData.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
-    Protected shape.i = CArray::GetValueI(*shapeData,0)
-    
-    Debug "[ExtrusionNode] Curent Selected Shape : "+Str(shape)
-    
-    Protected *parent.Object3D::Object3D_t = *node\parent3dobject
-    If Not *parent Or *parent\type <>Object3D::#Polymesh
-      *node\state = Graph::#Node_StateError
-      *node\errorstr =  "[ERROR]ExtrusionNode only works on Polymesh..."
-      ProcedureReturn
-    EndIf
-  
-    ; Get Parent Objectts
-    Protected *mesh.Polymesh::Polymesh_t = *node\parent3dobject
-  
-    ; Get Inputs
-    Protected *input.NodePort::NodePort_t
-    Protected *iVal.CArray::CArrayInt
-    Protected *fVal.CArray::CArrayFloat
-  
-    Protected u,v,w
-    Protected radius.f
-    *input = Node::GetPortByName(*node,"U")
-    *iVal = NodePort::AcquireInputData(*input)
-    u = CArray::GetValueI(*iVal,0)
-    *input = Node::GetPortByName(*node,"V")
-    *iVal = NodePort::AcquireInputData(*input)
-    v = CArray::GetValueI(*iVal,0)
-    *input = Node::GetPortByName(*node,"W")
-    *iVal = NodePort::AcquireInputData(*input)
-    w = CArray::GetValueI(*iVal,0)
-    *input = Node::GetPortByName(*node,"Radius")
-    *fVal = NodePort::AcquireInputData(*input)
-    radius = CArray::GetValueF(*fVal,0)
-    
-    ; Get Output
-    Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = *output\value
-    ;   Protected *topo.CAttributePolymeshTopology_t = oVal\GetValue(0)
-    Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
+    Define *points.CArray::CArrayM4F32 = NodePort::AcquireInputData(*node\inputs())
+    NextElement(*node\inputs())
+    Define *section.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
 
-    Select shape
-        ; Box Shape
-      Case 0
-        ;PolymeshGeometry::Cube(*mesh\geometry,radius,u,v,w)
-        PolymeshGeometry::CubeTopology(*topo,radius,u,v,w)
-      Case 1
-        ;PolymeshGeometry::Sphere(*mesh\geometry,radius,u,v)
-        PolymeshGeometry::SphereTopology(*topo,radius,u,v)
-      Case 2
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::GridTopology(*topo,radius,u,v)
-      Case 3
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::CylinderTopology(*topo,radius,u,v,w,#False,#False)
-      Case 4
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::BunnyTopology(*topo)
-      Case 5
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::TorusTopology(*topo)
-    EndSelect
-
-    Debug "-----------> ExtrusionNode End Evaluate"
+    Define closed = #False
+    
+   Topology::Extrusion(*topo,*points,*section,closed)
   EndProcedure
   
+  ; ---[ TERMINATE ]-----------------------------------------------------------------
   Procedure Terminate(*node.ExtrusionNode_t)
   
   EndProcedure
@@ -193,7 +110,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 95
+; CursorPosition = 57
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

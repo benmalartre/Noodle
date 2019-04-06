@@ -28,7 +28,7 @@ XIncludeFile "../opengl/CubeMap.pbi"
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Null.pbi"
+XIncludeFile "../objects/Locator.pbi"
 XIncludeFile "../objects/Curve.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
@@ -641,7 +641,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 30
+; FirstLine = 26
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

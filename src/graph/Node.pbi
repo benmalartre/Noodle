@@ -57,6 +57,32 @@ Module Node
     *n\step1 =   Graph::#Node_TitleHeight/*n\height
     *n\step2 =  ( Graph::#Node_TitleHeight +  Graph::#Node_PortSpacing * ListSize(*n\outputs()))/*n\height
   EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;   Get Node Parent 3D Object
+  ; ----------------------------------------------------------------------------
+  Procedure GetParent3DObject(*n.Node_t)
+    Define *node.Node::Node_t = *n
+    Define *parent.Object::Object_t = *n\parent
+    Define search.b = #True
+    While search
+      If *parent\class\name = "Tree"
+        search = #False
+        Break
+      Else
+        *node = *parent
+        *parent = *node\parent
+      EndIf
+      If Not *parent : Break : EndIf
+    Wend  
+    
+    If Not search And *parent
+      Define *tree.Tree::Tree_t = *parent
+      Define *object3D.Object3D::Object3D_t = *tree\parent
+      ProcedureReturn *object3D
+    EndIf
+
+  EndProcedure
 
   ; ----------------------------------------------------------------------------
   ;   Draw Node
@@ -76,14 +102,24 @@ Module Node
   Protected limit = *n\height* *n\step1
   ; Draw shadow
   If Graph::#Node_DrawShadow
+    VectorSourceColor(RGBA(0,0,0,32))
     Vector::RoundBoxPath(*n\posx+Graph::#Node_ShadowX,
-                         *n\posy+Graph::#Node_ShadowY-24,
+                         *n\posy+Graph::#Node_ShadowY-20,
                          *n\width+Graph::#Node_ShadowR,
-                         *n\height+Graph::#Node_ShadowR+24,
+                         *n\height+Graph::#Node_ShadowR+20,
                          Graph::#Node_CornerRadius)
-   VectorSourceColor(RGBA(0,0,0,32))
-   FillPath()
-  EndIf
+    
+    FillPath()
+   
+   
+ EndIf
+ 
+   ; Draw Node Name
+  VectorFont(FontID(Globals::#FONT_BOLD),14 )
+  VectorSourceColor(UIColor::COLOR_LABEL)
+  MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
+  AddPathText(*n\label)
+  FillPath()
 
   ; Draw node
   Vector::RoundBoxPath(*n\posx, *n\posy, *n\width, *n\height, Graph::#Node_CornerRadius)
@@ -136,7 +172,7 @@ Module Node
     
     
     Protected w = VectorTextWidth(*n\outputs()\name)
-    VectorSourceColor(UIColor::COLORA_LABEL)
+    VectorSourceColor(UIColor::COLOR_LABEL)
     MovePathCursor(x-w-2*Graph::#Node_PortRadius ,y+4-(Graph::#Node_PortSpacing / 2))
     AddPathText(*n\outputs()\name)
     FillPath()
@@ -171,7 +207,7 @@ Module Node
       StrokePath(1)
     EndIf
 
-    VectorSourceColor(UIColor::COLORA_LABEL)
+    VectorSourceColor(UIColor::COLOR_LABEL)
     MovePathCursor(x+2*Graph::#Node_PortRadius,y+4-(Graph::#Node_PortSpacing/2))
     AddPathText(*n\inputs()\name)
     FillPath()
@@ -179,12 +215,7 @@ Module Node
     y + Graph::#Node_PortSpacing
   Next
   
-  ; Draw Node Name
-  VectorFont(FontID(Globals::#FONT_BOLD),14 )
-  VectorSourceColor(UIColor::COLORA_LABEL)
-  MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
-  AddPathText(*n\label)
-  FillPath()
+  
       
 ;       ;Draw Edit Button
 ;       If Not *n\leaf And Not *n\isroot
@@ -665,9 +696,9 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 516
-; FirstLine = 513
-; Folding = ------
+; CursorPosition = 209
+; FirstLine = 150
+; Folding = -------
 ; EnableThread
 ; EnableXP
 ; EnableUnicode

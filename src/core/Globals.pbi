@@ -236,6 +236,10 @@ DeclareModule Globals
   Macro TOSTRING(_arg)
     Globals::QUOTE()_arg#Globals::QUOTE()
   EndMacro
+;   
+;   Macro ISCONSTANTSTRING(_arg)
+;     CompilerIf Defined(_arg, #PB_Constant)
+;       CompilerIf _arg>Globals::#CONSTANT_TOKENS And _arg < Globals::#CONSTANT
   
   ;---------------------------------------------------------
   ; STRUCTURE
@@ -252,7 +256,17 @@ DeclareModule Globals
     key.s
     value.i
   EndStructure
-
+  
+  ;---------------------------------------------------------
+  ; DAISY REFERENCE
+  ;---------------------------------------------------------
+  Structure Reference_t
+    *datas
+    refchanged.b
+    reference.s
+    daisyreference.s
+  EndStructure
+ 
 EndDeclareModule
 
 ;========================================================================================
@@ -305,7 +319,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 38
+; CursorPosition = 263
+; FirstLine = 222
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

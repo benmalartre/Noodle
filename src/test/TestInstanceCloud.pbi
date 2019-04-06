@@ -226,7 +226,7 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define *locs.CArray::CArrayLocation = CArray::newCArrayLocation()
+  Define *locs.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
   
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 189
+; CursorPosition = 228
+; FirstLine = 199
 ; Folding = --
 ; EnableXP
 ; Executable = Test

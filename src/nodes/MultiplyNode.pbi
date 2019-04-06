@@ -61,9 +61,6 @@ Module MultiplyNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
     
     If *output\attribute\data = #Null : ProcedureReturn : EndIf
     
@@ -208,7 +205,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 132
+; CursorPosition = 62
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

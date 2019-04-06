@@ -9,7 +9,7 @@ Module Graph
   Procedure ResolveGetReference(*port.NodePort::NodePort_t)
     Protected refname.s
     Protected *node.Node::Node_t = *port\node
-    Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+    Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
 
     refname.s = NodePort::AcquireReferenceData(*port)
 
@@ -23,12 +23,10 @@ Module Graph
         *output\currenttype = *attribute\datatype
         *output\currentcontext = *attribute\datacontext
         *output\currentstructure = *attribute\datastructure
-        NodePort::Init(*output)
+        NodePort::Init(*output, *obj\geom)
         *output\attribute = *attribute
       EndIf
     EndIf
-  
-    
   EndProcedure  
   
   Procedure ResolveSetReference(*port.NodePort::NodePort_t)
@@ -40,7 +38,7 @@ Module Graph
       Protected base.s = StringField(refname, 1,".")
       
       If base ="Self" Or base ="This"
-        Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+        Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
         If FindMapElement(*obj\geom\m_attributes(),name)
@@ -130,8 +128,8 @@ Module Graph
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 12
+; CursorPosition = 40
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

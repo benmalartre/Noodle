@@ -55,7 +55,7 @@ Module AddPointNode
     Node::PortAffectByName(*node, "Reference", "Data")
     *node\label = "Add Point"
     
-    Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+    Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
     
     If *obj\type = Object3D::#PointCloud  Or *obj\type = Object3D::#InstanceCloud
       Protected *pc.PointCloud::PointCloud_t = *obj
@@ -69,7 +69,6 @@ Module AddPointNode
   EndProcedure
   
   Procedure Evaluate(*node.AddPointNode_t)    
-    Debug "EVALUATE ADD POINT NODE...."
     FirstElement(*node\inputs())
     If *node\geom
       
@@ -80,28 +79,29 @@ Module AddPointNode
         
         If CArray::GetCount(*in_data)
           PointCloudGeometry::AddPoints(*node\geom,*in_data)
-          *obj = *node\parent3dobject
+          *obj = *node\geom\parent
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
         EndIf
       ElseIf *inP\currenttype = Attribute::#ATTR_TYPE_LOCATION
         Protected *loc_data.CArray::CArrayLocation = NodePort::AcquireInputData(*node\inputs())
+        Define *emitG.Geometry::Geometry_t = *loc_data\geometry
+        Define *object3D.Object3D::Object3D_t = Geometry::GetParentObject3D(*emitG)
+        Define *emitT.Transform::Transform_t = *loc_data\transform
         Protected *pos_data.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
         Define numLocations= CArray::GetCount(*loc_data)
         If numLocations
           CArray::SetCount(*pos_data, numLocations)
           Protected *loc.Geometry::Location_t
-
           Protected j
           Protected *pos.v3f32
           For j=0 To numLocations-1
             *loc = CArray::GetValue(*loc_data,j)
-            Debug *loc
-            Location::GetPosition(*loc)
+            Location::GetPosition(*loc, *emitG, *emitT)
             CArray::SetValue(*pos_data, j, *loc\p)
           Next
           
           PointCloudGeometry::AddPoints(*node\geom,*pos_data)
-          *obj = *node\parent3dobject
+          *obj = *node\geom\parent
               
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
           CArray::Delete(*pos_data)
@@ -146,7 +146,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 55
+; CursorPosition = 71
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

@@ -67,7 +67,7 @@ Module ArraySizeNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *iIn.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
-    Protected *iOut.CArray::CArrayInt = *node\outputs()\value
+    Protected *iOut.CArray::CArrayInt = NodePort::AcquireOutputData(*node\outputs())
     
     Protected nbp.i = CArray::GetValueI(*iIn,0)
     CArray::SetCount(*iOut,nbp)
@@ -116,10 +116,10 @@ EndModule
 ; ============================================================================
 
 
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 110
-; FirstLine = 78
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 58
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

@@ -121,6 +121,8 @@ DeclareModule CArray
   EndStructure
   
   Structure CArrayLocation Extends CArrayT
+    *geometry
+    *transform
   EndStructure
   
   Structure CArrayStr Extends CArrayT
@@ -351,7 +353,7 @@ DeclareModule CArray
   Declare newCArrayM4F32()
   Declare newCArrayPtr()
   Declare newCArrayStr()
-  Declare newCArrayLocation()
+  Declare newCArrayLocation(*geom, *t)
 EndDeclareModule
 
 ; ========================================================================================
@@ -387,6 +389,13 @@ Module CArray
       EndIf
       CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
     EndIf
+    If *array\type = #ARRAY_LOCATION
+      Define *dst.CArray::CarrayLocation = *array
+      Define *src2.CArray::CarrayLocation = *src
+      *dst\geometry = *src2\geometry
+      *dst\transform = *src2\transform
+    EndIf
+    
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1177,11 +1186,13 @@ Module CArray
   ;----------------------------------------------------------------
   ; CArrayLocation
   ;----------------------------------------------------------------
-  Procedure newCArrayLocation()
+  Procedure newCArrayLocation(*geom, *t)
     Protected *array.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
     *array\type = #ARRAY_LOCATION
     *array\itemCount = 0
     *array\itemSize = #SIZE_LOCATION
+    *array\geometry = *geom
+    *array\transform = *t
     ProcedureReturn *array
   EndProcedure
   
@@ -1202,7 +1213,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 21
+; CursorPosition = 395
+; FirstLine = 376
 ; Folding = ------------
 ; EnableXP

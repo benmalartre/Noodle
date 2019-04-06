@@ -126,8 +126,7 @@ Module ExplorerUI
   ;  OnEvent
   ;---------------------------------------------------------
   Procedure OnEvent(*e.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-    ;   GetItems(*e)
-    
+    Define ev_datas.Control::EventTypeDatas_t
     Select event
       Case Globals::#EVENT_NEW_SCENE
         ControlExplorer::Fill(*e\explorer,Scene::*current_scene) 
@@ -138,10 +137,10 @@ Module ExplorerUI
       CompilerEndIf
         If *e\top
           Resize(*e)
-          Define ev_datas.Control::EventTypeDatas_t
+          
           ev_datas\width = *e\width
           ev_datas\height = *e\height
-          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
+          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,ev_datas)
         EndIf
         
       Case #PB_Event_SizeWindow
@@ -150,10 +149,14 @@ Module ExplorerUI
           Define ev_datas.Control::EventTypeDatas_t
           ev_datas\width = *e\width
           ev_datas\height = *e\height
-          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,@ev_datas)
+          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,ev_datas)
         EndIf
     
       Case #PB_Event_Gadget
+        ev_datas\xoff = *e\scrollx
+        ev_datas\yoff = *e\scrolly
+        ev_datas\width = *e\width
+        ev_datas\height = *e\height
         ControlExplorer::OnEvent(*e\explorer,event,#Null)
         If EventType() = #PB_EventType_MouseWheel
           UI::Scroll(*e,#True)
@@ -202,7 +205,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 129
+; CursorPosition = 158
+; FirstLine = 101
 ; Folding = ---
 ; EnableXP

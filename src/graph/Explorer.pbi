@@ -200,7 +200,7 @@ EndProcedure
   ; ----------------------------------------------------------------------------
   Procedure Draw(*explorer.NodeExplorer_t)
     StartDrawing(CanvasOutput(*explorer\gadgetID))
-    Box(0,0,GadgetWidth(*explorer\gadgetID),GadgetHeight(*explorer\gadgetID),UIColor::COLORA_MAIN_BG)
+    Box(0,0,GadgetWidth(*explorer\gadgetID),GadgetHeight(*explorer\gadgetID),UIColor::COLOR_MAIN_BG)
     DrawImage(ImageID(*explorer\imageID),*explorer\scrollx,*explorer\scrolly)
   ;   DrawImage(ImageID(*explorer\pickID),*explorer\scrollx+100,*explorer\scrolly)
     StopDrawing()
@@ -217,7 +217,7 @@ EndProcedure
     StartDrawing(ImageOutput(*explorer\imageID))
     
     DrawingMode(#PB_2DDrawing_AllChannels)
-    Box(0,0,*explorer\iwidth,*explorer\iheight,UIColor::COLORA_MAIN_BG)
+    Box(0,0,*explorer\iwidth,*explorer\iheight,UIColor::COLOR_MAIN_BG)
   
     ForEach Nodes::*graph_nodes_category()
   
@@ -455,9 +455,9 @@ EndProcedure
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 368
-; FirstLine = 362
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 219
+; FirstLine = 202
 ; Folding = ---
 ; EnableThread
 ; EnableXP

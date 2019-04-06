@@ -369,7 +369,6 @@ UseModule Math
       SetXMLAttribute(attr,"Structure",Str(*a\datastructure))
       SetXMLAttribute(attr,"Constant",Str(*a\constant))
       SetXMLAttribute(attr,"Size",Str(Attribute::GetSize(*a)))
-  ;     SetXMLNodeText(attr, OGraphAttribute_GetAsString(*a))
       SetXMLNodeText(attr, Attribute::GetAsBase64(*a))
   
     Next
@@ -388,15 +387,7 @@ UseModule Math
     SetXMLAttribute(local,"Name","Local Transform")
     Protected value.s = Matrix4::ToString(*m)
     SetXMLAttribute(local,"Value", value)
-    ;Base64Encoder(*m,size_t,*mem,size_t*1.5)
-    ;SetXMLAttribute(local,"Value",PeekS(*mem,size_t*1.5))
-    
-;     *t = *obj\globalT
-;     *m = *t\m
-;     Protected glob = CreateXMLNode(kine,"transform")
-;     SetXMLAttribute(glob,"Name","Global Transform")
-;     Base64Encoder(*m,size_t,*mem,size_t*1.5)
-;     SetXMLAttribute(glob,"Value",PeekS(*mem,size_t*1.5))
+
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -487,9 +478,9 @@ UseModule Math
     
     SaveTransform(object,*item)
     
-;     If MapSize(*item\m_attributes())
-;       SaveAttributes(*Me,object,*item)
-;     EndIf
+    If MapSize(*item\geom\m_attributes())
+      SaveAttributes(*Me,object,*item)
+    EndIf
     
     SaveStack(*Me,object,*item)
     *Me\numSaved3DObject +1
@@ -576,8 +567,8 @@ UseModule Math
   Class::DEF(Saver)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 407
+; CursorPosition = 358
+; FirstLine = 354
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

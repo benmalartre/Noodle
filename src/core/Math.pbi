@@ -416,8 +416,6 @@ DeclareModule Math
       n.v3f32
       uvw.v3f32
       c.c4f32
-      *geometry
-      *t
     EndStructure
     
   ; ----------------------------------------------------------------------------
@@ -4287,8 +4285,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 427
-; FirstLine = 392
+; CursorPosition = 417
+; FirstLine = 407
 ; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

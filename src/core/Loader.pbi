@@ -43,28 +43,10 @@ Module Loader
     Protected *m.Math::m4f32 = *t\m
     Protected localTransform.i = ChildXMLNode(kinematics, 1)
     value.s = GetXMLAttribute(localTransform,"Value")
-    Debug "VALUE : "+value
     Matrix4::FromString(*m, value)
-    Matrix4::Echo(*m, "HOUHOU OO : ")
-;     Protected bufferLength.i = Len(lm)+2
-;     Protected *mem = AllocateMemory(bufferLength)
-;     PokeS(*mem,lm,bufferLength)
-;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
-;     Transform::UpdateSRTFromMatrix(*t)
-;     Vector3::Echo(*t\t\pos, "TRANSFORM POSITION")
-;     Object3D::SetLocalTransform(*obj,*t)
-;     Object3D::UpdateTransform(*obj,#Null)
-    
-  
-     
-;     *t = *obj\globalT
-;     Protected gm.s = GetXMLAttribute(kine,"GlobalTransform")
-;     bufferLength.i = Len(gm)+2
-;     *mem = ReAllocateMemory(*mem,bufferLength)
-;     PokeS(*mem,gm,bufferLength)
-;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
-;     FreeMemory(*mem)
-;     Transform::UpdateSRTFromMatrix(*t)
+    Transform::UpdateSRTFromMatrix(*t)
+    Object3D::SetLocalTransform(*obj,*t)
+    Object3D::UpdateTransform(*obj,#Null)
   EndProcedure
   
   Procedure GetVector3FromString(string.s,*v.v3f32)
@@ -511,9 +493,11 @@ Module Loader
     Protected name.s = GetXMLNodeName(root)
     Protected o
     Protected n
+    Protected cnt = 0
     For o=1 To XMLChildCount(root)
       n = ChildXMLNode(root,o)
       Load3DObject(*Me,n,Scene::*current_scene,Scene::*current_scene\root)
+      cnt + 1
     Next
     PostEvent(Globals::#EVENT_NEW_SCENE)
     ProcedureReturn Scene::*current_scene
@@ -546,8 +530,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 517
-; FirstLine = 487
+; CursorPosition = 48
+; FirstLine = 37
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -153,11 +153,6 @@ DeclareModule NodePort
     constant.b
     dirty.b
     
-    ; Reference
-    refchanged.b
-    reference.s
-    daisyreference.s
-    
     ;Connexions
     *source.NodePort_t
     List *targets.NodePort_t()
@@ -179,7 +174,7 @@ DeclareModule NodePort
   Declare Delete(*port.NodePort_t)
   Declare Echo(*port.NodePort_t)
   Declare GetColor(*port.NodePort_t)
-  Declare Init(*port.NodePort_t, *geom.Geometry::Geometry_t=#Null)
+  Declare Init(*port.NodePort_t, *geom.Geometry::Geometry_t)
   Declare InitFromReference(*port.NodePort_t,*attr.Attribute::Attribute_t)
   Declare.s AcquireReferenceData(*port.NodePort_t)
   Declare AcquireInputAttribute(*port.NodePort_t)
@@ -195,6 +190,7 @@ DeclareModule NodePort
   Declare SetValue(*Me.NodePort_t,*value)
   Declare SetReference(*Me.NodePort_t,ref.s)
   Declare GetValue(*Me.NodePort_t)
+  Declare GetReferenceSibling(*ref.NodePort_t)
   Declare SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
   Declare SetupDisconnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
   DataSection
@@ -297,7 +293,6 @@ DeclareModule Node
     label.s
     type.s
     *parent.Node::Node_t
-    *parent3dobject.Object::Object_t
   
     ;Global infos 
     posx.l
@@ -352,7 +347,6 @@ DeclareModule Node
     Object::INI(cls)
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\parent = p
-    *Me\parent3dobject = p\parent3dobject
     *Me\type = t
     *Me\posx = x
     *Me\posy = y
@@ -416,6 +410,7 @@ DeclareModule Node
   Declare Update(*node.Node_t)
   Declare.s GetName(*n.Node_t)
   Declare GetSize(*n.Node_t)
+  Declare GetParent3DObject(*n.Node_t)
   Declare Draw(*n.Node_t)
   Declare ViewPosition(*n.Node_t,x.i,y.i)
   Declare ViewSize(*n.Node_t)
@@ -614,7 +609,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 508
+; CursorPosition = 349
+; FirstLine = 341
 ; Folding = ---
 ; EnableXP

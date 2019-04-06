@@ -13,6 +13,7 @@ DeclareModule PropertyUI
   Structure PropertyUI_t Extends UI::UI_t
     *prop.ControlProperty::ControlProperty_t
     List *props.ControlProperty::ControlProperty_t()
+    *focus.Control::Control_t
     anchorX.i
     anchorY.i
   EndStructure
@@ -72,7 +73,7 @@ Module PropertyUI
     *Me\width = w
     *Me\height = h
     
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,10,#PB_ScrollArea_BorderLess)
+    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h,10,#PB_ScrollArea_BorderLess)
     *Me\gadgetID = *Me\container
     
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
@@ -147,13 +148,26 @@ Module PropertyUI
               CompilerEndIf
             Next
           EndIf
-
+          
         Case #PB_Event_Gadget
-          Define currentGadget = EventGadget()
+          If EventType()  = #PB_EventType_LeftButtonDown
+            *Me\down = #True
+          ElseIf EventType() = #PB_EventType_LeftButtonUp
+            *Me\down = #False
+          EndIf
+          
+          Define currentGadget
+          If *Me\down And *Me\focus
+            currentGadget = *Me\focus\gadgetID
+          Else
+            currentGadget = EventGadget()
+          EndIf
+
           If ListSize(*Me\props())
             ForEach *Me\props()
               If *Me\props()\gadgetID = currentGadget
-                 ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+                ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+                *Me\focus = *Me\props()
               EndIf
             Next
           EndIf
@@ -361,10 +375,11 @@ Module PropertyUI
               ControlProperty::AddMatrix4Control(*p,\name,\name,CArray::GetValue(*mVal4,0),*node\inputs())
               
             Case Attribute::#ATTR_TYPE_REFERENCE
-              ControlProperty::AddReferenceControl(*p,\name,\reference,*node\inputs())
+              Protected *ref.Globals::Reference_t = NodePort::AcquireInputData(*node\inputs())
+              ControlProperty::AddReferenceControl(*p,\name,*ref\reference,*node\inputs())
               
             Case Attribute::#ATTR_TYPE_FILE
-              ControlProperty::AddFileControl(*p,\name,\reference,*node\inputs())
+              ControlProperty::AddFileControl(*p,\name,\name,*node\inputs())
               
             Case Attribute::#ATTR_TYPE_STRING
               Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs())
@@ -535,8 +550,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 506
-; FirstLine = 481
+; CursorPosition = 75
+; FirstLine = 72
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

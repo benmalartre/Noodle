@@ -115,6 +115,7 @@ DeclareModule Attribute
     datacontext.i
     *data     ; Pointer to data
     atomic.b
+    isarray.b
     constant.b
     readonly.b
     writable.b
@@ -138,7 +139,7 @@ DeclareModule Attribute
     EndSelect
   EndMacro
   
-  Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,atomic.b,read_only.b,constant.b,writable.b=#True)
+  Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,atomic.b,read_only.b,constant.b,writable.b=#True,isarray.b=#False)
   Declare Delete(*attribute.Attribute_t)
   Declare GetSize(*attribute.Attribute_t)
   Declare Get(*attribute.Attribute_t,*out_datas)
@@ -524,8 +525,8 @@ Module Attribute
   ; Copy
   ;-----------------------------------------------------
   Procedure PassThrough(*src.Attribute_t, *dst.Attribute_t)
-    Debug "PASS THROUGH CALLED : "+*src\name +" ---> "+*dst\name
-    If *src\atomic And *dst\atomic
+    Debug "PASS THROUGH ; "+*src\name+" ---> "+*dst\name
+    If Not *src\isarray And Not *dst\isarray
       Select *src\datatype
         Case Attribute::#ATTR_TYPE_BOOL
           PokeB(*dst\data, PeekB(*dst\data))
@@ -551,6 +552,9 @@ Module Attribute
           CopyMemory(*src\data, *dst\data, SizeOf(Math::m4f32))
         Case Attribute::#ATTR_TYPE_LOCATION
           CopyMemory(*src\data, *dst\data, SizeOf(Math::locf32))
+          
+        Case Attribute::#ATTR_TYPE_GEOMETRY
+          *dst\data = *src\data
         Default
           CompilerIf #PB_Compiler_Processor = #PB_Processor_x86
             CopyMemory(*src\data, *dst\data, 4)
@@ -558,35 +562,47 @@ Module Attribute
             CopyMemory(*src\data, *dst\data, 8)
           CompilerEndIf 
       EndSelect
-    ElseIf Not *src\atomic And Not *dst\atomic
+    ElseIf *src\isarray And *dst\isarray
+      Debug "PASSTHROUGH : ARRAY"
       If CArray::GetCount(*src\data) : CArray::Copy(*dst\data,*src\data) : EndIf
     Else
-      If *src\atomic
+     
+      If *dst\isarray
+        Debug "PASSTHROUGH : ATOMIC ---> ARRAY"
+         Debug "############ GEOMETRY ATTRIBUTE : "+Str(*src\data)
         Define *dstArray.CArray::CArrayT = *dst\data
+        CArray::SetCount(*dstArray, 1)
         CopyMemory(*src\data,*dstArray\data, *dstArray\itemSize)
       Else
+        Debug "PASSTHROUGH : ARRAY ---> ATOMIC"
         Define *srcArray.CArray::CArrayT = *src\data
         CopyMemory(*srcArray\data,*dst\data, *srcArray\itemSize)
       EndIf
-
+    EndIf
+    
+    If *src\datatype = Attribute::#ATTR_TYPE_LOCATION
+      Debug "FUCKIN COPY EXTRA INFOS"
+      Define *srcX.CArray::CArrayLocation = *src\data
+      Define *dstX.CArray::CArrayLocation = *dst\data
+      *dstX\geometry = *srcX\geometry
+      *dstX\transform = *srcX\transform
     EndIf
 
   EndProcedure
   
   
-  ;-----------------------------------------------------------------------------
-  ; Destructor
-  ;-----------------------------------------------------------------------------
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
   Procedure Delete(*Me.Attribute_t)
-    ClearStructure(*Me,Attribute_t)
-    FreeMemory(*Me)
+    If Not *Me\atomic And *Me\isarray And *Me\data : CArray::Delete(*Me\data) : EndIf
+    Object::TERM(Attribute)
   EndProcedure
   
   ; ============================================================================
-  ;  CONSTRUCTORS
+  ;  CONSTRUCTOR
   ; ============================================================================
-  ;{
-  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True)
+  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True, isarray.b=#False)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
     Object::INI(Attribute)
@@ -601,6 +617,7 @@ Module Attribute
     *Me\constant      = constant
     *Me\readonly      = read_only
     *Me\writable      = writable
+    *Me\isarray       = isarray
    
     ProcedureReturn *Me
     
@@ -609,7 +626,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 526
-; FirstLine = 521
-; Folding = ----
+; CursorPosition = 597
+; FirstLine = 567
+; Folding = ---
 ; EnableXP

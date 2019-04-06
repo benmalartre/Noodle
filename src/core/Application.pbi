@@ -37,7 +37,7 @@ XIncludeFile "../opengl/CubeMap.pbi"
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Null.pbi"
+XIncludeFile "../objects/Locator.pbi"
 XIncludeFile "../objects/Curve.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
@@ -607,7 +607,7 @@ EndProcedure
       ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
       *callback(*app)
       Repeat
-        event = WindowEvent();WaitWindowEvent(1000/60)
+        event = WaitWindowEvent()
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -617,6 +617,10 @@ EndProcedure
         CompilerEndSelect
         
         Select event
+          Case Globals::#EVENT_NEW_SCENE
+            ;Scene::Setup(Scene::*current_scene, *app\context)
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_NEW_SCENE)
+            
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
             *callback(*app)
@@ -664,8 +668,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 588
-; FirstLine = 549
+; CursorPosition = 39
+; FirstLine = 35
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

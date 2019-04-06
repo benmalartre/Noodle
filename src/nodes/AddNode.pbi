@@ -64,10 +64,7 @@ Module AddNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
-    
+
     Protected i.i
     
     Select *output\currenttype
@@ -215,8 +212,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 47
+; CursorPosition = 66
+; FirstLine = 45
 ; Folding = --
 ; EnableThread
 ; EnableXP

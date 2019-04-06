@@ -60,10 +60,7 @@ Module ModuloNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
-    
+
     If *output\attribute\data = #Null
       Debug "Cannot Init Port For Modulo Node"
       ProcedureReturn 
@@ -155,7 +152,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 96
+; CursorPosition = 62
+; FirstLine = 59
 ; Folding = --
 ; EnableXP

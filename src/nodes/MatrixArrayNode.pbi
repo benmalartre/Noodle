@@ -60,21 +60,26 @@ Module MatrixArrayNode
     FirstElement(*node\inputs())
     Define *count.CArray::CarrayInt = NodePort::AcquireInputData(*node\inputs())
     Define numMatrices = Carray::GetValueI(*count, 0)
+    
 
     SelectElement(*node\outputs(),0)
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *matricesArray.CArray::CArrayM4F32 = NodePort::AcquireOutputData(*output)
-    CArray::SetCount(*matricesArray,numMatrices)
+    If numMatrices
+      CArray::SetCount(*matricesArray,numMatrices)
+      
+      Protected i
+      Protected scl.v3f32,ori.q4f32,pos.v3f32
+      Vector3::Set(scl,1,1,1)
+      Quaternion::SetIdentity(ori)
+      For i=0 To numMatrices - 1
+        Vector3::Set(pos,0,i,0)
+        Transform::SetMatrixFromSRT(CArray::GetValue(*matricesArray,i),scl,ori,pos)
+      Next
+    Else
+      CArray::SetCount(*matricesArray, 0)
+    EndIf
     
-    Protected i
-    Protected scl.v3f32,ori.q4f32,pos.v3f32
-    Vector3::Set(scl,1,1,1)
-    Quaternion::SetIdentity(ori)
-    Debug "NUM MATRICES : "+Str(numMatrices)
-    For i=0 To numMatrices - 1
-      Vector3::Set(pos,0,i,0)
-      Transform::SetMatrixFromSRT(CArray::GetValue(*matricesArray,i),scl,ori,pos)
-    Next
   EndProcedure
   
   Procedure Terminate(*node.MatrixArrayNode_t)
@@ -116,7 +121,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 49
+; CursorPosition = 81
 ; FirstLine = 33
 ; Folding = --
 ; EnableXP

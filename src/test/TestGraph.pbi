@@ -158,14 +158,14 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 ViewportUI::AddLayer(*viewport, *layer)
 
 Scene::Setup(Scene::*current_scene,*app\context)
-PostEvent(Globals::#EVENT_NEW_SCENE)
-
-; ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
+ViewManager::OnEvent(*app\manager, Globals::#EVENT_NEW_SCENE)
+ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
+Controls::SetTheme(UIColor::#LIGHT_THEME)
 
 Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   
-  Scene::Update(Scene::*current_scene)
+  ;Scene::Update(Scene::*current_scene)
   *layer\Draw( *app\context)
   
   FTGL::BeginDraw(*app\context\writer)
@@ -186,8 +186,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 103
+; CursorPosition = 162
+; FirstLine = 127
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

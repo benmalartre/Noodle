@@ -56,7 +56,7 @@ Module ScintillaUI
     *Me\height = h
     
     *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1)
-    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLORA_MAIN_BG)
+    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
     
     *Me\scintilla = ControlScintilla::New()
    
@@ -438,7 +438,7 @@ Module ScintillaUI
   Class::DEF( ScintillaUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 9
+; CursorPosition = 63
+; FirstLine = 54
 ; Folding = ----
 ; EnableXP

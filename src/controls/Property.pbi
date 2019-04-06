@@ -93,6 +93,8 @@ DeclareModule ControlProperty
   Declare Clear( *Me.ControlProperty_t )
   Declare.i GetWidth(*Me.ControlProperty_t)
   Declare.i GetHeight(*Me.ControlProperty_t)
+  Declare GetControlByIndex(*Me.ControlProperty_t, index.i)
+  Declare GetControlByName(*Me.ControlProperty_t, name.s)
   
   Declare Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
   
@@ -217,7 +219,8 @@ Module ControlProperty
             
           Case "GetDataNode"
             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
-            ;InitFromReference(*port.NodePort_t,*attr.Attribute::Attribute_t)
+            GetDataNode::ResolveReference(*port\node)
+
             *port\dirty = #True
             
         EndSelect
@@ -413,7 +416,7 @@ Module ControlProperty
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         ResetCoordinates()
         AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-        VectorSourceColor(UIColor::COLORA_MAIN_BG)
+        VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
 
         ; ---[ Redraw Children ]----------------------------------------------------
@@ -432,7 +435,7 @@ Module ControlProperty
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         ResetCoordinates()
         AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-        VectorSourceColor( UIColor::COLORA_MAIN_BG )
+        VectorSourceColor( UIColor::COLOR_MAIN_BG )
         FillPath()
         
 ;         ; ---[ Redraw Head ]----------------------------------------------------
@@ -458,7 +461,7 @@ Module ControlProperty
     
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     AddPathBox( 0, 0, w,h);
-    VectorSourceColor( UIColor::COLORA_MAIN_BG )
+    VectorSourceColor( UIColor::COLOR_MAIN_BG )
     FillPath()
     StopVectorDrawing()
   EndProcedure
@@ -1488,6 +1491,33 @@ EndProcedure
     
     ProcedureReturn *Me\sizY
   EndProcedure
+  
+  ; ---[ Get Control By Index ]-----------------------------------------------
+  Procedure GetControlByIndex( *Me.ControlProperty_t, index.i)
+    
+    ; ---[ Sanity Check ]-----------------------------------------------
+    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn #Null : EndIf
+    ProcedureReturn *Me\children(index)
+
+  EndProcedure
+  
+  ; ---[ Get Control By Index ]-----------------------------------------------
+  Procedure GetControlByName( *Me.ControlProperty_t, name.s)
+    
+    ; ---[ Sanity Check ]-----------------------------------------------
+    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn : EndIf
+    Protected *son.Control::Control_t
+    For i=0 To *Me\chilcount-1
+      *son = *Me\children(i)
+      Debug ">>>>>>>>>>>>>>>>>>>>>> "+ *son\name
+      If *son\name = name
+        ProcedureReturn *son
+      EndIf
+    Next
+    
+    ProcedureReturn #Null
+
+  EndProcedure
 
   
   ; ---[ On Init ]-----------------------------------------------
@@ -1648,7 +1678,7 @@ EndProcedure
         ev_data\yoff    = *son\posY
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
         AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-        VectorSourceColor(UIColor::COLORA_MAIN_BG )
+        VectorSourceColor(UIColor::COLOR_MAIN_BG )
         FillPath()
         son\OnEvent( Control::#PB_EventType_Draw, ev_data )
         StopVectorDrawing()
@@ -1714,11 +1744,19 @@ EndProcedure
             *Me\overchild = *overchild
             If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseEnter) : EndIf
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-        ElseIf *overchild
+
+        ElseIf *overchild And Not *Me\down
           *Me\overchild = *overchild
           ev_data\x    = xm - *overchild\posX + *Me\posX
           ev_data\y    = ym - *overchild\posY + *Me\posY
           *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+        Else
+          If *Me\overchild
+            *overchild = *Me\overchild
+            ev_data\x    = xm - *overchild\posX + *Me\posX
+            ev_data\y    = ym - *overchild\posY + *Me\posY
+            *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+          EndIf
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -2019,7 +2057,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 250
-; FirstLine = 221
+; CursorPosition = 1680
+; FirstLine = 1621
 ; Folding = ----------
 ; EnableXP

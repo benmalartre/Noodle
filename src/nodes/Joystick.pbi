@@ -57,9 +57,7 @@ Module JoystickNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
+
     
     If *output\value = #Null
       Debug "Cannot Init Port For Add Node"
@@ -212,8 +210,8 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 150
+; CursorPosition = 59
+; FirstLine = 50
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

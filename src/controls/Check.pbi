@@ -71,12 +71,12 @@ Module ControlCheck
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
     AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     MovePathCursor(0 + xoff, 0 + yoff)
     AddPathBox(0+ xoff +*Me\sizX-(#CHECK_WIDTH+#CHECK_MARGIN), 0 +yoff+#CHECK_MARGIN, #CHECK_WIDTH, #CHECK_WIDTH)
-    VectorSourceColor(UIColor::COLORA_SECONDARY_BG)
+    VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
     FillPath(#PB_Path_Preserve)
     VectorSourceColor(UIColor::BLACK)
     StrokePath(#CHECK_STROKE_WIDTH, #PB_Path_RoundCorner)
@@ -338,7 +338,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 54
+; CursorPosition = 78
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

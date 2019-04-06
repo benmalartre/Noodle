@@ -77,7 +77,7 @@ Module ControlHead
     Protected h.i
 
     AddPathBox(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
         
     Protected *prop.Control::Control_t = *Me\parent
@@ -88,30 +88,30 @@ Module ControlHead
     
     MovePathCursor(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3)
     AddPathLine(*Me\sizX-(w+70),0, #PB_Path_Relative)
-    VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
+    VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
     StrokePath(#HEAD_STROKE_WIDTH)
     
     If *Me\touch_l
       AddPathBox(*Me\posX,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
     Else
       AddPathBox(*Me\posX,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
       FillPath()
     EndIf
     
     If *Me\touch_r
       AddPathBox(*Me\posX+*Me\sizX-#HEAD_BUTTON_SIZE,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
     Else
       AddPathBox(*Me\posX+*Me\sizX-#HEAD_BUTTON_SIZE,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
       FillPath()
     EndIf
     
-    VectorSourceColor(UIColor::COLORA_LABEL)
+    VectorSourceColor(UIColor::COLOR_LABEL)
     MovePathCursor(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.75)
     DrawVectorText(*Me\title)
     MovePathCursor(*Me\posX+3,*Me\posY+6)
@@ -374,7 +374,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 63
+; CursorPosition = 113
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP

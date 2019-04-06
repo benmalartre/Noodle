@@ -375,19 +375,19 @@ Module ControlNumber
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLORA_LABEL_DISABLED
+      tc = UIColor::COLOR_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
@@ -397,7 +397,7 @@ Module ControlNumber
       
     Else
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
@@ -408,20 +408,20 @@ Module ControlNumber
 
 ;       If slider_w > *Me\sizX * 0.5
 ;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+;         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
 ;         FillPath()
 ;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
 ;         VectorSourceColor(RGBA(0,0,0,64))
 ;         FillPath()
 ;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-;         VectorSourceColor(UIColor::COLORA_CARET)
+;         VectorSourceColor(UIColor::COLOR_CARET)
 ;         FillPath()
 ;       Else
 ;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+;         VectorSourceColor(UIColor::COLOR_NUMBER_FG)
 ;         FillPath()
 ;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+;         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
 ;         FillPath()
 ;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
 ;         VectorSourceColor(RGBA(0,255,0,255))
@@ -444,25 +444,25 @@ Module ControlNumber
         CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
           CompilerCase #PB_OS_Linux
             AddPathBox(tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
           CompilerCase #PB_OS_MacOS
             AddPathBox(tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
         CompilerEndSelect
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         DrawVectorText( dtext )
       ; ---[ Just Caret ]-------------------------------------------------------
       Else
         ; ---[ Draw Value ]-----------------------------------------------------
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         DrawVectorText(  dtext)
         ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
@@ -470,17 +470,17 @@ Module ControlNumber
             CompilerCase #PB_OS_Windows
               MovePathCursor(tx + posXL + xoff, ty)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
             CompilerCase #PB_OS_Linux
                MovePathCursor(tx + posXL + xoff, ty+1)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
             CompilerCase #PB_OS_MacOS
                MovePathCursor(tx + posXL + xoff, ty+2)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
           CompilerEndSelect
         EndIf
@@ -490,20 +490,20 @@ Module ControlNumber
       CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
             FillPath()
           CompilerCase #PB_OS_Linux
             Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
             FillPath()
           CompilerCase #PB_OS_MacOS
             Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
             FillPath()
         CompilerEndSelect
 
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         DrawVectorText( dtext)
     EndIf
     
@@ -1269,7 +1269,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1214
-; FirstLine = 1166
+; CursorPosition = 505
+; FirstLine = 446
 ; Folding = ----
 ; EnableXP

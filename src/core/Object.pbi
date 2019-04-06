@@ -60,9 +60,9 @@ DeclareModule Object
   ;   TERM
   ; ------------------------------------------------------------------
   Macro TERM( _cls )
-    ForEach *Me\signals()
-      Signal::Delete(*Me\signals())
-    Next
+    If MapSize(*Me\signals()) > 0
+      ForEach *Me\signals() : Signal::Delete(*Me\signals()) : Next
+    EndIf
     ClearStructure(*Me, _cls#_t)
     FreeMemory(*Me)
   EndMacro
@@ -285,6 +285,7 @@ EndModule
 ;   EndProcedure
 ; EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 17
+; CursorPosition = 62
+; FirstLine = 30
 ; Folding = ---
 ; EnableXP

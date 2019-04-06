@@ -74,10 +74,10 @@ Module SampleGeometryNode
     Protected *seedIn.NodePort::NodePort_t = *node\inputs()
     
     If *geomIn\connected
-      Protected *geom.Geometry::PolymeshGeometry_t = NodePort::AcquireInputData(*geomIn)
+      Protected *geom.Geometry::Geometry_t = NodePort::AcquireInputData(*geomIn)
       Protected *rate.CArray::CArrayInt = NodePort::AcquireInputData(*rateIn)
       Protected *seed.CArray::CArrayInt = NodePort::AcquireInputData(*seedIn)
-      If *geom
+      If *geom And *geom\nbpoints
         Sampler::SamplePolymesh(*geom,
                                 NodePort::AcquireOutputData(*output),
                                 CArray::GetValueI(*rate,0),
@@ -122,7 +122,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 40
+; CursorPosition = 80
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

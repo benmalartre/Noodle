@@ -772,8 +772,6 @@ Module PolymeshGeometry
     Color::Set(color,0.33,0.33,0.33,1.0)
     SetColors(*mesh,color)
     
-    
-    
   EndProcedure
   
   ;---------------------------------------------------------
@@ -1481,8 +1479,6 @@ Module PolymeshGeometry
     Protected r.f
     Protected loc.Geometry::Location_t
     Protected *p.v3f32
-    loc\geometry = *mesh
-    loc\t = *t
     CArray::SetCount(*io, numSamples)
     Protected i, j
     For i=0 To numSamples - 1
@@ -1497,7 +1493,7 @@ Module PolymeshGeometry
           EndIf
           loc\uvw\z = 1-loc\uvw\x-loc\uvw\y
           loc\tid = j
-          *p = Location::GetPosition(loc)
+          *p = Location::GetPosition(loc, *mesh, *t)
           CArray::SetValue(*io, i, *p)
           Break
         Else
@@ -2280,7 +2276,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 21
+; CursorPosition = 1495
+; FirstLine = 1456
 ; Folding = ----P5---4--
 ; EnableXP

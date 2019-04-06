@@ -64,7 +64,7 @@ Module ControlButton
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_LABEL
+  Protected tc.i = UIColor::COLOR_LABEL
   
   ; ---[ Set Font ]-----------------------------------------------------------
   VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
@@ -77,7 +77,7 @@ Module ControlButton
     AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
     VectorSourceColor(*Me\color_disabled)
     FillPath()
-    tc = UIColor::COLORA_LABEL_DISABLED
+    tc = UIColor::COLOR_LABEL_DISABLED
   Else
     ; ---[ Check Over ]-------------------------------------------------------
     If *Me\over
@@ -85,7 +85,7 @@ Module ControlButton
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_pressed)
         FillPath()
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       Else
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_over)
@@ -96,7 +96,7 @@ Module ControlButton
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_pressed)
         FillPath()
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       Else
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_enabled)
@@ -107,7 +107,7 @@ Module ControlButton
   
   ; ---[ Draw Label ]---------------------------------------------------------
   MovePathCursor(tx, ty )
-  VectorSourceColor(UIColor::COLORA_TEXT)
+  VectorSourceColor(UIColor::COLOR_TEXT)
   DrawVectorText(*Me\label)
   
 ;   ; ---[ Check Visible ]----------------------------------------------------
@@ -390,7 +390,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 336
+; CursorPosition = 109
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP

@@ -704,7 +704,6 @@ Module Octree
       distance = Vector3::Length(delta)
       If distance < PeekF(*closestDistance)
         PokeF(*closestDistance, distance)
-        *loc\geometry = *geom
         *loc\tid = j
         Vector3::SetFromOther(*loc\p, closest)
         Vector3::SetFromOther(*loc\uvw, uvw)
@@ -778,7 +777,6 @@ Module Octree
       distance = Vector3::Length(delta)
       If distance < closestDistance
         closestDistance = distance
-        *loc\geometry = *geom
         *loc\tid = t
         Vector3::SetFromOther(*loc\p, closest)
         Vector3::SetFromOther(*loc\uvw, uvw)
@@ -1220,6 +1218,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 779
+; FirstLine = 775
 ; Folding = ---------
 ; EnableXP

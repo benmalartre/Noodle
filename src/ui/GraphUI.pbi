@@ -229,7 +229,7 @@ Module GraphUI
             Protected windowID = EventWindow()
             Protected mx = WindowX(windowID) + WindowMouseX(windowID)
             Protected my = WindowY(windowID) + WindowMouseY(windowID)
-            Define *search.NodeSearch::NodeSearch_t = NodeSearch::New(mx,my)
+            Define *search.NodeSearch::NodeSearch_t = NodeSearch::New(EventWindow(), mx, my)
             NodeSearch::Update(*search)
             If *search\selected
 
@@ -762,7 +762,7 @@ Module GraphUI
       Protected mx =0
       If *Me\depth>0 : mx = Graph::#Graph_Compound_Border : EndIf
       DrawingMode(#PB_2DDrawing_AllChannels)
-      Box( mx, 0, *Me\width-2*mx, *Me\height, UIColor::COLORA_MAIN_BG )
+      Box( mx, 0, *Me\width-2*mx, *Me\height, UIColor::COLOR_MAIN_BG )
       
       Protected vw.i = Percentage(*Me\width,iz)
       Protected vh.i = Percentage(*Me\height,iz)
@@ -771,14 +771,14 @@ Module GraphUI
       Protected i
       For i=0 To vw
         If i%iz = 0
-          Line(i+*Me\posx%iz,0,1,*Me\height,UIColor::COLORA_LINE_DIMMED)
+          Line(i+*Me\posx%iz,0,1,*Me\height,UIColor::COLOR_LINE_DIMMED)
         EndIf
       Next i
         
       ;Horizontal lines
       For i=0 To vh
         If i%iz = 0
-          Line(mx,i+*Me\posy%iz,*Me\width-2*mx,1,UIColor::COLORA_LINE_DIMMED)
+          Line(mx,i+*Me\posy%iz,*Me\width-2*mx,1,UIColor::COLOR_LINE_DIMMED)
         EndIf
       Next i
       
@@ -793,13 +793,13 @@ Module GraphUI
     CompilerElse
       MovePathCursor(0,0)
       AddPathBox(0, 0, *Me\width, *Me\height)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
       
 ;       Protected vw.i = Percentage(*Me\width,iz)
 ;       Protected vh.i = Percentage(*Me\height,iz)
 ;       
-;       VectorSourceColor(UIColor::COLORA_LINE_DIMMED)
+;       VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
 ;       ;Vertical lines
 ;       Protected i
 ;       Protected ix,iy
@@ -844,10 +844,10 @@ Module GraphUI
       Protected *compound.CompoundNode::CompoundNode_t = *Me\tree\current
       
       ; Inputs
-      Box(0,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLORA_SECONDARY_BG)
+      Box(0,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLOR_SECONDARY_BG)
       
       ; Outputs
-      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLORA_SECONDARY_BG)
+      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLOR_SECONDARY_BG)
 
       CompoundNode::Draw(*compound,*Me\gadgetID)
  
@@ -1610,7 +1610,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 343
-; FirstLine = 321
+; CursorPosition = 849
+; FirstLine = 845
 ; Folding = --------
 ; EnableXP

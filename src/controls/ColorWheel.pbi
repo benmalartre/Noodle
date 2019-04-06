@@ -595,7 +595,7 @@ Module ControlColorWheel
     If *Me\sizY<*Me\sizX : size = *Me\sizY : EndIf
   
     AddPathBox(xoff,yoff,*Me\sizX,*Me\sizY)
-    VectorSourceColor(RGBA(255,0,0,255));UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(RGBA(255,0,0,255));UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ResetCoordinates()
@@ -869,7 +869,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 827
-; FirstLine = 803
+; CursorPosition = 597
+; FirstLine = 593
 ; Folding = ----
 ; EnableXP

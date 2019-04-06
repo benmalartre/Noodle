@@ -72,10 +72,6 @@ Module MultiplyByScalarNode
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *output.NodePort::NodePort_t = *node\outputs()
     
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
-    
     If *output\attribute\data = #Null : ProcedureReturn : EndIf
     
     Protected i.i
@@ -221,7 +217,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 149
+; CursorPosition = 72
+; FirstLine = 71
 ; Folding = --
 ; EnableXP

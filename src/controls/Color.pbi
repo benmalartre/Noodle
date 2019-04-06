@@ -76,7 +76,7 @@ Module ControlColor
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
 
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = UIColor::COLORA_LABEL
+    Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont(FontID(Globals::#FONT_DEFAULT ),GLobals::#FONT_SIZE_LABEL)
@@ -458,8 +458,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 398
+; CursorPosition = 78
+; FirstLine = 74
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

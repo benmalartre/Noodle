@@ -6,16 +6,18 @@ XIncludeFile "../graph/Compound.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 
 ; ==============================================================================
-; FLOAT NODE MODULE DECLARATION
+; GET DATA NODE MODULE DECLARATION
 ; ==============================================================================
 DeclareModule GetDataNode
   ; ----------------------------------------------------------------------------
   ;   STRUCTURE
   ; ----------------------------------------------------------------------------
   Structure GetDataNode_t Extends Node::Node_t
+    custom.b
     *attribute.Attribute::Attribute_t
     sig_onchanged.i
     valid.b
+    need_compute.b
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -50,36 +52,53 @@ DeclareModule GetDataNode
 EndDeclareModule
 
 ; ==============================================================================
-; FLOAT NODE MODULE IMPLEMENTATION
+; GET DATA NODE MODULE IMPLEMENTATION
 ; ==============================================================================
 Module GetDataNode
   UseModule Math
   Procedure ResolveReference(*node.GetDataNode_t)
 
     Protected refname.s
-    Protected *p.Object3D::Object3D_t = *node\parent3dobject
+    Protected *p.Object3D::Object3D_t = Node::GetParent3DObject(*node)
     FirstElement(*Node\inputs())
     Define *location.NodePort::NodePort_t = *node\inputs()
-    Define *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
+    NextElement(*node\inputs())
+    FirstElement(*node\outputs())
+    Define *output.NodePort::NodePort_t = *node\outputs()
     If *location\connected
+      *node\need_compute = #True
       refname = NodePort::AcquireReferenceData(*node\inputs())
       If refname = "" : ProcedureReturn : EndIf
       Define *locationArray.CArray::CArrayLocation = NodePort::AcquireInputData(*location)
-      Define numLocations = CArray::GetCount(*locationArray)
-      Define *loc.Geometry::Location_t
-      Define *geom.Geometry::Geometry_t
+      Define *geom.Geometry::Geometry_t = *locationArray\geometry
+      Define *t.Transform::Transform_t = *locationArray\transform
       
-      For i=0 To numLocations - 1
-        *loc = CArray::GetValue(*locationArray, i)
-        Debug "LOCATION "+Str(i)+" : "+Str(*loc)
-        If *loc
-          *geom = *loc\geometry
-          Define *object.Object3D::Object3D_t = *loc\geometry\parent
-          Debug "OBJECT 3D : "+*object\name
-        EndIf
-      Next
+      Define numLocations = CArray::GetCount(*locationArray)
+
+      If *geom
+        *node\attribute = *geom\m_attributes(refname)
+        *output\currenttype = *node\attribute\datatype
+        *output\currentcontext = *node\attribute\datacontext
+        *output\currentstructure = *node\attribute\datastructure
+        NodePort::Init(*output, *geom)
+        *output\dirty = #True
+      EndIf
+            
+;       If Not *node\attribute :
+;         *node\attribute = Attribute::New(
+;       
+;       *node\attribute = *p\geom\m_attributes(StringField(refname, 2,"."))
+;         If *node\attribute
+;           *output\currenttype = *node\attribute\datatype
+;           *output\currentcontext = *node\attribute\datacontext
+;           *output\currentstructure = *node\attribute\datastructure
+;           NodePort::Init(*output)
+;           *output\attribute = *node\attribute
+;           *output\dirty = #True
+;         EndIf
 
     Else
+      *node\need_compute = #False
       refname = NodePort::AcquireReferenceData(*node\inputs())
       If refname = "" : ProcedureReturn : EndIf
       
@@ -92,24 +111,21 @@ Module GetDataNode
           *output\currenttype = *node\attribute\datatype
           *output\currentcontext = *node\attribute\datacontext
           *output\currentstructure = *node\attribute\datastructure
-          NodePort::Init(*output)
-          *output\attribute = *node\attribute
+          NodePort::Init(*output, *p\geom)
+;           *output\attribute = *node\attribute
           *output\dirty = #True
         EndIf
         
       Else
         Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(Scene::*current_scene,base)
-        Debug "OPERATING ON OBJECT : "+*o\name
         If *o
           *node\attribute = *o\geom\m_attributes(StringField(refname, 2,"."))
-          Debug "OPERATING ON OBJECT : "+*o\name
-          Debug "ATTRIBUTE : "+*node\attribute
           If *node\attribute
             *output\currenttype = *node\attribute\datatype
             *output\currentcontext = *node\attribute\datacontext
             *output\currentstructure = *node\attribute\datastructure
-            NodePort::Init(*output)
-            *output\attribute = *node\attribute
+            NodePort::Init(*output, *p\geom)
+;             *output\attribute = *node\attribute
             *output\dirty = #True
           EndIf
         EndIf
@@ -139,7 +155,8 @@ Module GetDataNode
     FirstElement(*node\inputs())
     Protected *src.NodePort::NodePort_t = *node\inputs()
     NextElement(*node\inputs())
-    Protected *ref.NodePort::NodePort_t = *node\inputs()
+    Protected *refPort.NodePort::NodePort_t = *node\inputs()
+    Protected *ref.Globals::Reference_t = *refPort\attribute\data
 
     If Not *node\attribute Or *ref\refchanged : ResolveReference(*node) :*ref\refchanged = #False : EndIf
     
@@ -148,14 +165,21 @@ Module GetDataNode
     FirstElement(*node\outputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     
-    If *output\attribute = #Null
-      *output\currenttype = *node\attribute\datatype
-      NodePort::Init(*output)
-    EndIf
   
     If *output\attribute = #Null : ProcedureReturn : EndIf
-    
-    Attribute::PassThrough(*node\attribute, *output\attribute)
+    If *node\need_compute And *src\connected
+      Debug "HDHDLIHDLSHUMUIHBMUYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGBHHM/LIJ%KMK%M"
+      Define *srcArray.CArray::CArrayLocation = NodePort::AcquireInputData(*src)
+      Define *dstArray.CArray::CArrayT = NodePort::AcquireOutputData(*output)
+      Define numSamples.i = CArray::GetCount(*srcArray)
+      CArray::SetCount(*dstArray, numSamples)
+      For i=0 To numSamples-1
+        Location::GetValue(CArray::GetValue(*srcArray, i), *srcArray\geometry, *srcArray\transform, CArray::GetValue(*dstArray, i))
+      Next
+      
+    Else
+      Attribute::PassThrough(*node\attribute, *output\attribute)
+    EndIf
 
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
@@ -187,7 +211,7 @@ Module GetDataNode
   ;   DESTRUCTOR
   ; ============================================================================
   Procedure Delete(*node.GetDataNode_t)
-    If *node\attribute
+    If *node\attribute And *node\custom
       Attribute::Delete(*node\attribute)
     EndIf
     Node::DEL(GetDataNode)
@@ -220,8 +244,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 153
+; CursorPosition = 114
+; FirstLine = 105
 ; Folding = --
 ; EnableThread
 ; EnableXP

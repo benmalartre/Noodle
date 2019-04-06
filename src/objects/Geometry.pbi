@@ -382,8 +382,6 @@ DeclareModule Geometry
     n.v3f32
     uvw.v3f32
     c.c4f32
-    *geometry.Geometry::Geometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; PointOnMesh
@@ -395,8 +393,6 @@ DeclareModule Geometry
     n.v3f32
     uvw.v3f32
     c.c4f32
-    *geometry.Geometry::PolymeshGeometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; PointOnCurve
@@ -407,8 +403,6 @@ DeclareModule Geometry
     n.v3f32
     p.v3f32
     c.c4f32
-    *geometry.Geometry::CurveGeometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; Element
@@ -638,6 +632,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 404
+; FirstLine = 357
 ; Folding = -----
 ; EnableXP

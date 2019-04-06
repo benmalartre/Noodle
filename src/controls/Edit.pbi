@@ -268,7 +268,7 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_TEXT
+  Protected tc.i = UIColor::COLOR_TEXT
   VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
   Protected ty.i
@@ -279,11 +279,11 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   EndIf
   
   AddPathBox(xoff-1, yoff-1, *Me\sizX+2, *Me\sizY+2)
-  VectorSourceColor(UIColor::COLORA_MAIN_BG)
+  VectorSourceColor(UIColor::COLOR_MAIN_BG)
   FillPath()
   
   Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, 4)
-  VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+  VectorSourceColor(UIColor::COLOR_NUMBER_BG)
   FillPath(#PB_Path_Preserve)
   
   ; ---[ Check Positions Lookup Table ]---------------------------------------
@@ -390,15 +390,15 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
           AddPathBox( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
         CompilerCase #PB_OS_Linux
           AddPathBox( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
         CompilerCase #PB_OS_MacOS
           AddPathBox( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
       CompilerEndSelect
       
@@ -417,15 +417,15 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
           CompilerCase #PB_OS_Windows
             MovePathCursor(tx + posXL + xoff, ty)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
           CompilerCase #PB_OS_Linux
             MovePathCursor(tx + posXL + xoff, ty+1)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
           CompilerCase #PB_OS_MacOS
             MovePathCursor(tx + posXL + xoff, ty+2)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
         CompilerEndSelect
       EndIf
       StrokePath(1)
@@ -1082,7 +1082,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 993
-; FirstLine = 969
+; CursorPosition = 427
+; FirstLine = 368
 ; Folding = ----
 ; EnableXP

@@ -14,6 +14,7 @@ DeclareModule SetDataNode
   Structure SetDataNode_t Extends Node::Node_t
     *data
     *attribute.Attribute::Attribute_t
+    *parent3dobject.Object3D::Object3D_t
   EndStructure
   
   ;------------------------------
@@ -51,6 +52,9 @@ EndDeclareModule
 ; ==================================================================================================
 Module SetDataNode
   UseModule Math
+  ; ------------------------------------------------------------
+  ; RESOLVE REFERENCE
+  ;-------------------------------------------------------------
   Procedure ResolveReference(*node.SetDataNode_t)
     Protected *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
     Protected refname.s = NodePort::AcquireReferenceData(*ref)
@@ -59,7 +63,8 @@ Module SetDataNode
       Protected base.s = StringField(refname, 1,".")
       
       If base ="Self" Or base ="This"
-        Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+        Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
+        *node\parent3dobject = *obj
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
         If FindMapElement(*obj\geom\m_attributes(),name)
@@ -77,28 +82,37 @@ Module SetDataNode
               Select \datatype
                 Case Attribute::#ATTR_TYPE_BOOL
                   *datas = CArray::newCArrayBool()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_LONG
                   *datas = CArray::newCArrayLong()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_INTEGER
                   *datas = CArray::newCArrayInt()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_FLOAT
                   *datas = CArray::newCArrayFloat()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR2
                   *datas = CArray::newCArrayV2F32()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR3
                   *datas = CArray::newCArrayV3F32()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_QUATERNION
                   *datas = CArray::newCArrayQ4F32()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX3
                   *datas = CArray::newCArrayM3F32()
+                  CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX4
                   *datas = CArray::newCArrayM4F32()
+                  CArray::Copy(*datas, *input\source\attribute\data)
               EndSelect
               
-              *node\attribute = Attribute::New(name,\datatype,\datastructure,\datacontext,*datas,#True,#False,#True)
+              *node\attribute = Attribute::New(name,*obj\geom,\datatype,\datastructure,\datacontext,*datas,#True,#False,#True)
               Object3D::AddAttribute(*obj,*node\attribute)
               *node\state = Graph::#Node_StateOK
-              NodePort::Init(*input)
+              NodePort::Init(*input, *obj\geom)
               *node\errorstr = ""
             EndWith
           EndIf
@@ -111,8 +125,10 @@ Module SetDataNode
       *node\attribute = #Null
     EndIf
   EndProcedure
-
   
+  ; -----------------------------------------------------------
+  ;   INITIALIZE
+  ; -----------------------------------------------------------
   Procedure Init(*node.SetDataNode_t) 
     Node::AddInputPort(*node,"Data",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
@@ -124,12 +140,16 @@ Module SetDataNode
     ResolveReference(*node)
   EndProcedure
   
+  ; -----------------------------------------------------------
+  ;   EVALUATE
+  ; -----------------------------------------------------------
   Procedure Evaluate(*node.SetDataNode_t)
     FirstElement(*node\inputs())
     Define *input.NodePort::NodePort_t = *node\inputs()
     Define x, i, size_t
     Define v.v3f32
-    Define *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
+    Define *refPort.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
+    Define *ref.Globals::Reference_t = *refPort\attribute\data
     If Not *node\attribute Or *ref\refchanged
       ResolveReference(*node.SetDataNode_t)
       *ref\refchanged = #False
@@ -146,6 +166,10 @@ Module SetDataNode
       If CArray::GetCount(*in_data) = 0 : ProcedureReturn : EndIf
       size_t = Carray::GetCount(*in_data)
       Select *input\currenttype
+          
+      ; ------------------------------------------------------------
+      ; BOOLEAN
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_BOOL
         Define *bIn.Carray::CArrayBool = *in_data
         If *input\currentcontext =Attribute::#ATTR_CTXT_SINGLETON
@@ -160,12 +184,18 @@ Module SetDataNode
           Next x
         EndIf
         
+      ; ------------------------------------------------------------
+      ; FLOAT
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_FLOAT
         Define *fIn.Carray::CArrayFloat = *in_data
         For x=0 To CArray::GetCount(*fIn)-1
           Debug "SetDataNode Array Item ["+Str(x)+"]: "+StrF(CArray::GetValueF(*fIn,x))
         Next x
         
+      ; ------------------------------------------------------------
+      ; VECTOR3
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_VECTOR3
         Define *vIn.Carray::CArrayV3F32 = *in_data
         Define *vOut.Carray::CArrayV3F32 = *node\attribute\data
@@ -187,7 +217,10 @@ Module SetDataNode
             Polymesh::SetDirtyState(*mesh, Object3D::#DIRTY_STATE_DEFORM)
           EndIf
         EndIf
-
+        
+      ; ------------------------------------------------------------
+      ; QUATERNION
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_QUATERNION
         Define *qIn.Carray::CArrayQ4F32 = *in_data
         Define *qOut.Carray::CArrayQ4F32 = *node\attribute\data
@@ -202,16 +235,25 @@ Module SetDataNode
           EndIf
         EndIf
         
+      ; ------------------------------------------------------------
+      ; COLOR
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_COLOR
         Define *cIn.Carray::CArrayC4F32 = *in_data
         Define *cOut.Carray::CArrayC4F32 = *node\attribute\data
         CArray::Copy(*cOut,*cIn)
         
+      ; ------------------------------------------------------------
+      ; MATRIX3
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_MATRIX3
         Define *m3In.Carray::CArrayM3F32 = *in_data
         Define *m3Out.Carray::CArrayM3F32 = *node\attribute\data
         CArray::Copy(*m3Out,*m3In)
         
+      ; ------------------------------------------------------------
+      ; MATRIX4
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_MATRIX4
         Define *m4In.Carray::CArrayM4F32 = *in_data
         Define *m4.m4f32 = CArray::GetValue(*m4In,0)
@@ -225,7 +267,7 @@ Module SetDataNode
           If *parent
             Transform::UpdateSRTFromMatrix(*parent\globalT)
             Object3D::UpdateLocalTransform(*parent)
-            ;Object3D::UpdateTransform(*parent,#Null)
+            Object3D::UpdateTransform(*parent,#Null)
           EndIf
           
         ElseIf *node\attribute\name = "LocalTransform"
@@ -235,30 +277,34 @@ Module SetDataNode
             Object3D::UpdateTransform(*parent,#Null)
           EndIf 
         EndIf
-
+        
+      ; ------------------------------------------------------------
+      ; TOPOLOGY
+      ;-------------------------------------------------------------
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         If *node\attribute\name = "Topology"
           Define *tIn.Carray::CArrayPtr = *in_data
-
-           Define *iTopo.Geometry::Topology_t = CArray::GetValuePtr(*tIn,0)
-          *parent = *node\parent3dobject
-;           
-;           If *parent And Object3D::IsA(*parent,Object3D::#Polymesh)
-            Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
-;             ;If *iTopo\dirty
+          If CARray::GetCount(*tIn)>0
+             Define *iTopo.Geometry::Topology_t = CArray::GetValuePtr(*tIn,0)
+            *parent = *node\parent3dobject
+  ;           
+  ;           If *parent And Object3D::IsA(*parent,Object3D::#Polymesh)
+              Define *geom.Geometry::PolymeshGeometry_t = *parent\geom
+  ;             ;If *iTopo\dirty
               PolymeshGeometry::Set2(*geom,*iTopo)
+              Polymesh::UpdateAttributes(*parent)
               Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_TOPOLOGY)
-            
-;               *iTopo\dirty = #False
-; ;               Else
-; ;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
-; ;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
-; ;                EndIf
-;             Log::Message("[SetDataNode] Update Polymesh Topology")
-;           Else
-;             Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
-;           EndIf       
-          
+              
+  ;               *iTopo\dirty = #False
+  ; ;               Else
+  ; ;                  PolymeshGeometry::SetPointsPosition(*geom,*iTopo\vertices)
+  ; ;                  Polymesh::SetDirtyState(*parent, Object3D::#DIRTY_STATE_DEFORM)
+  ; ;                EndIf
+  ;             Log::Message("[SetDataNode] Update Polymesh Topology")
+  ;           Else
+  ;             Log::Message( "[SetDataNode] Topology only supported on POLYMESH!!")
+  ;           EndIf       
+          EndIf    
         EndIf
       EndSelect
     EndIf
@@ -271,7 +317,7 @@ Module SetDataNode
   EndProcedure
   
   Procedure Delete(*node.SetDataNode_t)
-    FreeMemory(*node)
+    Node::DEL(SetDataNode)
   EndProcedure
 
 
@@ -301,8 +347,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 133
+; CursorPosition = 66
+; FirstLine = 51
 ; Folding = --
 ; EnableThread
 ; EnableXP

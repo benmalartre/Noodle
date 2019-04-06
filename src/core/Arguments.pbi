@@ -98,8 +98,8 @@ DeclareModule Arguments
   EndMacro
 
   Macro ARGCREATEVALUE(_funcname, _arg, _type, _index)
-    Define __s.s = Constants::TOSTRING(_arg)
-    Define __name.s = Constants::TOSTRING(_funcname#ARG#_index)
+    Define __s.s = Globals::TOSTRING(_arg)
+    Define __name.s = Globals::TOSTRING(_funcname#ARG#_index)
     Define __type.s = StringField(__s, 2, ".")
     
     If __type = "a"
@@ -172,7 +172,13 @@ DeclareModule Arguments
   EndMacro
   
   Macro SET(_arg, _value)
-    _arg = _value
+    CompilerSelect TypeOf(_arg)
+      CompilerCase #PB_String
+        _arg = Globals::QUOTE()_value#Globals::QUOTE()
+      CompilerDefault
+        _arg = _value
+    CompilerEndSelect
+    
   EndMacro
 
   Declare ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
@@ -325,7 +331,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 171
-; FirstLine = 155
+; CursorPosition = 176
+; FirstLine = 134
 ; Folding = ---
 ; EnableXP

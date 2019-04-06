@@ -80,9 +80,6 @@ Module RandomNode
     Protected variancei.f
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\attribute\data = #Null
-      NodePort::Init(*output)
-    EndIf
     
     Protected i.i
     Protected time.f = Time::currentframe
@@ -241,7 +238,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 161
+; CursorPosition = 81
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

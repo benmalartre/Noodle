@@ -17,8 +17,7 @@
 ;logx= log(a)/log(b) b darf nicht <=0 oder 1 sein
 
 DeclareModule Eval
-  
-  EnableExplicit
+ 
   
   Enumeration error 0 Step -1
     #err_ok
@@ -1150,7 +1149,7 @@ CompilerEndIf
   ;evalit(f)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1150
-; FirstLine = 1092
+; CursorPosition = 19
+; FirstLine = 16
 ; Folding = -------
 ; EnableXP

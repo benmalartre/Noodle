@@ -53,20 +53,25 @@ EndDeclareModule
 ; ==============================================================================
 Module ControlLabel
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlLabel_t, xoff.i = 0, yoff.i = 0 )
-    
+
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
     ; ---[ Label Color ]--------------------------------------------------------
     Protected tc.i
     If *Me\value
-      tc = UIColor::COLORA_LABEL_MARKED
+      tc = UIColor::COLOR_LABEL_MARKED
     Else
-      tc = UIColor::COLORA_LABEL
+      tc = UIColor::COLOR_LABEL
     EndIf
+    
+    ; ---[ Background ]---------------------------------------------------------
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    FillPath()
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont( FontID(Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
@@ -77,7 +82,7 @@ Module ControlLabel
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLORA_LABEL_DISABLED
+      tc = UIColor::COLOR_LABEL_DISABLED
     EndIf
     
     ; ---[ Local Variables ]----------------------------------------------------
@@ -97,23 +102,23 @@ Module ControlLabel
     Else
       MovePathCursor(VectorTextWidth(label)+5.0 + xoff, ty + 10)
       AddPathLine(*Me\sizX-1 + xoff, ty + 10)
-      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED )
+      VectorSourceColor(UIColor::COLOR_LABEL_DISABLED )
       StrokePath(1)
     EndIf
     
 ;     AddPathBox( -6 + xoff, ty-3, 6, 20)
 ;     If *Me\over
-;       VectorSourceColor(UIColor::COLORA_SECONDARY_BG )
+;       VectorSourceColor(UIColor::COLOR_SECONDARY_BG )
 ;     Else
-;       VectorSourceColor(UIColor::COLORA_MAIN_BG )
+;       VectorSourceColor(UIColor::COLOR_MAIN_BG )
 ;     EndIf
 ;     
 ;     FillPath()
 ;     If *Me\value
 ;       AddPathBox( -3 + xoff, ty-2, VectorTextWidth(label)+6, 18)
-;       VectorSourceColor( UIColor::COLORA_LABEL_MARKED )
+;       VectorSourceColor( UIColor::COLOR_LABEL_MARKED )
 ;       FillPath(#PB_Path_Preserve)
-;       VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
+;       VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
 ;       StrokePath(2)
 ;     EndIf
     
@@ -195,12 +200,10 @@ Module ControlLabel
               If *Me\over
                 If *Me\value : *Me\value = #False : Else : *Me\value = #True : EndIf
                 *Me\over = #False
-                Control::Invalidate(*Me)
               EndIf
             ElseIf Not *Me\over
               If *Me\value : *Me\value = #False : Else : *Me\value = #True : EndIf
               *Me\over = #True
-              Control::Invalidate(*Me)
             EndIf
           EndIf
         EndIf
@@ -361,7 +364,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 78
+; CursorPosition = 55
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

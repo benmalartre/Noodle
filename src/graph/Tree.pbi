@@ -20,7 +20,7 @@ Module Tree
         Repeat
           If *current\inputs()\connected
             *child = *current\inputs()\source\node
-            If Node::IsDirty(*child) ;And Not CheckUniqueBranchNode(*Me, *branch, *child)
+            If Node::IsDirty(*child) And Not CheckUniqueBranchNode(*Me, *branch, *child)
               AddElement(*branch\filter_nodes())
               *branch\filter_nodes() = *child
               RecurseNodes(*Me, *branch, *child, filterDirty)
@@ -29,7 +29,7 @@ Module Tree
         Until Not PreviousElement(*current\inputs())
       Else
         Repeat
-           If *current\inputs()\connected ;And Not CheckUniqueBranchNode(*Me, *branch, *child)
+           If *current\inputs()\connected And Not CheckUniqueBranchNode(*Me, *branch, *child)
              *child = *current\inputs()\source\node
             AddElement(*branch\nodes())
             *branch\nodes() = *child
@@ -541,8 +541,7 @@ Module Tree
     
     Node::Delete(*root)
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(Tree)
     
   EndProcedure
   
@@ -561,7 +560,7 @@ Module Tree
     *Me\name = name
     
     ; ---[ Init Members ]------------------------------------------------------
-    *Me\parent3dobject = *obj
+    *Me\parent = *obj
     ;*Me\root = OGraphTree_AddNode(*Me,"RootNode",0,0,100,100,RGB(100,100,100))
     Select context
       Case Graph::#Graph_Context_Operator
@@ -594,8 +593,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 113
+; CursorPosition = 543
+; FirstLine = 526
 ; Folding = -----
 ; EnableThread
 ; EnableXP

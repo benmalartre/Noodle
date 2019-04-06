@@ -300,7 +300,7 @@ Module ControlMenu
     Protected i
     StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
     AddPathBox(0,0,*menu\width,*menu\height)
-    VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+    VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath()
     
     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
@@ -309,21 +309,21 @@ Module ControlMenu
       If *menu\items(a)\type = #MenuItemType_Separator
         MovePathCursor(10,a*#MenuItemHeight+0.5*#MenuItemHeight)
         AddPathLine(*menu\width-20,0, #PB_Path_Relative)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         StrokePath(2)
       Else
         
         If a = *menu\selected
           Vector::RoundBoxPath(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG)
           FillPath()
           MovePathCursor(5,a*#MenuItemHeight)
-          VectorSourceColor(UIColor::COLORA_SELECTED_FG)
+          VectorSourceColor(UIColor::COLOR_SELECTED_FG)
           DrawVectorText(*menu\items(a)\name)
          ; DrawingMode(#PB_2DDrawing_Transparent)
         Else
           MovePathCursor(5,a*#MenuItemHeight)
-          VectorSourceColor(UIColor::COLORA_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT)
           DrawVectorText(*menu\items(a)\name)
         EndIf
       EndIf   
@@ -553,7 +553,7 @@ Module ControlMenu
       
       
       AddPathBox(0,0,*menu\width,*menu\height)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
       Protected x,y, a
       
@@ -564,18 +564,18 @@ Module ControlMenu
         If *menu\inspected = *menu\submenus(a)
           Protected width.i = VectorTextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
           Vector::RoundBoxPath(x-#MenuItemSpacing/2,0,width,GadgetHeight(*menu\gadgetID),2)
-          VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+          VectorSourceColor(UIColor::COLOR_NUMBER_BG)
           FillPath(#PB_Path_Preserve)
-          VectorSourceColor(UIColor::COLORA_LINE_DIMMED)
+          VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
           StrokePath(2)
           
           MovePathCursor(x, y)
-          VectorSourceColor(UIColor::COLORA_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT)
           DrawVectorText(*menu\submenus(a)\name)
      
         Else
           MovePathCursor(x, y)
-          VectorSourceColor(UIColor::COLORA_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT)
           DrawVectorText(*menu\submenus(a)\name)
         EndIf
         
@@ -702,8 +702,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 228
+; CursorPosition = 577
+; FirstLine = 493
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP
