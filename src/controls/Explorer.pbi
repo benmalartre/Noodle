@@ -114,7 +114,7 @@ DeclareModule ControlExplorer
   Declare Delete(*Me.ControlExplorer_t)
   ;   Declare Draw(*Me.ExplorerUI_t)
   Declare Init()
-  Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
   Declare Term()
   Declare Clear(*Me.ControlExplorer_t)
 
@@ -161,7 +161,7 @@ DeclareModule ControlExplorer
   Declare Resize(*Me.ControlExplorer_t)
 ;   Declare ResetVisited(*Me.ControlExplorer_t,*root.Object3D::Object3D_t)
 ;   Declare GetVisibles(*Me.ControlExplorer_t)
-;   Declare SetBinaryLine(*e.ControlExplorer_t,id.i,value.b)
+;   Declare SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
 ;   Declare DrawItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
 ;   Declare DrawDisplayImage(*Me.ControlExplorer_t)
 ;   Declare DrawPickItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
@@ -177,8 +177,8 @@ DeclareModule ControlExplorer
   Declare Add3DObject(*Me.ControlExplorer_t,*parent.ControlExplorerItem_t,*obj.Object3D::Object3D_t,depth.i)  
 ;   Declare IsInList(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
-  Declare OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
+  Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *Mev_data.Control::Control_t)
    DataSection 
     ControlExplorerVT: 
     Data.i @OnEvent()
@@ -334,8 +334,8 @@ Module ControlExplorer
     ; ----------------------------------------
   ;  Set Binary Lines
   ; ----------------------------------------
-  Procedure SetBinaryLine(*e.ControlExplorer_t,id.i,value.b)
-    Globals::BitWrite(*e\linebinary,id,value)
+  Procedure SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
+    Globals::BitWrite(*Me\linebinary,id,value)
   EndProcedure
   
   
@@ -966,49 +966,49 @@ Module ControlExplorer
   ;----------------------------------------
   ;  Event
   ;---------------------------------------------------
-  Procedure OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
-    ;   GetItems(*e)
+  Procedure OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
+    ;   GetItems(*Me)
     CompilerIf #PB_Compiler_Version < 560
         If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
       CompilerElse
         If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
     CompilerEndIf
-      *e\sizX = *ev_data\width
-      *e\sizY = *ev_data\height
-      Resize(*e)
-      Draw(*e)
+      *Me\sizX = *Mev_data\width
+      *Me\sizY = *Mev_data\height
+      Resize(*Me)
+      Draw(*Me)
       
     ElseIf event = #PB_Event_Gadget
       Protected evdt.Control::EventTypeDatas_t
-      Protected mx = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseX)
-      Protected my = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseY)
+      Protected mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+      Protected my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
 
   
         Protected key
         Select EventType()
           Case #PB_EventType_KeyDown
-            key = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_Key)
+            key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
 ;             If key = #PB_Shortcut_Space 
-;               *e\scrolling = #True
-;               *e\scrolllastx = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseX)
-;               *e\scrolllasty = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseY)
-;               SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
+;               *Me\scrolling = #True
+;               *Me\scrolllastx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+;               *Me\scrolllasty = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
+;               SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
 ;             EndIf
             
           Case #PB_EventType_KeyUp
             
-            key = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_Key)
-            If key = #PB_Shortcut_Space ;And *e\scrollable And *e\scrolling
-;               *e\scrolling = #False
-              SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)
+            key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
+            If key = #PB_Shortcut_Space ;And *Me\scrollable And *Me\scrolling
+;               *Me\scrolling = #False
+              SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)
             EndIf
             
           Case #PB_EventType_MouseMove
-            ;UI::Scroll(*e)
+            ;UI::Scroll(*Me)
             
             
           Case #PB_EventType_LeftButtonDown 
-            Pick(*e)
+            Pick(*Me)
           
             
         EndSelect
@@ -1018,14 +1018,14 @@ Module ControlExplorer
     
     
     ;Redraw Explorer
-    Draw(*e)
+    Draw(*Me)
     
   EndProcedure
   
   ;----------------------------------------
   ;  Item Event
   ;---------------------------------------------------
-  Procedure OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
+  Procedure OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *Mev_data.Control::Control_t)
     
   EndProcedure
   
@@ -1033,17 +1033,17 @@ Module ControlExplorer
   
   Procedure OnMessage( id.i, *up)
 ;     Protected *sig.Signal::Signal_t = *up
-;     Protected *explorer.ControlExplorer_t = *sig\rcv_inst
+;     Protected *Mexplorer.ControlExplorer_t = *sig\rcv_inst
 ;     Debug "Explorer Signal Recieved..."
 ;     Debug "Slot : "+Str(*sig\rcv_slot)
 ;     Debug "Sender Class : "+Str(*sig\snd_class)
-  ;   *explorer\SendEvent(#PB_Event_Repaint)
+  ;   *Mexplorer\SendEvent(#PB_Event_Repaint)
   ;     Protected *sig.CSignal_t = *up
   ;   Protected *c.CControlNumber_t = *sig\snd_inst
-  ;   Protected *e.ExplorerUI_t = *c\parent
+  ;   Protected *Me.ExplorerUI_t = *c\parent
   ;   Protected v.i = *c\value_n
   ; 
-  ;   Draw(*e)
+  ;   Draw(*Me)
   EndProcedure
   
   
@@ -1063,17 +1063,19 @@ Module ControlExplorer
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*e.ControlExplorer_t)
-    FreeMemory(*e)
+  Procedure Delete(*Me.ControlExplorer_t)
+    Object::TERM(ControlExplorer)
   EndProcedure
   
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
+  Procedure.i New(*parent.UI::UI_t,x.i,y.i,w.i,h.i)
     Protected *Me.ControlExplorer_t = AllocateMemory(SizeOf(ControlExplorer_t))
     Object::INI( ControlExplorer )
     
+    *Me\parent = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX = x
     *Me\posY = y
     *Me\sizX = w
@@ -1081,8 +1083,6 @@ Module ControlExplorer
   
     *Me\name = "Explorer"
     
-    ;Initialize Structures
-    InitializeStructure(*Me,ControlExplorer_t)
     
     ; ---[ Explorer ]------------------------
     *Me\type = Globals::#VIEW_EXPLORER
@@ -1092,10 +1092,6 @@ Module ControlExplorer
     *Me\expended_level = 12
 ;     *Me\scrollable = #True
     
-
-    ; ---[ Set Canvas ]----------------------
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
-
     ; ---[ Set Controls ]----------------------
     Protected options.i = ControlGroup::#Autosize_V|ControlGroup::#Autosize_h
       
@@ -1174,7 +1170,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 578
-; FirstLine = 492
-; Folding = X02vf-
+; CursorPosition = 1093
+; FirstLine = 999
+; Folding = X-2v--
 ; EnableXP

@@ -40,19 +40,19 @@ DeclareModule GraphUI
     r_expended.b
     
     ; Mouse Handling
-    mousex.i           ; Current Mouse X
-    mousey.i           ; Current Mouse Y
+    mouseX.i           ; Current Mouse X
+    mouseY.i           ; Current Mouse Y
     
     ; Translate and Scale
-    posx.i             ; canvas position X
-    posy.i             ; canvas position Y
-    realx.i
-    realy.i
+    canvasX.i          ; canvas position X
+    canvasY.i          ; canvas position Y
+    realX.i
+    realY.i
   
-    rectx1.i           ; Selection Rectangle LeftUpCornerX
-    recty1.i           ; Selection Rectangle LeftUpCornerY
-    rectx2.i           ; Selection Rectangle RightBottomCornerX
-    recty2.i           ; Selection Rectangle RightBottomCornerY
+    rectX1.i           ; Selection Rectangle LeftUpCornerX
+    rectY1.i           ; Selection Rectangle LeftUpCornerY
+    rectX2.i           ; Selection Rectangle RightBottomCornerX
+    rectY2.i           ; Selection Rectangle RightBottomCornerY
   
     ; States
     pan.b              ; Panning
@@ -81,10 +81,10 @@ DeclareModule GraphUI
   ;  FORWARD DECLARATION
   ;---------------------------------------------------------------------------
   Declare New(*parent.View::View_t,name.s="GraphUI")
-  Declare Delete(*ui.GraphUI_t)
-  Declare Init(*ui.GraphUI_t)
-  Declare OnEvent(*ui.GraphUI_t,event.i)
-  Declare Term(*ui.GraphUI_t)
+  Declare Delete(*Me.GraphUI_t)
+  Declare Init(*Me.GraphUI_t)
+  Declare OnEvent(*Me.GraphUI_t,event.i)
+  Declare Term(*Me.GraphUI_t)
   
   Declare Resize(*Me.GraphUI_t)
   Declare NodeInfos(*Me.GraphUI_t)
@@ -149,14 +149,14 @@ Module GraphUI
     InitializeStructure(*Me,GraphUI_t)
     Object::INI(GraphUI)
     *Me\name = name
-    *Me\top = *parent
+    *Me\parent = *parent
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
 
     *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus) 
     EnableGadgetDrop(*Me\gadgetID,#PB_Drop_Text,#PB_Drag_Copy)
     
-    *Me\width = w
-    *Me\height = h
+    *Me\sizX = w
+    *Me\sizY = h
 
     *Me\type = UI::#UI_GRAPH
     
@@ -166,9 +166,6 @@ Module GraphUI
     *Me\a_selected = CArray::newCArrayPtr()
    
     *Me\font_debug = LoadFont(#PB_Any,"Tahoma",10)
-       
-    Protected *view.View::View_t = *Me\top
-    Protected *manager.ViewManager::ViewManager_t = *view\manager
     
     CloseGadgetList()
 
@@ -186,17 +183,16 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   ; Destructor
   ;---------------------------------------------------------------------------
-  Procedure Delete(*ui.GraphUI_t)
-    If IsGadget(*ui\gadgetID) : FreeGadget(*ui\gadgetID):EndIf
-    If IsGadget(*ui\container) : FreeGadget(*ui\container):EndIf
-    ClearStructure(*ui,GraphUI_t)
-    FreeMemory(*ui)
+  Procedure Delete(*Me.GraphUI_t)
+    If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
+    If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
+    Object::TERM(GraphUI)
   EndProcedure
 
   ;---------------------------------------------------------------------------
   ; Init
   ;---------------------------------------------------------------------------
-  Procedure Init(*ui.GraphUI_t)
+  Procedure Init(*Me.GraphUI_t)
     Debug "ViewportUI Init Called!!!"
   EndProcedure
   
@@ -234,7 +230,7 @@ Module GraphUI
             If *search\selected
 
               ; Add Node
-              Tree::AddNode(*Me\tree,*search\selected\name,*Me\mousex - *Me\posx, *Me\mousey - *Me\posy,100,50,RGB(120,120,140))
+              Tree::AddNode(*Me\tree,*search\selected\name,*Me\mouseX - *Me\canvasX, *Me\mouseY - *Me\canvasY,100,50,RGB(120,120,140))
               NodeInfos(*Me)
               *Me\redraw = #True
               *Me\tree\dirty = #True
@@ -247,12 +243,12 @@ Module GraphUI
         EndSelect
         
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *Me\top
+        Protected *top.View::View_t = *Me\parent
         Protected width.i = *top\width
         Protected height.i = *top\height
         
-        *Me\width = width
-        *Me\height = height
+        *Me\sizX = width
+        *Me\sizY = height
 
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
         ResizeGadget(*Me\gadgetID,0,0,width,height)
@@ -275,26 +271,26 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   ; Term
   ;---------------------------------------------------------------------------
-  Procedure Term(*ui.GraphUI_t)
+  Procedure Term(*Me.GraphUI_t)
     Debug "ViewportUI Term Called!!!"
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Resize
   ;---------------------------------------------------------------------------
-  Procedure  Resize(*ui.GraphUI_t)
-    *ui\x = GadgetX(*ui\container)
-    *ui\y = GadgetY(*ui\container)
-    *ui\width = GadgetWidth(*ui\container)
-    *ui\height = GadgetHeight(*ui\container)
-    ResizeGadget(*ui\gadgetID,0,0,*ui\width,*ui\height)    
+  Procedure  Resize(*Me.GraphUI_t)
+    *Me\posX = GadgetX(*Me\container)
+    *Me\posY = GadgetY(*Me\container)
+    *Me\sizX = GadgetWidth(*Me\container)
+    *Me\sizY = GadgetHeight(*Me\container)
+    ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)    
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Inspect Node
   ;---------------------------------------------------------------------------
   Procedure InspectNode(*Me.GraphUI_t,*node.Node::Node_t)
-    Protected *top.View::View_t = *Me\top
+    Protected *top.View::View_t = *Me\parent
 
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     If *node
@@ -371,7 +367,7 @@ Module GraphUI
   ; Is Node Visible
   ;---------------------------------------------------------------------------
   Procedure.b IsNodeVisible(*Me.GraphUI_t,*n.Node::Node_t)
-    If (*n\posx+*n\width)<0 Or *n\posx>*Me\width Or (*n\posy+*n\height)<0 Or *n\posy>*Me\height
+    If (*n\posx+*n\width)<0 Or *n\posx>*Me\sizX Or (*n\posy+*n\height)<0 Or *n\posy>*Me\sizY
       ProcedureReturn #False
     Else
       ProcedureReturn #True
@@ -393,7 +389,7 @@ Module GraphUI
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
     If *current And *current\isroot
       Node::ViewSize(*current)
-      Node::ViewPosition(*current,*Me\posx,*Me\posy)
+      Node::ViewPosition(*current,*Me\canvasX,*Me\canvasY)
       ; Check For Visibility
 ;        If IsNodeVisible(*Me,*current)
          Graph::AttachListElement(*Me\a_visible(),*current)
@@ -408,7 +404,7 @@ Module GraphUI
         *node = *current\nodes()
         
         Node::ViewSize(*node)
-        Node::ViewPosition(*node,*Me\posx,*Me\posy)
+        Node::ViewPosition(*node,*Me\canvasX,*Me\canvasY)
         ; Check Fo Visibility
 ;          If IsNodeVisible(*Me,*node)
            Graph::AttachListElement(*Me\a_visible(),*node)
@@ -478,24 +474,24 @@ Module GraphUI
 ;       ControlMenu::AddSeparator(*menu)
 ;       
 ;       
-;       Arguments::SET(*args\args(1),*node)
-;       Arguments::SET(*args\args(2),"Bool",2)
-;       Arguments::SET(*args\args(3),Attribute::#ATTR_TYPE_BOOL)
+;       Arguments::PASS(*args\args(1),*node)
+;       Arguments::PASS(*args\args(2),"Bool",2)
+;       Arguments::PASS(*args\args(3),Attribute::#ATTR_TYPE_BOOL)
 ;       ControlMenu::AddItem(*menu,"Add Bool",@Dummy(),*args)
 ;       
-;       Arguments::SET(*args\args(1),*node,1)
-;       Arguments::SET(*args,"Float",2)
-;       Arguments::SET(*args,Attribute::#ATTR_TYPE_FLOAT,3)
+;       Arguments::PASS(*args\args(1),*node,1)
+;       Arguments::PASS(*args,"Float",2)
+;       Arguments::PASS(*args,Attribute::#ATTR_TYPE_FLOAT,3)
 ;       ControlMenu::AddItem(*menu,"Add Float",@Dummy(),*args)
 ;       
-;       Arguments::SET(*args\args(1),*node)
-;       Arguments::SET(*args\args(2),"Vector2")
-;       Arguments::SET(*args\args(3),Attribute::#ATTR_TYPE_VECTOR2)
+;       Arguments::PASS(*args\args(1),*node)
+;       Arguments::PASS(*args\args(2),"Vector2")
+;       Arguments::PASS(*args\args(3),Attribute::#ATTR_TYPE_VECTOR2)
 ;       ControlMenu::AddItem(*menu,"Add Vector2",@Dummy(),*args)
 ;       
-;       Arguments::SET(*args,"Node",*node,1)
-;       Arguments::SET(*args,"TypeName","Vector3",2)
-;       Arguments::SET(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
+;       Arguments::PASS(*args,"Node",*node,1)
+;       Arguments::PASS(*args,"TypeName","Vector3",2)
+;       Arguments::PASS(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
 ;       ControlMenu::AddItem(*menu,"Add Vector3",@Dummy(),*args)
 ;       
 ;       Arguments::Delete(*args)
@@ -554,7 +550,7 @@ Module GraphUI
   ; Change Port Name
   ;---------------------------------------------------------------------------
   Procedure ChangePortName(*Me.GraphUI_t,x.i,y.i)
-    Protected *top.View::View_t = *Me\top
+    Protected *top.View::View_t = *Me\parent
     If *Me\focus And *Me\focus\port
       Protected mx = x+*top\x
       Protected my = y+*top\y
@@ -659,10 +655,10 @@ Module GraphUI
   Procedure TerminateConnecter(*Me.GraphUI_t)
     If *Me\focus
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-      TranslateCoordinates(*Me\posx, *Me\posy)
+      TranslateCoordinates(*Me\canvasX, *Me\canvasY)
       ScaleCoordinates(*Me\zoom, *Me\zoom)
-      x = ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
-      y = ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User)
+      x = ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
+      y = ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
       StopVectorDrawing()
       
       ;Check For connection succeded
@@ -708,44 +704,44 @@ Module GraphUI
     Protected of.f = 1.0-f
     Protected ox = 200 * z
     Protected oy = 120 * z
-    Protected p1x = *Me\posx+ox
-    Protected p1y = *Me\posy+oy
+    Protected p1x = *Me\canvasX+ox
+    Protected p1y = *Me\canvasY+oy
     Protected w = 120 * z
     Protected h = 60 * z
     
     Box(p1x,p1y,w,h, RGBA(255,0,0,255))
-    Box(p1x*f+*Me\mousex*of,p1y*f+*Me\mousey*of,w*f,h*f,RGBA(0,255*f,0,255))
-    Box(p1x*f+*Me\posx*of,p1y*f+*Me\posy*of,w*f,h*f,RGBA(0,255*f,0,255))
+    Box(p1x*f+*Me\mouseX*of,p1y*f+*Me\mouseY*of,w*f,h*f,RGBA(0,255*f,0,255))
+    Box(p1x*f+*Me\canvasX*of,p1y*f+*Me\canvasY*of,w*f,h*f,RGBA(0,255*f,0,255))
     
-    LineXY(p1x,p1y,*Me\mousex,*Me\mousey, RGBA(255,255,0,255))
-    LineXY(p1x+w,p1y,*Me\mousex,*Me\mousey, RGBA(255,255,0,255))
-    LineXY(p1x,p1y+h,*Me\mousex,*Me\mousey, RGBA(255,255,0,255))
-    LineXY(p1x+w,p1y+h,*Me\mousex,*Me\mousey, RGBA(255,255,0,255))
+    LineXY(p1x,p1y,*Me\mouseX,*Me\mouseY, RGBA(255,255,0,255))
+    LineXY(p1x+w,p1y,*Me\mouseX,*Me\mouseY, RGBA(255,255,0,255))
+    LineXY(p1x,p1y+h,*Me\mouseX,*Me\mouseY, RGBA(255,255,0,255))
+    LineXY(p1x+w,p1y+h,*Me\mouseX,*Me\mouseY, RGBA(255,255,0,255))
     
-    Circle(p1x*f+*Me\mousex*of,p1y*f+*Me\mousey*of,2,RGBA(0,0,255,255))
-    Circle((p1x+w)*f+*Me\mousex*of,p1y*f+*Me\mousey*of,2,RGBA(0,0,255,255))
-    Circle(p1x*f+*Me\mousex*of,(p1y+h)*f+*Me\mousey*of,2,RGBA(0,0,255,255))
-    Circle((p1x+w)*f+*Me\mousex*of,(p1y+h)*f+*Me\mousey*of,2,RGBA(0,0,255,255))
+    Circle(p1x*f+*Me\mouseX*of,p1y*f+*Me\mouseY*of,2,RGBA(0,0,255,255))
+    Circle((p1x+w)*f+*Me\mouseX*of,p1y*f+*Me\mouseY*of,2,RGBA(0,0,255,255))
+    Circle(p1x*f+*Me\mouseX*of,(p1y+h)*f+*Me\mouseY*of,2,RGBA(0,0,255,255))
+    Circle((p1x+w)*f+*Me\mouseX*of,(p1y+h)*f+*Me\mouseY*of,2,RGBA(0,0,255,255))
     
-    LineXY(*Me\posx, *Me\posy, p1x, p1y, RGBA(255,255,0,255))
-    LineXY(*Me\posx, *Me\posy, p1x+w, p1y, RGBA(255,255,0,255))
-    LineXY(*Me\posx, *Me\posy, p1x, p1y+h, RGBA(255,255,0,255))
-    LineXY(*Me\posx, *Me\posy, p1x+w, p1y+h, RGBA(255,255,0,255))
+    LineXY(*Me\canvasX, *Me\canvasY, p1x, p1y, RGBA(255,255,0,255))
+    LineXY(*Me\canvasX, *Me\canvasY, p1x+w, p1y, RGBA(255,255,0,255))
+    LineXY(*Me\canvasX, *Me\canvasY, p1x, p1y+h, RGBA(255,255,0,255))
+    LineXY(*Me\canvasX, *Me\canvasY, p1x+w, p1y+h, RGBA(255,255,0,255))
     
-    Circle(*Me\posx*f+p1x*of,*Me\posy*f+p1y*of,2,RGBA(0,0,255,255))
-    Circle(*Me\posx*f+(p1x+w)*of,*Me\posy*f+p1y*of,2,RGBA(0,0,255,255))
-    Circle(*Me\posx*f+p1x*of,*Me\posy*f+(p1y+h)*of,2,RGBA(0,0,255,255))
-    Circle(*Me\posx*f+(p1x+w)*of,*Me\posy*f+(p1y+h)*of,2,RGBA(0,0,255,255))
+    Circle(*Me\canvasX*f+p1x*of,*Me\canvasY*f+p1y*of,2,RGBA(0,0,255,255))
+    Circle(*Me\canvasX*f+(p1x+w)*of,*Me\canvasY*f+p1y*of,2,RGBA(0,0,255,255))
+    Circle(*Me\canvasX*f+p1x*of,*Me\canvasY*f+(p1y+h)*of,2,RGBA(0,0,255,255))
+    Circle(*Me\canvasX*f+(p1x+w)*of,*Me\canvasY*f+(p1y+h)*of,2,RGBA(0,0,255,255))
     
-    LineXY(p1x*f+*Me\mousex*of, p1y*f+*Me\mousey*of, *Me\posx*of+p1x*f, *Me\posy*of+p1y*f, RGBA(255,255,255,255))
-    Protected x = (*Me\posx*of+p1x*f) - (p1x*f+*Me\mousex*of)
-    Protected y = (*Me\posy*of+p1y*f) - (p1y*f+*Me\mousey*of)
+    LineXY(p1x*f+*Me\mouseX*of, p1y*f+*Me\mouseY*of, *Me\canvasX*of+p1x*f, *Me\canvasY*of+p1y*f, RGBA(255,255,255,255))
+    Protected x = (*Me\canvasX*of+p1x*f) - (p1x*f+*Me\mouseX*of)
+    Protected y = (*Me\canvasY*of+p1y*f) - (p1y*f+*Me\mouseY*of)
     Protected l.f = Sqr(x*x +y*y)
     DrawingMode(#PB_2DDrawing_Transparent)
-    DrawText((p1x*f+*Me\mousex*of+*Me\posx*of+p1x*f)*0.5, (p1y*f+*Me\mousey*of+*Me\posy*of+p1y*f)*0.5-12, StrF(l,3), RGBA(255,255,255,255))
+    DrawText((p1x*f+*Me\mouseX*of+*Me\canvasX*of+p1x*f)*0.5, (p1y*f+*Me\mouseY*of+*Me\canvasY*of+p1y*f)*0.5-12, StrF(l,3), RGBA(255,255,255,255))
     
     DrawingMode(#PB_2DDrawing_Outlined)
-    Box(p1x*f+*Me\mousex*of,p1y*f+*Me\mousey*of,w*f,h*f,RGBA(255,255,255,255))
+    Box(p1x*f+*Me\mouseX*of,p1y*f+*Me\mouseY*of,w*f,h*f,RGBA(255,255,255,255))
     
     
     
@@ -771,28 +767,28 @@ Module GraphUI
       Protected i
       For i=0 To vw
         If i%iz = 0
-          Line(i+*Me\posx%iz,0,1,*Me\height,UIColor::COLOR_LINE_DIMMED)
+          Line(i+*Me\canvasX%iz,0,1,*Me\height,UIColor::COLOR_LINE_DIMMED)
         EndIf
       Next i
         
       ;Horizontal lines
       For i=0 To vh
         If i%iz = 0
-          Line(mx,i+*Me\posy%iz,*Me\width-2*mx,1,UIColor::COLOR_LINE_DIMMED)
+          Line(mx,i+*Me\canvasY%iz,*Me\width-2*mx,1,UIColor::COLOR_LINE_DIMMED)
         EndIf
       Next i
       
       ;CenterCircle
-      Circle(*Me\posx,*Me\posy,7,RGBA(255,100,100,255))
+      Circle(*Me\canvasX,*Me\canvasY,7,RGBA(255,100,100,255))
       Circle(*Me\width*0.5,*Me\height*0.5,4,RGBA(255,100,255,255))
       
       ; Mouse Circle
-      Circle(*Me\mousex,*Me\mousey,5,RGBA(0,255,100,255))
+      Circle(*Me\mouseX,*Me\mouseY,5,RGBA(0,255,100,255))
       
     ; Use Vector Drawing
     CompilerElse
       MovePathCursor(0,0)
-      AddPathBox(0, 0, *Me\width, *Me\height)
+      AddPathBox(0, 0, *Me\sizX, *Me\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
       
@@ -806,27 +802,27 @@ Module GraphUI
 ;       
 ;       For i=0 To vw
 ;         If i%iz = 0
-;           ix = i+*Me\posx%iz
+;           ix = i+*Me\canvasX%iz
 ;           MovePathCursor(ix,0)
 ;           AddPathLine(0,*Me\height,#PB_Path_Relative)
 ;           StrokePath(1)
-;           ;Line(i+*Me\posx%*Me\zoom,0,1,*Me\height,Globals::COLOR_LINE_DIMMED)
+;           ;Line(i+*Me\canvasX%*Me\zoom,0,1,*Me\height,Globals::COLOR_LINE_DIMMED)
 ;         EndIf
 ;       Next i
 ;         
 ;       ;Horizontal lines
 ;       For i=0 To vh
 ;         If i%iz = 0
-;           iy = i+*Me\posy%iz
+;           iy = i+*Me\canvasY%iz
 ;           MovePathCursor(0,iy,0)
 ;           AddPathLine(*Me\width,0,#PB_Path_Relative)
 ;           StrokePath(1)
-;           ;Line(0,i+*Me\posy%*Me\zoom,*Me\width,1,Globals::COLOR_LINE_DIMMED)
+;           ;Line(0,i+*Me\canvasY%*Me\zoom,*Me\width,1,Globals::COLOR_LINE_DIMMED)
 ;         EndIf
 ;       Next i
       
       ;CenterCircle
-      AddPathCircle(*Me\posx,*Me\posy,12 * *Me\zoom)
+      AddPathCircle(*Me\canvasX,*Me\canvasY,12 * *Me\zoom)
       VectorSourceColor(RGBA(255,100,100,255))
       FillPath()
       
@@ -844,10 +840,10 @@ Module GraphUI
       Protected *compound.CompoundNode::CompoundNode_t = *Me\tree\current
       
       ; Inputs
-      Box(0,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLOR_SECONDARY_BG)
+      Box(0,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_SECONDARY_BG)
       
       ; Outputs
-      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\height,UIColor::COLOR_SECONDARY_BG)
+      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_SECONDARY_BG)
 
       CompoundNode::Draw(*compound,*Me\gadgetID)
  
@@ -897,7 +893,7 @@ Module GraphUI
    ResetCoordinates()
    Background(*Me)
    
-   TranslateCoordinates(*Me\posx, *Me\posy)
+   TranslateCoordinates(*Me\canvasX, *Me\canvasY)
    ScaleCoordinates(*Me\zoom, *Me\zoom)
      If *Me\tree
       Protected c
@@ -927,7 +923,7 @@ Module GraphUI
 ;         ;Draw Rectangle Selection
 ;         If *Me\pick
 ;           DrawingMode(#PB_2DDrawing_Outlined)
-;           RoundBox(*Me\rectx1,*Me\recty1,*Me\rectx2-*Me\rectx1,*Me\recty2-*Me\recty1,3,3,RGB(250,200,50))
+;           RoundBox(*Me\rectX1,*Me\rectY1,*Me\rectX2-*Me\rectX1,*Me\rectY2-*Me\rectY1,3,3,RGB(250,200,50))
 ;         EndIf
 ;         
       ;Debug
@@ -936,9 +932,9 @@ Module GraphUI
       MovePathCursor(10,10)
       AddPathText("Nb Nodes : "+Str(ListSize(*Me\tree\current\nodes())-1))
       MovePathCursor(10,40)
-      AddPathText("PositionX : "+Str(*Me\posx))
+      AddPathText("PositionX : "+Str(*Me\canvasX))
       MovePathCursor(10,50)
-      AddPathText("PositionY : "+Str(*Me\posy))
+      AddPathText("PositionY : "+Str(*Me\canvasY))
       MovePathCursor(10,70)
       AddPathText("Zoom Factor : "+Str(*Me\zoom))
       MovePathCursor(10,80)
@@ -1089,7 +1085,7 @@ Module GraphUI
     CArray::SetCount(*Me\a_selected,0)
   
     With *Me\tree\current
-      If Bool(\posx>*Me\rectx1 And \posx+\width<*Me\rectx2 And \posy>*Me\recty1 And \posy+\height<*Me\recty2)
+      If Bool(\posx>*Me\rectX1 And \posx+\width<*Me\rectX2 And \posy>*Me\rectY1 And \posy+\height<*Me\rectY2)
         CArray::AppendUnique(*Me\a_selected,*Me\tree\current)
         \selected = #True
       Else
@@ -1100,7 +1096,7 @@ Module GraphUI
     
     ForEach *Me\tree\current\nodes()
       With *Me\tree\current\nodes()
-        If Bool(\posx>*Me\rectx1 And \posx+\width<*Me\rectx2 And \posy>*Me\recty1 And \posy+\height<*Me\recty2)
+        If Bool(\posx>*Me\rectX1 And \posx+\width<*Me\rectX2 And \posy>*Me\rectY1 And \posy+\height<*Me\rectY2)
           CArray::AppendUnique(*Me\a_selected,*Me\tree\current\nodes())
           \selected = #True
         Else
@@ -1114,8 +1110,8 @@ Module GraphUI
   ; Reset
   ;---------------------------------------------------------------------------
   Procedure Reset(*Me.GraphUI_t)
-    *Me\posx = *Me\width*0.5
-    *Me\posy = *Me\height*0.5
+    *Me\canvasX = *Me\sizX * 0.5
+    *Me\canvasY = *Me\sizY * 0.5
     *Me\zoom = 1.0
     *Me\redraw = #True
   EndProcedure
@@ -1145,14 +1141,14 @@ Module GraphUI
     width = maxx-minx
     height = maxy-miny
    
-    *Me\posx = -(maxx-minx)/2
-    *Me\posy = -(maxy-miny)/2
-    *Me\zoom = (*Me\width/width/2 + *Me\height/height/2)
+    *Me\canvasX = -(maxx-minx)/2
+    *Me\canvasY = -(maxy-miny)/2
+    *Me\zoom = (*Me\sizX/width/2 + *Me\sizY/height/2)
     MINIMUM(*Me\zoom,2.5)
     MAXIMUM(*Me\zoom,0.01)
    
     ForEach *Me\tree\current\nodes()
-      Node::ViewPosition(*Me\tree\root\nodes(),*Me\posx,*Me\posy)
+      Node::ViewPosition(*Me\tree\root\nodes(),*Me\canvasX,*Me\canvasY)
     Next
     
     *Me\redraw = #True
@@ -1183,12 +1179,12 @@ Module GraphUI
     Next
     
     msg + "BBox : "+Str(minx)+","+Str(miny)+","+Str(maxx)+","+Str(maxy)
-    *Me\posx = -(minx+maxx) * 0.5 +*Me\width * 0.5
-    *Me\posy = -(miny+maxy) * 0.5 + *Me\height * 0.5
+    *Me\canvasX = -(minx+maxx) * 0.5 +*Me\sizX * 0.5
+    *Me\canvasY = -(miny+maxy) * 0.5 + *Me\sizY * 0.5
     *Me\zoom = 1.0
     ;MessageRequester("Frame Selected", msg)
     ForEach *Me\tree\root\nodes()
-      Node::ViewPosition(*Me\tree\root\nodes(),*Me\posx,*Me\posy)
+      Node::ViewPosition(*Me\tree\root\nodes(),*Me\canvasX,*Me\canvasY)
     Next
     
     *Me\redraw = #True 
@@ -1207,10 +1203,10 @@ Module GraphUI
   
   Procedure Pick(*Me.GraphUI_t)
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-    TranslateCoordinates(*Me\posx, *Me\posy)
+    TranslateCoordinates(*Me\canvasX, *Me\canvasY)
     ScaleCoordinates(*Me\zoom, *Me\zoom)
-    PokeI(@*Me\realx, ConvertCoordinateX(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User))
-    PokeI(@*Me\realy, ConvertCoordinateY(*Me\mousex, *Me\mousey, #PB_Coordinate_Device, #PB_Coordinate_User))
+    PokeI(@*Me\realX, ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User))
+    PokeI(@*Me\realY, ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User))
     StopVectorDrawing()
   EndProcedure
   
@@ -1222,8 +1218,8 @@ Module GraphUI
     
     Define x.d,y.d ,out_value
     *Me\redraw = #False
-    *Me\mousex = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
-    *Me\mousey = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
+    *Me\mouseX = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+    *Me\mouseY = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
     
     ; Return value(push the command stack)
     out_value = -1
@@ -1242,9 +1238,9 @@ Module GraphUI
           ;Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
             Pick(*Me)
-            GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
+            GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
             If *Me\focus
-               Define mode = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#False)
+               Define mode = Node::Pick(*Me\focus,*Me\realX,*Me\realY,#False)
                If mode = Graph::#Graph_Selection_Node
                  ;Inspect Current Node
                  InspectNode(*Me,*Me\focus)
@@ -1257,8 +1253,8 @@ Module GraphUI
 
           ;Wheel Event
           Case #PB_EventType_MouseWheel
-;             Protected dx.i = (*Me\mousex - *Me\posx)
-;             Protected dy.i = (*Me\mousey - *Me\posy)
+;             Protected dx.i = (*Me\mouseX - *Me\canvasX)
+;             Protected dy.i = (*Me\mouseY - *Me\canvasY)
 ;             Protected ox.i = dx * *Me\zoom
 ;             Protected oy.i = dy * *Me\zoom
         
@@ -1270,8 +1266,8 @@ Module GraphUI
               Protected nx.i = dx * *Me\zoom
               Protected ny.i = dy * *Me\zoom
              
-              *Me\posx + (ox - nx) / *Me\zoom
-              *Me\posy + (oy - ny) / *Me\zoom
+              *Me\canvasX + (ox - nx) / *Me\zoom
+              *Me\canvasY + (oy - ny) / *Me\zoom
             EndIf
             
 
@@ -1285,13 +1281,13 @@ Module GraphUI
               If *me\pan :ProcedureReturn : EndIf
               ; Pan
               SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
-              *Me\offsetx = *Me\mousex - *Me\posx
-              *Me\offsety = *Me\mousey - *Me\posy
+              *Me\offsetx = *Me\mouseX - *Me\canvasX
+              *Me\offsety = *Me\mouseY - *Me\canvasY
               *Me\pan = #True
               ProcedureReturn
             EndIf
               
-            Define s.i = GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
+            Define s.i = GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
             If s = Graph::#Graph_Selection_Climb
               If *Me\depth>0
                 *Me\tree\current = *Me\tree\current\parent
@@ -1306,7 +1302,7 @@ Module GraphUI
               Protected id=0
               Protected selected = #False
               ForEach *Me\tree\current\inputs()
-                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,*Me\realx,*Me\realy)
+                selected = Node::PickPort(*Me\tree\current,*Me\tree\current\inputs(),id,*Me\realX,*Me\realY)
                 If selected 
                   If *Me\tree\current\inputs()\connected
                     MessageRequester("GraphUI","Port Already Connected ---> Diconnect")
@@ -1324,7 +1320,7 @@ Module GraphUI
             EndIf
             
             If *Me\focus
-              Define mode.i = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#False)
+              Define mode.i = Node::Pick(*Me\focus,*Me\realX,*Me\realY,#False)
               
               Select mode
                 Case Graph::#Graph_Selection_Dive
@@ -1334,7 +1330,7 @@ Module GraphUI
                   *Me\depth +1
                  ; selection 
                 Case Graph::#Graph_Selection_Node
-                  Selection(*Me,*Me\realx,*Me\realy,#False)
+                  Selection(*Me,*Me\realX,*Me\realY,#False)
                   *Me\drag = #True               
                 ; Connexion 
                 Case Graph::#Graph_Selection_Port
@@ -1344,10 +1340,10 @@ Module GraphUI
               EndSelect
             Else
               ;Rectangle Selection  
-              *Me\rectx1 = *Me\realx
-              *Me\recty1 = *Me\realy
-              *Me\rectx2 = *Me\realx
-              *Me\recty2 = *Me\realy
+              *Me\rectX1 = *Me\realX
+              *Me\rectY1 = *Me\realY
+              *Me\rectX2 = *Me\realX
+              *Me\rectY2 = *Me\realY
               *Me\pick = #True
             EndIf 
             
@@ -1369,15 +1365,15 @@ Module GraphUI
               ;Do nothing as we are panning
               *Me\pan = #False
             ElseIf *Me\pick
-              *Me\rectx2 = *Me\realx
-              *Me\recty2 = *Me\realy
+              *Me\rectX2 = *Me\realX
+              *Me\rectY2 = *Me\realY
               RectangleSelect(*Me)
               *Me\pick = #False
               *Me\redraw = #True
             Else
               *Me\down = #False
-              *Me\lastx = *Me\realx
-              *Me\lasty = *Me\realy
+              *Me\lastx = *Me\realX
+              *Me\lasty = *Me\realY
               *Me\drag = #False
               *Me\redraw = #False
             EndIf
@@ -1397,7 +1393,7 @@ Module GraphUI
           ; Middle Button Button Event 
          Case #PB_EventType_MiddleButtonDown
            Pick(*Me)
-            Define s.i = GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
+            Define s.i = GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
             If *Me\focus
               SelectBranch(*Me,*Me\focus)
               *Me\redraw = #True
@@ -1412,8 +1408,8 @@ Module GraphUI
 ;                  If *me\pan :ProcedureReturn : EndIf
 ;                  ; Pan
 ;                  SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
-;                  *Me\offsetx = *Me\mousex - *Me\posx
-;                  *Me\offsety = *Me\mousey - *Me\posy
+;                  *Me\offsetx = *Me\mouseX - *Me\canvasX
+;                  *Me\offsety = *Me\mouseY - *Me\canvasY
 ;                  *Me\pan = #True
                Case #PB_Shortcut_A
                  *me\keydown = #PB_Shortcut_A
@@ -1446,12 +1442,12 @@ Module GraphUI
           Case #PB_EventType_MouseMove
             If *Me\connect = #True
               Pick(*Me)
-              Connexion::Drag(*Me\connecter,*Me\realx,*Me\realy)
-              GetNodeUnderMouse(*Me,*Me\realx,*Me\realy)
+              Connexion::Drag(*Me\connecter,*Me\realX,*Me\realY)
+              GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
               
               If *me\focus
                 ; try to connect
-                mode = Node::Pick(*Me\focus,*Me\realx,*Me\realy,#True)
+                mode = Node::Pick(*Me\focus,*Me\realX,*Me\realY,#True)
                 
                ;Snap head of the connexion to the port
                Select mode
@@ -1468,13 +1464,13 @@ Module GraphUI
              
            ElseIf *Me\pick = #True
              Pick(*Me)
-              *Me\rectx2 = *Me\realx
-              *Me\recty2 = *Me\realy
+              *Me\rectX2 = *Me\realX
+              *Me\rectY2 = *Me\realY
               *Me\redraw = #True
             ElseIf *Me\pan = #True
               Pick(*Me)
-              *Me\posx = - (*Me\offsetx -*Me\mousex)
-              *Me\posy = - (*Me\offsety -*Me\mousey)
+              *Me\canvasX = - (*Me\offsetx -*Me\mouseX)
+              *Me\canvasY = - (*Me\offsety -*Me\mouseY)
               *Me\redraw = #True
             ElseIf *Me\drag = #True
               Pick(*Me)
@@ -1482,7 +1478,7 @@ Module GraphUI
               For i=0 To CArray::GetCount(*Me\a_selected)-1
                 Protected *sel.Node::Node_t = CArray::GetValuePtr(*Me\a_selected,i)
                 If *sel
-                  Node::Drag(*sel,*Me\realx-*Me\lastx,*Me\realy-*Me\lasty)
+                  Node::Drag(*sel,*Me\realX-*Me\lastx,*Me\realY-*Me\lasty)
                 EndIf
               Next
               *Me\redraw = #True
@@ -1492,8 +1488,8 @@ Module GraphUI
           Case #PB_EventType_LostFocus
             Pick(*Me)
             If *Me\pick
-              *Me\rectx2 = *Me\realx
-              *Me\recty2 = *Me\realy
+              *Me\rectX2 = *Me\realX
+              *Me\rectY2 = *Me\realY
               RectangleSelect(*Me)
               *Me\pick = #False
               *Me\redraw = #True
@@ -1507,7 +1503,7 @@ Module GraphUI
       Case #PB_Event_GadgetDrop
         If *Me\tree
           Protected text.s = EventDropText()
-          Tree::AddNode(*Me\tree,text,*Me\posx+*Me\mousex,*Me\posy+*Me\mousey,200,100,RGB(166,166,166))
+          Tree::AddNode(*Me\tree,text,*Me\canvasX+*Me\mouseX,*Me\canvasY+*Me\mouseY,200,100,RGB(166,166,166))
           
           *Me\tree\dirty = #True
           *Me\redraw = #True
@@ -1534,8 +1530,8 @@ Module GraphUI
     Else
       DrawEmpty(*Me)
     EndIf
-    *Me\lastx = *Me\realx
-    *Me\lasty = *Me\realy
+    *Me\lastx = *Me\realX
+    *Me\lasty = *Me\realY
     
     ; Don't push command stack
     ProcedureReturn out_value
@@ -1610,7 +1606,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 849
-; FirstLine = 845
+; CursorPosition = 501
+; FirstLine = 473
 ; Folding = --------
 ; EnableXP

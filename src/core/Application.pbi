@@ -618,7 +618,7 @@ EndProcedure
         
         Select event
           Case Globals::#EVENT_NEW_SCENE
-            ;Scene::Setup(Scene::*current_scene, *app\context)
+            Scene::Setup(Scene::*current_scene, *app\context)
             ViewManager::OnEvent(*app\manager,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
@@ -668,8 +668,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 35
+; CursorPosition = 620
+; FirstLine = 571
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

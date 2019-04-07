@@ -1030,7 +1030,7 @@ Module ControlTimeline
   ; ============================================================================
   ;{
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New(windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
+  Procedure.i New(*parent.UI::UI_t, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
@@ -1044,6 +1044,7 @@ Module ControlTimeline
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = #PB_GadgetType_Canvas
     *Me\name       = "Timeline"
+    *Me\parent     = *parent
     *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
     *Me\imageID    = CreateImage( #PB_Any, width, height )
     *Me\posX       = x
@@ -1135,7 +1136,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 416
-; FirstLine = 357
+; CursorPosition = 1046
+; FirstLine = 1028
 ; Folding = ------
 ; EnableXP

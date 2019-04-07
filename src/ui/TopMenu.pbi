@@ -117,11 +117,11 @@ Module TopMenuUI
         ControlMenu::OnEvent(*me\menu,Control::#PB_EventType_Resize)
     CompilerElse
       If event =  #PB_EventType_Resize
-        Protected *top.View::View_t = *Me\top
-        *Me\x = *top\x
-        *Me\y = *top\y
-        *Me\width = *top\width
-        *Me\height = *top\height
+        Protected *top.View::View_t = *Me\parent
+        *Me\posX = *top\x
+        *Me\posY = *top\y
+        *Me\sizX = *top\width
+        *Me\sizY = *top\height
         ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
         ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
     CompilerEndIf
@@ -147,28 +147,16 @@ Module TopMenuUI
     ;Me\SignalConnect(*Me\menu\SignalOnChanged(),0)
     
   EndProcedure
-  
-  ;---------------------------------------------------------------
-  ; On Message
-  ;---------------------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-;     Protected *sig.CSignal_t = *up
-;     Protected *menu.TopMenuUI_t = *sig\rcv_inst
-;     
-;     ; Menu Event
-;     ;--------------------------------------------------------
-;     Protected *manager.CViewManager_t = *menu\top\manager
-;     OView_Event(*manager\main,#PB_Event_SizeWindow,#Null)
-  
-  EndProcedure
+ 
   
   
   
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*e.TopMenuUI_t)
-    FreeMemory(*e)
+  Procedure Delete(*Me.TopMenuUI_t)
+    ControlMenu::Delete(*Me\menu)
+    Object::TERM(TopMenuUI)
   EndProcedure
   
 ;   Procedure OnCreatePolymesh(shape.i)
@@ -187,29 +175,28 @@ Module TopMenuUI
   Procedure.i New(*parent.View::View_t,name.s="TopMenuUI")
     Protected *Me.TopMenuUI_t = AllocateMemory(SizeOf(TopMenuUI_t))
     ;Initialize Structures
-    InitializeStructure(*Me,TopMenuUI_t)
     Object::INI( TopMenuUI )
-    *Me\x = *parent\x
-    *Me\y = *parent\y
-    *Me\width = *parent\width
-    *Me\height = 25
+    *Me\posX = *parent\x
+    *Me\posY = *parent\y
+    *Me\sizX = *parent\width
+    *Me\sizY = 25
     
     *Me\name = "Top Menu"
     *Me\type = Globals::#VIEW_TOPMENU
-    *Me\container = ContainerGadget(#PB_Any,*Me\x,*Me\y,*Me\width,*Me\height)
+    *Me\container = ContainerGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
                                   
 
     Protected *manager.ViewManager::ViewManager_t = *parent\manager
     
     ; ---[ Menu ]------------------
-    *Me\menu = ControlMenu::New(*manager\window,*Me\container,*Me\x,*Me\y,*Me\width,*Me\height)
+    *Me\menu = ControlMenu::New(*manager\window,*Me\container,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     *Me\gadgetID = *Me\menu\gadgetID
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
     Protected *args.Arguments::Arguments_t = Arguments::New(1)
     *args\args(0)\type = Arguments::#PTR
     *args\args(0)\p = Scene::*current_scene
-    Debug "CURRENT SCENE : "+*args
+
     ControlMenu::AddItem(*submenu,"Save Scene",SaveSceneCmd::@Do(),*args)
     ControlMenu::AddItem(*submenu,"Load Scene",LoadSceneCmd::@Do(),*args)
     ControlMenu::AddSeparator(*submenu)
@@ -287,7 +274,7 @@ Module TopMenuUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 237
-; FirstLine = 204
+; CursorPosition = 191
+; FirstLine = 187
 ; Folding = ---
 ; EnableXP

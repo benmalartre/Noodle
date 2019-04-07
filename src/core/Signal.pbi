@@ -36,56 +36,56 @@ DeclareModule Signal
     Define *_datas#_callback._callback#DATAS_t = AllocateMemory(SizeOf(_callback#DATAS_t ))
     
     CompilerIf Globals::TOSTRING(_arg8) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
-      Arguments::SET(*_datas#_callback\__arg__3, _arg4)
-      Arguments::SET(*_datas#_callback\__arg__4, _arg5)
-      Arguments::SET(*_datas#_callback\__arg__5, _arg6)
-      Arguments::SET(*_datas#_callback\__arg__6, _arg7)
-      Arguments::SET(*_datas#_callback\__arg__7, _arg8)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__3, _arg4)
+      Arguments::PASS(*_datas#_callback\__arg__4, _arg5)
+      Arguments::PASS(*_datas#_callback\__arg__5, _arg6)
+      Arguments::PASS(*_datas#_callback\__arg__6, _arg7)
+      Arguments::PASS(*_datas#_callback\__arg__7, _arg8)
       
     CompilerElseIf Globals::TOSTRING(_arg7) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
-      Arguments::SET(*_datas#_callback\__arg__3, _arg4)
-      Arguments::SET(*_datas#_callback\__arg__4, _arg5)
-      Arguments::SET(*_datas#_callback\__arg__5, _arg6)
-      Arguments::SET(*_datas#_callback\__arg__6, _arg7)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__3, _arg4)
+      Arguments::PASS(*_datas#_callback\__arg__4, _arg5)
+      Arguments::PASS(*_datas#_callback\__arg__5, _arg6)
+      Arguments::PASS(*_datas#_callback\__arg__6, _arg7)
       
     CompilerElseIf Globals::TOSTRING(_arg6) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
-      Arguments::SET(*_datas#_callback\__arg__3, _arg4)
-      Arguments::SET(*_datas#_callback\__arg__4, _arg5)
-      Arguments::SET(*_datas#_callback\__arg__5, _arg6)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__3, _arg4)
+      Arguments::PASS(*_datas#_callback\__arg__4, _arg5)
+      Arguments::PASS(*_datas#_callback\__arg__5, _arg6)
       
     CompilerElseIf Globals::TOSTRING(_arg5) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
-      Arguments::SET(*_datas#_callback\__arg__3, _arg4)
-      Arguments::SET(*_datas#_callback\__arg__4, _arg5)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__3, _arg4)
+      Arguments::PASS(*_datas#_callback\__arg__4, _arg5)
       
     CompilerElseIf Globals::TOSTRING(_arg4) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
-      Arguments::SET(*_datas#_callback\__arg__3, _arg4)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__3, _arg4)
       
     CompilerElseIf Globals::TOSTRING(_arg3) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
-      Arguments::SET(*_datas#_callback\__arg__2, _arg3)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__2, _arg3)
       
     CompilerElseIf Globals::TOSTRING(_arg2) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
-      Arguments::SET(*_datas#_callback\__arg__1, _arg2)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__1, _arg2)
       
     CompilerElseIf Globals::TOSTRING(_arg1) <> Globals::#EMPTYSTRING
-      Arguments::SET(*_datas#_callback\__arg__0, _arg1)
+      Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
     CompilerEndIf
     
     *_slot#_callback\datas = *_datas#_callback
@@ -145,7 +145,7 @@ Module Signal
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 83
+; CursorPosition = 87
+; FirstLine = 34
 ; Folding = --
 ; EnableXP

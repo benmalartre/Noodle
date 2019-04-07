@@ -15,14 +15,14 @@ DeclareModule DummyUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s)
-  Declare Delete(*ui.DummyUI_t)
-  Declare Init(*ui.DummyUI_t)
-  Declare OnEvent(*ui.DummyUI_t,event.i)
-  Declare Term(*ui.DummyUI_t)
-  Declare Draw(*ui.DummyUI_t)
+  Declare Delete(*Me.DummyUI_t)
+  Declare Init(*Me.DummyUI_t)
+  Declare OnEvent(*Me.DummyUI_t,event.i)
+  Declare Term(*Me.DummyUI_t)
+  Declare Draw(*Me.DummyUI_t)
   
   DataSection 
-    DummyVT: 
+    DummyUIVT: 
     Data.i @Init()
     Data.i @OnEvent()
     Data.i @Term()
@@ -47,69 +47,69 @@ Module DummyUI
     Protected w = *parent\width
     Protected h = *parent\height
     
-    Protected *ui.DummyUI_t = AllocateMemory(SizeOf(DummyUI_t))
-    InitializeStructure(*ui,DummyUI_t)
-    *ui\name = name
-    *ui\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *ui\width = w
-    *ui\height = h
-    *ui\gadgetID = CanvasGadget(#PB_Any,0,20,w,h-20)
-    *ui\VT = ?DummyVT
-    *ui\active = #False
-    View::SetContent(*parent,*ui)
+    Protected *Me.DummyUI_t = AllocateMemory(SizeOf(DummyUI_t))
+    Object::INI(DummyUI)
+    *Me\name = name
+    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
+    *Me\sizX = w
+    *Me\sizY = h
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,20,w,h-20)
+    *Me\active = #False
+    View::SetContent(*parent,*Me)
     
 ;     Protected *args.Arguments::Arguments_t = Arguments::New()
 ;     Arguments::AddBool(*args,"Boolean",#True)
 ;     MessageRequester( "DUMMY CALLBACK","Nb Arguments : "+Str(*args\nb))
 ;     Protected *manager.ViewManager::ViewManager_t = *parent\manager
-;     *ui\menu = ControlMenu::New(*manager\window,*ui\container,0,0,800,20)
-;     Protected *files.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*ui\menu,"Files")
+;     *Me\menu = ControlMenu::New(*manager\window,*Me\container,0,0,800,20)
+;     Protected *files.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Files")
 ;     ControlMenu::AddItem(*files,"Save",@DummyCallback(),*args)
 ;     ControlMenu::AddItem(*files,"Load",@DummyCallback(),*args)
 ;     ControlMenu::AddItem(*files,"SaveAs",@DummyCallback(),*args)
 ;     
-;     Protected *disk.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*ui\menu,"Disk")
+;     Protected *disk.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Disk")
 ;     ControlMenu::AddItem(*disk,"Save",@DummyCallback(),*args)
 ;     ControlMenu::AddItem(*disk,"Load",@DummyCallback(),*args)
 ;     ControlMenu::AddItem(*disk,"SaveAs",@DummyCallback(),*args)
 ;     
-;     ControlMenu::Init(*ui\menu,"Test")
+;     ControlMenu::Init(*Me\menu,"Test")
     
     CloseGadgetList()
-    ProcedureReturn *ui
+    ProcedureReturn *Me
   EndProcedure
   
   ; Delete
   ;-------------------------------
-  Procedure Delete(*ui.DummyUI_t)
-    ClearStructure(*ui,DummyUI_t)
-    FreeMemory(*ui)
+  Procedure Delete(*Me.DummyUI_t)
+    FreeGadget(*Me\gadgetID)
+    FreeGadget(*Me\container)
+    Object::TERM(DummyUI)
   EndProcedure
 
   
   ; Draw
   ;-------------------------------
-  Procedure Draw(*ui.DummyUI_t)
-    StartVectorDrawing(CanvasOutput(*ui\gadgetID))
+  Procedure Draw(*Me.DummyUI_t)
+    StartVectorDrawing(CanvasOutput(*Me\gadgetID))
     DrawingMode(#PB_2DDrawing_Default)
-    If *ui\active
-      AddPathBox(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID))
+    If *Me\active
+      AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
       VectorSourceColor(RGBA(Random(255),Random(255),Random(255),255))
       FillPath()
     Else
-      AddPathBox(0,0,GadgetWidth(*ui\gadgetID),GadgetHeight(*ui\gadgetID))
+      AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
       VectorSourceColor(RGBA(100,100,100,255))
       FillPath()
     EndIf
     
-    Protected txt.s = Str(*ui\width)+"x"+Str(*ui\height)
-    Protected tx = GadgetWidth(*ui\gadgetID)/2 - TextWidth(txt)/2
-    Protected ty = GadgetHeight(*ui\gadgetID)/2-6
+    Protected txt.s = Str(*Me\sizX)+"x"+Str(*Me\sizY)
+    Protected tx = GadgetWidth(*Me\gadgetID)/2 - TextWidth(txt)/2
+    Protected ty = GadgetHeight(*Me\gadgetID)/2-6
     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
     MovePathCursor(tx,ty)
     DrawVectorText(txt)
     
-    Vector::RoundBoxPath(2,2,GadgetWidth(*ui\gadgetID)-4,GadgetHeight(*ui\gadgetID)-4,4)
+    Vector::RoundBoxPath(2,2,GadgetWidth(*Me\gadgetID)-4,GadgetHeight(*Me\gadgetID)-4,4)
     VectorSourceColor(RGBA(60,60,60,255))
     FillPath()
     StopVectorDrawing()
@@ -117,34 +117,34 @@ Module DummyUI
   
   ; Init
   ;-------------------------------
-  Procedure Init(*ui.DummyUI_t)
+  Procedure Init(*Me.DummyUI_t)
     Debug "DUmmyUI Init Called!!!"
   EndProcedure
   
   ; Event
   ;-------------------------------
-  Procedure OnEvent(*ui.DummyUI_t,event.i)
+  Procedure OnEvent(*Me.DummyUI_t,event.i)
     
    
     Select event
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *ui\top
+        Protected *top.View::View_t = *Me\parent
         Protected width.i = *top\width
         Protected height.i = *top\height
         
-        *ui\width = width
-        *ui\height = height
-        ResizeGadget(*ui\container,*top\x,*top\y,width,height)
-        ResizeGadget(*ui\gadgetID,0,0,width,height)
+        *Me\sizX = width
+        *Me\sizY = height
+        ResizeGadget(*Me\container,*top\x,*top\y,width,height)
+        ResizeGadget(*Me\gadgetID,0,0,width,height)
   
       Case #PB_Event_Gadget
         Protected g = EventGadget()
-        If g= *ui\gadgetID
+        If g= *Me\gadgetID
           Select EventType()
             Case #PB_EventType_Focus
-              *ui\active = #True
+              *Me\active = #True
             Case #PB_EventType_LostFocus
-              *ui\active = #True
+              *Me\active = #True
               
           EndSelect
           
@@ -152,18 +152,18 @@ Module DummyUI
         
         
     EndSelect
-     Draw(*ui)
+     Draw(*Me)
   EndProcedure
   
   ; Term
   ;-------------------------------
-  Procedure Term(*ui.DummyUI_t)
+  Procedure Term(*Me.DummyUI_t)
     Debug "DUmmyUI Term Called!!!"
   EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 34
+; CursorPosition = 24
+; FirstLine = 2
 ; Folding = --
 ; EnableXP

@@ -2009,7 +2009,7 @@ EndProcedure
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( *object.Object::Object_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
+  Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
     
     ; Allocate Object Memory
     Protected *Me.ControlProperty_t = AllocateMemory( SizeOf(ControlProperty_t) )
@@ -2017,7 +2017,8 @@ EndProcedure
     Object::INI(ControlProperty)
     
     ; Init Members
-    *Me\object     = *object
+    *Me\object     = #Null
+    *Me\parent      = *parent
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
@@ -2057,7 +2058,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1680
-; FirstLine = 1621
+; CursorPosition = 2011
+; FirstLine = 1998
 ; Folding = ----------
 ; EnableXP

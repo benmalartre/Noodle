@@ -93,11 +93,11 @@ Module ExplorerUI
   ; Resize
   ;---------------------------------------------------------
   Procedure Resize(*Me.ExplorerUI_t)
-    Protected *top.View::View_t = *Me\top
-    *Me\width = *top\width
-    *Me\height = *top\height
-    *Me\scrollmaxx = ImageWidth(*Me\explorer\imageID)
-    *Me\scrollmaxy = 200
+    Protected *top.View::View_t = *Me\parent
+    *Me\sizX = *top\width
+    *Me\sizY = *top\height
+    *Me\scrollMaxX = ImageWidth(*Me\explorer\imageID)
+    *Me\scrollMaxY = 200
   ;   *Me\grp\Event(#PB_EventType_Resize,@ed)
     
   EndProcedure
@@ -125,45 +125,45 @@ Module ExplorerUI
   ;---------------------------------------------------------
   ;  OnEvent
   ;---------------------------------------------------------
-  Procedure OnEvent(*e.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Procedure OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
     Define ev_datas.Control::EventTypeDatas_t
     Select event
       Case Globals::#EVENT_NEW_SCENE
-        ControlExplorer::Fill(*e\explorer,Scene::*current_scene) 
+        ControlExplorer::Fill(*Me\explorer,Scene::*current_scene) 
       CompilerIf #PB_Compiler_Version < 560
         Case  Control::#PB_EventType_Resize 
       CompilerElse
         Case #PB_EventType_Resize
       CompilerEndIf
-        If *e\top
-          Resize(*e)
+        If *Me\parent
+          Resize(*Me)
           
-          ev_datas\width = *e\width
-          ev_datas\height = *e\height
-          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,ev_datas)
+          ev_datas\width = *Me\sizX
+          ev_datas\height = *Me\sizY
+          ControlExplorer::OnEvent(*Me\explorer,#PB_Event_SizeWindow,ev_datas)
         EndIf
         
       Case #PB_Event_SizeWindow
-        If *e\top
-          Resize(*e)
+        If *Me\parent
+          Resize(*Me)
           Define ev_datas.Control::EventTypeDatas_t
-          ev_datas\width = *e\width
-          ev_datas\height = *e\height
-          ControlExplorer::OnEvent(*e\explorer,#PB_Event_SizeWindow,ev_datas)
+          ev_datas\width = *Me\sizX
+          ev_datas\height = *Me\sizY
+          ControlExplorer::OnEvent(*Me\explorer,#PB_Event_SizeWindow,ev_datas)
         EndIf
     
       Case #PB_Event_Gadget
-        ev_datas\xoff = *e\scrollx
-        ev_datas\yoff = *e\scrolly
-        ev_datas\width = *e\width
-        ev_datas\height = *e\height
-        ControlExplorer::OnEvent(*e\explorer,event,#Null)
+        ev_datas\xoff = *Me\scrollX
+        ev_datas\yoff = *Me\scrollY
+        ev_datas\width = *Me\sizX
+        ev_datas\height = *Me\sizY
+        ControlExplorer::OnEvent(*Me\explorer,event,#Null)
         If EventType() = #PB_EventType_MouseWheel
-          UI::Scroll(*e,#True)
+          UI::Scroll(*Me,#True)
         EndIf
     EndSelect
     
-    Draw(*e)
+    Draw(*Me)
     
   EndProcedure
   
@@ -185,13 +185,14 @@ Module ExplorerUI
     
     *Me\container = ContainerGadget(#PB_Any,*view\x,*view\y,*view\width,*view\height)
     *Me\name = name
-    *Me\width = *view\width
-    *Me\height = *view\height
-    *Me\scrollx = 0
-    *Me\scrolly = 0
+    *Me\sizX = *view\width
+    *Me\sizY = *view\height
+    *Me\scrollX = 0
+    *Me\scrollY = 0
     *Me\scrollable = #True
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
     *Me\explorer = ControlExplorer::New(*Me,0,0,*view\width,*view\height)
-    *Me\gadgetID = *Me\explorer\gadgetID
+
     CloseGadgetList()
     
     View::SetContent(*view,*Me)
@@ -205,7 +206,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 101
+; CursorPosition = 194
+; FirstLine = 146
 ; Folding = ---
 ; EnableXP

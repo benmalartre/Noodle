@@ -19,7 +19,7 @@ DeclareModule View
     *content.UI::UI_t               ; view content
     *right.View_t
     *left.View_t
-    *top.View_t
+    *parent.View_t
     
     name.s                          ; view name
     lorr.b                          ; left or right view
@@ -145,9 +145,9 @@ Module View
     
     If *top = #Null
       *view\manager = #Null
-      *view\top = #Null
+      *view\parent = #Null
     Else
-      *view\top = *top
+      *view\parent = *top
       *view\manager = *top\manager
     EndIf
    
@@ -617,7 +617,7 @@ Module View
     EndIf
    
     *Me\content = *content
-    *content\top = *Me
+    *content\parent = *Me
     
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     *manager\uis(*content\name) = *content
@@ -772,7 +772,7 @@ Module ViewManager
           If EventType() = #PB_EventType_LostFocus
             gadgetID = EventGadget()
             If FindMapElement(*Me\uis(), Str(gadgetID))
-              View::OnEvent(*Me\uis()\top, event)
+              View::OnEvent(*Me\uis()\parent, event)
             EndIf
           Else
             If touch
@@ -923,7 +923,7 @@ Module ViewManager
       picked = Point(mx, my)
       If FindMapElement(*Me\uis(), Str(picked))
         StopDrawing()
-        ProcedureReturn *Me\uis()\top
+        ProcedureReturn *Me\uis()\parent
       EndIf
     EndIf
     StopDrawing()
@@ -966,7 +966,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 836
-; FirstLine = 15
+; CursorPosition = 925
+; FirstLine = 907
 ; Folding = -------
 ; EnableXP

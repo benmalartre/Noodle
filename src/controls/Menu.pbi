@@ -151,13 +151,10 @@ Module ControlMenu
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  Procedure Delete(*menu.ControlMenu_t)
-    ; ---[ Release 'OnChanged' Slot ]--------------------------------------------
-;     OSlot_Release(*menu\sig_onchanged)
-    
-    FreeGadget(*menu\gadgetID)
-    FreeImage(*menu\imageID)
-    FreeMemory(*menu)
+  Procedure Delete(*Me.ControlMenu_t)
+    FreeGadget(*Me\gadgetID)
+    FreeImage(*Me\imageID)
+    Object::TERM(ControlMenu)
   EndProcedure
   
   ; ==========================================================================
@@ -702,8 +699,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 577
-; FirstLine = 493
+; CursorPosition = 153
+; FirstLine = 149
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

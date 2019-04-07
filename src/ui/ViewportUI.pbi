@@ -76,9 +76,7 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
-    InitializeStructure(*Me,ViewportUI_t)
-    *Me\name = name
-    *Me\type = Globals::#VIEW_VIEWPORT
+    
     Object::INI(ViewportUI)
     
     Protected x = *parent\x
@@ -86,8 +84,10 @@ Module ViewportUI
     Protected w = *parent\width
     Protected h = *parent\height
     
-    *Me\width = w
-    *Me\height = h
+    *Me\name = name
+    *Me\type = Globals::#VIEW_VIEWPORT
+    *Me\sizX = w
+    *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\context = GLContext::New(w,h,#False)
     *Me\camera = *camera
@@ -134,7 +134,7 @@ Module ViewportUI
     
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
-    *Me\select = LayerSelection::New(*Me\width, *Me\height, *Me\context, *Me\camera)
+    *Me\select = LayerSelection::New(*Me\sizX, *Me\sizY, *Me\context, *Me\camera)
     Handle::Setup(*Me\handle, *Me\context)
   
     View::SetContent(*parent,*Me)
@@ -148,8 +148,7 @@ Module ViewportUI
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
-    ClearStructure(*Me,ViewportUI_t)
-    FreeMemory(*Me)
+    Object::TERM(ViewportUI)
   EndProcedure
 
   ;------------------------------------------------------------------
@@ -169,7 +168,7 @@ Module ViewportUI
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
 
     Protected width.i, height.i, i
-    Protected *top.View::View_t = *Me\top
+    Protected *top.View::View_t = *Me\parent
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
@@ -177,10 +176,10 @@ Module ViewportUI
         width = *top\width
         height = *top\height
 
-        *Me\width = width
-        *Me\height = height
-        *Me\x = *top\x
-        *Me\y = *top\y
+        *Me\sizX = width
+        *Me\sizY = height
+        *Me\posX = *top\x
+        *Me\posY = *top\y
         
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
@@ -188,8 +187,8 @@ Module ViewportUI
         ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
 
         If *Me\context  
-          *Me\context\width = *Me\width
-          *Me\context\height = *Me\height
+          *Me\context\width = *Me\sizX
+          *Me\context\height = *Me\sizY
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
         
@@ -275,8 +274,8 @@ Module ViewportUI
                   Case Globals::#TOOL_TRANSLATE
                     ev_datas\x = *Me\mx
                     ev_datas\y = *Me\my
-                    ev_datas\width = *Me\width
-                    ev_datas\height = *Me\height
+                    ev_datas\width = *Me\sizX
+                    ev_datas\height = *Me\sizY
                     Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)
                 EndSelect
               EndIf
@@ -287,8 +286,8 @@ Module ViewportUI
               If *Me\tool <> Globals::#TOOL_SELECT
                 ev_datas\x = *Me\mx
                 ev_datas\y = *Me\my
-                ev_datas\width = *Me\width
-                ev_datas\height = *Me\height
+                ev_datas\width = *Me\sizX
+                ev_datas\height = *Me\sizY
                 Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)                 
               EndIf
               
@@ -311,8 +310,8 @@ Module ViewportUI
             If *Me\handle\tool <> Globals::#TOOL_SELECT
               ev_datas\x = *Me\mx
               ev_datas\y = *Me\my
-              ev_datas\width = *Me\width
-              ev_datas\height = *Me\height
+              ev_datas\width = *Me\sizX
+              ev_datas\height = *Me\sizY
               Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonDown, ev_datas)
             EndIf
 
@@ -322,8 +321,8 @@ Module ViewportUI
             If *Me\handle\tool <> Globals::#TOOL_SELECT
               ev_datas\x = *Me\mx
               ev_datas\y = *Me\my
-              ev_datas\width = *Me\width
-              ev_datas\height = *Me\height
+              ev_datas\width = *Me\sizX
+              ev_datas\height = *Me\sizY
               Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonUp, ev_datas)
             EndIf
         
@@ -466,17 +465,17 @@ Module ViewportUI
     
     Protected rad.f = *v\camera\fov * #F32_PI / 180
     Protected vLength.f = Tan(rad/2) * *v\camera\nearplane
-    Protected hLength.f = vLength *(*v\width/*v\height)
+    Protected hLength.f = vLength *(*v\sizX/*v\sizY)
     
     Vector3::ScaleInPlace(v,vLength)
     Vector3::ScaleInPlace(h,hLength)
     
     ;Remap mouse coordinates
-    mx - *v\width/2
-    my - *v\height/2
+    mx - *v\sizX * 0.5
+    my - *v\sizY * 0.5
     
-    mx/(*v\width*0.5)
-    my/(*v\height*0.5)
+    mx / (*v\sizX * 0.5)
+    my / (*v\sizY* 0.5)
     
   
     Vector3::ScaleInPlace(h,mx)
@@ -498,8 +497,8 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.v3f32)
     ; 3d normalized device coordinates
-    Define x.f = (2 * mx) / *Me\width - 1
-    Define y.f = 1 - (2 * my) / *Me\height
+    Define x.f = (2 * mx) / *Me\sizX - 1
+    Define y.f = 1 - (2 * my) / *Me\sizY
     Define z.f = 1
     Define ray_nds.v3f32
     Vector3::Set(ray_nds, x, y, z)
@@ -631,10 +630,10 @@ Module ViewportUI
     ;glfwGetCursorPos(*v\window,@x,@y)
     x = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
     y = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    Vector3::Set(window_pos,x,*v\height-y,0.5)
+    Vector3::Set(window_pos,x,*v\sizY-y,0.5)
     Vector3::Echo(window_pos,"Window Pos")
     Protected viewport.v4f32
-    Vector4::Set(viewport,*v\x,*v\y,*v\width,*v\height)
+    Vector4::Set(viewport,*v\posX,*v\posY,*v\sizX,*v\sizY)
     Vector4::Echo(viewport,"Viewport")
     
     Define.m4f32 m,A;
@@ -714,7 +713,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 570
-; FirstLine = 566
+; CursorPosition = 635
+; FirstLine = 628
 ; Folding = -----
 ; EnableXP

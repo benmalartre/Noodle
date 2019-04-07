@@ -68,13 +68,14 @@ Module PropertyUI
     InitializeStructure(*Me,PropertyUI_t)
     Object::INI(PropertyUI)
     *Me\name = name
-    *Me\x = x
-    *Me\y = y
-    *Me\width = w
-    *Me\height = h
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = w
+    *Me\sizY = h
     
+    *Me\parent = *parent
     *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h,10,#PB_ScrollArea_BorderLess)
-    *Me\gadgetID = *Me\container
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
     
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
     
@@ -123,17 +124,17 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
     If *Me
-      Protected *top.View::View_t = *Me\top
+      Protected *top.View::View_t = *Me\parent
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
       ev_datas\width = *top\width 
       Select event
         Case #PB_Event_SizeWindow
-          *Me\width = *top\width
+          *Me\sizX = *top\width
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
-          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\width)
-          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\height)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\sizX)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\sizY)
          
           ev_datas\x = #PB_Ignore
           ev_datas\y = #PB_Ignore
@@ -323,7 +324,7 @@ Module PropertyUI
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
-    Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\width, *Me\height) 
+    Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\sizX, *Me\sizY) 
     *p\label = *node\type
     
     ControlProperty::AppendStart(*p)
@@ -393,7 +394,7 @@ Module PropertyUI
     ControlProperty::AppendStop(*p)
     *Me\anchorY + *p\dy
     
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\width)
+    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\sizX)
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
     
     ProcedureReturn *p
@@ -444,15 +445,15 @@ Module PropertyUI
     ForEach *Me\props()
       If *Me\props() = *prop
         *Me\props()\expanded = #False
-        *Me\props()\sizX = *Me\width
+        *Me\props()\sizX = *Me\sizX
         offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
         *Me\props()\sizY = ControlHead::#HEAD_BUTTON_SIZE
-        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         dirty = #True
       Else
         If dirty
           *Me\props()\posY - offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         EndIf
       EndIf
     Next
@@ -473,15 +474,15 @@ Module PropertyUI
     ForEach *Me\props()
       If *Me\props() = *prop
         *Me\props()\expanded = #True
-        *Me\props()\sizX = *Me\width
+        *Me\props()\sizX = *Me\sizX
         *Me\props()\sizY = ControlProperty::GetHeight(*Me\props())
-        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
         dirty = #True
       Else
         If dirty
           *Me\props()\posY + offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         EndIf
       EndIf
     Next
@@ -512,7 +513,7 @@ Module PropertyUI
       Else
         If dirty
          
-          ResizeGadget(*Me\props()\gadgetID, #PB_Ignore, *Me\props()\posY-offY, *Me\width, #PB_Ignore)
+          ResizeGadget(*Me\props()\gadgetID, #PB_Ignore, *Me\props()\posY-offY, *Me\sizX, #PB_Ignore)
            *Me\props()\posY - offY
         EndIf
       EndIf
@@ -550,8 +551,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 72
+; CursorPosition = 515
+; FirstLine = 492
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

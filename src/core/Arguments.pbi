@@ -171,18 +171,30 @@ DeclareModule Arguments
     CompilerEndSelect
   EndMacro
   
-  Macro SET(_arg, _value)
+  ; PASS ATRIBUTE VALUE
+  Macro PASS(_arg, _value)
     CompilerSelect TypeOf(_arg)
       CompilerCase #PB_String
         _arg = Globals::QUOTE()_value#Globals::QUOTE()
       CompilerDefault
         _arg = _value
     CompilerEndSelect
-    
+  EndMacro
+  
+  ; SET EXISTING ATTRIBUTE
+  Declare SET_INTERNAL(*args.Arguments::Arguments_t, type.l, size.i, index.i, *value)
+
+  Macro SET(_args, _index, _value)
+    CompilerIf TypeOf(value) = #PB_Structure
+       Arguments::SET_INTERNAL(_args, #PB_Structure, #PB_Integer, _index, _value)
+    CompilerElse
+      Arguments::ADD_INTERNAL(_args, TypeOf(_value), SizeOf(_value), _index, @value)
+    CompilerEndIf
   EndMacro
 
   Declare ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
-
+  
+  ; ADD NEW ATTRIBUTE
   Macro ADD(_args, value)
     CompilerIf TypeOf(value) = #PB_Structure
        Arguments::ADD_INTERNAL(_args, #PB_Structure, #PB_Integer, value)
@@ -191,6 +203,7 @@ DeclareModule Arguments
     CompilerEndIf
   EndMacro
   
+  ; DECLARE ATTRIBUTE
   Macro DECL(_type, _index)
     CompilerSelect _type
       CompilerCase Arguments::#BYTE
@@ -325,13 +338,27 @@ Module Arguments
       EndIf
     EndWith
   EndProcedure
- 
+  
+   Procedure SET_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, index.i, *value)
+    Protected numArgs = ArraySize(*args\args())
+    If index >= 0 Or index < numArgs
+      With *args\args(index)
+        \type = Type
+        If (Type = #PB_String)
+          \str = PeekS(*value)
+        Else
+          CopyMemory(*value, @*args\args(index)+ OffsetOf(Arguments::Argument_t\a), size)
+        EndIf
+      EndWith
+    EndIf
+    
+  EndProcedure
   
 EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 176
-; FirstLine = 134
+; CursorPosition = 335
+; FirstLine = 202
 ; Folding = ---
 ; EnableXP
