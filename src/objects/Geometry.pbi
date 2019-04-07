@@ -17,9 +17,11 @@ DeclareModule Geometry
   EndEnumeration
 
   Enumeration
-    #Geometry_Polymesh
-    #Geometry_PointCloud
-    #Geometry_Curve
+    #Polymesh
+    #PointCloud
+    #InstanceCloud
+    #Curve
+    #Drawer
   EndEnumeration
   
   Enumeration
@@ -330,11 +332,10 @@ DeclareModule Geometry
     *a_polygonareas.CArray::CArrayFloat
     *a_islands.CArray::CArrayLong
     *a_vertexhalfedge.CArray::CArrayLong
+    *a_halfedges.CArray::CArrayPtr
     *topo.Topology_t
     *base.Topology_t
     
-    Array a_halfedges.HalfEdge_t(0)
-
   EndStructure
   
   
@@ -638,7 +639,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 296
-; FirstLine = 268
+; CursorPosition = 337
+; FirstLine = 313
 ; Folding = -----
 ; EnableXP

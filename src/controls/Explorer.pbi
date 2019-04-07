@@ -108,6 +108,7 @@ DeclareModule ControlExplorer
     List *selected.ControlExplorerItem_t()
     
     *scene.Scene::Scene_t
+    *on_selection.Signal::Signal_t
   EndStructure
   
   Declare New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
@@ -650,12 +651,12 @@ Module ControlExplorer
     *Me\selected() = *item
     Select *item\type
       Case #TYPE_MODEL
-        ;OScene_AddToSelection(*Me\scene,*item\object)
-  ;       OScene_SelectObject_Do(*item\object)
+;         Scene::AddToSelection(*Me\scene,*item\object)
+;         SelectObjectCmd::Do(*item\object)
       Case #TYPE_3DOBJECT
-        MessageRequester("Select Object","Should Increment Command Stack!!!")
-        ;OScene_AddToSelection(*Me\scene,*item\object)
-  ;       OScene_SelectObject_Do(*item\object)
+;         MessageRequester("Select Object","Should Increment Command Stack!!!")
+;         Scene::AddToSelection(*Me\scene,*item\object)
+;         SelectObjectCmdDo(*item\object)
       Default
         Debug "NOT implemented!!!"
     EndSelect
@@ -699,7 +700,7 @@ Module ControlExplorer
   ; Pick Item
   ; ----------------------------------------
   Procedure PickItem(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, mx, my, key)
-   
+    
     If *item <>#Null
       
       Protected l = (*item\depth+2) * #SHIFTX
@@ -724,6 +725,7 @@ Module ControlExplorer
             Selection(*Me,*item)
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
+              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
             Else
               ; do nothing
             EndIf
@@ -735,14 +737,13 @@ Module ControlExplorer
             *item\selected = #True
             AddElement(*Me\selected())
             *Me\selected() = *item
-
-            ;             OScene_SelectObject_Do(*item\object)
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
+              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
             EndIf
             
         EndSelect
-       
+        
         *Me\dirty = #True
 ;       EndIf
     EndIf
@@ -769,12 +770,6 @@ Module ControlExplorer
 
     If FindMapElement(*Me\m_items(), Str(pick))  
       PickItem(*Me, *Me\m_items(), mx, my, key)
-    EndIf
-    
-    If ListSize(*Me\selected())>0
-      ForEach *Me\selected()
-       Scene::AddToSelection(*Me\scene,*Me\selected())
-      Next
     EndIf
     
     Draw(*Me)
@@ -910,6 +905,11 @@ Module ControlExplorer
     ProcedureReturn #False
   EndProcedure
   
+  Procedure OnSelectionChange(*scene.Scene::Scene_t)
+    PostEvent(Globals::#EVENT_SELECTION_CHANGED)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
+  
   ; ----------------------------------------
   ;  Fill Explorer from Scene Description
   ; ----------------------------------------
@@ -954,6 +954,9 @@ Module ControlExplorer
 ;     ConnectSignalsSlots(*Me)
     RecurseExpended(*Me\root,#False)
     *Me\dirty = #True
+    
+    Signal::CONNECTCALLBACK(*Me\on_selection, OnSelectionChange, *scene)
+    
   EndProcedure
  
   ;----------------------------------------
@@ -1095,7 +1098,8 @@ Module ControlExplorer
     ; ---[ Splitter ]-------------------------
     *Me\dirty = #True
     
-  
+    ; ---[ Signals ]-------------------------
+    *Me\on_selection = Object::NewSignal(*Me, "OnSelectionChange")
     
     
 ;     If Scene::*current_scene
@@ -1163,7 +1167,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 464
-; FirstLine = 410
-; Folding = X-2v--
+; CursorPosition = 658
+; FirstLine = 579
+; Folding = X-4---
 ; EnableXP

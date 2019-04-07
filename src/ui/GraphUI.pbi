@@ -6,6 +6,7 @@ XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Tree.pbi"
 XIncludeFile "../graph/Search.pbi"
 XIncludeFile "../controls/Menu.pbi"
+XIncludeFile "../controls/Popup.pbi"
 XIncludeFile "PropertyUI.pbi"
 XIncludeFile "View.pbi"
 
@@ -92,7 +93,6 @@ DeclareModule GraphUI
   Declare InspectNode(*Me.GraphUI_t,*node.Node::Node_t)
   Declare SetContent(*Me.GraphUI_t,*tree.Tree::Tree_t)
   Declare MousePosition(*Me.GraphUI_t,x.i,y.i)
-  Declare LoadFont2(*Me.GraphUI_t)
   Declare.b IsNodeVisible(*Me.GraphUI_t,*n.Node::Node_t)
   Declare NodeInfos(*Me.GraphUI_t)
   Declare AddInputPort(*args.CArray::CArrayPtr)
@@ -175,7 +175,6 @@ Module GraphUI
     *Me\dirty = #True
     *Me\redraw = #True
     CanvasEvent(*Me,#PB_Event_SizeWindow)
-    LoadFont2(*Me)
     View::SetContent(*parent,*Me)
     ProcedureReturn *Me
   EndProcedure
@@ -351,16 +350,6 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   Procedure MousePosition(*Me.GraphUI_t,x.i,y.i)
   
-  EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Load Fonts
-  ;---------------------------------------------------------------------------
-  Procedure LoadFont2(*Me.GraphUI_t)
-    If IsFont( Graph::FONT_NODE):FreeFont( Graph::FONT_NODE):EndIf
-    If IsFont( Graph::FONT_PORT):FreeFont( Graph::FONT_PORT):EndIf
-    Graph::FONT_NODE = LoadFont(#PB_Any,"Tahoma",*Me\zoom*10,#PB_Font_Bold )
-     Graph::FONT_PORT = LoadFont(#PB_Any,"Tahoma",*Me\zoom*8)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -888,7 +877,6 @@ Module GraphUI
   ;Draw All Nodes
   ;---------------------------------------------------------------------------
   Procedure DrawAllNodes(*Me.GraphUI_t)
-   LoadFont2(*Me)
    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
    ResetCoordinates()
    Background(*Me)
@@ -1234,6 +1222,13 @@ Module GraphUI
           ; DragStart Event
           Case #PB_EventType_DragStart
             Debug "Drag Start On View Graph!!!"
+            
+          ;Left Double Click Event
+          Case #PB_EventType_RightButtonDown
+            Define *popup.ControlPopup::ControlPopup_t = ControlPopup::New(*Me, *Me\mouseX - 120, *Me\mouseY - 60, 240, 120)
+            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+            ControlPopup::Draw(*popup,0,0)
+            StopVectorDrawing()
             
           ;Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
@@ -1606,7 +1601,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 842
-; FirstLine = 826
+; CursorPosition = 1214
+; FirstLine = 1193
 ; Folding = --------
 ; EnableXP

@@ -41,7 +41,7 @@ Module Location
   ;---------------------------------------------------------
   Procedure GetValue(*Me.Geometry::Location_t, *geom.Geometry::Geometry_t, *Array.CArray::CArrayT, *result)
     Select *geom\type
-      Case Geometry::#Geometry_Polymesh
+      Case Geometry::#Polymesh
         Define *mesh.Geometry::PolymeshGeometry_t = *geom
         Define u.f = *Me\uvw\u
         Define v.f = *Me\uvw\v
@@ -581,7 +581,7 @@ Module Location
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 271
-; FirstLine = 239
+; CursorPosition = 43
+; FirstLine = 39
 ; Folding = ---
 ; EnableXP

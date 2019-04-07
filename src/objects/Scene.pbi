@@ -82,7 +82,7 @@ DeclareModule Scene
   Declare SaveAs(*scn.Scene_t, filename.s)
   Declare GetUniqueID(*scn.Scene_t, *o.Object3D::Object3D_t)
   Declare.s GetInfos(*scn.Scene_t)
-
+  
   DataSection 
     SceneVT: 
     Data.i @Delete()
@@ -173,25 +173,16 @@ Module Scene
   ; Select Object
   ;---------------------------------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
-;     Protected nbs = CArray::GetCount(*Me\selection)
-;     Protected s
-;     Protected *o.Object3D::Object3D_t
-;     For s = 0 To nbs-1
-;       *o = CArray::GetValue(*Me\selection,s)
-;       If *o\selected : *o\selected = #False : EndIf
-;     Next s
-;     
-;     *obj\selected = #True
-;     CArray::SetCount(*Me\selection,0)
-;     CArray::AppendPtr(*Me\selection,*obj)
-    ;Handle::SetTarget(*Me\handle,*obj)
+    Debug "SCENE SELECT OBJECT"
+    Selection::Clear(*Me\selection)
+    Selection::AddObject(*Me\selection, *obj)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Add Object To Selection
   ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
-;     CArray::AppendPtr(*Me\selection,*obj)  
+;      Selection::AddObject(*Me\selection, *obj)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -837,7 +828,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 557
-; FirstLine = 533
+; CursorPosition = 184
+; FirstLine = 180
 ; Folding = -------
 ; EnableXP

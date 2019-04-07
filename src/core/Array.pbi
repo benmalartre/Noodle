@@ -295,9 +295,9 @@ DeclareModule CArray
   EndMacro
   
   ;----------------------------------------------------------------
-  ; InitializePtr
+  ; InitializeReferences
   ;----------------------------------------------------------------
-  Macro InitializePtr(_array,_nb,_type)
+  Macro InitializeReferences(_array,_nb,_type)
     CArray::SetCount(_array, _nb)
     Define _i
     For _i=0 To _nb-1
@@ -307,6 +307,9 @@ DeclareModule CArray
     Next 
   EndMacro
   
+  ;----------------------------------------------------------------
+  ; Declares
+  ;----------------------------------------------------------------
   Declare GetPtr(*array.CArrayT, index.i=0)
   Declare.s GetValueStr(*array.CArrayStr, index.i=0)
   Declare.s GetAsString(*array.CArrayT, label.s="")
@@ -333,6 +336,7 @@ DeclareModule CArray
   Declare GetItemSize(*array.CArrayT)
   Declare GetSize(*array.CArrayT)
   Declare Delete(*array.CArrayT)
+  Declare DeleteReferences(*array.CArrayPtr)
   Declare Find(*array,*value)
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
@@ -1209,11 +1213,23 @@ Module CArray
     FreeMemory(*array)
   EndProcedure
   
+  ;----------------------------------------------------------------
+  ; Destructor
+  ;----------------------------------------------------------------
+  Procedure DeleteReferences(*array.CArrayPtr)
+    If *array\data 
+      Define i
+      For i=0 To *array\itemCount-1
+        FreeMemory(Carray::GetValuePtr(*array, i))
+      Next
+    EndIf
+  EndProcedure
+  
 EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 395
-; FirstLine = 376
+; CursorPosition = 1223
+; FirstLine = 1170
 ; Folding = ------------
 ; EnableXP

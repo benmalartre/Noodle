@@ -1219,7 +1219,7 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure ComputeHalfEdges(*mesh.PolymeshGeometry_t)
     
-    ReDim *mesh\a_halfedges(*mesh\nbedges * 2)
+    CArray::SetCount(*mesh\a_halfedges, *mesh\nbedges * 2)
     Define i, j, nbv, offset = 0
     Define x, a, b
     Define key.s
@@ -1237,7 +1237,7 @@ Module PolymeshGeometry
       For j=0 To nbv-1
         x = offset+j
 
-        *h = *mesh\a_halfedges(x)
+        *h = CArray::GetValuePtr(*mesh\a_halfedges, x)
         a = CArray::GetValueL(*mesh\a_faceindices, offset + j)
         b = CArray::GetValueL(*mesh\a_faceindices, offset + ((j+1)%nbv))
         *h\vertex = a
@@ -1259,15 +1259,15 @@ Module PolymeshGeometry
        
         
         If j = 0
-          *h\prev_he = *mesh\a_halfedges(offset+nbv-1)
+          *h\prev_he = CArray::GetValuePtr(*mesh\a_halfedges, offset+nbv-1)
         Else
-          *h\prev_he = *mesh\a_halfedges(x-1)
+          *h\prev_he = CArray::GetValuePtr(*mesh\a_halfedges, x-1)
         EndIf
         
         If j = nbv-1
-          *h\next_he = *mesh\a_halfedges(offset)
+          *h\next_he = CArray::GetValuePtr(*mesh\a_halfedges, offset)
         Else
-          *h\next_he = *mesh\a_halfedges(x+1)
+          *h\next_he = CArray::GetValuePtr(*mesh\a_halfedges, x+1)
         EndIf
 
       Next
@@ -1287,65 +1287,57 @@ Module PolymeshGeometry
     Define *first.Geometry::HalfEdge_t
     Define *last.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-
+    Define *atidx.Geometry::HalfEdge_t
     If MapSize(*openedges())
       ResetMap(*openedges())
       NextMapElement(*openedges())
       *first = *openedges()
-      *mesh\a_halfedges(index)\face = -1
-      *mesh\a_halfedges(index)\vertex = *first\next_he\vertex
-      *mesh\a_halfedges(index)\opposite_he = *first
-      *first\opposite_he =  *mesh\a_halfedges(index)
-      *last = *mesh\a_halfedges(index)
+      *atidx = CArray::GetValuePtr(*mesh\a_halfedges, index)
+      *atidx\face = -1
+      *atidx\vertex = *first\next_he\vertex
+      *atidx\opposite_he = *first
+      *first\opposite_he =  *atidx
+      *last = *atidx
       index + 1
       *current = GetNextOpenEdge(*openedges(), *first\vertex)
-      If *current
-        While *current And *current <> *first
-          *mesh\a_halfedges(index)\face = -1
-          *mesh\a_halfedges(index)\vertex = *current\next_he\vertex
-          *mesh\a_halfedges(index)\opposite_he = *current
-          *mesh\a_halfedges(index)\prev_he = *last
-          *last\next_he = *mesh\a_halfedges(index)
-          *current\opposite_he =  *mesh\a_halfedges(index)
-          *last =  *mesh\a_halfedges(index)
-          *current = GetNextOpenEdge(*openedges(), *current\vertex)
-          index + 1
-        Wend  
-      Else
-        *current = GetPreviousOpenEdge(*openedges(), *first\vertex)
-        If *current
-          While *current And *current <> *first
-            *mesh\a_halfedges(index)\face = -1
-            *mesh\a_halfedges(index)\vertex = *current\prev_he\vertex
-            *mesh\a_halfedges(index)\opposite_he = *current
-            *mesh\a_halfedges(index)\next_he = *last
-            *last\prev_he = *mesh\a_halfedges(index)
-            *current\opposite_he =  *mesh\a_halfedges(index)
-            *last =  *mesh\a_halfedges(index)
-            *current = GetPreviousOpenEdge(*openedges(), *current\vertex)
-            index + 1
-          Wend  
-        EndIf
-      EndIf
-
+      While *current And *current <> *first
+        *atidx = CArray::GetValuePtr(*mesh\a_halfedges, index)
+        *atidx\face = -1
+        *atidx\vertex = *current\next_he\vertex
+        *atidx\opposite_he = *current
+        *atidx\prev_he = *last
+        *last\next_he = *atidx
+        *current\opposite_he =  *atidx
+        *last =  *atidx
+        *current = GetNextOpenEdge(*openedges(), *current\vertex)
+        index + 1
+      Wend  
       If *current
         *first\opposite_he\prev_he = *last
         *last\next_he = *first\opposite_he
       EndIf
     EndIf
     
-    ReDim *mesh\a_halfedges(index)
-    CArray::SetCount(*mesh\a_vertexhalfedge, ArraySize(*mesh\a_halfedges()))
+    Define maxIndex = CArray::GetCount(*mesh\a_halfedges)-1
+    If index < maxIndex
+      For i = index To maxIndex
+        FreeMemory(CArray::GetValuePtr(*mesh\a_halfedges, i))
+      Next
+      CArray::SetCount(*mesh\a_halfedges, index)
+    EndIf
+    
+    CArray::SetCount(*mesh\a_vertexhalfedge, CArray::GetCount(*mesh\a_halfedges))
     CArray::FillL(*mesh\a_vertexhalfedge, -1)
     
     ; create vertex lookup
-    For i=0 To ArraySize(*mesh\a_halfedges())-1
-      index = *mesh\a_halfedges(i)\vertex
+    For i=0 To CArray::GetCount(*mesh\a_halfedges)-1
+      *current = CArray::GetValuePtr(*mesh\a_halfedges, i)
+      index = *current\vertex
       If CArray::GetValueL(*mesh\a_vertexhalfedge, index) < 0
         CArray::SetValueL(*mesh\a_vertexhalfedge, index, i)
       EndIf
     Next
-
+    
     FreeMap(*openedges())
     
   EndProcedure
@@ -1359,7 +1351,7 @@ Module PolymeshGeometry
 
     CArray::SetCount(*neighbors, 0)
 
-    *first = *mesh\a_halfedges(CArray::getValueL(*mesh\a_vertexhalfedge, index))
+    *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
     If *first\opposite_he
       CArray::AppendL(*neighbors, *first\opposite_he\vertex)
       
@@ -1454,6 +1446,7 @@ Module PolymeshGeometry
     CArray::Delete(*neighbors)
 
   EndProcedure
+
   
   ;---------------------------------------------------------
   ; Compute Islands
@@ -1480,12 +1473,10 @@ Module PolymeshGeometry
           ClearList(nexts())
           ForEach seeds()
             GetVertexNeighbors(*mesh, seeds(), *neighbors)
-            Debug "NUM NEIGHBORS : "+Str(CArray::GetCount(*neighbors))
             For j=0 To CArray::GetCount(*neighbors)-1
               n = CArray::GetValueL(*neighbors, j)
               If Not visited(n)
                 CArray::SetValueL(*mesh\a_islands, n, islandIndex)
-                Debug "SET VERTEX ISLAND INDEX : "+Str(islandIndex)
                 visited(n) = #True
                 AddElement(nexts())
                 nexts() = n
@@ -2314,7 +2305,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1502
-; FirstLine = 1481
+; CursorPosition = 1332
+; FirstLine = 1305
 ; Folding = ----P5---v--
 ; EnableXP

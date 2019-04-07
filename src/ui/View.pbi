@@ -802,6 +802,12 @@ Module ViewManager
       Case Globals::#EVENT_PARAMETER_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_PARAMETER_CHANGED)
         Scene::Update(Scene::*current_scene)
+      Case Globals::#EVENT_SELECTION_CHANGED
+        View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
+        
+      Case Globals::#EVENT_HIERARCHY_CHANGED
+        View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
+        
       Case Globals::#EVENT_GRAPH_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_GRAPH_CHANGED)
          Scene::Update(Scene::*current_scene)
@@ -966,7 +972,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 488
-; FirstLine = 484
+; CursorPosition = 807
+; FirstLine = 759
 ; Folding = -------
 ; EnableXP

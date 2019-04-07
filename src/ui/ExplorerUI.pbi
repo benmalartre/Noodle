@@ -68,6 +68,14 @@ Module ExplorerUI
   EndProcedure
   Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
   
+  Procedure OnSelectionChange(*Me.ExplorerUI_t)
+    ControlExplorer::Clear(*Me\explorer)
+    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Draw(*Me\explorer)
+    Draw(*Me)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
+  
   ; --------------------------------------------------------
   ;  Setup
   ; --------------------------------------------------------
@@ -206,7 +214,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 146
-; Folding = ---
+; CursorPosition = 76
+; FirstLine = 17
+; Folding = ----
 ; EnableXP

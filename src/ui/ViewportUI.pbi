@@ -174,6 +174,14 @@ Module ViewportUI
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
+        
+      Case Globals::#EVENT_SELECTION_CHANGED
+        If Scene::*current_scene\selection\selected()
+          Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
+        EndIf
+        MessageRequester("SUCK", "MY DICK")
+        
+        
       Case #PB_Event_SizeWindow
         width = *top\width
         height = *top\height
@@ -723,7 +731,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 26
+; CursorPosition = 179
+; FirstLine = 175
 ; Folding = -----
 ; EnableXP

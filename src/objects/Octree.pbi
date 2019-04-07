@@ -500,13 +500,13 @@ Module Octree
         
       Case #ELEMENT_2D
         Select *geom\type   
-          Case Geometry::#Geometry_Curve
+          Case Geometry::#Curve
             Define *curve.Geometry::CurveGeometry_t = *geom
             Define numSegments = *curve\nbsegments
              CArray::SetCount(*octree\elements, numSegments)
              For i=0 To numSegments - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
              
-          Case Geometry::#Geometry_Polymesh
+          Case Geometry::#Polymesh
             Define *mesh.Geometry::PolymeshGeometry_t = *geom
             Define numEdges = *mesh\nbedges
              CArray::SetCount(*octree\elements, numEdges)
@@ -524,8 +524,6 @@ Module Octree
         For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
         
     EndSelect
-    
-    
     
     Define minv.f = *geom\bbox\origin\x - *geom\bbox\extend\x
     If  *geom\bbox\origin\y - *geom\bbox\extend\y < minv :  minv = *geom\bbox\origin\y - *geom\bbox\extend\y : EndIf
@@ -1218,7 +1216,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 779
-; FirstLine = 775
+; CursorPosition = 525
+; FirstLine = 498
 ; Folding = ---------
 ; EnableXP

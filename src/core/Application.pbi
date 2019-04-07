@@ -100,6 +100,7 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
+XIncludeFile "../controls/Popup.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
 
 ; ============================================================================
@@ -539,53 +540,6 @@ CompilerEndIf
     ProcedureReturn *app\fps
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Echo Event Type (PureBasic)
-  ;-----------------------------------------------------------------------------
-  Procedure EchoEventType(event)
-    Select event
-      Case #PB_Event_Menu
-        Debug "Event Menu"
-      Case #PB_Event_Gadget
-        Debug "Event Gadget"
-      Case #PB_Event_SysTray
-        Debug "Event SysTray"
-      Case #PB_Event_Timer
-        Debug "Event Timer"
-      Case #PB_Event_CloseWindow
-        Debug "Event Close Window"
-      Case #PB_Event_Repaint
-        Debug "Tout ou partie du contenu de la fenêtre a été détruit et doit être reconstitué "
-      Case #PB_Event_SizeWindow
-        Debug "La fenêtre a été redimensionnée " 
-      Case #PB_Event_MoveWindow
-        Debug "La fenêtre a été déplacée"
-      Case #PB_Event_MinimizeWindow
-        Debug "La fenêtre a été minimisée"
-      Case #PB_Event_MaximizeWindow
-        Debug "La fenêtre a été maximisée"
-      Case #PB_Event_RestoreWindow 
-        Debug "La fenêtre a été restaurée à sa taille normale"
-      Case #PB_Event_ActivateWindow 
-        Debug "La fenêtre a été activée (gain du focus)"
-      Case #PB_Event_DeactivateWindow
-        Debug "La fenêtre a été désactivée (perte du focus)"
-      Case #PB_Event_LeftDoubleClick 
-        Debug "Un double clic gauche de la souris s'est produit sur la fenêtre"
-      Case #PB_Event_LeftClick  
-        Debug "Un clic gauche de la souris s'est produit sur la fenêtre"
-      Case #PB_Event_RightClick 
-        Debug "Un clic droit de la souris s'est produit sur la fenêtre. Cela peut être utile pour afficher un menu contextuel"
-      Case #PB_Event_WindowDrop   
-        Debug "Une opération Glisser & Déposer s'est terminée sur une fenêtre (Voir remarque ci-dessous)"
-      Case #PB_Event_GadgetDrop 
-        Debug "Une opération Glisser & Déposer s'est terminée sur un gadget (Voir remarque ci-dessous)"
-      Default 
-        Debug "UNSUPPORTED EVENT"
-  EndSelect
-  
-EndProcedure
-
 
   ;-----------------------------------------------------------------------------
   ; Main Loop
@@ -623,6 +577,18 @@ EndProcedure
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
             *callback(*app)
+            
+          Case Globals::#EVENT_SELECTION_CHANGED
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_SELECTION_CHANGED)
+            Scene::Update(Scene::*current_scene)
+            *callback(*app)
+           
+          Case Globals::#EVENT_HIERARCHY_CHANGED
+            Scene::Setup(Scene::*current_scene, *app\context)
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_HIERARCHY_CHANGED)
+           
+            *callback(*app)
+            
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = ViewManager::*view_manager\uis("Graph")
             Protected *tree = EventData()
@@ -634,6 +600,7 @@ EndProcedure
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
                 *app\tool = Globals::#TOOL_TRANSLATE
+                
               Case Globals::#SHORTCUT_ROTATE
                 *app\tool = Globals::#TOOL_ROTATE
               Case Globals::#SHORTCUT_SCALE
@@ -668,7 +635,7 @@ EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 102
-; FirstLine = 98
+; FirstLine = 72
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

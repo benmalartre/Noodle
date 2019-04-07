@@ -34,6 +34,7 @@ DeclareModule Control
     #SLIDER
     #DIVOT
     #EDIT
+    #POPUP
     #INPUT
     #NUMBER
     #GROUP
@@ -317,8 +318,7 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 124
+; CursorPosition = 36
 ; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

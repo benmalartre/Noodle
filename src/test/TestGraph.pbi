@@ -160,7 +160,7 @@ ViewportUI::AddLayer(*viewport, *layer)
 Scene::Setup(Scene::*current_scene,*app\context)
 ViewManager::OnEvent(*app\manager, Globals::#EVENT_NEW_SCENE)
 ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
-Controls::SetTheme(UIColor::#LIGHT_THEME)
+Controls::SetTheme(UIColor::#DARK_THEME)
 
 Scene::SelectObject(Scene::*current_scene, *teapot)
 ViewportUI::SetHandleTarget(*viewport, *teapot)
@@ -189,7 +189,7 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 170
+; CursorPosition = 162
 ; FirstLine = 129
 ; Folding = --
 ; EnableXP

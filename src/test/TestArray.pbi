@@ -144,6 +144,23 @@ For x=0 To CArray::GetCount(*array7)-1
   Debug "String ID "+Str(x)+" : "+CArray::GetValueStr(*array7,x)
   
 Next
+
+Define nb = 64
+Define *ptrArray.CArray::CArrayPtr = CArray::newCArrayPtr()
+CArray::InitializeReferences(*ptrArray,nb,Geometry::PointOnCurve_t)
+
+Debug "ITEM COUNT : "+*ptrArray\itemCount
+Debug "ITEM SIZE : "+*ptrArray\itemSize
+Debug "TOTAL SIZE : "+Str(*ptrArray\itemCount * *ptrArray\itemSize)
+
+For i=0 To nb-1
+  Define *pc.Geometry::PointOnCurve_t = CArray::GetValuePtr(*ptrArray, i)
+  *pc\cid = i
+  *pc\u = Random(1000)*0.001
+Next
+
+CArray::DeleteReferences(*ptrArray)
+CArray::Delete(*ptrArray)
 ;
 ; Debug "====================== ARRAY FLOAT =============================="
 ; Define *array5.CArrayFloat = CArray::newCArrayFloat()
@@ -161,7 +178,7 @@ Next
 ;   
 ; Next
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 108
+; CursorPosition = 162
+; FirstLine = 109
 ; EnableXP
 ; EnableUnicode
