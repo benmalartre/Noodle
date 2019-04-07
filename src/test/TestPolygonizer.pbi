@@ -37,6 +37,7 @@ Global view.m4f32
 Global proj.m4f32
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
 Global *polygonizer.Polygonizer::Grid_t
+Global *mesh.Polymesh::Polymesh_t 
 Global *geom.Geometry::PolymeshGeometry_t
 
 Procedure MapWorldPositionToScreenSpace(*view.m4f32, *proj.m4f32, width.i, height.i, *w.v3f32, *s.v2f32)
@@ -74,6 +75,7 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Scene::*current_scene\dirty= #True
   Define isolevel.f = Random(100)*0.0
+
 ;   Polygonizer::Polygonize(*polygonizer, *geom, isolevel)
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
@@ -122,7 +124,7 @@ FTGL::Init()
   
   shader = *s_polymesh\pgm
 
-  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("BUNNY",Shape::#SHAPE_SPHERE)
+  *mesh= Polymesh::New("BUNNY",Shape::#SHAPE_SPHERE)
   *geom = *mesh\geom
   Object3D::SetShader(*mesh,*s_polymesh)
   Object3D::AddChild(*root, *mesh)
@@ -130,19 +132,21 @@ FTGL::Init()
   Define box.Geometry::Box_t
   Vector3::Set(box\extend, 12,12,12)
 
-  *polygonizer = Polygonizer::CreateGrid(box, 0.25)
+  *polygonizer = Polygonizer::CreateGrid(box, 1.0)
 
   Polygonizer::Polygonize(*polygonizer, *geom, 0.1)
-  
+  PolymeshGeometry::ComputeHalfEdges(*mesh\geom)
+  PolymeshGeometry::ComputeIslands(*mesh\geom)
+  PolymeshGeometry::RandomColorByIsland(*mesh\geom)
   
   Object3D::Freeze(*mesh)
-  
+    
   Scene::AddModel(Scene::*current_scene, *root)
   Scene::Setup(Scene::*current_scene, *app\context)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 81
+; CursorPosition = 135
+; FirstLine = 87
 ; Folding = -
 ; EnableXP

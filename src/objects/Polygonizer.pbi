@@ -373,8 +373,8 @@ Module Polygonizer
           *p\p[2] = *box\origin\z - *box\extend\z  + z * cs\z
           
           ; set sine distance field for testing
-          ;*p\d = *p\p[1] + Sin(*p\p[0])*0.6
-          *p\d =  -(1 - Sqr(*p\p[0] * *p\p[0] + *p\p[1] * *p\p[1] + *p\p[2] * *p\p[2]))
+          *p\d = *p\p[1] + Sin(*p\p[0])*0.6
+          ;*p\d =  1 - Sqr(*p\p[0] * *p\p[0] + *p\p[1] * *p\p[1] + *p\p[2] * *p\p[2])
           
         Next
       Next
@@ -708,7 +708,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 376
-; FirstLine = 372
+; CursorPosition = 560
+; FirstLine = 529
 ; Folding = --
 ; EnableXP

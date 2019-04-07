@@ -415,8 +415,9 @@ Module FTGL
     ProcedureReturn *drawer
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 276
+; FirstLine = 264
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

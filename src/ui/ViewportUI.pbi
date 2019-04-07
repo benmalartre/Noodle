@@ -54,6 +54,8 @@ DeclareModule ViewportUI
   ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
   Declare ViewToWorld(*v.ViewportUI_t,mx.d,my.d,*world_pos.Math::v3f32)
   Declare ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.Math::v3f32)
+  Declare Project(*v.ViewportUI_t,*pos.Math::v3f32,*io_pos.Math::v3f32, homogenous.b=#True)
+  Declare Unproject(*v.ViewportUI_t, x.f, y.f,*world_pos.Math::v3f32)
   
   DataSection 
     ViewportUIVT: 
@@ -624,12 +626,9 @@ Module ViewportUI
   ;-------------------------------------------------------
   ; Unproject
   ;-------------------------------------------------------
-  Procedure Unproject(*v.ViewportUI_t,*world_pos.v3f32)
+  Procedure Unproject(*v.ViewportUI_t, x.f, y.f,*world_pos.v3f32)
     Protected window_pos.v3f32
-    Define.d x,y
-    ;glfwGetCursorPos(*v\window,@x,@y)
-    x = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    y = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
+
     Vector3::Set(window_pos,x,*v\sizY-y,0.5)
     Vector3::Echo(window_pos,"Window Pos")
     Protected viewport.v4f32
@@ -677,8 +676,19 @@ Module ViewportUI
   ;-------------------------------------------------------
   ; Project
   ;-------------------------------------------------------
-  Procedure Project(*v.ViewportUI_t,*pos.v3f32,*io_pos.v3f32)
+  Procedure Project(*v.ViewportUI_t,*pos.v3f32,*io_pos.v3f32, homogenous.b=#True)
+
+    Define *proj.Math::m4f32 = *v\camera\projection
+    Define *view.Math::m4f32 = *v\camera\view
+    Vector3::MulByMatrix4(*io_pos, *pos, *view)
+    Vector3::MulByMatrix4InPlace(*io_pos, *proj)
+    If Not homogenous
+      *io_pos\x = *v\context\width * (*io_pos\x + 1.0) / 2.0
+      *io_pos\y = *v\context\height * (1.0 - ((*io_pos\y + 1.0) / 2.0))
+      *io_pos\z = 0.0
+    EndIf
     
+
   EndProcedure
   
   ;-------------------------------------------------------
@@ -713,7 +723,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 635
-; FirstLine = 628
+; CursorPosition = 56
+; FirstLine = 26
 ; Folding = -----
 ; EnableXP

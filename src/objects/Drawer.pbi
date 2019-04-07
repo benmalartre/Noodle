@@ -23,6 +23,7 @@ DeclareModule Drawer
     #ITEM_MATRIX
     #ITEM_SPHERE
     #ITEM_TRIANGLE
+    #ITEM_TEXT
     #ITEM_COMPOUND
   EndEnumeration
   
@@ -52,6 +53,10 @@ DeclareModule Drawer
   EndStructure
   
   Structure Triangle_t Extends Item_t
+  EndStructure
+  
+  Structure Text_t Extends Item_t
+    text.s
   EndStructure
   
   Structure Box_t Extends Item_t
@@ -864,6 +869,25 @@ Module Drawer
     ProcedureReturn *triangle
   EndProcedure
   
+  ; ---[ Add Text Item ]------------------------------------------------------
+  Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s, size.f)
+    Protected *text.Text_t = AllocateMemory(SizeOf(Text_t))
+    *text\type = #ITEM_TEXT
+    *text\positions = CArray::newCArrayV3F32()
+    *text\colors = CArray::newCArrayC4F32()
+    *text\text = text
+    *text\size = size
+    SetColor(*text, Color::_BLACK())
+    CArray::SetCount(*text\positions, 1)
+    CArray::SetCount(*text\colors, 1)
+    If *position : CArray::SetValue(*text\positions, 0, *position) : EndIf
+    AddElement(*Me\items())
+    *Me\items() = *text
+    *Me\dirty = #True
+    
+    ProcedureReturn *text
+  EndProcedure
+  
   ; ---[ Reflection ]----------------------------------------------------------
   Class::DEF( Drawer )
   
@@ -873,7 +897,6 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 590
-; FirstLine = 575
+; CursorPosition = 25
 ; Folding = ---------
 ; EnableXP
