@@ -397,7 +397,7 @@ Module ControlNumber
       
     Else
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_SHADOW)
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
@@ -406,27 +406,27 @@ Module ControlNumber
       EndIf
       
 
-;       If slider_w > *Me\sizX * 0.5
-;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
-;         FillPath()
-;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-;         VectorSourceColor(RGBA(0,0,0,64))
-;         FillPath()
-;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-;         VectorSourceColor(UIColor::COLOR_CARET)
-;         FillPath()
-;       Else
-;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLOR_NUMBER_FG)
-;         FillPath()
-;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
-;         FillPath()
-;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-;         VectorSourceColor(RGBA(0,255,0,255))
-;         FillPath()
-;       EndIf
+      If slider_w > *Me\sizX * 0.5
+        Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_BG)
+        FillPath()
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(RGBA(0,0,0,64))
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(UIColor::COLOR_CARET)
+        FillPath()
+      Else
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+        FillPath()
+        Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_BG)
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(RGBA(0,255,0,255))
+        FillPath()
+      EndIf
     EndIf
     
 ;     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
@@ -490,20 +490,20 @@ Module ControlNumber
       CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
           CompilerCase #PB_OS_Linux
             Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
           CompilerCase #PB_OS_MacOS
             Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
         CompilerEndSelect
 
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLOR_TEXT)
+        VectorSourceColor(UIColor::COLOR_NUMBER_FG)
         DrawVectorText( dtext)
     EndIf
     
@@ -1270,6 +1270,6 @@ EndModule
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 505
-; FirstLine = 446
+; FirstLine = 469
 ; Folding = ----
 ; EnableXP

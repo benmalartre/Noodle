@@ -97,7 +97,7 @@ Module ControlHead
       FillPath()
     Else
       AddPathBox(*Me\posX,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
       FillPath()
     EndIf
     
@@ -107,7 +107,7 @@ Module ControlHead
       FillPath()
     Else
       AddPathBox(*Me\posX+*Me\sizX-#HEAD_BUTTON_SIZE,*Me\posY,#HEAD_BUTTON_SIZE,#HEAD_BUTTON_SIZE)
-      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
       FillPath()
     EndIf
     
@@ -374,7 +374,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 75
+; CursorPosition = 109
+; FirstLine = 66
 ; Folding = ---
 ; EnableXP

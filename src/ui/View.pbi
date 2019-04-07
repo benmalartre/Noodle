@@ -223,8 +223,8 @@ Module View
           Resize(*view\right,*view\x,*view\y+*view\height* *view\perc/100+hs,*view\width,*view\height-*view\height* *view\perc/100-hs)
         EndIf
       EndIf
-      
     EndIf
+    InitSplitter(*view)
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -437,28 +437,28 @@ Module View
       *affected = *view\tsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\lsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\rsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\bsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
     EndIf
@@ -486,7 +486,7 @@ Module View
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
         ;         Box(0,0,GadgetWidth(*view\top\splitterID),GadgetHeight(*view\top\splitterID),RGB(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
         ProcedureReturn *affected
       EndIf
@@ -966,7 +966,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 925
-; FirstLine = 907
+; CursorPosition = 488
+; FirstLine = 484
 ; Folding = -------
 ; EnableXP

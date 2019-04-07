@@ -28,13 +28,15 @@ DeclareModule UIColor
   ;{
   ; ---[ RGBA ]------------------------------------------------------------------
   #COLOR_LIGHT_MAIN_BG              = $FF8F8F8F
-  #COLOR_LIGHT_SECONDARY_BG         = $FF727272
+  #COLOR_LIGHT_SECONDARY_BG         = $FF7F7F7F
+  #COLOR_LIGHT_TERNARY_BG           = $FF727272
+  #COLOR_LIGHT_SHADOW               = $2F000000
   #COLOR_LIGHT_LABEL                = $FF000000
   #COLOR_LIGHT_LABEL_NEG            = $FFFFFFFF
   #COLOR_LIGHT_LABEL_DISABLED       = $FF333333
   #COLOR_LIGHT_LABEL_MARKED         = $FF349AAB
   #COLOR_LIGHT_LABEL_MARKED_DIMMED  = $B3339AAB
-  #COLOR_LIGHT_LINE_DIMMED          = $B3339AAB
+  #COLOR_LIGHT_LINE_DIMMED          = $55000000
   #COLOR_LIGHT_GROUP_FRAME          = $FF4BB6C8
   #COLOR_LIGHT_GROUP_LABEL          = $FF000000
   #COLOR_LIGHT_CARET                = $FF000000
@@ -54,21 +56,23 @@ DeclareModule UIColor
   ;{
   ;----[ RGBA ]-----------------------------------------------------------------
   #COLOR_DARK_MAIN_BG             = $FF292929
-  #COLOR_DARK_SECONDARY_BG        = $FF373737
+  #COLOR_DARK_SECONDARY_BG        = $FF2F2F2F
+  #COLOR_DARK_TERNARY_BG          = $FF373737
+  #COLOR_DARK_SHADOW              = $0FFFFFFF
   #COLOR_DARK_LABEL               = $FFC1C1C1
   #COLOR_DARK_LABEL_NEG           = $FFB6D1D8
   #COLOR_DARK_LABEL_DISABLED      = $77B6D1D8
   #COLOR_DARK_LABEL_MARKED        = $FF7ECBD8
   #COLOR_DARK_LABEL_MARKED_DIMMED = $777ECBD8
-  #COLOR_DARK_LINE_DIMMED         = $FF00FF00
-  #COLOR_DARK_GROUP_FRAME         = $FFFF0000
+  #COLOR_DARK_LINE_DIMMED         = $55FFFFFF
+  #COLOR_DARK_GROUP_FRAME         = $33FFFFFF
   #COLOR_DARK_GROUP_LABEL         = $FFFFFFFF
   #COLOR_DARK_CARET               = $FF0000FF
   #COLOR_DARK_TEXT                = $FFFFFFFF
   #COLOR_DARK_SELECTED_BG         = $994AB6C8
   #COLOR_DARK_SELECTED_FG         = $FFFFFFFF
   #COLOR_DARK_NUMBER_BG           = $FF454545
-  #COLOR_DARK_NUMBER_FG           = $FF7ECBD8
+  #COLOR_DARK_NUMBER_FG           = $FFFFFFFF
   #COLOR_LIGHT_SPLITTER           = $FFFFFFFF
   ;}
   
@@ -81,6 +85,8 @@ DeclareModule UIColor
   ; ---[ RGBA ]------------------------------------------------------------------
   Global COLOR_MAIN_BG            .i
   Global COLOR_SECONDARY_BG       .i
+  Global COLOR_TERNARY_BG         .i
+  Global COLOR_SHADOW             .i
   Global COLOR_LABEL              .i
   Global COLOR_LABEL_NEG          .i
   Global COLOR_LABEL_DISABLED     .i
@@ -152,6 +158,8 @@ Module UIColor
         ; ...[ RGBA ]............................................................
         COLOR_MAIN_BG              = #COLOR_LIGHT_MAIN_BG
         COLOR_SECONDARY_BG         = #COLOR_LIGHT_SECONDARY_BG
+        COLOR_TERNARY_BG            = #COLOR_LIGHT_TERNARY_BG
+        COLOR_SHADOW               = #COLOR_LIGHT_SHADOW
         COLOR_LABEL                = #COLOR_LIGHT_LABEL
         COLOR_LABEL_NEG            = #COLOR_LIGHT_LABEL_NEG
         COLOR_LABEL_DISABLED       = #COLOR_LIGHT_LABEL_DISABLED
@@ -173,6 +181,8 @@ Module UIColor
         ; ...[ RGBA ]............................................................
         COLOR_MAIN_BG              = #COLOR_DARK_MAIN_BG
         COLOR_SECONDARY_BG         = #COLOR_DARK_SECONDARY_BG
+        COLOR_TERNARY_BG           = #COLOR_DARK_TERNARY_BG
+        COLOR_SHADOW               = #COLOR_DARK_SHADOW
         COLOR_LABEL                = #COLOR_DARK_LABEL
         COLOR_LABEL_NEG            = #COLOR_DARK_LABEL_NEG
         COLOR_LABEL_DISABLED       = #COLOR_DARK_LABEL_DISABLED
@@ -205,6 +215,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 10
+; CursorPosition = 179
+; FirstLine = 156
 ; Folding = ---
 ; EnableXP

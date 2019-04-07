@@ -155,7 +155,6 @@ Module ControlTimeline
     
     MovePathCursor(l,h-1)
     AddPathLine(w,1, #PB_Path_Relative)
-    VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
     
     For f=Time::startframe To Time::endframe
       If f%m = 0
@@ -171,7 +170,7 @@ Module ControlTimeline
       EndIf
     Next f
     
-    VectorSourceColor(UIColor::COLOR_LABEL)
+    VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
     
     ;---[ Draw Current Frame ]--------------------------------------------------
@@ -601,8 +600,6 @@ Module ControlTimeline
         ;  KeyDown
         ; ------------------------------------------------------------------------
         Case #PB_EventType_KeyDown
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Control Timeline Key Down!!!"
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Focus Child : "+Str(*Me\focuschild)
           ; ---[ Do We Have A Focused Child ? ]-----------------------------------
           If *Me\focuschild
             ; ...[ Retrieve Key ].................................................
@@ -725,7 +722,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
-  Callback::DECLARECALLBACK(FirstFrame, #PB_Structure)
+  Callback::DECLARECALLBACK(FirstFrame, Arguments::#PTR)
   
   ; ---[ Go to Last Frame ]-----------------------------------------------------
   Procedure LastFrame( *Me.ControlTimeline_t)
@@ -747,7 +744,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
-  Callback::DECLARECALLBACK(LastFrame, #PB_Structure)
+  Callback::DECLARECALLBACK(LastFrame, Arguments::#PTR)
   
   ; ---[ Go to Next Frame ]-----------------------------------------------------
   Procedure NextFrame( *Me.ControlTimeline_t)
@@ -819,6 +816,7 @@ Module ControlTimeline
     EndIf   
   EndProcedure
   Callback::DECLARECALLBACK(PlayForward, Arguments::#PTR)
+
   
   ; ---[ Play Backward ]---------------------------------------------------------
   Procedure PlayBackward( *Me.ControlTimeline_t)
@@ -857,7 +855,12 @@ Module ControlTimeline
       StopPlayback(*Me)
     EndIf   
   EndProcedure
-  Callback::DECLARECALLBACK(StartPlayback, Arguments::#PTR, Arguments::#BOOL)
+  
+  Procedure OnStartPlayback( *Me.ControlTimeline_t)
+    Define *icon.ControlIcon::ControlIcon_t = *Me\c_playforward
+    ControlTimeline::StartPlayback( *Me, *icon\down)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnStartPlayback, Arguments::#PTR)
   
   
   ; ---[ Stop Playback ]--------------------------------------------------------
@@ -866,23 +869,24 @@ Module ControlTimeline
     If Time::play
       Time::play = #False
       Protected *ico.ControlIcon::ControlIcon_t
-        If Time::forward
-          *ico = *Me\c_playforward
-          *ico\value = 1
-          Control::Invalidate(*Me\c_playforward)
-        Else
-          *ico = *Me\c_playbackward
-          *ico\value = 1
-          Control::Invalidate(*Me\c_playbackward)
-        EndIf
-        If *Me\timer <> #Null :
-  ;         raaDeleteTimer(*Me\timer) : EndIf
-          Time::StopTimer(*Me\timer)
-        EndIf
-        
+      If Time::forward
+        *ico = *Me\c_playforward
+        *ico\value = 1
+        Control::Invalidate(*Me\c_playforward)
+      Else
+        *ico = *Me\c_playbackward
+        *ico\value = 1
+        Control::Invalidate(*Me\c_playbackward)
       EndIf
-      SetCurrentFrame(*Me,Time::currentframe)
+      If *Me\timer <> #Null :
+;         raaDeleteTimer(*Me\timer) : EndIf
+        Time::StopTimer(*Me\timer)
+      EndIf
+      
+    EndIf
+    SetCurrentFrame(*Me,Time::currentframe)
   EndProcedure
+ 
   Callback::DECLARECALLBACK(StopPlayback, Arguments::#PTR)
   
   
@@ -906,7 +910,12 @@ Module ControlTimeline
       Time::startframe = frame
     EndIf
   EndProcedure
-  Callback::DECLARECALLBACK(SetStartFrame, Arguments::#PTR, Arguments::#INT)
+  
+  Procedure OnSetStartFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_startframe
+    ControlTimeline::SetStartFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetStartFrame, Arguments::#PTR)
   
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndFrame( *Me.ControlTimeline_t,frame.i)
@@ -917,7 +926,12 @@ Module ControlTimeline
     EndIf  
   
   EndProcedure
-  Callback::DECLARECALLBACK(SetEndFrame, Arguments::#PTR, Arguments::#INT)
+  
+  Procedure OnSetEndFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_endframe
+    ControlTimeline::SetEndFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetEndFrame, Arguments::#PTR)
   
   ; ---[ Set Start Range ]------------------------------------------------------
   Procedure SetStartRange( *Me.ControlTimeline_t, frame.i)
@@ -929,7 +943,12 @@ Module ControlTimeline
     EndIf
     Time::startloop = Time::startrange
   EndProcedure
-  Callback::DECLARECALLBACK(SetStartRange, Arguments::#PTR, Arguments::#INT)
+  
+  Procedure OnSetStartRange(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_startrange
+    ControlTimeline::SetStartRange(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetStartRange, Arguments::#PTR)
   
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndRange( *Me.ControlTimeline_t,frame.i)
@@ -940,7 +959,12 @@ Module ControlTimeline
     EndIf  
     Time::endloop = Time::endrange
   EndProcedure
-  Callback::DECLARECALLBACK(SetEndRange, Arguments::#PTR, Arguments::#INT)
+  
+  Procedure OnSetEndRange(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_endrange
+    ControlTimeline::SetEndRange(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetEndRange, Arguments::#PTR)
   
   ; ---[ Set Current Frame ]----------------------------------------------------
   Procedure SetCurrentFrame( *Me.ControlTimeline_t,frame)
@@ -966,7 +990,13 @@ Module ControlTimeline
       ControlNumber::SetValue(*Me\c_currentframe,Str(Time::currentframe))
     EndIf
   EndProcedure
-  Callback::DECLARECALLBACK(SetCurrentFrame, Arguments::#PTR, Arguments::#INT)
+  
+  Procedure OnSetCurrentFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_currentframe
+    ControlTimeline::SetCurrentFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetCurrentFrame, Arguments::#PTR)
+  
   
   ; ---[ Append Control ]---------------------------------------------------------------
   Procedure.i Append( *Me.ControlTimeline_t, *ctl.Control::Control_t )
@@ -1102,21 +1132,15 @@ Module ControlTimeline
     
     Protected Me.ControlTimeline::IControlTimeline = *Me
     Protected *ctrl.Control::Control_t = *Me\c_currentframe
-    
-;     Define *check.Check::Check_t = Check::New(*Me\gadgetID,x,y,width,16, MapKey(*obj\attributes()))
-;     *check\checked = PeekB(*obj\attributes()\datas)
-;     *Me\items(index) = *check
-;     Signal::CONNECTCALLBACK(*check\on_change, OnChange, *check, *obj\attributes())
-    
-    Signal::CONNECTCALLBACK(*ctrl\on_change, SetCurrentFrame)
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetCurrentFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_startframe
-    Signal::CONNECTCALLBACK(*ctrl\on_change, SetStartFrame)
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetStartFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_endframe
-    Signal::CONNECTCALLBACK(*ctrl\on_change, SetEndFrame)
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetEndFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_startrange
-    Signal::CONNECTCALLBACK(*ctrl\on_change, SetStartRange)
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetStartRange, *Me)
     *ctrl.Control::Control_t = *Me\c_endrange
-    Signal::CONNECTCALLBACK(*ctrl\on_change, SetEndRange)
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetEndRange, *Me)
   
     ; ---[ Draw ]---------------------------------------------------------------
     hlpDrawPickImage(*Me)
@@ -1136,7 +1160,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1046
-; FirstLine = 1028
-; Folding = ------
+; CursorPosition = 995
+; FirstLine = 982
+; Folding = -------
 ; EnableXP

@@ -162,11 +162,14 @@ ViewManager::OnEvent(*app\manager, Globals::#EVENT_NEW_SCENE)
 ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
 Controls::SetTheme(UIColor::#LIGHT_THEME)
 
+Scene::SelectObject(Scene::*current_scene, *teapot)
+ViewportUI::SetHandleTarget(*viewport, *teapot)
+
 Procedure Update(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   
-  ;Scene::Update(Scene::*current_scene)
-  *layer\Draw( *app\context)
+  Scene::Update(Scene::*current_scene)
+  ViewportUI::Draw(*viewport, *app\context)
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -186,8 +189,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 127
+; CursorPosition = 170
+; FirstLine = 129
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

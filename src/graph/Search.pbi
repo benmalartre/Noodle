@@ -29,7 +29,7 @@ Module NodeSearch
     Protected *Me.NodeSearch_t = AllocateMemory(SizeOf(NodeSearch_t))
     InitializeStructure(*Me,NodeSearch_t)
     *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess,WindowID(window))
-    SetWindowColor(*Me\window,UIColor::COLOR_MAIN_BG)
+    SetWindowColor(*Me\window,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     *Me\input = StringGadget(#PB_Any,0,0,WindowWidth(*Me\window),30,"")
     SetGadgetColor(*Me\input,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
     *Me\tree = ListViewGadget(#PB_Any,0,30,WindowWidth(*Me\window),WindowHeight(*Me\window)-30)
@@ -175,8 +175,8 @@ Module NodeSearch
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 2
+; CursorPosition = 31
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -328,6 +328,9 @@ DeclareModule Node
     
     ;current port
     *port.NodePort::NodePort_t
+    
+    ; signals
+    *on_delete.Signal::Signal_t
   EndStructure
   
   Interface INode
@@ -356,6 +359,8 @@ DeclareModule Node
     *Me\state = Graph::#Node_StateUndefined
     *Me\leaf = #True
     *Me\name = Globals::GUILLEMETS#cls#Globals::GUILLEMETS
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    
     ; ---[ Initialize Structure ]-----------------------------------------------
     InitializeStructure(*Me,cls#_t)
   
@@ -522,7 +527,6 @@ DeclareModule Tree
     List *evaluation.NodePort::NodePort_t()
     
     ; ---[ callbacks ]---------------------------------------
-    *on_delete.Signal::Signal_t
     *on_change.Signal::Signal_t
     
   EndStructure
@@ -609,7 +613,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 349
-; FirstLine = 341
+; CursorPosition = 529
+; FirstLine = 504
 ; Folding = ---
 ; EnableXP

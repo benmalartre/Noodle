@@ -165,12 +165,12 @@ Module ControlIcon
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,128,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(128,255,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
     ; ---[ Check Over ]---------------------------------------------------------
@@ -178,25 +178,25 @@ Module ControlIcon
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(64,255,255,255))
+        VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(64,255,32,255))
+        VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         FillPath()
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; ---[ Down ]-------------------------------------------------------------
-      If *Me\value < 0
+      If *Me\value < 0 Or *Me\down
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,255,128,255))
+        VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,64,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
     EndIf
@@ -291,7 +291,7 @@ Module ControlIcon
       ;  LeftButtonDown
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonDown
-        If *Me\visible And *Me\enable And *Me\over
+        If *Me\visible And *Me\enable
           *Me\down = #True
           Control::Invalidate(*Me)
         EndIf
@@ -555,7 +555,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 42
+; CursorPosition = 180
+; FirstLine = 176
 ; Folding = ----
 ; EnableXP

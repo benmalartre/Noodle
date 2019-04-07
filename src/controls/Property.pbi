@@ -2022,7 +2022,7 @@ EndProcedure
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
-    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus) 
+    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard) 
     *Me\imageID    = CreateImage(#PB_Any,width,height)
     *Me\pickID     = CreateImage(#PB_Any,width,height)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
@@ -2058,7 +2058,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2011
-; FirstLine = 1998
+; CursorPosition = 255
+; FirstLine = 253
 ; Folding = ----------
 ; EnableXP

@@ -190,7 +190,7 @@ Module ExplorerUI
     *Me\scrollX = 0
     *Me\scrollY = 0
     *Me\scrollable = #True
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard)
     *Me\explorer = ControlExplorer::New(*Me,0,0,*view\width,*view\height)
 
     CloseGadgetList()
@@ -206,7 +206,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 194
+; CursorPosition = 192
 ; FirstLine = 146
 ; Folding = ---
 ; EnableXP

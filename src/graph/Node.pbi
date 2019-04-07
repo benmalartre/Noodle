@@ -102,7 +102,7 @@ Module Node
   Protected limit = *n\height* *n\step1
   ; Draw shadow
   If Graph::#Node_DrawShadow
-    VectorSourceColor(RGBA(0,0,0,32))
+    VectorSourceColor(UIColor::COLOR_SHADOW)
     Vector::RoundBoxPath(*n\posx+Graph::#Node_ShadowX,
                          *n\posy+Graph::#Node_ShadowY-20,
                          *n\width+Graph::#Node_ShadowR,
@@ -116,7 +116,7 @@ Module Node
  
    ; Draw Node Name
   VectorFont(FontID(Globals::#FONT_BOLD),14 )
-  VectorSourceColor(UIColor::COLOR_LABEL)
+  VectorSourceColor(UIColor::COLOR_TEXT)
   MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
   AddPathText(*n\label)
   FillPath()
@@ -172,7 +172,7 @@ Module Node
     
     
     Protected w = VectorTextWidth(*n\outputs()\name)
-    VectorSourceColor(UIColor::COLOR_LABEL)
+    VectorSourceColor(UIColor::COLOR_TEXT)
     MovePathCursor(x-w-2*Graph::#Node_PortRadius ,y+4-(Graph::#Node_PortSpacing / 2))
     AddPathText(*n\outputs()\name)
     FillPath()
@@ -207,7 +207,7 @@ Module Node
       StrokePath(1)
     EndIf
 
-    VectorSourceColor(UIColor::COLOR_LABEL)
+    VectorSourceColor(UIColor::COLOR_TEXT)
     MovePathCursor(x+2*Graph::#Node_PortRadius,y+4-(Graph::#Node_PortSpacing/2))
     AddPathText(*n\inputs()\name)
     FillPath()
@@ -697,7 +697,7 @@ EndModule
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 209
-; FirstLine = 150
+; FirstLine = 206
 ; Folding = -------
 ; EnableThread
 ; EnableXP

@@ -114,7 +114,7 @@ DeclareModule ControlExplorer
   Declare Delete(*Me.ControlExplorer_t)
   ;   Declare Draw(*Me.ExplorerUI_t)
   Declare Init()
-  Declare OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term()
   Declare Clear(*Me.ControlExplorer_t)
 
@@ -177,8 +177,8 @@ DeclareModule ControlExplorer
   Declare Add3DObject(*Me.ControlExplorer_t,*parent.ControlExplorerItem_t,*obj.Object3D::Object3D_t,depth.i)  
 ;   Declare IsInList(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
-  Declare OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
-  Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *Mev_data.Control::Control_t)
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
    DataSection 
     ControlExplorerVT: 
     Data.i @OnEvent()
@@ -351,8 +351,8 @@ Module ControlExplorer
     Protected shiftx.i = #SHIFTX
     Protected shifty.i = #SHIFTY
     Protected x = 25 + shiftx * (*item\depth)
-    Protected tc = RGBA(0,0,0,255)
-    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
+    Protected tc = UIColor::COLOR_TEXT
+    VectorFont(FontID(Globals::#FONT_DEFAULT));, Globals::#FONT_SIZE_TEXT)
     ; Draw Background
     If Mod(*Me\itemcounter,2) = 1
       AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
@@ -966,15 +966,15 @@ Module ControlExplorer
   ;----------------------------------------
   ;  Event
   ;---------------------------------------------------
-  Procedure OnEvent(*Me.ControlExplorer_t,event.i,*Mev_data.Control::EventTypeDatas_t)
+  Procedure OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
     ;   GetItems(*Me)
     CompilerIf #PB_Compiler_Version < 560
         If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
       CompilerElse
         If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
     CompilerEndIf
-      *Me\sizX = *Mev_data\width
-      *Me\sizY = *Mev_data\height
+      *Me\sizX = *ev_data\width
+      *Me\sizY = *ev_data\height
       Resize(*Me)
       Draw(*Me)
       
@@ -1025,7 +1025,7 @@ Module ControlExplorer
   ;----------------------------------------
   ;  Item Event
   ;---------------------------------------------------
-  Procedure OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *Mev_data.Control::Control_t)
+  Procedure OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
     
   EndProcedure
   
@@ -1033,11 +1033,11 @@ Module ControlExplorer
   
   Procedure OnMessage( id.i, *up)
 ;     Protected *sig.Signal::Signal_t = *up
-;     Protected *Mexplorer.ControlExplorer_t = *sig\rcv_inst
+;     Protected *explorer.ControlExplorer_t = *sig\rcv_inst
 ;     Debug "Explorer Signal Recieved..."
 ;     Debug "Slot : "+Str(*sig\rcv_slot)
 ;     Debug "Sender Class : "+Str(*sig\snd_class)
-  ;   *Mexplorer\SendEvent(#PB_Event_Repaint)
+  ;   *explorer\SendEvent(#PB_Event_Repaint)
   ;     Protected *sig.CSignal_t = *up
   ;   Protected *c.CControlNumber_t = *sig\snd_inst
   ;   Protected *Me.ExplorerUI_t = *c\parent
@@ -1170,7 +1170,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1093
-; FirstLine = 999
+; CursorPosition = 354
+; FirstLine = 315
 ; Folding = X-2v--
 ; EnableXP

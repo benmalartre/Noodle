@@ -75,7 +75,7 @@ Module PropertyUI
     
     *Me\parent = *parent
     *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h,10,#PB_ScrollArea_BorderLess)
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
+    *Me\gadgetID = *Me\container
     
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
     
@@ -198,6 +198,18 @@ Module PropertyUI
   EndProcedure
   Callback::DECLARECALLBACK(OnExpandProperty, Arguments::#PTR, Arguments::#BOOL, Arguments::#INT)
   
+  Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
+    ForEach *Me\props()
+      If *Me\props()\object = *object
+        If *Me\props()\head
+          Signal::Trigger(*Me\props()\head\on_delete, Signal::#SIGNAL_TYPE_PING)
+        EndIf
+        Break
+      EndIf
+    Next
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteObject, Arguments::#PTR, Arguments::#PTR)
+  
   ; ----------------------------------------------------------------------------
   ;  Terminate
   ; ----------------------------------------------------------------------------
@@ -290,6 +302,7 @@ Module PropertyUI
     Next
     
     ControlProperty::AppendStop(*p)
+    Signal::CONNECTCALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -396,7 +409,7 @@ Module PropertyUI
     
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\sizX)
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
-    
+    Signal::CONNECTCALLBACK(*node\on_delete, OnDeleteObject, *Me, *object)
     ProcedureReturn *p
 
   EndProcedure
@@ -551,8 +564,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 515
-; FirstLine = 492
+; CursorPosition = 411
+; FirstLine = 366
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

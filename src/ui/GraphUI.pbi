@@ -152,7 +152,7 @@ Module GraphUI
     *Me\parent = *parent
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
 
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus) 
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard) 
     EnableGadgetDrop(*Me\gadgetID,#PB_Drop_Text,#PB_Drag_Copy)
     
     *Me\sizX = w
@@ -840,10 +840,10 @@ Module GraphUI
       Protected *compound.CompoundNode::CompoundNode_t = *Me\tree\current
       
       ; Inputs
-      Box(0,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_SECONDARY_BG)
+      Box(0,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_TERNARY_BG)
       
       ; Outputs
-      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_SECONDARY_BG)
+      Box(GadgetWidth(*Me\gadgetID)-Graph::#Graph_Compound_Border,0,Graph::#Graph_Compound_Border,*Me\sizY,UIColor::COLOR_TERNARY_BG)
 
       CompoundNode::Draw(*compound,*Me\gadgetID)
  
@@ -1606,7 +1606,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 501
-; FirstLine = 473
+; CursorPosition = 842
+; FirstLine = 826
 ; Folding = --------
 ; EnableXP

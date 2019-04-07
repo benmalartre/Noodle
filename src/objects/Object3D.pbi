@@ -72,11 +72,16 @@ DeclareModule Object3D
     *parent.Object3D_t
     *model.Object3D_t
     List *children.Object3D_t()
+    
     *stack.Stack::Stack_t
+    
+    *on_delete.Signal::Signal_t
+    
   EndStructure
   
   
   Macro OBJECT3DATTR()
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
     *Me\stack = Stack::New()
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected *global = Attribute::New("GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
@@ -537,7 +542,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 65
+; CursorPosition = 83
+; FirstLine = 62
 ; Folding = ------
 ; EnableXP
