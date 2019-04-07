@@ -174,10 +174,6 @@ Module ControlDivot
 
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn : EndIf
-;     DrawingMode(#PB_2DDrawing_AlphaBlend)
-    ; ---[ Reset Clipping ]-----------------------------------------------------
-  ;   raaResetClip()
-    
     MovePathCursor( 0 + xoff, 0 + yoff )
     ; 같�[ Disabled ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
     If Not *Me\enable
@@ -543,7 +539,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 433
+; CursorPosition = 175
+; FirstLine = 174
 ; Folding = ---
 ; EnableXP

@@ -361,7 +361,7 @@ Module ControlHead
     
   EndProcedure
   ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsHeadTermOnce
+  ;  ControlsHeadTermOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Term( )
   
@@ -374,7 +374,7 @@ Module ControlHead
   Class::DEF(ControlHead)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 66
+; CursorPosition = 363
+; FirstLine = 315
 ; Folding = ---
 ; EnableXP

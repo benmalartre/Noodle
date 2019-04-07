@@ -61,7 +61,7 @@ Module BulletRigidBody
   ;     O3DObject_ResetStaticKinematicState(*p)
   ;     
   ;     ;Attach Shader
-  ;     *p\shader = *raa_gl_context\s_polymesh
+  ;     *p\shader = *gl_context\s_polymesh
   ; ;     
   ; ;     If *p\vao
   ; ;       Protected x
@@ -468,7 +468,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 452
-; FirstLine = 393
+; CursorPosition = 63
+; FirstLine = 59
 ; Folding = ---
 ; EnableXP

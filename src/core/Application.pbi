@@ -100,7 +100,6 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
-; XIncludeFile "../controls/PopupMenu.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
 
 ; ============================================================================
@@ -668,8 +667,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 620
-; FirstLine = 571
+; CursorPosition = 102
+; FirstLine = 98
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

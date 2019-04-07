@@ -5,7 +5,7 @@ XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
-XIncludeFile "PolymeshGeometry.pbi"
+XIncludeFile "DrawerGeometry.pbi"
 
 ;==============================================================================
 ; Drawer Module Declaration
@@ -570,8 +570,7 @@ Module Drawer
       EndSelect
     Next
     ClearList(*Me\items())
-    ClearStructure(*Me,Drawer_t)
-    FreeMemory( *Me )
+    Object::TERM(Drawer)
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -581,16 +580,15 @@ Module Drawer
     ; Allocate Object Memory
     Protected *Me.Drawer_t = AllocateMemory( SizeOf(Drawer_t) )
     ; Initialize Structure
-    InitializeStructure(*Me,Drawer_t)
     Object::INI(Drawer)
     
     ; Init Members
     *Me\type = Object3D::#Drawer
     *Me\name = name
-  
     *Me\wireframe_r = Random(255)/255
     *Me\wireframe_g = Random(255)/255
     *Me\wireframe_b = Random(255)/255
+    *Me\geom = DrawerGeometry::New(*Me)
     
     Object3D::OBJECT3DATTR()
     Object3D::ResetGlobalKinematicState(*Me)
@@ -875,7 +873,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 587
-; FirstLine = 583
+; CursorPosition = 590
+; FirstLine = 575
 ; Folding = ---------
 ; EnableXP

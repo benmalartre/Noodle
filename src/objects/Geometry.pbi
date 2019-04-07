@@ -294,6 +294,12 @@ DeclareModule Geometry
   EndStructure
   
   ; --------------------------------------------
+  ; Drawer Geometry
+  ; --------------------------------------------
+  Structure DrawerGeometry_t Extends Geometry_t
+  EndStructure
+  
+  ; --------------------------------------------
   ; Polymesh Geometry
   ; --------------------------------------------
   Structure PolymeshGeometry_t Extends Geometry_t
@@ -632,7 +638,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 404
-; FirstLine = 357
+; CursorPosition = 296
+; FirstLine = 268
 ; Folding = -----
 ; EnableXP

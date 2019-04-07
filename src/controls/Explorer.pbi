@@ -442,33 +442,26 @@ Module ControlExplorer
         Protected *o.Object3D::Object3D_t = *item\object
         Select *o\type
           Case Object3D::#Model
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_model))
           Case Object3D::#Light
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_light))
           Case Object3D::#Camera
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_camera))
           Case Object3D::#Polymesh
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_polymesh))
-            ;raaBox(x,*Me\offsety,12,12,RGBA(255,0,120,255))
           Case Object3D::#Locator
-            ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_null))
           Case Object3D::#Curve
-            ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_curve))
           Case Object3D::#PointCloud
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_pointcloud))
-            ;raaBox(x,*Me\offsety,12,12,RGBA(255,255,120,255))
           Case Object3D::#InstanceCloud
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_instancecloud))
@@ -1170,7 +1163,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 354
-; FirstLine = 315
+; CursorPosition = 464
+; FirstLine = 410
 ; Folding = X-2v--
 ; EnableXP

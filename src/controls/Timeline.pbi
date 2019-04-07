@@ -1,6 +1,4 @@
 ; ============================================================================
-;  raafal.gui.controls.timeline.pbi
-; ............................................................................
 ;  GUI Timeline Control
 ; ============================================================================
 ;  2013/02/24 | benmalartre
@@ -879,7 +877,6 @@ Module ControlTimeline
         Control::Invalidate(*Me\c_playbackward)
       EndIf
       If *Me\timer <> #Null :
-;         raaDeleteTimer(*Me\timer) : EndIf
         Time::StopTimer(*Me\timer)
       EndIf
       
@@ -1160,7 +1157,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 995
-; FirstLine = 982
+; CursorPosition = 879
+; FirstLine = 864
 ; Folding = -------
 ; EnableXP
