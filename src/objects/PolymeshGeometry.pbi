@@ -27,8 +27,8 @@ DeclareModule PolymeshGeometry
   Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
   Declare ComputeTriangles(*mesh.PolymeshGeometry_t)
   Declare ComputeHalfEdges(*mesh.PolymeshGeometry_t)
+  Declare ComputeTopology(*mesh.PolymeshGeometry_t)
   Declare Clear(*mesh.PolymeshGeometry_t)
-  Declare GetTopology(*mesh.PolymeshGeometry_t)
   Declare SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
   Declare Set2(*mesh.PolymeshGeometry_t,*topo.Topology_t)
   Declare Set(*mesh.PolymeshGeometry_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayInt)
@@ -798,7 +798,7 @@ Module PolymeshGeometry
 ;     *geom\a_positions\Copy(*other\a_positions)
 ;     *geom\a_facecount\Copy(*other\a_facecount)
 ;     *geom\a_faceindices\Copy(*other\a_faceindices)
-    PolymeshGeometry::GetTopology(*other)
+    PolymeshGeometry::ComputeTopology(*other)
     Topology::Copy(*geom\base,*other)
     Set2(*geom,*geom\base)
     
@@ -1218,8 +1218,8 @@ Module PolymeshGeometry
   ; Compute Half Edges
   ;---------------------------------------------------------
   Procedure ComputeHalfEdges(*mesh.PolymeshGeometry_t)
-    
-    CArray::SetCount(*mesh\a_halfedges, *mesh\nbedges * 2)
+    CArray::CreateReferences(*mesh\a_halfedges, Geometry::HalfEdge_t, *mesh\nbedges * 2)
+
     Define i, j, nbv, offset = 0
     Define x, a, b
     Define key.s
@@ -1319,12 +1319,9 @@ Module PolymeshGeometry
     EndIf
     
     Define maxIndex = CArray::GetCount(*mesh\a_halfedges)-1
-    If index < maxIndex
-      For i = index To maxIndex
-        FreeMemory(CArray::GetValuePtr(*mesh\a_halfedges, i))
-      Next
-      CArray::SetCount(*mesh\a_halfedges, index)
-    EndIf
+;     If index < maxIndex
+;       CArray::DeleteReferences(*mesh\a_halfedges, index)
+;     EndIf
     
     CArray::SetCount(*mesh\a_vertexhalfedge, CArray::GetCount(*mesh\a_halfedges))
     CArray::FillL(*mesh\a_vertexhalfedge, -1)
@@ -1600,7 +1597,7 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Topology Attribute
   ;---------------------------------------------------------
-  Procedure GetTopology(*geom.PolymeshGeometry_t)
+  Procedure ComputeTopology(*geom.PolymeshGeometry_t)
     Protected i,j,src_offset,dst_offset,nbv
     Protected *topo.Topology_t = *geom\topo
     Protected size_t.i
@@ -1805,7 +1802,7 @@ Module PolymeshGeometry
     SetColors(*geom,@color)
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
-    GetTopology(*geom)
+    ComputeTopology(*geom)
     
   EndProcedure
   
@@ -1927,7 +1924,7 @@ Module PolymeshGeometry
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
   
-    GetTopology(*geom)
+    ComputeTopology(*geom)
     
     ;UVs
     GetUVWSFromPosition(*geom)
@@ -1997,7 +1994,7 @@ Module PolymeshGeometry
     Protected color.c4f32
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
-    GetTopology(*geom)
+    ComputeTopology(*geom)
    
     ;Color
     Color::Set(color,1,Random(255)/255,Random(255)/255,Random(255)/255);
@@ -2162,7 +2159,7 @@ Module PolymeshGeometry
     Protected color.c4f32
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
-    GetTopology(*geom)
+    ComputeTopology(*geom)
  
   EndProcedure
   
@@ -2263,6 +2260,7 @@ Module PolymeshGeometry
     *Me\a_triangleareas = CArray::newCArrayFloat()
     *Me\a_islands = CArray::newCArrayLong()
     *Me\a_vertexhalfedge = CArray::newCArrayLong()
+    *Me\a_halfedges = CArray::newCArrayPtr()
     
     *Me\topo  = Topology::New()
     *Me\base = Topology::New()
@@ -2305,7 +2303,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1332
-; FirstLine = 1305
+; CursorPosition = 2161
+; FirstLine = 2088
 ; Folding = ----P5---v--
 ; EnableXP

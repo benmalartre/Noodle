@@ -163,7 +163,6 @@ Module Topology
     Protected *t.Topology_t
     Protected *m.m4f32
     Protected i
-    Debug "NUM MATRICES : "+CArray::GetCount(*matrices)
     For i=0 To CArray::GetCount(*matrices)-1
       *t = New(*topo)
       *m = CArray::GetValue(*matrices,i)
@@ -916,7 +915,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 210
-; FirstLine = 184
+; CursorPosition = 100
+; FirstLine = 86
 ; Folding = -----
 ; EnableXP

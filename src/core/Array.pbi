@@ -295,18 +295,35 @@ DeclareModule CArray
   EndMacro
   
   ;----------------------------------------------------------------
-  ; InitializeReferences
+  ; CreateReferences
   ;----------------------------------------------------------------
-  Macro InitializeReferences(_array,_nb,_type)
-    CArray::SetCount(_array, _nb)
-    Define _i
-    For _i=0 To _nb-1
-      Define _mem = AllocateMemory(SizeOf(_type))
-      InitializeStructure(_mem, _type)
-      CArray::SetValuePtr(_array, _i, _mem)
+  Macro CreateReferences(_array, _cls, _count)
+    CArray::SetCount(_array, _count)
+    Define _i, _address
+    Define _mem = AllocateMemory(_count * SizeOf(_cls))
+    For _i=0 To _count-1
+      _address = _mem +_i*SizeOf(_cls)
+      InitializeStructure(_address, _cls)
+      CArray::SetValuePtr(_array, _i, _address)
     Next 
   EndMacro
   
+  ;----------------------------------------------------------------
+  ; Destructor
+  ;----------------------------------------------------------------
+  Macro DeleteReferences(_array, _cls, _idx)
+    If _array\data 
+      Define _i, _ref
+      For _i=_idx To _array\itemCount-1
+        _ref = Carray::GetValuePtr(_array, _i)
+        ClearStructure(_ref, _cls)
+        FreeMemory(_ref)
+      Next
+      If _idx = 0 : _array\data = #Null : EndIf
+      _array\itemCount = _idx
+    EndIf
+  EndMacro
+
   ;----------------------------------------------------------------
   ; Declares
   ;----------------------------------------------------------------
@@ -336,7 +353,7 @@ DeclareModule CArray
   Declare GetItemSize(*array.CArrayT)
   Declare GetSize(*array.CArrayT)
   Declare Delete(*array.CArrayT)
-  Declare DeleteReferences(*array.CArrayPtr)
+;   Declare DeleteReferences(*array.CArrayPtr, instanceSize, maxIndex.i=0)
   Declare Find(*array,*value)
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
@@ -1213,23 +1230,11 @@ Module CArray
     FreeMemory(*array)
   EndProcedure
   
-  ;----------------------------------------------------------------
-  ; Destructor
-  ;----------------------------------------------------------------
-  Procedure DeleteReferences(*array.CArrayPtr)
-    If *array\data 
-      Define i
-      For i=0 To *array\itemCount-1
-        FreeMemory(Carray::GetValuePtr(*array, i))
-      Next
-    EndIf
-  EndProcedure
-  
 EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1223
-; FirstLine = 1170
+; CursorPosition = 303
+; FirstLine = 285
 ; Folding = ------------
 ; EnableXP

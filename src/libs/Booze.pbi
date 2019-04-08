@@ -873,7 +873,7 @@ Module AlembicIObject
 ;        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
 ;        If Not *infos\hastangent : PolymeshGeometry::RecomputeTangents(*geom):EndIf
 ;       
-;        PolymeshGeometry::GetTopology(*geom)
+;        PolymeshGeometry::ComputeTopology(*geom)
 ;        
 ;        
 ;        If *infos\hasenvelope
@@ -982,7 +982,7 @@ Module AlembicIObject
         Memory::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
       CompilerEndIf
       
-       PolymeshGeometry::GetTopology(*geom)
+       PolymeshGeometry::ComputeTopology(*geom)
        PolymeshGeometry::ComputeTriangles(*geom)
        PolymeshGeometry::ComputeVertexPolygons(*geom, *geom\topo)
        
@@ -991,7 +991,7 @@ Module AlembicIObject
        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
        If Not *infos\hastangent : PolymeshGeometry::ComputeTangents(*geom):EndIf
       
-       PolymeshGeometry::GetTopology(*geom)
+       PolymeshGeometry::ComputeTopology(*geom)
        
        
 ;        If *infos\hasenvelope
@@ -1441,7 +1441,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1133
-; FirstLine = 1080
+; CursorPosition = 993
+; FirstLine = 934
 ; Folding = --------
 ; EnableXP

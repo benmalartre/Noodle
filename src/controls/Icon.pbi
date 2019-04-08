@@ -191,7 +191,7 @@ Module ControlIcon
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0 Or *Me\down
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(UIColor::COLOR_MAIN_BG)
+        VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
@@ -555,7 +555,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 180
+; CursorPosition = 193
 ; FirstLine = 176
 ; Folding = ----
 ; EnableXP

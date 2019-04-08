@@ -78,20 +78,7 @@ Globals::Init()
   Global *root.Model::Model_t = Model::New("Model")
   
 
-  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_TORUS)
-;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-;   Topology::Grid(*geom\topo, 10,64,64)
-;   PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
-  
-  Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
-  Object3D::UpdateTransform(*mesh)
-  Transform::SetTranslationFromXYZValues(*T, 0,6,0)
-  Define q.Math::q4f32
-  Quaternion::SetFromAxisAngleValues(q,0,0.2,0.9,0.5)
-  Transform::SetRotationFromQuaternion(*T, q)
-  Object3D::SetGlobalTransform(*mesh, *T)
-  Object3D::FreezeTransform(*mesh)
-  
+  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
   *drawer = Drawer::New()
   *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 
@@ -114,7 +101,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 39
+; CursorPosition = 101
+; FirstLine = 42
 ; Folding = -
 ; EnableXP

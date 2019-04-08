@@ -189,11 +189,13 @@ Module FTGL
     Define fragment.s 
   If #USE_LEGACY_OPENGL
     fragment = "#version 120"+#CRLF$+                  
-                "varying vec2 texcoord;"+
-                "uniform sampler2D tex;"+
-                "uniform vec4 color;"+
-                "void main(){"+
-                "gl_FragColor = vec4(1,1,1,texture2D(tex,texcoord).a)*color;"+;vec4(texture2D(tex, texcoord))*color;"+
+               "varying vec2 texcoord;"+
+               "uniform sampler2D tex;"+
+               "uniform vec4 color;"+
+               "uniform vec4 background;"+
+               "void main(){"+
+               "vec4 coords = texture2D(tex,texcoord);"+
+                "gl_FragColor = vec4(1,1,1,coords.a)*color + vec4(1,1,1,1 - coords.a) * background;"+
                 "}"
   Else
     fragment = "#version 330"+#CRLF$+                 
@@ -466,8 +468,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 266
-; FirstLine = 262
+; CursorPosition = 188
+; FirstLine = 151
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

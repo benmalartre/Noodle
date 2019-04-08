@@ -135,6 +135,7 @@ DeclareModule Object3D
 ;   Declare SetMaterial(*obj.Object3D_t,shader.i)
 ;   Declare GetMaterial(*obj.Object3D_t)
 ;   Declare GetUniqueID(*obj.Object3D_t)
+  Declare GetLocalTransform(*Me.Object3D_t)
   Declare SetLocalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
   Declare GetGlobalTransform(*Me.Object3D_t)
   Declare SetGlobalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
@@ -171,8 +172,17 @@ Module Object3D
   Procedure Freeze(*obj.Object3D_t)
     If *obj\type = Object3D::#Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
+      Debug "OBJECT : "+*obj\name
+       Debug "OBJECT : "+*obj\class\name
+      Debug "GEOM : "+Str(*geom)
+      Debug "BASE : "+Str(*geom\base)
+      Debug *geom\base\vertices\itemCount
+      Debug "TOPO : "+Str(*geom\topo)
+      Debug *geom\topo\vertices\itemCount
       Topology::Copy(*geom\base,*geom\topo)
+      Debug "COPIED TOPO"
       Stack::Clear(*obj\stack)
+      Debug "CLERED STACK"
     EndIf
    
   EndProcedure
@@ -181,7 +191,17 @@ Module Object3D
   ; FreezeTransform
   ; ----------------------------------------------------------------------------
   Procedure FreezeTransform(*obj.Object3D_t)
-    
+    Select *obj\geom\type
+      Case Geometry::#Polymesh
+        Define *mesh.Geometry::PolymeshGeometry_t = *obj\geom
+        Define invM.Math::m4f32
+ 
+        Utils::TransformPositionArrayInPlace(*mesh\a_positions, *obj\globalT\m)
+        Matrix4::SetIdentity(*obj\localT\m)
+        Transform::UpdateSRTFromMatrix(*obj\localT)
+        Object3D::UpdateTransform(*obj)
+        
+    EndSelect
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -284,6 +304,13 @@ Module Object3D
   ; ----------------------------------------------------------------------------
   Procedure GetGlobalTransform(*Me.Object3D_t)
     ProcedureReturn(*Me\globalT)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Get Local Transform
+  ; ----------------------------------------------------------------------------
+  Procedure GetLocalTransform(*Me.Object3D_t)
+    ProcedureReturn(*Me\localT)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -542,7 +569,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 402
-; FirstLine = 396
-; Folding = ------
+; CursorPosition = 174
+; FirstLine = 163
+; Folding = -------
 ; EnableXP

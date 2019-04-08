@@ -28,13 +28,12 @@ Global rootIndex.i
 Global numTopos = 7
 
 Procedure PolygonSoup(numTopos=9)
-  Debug "POLYGON SOUP : "+Str(numTopos)
-  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_TEAPOT)
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_GRID)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  
-  PolymeshGeometry::BunnyTopology(*geom)
-  Define *topo = Topology::New()
-  Topology::Bunny(*topo)
+  Define *topo = *geom\topo
+;   PolymeshGeometry::BunnyTopology(*geom)
+;   Define *topo = Topology::New()
+;   Topology::Bunny(*topo)
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
@@ -55,25 +54,19 @@ Procedure PolygonSoup(numTopos=9)
     *p = CArray::GetValue(*positions, i)
     Matrix4::SetTranslation(*m,   *p)
   Next
-  
-  Debug "UM MATRICES : "+Str(numTopos)
-  
   Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
   Topology::TransformArray(*topo, *matrices, *topos)
-  
   Topology::MergeArray(*topo, *topos)
-  
   PolymeshGeometry::Set2(*geom, *topo)
   Object3D::Freeze(*mesh)
-  Topology::Delete(*topo)
+;   Topology::Delete(*topo)
 ;   For i=0 To numTopos-1
 ;     Topology::Delete(CArray::GetValuePtr(*topos, i))
 ;   Next
 ;   
 ;   CArray::Delete(*topos)
 ;   
-;   
-  Debug "TOPO : "+Str(*topo)
+
   CArray::Delete(*matrices)
   CArray::Delete(*positions)
   
@@ -177,13 +170,17 @@ FTGL::Init()
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
 
   PolymeshGeometry::ComputeHalfEdges(*mesh\geom)
+  Debug "COMPUTE HALF EDGES OK"
   PolymeshGeometry::ComputeIslands(*mesh\geom)
+  Debug "COMPUTE ISLANDS OK"
   PolymeshGeometry::RandomColorByIsland(*mesh\geom)
+  Debug "COLOR BY ISLAND OK"
 ;   GetNeighbors(*mesh\geom)
 ;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 ;   PolymeshGeometry::SphereTopology(*geom\topo, 2, 512, 256)
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
   Object3D::Freeze(*mesh)
+  Debug "FREEZE OK"
   *drawer = Drawer::New("DRAWER")
   Object3D::SetShader(*drawer, *app\context\shaders("drawer"))
   
@@ -207,7 +204,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 30
+; CursorPosition = 61
 ; FirstLine = 25
 ; Folding = -
 ; EnableXP
