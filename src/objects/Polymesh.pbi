@@ -525,7 +525,7 @@ Module Polymesh
 ;     glUseProgram(*ctx\shaders("normal")\pgm)
       glBindVertexArray(*p\vao)
       glDisable (#GL_POLYGON_OFFSET_FILL)
-      glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
       glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
       GLCheckError("[Polymesh] Draw mesh Called")
       glBindVertexArray(0)

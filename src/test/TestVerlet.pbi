@@ -78,10 +78,10 @@ Globals::Init()
   Global *root.Model::Model_t = Model::New("Model")
   
 
-  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_TORUS)
-;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-;   Topology::Grid(*geom\topo, 10,64,64)
-;   PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
+  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_NONE)
+  Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+  Topology::Grid(*geom\topo, 10,64,64)
+  PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
   
   Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
   Object3D::UpdateTransform(*mesh)
@@ -100,7 +100,7 @@ Globals::Init()
   
   Verlet::RigGeometry(*verlet)
   
-  Object3D::AddChild(*root,*mesh)
+;   Object3D::AddChild(*root,*mesh)
   Object3D::AddChild(*root,*drawer)
   
   Scene::AddModel(Scene::*current_scene,*root)
@@ -114,7 +114,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 39
+; CursorPosition = 32
+; FirstLine = 18
 ; Folding = -
 ; EnableXP

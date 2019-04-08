@@ -19,7 +19,7 @@ EndProcedure
 
 Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
-  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\sizX, 128)
   ControlProperty::AppendStart(*prop)
   ControlProperty::RowStart(*prop)
   Define i
@@ -54,6 +54,6 @@ AddKnobs(*ui, "KNOB")
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 39
+; CursorPosition = 28
 ; Folding = -
 ; EnableXP

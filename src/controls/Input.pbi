@@ -26,10 +26,6 @@ DeclareModule ControlInput
   Declare OnEvent(*Me.ControlInput_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare OnTimer(*Me.ControlInput_t, delay.i=250)
   
-  Macro ISNUMERIC(_key)
-    (1-Bool(_key<>45 And _key<>46 And (_key<48 Or _key>57)))
-  EndMacro
-  
   ; ------------------------------------------------------------------
   ;   VTABLE ( Control )
   ; ------------------------------------------------------------------ 
@@ -250,6 +246,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 54
+; CursorPosition = 27
+; FirstLine = 3
 ; Folding = --
 ; EnableXP

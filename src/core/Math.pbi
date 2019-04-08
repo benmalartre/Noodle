@@ -2176,6 +2176,91 @@ DeclareModule Matrix3
   EndMacro
   
   ;------------------------------------------------------------------
+  ; MATRIX3 TRANSPOSE
+  ;------------------------------------------------------------------
+  Macro Transpose(_m,_o)
+    _m\v[0] = _o\v[0]
+    _m\v[3] = _o\v[1]
+    _m\v[6] = _o\v[2]
+    
+    _m\v[1] = _o\v[3]
+    _m\v[4] = _o\v[4]
+    _m\v[7] = _o\v[5]
+
+    _m\v[2] = _o\v[6]
+    _m\v[5] = _o\v[7]
+    _m\v[8] = _o\v[8]
+  EndMacro
+  
+  Macro TransposeInPlace(_m)
+    Define _m4_tmp.m4f32
+    Matrix4::Transpose(_m4_tmp,_m)
+    Matrix4::SetFromOther(_m,_m4_tmp)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX3 ADDITION
+  ;------------------------------------------------------------------
+  Macro Add(_m,_a,_b)
+    _m\v[0] = _a\v[0] + _b\v[0]
+    _m\v[3] = _a\v[1] + _b\v[1]
+    _m\v[6] = _a\v[2] + _b\v[2]
+    
+    _m\v[1] = _a\v[3] + _b\v[3]
+    _m\v[4] = _a\v[4] + _b\v[4]
+    _m\v[7] = _a\v[5] + _b\v[5]
+
+    _m\v[2] = _a\v[6] + _b\v[6]
+    _m\v[5] = _a\v[7] + _b\v[7]
+    _m\v[8] = _a\v[8] + _b\v[8]
+  EndMacro
+  
+  Macro AddInPlace(_m, _o)
+    _m\v[0] + _o\v[0]
+    _m\v[3] + _o\v[1]
+    _m\v[6] + _o\v[2]
+    
+    _m\v[1] + _o\v[3]
+    _m\v[4] + _o\v[4]
+    _m\v[7] + _o\v[5]
+
+    _m\v[2] + _o\v[6]
+    _m\v[5] + _o\v[7]
+    _m\v[8] + _o\v[8]
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; MATRIX4 SCALE
+  ;------------------------------------------------------------------
+  Macro Scale(_m,_o,_f)
+    _m\v[0] = _o\v[0] * _f
+    _m\v[3] = _o\v[1] * _f
+    _m\v[6] = _o\v[2] * _f
+    
+    _m\v[1] = _o\v[3] * _f
+    _m\v[4] = _o\v[4] * _f
+    _m\v[7] = _o\v[5] * _f
+
+    _m\v[2] = _o\v[6] * _f
+    _m\v[5] = _o\v[7] * _f
+    _m\v[8] = _o\v[8] * _f
+  EndMacro
+  
+  Macro ScaleInPlace(_m, _f)
+    _m\v[0] * _f
+    _m\v[3] * _f
+    _m\v[6] * _f
+    
+    _m\v[1] * _f
+    _m\v[4] * _f
+    _m\v[7] * _f
+
+    _m\v[2] * _f
+    _m\v[5] * _f
+    _m\v[8] * _f
+  EndMacro
+
+  ;------------------------------------------------------------------
   ; MATRIX3 SET FROM OTHER
   ;------------------------------------------------------------------
   Macro SetFromOther(_m,_o)
@@ -4285,8 +4370,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 780
-; FirstLine = 777
-; Folding = -------------------------------------------------------
+; CursorPosition = 2239
+; FirstLine = 2213
+; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

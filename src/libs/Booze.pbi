@@ -370,6 +370,12 @@ DeclareModule Alembic
   EndStructure
   
   ;-----------------------------------------
+  ; Write Job Opaque Structure
+  ;-----------------------------------------
+  Structure ABC_Write_Job
+  EndStructure
+  
+  ;-----------------------------------------
   ; CPP Interfaces Objects
   ;-----------------------------------------
   ; IArchiveManager
@@ -449,6 +455,72 @@ DeclareModule Alembic
   	GetSample.l(time.f, *infos.ABC_Property_Sample_Infos, *sample.ABC_Property_Sample)
   EndInterface
   
+  ; AlembicWriteJob
+  Interface IWriteJob
+    GetArchive()
+	  GetFrames()
+  	SetFileName(filename.p-utf8)
+  	GetFileName()
+  	GetAnimatedTs()
+  	SetOption(in_Name.p-utf8, in_Value.p-utf8)
+  	HasOption(in_Name.p-utf8)
+  	GetOption(in_Name.p-utf8)
+  EndInterface
+  
+   ; OArchive
+  Interface OArchive
+    Open.b(fp.p-utf8)
+    Close.b()
+    IsValid.b()
+	EndInterface 
+	
+  ; OObject
+  Interface OObject
+    Initialize.b()
+    GetName.l()
+    GetFullName.l()
+    GetType.l()
+    Get.l()
+    GetProperties.l()
+    HasProperty.b(name.p-utf8)
+    GetNumProperties.i()
+    GetProperty.l(index.i)
+  EndInterface
+  
+  ; OPolymesh
+  Interface OPolymesh Extends OObject
+    GetTopoSampleDescription.l(time.f, *infos.ABC_Polymesh_Topo_Sample_Infos)
+    UpdateTopoSample.l(*infos.ABC_Polymesh_Topo_Sample_Infos, *sample.ABC_Polymesh_Topo_Sample)
+    GetSampleDescription.l(time.f, *infos.ABC_Polymesh_Topo_Sample_Infos)
+    UpdateSample.l(*infos.ABC_Polymesh_Topo_Sample_Infos, *sample.ABC_Polymesh_Topo_Sample)
+  EndInterface
+  
+  ; OPoints
+  Interface OPoints Extends OObject
+    GetSampleDescription.l(time.f, *infos.ABC_Polymesh_Topo_Sample_Infos)
+    UpdateSample.l(*infos.ABC_Polymesh_Topo_Sample_Infos, *sample.ABC_Polymesh_Topo_Sample)
+  EndInterface
+  
+  ; OCurves
+  Interface OCurves Extends OObject
+    GetSampleDescription.l(time.f, *infos.ABC_Curves_Sample_Infos)
+    UpdateSample.l(*infos.ABC_Curves_Sample_Infos, *sample.ABC_Curves_Sample)
+  EndInterface
+
+  ; IProperty
+  Interface OProperty
+  	Init.l(*prop)
+  	IsConstant.b()
+  	GetName.l()
+  	GetPropertyType.l()
+  	GetDataTraits.l()
+  	GetNbItems.i(time.f)
+  	GetInterpretation.l()
+  	GetSampleDescription.b(time.f, *infos.ABC_Property_Sample_Infos)
+  	GetSample.l(time.f, *infos.ABC_Property_Sample_Infos, *sample.ABC_Property_Sample)
+  EndInterface
+
+  
   ; Import C Library
   ;-------------------------------------------------------
   If FileSize("../../libs")=-2
@@ -489,6 +561,10 @@ DeclareModule Alembic
   PrototypeC    ABCDELETEOOBJECT(obj.IObject)
   
   
+  PrototypeC    ABCNEWWRITEJOB(filename.p-utf8, *frames, numFrames.i)
+  PrototypeC    ABCDELETEWRITEJOB(job.IWriteJob)
+  
+  
   ; import functions
   If alembic_lib  
     Global getLibraryVersion.ABCVERSION = GetFunction(alembic_lib, "getLibraryVersion")
@@ -506,6 +582,9 @@ DeclareModule Alembic
     Global deleteOArchive.ABCDELETEOARCHIVE = GetFunction(alembic_lib, "deleteOArchive")
     Global newOObject.ABCNEWOOBJECT = GetFunction(alembic_lib, "newOObject")
     Global deleteOObject.ABCDELETEOOBJECT = GetFunction(alembic_lib, "deleteOObject")
+    
+    Global newWriteJob.ABCNEWWRITEJOB = GetFunction(alembic_lib, "newWriteJob")
+    Global deleteWriteJob.ABCDELETEWRITEJOB = GetFunction(alembic_lib, "deleteWriteJob")
   EndIf
 
   Declare Init()
@@ -1441,7 +1520,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 993
-; FirstLine = 934
+; CursorPosition = 473
+; FirstLine = 453
 ; Folding = --------
 ; EnableXP

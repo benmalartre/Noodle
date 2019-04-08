@@ -6,7 +6,7 @@ DeclareModule Verlet
   #KdStruct = -0.25
   #KsShear = 50.75
   #KdShear = -0.25
-  #KsBend = 0.5
+  #KsBend = 50.75
   #KdBend = -0.25
   
   Enumeration
@@ -65,22 +65,27 @@ Module Verlet
   	ProcedureReturn *spring
   EndProcedure
   
-  Procedure IsFirstRing( *geom.Geometry::PolymeshGeometry_t, a.i, b.i, *firstring.CArray::CArrayLong)
-    Define *halfedge.Geometry::HalfEdge_t = CArray::GetValuePtr(*geom\a_halfedges, CArray::getValueL(*geom\a_vertexhalfedge, a))
-    Define *start.Geometry::HalfEdge_t = *halfedge
-    Define *next.Geometry::HalfEdge_t = *halfedge\opposite_he\next_he
+  Procedure.b IsRealEdge(*geom.Geometry::PolymeshGeometry_t, a.i, b.i)
+    Define i, x, y
+    Define *cur.Geometry::HalfEdge_t, *nxt.Geometry::HalfEdge_t
+    For i=0 To CArray::GetCount(*geom\a_halfedges)-1
+      *cur = CArray::getValuePtr(*geom\a_halfedges, i)
+      *nxt = *cur\next_he
+      x = *cur\vertex
+      y = *nxt\vertex
+      If (a=x And b=y) Or (a=y And b=x) : ProcedureReturn #True : EndIf
+    Next
+    ProcedureReturn #False
+
+  EndProcedure
+  
+  Procedure InFirstRing( *geom.Geometry::PolymeshGeometry_t, idx.i, *firstring.CArray::CArrayLong)
     Define i
     For i=0 To CArray::GetCount(*firstring)-1
-      If CArray::GetValueL(*firstring, i) = b
+      If CArray::GetValueL(*firstring, i) = idx
         ProcedureReturn #True
       EndIf
     Next
-    ProcedureReturn #False
-     
-    While *next And Not *next = *start
-      If *next\vertex = b : ProcedureReturn #True : EndIf
-      *next = *next\opposite_he\next_he
-    Wend
     ProcedureReturn #False
   EndProcedure
   
@@ -109,9 +114,9 @@ Module Verlet
         If b < a : Define t = a : a = b : b = t : EndIf
         edgeKey = Str(a)+","+Str(b)
         If Not FindMapElement(unique_edges(), edgeKey)
-
-          Define *spring.Spring_t = AddSpring(*Me,a,b,#KsStruct,#KdStruct,#STRUCTURAL_SPRING)
           
+          Define *spring.Spring_t = AddSpring(*Me,a,b,#KsStruct,#KdStruct,#STRUCTURAL_SPRING)
+
           AddMapElement(unique_edges(), edgeKey)
           unique_edges() = *spring
         EndIf
@@ -123,7 +128,7 @@ Module Verlet
 ;         PolymeshGeometry::GetVertexNeighbors(*geom, CArray::GetValueL(*neighbors, j), *secondary)
 ;         For k=0 To CArray::GetCount(*secondary)-1
 ;           b = CArray::GetValueL(*secondary, k)
-;           If Not IsFirstRing(*geom, a, b, *neighbors) And b <> a
+;           If InFirstRing(*geom, b, *neighbors)
 ;             If b < a : Define t = a : a = b : b = t : EndIf
 ;             edgeKey = Str(a)+","+Str(b)
 ;             If Not FindMapElement(unique_edges(), edgeKey)
@@ -166,44 +171,47 @@ Module Verlet
     Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
     Define *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
     Define numSprings = CArray::GetCount(*Me\springs)
-    Define color.Math::c4f32
-    CArray::SetCount(*positions,numSprings *2)
-    CArray::SetCount(*colors,numSPrings *2)
-    
-    Define struct_color.Math::c4f32
-    Define bend_color.Math::c4f32
-    Define shear_color.Math::c4f32
-    Color::Set(struct_color,0.5,0.9,0.5,1.0)
-    Color::Set(bend_color,0.9,0.4,0.3,1.0)
-    Color::Set(shear_color,0.6,0.6,0.9,1.0)
-    
-    Define i
-    Define *spring.Verlet::Spring_t
-    For i=0 To numSprings-1
-      *spring = CArray::GetValuePtr(*Me\springs, i)
-      CArray::SetValue(*positions, i*2, CArray::GetValue(*Me\X,  *spring\p1))
-      CArray::SetValue(*positions, i*2+1, CArray::GetValue(*Me\X,  *spring\p2))
-      If *spring\type = #STRUCTURAL_SPRING
-        CArray::SetValue(*colors, i*2, struct_color)
-        CArray::SetValue(*colors, i*2+1, struct_color)
-      ElseIf *spring\type = #BEND_SPRING
-        CArray::SetValue(*colors, i*2, bend_color)
-        CArray::SetValue(*colors, i*2+1, bend_color)
-      ElseIf *spring\type = #SHEAR_SPRING
-        CArray::SetValue(*colors, i*2, shear_color)
-        CArray::SetValue(*colors, i*2+1, shear_color)
-      EndIf
-    Next
-    
-    Define *line.Drawer::Line_t = Drawer::AddColoredLines(*drawer, *positions, *colors)
-;     Color::Set(color,0.35,0.9,0.35,1.0)
-;     Drawer::SetColor(*line, color)
-
-    CArray::Copy(*positions, *Me\X)
-    Define *pnt.Drawer::Point_t = Drawer::AddPoints(*drawer, *positions)
-    Color::Set(color,1.0,0.2,0.35,1.0)
-    Drawer::SetColor(*pnt, color)
-    Drawer::SetSize(*pnt, 4)
+    If numSprings > 0
+      Define color.Math::c4f32
+      CArray::SetCount(*positions,numSprings *2)
+      CArray::SetCount(*colors,numSPrings *2)
+      
+      Define struct_color.Math::c4f32
+      Define bend_color.Math::c4f32
+      Define shear_color.Math::c4f32
+      Color::Set(struct_color,0.5,0.9,0.5,1.0)
+      Color::Set(bend_color,0.9,0.4,0.1,1.0)
+      Color::Set(shear_color,0.1,0.6,0.9,1.0)
+      
+      Define i
+      Define *spring.Verlet::Spring_t
+      For i=0 To numSprings-1
+        *spring = CArray::GetValuePtr(*Me\springs, i)
+        CArray::SetValue(*positions, i*2, CArray::GetValue(*Me\X,  *spring\p1))
+        CArray::SetValue(*positions, i*2+1, CArray::GetValue(*Me\X,  *spring\p2))
+        If *spring\type = #STRUCTURAL_SPRING
+          CArray::SetValue(*colors, i*2, struct_color)
+          CArray::SetValue(*colors, i*2+1, struct_color)
+        ElseIf *spring\type = #BEND_SPRING
+          CArray::SetValue(*colors, i*2, bend_color)
+          CArray::SetValue(*colors, i*2+1, bend_color)
+        ElseIf *spring\type = #SHEAR_SPRING
+          CArray::SetValue(*colors, i*2, shear_color)
+          CArray::SetValue(*colors, i*2+1, shear_color)
+        EndIf
+      Next
+      
+      Define *line.Drawer::Line_t = Drawer::AddColoredLines(*drawer, *positions, *colors)
+      Drawer::SetSize(*line, 4)
+  ;     Color::Set(color,0.35,0.9,0.35,1.0)
+  ;     Drawer::SetColor(*line, color)
+  
+      CArray::Copy(*positions, *Me\X)
+      Define *pnt.Drawer::Point_t = Drawer::AddPoints(*drawer, *positions)
+      Color::Set(color,1.0,0.2,0.35,1.0)
+      Drawer::SetColor(*pnt, color)
+      Drawer::SetSize(*pnt, 4)
+    EndIf
     
   EndProcedure
   
@@ -402,7 +410,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 84
+; CursorPosition = 116
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP

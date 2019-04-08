@@ -237,9 +237,9 @@ Procedure Draw(*app.Application::Application_t)
   Define *l.Geometry::Location_t
   For i=0 To *cgeom\nbpoints-1
     *l = CArray::GetValue(*locs,i)
-    Location::GetPosition(*l)
+    Location::GetPosition(*l, *ground\geom, *ground\globalT)
     CArray::SetValue(*cgeom\a_positions,i,*l\p)
-    Location::GetNormal(*l)
+    Location::GetNormal(*l, *ground\geom, *ground\globalT)
     CArray::SetValue(*cgeom\a_normals,i,*l\n)
     Vector3::Set(s,5,5,5)
     CArray::SetValue(*cgeom\a_scale,i,s)
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 228
-; FirstLine = 199
+; CursorPosition = 241
+; FirstLine = 205
 ; Folding = --
 ; EnableXP
 ; Executable = Test

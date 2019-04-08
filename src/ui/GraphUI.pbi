@@ -1225,10 +1225,9 @@ Module GraphUI
             
           ;Left Double Click Event
           Case #PB_EventType_RightButtonDown
-            Define *popup.ControlPopup::ControlPopup_t = ControlPopup::New(*Me, *Me\mouseX - 120, *Me\mouseY - 60, 240, 120)
-            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-            ControlPopup::Draw(*popup,0,0)
-            StopVectorDrawing()
+            Define *popup.ControlPopup::ControlPopup_t = ControlPopup::New(*Me, *Me\mouseX, *Me\mouseY-32, 240, 120)
+           ControlPopup::StartLoop(*popup)
+            
             
           ;Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
@@ -1601,7 +1600,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1214
-; FirstLine = 1193
+; CursorPosition = 1228
+; FirstLine = 1213
 ; Folding = --------
 ; EnableXP

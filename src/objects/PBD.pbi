@@ -53,6 +53,8 @@ DeclareModule PDB
     *phi0.CArray::CArrayFloat       ; initial dihedral angle between adjacent triangles
     List bending_constraints.BendingConstraint_t()
     List distance_constraints.DistanceConstraint_t()
+    
+    gravity.Math::v3f32
   EndStructure
 
 EndDeclareModule
@@ -67,6 +69,15 @@ Module PDB
     Vector3::Cross(cross, e1, e2)
     ProcedureReturn 0.5 * Vector3::Length(cross)
   EndProcedure
+  
+   Procedure  GetNormal(*Me.PDB_t, ind0.i, ind1.i, ind2.i, *nrm.Math::v3f32)
+     Define.Math::v3f32 e1, e2
+     Vector3::Sub(e1, CArray::GetValue(*Me\X, ind0), CArray::GetValue(*Me\X, ind1))
+     Vector3::Sub(e2, CArray::GetValue(*Me\X, ind2), CArray::GetValue(*Me\X, ind1))
+     Vector3::Cross(*nrm, e1, e2)
+     Vector3::NormalizeInPlace(*nrm)
+   EndProcedure
+   
   
   
   Procedure AddDistanceConstraint(*Me.PDB_t,a.i, b.i, k.f) 
@@ -136,324 +147,157 @@ CompilerElse
   	*Me\bending_constraints() = *c
   EndProcedure
 CompilerEndIf
+  
+CompilerIf #USE_TRIANGLE_BENDING_CONSTRAINT
+  Procedure.f GetDihedralAngle(*Me.PBD_t, *c.BendingConstraint_t, *n1.Math::v3f32, *n2.Math::v3f32, *d) 
+    GetNormal(*Me, *c\p1, *c\p2, *c\p3, *n1)
+    GetNormal(*Me, *c\p1, *c\p2, *c\p4, *n2)
+    ProcedureReturn Vector3::Dot(*n1, *n2)
+;     Procedure
+;   	n1 = GetNormal(c.p1, c.p2, c.p3);
+;   	n2 = GetNormal(c.p1, c.p2, c.p4); 
+;   	d = glm::dot(n1, n2);
+;   	Return ACos(d);
+  EndProcedure
+  
+CompilerEndIf
 
-  void DrawGrid()
-  {
-  	glBegin(GL_LINES);
-  	glColor3f(0.5f, 0.5f, 0.5f);
-  	For(int i=-GRID_SIZE;i<=GRID_SIZE;i++)
-  	{
-  		glVertex3f((float)i,0,(float)-GRID_SIZE);
-  		glVertex3f((float)i,0,(float)GRID_SIZE);
-  
-  		glVertex3f((float)-GRID_SIZE,0,(float)i);
-  		glVertex3f((float)GRID_SIZE,0,(float)i);
-  	}
-  	glEnd();
-  }
-  
-  inline glm::vec3 GetNormal(int ind0, int ind1, int ind2) {
-  	glm::vec3 e1 = X[ind0]-X[ind1];
-  	glm::vec3 e2 = X[ind2]-X[ind1];
-  	Return glm::normalize(glm::cross(e1,e2));
-  }
-  
-  #ifndef USE_TRIANGLE_BENDING_CONSTRAINT
-  inline float GetDihedralAngle(BendingConstraint c, float& d, glm::vec3& n1, glm::vec3& n2) {	 
-  	n1 = GetNormal(c.p1, c.p2, c.p3);
-  	n2 = GetNormal(c.p1, c.p2, c.p4); 
-  	d = glm::dot(n1, n2);
-  	Return ACos(d);
-  }
-  #else
-  inline int getIndex(int i, int j) {
-  	Return j*(numX+1) + i;
-  }
-  #endif
-  void InitGL() { 
-   
-  	startTime = (float)glutGet(GLUT_ELAPSED_TIME);
-  	currentTime = startTime;
-  
-  	// get ticks per second
-      QueryPerformanceFrequency(&frequency);
-  
-      // start timer
-      QueryPerformanceCounter(&t1);
-  
-  
-  	glEnable(GL_DEPTH_TEST);
-  	size_t i=0, j=0, count=0;
-  	int l1=0, l2=0;
-  	float ypos = 7.0f;
-  	int v = numY+1;
-  	int u = numX+1;
-  
-  	indices.resize( numX*numY*2*3);
-   
-  	X.resize(total_points);
-  	tmp_X.resize(total_points);
-  	V.resize(total_points);
-  	F.resize(total_points); 
-  	Ri.resize(total_points); 
-  	 
-  	//fill in positions
-  	For(int j=0;j<=numY;j++) {		 
-  		For(int i=0;i<=numX;i++) {	 
-  			X[count++] = glm::vec3( ((float(i)/(u-1)) *2-1)* hsize, size+1, ((float(j)/(v-1) )* size));
-  		}
-  	}
-  
-  	///DevO: 24.07.2011
-  	W.resize(total_points); 
-  	For(i=0;i<total_points;i++) {	
-  		W[i] = 1.0f/mass;
-  	}
-  	/// 2 Fixed Points 
-  	W[0] = 0.0;
-  	W[numX] = 0.0;
-  
-  	memcpy(&tmp_X[0].x, &X[0].x, SizeOf(glm::vec3)*total_points);
-  
-  	//fill in velocities	 
-  	memset(&(V[0].x),0,total_points*SizeOf(glm::vec3));
-  
-  	//fill in indices
-  	GLushort* id=&indices[0];
-  	For (int i = 0; i < numY; i++) {        
-  		For (int j = 0; j < numX; j++) {            
-  			int i0 = i * (numX+1) + j;            
-  			int i1 = i0 + 1;            
-  			int i2 = i0 + (numX+1);            
-  			int i3 = i2 + 1;            
-  			If ((j+i)%2) {                
-  				*id++ = i0; *id++ = i2; *id++ = i1;                
-  				*id++ = i1; *id++ = i2; *id++ = i3;            
-  			} Else {                
-  				*id++ = i0; *id++ = i2; *id++ = i3;                
-  				*id++ = i0; *id++ = i3; *id++ = i1;            
-  			}        
-  		}    
-  	}
-  	 
-  	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  	//glPolygonMode(GL_BACK, GL_LINE);
-  	glPointSize(5);
-  
-  	wglSwapIntervalEXT(0);
-  
-  	//check the damping values
-  	If(kStretch>1)
-  		kStretch=1;
-  	If(kStretch<0)
-  		kStretch=0;
-  	If(kBend>1)
-  		kBend=1;
-  	If(kBend<0)
-  		kBend=0;
-  	If(kDamp>1)
-  		kDamp=1;
-  	If(kDamp<0)
-  		kDamp=0;
-  	If(global_dampening>1)
-  		global_dampening = 1;
-  
-  	//setup constraints
-  	// Horizontal
-  	For (l1 = 0; l1 < v; l1++)	// v
-  		For (l2 = 0; l2 < (u - 1); l2++) {
-  			AddDistanceConstraint((l1 * u) + l2,(l1 * u) + l2 + 1, kStretch);
-  		}
-  
-  	// Vertical
-  	For (l1 = 0; l1 < (u); l1++)	
-  		For (l2 = 0; l2 < (v - 1); l2++) {
-  			AddDistanceConstraint((l2 * u) + l1,((l2 + 1) * u) + l1, kStretch);
-  		}
-  
-  	
-  	// Shearing distance constraint
-  	For (l1 = 0; l1 < (v - 1); l1++)	
-  		For (l2 = 0; l2 < (u - 1); l2++) {
-  			AddDistanceConstraint((l1 * u) + l2,((l1 + 1) * u) + l2 + 1, kStretch);
-  			AddDistanceConstraint(((l1 + 1) * u) + l2,(l1 * u) + l2 + 1, kStretch);
-  		}
-  
-  	
-  	// create bending constraints	
-  	#ifdef USE_TRIANGLE_BENDING_CONSTRAINT
-  	//add vertical constraints
-  	For(int i=0;i<=numX;i++) {
-  		For(int j=0;j<numY-1 ;j++) {
-  			AddBendingConstraint(getIndex(i,j), getIndex(i,(j+1)), getIndex(i,j+2), kBend);
-  		}
-  	}
-  	//add horizontal constraints
-  	For(int i=0;i<numX-1;i++) {
-  		For(int j=0;j<=numY;j++) {	   
-  			AddBendingConstraint(getIndex(i,j), getIndex(i+1,j), getIndex(i+2,j), kBend);
-  		}
-  	}
-  
-  	#else
-  	For(int i = 0; i < v-1; ++i) {
-  		For(int j = 0; j < u-1; ++j) {	 			 
-  			int p1 = i * (numX+1) + j;            
-  			int p2 = p1 + 1;            
-  			int p3 = p1 + (numX+1);            
-  			int p4 = p3 + 1;   
-  			 
-  			If ((j+i)%2) {  						
-  				AddBendingConstraint(p3,p2,p1,p4, kBend);	
-  			} Else {  
-  				AddBendingConstraint(p4,p1,p3,p2, kBend);
-  			}     
-  		}
-  	}		 
-  	float d;
-  	glm::vec3 n1, n2;
-  	phi0.resize(b_constraints.size());
-  	
-  	For(i=0;i<b_constraints.size();i++) {		
-  		phi0[i] = GetDihedralAngle(b_constraints[i],d,n1,n2);		
-  	}	
-  	#endif
-  
-  	//create a basic ellipsoid object
-  	ellipsoid = glm::translate(glm::mat4(1),glm::vec3(0,2,0));
-  	ellipsoid = glm::rotate(ellipsoid, 45.0f ,glm::vec3(1,0,0));
-  	ellipsoid = glm::scale(ellipsoid, glm::vec3(fRadius,fRadius,fRadius/2));
-  	inverse_ellipsoid = glm::inverse(ellipsoid);
-  }
+; 
+;   	//add horizontal constraints
+;   	For(int i=0;i<numX-1;i++) {
+;   		For(int j=0;j<=numY;j++) {	   
+;   			AddBendingConstraint(getIndex(i,j), getIndex(i+1,j), getIndex(i+2,j), kBend);
+;   		}
+;   	}
+;   
+;   	#else
+;   	For(int i = 0; i < v-1; ++i) {
+;   		For(int j = 0; j < u-1; ++j) {	 			 
+;   			int p1 = i * (numX+1) + j;            
+;   			int p2 = p1 + 1;            
+;   			int p3 = p1 + (numX+1);            
+;   			int p4 = p3 + 1;   
+;   			 
+;   			If ((j+i)%2) {  						
+;   				AddBendingConstraint(p3,p2,p1,p4, kBend);	
+;   			} Else {  
+;   				AddBendingConstraint(p4,p1,p3,p2, kBend);
+;   			}     
+;   		}
+;   	}		 
+;   	float d;
+;   	glm::vec3 n1, n2;
+;   	phi0.resize(b_constraints.size());
+;   	
+;   	For(i=0;i<b_constraints.size();i++) {		
+;   		phi0[i] = GetDihedralAngle(b_constraints[i],d,n1,n2);		
+;   	}	
+;   	#endif
+;   
+;   	//create a basic ellipsoid object
+;   	ellipsoid = glm::translate(glm::mat4(1),glm::vec3(0,2,0));
+;   	ellipsoid = glm::rotate(ellipsoid, 45.0f ,glm::vec3(1,0,0));
+;   	ellipsoid = glm::scale(ellipsoid, glm::vec3(fRadius,fRadius,fRadius/2));
+;   	inverse_ellipsoid = glm::inverse(ellipsoid);
+;   }
+;   
   
   
   
-  	sprintf_s(info, "FPS: %3.2f, Frame time (GLUT): %3.4f msecs, Frame time (QP): %3.3f", fps, frameTime, frameTimeQP);
-  	glutSetWindowTitle(info);
-  
-  	glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
-  	glLoadIdentity();
-  
-  	//set viewing transformation
-  	glTranslatef(0,0,dist);
-  	glRotatef(rX,1,0,0);
-  	glRotatef(rY,0,1,0);
-  	
-  	glGetDoublev(GL_MODELVIEW_MATRIX, MV);
-  	viewDir.x = (float)-MV[2];
-  	viewDir.y = (float)-MV[6];
-  	viewDir.z = (float)-MV[10];
-  	Right = glm::cross(viewDir, Up);
-  
-  	//draw grid
-  	DrawGrid();
-  	
-  	//draw ellipsoid
-  	glColor3f(0,1,0);
-  	glPushMatrix();
-  		glMultMatrixf(glm::value_ptr(ellipsoid));
-  			glutWireSphere(fRadius, iSlices, iStacks);
-  	glPopMatrix();
-  
-  
-  	//draw polygons
-  	glColor3f(1,1,1);
-  	glBegin(GL_TRIANGLES);
-  	For(i=0;i<indices.size();i+=3) {
-  		glm::vec3 p1 = X[indices[i]];
-  		glm::vec3 p2 = X[indices[i+1]];
-  		glm::vec3 p3 = X[indices[i+2]];
-  		glVertex3f(p1.x,p1.y,p1.z);
-  		glVertex3f(p2.x,p2.y,p2.z);
-  		glVertex3f(p3.x,p3.y,p3.z);
-  	}
-  	glEnd();	 
-  
-  	//draw points
-  	
-  	glBegin(GL_POINTS);
-  	For(i=0;i<total_points;i++) {
-  		glm::vec3 p = X[i];
-  		int is = (i==selected_index);
-  		glColor3f((float)!is,(float)is,(float)is);
-  		glVertex3f(p.x,p.y,p.z);
-  	}
-  	glEnd();
-  
-  
-  	//draw normals For Debug only 	
-  #ifndef USE_TRIANGLE_BENDING_CONSTRAINT
-  #ifdef _DEBUG
-  	BendingConstraint b;
-  	float size = 0.1f;
-  	float d = 0;
-  	glm::vec3 n1, n2, c1, c2;
-  
-  	
-  	glBegin(GL_LINES);
-  	For(i=0;i<b_constraints.size();i++) {
-  		b = b_constraints[i];
-  		c1 = (X[b.p1] + X[b.p2] + X[b.p3]) /3.0f;
-  		c2 = (X[b.p1] + X[b.p2] + X[b.p4]) /3.0f;
-  		GetDihedralAngle(b,d,n1,n2);
-  		glColor3f(Abs(n1.x), Abs(n1.y), Abs(n1.z) );
-  		glVertex3f(c1.x,c1.y,c1.z);		glVertex3f(c1.x+size*n1.x,c1.y+size*n1.y,c1.z+size*n1.z);
-  
-  		glColor3f(Abs(n2.x), Abs(n2.y), Abs(n2.z));
-  		glVertex3f(c2.x,c2.y,c2.z);		glVertex3f(c2.x+size*n2.x,c2.y+size*n2.y,c2.z+size*n2.z);
-  	}
-  	glEnd();
-  #endif
-  #endif
-  	glutSwapBuffers();
-  }
-  
+;   	
+;   	glBegin(GL_LINES);
+;   	For(i=0;i<b_constraints.size();i++) {
+;   		b = b_constraints[i];
+;   		c1 = (X[b.p1] + X[b.p2] + X[b.p3]) /3.0f;
+;   		c2 = (X[b.p1] + X[b.p2] + X[b.p4]) /3.0f;
+;   		GetDihedralAngle(b,d,n1,n2);
+;   		glColor3f(Abs(n1.x), Abs(n1.y), Abs(n1.z) );
+;   		glVertex3f(c1.x,c1.y,c1.z);		glVertex3f(c1.x+size*n1.x,c1.y+size*n1.y,c1.z+size*n1.z);
+;   
+;   		glColor3f(Abs(n2.x), Abs(n2.y), Abs(n2.z));
+;   		glVertex3f(c2.x,c2.y,c2.z);		glVertex3f(c2.x+size*n2.x,c2.y+size*n2.y,c2.z+size*n2.z);
+;   	}
+;   	glEnd();
+;   #endif
+;   #endif
+;   	glutSwapBuffers();
+;   }
+;   
 
   
   Procedure ComputeForces(*Me.PDB_t)
   	Define i=0
-  	
+  	Define zerForce.Math::v3f32
+  	Define *force.Math::v3f32
   	For i=0 To *Me\geom\nbpoints - 1
-  		F[i] = glm::vec3(0); 
-  		 
-  		;add gravity force
-  		If(W[i]>0)		 
-  			F[i] += gravity ; 
-  	}	
-  } 
-  void IntegrateExplicitWithDamping(float deltaTime) {
-  	float deltaTimeMass = deltaTime;
-  	size_t i=0;
-   
-  	glm::vec3 Xcm = glm::vec3(0);
-  	glm::vec3 Vcm = glm::vec3(0);
-  	float sumM = 0;
-  	For(i=0;i<total_points;i++) {
+  	  *force = CArray::GetValue(*Me\F, i)
+  	  Vector3::SetFromOther(*force, zeroForce)
+  	  If CArray::GetValueF(*Me\W, i) > 0
+  	    Vector3::AddInPlace(*force, *Me\gravity)
+  	  EndIf
+  	Next
+  EndProcedure
   
-  		V[i] *= global_dampening; //global velocity dampening !!!		
-  		V[i] = V[i] + (F[i]*deltaTime)*W[i]; 	 					
-  		
-  		//calculate the center of mass's position 
-  		//And velocity For damping calc
-  		Xcm += (X[i]*mass);
-  		Vcm += (V[i]*mass);
-  		sumM += mass;
-  	}
-  	Xcm /= sumM; 
-  	Vcm /= sumM; 
-  
-  	glm::mat3 I = glm::mat3(1);
-  	glm::vec3 L = glm::vec3(0);
-  	glm::vec3 w = glm::vec3(0);//angular velocity
+  Procedure IntegrateExplicitWithDamping(*Me.PBD_t, deltaTime.f)
+  	Define deltaTimeMass.f = deltaTime
+  	Define i=0;
   	
+  	Define Xcm.Math::v3f32
+  	Define Vcm.Math::v3f32
+  	Define sumM.f = 0
+  	Define *v.Math::v3f32
+  	For i=0 To *Me\geom\nbpoints-1
+  	  *v = CArray::GetValue(*Me\V, i)
+  	  Vector3::ScaleInPlace(*v, *Me\global_damping)
+      Vector3::ScaleAddInPlace(*v, CArray::GetValue(*Me\F, i), deltaTime * CArray::GetValueF(*Me\W, i))
+  		
+  		; calculate the center of mass's position 
+      ; and velocity for damping calc
+      Vector3::ScaleAddInPlace(Xcm, CArray::GetValue(*Me\X), *Me\mass)
+      Vector3::ScaleAddInPlace(Vcm, CArray::GetValue(*Me\V), *Me\mass)
+      
+  		sumM + *Me\mass
+  	Next
+  	
+  	If sumM > 0
+  	  Vector3::ScaleInPlace(Xcm, 1 / sumM)
+  	  Vector3::ScaleInPlace(Vcm, 1 / sumM)
+  	EndIf
+  	
+  	Define I.Math::m3f32
+  	Matrix3::SetIdentity(I)
+  	Define L.Math::v3f32 
+  	Define w.Math::v3f32        ; angular velocity
+  	Define s.Math::v3f32
+  	Define C.Math::v3f32
+  	Define tmp.Math::m3f32
+  	Define pmt.Math::m3f32
+  	Define *Rii.Math::v3f32
+  	For i=0 To *Me\geom\nbpoints-1
+  	  Vector3::Sub(CArray::GetValue(*Me\Ri, i), CArray::GetValue(*Me\X, i), Xcm)  
+  	  Vector3::Scale(s, CArray::GetValue(*Me\V, i), *Me\mass)
+  	  Vector3::Cross(C,CArray::GetValue(*Me\Ri, i), s)
+  	  Vector3::AddInPlace(L, C)
+  	  
+  	  *Rii = CArray::GetValue(*Me\Ri, i)
+  	  Matrix3::Set(tmp,0, -*Rii\z, *Rii\y, 
+  	               *Rii\z, 0, -*Rii\x,
+  	               -*Rii\y,  *Rii\x, 0)
+  	  
+  	  Matrix3::Transpose(pmt, tmp)
+  	  Matrix3::MulByMatrix3InPlace(tmp, pmt)
+  	  Matrix3::ScaleInPlace(tmp, mass)
+  	  Matrix3::AddInPlace(I, tmp)
+  	  
+  	Next
   	
   	For(i=0;i<total_points;i++) { 
   		Ri[i] = (X[i] - Xcm);	
   		
   		L += glm::cross(Ri[i],mass*V[i]); 
   
-  		//thanks To DevO For pointing this And these notes really helped.
-  		//http://www.sccg.sk/~onderik/phd/ca2010/ca10_lesson11.pdf
+  		;thanks To DevO For pointing this And these notes really helped.
+  		;http://www.sccg.sk/~onderik/phd/ca2010/ca10_lesson11.pdf
   
   		glm::mat3 tmp = glm::mat3(0,-Ri[i].z,  Ri[i].y, 
   							 Ri[i].z,       0,-Ri[i].x,
@@ -736,7 +580,7 @@ CompilerEndIf
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 410
-; FirstLine = 180
+; CursorPosition = 289
+; FirstLine = 272
 ; Folding = ----
 ; EnableXP

@@ -11,7 +11,7 @@ DeclareModule ControlPopup
     label.s
     over.i
     down.i
-    
+    value.s
     *edit.ControlEdit::ControlEdit_t
 ;     *list.ControlList::ControlList_t
   EndStructure
@@ -26,6 +26,7 @@ DeclareModule ControlPopup
   Declare Draw(*Me.ControlPopup_t, xoff.i = 0, yoff.i = 0)
   Declare Delete(*Me.ControlPopup_t)
   Declare OnEvent( *Me.ControlPopup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Declare StartLoop(*Me.ControlPopup_t)
   
   ; ============================================================================
   ;  VTABLE ( Object + Control + ControlButton )
@@ -47,7 +48,85 @@ EndDeclareModule
 
 Module ControlPopup
 
-
+  Procedure StartLoop(*Me.ControlPopup_t)
+    
+    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+    Draw(*Me)
+    StopVectorDrawing()
+    
+    SetActiveGadget(*Me\gadgetID)
+    Define ev_datas.Control::EventTypeDatas_t
+    Repeat
+      Define ev = WaitWindowEvent()
+      If ev = #PB_Event_Gadget And EventGadget() = *Me\gadgetID
+        
+        Select EventType()
+          Case #PB_EventType_Input
+            ev_datas\key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input)
+            ev_datas\input = Chr(ev_datas\key)
+            ev_datas\xoff = *Me\posX
+            ev_datas\yoff = *Me\posY
+            ControlEdit::OnEvent(*Me\edit, #PB_EventType_Input, ev_datas)
+            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+            ControlEdit::OnEvent(*Me\edit, Control::#PB_EventType_Draw, ev_datas)
+            StopVectorDrawing()
+            
+          Case #PB_EventType_KeyDown
+            ev_datas\key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
+            ev_datas\input = Chr(ev_datas\key)
+            ev_datas\xoff = *Me\posX
+            ev_datas\yoff = *Me\posY
+            ControlEdit::OnEvent(*Me\edit, #PB_EventType_KeyDown, ev_datas)
+            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+            ControlEdit::OnEvent(*Me\edit, Control::#PB_EventType_Draw, ev_datas)
+            StopVectorDrawing()
+        EndSelect
+      EndIf
+      
+     
+;       Select EventType()
+;         Case #PB_EventType_Input
+;           Define key = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Input)
+;           Define modifier = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
+;         
+;           If *Me\edit
+;             If *Me\options & #PB_String_Numeric
+;               If Not Globals::ISNUMERIC(key) : ProcedureReturn : EndIf
+;               *Me\value + Chr(key)
+;               *Me\caret_x = IndexToPosition(*Me, Len(*Me\value))
+;             Else
+;               *Me\value + Chr(key)
+;               *Me\caret_x = IndexToPosition(*Me, Len(*Me\value))
+;             EndIf
+;           EndIf
+;           Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+;             
+;         Case #PB_EventType_KeyDown
+;           Define key = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Key)
+;           Define modifier = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
+;           
+;           Select key
+;             Case #PB_Shortcut_Return
+;               *Me\edit = #False
+;               *Me\active = #False
+;               *Me\caret_l = -1
+;               *Me\caret_r = -1
+;               Time::StopTimer(*Me)
+;               If *Me\value = "" : *Me\value = "0" : EndIf
+;               Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+;               
+;             Case #PB_Shortcut_Back
+;               Define l = Len(*Me\value)
+;               If l > 0 : *Me\value = Left(*Me\value, l-1) : EndIf
+;              *Me\caret_x = IndexToPosition(*Me, Len(*Me\value))
+;              Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+;           EndSelect
+; 
+;       EndSelect
+      
+    Until EventType() = #PB_EventType_LeftClick
+  EndProcedure
+          
   ; ============================================================================
   ;  CONTROL POPUP MODULE IMPLEMENTATION 
   ; ============================================================================
@@ -66,16 +145,7 @@ Module ControlPopup
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont(FontID(Globals::#FONT_DEFAULT))
     
-    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    VectorSourceColor(UIColor::RANDOMIZED)
-    FillPath()
-      
-    ; ---[ Draw Label ]---------------------------------------------------------
-    MovePathCursor(10 + xoff, ty)
-    VectorSourceColor(tc)
-    DrawVectorText( *Me\label )
-    
-    ControlEdit::Draw(*Me\edit,0,0)
+    ControlEdit::Draw(*Me\edit,*Me\posX,*Me\posY)
     
   EndProcedure
   ;}
@@ -270,8 +340,8 @@ Module ControlPopup
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 36
+; CursorPosition = 67
+; FirstLine = 54
 ; Folding = ---
 ; EnableThread
 ; EnableXP

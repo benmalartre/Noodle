@@ -255,7 +255,7 @@ Module InstanceCloud
   ;----------------------------------------------------
   Procedure Setup(*Me.InstanceCloud_t,*pgm.Program::Program_t)
     
-    
+    Debug "INSTANCE CLOUD SETUP..."
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     ; Update Geometry
@@ -295,6 +295,7 @@ Module InstanceCloud
   ; Update
   ;----------------------------------------------------
   Procedure Update(*Me.InstanceCloud_t)
+    Debug "INSTANCE CLOUD UPDATE..."
     If *Me\stack
       PointCloudGeometry::Reset(*Me\geom)
       Stack::Update(*Me\stack)
@@ -303,6 +304,7 @@ Module InstanceCloud
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
       Protected Me.Object3D::IObject3D = *Me
       Me\Setup(*Me\shader)
+      Debug "INSTANCE CLOUD SETUP..."
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
@@ -311,6 +313,7 @@ Module InstanceCloud
         BuildGLData(*Me)
         ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
+        Debug "INSTANCE CLOUD UPDATE..."
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
       EndIf
     EndIf
@@ -352,7 +355,7 @@ Module InstanceCloud
     Else
       glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
     EndIf
-    
+        
     glBindVertexArray(0)
     
   EndIf
@@ -373,8 +376,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 56
+; CursorPosition = 357
+; FirstLine = 317
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

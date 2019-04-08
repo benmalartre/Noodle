@@ -161,9 +161,13 @@ DeclareModule Globals
      Macro SLASH: "/" : EndMacro
     CompilerCase #PB_OS_MacOS
      Macro SLASH: "/" : EndMacro
-  CompilerEndSelect
+ CompilerEndSelect
+ 
+ ; ---[ CHECKS ] --------------------------------------------------------------
+  Macro ISNUMERIC(_key)
+    (1-Bool(_key<>45 And _key<>46 And (_key<48 Or _key>57)))
+  EndMacro
 
-  
   ; ---[ Bits Manipulation]-----------------------------------------------------
   Macro BitRead(_number,_bit)
     Bool((_number>>_bit)& #True)
@@ -320,8 +324,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 21
+; CursorPosition = 169
+; FirstLine = 144
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

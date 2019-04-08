@@ -100,9 +100,11 @@ Module PerlinNode
     *outputArray = NodePort::AcquireOutputData(*output)
     
     CArray::Copy(*outputArray,*positionArray)
-    Protected v.v3f32
+    Protected v.v3f32, *a.v3f32, *b.v3f32
     For i=0 To CArray::GetCount(*positionArray)-1
-      Vector3::Multiply(v, CArray::GetValue(*positionArray,i), CArray::GetValue(*spaceFrequencyArray,0))
+      *a = CArray::GetValue(*positionArray,i)
+      *b = CArray::GetValue(*spaceFrequencyArray,0)
+      Vector3::Multiply(v, *a, *b)
       PerlinNoise::Eval(*node\noise,v , CArray::GetValue(*outputArray,i))
     Next i
   EndProcedure
@@ -141,6 +143,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
+; CursorPosition = 106
+; FirstLine = 82
 ; Folding = --
 ; EnableXP

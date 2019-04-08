@@ -617,7 +617,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
     Case #PB_EventType_Input
       ; ---[ Sanity Check ]---------------------------------------------------
       If Not( *ev_data ):ProcedureReturn : EndIf
-      Debug "INPUT : "+*ev_data\input
       ; ---[ Set Undo ]-------------------------------------------------------
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       ; ---[ Check Strong/Weak Cursor Order ]---------------------------------
@@ -1082,7 +1081,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 427
-; FirstLine = 368
+; CursorPosition = 616
+; FirstLine = 596
 ; Folding = ----
 ; EnableXP

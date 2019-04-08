@@ -28,7 +28,7 @@ Global rootIndex.i
 Global numTopos = 7
 
 Procedure PolygonSoup(numTopos=9)
-  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_GRID)
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_TEAPOT)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   Define *topo = *geom\topo
 ;   PolymeshGeometry::BunnyTopology(*geom)
@@ -204,7 +204,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 61
+; CursorPosition = 30
 ; FirstLine = 25
 ; Folding = -
 ; EnableXP

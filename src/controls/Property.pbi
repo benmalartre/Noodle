@@ -1509,7 +1509,6 @@ EndProcedure
     Protected *son.Control::Control_t
     For i=0 To *Me\chilcount-1
       *son = *Me\children(i)
-      Debug ">>>>>>>>>>>>>>>>>>>>>> "+ *son\name
       If *son\name = name
         ProcedureReturn *son
       EndIf
@@ -1558,14 +1557,6 @@ EndProcedure
   ;   
   ;     If filter = *Me\groups()\GetGadgetID() : *Me\groups()\Event( ev_type ) : EndIf
   ;   Next
-  EndProcedure
-  
-
-  ; ----------------------------------------------------------------------------
-  ;  ON MESSAGE
-  ; ----------------------------------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -2058,7 +2049,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 253
+; CursorPosition = 1843
+; FirstLine = 1793
 ; Folding = ----------
 ; EnableXP

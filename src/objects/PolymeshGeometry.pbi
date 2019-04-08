@@ -58,6 +58,8 @@ DeclareModule PolymeshGeometry
   Declare ExtrudePolygons(*mesh.PolymeshGeometry_t, *polygons.CArray::CArrayLong, distance.f, separate.b)
   Declare.b GetClosestLocation(*mesh.PolymeshGeometry_t, *p.v3f32, *cp.Geometry::Location_t, *distance, maxDistance.f=#F32_MAX)
   Declare ComputeIslands(*mesh.PolymeshGeometry_t)
+  Declare GetPolygonVertices(*Me.PolymeshGeometry_t, polygon.i, *indices.CArray::CArrayLong)
+  Declare GetVertexPolygons(*Me.PolymeshGeometry_t, vertex.i, *indices.CArray::CArrayLong)
   Declare GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
   Declare GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
   Declare ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
@@ -1340,6 +1342,43 @@ Module PolymeshGeometry
   EndProcedure
   
   ;---------------------------------------------------------
+  ; Get Vertex Adjacents
+  ;---------------------------------------------------------
+  Procedure GetVertexAdjacents(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
+    Define *first.Geometry::HalfEdge_t
+    Define *current.Geometry::HalfEdge_t
+
+    CArray::SetCount(*neighbors, 0)
+
+    *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
+    If *first\opposite_he
+      CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+      
+      *current = *first\opposite_he\next_he
+      Define closed.b = #False
+      While Not *first = *current
+        If *current\opposite_he
+          CArray::AppendL(*neighbors, *current\opposite_he\vertex)
+          *current = *current\opposite_he\next_he
+          If *current = *first : closed = #True : EndIf
+        Else
+          *current = *first
+        EndIf
+      Wend
+      
+      If Not closed
+        *current = *first\prev_he\opposite_he
+        While *current
+          CArray::AppendL(*neighbors, *current\vertex)
+          *current = *current\prev_he\opposite_he
+        Wend  
+      EndIf
+    EndIf
+    
+
+  EndProcedure
+  
+  ;---------------------------------------------------------
   ; Get Vertex Neighbors
   ;---------------------------------------------------------
   Procedure GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
@@ -1490,6 +1529,36 @@ Module PolymeshGeometry
     *mesh\nbislands = islandIndex
 
   EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Polygon Vertices
+  ;---------------------------------------------------------
+  Procedure GetPolygonVertices(*Me.PolymeshGeometry_t, polygon.i, *indices.CArray::CArrayLong)
+    Define i,j, accum = 0
+    For i=0 To polygon-1
+      accum + CArray::GetValueL(*Me\a_vertexpolygoncount, i)
+    Next
+    j = CArray::GetValueL(*Me\a_vertexpolygoncount, polygon)
+    CArray::SetCount(*indices, j)
+    For i=0 To j-1
+      CArray::SetValueL(*indices, j, CArray::GetValueL(*Me\a_vertexpolygonindices, accum + i))
+    Next
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Get Vertex Polygons
+  ;---------------------------------------------------------
+  Procedure GetVertexPolygons(*Me.PolymeshGeometry_t, vertex.i, *indices.CArray::CArrayLong)
+    Define i,j, k, accum = 0
+    For i=0 To *Me\nbpolygons-1
+      k = CArray::GetValueL(*Me\a_vertexpolygoncount, i)
+      For j=0 To k-1
+        If CArray::GetValueL(*Me\a_vertexpolygonindices, accum + j ) = vertex : CArray::AppendL(*indices, i) : EndIf
+      Next
+      accum + k
+    Next
+  EndProcedure
+  
   
   ;---------------------------------------------------------
   ; Init Sampling
@@ -2303,7 +2372,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2161
-; FirstLine = 2088
-; Folding = ----P5---v--
+; CursorPosition = 1558
+; FirstLine = 1505
+; Folding = ----P5----0-
 ; EnableXP

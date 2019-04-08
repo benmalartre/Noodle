@@ -172,17 +172,8 @@ Module Object3D
   Procedure Freeze(*obj.Object3D_t)
     If *obj\type = Object3D::#Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
-      Debug "OBJECT : "+*obj\name
-       Debug "OBJECT : "+*obj\class\name
-      Debug "GEOM : "+Str(*geom)
-      Debug "BASE : "+Str(*geom\base)
-      Debug *geom\base\vertices\itemCount
-      Debug "TOPO : "+Str(*geom\topo)
-      Debug *geom\topo\vertices\itemCount
       Topology::Copy(*geom\base,*geom\topo)
-      Debug "COPIED TOPO"
       Stack::Clear(*obj\stack)
-      Debug "CLERED STACK"
     EndIf
    
   EndProcedure
@@ -569,7 +560,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 174
-; FirstLine = 163
+; CursorPosition = 175
+; FirstLine = 157
 ; Folding = -------
 ; EnableXP
