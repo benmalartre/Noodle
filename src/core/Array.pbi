@@ -314,11 +314,12 @@ DeclareModule CArray
   Macro DeleteReferences(_array, _cls, _idx)
     If _array\data 
       Define _i, _ref
+
       For _i=_idx To _array\itemCount-1
         _ref = Carray::GetValuePtr(_array, _i)
         ClearStructure(_ref, _cls)
-        FreeMemory(_ref)
       Next
+    
       If _idx = 0 : _array\data = #Null : EndIf
       _array\itemCount = _idx
     EndIf
@@ -1234,7 +1235,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 303
+; CursorPosition = 321
 ; FirstLine = 285
 ; Folding = ------------
 ; EnableXP

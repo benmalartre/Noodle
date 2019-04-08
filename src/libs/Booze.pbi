@@ -467,25 +467,18 @@ DeclareModule Alembic
   	GetOption(in_Name.p-utf8)
   EndInterface
   
-   ; OArchive
-  Interface OArchive
-    Open.b(fp.p-utf8)
-    Close.b()
-    IsValid.b()
-	EndInterface 
-	
+ 
   ; OObject
   Interface OObject
-    Initialize.b()
-    GetName.l()
-    GetFullName.l()
-    GetType.l()
-    Get.l()
-    GetProperties.l()
-    HasProperty.b(name.p-utf8)
-    GetNumProperties.i()
-    GetProperty.l(index.i)
-  EndInterface
+    Set(*obj)
+	  Get()
+	  GetMetaDataStr()
+	  GetMetaData()
+	  GetCustomData()
+	  GetWriteJob()
+	  Save(time.f)
+	EndInterface
+	
   
   ; OPolymesh
   Interface OPolymesh Extends OObject
@@ -519,6 +512,17 @@ DeclareModule Alembic
   	GetSampleDescription.b(time.f, *infos.ABC_Property_Sample_Infos)
   	GetSample.l(time.f, *infos.ABC_Property_Sample_Infos, *sample.ABC_Property_Sample)
   EndInterface
+  
+  ; OArchive
+  Interface OArchive
+    Open.b(fp.p-utf8)
+    Close.b()
+    IsValid.b()
+    AddObject(parent.OObject, name.p-utf8, type.ABCGeometricType, *ptr)
+    GetTop()
+    GetJob()
+    GetNumObjects()
+	EndInterface 
 
   
   ; Import C Library
@@ -1520,7 +1524,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 473
-; FirstLine = 453
+; CursorPosition = 480
+; FirstLine = 462
 ; Folding = --------
 ; EnableXP

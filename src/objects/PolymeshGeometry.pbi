@@ -60,6 +60,7 @@ DeclareModule PolymeshGeometry
   Declare ComputeIslands(*mesh.PolymeshGeometry_t)
   Declare GetPolygonVertices(*Me.PolymeshGeometry_t, polygon.i, *indices.CArray::CArrayLong)
   Declare GetVertexPolygons(*Me.PolymeshGeometry_t, vertex.i, *indices.CArray::CArrayLong)
+  Declare GetVertexAdjacents(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
   Declare GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
   Declare GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
   Declare ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
@@ -1321,9 +1322,10 @@ Module PolymeshGeometry
     EndIf
     
     Define maxIndex = CArray::GetCount(*mesh\a_halfedges)-1
-;     If index < maxIndex
-;       CArray::DeleteReferences(*mesh\a_halfedges, index)
-;     EndIf
+    If index < maxIndex
+      CArray::DeleteReferences(*mesh\a_halfedges, Geometry::HalfEdge_t, index)
+      Define after.i = CArray::GetCount(*mesh\a_halfedges)
+    EndIf
     
     CArray::SetCount(*mesh\a_vertexhalfedge, CArray::GetCount(*mesh\a_halfedges))
     CArray::FillL(*mesh\a_vertexhalfedge, -1)
@@ -1331,11 +1333,26 @@ Module PolymeshGeometry
     ; create vertex lookup
     For i=0 To CArray::GetCount(*mesh\a_halfedges)-1
       *current = CArray::GetValuePtr(*mesh\a_halfedges, i)
-      index = *current\vertex
-      If CArray::GetValueL(*mesh\a_vertexhalfedge, index) < 0
-        CArray::SetValueL(*mesh\a_vertexhalfedge, index, i)
+      If CArray::GetValueL(*mesh\a_vertexhalfedge, *current\vertex) < 0
+        CArray::SetValueL(*mesh\a_vertexhalfedge, *current\vertex, i)
       EndIf
     Next
+    
+    Define x 
+    Define problematic = 0
+    For x=0 To CArray::GetCount(*mesh\a_halfedges)-1
+      Define *he.Geometry::HalfEdge_t = CArray::GetValuePtr(*mesh\a_halfedges, x)
+      If Not *he\next_he : problematic + 1 : EndIf
+      
+    Next
+    
+    
+    MessageRequester("HALF EDGES", "NUM HALF EDGES : "+Str(CArray::GetCount(*mesh\a_halfedges))+Chr(10)+
+                                   "NUM OPEN EDGES : "+Str(MapSize(*openedges()))+Chr(10)+
+                                   "NUM PROBLEMATICS : "+Str(problematic)+Chr(10)+
+                                   "INDEX : "+Str(index)+" vs MAXINDEX : "+Str(maxIndex)+Chr(10)+
+                                   "AFTER : "+Str(after))
+                                                           
     
     FreeMap(*openedges())
     
@@ -1344,22 +1361,35 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Get Vertex Adjacents
   ;---------------------------------------------------------
-  Procedure GetVertexAdjacents(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
+  Procedure GetVertexAdjacents(*mesh.Geometry::PolymeshGeometry_t, index.i, *adjacents.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-
-    CArray::SetCount(*neighbors, 0)
-
+    Define *secondary.Geometry::HalfEdge_t
+    Define *next.Geometry::HalfEdge_t
+    
+    CArray::SetCount(*adjacents, 0)
+MessageRequester("FCK","TT")
     *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
     If *first\opposite_he
-      CArray::AppendL(*neighbors, *first\opposite_he\vertex)
+      CArray::AppendL(*adjacents, *first\opposite_he\vertex)
       
       *current = *first\opposite_he\next_he
       Define closed.b = #False
       While Not *first = *current
         If *current\opposite_he
-          CArray::AppendL(*neighbors, *current\opposite_he\vertex)
+          
+          CArray::AppendL(*adjacents, *current\opposite_he\vertex)
           *current = *current\opposite_he\next_he
+          *secondary = *current
+          *next = *secondary\next_he
+          While *next <> *secondary
+            If CArray::Find(*adjacents, @*next\vertex)>-1
+              CArray::AppendL(*adjacents, *next\vertex)
+            EndIf
+            
+            *next = *next\next_he
+          Wend  
+          
           If *current = *first : closed = #True : EndIf
         Else
           *current = *first
@@ -1369,7 +1399,7 @@ Module PolymeshGeometry
       If Not closed
         *current = *first\prev_he\opposite_he
         While *current
-          CArray::AppendL(*neighbors, *current\vertex)
+          CArray::AppendL(*adjacents, *current\vertex)
           *current = *current\prev_he\opposite_he
         Wend  
       EndIf
@@ -1384,6 +1414,7 @@ Module PolymeshGeometry
   Procedure GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
+   
 
     CArray::SetCount(*neighbors, 0)
 
@@ -1397,6 +1428,7 @@ Module PolymeshGeometry
         If *current\opposite_he
           CArray::AppendL(*neighbors, *current\opposite_he\vertex)
           *current = *current\opposite_he\next_he
+
           If *current = *first : closed = #True : EndIf
         Else
           *current = *first
@@ -2372,7 +2404,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1558
-; FirstLine = 1505
+; CursorPosition = 1370
+; FirstLine = 1351
 ; Folding = ----P5----0-
 ; EnableXP

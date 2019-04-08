@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../objects/Geometry.pbi"
 
 DeclareModule Verlet
-  #DEFAULT_DAMPING =  -0.0125
+  #DEFAULT_DAMPING =  -0.0
   #KsStruct = 50.75
   #KdStruct = -0.25
   #KsShear = 50.75
@@ -69,7 +69,7 @@ Module Verlet
     Define i, x, y
     Define *cur.Geometry::HalfEdge_t, *nxt.Geometry::HalfEdge_t
     For i=0 To CArray::GetCount(*geom\a_halfedges)-1
-      *cur = CArray::getValuePtr(*geom\a_halfedges, i)
+      *cur = CArray::GetValuePtr(*geom\a_halfedges, i)
       *nxt = *cur\next_he
       x = *cur\vertex
       y = *nxt\vertex
@@ -103,8 +103,9 @@ Module Verlet
     NewMap unique_edges()
     Define edgeKey.s
     For i=0 To numVertices - 1
+      If i > 128 :Continue : EndIf
       ; get first ring vertices
-      PolymeshGeometry::GetVertexNeighbors(*geom, i, *neighbors)
+      PolymeshGeometry::GetVertexAdjacents(*geom, i, *neighbors)
       
       For j=0 To Carray::GetCount(*neighbors)-1
         a = i
@@ -124,19 +125,21 @@ Module Verlet
       
 ;       ; get secondary ring vertices
 ;       For j=0 To CArray::GetCount(*neighbors)-1
-;         a = i
-;         PolymeshGeometry::GetVertexNeighbors(*geom, CArray::GetValueL(*neighbors, j), *secondary)
+; 
+;         PolymeshGeometry::GetVertexAdjacents(*geom, CArray::GetValueL(*neighbors, j), *secondary)
 ;         For k=0 To CArray::GetCount(*secondary)-1
+;           a = i
+;           If a = k : Continue : EndIf
 ;           b = CArray::GetValueL(*secondary, k)
-;           If InFirstRing(*geom, b, *neighbors)
+;           If Not InFirstRing(*geom, b, *neighbors)
 ;             If b < a : Define t = a : a = b : b = t : EndIf
 ;             edgeKey = Str(a)+","+Str(b)
-;             If Not FindMapElement(unique_edges(), edgeKey)
+; ;             If Not FindMapElement(unique_edges(), edgeKey)
 ;     
 ;               Define *spring.Spring_t = AddSpring(*Me,a,b,#KsBend,#KdBend,#BEND_SPRING)
 ;               AddMapElement(unique_edges(), edgeKey)
 ;               unique_edges() = *spring
-;             EndIf
+; ;             EndIf
 ;           EndIf
 ;           
 ;         Next
@@ -202,7 +205,7 @@ Module Verlet
       Next
       
       Define *line.Drawer::Line_t = Drawer::AddColoredLines(*drawer, *positions, *colors)
-      Drawer::SetSize(*line, 4)
+      Drawer::SetSize(*line, 2)
   ;     Color::Set(color,0.35,0.9,0.35,1.0)
   ;     Drawer::SetColor(*line, color)
   
@@ -410,7 +413,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 73
+; CursorPosition = 145
+; FirstLine = 92
 ; Folding = ---
 ; EnableXP

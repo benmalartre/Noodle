@@ -78,9 +78,9 @@ Globals::Init()
   Global *root.Model::Model_t = Model::New("Model")
   
 
-  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_NONE)
+  *mesh = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  Topology::Grid(*geom\topo, 10,64,64)
+  Topology::Grid(*geom\topo, 10,16,16)
   PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
   
   Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
@@ -114,7 +114,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 18
+; CursorPosition = 82
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
