@@ -527,7 +527,6 @@ Module Scene
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
   Procedure Update(*scn.Scene_t)
-    Debug "################  SCENE UPDATE STARTED ########################"
     If Not *scn : ProcedureReturn : EndIf
 ;     If *scn\dirty
       Protected i
@@ -546,7 +545,6 @@ Module Scene
       
       *scn\dirty = #False
       ;     EndIf
-      Debug "################  SCENE UPDATE STOPED ########################"
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -828,7 +826,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 180
+; CursorPosition = 547
+; FirstLine = 503
 ; Folding = -------
 ; EnableXP

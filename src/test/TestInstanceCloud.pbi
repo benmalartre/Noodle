@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 241
-; FirstLine = 205
+; CursorPosition = 102
+; FirstLine = 88
 ; Folding = --
 ; EnableXP
 ; Executable = Test

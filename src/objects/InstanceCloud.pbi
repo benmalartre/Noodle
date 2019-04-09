@@ -133,7 +133,6 @@ Module InstanceCloud
   ; Build GL Data
   ;----------------------------------------------------
   Procedure  BuildGLData(*Me.InstanceCloud_t)
-    
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     Protected sts.i = GetShapeDataSize(*Me)
@@ -174,13 +173,18 @@ Module InstanceCloud
       glBufferSubData(#GL_ARRAY_BUFFER,offset,st1,CArray::GetPtr(*geom\a_size,0))
       offset + st1
       
-      ; Create Element Array Buffer
-      glGenBuffers(1,@*Me\eab)
-      glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-      glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
-                   CArray::GetCount(*Me\shape\indices)* SizeOf(l),
-                   CArray::GetPtr(*Me\shape\indices,0),
-                   #GL_DYNAMIC_DRAW)
+      If *Me\shape\indexed
+        ; Create\Reuse Element Array Buffer
+        If Not *Me\eab
+          glGenBuffers(1,@*Me\eab)
+        EndIf        
+        glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+        glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
+                     CArray::GetCount(*Me\shape\indices)* SizeOf(l),
+                     CArray::GetPtr(*Me\shape\indices,0),
+                     #GL_DYNAMIC_DRAW)
+      EndIf
+      
       
       ; Shape Datas
       CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -338,18 +342,7 @@ Module InstanceCloud
     glPointSize(12)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-;     Protected msg.s
-;     Protected *v.v3f32
-;     For i=0 To *geom\nbpoints-1
-;       Debug i
-;       *v = CArray::GetValue(*geom\a_positions,i)
-;       
-;       msg + StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\y)+","+Chr(10)
-;     Next
-    
-    ;glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,0)
-    ;glDisableClientState(#GL_ELEMENT_ARRAY_BUFFER)
-    ;glDrawElementsInstanced(	#GL_TRIANGLES,*Me\shape\nbt*3,#GL_UNSIGNED_INT,CArray::GetPtr(*Me\shape\indices, 0),*geom\nbpoints)
+
     If *Me\shape\indexed
       glDrawElementsInstanced(#GL_TRIANGLES,CArray::GetCount(*Me\shape\indices),#GL_UNSIGNED_INT,0,*geom\nbpoints)
     Else
@@ -376,8 +369,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 357
-; FirstLine = 317
+; CursorPosition = 177
+; FirstLine = 148
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

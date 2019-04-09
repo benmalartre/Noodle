@@ -16,7 +16,7 @@ void main(){
 	outColor = vec4(inColor*0.1+vec3(0.666,0.666,0.666),a);
 	*/
 	vec3 nn = normalize((inNorm+1)/2);
-	gl_FragColor = vec4(inColor,1.0);// * vec4(nn,1);
+	gl_FragColor = vec4(1.0,0.0,0.0,1.0);//vec4(inColor,1.0);// * vec4(nn,1);
 	//outColor = vec4(texture(tex,inUVWs.xz).xyz,1.0) * vec4(inColor,1.0);
 	//outColor = vec4(inColor,1.0);
 	//outColor = vec4(texture(tex,inUVWs.xz).xyz,1.0);//vec4(inUVWs,1.0);//*d;//vec4(inColor,1.0)* vec4((inNorm+1)/2,1);
