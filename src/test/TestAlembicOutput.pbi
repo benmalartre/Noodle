@@ -79,8 +79,8 @@ CompilerIf #USE_SSE
   Memory::ShiftAlign(*geom\a_positions\data, *geom\nbpoints, 12, 16)
 CompilerElse
   obj0\Set2(*geom\a_positions\data, *geom\nbpoints, *geom\a_faceindices\data, *geom\a_facecount\data, *geom\nbpolygons)
-  obj1\Set2(*geom\a_positions\data, *geom\nbpoints, *geom\a_faceindices\data, *geom\a_facecount\data, *geom\nbpolygons)
-  obj2\Set2(*geom\a_positions\data, *geom\nbpoints, *geom\a_faceindices\data, *geom\a_facecount\data, *geom\nbpolygons)
+  
+  
 CompilerEndIf
 
 job\Save(0)
@@ -93,6 +93,6 @@ Alembic::deleteWriteJob(job)
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 82
-; FirstLine = 33
+; FirstLine = 32
 ; Folding = -
 ; EnableXP
