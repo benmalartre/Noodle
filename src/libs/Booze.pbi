@@ -202,7 +202,7 @@ DeclareModule Alembic
   ;----------------------------------------
   Structure ABC_Object_Infos
     *name
-    type.i
+    type.l
     *obj
   EndStructure
   
@@ -219,11 +219,11 @@ DeclareModule Alembic
   ;Polymesh Topology Sample
   ;-----------------------------------------
   Structure ABC_Polymesh_Topo_Sample_Infos
-    nbpoints.i
-    nbfacecount.i
-    nbindices.i
-    nbsamples.i
-    sampleindex.i
+    nbpoints.l
+    nbfacecount.l
+    nbindices.l
+    nbsamples.l
+    sampleindex.l
     
     hasvelocity.b
   	hasnormal.b
@@ -251,7 +251,7 @@ DeclareModule Alembic
   EndStructure
   
   Structure ABC_Envelope_Sample
-    nbdeformers.i
+    nbdeformers.l
     *indices
     *weights 
   EndStructure
@@ -260,7 +260,7 @@ DeclareModule Alembic
   ;Polymesh Sample
   ;-----------------------------------------
   Structure ABC_Polymesh_Sample_Infos
-    nbpoints.i
+    nbpoints.l
     hasvelocity.b
   	sampleindex.i
   EndStructure
@@ -274,8 +274,8 @@ DeclareModule Alembic
   ;Points Sample
   ;-----------------------------------------
   Structure ABC_PointCloud_Sample_Infos
-    nbpoints.i
-    sampleindex.i
+    nbpoints.l
+    sampleindex.l
     b_velocity.b
 	  b_size.b
 	  b_orientation.b
@@ -297,9 +297,9 @@ DeclareModule Alembic
   ; Curves Sample
   ;-----------------------------------------
   Structure ABC_Curves_Sample_Infos
-    nbpoints.i
-    nbcurves.b
-    sampleindex.i
+    nbpoints.l
+    nbcurves.l
+    sampleindex.l
     hasWidth.b
     hasUVs.b
     hasNormals.b
@@ -407,6 +407,7 @@ DeclareModule Alembic
 	  GetEndTime.d()
 	  GetNumTimeSampling.i()
 	  GetMaxNumSamplesForTimeSamplingIndex.l(index.l)
+
 	EndInterface 
 	
   ; IObject
@@ -456,7 +457,7 @@ DeclareModule Alembic
   EndInterface
   
   ; AlembicWriteJob
-  Interface IWriteJob
+  Interface OWriteJob
     GetArchive()
 	  GetFrames()
   	SetFileName(filename.p-utf8)
@@ -466,23 +467,30 @@ DeclareModule Alembic
   	SetOption(in_Name.p-utf8, in_Value.p-utf8)
   	HasOption(in_Name.p-utf8)
   	GetOption(in_Name.p-utf8)
+  	Save(time.f)
   EndInterface
   
   ; OObject
   Interface OObject
-	  Get()
-	  GetMetaDataStr()
 	  GetMetaData()
 	  GetCustomData()
-	  GetWriteJob()
+	  GetArchive()
+	  Save(time.f)
+	  AddChild(*child)
+	EndInterface
+	
+	; OXform
+  Interface OXform
+	  SetTransform(*m.Math::m4f32)
+	  GetTransform()
 	  Save(time.f)
 	EndInterface
 	
   ; OPolymesh
   Interface OPolymesh Extends OObject
-;     Set(*positions, numVertices.i, *faceIndices=#Null, *faceCount=#Null, numFaces.i)
-    SetPositions(*positions, numVertices.i)
-    SetDescription(*faceIndices, *faceCount, numFaces.i)
+    Set2(*positions, numVertices.l, *faceIndices=#Null, *faceCount=#Null, numFaces.l=0)
+    SetPositions(*positions, numVertices.l)
+    SetDescription(*faceIndices, *faceCount, numFaces.l)
   EndInterface
   
   ; OPoints
@@ -517,12 +525,13 @@ DeclareModule Alembic
     IsValid.b()
     AddObject(parent.OObject, name.p-utf8, type.ABCGeometricType, *ptr)
     Get()
-    GetTop()
+    GetRoot()
     GetJob()
     GetNumObjects()
+    GetObjectByIndex(index)
+    GetObjectByName(name.p-utf8)
 	EndInterface 
 
-  
   ; Import C Library
   ;-------------------------------------------------------
   If FileSize("../../libs")=-2
@@ -564,7 +573,7 @@ DeclareModule Alembic
   
   
   PrototypeC    ABCNEWWRITEJOB(filename.p-utf8, *frames, numFrames.i)
-  PrototypeC    ABCDELETEWRITEJOB(job.IWriteJob)
+  PrototypeC    ABCDELETEWRITEJOB(job.OWriteJob)
   
   
   ; import functions
@@ -658,10 +667,8 @@ Module Alembic
       archive\Open(filename)
       Define identifier.s
       Define numIdentifiers = archive\GetNumIdentifiers()
-      Debug "NUM IDENTIFIERS : "+Str(numIdentifiers)
       For i=0 To numIdentifiers-1
         identifier = PeekS(archive\GetIdentifier(i), -1, #PB_UTF8)
-        Debug "IDENTIFIER : "+identifier
         If identifier <> "/"
           Define iObject.IObject = AddIObject(archive, i)
         EndIf
@@ -1544,7 +1551,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1265
-; FirstLine = 1248
+; CursorPosition = 492
+; FirstLine = 480
 ; Folding = --------
 ; EnableXP
