@@ -24,7 +24,7 @@ DeclareModule Alembic
   Global.s ALEMBIC_VERSION
   Macro ABCGeometricType : l : EndMacro
   Enumeration
-    #ABC_OBJECT_UNKNOWN = 0
+    #ABC_OBJECT_ROOT = 0
     #ABC_OBJECT_XFORM
     #ABC_OBJECT_POINTS
     #ABC_OBJECT_CURVE
@@ -458,36 +458,40 @@ DeclareModule Alembic
   
   ; AlembicWriteJob
   Interface OWriteJob
+    GetTimeSampling()
     GetArchive()
 	  GetFrames()
   	SetFileName(filename.p-utf8)
   	GetFileName()
-  	GetAnimatedTs()
   	SetFrameRate(framerate.f)
   	SetOption(in_Name.p-utf8, in_Value.p-utf8)
   	HasOption(in_Name.p-utf8)
   	GetOption(in_Name.p-utf8)
   	Save(time.f)
   EndInterface
-  
+ 
   ; OObject
   Interface OObject
+    Delete()
 	  GetMetaData()
 	  GetCustomData()
+	  Get()
+	  GetPtr()
 	  GetArchive()
+	  GetTimeSampling()
+	  GetJob()
 	  Save(time.f)
 	  AddChild(*child)
 	EndInterface
-	
+
 	; OXform
-  Interface OXform
+  Interface OXform Extends OObject
 	  SetTransform(*m.Math::m4f32)
 	  GetTransform()
-	  Save(time.f)
 	EndInterface
 	
   ; OPolymesh
-  Interface OPolymesh Extends OObject
+	Interface OPolymesh Extends OObject
     Set2(*positions, numVertices.l, *faceIndices=#Null, *faceCount=#Null, numFaces.l=0)
     SetPositions(*positions, numVertices.l)
     SetDescription(*faceIndices, *faceCount, numFaces.l)
@@ -712,8 +716,8 @@ Module Alembic
         Debug Chr(9)+"OBJECT TYPE : CURVE"
       Case #ABC_OBJECT_FACESET
         Debug Chr(9)+"OBJECT TYPE : FACESET"
-      Case #ABC_OBJECT_UNKNOWN
-        Debug Chr(9)+"OBJECT TYPE : UNKNOWN"
+      Case #ABC_OBJECT_ROOT
+        Debug Chr(9)+"OBJECT TYPE : ROOT"
     EndSelect
     
     Define numProperties = object\GetNumProperties()
@@ -1551,7 +1555,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 492
-; FirstLine = 480
+; CursorPosition = 470
+; FirstLine = 443
 ; Folding = --------
 ; EnableXP

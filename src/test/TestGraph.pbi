@@ -160,7 +160,7 @@ ViewportUI::AddLayer(*viewport, *layer)
 Scene::Setup(Scene::*current_scene,*app\context)
 ViewManager::OnEvent(*app\manager, Globals::#EVENT_NEW_SCENE)
 ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
-Controls::SetTheme(UIColor::#DARK_THEME)
+Controls::SetTheme(UIColor::#LIGHT_THEME)
 
 Scene::SelectObject(Scene::*current_scene, *teapot)
 ViewportUI::SetHandleTarget(*viewport, *teapot)
