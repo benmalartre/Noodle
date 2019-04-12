@@ -172,7 +172,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_None,256)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_None,0)
 ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
 ;     *abc = Alembic::LoadABCArchive(path)
@@ -198,12 +198,12 @@ Procedure Draw(*app.Application::Application_t)
 ;     EndIf
 ;   Next
 ;   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TEAPOT)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
-  Define startP.v3f32, endP.v3f32
-  Vector3::Set(startP, -10,0,0)
-  Vector3::Set(endP, 10,0,0)
+;   Define startP.v3f32, endP.v3f32
+;   Vector3::Set(startP, -10,0,0)
+;   Vector3::Set(endP, 10,0,0)
 ;   PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
 ;   Define *T.Transform::Transform_t = *mesh\localT
 ;   Define pos.v3f32
@@ -264,8 +264,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 88
+; CursorPosition = 200
+; FirstLine = 181
 ; Folding = --
 ; EnableXP
 ; Executable = Test

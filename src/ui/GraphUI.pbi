@@ -1247,23 +1247,25 @@ Module GraphUI
 
           ;Wheel Event
           Case #PB_EventType_MouseWheel
-;             Protected dx.i = (*Me\mouseX - *Me\canvasX)
-;             Protected dy.i = (*Me\mouseY - *Me\canvasY)
-;             Protected ox.i = dx * *Me\zoom
-;             Protected oy.i = dy * *Me\zoom
-        
+
+       
+            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+            TranslateCoordinates(*Me\canvasX, *Me\canvasY)
+            ScaleCoordinates(*Me\zoom, *Me\zoom)
+            Define ox.d = ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
+            Define oy.d = ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
             Protected wheel.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
-            *Me\zoom + wheel*0.01
+            
+            *Me\zoom + wheel * (*Me\zoom * 250 / 1000)
             Clamp(*Me\zoom,0.01,2.5)
-            If *Me\zoom > 0.01 And *Me\zoom < 2.5
             
-              Protected nx.i = dx * *Me\zoom
-              Protected ny.i = dy * *Me\zoom
-             
-              *Me\canvasX + (ox - nx) / *Me\zoom
-              *Me\canvasY + (oy - ny) / *Me\zoom
-            EndIf
+            ScaleCoordinates(*Me\zoom, *Me\zoom)
+            Define nx.d = ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
+            Define ny.d = ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
+            StopVectorDrawing()
             
+            *Me\canvasX + (nx - ox) * *Me\zoom
+            *Me\canvasY + (ny - oy) * *Me\zoom
 
             *Me\redraw = #True
 
@@ -1600,7 +1602,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1228
-; FirstLine = 1213
+; CursorPosition = 1268
+; FirstLine = 1250
 ; Folding = --------
 ; EnableXP

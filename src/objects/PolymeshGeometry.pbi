@@ -1017,6 +1017,9 @@ Module PolymeshGeometry
   
     Topology::Extrusion(*geom\topo,*points,*section,#False)
     Set2(*geom,*geom\topo)
+    Define color.c4f32
+    Color::Randomize(color)
+    SetColors(*geom, colo)
     GetUVWSFromExtrusion(*geom,*points,*section)
   
   EndProcedure
@@ -2404,7 +2407,7 @@ MessageRequester("FCK","TT")
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1370
-; FirstLine = 1351
+; CursorPosition = 1050
+; FirstLine = 1010
 ; Folding = ----P5----0-
 ; EnableXP

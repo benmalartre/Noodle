@@ -375,6 +375,14 @@ DeclareModule Alembic
   Structure ABC_Write_Job
   EndStructure
   
+  Interface ITimeSampling
+    Get()                                   
+	  GetPtr()
+	  NumStoredTimes.l()
+	  GetStoredTimes()
+  EndInterface
+  
+  
   ;-----------------------------------------
   ; CPP Interfaces Objects
   ;-----------------------------------------
@@ -492,15 +500,15 @@ DeclareModule Alembic
 	
   ; OPolymesh
 	Interface OPolymesh Extends OObject
-    Set2(*positions, numVertices.l, *faceIndices=#Null, *faceCount=#Null, numFaces.l=0)
+    Set(*positions, numVertices.l, *faceIndices=#Null, *faceCount=#Null, numFaces.l=0)
     SetPositions(*positions, numVertices.l)
     SetDescription(*faceIndices, *faceCount, numFaces.l)
   EndInterface
   
   ; OPoints
   Interface OPoints Extends OObject
-    GetSampleDescription.l(time.f, *infos.ABC_Polymesh_Topo_Sample_Infos)
-    UpdateSample.l(*infos.ABC_Polymesh_Topo_Sample_Infos, *sample.ABC_Polymesh_Topo_Sample)
+    Set(*positions, *ids, numIndices.l)
+	  SetPositions(*positions, numPoints.l)
   EndInterface
   
   ; OCurves
@@ -565,6 +573,9 @@ DeclareModule Alembic
   PrototypeC    ABCNEWARCHIVEMANAGER()
   PrototypeC    ABCDELETEARCHIVEMANAGER(manager.IArchiveManager)
   
+  PrototypeC    ABCNEWTIMESAMPLING(frameRate.f=24, startFrame.f=0)
+  PrototypeC    ABCDELETETIMESAMPLING(sampling.ITimeSampling)
+  
   PrototypeC    ABCNEWIARCHIVE()
   PrototypeC    ABCDELETEIARCHIVE(arc.IArchive)
   PrototypeC    ABCNEWIOBJECT(arch.IArchive, index.i)
@@ -587,6 +598,9 @@ DeclareModule Alembic
     
     Global newIArchiveManager.ABCNEWARCHIVEMANAGER = GetFunction(alembic_lib, "newArchiveManager")
     Global deleteIArchiveManager.ABCDELETEARCHIVEMANAGER = GetFunction(alembic_lib, "deleteArchiveManager")
+    
+    Global newTimeSampling.ABCNEWTIMESAMPLING= GetFunction(alembic_lib, "newTimeSampling")
+    Global deleteTimeSampling.ABCDELETETIMESAMPLING = GetFunction(alembic_lib, "deleteTimeSampling")
     
     Global newIArchive.ABCNEWIARCHIVE = GetFunction(alembic_lib, "newIArchive")
     Global deleteIArchive.ABCDELETEIARCHIVE = GetFunction(alembic_lib, "deleteIArchive")
@@ -1555,7 +1569,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 470
-; FirstLine = 443
+; CursorPosition = 223
+; FirstLine = 220
 ; Folding = --------
 ; EnableXP

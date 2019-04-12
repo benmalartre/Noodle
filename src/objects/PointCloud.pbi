@@ -20,7 +20,7 @@ DeclareModule PointCloud
   Interface IPointCloud Extends Object3D::IObject3D
   EndInterface
   
-  Declare New(name.s,shape.i)
+  Declare New(name.s,numPoints.i)
   Declare Delete(*Me.PointCloud_t)
   Declare Setup(*Me.PointCloud_t,*shader.Program::Program_t)
   ;Declare SetProgram(*Me.PointCloud_t,*shader.Program::Program_t)
@@ -49,13 +49,13 @@ Module PointCloud
 
   ; Constructor
   ;----------------------------------------------------
-  Procedure New(name.s,shape.i)
+  Procedure New(name.s,numPoints.i)
     Protected *Me.PointCloud_t = AllocateMemory(SizeOf(PointCloud_t))
     InitializeStructure(*Me,PointCloud_t)
     *Me\name = name
     *Me\type = Object3D::#PointCloud
     Object::INI(PointCloud)
-    *Me\geom = PointCloudGeometry::New(*Me,shape)
+    *Me\geom = PointCloudGeometry::New(*Me,numPoints)
     *Me\visible = #True
     *Me\stack = Stack::New()
     *Me\pointsize = 2
@@ -387,7 +387,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 55
+; CursorPosition = 22
+; FirstLine = 16
 ; Folding = ---
 ; EnableXP

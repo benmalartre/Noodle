@@ -301,7 +301,7 @@ Module PointCloudGeometry
       Vector3::Cross(t,n,c)
       CArray::Append(*p\a_tangents,t)
 
-      CArray::AppendL(*p\a_indices,*p\incrementID)
+      CArray::AppendI(*p\a_indices,*p\incrementID)
       
       ;Set Color
       r = Random(255)/255
@@ -374,7 +374,7 @@ Module PointCloudGeometry
     *Me\a_normals = CArray::newCArrayV3F32()
     *Me\a_tangents = CArray::newCArrayV3F32()
     *Me\a_color = CArray::newCArrayC4F32()
-    *Me\a_indices = CArray::newCArrayLong()
+    *Me\a_indices = CArray::newCArrayInt()
     *Me\a_scale = CArray::newCArrayV3F32()
     *Me\a_size = CArray::newCArrayFloat()
     *Me\a_uvws = CArray::newCArrayV3F32()
@@ -398,7 +398,7 @@ Module PointCloudGeometry
   Class::DEF( PointCloudGeometry )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 318
-; FirstLine = 277
+; CursorPosition = 386
+; FirstLine = 339
 ; Folding = ---
 ; EnableXP

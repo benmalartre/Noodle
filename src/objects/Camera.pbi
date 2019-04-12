@@ -239,7 +239,7 @@ Module Camera
     Protected dist.v3f32
     
     Vector3::Sub(dist,*Me\pos,*Me\lookat)
-    Protected d.f = Vector3::Length(dist)
+    Protected d.f = Vector3::Length(dist)*Radian(*Me\fov)*0.5
     delta\x = -deltax/(width/2)*d
     delta\y = deltay/(height/2)*d
     delta\z = 0
@@ -495,8 +495,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 87
+; CursorPosition = 241
+; FirstLine = 231
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

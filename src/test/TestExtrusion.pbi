@@ -29,6 +29,9 @@ Procedure Draw(*app.Application::Application_t)
 EndProcedure
 
 Define nbp = 12
+Define nbe = 256
+Define rs = 4
+
 width = 800
 height = 600
 
@@ -58,36 +61,49 @@ If Time::Init()
   
   Global *root.Model::Model_t = Model::New("Model")
   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("EX", Shape::#SHAPE_NONE)
-    
-  Define *points.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
-  CArray::SetCount(*points, nbp)
-  Define *m.Math::m4f32
-  Define p.Math::v3f32
-  Define i
-  For i=0 To nbp-1
-    *m = CArray::GetValue(*points, i)
-    Matrix4::SetIdentity(*m)
-    Vector3::Set(p, Math::Random_Neg1_1(), i*3, Math::Random_Neg1_1())
-    Matrix4::SetTranslation(*m, p)
-  Next
+  
   
   Define *section.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
   Utils::BuildCircleSection(*section, 12)
+      
+  Define *points.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   
-  PolymeshGeometry::Extrusion(*mesh\geom, *points, *section)
+  Define *m.Math::m4f32
+  Define p.Math::v3f32
+  Define i, j
+  Define.f bx,bz
+  For j=0 To nbe-1
+    *mesh.Polymesh::Polymesh_t = Polymesh::New("EX"+Str(j), Shape::#SHAPE_NONE)
+    
+    Define _nbp = nbp+(Random(2*rs)-rs)
+    CArray::SetCount(*points, _nbp)
+    bx = Math::Random_Neg1_1()*32
+    bz = Math::Random_Neg1_1()*32
+    For i=0 To _nbp-1
+      *m = CArray::GetValue(*points, i)
+      Matrix4::SetIdentity(*m)
+      Vector3::Set(p, Math::Random_Neg1_1()+bx, i*3, Math::Random_Neg1_1()+bz)
+      Matrix4::SetTranslation(*m, p)
+    Next
+    
+    PolymeshGeometry::Extrusion(*mesh\geom, *points, *section)
   
   Object3D::Freeze(*mesh)
   
   Object3D::AddChild(*root,*mesh)
+  Next
+  
+
+  
+  
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
 
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 87
-; FirstLine = 52
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 80
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

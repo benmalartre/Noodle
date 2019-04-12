@@ -349,7 +349,7 @@ DeclareModule Geometry
     *a_color.CArray::CArrayC4F32
     *a_scale.CArray::CArrayV3F32
     *a_size.CArray::CArrayFloat
-    *a_indices.CArray::CArrayLong
+    *a_indices.CArray::CArrayInt
     *a_uvws.CArray::CArrayV3F32
    
   EndStructure
@@ -639,7 +639,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 337
+; CursorPosition = 351
 ; FirstLine = 313
 ; Folding = -----
 ; EnableXP

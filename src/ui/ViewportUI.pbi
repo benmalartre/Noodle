@@ -179,9 +179,7 @@ Module ViewportUI
         If Scene::*current_scene\selection\selected()
           Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
         EndIf
-        MessageRequester("SUCK", "MY DICK")
-        
-        
+    
       Case #PB_Event_SizeWindow
         width = *top\width
         height = *top\height
@@ -731,7 +729,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 175
+; CursorPosition = 181
+; FirstLine = 160
 ; Folding = -----
 ; EnableXP
