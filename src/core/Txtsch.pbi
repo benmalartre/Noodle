@@ -3,10 +3,9 @@
 DeclareModule Txtsch
   #MAX_THREADS = 64
   Structure Hit_t
-    gID.i               ; global ID    (in file)
-    lID.i               ; line ID      (in file)
-    cID.i               ; character ID (in line)
-    line.s              ; content of the line
+    lineID.i
+    charID.i
+    line.s
   EndStructure
   
   Structure File_t
@@ -26,7 +25,7 @@ DeclareModule Txtsch
     token.s
     mode.i
   EndStructure
-  
+
   Declare FilesFromFolder(*search.Search_t, folder.s, pattern.s="*.*", recurse.b=#False)
   Declare SearchOneFile(*file.File_t, token.s, mode.i=0)
   Declare Search(*file.File_t, token.s, mode.i=0)
@@ -35,6 +34,9 @@ DeclareModule Txtsch
 EndDeclareModule
 
 Module Txtsch
+  Procedure.b CheckOnePattern(file.s, pattern.s)
+    ProcedureReturn Bool(FindString(file, pattern) > 0)
+  EndProcedure
   
   Procedure.b CheckPattern(file.s, patterns.s)
     Define numTickets, numSeparators.i = CountString(patterns, ";")
@@ -43,17 +45,13 @@ Module Txtsch
     Else
       numTickets = numSeparators + 1
     EndIf
+    
     Define pattern.s
     Define i
     For i=0 To numTickets-1
       pattern = StringField(patterns, i+1,";")
-      Define regex.i = CreateRegularExpression(#PB_Any, pattern)
-      If regex
-        If MatchRegularExpression(regex, file)
-          FreeRegularExpression(regex)
-          ProcedureReturn #True
-        EndIf
-        FreeRegularExpression(regex)
+      If CheckOnePattern(file, pattern)
+        ProcedureReturn #True
       EndIf
       
     Next
@@ -77,8 +75,8 @@ Module Txtsch
     ProcedureReturn numHits
   EndProcedure
   
-  Procedure GetNumLines(*file.File_t, *datas)
-    Define *buffer.Byte = *datas
+  Procedure GetNumLines(*file.File_t)
+    Define *buffer.Byte = AllocateMemory(Lof(*file\file))
     ReadData(*file\file, *buffer, Lof(*file\file))
     Define numLines.i = 0
     While *buffer\b <> 0
@@ -87,9 +85,13 @@ Module Txtsch
       EndIf
       *buffer+1
     Wend
+    FreeMemory(*buffer)  
+    Debug "NUM LINES : "+Str(numLines)
     ProcedureReturn numLines
   EndProcedure
   
+ 
+    
   Procedure FilesFromFolder(*search.Search_t, path.s, pattern.s="*.*", recurse.b=#False)
     Define.i Id
     Id = ExamineDirectory(#PB_Any, path, "*.*")
@@ -117,12 +119,11 @@ Module Txtsch
   EndProcedure
   
   Procedure SearchOneFile(*file.File_t, token.s, mode.i=0)
-    
     If FileSize(*file\folder+"/"+*file\name)>0
       *file\file = ReadFile(#PB_Any, *file\folder+"/"+*file\name)
   
       Define line.s, lid.i = 0
-      Define i.i, c.c, cid=0, gid = 0
+      Define i.i, c.c, sid.i=0, cid.i = 0, gid = 0
 
       If *file\file
         Define length = Lof(*file\file)         
@@ -134,7 +135,7 @@ Module Txtsch
         
         ; split up the token string into a character array
         Define nc = Len(token)
-        Dim tokens.c(nc)
+        Dim tokens.c(Len(token))
         For i=0 To nc-1
           tokens(i) = Asc(Mid(token, i+1, 1))
         Next
@@ -148,9 +149,8 @@ Module Txtsch
               cid = FindString(line, token)
               If cid
                 AddElement(*file\hits())
-                *file\hits()\lID = lid
-                *file\hits()\cID = cid
-                *file\hits()\gID = 666
+                *file\hits()\lineID = lid
+                *file\hits()\charID = cid
                 *file\hits()\line = line
               EndIf
               lid + 1
@@ -161,29 +161,25 @@ Module Txtsch
             FileSeek(*file\file, 0)
             While Not gid = (length-1)
               c = PeekA(*datas + gid)
-              gid + 1
-              cid + 1
-              
               If c = 10                 ; new line 
                 lid + 1
-                sid = 0
                 cid = 0
+                sid = 0
               ElseIf c = tokens(sid)    ; we've got a match
                 sid + 1
+                cid + 1
               Else                      ; else reset counter
                 sid = 0
+                cid + 1
               EndIf
               If sid = nc-1             ; we've found our complete token
                 AddElement(*file\hits())
-                *file\hits()\lID = lid
-                *file\hits()\gID = gid - nc
-                *file\hits()\cID = cid - nc
-                *file\hits()\line = GetOneLine(*file, gid - sid )
+                *file\hits()\lineID = lid
+                *file\hits()\charID = cid - nc
+                *file\hits()\line = GetOneLine(*file, gid - (cid-1) )
                 FileSeek(*file\file, gid)
-                sid = 0
-                lid + 1
               EndIf
-              
+              gid + 1
             Wend  
             
           Case 2
@@ -214,7 +210,7 @@ Module Txtsch
     While ListSize(*queue())
       
       
-      If currentThread = #MAX_THREADS - 1 : currentThread = 0 : EndIf
+      If currentThread >= #MAX_THREADS  : currentThread = 0 : EndIf
       
       For i = currentThread To #MAX_THREADS - 1
         If Not IsThread(threads(i))
@@ -225,10 +221,24 @@ Module Txtsch
       
           threads(i) = CreateThread(@SearchOneFileThread(), *datas)
           DeleteElement(*queue())
+          currentThread = i+1
           Break
         EndIf
       Next
     Wend
+    
+    ; wait threads to finish
+    Define working.i
+    
+    Repeat
+      working = 0
+      For i=0 To #MAX_THREADS-1
+        If IsThread(threads(i))
+          working + 1
+        EndIf
+      Next
+    Until Not working 
+      
   EndProcedure
   
   
@@ -244,10 +254,9 @@ EndModule
 
 
 ; TEST CODE
-Define folder.s = "E:/Projects/RnD/Alembic/booze"
-Define pattern.s = ".h;.cpp"
-Define token.s =  "BOOZE_TYPE"
-Define numHitsThreaded.i = 0
+Define folder.s = "E:/Projects/RnD/Alembic"
+Define pattern.s = ".h"
+Define token.s =  "BOOZE_"
 
 Define search.Txtsch::Search_t
 InitializeStructure(search, Txtsch::Search_t)
@@ -256,7 +265,7 @@ Txtsch::FilesFromFolder(search, folder, pattern, #True)
 Define searchThreaded.Txtsch::Search_t
 InitializeStructure(searchThreaded, Txtsch::Search_t)
 Txtsch::FilesFromFolder(searchThreaded, folder, pattern, #True)
-Define numFiles = ListSize(searchThreaded\files())
+
 ; Define file.Txtsch::File_t
 ; InitializeStructure(file, Txtsch::File_t)
 ; file\folder = "E:/Projects/RnD/Alembic/booze"
@@ -275,28 +284,29 @@ Txtsch::ThreadSearch(searchThreaded, token, mode)
 Define E2.q = ElapsedMilliseconds()
 Define numHitsThreaded = Txtsch::GetNumHits(searchThreaded)
 
-; Define numHits = 0
-; ForEach search\files()
-;   If ListSize(search\files()\hits())
-;     With search\files()
-;       ForEach \hits()
-;         AddGadgetItem(gadget,-1, "LINE : "+Str(\hits()\lineID)+": "+\hits()\line+" IN "+\folder+"/"+\name)
-;         numHits + 1
-;       Next
-;     EndWith
-;     
-;   EndIf
-; Next
+Define file = CreateFile(#PB_Any, "E:/Projects/RnD/test/search"+Str(mode)+".log")
+Define numHits = 0
+ForEach search\files()
+  If ListSize(search\files()\hits())
+    With search\files()
+      ForEach \hits()
+        ;AddGadgetItem(gadget,-1, )
+        WriteStringN(file, \hits()\line+" IN "+\folder+"/"+\name+" : LINE "+Str(\hits()\lineID))
+        numHits + 1
+      Next
+    EndWith
+    
+  EndIf
+Next
 
 
 MessageRequester("SEARCH", "SINGLE THREAD : "+StrD((E1-T1)*0.001)+" : "+Str(numHits)+Chr(10)+Chr(10)+
-                           "MULTI THREAD  : "+StrD((E2-T2)*0.001)+" : "+Str(numHitsThreaded)+Chr(10)+
-                           "NUM FILES : "+Str(numFiles))
+                           "MULTI THREAD  : "+StrD((E2-T2)*0.001)+" : "+Str(numHitsThreaded))
 
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 183
-; FirstLine = 128
+; CursorPosition = 275
+; FirstLine = 213
 ; Folding = ---
 ; EnableXP
