@@ -12,6 +12,8 @@ DeclareModule Txtsch
     file.i
     name.s
     folder.s
+    *buffer
+    bytes.i
     List hits.Hit_t()
   EndStructure
   
@@ -75,23 +77,22 @@ Module Txtsch
     ProcedureReturn numHits
   EndProcedure
   
+  Procedure GetBuffer(*file.File_t)
+    
+  EndProcedure
+  
   Procedure GetNumLines(*file.File_t)
-    Define *buffer.Byte = AllocateMemory(Lof(*file\file))
-    ReadData(*file\file, *buffer, Lof(*file\file))
     Define numLines.i = 0
+    Define *buffer.Byte = *file\buffer
     While *buffer\b <> 0
       If *buffer\b = 10
         numLines+1
       EndIf
       *buffer+1
     Wend
-    FreeMemory(*buffer)  
-    Debug "NUM LINES : "+Str(numLines)
     ProcedureReturn numLines
   EndProcedure
-  
- 
-    
+
   Procedure FilesFromFolder(*search.Search_t, path.s, pattern.s="*.*", recurse.b=#False)
     Define.i Id
     Id = ExamineDirectory(#PB_Any, path, "*.*")
@@ -130,8 +131,8 @@ Module Txtsch
         If Not length : ProcedureReturn : EndIf
         
         ; acquire file in memory
-        Define *datas = AllocateMemory(length)    
-        Define bytes = ReadData(*file\file, *datas, length) 
+        *file\buffer = AllocateMemory(length)    
+        *file\bytes = ReadData(*file\file, *file\buffer, length) 
         
         ; split up the token string into a character array
         Define nc = Len(token)
@@ -160,7 +161,7 @@ Module Txtsch
           Case 1
             FileSeek(*file\file, 0)
             While Not gid = (length-1)
-              c = PeekA(*datas + gid)
+              c = PeekA(*file\buffer + gid)
               If c = 10                 ; new line 
                 lid + 1
                 cid = 0
@@ -188,8 +189,9 @@ Module Txtsch
         
         ; clean up
         CloseFile(*file\file)
+        FreeMemory(*file\buffer)
         FreeArray(tokens())
-        FreeMemory(*datas)
+
       EndIf
     EndIf
     
@@ -252,9 +254,8 @@ Module Txtsch
 EndModule
 
 
-
 ; TEST CODE
-Define folder.s = "E:/Projects/RnD/Alembic"
+Define folder.s = "E:/Projects/RnD/Alembic/booze"
 Define pattern.s = ".h"
 Define token.s =  "BOOZE_"
 
@@ -285,14 +286,11 @@ Define E2.q = ElapsedMilliseconds()
 Define numHitsThreaded = Txtsch::GetNumHits(searchThreaded)
 
 Define file = CreateFile(#PB_Any, "E:/Projects/RnD/test/search"+Str(mode)+".log")
-Define numHits = 0
 ForEach search\files()
   If ListSize(search\files()\hits())
     With search\files()
       ForEach \hits()
-        ;AddGadgetItem(gadget,-1, )
         WriteStringN(file, \hits()\line+" IN "+\folder+"/"+\name+" : LINE "+Str(\hits()\lineID))
-        numHits + 1
       Next
     EndWith
     
@@ -306,7 +304,7 @@ MessageRequester("SEARCH", "SINGLE THREAD : "+StrD((E1-T1)*0.001)+" : "+Str(numH
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 275
-; FirstLine = 213
+; CursorPosition = 255
+; FirstLine = 222
 ; Folding = ---
 ; EnableXP
