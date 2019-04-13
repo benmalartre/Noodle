@@ -1,5 +1,7 @@
 ﻿EnableExplicit
-
+;========================================================================================
+; Txtsch Module Declaration  ( search text in file content )
+;========================================================================================
 DeclareModule Txtsch
   #MAX_THREADS = 64
   Structure Hit_t
@@ -35,6 +37,9 @@ DeclareModule Txtsch
   Declare GetNumHits(*search.Search_t)
 EndDeclareModule
 
+;========================================================================================
+; Txtsch Module Implementation
+;========================================================================================
 Module Txtsch
   Procedure.b CheckOnePattern(file.s, pattern.s)
     ProcedureReturn Bool(FindString(file, pattern) > 0)
@@ -255,9 +260,9 @@ EndModule
 
 
 ; TEST CODE
-Define folder.s = "E:/Projects/RnD/Alembic/booze"
-Define pattern.s = ".h"
-Define token.s =  "BOOZE_"
+Define folder.s = "E:\Projects\RnD\Alembic\booze\PureBasic";"C:\Program Files\Autodesk\Maya2018"
+Define pattern.s = ".h;.cpp"
+Define token.s =  "BOOZE"
 
 Define search.Txtsch::Search_t
 InitializeStructure(search, Txtsch::Search_t)
@@ -304,7 +309,7 @@ MessageRequester("SEARCH", "SINGLE THREAD : "+StrD((E1-T1)*0.001)+" : "+Str(numH
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 222
+; CursorPosition = 264
+; FirstLine = 252
 ; Folding = ---
 ; EnableXP

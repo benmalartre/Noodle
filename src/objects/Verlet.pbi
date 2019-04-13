@@ -103,7 +103,6 @@ Module Verlet
     NewMap unique_edges()
     Define edgeKey.s
     For i=0 To numVertices - 1
-      If i > 128 :Continue : EndIf
       ; get first ring vertices
       PolymeshGeometry::GetVertexAdjacents(*geom, i, *neighbors)
       
@@ -123,27 +122,27 @@ Module Verlet
         EndIf
       Next
       
-;       ; get secondary ring vertices
-;       For j=0 To CArray::GetCount(*neighbors)-1
-; 
-;         PolymeshGeometry::GetVertexAdjacents(*geom, CArray::GetValueL(*neighbors, j), *secondary)
-;         For k=0 To CArray::GetCount(*secondary)-1
-;           a = i
-;           If a = k : Continue : EndIf
-;           b = CArray::GetValueL(*secondary, k)
-;           If Not InFirstRing(*geom, b, *neighbors)
-;             If b < a : Define t = a : a = b : b = t : EndIf
-;             edgeKey = Str(a)+","+Str(b)
-; ;             If Not FindMapElement(unique_edges(), edgeKey)
-;     
-;               Define *spring.Spring_t = AddSpring(*Me,a,b,#KsBend,#KdBend,#BEND_SPRING)
-;               AddMapElement(unique_edges(), edgeKey)
-;               unique_edges() = *spring
-; ;             EndIf
-;           EndIf
-;           
-;         Next
-;       Next
+      ; get secondary ring vertices
+      For j=0 To CArray::GetCount(*neighbors)-1
+
+        PolymeshGeometry::GetVertexAdjacents(*geom, CArray::GetValueL(*neighbors, j), *secondary)
+        For k=0 To CArray::GetCount(*secondary)-1
+          a = i
+          If a = k : Continue : EndIf
+          b = CArray::GetValueL(*secondary, k)
+          If Not InFirstRing(*geom, b, *neighbors)
+            If b < a : Define t = a : a = b : b = t : EndIf
+            edgeKey = Str(a)+","+Str(b)
+;             If Not FindMapElement(unique_edges(), edgeKey)
+    
+              Define *spring.Spring_t = AddSpring(*Me,a,b,#KsBend,#KdBend,#BEND_SPRING)
+              AddMapElement(unique_edges(), edgeKey)
+              unique_edges() = *spring
+;             EndIf
+          EndIf
+          
+        Next
+      Next
 
     Next
     CArray::Delete(*neighbors)  
@@ -413,7 +412,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 92
+; CursorPosition = 138
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP

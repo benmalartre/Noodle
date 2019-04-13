@@ -39,16 +39,28 @@ Procedure Draw(*app.Application::Application_t)
   ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
   
-  ViewportUI::Draw(*viewport, *app\context)
-
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  CompilerIf #USE_GLFW
+    Application::Draw(*app, *layer)
+    FTGL::BeginDraw(*app\context\writer)
+    FTGL::SetColor(*app\context\writer,1,1,1,1)
+    Define ss.f = 0.85/width
+    Define ratio.f = width / height
+    FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+    FTGL::EndDraw(*app\context\writer)
+  CompilerElse
+    
+    ViewportUI::Draw(*viewport, *app\context)
   
-  ViewportUI::FlipBuffer(*viewport)
+    FTGL::BeginDraw(*app\context\writer)
+    FTGL::SetColor(*app\context\writer,1,1,1,1)
+    Define ss.f = 0.85/width
+    Define ratio.f = width / height
+    FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+    FTGL::EndDraw(*app\context\writer)
+    
+    ViewportUI::FlipBuffer(*viewport)
+  CompilerEndIf
+    
 
  EndProcedure
  
@@ -68,12 +80,13 @@ Globals::Init()
      
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  Else
+    GLContext::Setup(*app\context)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -82,6 +95,11 @@ Globals::Init()
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   Topology::Grid(*geom\topo, 10,16,16)
   PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
+  
+  If Not #USE_GLFW
+    ViewportUI::SetHandleTarget(*viewport, *mesh)
+    ViewportUI::AddLayer(*viewport, *layer)
+  EndIf
   
   Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
   Object3D::UpdateTransform(*mesh)
@@ -105,7 +123,7 @@ Globals::Init()
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
-  ViewportUI::SetHandleTarget(*viewport, *mesh)
+ 
   Application::Loop(*app, @Draw())
 
 
@@ -114,7 +132,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 49
+; CursorPosition = 83
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

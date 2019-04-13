@@ -199,6 +199,7 @@ CompilerEndIf
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*app.Application_t)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -364,13 +365,13 @@ CompilerIf #USE_GLFW
      If *app\idle
        ; Camera Events
         Select *app\idle
-          Case #TOOL_PAN
+          Case Globals::#TOOL_PAN
             Camera::Pan(*c,deltax,deltay,w,h)
     
-          Case #TOOL_DOLLY
+          Case Globals::#TOOL_DOLLY
             Camera::Dolly(*c,deltax,deltay,w,h)
               
-          Case #TOOL_ORBIT
+          Case Globals::#TOOL_ORBIT
             Camera::Orbit(*c,deltax,deltay,w,h)
         EndSelect
       EndIf
@@ -413,12 +414,12 @@ CompilerIf #USE_GLFW
             
           EndSelect
           *app\down = #True
-          *app\idle = #TOOL_CAMERA
+          *app\idle = Globals::#TOOL_CAMERA
           glfwGetCursorPos(*window,@*app\mouseX,@*app\mouseY)
-          If *app\idle = #TOOL_CAMERA
-            If *app\lmb_p : *app\idle = #Tool_Pan
-            ElseIf *app\mmb_p :*app\idle = #Tool_Dolly
-            ElseIf *app\rmb_p : *app\idle = #Tool_Orbit
+          If *app\idle = Globals::#TOOL_CAMERA
+            If *app\lmb_p : *app\idle = Globals::#Tool_Pan
+            ElseIf *app\mmb_p :*app\idle = Globals::#Tool_Dolly
+            ElseIf *app\rmb_p : *app\idle = Globals::#Tool_Orbit
             EndIf
             
 ;           ElseIf *app\tool = #Tool_Translate Or *app\tool = #Tool_Rotate Or *app\tool = #Tool_Scale
@@ -439,8 +440,8 @@ CompilerIf #USE_GLFW
           *app\mmb_p = #False
           *app\rmb_p = #False
           *app\down = #False
-          If *app\idle = #Tool_Pan Or *app\idle = #Tool_Dolly Or *app\idle = #Tool_Orbit 
-            *app\idle = #Tool_Camera
+          If *app\idle = Globals::#Tool_Pan Or *app\idle = Globals::#Tool_Dolly Or *app\idle = Globals::#Tool_Orbit 
+            *app\idle = Globals::#Tool_Camera
           EndIf
     EndSelect
    
@@ -631,11 +632,45 @@ CompilerEndIf
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Draw
+  ;------------------------------------------------------------------
+  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t)
+
+    Dim shaderNames.s(3)
+    shaderNames(0) = "wireframe"
+    shaderNames(1) = "polymesh"
+    shaderNames(2) = "normal"
+    Define i
+    Define *pgm.Program::Program_t
+    For i=0 To 2
+      *pgm = *Me\context\shaders(shaderNames(i))
+      glUseProgram(*pgm\pgm)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+    Next
+    
+    Protected ilayer.Layer::ILayer = *layer
+    ilayer\Draw(*ctx)
+    If *Me\tool
+      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
+      glUseProgram(*wireframe\pgm)
+
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+      
+      ;Handle::Draw( *Me\handle,*ctx) 
+    EndIf
+    
+  EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 562
-; FirstLine = 557
+; CursorPosition = 257
+; FirstLine = 235
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

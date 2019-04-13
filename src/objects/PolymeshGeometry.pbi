@@ -1371,7 +1371,6 @@ Module PolymeshGeometry
     Define *next.Geometry::HalfEdge_t
     
     CArray::SetCount(*adjacents, 0)
-MessageRequester("FCK","TT")
     *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
     If *first\opposite_he
       CArray::AppendL(*adjacents, *first\opposite_he\vertex)
@@ -2407,7 +2406,7 @@ MessageRequester("FCK","TT")
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1050
-; FirstLine = 1010
+; CursorPosition = 1372
+; FirstLine = 1349
 ; Folding = ----P5----0-
 ; EnableXP
