@@ -86,7 +86,7 @@ Module AudioDACNode
     STK::SetEnvelopeScalar(*envelope, STK::#ENV_RELEASE_TIME, 0.1)
     
     STK::GeneratorStreamStart(*stream)
-    Debug   " GENERATOR STREAM STARTED..."
+    Debug " GENERATOR STREAM STARTED..."
   EndProcedure
   
   Procedure Evaluate(*node.AudioDACNode_t)
@@ -135,7 +135,7 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 88
-; FirstLine = 66
+; CursorPosition = 82
+; FirstLine = 74
 ; Folding = --
 ; EnableXP
