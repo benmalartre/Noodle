@@ -29,15 +29,15 @@ DeclareModule Layer
     width.i
     height.i
   
-    *context.GLContext_t
-    color.c4f32
-    background_color.c4f32
+    *context.GLContext::GLContext_t
+    color.Math::c4f32
+    background_color.Math::c4f32
     active.b
     fixed.b
     mask.l
     
-    *items.CArrayPtr
-    
+    *items.CArray::CArrayPtr
+    *dependencies.CArray::CArrayPtr
     image.i
   EndStructure
   
@@ -96,7 +96,10 @@ DeclareModule Layer
   Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
- 
+  
+  Declare AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
+  Declare RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
+  
   Declare GetImage(*layer.Layer::Layer_t, path.s)
    ; ============================================================================
   ;  MACROS ( Layer )
@@ -119,7 +122,7 @@ Module Layer
   UseModule OpenGLExt
   Procedure Init(*layer.Layer_t)
     *layer\shader = #Null
-;     *layer\tree = #Null
+    ;*layer\tree = #Null
   EndProcedure
   
   ;---------------------------------------------------
@@ -690,6 +693,29 @@ Module Layer
     SaveImage(*layer\image,path)
   EndProcedure
   
+  ;------------------------------------------------------------------
+  ; Layer Dependencies (ie shadow map)
+  ;------------------------------------------------------------------
+  Procedure AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
+    Define i
+    For i=0 To CArray::GetCount(*layer\dependencies)-1
+      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
+        ProcedureReturn
+      EndIf
+    Next
+    CArray::AppendPtr(*layer\dependencies, *dependency)
+  EndProcedure
+  
+  Procedure RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
+    Define i
+    For i = 0 To CArray::GetCount(*layer\dependencies)-1
+      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
+        CArray::Remove(*layer\dependencies, i)
+        ProcedureReturn
+      EndIf
+    Next
+  EndProcedure
+  
   Procedure Delete()
     
   EndProcedure
@@ -699,7 +725,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 463
-; FirstLine = 459
+; CursorPosition = 717
+; FirstLine = 666
 ; Folding = -----
 ; EnableXP

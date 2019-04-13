@@ -82,6 +82,7 @@ Globals::Init()
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
+    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
@@ -132,7 +133,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 36
+; CursorPosition = 109
+; FirstLine = 68
 ; Folding = -
 ; EnableXP

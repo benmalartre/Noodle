@@ -157,7 +157,10 @@ Procedure Draw(*app.Application::Application_t)
   *ssao = LayerSSAO::New(width,height,*app\context,*gbuffer\buffer,*app\camera)
   *blur = LayerBlur::New(width,height,*app\context,*ssao\buffer,*app\camera)
   
-  ViewportUI::AddLayer(*viewport, *default)
+  If Not #USE_GLFW
+    ViewportUI::AddLayer(*viewport, *default)
+  EndIf
+  
 ;   
 ;   Debug "Size "+Str(*app\width)+","+Str(*app\height)
 ;   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -198,7 +201,7 @@ Procedure Draw(*app.Application::Application_t)
 ;     EndIf
 ;   Next
 ;   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TEAPOT)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
 ;   Define startP.v3f32, endP.v3f32
@@ -264,8 +267,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 181
+; CursorPosition = 203
+; FirstLine = 171
 ; Folding = --
 ; EnableXP
 ; Executable = Test

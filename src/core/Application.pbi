@@ -653,7 +653,7 @@ CompilerEndIf
     Next
     
     Protected ilayer.Layer::ILayer = *layer
-    ilayer\Draw(*ctx)
+    ilayer\Draw(*Me\context)
     If *Me\tool
       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
@@ -669,8 +669,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 257
-; FirstLine = 235
+; CursorPosition = 655
+; FirstLine = 612
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL
