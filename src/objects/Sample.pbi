@@ -20,28 +20,26 @@ Module Sample
   UseModule Geometry
   
   ; Destuctor
-  ;------------------------------------------------------------------
+  ;--------------------------------------------------------------------------------------
   Procedure Delete(*Me.Sample_t)    
     ClearStructure(*Me,Sample_t)
     
     FreeMemory(*Me)
   EndProcedure
   
-  
   ;  Constructor
-  ;---------------------------------------------
-  ;{
+  ;--------------------------------------------------------------------------------------
   Procedure.i New(index.i)
-    ; ---[ Allocate Memory ]----------------------------------------------------
+    ; ---[ Allocate Memory ]-------------------------------------------------------------
     Protected *Me.Sample_t = AllocateMemory(SizeOf(Sample_t))
     InitializeStructure(*Me,Sample_t)
     *Me\id = index
     ProcedureReturn *Me
   EndProcedure
+  
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 32
-; FirstLine = 7
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 38
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

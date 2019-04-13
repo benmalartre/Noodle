@@ -4,6 +4,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "Object3D.pbi"
+XIncludeFile "CameraGeometry.pbi"
 
 DeclareModule Camera
   UseModule Math
@@ -88,8 +89,9 @@ Module Camera
         Object::INI(Camera)
         
     *Me\cameratype = type
-    *Me\type = Object3D::#Object3D_Camera
+    *Me\type = Object3D::#Camera
     *Me\name = name
+    *Me\geom = CameraGeometry::New(*Me)
     
     Select *Me\cameratype
       Case #Camera_Perspective
@@ -132,17 +134,17 @@ Module Camera
       
   EndSelect
   
-    Protected *position = Attribute::New("Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#False,#True)
+    Protected *position = Attribute::New("Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#True,#False,#True)
     Object3D::AddAttribute(*Me,*position)
-    Protected *lookat = Attribute::New("LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#False,#True)
+    Protected *lookat = Attribute::New("LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#True,#False,#True)
     Object3D::AddAttribute(*Me,*lookat)
-    Protected *up = Attribute::New("UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#False,#True)
+    Protected *up = Attribute::New("UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#True,#False,#True)
     Object3D::AddAttribute(*Me,*up)
-    Protected *fov = Attribute::New("FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#False,#True)
+    Protected *fov = Attribute::New("FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#True,#False,#True)
     Object3D::AddAttribute(*Me,*fov)
-    Protected *near = Attribute::New("nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#False,#True)
+    Protected *near = Attribute::New("nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*near)
-    Protected *far = Attribute::New("farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#False,#True)
+    Protected *far = Attribute::New("farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*far)
     
     ProcedureReturn *Me
@@ -237,7 +239,7 @@ Module Camera
     Protected dist.v3f32
     
     Vector3::Sub(dist,*Me\pos,*Me\lookat)
-    Protected d.f = Vector3::Length(dist)
+    Protected d.f = Vector3::Length(dist)*Radian(*Me\fov)*0.5
     delta\x = -deltax/(width/2)*d
     delta\y = deltay/(height/2)*d
     delta\z = 0
@@ -492,9 +494,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 185
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 241
+; FirstLine = 231
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

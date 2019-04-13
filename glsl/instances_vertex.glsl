@@ -55,13 +55,14 @@ out vec3 inUVWs;
 out vec3 inNorm;
 
 void main(){
-	
+	/*
 	if(selected ==1)
 		//inColor = vec3(gl_InstanceID%10*0.1+0.2,0.0,0.0);
 		inColor = color.xyz;
 	else 	
 		inColor = color.xyz;
-
+	*/
+	inColor = vec3(gl_InstanceID%10*0.1,1-gl_InstanceID%10*0.1,0.5);
 	mat4 rot = directionFromTwoVectors(normal,tangent);
 	vec4 sshape = vec4(s_pos*scale*size,1.0)*rot;
 	vec4 rshape = vec4(position+sshape.xyz,1.0);

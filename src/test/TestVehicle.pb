@@ -82,7 +82,7 @@ Procedure Ground(*scene.Scene::Scene_t,*shader.Program::Program_t)
   Object3D::Freeze(*ground)
   *ground\deformdirty = #True
   PolymeshGeometry::SetColors(*mesh)
-  PolymeshGeometry::RecomputeNormals(*mesh,1.0)
+  PolymeshGeometry::ComputeNormals(*mesh,1.0)
   
   
   Scene::AddChild(*scene,*ground)
@@ -277,7 +277,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   Scene::Update(Scene::*current_scene)
-  Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Object3D_Polymesh)
+  Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
 ;   Polymesh::Draw(*teapot)
 ;   Polymesh::Draw(*ground)
@@ -328,9 +328,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
      *app\context = GLContext::New(0,#False,*viewport\gadgetID)
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -374,7 +373,7 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 148
+; CursorPosition = 332
+; FirstLine = 314
 ; Folding = --
 ; EnableXP

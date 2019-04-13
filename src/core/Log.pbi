@@ -19,7 +19,7 @@ DeclareModule Log
   EndStructure
   
   Global *LOGMACHINE.LogMachine_t
-  
+  Global.b INITIALIZED
   Declare Init()
   Declare Term()
   Declare Message(msg.s,severity.i=#LOG_INFOS)
@@ -35,7 +35,7 @@ Module Log
       *LOGMACHINE = AllocateMemory(SizeOf(LogMachine_t))
       InitializeStructure(*LOGMACHINE,LogMachine_t)
     EndIf
-    
+    INITIALIZED = #True
   EndProcedure
   
   Procedure Term()
@@ -43,10 +43,11 @@ Module Log
       ClearStructure(*LOGMACHINE,LogMachine_t)
       FreeMemory(*LOGMACHINE)
     EndIf
-    
+    INITIALIZED = #False
   EndProcedure
   
   Procedure Message(msg.s, severity.i=#LOG_INFOS)
+    If Not INITIALIZED : ProcedureReturn : EndIf
     If ListSize(*LOGMACHINE\msgs()) >= #MAX_MESSAGE
       FirstElement(*LOGMACHINE\msgs())
       DeleteElement(*LOGMACHINE\msgs())
@@ -61,8 +62,8 @@ Module Log
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 5
+; CursorPosition = 49
+; FirstLine = 4
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

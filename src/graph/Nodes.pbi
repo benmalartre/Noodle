@@ -58,8 +58,6 @@ Module Nodes
   EndProcedure
 EndModule
 
-
-
 ;----------------------------------------------------------------------------
 ; Nodes
 ;----------------------------------------------------------------------------
@@ -84,11 +82,15 @@ CompilerEndIf
   XIncludeFile "TimeNode.pbi"
   
   ; Arrays
+  XIncludeFile "SelectInArrayNode.pbi"
   XIncludeFile "BuildArrayNode.pbi"
   XIncludeFile "BuildArrayFromConstantNode.pbi"
   XIncludeFile "BuildIndexArrayNode.pbi"
   XIncludeFile "ArraySubIndicesNode.pbi"
   XIncludeFile "MatrixArrayNode.pbi"
+  XIncludeFile "ArraySizeNode.pbi"
+  XIncludeFile "ArrayMinimumNode.pbi"
+  XIncludeFile "ArrayMaximumNode.pbi"
   
   ; Utils
   XIncludeFile "IfNode.pbi"
@@ -112,6 +114,7 @@ CompilerEndIf
   XIncludeFile "LinearInterpolateNode.pbi"
   XIncludeFile "Vector3ToFloatNode.pbi"
   XIncludeFile "SRTToMatrixNode.pbi"
+  XIncludeFile "MatrixToSRTNode.pbi"
   XIncludeFile "AxisAngleToRotationNode.pbi"
   
   ; Operators
@@ -124,14 +127,21 @@ CompilerEndIf
   XIncludeFile "SampleGeometryNode.pbi"
   
   ; Audio
+  XIncludeFile "AudioNode.pbi"
   XIncludeFile "AudioDACNode.pbi"
+  XIncludeFile "AudioArythmeticNode.pbi"
   XIncludeFile "AudioGeneratorNode.pbi"
-  
+  XIncludeFile "AudioReaderNode.pbi"
+  XIncludeFile "AudioNoiseNode.pbi"
+  XIncludeFile "AudioSineWaveNode.pbi"
+  XIncludeFile "AudioEffectNode.pbi"
+
   ; Topology
   XIncludeFile "SimpleTopoNode.pbi"
   XIncludeFile "TransformTopoNode.pbi"
   XIncludeFile "MergeTopoNode.pbi"
   XIncludeFile "MergeTopoArrayNode.pbi"  
+  XIncludeFile "ExtrusionNode.pbi"  
   
   ; Alembic
   CompilerIf #USE_ALEMBIC 
@@ -143,9 +153,9 @@ CompilerEndIf
   
 ;   
   IncludePath "../"
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 127
-; FirstLine = 109
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 139
+; FirstLine = 89
 ; Folding = --
 ; EnableThread
 ; EnableXP

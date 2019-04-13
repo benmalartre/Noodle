@@ -1,8 +1,9 @@
 ﻿XIncludeFile "Object.pbi"
+XIncludeFile "Signal.pbi"
 
-; -----------------------------------------
-; Control Module Declaration
-; -----------------------------------------
+; ==============================================================================
+;  CONTROL MODULE DECLARATION
+; ==============================================================================
 DeclareModule Control
   ; ---[ Event Types ]---------------------
   Enumeration
@@ -28,9 +29,13 @@ DeclareModule Control
     #ICON
     #RADIO
     #COMBO
+    #ENUM
     #LABEL
+    #SLIDER
     #DIVOT
     #EDIT
+    #POPUP
+    #INPUT
     #NUMBER
     #GROUP
     #COLORWHEEL
@@ -61,11 +66,10 @@ DeclareModule Control
   
   
   ; ----------------------------------------------------------------------------
-  ;  CControl Instance
+  ;   Control Instance
   ; ----------------------------------------------------------------------------
   Structure Control_t  Extends Object::Object_t
     *parent    .Control_t
-    *object    .Object::Object_t
     type       .i
     name       .s
     gadgetID   .i
@@ -73,20 +77,31 @@ DeclareModule Control
     posY       .i
     sizX       .i
     sizY       .i
+    percX      .i
+    percY      .i
+    fixedX     .i
+    fixedY     .i
     visible    .i
     enable     .i
     options    .i
     state      .i
+    *on_change .Signal::Signal_t 
   EndStructure
   
   ; ----------------------------------------------------------------------------
-  ;  CControl Interface
+  ;   Control Interface
   ; ----------------------------------------------------------------------------
-  ; ---[ Overided in Extension Classes ]-----------------------
   Interface IControl
     OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
+    Pick(*Me.Control_t, mx, my)
+    
   EndInterface
+  
+  Declare Delete(*Me.Control_t)
+  Declare Draw(*Me.Control_t)
+  Declare DrawPickImage(*Me.Control_t, id.i)
+  Declare Pick(*Me.Control_t, mx, my)
   
   Declare GetGadgetID(*Me.Control_t)
   Declare GetType(*Me.Control_t)
@@ -101,13 +116,41 @@ DeclareModule Control
   Declare Focused( *Me.Control_t )
   Declare DeFocused( *Me.Control_t )
   Declare SetCursor( *Me.Control_t, cursor_id.i )
+  
 EndDeclareModule
 
-; ============================================================================
+; ==============================================================================
 ;  CONTROL MODULE IMPLEMENTATION
-; ============================================================================
+; ==============================================================================
 Module Control
   
+  ; ---[ Generic Draw Routine ]--------------------------------------------------
+  Procedure Draw(*Me.Control_t)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::RANDOMIZED)
+    FillPath()
+  EndProcedure
+  
+  ; ---[ Generic Draw Pick Image ]-----------------------------------------------
+  Procedure DrawPickImage(*Me.Control_t, id.i)
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(RGBA(id, 0,0,255))
+    FillPath()
+  EndProcedure
+  
+  ; ---[ Generic Pick Image ]----------------------------------------------------
+  Procedure Pick(*Me.Control_t, mx, my)
+    If mx > *Me\posX And mx<*Me\posX + *Me\sizX And my > *Me\posY And my <*Me\posY + *Me\sizY
+      ProcedureReturn #True
+    EndIf
+    ProcedureReturn #False
+  EndProcedure
+  
+  ; ---[ Delete ]---------------------------------------------------------------
+  Procedure Delete(*Me.Control_t)
+    Object::TERM(Control)
+  EndProcedure
+
   ; ---[ GetGadgetID ]----------------------------------------------------------
   Procedure.i GetGadgetID( *Me.Control_t )
     
@@ -275,7 +318,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 34
-; Folding = H5--
+; CursorPosition = 54
+; FirstLine = 54
+; Folding = -B+-
 ; EnableXP
 ; EnableUnicode

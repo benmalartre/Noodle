@@ -64,7 +64,7 @@ Module LengthNode
    
     Protected v.v3f32, *v.v3f32
     Protected *vIn.CArray::CArrayV3F32,*fOut.CArray::CArrayFloat
-    *vOut = *output\value
+    *vOut = NodePort::AcquireOutputData(*output)
     *vIn = NodePort::AcquireInputData(*node\inputs())
     CArray::SetCount(*vOut,CArray::GetCount(*vIn))
     
@@ -111,8 +111,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 58
+; CursorPosition = 61
+; FirstLine = 40
 ; Folding = --
 ; EnableThread
 ; EnableXP

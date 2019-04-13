@@ -5,58 +5,17 @@ XIncludeFile "../core/Control.pbi"
 ;  CONTROL CHECK MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlCheck
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  
-  Global s_gui_controls_light_check_disabled_checked     .i
-  Global s_gui_controls_light_check_disabled_unchecked   .i
-  Global s_gui_controls_light_check_disabled_undetermined.i
-  Global s_gui_controls_light_check_normal_checked       .i
-  Global s_gui_controls_light_check_normal_unchecked     .i
-  Global s_gui_controls_light_check_normal_undetermined  .i
-  Global s_gui_controls_light_check_over_checked         .i
-  Global s_gui_controls_light_check_over_unchecked       .i
-  Global s_gui_controls_light_check_over_undetermined    .i
-  
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  Global s_gui_controls_dark_check_disabled_checked     .i
-  Global s_gui_controls_dark_check_disabled_unchecked   .i
-  Global s_gui_controls_dark_check_disabled_undetermined.i
-  Global s_gui_controls_dark_check_normal_checked       .i
-  Global s_gui_controls_dark_check_normal_unchecked     .i
-  Global s_gui_controls_dark_check_normal_undetermined  .i
-  Global s_gui_controls_dark_check_over_checked         .i
-  Global s_gui_controls_dark_check_over_unchecked       .i
-  Global s_gui_controls_dark_check_over_undetermined    .i
-  
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-  Global s_gui_controls_check_disabled_checked     .i
-  Global s_gui_controls_check_disabled_unchecked   .i
-  Global s_gui_controls_check_disabled_undetermined.i
-  Global s_gui_controls_check_normal_checked       .i
-  Global s_gui_controls_check_normal_unchecked     .i
-  Global s_gui_controls_check_normal_undetermined  .i
-  Global s_gui_controls_check_over_checked         .i
-  Global s_gui_controls_check_over_unchecked       .i
-  Global s_gui_controls_check_over_undetermined    .i
-
-  
+  #CHECK_WIDTH = 16
+  #CHECK_MARGIN = 2
+  #CHECK_STROKE_WIDTH = 2
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlCheck_t )
   ; ----------------------------------------------------------------------------
   Structure ControlCheck_t Extends Control::Control_t
-  label.s
-  value.i
-  over .i
-  down.i
+    label.s
+    value.i
+    over .i
+    down.i
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -68,14 +27,12 @@ DeclareModule ControlCheck
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Declare New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
   Declare Delete(*Me.ControlCheck_t)
+  Declare Draw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCheck_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  Declare SetTheme( theme.i)
   Declare SetValue( *Me.ControlCheck_t, value.i )
   Declare GetValue( *Me.ControlCheck_t)
-  Declare.b Init()
-  Declare.b Term()
   
   ; ----------------------------------------------------------------------------
   ;  Datas 
@@ -84,54 +41,14 @@ DeclareModule ControlCheck
     ControlCheckVT: 
     Data.i @OnEvent()
     Data.i @Delete()
-    ; Images
-    ; (Light)
-    VIControlCheck_light_disabled_checked:      
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.disabled.checked.png"
-    VIControlCheck_light_disabled_unchecked:    
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.disabled.unchecked.png"
-    VIControlCheck_light_disabled_undetermined: 
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.disabled.undetermined.png"
-    VIControlCheck_light_normal_checked:        
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.normal.checked.png"
-    VIControlCheck_light_normal_unchecked:      
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.normal.unchecked.png"
-    VIControlCheck_light_normal_undetermined:   
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.normal.undetermined.png"
-    VIControlCheck_light_over_checked:          
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.over.checked.png"
-    VIControlCheck_light_over_unchecked:        
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.over.unchecked.png"
-    VIControlCheck_light_over_undetermined:     
-    IncludeBinary "../../rsc/skins/grey/control_check/light.check.over.undetermined.png"
-    
-    ; (Dark)
-    VIControlCheck_dark_disabled_checked:      
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.disabled.checked.png"
-    VIControlCheck_dark_disabled_unchecked:    
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.disabled.unchecked.png"
-    VIControlCheck_dark_disabled_undetermined: 
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.disabled.undetermined.png"
-    VIControlCheck_dark_normal_checked:        
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.normal.checked.png"
-    VIControlCheck_dark_normal_unchecked:      
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.normal.unchecked.png"
-    VIControlCheck_dark_normal_undetermined:   
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.normal.undetermined.png"
-    VIControlCheck_dark_over_checked:          
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.over.checked.png"
-    VIControlCheck_dark_over_unchecked:        
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.over.unchecked.png"
-    VIControlCheck_dark_over_undetermined:     
-    IncludeBinary "../../rsc/skins/grey/control_check/dark.check.over.undetermined.png"
-
-  EndDataSection
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+  EndDataSection;
   
   Global CLASS.Class::Class_t
   
 EndDeclareModule
-
-
 
 
 ; ==============================================================================
@@ -141,7 +58,7 @@ Module ControlCheck
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlCheck_t, xoff.i = 0, yoff.i = 0 )
     
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
@@ -153,43 +70,50 @@ Module ControlCheck
     VectorFont(FontID( Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
-    ; ---[ Reset Clipping ]-----------------------------------------------------
-  ;   raaResetClip()
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    FillPath()
     
     MovePathCursor(0 + xoff, 0 + yoff)
-    ; ---[ Check Disabled ]-----------------------------------------------------
-    If Not *Me\enable
-      ; ...[ Dispatch Value ]...................................................
-      Select *Me\value
-        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_checked     ))
-        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_unchecked   ))
-        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_undetermined))
-      EndSelect
-      ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLOR_LABEL_DISABLED
-    ; ---[ Check Over ]---------------------------------------------------------
-    ElseIf *Me\over
-      ; ...[ Dispatch Value ]...................................................
-      Select *Me\value
-        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_over_checked     ) )
-        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_over_unchecked   ) )
-        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_over_undetermined) )
-      EndSelect
-    ; ---[ Normal State ]-------------------------------------------------------
-    Else
-      ; ...[ Dispatch Value ]...................................................
-      Select *Me\value
-        Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_checked     ) )
-        Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_normal_unchecked   ) )
-        Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_undetermined) )
-      EndSelect
-    EndIf
+    AddPathBox(0+ xoff +*Me\sizX-(#CHECK_WIDTH+#CHECK_MARGIN), 0 +yoff+#CHECK_MARGIN, #CHECK_WIDTH, #CHECK_WIDTH)
+    VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(UIColor::BLACK)
+    StrokePath(#CHECK_STROKE_WIDTH, #PB_Path_RoundCorner)
+    
+;     ; ---[ Check Disabled ]-----------------------------------------------------
+;     If Not *Me\enable
+;       ; ...[ Dispatch Value ]...................................................
+;       Select *Me\value
+;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_checked     ))
+;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_unchecked   ))
+;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_undetermined))
+;       EndSelect
+;       ; ...[ Disabled Text ]....................................................
+;       tc = UIColor::COLOR_LABEL_DISABLED
+;     ; ---[ Check Over ]---------------------------------------------------------
+;     ElseIf *Me\over
+;       ; ...[ Dispatch Value ]...................................................
+;       Select *Me\value
+;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_over_checked     ) )
+;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_over_unchecked   ) )
+;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_over_undetermined) )
+;       EndSelect
+;     ; ---[ Normal State ]-------------------------------------------------------
+;     Else
+;       ; ...[ Dispatch Value ]...................................................
+;       Select *Me\value
+;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_checked     ) )
+;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_normal_unchecked   ) )
+;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_undetermined) )
+;       EndSelect
+;     EndIf
     
     ; ---[ Draw Label ]---------------------------------------------------------
-    ;   raaClipBoxHole( 23 + xoff, 3 + yoff, *Me\sizX-24, *Me\sizY-6 )
+    ;   raaClipBoxHole( 23 + xoff,  + yoff, *Me\sizX-24, *Me\sizY-6 )
     MovePathCursor( 23 + xoff, ty)
     VectorSourceColor(tc)
-    DrawVectorText(*Me\label )
+    DrawVectorText("FUCK THAQT : "+*Me\label )
   EndProcedure
   ;}
   
@@ -211,7 +135,7 @@ Module ControlCheck
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlCheck_t, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me.ControlCheck_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -294,9 +218,7 @@ Module ControlCheck
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
-            Debug "TRIGGER FROM CHECK"
-            PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+            Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
 ;             Protected sig.CSlot = *Me\sig_onchanged
 ;             sig\Trigger( #RAA_SIGNAL_TYPE_PING, @*Me\value )
           EndIf
@@ -364,35 +286,29 @@ Module ControlCheck
     ProcedureReturn( *Me\value )
     
   EndProcedure
-  ; ---[ Free ]-----------------------------------------------------------------
+  
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
   Procedure Delete( *Me.ControlCheck_t )
-    ;OSlot_Release(*Me\sig_onchanged)
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
-    
+    Object::TERM(ControlCheck)
   EndProcedure
   
-  
   ; ============================================================================
-  ;  CONSTRUCTORS
+  ;  CONSTRUCTOR
   ; ============================================================================
-  ;{
-  ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
+  Procedure.i New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCheck_t = AllocateMemory( SizeOf(ControlCheck_t) )
-;     
-;     *Me\VT = ?ControlCheckVT
-;     *Me\classname = "CONTROLCHECK"
+
     Object::INI(ControlCheck)
-    
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#CHECK
     *Me\name     = name
-    *Me\gadgetID = #Null
+    *Me\parent   = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -405,132 +321,14 @@ Module ControlCheck
     *Me\over     = #False
     *Me\down     = #False
     
-    ; ---[ Init 'OnChanged' Slot ]----------------------------------------------
-;     *Me\sig_onchanged = newCSlot( *Me )
+    ; ---[ Signals ]------------------------------------------------------------
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
     
   EndProcedure
   
-  
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  Procedure SetTheme( theme.i )
-    
-    Select theme
-        
-      ; ---[ Light ]------------------------------------------------------------
-      Case Globals::#GUI_THEME_LIGHT
-        s_gui_controls_check_disabled_checked      = s_gui_controls_light_check_disabled_checked
-        s_gui_controls_check_disabled_unchecked    = s_gui_controls_light_check_disabled_unchecked
-        s_gui_controls_check_disabled_undetermined = s_gui_controls_light_check_disabled_undetermined
-        s_gui_controls_check_normal_checked        = s_gui_controls_light_check_normal_checked
-        s_gui_controls_check_normal_unchecked      = s_gui_controls_light_check_normal_unchecked
-        s_gui_controls_check_normal_undetermined   = s_gui_controls_light_check_normal_undetermined
-        s_gui_controls_check_over_checked          = s_gui_controls_light_check_over_checked
-        s_gui_controls_check_over_unchecked        = s_gui_controls_light_check_over_unchecked
-        s_gui_controls_check_over_undetermined     = s_gui_controls_light_check_over_undetermined
-        
-      ; ---[ Dark ]-------------------------------------------------------------
-      Case Globals::#GUI_THEME_DARK
-        s_gui_controls_check_disabled_checked      = s_gui_controls_dark_check_disabled_checked
-        s_gui_controls_check_disabled_unchecked    = s_gui_controls_dark_check_disabled_unchecked
-        s_gui_controls_check_disabled_undetermined = s_gui_controls_dark_check_disabled_undetermined
-        s_gui_controls_check_normal_checked        = s_gui_controls_dark_check_normal_checked
-        s_gui_controls_check_normal_unchecked      = s_gui_controls_dark_check_normal_unchecked
-        s_gui_controls_check_normal_undetermined   = s_gui_controls_dark_check_normal_undetermined
-        s_gui_controls_check_over_checked          = s_gui_controls_dark_check_over_checked
-        s_gui_controls_check_over_unchecked        = s_gui_controls_dark_check_over_unchecked
-        s_gui_controls_check_over_undetermined     = s_gui_controls_dark_check_over_undetermined
-        
-    EndSelect
-    
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Init
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init( )
-  ;CHECK_INIT
-    
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  LIGHT
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    s_gui_controls_light_check_disabled_checked      = CatchImage( #PB_Any, ?VIControlCheck_light_disabled_checked      )
-    s_gui_controls_light_check_disabled_unchecked    = CatchImage( #PB_Any, ?VIControlCheck_light_disabled_unchecked    )
-    s_gui_controls_light_check_disabled_undetermined = CatchImage( #PB_Any, ?VIControlCheck_light_disabled_undetermined )
-    s_gui_controls_light_check_normal_checked        = CatchImage( #PB_Any, ?VIControlCheck_light_normal_checked        )
-    s_gui_controls_light_check_normal_unchecked      = CatchImage( #PB_Any, ?VIControlCheck_light_normal_unchecked      )
-    s_gui_controls_light_check_normal_undetermined   = CatchImage( #PB_Any, ?VIControlCheck_light_normal_undetermined   )
-    s_gui_controls_light_check_over_checked          = CatchImage( #PB_Any, ?VIControlCheck_light_over_checked          )
-    s_gui_controls_light_check_over_unchecked        = CatchImage( #PB_Any, ?VIControlCheck_light_over_unchecked        )
-    s_gui_controls_light_check_over_undetermined     = CatchImage( #PB_Any, ?VIControlCheck_light_over_undetermined     )
-    ;}
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  DARK
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    s_gui_controls_dark_check_disabled_checked      = CatchImage( #PB_Any, ?VIControlCheck_dark_disabled_checked      )
-    s_gui_controls_dark_check_disabled_unchecked    = CatchImage( #PB_Any, ?VIControlCheck_dark_disabled_unchecked    )
-    s_gui_controls_dark_check_disabled_undetermined = CatchImage( #PB_Any, ?VIControlCheck_dark_disabled_undetermined )
-    s_gui_controls_dark_check_normal_checked        = CatchImage( #PB_Any, ?VIControlCheck_dark_normal_checked        )
-    s_gui_controls_dark_check_normal_unchecked      = CatchImage( #PB_Any, ?VIControlCheck_dark_normal_unchecked      )
-    s_gui_controls_dark_check_normal_undetermined   = CatchImage( #PB_Any, ?VIControlCheck_dark_normal_undetermined   )
-    s_gui_controls_dark_check_over_checked          = CatchImage( #PB_Any, ?VIControlCheck_dark_over_checked          )
-    s_gui_controls_dark_check_over_unchecked        = CatchImage( #PB_Any, ?VIControlCheck_dark_over_unchecked        )
-    s_gui_controls_dark_check_over_undetermined     = CatchImage( #PB_Any, ?VIControlCheck_dark_over_undetermined     )
-    ;}
-    
-    SetTheme(Globals::#GUI_THEME_LIGHT)
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsCheckTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-  ;CHECK_INIT  
- 
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; 같�[ Free Images ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;{
-    ; ...[ Dark ]...............................................................
-    ;{
-    FreeImage( s_gui_controls_dark_check_over_undetermined     )
-    FreeImage( s_gui_controls_dark_check_over_unchecked        )
-    FreeImage( s_gui_controls_dark_check_over_checked          )
-    FreeImage( s_gui_controls_dark_check_normal_undetermined   )
-    FreeImage( s_gui_controls_dark_check_normal_unchecked      )
-    FreeImage( s_gui_controls_dark_check_normal_checked        )
-    FreeImage( s_gui_controls_dark_check_disabled_undetermined )
-    FreeImage( s_gui_controls_dark_check_disabled_unchecked    )
-    FreeImage( s_gui_controls_dark_check_disabled_checked      )
-    ;}
-    ; ...[ Light ]..............................................................
-    ;{
-    FreeImage( s_gui_controls_light_check_over_undetermined     )
-    FreeImage( s_gui_controls_light_check_over_unchecked        )
-    FreeImage( s_gui_controls_light_check_over_checked          )
-    FreeImage( s_gui_controls_light_check_normal_undetermined   )
-    FreeImage( s_gui_controls_light_check_normal_unchecked      )
-    FreeImage( s_gui_controls_light_check_normal_checked        )
-    FreeImage( s_gui_controls_light_check_disabled_undetermined )
-    FreeImage( s_gui_controls_light_check_disabled_unchecked    )
-    FreeImage( s_gui_controls_light_check_disabled_checked      )
-    ;}
-    ;}
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlCheck )
 EndModule
@@ -540,7 +338,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 392
-; FirstLine = 388
-; Folding = ----
+; CursorPosition = 78
+; FirstLine = 74
+; Folding = --
 ; EnableXP

@@ -44,8 +44,9 @@ DeclareModule Time
   Global loop.b
   Global play.b
   Global forward.b
-  Global framerate.f = 25
+  Global FRAMERATE.f = 25
   Global fps.i
+  Global NewList *affectednodes()
   
   ;-----------------------------------------------------------------------------
   ;  GLOBALS
@@ -61,6 +62,19 @@ DeclareModule Time
   Declare.b Init()
   Declare.d Get()
   
+  Prototype PFNTIMERCALLBACK(*obj)
+  Structure Timeable_t
+    *obj
+    callback.PFNTIMERCALLBACK
+    timer.i
+    delay.i
+  EndStructure
+
+  Declare OnTimer(*Me.Timeable_t)
+  Declare StartTimer(*Me.Timeable_t, *callback.PFNTIMERCALLBACK, delay.i=250)
+  Declare StopTimer(*Me.Timeable_t)
+  
+ 
 EndDeclareModule
 
 ;===============================================================================
@@ -110,7 +124,7 @@ Module Time
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  GetAppTime
+  ;  Get Time
   ; ----------------------------------------------------------------------------
   Procedure.d Get()
     
@@ -131,12 +145,36 @@ Module Time
     CompilerEndSelect
     
   EndProcedure
-   
   
+
+  ; -----------------------------------------------------------------------------
+  ;   TIMER
+  ; -----------------------------------------------------------------------------
+  Procedure OnTimer(*Me.Timeable_t)
+    Repeat
+      Delay(*Me\delay)
+      PostEvent(#PB_Event_Timer)
+    ForEver
+  EndProcedure
+  
+  Procedure StartTimer(*Me.Timeable_t, *callback.PFNTIMERCALLBACK, delay.i=250)
+    *Me\delay = delay
+    If Not IsThread(*Me\timer)
+      *Me\callback = *callback
+      *Me\timer = CreateThread(*callback, *Me)
+    EndIf
+  EndProcedure
+  
+  Procedure StopTimer(*Me.Timeable_t)
+    If IsThread(*Me\timer)
+      KillThread(*Me\timer)
+    EndIf
+    *Me\timer = #Null
+  EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 54
+; CursorPosition = 46
+; FirstLine = 26
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

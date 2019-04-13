@@ -89,7 +89,7 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
 
   *ground\deformdirty = #True
   PolymeshGeometry::SetColors(*mesh)
-  PolymeshGeometry::RecomputeNormals(*mesh,1.0)
+  PolymeshGeometry::ComputeNormals(*mesh,1.0)
   
   Object3D::Freeze(*ground)
   
@@ -324,9 +324,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Bullet Arm",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
      *app\context = *viewport\context
-      *viewport\camera = *app\camera
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -384,8 +383,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 335
-; FirstLine = 327
+; CursorPosition = 327
+; FirstLine = 322
 ; Folding = --
 ; EnableThread
 ; EnableXP

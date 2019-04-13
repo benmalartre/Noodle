@@ -60,9 +60,9 @@ Procedure RecurseBuildTree(*tree.Tree::Tree_t,*obj.Object3D::Object3D_t,x,y)
   Protected nbc = ListSize(*obj\children())
   Protected color = RGB(30,120,60)
   Select *obj\type
-    Case Object3D::#Object3D_Model
+    Case Object3D::#Model
       color = RGB(30,120,60)
-    Case Object3D::#Object3D_Polymesh
+    Case Object3D::#Polymesh
       color = RGB(60,150,80)
   EndSelect
   
@@ -162,7 +162,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 94
+; CursorPosition = 64
+; FirstLine = 58
 ; Folding = ---
 ; EnableXP

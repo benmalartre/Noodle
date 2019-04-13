@@ -1,6 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../core/Morton.pbi"
+XIncludeFile "../objects/Box.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Drawer.pbi"
@@ -499,13 +500,13 @@ Module Octree
         
       Case #ELEMENT_2D
         Select *geom\type   
-          Case Geometry::#Geometry_Curve
+          Case Geometry::#Curve
             Define *curve.Geometry::CurveGeometry_t = *geom
             Define numSegments = *curve\nbsegments
              CArray::SetCount(*octree\elements, numSegments)
              For i=0 To numSegments - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
              
-          Case Geometry::#Geometry_Polymesh
+          Case Geometry::#Polymesh
             Define *mesh.Geometry::PolymeshGeometry_t = *geom
             Define numEdges = *mesh\nbedges
              CArray::SetCount(*octree\elements, numEdges)
@@ -523,8 +524,6 @@ Module Octree
         For i=0 To numTriangles - 1 : CArray::SetValueL(*octree\elements, i, i) : Next
         
     EndSelect
-    
-    
     
     Define minv.f = *geom\bbox\origin\x - *geom\bbox\extend\x
     If  *geom\bbox\origin\y - *geom\bbox\extend\y < minv :  minv = *geom\bbox\origin\y - *geom\bbox\extend\y : EndIf
@@ -703,7 +702,6 @@ Module Octree
       distance = Vector3::Length(delta)
       If distance < PeekF(*closestDistance)
         PokeF(*closestDistance, distance)
-        *loc\geometry = *geom
         *loc\tid = j
         Vector3::SetFromOther(*loc\p, closest)
         Vector3::SetFromOther(*loc\uvw, uvw)
@@ -777,7 +775,6 @@ Module Octree
       distance = Vector3::Length(delta)
       If distance < closestDistance
         closestDistance = distance
-        *loc\geometry = *geom
         *loc\tid = t
         Vector3::SetFromOther(*loc\p, closest)
         Vector3::SetFromOther(*loc\uvw, uvw)
@@ -1219,7 +1216,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 987
-; FirstLine = 953
+; CursorPosition = 525
+; FirstLine = 498
 ; Folding = ---------
 ; EnableXP

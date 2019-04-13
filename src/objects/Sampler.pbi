@@ -11,7 +11,7 @@ DeclareModule Sampler
     #Sample_Poisson
   EndEnumeration
   
-  Declare SamplePolymesh(*mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayPtr, nb.i,seed)
+  Declare SamplePolymesh(*mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayLocation, nb.i,seed)
 EndDeclareModule
 
 Module Sampler
@@ -19,18 +19,13 @@ Module Sampler
   ;-----------------------------------------------------
   ; Sample Geometry
   ;-----------------------------------------------------
-  ;{
-  Procedure SamplePolymesh( *mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayPtr, nb.i,seed.i)
+  Procedure SamplePolymesh( *mesh.Geometry::PolymeshGeometry_t,*locations.CArray::CArrayLocation, nb.i,seed.i)
+    Define *object3D.Object3D::Object3D_t = *mesh\parent
+    *locations\geometry = *mesh
+    *locations\transform = *object3D\globalT
     
-    If CArray::GetCount(*locations)
-      Protected x
-      For x=nb To CArray::GetCount(*locations)-1
-        Protected *l.Geometry::Location_t = CArray::GetValuePtr(*locations,x)
-        If *l : Location::Delete(*l) : EndIf
-      Next
-      CArray::SetCount(*locations,0)
-    EndIf
-   
+    CArray::SetCount(*locations, nb)
+    
     Protected i
     Protected tid
     Define.v3f32 *a,*b,*c
@@ -43,6 +38,8 @@ Module Sampler
     Define uvw.v3f32
     
     Protected *parent.Object3D::Object3D_t = *mesh\parent
+    Protected *loc.Geometry::Location_t 
+    CArray::SetCount(*locations, nb)
     
     RandomSeed(seed)
     For i=0 To nb-1
@@ -74,13 +71,13 @@ Module Sampler
       s = 1;Random(10)*0.1
       Vector3::Set(scl,s,s,s)
       
-      Protected *loc.Geometry::Location_t  = Location::New(*mesh,*parent\globalT)
-      CArray::AppendPtr(*locations,*loc)
+      *loc = CArray::GetValue(*locations, i)
+      Location::Init(*loc, *mesh, *parent\globalT, tid, u, v, 1-(u+v))
       
       Vector3::Set(*loc\uvw, u, v, 1-(u+v))
       *loc\tid = tid
       Vector3::SetFromOther(*loc\p,sum)      
-      Vector3::MulByMatrix4InPlace(*loc\p, *loc\t\m)
+;       Vector3::MulByMatrix4InPlace(*loc\p, *loc\t\m)
       
       *a = CArray::GetValue(*mesh\a_pointnormals,a)
       *b = CArray::GetValue(*mesh\a_pointnormals,b)
@@ -94,7 +91,7 @@ Module Sampler
       Vector3::AddInPlace(sum,p)
       
       Vector3::SetFromOther(*loc\n,sum)
-      Vector3::MulByMatrix4InPlace(*loc\n, *loc\t\m)
+;       Vector3::MulByMatrix4InPlace(*loc\n, *loc\t\m)
       
       *ca = CArray::GetValue(*mesh\a_colors,tid*3)
       *cb = CArray::GetValue(*mesh\a_colors,tid*3+1)
@@ -103,14 +100,12 @@ Module Sampler
       Color::Set(color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
       ;*pc\a_color\SetValue(i,@color)
       Color::SetFromOther(*loc\c,color)
-
     Next
-    
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 50
+; CursorPosition = 101
+; FirstLine = 45
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

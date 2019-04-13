@@ -653,14 +653,14 @@ Module Handle
        Protected *view.m4f32
   
        Select *Me\target\type
-         Case Object3D::#Object3D_Camera
+         Case Object3D::#Camera
            Protected *camera.Camera::Camera_t = *Me\target
            *pos = *camera\pos
            *lookat = *camera\lookat
            *up = *camera\up
            *view = *camera\globalT\m
            
-         Case Object3D::#Object3D_Light
+         Case Object3D::#Light
            Protected *light.Light::Light_t = *Me\target
            *pos = *light\pos
            *lookat = *light\lookat
@@ -846,12 +846,12 @@ Module Handle
 ;     
 ;     If *Me\target <> #Null
 ;       Protected pos.v3f32 
-;       If *Me\target\type = Object3D::#Object3D_Light
+;       If *Me\target\type = Object3D::#Light
 ;         Protected *light.Light::Light_t = *Me\target
 ;   
 ;         Vector3::SetFromOther(*light\pos,*Me\localT\t\pos)
 ;         Light::LookAt(*light)
-;       ElseIf *Me\target\type = Object3D::#Object3D_Camera
+;       ElseIf *Me\target\type = Object3D::#Camera
 ;         Protected *camera.Camera::Camera_t = *Me\target
 ;   
 ;         Vector3::SetFromOther(*camera\pos,*Me\localT\t\pos)
@@ -958,12 +958,12 @@ Module Handle
     
     If *Me\target <> #Null
       Protected pos.v3f32 
-      If *Me\target\type = Object3D::#Object3D_Light
+      If *Me\target\type = Object3D::#Light
         Protected *light.Light::Light_t = *Me\target
   
         Vector3::SetFromOther(*light\pos,*Me\localT\t\pos)
         Light::LookAt(*light)
-      ElseIf *Me\target\type = Object3D::#Object3D_Camera
+      ElseIf *Me\target\type = Object3D::#Camera
         Protected *camera.Camera::Camera_t = *Me\target
   
         Vector3::SetFromOther(*camera\pos,*Me\localT\t\pos)
@@ -1168,11 +1168,11 @@ Module Handle
       Case Globals::#TOOL_DIRECTED
         If *Me\target
           Select *Me\target\type
-            Case Object3D::#Object3D_Camera
+            Case Object3D::#Camera
 ;               Protected *camera.Camera::Camera_t = *Me\target
 ;               Vector3::SetFromOther(*Me\foot_sphere\center,*camera\pos)
 ;               Vector3::SetFromOther(*Me\head_sphere\center,*camera\lookat)
-            Case Object3D::#Object3D_Light
+            Case Object3D::#Light
 ;               Protected *light.Light::Light_t = *Me\target
 ;               Vector3::SetFromOther(*Me\foot_sphere\center,*light\pos)
 ;               Vector3::SetFromOther(*Me\head_sphere\center,*light\lookat)
@@ -1444,8 +1444,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 589
-; FirstLine = 585
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1174
+; FirstLine = 1115
 ; Folding = -------
 ; EnableXP

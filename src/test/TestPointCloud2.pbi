@@ -52,6 +52,7 @@ Procedure AddPointsTree(*tree.Tree::Tree_t)
 EndProcedure
 
 Scene::*current_scene = Scene::New()
+Define *grd.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
 Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#SHAPE_CUBE,0)
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
 PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
@@ -82,6 +83,8 @@ Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator
 AddPointsTree(*tree.Tree::Tree_t)
 
 Scene::AddChild(Scene::*current_scene,*obj)
+Scene::AddChild(Scene::*current_scene,*grd)
+
 ExamineDesktops()
 Define width = DesktopWidth(0)
 Define height = DesktopHeight(0)
@@ -113,9 +116,6 @@ Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
 GraphUI::SetContent(*graph,*tree)
 
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
-
-
-
 Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
 
 
@@ -151,8 +151,8 @@ Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 91
+; CursorPosition = 85
+; FirstLine = 66
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

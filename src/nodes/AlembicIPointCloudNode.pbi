@@ -131,32 +131,32 @@ Module AlembicIPointCloudNode
 ;       CArray::SetCount(*cloud_geom\a_indices,*infos\nbpoints)
       
       FirstElement(*node\outputs())
-      Protected *positions.CArray::CArrayV3F32 = *node\outputs()\value
+      Protected *positions.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*positions,*infos\nbpoints)
       *sample\position = *positions\data
       
       NextElement(*node\outputs())
-      Protected *velocities.CArray::CArrayV3F32 = *node\outputs()\value
+      Protected *velocities.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*velocities,*infos\nbpoints)
       *sample\velocity = *velocities\data
       
       NextElement(*node\outputs())
-      Protected *size.CArray::CArrayFloat = *node\outputs()\value
+      Protected *size.CArray::CArrayFloat = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*size,*infos\nbpoints)
       *sample\size = *size\data
       
       NextElement(*node\outputs())
-      Protected *orientation.CArray::CArrayQ4F32 = *node\outputs()\value
+      Protected *orientation.CArray::CArrayQ4F32 = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*orientation,*infos\nbpoints)
       *sample\orientation = *orientation\data
       
       NextElement(*node\outputs())
-      Protected *scale.CArray::CArrayV3F32 = *node\outputs()\value
+      Protected *scale.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*scale,*infos\nbpoints)
       *sample\scale = *scale\data
       
       NextElement(*node\outputs())
-      Protected *color.CArray::CArrayC4F32 = *node\outputs()\value
+      Protected *color.CArray::CArrayC4F32 = NodePort::AcquireOutputData(*node\outputs())
       CArray::SetCount(*color,*infos\nbpoints)
       *sample\color = *color\data
       
@@ -179,8 +179,7 @@ Module AlembicIPointCloudNode
 
   EndProcedure
   
-
- Procedure Terminate(*node.AlembicIPointCloudNode_t)
+  Procedure Terminate(*node.AlembicIPointCloudNode_t)
   
   EndProcedure
   
@@ -211,7 +210,7 @@ Module AlembicIPointCloudNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 151
+; CursorPosition = 158
+; FirstLine = 134
 ; Folding = --
 ; EnableXP

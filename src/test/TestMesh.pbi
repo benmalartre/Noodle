@@ -134,9 +134,7 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
-     
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)     
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -160,10 +158,10 @@ Procedure Draw(*app.Application::Application_t)
   
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
-  Define *samples.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Sampler::SamplePolymesh(*ground\geom,*samples,2,7)
+  Define *samples.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
+  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_CUBE)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
@@ -177,7 +175,7 @@ Procedure Draw(*app.Application::Application_t)
       
   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
   
-  Define *outtopo.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
   Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
   Define m.m4f32
   Define pos.v3f32
@@ -190,9 +188,9 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(center, 0,5,0)
 ;   CArray::SetCount(*matrices, CArray::GetCount(*samples))
   For i=0 To CArray::GetCount(*samples)-1
-    *loc = CArray::GetValuePtr(*samples,i)
-    Location::GetPosition(*loc)
-    Location::GetNormal(*loc)
+    *loc = CArray::GetValue(*samples,i)
+    Location::GetPosition(*loc,*ggeom,*ground\globalT)
+    Location::GetNormal(*loc,*ggeom,*ground\globalT)
     Matrix4::SetIdentity(m)
     size = Random(50)+5
     Vector3::ScaleInPlace(*loc\n, size/2)
@@ -208,15 +206,20 @@ Procedure Draw(*app.Application::Application_t)
 ;     CArray::SetValue(*matrices, i, m)
  Next
   
-  Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
-  Topology::TransformArray(*topo,*matrices,*outtopo)
-  Topology::MergeArray(*topo,*outtopo)
+ Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
+ Debug "NUM MATRICES : "+Str(CArray::GetCount(*matrices))
+ 
+ Topology::TransformArray(*topo,*matrices,*topos)
+  Debug "NUM TOPOS : "+Str(CArray::GetCount(*topos))
+  Topology::MergeArray(*topo,*topos)
+ 
   Define sT.d = Time::Get()
   PolymeshGeometry::Set2(*mgeom,*topo)
+  Topology::Delete(*topo)
   
-  PolymeshGeometry::ComputeHalfEdges(*mgeom)
-  PolymeshGeometry::ComputeIslands(*mgeom)
-  PolymeshGeometry::RandomColorByIsland(*mgeom)
+;   PolymeshGeometry::ComputeHalfEdges(*mgeom)
+;   PolymeshGeometry::ComputeIslands(*mgeom)
+;   PolymeshGeometry::RandomColorByIsland(*mgeom)
   Object3D::Freeze(*merged)
   
   Object3D::AddChild(*root,*merged)
@@ -231,8 +234,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 144
+; CursorPosition = 136
+; FirstLine = 117
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

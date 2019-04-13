@@ -9,16 +9,22 @@ XIncludeFile "../objects/Object3D.pbi"
 ; ARRAY SUB INDICES NODE MODULE DECLARATION
 ; ==================================================================================================
 DeclareModule ArraySubIndicesNode
+  ; ------------------------------
+  ;   Structure
+  ; ------------------------------
   Structure ArraySubIndicesNode_t Extends Node::Node_t
 
   EndStructure
   
-  ;------------------------------
-  ;Interface
-  ;------------------------------
+  ; ------------------------------
+  ;   Interface
+  ; ------------------------------
   Interface IArraySubIndicesNode Extends Node::INode 
   EndInterface
   
+  ; ------------------------------
+  ;   Declare
+  ; ------------------------------
   Declare New(*tree.Tree::Tree_t,type.s="ArraySubIndicesNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
   Declare Delete(*node.ArraySubIndicesNode_t)
   Declare Init(*node.ArraySubIndicesNode_t)
@@ -26,7 +32,7 @@ DeclareModule ArraySubIndicesNode
   Declare Terminate(*node.ArraySubIndicesNode_t)
   
   ; ============================================================================
-  ;  ADMINISTRATION
+  ;   ADMINISTRATION
   ; ============================================================================
   ;{
   Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("ArraySubIndicesNode","Array",@New())
@@ -42,7 +48,7 @@ DeclareModule ArraySubIndicesNode
 EndDeclareModule
 
 ; ==================================================================================================
-; ARRAY SUB INDICES NODE MODULE IMPLEMENTATION
+;   ARRAY SUB INDICES NODE MODULE IMPLEMENTATION
 ; ==================================================================================================
 Module ArraySubIndicesNode
   Procedure GetSize(*node.ArraySubIndicesNode_t)
@@ -70,7 +76,7 @@ Module ArraySubIndicesNode
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *iIn.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
-    Protected *iOut.CArray::CArrayInt = *node\outputs()\value
+    Protected *iOut.CArray::CArrayInt = *node\outputs()\attribute\data
     
     Protected nbp.i = CArray::GetCount(*iIn)
     CArray::SetCount(*iOut,nbp)
@@ -86,6 +92,7 @@ Module ArraySubIndicesNode
   Procedure Terminate(*node.ArraySubIndicesNode_t)
   
   EndProcedure
+  
   
   Procedure Delete(*node.ArraySubIndicesNode_t)
     Node::DEL(ArraySubIndicesNode)
@@ -119,8 +126,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 62
-; FirstLine = 58
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 78
+; FirstLine = 68
 ; Folding = --
 ; EnableXP

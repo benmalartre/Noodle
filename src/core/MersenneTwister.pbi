@@ -15,7 +15,6 @@
 ; Equidistributed Uniform Pseudo-Random Number Generator", ACM Transactions on
 ; Modeling and Computer Simulation, Vol. 8, No. 1, January 1998, pp 3-30.
 ; ============================================================================
-EnableExplicit
 
 ; ============================================================================
 ;- Class (CRandMT)
@@ -591,7 +590,7 @@ CompilerEndIf
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 267
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = ---------
 ; EnableXP

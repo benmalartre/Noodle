@@ -963,7 +963,7 @@ Module Light
     *Me\classname = "LIGHT"
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Object3D::#Object3D_Light
+    *Me\type     = Object3D::#Light
     *Me\name     = name
     *Me\lighttype = type
     
@@ -1058,7 +1058,7 @@ Module Light
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 877
-; FirstLine = 867
+; CursorPosition = 965
+; FirstLine = 961
 ; Folding = -----
 ; EnableXP

@@ -1,5 +1,5 @@
 XIncludeFile "Object3D.pbi"
-
+XIncludeFile "ModelGeometry.pbi"
 
 DeclareModule Model
   UseModule Math
@@ -42,14 +42,15 @@ Module Model
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\name = name
-    *Me\type = Object3D::#Object3D_Model
+    *Me\geom = ModelGeometry::New(*Me)
+    *Me\type = Object3D::#Model
     Matrix4::SetIdentity(*Me\matrix)
+    
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
     
-    Object3D::Object3D_ATTR()
-   
+
     ProcedureReturn *Me
   EndProcedure
   
@@ -110,7 +111,7 @@ Module Model
   Class::DEF( Model )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 35
+; CursorPosition = 45
+; FirstLine = 41
 ; Folding = --
 ; EnableXP

@@ -13,6 +13,7 @@ DeclareModule PropertyUI
   Structure PropertyUI_t Extends UI::UI_t
     *prop.ControlProperty::ControlProperty_t
     List *props.ControlProperty::ControlProperty_t()
+    *focus.Control::Control_t
     anchorX.i
     anchorY.i
   EndStructure
@@ -35,6 +36,8 @@ DeclareModule PropertyUI
   Declare ExpandProperty(*Me.PropertyUI_t, index.i)
   Declare DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
   Declare DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+  Declare OnDeleteProperty(*Me.PropertyUI_t, index.i)
+  Declare OnExpandProperty(*Me.PropertyUI_t, expand.b, index.i)
   
   DataSection 
     PropertyUIVT: 
@@ -65,13 +68,15 @@ Module PropertyUI
     InitializeStructure(*Me,PropertyUI_t)
     Object::INI(PropertyUI)
     *Me\name = name
-    *Me\x = x
-    *Me\y = y
-    *Me\width = w
-    *Me\height = h
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = w
+    *Me\sizY = h
     
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w-1,h-1,#PB_ScrollArea_BorderLess|#PB_ScrollArea_Center)
+    *Me\parent = *parent
+    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h,10,#PB_ScrollArea_BorderLess)
     *Me\gadgetID = *Me\container
+    
     SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
     
     *Me\prop = #Null
@@ -119,17 +124,20 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
     If *Me
-      Protected *top.View::View_t = *Me\top
+      Protected *top.View::View_t = *Me\parent
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
-      ev_datas\width = *top\width - 20
+      ev_datas\width = *top\width 
       Select event
         Case #PB_Event_SizeWindow
+          *Me\sizX = *top\width
           ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\sizX)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\sizY)
          
-          ev_datas\x = 0
-          ev_datas\y = 0
+          ev_datas\x = #PB_Ignore
+          ev_datas\y = #PB_Ignore
           ev_datas\height = #PB_Ignore
 
           If ListSize(*Me\props())
@@ -139,21 +147,29 @@ Module PropertyUI
               CompilerElse
                 ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               CompilerEndIf
-              If *Me\props() : ev_datas\y + *Me\props()\sizY : EndIf
             Next
           EndIf
-
-          SetGadgetAttribute(*Me\container,#PB_ScrollArea_InnerWidth, *top\width-2)
-          SetGadgetAttribute(*Me\container,#PB_ScrollArea_InnerHeight, ev_datas\y-2)
           
         Case #PB_Event_Gadget
-          Define currentGadget = EventGadget()
+          If EventType()  = #PB_EventType_LeftButtonDown
+            *Me\down = #True
+          ElseIf EventType() = #PB_EventType_LeftButtonUp
+            *Me\down = #False
+          EndIf
+          
+          Define currentGadget
+          If *Me\down And *Me\focus
+            currentGadget = *Me\focus\gadgetID
+          Else
+            currentGadget = EventGadget()
+          EndIf
+
           If ListSize(*Me\props())
             ForEach *Me\props()
               If *Me\props()\gadgetID = currentGadget
-                 ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+                ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
+                *Me\focus = *Me\props()
               EndIf
-              ev_datas\y + *Me\props()\sizY
             Next
           EndIf
 
@@ -168,7 +184,31 @@ Module PropertyUI
     EndIf
     
   EndProcedure
-
+  
+  ; ----------------------------------------------------------------------------
+  ;   CALLBACKS
+  ; ----------------------------------------------------------------------------
+  Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
+    PropertyUI::DeleteProperty(*Me, *prop)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteProperty, Arguments::#PTR, Arguments::#PTR)
+  
+  Procedure OnExpandProperty( *Me.PropertyUI_t, expand.b, index.i)
+    ;PropertyUI::DeletePropertyByIndex(*Me, index)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnExpandProperty, Arguments::#PTR, Arguments::#BOOL, Arguments::#INT)
+  
+  Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
+    ForEach *Me\props()
+      If *Me\props()\object = *object
+        If *Me\props()\head
+          Signal::Trigger(*Me\props()\head\on_delete, Signal::#SIGNAL_TYPE_PING)
+        EndIf
+        Break
+      EndIf
+    Next
+  EndProcedure
+  Callback::DECLARECALLBACK(OnDeleteObject, Arguments::#PTR, Arguments::#PTR)
   
   ; ----------------------------------------------------------------------------
   ;  Terminate
@@ -181,20 +221,20 @@ Module PropertyUI
   ;  On Message
   ; ----------------------------------------------------------------------------
   Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
-    Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
-    Protected *c.ControlProperty::ControlProperty_t = *h\parent
-
-    If id = 0
-      DeleteProperty(*Me, *c)
-    ElseIf id = 1
-      If *c\expanded
-        CollapseProperty(*Me, *c)
-      Else
-        ExpandProperty(*Me, *c)
-      EndIf
-    EndIf
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *Me.PropertyUI::PropertyUI_t = *sig\rcv_inst
+;     Protected *h.ControlHead::ControlHead_t = *sig\snd_inst
+;     Protected *c.ControlProperty::ControlProperty_t = *h\parent
+; 
+;     If id = 0
+;       DeleteProperty(*Me, *c)
+;     ElseIf id = 1
+;       If *c\expanded
+;         CollapseProperty(*Me, *c)
+;       Else
+;         ExpandProperty(*Me, *c)
+;       EndIf
+;     EndIf
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -231,8 +271,8 @@ Module PropertyUI
     Protected v.Math::v3f32
     Protected *attr.Attribute::Attribute_t
     Define i
-    ForEach *object\m_attributes()
-      *attr = *object\m_attributes()
+    ForEach *object\geom\m_attributes()
+      *attr = *object\geom\m_attributes()
       If Not *attr\readonly And *attr\constant
         Select *attr\datatype
           Case Attribute::#ATTR_TYPE_BOOL
@@ -243,25 +283,26 @@ Module PropertyUI
             ControlProperty::AddFloatControl(*p,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR2
             Protected v2.v2f32
-            ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,@v2,*attr)
+            ControlProperty::AddVector2Control(*p,*attr\name,*attr\name,v2,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR3
             Protected v3.v3f32
-            ControlProperty::AddVector3Control(*p,*attr\name,*attr\name,@v3,*attr)
+            ControlProperty::AddVector3Control(*p,*attr\name,*attr\name,v3,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR4
             Protected c4.c4f32
-            ControlProperty::AddColorControl(*p,*attr\name,*attr\name,@c4,*attr)
+            ControlProperty::AddColorControl(*p,*attr\name,*attr\name,c4,*attr)
           Case Attribute::#ATTR_TYPE_QUATERNION
             Protected q.q4f32
-            ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,@q,*attr)
+            ControlProperty::AddQuaternionControl(*p,*attr\name,*attr\name,q,*attr)
           Case Attribute::#ATTR_TYPE_MATRIX4
             Protected m.m4f32
             Matrix4::SetIdentity(m)
-            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,@m,*attr) 
+            ControlProperty::AddMatrix4Control(*p,*attr\name,*attr\name,m,*attr) 
         EndSelect
       EndIf
     Next
     
     ControlProperty::AppendStop(*p)
+    Signal::CONNECTCALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -274,18 +315,18 @@ Module PropertyUI
       Define *first = @*Me\props()
     EndIf
     
-    ForEach *Me\props()
-      If *Me\props()\object = *node
-        If ListSize(*Me\props()) > 1 And index > 0
-          Define *current = @*Me\props()
-          SwapElements(*Me\props(), *current, *first)
-          OnEvent(*Me, #PB_Event_SizeWindow)
-        EndIf
-        
-        ProcedureReturn #True
-      EndIf
-      index + 1
-    Next
+;     ForEach *Me\props()
+;       If *Me\props()\object = *node
+;         If ListSize(*Me\props()) > 1 And index > 0
+;           Define *current = @*Me\props()
+;           SwapElements(*Me\props(), *current, *first)
+;           OnEvent(*Me, #PB_Event_SizeWindow)
+;         EndIf
+;         
+;         ProcedureReturn #True
+;       EndIf
+;       index + 1
+;     Next
     ProcedureReturn #False
   EndProcedure
   
@@ -296,10 +337,7 @@ Module PropertyUI
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
-    Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\width, *Me\height) 
-    AddElement(*Me\props())
-    *Me\props() = *p
-    *Me\prop = *p
+    Protected *p.ControlProperty::ControlProperty_t = ControlProperty::New(*node,*node\name,*node\name,*Me\anchorX,*Me\anchorY,*Me\sizX, *Me\sizY) 
     *p\label = *node\type
     
     ControlProperty::AppendStart(*p)
@@ -307,6 +345,7 @@ Module PropertyUI
 
     Protected *attr.Attribute::Attribute_t
     Define i
+    Define *port.NodePort::NodePort_t
     ; Add Input Ports 
     ForEach *node\inputs()
       With *node\inputs()
@@ -345,8 +384,16 @@ Module PropertyUI
               Protected *cVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
               ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),*node\inputs())
               
+            Case Attribute::#ATTR_TYPE_MATRIX4
+              Protected *mVal4.CArray::CArrayM4F32 = NodePort::AcquireInputData(*node\inputs())
+              ControlProperty::AddMatrix4Control(*p,\name,\name,CArray::GetValue(*mVal4,0),*node\inputs())
+              
             Case Attribute::#ATTR_TYPE_REFERENCE
-              ControlProperty::AddReferenceControl(*p,\name,\reference,*node\inputs())
+              Protected *ref.Globals::Reference_t = NodePort::AcquireInputData(*node\inputs())
+              ControlProperty::AddReferenceControl(*p,\name,*ref\reference,*node\inputs())
+              
+            Case Attribute::#ATTR_TYPE_FILE
+              ControlProperty::AddFileControl(*p,\name,\name,*node\inputs())
               
             Case Attribute::#ATTR_TYPE_STRING
               Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs())
@@ -360,12 +407,10 @@ Module PropertyUI
     ControlProperty::AppendStop(*p)
     *Me\anchorY + *p\dy
     
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\width)
+    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\sizX)
     SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
-    
-    Protected *head.ControlHead::ControlHead_t = *p\head
-    Object::SignalConnect(*Me, *head\ondelete_signal, 0)
-    Object::SignalConnect(*Me, *head\onexpand_signal, 1)
+    Signal::CONNECTCALLBACK(*node\on_delete, OnDeleteObject, *Me, *object)
+    ProcedureReturn *p
 
   EndProcedure
   
@@ -373,13 +418,19 @@ Module PropertyUI
   ;  Add Property
   ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
+    ;check if already in list
+    ForEach *Me\props() : If *prop = *Me\props() :  ProcedureReturn : EndIf : Next
+    
     AddElement(*Me\props())
     *Me\props() = *prop
     *Me\prop = *prop
-    *Me\anchorY + *prop\dy
+    If *prop\head
+      Define idx = ListSize(*Me\props())-1
+      Signal::CONNECTCALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
+    EndIf
+    
   EndProcedure
 
-  
   ; ----------------------------------------------------------------------------
   ;  Setup
   ; ----------------------------------------------------------------------------
@@ -388,7 +439,9 @@ Module PropertyUI
     Protected cName.s = *object\class\name
     If Right(cName,4) = "Node"
       Protected *node.Node::Node_t = *object
-      SetupFromNode(*Me,*node)
+      Protected *prop.ControlProperty::ControlProperty_t = SetupFromNode(*Me,*node)
+      PropertyUI::AddProperty(*Me, *prop)
+      
     Else
       Protected *obj.Object3D::Object3D_t = *object
        SetupFromObject3D(*Me,*obj)
@@ -405,15 +458,15 @@ Module PropertyUI
     ForEach *Me\props()
       If *Me\props() = *prop
         *Me\props()\expanded = #False
-        *Me\props()\sizX = *Me\width
-        offY = *Me\props()\sizY - ControlHead::#HEAD_HEIGHT
-        *Me\props()\sizY = ControlHead::#HEAD_HEIGHT
-        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+        *Me\props()\sizX = *Me\sizX
+        offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
+        *Me\props()\sizY = ControlHead::#HEAD_BUTTON_SIZE
+        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         dirty = #True
       Else
         If dirty
           *Me\props()\posY - offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         EndIf
       EndIf
     Next
@@ -434,15 +487,15 @@ Module PropertyUI
     ForEach *Me\props()
       If *Me\props() = *prop
         *Me\props()\expanded = #True
-        *Me\props()\sizX = *Me\width
+        *Me\props()\sizX = *Me\sizX
         *Me\props()\sizY = ControlProperty::GetHeight(*Me\props())
-        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
-        offY = *Me\props()\sizY - ControlHead::#HEAD_HEIGHT
+        ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
+        offY = *Me\props()\sizY - ControlHead::#HEAD_BUTTON_SIZE
         dirty = #True
       Else
         If dirty
           *Me\props()\posY + offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\sizX, *Me\props()\sizY)
         EndIf
       EndIf
     Next
@@ -461,47 +514,58 @@ Module PropertyUI
   Procedure DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     Protected dirty.b  =#False
     Protected offY.i = 0
-    
-    Debug "Delete Property : "+Str(*prop)
+    Protected idx.i=0
+    Protected toRemove.i = -1
     
     ForEach *Me\props()
-      Debug *Me\props()
       If *Me\props() = *prop
-        Debug "FOUND"
         offY = *Me\props()\sizY
-        ControlProperty::Delete(*Me\props())
-        DeleteElement(*Me\props())
-        dirty = #True
-        Break
+        
+        toRemove = idx
+        dirty=#True
       Else
         If dirty
-          *Me\props()\posY - offY
-          ResizeGadget(*Me\props()\gadgetID,#PB_Ignore,*Me\props()\posY,*Me\width, *Me\props()\sizY)
+         
+          ResizeGadget(*Me\props()\gadgetID, #PB_Ignore, *Me\props()\posY-offY, *Me\sizX, #PB_Ignore)
+           *Me\props()\posY - offY
         EndIf
       EndIf
+      idx+1
     Next
     
-    If dirty
-      If ListSize(*Me\props())
-        *Me\anchorY - offY
-      Else
-        *Me\anchorY = 0
-      EndIf
-    EndIf    
+    If toRemove > -1
+      SelectElement(*Me\props(), toRemove)
+      DeleteElement(*Me\props())
+      ControlProperty::Delete(*prop)
+    EndIf
+    
+    If ListSize(*Me\props())
+      *Me\anchorY - offY
+    Else
+      *Me\anchorY = 0
+    EndIf
+  
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  Structure
   ; ----------------------------------------------------------------------------
   Procedure DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
+    SelectElement(*Me\props(), index)
+    Define offY = *Me\props()\sizY
+    ControlProperty::Delete(*Me\props())
+    DeleteElement(*Me\props())
+    While NextElement(*Me\props())
+      *Me\props()\posY - offY
+    Wend
   EndProcedure
   
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 308
-; FirstLine = 271
-; Folding = ----
+; CursorPosition = 411
+; FirstLine = 366
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

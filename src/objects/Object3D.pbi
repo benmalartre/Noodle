@@ -14,19 +14,19 @@ DeclareModule Object3D
   UseModule Math
   UseModule OpenGL
   Enumeration
-    #Object3D_None
-    #Object3D_Camera
-    #Object3D_Light
-    #Object3D_Null
-    #Object3D_Polymesh
-    #Object3D_Curve
-    #Object3D_PointCloud
-    #Object3D_InstanceCloud
-    #Object3D_Grid
-    #Object3D_Model
-    #Object3D_Root
-    #Object3D_Layer
-    #Object3D_Drawer
+    #None
+    #Camera
+    #Light
+    #Locator
+    #Polymesh
+    #Curve
+    #PointCloud
+    #InstanceCloud
+    #Grid
+    #Model
+    #Root
+    #Layer
+    #Drawer
   EndEnumeration
 
   #DIRTY_STATE_CLEAN = 0
@@ -72,20 +72,24 @@ DeclareModule Object3D
     *parent.Object3D_t
     *model.Object3D_t
     List *children.Object3D_t()
+    
     *stack.Stack::Stack_t
-    Map *m_attributes.Attribute::Attribute_t()
+    
+    *on_delete.Signal::Signal_t
     
   EndStructure
   
   
-  Macro Object3D_ATTR()
+  Macro OBJECT3DATTR()
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    *Me\stack = Stack::New()
     Protected *t.Transform::Transform_t = *Me\globalT
-    Protected *global = Attribute::New("GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#False,#True)
+    Protected *global = Attribute::New("GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
     Object3D::AddAttribute(*Me,*global)
     *t = *Me\localT
-    Protected *local = Attribute::New("LocalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#False,#True)
+    Protected *local = Attribute::New("LocalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
     Object3D::AddAttribute(*Me,*local)
-    Protected *viewvis = Attribute::New("ViewVisibility",Attribute::#ATTR_TYPE_BOOL,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\visible,#False,#True)
+    Protected *viewvis = Attribute::New("ViewVisibility",Attribute::#ATTR_TYPE_BOOL,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\visible,#True,#False,#True)
     Object3D::AddAttribute(*Me,*viewvis)
   EndMacro
   
@@ -131,6 +135,7 @@ DeclareModule Object3D
 ;   Declare SetMaterial(*obj.Object3D_t,shader.i)
 ;   Declare GetMaterial(*obj.Object3D_t)
 ;   Declare GetUniqueID(*obj.Object3D_t)
+  Declare GetLocalTransform(*Me.Object3D_t)
   Declare SetLocalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
   Declare GetGlobalTransform(*Me.Object3D_t)
   Declare SetGlobalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
@@ -165,7 +170,7 @@ Module Object3D
   ; Freeze
   ; ----------------------------------------------------------------------------
   Procedure Freeze(*obj.Object3D_t)
-    If *obj\type = Object3D::#Object3D_Polymesh
+    If *obj\type = Object3D::#Polymesh
       Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
       Topology::Copy(*geom\base,*geom\topo)
       Stack::Clear(*obj\stack)
@@ -177,7 +182,17 @@ Module Object3D
   ; FreezeTransform
   ; ----------------------------------------------------------------------------
   Procedure FreezeTransform(*obj.Object3D_t)
-    
+    Select *obj\geom\type
+      Case Geometry::#Polymesh
+        Define *mesh.Geometry::PolymeshGeometry_t = *obj\geom
+        Define invM.Math::m4f32
+ 
+        Utils::TransformPositionArrayInPlace(*mesh\a_positions, *obj\globalT\m)
+        Matrix4::SetIdentity(*obj\localT\m)
+        Transform::UpdateSRTFromMatrix(*obj\localT)
+        Object3D::UpdateTransform(*obj)
+        
+    EndSelect
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -236,7 +251,7 @@ Module Object3D
     EndIf
     *child\parent = *parent
     
-    If *parent\type = Object3D::#Object3D_Model
+    If *parent\type = Object3D::#Model
       *child\model = *parent
     Else
       *child\model = *parent\model
@@ -280,6 +295,13 @@ Module Object3D
   ; ----------------------------------------------------------------------------
   Procedure GetGlobalTransform(*Me.Object3D_t)
     ProcedureReturn(*Me\globalT)
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Get Local Transform
+  ; ----------------------------------------------------------------------------
+  Procedure GetLocalTransform(*Me.Object3D_t)
+    ProcedureReturn(*Me\localT)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -382,10 +404,10 @@ Module Object3D
   ; Get Attribute
   ;-----------------------------------------------
   Procedure GetAttribute(*obj.Object3D_t,name.s)
-    If Not *obj\m_attributes(name)
+    If Not *obj\geom\m_attributes(name)
       ProcedureReturn #Null
     Else
-      ProcedureReturn *obj\m_attributes(name)
+      ProcedureReturn *obj\geom\m_attributes(name)
     EndIf
     
   EndProcedure
@@ -393,14 +415,14 @@ Module Object3D
   ;-----------------------------------------------
   ; Add Attribute
   ;-----------------------------------------------
-  Procedure AddAttribute(*obj.Object3d_t,*attribute.Attribute::Attribute_t)
+  Procedure AddAttribute(*obj.Object3D::Object3D_t,*attribute.Attribute::Attribute_t)
     If Not *obj : ProcedureReturn : EndIf
     If Not *attribute : ProcedureReturn : EndIf
     
-    If *obj\m_attributes(*attribute\name)
+    If *obj\geom\m_attributes(*attribute\name)
       ProcedureReturn #Null
     Else
-      Object3D::AttachMapElement(*obj\m_attributes(),*attribute\name,*attribute)
+      Object3D::AttachMapElement(*obj\geom\m_attributes(),*attribute\name,*attribute)
     EndIf
 
   EndProcedure
@@ -411,9 +433,9 @@ Module Object3D
   Procedure DeleteAttribute(*obj.Object3D_t,name.s)
     If Not *obj : ProcedureReturn : EndIf
   
-    If *obj\m_attributes(name)
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(name)
-      DeleteMapElement(*obj\m_attributes(),name)
+    If *obj\geom\m_attributes(name)
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(name)
+      DeleteMapElement(*obj\geom\m_attributes(),name)
       Attribute::Delete(*attribute)
     EndIf
     
@@ -425,13 +447,13 @@ Module Object3D
   Procedure DeleteAllAttributes(*obj.Object3D_t)
     If Not *obj : ProcedureReturn : EndIf
     
-    ForEach *obj\m_attributes()
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes()
-      DeleteMapElement(*obj\m_attributes())
+    ForEach *obj\geom\m_attributes()
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes()
+      DeleteMapElement(*obj\geom\m_attributes())
       Attribute::Delete(*attribute)
     Next
     
-    FreeMap(*obj\m_attributes())
+    FreeMap(*obj\geom\m_attributes())
     
   EndProcedure
   
@@ -439,7 +461,7 @@ Module Object3D
   ; Check Attribute Exists
   ;-----------------------------------------------
   Procedure.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
+    If *obj\geom\m_attributes(attrname)
       ProcedureReturn #True
     Else
       ProcedureReturn #False
@@ -451,8 +473,8 @@ Module Object3D
   ; Set Attribute Dirty
   ;-----------------------------------------------
   Procedure SetAttributeDirty(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
-      *obj\m_attributes(attrname)\dirty = #True
+    If *obj\geom\m_attributes(attrname)
+      *obj\geom\m_attributes(attrname)\dirty = #True
     EndIf
   EndProcedure
   
@@ -460,8 +482,8 @@ Module Object3D
   ; Set Attribute Clean
   ;-----------------------------------------------
   Procedure SetAttributeClean(*obj.Object3D_t,attrname.s)
-    If *obj\m_attributes(attrname)
-      *obj\m_attributes(attrname)\dirty = #False
+    If *obj\geom\m_attributes(attrname)
+      *obj\geom\m_attributes(attrname)\dirty = #False
     EndIf
   EndProcedure
   
@@ -538,7 +560,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 410
-; FirstLine = 397
-; Folding = ------
+; CursorPosition = 175
+; FirstLine = 157
+; Folding = -------
 ; EnableXP

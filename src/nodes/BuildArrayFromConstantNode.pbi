@@ -79,11 +79,7 @@ Module BuildArrayFromConstantNode
     
     ; Output
     ;-------------------------------------------------
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
-    
-    Protected *iOut.CArray::CArrayT = *node\outputs()\value
+    Protected *iOut.CArray::CArrayT = NodePort::AcquireOutputData(*node\outputs())
     
     Protected nbp.i = CArray::GetValueI(*iCount,0)
     Protected i
@@ -184,9 +180,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 67
-; FirstLine = 59
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 97
+; FirstLine = 78
 ; Folding = --
 ; EnableThread
 ; EnableXP

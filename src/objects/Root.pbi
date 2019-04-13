@@ -60,11 +60,11 @@ Module Root
     
     ; ---[ Init CObject Base Class ]--------------------------------------------
     *Me\name = name
-    *Me\type = Object3D::#Object3D_Root
+    *Me\type = Object3D::#Root
     *Me\tree = #Null
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Root
+    *Me\type = Object3D::#Root
     Matrix4::SetIdentity(*Me\matrix)
     
     Object3D::ResetLocalKinematicState(*Me)
@@ -147,10 +147,10 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 89
-; FirstLine = 78
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 58
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

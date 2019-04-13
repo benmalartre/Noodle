@@ -2,7 +2,7 @@
 XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
-XIncludeFile "Slot.pbi"
+XIncludeFile "Signal.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
@@ -28,7 +28,7 @@ XIncludeFile "../opengl/CubeMap.pbi"
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Null.pbi"
+XIncludeFile "../objects/Locator.pbi"
 XIncludeFile "../objects/Curve.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
@@ -82,7 +82,6 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
-; XIncludeFile "../controls/PopupMenu.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
 
 XIncludeFile "../commands/Scene.pbi"
@@ -641,8 +640,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 543
-; FirstLine = 87
+; CursorPosition = 84
+; FirstLine = 80
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -74,7 +74,7 @@ Module LayerGBuffer
     ForEach *obj\children()
       *child = *obj\children()
       *t = *child\globalT
-      If Object3D::IsA(*child,Object3D::#Object3D_Polymesh)
+      If Object3D::IsA(*child,Object3D::#Polymesh)
         Protected id.v3f32
         Object3D::EncodeID(@id,*child\uniqueID)
         glUniform1i(glGetUniformLocation(shader,"selectionMode"),1)
@@ -240,7 +240,7 @@ Module LayerGBuffer
 ;     
 ;     For i=0 To nbo-1
 ;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
-;       If *obj\type = Object3D::#Object3D_Polymesh
+;       If *obj\type = Object3D::#Polymesh
 ;         *mesh = *obj
 ;         If *mesh\texture
 ;           glActiveTexture(#GL_TEXTURE0)
@@ -273,7 +273,7 @@ Module LayerGBuffer
 ;     Protected *cloud.InstanceCloud::InstanceCloud_t
 ;     For i=0 To nbo-1
 ;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
-;       If *obj\type = Object3D::#Object3D_InstanceCloud
+;       If *obj\type = Object3D::#InstanceCloud
 ;         *cloud = *obj
 ;         If *cloud\texture
 ;           glActiveTexture(#GL_TEXTURE0)
@@ -325,7 +325,6 @@ Module LayerGBuffer
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
     Protected *Me.LayerGBuffer_t = AllocateMemory(SizeOf(LayerGBuffer_t))
-    InitializeStructure(*Me,LayerGBuffer_t)
     Object::INI( LayerGBuffer )
     
     *Me\width = width
@@ -351,7 +350,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 135
+; CursorPosition = 242
+; FirstLine = 238
 ; Folding = --
 ; EnableXP

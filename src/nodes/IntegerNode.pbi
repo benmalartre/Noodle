@@ -53,8 +53,8 @@ Module IntegerNode
     
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t = *node\Inputs()
-    Protected *bIn.CArray::CArrayInt = *input\value
-    Protected *bOut.CArray::CArrayInt = *output\value
+    Protected *bIn.CArray::CArrayInt = *input\attribute\data
+    Protected *bOut.CArray::CArrayInt = *output\attribute\data
     CArray::SetCount(*bOut,CArray::GetCount(*bIn))
     CArray::Copy(*bOut,*bIn)
     
@@ -101,9 +101,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 47
-; FirstLine = 44
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 56
+; FirstLine = 43
 ; Folding = --
 ; EnableThread
 ; EnableXP

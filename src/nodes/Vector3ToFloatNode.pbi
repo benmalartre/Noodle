@@ -67,9 +67,9 @@ Module Vector3ToFloatNode
     Protected *input.NodePort::NodePort_t = *node\inputs()
     
     Protected *vVal.CArray::CArrayV3F32 = NodePort::AcquireInputData(*input)
-    Protected *xVal.CArray::CArrayFloat = *outputX\value
-    Protected *yVal.CArray::CArrayFloat = *outputY\value
-    Protected *zVal.CArray::CArrayFloat = *outputZ\value
+    Protected *xVal.CArray::CArrayFloat = NodePort::AcquireOutputData(*outputX)
+    Protected *yVal.CArray::CArrayFloat = NodePort::AcquireOutputData(*outputY)
+    Protected *zVal.CArray::CArrayFloat = NodePort::AcquireOutputData(*outputZ)
     
     Protected size_t = CArray::GetCount(*vVal)
     
@@ -122,8 +122,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 50
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

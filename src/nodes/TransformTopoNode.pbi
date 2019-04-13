@@ -64,9 +64,9 @@ Module TransformTopoNode
     Protected *inTopoArray.CArray::CArrayPtr = NodePort::AcquireInputData(*inTopo)
     Protected *inTsArray.CArray::CArrayM4F32 = NodePort::AcquireInputData(*inTs)
     
-    Protected *outTopoArray.CArray::CArrayPtr = *outTopo\value
+    Protected *outTopoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*outTopo)
     
-    ;Clear old Data
+    ; Clear old Data
     Protected i
     For i=0 To CArray::GetCount(*outTopoArray)-1
       Topology::Delete(CArray::GetValuePtr(*outTopoArray,i))
@@ -74,13 +74,15 @@ Module TransformTopoNode
     CArray::SetCount(*outTopoArray,0)
        
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*inTopoArray,0)
-
+          
     If *topo And CArray::GetCount(*inTsArray)>1
       Topology::TransformArray(*topo,*inTsArray,*outTopoArray)
     ElseIf *topo And CArray::GetCount(*inTsArray)=1
       Protected *out = Topology::New(*topo)
       Topology::Transform(*out,CArray::GetValue(*inTsArray,0))
       CArray::AppendPtr(*outTopoArray,*out)
+    Else
+
     EndIf
     
 
@@ -122,8 +124,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 50
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 84
 ; FirstLine = 45
 ; Folding = --
 ; EnableXP

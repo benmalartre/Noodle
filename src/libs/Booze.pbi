@@ -24,7 +24,7 @@ DeclareModule Alembic
   Global.s ALEMBIC_VERSION
   Macro ABCGeometricType : l : EndMacro
   Enumeration
-    #ABC_OBJECT_UNKNOWN = 0
+    #ABC_OBJECT_ROOT = 0
     #ABC_OBJECT_XFORM
     #ABC_OBJECT_POINTS
     #ABC_OBJECT_CURVE
@@ -202,7 +202,7 @@ DeclareModule Alembic
   ;----------------------------------------
   Structure ABC_Object_Infos
     *name
-    type.i
+    type.l
     *obj
   EndStructure
   
@@ -219,11 +219,11 @@ DeclareModule Alembic
   ;Polymesh Topology Sample
   ;-----------------------------------------
   Structure ABC_Polymesh_Topo_Sample_Infos
-    nbpoints.i
-    nbfacecount.i
-    nbindices.i
-    nbsamples.i
-    sampleindex.i
+    nbpoints.l
+    nbfacecount.l
+    nbindices.l
+    nbsamples.l
+    sampleindex.l
     
     hasvelocity.b
   	hasnormal.b
@@ -251,7 +251,7 @@ DeclareModule Alembic
   EndStructure
   
   Structure ABC_Envelope_Sample
-    nbdeformers.i
+    nbdeformers.l
     *indices
     *weights 
   EndStructure
@@ -260,7 +260,7 @@ DeclareModule Alembic
   ;Polymesh Sample
   ;-----------------------------------------
   Structure ABC_Polymesh_Sample_Infos
-    nbpoints.i
+    nbpoints.l
     hasvelocity.b
   	sampleindex.i
   EndStructure
@@ -274,8 +274,8 @@ DeclareModule Alembic
   ;Points Sample
   ;-----------------------------------------
   Structure ABC_PointCloud_Sample_Infos
-    nbpoints.i
-    sampleindex.i
+    nbpoints.l
+    sampleindex.l
     b_velocity.b
 	  b_size.b
 	  b_orientation.b
@@ -297,9 +297,9 @@ DeclareModule Alembic
   ; Curves Sample
   ;-----------------------------------------
   Structure ABC_Curves_Sample_Infos
-    nbpoints.i
-    nbcurves.b
-    sampleindex.i
+    nbpoints.l
+    nbcurves.l
+    sampleindex.l
     hasWidth.b
     hasUVs.b
     hasNormals.b
@@ -370,6 +370,20 @@ DeclareModule Alembic
   EndStructure
   
   ;-----------------------------------------
+  ; Write Job Opaque Structure
+  ;-----------------------------------------
+  Structure ABC_Write_Job
+  EndStructure
+  
+  Interface ITimeSampling
+    Get()                                   
+	  GetPtr()
+	  NumStoredTimes.l()
+	  GetStoredTimes()
+  EndInterface
+  
+  
+  ;-----------------------------------------
   ; CPP Interfaces Objects
   ;-----------------------------------------
   ; IArchiveManager
@@ -401,6 +415,7 @@ DeclareModule Alembic
 	  GetEndTime.d()
 	  GetNumTimeSampling.i()
 	  GetMaxNumSamplesForTimeSamplingIndex.l(index.l)
+
 	EndInterface 
 	
   ; IObject
@@ -449,13 +464,92 @@ DeclareModule Alembic
   	GetSample.l(time.f, *infos.ABC_Property_Sample_Infos, *sample.ABC_Property_Sample)
   EndInterface
   
+  ; AlembicWriteJob
+  Interface OWriteJob
+    GetTimeSampling()
+    GetArchive()
+	  GetFrames()
+  	SetFileName(filename.p-utf8)
+  	GetFileName()
+  	SetFrameRate(framerate.f)
+  	SetOption(in_Name.p-utf8, in_Value.p-utf8)
+  	HasOption(in_Name.p-utf8)
+  	GetOption(in_Name.p-utf8)
+  	Save(time.f)
+  EndInterface
+ 
+  ; OObject
+  Interface OObject
+    Delete()
+	  GetMetaData()
+	  GetCustomData()
+	  Get()
+	  GetPtr()
+	  GetArchive()
+	  GetTimeSampling()
+	  GetJob()
+	  Save(time.f)
+	  AddChild(*child)
+	EndInterface
+
+	; OXform
+  Interface OXform Extends OObject
+	  SetTransform(*m.Math::m4f32)
+	  GetTransform()
+	EndInterface
+	
+  ; OPolymesh
+	Interface OPolymesh Extends OObject
+    Set(*positions, numVertices.l, *faceIndices=#Null, *faceCount=#Null, numFaces.l=0)
+    SetPositions(*positions, numVertices.l)
+    SetDescription(*faceIndices, *faceCount, numFaces.l)
+  EndInterface
+  
+  ; OPoints
+  Interface OPoints Extends OObject
+    Set(*positions, *ids, numIndices.l)
+	  SetPositions(*positions, numPoints.l)
+  EndInterface
+  
+  ; OCurves
+  Interface OCurves Extends OObject
+    GetSampleDescription.l(time.f, *infos.ABC_Curves_Sample_Infos)
+    UpdateSample.l(*infos.ABC_Curves_Sample_Infos, *sample.ABC_Curves_Sample)
+  EndInterface
+
+  ; OProperty
+  Interface OProperty
+  	Init.l(*prop)
+  	IsConstant.b()
+  	GetName.l()
+  	GetPropertyType.l()
+  	GetDataTraits.l()
+  	GetNbItems.i(time.f)
+  	GetInterpretation.l()
+  	GetSampleDescription.b(time.f, *infos.ABC_Property_Sample_Infos)
+  	GetSample.l(time.f, *infos.ABC_Property_Sample_Infos, *sample.ABC_Property_Sample)
+  EndInterface
+  
+  ; OArchive
+  Interface OArchive
+    Open.b(fp.p-utf8)
+    Close.b()
+    IsValid.b()
+    AddObject(parent.OObject, name.p-utf8, type.ABCGeometricType, *ptr)
+    Get()
+    GetRoot()
+    GetJob()
+    GetNumObjects()
+    GetObjectByIndex(index)
+    GetObjectByName(name.p-utf8)
+	EndInterface 
+
   ; Import C Library
   ;-------------------------------------------------------
   If FileSize("../../libs")=-2
     CompilerSelect #PB_Compiler_OS
       CompilerCase  #PB_OS_Windows
         Global alembic_lib = OpenLibrary(#PB_Any, "..\..\libs\x64\windows\Alembic.dll")
-        ;Global alembic_lib = OpenLibrary(#PB_Any, "E:\Projects\RnD\Noodle\libs\x64\windows\Alembic.dll")
       CompilerCase #PB_OS_MacOS
         Global alembic_lib = OpenLibrary(#PB_Any, "../../libs/x64/macosx/PBAlembic.so")
       CompilerCase #PB_OS_Linux
@@ -465,7 +559,6 @@ DeclareModule Alembic
     CompilerSelect #PB_Compiler_OS
       CompilerCase  #PB_OS_Windows
         Global alembic_lib = OpenLibrary(#PB_Any, "libs\x64\windows\Alembic.dll")
-;         Global alembic_lib = OpenLibrary(#PB_Any, "E:\Projects\RnD\Noodle\libs\x64\windows\Alembic.dll")
       CompilerCase #PB_OS_MacOS
         Global alembic_lib = OpenLibrary(#PB_Any, "libs/x64/macosx/PBAlembic.so")
       CompilerCase #PB_OS_Linux
@@ -480,6 +573,9 @@ DeclareModule Alembic
   PrototypeC    ABCNEWARCHIVEMANAGER()
   PrototypeC    ABCDELETEARCHIVEMANAGER(manager.IArchiveManager)
   
+  PrototypeC    ABCNEWTIMESAMPLING(frameRate.f=24, startFrame.f=0)
+  PrototypeC    ABCDELETETIMESAMPLING(sampling.ITimeSampling)
+  
   PrototypeC    ABCNEWIARCHIVE()
   PrototypeC    ABCDELETEIARCHIVE(arc.IArchive)
   PrototypeC    ABCNEWIOBJECT(arch.IArchive, index.i)
@@ -491,6 +587,10 @@ DeclareModule Alembic
   PrototypeC    ABCDELETEOOBJECT(obj.IObject)
   
   
+  PrototypeC    ABCNEWWRITEJOB(filename.p-utf8, *frames, numFrames.i)
+  PrototypeC    ABCDELETEWRITEJOB(job.OWriteJob)
+  
+  
   ; import functions
   If alembic_lib  
     Global getLibraryVersion.ABCVERSION = GetFunction(alembic_lib, "getLibraryVersion")
@@ -498,6 +598,9 @@ DeclareModule Alembic
     
     Global newIArchiveManager.ABCNEWARCHIVEMANAGER = GetFunction(alembic_lib, "newArchiveManager")
     Global deleteIArchiveManager.ABCDELETEARCHIVEMANAGER = GetFunction(alembic_lib, "deleteArchiveManager")
+    
+    Global newTimeSampling.ABCNEWTIMESAMPLING= GetFunction(alembic_lib, "newTimeSampling")
+    Global deleteTimeSampling.ABCDELETETIMESAMPLING = GetFunction(alembic_lib, "deleteTimeSampling")
     
     Global newIArchive.ABCNEWIARCHIVE = GetFunction(alembic_lib, "newIArchive")
     Global deleteIArchive.ABCDELETEIARCHIVE = GetFunction(alembic_lib, "deleteIArchive")
@@ -508,6 +611,9 @@ DeclareModule Alembic
     Global deleteOArchive.ABCDELETEOARCHIVE = GetFunction(alembic_lib, "deleteOArchive")
     Global newOObject.ABCNEWOOBJECT = GetFunction(alembic_lib, "newOObject")
     Global deleteOObject.ABCDELETEOOBJECT = GetFunction(alembic_lib, "deleteOObject")
+    
+    Global newWriteJob.ABCNEWWRITEJOB = GetFunction(alembic_lib, "newWriteJob")
+    Global deleteWriteJob.ABCDELETEWRITEJOB = GetFunction(alembic_lib, "deleteWriteJob")
   EndIf
 
   Declare Init()
@@ -624,16 +730,17 @@ Module Alembic
         Debug Chr(9)+"OBJECT TYPE : CURVE"
       Case #ABC_OBJECT_FACESET
         Debug Chr(9)+"OBJECT TYPE : FACESET"
-      Case #ABC_OBJECT_UNKNOWN
-        Debug Chr(9)+"OBJECT TYPE : UNKNOWN"
+      Case #ABC_OBJECT_ROOT
+        Debug Chr(9)+"OBJECT TYPE : ROOT"
     EndSelect
     
-    Debug Chr(9)+" NUM PROPERTIES : "+Str(object\GetNumProperties())
-    For i=0 To object\GetNumProperties()-1
+    Define numProperties = object\GetNumProperties()
+    Debug Chr(9)+" NUM PROPERTIES : "+Str(numProperties)
+    For i=0 To numProperties-1
       Define prop.IProperty = object\GetProperty(i)
       Debug Chr(9)+Chr(9)+PeekS(prop\GetName(), -1, #PB_UTF8)
     Next
-    
+    Debug Chr(9)+" GET PROPERTIES OK ===> "+Str(object\GetNumProperties())
     ProcedureReturn object
   EndProcedure
   
@@ -661,11 +768,15 @@ Module Alembic
           For i=0 To archive\GetNumObjects()-1
             *abc_obj = AlembicIObject::New(archive\GetObject(i))
             If *abc_obj <> #Null
+              Debug "INIT ALEMBIC OBJECT : "+Str(*abc_obj)
               AlembicIObject::Init(*abc_obj,*abc_par)
+              Debug "INITIALIZED"
               If AlembicIObject::Get3DObject(*abc_obj)<>#Null
+                
                 *abc_par = #Null
                 *child = AlembicIObject::Get3DObject(*abc_obj)
                 Object3D::AddChild(*model,*child)
+                Debug "WE GOT 3D OBJECT : "+*child\name
               Else 
                 *abc_par = *abc_obj
               EndIf
@@ -792,12 +903,12 @@ Module AlembicIObject
     Protected *cloud_geom.Geometry::PointCloudGeometry_t = *cloud\geom
     Protected points.Alembic::IPoints = *o\iObj
     points\GetSampleDescription(frame,*cloud_infos)
-    
+    Debug "GET SAMPLE DESCIPTION POINT CLOUD PASSED"
     CArray::SetCount(*cloud_geom\a_positions,*cloud_infos\nbpoints)
     CArray::SetCount(*cloud_geom\a_velocities,*cloud_infos\nbpoints)
     CArray::SetCount(*cloud_geom\a_color,*cloud_infos\nbpoints)
     CArray::SetCount(*cloud_geom\a_indices,*cloud_infos\nbpoints)
-    
+    Debug "SET BASE ATTRIBUTES POINT CLOUD"
     
     *cloud_sample\position = CArray::GetPtr(*cloud_geom\a_positions,0)
     *cloud_sample\velocity = CArray::GetPtr(*cloud_geom\a_velocities,0)
@@ -805,17 +916,24 @@ Module AlembicIObject
     *cloud_sample\id = CArray::GetPtr(*cloud_geom\a_indices,0)
     
     update.i =  points\UpdateSample(*cloud_infos,*cloud_sample)
-    
+    Debug "UPDATE SAMPLE POINT CLOUD"
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
       Memory::ShiftAlign(*cloud_geom\a_positions\data, *cloud_geom\nbpoints, 12, 16)
       Memory::ShiftAlign(*cloud_geom\a_velocities\data, *cloud_geom\nbpoints, 12, 16)
       Memory::ShiftAlign(*cloud_geom\a_scale\data, *cloud_geom\nbpoints, 12, 16)
+      Debug "SHIFT ALIGN POINT CLOUD"
     CompilerEndIf
       
     UpdateProperties(*o,frame/30)
+    Debug "UPDATE PROPERTIES POINT CLOUD"
     ApplyProperty(*o,"Scale")
+    Debug "UPDATE SCALE POINT CLOUD"
     ApplyProperty(*o,"Orientation")
+    Debug "UPDATE ORIENTATION POINT CLOUD"
     ApplyProperty(*o,"Color")
+    Debug "UPDATE COLOR POINT CLOUD"
+    
+    Debug "INIT POINT CLOUD PASSED"
 
 ;     If *geom\nbpoints <> *infos\nbpoints Or *geom\nbsamples <> *infos\nbindices Or *geom\nbpolygons <> *infos\nbfacecount
 ;       *o\initialized = #False
@@ -875,7 +993,7 @@ Module AlembicIObject
 ;        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
 ;        If Not *infos\hastangent : PolymeshGeometry::RecomputeTangents(*geom):EndIf
 ;       
-;        PolymeshGeometry::GetTopology(*geom)
+;        PolymeshGeometry::ComputeTopology(*geom)
 ;        
 ;        
 ;        If *infos\hasenvelope
@@ -984,16 +1102,16 @@ Module AlembicIObject
         Memory::ShiftAlign(*geom\a_uvws\data, *geom\nbsamples, 12, 16)
       CompilerEndIf
       
-
+       PolymeshGeometry::ComputeTopology(*geom)
        PolymeshGeometry::ComputeTriangles(*geom)
-       
+       PolymeshGeometry::ComputeVertexPolygons(*geom, *geom\topo)
        
        If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
        If Not *infos\hasnormal : PolymeshGeometry::ComputeNormals(*geom,1.0): EndIf
        If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
        If Not *infos\hastangent : PolymeshGeometry::ComputeTangents(*geom):EndIf
       
-       PolymeshGeometry::GetTopology(*geom)
+       PolymeshGeometry::ComputeTopology(*geom)
        
        
 ;        If *infos\hasenvelope
@@ -1091,6 +1209,7 @@ Module AlembicIObject
   ;---------------------------------------------------------
   Procedure CreateAttributeFromProperty(*Me.AlembicIObject_t,*infos.Alembic::ABC_Property_Sample_Infos, name.s)
     Protected *obj.Object3D::Object3D_t = *Me\obj
+    Protected *geom.Geometry::Geometry_t = *obj\geom
     Protected *data.CArray::CArrayT
     Protected *attribute.Attribute::Attribute_t = #Null
     Protected context.i = Attribute::#ATTR_CTXT_SINGLETON
@@ -1102,41 +1221,40 @@ Module AlembicIObject
     Select *infos\traits
       Case Alembic::#ABC_DataTraits_Bool
         *data = CArray::newCArrayBool()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_BOOL,struct,context,*data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_BOOL,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Int32
         *data = CArray::newCArrayLong()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_LONG,struct,context,*data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_LONG,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Int64
         *data = CArray::newCArrayInt()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_INTEGER,struct,context,*data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_INTEGER,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Float
         *data = CArray::newCArrayFloat()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_FLOAT,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_FLOAT,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V2f
         *data = CArray::newCArrayV2F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR2,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR2,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V3f
         *data = CArray::newCArrayV3F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR3,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR3,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V4f
         *data = CArray::newCArrayC4F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR4,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_VECTOR4,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_C4f
         *data = CArray::newCArrayC4F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_COLOR,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_COLOR,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Quatf
         *data = CArray::newCArrayQ4F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_QUATERNION,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_QUATERNION,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_M33f
         *data = CArray::newCArrayM3F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_MATRIX3,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_MATRIX3,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_M44f
         *data = CArray::newCArrayM4F32()
-        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_MATRIX4,struct,context, *data,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE))
+        *attribute = Attribute::New(name,Attribute::#ATTR_TYPE_MATRIX4,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Default
         MessageRequester("[Alembic]","Create Attribute From Property Failed!"+Chr(10)+name+" Traits Unsupported!!")
     EndSelect
-    
     If *attribute
       Object3D::AddAttribute(*obj,*attribute)
     EndIf
@@ -1151,8 +1269,9 @@ Module AlembicIObject
   ;---------------------------------------------------------
   Procedure GetProperties(*Me.AlembicIObject_t)
     Protected i
-    Protected *sample.Alembic::ABC_Property_Sample = AllocateMemory(SizeOf(Alembic::ABC_Property_Sample))
-    Protected *attr.Attribute::Attribute_t
+    Protected *sample.Alembic::ABC_Property_Sample =  AllocateMemory(SizeOf(Alembic::ABC_Property_Sample))
+    InitializeStructure(*sample, Alembic::ABC_Property_Sample)
+    Protected *attr.Attribute::Attribute_t 
     Protected x
     Protected *infos.Alembic::ABC_Property_Sample_Infos = AllocateMemory(SizeOf(Alembic::ABC_Property_Sample_Infos))
     InitializeStructure(*infos,Alembic::ABC_Property_Sample_Infos)
@@ -1261,20 +1380,20 @@ Module AlembicIObject
     Define nbp
     Define *v.v3f32
     
-    If FindMapElement(*Me\obj\m_attributes(),name)
+    If FindMapElement(*Me\obj\geom\m_attributes(),name)
        If *Me\iObj\GetType() = Alembic::#ABC_OBJECT_POINTS
          Define *geom.Geometry::PointCloudGeometry_t = *Me\obj\geom
          If *geom
            Select name
              Case "Scale"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
                CArray::SetCount(*geom\a_scale,nbp)
-               CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),
+               CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),
                           CArray::GetPtr(*geom\a_scale,0),
                           CArray::GetCount(*geom\a_scale)*CArray::GetItemSize(*geom\a_scale))
                
              Case "Orientation"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
                Define *tan.v3f32
                Define *nrm.v3f32
                Define *q.q4f32
@@ -1286,7 +1405,7 @@ Module AlembicIObject
                For x=0 To nbp-1
                  *nrm = CArray::GetValue(*geom\a_normals,x)
                  *tan = CArray::GetValue(*geom\a_tangents,x)
-                 *q = CArray::GetPtr(*Me\obj\m_attributes()\data,x)
+                 *q = CArray::GetPtr(*Me\obj\geom\m_attributes()\data,x)
                  
                  Vector3::Set(*nrm,0,1,0)
                  Vector3::MulByQuaternionInPlace(*nrm,*q)
@@ -1295,11 +1414,11 @@ Module AlembicIObject
                Next
                
              Case "Color"
-               nbp = CArray::GetCount(*Me\obj\m_attributes()\data)
+               nbp = CArray::GetCount(*Me\obj\geom\m_attributes()\data)
                Define c.c4f32
                CArray::SetCount(*geom\a_color,nbp)
                For x=0 To nbp-1
-                 CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data, x), CArray::GetPtr(*geom\a_color,x), SizeOf(c))
+                 CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data, x), CArray::GetPtr(*geom\a_color,x), SizeOf(c))
                Next
            EndSelect
          EndIf
@@ -1320,8 +1439,8 @@ Module AlembicIObject
     ;If FindMapElement(*Me\attributes(),name)
       
        nbp = CArray::GetCount(*arr)
-       CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
-       CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
+       CArray::SetCount(*Me\obj\geom\m_attributes()\data,nbp)
+       CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
         Break
 ;        Else
 ;          MessageRequester("[Alembic]","Property "+name+" does NOT exists!!!")
@@ -1329,11 +1448,11 @@ Module AlembicIObject
      Next
      
 
-;     If FindMapElement(*Me\obj\m_attributes(),name)
+;     If FindMapElement(*Me\obj\geom\m_attributes(),name)
 ;       
 ;        nbp = CArray::GetCount(*arr)
-;        CArray::SetCount(*Me\obj\m_attributes()\data,nbp)
-;        CopyMemory(CArray::GetPtr(*Me\obj\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
+;        CArray::SetCount(*Me\obj\geom\m_attributes()\data,nbp)
+;        CopyMemory(CArray::GetPtr(*Me\obj\geom\m_attributes()\data,0),CArray::GetPtr(*arr,0),nbp*CArray::GetItemSize(*arr))
 ; 
 ;                
 ;      Else
@@ -1346,12 +1465,12 @@ Module AlembicIObject
   ; Init
   ;---------------------------------------------------------
   Procedure Init(*o.AlembicIObject_t,*p.AlembicIObject_t=#Null)
-    
+    Debug "INIT ALEMBIC OBJECT"
     Protected name.s = PeekS(*o\iObj\GetName(),-1,#PB_Ascii)
     *o\parent = *p
    Select *o\iObj\GetType()
      Case Alembic::#ABC_OBJECT_XFORM
-       
+       Debug "INIT XFORM"
 ;      Protected *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_XFORM)
 
       CreateSample(*o)
@@ -1361,6 +1480,7 @@ Module AlembicIObject
       UpdateSample(*o,1)
       
     Case Alembic::#ABC_OBJECT_POLYMESH
+      Debug "INIT POLYMESH"
       ; *s = Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_POLYMESH)
        CreateSample(*o)
       ;LogProperties(*o)
@@ -1393,10 +1513,11 @@ Module AlembicIObject
 ;       
 ;       
 ;       
-   Case Alembic::#ABC_OBJECT_POINTS
+    Case Alembic::#ABC_OBJECT_POINTS
+      Debug "INIT POINTS"
 ;      Alembic::ABC_InitObject(*o\ptr,Alembic::#ABC_OBJECT_POINTCLOUD)
      CreateSample(*o)
-     
+     Debug "SAMPLE CREATED"
      Protected *cloudinfos.Alembic::ABC_PointCloud_Sample_Infos = *o\infos
      Protected *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New(name,Shape::#SHAPE_CUBE,*cloudinfos\nbpoints)
 ;       *node.AlembicNode::AlembicNode_t = AlembicNode::New(*cloud,*o)
@@ -1404,8 +1525,14 @@ Module AlembicIObject
       *o\obj = *cloud
       *o\initialized = #False
       Protected *cloud_geom.Geometry::PointCloudGeometry_t = *cloud\geom
+      Debug "POINTS CREATED"
       GetProperties(*o)
-      UpdateSample(*o,1)
+      Debug "PROPERTIES UPDATED"
+      UpdateSample(*o,0)
+      Debug "SAMPLE UPDATED"
+      Debug "POINTS INITIALIZD"
+    Default
+      Debug "INITILAIZE FAILURE UNKNOWN TYPE"
       
   EndSelect
   
@@ -1442,7 +1569,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 596
-; FirstLine = 559
+; CursorPosition = 223
+; FirstLine = 220
 ; Folding = --------
 ; EnableXP

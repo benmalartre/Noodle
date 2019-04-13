@@ -87,11 +87,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestCurve",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
      *app\context = *viewport\context
-     
-    *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
+     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -121,8 +119,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 63
+; CursorPosition = 89
+; FirstLine = 60
 ; Folding = -
 ; EnableThread
 ; EnableXP

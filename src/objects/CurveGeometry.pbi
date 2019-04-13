@@ -41,6 +41,13 @@ DeclareModule CurveGeometry
   Declare CatmullInterpolateColors(*Me.CurveGeometry_t, *colors.CArray::CArrayV3f32)
   Declare CatmullInterpolateTangents(*Me.CurveGeometry_t, *normals.CArray::CArrayV3f32)
   Declare CatmullInterpolateWidths(*Me.CurveGeometry_t, *width.CArray::CArrayFloat)
+  
+  DataSection 
+    CurveGeometryVT: 
+    Data.i @Delete()
+  EndDataSection 
+  
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 ;========================================================================================
@@ -640,8 +647,8 @@ Module CurveGeometry
     If *a_knots : CArray::Delete(*a_knots) : EndIf
    
     ;---[ Deallocate Memory ]----------------------------------------
-    ClearStructure(*Me,CurveGeometry_t)
-    FreeMemory(*Me)
+    Object::TERM(CurveGeometry)
+    
   EndProcedure
 
     
@@ -651,7 +658,7 @@ Module CurveGeometry
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.CurveGeometry_t = AllocateMemory(SizeOf(CurveGeometry_t))
-    InitializeStructure(*Me,CurveGeometry_t)
+    Object::INI(CurveGeometry)
     *Me\parent = *parent
     *Me\a_positions = CArray::newCArrayV3F32()
     *Me\a_colors = CArray::newCArrayV3F32()
@@ -668,13 +675,11 @@ Module CurveGeometry
     ComputeSamples(*Me)
     ProcedureReturn *Me
   EndProcedure
-  ;}
-  
-  
+
+   Class::DEF( CurveGeometry )
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 242
-; FirstLine = 202
+; CursorPosition = 45
 ; Folding = ------
 ; EnableXP

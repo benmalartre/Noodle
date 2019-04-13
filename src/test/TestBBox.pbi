@@ -17,7 +17,7 @@ Define q.Math::q4f32
 Quaternion::SetFromAxisAngleValues(q,0,0,1,Radian(90))
 Transform::SetRotationFromQuaternion(*T, q)
 Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-PolymeshGeometry::SphereTopology(*geom\topo,1,512,512)
+PolymeshGeometry::SphereTopology(*geom,1,512,512)
 
 
 PolymeshGeometry::Set2(*geom, *geom\topo)
@@ -41,6 +41,6 @@ MessageRequester("Time", msg)
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 29
+; CursorPosition = 19
 ; EnableXP
 ; Constant = #USE_SSE=1

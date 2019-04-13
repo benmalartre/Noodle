@@ -5,7 +5,7 @@ XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
-XIncludeFile "PolymeshGeometry.pbi"
+XIncludeFile "DrawerGeometry.pbi"
 
 ;==============================================================================
 ; Drawer Module Declaration
@@ -23,6 +23,7 @@ DeclareModule Drawer
     #ITEM_MATRIX
     #ITEM_SPHERE
     #ITEM_TRIANGLE
+    #ITEM_TEXT
     #ITEM_COMPOUND
   EndEnumeration
   
@@ -52,6 +53,10 @@ DeclareModule Drawer
   EndStructure
   
   Structure Triangle_t Extends Item_t
+  EndStructure
+  
+  Structure Text_t Extends Item_t
+    text.s
   EndStructure
   
   Structure Box_t Extends Item_t
@@ -570,8 +575,7 @@ Module Drawer
       EndSelect
     Next
     ClearList(*Me\items())
-    ClearStructure(*Me,Drawer_t)
-    FreeMemory( *Me )
+    Object::TERM(Drawer)
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -581,24 +585,21 @@ Module Drawer
     ; Allocate Object Memory
     Protected *Me.Drawer_t = AllocateMemory( SizeOf(Drawer_t) )
     ; Initialize Structure
-    InitializeStructure(*Me,Drawer_t)
     Object::INI(Drawer)
     
     ; Init Members
-    *Me\type = Object3D::#Object3D_Drawer
+    *Me\type = Object3D::#Drawer
     *Me\name = name
-  
-    *Me\wireframe_r = Random(255)/255;
-    *Me\wireframe_g = Random(255)/255;
-    *Me\wireframe_b = Random(255)/255;
+    *Me\wireframe_r = Random(255)/255
+    *Me\wireframe_g = Random(255)/255
+    *Me\wireframe_b = Random(255)/255
+    *Me\geom = DrawerGeometry::New(*Me)
     
+    Object3D::OBJECT3DATTR()
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
-   
-    ;*Me\bbox      = newCBox()
     
-    Object3D::Object3D_ATTR()
     
     ; Return Initialized Object
     ProcedureReturn *Me 
@@ -868,6 +869,25 @@ Module Drawer
     ProcedureReturn *triangle
   EndProcedure
   
+  ; ---[ Add Text Item ]------------------------------------------------------
+  Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s, size.f)
+    Protected *text.Text_t = AllocateMemory(SizeOf(Text_t))
+    *text\type = #ITEM_TEXT
+    *text\positions = CArray::newCArrayV3F32()
+    *text\colors = CArray::newCArrayC4F32()
+    *text\text = text
+    *text\size = size
+    SetColor(*text, Color::_BLACK())
+    CArray::SetCount(*text\positions, 1)
+    CArray::SetCount(*text\colors, 1)
+    If *position : CArray::SetValue(*text\positions, 0, *position) : EndIf
+    AddElement(*Me\items())
+    *Me\items() = *text
+    *Me\dirty = #True
+    
+    ProcedureReturn *text
+  EndProcedure
+  
   ; ---[ Reflection ]----------------------------------------------------------
   Class::DEF( Drawer )
   
@@ -877,7 +897,6 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 406
-; FirstLine = 360
+; CursorPosition = 25
 ; Folding = ---------
 ; EnableXP

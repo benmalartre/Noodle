@@ -1,7 +1,6 @@
 ﻿; -----------------------------------------------------------------------------------
 ; Test Hilbert Curve
 ; -----------------------------------------------------------------------------------
-
 XIncludeFile "../core/Application.pbi"
 XIncludeFile "../core/Morton.pbi"
 XIncludeFile "../libs/FTGL.pbi"
@@ -11,11 +10,13 @@ XIncludeFile "../objects/Polygonizer.pbi"
 XIncludeFile "../ui/ViewportUI.pbi"
 
 
-
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -608,7 +609,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 582
-; FirstLine = 551
+; CursorPosition = 17
+; FirstLine = 2
 ; Folding = ---
 ; EnableXP

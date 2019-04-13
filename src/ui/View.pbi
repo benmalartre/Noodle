@@ -19,7 +19,7 @@ DeclareModule View
     *content.UI::UI_t               ; view content
     *right.View_t
     *left.View_t
-    *top.View_t
+    *parent.View_t
     
     name.s                          ; view name
     lorr.b                          ; left or right view
@@ -104,12 +104,12 @@ DeclareModule ViewManager
   Global *view_manager.ViewManager_t
   
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-  Declare Delete(*manager.ViewManager_t)
-  Declare OnEvent(*manager.ViewManager_t,event.i)
-  Declare DrawPickImage(*manager.ViewManager_t)
-  Declare Draw(*manager.ViewManager_t)
+  Declare Delete(*Me.ViewManager_t)
+  Declare OnEvent(*Me.ViewManager_t,event.i)
+  Declare DrawPickImage(*Me.ViewManager_t)
+  Declare Draw(*Me.ViewManager_t)
   Declare Pick(*Me.ViewManager_t, mx.i, my.i)
-;   Declare UpdateMap(*manager.ViewManager_t)
+;   Declare UpdateMap(*Me.ViewManager_t)
 EndDeclareModule
 
 
@@ -145,9 +145,9 @@ Module View
     
     If *top = #Null
       *view\manager = #Null
-      *view\top = #Null
+      *view\parent = #Null
     Else
-      *view\top = *top
+      *view\parent = *top
       *view\manager = *top\manager
     EndIf
    
@@ -169,7 +169,7 @@ Module View
   ; Resize
   ;----------------------------------------------------------
   Procedure Resize(*view.View_t,x.i,y.i,width.i,height.i)
-    Protected *manager.ViewManager::ViewManager_t = *view\manager
+    Protected *Me.ViewManager::ViewManager_t = *view\manager
     
     *view\x = x
     *view\y = y
@@ -223,8 +223,8 @@ Module View
           Resize(*view\right,*view\x,*view\y+*view\height* *view\perc/100+hs,*view\width,*view\height-*view\height* *view\perc/100-hs)
         EndIf
       EndIf
-      
     EndIf
+    InitSplitter(*view)
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -280,7 +280,7 @@ Module View
 ;       If *view\gadgetID : FreeGadget(*view\gadgetID):EndIf
       Protected hs = ViewManager::#VIEW_BORDER_SENSIBILITY/2
       Protected *content = *view\content
-      Protected *manager.ViewManager::ViewManager_t = *view\manager
+      Protected *Me.ViewManager::ViewManager_t = *view\manager
       UseGadgetList(WindowID(*view\parentID))
       
       *view\fixed = Bool(options & #PB_Splitter_FirstFixed Or options & #PB_Splitter_SecondFixed)
@@ -370,23 +370,23 @@ Module View
   ;----------------------------------------------------------------------------------
   Procedure.i TouchBorderEvent(*view.View_t)
     If Not *view : ProcedureReturn : EndIf
-    Protected *manager.ViewManager::ViewManager_t = *view\manager
+    Protected *Me.ViewManager::ViewManager_t = *view\manager
     Protected btn.i
     If *view\fixed : ProcedureReturn : EndIf
     If EventType() = #PB_EventType_LeftButtonDown
       Protected drag.b = #True
       
       Protected sx,sy,sw, sh
-      Protected mx = WindowMouseX(*manager\window)
-      Protected my = WindowMouseY(*manager\window)
+      Protected mx = WindowMouseX(*Me\window)
+      Protected my = WindowMouseY(*Me\window)
        
 
       Define e
       Repeat 
         e = WaitWindowEvent()
         ; Get Mouse Position
-        mx = WindowMouseX(*manager\window)
-        my = WindowMouseY(*manager\window)
+        mx = WindowMouseX(*Me\window)
+        my = WindowMouseY(*Me\window)
         ; Resize Window Event
         ;If EventType() = #PB_EventType_LeftButtonUp
         
@@ -397,7 +397,7 @@ Module View
         EndIf
   
       Until drag = #False
-      ViewManager::OnEvent(*manager,#PB_Event_SizeWindow)
+      ViewManager::OnEvent(*Me,#PB_Event_SizeWindow)
     EndIf
     
   EndProcedure
@@ -437,28 +437,28 @@ Module View
       *affected = *view\tsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\lsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\rsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
       
       *affected = *view\bsplitter 
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
       EndIf
     EndIf
@@ -486,7 +486,7 @@ Module View
       If *affected And *affected\splitterID
         StartDrawing(CanvasOutput(*affected\splitterID  ))
         ;         Box(0,0,GadgetWidth(*view\top\splitterID),GadgetHeight(*view\top\splitterID),RGB(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01))
-        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_SPLITTER)
+        Box(0,0,GadgetWidth(*affected\splitterID),GadgetHeight(*affected\splitterID),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
         ProcedureReturn *affected
       EndIf
@@ -534,7 +534,7 @@ Module View
   ; Get Active View
   ;----------------------------------------------------------------------------------
   Procedure GetActive(*view.View_t,x.i,y.i)
-    Protected *manager.ViewManager::ViewManager_t = *view\manager
+    Protected *Me.ViewManager::ViewManager_t = *view\manager
     Protected active.b = *view\active 
     If *view\leaf
       If MouseInside(*view,x,y) = #True
@@ -617,7 +617,7 @@ Module View
     EndIf
    
     *Me\content = *content
-    *content\top = *Me
+    *content\parent = *Me
     
     Protected *manager.ViewManager::ViewManager_t = *Me\manager
     *manager\uis(*content\name) = *content
@@ -677,59 +677,59 @@ EndModule
 ;==========================================================================
 Module ViewManager
   
-  Procedure Resize(*manager.ViewManager_t)    
-    If Not *manager : ProcedureReturn : EndIf
-    Protected w = WindowWidth(*manager\window,#PB_Window_InnerCoordinate)
-    Protected h = WindowHeight(*manager\window,#PB_Window_InnerCoordinate)
+  Procedure Resize(*Me.ViewManager_t)    
+    If Not *Me : ProcedureReturn : EndIf
+    Protected w = WindowWidth(*Me\window,#PB_Window_InnerCoordinate)
+    Protected h = WindowHeight(*Me\window,#PB_Window_InnerCoordinate)
 
-    View::Resize(*manager\main,0,0,w,h)
-    DrawPickImage(*manager)
+    View::Resize(*Me\main,0,0,w,h)
+    DrawPickImage(*Me)
   EndProcedure
   
   ;----------------------------------------------------------------------------------
   ; Recurse View
   ;----------------------------------------------------------------------------------
-  Procedure RecurseView(*manager.ViewManager_t,*view.View::View_t)
+  Procedure RecurseView(*Me.ViewManager_t,*view.View::View_t)
     If *view\leaf
       If *view\active
-        *manager\active = *view
+        *Me\active = *view
       EndIf
     Else
-      If *view\left : RecurseView(*manager,*view\left) : EndIf
-      If *view\right : RecurseView(*manager,*view\right) : EndIf
+      If *view\left : RecurseView(*Me,*view\left) : EndIf
+      If *view\right : RecurseView(*Me,*view\right) : EndIf
     EndIf
   EndProcedure
   
   ;----------------------------------------------------------------------------------
   ; Get Active View
   ;----------------------------------------------------------------------------------
-  Procedure.i GetActiveView(*manager.ViewManager_t,x.i,y.i)
-    Protected *view.View::View_t = *manager\main
+  Procedure.i GetActiveView(*Me.ViewManager_t,x.i,y.i)
+    Protected *view.View::View_t = *Me\main
     View::GetActive(*view,x,y)
 
-    ProcedureReturn RecurseView(*manager, *manager\main)
+    ProcedureReturn RecurseView(*Me, *Me\main)
   EndProcedure
   
   ;----------------------------------------------------------------------------------
   ; Drag
   ;----------------------------------------------------------------------------------
-  Procedure Drag(*manager.ViewManager_t)
-    ;Debug "View Manager Drag View Top ID: "+Str(*manager\active\top\id)  
+  Procedure Drag(*Me.ViewManager_t)
+    ;Debug "View Manager Drag View Top ID: "+Str(*Me\active\top\id)  
   EndProcedure
   
 ;   ;----------------------------------------------------------------------------------
 ;   ; Set Map Element
 ;   ;----------------------------------------------------------------------------------
-;   Procedure SetMapElement(*manager.ViewManager_t,*view.View::View_t)
+;   Procedure SetMapElement(*Me.ViewManager_t,*view.View::View_t)
 ;     If *view\leaf And *view\content
 ;       Protected name.s = *view\content\name
 ;       ; Check if already in map
-;       AddMapElement(*manager\views(),name)
-;       *manager\views() = *view\content
+;       AddMapElement(*Me\views(),name)
+;       *Me\views() = *view\content
 ;       Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD VIEW MAP ELEMENT : "+name
 ;     Else
-;       SetMapElement(*manager,*view\left)
-;       SetMapElement(*manager,*view\right)
+;       SetMapElement(*Me,*view\left)
+;       SetMapElement(*Me,*view\right)
 ;     EndIf
 ;     
 ;   EndProcedure
@@ -737,79 +737,88 @@ Module ViewManager
 ;   ;----------------------------------------------------------------------------------
 ;   ; Update Map
 ;   ;----------------------------------------------------------------------------------
-;   Procedure UpdateMap(*manager.ViewManager_t)
-;     ClearMap(*manager\views())
-;     SetMapElement(*manager,*manager\main)
+;   Procedure UpdateMap(*Me.ViewManager_t)
+;     ClearMap(*Me\views())
+;     SetMapElement(*Me,*Me\main)
 ;   EndProcedure
 
   
   ;----------------------------------------------------------------------------------
   ; Event
   ;----------------------------------------------------------------------------------
-  Procedure OnEvent(*manager.ViewManager_t,event.i)
+  Procedure OnEvent(*Me.ViewManager_t,event.i)
     
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
-    If *manager = #Null Or event = -1: ProcedureReturn: EndIf
+    If *Me = #Null Or event = -1: ProcedureReturn: EndIf
     
-    Protected mx = WindowMouseX(*manager\window)
-    Protected my = WindowMouseY(*manager\window)
+    Protected mx = WindowMouseX(*Me\window)
+    Protected my = WindowMouseY(*Me\window)
     
-    Protected *old.View::View_t = *manager\active
-    Protected *active.View::View_t = Pick(*manager, mx, my)
-    If *old And *old <> *active
+    Protected *old.View::View_t = *Me\active
+    Protected *over.View::View_t = Pick(*Me, mx, my)
+    If *old And *old <> *over
       If *old\content And IsGadget(*old\content\gadgetID)
-        PostEvent(#PB_Event_Gadget, *manager\window, *old\content\gadgetID, #PB_EventType_LostFocus)
+        PostEvent(#PB_Event_Gadget, *Me\window, *old\content\gadgetID, #PB_EventType_LostFocus)
       EndIf
       ;View::OnEvent(*old, #PB_EventType_LostFocus)
     EndIf
     
     Select event
       Case #PB_Event_Gadget
-        If *active
-          Protected touch = View::TouchBorder(*active,mx,my,#VIEW_BORDER_SENSIBILITY)
+        If *over
+          Protected touch = View::TouchBorder(*over,mx,my,#VIEW_BORDER_SENSIBILITY)
           If EventType() = #PB_EventType_LostFocus
             gadgetID = EventGadget()
-            If FindMapElement(*manager\uis(), Str(gadgetID))
-              View::OnEvent(*manager\uis()\top, event)
+            If FindMapElement(*Me\uis(), Str(gadgetID))
+              View::OnEvent(*Me\uis()\parent, event)
             EndIf
           Else
             If touch
-              View::EventSplitter(*active,touch)
-              Protected *affected.View::View_t = View::EventSplitter(*active,touch)
+              View::EventSplitter(*over,touch)
+              Protected *affected.View::View_t = View::EventSplitter(*over,touch)
               If *affected
                 View::TouchBorderEvent(*affected)
               EndIf
             Else
-              View::ClearBorderEvent(*active)
+              View::ClearBorderEvent(*over)
             EndIf
-            View::OnEvent(*active,event)
+            View::OnEvent(*over,event)
           EndIf
         EndIf
           
       Case #PB_Event_Timer
         Scene::Update(Scene::*current_scene)
-        View::OnEvent(*manager\main,#PB_Event_Timer)
-      
+        View::OnEvent(*Me\main,#PB_Event_Timer)
+        
+      Case Globals::#EVENT_NEW_SCENE
+        View::OnEvent(*Me\main, Globals::#EVENT_NEW_SCENE)
+        
       Case Globals::#EVENT_BUTTON_PRESSED
         
       Case Globals::#EVENT_COMMAND_CALLED
-        View::OnEvent(*manager\main,Globals::#EVENT_COMMAND_CALLED)
+        View::OnEvent(*Me\main,Globals::#EVENT_COMMAND_CALLED)
       Case Globals::#EVENT_PARAMETER_CHANGED
-        View::OnEvent(*manager\main,Globals::#EVENT_PARAMETER_CHANGED)
+        View::OnEvent(*Me\main,Globals::#EVENT_PARAMETER_CHANGED)
         Scene::Update(Scene::*current_scene)
+      Case Globals::#EVENT_SELECTION_CHANGED
+        View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
+        
+      Case Globals::#EVENT_HIERARCHY_CHANGED
+        View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
+        
       Case Globals::#EVENT_GRAPH_CHANGED
-        View::OnEvent(*manager\main,Globals::#EVENT_GRAPH_CHANGED)
+        View::OnEvent(*Me\main,Globals::#EVENT_GRAPH_CHANGED)
          Scene::Update(Scene::*current_scene)
       Case #PB_Event_Repaint
-        View::OnEvent(*manager\main,#PB_Event_Repaint)
+        View::OnEvent(*Me\main,#PB_Event_Repaint)
       Case #PB_Event_Timer
 ;         Select EventTimer()
 ;           Case #RAA_TIMELINE_TIMER
 ;             ; Get Timeline View
-;             If FindMapElement(*manager\views(),"Timeline")
-;               Protected *timeline.CView = *manager\views()
+;             If FindMapElement(*Me\views(),"Timeline")
+;               Protected *timeline.CView = *Me\views()
 ;               *timeline\Event(#PB_Event_Timer,#Null)
 ;             EndIf
 ;             
@@ -819,13 +828,13 @@ Module ViewManager
         Select EventMenu()
 ;           Case Globals::#SHORTCUT_COPY
 ;             Debug "View Manager : SHORTCUT COPY"
-;             View::OnEvent(*manager\active,#PB_Event_Menu)
+;             View::OnEvent(*Me\active,#PB_Event_Menu)
 ;           Case Globals::#SHORTCUT_CUT
 ;             Debug "View Manager : SHORTCUT CUT"
-;             View::OnEvent(*manager\active,#PB_Event_Menu)
+;             View::OnEvent(*Me\active,#PB_Event_Menu)
 ;           Case Globals::#SHORTCUT_PASTE
 ;             Debug "View Manager : SHORTCUT PASTE"
-;             View::OnEvent(*manager\active,#PB_Event_Menu)
+;             View::OnEvent(*Me\active,#PB_Event_Menu)
           Case Globals::#SHORTCUT_UNDO
             MessageRequester("View Manager","Undo Called")
             Commands::Undo(Commands::*manager)
@@ -833,36 +842,36 @@ Module ViewManager
             MessageRequester("View Manager","Redo Called")
             Commands::Redo(Commands::*manager)
           Default
-            View::OnEvent(*active,#PB_Event_Menu)
+            View::OnEvent(*over,#PB_Event_Menu)
             
         EndSelect
         
       Case #PB_Event_SizeWindow
-        Resize(*manager)
+        Resize(*Me)
       Case #PB_Event_MaximizeWindow
-        Resize(*manager)
+        Resize(*Me)
       Case #PB_Event_MoveWindow
-        Resize(*manager)
+        Resize(*Me)
       Case #PB_Event_Menu
         ProcedureReturn
       Case #PB_Event_CloseWindow
         ProcedureReturn 
     EndSelect
     
-    *manager\active = *active
+    *Me\active = *over
     
   EndProcedure
   
   ;----------------------------------------------------------------------------------
   ; Get Unique ID
   ;----------------------------------------------------------------------------------
-  Procedure GetUniqueID(*manager.ViewManager_t, *view.View::View_t)
+  Procedure GetUniqueID(*Me.ViewManager_t, *view.View::View_t)
     Protected uuid.i = Random(65535)
-    If FindMapElement(*manager\uis(), Str(uuid))
-      GetUniqueID(*manager, *view)
+    If FindMapElement(*Me\uis(), Str(uuid))
+      GetUniqueID(*Me, *view)
     Else
-      AddMapElement(*manager\uis(), Str(uuid))
-      *manager\uis() = *view\content
+      AddMapElement(*Me\uis(), Str(uuid))
+      *Me\uis() = *view\content
       ProcedureReturn uuid
     EndIf  
   EndProcedure
@@ -870,17 +879,17 @@ Module ViewManager
   ;----------------------------------------------------------------------------------
   ; Recurse Draw View
   ;----------------------------------------------------------------------------------
-  Procedure RecurseDrawPickImage(*manager.ViewManager_t,*view.View::View_t)
+  Procedure RecurseDrawPickImage(*Me.ViewManager_t,*view.View::View_t)
     If *view\leaf And *view\content
-      Define uuid.i = GetUniqueID(*manager, *view)
+      Define uuid.i = GetUniqueID(*Me, *view)
       DrawingMode(#PB_2DDrawing_Default)
       Box(*view\x-#VIEW_BORDER_SENSIBILITY*0.5,
           *view\y-#VIEW_BORDER_SENSIBILITY*0.5,
           *view\width+#VIEW_BORDER_SENSIBILITY,
           *view\height+#VIEW_BORDER_SENSIBILITY, uuid)
     Else
-      If *view\left : RecurseDrawPickImage(*manager,*view\left) : EndIf
-      If *view\right : RecurseDrawPickImage(*manager,*view\right) : EndIf
+      If *view\left : RecurseDrawPickImage(*Me,*view\left) : EndIf
+      If *view\right : RecurseDrawPickImage(*Me,*view\right) : EndIf
     EndIf
   EndProcedure
   
@@ -920,7 +929,7 @@ Module ViewManager
       picked = Point(mx, my)
       If FindMapElement(*Me\uis(), Str(picked))
         StopDrawing()
-        ProcedureReturn *Me\uis()\top
+        ProcedureReturn *Me\uis()\parent
       EndIf
     EndIf
     StopDrawing()
@@ -963,7 +972,7 @@ Module ViewManager
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 763
-; FirstLine = 744
+; CursorPosition = 807
+; FirstLine = 759
 ; Folding = -------
 ; EnableXP

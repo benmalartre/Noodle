@@ -59,7 +59,7 @@ EndProcedure
 Procedure CreateGround()
   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground",Shape::#SHAPE_NONE)
   Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
-  PolymeshGeometry::GridTopology(*geom\topo,1000,10,10)
+  Topology::Grid(*geom\topo,1000,10,10)
   PolymeshGeometry::Set2(*geom,*geom\topo)
   Object3D::Freeze(*ground)
   Protected *p.v3f32
@@ -157,7 +157,10 @@ Procedure Draw(*app.Application::Application_t)
   *ssao = LayerSSAO::New(width,height,*app\context,*gbuffer\buffer,*app\camera)
   *blur = LayerBlur::New(width,height,*app\context,*ssao\buffer,*app\camera)
   
-  ViewportUI::AddLayer(*viewport, *default)
+  If Not #USE_GLFW
+    ViewportUI::AddLayer(*viewport, *default)
+  EndIf
+  
 ;   
 ;   Debug "Size "+Str(*app\width)+","+Str(*app\height)
 ;   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -172,7 +175,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   *s_pointcloud = Program::NewFromName("instances")
 ;   shader = *s_pointcloud\pgm
 ;   
-  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_None,256)
+  *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("cloud",Shape::#SHAPE_None,0)
 ;   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
 ;     Define path.s = OpenFileRequester("Alembic Archive","/Users/benmalartre/Documents/RnD/Modules/abc/Chaley.abc","Alembic (*.abc)|*.abc",0)
 ;     *abc = Alembic::LoadABCArchive(path)
@@ -191,19 +194,19 @@ Procedure Draw(*app.Application::Application_t)
 
   
 ;   ForEach *abc\children()
-;     If *abc\children()\type = Object3D::#Object3D_Polymesh
+;     If *abc\children()\type = Object3D::#Polymesh
 ;       *mesh = *abc\children()
 ;       PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
 ;       Break
 ;     EndIf
 ;   Next
 ;   
-  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_TEAPOT)
+  *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
-  Define startP.v3f32, endP.v3f32
-  Vector3::Set(startP, -10,0,0)
-  Vector3::Set(endP, 10,0,0)
+;   Define startP.v3f32, endP.v3f32
+;   Vector3::Set(startP, -10,0,0)
+;   Vector3::Set(endP, 10,0,0)
 ;   PointCloudGeometry::PointsOnLine(*cloud\geom, @startP, @endP)
 ;   Define *T.Transform::Transform_t = *mesh\localT
 ;   Define pos.v3f32
@@ -226,7 +229,7 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define *locs.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *locs.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
   
@@ -236,10 +239,10 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(s,13,13,13)
   Define *l.Geometry::Location_t
   For i=0 To *cgeom\nbpoints-1
-    *l = CArray::GetValuePtr(*locs,i)
-    Location::GetPosition(*l)
+    *l = CArray::GetValue(*locs,i)
+    Location::GetPosition(*l, *ground\geom, *ground\globalT)
     CArray::SetValue(*cgeom\a_positions,i,*l\p)
-    Location::GetNormal(*l)
+    Location::GetNormal(*l, *ground\geom, *ground\globalT)
     CArray::SetValue(*cgeom\a_normals,i,*l\n)
     Vector3::Set(s,5,5,5)
     CArray::SetValue(*cgeom\a_scale,i,s)
@@ -249,12 +252,12 @@ Procedure Draw(*app.Application::Application_t)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
   
-  
-;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
-; 
-;   glActiveTexture(#GL_TEXTURE0)
-;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
-  
+;   
+; ;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
+; ; 
+; ;   glActiveTexture(#GL_TEXTURE0)
+; ;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
+;   
   Scene::AddChild(Scene::*current_scene,*cloud)
   Scene::AddChild(Scene::*current_scene,*mesh)
   Scene::Setup(Scene::*current_scene,*app\context)
@@ -264,8 +267,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 133
+; CursorPosition = 203
+; FirstLine = 171
 ; Folding = --
 ; EnableXP
 ; Executable = Test

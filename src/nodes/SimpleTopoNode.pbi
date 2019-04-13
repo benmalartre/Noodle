@@ -67,20 +67,20 @@ Module SimpleTopoNode
   EndProcedure
   
   Procedure Init(*node.SimpleTopoNode_t)
-    Node::AddInputPort(*node,"Shape",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"U",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"V",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"W",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddInputPort(*node,"Radius",Attribute::#ATTR_TYPE_FLOAT)
-    Node::AddInputPort(*node,"Geometry", Attribute::#ATTR_TYPE_GEOMETRY)
-    Node::AddOutputPort(*node,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY)
+    Node::AddInputPort(*node,"Shape"    , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"U"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"V"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"W"        , Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"Radius"   , Attribute::#ATTR_TYPE_FLOAT)
+    Node::AddInputPort(*node,"Geometry" , Attribute::#ATTR_TYPE_GEOMETRY)
+    Node::AddOutputPort(*node,"Topology", Attribute::#ATTR_TYPE_TOPOLOGY)
     *node\label = "Primitive Mesh"
     Reset(*node)
     
-    Node::PortAffectByName(*node, "Shape", "Topology")
-    Node::PortAffectByName(*node, "U", "Topology")
-    Node::PortAffectByName(*node, "V", "Topology")
-    Node::PortAffectByName(*node, "W", "Topology")
+    Node::PortAffectByName(*node, "Shape" , "Topology")
+    Node::PortAffectByName(*node, "U"     , "Topology")
+    Node::PortAffectByName(*node, "V"     , "Topology")
+    Node::PortAffectByName(*node, "W"     , "Topology")
     Node::PortAffectByName(*node, "Radius", "Topology")
   EndProcedure
   
@@ -88,16 +88,7 @@ Module SimpleTopoNode
     FirstElement(*node\inputs())
     Protected *shapeData.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
     Protected shape.i = CArray::GetValueI(*shapeData,0)
-    
-    Protected *parent.Object3D::Object3D_t = *node\parent3dobject
-    If Not *parent Or *parent\type <>Object3D::#Object3D_Polymesh
-      *node\state = Graph::#Node_StateError
-      *node\errorstr =  "[ERROR]SimpleTopoNode only works on Polymesh..."
-      ProcedureReturn
-    EndIf
-  
-    ; Get Parent Objectts
-    Protected *mesh.Polymesh::Polymesh_t = *node\parent3dobject
+
   
     ; Get Inputs
     Protected *input.NodePort::NodePort_t
@@ -121,42 +112,27 @@ Module SimpleTopoNode
     
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = *output\value
-    ;   Protected *topo.CAttributePolymeshTopology_t = oVal\GetValue(0)
-    Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
-    Select shape
-        ; Box Shape
-      Case 0
-        ;PolymeshGeometry::Cube(*mesh\geometry,radius,u,v,w)
-        PolymeshGeometry::CubeTopology(*topo,radius,u,v,w)
-      Case 1
-        ;PolymeshGeometry::Sphere(*mesh\geometry,radius,u,v)
-        PolymeshGeometry::SphereTopology(*topo,radius,u,v)
-      Case 2
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::GridTopology(*topo,radius,u,v)
-      Case 3
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::CylinderTopology(*topo,radius,u,v,w,#False,#False)
-      Case 4
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::BunnyTopology(*topo)
-      Case 5
-        ;PolymeshGeometry::Grid(*mesh\geometry,radius,radius,u,v)
-        PolymeshGeometry::TorusTopology(*topo)
-      Default
-        *input = Node::GetPortByName(*node,"Geometry")
-        If *input\connected
+    Protected *topoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
 
-        EndIf
+    Define *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoArray,0)
+    Select shape
+      Case 0
+        Topology::Cube(*topo,radius,u,v,w)
+      Case 1
+        Topology::Sphere(*topo,radius,u,v)
+      Case 2
+        Topology::Grid(*topo,radius,u,v)
+      Case 3
+        Topology::Cylinder(*topo,radius,u,v,w,#False,#False)
+      Case 4
+        Topology::Bunny(*topo)
+      Case 5
+        Topology::Torus(*topo)
           
     EndSelect
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
-    
-    
-    ;MessageRequester("PRIMITIVE MESH NODE", "EAVALUATE CALLED >>> "+Str(CArray::GetCount(*topo\vertices)))
   EndProcedure
   
   Procedure Terminate(*node.SimpleTopoNode_t)
@@ -193,7 +169,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 100
+; CursorPosition = 113
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

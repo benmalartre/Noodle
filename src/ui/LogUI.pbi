@@ -43,20 +43,17 @@ Module LogUI
     
     Object::INI(LogUI)
     *Me\name = name
-    *Me\x = x
-    *Me\y = y
-    *Me\width = w
-    *Me\height = h
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = w
+    *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\frame = FrameGadget(#PB_Any,0,0,w,h,"Log")
     
     
     *Me\area = EditorGadget(#PB_Any,5,20,w-10,h-25,s)
     SetGadgetAttribute(*Me\area,#PB_Editor_ReadOnly,#True)
-;     SetGadgetColor(*Me\area,#PB_Gadget_BackColor,RGB(20,20,20))
-;     SetGadgetColor(*Me\area,#PB_Gadget_FrontColor,RGB(100,255,160))
 
-    ;SetGadgetColor(*Me\area,#PB_Gadget_BackColor,RGB(222,222,222))
     CloseGadgetList()
     
     View::SetContent(*parent,*Me)
@@ -170,9 +167,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 115
-; FirstLine = 97
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 46
+; FirstLine = 36
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

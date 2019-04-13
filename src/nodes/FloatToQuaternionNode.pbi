@@ -86,7 +86,7 @@ Module FloatToQuaternionNode
     EndIf
     
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *qOut.CArray::CArrayQ4F32 = *output\value
+    Protected *qOut.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*output)
     CArray::SetCount(*qOut,m_max)
     
     Protected i
@@ -137,8 +137,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 18
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

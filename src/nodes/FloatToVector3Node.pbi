@@ -92,7 +92,7 @@ Module FloatToVector3Node
     EndIf
     
     
-    Protected *m_out.CArray::CArrayV3F32 = *output\value
+    Protected *m_out.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*output)
     CArray::SetCount(*m_out,m_max)
     
     Protected i=0
@@ -144,7 +144,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 62
+; CursorPosition = 94
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

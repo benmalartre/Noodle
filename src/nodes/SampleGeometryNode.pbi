@@ -51,12 +51,12 @@ Module SampleGeometryNode
     Node::AddInputPort(*node,"Mode",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddInputPort(*node,"Rate",Attribute::#ATTR_TYPE_INTEGER)
     Node::AddInputPort(*node,"Seed",Attribute::#ATTR_TYPE_INTEGER)
-    Node::AddOutputPort(*node,"Points",Attribute::#ATTR_TYPE_LOCATION)
+    Node::AddOutputPort(*node,"Location",Attribute::#ATTR_TYPE_LOCATION)
     
-    Node::PortAffectByName(*node, "Geometry", "Points")
-    Node::PortAffectByName(*node, "Mode", "Points")
-    Node::PortAffectByName(*node, "Rate", "Points")
-    Node::PortAffectByName(*node, "Seed", "Points")
+    Node::PortAffectByName(*node, "Geometry", "Location")
+    Node::PortAffectByName(*node, "Mode", "Location")
+    Node::PortAffectByName(*node, "Rate", "Location")
+    Node::PortAffectByName(*node, "Seed", "Location")
     *node\label = "SampleGeometry"
   EndProcedure
   
@@ -74,17 +74,14 @@ Module SampleGeometryNode
     Protected *seedIn.NodePort::NodePort_t = *node\inputs()
     
     If *geomIn\connected
-      Protected *geom.Geometry::PolymeshGeometry_t = NodePort::AcquireInputData(*geomIn)
+      Protected *geom.Geometry::Geometry_t = NodePort::AcquireInputData(*geomIn)
       Protected *rate.CArray::CArrayInt = NodePort::AcquireInputData(*rateIn)
       Protected *seed.CArray::CArrayInt = NodePort::AcquireInputData(*seedIn)
-      If *geom
-        Sampler::SamplePolymesh(*geom,*output\value,CArray::GetValueI(*rate,0),CArray::GetValueI(*seed,0))
-;         PolymeshGeometry::BunnyTopology(*geom\topo)
-;         PolymeshGeometry::Set2(*geom,*geom\topo)
-;         Protected *parent.Object3D::Object3D_t = *geom\parent
-;         *parent\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
-      Else
-        MessageRequester("SampleGeometryNode","No Input Geometry")
+      If *geom And *geom\nbpoints
+        Sampler::SamplePolymesh(*geom,
+                                NodePort::AcquireOutputData(*output),
+                                CArray::GetValueI(*rate,0),
+                                CArray::GetValueI(*seed,0))
       EndIf
     EndIf
     
@@ -98,9 +95,6 @@ Module SampleGeometryNode
 
     FreeMemory(*node)
   EndProcedure
-  
-  
-  
   
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -127,8 +121,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 80
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

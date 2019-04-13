@@ -1,13 +1,103 @@
 ﻿XIncludeFile "../libs/STK.pbi"
+XIncludeFile "../core/Application.pbi"
+XIncludeFile "../core/Callback.pbi"
+XIncludeFile "../core/Control.pbi"
+XIncludeFile "../controls/Slider.pbi"
 
-Global WIDTH = 800
-Global HEIGHT = 600
+Globals::Init()
+Controls::Init()
+Time::Init()
+UIColor::Init()
 
+Global *app.Application::Application_t
+Global *ui.PropertyUI::PropertyUI_t 
+Global *DAC.STK::RtAudio = STK::Init()
+Global *stream.STK::Stream = STK::StreamSetup(*DAC)
+Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_ASYMP, 64, #True)
+STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
+STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+
+Procedure OnFrequencyChange(*wave.STK::Generator, frequency.f)
+  STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, frequency)
+EndProcedure
+Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#FLOAT)
+
+Procedure Update(*app.Application::Application_t)
+  
+;     event = WaitWindowEvent()
+;     If event = #PB_Event_Gadget And EventGadget() = canvas
+;       Select EventType()
+;         Case #PB_EventType_KeyDown
+;           key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
+;           If key = #PB_Shortcut_Return
+;             If running
+;               STK::GeneratorStreamStop(*stream)
+;               running = #False  
+;               DrawCanvas()
+;             Else
+;               Define result.b = STK::GeneratorStreamStart(*stream)
+;               running = #True
+;               DrawCanvas()
+;             EndIf
+;           ElseIf key = #PB_Shortcut_Space
+;             ; STK::EnvelopeKeyOn(*envelope) 
+;           EndIf
+;         Case #PB_EventType_LeftButtonDown
+;           down = #True
+;         Case #PB_EventType_LeftButtonUp
+;           down=#False
+;         Case #PB_EventType_MouseMove
+;           If down
+;             mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
+;             v = mx / width
+;             STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
+; 
+;           EndIf
+;           
+;       EndSelect
+;     EndIf 
+;   Until event = #PB_Event_CloseWindow
+; 
+
+
+EndProcedure
+
+*app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
 
 
 Global *DAC.STK::RtAudio = STK::Init()
 Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
 Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+
+*ui = PropertyUI::New(*app\manager\main, "STK", #Null)
+OpenGadgetList(*ui\container)
+
+Define *p.ControlProperty::ControlProperty_t = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window, #PB_Window_InnerCoordinate), WindowHeight(*app\window, #PB_Window_InnerCoordinate)) 
+AddElement(*ui\props())
+*ui\props() = *p
+*ui\prop = *p
+    
+ControlProperty::AppendStart(*p)
+Define i
+For i=0 To 7
+  ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), i*10, #Null) 
+Next
+
+  
+ControlProperty::AppendStop(*p)
+
+CloseGadgetList()
+
+STK::StreamStart(*stream)
+Application::Loop(*app, @Update())
+
+STK::StreamClean(*stream)
+STK::Terminate()
+
+
+; STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, 64)
+; STK::SetGeneratorScalar(*wave, STK::#GEN_PHASE, 1.0)
+; STK::SetNodeVolume(*wave, 0.5)
 ; Global *envelope.STK::Envelope = STK::AddEnvelope(*stream, STK::#ADSR_GENERATOR, *wave, #True)
 ; 
 ; STK::SetEnvelopeScalar(*envelope, STK::#ENV_ATTACK_TIME, 0.01)
@@ -58,13 +148,6 @@ Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATO
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-
-
-Global event.i
-Global window.i = OpenWindow(#PB_Any, 0,0,WIDTH,HEIGHT,"STK")
-Global canvas.i = CanvasGadget(#PB_Any, 0, 0, WIDTH, HEIGHT, #PB_Canvas_Keyboard)
-Global running.b = #False
-
 
 Procedure DrawCanvas()
   StartDrawing(CanvasOutput(canvas))
@@ -127,20 +210,8 @@ Else
   MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
 
-
-; 
-; If *sine
-;   Debug "START : "+Str(STK::SineStreamStart(*sine))
-;   Define N = 0
-;   While N < 1024000000
-;     N + 1
-;   Wend
-;   
-;   Debug "STOP : "+Str(STK::SineStreamStop(*sine))
-;   Debug "CLEAN : "+Str(Stk::STKSineStreamClean(*sine))
-; Else
-;   Debug "FAIL TO START DAC"
-; EndIf
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 211
+; FirstLine = 180
 ; Folding = -
 ; EnableXP

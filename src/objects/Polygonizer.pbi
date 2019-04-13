@@ -331,7 +331,7 @@ DeclareModule Polygonizer
   Declare CreateGrid(*box.Geometry::Box_t, cellSize.f)
   Declare PolygonizeCell(*grid.Cell_t, isolevel.f, *triangles)
   Declare Interpolate(*io.Point_t, isolevel.f,*p1.Point_t,*p2.Point_t)
-  Declare Polygonize(*grid.Grid_t, *mesh.Geometry::PolymeshGeometry_t)
+  Declare Polygonize(*grid.Grid_t, *mesh.Geometry::PolymeshGeometry_t, isolevel.f=1.0)
 ;   Declare New()
 ;   Declare Delete(*polygonizer.Polygonizer_t)
   
@@ -371,8 +371,10 @@ Module Polygonizer
           *p\p[0] = *box\origin\x - *box\extend\x  + x * cs\x
           *p\p[1] = *box\origin\y - *box\extend\y  + y * cs\y
           *p\p[2] = *box\origin\z - *box\extend\z  + z * cs\z
-          *p\d =  *p\p[1] + Sin(*p\p[0])*0.6
-
+          
+          ; set sine distance field for testing
+          *p\d = *p\p[1] + Sin(*p\p[0])*0.6
+          ;*p\d =  1 - Sqr(*p\p[0] * *p\p[0] + *p\p[1] * *p\p[1] + *p\p[2] * *p\p[2])
           
         Next
       Next
@@ -399,9 +401,9 @@ Module Polygonizer
       Next
     Next
 
-
     ProcedureReturn *grid
   EndProcedure
+ 
   
   ;    Given a grid cell And an isolevel, calculate the triangular
   ;    facets required To represent the isosurface through the cell.
@@ -498,7 +500,6 @@ Module Polygonizer
      EndIf
      
    Wend
- 
 
    ProcedureReturn ntriang
  EndProcedure
@@ -523,10 +524,10 @@ Module Polygonizer
    
    Protected mu.f
    mu = (isolevel - *p1\d) / (*p2\d - *p1\d)
-   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0]) ;+ Random(100)*0.001
-   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1]) ;+ Random(100)*0.001
-   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2]) ;+ Random(100)*0.001
-
+   *io\p[0] = *p1\p[0] + mu * (*p2\p[0] - *p1\p[0]) 
+   *io\p[1] = *p1\p[1] + mu * (*p2\p[1] - *p1\p[1]) 
+   *io\p[2] = *p1\p[2] + mu * (*p2\p[2] - *p1\p[2])
+  
    ProcedureReturn
    
  EndProcedure
@@ -534,7 +535,7 @@ Module Polygonizer
   Procedure Init()
   EndProcedure
   
-  Procedure Polygonize(*grid.Grid_t, *geom.Geometry::PolymeshGeometry_t)
+  Procedure Polygonize(*grid.Grid_t, *geom.Geometry::PolymeshGeometry_t, isolevel.f=1.0)
     
     Define *triangles = AllocateMemory(5 * SizeOf(Triangle_t))
     Define numCells.i = ArraySize(*grid\cells())
@@ -546,7 +547,7 @@ Module Polygonizer
     Define *t.Polygonizer::Triangle_t
     Define i, j
     For c=0 To numCells - 1
-      Define numTris = PolygonizeCell(*grid\cells(c), 0.1, *triangles)
+      Define numTris = PolygonizeCell(*grid\cells(c), isolevel, *triangles)
       If numTris
         CArray::SetCount(*vertices, numVertices + numTris * 3)
         CArray::SetCount(*faces, numFaces + numTris * 4)
@@ -707,7 +708,7 @@ EndModule
 ; }
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 411
-; FirstLine = 398
+; CursorPosition = 560
+; FirstLine = 529
 ; Folding = --
 ; EnableXP

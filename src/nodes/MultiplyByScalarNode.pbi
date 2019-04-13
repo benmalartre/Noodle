@@ -72,11 +72,7 @@ Module MultiplyByScalarNode
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *output.NodePort::NodePort_t = *node\outputs()
     
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
-    
-    If *output\value = #Null : ProcedureReturn : EndIf
+    If *output\attribute\data = #Null : ProcedureReturn : EndIf
     
     Protected i.i
     
@@ -88,7 +84,7 @@ Module MultiplyByScalarNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
-        *lOut = *output\value
+        *lOut = *output\attribute\data
         *lIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*lOut,CArray::GetCount(*lIn))
         
@@ -119,7 +115,7 @@ Module MultiplyByScalarNode
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
   
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         *fIn = NodePort::AcquireInputData(*input)
         CArray::SetCount(*fOut,CArray::GetCount(*fIn))
         If scalarConstant
@@ -147,7 +143,7 @@ Module MultiplyByScalarNode
         Protected v.v3f32
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
   
-        *vOut = *output\value
+        *vOut = *output\attribute\data
         *vIn = NodePort::AcquireInputData(*node\inputs())
         CArray::SetCount(*vOut,CArray::GetCount(*vIn))
         Protected *v.v3f32
@@ -221,7 +217,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 65
+; CursorPosition = 72
+; FirstLine = 71
 ; Folding = --
 ; EnableXP

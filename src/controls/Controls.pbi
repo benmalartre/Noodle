@@ -27,7 +27,6 @@ Module Controls
   Procedure Init()
     ControlDivot::Init()
     ControlNumber::Init()
-    ControlCheck::Init()
     ControlEdit::Init()
     ControlButton::Init()
     ControlIcon::Init()
@@ -38,7 +37,6 @@ Module Controls
   Procedure Term()
     ControlDivot::Term()
     ControlNumber::Term()
-    ControlCheck::Term()
     ControlEdit::Init()
     ControlButton::Term()
     ControlIcon::Term()
@@ -50,7 +48,6 @@ Module Controls
     UIColor::SetTheme(theme)
     ControlDivot::SetTheme(theme)
     ControlNumber::SetTheme(theme)
-    ControlCheck::SetTheme(theme)
     ControlEdit::SetTheme(theme)
     ControlButton::SetTheme(theme)
     ControlIcon::SetTheme(theme)
@@ -60,6 +57,7 @@ Module Controls
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 31
+; CursorPosition = 50
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

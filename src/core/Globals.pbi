@@ -13,8 +13,6 @@ DeclareModule Globals
     #SHORTCUT_ENTER
     #SHORTCUT_DELETE
     #SHORTCUT_RESET
-    #SHORTCUT_NEXT
-    #SHORTCUT_PREVIOUS
     #SHORTCUT_QUIT
     #SHORTCUT_TAB
     #SHORTCUT_SCALE
@@ -22,6 +20,10 @@ DeclareModule Globals
     #SHORTCUT_TRANSLATE
     #SHORTCUT_CAMERA
     #SHORTCUT_SELECT
+    #SHORTCUT_UP
+    #SHORTCUT_DOWN
+    #SHORTCUT_PREVIOUS
+    #SHORTCUT_NEXT
   EndEnumeration
   
   Enumeration #PB_Event_FirstCustomValue
@@ -31,20 +33,12 @@ DeclareModule Globals
     #EVENT_ICON_PRESSED
     #EVENT_TIME_CHANGED
     #EVENT_SELECTION_CHANGED
+    #EVENT_HIERARCHY_CHANGED
     #EVENT_COMMAND_CALLED
     #EVENT_GRAPH_CHANGED
     #EVENT_TREE_CREATED
+    #EVENT_NEW_SCENE
   EndEnumeration
-  
-  Enumeration 
-    #FONT_DEFAULT = 1
-    #FONT_BOLD
-  EndEnumeration
-  
-  #FONT_SIZE_TEXT = 8
-  #FONT_SIZE_LABEL = 10
-  #FONT_SIZE_MENU = 11
-  #FONT_SIZE_TITLE = 13
   
   Enumeration
     #GUI_THEME_LIGHT
@@ -107,6 +101,15 @@ DeclareModule Globals
     #TOOL_MAX
   EndEnumeration
   
+  #Color_ButtonSize = 24
+  #Color_ButtonSpacing = 6
+  #Corner_Rounding = 4
+  
+  #MARGIN = 12
+  #COLORS_HEIGHT = 200
+  #OUTPUT_HEIGHT = 128
+  #SELECTION_BORDER = 2
+  
   ; ----------------------------------------------------------------------------
   ; Vector Drawing
   ; ----------------------------------------------------------------------------
@@ -123,6 +126,7 @@ DeclareModule Globals
   ; ============================================================================
   Declare Init()
   Declare Term()
+  Declare.s RandomName(len)
   
   ; ============================================================================
   ;  MACROS
@@ -157,9 +161,13 @@ DeclareModule Globals
      Macro SLASH: "/" : EndMacro
     CompilerCase #PB_OS_MacOS
      Macro SLASH: "/" : EndMacro
-  CompilerEndSelect
+ CompilerEndSelect
+ 
+ ; ---[ CHECKS ] --------------------------------------------------------------
+  Macro ISNUMERIC(_key)
+    (1-Bool(_key<>45 And _key<>46 And (_key<48 Or _key>57)))
+  EndMacro
 
-  
   ; ---[ Bits Manipulation]-----------------------------------------------------
   Macro BitRead(_number,_bit)
     Bool((_number>>_bit)& #True)
@@ -189,7 +197,81 @@ DeclareModule Globals
   Macro RGBA2RGB(color)
     RGB(Red(color),Green(color),Blue(color))  
   EndMacro
-
+  
+  ;---------------------------------------------------------
+  ; FONTS
+  ;---------------------------------------------------------
+  Global font_label = LoadFont(#PB_Any,"Consolas",8)
+  Global font_title = LoadFont(#PB_Any,"Consolas",12)
+  
+  Enumeration 
+    #FONT_DEFAULT = 1
+    #FONT_BOLD
+  EndEnumeration
+  
+  #FONT_SIZE_TEXT = 10
+  #FONT_SIZE_LABEL = 12
+  #FONT_SIZE_MENU = 13
+  #FONT_SIZE_TITLE = 14
+  
+  ;---------------------------------------------------------
+  ; MACROS
+  ;---------------------------------------------------------
+  Macro MAXIMIZE(a,b)
+    If a<b : a=b : EndIf
+  EndMacro
+  
+  Macro MINIMIZE(a,b)
+    If a>b : a=b : EndIf
+  EndMacro
+  
+  Macro CLAMPIZE(v,a,b)
+    If v<a : v=a : ElseIf v>b : v=b : EndIf
+  EndMacro
+  
+  #EMPTYSTRING = ""
+  Macro QUOTE()
+    "
+  EndMacro
+  
+  Macro DOT()
+    .
+  EndMacro
+  
+  Macro TOSTRING(_arg)
+    Globals::QUOTE()_arg#Globals::QUOTE()
+  EndMacro
+;   
+;   Macro ISCONSTANTSTRING(_arg)
+;     CompilerIf Defined(_arg, #PB_Constant)
+;       CompilerIf _arg>Globals::#CONSTANT_TOKENS And _arg < Globals::#CONSTANT
+  
+  ;---------------------------------------------------------
+  ; STRUCTURE
+  ;---------------------------------------------------------
+  Structure Resolution_t
+    x.i
+    y.i
+  EndStructure
+  
+  ;---------------------------------------------------------
+  ; KEY VALUE
+  ;---------------------------------------------------------
+  Structure KeyValue_t
+    key.s
+    value.i
+  EndStructure
+  
+  ;---------------------------------------------------------
+  ; DAISY REFERENCE
+  ;---------------------------------------------------------
+  Structure Reference_t
+    *datas
+    refchanged.b
+    reference.s
+    daisyreference.s
+  EndStructure
+ 
 EndDeclareModule
 
 ;========================================================================================
@@ -221,16 +303,29 @@ Module Globals
     If IsFont(#FONT_BOLD) : FreeFont( #FONT_BOLD ) : EndIf
 
   EndProcedure
-
-;}
   
+  Procedure.s RandomName(len.i)
+    Define name.s
+    For i=0 To len-1
+      Select Random(2) 
+        Case 0  ; (a ---> z)
+          name + Chr(Random(25) + 97)
+        Case 1  ; (A ---> Z)
+          name + Chr(Random(25) + 65)
+        Default ; (0 ---> 9)
+          name + Chr(Random(9) + 48)
+      EndSelect
+    Next
+    ProcedureReturn name
+  EndProcedure
+
   
 EndModule
 
   
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 164
-; FirstLine = 160
-; Folding = ----
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 169
+; FirstLine = 144
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

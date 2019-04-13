@@ -34,7 +34,7 @@ Time::Init()
 
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Test", Shape::#Shape_Sphere)
 Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-PolymeshGeometry::SphereTopology(*geom\topo, 12, 1024,1024)
+PolymeshGeometry::SphereTopology(*geom, 12, 1024,1024)
 PolymeshGeometry::Set2(*geom, *geom\topo)
 
 Global box.Geometry::Box_t 
@@ -110,7 +110,7 @@ MessageRequester("THREADED",
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 58
-; FirstLine = 36
+; CursorPosition = 36
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

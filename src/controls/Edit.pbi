@@ -42,8 +42,9 @@ DeclareModule ControlEdit
   ;  Declares 
   ; ----------------------------------------------------------------------------
   
-  Declare New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New(*parent.Control::Control_t ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlEdit_t)
+  Declare Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare.s GetValue( *Me.ControlEdit_t )
   Declare SetValue( *Me.ControlEdit_t, value.s )
@@ -59,6 +60,10 @@ DeclareModule ControlEdit
     ControlEditVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+    Data.i @OnEvent()
     
   EndDataSection
   ;}
@@ -256,14 +261,14 @@ Procedure.i hlpCharPosFromMousePos( *Me.ControlEdit_t, xpos.i )
   
 EndProcedure
 ; ----------------------------------------------------------------------------
-;  hlpDraw
+;  Draw
 ; ----------------------------------------------------------------------------
-Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
+Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   ; ---[ Check Visible ]------------------------------------------------------
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_TEXT
+  Protected tc.i = UIColor::COLOR_TEXT
   VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
   Protected ty.i
@@ -274,11 +279,11 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   EndIf
   
   AddPathBox(xoff-1, yoff-1, *Me\sizX+2, *Me\sizY+2)
-  VectorSourceColor(UIColor::COLORA_MAIN_BG)
+  VectorSourceColor(UIColor::COLOR_MAIN_BG)
   FillPath()
   
   Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, 4)
-  VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+  VectorSourceColor(UIColor::COLOR_NUMBER_BG)
   FillPath(#PB_Path_Preserve)
   
   ; ---[ Check Positions Lookup Table ]---------------------------------------
@@ -379,28 +384,28 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
 
   ; ---[ Handle Caret & Selection ]-------------------------------------------
   If *Me\focused
-    ; °°°[ Has Selection ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+    ; ---[ Has Selection ]----------------------------------------------------
     If *Me\selected
-      ; ...[ Draw Regular Text + Selection ]..................................
+      ; ---[ Draw Regular Text + Selection ]----------------------------------
       CompilerSelect #PB_Compiler_OS
         CompilerCase #PB_OS_Windows
           AddPathBox( tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
         CompilerCase #PB_OS_Linux
           AddPathBox( tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
         CompilerCase #PB_OS_MacOS
           AddPathBox( tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
-          VectorSourceColor(UIColor::COLORA_SELECTED_BG )
+          VectorSourceColor(UIColor::COLOR_SELECTED_BG )
           FillPath()
       CompilerEndSelect
       
       MovePathCursor(tx + xoff, ty)
       VectorSourceColor(tc)
       DrawVectorText( Mid( *Me\value, *Me\posS, tlen ))
-    ; °°°[ Just Caret ]°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°  
+    ; ---[ Just Caret ]-------------------------------------------------------  
     Else
       ; ...[ Draw Value ].....................................................
       MovePathCursor(tx + xoff, ty)
@@ -412,15 +417,15 @@ Procedure hlpDraw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
           CompilerCase #PB_OS_Windows
             MovePathCursor(tx + posXL + xoff, ty)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
           CompilerCase #PB_OS_Linux
             MovePathCursor(tx + posXL + xoff, ty+1)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
           CompilerCase #PB_OS_MacOS
             MovePathCursor(tx + posXL + xoff, ty+2)
             AddPathLine( 0, 12, #PB_Path_Relative)
-            VectorSourceColor(UIColor::COLORA_CARET )
+            VectorSourceColor(UIColor::COLOR_CARET )
         CompilerEndSelect
       EndIf
       StrokePath(1)
@@ -455,7 +460,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       If Not( *ev_data ):ProcedureReturn : EndIf
       
       ; ---[ Draw Control ]---------------------------------------------------
-      hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+      Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
@@ -637,6 +642,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
     Case #PB_EventType_KeyDown
       ; ---[ Dispatch Key ]---------------------------------------------------
       Select *ev_data\key
+          
         ;_____________________________________________________________________
         ;  Return
         ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -645,12 +651,10 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
           *Me\focused = #False : Control::DeFocused(*Me)
           ; ---[ Show Text From Start ]---------------------------------------
           *Me\posG = 1 : *Me\posW = 1
+          ; ---[ Send 'OnChanged' Signal ]------------------------------------
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
           ; ---[ Redraw Me ]--------------------------------------------------
           Control::Invalidate(*Me)
-          ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
-;           Sig = *Me\sig_onchanged
-;           Sig\Trigger( #RAA_SIGNAL_TYPE_PING, 0)
           ; ---[ Processed ]--------------------------------------------------
           ProcedureReturn( #True )
         ;_____________________________________________________________________
@@ -973,7 +977,7 @@ EndProcedure
 ; ============================================================================
 ;{
 ; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+Procedure.i New(*parent.Control::Control_t ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlEdit_t = AllocateMemory( SizeOf(ControlEdit_t) )
@@ -981,12 +985,12 @@ Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.
 ;   *Me\VT = ?ControlEditVT
 ;   *Me\classname = "CONTROLEDIT"
   Object::INI(ControlEdit)
-  *Me\object = *object
   
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type         = Control::#EDIT
   *Me\name         = name
-  *Me\gadgetID     = #Null
+  *Me\parent       = *parent
+  *Me\gadgetID     = *parent\gadgetID
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
@@ -1011,6 +1015,9 @@ Procedure.i New(*object.Object::Object_t,name.s, value.s = "", options.i = 0, x.
   
   ; ---[ Init Array ]---------------------------------------------------------
   InitializeStructure( *Me, ControlEdit_t )
+  
+  ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
   
   
   ; ---[ Return Initialized Object ]------------------------------------------
@@ -1074,7 +1081,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 986
-; FirstLine = 982
+; CursorPosition = 616
+; FirstLine = 596
 ; Folding = ----
 ; EnableXP

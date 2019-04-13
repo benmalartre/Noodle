@@ -80,9 +80,6 @@ Module RandomNode
     Protected variancei.f
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
     
     Protected i.i
     Protected time.f = Time::currentframe
@@ -100,7 +97,7 @@ Module RandomNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected int.i
         Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\value
+        *iOut = *output\attribute\data
         *iIn = NodePort::AcquireInputData(*meanValuePort)
         
         CArray::Copy(*iOut,*iIn)
@@ -128,7 +125,7 @@ Module RandomNode
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected float.f
         Protected *fIn.CArray::CArrayInt,*fOut.CArray::CArrayInt
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         *fIn = NodePort::AcquireInputData(*meanValuePort)
         
         CArray::Copy(*fOut,*fIn)
@@ -159,7 +156,7 @@ Module RandomNode
         Protected v2.v3f32
         Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
         Define.f rx,ry,rz
-        *vOut = *output\value
+        *vOut = *output\attribute\data
         *vIn = NodePort::AcquireInputData(*meanValuePort)
         CArray::Copy(*vOut,*vIn)
 
@@ -241,7 +238,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 174
-; FirstLine = 110
+; CursorPosition = 81
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

@@ -311,8 +311,7 @@ Module CreatePolymeshCmd
   
   Procedure Do(*args.Arguments::Arguments_t)
 
-    FirstElement(*args\args())
-    Protected type.i = *args\args()\l
+    Protected type.i = *args\args(0)\l
     
     Protected *info = hlpGetInfo(type)
     Commands::Add(Commands::*manager,@hlpDo(),@hlpUndo(),@hlpClear(),*info)
@@ -320,8 +319,8 @@ Module CreatePolymeshCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 259
-; FirstLine = 240
+; CursorPosition = 313
+; FirstLine = 260
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

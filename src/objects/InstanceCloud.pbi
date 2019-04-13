@@ -61,33 +61,36 @@ Module InstanceCloud
     *Me\visible = #True
     *Me\shape = Shape::New(shape)
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_InstanceCloud
+    *Me\type = Object3D::#InstanceCloud
     Matrix4::SetIdentity(*Me\matrix)
+    Object3D::OBJECT3DATTR()
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
     
      ; ---[ Attributes ]---------------------------------------------------------
     Protected *cloud.Geometry::PointCloudGeometry_t = *Me\geom
-    Protected *nbpoints = Attribute::New("NbPoints",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*cloud\nbpoints,#True,#True)
+    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*cloud,#True,#True,#True)
+    Object3D::AddAttribute(*Me,*geom)
+    Protected *nbpoints = Attribute::New("NbPoints",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*cloud\nbpoints,#True,#True,#True)
     Object3D::AddAttribute(*Me,*nbpoints)
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#False,#False)
+    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-  ;   Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#False,#False)
-  ;   Object3D::AddAttribute(*Me,*pointvelocity)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#False,#False)
+    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#False,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*pointvelocity)
+    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointtangent = Attribute::New("PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#False,#False)
+    Protected *pointtangent = Attribute::New("PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointtangent)
-    Protected *pointcolor = Attribute::New("PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#False,#False)
+    Protected *pointcolor = Attribute::New("PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointcolor)
-    Protected *pointsize = Attribute::New("PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#False,#False)
+    Protected *pointsize = Attribute::New("PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointsize)
-    Protected *pointscale = Attribute::New("PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#False,#False)
+    Protected *pointscale = Attribute::New("PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointscale)
-    Protected *pointindices = Attribute::New("PointIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#False,#False)
+    Protected *pointindices = Attribute::New("PointIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointindices)
-    Protected *pointuvws = Attribute::New("PointUVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#False,#False)
+    Protected *pointuvws = Attribute::New("PointUVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointuvws)
     
     ProcedureReturn *Me
@@ -120,23 +123,6 @@ Module InstanceCloud
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     
-    Debug *shape\positions
-    Debug *shape\normals
-    Debug *shape\uvws
-    Debug *shape\colors
-    
-    Debug CArray::GetCount(*shape\positions)
-    Debug CArray::GetCount(*shape\normals)
-    Debug CArray::GetCount(*shape\uvws)
-    Debug CArray::GetCount(*shape\colors)
-    
-    Debug CArray::GetPtr(*shape\positions,0)
-    Debug CArray::GetPtr(*shape\normals,0)
-    Debug CArray::GetPtr(*shape\uvws,0)
-    Debug CArray::GetPtr(*shape\colors,0)
-    
-    Debug "SIZE S : "+Str(size_s)
-    Debug "POSITION : "+Str(CARray::GetCount(*shape\positions) * CARray::GetItemSize(*shape\positions))
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_s,CArray::GetPtr(*shape\positions,0))
     glBufferSubData(#GL_ARRAY_BUFFER,1*size_s,size_s,CArray::GetPtr(*shape\normals,0))
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_s,size_s,CArray::GetPtr(*shape\uvws,0))
@@ -147,7 +133,6 @@ Module InstanceCloud
   ; Build GL Data
   ;----------------------------------------------------
   Procedure  BuildGLData(*Me.InstanceCloud_t)
-    
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     Protected sts.i = GetShapeDataSize(*Me)
@@ -188,13 +173,18 @@ Module InstanceCloud
       glBufferSubData(#GL_ARRAY_BUFFER,offset,st1,CArray::GetPtr(*geom\a_size,0))
       offset + st1
       
-      ; Create Element Array Buffer
-      glGenBuffers(1,@*Me\eab)
-      glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-      glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
-                   CArray::GetCount(*Me\shape\indices)* SizeOf(l),
-                   CArray::GetPtr(*Me\shape\indices,0),
-                   #GL_DYNAMIC_DRAW)
+      If *Me\shape\indexed
+        ; Create\Reuse Element Array Buffer
+        If Not *Me\eab
+          glGenBuffers(1,@*Me\eab)
+        EndIf        
+        glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+        glBufferData(#GL_ELEMENT_ARRAY_BUFFER,
+                     CArray::GetCount(*Me\shape\indices)* SizeOf(l),
+                     CArray::GetPtr(*Me\shape\indices,0),
+                     #GL_DYNAMIC_DRAW)
+      EndIf
+      
       
       ; Shape Datas
       CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -269,7 +259,7 @@ Module InstanceCloud
   ;----------------------------------------------------
   Procedure Setup(*Me.InstanceCloud_t,*pgm.Program::Program_t)
     
-    
+    Debug "INSTANCE CLOUD SETUP..."
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     ; Update Geometry
@@ -309,6 +299,7 @@ Module InstanceCloud
   ; Update
   ;----------------------------------------------------
   Procedure Update(*Me.InstanceCloud_t)
+    Debug "INSTANCE CLOUD UPDATE..."
     If *Me\stack
       PointCloudGeometry::Reset(*Me\geom)
       Stack::Update(*Me\stack)
@@ -317,6 +308,7 @@ Module InstanceCloud
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
       Protected Me.Object3D::IObject3D = *Me
       Me\Setup(*Me\shader)
+      Debug "INSTANCE CLOUD SETUP..."
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
@@ -325,6 +317,7 @@ Module InstanceCloud
         BuildGLData(*Me)
         ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
+        Debug "INSTANCE CLOUD UPDATE..."
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
       EndIf
     EndIf
@@ -349,24 +342,13 @@ Module InstanceCloud
     glPointSize(12)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
-;     Protected msg.s
-;     Protected *v.v3f32
-;     For i=0 To *geom\nbpoints-1
-;       Debug i
-;       *v = CArray::GetValue(*geom\a_positions,i)
-;       
-;       msg + StrF(*v\x)+","+StrF(*v\y)+","+StrF(*v\y)+","+Chr(10)
-;     Next
-    
-    ;glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,0)
-    ;glDisableClientState(#GL_ELEMENT_ARRAY_BUFFER)
-    ;glDrawElementsInstanced(	#GL_TRIANGLES,*Me\shape\nbt*3,#GL_UNSIGNED_INT,CArray::GetPtr(*Me\shape\indices, 0),*geom\nbpoints)
+
     If *Me\shape\indexed
       glDrawElementsInstanced(#GL_TRIANGLES,CArray::GetCount(*Me\shape\indices),#GL_UNSIGNED_INT,0,*geom\nbpoints)
     Else
       glDrawArraysInstanced(#GL_TRIANGLES,0,*Me\shape\nbt*3,*geom\nbpoints)
     EndIf
-    
+        
     glBindVertexArray(0)
     
   EndIf
@@ -387,8 +369,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 94
+; CursorPosition = 183
+; FirstLine = 180
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

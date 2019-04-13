@@ -69,7 +69,7 @@ Module ControlScintilla
     Protected h.i
     DrawingMode(#PB_2DDrawing_AlphaBlend)
     
-    Box(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,UIColor::COLORA_MAIN_BG)
+    Box(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,UIColor::COLOR_MAIN_BG)
     
     Protected *obj.Object::Object_t = *Me\object
     
@@ -82,21 +82,21 @@ Module ControlScintilla
     
     
     If *Me\over
-      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLORA_CARET)
+      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLOR_CARET)
     Else
-      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLORA_LABEL)
+      Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLOR_LABEL)
     EndIf
     
     If *Me\touch_l
-      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLORA_NUMBER_BG)
+      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLOR_NUMBER_BG)
     Else
-      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLORA_NUMBER_FG)
+      Box(*Me\posX,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT,UIColor::COLOR_NUMBER_FG)
     EndIf
     
     If *Me\touch_r
-      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLORA_NUMBER_BG)
+      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLOR_NUMBER_BG)
     Else
-      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLORA_NUMBER_FG)
+      Box(*Me\posX+*Me\sizX-#HEAD_HEIGHT,*Me\posY,#HEAD_HEIGHT,#HEAD_HEIGHT, UIColor::COLOR_NUMBER_FG)
     EndIf
     
     DrawingMode(#PB_2DDrawing_Transparent)
@@ -360,7 +360,7 @@ Module ControlScintilla
   Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 33
+; CursorPosition = 98
+; FirstLine = 94
 ; Folding = ---
 ; EnableXP

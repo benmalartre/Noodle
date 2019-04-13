@@ -66,13 +66,13 @@ Module LayerSelection
   ForEach *obj\children()
     *child = *obj\children()
     Object3D::EncodeID(id,*child\uniqueID)
-    If *child\type = Object3D::#Object3D_Polymesh
+    If *child\type = Object3D::#Polymesh
       *t = *child\globalT
       glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
       glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
       child = *child
       child\Draw()
-    ElseIf *child\type = Object3D::#Object3D_PointCloud
+    ElseIf *child\type = Object3D::#PointCloud
       *t = *child\globalT
       glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
       glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
@@ -214,7 +214,6 @@ EndProcedure
 ;---------------------------------------------------
 Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
-  InitializeStructure(*Me,LayerSelection_t)
   Object::INI( LayerSelection )
   Color::Set(*Me\background_color,0.5,1.0,0.5,1)
   *Me\width = width
@@ -246,7 +245,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 110
+; CursorPosition = 74
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

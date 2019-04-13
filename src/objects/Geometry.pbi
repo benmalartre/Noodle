@@ -1,5 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
+XIncludeFile "../core/Object.pbi"
+XIncludeFile "../core/Attribute.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 
 ; ==============================================================================
@@ -15,9 +17,11 @@ DeclareModule Geometry
   EndEnumeration
 
   Enumeration
-    #Geometry_Polymesh
-    #Geometry_PointCloud
-    #Geometry_Curve
+    #Polymesh
+    #PointCloud
+    #InstanceCloud
+    #Curve
+    #Drawer
   EndEnumeration
   
   Enumeration
@@ -100,9 +104,9 @@ DeclareModule Geometry
   ; ----------------------------------------------------------------------------
   ;{
   Structure Capsule_t
-    *cylinder.Cylinder_t
-    *head.Sphere_t
-    *tail.Sphere_t
+    cylinder.Cylinder_t
+    head.Sphere_t
+    tail.Sphere_t
   EndStructure
   ;}
   
@@ -250,12 +254,14 @@ DeclareModule Geometry
   ; Geometry Base
   ; --------------------------------------------
   ;{
-   Structure Geometry_t
+   Structure Geometry_t Extends Object::Object_t
     bbox.Box_t
     nbpoints.i
     type.i
     *parent
     *a_positions.CArray::CArrayV3F32
+    Map *m_attributes.Attribute::Attribute_t()
+
   EndStructure
   ;}
   
@@ -272,9 +278,32 @@ DeclareModule Geometry
   EndStructure
   
   ; --------------------------------------------
+  ; Camera Geometry
+  ; --------------------------------------------
+  Structure CameraGeometry_t Extends Geometry_t
+  EndStructure
+  
+  ; --------------------------------------------
+  ; Light Geometry
+  ; --------------------------------------------
+  Structure LightGeometry_t Extends Geometry_t
+  EndStructure
+  
+  ; --------------------------------------------
+  ; Model Geometry
+  ; --------------------------------------------
+  Structure ModelGeometry_t Extends Geometry_t
+  EndStructure
+  
+  ; --------------------------------------------
+  ; Drawer Geometry
+  ; --------------------------------------------
+  Structure DrawerGeometry_t Extends Geometry_t
+  EndStructure
+  
+  ; --------------------------------------------
   ; Polymesh Geometry
   ; --------------------------------------------
-  ;{
   Structure PolymeshGeometry_t Extends Geometry_t
     nbedges.i
     nbpolygons.i
@@ -303,13 +332,11 @@ DeclareModule Geometry
     *a_polygonareas.CArray::CArrayFloat
     *a_islands.CArray::CArrayLong
     *a_vertexhalfedge.CArray::CArrayLong
+    *a_halfedges.CArray::CArrayPtr
     *topo.Topology_t
     *base.Topology_t
     
-    Array a_halfedges.HalfEdge_t(0)
-
   EndStructure
-  ;}
   
   
   ;  PointCloud Geometry
@@ -322,7 +349,7 @@ DeclareModule Geometry
     *a_color.CArray::CArrayC4F32
     *a_scale.CArray::CArrayV3F32
     *a_size.CArray::CArrayFloat
-    *a_indices.CArray::CArrayLong
+    *a_indices.CArray::CArrayInt
     *a_uvws.CArray::CArrayV3F32
    
   EndStructure
@@ -362,8 +389,6 @@ DeclareModule Geometry
     n.v3f32
     uvw.v3f32
     c.c4f32
-    *geometry.Geometry::Geometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; PointOnMesh
@@ -375,8 +400,6 @@ DeclareModule Geometry
     n.v3f32
     uvw.v3f32
     c.c4f32
-    *geometry.Geometry::PolymeshGeometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; PointOnCurve
@@ -387,8 +410,6 @@ DeclareModule Geometry
     n.v3f32
     p.v3f32
     c.c4f32
-    *geometry.Geometry::CurveGeometry_t
-    *t.Transform::Transform_t
   EndStructure
   
   ; Element
@@ -618,7 +639,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 339
-; FirstLine = 294
+; CursorPosition = 351
+; FirstLine = 313
 ; Folding = -----
 ; EnableXP

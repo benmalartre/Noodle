@@ -6,11 +6,6 @@ XIncludeFile "../core/UIColor.pbi"
 ;  CONTROL LABEL MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlLabel
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  Global Dim PenStyle.f(2)
-  
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlLabel_t )
@@ -31,8 +26,9 @@ DeclareModule ControlLabel
   ; ----------------------------------------------------------------------------
   ;  Declares 
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
+  Declare New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
   Declare Delete(*Me.ControlLabel_t)
+  Declare Draw( *Me.ControlLabel_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlLabel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
   ; ----------------------------------------------------------------------------
@@ -42,7 +38,11 @@ DeclareModule ControlLabel
     ControlLabelVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
   EndDataSection
+  
   
   Global CLASS.Class::Class_t
 EndDeclareModule
@@ -53,20 +53,25 @@ EndDeclareModule
 ; ==============================================================================
 Module ControlLabel
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlLabel_t, xoff.i = 0, yoff.i = 0 )
-    
+  Procedure Draw( *Me.ControlLabel_t, xoff.i = 0, yoff.i = 0 )
+
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
     ; ---[ Label Color ]--------------------------------------------------------
     Protected tc.i
     If *Me\value
-      tc = UIColor::COLORA_LABEL_MARKED
+      tc = UIColor::COLOR_LABEL_MARKED
     Else
-      tc = UIColor::COLORA_LABEL
+      tc = UIColor::COLOR_LABEL
     EndIf
+    
+    ; ---[ Background ]---------------------------------------------------------
+    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    FillPath()
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont( FontID(Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
@@ -77,7 +82,7 @@ Module ControlLabel
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLORA_LABEL_DISABLED
+      tc = UIColor::COLOR_LABEL_DISABLED
     EndIf
     
     ; ---[ Local Variables ]----------------------------------------------------
@@ -97,34 +102,26 @@ Module ControlLabel
     Else
       MovePathCursor(VectorTextWidth(label)+5.0 + xoff, ty + 10)
       AddPathLine(*Me\sizX-1 + xoff, ty + 10)
-      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED )
+      VectorSourceColor(UIColor::COLOR_LABEL_DISABLED )
       StrokePath(1)
     EndIf
     
-    ; ---[ Light Theme Marked Highlight ]---------------------------------------
-    AddPathBox( -6 + xoff, ty-3, 6, 20)
-    If *Me\over
-      VectorSourceColor(UIColor::COLORA_SECONDARY_BG )
-    Else
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
-    EndIf
+;     AddPathBox( -6 + xoff, ty-3, 6, 20)
+;     If *Me\over
+;       VectorSourceColor(UIColor::COLOR_SECONDARY_BG )
+;     Else
+;       VectorSourceColor(UIColor::COLOR_MAIN_BG )
+;     EndIf
+;     
+;     FillPath()
+;     If *Me\value
+;       AddPathBox( -3 + xoff, ty-2, VectorTextWidth(label)+6, 18)
+;       VectorSourceColor( UIColor::COLOR_LABEL_MARKED )
+;       FillPath(#PB_Path_Preserve)
+;       VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
+;       StrokePath(2)
+;     EndIf
     
-    FillPath()
-    If *Me\value
-      ;If raaGUIGetTheme() = #RAA_GUI_THEME_LIGHT
-      AddPathBox( -3 + xoff, ty-2, VectorTextWidth(label)+6, 18)
-      VectorSourceColor( UIColor::COLORA_LABEL_MARKED )
-      FillPath(#PB_Path_Preserve)
-      VectorSourceColor(UIColor::COLORA_LABEL_DISABLED)
-      StrokePath(2)
-      ;Else
-;         DrawingMode( #PB_2DDrawing_Outlined )
-;         RoundBox( -3 + xoff, ty-2, TextWidth(label)+6, 18, 5, 5, Globals::COLOR_LABEL_MARKED_DIMMED )
-;       EndIf
-    EndIf
-    
-    ; ---[ Draw Label ]---------------------------------------------------------
-    ;   raaClipBoxHole( 0 + xoff, 3 + yoff, *Me\sizX-24, *Me\sizY-6 )
     MovePathCursor(0 + xoff, ty)
     VectorSourceColor(tc)
     DrawVectorText(*Me\label)
@@ -150,7 +147,7 @@ Module ControlLabel
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me.ControlLabel_t, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me.ControlLabel_t, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -203,12 +200,10 @@ Module ControlLabel
               If *Me\over
                 If *Me\value : *Me\value = #False : Else : *Me\value = #True : EndIf
                 *Me\over = #False
-                Control::Invalidate(*Me)
               EndIf
             ElseIf Not *Me\over
               If *Me\value : *Me\value = #False : Else : *Me\value = #True : EndIf
               *Me\over = #True
-              Control::Invalidate(*Me)
             EndIf
           EndIf
         EndIf
@@ -324,8 +319,7 @@ Module ControlLabel
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlLabel_t )
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(ControlLabel)
     
   EndProcedure
   
@@ -334,20 +328,18 @@ Module ControlLabel
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
+  Procedure.i New( *parent.Control::Control_t  ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlLabel_t = AllocateMemory( SizeOf(ControlLabel_t) )
     
-;     *Me\VT = ?ControlLabelVT
-;     *Me\classname = "CONTROLLABEL"
     Object::INI(ControlLabel)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type     = Control::#LABEL
     *Me\name     = name
-    *Me\gadgetID = #Null
+    *Me\parent   = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
@@ -372,7 +364,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 347
-; FirstLine = 317
+; CursorPosition = 55
+; FirstLine = 37
 ; Folding = --
 ; EnableXP

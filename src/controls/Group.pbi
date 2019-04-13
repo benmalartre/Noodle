@@ -31,8 +31,9 @@ DeclareModule ControlGroup
     OnClick()
   EndInterface
   
-  Declare New( *object.Object::Object_t,name.s, label.s,canvasID=-1, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
+  Declare Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
@@ -48,6 +49,9 @@ DeclareModule ControlGroup
     ControlGroupVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
     Data.i @OnClick()
   EndDataSection
   
@@ -234,16 +238,16 @@ Module ControlGroup
   ;}
 
 ; ----------------------------------------------------------------------------
-;  hlpDraw
+;  Draw
 ; ----------------------------------------------------------------------------
-Procedure hlpDraw( *Me.ControlGroup_t )
+Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
   
   Protected label.s = *Me\label
   Protected lalen.i = Len(label)
   Protected maxW .i = *Me\sizX - 21
   Protected curW .i
   
-  VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_TITLE)
+  VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_LABEL)
   
   curW = VectorTextWidth(label)
   While Len(label) And ( curW > maxW )
@@ -257,30 +261,30 @@ Procedure hlpDraw( *Me.ControlGroup_t )
  
   
   AddPathBox( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0)
-  VectorSourceColor(UIColor::COLORA_GROUP_FRAME )
+  VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
   StrokePath(1, #PB_Path_RoundCorner)   
 
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_Windows
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
       MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
       DrawVectorText( label )
     CompilerCase #PB_OS_Linux
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
       MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
       DrawVectorText( label )
     CompilerCase #PB_OS_MacOS
       AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12 )
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
        MovePathCursor(*Me\posX+15, *Me\posY-3)
-      VectorSourceColor(UIColor::COLORA_GROUP_LABEL )
+      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
       DrawVectorText( label )
   CompilerEndSelect
   
@@ -419,7 +423,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       ev_data\yoff    = *son\posY+*Me\posY
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG )
+      VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
       son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
       StopVectorDrawing()
@@ -428,7 +432,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ;  Draw
     ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
-      hlpDraw( *Me )
+      Draw( *Me )
 
     ; ------------------------------------------------------------------------
     ;  Focus
@@ -880,27 +884,17 @@ EndProcedure
   Procedure.i DrawTagImage( *Me.ControlGroup_t)
     hlpDrawPickImage( *Me )
   EndProcedure
-
-  ; ---[ On Message ]----------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *c.Controlgroup::Controlgroup_t = *sig\snd_inst
-    
-    
-  EndProcedure
-  
   
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(*object.Object::Object_t, name.s, label.s,canvasID=-1, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlGroup_t = AllocateMemory( SizeOf(ControlGroup_t) )
   
     
     Object::INI(ControlGroup)
-    *Me\object = *object
     
     ; ---[ Minimum Width ]------------------------------------------------------
     If width < 50 : width = 50 : EndIf
@@ -908,10 +902,11 @@ EndProcedure
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#GROUP
     *Me\name       = name
-    If Not IsGadget(canvasID)
+    *Me\parent     = *parent
+    If Not *Me\parent Or Not IsGadget(*Me\parent\gadgetID)
       *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
     Else
-      *Me\gadgetID = canvasID
+      *Me\gadgetID = *Me\parent\gadgetID
     EndIf
     
     *Me\imageID    = CreateImage( #PB_Any, width, height )
@@ -946,7 +941,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 908
-; FirstLine = 886
+; CursorPosition = 425
+; FirstLine = 366
 ; Folding = ---0
 ; EnableXP

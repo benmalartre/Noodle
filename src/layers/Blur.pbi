@@ -103,7 +103,6 @@ Module LayerBlur
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*input.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
     Protected *Me.LayerBlur_t = AllocateMemory(SizeOf(LayerBlur_t))
-    InitializeStructure(*Me,LayerBlur_t)
     Object::INI( LayerBlur )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\name = "LayerBlur"
@@ -125,9 +124,9 @@ Module LayerBlur
   
   Class::DEF(LayerBlur)
 EndModule
-; IDE Options = PureBasic 5.41 LTS (Linux - x64)
-; CursorPosition = 87
-; FirstLine = 65
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 105
+; FirstLine = 66
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -16,7 +16,7 @@ DeclareModule NodeSearch
     List *nodes.Nodes::NodeDescription_t()
   EndStructure
   
-  Declare New(x.i,y.i)
+  Declare New(window.i,x.i,y.i)
   Declare Delete(*Me.NodeSearch_t)
   Declare Update(*Me.NodeSearch_t)
   Declare UpdateList(*Me.NodeSearch_t,force.b=#False)
@@ -25,17 +25,19 @@ EndDeclareModule
 Module NodeSearch
   ; CONSTRUCTOR
   ; -----------------------------------------------------------------
-  Procedure New(x.i,y.i)
+  Procedure New(window.i,x.i,y.i)
     Protected *Me.NodeSearch_t = AllocateMemory(SizeOf(NodeSearch_t))
     InitializeStructure(*Me,NodeSearch_t)
-    *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess)
-    SetWindowColor(*Me\window,UIColor::COLOR_MAIN_BG)
+    *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess,WindowID(window))
+    SetWindowColor(*Me\window,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     *Me\input = StringGadget(#PB_Any,0,0,WindowWidth(*Me\window),30,"")
     SetGadgetColor(*Me\input,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
     *Me\tree = ListViewGadget(#PB_Any,0,30,WindowWidth(*Me\window),WindowHeight(*Me\window)-30)
     SetGadgetColor(*Me\tree,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Return,Globals::#SHORTCUT_ENTER)
+    AddKeyboardShortcut(*Me\window,#PB_Shortcut_Up,Globals::#SHORTCUT_UP)
+    AddKeyboardShortcut(*Me\window,#PB_Shortcut_Down,Globals::#SHORTCUT_DOWN)
     UpdateList(*Me,#True)
     SetActiveGadget(*Me\input)
     ProcedureReturn *Me
@@ -56,21 +58,17 @@ Module NodeSearch
   Procedure UpdateList(*Me.NodeSearch_t,force.b=#False)
     Protected s.s = GetGadgetText(*Me\input)
     Protected w = WindowWidth(*Me\window)
-    Protected h = 30
+    Protected h = 24
     If Not *Me\str = s Or force
 
       ClearGadgetItems(*Me\tree)
-      If ListSize(*Me\nodes()) : ClearList(*Me\nodes()) : EndIf
+      If ListSize(*Me\nodes()) : ClearList(*Me\nodes()) : h+5 : EndIf
       If s=""
         ForEach Nodes::*graph_nodes()
           AddGadgetItem(*Me\tree,-1,Nodes::*graph_nodes()\name)
           AddElement(*Me\nodes())
           *Me\nodes() = Nodes::*graph_nodes()
           h+15
-          Debug Nodes::*graph_nodes()\name
-          Debug Nodes::*graph_nodes()\label
-          Debug Nodes::*graph_nodes()\category
-        
         Next
       Else
         
@@ -80,17 +78,13 @@ Module NodeSearch
             AddElement(*Me\nodes())
             *Me\nodes() = Nodes::*graph_nodes()
             h+15
-            Debug Nodes::*graph_nodes()\name
-            Debug Nodes::*graph_nodes()\label
-            Debug Nodes::*graph_nodes()\category
           EndIf
-        
         Next
       EndIf
       
       *Me\str = s
       ResizeWindow(*Me\window,#PB_Ignore,#PB_Ignore,#PB_Ignore,h)
-      ResizeGadget(*Me\tree,0,30,WindowWidth(*Me\window, #PB_Window_InnerCoordinate), h-30)
+      ResizeGadget(*Me\tree,0,24,WindowWidth(*Me\window, #PB_Window_InnerCoordinate), h-24)
     EndIf
   EndProcedure
     
@@ -124,6 +118,19 @@ Module NodeSearch
               EndIf
               
               quit = #True
+              
+            Case Globals::#SHORTCUT_UP
+              state = GetGadgetState(*Me\tree)
+              If state > 0
+                SetGadgetState(*Me\tree, state-1)
+              EndIf
+
+            Case Globals::#SHORTCUT_DOWN
+               state = GetGadgetState(*Me\tree)
+              If state < CountGadgetItems(*Me\tree)-1
+                SetGadgetState(*Me\tree, state+1)
+              EndIf
+              
           EndSelect
           
         Case #PB_Event_Gadget
@@ -168,8 +175,8 @@ Module NodeSearch
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 104
+; CursorPosition = 31
+; FirstLine = 4
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

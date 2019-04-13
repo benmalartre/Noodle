@@ -5,19 +5,24 @@ XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Compound.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 
-; ==================================================================================================
-; FLOAT NODE MODULE DECLARATION
-; ==================================================================================================
+; ==============================================================================
+; GET DATA NODE MODULE DECLARATION
+; ==============================================================================
 DeclareModule GetDataNode
+  ; ----------------------------------------------------------------------------
+  ;   STRUCTURE
+  ; ----------------------------------------------------------------------------
   Structure GetDataNode_t Extends Node::Node_t
+    custom.b
     *attribute.Attribute::Attribute_t
     sig_onchanged.i
     valid.b
+    need_compute.b
   EndStructure
   
-  ;------------------------------
-  ;Interface
-  ;------------------------------
+  ; ----------------------------------------------------------------------------
+  ;   INTERFACE
+  ; ----------------------------------------------------------------------------
   Interface IGetDataNode Extends Node::INode 
   EndInterface
   
@@ -34,7 +39,7 @@ DeclareModule GetDataNode
   ;  ADMINISTRATION
   ; ============================================================================
   ;{
-  Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("GetDataNode","Data",@New())
+  Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("GetDataNode", "Data", @New())
   Nodes::AppendDescription(*desc)
   ;}
   
@@ -46,58 +51,93 @@ DeclareModule GetDataNode
 
 EndDeclareModule
 
-; ==================================================================================================
-; FLOAT NODE MODULE IMPLEMENTATION
-; ==================================================================================================
+; ==============================================================================
+; GET DATA NODE MODULE IMPLEMENTATION
+; ==============================================================================
 Module GetDataNode
   UseModule Math
   Procedure ResolveReference(*node.GetDataNode_t)
-    Protected *p.Object3D::Object3D_t = *node\parent3dobject
-  
-    Protected refname.s = NodePort::AcquireReferenceData(*node\inputs())
-    If refname = "" : ProcedureReturn : EndIf
-    
-    Protected fields.i = CountString(refname, ".")+1
-    Protected base.s = StringField(refname, 1,".")
-    *node\label = refname
-    Protected *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
-    If base ="Self" Or base ="This"
-      *node\attribute = *p\m_attributes(StringField(refname, 2,"."))
-      If *node\attribute
+
+    Protected refname.s
+    Protected *p.Object3D::Object3D_t = Node::GetParent3DObject(*node)
+    FirstElement(*Node\inputs())
+    Define *location.NodePort::NodePort_t = *node\inputs()
+    NextElement(*node\inputs())
+    FirstElement(*node\outputs())
+    Define *output.NodePort::NodePort_t = *node\outputs()
+    If *location\connected
+      *node\need_compute = #True
+      refname = NodePort::AcquireReferenceData(*node\inputs())
+      If refname = "" : ProcedureReturn : EndIf
+      Define *locationArray.CArray::CArrayLocation = NodePort::AcquireInputData(*location)
+      Define *geom.Geometry::Geometry_t = *locationArray\geometry
+      Define *t.Transform::Transform_t = *locationArray\transform
+      
+      Define numLocations = CArray::GetCount(*locationArray)
+
+      If *geom
+        *node\attribute = *geom\m_attributes(refname)
         *output\currenttype = *node\attribute\datatype
         *output\currentcontext = *node\attribute\datacontext
         *output\currentstructure = *node\attribute\datastructure
-        NodePort::Init(*output)
-        *output\value = *node\attribute\data
+        NodePort::Init(*output, *geom)
         *output\dirty = #True
       EndIf
-      
+            
+;       If Not *node\attribute :
+;         *node\attribute = Attribute::New(
+;       
+;       *node\attribute = *p\geom\m_attributes(StringField(refname, 2,"."))
+;         If *node\attribute
+;           *output\currenttype = *node\attribute\datatype
+;           *output\currentcontext = *node\attribute\datacontext
+;           *output\currentstructure = *node\attribute\datastructure
+;           NodePort::Init(*output)
+;           *output\attribute = *node\attribute
+;           *output\dirty = #True
+;         EndIf
+
     Else
-      Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(Scene::*current_scene,base)
-      If *o
-        *node\attribute = *o\m_attributes(StringField(refname, 2,"."))
+      *node\need_compute = #False
+      refname = NodePort::AcquireReferenceData(*node\inputs())
+      If refname = "" : ProcedureReturn : EndIf
+      
+      Protected fields.i = CountString(refname, ".")+1
+      Protected base.s = StringField(refname, 1,".")
+      *node\label = refname
+      If base ="Self" Or base ="This"
+        *node\attribute = *p\geom\m_attributes(StringField(refname, 2,"."))
         If *node\attribute
           *output\currenttype = *node\attribute\datatype
           *output\currentcontext = *node\attribute\datacontext
           *output\currentstructure = *node\attribute\datastructure
-          NodePort::Init(*output)
-          *output\value = *node\attribute\data
+          NodePort::Init(*output, *p\geom)
+;           *output\attribute = *node\attribute
           *output\dirty = #True
-          MessageRequester("GET DATA NODE", "RESOLVE REFERENCE CALLED")
         EndIf
+        
       Else
-        MessageRequester("GetDataNode","Fail to Find Attribute"+base+StringField(refname, 2,"."))
+        Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(Scene::*current_scene,base)
+        If *o
+          *node\attribute = *o\geom\m_attributes(StringField(refname, 2,"."))
+          If *node\attribute
+            *output\currenttype = *node\attribute\datatype
+            *output\currentcontext = *node\attribute\datacontext
+            *output\currentstructure = *node\attribute\datastructure
+            NodePort::Init(*output, *p\geom)
+;             *output\attribute = *node\attribute
+            *output\dirty = #True
+          EndIf
+        EndIf
       EndIf
-      
     EndIf
-   
-    
   EndProcedure
   
-  ;------------------------------
-  ;Implementation
-  ;------------------------------
+  ; ============================================================================
+  ;   INIT
+  ; ============================================================================
   Procedure Init(*node.GetDataNode_t)
+    Node::AddInputPort(*node,"Source",Attribute::#ATTR_TYPE_LOCATION)
     Node::AddInputPort(*node,"Reference",Attribute::#ATTR_TYPE_REFERENCE)
     Node::AddOutputPort(*node,"Data",Attribute::#ATTR_TYPE_POLYMORPH)
     Node::AddOutputPort(*node,"Output",Attribute::#ATTR_TYPE_REFERENCE)
@@ -108,136 +148,86 @@ Module GetDataNode
     ResolveReference(*node)
   EndProcedure
   
+  ; ============================================================================
+  ;   EVALUATE
+  ; ============================================================================
   Procedure Evaluate(*node.GetDataNode_t)
-
-    Protected *ref.NodePort::NodePort_t = Node::GetPortByName(*node,"Reference")
+    FirstElement(*node\inputs())
+    Protected *src.NodePort::NodePort_t = *node\inputs()
+    NextElement(*node\inputs())
+    Protected *refPort.NodePort::NodePort_t = *node\inputs()
+    Protected *ref.Globals::Reference_t = *refPort\attribute\data
 
     If Not *node\attribute Or *ref\refchanged : ResolveReference(*node) :*ref\refchanged = #False : EndIf
     
-    If Not *node\attribute :Debug "[GetDataNode] Cannot resolve Reference" : ProcedureReturn : EndIf
+    If Not *node\attribute : ProcedureReturn : EndIf
     
     FirstElement(*node\outputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     
-    If *output\value = #Null
-      *output\currenttype = *node\attribute\datatype
-      NodePort::Init(*output)
+  
+    If *output\attribute = #Null : ProcedureReturn : EndIf
+    If *node\need_compute And *src\connected
+      Debug "HDHDLIHDLSHUMUIHBMUYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGBHHM/LIJ%KMK%M"
+      Define *srcArray.CArray::CArrayLocation = NodePort::AcquireInputData(*src)
+      Define *dstArray.CArray::CArrayT = NodePort::AcquireOutputData(*output)
+      Define numSamples.i = CArray::GetCount(*srcArray)
+      CArray::SetCount(*dstArray, numSamples)
+      For i=0 To numSamples-1
+        Location::GetValue(CArray::GetValue(*srcArray, i), *srcArray\geometry, *srcArray\transform, CArray::GetValue(*dstArray, i))
+      Next
+      
+    Else
+      Attribute::PassThrough(*node\attribute, *output\attribute)
     EndIf
-  
-    If *output\value = #Null :Debug "[GetDataNode] Cannot resolve Output": ProcedureReturn : EndIf
-  
-    Select *node\attribute\datatype
-     Case Attribute::#ATTR_TYPE_BOOL
-        Protected bool.b
-        Protected *bIn.CArray::CArrayBool,*bOut.CArray::CArrayBool
-        *bOut = *output\value
-        *bIn = *node\attribute\data
-      Case Attribute::#ATTR_TYPE_INTEGER
-        Protected int.i
-        Protected *iIn.CArray::CArrayInt,*iOut.CArray::CArrayInt
-        *iOut = *output\value
-        *iIn = *node\attribute\data
-      Case Attribute::#ATTR_TYPE_FLOAT
-        Protected float.f
-        Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
-        *fOut = *output\value
-        *fIn = *node\attribute\data
-        If CArray::GetCount(*fIn)
-          CArray::Copy(*fOut,*fIn)
-        EndIf
-      Case Attribute::#ATTR_TYPE_COLOR
-        Protected color.c4f32
-        Protected *cIn.CArray::CArrayC4F32,*cOut.CArray::CArrayC4F32
-        *cOut = *output\value
-        *cIn = *node\attribute\data
-;         
-;         Debug "[GetDataNode] Output Data Size : "+Str(CArray::GetCount(*cOut))
-;         Debug "[GetDataNode] Attribute Data Size : "+Str(CArray::GetCount(*cIn))
-        
-        If CArray::GetCount(*cIn)
-          ;vOut\SetCount(vIn\GetCount())
-          CArray::Copy(*cOut,*cIn)
-          ;CopyMemory(vIn\GetPtr(0),vOut\GetPtr(0),SizeOf(v)* vIn\GetCount())
-;           Debug "Out Size --->W "+Str(CArray::GetCount(*cOut) * CArray::GetItemSize(*cOut))
-        EndIf
-  
-    Case Attribute::#ATTR_TYPE_VECTOR3
-        Protected v.v3f32
-        Protected *vIn.CArray::CArrayV3F32,*vOut.CArray::CArrayV3F32
-        *vOut = *output\value
-        *vIn = *node\attribute\data
-;         Debug "[GetDataNode] Output Data Size : "+Str(CArray::GetCount(*vOut))
-;         Debug "[GetDataNode] Attribute Data Size : "+Str(CArray::GetCount(*vIn))
-;         
-        If CArray::GetCount(*vIn)
-          ;vOut\SetCount(vIn\GetCount())
-          CArray::Copy(*vOut,*vIn)
-          ;CopyMemory(vIn\GetPtr(0),vOut\GetPtr(0),SizeOf(v)* vIn\GetCount())
-;           Debug "Out Size --->W "+Str(CArray::GetCount(*vOut) * CArray::GetItemSize(*vOut))
-        EndIf
-        
-;       Default
-;         Protected *tIn.CArray::CArrayT,*tOut.CArray::CArrayT
-;         *tOut = *output\value
-;         *tIn = *node\attribute\data
-;         
-;         If CArray::GetCount(*tIn)
-;           CArray::Copy(*tOut,*tIn)
-;         EndIf
-        
-      Case Attribute::#ATTR_TYPE_TOPOLOGY
-        Protected *topo.Geometry::Topology_t
-        Protected *tIn.CArray::CArrayPtr,*tOut.CArray::CArrayPtr
-        *tOut = *output\value
-        *tIn = *node\attribute\data
-        If CArray::GetCount(*tIn)
-          ;vOut\SetCount(vIn\GetCount())
-          CArray::Copy(*tOut,*tIn)
-          ;CopyMemory(vIn\GetPtr(0),vOut\GetPtr(0),SizeOf(v)* vIn\GetCount())
-;           Debug "Out Size --->W "+Str(CArray::GetCount(*vOut) * CArray::GetItemSize(*vOut))
-        EndIf
-        
-        
-    EndSelect
+
     ForEach *node\outputs()
       *node\outputs()\dirty = #False
     Next
     
   EndProcedure
   
-  Procedure Terminate(*node.GetDataNode_t)
-  
-  EndProcedure
-  
-  Procedure Delete(*node.GetDataNode_t)
-    If *node\attribute
-      Attribute::Delete(*node\attribute)
-    EndIf
-    Node::DEL(GetDataNode)
-    
-  EndProcedure
-  
-  Procedure OnMessage(id.i,*up)
-    Protected *signal.Signal::Signal_t = *up
-    Protected *node.Object::Object_t = *signal\rcv_inst
-    If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
+  ; ============================================================================
+  ;   CALLBACKS
+  ; ============================================================================
+  Procedure OnChange(*node.GetDataNode_t)
+;     Protected *signal.Signal::Signal_t = *up
+;     Protected *node.Object::Object_t = *signal\rcv_inst
+;     If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
   EndProcedure
   
   Runtime Procedure GetNodeAttribute(*node.GetDataNode_t)
     ProcedureReturn *node\attribute
   EndProcedure
   
+  ; ============================================================================
+  ;   TERMINATE
+  ; ============================================================================
+  Procedure Terminate(*node.GetDataNode_t)
+  
+  EndProcedure
   
   ; ============================================================================
-  ;  CONSTRUCTORS
+  ;   DESTRUCTOR
   ; ============================================================================
-  ; ---[ Heap & stack]-----------------------------------------------------------------
+  Procedure Delete(*node.GetDataNode_t)
+    If *node\attribute And *node\custom
+      Attribute::Delete(*node\attribute)
+    EndIf
+    Node::DEL(GetDataNode)
+    
+  EndProcedure
+  
+  ; ============================================================================
+  ;  CONSTRUCTOR
+  ; ============================================================================
+  ; ---[ Heap & stack]----------------------------------------------------------
   Procedure.i New(*tree.Tree::Tree_t,type.s="GetData",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
-    ; ---[ Allocate Node Memory ]---------------------------------------------
+    ; ---[ Allocate Node Memory ]-----------------------------------------------
     Protected *Me.GetDataNode_t = AllocateMemory(SizeOf(GetDataNode_t))
     
-    ; ---[ Init Node]----------------------------------------------
+    ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(GetDataNode,*tree,type,x,y,w,h,c)
     
     ; ---[ Return Node ]--------------------------------------------------------
@@ -253,9 +243,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 105
-; FirstLine = 100
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 114
+; FirstLine = 105
 ; Folding = --
 ; EnableThread
 ; EnableXP

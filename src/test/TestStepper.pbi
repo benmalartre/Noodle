@@ -32,7 +32,7 @@ ControlProperty::Append(*prop,ControlIcon::New(*mesh,"Back",ControlIcon::#Icon_B
 ; ControlProperty::AddReferenceControl(*prop,"reference3","ref3",*mesh)
 ; *group = ControlProperty::AddGroup(*prop,"BUTTON")
 ; 
-; ControlGroup::Append(*group,ControlButton::New(*mesh,"button","button",#True,#PB_Button_Toggle))
+; ControlGroup::Append(*group,ControlButton::New(*prop,"button","button",#True,#PB_Button_Toggle))
 ; ControlProperty::EndGroup(*prop)
 ; 
 ; 
@@ -113,6 +113,7 @@ Until e = #PB_Event_CloseWindow
 ;   EndIf
 ;   
 ; Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 23
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 34
+; FirstLine = 30
 ; EnableXP

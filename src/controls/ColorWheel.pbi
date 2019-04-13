@@ -70,7 +70,7 @@ DeclareModule ControlColorWheel
   ; ============================================================================
   ;  Functions Declaration
   ; ============================================================================
-  Declare New(x.i=0,y.i=0,width.i=200,height.i=200 )
+  Declare New(*parent.Control::Control_t,x.i=0,y.i=0,width.i=200,height.i=200 )
   Declare Init()
   Declare Term()
   Declare SetTheme(theme.i)
@@ -595,7 +595,7 @@ Module ControlColorWheel
     If *Me\sizY<*Me\sizX : size = *Me\sizY : EndIf
   
     AddPathBox(xoff,yoff,*Me\sizX,*Me\sizY)
-    VectorSourceColor(RGBA(255,0,0,255));UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(RGBA(255,0,0,255));UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ResetCoordinates()
@@ -809,7 +809,7 @@ Module ControlColorWheel
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( x.i=0,y.i=0,width.i=200,height.i=200 )
+  Procedure.i New( *parent.Control::Control_t, x.i=0,y.i=0,width.i=200,height.i=200 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlColorWheel_t = AllocateMemory( SizeOf(ControlColorWheel_t) )
@@ -824,7 +824,8 @@ Module ControlColorWheel
     *Me\posY     = y
     *Me\sizX     = width
     *Me\sizY     = height
-    *Me\gadgetID = #Null
+    *Me\parent   = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\imageID  = CreateImage(#PB_Any,256,256)
     *Me\visible  = #True
     *Me\enable   = #True
@@ -868,7 +869,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 685
-; FirstLine = 671
+; CursorPosition = 597
+; FirstLine = 593
 ; Folding = ----
 ; EnableXP

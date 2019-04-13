@@ -70,6 +70,7 @@ DeclareModule ControlIcon
     value.i
     over.i
     down.i
+    *on_click.Signal::Signal_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -81,7 +82,7 @@ DeclareModule ControlIcon
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New( *object.Object::Object_t,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Declare New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
   Declare Delete(*Me.ControlIcon_t)
   Declare OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -164,12 +165,12 @@ Module ControlIcon
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,128,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(128,255,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
     ; ---[ Check Over ]---------------------------------------------------------
@@ -177,25 +178,25 @@ Module ControlIcon
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(64,255,255,255))
+        VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(64,255,32,255))
+        VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         FillPath()
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; ---[ Down ]-------------------------------------------------------------
-      If *Me\value < 0
+      If *Me\value < 0 Or *Me\down
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,255,128,255))
+        VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
-        VectorSourceColor(RGBA(255,64,64,255))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
     EndIf
@@ -290,7 +291,7 @@ Module ControlIcon
       ;  LeftButtonDown
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonDown
-        If *Me\visible And *Me\enable And *Me\over
+        If *Me\visible And *Me\enable
           *Me\down = #True
           Control::Invalidate(*Me)
         EndIf
@@ -307,8 +308,7 @@ Module ControlIcon
           Control::Invalidate(*Me)
           Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OVER : "+Str(*Me\over)
           If *Me\over
-            PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value)
+            Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
             ; TODO : >>> TRIGGER ACTION <<<
 ;             Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
 ;             Protected *slot.CSlot = *Me\sig_onchanged
@@ -368,7 +368,7 @@ Module ControlIcon
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *object.Object::Object_t,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Procedure.i New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlIcon_t = AllocateMemory( SizeOf(ControlIcon_t) )
@@ -376,12 +376,11 @@ Module ControlIcon
 ;     *Me\VT = ?ControlIconVT
 ;     *Me\classname = "CONTROLICON"
     Object::INI(ControlIcon)
-    *Me\object = *object
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = #PB_GadgetType_Button
     *Me\name       = name
-    *Me\gadgetID   = #Null
+    *Me\gadgetID   = gadgetID
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -393,6 +392,9 @@ Module ControlIcon
     *Me\label      = name
     *Me\icon       = icon 
     If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
+    
+    ; ---[ Signals ]------------------------------------------------------------
+    *Me\on_click = Object::NewSignal(*Me, "OnClick")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -553,7 +555,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 192
+; CursorPosition = 193
+; FirstLine = 176
 ; Folding = ----
 ; EnableXP

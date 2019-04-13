@@ -97,7 +97,7 @@ If Time::Init()
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
 ;   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
-    ViewportUI::AddLayer(*viewport, *layer)
+;     ViewportUI::AddLayer(*viewport, *layer)
     
   Matrix4::SetIdentity(model)
 
@@ -164,8 +164,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 84
+; CursorPosition = 99
+; FirstLine = 74
 ; Folding = -
 ; EnableThread
 ; EnableXP

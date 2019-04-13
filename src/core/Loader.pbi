@@ -43,26 +43,10 @@ Module Loader
     Protected *m.Math::m4f32 = *t\m
     Protected localTransform.i = ChildXMLNode(kinematics, 1)
     value.s = GetXMLAttribute(localTransform,"Value")
-    MessageRequester("LOADER","MATRIX : "+value)
     Matrix4::FromString(*m, value)
-;     Protected bufferLength.i = Len(lm)+2
-;     Protected *mem = AllocateMemory(bufferLength)
-;     PokeS(*mem,lm,bufferLength)
-;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
     Transform::UpdateSRTFromMatrix(*t)
     Object3D::SetLocalTransform(*obj,*t)
     Object3D::UpdateTransform(*obj,#Null)
-    
-  
-     
-;     *t = *obj\globalT
-;     Protected gm.s = GetXMLAttribute(kine,"GlobalTransform")
-;     bufferLength.i = Len(gm)+2
-;     *mem = ReAllocateMemory(*mem,bufferLength)
-;     PokeS(*mem,gm,bufferLength)
-;     Base64Decoder(*mem,bufferLength,*t\m,SizeOf(m4f32))
-;     FreeMemory(*mem)
-;     Transform::UpdateSRTFromMatrix(*t)
   EndProcedure
   
   Procedure GetVector3FromString(string.s,*v.v3f32)
@@ -199,7 +183,7 @@ Module Loader
       Wend
       If Not datasize : Continue : EndIf
       
-      *attr = *obj\m_attributes(attrName)
+      *attr = *obj\geom\m_attributes(attrName)
       If Not *attr
         ; Create Attribute as it doesn't exists!!!
         MessageRequester("Noodle","Attribute "+GetXMLNodeName(attr)+" doesn't exists!!!")
@@ -454,11 +438,11 @@ Module Loader
       Case "PointCloud"
         name.s= GetXMLNodeName(node)
         Protected *cloud.PointCloud::PointCloud_t = PointCloud::New(name,0)
-        Object3D::AddChild(*parent,*cloud)
-        Scene::AddObject(*scene,*cloud)
         Protected *pcgeom.Geometry::PointCloudGeometry_t = *cloud\geom
         *object = *cloud
         LoadAttributes(*Me,node,*cloud)
+        Object3D::AddChild(*parent,*cloud)
+        Scene::AddObject(*scene,*cloud)
         *cloud\dirty = #True
         *parent = cloud
         *Me\numLoaded3DObject +1
@@ -468,13 +452,11 @@ Module Loader
       Case "Polymesh"
         Debug "THIS IS A POLYMESH..."
         name.s = GetXMLNodeName(node)
-        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_NONE)
-        Object3D::AddChild(*parent,*mesh)
-        Scene::AddChild(*scene,*mesh)
-        Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-        *object = *mesh
-        ;PolymeshGeometry::BunnyTopology(*geom\base)
+        Protected *mesh.Polymesh::Polymesh_t = Polymesh::New(name,Shape::#SHAPE_None)
         LoadPolymesh(*Me,node,*mesh)
+        *object = *mesh
+        Object3D::AddChild(*parent,*mesh)
+        Scene::AddObject(*scene,*mesh)
         
         *parent = *mesh
         *Me\numLoaded3DObject +1
@@ -505,19 +487,19 @@ Module Loader
   ;------------------------------------------------------------------
   Procedure Load(*Me.Loader_t)
     If Scene::*current_scene : Scene::Delete(Scene::*current_scene) : EndIf
-    
+
     Scene::*current_scene = Scene::New("Clone")
     Protected root.i = ChildXMLNode(RootXMLNode(*Me\xml))
     Protected name.s = GetXMLNodeName(root)
     Protected o
     Protected n
+    Protected cnt = 0
     For o=1 To XMLChildCount(root)
       n = ChildXMLNode(root,o)
       Load3DObject(*Me,n,Scene::*current_scene,Scene::*current_scene\root)
+      cnt + 1
     Next
-    
-    MessageRequester("LOADER","NUM LOADED 3D OBEJCTS : "+Str(*Me\numLoaded3DObject))
-    
+    PostEvent(Globals::#EVENT_NEW_SCENE)
     ProcedureReturn Scene::*current_scene
   EndProcedure
   ;------------------------------------------------------------------
@@ -548,8 +530,8 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 170
+; CursorPosition = 48
+; FirstLine = 37
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

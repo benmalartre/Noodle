@@ -31,15 +31,15 @@ DeclareModule Stack
   EndStructure
   
   Declare New()
-  Declare Delete(*stack.Stack_t)
-  Declare NewLevel(*stack.Stack_t,name.s,color.i)
-  Declare DeleteLevel(*stack.Stack_t,*level.StackLevel_t)
-  Declare Update(*stack.Stack_t)
+  Declare Delete(*Me.Stack_t)
+  Declare NewLevel(*Me.Stack_t,name.s,color.i)
+  Declare DeleteLevel(*Me.StackLevel_t)
+  Declare Update(*Me.Stack_t)
   Declare UpdateLevel(*level.StackLevel_t)
-  Declare AddNode(*stack.Stack_t,node.StackNode,level.i)
-  Declare Clear(*stack.Stack_t)
+  Declare AddNode(*Me.Stack_t,node.StackNode,level.i)
+  Declare Clear(*Me.Stack_t)
   Declare ClearLevel(*level.StackLevel_t)
-  Declare.b HasNodes(*stack.Stack_t)
+  Declare.b HasNodes(*Me.Stack_t)
   DataSection
     StackVT:
     StackLevelVT:
@@ -57,7 +57,6 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   Procedure NewLevel(*stack.Stack_t,name.s,color.i)
     Protected   *Me.StackLevel_t = AllocateMemory(SizeOf(StackLevel_t))
-    InitializeStructure(*Me,StackLevel_t)
     Object::INI(StackLevel)
     *Me\name = name
     *Me\color = color
@@ -70,15 +69,13 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   ; Delete Level
   ;------------------------------------------------------------------------------------------
-  Procedure DeleteLevel(*stack.Stack_t,*level.StackLevel_t)
+  Procedure DeleteLevel(*Me.StackLevel_t)
     Protected node.StackNode
-    ForEach *level\nodes()
-      node = *level\nodes()
+    ForEach *Me\nodes()
+      node = *Me\nodes()
       node\Delete()
     Next
-    DeleteElement(*stack\levels())
-    ClearStructure(*level,StackLevel_t)
-    FreeMemory(*level)
+    Object::TERM(StackLevel)
     
   EndProcedure
   
@@ -108,12 +105,12 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   ; Has Nodes
   ;------------------------------------------------------------------------------------------
-  Procedure.b HasNodes(*stack.Stack_t)
-    *stack\numNodes = 0
-    ForEach *stack\levels()
-      *stack\numNodes + ListSize(*stack\levels()\nodes())
+  Procedure.b HasNodes(*Me.Stack_t)
+    *Me\numNodes = 0
+    ForEach *Me\levels()
+        *Me\numNodes + ListSize(*Me\levels()\nodes())
     Next
-    ProcedureReturn Bool(*stack\numNodes > 0)
+    ProcedureReturn Bool(*Me\numNodes > 0)
   EndProcedure
   
   
@@ -121,14 +118,13 @@ Module Stack
   ; Constructor
   ;------------------------------------------------------------------------------------------
   Procedure New()
-    
     Protected *Me.Stack_t = AllocateMemory(SizeOf(Stack_t))
-    InitializeStructure(*Me,Stack_t)
+    Object::INI(Stack)
     NewLevel(*Me,"Modeling",RGB(255,200,200))
     NewLevel(*Me,"Shape",RGB(200,255,200))
     NewLevel(*Me,"Animation",RGB(200,200,255))
     NewLevel(*Me,"Secondary",RGB(255,255,200))
-    Object::INI(Stack)
+    
     ProcedureReturn *Me
   EndProcedure
   
@@ -137,22 +133,19 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   ; Destructor
   ;------------------------------------------------------------------------------------------
-  Procedure Delete(*stack.Stack_t)
-    
-    ForEach *stack\levels()
-      DeleteLevel(*stack,*stack\levels())
+  Procedure Delete(*Me.Stack_t)
+    ForEach *Me\levels()
+      DeleteLevel(*Me\levels())
     Next
-    
-    ClearStructure(*stack,Stack_t)
-    FreeMemory(*stack)
+    Object::TERM(Stack)
   EndProcedure
   
   ;------------------------------------------------------------------------------------------
   ; Update
   ;------------------------------------------------------------------------------------------
-  Procedure Update(*stack.Stack_t)
-    ForEach *stack\levels()
-      UpdateLevel(*stack\levels())
+  Procedure Update(*Me.Stack_t)
+    ForEach *Me\levels()
+      UpdateLevel(*Me\levels())
     Next
 
   EndProcedure
@@ -160,24 +153,24 @@ Module Stack
   ;------------------------------------------------------------------------------------------
   ; Add Node
   ;------------------------------------------------------------------------------------------
-  Procedure AddNode(*stack.Stack_t,node.StackNode,level.i)
-    SelectElement(*stack\levels(),level)
-    Protected *level.StackLevel_t = *stack\levels()
+  Procedure AddNode(*Me.Stack_t,node.StackNode,level.i)
+    SelectElement(*Me\levels(),level)
+    Protected *level.StackLevel_t = *Me\levels()
     
     AddElement(*level\nodes())
     *level\nodes() = node
   EndProcedure
   
-  Procedure MoveUp(*stack.Stack_t,node.StackNode)
+  Procedure MoveUp(*Me.Stack_t,node.StackNode)
     
   EndProcedure
   
   ;------------------------------------------------------------------------------------------
   ; Clear Stack
   ;------------------------------------------------------------------------------------------
-  Procedure Clear(*stack.Stack_t)
-    ForEach *stack\levels()
-      ClearLevel(*stack\levels())
+  Procedure Clear(*Me.Stack_t)
+    ForEach *Me\levels()
+      ClearLevel(*Me\levels())
     Next
   EndProcedure
   
@@ -187,7 +180,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 81
+; CursorPosition = 110
+; FirstLine = 91
 ; Folding = ---
 ; EnableXP

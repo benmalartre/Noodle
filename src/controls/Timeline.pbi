@@ -1,6 +1,4 @@
 ; ============================================================================
-;  raafal.gui.controls.timeline.pbi
-; ............................................................................
 ;  GUI Timeline Control
 ; ============================================================================
 ;  2013/02/24 | benmalartre
@@ -37,7 +35,7 @@ DeclareModule ControlTimeline
     down.b
     
     ; timer
-    timer.i
+    timer.Time::Timeable_t
     window.i
     
     ; Nb Controls
@@ -84,7 +82,7 @@ DeclareModule ControlTimeline
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New(*object.Object::Object_t, windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
+  Declare New( windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
   Declare Delete(*Me.ControlTimeline_t)
   Declare OnEvent( *Me.ControlTimeline_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare Draw( *Me.ControlTimeline_t)
@@ -102,7 +100,7 @@ DeclareModule ControlTimeline
   Declare SetStartRange( *Me.ControlTimeline_t, frame.i)
   Declare SetEndRange( *Me.ControlTimeline_t,frame.i)
   Declare SetCurrentFrame( *Me.ControlTimeline_t,frame)
-  
+  Declare OnTimer(*Me.ControlTimeline_t)
   DataSection
     ControlTimelineVT:
     Data.i @OnEvent() ; mandatory override
@@ -150,12 +148,11 @@ Module ControlTimeline
     
     ;---[ Draw Frames ]---------------------------------------------------------
     AddPathBox(l,0,w,h)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     MovePathCursor(l,h-1)
     AddPathLine(w,1, #PB_Path_Relative)
-    VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
     
     For f=Time::startframe To Time::endframe
       If f%m = 0
@@ -171,7 +168,7 @@ Module ControlTimeline
       EndIf
     Next f
     
-    VectorSourceColor(UIColor::COLORA_LABEL)
+    VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
     
     ;---[ Draw Current Frame ]--------------------------------------------------
@@ -209,7 +206,7 @@ Module ControlTimeline
     ;---[ Start Drawing ]-------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     AddPathBox(0,*Me\sizY-30,*Me\sizX,30)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ; ---[ Redraw Children ]----------------------------------------------------
@@ -265,19 +262,21 @@ Module ControlTimeline
     hlpDrawPickImage( *Me)
   EndProcedure
   
-  ; ---[ Timer Event]-----------------------------------------------------------
-  Procedure OnTimer(*Me.ControlTimeline_t)
-    Protected Me.IControlTimeline = *Me
-    If Time::play = #True
-      If Time::forward
-        NextFrame(*Me)
-      Else
-        PreviousFrame(*Me)
+  Procedure OnTimer(*Me.Time::Timeable_t)
+    Define *timeline.ControlTimeline_t = *Me\obj
+    Repeat
+      Delay(*Me\delay)
+      If Time::play = #True
+        If Time::forward
+          NextFrame(*timeline)
+        Else
+          PreviousFrame(*timeline)
+        EndIf
       EndIf
-  
-      PostEvent(Globals::#EVENT_TIME_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
       
-    EndIf
+      PostEvent(Globals::#EVENT_TIME_CHANGED,EventWindow(),*timeline,#Null,@*timeline\name)  
+      
+    ForEver
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -412,7 +411,7 @@ Module ControlTimeline
           ev_data\yoff    = *son\posY
           StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
           AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-          VectorSourceColor(UIColor::COLORA_MAIN_BG )
+          VectorSourceColor(UIColor::COLOR_MAIN_BG )
           FillPath()
           son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
           StopVectorDrawing()
@@ -599,8 +598,6 @@ Module ControlTimeline
         ;  KeyDown
         ; ------------------------------------------------------------------------
         Case #PB_EventType_KeyDown
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Control Timeline Key Down!!!"
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Focus Child : "+Str(*Me\focuschild)
           ; ---[ Do We Have A Focused Child ? ]-----------------------------------
           If *Me\focuschild
             ; ...[ Retrieve Key ].................................................
@@ -723,6 +720,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
+  Callback::DECLARECALLBACK(FirstFrame, Arguments::#PTR)
   
   ; ---[ Go to Last Frame ]-----------------------------------------------------
   Procedure LastFrame( *Me.ControlTimeline_t)
@@ -744,6 +742,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
+  Callback::DECLARECALLBACK(LastFrame, Arguments::#PTR)
   
   ; ---[ Go to Next Frame ]-----------------------------------------------------
   Procedure NextFrame( *Me.ControlTimeline_t)
@@ -770,6 +769,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
+  Callback::DECLARECALLBACK(NextFrame, Arguments::#PTR)
   
   ; ---[ Go to Previous Frame ]-------------------------------------------------
   Procedure PreviousFrame( *Me.ControlTimeline_t)
@@ -796,6 +796,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
+  Callback::DECLARECALLBACK(PreviousFrame, Arguments::#PTR)
   
   ; ---[ Play Forward ]---------------------------------------------------------
   Procedure PlayForward( *Me.ControlTimeline_t)
@@ -812,6 +813,8 @@ Module ControlTimeline
       EndIf
     EndIf   
   EndProcedure
+  Callback::DECLARECALLBACK(PlayForward, Arguments::#PTR)
+
   
   ; ---[ Play Backward ]---------------------------------------------------------
   Procedure PlayBackward( *Me.ControlTimeline_t)
@@ -829,6 +832,7 @@ Module ControlTimeline
       EndIf
     EndIf   
   EndProcedure
+  Callback::DECLARECALLBACK(PlayBackward, Arguments::#PTR)
   
   ; ---[ Start Playback ]-------------------------------------------------------
   Procedure StartPlayback( *Me.ControlTimeline_t, forward.b)
@@ -837,7 +841,7 @@ Module ControlTimeline
       ;--- [ Start Playback / Create Timer Event ]------------------------------
       Time::play = #True
       Time::forward = forward
-      *Me\timer = AddWindowTimer(*Me\window, #TIMER, 1000/Time::framerate)
+      Time::StartTimer(*Me\timer, @OnTimer(), 1000/Time::framerate)
   
       If forward
         NextFrame(*Me)
@@ -850,30 +854,38 @@ Module ControlTimeline
     EndIf   
   EndProcedure
   
+  Procedure OnStartPlayback( *Me.ControlTimeline_t)
+    Define *icon.ControlIcon::ControlIcon_t = *Me\c_playforward
+    ControlTimeline::StartPlayback( *Me, *icon\down)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnStartPlayback, Arguments::#PTR)
+  
+  
   ; ---[ Stop Playback ]--------------------------------------------------------
   Procedure StopPlayback( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     If Time::play
       Time::play = #False
       Protected *ico.ControlIcon::ControlIcon_t
-        If Time::forward
-          *ico = *Me\c_playforward
-          *ico\value = 1
-          Control::Invalidate(*Me\c_playforward)
-        Else
-          *ico = *Me\c_playbackward
-          *ico\value = 1
-          Control::Invalidate(*Me\c_playbackward)
-        EndIf
-        If *Me\timer <> #Null :
-  ;         raaDeleteTimer(*Me\timer) : EndIf
-          RemoveWindowTimer(*Me\window,#TIMER)
-          *Me\timer = #Null
-        EndIf
-        
+      If Time::forward
+        *ico = *Me\c_playforward
+        *ico\value = 1
+        Control::Invalidate(*Me\c_playforward)
+      Else
+        *ico = *Me\c_playbackward
+        *ico\value = 1
+        Control::Invalidate(*Me\c_playbackward)
       EndIf
-      SetCurrentFrame(*Me,Time::currentframe)
+      If *Me\timer <> #Null :
+        Time::StopTimer(*Me\timer)
+      EndIf
+      
+    EndIf
+    SetCurrentFrame(*Me,Time::currentframe)
   EndProcedure
+ 
+  Callback::DECLARECALLBACK(StopPlayback, Arguments::#PTR)
+  
   
   ; ---[ Play Loop ]--------------------------------------------------------
   Procedure PlayLoop( *Me.ControlTimeline_t)
@@ -884,6 +896,7 @@ Module ControlTimeline
     ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
+  Callback::DECLARECALLBACK(PlayLoop, Arguments::#PTR)
   
   
   ; ---[ Set Start Frame ]------------------------------------------------------
@@ -895,6 +908,12 @@ Module ControlTimeline
     EndIf
   EndProcedure
   
+  Procedure OnSetStartFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_startframe
+    ControlTimeline::SetStartFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetStartFrame, Arguments::#PTR)
+  
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndFrame( *Me.ControlTimeline_t,frame.i)
     If frame <= Time::startframe
@@ -904,6 +923,12 @@ Module ControlTimeline
     EndIf  
   
   EndProcedure
+  
+  Procedure OnSetEndFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_endframe
+    ControlTimeline::SetEndFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetEndFrame, Arguments::#PTR)
   
   ; ---[ Set Start Range ]------------------------------------------------------
   Procedure SetStartRange( *Me.ControlTimeline_t, frame.i)
@@ -916,6 +941,12 @@ Module ControlTimeline
     Time::startloop = Time::startrange
   EndProcedure
   
+  Procedure OnSetStartRange(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_startrange
+    ControlTimeline::SetStartRange(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetStartRange, Arguments::#PTR)
+  
   ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndRange( *Me.ControlTimeline_t,frame.i)
     If frame <= Time::startframe
@@ -925,6 +956,12 @@ Module ControlTimeline
     EndIf  
     Time::endloop = Time::endrange
   EndProcedure
+  
+  Procedure OnSetEndRange(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_endrange
+    ControlTimeline::SetEndRange(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetEndRange, Arguments::#PTR)
   
   ; ---[ Set Current Frame ]----------------------------------------------------
   Procedure SetCurrentFrame( *Me.ControlTimeline_t,frame)
@@ -950,7 +987,13 @@ Module ControlTimeline
       ControlNumber::SetValue(*Me\c_currentframe,Str(Time::currentframe))
     EndIf
   EndProcedure
- 
+  
+  Procedure OnSetCurrentFrame(*Me.ControlTimeline_t)
+    Define *n.ControlNumber::ControlNumber_t = *Me\c_currentframe
+    ControlTimeline::SetCurrentFrame(*Me, ValF(*n\value))
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSetCurrentFrame, Arguments::#PTR)
+  
   
   ; ---[ Append Control ]---------------------------------------------------------------
   Procedure.i Append( *Me.ControlTimeline_t, *ctl.Control::Control_t )
@@ -975,28 +1018,6 @@ Module ControlTimeline
     ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
   
-  EndProcedure
-  
-  ; ---[ On Message ]----------------------------------------------------
-  Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *c.ControlNumber::ControlNumber_t = *sig\snd_inst
-    Protected *t.ControlTimeline::ControlTimeline_t = *c\parent
-    Protected v.i = *c\value_n
-
-    Select *c\name
-      Case "CurrentFrame"
-        SetCurrentFrame(*t,v)
-      Case "StartFrame"
-        SetStartFrame(*t,v)
-      Case "EndFrame"
-        SetEndFrame(*t,v)
-      Case "StartRange"
-        SetStartRange(*t,v)
-      Case "EndRange"
-        SetEndRange(*t,v)
-    EndSelect
-    hlpDrawFrames( *t )
   EndProcedure
 
   
@@ -1036,13 +1057,12 @@ Module ControlTimeline
   ; ============================================================================
   ;{
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New(*object.Object::Object_t,windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
+  Procedure.i New(*parent.UI::UI_t, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
     
     Object::INI(ControlTimeline)
-    *Me\object = *object
     
     *Me\window = windowID
     ; ---[ Minimum Width ]------------------------------------------------------
@@ -1051,6 +1071,7 @@ Module ControlTimeline
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = #PB_GadgetType_Canvas
     *Me\name       = "Timeline"
+    *Me\parent     = *parent
     *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
     *Me\imageID    = CreateImage( #PB_Any, width, height )
     *Me\posX       = x
@@ -1059,6 +1080,9 @@ Module ControlTimeline
     *Me\sizY       = height
     
     *Me\controls = 0
+    *Me\timer\callback = @OnTimer()
+    *Me\timer\obj = *Me
+    *Me\timer\delay = 1000 / Time::FRAMERATE
     
     ; ---[ Init Structure ]-----------------------------------------------------
     InitializeStructure( *Me, ControlTimeline_t ) ; Arrays
@@ -1105,15 +1129,15 @@ Module ControlTimeline
     
     Protected Me.ControlTimeline::IControlTimeline = *Me
     Protected *ctrl.Control::Control_t = *Me\c_currentframe
-    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetCurrentFrame())
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetCurrentFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_startframe
-    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetStartFrame())
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetStartFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_endframe
-    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetEndFrame())
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetEndFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_startrange
-    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetStartRange())
-     *ctrl.Control::Control_t = *Me\c_endrange
-    Object::SignalConnect(*Me,*ctrl\slot,@Me\SetEndRange())
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetStartRange, *Me)
+    *ctrl.Control::Control_t = *Me\c_endrange
+    Signal::CONNECTCALLBACK(*ctrl\on_change, OnSetEndRange, *Me)
   
     ; ---[ Draw ]---------------------------------------------------------------
     hlpDrawPickImage(*Me)
@@ -1133,7 +1157,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 149
-; Folding = ------
+; CursorPosition = 879
+; FirstLine = 864
+; Folding = -------
 ; EnableXP

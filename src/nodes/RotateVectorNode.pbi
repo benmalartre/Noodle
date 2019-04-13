@@ -62,7 +62,7 @@ Module RotateVectorNode
   Procedure Evaluate(*node.RotateVectorNode_t)
 
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *vOut.CArray::CArrayV3F32 = *output\value
+    Protected *vOut.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*output)
     
     FirstElement(*node\inputs())
     Protected *input.NodePort::NodePort_t = *node\inputs()
@@ -131,7 +131,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 76
+; CursorPosition = 64
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

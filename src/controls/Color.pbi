@@ -36,8 +36,9 @@ DeclareModule ControlColor
     SetBlue()
   EndInterface
   
-  Declare New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
+  Declare New( *parent.Control::Control_t, name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
   Declare Delete(*Me.ControlColor_t)
+  Declare Draw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlColor_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetRed(*Me.ControlColor_t)
   Declare SetGreen(*Me.ControlColor_t)
@@ -51,6 +52,9 @@ DeclareModule ControlColor
     ControlColorVT:
     Data.i @OnEvent() ; mandatory override
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
   EndDataSection
 
   
@@ -66,13 +70,13 @@ Module ControlColor
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlColor_t, xoff.i = 0, yoff.i = 0 )
   
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
 
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = UIColor::COLORA_LABEL
+    Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont(FontID(Globals::#FONT_DEFAULT ),GLobals::#FONT_SIZE_LABEL)
@@ -200,7 +204,7 @@ Module ControlColor
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -344,17 +348,17 @@ Module ControlColor
   ;}
   
   Procedure OnMessage(type.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
-    Protected Me.ControlColor::IControlColor = *Me
-    Select *sig\rcv_slot
-      Case 0:
-        SetRed(*Me)
-      Case 1:
-        SetGreen(*Me)
-      Case 2:
-        SetBlue(*Me)
-    EndSelect
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *Me.ControlColor::ControlColor_t = *sig\rcv_inst
+;     Protected Me.ControlColor::IControlColor = *Me
+;     Select *sig\rcv_slot
+;       Case 0:
+;         SetRed(*Me)
+;       Case 1:
+;         SetGreen(*Me)
+;       Case 2:
+;         SetBlue(*Me)
+;     EndSelect
     
   EndProcedure
 
@@ -409,29 +413,24 @@ Module ControlColor
   ; ============================================================================
   Procedure Delete( *Me.ControlColor_t )
     Object::TERM(ControlColor)
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,ControlColor_t)
-    FreeMemory( *Me )
-    
   EndProcedure
   
   
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  Procedure.i New( name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
+  Procedure.i New( *parent.Control::Control_t, name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlColor_t = AllocateMemory( SizeOf(ControlColor_t) )
     
     Object::INI(ControlColor)
-    
-    *Me\object = *object
-    
+
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#COLOR
     *Me\name       = name
-    *Me\gadgetID   = #Null
+    *Me\parent     = *parent
+    *Me\gadgetID   = *parent\gadgetID
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -459,8 +458,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 404
+; CursorPosition = 78
+; FirstLine = 74
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -38,7 +38,7 @@ DeclareModule ViewportUI
   Interface IViewportUI Extends IUI
   EndInterface
 
-  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
+  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Init(*Me.ViewportUI_t)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
@@ -54,6 +54,8 @@ DeclareModule ViewportUI
   ;Declare SetActiveLayer(*Me.ViewportUI_t, index.i)
   Declare ViewToWorld(*v.ViewportUI_t,mx.d,my.d,*world_pos.Math::v3f32)
   Declare ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.Math::v3f32)
+  Declare Project(*v.ViewportUI_t,*pos.Math::v3f32,*io_pos.Math::v3f32, homogenous.b=#True)
+  Declare Unproject(*v.ViewportUI_t, x.f, y.f,*world_pos.Math::v3f32)
   
   DataSection 
     ViewportUIVT: 
@@ -74,11 +76,9 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; New
   ;------------------------------------------------------------------
-  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
+  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
-    InitializeStructure(*Me,ViewportUI_t)
-    *Me\name = name
-    *Me\type = Globals::#VIEW_VIEWPORT
+    
     Object::INI(ViewportUI)
     
     Protected x = *parent\x
@@ -86,47 +86,50 @@ Module ViewportUI
     Protected w = *parent\width
     Protected h = *parent\height
     
-    *Me\width = w
-    *Me\height = h
+    *Me\name = name
+    *Me\type = Globals::#VIEW_VIEWPORT
+    *Me\sizX = w
+    *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *Me\context = GLContext::New(w,h,#False)
+    *Me\context = *ctx
     *Me\camera = *camera
 
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      ; Allocate Pixel Format Object
-      Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-      ; Set Pixel Format Attributes
-      Define pfa.NSOpenGLPixelFormatAttribute
-      With pfa
-        \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-        \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-        \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-        \v[6] = #NSOpenGLPFADoubleBuffer
-        \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-        \v[8] = #NSOpenGLPFANoRecovery
-        \v[9] = #Null
-      EndWith
-
-      ; Choose Pixel Format
-      CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-      ; Allocate OpenGL Context
-      Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-      ; Create OpenGL Context
-      CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-      ; Set Current Context
-      CocoaMessage( 0, ctx, "makeCurrentContext" )
-      ; Swap Buffers
-      CocoaMessage( 0, ctx, "flushBuffer" )
-      ; Associate Context With OpenGLGadget NSView
-      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
-      CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
-      *Me\context\ID = ctx
-      
-    CompilerElse
-      *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
-      SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-
-    CompilerEndIf
+;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+;       ; Allocate Pixel Format Object
+;       Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+;       ; Set Pixel Format Attributes
+;       Define pfa.NSOpenGLPixelFormatAttribute
+;       With pfa
+;         \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
+;         \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
+;         \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+;         \v[6] = #NSOpenGLPFADoubleBuffer
+;         \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
+;         \v[8] = #NSOpenGLPFANoRecovery
+;         \v[9] = #Null
+;       EndWith
+; 
+;       ; Choose Pixel Format
+;       CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+;       ; Allocate OpenGL Context
+;       Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+;       ; Create OpenGL Context
+;       CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+;       ; Set Current Context
+;       CocoaMessage( 0, ctx, "makeCurrentContext" )
+;       ; Swap Buffers
+;       CocoaMessage( 0, ctx, "flushBuffer" )
+;       ; Associate Context With OpenGLGadget NSView
+;       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
+;       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) )
+;       *Me\context\ID = ctx
+;       
+;     CompilerElse
+;       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
+;       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
+; 
+;     CompilerEndIf
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
     
     CloseGadgetList()
 
@@ -134,7 +137,7 @@ Module ViewportUI
     
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
-    *Me\select = LayerSelection::New(*Me\width, *Me\height, *Me\context, *Me\camera)
+    *Me\select = LayerSelection::New(*Me\sizX, *Me\sizY, *Me\context, *Me\camera)
     Handle::Setup(*Me\handle, *Me\context)
   
     View::SetContent(*parent,*Me)
@@ -148,8 +151,7 @@ Module ViewportUI
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
-    ClearStructure(*Me,ViewportUI_t)
-    FreeMemory(*Me)
+    Object::TERM(ViewportUI)
   EndProcedure
 
   ;------------------------------------------------------------------
@@ -169,18 +171,24 @@ Module ViewportUI
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
 
     Protected width.i, height.i, i
-    Protected *top.View::View_t = *Me\top
+    Protected *top.View::View_t = *Me\parent
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
+        
+      Case Globals::#EVENT_SELECTION_CHANGED
+        If Scene::*current_scene\selection\selected()
+          Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
+        EndIf
+    
       Case #PB_Event_SizeWindow
         width = *top\width
         height = *top\height
 
-        *Me\width = width
-        *Me\height = height
-        *Me\x = *top\x
-        *Me\y = *top\y
+        *Me\sizX = width
+        *Me\sizY = height
+        *Me\posX = *top\x
+        *Me\posY = *top\y
         
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
@@ -188,10 +196,11 @@ Module ViewportUI
         ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
 
         If *Me\context  
-          *Me\context\width = *Me\width
-          *Me\context\height = *Me\height
+          *Me\context\width = *Me\sizX
+          *Me\context\height = *Me\sizY
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+        
       Case #PB_Event_Gadget
         Protected deltax.d, deltay.d
         Protected modifiers.i
@@ -274,8 +283,8 @@ Module ViewportUI
                   Case Globals::#TOOL_TRANSLATE
                     ev_datas\x = *Me\mx
                     ev_datas\y = *Me\my
-                    ev_datas\width = *Me\width
-                    ev_datas\height = *Me\height
+                    ev_datas\width = *Me\sizX
+                    ev_datas\height = *Me\sizY
                     Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)
                 EndSelect
               EndIf
@@ -286,14 +295,13 @@ Module ViewportUI
               If *Me\tool <> Globals::#TOOL_SELECT
                 ev_datas\x = *Me\mx
                 ev_datas\y = *Me\my
-                ev_datas\width = *Me\width
-                ev_datas\height = *Me\height
+                ev_datas\width = *Me\sizX
+                ev_datas\height = *Me\sizY
                 Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)                 
               EndIf
               
             EndIf
 
-      
           Case #PB_EventType_LeftButtonDown
 ;               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
 ;               If modifiers = #PB_OpenGL_Alt
@@ -311,20 +319,19 @@ Module ViewportUI
             If *Me\handle\tool <> Globals::#TOOL_SELECT
               ev_datas\x = *Me\mx
               ev_datas\y = *Me\my
-              ev_datas\width = *Me\width
-              ev_datas\height = *Me\height
+              ev_datas\width = *Me\sizX
+              ev_datas\height = *Me\sizY
               Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonDown, ev_datas)
             EndIf
 
-          
           Case #PB_EventType_LeftButtonUp
             *Me\lmb_p = #False
             *Me\down = #False
             If *Me\handle\tool <> Globals::#TOOL_SELECT
               ev_datas\x = *Me\mx
               ev_datas\y = *Me\my
-              ev_datas\width = *Me\width
-              ev_datas\height = *Me\height
+              ev_datas\width = *Me\sizX
+              ev_datas\height = *Me\sizY
               Handle::OnEvent(*Me\handle, #PB_EventType_LeftButtonUp, ev_datas)
             EndIf
         
@@ -381,7 +388,6 @@ Module ViewportUI
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
-    
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -467,17 +473,17 @@ Module ViewportUI
     
     Protected rad.f = *v\camera\fov * #F32_PI / 180
     Protected vLength.f = Tan(rad/2) * *v\camera\nearplane
-    Protected hLength.f = vLength *(*v\width/*v\height)
+    Protected hLength.f = vLength *(*v\sizX/*v\sizY)
     
     Vector3::ScaleInPlace(v,vLength)
     Vector3::ScaleInPlace(h,hLength)
     
     ;Remap mouse coordinates
-    mx - *v\width/2
-    my - *v\height/2
+    mx - *v\sizX * 0.5
+    my - *v\sizY * 0.5
     
-    mx/(*v\width*0.5)
-    my/(*v\height*0.5)
+    mx / (*v\sizX * 0.5)
+    my / (*v\sizY* 0.5)
     
   
     Vector3::ScaleInPlace(h,mx)
@@ -499,8 +505,8 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.v3f32)
     ; 3d normalized device coordinates
-    Define x.f = (2 * mx) / *Me\width - 1
-    Define y.f = 1 - (2 * my) / *Me\height
+    Define x.f = (2 * mx) / *Me\sizX - 1
+    Define y.f = 1 - (2 * my) / *Me\sizY
     Define z.f = 1
     Define ray_nds.v3f32
     Vector3::Set(ray_nds, x, y, z)
@@ -569,7 +575,7 @@ Module ViewportUI
     Protected *body.Bullet::btRigidBody
     For  i= 0 To CArray::GetCount(*scn\objects)-1
       *obj = CArray::GetValuePtr(*scn\objects,i)
-      If *obj\type = Object3D::#Object3D_Polymesh
+      If *obj\type = Object3D::#Polymesh
         *body = BulletRigidBody::BTCreateRigidBodyFrom3DObject(*obj,Bullet::#TRIANGLEMESH_SHAPE,0.0,Bullet::*pick_world)
         CArray::AppendPtr(*bodies,*body)
       EndIf
@@ -626,16 +632,13 @@ Module ViewportUI
   ;-------------------------------------------------------
   ; Unproject
   ;-------------------------------------------------------
-  Procedure Unproject(*v.ViewportUI_t,*world_pos.v3f32)
+  Procedure Unproject(*v.ViewportUI_t, x.f, y.f,*world_pos.v3f32)
     Protected window_pos.v3f32
-    Define.d x,y
-    ;glfwGetCursorPos(*v\window,@x,@y)
-    x = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    y = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    Vector3::Set(window_pos,x,*v\height-y,0.5)
+
+    Vector3::Set(window_pos,x,*v\sizY-y,0.5)
     Vector3::Echo(window_pos,"Window Pos")
     Protected viewport.v4f32
-    Vector4::Set(viewport,*v\x,*v\y,*v\width,*v\height)
+    Vector4::Set(viewport,*v\posX,*v\posY,*v\sizX,*v\sizY)
     Vector4::Echo(viewport,"Viewport")
     
     Define.m4f32 m,A;
@@ -679,8 +682,19 @@ Module ViewportUI
   ;-------------------------------------------------------
   ; Project
   ;-------------------------------------------------------
-  Procedure Project(*v.ViewportUI_t,*pos.v3f32,*io_pos.v3f32)
+  Procedure Project(*v.ViewportUI_t,*pos.v3f32,*io_pos.v3f32, homogenous.b=#True)
+
+    Define *proj.Math::m4f32 = *v\camera\projection
+    Define *view.Math::m4f32 = *v\camera\view
+    Vector3::MulByMatrix4(*io_pos, *pos, *view)
+    Vector3::MulByMatrix4InPlace(*io_pos, *proj)
+    If Not homogenous
+      *io_pos\x = *v\context\width * (*io_pos\x + 1.0) / 2.0
+      *io_pos\y = *v\context\height * (1.0 - ((*io_pos\y + 1.0) / 2.0))
+      *io_pos\z = 0.0
+    EndIf
     
+
   EndProcedure
   
   ;-------------------------------------------------------
@@ -714,8 +728,8 @@ Module ViewportUI
   
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 270
-; FirstLine = 247
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 389
+; FirstLine = 383
 ; Folding = -----
 ; EnableXP

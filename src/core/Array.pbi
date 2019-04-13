@@ -26,37 +26,37 @@ DeclareModule CArray
     #ARRAY_STR
   EndEnumeration
   
-  #SIZE_BOOL  = 1
-  #SIZE_CHAR  = 2
-  #SIZE_LONG  = 4
-  #SIZE_FLOAT = 4
-  #SIZE_DOUBLE= 8
+  #SIZE_BOOL        = 1
+  #SIZE_CHAR        = 2
+  #SIZE_LONG        = 4
+  #SIZE_FLOAT       = 4
+  #SIZE_DOUBLE      = 8
   
   CompilerIf #PB_Compiler_Version = #PB_Processor_x86
-    #SIZE_INT   = 4
-    #SIZE_PTR   = 4
+    #SIZE_INT       = 4
+    #SIZE_PTR       = 4
   CompilerElse
-    #SIZE_INT   = 8
-    #SIZE_PTR   = 8
+    #SIZE_INT       = 8
+    #SIZE_PTR       = 8
   CompilerEndIf
-  #SIZE_V2F32 = 8
+  #SIZE_V2F32       = 8
   
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-    #SIZE_V3F32 = 16
-    #SIZE_TRF32 = 48
-    #SIZE_LOCATION = 88
+    #SIZE_V3F32     = 16
+    #SIZE_TRF32     = 48
+    #SIZE_LOCATION  = 88
   CompilerElse
-    #SIZE_V3F32 = 12
-    #SIZE_TRF32 = 40
-    #SIZE_LOCATION = 72
+    #SIZE_V3F32     = 12
+    #SIZE_TRF32     = 40
+    #SIZE_LOCATION  = 72
   CompilerEndIf  
   
-  #SIZE_V4F32 = 16
-  #SIZE_C4F32 = 16
-  #SIZE_C4U8  = 4
-  #SIZE_Q4F32 = 16
-  #SIZE_M3F32 = 36
-  #SIZE_M4F32 = 64
+  #SIZE_V4F32       = 16
+  #SIZE_C4F32       = 16
+  #SIZE_C4U8        = 4
+  #SIZE_Q4F32       = 16
+  #SIZE_M3F32       = 36
+  #SIZE_M4F32       = 64
     
   Structure CArrayT
     type.i
@@ -67,11 +67,11 @@ DeclareModule CArray
   
   CompilerIf #PB_Compiler_Version = #PB_Processor_x86
     Macro CARRAY_DATA_OFFSET
-      13
+      12
     EndMacro
   CompilerElse
     Macro CARRAY_DATA_OFFSET
-      25
+      24
     EndMacro
   CompilerEndIf
     
@@ -121,6 +121,8 @@ DeclareModule CArray
   EndStructure
   
   Structure CArrayLocation Extends CArrayT
+    *geometry
+    *transform
   EndStructure
   
   Structure CArrayStr Extends CArrayT
@@ -293,18 +295,39 @@ DeclareModule CArray
   EndMacro
   
   ;----------------------------------------------------------------
-  ; InitializePtr
+  ; CreateReferences
   ;----------------------------------------------------------------
-  Macro InitializePtr(_array,_nb,_type)
-    CArray::SetCount(_array, _nb)
-    Define _i
-    For _i=0 To _nb-1
-      Define _mem = AllocateMemory(SizeOf(_type))
-      InitializeStructure(_mem, _type)
-      CArray::SetValuePtr(_array, _i, _mem)
+  Macro CreateReferences(_array, _cls, _count)
+    CArray::SetCount(_array, _count)
+    Define _i, _address
+    Define _mem = AllocateMemory(_count * SizeOf(_cls))
+    For _i=0 To _count-1
+      _address = _mem +_i*SizeOf(_cls)
+      InitializeStructure(_address, _cls)
+      CArray::SetValuePtr(_array, _i, _address)
     Next 
   EndMacro
   
+  ;----------------------------------------------------------------
+  ; Destructor
+  ;----------------------------------------------------------------
+  Macro DeleteReferences(_array, _cls, _idx)
+    If _array\data 
+      Define _i, _ref
+
+      For _i=_idx To _array\itemCount-1
+        _ref = Carray::GetValuePtr(_array, _i)
+        ClearStructure(_ref, _cls)
+      Next
+    
+      If _idx = 0 : _array\data = #Null : EndIf
+      _array\itemCount = _idx
+    EndIf
+  EndMacro
+
+  ;----------------------------------------------------------------
+  ; Declares
+  ;----------------------------------------------------------------
   Declare GetPtr(*array.CArrayT, index.i=0)
   Declare.s GetValueStr(*array.CArrayStr, index.i=0)
   Declare.s GetAsString(*array.CArrayT, label.s="")
@@ -331,6 +354,7 @@ DeclareModule CArray
   Declare GetItemSize(*array.CArrayT)
   Declare GetSize(*array.CArrayT)
   Declare Delete(*array.CArrayT)
+;   Declare DeleteReferences(*array.CArrayPtr, instanceSize, maxIndex.i=0)
   Declare Find(*array,*value)
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
@@ -351,7 +375,7 @@ DeclareModule CArray
   Declare newCArrayM4F32()
   Declare newCArrayPtr()
   Declare newCArrayStr()
-  Declare newCArrayLocation()
+  Declare newCArrayLocation(*geom, *t)
 EndDeclareModule
 
 ; ========================================================================================
@@ -387,6 +411,13 @@ Module CArray
       EndIf
       CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
     EndIf
+    If *array\type = #ARRAY_LOCATION
+      Define *dst.CArray::CarrayLocation = *array
+      Define *src2.CArray::CarrayLocation = *src
+      *dst\geometry = *src2\geometry
+      *dst\transform = *src2\transform
+    EndIf
+    
   EndProcedure
   
   ;----------------------------------------------------------------
@@ -1177,11 +1208,13 @@ Module CArray
   ;----------------------------------------------------------------
   ; CArrayLocation
   ;----------------------------------------------------------------
-  Procedure newCArrayLocation()
+  Procedure newCArrayLocation(*geom, *t)
     Protected *array.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
     *array\type = #ARRAY_LOCATION
     *array\itemCount = 0
     *array\itemSize = #SIZE_LOCATION
+    *array\geometry = *geom
+    *array\transform = *t
     ProcedureReturn *array
   EndProcedure
   
@@ -1189,7 +1222,9 @@ Module CArray
   ; Destructor
   ;----------------------------------------------------------------
   Procedure Delete(*array.CArrayT)
-    If *array\data : Memory::FreeAlignedMemory(*array\data, *array\itemSize * *array\itemCount) : EndIf
+    If *array\data 
+      Memory::FreeAlignedMemory(*array\data, *array\itemSize * *array\itemCount)
+    EndIf
     If *Array\type = #ARRAY_STR
       ClearStructure(*array,CArrayStr)
     EndIf
@@ -1200,7 +1235,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 277
-; FirstLine = 831
+; CursorPosition = 321
+; FirstLine = 285
 ; Folding = ------------
 ; EnableXP

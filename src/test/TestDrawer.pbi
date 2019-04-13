@@ -41,6 +41,7 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *texts.CArray::CArrayStr = CArray::newCArrayStr()
 
 ; Resize
 ;--------------------------------------------
@@ -123,6 +124,26 @@ Procedure RandomPoints(numItems.i)
   Next
 EndProcedure
 
+Procedure RandomTexts(numItems.i, text.s)
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  Protected *item.Drawer::Item_t
+  CArray::SetCount(*positions, 12)
+  CArray::SetCount(*texts, 12)
+  Define i,j
+  For i=0 To numItems-1
+    For j=0 To CArray::GetCount(*positions)-1
+      Vector3::Set(position, i, j, (Random(10)-5)/10)
+      CArray::SetValue(*positions, j, position)
+      CArray::SetValueStr(*texts, j, text)
+    Next
+    Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
+    *item = Drawer::AddPoints(*drawer, *positions)
+    Drawer::SetColor(*item,  @color)
+    Drawer::SetSize(*item, 6)
+  Next
+EndProcedure
+
 
 ; Draw
 ;--------------------------------------------
@@ -133,6 +154,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   RandomSpheres(Random(64,16), Random(10)-5)
   RandomCubes(Random(64,16), Random(10)-5)
   RandomStrips(32)
+  RandomTexts(32,"HELLO")
 ;   RandomPoints(Random(256, 64))
   Scene::*current_scene\dirty= #True
   
@@ -165,9 +187,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Drawer",width,height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -201,8 +222,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 115
+; CursorPosition = 126
+; FirstLine = 86
 ; Folding = --
 ; EnableThread
 ; EnableXP

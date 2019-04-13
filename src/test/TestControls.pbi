@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../core/Application.pbi"
 
+
 EnableExplicit
 UseModule Math
 UseModule OpenGL
@@ -17,6 +18,9 @@ Controls::Init()
 Commands::Init()
 UIColor::Init()
 
+Procedure KissThatButton(*Me.Object::Object_t)
+EndProcedure
+Callback::DECLARECALLBACK(KissThatButton, Arguments::#PTR)
 
 
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
@@ -29,7 +33,7 @@ OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
-For i=0 To 1
+
   Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name+Str(i+1), name+Str(i+1),0,128,*ui\width, *ui\height-128)
   
   ControlProperty::AppendStart(*prop)
@@ -44,41 +48,46 @@ For i=0 To 1
   Next
   ControlProperty::RowEnd(*prop)
   *prop\dy + 64
+  
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "fuck","fuck", UIColor::RANDOMIZED, 256,32)
+  
+  Signal::CONNECTCALLBACK(*btn\on_click, KissThatButton, *prop)
   ;   
-  
-  Object::SignalConnect(*ui, *head\ondelete_signal, 0)
-  Object::SignalConnect(*ui, *head\onexpand_signal, 1)
-  
-  Define v.Math::v3f32
-  ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
-  Define c.Math::c4f32
-  ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
 ;   
-  Define b.b
-  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
-  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
-  ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
-
-  Define f.f
-  ControlProperty::AddFloatControl(*prop, "Float", "Float", f, #Null)
-  
-  Define v2.v2f32
-  ControlProperty::AddVector2Control(*prop, "Vector2", "Vector2", v2, #Null)
-  
-  Define q.q4f32
-  ControlProperty::AddQuaternionControl(*prop, "Quaternion", "Quaternion", q, #Null)
+; ;   Object::SignalConnect(*ui, *head\ondelete_signal, 0)
+; ;   Object::SignalConnect(*ui, *head\onexpand_signal, 1)
+;   
+;   Define v.Math::v3f32
+;   ControlProperty::AddVector3Control(*prop, "Vector3", "Vector3", v, #Null)
+;   Define c.Math::c4f32
+;   ControlProperty::AddColorControl(*prop, "Color", "Color", c, #Null)
+; ;   
+;   Define b.b
+;   ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+;   ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+;   ControlProperty::AddBoolControl(*prop, "Boolean", "Boolean", b, #Null)
+; 
+;   Define f.f
+;   ControlProperty::AddFloatControl(*prop, "Float", "Float", f, #Null)
+;   
+;   Define v2.v2f32
+;   ControlProperty::AddVector2Control(*prop, "Vector2", "Vector2", v2, #Null)
+;   
+;   Define q.q4f32
+;   ControlProperty::AddQuaternionControl(*prop, "Quaternion", "Quaternion", q, #Null)
  
   
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
-Next
+
 
 CloseGadgetList()
 
 
 Application::Loop(*app,@Update())
+
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 21
+; CursorPosition = 22
+; FirstLine = 14
 ; Folding = -
 ; EnableXP

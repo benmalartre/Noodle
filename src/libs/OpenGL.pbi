@@ -1461,6 +1461,7 @@ DeclareModule OpenGL
   glTexParameteriv                    ( target.GLenum, pname.GLenum, params.GLint )
   glTexImage1D                        ( target.GLenum, level.GLint, internalformat.GLint, width.GLsizei, border.GLint, format.GLenum, type.GLenum, *pixels )
   glTexImage2D                        ( target.GLenum, level.GLint, internalformat.GLint, width.GLsizei, height.GLsizei, border.GLint, format.GLenum, type.GLenum, *pixels )
+  glTexSubImage2D                     (	target.GLenum, level.GLint, xoffset.GLint, yoffset.GLint,	width.GLsizei, height.GLsizei, format.GLenum , type.GLenum , *pixels)
   glDrawBuffer                        ( mode.GLenum )
   glClear                             ( mask.GLbitfield )
   glClearColor                        ( red.GLclampf, green.GLclampf, blue.GLclampf, alpha.GLclampf )
@@ -1606,9 +1607,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 1405
-; FirstLine = 1184
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1463
+; FirstLine = 1434
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

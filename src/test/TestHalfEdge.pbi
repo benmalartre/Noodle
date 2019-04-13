@@ -10,6 +10,8 @@ XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../core/Morton.pbi"
 XIncludeFile "../core/Application.pbi"
 
+XIncludeFile "../core/Application.pbi"
+
 UseModule Math
 Global width = 800
 Global height = 600
@@ -23,15 +25,15 @@ Global *drawer.Drawer::Drawer_t
 Global *root.Model::Model_t
 Global *selected.CArray::CArrayLong = CArray::newCArrayLong()
 Global rootIndex.i
-
+Global numTopos = 7
 
 Procedure PolygonSoup(numTopos=9)
-  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_BUNNY)
+  Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("SOUP", Shape::#SHAPE_TEAPOT)
   Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  
-  Protected *topo.Geometry::Topology_t = Topology::New()
-  PolymeshGeometry::BunnyTopology(*topo)
-  
+  Define *topo = *geom\topo
+;   PolymeshGeometry::BunnyTopology(*geom)
+;   Define *topo = Topology::New()
+;   Topology::Bunny(*topo)
   
   Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
@@ -52,20 +54,19 @@ Procedure PolygonSoup(numTopos=9)
     *p = CArray::GetValue(*positions, i)
     Matrix4::SetTranslation(*m,   *p)
   Next
-  
   Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
-  
   PolymeshGeometry::Set2(*geom, *topo)
   Object3D::Freeze(*mesh)
+;   Topology::Delete(*topo)
+;   For i=0 To numTopos-1
+;     Topology::Delete(CArray::GetValuePtr(*topos, i))
+;   Next
 ;   
-  For i=0 To numTopos-1
-    Topology::Delete(CArray::GetValuePtr(*topos, i))
-  Next
-  CArray::Delete(*topos)
-  Topology::Delete(*topo)
-  
+;   CArray::Delete(*topos)
+;   
+
   CArray::Delete(*matrices)
   CArray::Delete(*positions)
   
@@ -169,13 +170,17 @@ FTGL::Init()
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
 
   PolymeshGeometry::ComputeHalfEdges(*mesh\geom)
+  Debug "COMPUTE HALF EDGES OK"
   PolymeshGeometry::ComputeIslands(*mesh\geom)
+  Debug "COMPUTE ISLANDS OK"
   PolymeshGeometry::RandomColorByIsland(*mesh\geom)
+  Debug "COLOR BY ISLAND OK"
 ;   GetNeighbors(*mesh\geom)
 ;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
 ;   PolymeshGeometry::SphereTopology(*geom\topo, 2, 512, 256)
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
   Object3D::Freeze(*mesh)
+  Debug "FREEZE OK"
   *drawer = Drawer::New("DRAWER")
   Object3D::SetShader(*drawer, *app\context\shaders("drawer"))
   
@@ -199,7 +204,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 70
+; CursorPosition = 30
+; FirstLine = 25
 ; Folding = -
 ; EnableXP

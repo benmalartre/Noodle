@@ -141,8 +141,6 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
       Drawer::SetSize(*pnt, 1)
       Drawer::SetColor(*pnt, Color::_MAGENTA())
       
-      *tr\location\geometry = *geom
-      *tr\location\t = *t
       Vector3::SetFromOther(*tr\location\uvw, *tr\uvw)
       *tr\location\tid = i
       
@@ -195,14 +193,21 @@ EndProcedure
 
 
 Procedure Draw(*app.Application::Application_t)
+  CompilerIf #USE_GLFW
+    TestRay_Update(*ray, *app)
+    Scene::Update(Scene::*current_scene)
+    Application::Draw(*app, *layer)
+  CompilerElse
+    
+    ViewportUI::SetContext(*viewport)
+    TestRay_Update(*ray, *viewport)
+    Scene::Update(Scene::*current_scene)
+   
+    
+    ViewportUI::Draw(*viewport, *app\context)
+    ViewportUI::FlipBuffer(*viewport)
+  CompilerEndIf
   
-  ViewportUI::SetContext(*viewport)
-  TestRay_Update(*ray, *viewport)
-  Scene::Update(Scene::*current_scene)
- 
-  
-  ViewportUI::Draw(*viewport, *app\context)
-  ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
 
@@ -231,7 +236,10 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
 
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  CompilerIf Not #USE_GLFW
+    ViewportUI::AddLayer(*viewport, *layer)
+  CompilerEndIf
+  
   
   Scene::*current_scene = Scene::New()
   
@@ -243,9 +251,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 226
-; FirstLine = 213
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 196
+; FirstLine = 177
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

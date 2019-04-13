@@ -58,18 +58,18 @@ Module MergeTopoArrayNode
   Procedure Evaluate(*node.MergeTopoArrayNode_t)
     
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *oVal.CArray::CArrayPtr = *output\value
-    
+    Protected *oVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*output)
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*oVal,0)
     
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *iVal.CArray::CArrayPtr = NodePort::AcquireInputData(*input)
     
     If CArray::GetCount(*iVal)>1
-      Debug ">>>>>>>>>>>>>>>>>>>>>>>> Merge Topo Array Node : Nb Topos ---> "+Str(CArray::GetCount(*iVal))
       Topology::MergeArray(*topo,*iVal)
     ElseIf CArray::GetCount(*iVal)=1
       Topology::Copy(*topo,CArray::GetValuePtr(*iVal,0))
+    Else
+      Topology::Clear(*topo)
     EndIf
     
   EndProcedure
@@ -110,8 +110,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 49
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

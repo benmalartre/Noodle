@@ -39,9 +39,8 @@ DeclareModule Polymesh
   Declare Clean(*Me.Polymesh_t)
   Declare Draw(*Me.Polymesh_t, *ctx.GLContext::GLContext_t)
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
-  Declare TestClass(*Me.Polymesh_t)
-  Declare OnMessage(id.i, *up)
   Declare SetDirtyState(*Me.Polymesh_t, state.i)
+  Declare UpdateAttributes(*Me.Polymesh_t)
   Declare SetClean(*Me.Polymesh_t)
   DataSection 
     PolymeshVT: 
@@ -73,7 +72,7 @@ Module Polymesh
     *Me\geom = PolymeshGeometry::New(*Me,shape)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Polymesh
+    *Me\type = Object3D::#Polymesh
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
@@ -81,50 +80,47 @@ Module Polymesh
    
     ; ---[ Attributes ]---------------------------------------------------------
     Protected *mesh.Geometry::PolymeshGeometry_t = *Me\geom
-    Object3D::Object3D_ATTR()
+    Object3D::OBJECT3DATTR()
     ; Singleton Attributes
-    
-    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*mesh,#True,#True)
+    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\geom,#True,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*geom)
-    Protected *nbp = Attribute::New("NbVertices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpoints,#True,#True)
+    Protected *nbp = Attribute::New("NbVertices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpoints,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbp)
-    Protected *nbe = Attribute::New("NbEdges",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbedges,#True,#True)
+    Protected *nbe = Attribute::New("NbEdges",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbedges,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbe)
-    Protected *nbf = Attribute::New("NbPolygons",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpolygons,#True,#True)
+    Protected *nbf = Attribute::New("NbPolygons",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpolygons,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbf)
-    Protected *nbt = Attribute::New("NbTriangles",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbtriangles,#True,#True)
+    Protected *nbt = Attribute::New("NbTriangles",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbtriangles,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbt)
-    Protected *nbs = Attribute::New("NbSamples",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbsamples,#True,#True)
+    Protected *nbs = Attribute::New("NbSamples",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbsamples,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbs)
-    Protected *nbi = Attribute::New("NbIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbindices,#True,#True)
+    Protected *nbi = Attribute::New("NbIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbindices,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbi)
     
     ; Singleton Arrays
-    Protected *fc = Attribute::New("FaceCount",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_facecount,#True,#False)
+    Protected *fc = Attribute::New("FaceCount",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_facecount,#True,#True,#False,#True,#True)
     Object3D::AddAttribute(*Me,*fc)
-    Protected *fi = Attribute::New("FaceIndices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_faceindices,#True,#False)
+    Protected *fi = Attribute::New("FaceIndices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_faceindices,#True,#True,#False,#True,#True)
     Object3D::AddAttribute(*Me,*fi)
     
     ; Per Point Attributes
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_positions,#False,#False)
+    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_positions,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_pointnormals,#False,#False)
+    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_pointnormals,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_velocities,#False,#False)
+    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_velocities,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointvelocity)
     
     ; Per Sample Attributes
-    Protected *normals = Attribute::New("Normals",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_normals,#False,#False)
+    Protected *normals = Attribute::New("Normals",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_normals,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*normals)
-    Protected *uvws = Attribute::New("UVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_uvws,#False,#False)
+    Protected *uvws = Attribute::New("UVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_uvws,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*uvws)
-    Protected *pointcolor = Attribute::New("Colors",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_colors,#False,#False)
+    Protected *pointcolor = Attribute::New("Colors",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_colors,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointcolor)
-    Protected *data.CArray::CArrayPtr = CArray::newCArrayPtr()
-    CArray::AppendPtr(*data,*mesh\topo)
     
     ; Topology Attribute
-    Protected *topology = Attribute::New("Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*data,#False,#True)
+    Protected *topology = Attribute::New("Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*mesh\topo,#True,#False,#True,#True,#True)
     Object3D::AddAttribute(*Me,*topology)
 ;     *Me\texture = 0
     Object3D::Freeze(*Me)
@@ -175,13 +171,56 @@ Module Polymesh
     EndIf
   EndProcedure
   
+  Procedure UpdateAttributes(*Me.Polymesh_t)
+    Define *attr.Attribute::Attribute_t
+    Define *geom.Geometry::PolymeshGeometry_t = *Me\geom
+    *attr = Object3D::GetAttribute(*Me, "Geometry")
+    *attr\data = *geom
+    *attr = Object3D::GetAttribute(*Me, "NbVertices")
+    *attr\data = @*geom\nbpoints
+    *attr = Object3D::GetAttribute(*Me, "NbEdges")
+    *attr\data = @*geom\nbedges
+    *attr = Object3D::GetAttribute(*Me, "NbPolygons")
+    *attr\data = @*geom\nbpolygons
+    *attr = Object3D::GetAttribute(*Me, "NbTriangles")
+    *attr\data = @*geom\nbtriangles
+    *attr = Object3D::GetAttribute(*Me, "NbSamples")
+    *attr\data = @*geom\nbsamples
+    *attr = Object3D::GetAttribute(*Me, "NbIndices")
+    *attr\data = @*geom\nbindices
+    
+    *attr = Object3D::GetAttribute(*Me, "FaceCount")
+    *attr\data = *geom\a_facecount
+    *attr = Object3D::GetAttribute(*Me, "FaceIndices")
+    *attr\data = *geom\a_faceindices
+    
+    *attr = Object3D::GetAttribute(*Me, "PointPosition")
+    *attr\data = *geom\a_positions
+    *attr = Object3D::GetAttribute(*Me, "PointNormal")
+    *attr\data = *geom\a_pointnormals
+    *attr = Object3D::GetAttribute(*Me, "PointVelocity")
+    *attr\data = *geom\a_velocities
+    
+    *attr = Object3D::GetAttribute(*Me, "Normals")
+    *attr\data = *geom\a_normals
+    *attr = Object3D::GetAttribute(*Me, "UVWs")
+    *attr\data = *geom\a_uvws
+    *attr = Object3D::GetAttribute(*Me, "Colors")
+    *attr\data = *geom\a_colors
+    
+    *attr = Object3D::GetAttribute(*Me, "Topology")
+    *attr\data = *geom\topo
+
+  EndProcedure
+  
+  
   ;-----------------------------------------------------
   ; Set Clean
   ;-----------------------------------------------------
   Procedure SetClean(*Me.Polymesh_t)
     *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
-    ForEach *Me\m_attributes()
-      *Me\m_attributes()\dirty = #False
+    ForEach *Me\geom\m_attributes()
+      *Me\geom\m_attributes()\dirty = #False
     Next
   EndProcedure
   
@@ -515,27 +554,7 @@ Module Polymesh
   Procedure SetFromShape(*Me.Polymesh_t,shape.i)
 
   EndProcedure
-  
-  
-  Procedure OnMessage(id.i,*up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *snd.Object::Object_t = *sig\snd_inst
-    Protected *rcv.Object::Object_t = *sig\rcv_inst
-    
-    Debug "Polymesh Recieved Message"
-    Debug "Sender Class Name : "+*snd\class\name
-    Debug "Reciever Class Name : "+*rcv\class\name
-    
-  EndProcedure
-  
-  Procedure TestClass(*Me.Polymesh_t)
-    Debug ">>>>>>>>>>> "+Class\name
-    Protected *cls.Class::Class_t = *Me\class
-    Debug *cls
-    Debug *cls\name
-    Debug *cls\cmsg
-    *cls\cmsg(0,#Null)
-  EndProcedure
+
   
   Class::DEF( Polymesh )
 
@@ -544,8 +563,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 387
-; FirstLine = 370
-; Folding = ----
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 527
+; FirstLine = 505
+; Folding = ---
 ; EnableXP

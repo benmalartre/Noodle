@@ -61,7 +61,7 @@ Module AxisANgleToRotationNode
   Procedure Evaluate(*node.AxisANgleToRotationNode_t)
     
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *qOut.CArray::CArrayQ4F32 = *output\value
+    Protected *qOut.CArray::CArrayQ4F32 = NodePort::AcquireOutputData(*output)
     
     FirstElement(*node\inputs())
     Protected *axis.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
@@ -129,7 +129,7 @@ EndModule
 ; ============================================================================
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 76
+; CursorPosition = 63
+; FirstLine = 59
 ; Folding = --
 ; EnableXP

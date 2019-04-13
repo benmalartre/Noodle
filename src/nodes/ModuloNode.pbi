@@ -60,11 +60,8 @@ Module ModuloNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
-    
-    If *output\value = #Null
+
+    If *output\attribute\data = #Null
       Debug "Cannot Init Port For Modulo Node"
       ProcedureReturn 
     EndIf
@@ -80,7 +77,7 @@ Module ModuloNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected long.i
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt,*mIn.CArray::CArrayInt
-        *lOut = *output\value
+        *lOut = *output\attribute\data
         FirstElement(*node\inputs())
         *lIn = NodePort::AcquireInputData(*node\inputs())
         NextElement(*node\inputs())
@@ -101,7 +98,7 @@ Module ModuloNode
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected float.f
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat,*mIn2.CArray::CArrayFloat
-        *fOut = *output\value
+        *fOut = *output\attribute\data
         FirstElement(*node\inputs())
         *fIn = NodePort::AcquireInputData(*node\inputs())
         NextElement(*node\inputs())
@@ -154,8 +151,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 53
-; FirstLine = 48
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 59
 ; Folding = --
 ; EnableXP

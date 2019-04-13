@@ -15,38 +15,31 @@ DeclareModule UI
     #UI_ANIMATION_EDITOR
   EndEnumeration
   
-  Structure UI_t Extends Object::Object_t
-    name.s
-    x.i
-    y.i
-    lastx.i
-    lasty.i
-    offsetx.i
-    offsety.i
-    width.i
-    height.i
+  Structure UI_t Extends Control::Control_t
+    lastX.i
+    lastY.i
+    offsetX.i
+    offsetY.i
+
     container.i
-    type.i
     dirty.b
     down.b
     zoom.f
-    gadgetID.i
     
     imageID.i
-    iwidth.i
-    iheight.i
+    iSizX.i
+    iSizY.i
     
     scrollable.b
     scrolling.b
-    scrollx.i
-    scrolly.i
-    scrollmaxx.i
-    scrollmaxy.i
-    scrolllastx.i
-    scrolllasty.i
+    scrollX.i
+    scrollY.i
+    scrollMaxX.i
+    scrollMaxY.i
+    scrollLastX.i
+    scrollLastY.i
     
     active.b
-    *top
   EndStructure
   
   Interface IUI
@@ -85,8 +78,8 @@ Module UI
   Procedure GetScrollArea(*Me.UI_t)
   If *Me\scrollable
     *Me\scrolling = #False
-    If *Me\width>*Me\iwidth : *Me\scrollmaxx = 0 : Else : *Me\scrollmaxx = *Me\iwidth-*Me\width : EndIf
-    If *Me\height>*Me\iheight : *Me\scrollmaxy = 0 : Else : *Me\scrollmaxy = *Me\iheight-*Me\height : EndIf
+    If *Me\sizX>*Me\iSizX : *Me\scrollMaxX = 0 : Else : *Me\scrollMaxX = *Me\iSizX-*Me\sizX : EndIf
+    If *Me\sizY>*Me\iSizY : *Me\scrollMaxY = 0 : Else : *Me\scrollMaxY = *Me\iSizY-*Me\sizY : EndIf
   EndIf
   
 EndProcedure
@@ -96,21 +89,21 @@ Procedure Scroll(*Me.UI_t,mode.b =#False)
   If *Me\scrollable And (*Me\scrolling Or mode = #True)
     If mode = #True
       Protected d = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
-      *Me\scrolly + d*22
+      *Me\scrollY + d*22
     Else
       
       Protected x = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
       Protected y = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
-      *Me\scrollx + (x-*Me\scrolllastx)
-      *Me\scrolly + (y-*Me\scrolllasty)
-      *Me\scrolllastx = x
-      *Me\scrolllasty = y
+      *Me\scrollX + (x-*Me\scrollLastX)
+      *Me\scrollY + (y-*Me\scrollLastY)
+      *Me\scrollLastX = x
+      *Me\scrollLastY = y
     EndIf
     
-    If *Me\scrollx>0 : *Me\scrollx = 0 : EndIf
-    If *Me\scrolly>0 : *Me\scrolly = 0 : EndIf
-    If *Me\scrollx<-*Me\scrollmaxx : *Me\scrollx = -*Me\scrollmaxx : EndIf
-    If *Me\scrolly<-*Me\scrollmaxy : *Me\scrolly = -*Me\scrollmaxy : EndIf
+    If *Me\scrollX>0 : *Me\scrollX = 0 : EndIf
+    If *Me\scrollY>0 : *Me\scrollY = 0 : EndIf
+    If *Me\scrollX<-*Me\scrollMaxX : *Me\scrollX = -*Me\scrollMaxX : EndIf
+    If *Me\scrollY<-*Me\scrollMaxY : *Me\scrollY = -*Me\scrollMaxY : EndIf
     
   EndIf
 EndProcedure
@@ -141,7 +134,6 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 62
+; CursorPosition = 30
 ; Folding = -
 ; EnableXP

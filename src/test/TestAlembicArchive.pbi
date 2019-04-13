@@ -10,28 +10,48 @@ Global load = ButtonGadget(#PB_Any,0,0,800,25, "Choose Alembic File")
 Global explorer = TreeGadget(#PB_Any,0,25,800,575)
 
 Procedure.i LogABCArchive(path.s)
-  If FileSize(path)>0 And GetExtensionPart(path) = "abc"
-    If Alembic::abc_manager<>#Null
-      Define *abc_archive = Alembic::LoadABCArchive(path)
-;     If Alembic::abc_manager<>#Null
-;       Protected *abc_manager.Alembic::IArchiveManager = Alembic::abc_manager
-;       Protected *abc_archive.IArchive = Alembic::OpenIArchive(path)
-;       
-;       Global startframe = *abc_archive\GetStartTime() 
-;       Global endframe = *abc_archive\GetEndTime();Alembic::ABC_GetEndFrame(*abc_archive\archive)
-;       Global numsamples = *abc_archive\GetMaxNumSamplesForTimeSamplingIndex(0);Alembic::ABC_GetMaxNumSamplesForTimeSamplingIndex(*abc_archive\archive,0)
-;       Global numsamples2 = *abc_archive\ABC_GetMaxNumSamplesForTimeSamplingIndex(1)
-;       ; CreateObject List
-;       Protected i,j
-;       Protected *abc_obj.AlembicObject::AlembicObject_t
-;       Protected *abc_par.AlembicObject::AlembicObject_t = #Null
-;       Protected *prop.Alembic::ABC_property
-;       Protected nbp = 0
-; 
-;       Protected pName.s
-;       Protected infos.Alembic::ABC_Attribute_Sample_Infos
-;             
-;       For i=0 To *abc_archive\GetNumObjects()-1
+    If FileSize(path)>0 And GetExtensionPart(path) = "abc"
+      
+      Protected manager.Alembic::IArchiveManager = Alembic::abc_manager
+      If manager<>#Null
+        Protected archive.Alembic::IArchive = Alembic::OpenIArchive(path)
+        ; Create a new Model
+        Protected *model.Model::Model_t = Model::New("Alembic")
+         If archive\IsValid()
+          
+          Define id = 1
+          ;Create Objects contained in alembic file
+          Define i,j = 0
+          Protected *abc_obj.AlembicIObject::AlembicIObject_t
+          Protected *abc_par.AlembicIObject::AlembicIObject_t = #Null
+          Protected *child.Object3D::Object3D_t
+          Protected identifier.s
+          For i=0 To archive\GetNumObjects()-1
+            *abc_obj = AlembicIObject::New(archive\GetObject(i))
+            If *abc_obj <> #Null
+              AlembicIObject::Init(*abc_obj,*abc_par)
+              If AlembicIObject::Get3DObject(*abc_obj)<>#Null
+                *abc_par = #Null
+                *child = AlembicIObject::Get3DObject(*abc_obj)
+                Object3D::AddChild(*model,*child)
+              Else 
+                *abc_par = *abc_obj
+              EndIf
+            EndIf
+            
+          Next i
+        EndIf
+        
+      EndIf
+      ProcedureReturn *model
+    Else
+      MessageRequester( "[Alembic LoadABCArchive] "," Invalid File !!!")
+      ProcedureReturn #Null
+    EndIf
+    
+  EndProcedure
+  
+  ;       For i=0 To *abc_archive\GetNumObjects()-1
 ;         *abc_obj = *abc_archive\GetObject(i)(i)
 ;         ;Alembic::ABC_InitObject(*abc_obj\ptr,*abc_obj\type)
 ;         
@@ -66,44 +86,9 @@ Procedure.i LogABCArchive(path.s)
 ;         
 ;       Next i
 
-      
-;       ; Create a new Model
-;       Protected *model.Model::Model_t = Model::New("Alembic")
-;       
-;       ;Create Objects contained in alembic file
-;       Define i
-;       Protected *abc_obj.AlembicObject::AlembicObject_t
-;       Protected *abc_par.AlembicObject::AlembicObject_t = #Null
-;       Protected *child.Object3D::Object3D_t
-;       For i=0 To AlembicArchive::GetNbObjects(*abc_archive)-1
-;         Debug "Alembic Object ID "+Str(i)
-;         *abc_obj = AlembicArchive::CreateObjectByID(*abc_archive,i)
-;         If *abc_obj <> #Null
-;           AlembicObject::Init(*abc_obj,*abc_par)
-;           If AlembicObject::Get3DObject(*abc_obj)<>#Null
-;             *abc_par = #Null
-;             *child = AlembicObject::Get3DObject(*abc_obj)
-;             Object3D::AddChild(*model,*child)
-;             
-;           Else 
-;             *abc_par = *abc_obj
-;           EndIf
-;         EndIf
-;         
-;       Next i
-    Else
-      Debug "[Alembic] : Invalid Manager"
-    EndIf
-    ProcedureReturn *abc_archive
-  Else
-    Debug "[Alembic Archive] : Invalid File"
-    ProcedureReturn #Null
-  EndIf
-  
-EndProcedure
-
 Define quit.b = #False
 Define ev.i
+Define manager.Alembic::IArchiveManager = Alembic::abc_manager
 Repeat
   ev = WaitWindowEvent()
   If ev = #PB_Event_CloseWindow
@@ -112,12 +97,14 @@ Repeat
     If EventGadget() = load And EventType() = #PB_EventType_LeftClick 
       ClearGadgetItems(explorer)
       Define path.s = OpenFileRequester("Alembic Archive","","Alembic (*.abc)|*.abc",0)
-      Define *archive.AlembicArchive::AlembicArchive_t = LogABCArchive(path)
-  
-      If *archive <> #Null
-        Debug AlembicManager::GetNumOpenArchives(*manager)
-        AlembicManager::CloseArchive(*manager, *archive)
+      Define *archive.Alembic::IArchive = LogABCArchive(path)
+      
+      If manager
+        Debug manager\GetNumOpenArchives()
+;         manager\CloseArchive(*archive)
       EndIf
+      
+
     EndIf
     
   EndIf
@@ -130,8 +117,8 @@ Alembic::Terminate()
   
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 73
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

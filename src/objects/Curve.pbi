@@ -250,12 +250,12 @@ Module Curve
   ;----------------------------------------------------
   Procedure OnMessage(id.i,*up)
     Protected *sig.Signal::Signal_t = *up
-    Protected *snd.Object::Object_t = *sig\snd_inst
-    Protected *rcv.Object::Object_t = *sig\rcv_inst
-    
-    Debug "Curve Recieved Message"
-    Debug "Sender Class Name : "+*snd\class\name
-    Debug "Reciever Class Name : "+*rcv\class\name
+;     Protected *snd.Object::Object_t = *sig\snd_inst
+;     Protected *rcv.Object::Object_t = *sig\rcv_inst
+;     
+;     Debug "Curve Recieved Message"
+;     Debug "Sender Class Name : "+*snd\class\name
+;     Debug "Reciever Class Name : "+*rcv\class\name
     
   EndProcedure
   
@@ -283,7 +283,7 @@ Module Curve
     *Me\geom = CurveGeometry::New(*Me)
     *Me\visible = #True
     *Me\stack = Stack::New()
-    *Me\type = Object3D::#Object3D_Curve
+    *Me\type = Object3D::#Curve
     
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
@@ -293,22 +293,22 @@ Module Curve
     
     ; ---[ Attributes ]---------------------------------------------------------
     Protected *curve.Geometry::CurveGeometry_t = *Me\geom
-    Object3D::Object3D_ATTR()
+    Object3D::OBJECT3DATTR()
     ; Singleton Attributes
     
-    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*curve,#True,#True)
+    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*curve,#True,#True,#True)
     Object3D::AddAttribute(*Me,*geom)
     
     ; Singleton Arrays
-    Protected *nv = Attribute::New("NumVertices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*curve\a_numVertices,#True,#False)
+    Protected *nv = Attribute::New("NumVertices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*curve\a_numVertices,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nv)
     
     ; Per Point Attributes
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_positions,#False,#False)
+    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_positions,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_normals,#False,#False)
+    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_normals,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_velocities,#False,#False)
+    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_velocities,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointvelocity)
     
     ProcedureReturn *Me
@@ -322,7 +322,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 107
+; CursorPosition = 310
+; FirstLine = 263
 ; Folding = ---
 ; EnableXP

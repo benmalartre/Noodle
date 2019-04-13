@@ -13,6 +13,7 @@ DeclareModule Selection
   Structure SelectionItem_t
     *obj.Object3D::Object3D_t
     type.i
+    key.s
   EndStructure
   
   Structure SelectionComponentItem_t Extends SelectionItem_t
@@ -25,19 +26,15 @@ DeclareModule Selection
   
   Declare New()
   Declare Delete(*Me.Selection_t)
+  Declare Clear(*Me.Selection_t)
   Declare AddObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
   Declare RemoveObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
   Declare AddComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
   Declare RemoveComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
   Declare Get(*Me.Selection_t)
   
-  Declare NewSelectionItem(*obj.Object3D::Object3D_t)
-  Declare NewSelectionComponentItem(*obj.Object3D::Object3D_t, type.i)
-  
-  Declare DeleteSelectionItem(*item.SelectionItem_t)
-  Declare DeleteSelectionComponentItem(*item.SelectionComponentItem_t)
-  
 EndDeclareModule
+
 
 Module Selection
   Procedure New()
@@ -51,51 +48,50 @@ Module Selection
     FreeMemory(*Me)
   EndProcedure
   
-  Procedure NewSelectionItem(*obj.Object3D::Object3D_t)
-    Protected *item.SelectionItem_t = AllocateMemory(SizeOf(SelectionItem_t))
-    *item\obj = *obj
-    *item\type = #ITEM_OBJECT
-    ProcedureReturn *item
+   Procedure Clear(*Me.Selection_t)
+     ForEach *Me\selected()
+       RemoveObject(*Me, *Me\selected())
+     Next
+     ClearMap(*Me\selected())
   EndProcedure
   
-  Procedure DeleteSelectionItem(*item.SelectionItem_t)
-    FreeMemory(*item)
+  Procedure AddObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
+    If Not *obj : ProcedureReturn : EndIf
+    
+    Debug "ADD OBJECT : "+Str(*obj);\name
+    If Not FindMapElement(*Me\selected(), Str(*obj))
+      Protected *item.SelectionItem_t = AllocateMemory(SizeOf(SelectionItem_t))
+      *item\obj = *obj
+      *item\type = #ITEM_OBJECT
+      Define key.s = Str(*obj)
+      Debug "KEY : "+key
+      AddMapElement(*Me\selected(), key)
+      *Me\selected(key) = *item
+      *item\key = key
+      
+      Debug "ADD OBJECT TO SELECTION : "+*Me\selected()\obj\fullname
+    EndIf  
   EndProcedure
   
-  Procedure NewSelectionComponentItem(*obj.Object3D::Object3D_t, type.i)
+  Procedure RemoveObject(*Me.Selection_t, *item.SelectionItem_t)
+    If *Me\selected(*item\key)
+      Define *item.SelectionItem_t = *Me\selected(*item\key)
+      If *item\type <> #ITEM_OBJECT
+        Define *subItem.SelectionComponentItem_t = *item
+        CArray::Delete(*subItem\components)
+      EndIf
+     DeleteMapElement(*Me\selected(), *item\key)
+     FreeMemory(*item)
+   EndIf
+  EndProcedure
+ 
+  
+  Procedure AddComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
     Protected *item.SelectionComponentItem_t = AllocateMemory(SizeOf(SelectionComponentItem_t))
     *item\obj = *obj
     *item\type = type
     *item\components = CArray::newCArrayLong()
-    ProcedureReturn *item
-  EndProcedure
-  
-  Procedure DeleteSelectionComponentItem(*item.SelectionComponentItem_t)
-    CArray::Delete(*item\components)
-    FreeMemory(*item)
-  EndProcedure
-  
-  
-  Procedure AddObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
-    If Not FindMapElement(*Me\selected(), Str(*obj))
-      Define *selectable.SelectionItem_t = NewSelectionItem(*obj)
-      AddMapElement(*Me\selected(), Str(*obj))
-      *Me\selected() = *selectable
-    EndIf  
-  EndProcedure
-  
-  Procedure RemoveObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
-    If FindMapElement(*Me\selected(), Str(*obj))
-      If *Me\selected()\type = #ITEM_OBJECT
-        DeleteSelectionItem(*Me\selected())
-      Else
-        DeleteSelectionComponentItem(*Me\selected())
-      EndIf
-      DeleteMapElement(*Me\selected())
-    EndIf
-  EndProcedure
-  
-  Procedure AddComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
+    
     Define hash.s = Str(*obj)
     Select type
       Case #ITEM_VERTEX
@@ -109,6 +105,7 @@ Module Selection
     If Not FindMapElement(*Me\selected(), hash)
       *Me\selected(hash) = *obj
     EndIf  
+    ProcedureReturn *item
   EndProcedure
   
   Procedure RemoveComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
@@ -131,8 +128,7 @@ Module Selection
       ProcedureReturn *Me\selected()
     EndIf
     
-  EndProcedure
-  
+  EndProcedure 
 EndModule
 
 DeclareModule ComponentSelection
@@ -160,7 +156,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 23
-; FirstLine = 3
+; CursorPosition = 60
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP

@@ -1,16 +1,22 @@
-﻿XIncludeFile "Globals.pbi"
+﻿; ============================================================================
+;   CORE MODULES
+; ============================================================================
+XIncludeFile "Globals.pbi"
 XIncludeFile "Array.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
-XIncludeFile "Slot.pbi"
+XIncludeFile "Arguments.pbi"
+XIncludeFile "Callback.pbi"
+XIncludeFile "Signal.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
 XIncludeFile "Pose.pbi"
 XIncludeFile "Image.pbi"
 
-
-
+; ============================================================================
+;   OPENGL MODULES
+; ============================================================================
 XIncludeFile "../libs/OpenGL.pbi"
 CompilerIf #USE_GLFW
   XIncludeFile "../libs/GLFW.pbi"
@@ -25,10 +31,13 @@ XIncludeFile "../opengl/ScreenQuad.pbi"
 XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../opengl/CubeMap.pbi"
 
+; ============================================================================
+;   OBJECT MODULES
+; ============================================================================
 XIncludeFile "../objects/Location.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Null.pbi"
+XIncludeFile "../objects/Locator.pbi"
 XIncludeFile "../objects/Curve.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/PointCloud.pbi"
@@ -43,6 +52,9 @@ XIncludeFile "../objects/Poisson.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Octree.pbi"
 
+; ============================================================================
+;   LAYER MODULES
+; ============================================================================
 XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
 XIncludeFile "../layers/Bitmap.pbi"
@@ -58,6 +70,9 @@ XIncludeFile "../layers/SSAO.pbi"
 XIncludeFile "../layers/Blur.pbi"
 XIncludeFile "../layers/Strokes.pbi"
 
+; ============================================================================
+;   GRAPH MODULES
+; ============================================================================
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/CompoundPort.pbi"
@@ -68,6 +83,9 @@ XIncludeFile "../graph/Connexion.pbi"
 XIncludeFile "../graph/Graph.pbi"
 XIncludeFile "../graph/Tree.pbi"
 
+; ============================================================================
+;   CONTROL MODULES
+; ============================================================================
 XIncludeFile "../controls/Dummy.pbi"
 XIncludeFile "../controls/Button.pbi"
 XIncludeFile "../controls/Check.pbi"
@@ -82,12 +100,18 @@ XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
-; XIncludeFile "../controls/PopupMenu.pbi"
+XIncludeFile "../controls/Popup.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
 
+; ============================================================================
+;   COMMAND MODULES
+; ============================================================================
 XIncludeFile "../commands/Scene.pbi"
 XIncludeFile "../commands/Graph.pbi"
 
+; ============================================================================
+;   UI MODULES
+; ============================================================================
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
@@ -123,6 +147,8 @@ CompilerIf (#USE_GLFW = #True)
   UseModule GLFW
 CompilerEndIf
 
+  #DEFAULT_WIDTH = 1024
+  #DEFAULT_HEIGHT = 720
   Structure Application_t
     name.s
     glfw.b
@@ -145,6 +171,7 @@ CompilerEndIf
     framecount.i
     lasttime.l
     dirty.b
+    dummy.i
   EndStructure
   
 ;   Enumeration 
@@ -175,6 +202,7 @@ CompilerEndIf
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*app.Application_t)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -205,7 +233,49 @@ CompilerEndIf
   ; Size Window Callback
   ;-----------------------------------------------------------------------------
   Procedure SizeWindowCallback()
-      ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
+    ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
+  EndProcedure
+    
+  Procedure CreateHiddenOpenGLContext(*Me.Application_t)
+    
+    *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+    ; Allocate Pixel Format Object
+    Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+    ; Set Pixel Format Attributes
+    Define pfa.NSOpenGLPixelFormatAttribute
+    With pfa
+      \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
+      \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
+      \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+      \v[6] = #NSOpenGLPFADoubleBuffer
+      \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
+      \v[8] = #NSOpenGLPFANoRecovery
+      \v[9] = #Null
+    EndWith
+
+    ; Choose Pixel Format
+    CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+    ; Allocate OpenGL Context
+    Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+    ; Create OpenGL Context
+    CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+    ; Set Current Context
+    CocoaMessage( 0, ctx, "makeCurrentContext" )
+    ; Swap Buffers
+    CocoaMessage( 0, ctx, "flushBuffer" )
+    ; Associate Context With OpenGLGadget NSView
+    *Me\dummy = CanvasGadget(#PB_Any,0,0,0,0,#PB_Canvas_Keyboard)
+    CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
+    *Me\context\ID = ctx
+      
+    CompilerElse
+      *Me\dummy = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
+      SetGadgetAttribute(*Me\dummy,#PB_OpenGL_SetContext,#True)
+      *Me\context = GLContext::New(0,0,#True, *Me\window)
+      GLContext::Setup(*Me\context)
+
+    CompilerEndIf
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -241,6 +311,7 @@ CompilerEndIf
 
       *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
+      *app\dummy = CreateHiddenOpenGLContext(*app)
       
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
@@ -339,13 +410,13 @@ CompilerIf #USE_GLFW
      If *app\idle
        ; Camera Events
         Select *app\idle
-          Case #TOOL_PAN
+          Case Globals::#TOOL_PAN
             Camera::Pan(*c,deltax,deltay,w,h)
     
-          Case #TOOL_DOLLY
+          Case Globals::#TOOL_DOLLY
             Camera::Dolly(*c,deltax,deltay,w,h)
               
-          Case #TOOL_ORBIT
+          Case Globals::#TOOL_ORBIT
             Camera::Orbit(*c,deltax,deltay,w,h)
         EndSelect
       EndIf
@@ -388,12 +459,12 @@ CompilerIf #USE_GLFW
             
           EndSelect
           *app\down = #True
-          *app\idle = #TOOL_CAMERA
+          *app\idle = Globals::#TOOL_CAMERA
           glfwGetCursorPos(*window,@*app\mouseX,@*app\mouseY)
-          If *app\idle = #TOOL_CAMERA
-            If *app\lmb_p : *app\idle = #Tool_Pan
-            ElseIf *app\mmb_p :*app\idle = #Tool_Dolly
-            ElseIf *app\rmb_p : *app\idle = #Tool_Orbit
+          If *app\idle = Globals::#TOOL_CAMERA
+            If *app\lmb_p : *app\idle = Globals::#Tool_Pan
+            ElseIf *app\mmb_p :*app\idle = Globals::#Tool_Dolly
+            ElseIf *app\rmb_p : *app\idle = Globals::#Tool_Orbit
             EndIf
             
 ;           ElseIf *app\tool = #Tool_Translate Or *app\tool = #Tool_Rotate Or *app\tool = #Tool_Scale
@@ -414,8 +485,8 @@ CompilerIf #USE_GLFW
           *app\mmb_p = #False
           *app\rmb_p = #False
           *app\down = #False
-          If *app\idle = #Tool_Pan Or *app\idle = #Tool_Dolly Or *app\idle = #Tool_Orbit 
-            *app\idle = #Tool_Camera
+          If *app\idle = Globals::#Tool_Pan Or *app\idle = Globals::#Tool_Dolly Or *app\idle = Globals::#Tool_Orbit 
+            *app\idle = Globals::#Tool_Camera
           EndIf
     EndSelect
    
@@ -515,55 +586,7 @@ CompilerEndIf
     ProcedureReturn *app\fps
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Echo Event Type (PureBasic)
-  ;-----------------------------------------------------------------------------
-  Procedure EchoEventType(event)
-    Select event
-      Case #PB_Event_Menu
-        Debug "Event Menu"
-      Case #PB_Event_Gadget
-        Debug "Event Gadget"
-      Case #PB_Event_SysTray
-        Debug "Event SysTray"
-      Case #PB_Event_Timer
-        Debug "Event Timer"
-      Case #PB_Event_CloseWindow
-        Debug "Event Close Window"
-      Case #PB_Event_Repaint
-        Debug "Tout ou partie du contenu de la fenêtre a été détruit et doit être reconstitué "
-      Case #PB_Event_SizeWindow
-        Debug "La fenêtre a été redimensionnée " 
-      Case #PB_Event_MoveWindow
-        Debug "La fenêtre a été déplacée"
-      Case #PB_Event_MinimizeWindow
-        Debug "La fenêtre a été minimisée"
-      Case #PB_Event_MaximizeWindow
-        Debug "La fenêtre a été maximisée"
-      Case #PB_Event_RestoreWindow 
-        Debug "La fenêtre a été restaurée à sa taille normale"
-      Case #PB_Event_ActivateWindow 
-        Debug "La fenêtre a été activée (gain du focus)"
-      Case #PB_Event_DeactivateWindow
-        Debug "La fenêtre a été désactivée (perte du focus)"
-      Case #PB_Event_LeftDoubleClick 
-        Debug "Un double clic gauche de la souris s'est produit sur la fenêtre"
-      Case #PB_Event_LeftClick  
-        Debug "Un clic gauche de la souris s'est produit sur la fenêtre"
-      Case #PB_Event_RightClick 
-        Debug "Un clic droit de la souris s'est produit sur la fenêtre. Cela peut être utile pour afficher un menu contextuel"
-      Case #PB_Event_WindowDrop   
-        Debug "Une opération Glisser & Déposer s'est terminée sur une fenêtre (Voir remarque ci-dessous)"
-      Case #PB_Event_GadgetDrop 
-        Debug "Une opération Glisser & Déposer s'est terminée sur un gadget (Voir remarque ci-dessous)"
-      Default 
-        Debug "UNSUPPORTED EVENT"
-  EndSelect
-  
-EndProcedure
 
-
-  
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
@@ -583,7 +606,7 @@ EndProcedure
       ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
       *callback(*app)
       Repeat
-        event = WaitWindowEvent(1000/60)
+        event = WaitWindowEvent(24)
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -593,9 +616,25 @@ EndProcedure
         CompilerEndSelect
         
         Select event
+          Case Globals::#EVENT_NEW_SCENE
+            Scene::Setup(Scene::*current_scene, *app\context)
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_NEW_SCENE)
+            
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
             *callback(*app)
+            
+          Case Globals::#EVENT_SELECTION_CHANGED
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_SELECTION_CHANGED)
+            Scene::Update(Scene::*current_scene)
+            *callback(*app)
+           
+          Case Globals::#EVENT_HIERARCHY_CHANGED
+            Scene::Setup(Scene::*current_scene, *app\context)
+            ViewManager::OnEvent(*app\manager,Globals::#EVENT_HIERARCHY_CHANGED)
+           
+            *callback(*app)
+            
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = ViewManager::*view_manager\uis("Graph")
             Protected *tree = EventData()
@@ -607,6 +646,7 @@ EndProcedure
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
                 *app\tool = Globals::#TOOL_TRANSLATE
+                
               Case Globals::#SHORTCUT_ROTATE
                 *app\tool = Globals::#TOOL_ROTATE
               Case Globals::#SHORTCUT_SCALE
@@ -637,11 +677,45 @@ EndProcedure
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Draw
+  ;------------------------------------------------------------------
+  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t)
+
+    Dim shaderNames.s(3)
+    shaderNames(0) = "wireframe"
+    shaderNames(1) = "polymesh"
+    shaderNames(2) = "normal"
+    Define i
+    Define *pgm.Program::Program_t
+    For i=0 To 2
+      *pgm = *Me\context\shaders(shaderNames(i))
+      glUseProgram(*pgm\pgm)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+    Next
+    
+    Protected ilayer.Layer::ILayer = *layer
+    ilayer\Draw(*Me\context)
+    If *Me\tool
+      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
+      glUseProgram(*wireframe\pgm)
+
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+      
+      ;Handle::Draw( *Me\handle,*ctx) 
+    EndIf
+    
+  EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 110
+; CursorPosition = 240
+; FirstLine = 220
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -17,6 +17,7 @@ DeclareModule ControlExplorer
   EndEnumeration
   
   Enumeration
+    #TYPE_UNKNOWN
     #TYPE_MODEL
     #TYPE_GROUP
     #TYPE_LAYER
@@ -63,22 +64,19 @@ DeclareModule ControlExplorer
   ; ----------------------------------------------------------------------------
   ;  CExplorerObject Instance
   ; ----------------------------------------------------------------------------
-  Structure ControlExplorerItem_t
+  Structure ControlExplorerItem_t Extends Object::Object_t
     *object.Object::Object_t
     List *children.ControlExplorerItem_t()
     *parent.ControlExplorerItem_t
     type.i
+    over.b
     expended.b
     selected.b
-    colorid.i
     depth.i
     isroot.b
     isleaf.b
     havechildren.b
     havenext.b
-    
-    
-    *slot.Slot::Slot_t
     
   EndStructure
   
@@ -104,11 +102,13 @@ DeclareModule ControlExplorer
     pick.i
     
     *root.ControlExplorerItem_t
+    Map *m_items.ControlExplorerItem_t()
     List *items.ControlExplorerItem_t()
     List *visibles.ControlExplorerItem_t()
     List *selected.ControlExplorerItem_t()
     
     *scene.Scene::Scene_t
+    *on_selection.Signal::Signal_t
   EndStructure
   
   Declare New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
@@ -156,14 +156,13 @@ DeclareModule ControlExplorer
     IncludeBinary "../../rsc/ico/tree.png"
   EndDataSection 
   
-;   Declare ItemEncodeID(*item.ControlExplorerItem_t,id.i)
-;   Declare ItemDecodeID(colorid.i)
+
 ;   Declare NewItem(*object.Object::Object_t,*parent.ControlExplorerItem_t,id,depth.i,havenext.b)
 ;   Declare DeleteItem(*item.ControlExplorerItem_t)
   Declare Resize(*Me.ControlExplorer_t)
 ;   Declare ResetVisited(*Me.ControlExplorer_t,*root.Object3D::Object3D_t)
 ;   Declare GetVisibles(*Me.ControlExplorer_t)
-;   Declare SetBinaryLine(*e.ControlExplorer_t,id.i,value.b)
+;   Declare SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
 ;   Declare DrawItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
 ;   Declare DrawDisplayImage(*Me.ControlExplorer_t)
 ;   Declare DrawPickItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
@@ -179,80 +178,70 @@ DeclareModule ControlExplorer
   Declare Add3DObject(*Me.ControlExplorer_t,*parent.ControlExplorerItem_t,*obj.Object3D::Object3D_t,depth.i)  
 ;   Declare IsInList(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
-  Declare OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  
+  Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
+   DataSection 
+    ControlExplorerVT: 
+    Data.i @OnEvent()
+    Data.i @Delete()
+    ControlExplorerItemVT: 
+    Data.i @OnEvent()
+    Data.i @Delete()
+  EndDataSection 
   
   Global CLASS.Class::Class_t
   
 EndDeclareModule
 
 Module ControlExplorer
-  ; ----------------------------------------------------------------------------
-  ;  Item Encode ID
-  ; ----------------------------------------------------------------------------
-  Procedure ItemEncodeID(*item.ControlExplorerItem_t,id.i)
-  Protected r = id / 65536
-  Math::MAXIMUM(r,0)
-  Protected g = (id-r *65536)/256
-  Math::MAXIMUM(g,0)
-  Protected b = (id- r * 65536 - g * 256)
-  Math::MAXIMUM(b,0)
-  *item\colorid = RGB(r,g,b)
-    
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Item Decode ID
-  ; ----------------------------------------------------------------------------
-  Procedure ItemDecodeID(colorid.i)
-    Protected id = Red(colorid)*(256*256) + Green(colorid)*256 + Blue(colorid)
-    ProcedureReturn id
-  EndProcedure
-  
-  
+ 
   ; ----------------------------------------------------------------------------
   ;  New Item
   ; ----------------------------------------------------------------------------
   Procedure NewItem(*object.Object::Object_t,*parent.ControlExplorerItem_t,id,depth.i,havenext.b)
     Protected *Me.ControlExplorerItem_t = AllocateMemory(SizeOf(ControlExplorerItem_t))
-    InitializeStructure(*Me,ControlExplorerItem_t)
-    
+    Object::INI(ControlExplorerItem)
+
     *Me\object = *object
     *Me\depth = depth
+
     *Me\isroot = Bool(*Me\object And *Me\object\class\name = "Model")
     *Me\expended = #False
     *Me\havechildren = *Me
     *Me\parent = *parent
     *Me\havenext = havenext
-    
-    ;Set Unique Color ID
-    ItemEncodeID(*Me,id)
+   
     
     If *object <> #Null
-      ;*Me\type = #TYPE_3DOBJECT
-      Select *object\class\name
-        Case "Model"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Polymesh"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "PointCloud"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Light"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Camera"
-          *Me\type = #TYPE_3DOBJECT
-        Case  "Curve"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Null"
-          *Me\type = #TYPE_3DOBJECT
-        Case "Attribute"
-          *Me\type = #TYPE_ATTRIBUTE
-        Case "Transform"
-          *Me\type = #TYPE_PROPERTY
-        Case ""
-          *Me\type = #TYPE_FOLDER
-          
-      EndSelect
+      If *object\class
+        ;*Me\type = #TYPE_3DOBJECT
+        Select *object\class\name
+          Case "Model"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Polymesh"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "PointCloud"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Light"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Camera"
+            *Me\type = #TYPE_3DOBJECT
+          Case  "Curve"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Null"
+            *Me\type = #TYPE_3DOBJECT
+          Case "Attribute"
+            *Me\type = #TYPE_ATTRIBUTE
+          Case "Transform"
+            *Me\type = #TYPE_PROPERTY
+          Case ""
+            *Me\type = #TYPE_FOLDER
+            
+        EndSelect
+      Else 
+        *Me\type = #TYPE_UNKNOWN
+      EndIf
+      
     Else
       *Me\type = #TYPE_FOLDER
     EndIf
@@ -312,17 +301,18 @@ Module ControlExplorer
   ; Get Visibles
   ;---------------------------------------------------------
   Procedure GetVisibles(*Me.ControlExplorer_t)
-    Protected depth.i,lastdepth.i
-    Protected expended.b,lastexpended.i
-    ResetVisited(*Me,*Me\root\object)
-    ClearList(*Me\visibles())
-    ForEach(*Me\items())
-      If (*Me\items()\parent And *Me\items()\parent\expended) Or *Me\items()\isroot = #True
-        AddElement(*Me\visibles())
-        *Me\visibles() = *Me\items()
-      EndIf
-    
-    Next
+;     Protected depth.i,lastdepth.i
+;     Protected expended.b,lastexpended.i
+    If *Me\root
+      ResetVisited(*Me,*Me\root\object)
+      ClearList(*Me\visibles())
+      ForEach(*Me\items())
+        If (*Me\items()\parent And *Me\items()\parent\expended) Or *Me\items()\isroot = #True
+          AddElement(*Me\visibles())
+          *Me\visibles() = *Me\items()
+        EndIf
+      Next
+    EndIf
     
   ;     expended = *Me\allitems()\expended
   ;     depth = *Me\allitems()\depth
@@ -336,8 +326,8 @@ Module ControlExplorer
   ;       *Me\items()=*Me\allitems()
   ;     EndIf
   ;   EndIf
-    lastexpended = expended
-    lastdepth = depth
+  ;     lastexpended = expended
+  ;     lastdepth = depth
   ;   Next
   
   EndProcedure
@@ -345,8 +335,8 @@ Module ControlExplorer
     ; ----------------------------------------
   ;  Set Binary Lines
   ; ----------------------------------------
-  Procedure SetBinaryLine(*e.ControlExplorer_t,id.i,value.b)
-    Globals::BitWrite(*e\linebinary,id,value)
+  Procedure SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
+    Globals::BitWrite(*Me\linebinary,id,value)
   EndProcedure
   
   
@@ -356,32 +346,33 @@ Module ControlExplorer
   Procedure DrawItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
     
    
-    If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : ProcedureReturn : EndIf
-    If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_attributes : ProcedureReturn : EndIf
+    If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : *Me\itemcounter + 1 : ProcedureReturn : EndIf
+    If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_attributes : *Me\itemcounter + 1 : ProcedureReturn : EndIf
   
     Protected shiftx.i = #SHIFTX
     Protected shifty.i = #SHIFTY
     Protected x = 25 + shiftx * (*item\depth)
-    Protected tc = RGBA(0,0,0,255)
-    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
+    Protected tc = UIColor::COLOR_TEXT
+    VectorFont(FontID(Globals::#FONT_DEFAULT));, Globals::#FONT_SIZE_TEXT)
     ; Draw Background
     If Mod(*Me\itemcounter,2) = 1
       AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
     Else
       AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
-      VectorSourceColor(UIColor::COLORA_SECONDARY_BG)
+      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
       FillPath()
     EndIf
     
-    ;   ; Draw Selected
+    ; Draw Selected
     If *item\selected = #True
       AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
-      VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+      VectorSourceColor(UIColor::COLOR_SELECTED_BG)
+      FillPath()
     EndIf
     
-    ;Draw Item
+    ; Draw Item
     Protected *parent.ControlExplorerItem_t = *item\parent
     If *parent
       Protected yoff = 0
@@ -394,20 +385,20 @@ Module ControlExplorer
         xoff + #SHIFTX
         *parent = *parent\parent
       Until *parent = #Null
-      VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
+      VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
       StrokePath(2)
     EndIf
   
-    ;Draw Connexions
+    ; Draw Connexions
     If *item\havenext
       SetBinaryLine(*Me,depth,#True)
     Else
       SetBinaryLine(*Me,depth,#False)
     EndIf
     
-    ;Vertical lines
+    ; Vertical lines
     Protected i
-    VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
+    VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
     For i=0 To depth-1
       If Globals::BitRead(*Me\linebinary,i)
         MovePathCursor(x-(i)*shiftx+5,*Me\ioffsety-shifty*0.5)
@@ -416,19 +407,19 @@ Module ControlExplorer
       EndIf
     Next
     
-    ;Horizontal line
+    ; Horizontal line
     MovePathCursor(x-shiftx+5,*Me\ioffsety+shifty/2)
     AddPathLine(shiftx-5,0, #PB_Path_Relative)
     StrokePath(2)
     
-    ;Expended button
+    ; Expended button
     If Not *item\isleaf
 
       AddPathBox(x-shiftx+2,*Me\ioffsety+7,3,3)
-      VectorSourceColor(UIColor::COLORA_MAIN_BG)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
       
-      VectorSourceColor(UIColor::COLORA_GROUP_FRAME)
+      VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
       If *item\expended
         MovePathCursor(x-shiftx+4,*Me\ioffsety+10)
         AddPathLine(3,0,#PB_Path_Relative)
@@ -451,35 +442,28 @@ Module ControlExplorer
       Case #TYPE_3DOBJECT
         Protected *o.Object3D::Object3D_t = *item\object
         Select *o\type
-          Case Object3D::#Object3D_Model
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
+          Case Object3D::#Model
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_model))
-          Case Object3D::#Object3D_Light
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
+          Case Object3D::#Light
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_light))
-          Case Object3D::#Object3D_Camera
-            ;raaBox(x,*Me\offsety,12,12,RGBA(0,120,255,255))
+          Case Object3D::#Camera
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_camera))
-          Case Object3D::#Object3D_Polymesh
+          Case Object3D::#Polymesh
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_polymesh))
-            ;raaBox(x,*Me\offsety,12,12,RGBA(255,0,120,255))
-          Case Object3D::#Object3D_Null
-            ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
+          Case Object3D::#Locator
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_null))
-          Case Object3D::#Object3D_Curve
-            ;raaBox(x,*Me\offsety,12,12,RGBA(120,255,0,255))
+          Case Object3D::#Curve
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_curve))
-          Case Object3D::#Object3D_PointCloud
+          Case Object3D::#PointCloud
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_pointcloud))
-            ;raaBox(x,*Me\offsety,12,12,RGBA(255,255,120,255))
-          Case Object3D::#Object3D_InstanceCloud
+          Case Object3D::#InstanceCloud
             MovePathCursor(x,*Me\ioffsety+2)
             DrawVectorImage(ImageID(explorer_icon_instancecloud))
             
@@ -563,6 +547,7 @@ Module ControlExplorer
     EndSelect
     
     *Me\ioffsety + #LINEHEIGHT
+    *Me\itemcounter + 1
   ;   Protected nbc.i = ListSize(*item\children())
   ;   If nbc>0 And *item\expended = #True
   ;     ForEach *item\children()
@@ -581,17 +566,16 @@ Module ControlExplorer
   Procedure DrawDisplayImage(*Me.ControlExplorer_t)
     *Me\ioffsetx = 25
     *Me\ioffsety = #TOPHEIGHT
-    *Me\itemcounter = 1
+    *Me\itemcounter = 0
 
     StartVectorDrawing(ImageVectorOutput(*Me\imageID))
     AddPathBox(0,0,*Me\iwidth,*Me\iheight)
-    VectorSourceColor(UIColor::COLORA_MAIN_BG)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     *Me\linebinary = 0
     ForEach *Me\visibles()
       DrawItem(*Me,*Me\visibles(),0)
     Next
-  ;   *Me\grp\Event(#PB_EventType_Draw)
     StopVectorDrawing()
   EndProcedure
   
@@ -599,43 +583,39 @@ Module ControlExplorer
   ;  Draw Pick Item
   ; ----------------------------------------
   Procedure DrawPickItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
-    If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : ProcedureReturn : EndIf
-    If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_uniforms : ProcedureReturn : EndIf
+    If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : *Me\itemcounter + 1 : ProcedureReturn : EndIf
+    If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_attributes : *Me\itemcounter + 1 : ProcedureReturn : EndIf
     
-    AddPathBox(0,*Me\ioffsety,*Me\iwidth,#LINEHEIGHT)
-    VectorSourceColor(*item\colorid)
-  ;   DrawText(0,*Me\ioffsety,Str(*item\colorid))
+    Define colorid = Random(Pow(256,3))
+    AddMapElement(*Me\m_items(), Str(colorid),#PB_Map_NoElementCheck)
+    *Me\m_items() = *item
+    Box(0,*Me\ioffsety,*Me\iwidth,#LINEHEIGHT, colorid)
+    
     *Me\ioffsety + #LINEHEIGHT
-    Protected nbc.i = ListSize(*item\children())
-  ;   If nbc>0 And *item\expended = #True Or *item\isroot
-  ;     Protected i
-  ;     ForEach *item\children()
-  ;       Define *item2.CControlExplorerItem_t = *item\children()
-  ;       If *item2\expended
-  ;         DrawPickItem(*Me,*item2,depth+1)
-  ;       EndIf
-  ;     Next
-  ;   EndIf
+    *Me\itemcounter + 1
+
   EndProcedure
   
   ; ----------------------------------------
   ;  Draw Pick Image
   ; ----------------------------------------
   Procedure DrawPickImage(*Me.ControlExplorer_t)
-    *Me\ioffsetx = 5
+    
+    ClearMap(*Me\m_items())
+    *Me\ioffsetx = 25
     *Me\ioffsety = #TOPHEIGHT
-    *Me\itemcounter = 1
-    If *Me\iwidth And *Me\iheight
-      ResizeImage(*Me\pickID,*Me\iwidth,*Me\iheight)
-      StartVectorDrawing(ImageVectorOutput(*Me\pickID))
-      AddPathBox(0,0,*Me\iwidth,*Me\iheight)
-      VectorSourceColor(RGBA(0,0,0,255))
-      
-       ForEach *Me\visibles()
-        DrawPickItem(*Me,*Me\visibles(),0)
-      Next
-      StopVectorDrawing()
-    EndIf
+    *Me\itemcounter = 0
+    
+    RandomSeed(0)
+    StartDrawing(ImageOutput(*Me\pickID))
+    DrawingMode(#PB_2DDrawing_AllChannels)
+    
+    Box(0,0,*Me\iwidth,*Me\iheight, 0)
+    *Me\linebinary = 0
+    ForEach *Me\visibles()
+      DrawPickItem(*Me,*Me\visibles(),0)
+    Next
+    StopDrawing()
     
     
   EndProcedure
@@ -646,13 +626,10 @@ Module ControlExplorer
   Procedure Draw(*Me.ControlExplorer_t)
   
     If *Me\dirty
+      GetVisibles(*Me)
       DrawPickImage(*Me)
       DrawDisplayImage(*Me)
     EndIf
-    
-    
-    
-   
   
   EndProcedure
   
@@ -674,12 +651,12 @@ Module ControlExplorer
     *Me\selected() = *item
     Select *item\type
       Case #TYPE_MODEL
-        ;OScene_AddToSelection(*Me\scene,*item\object)
-  ;       OScene_SelectObject_Do(*item\object)
+;         Scene::AddToSelection(*Me\scene,*item\object)
+;         SelectObjectCmd::Do(*item\object)
       Case #TYPE_3DOBJECT
-        MessageRequester("Select Object","Should Increment Command Stack!!!")
-        ;OScene_AddToSelection(*Me\scene,*item\object)
-  ;       OScene_SelectObject_Do(*item\object)
+;         MessageRequester("Select Object","Should Increment Command Stack!!!")
+;         Scene::AddToSelection(*Me\scene,*item\object)
+;         SelectObjectCmdDo(*item\object)
       Default
         Debug "NOT implemented!!!"
     EndSelect
@@ -719,6 +696,59 @@ Module ControlExplorer
     
   EndProcedure
   
+  ; ----------------------------------------
+  ; Pick Item
+  ; ----------------------------------------
+  Procedure PickItem(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, mx, my, key)
+    
+    If *item <>#Null
+      
+      Protected l = (*item\depth+2) * #SHIFTX
+;       If Abs(l-mx)<20
+;         If Not *item\isleaf
+;           *item\expended = 1-*item\expended
+;            RecurseExpended(*item, *item\expended)
+;           
+;           *Me\dirty = #True
+;         EndIf
+        
+;       Else
+
+        Select key
+          
+          Case #PB_Canvas_Shift
+            ; Add All Items between last pick an pick
+             SelectList(*Me,*Me\lastpick,*Me\pick)
+
+          Case #PB_Canvas_Control
+            *item\selected = #True
+            Selection(*Me,*item)
+            If *item\type = #TYPE_3DOBJECT
+              Scene::SelectObject(*Me\scene,*item\object)
+              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
+            Else
+              ; do nothing
+            EndIf
+            
+
+          Default
+            ;Clear Selection before adding item
+            UnselectAll(*Me)
+            *item\selected = #True
+            AddElement(*Me\selected())
+            *Me\selected() = *item
+            If *item\type = #TYPE_3DOBJECT
+              Scene::SelectObject(*Me\scene,*item\object)
+              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
+            EndIf
+            
+        EndSelect
+        
+        *Me\dirty = #True
+;       EndIf
+    EndIf
+  EndProcedure
+  
   
   ; ----------------------------------------
   ; Pick
@@ -731,81 +761,18 @@ Module ControlExplorer
     
     ; Return if OUT of picking area
     If mx<0 Or mx>=*Me\iwidth Or my<0 Or my>*Me\iheight:ProcedureReturn:EndIf
-    
     ; Get Point Color 
     StartDrawing(ImageOutput(*Me\pickID))
+    DrawingMode(#PB_2DDrawing_AllChannels)
     Protected key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
-    Protected pnt = Point(mx,my)
+    Protected pick = Point(mx,my)
     StopDrawing()
-    
-    ; Convert to ID
-    Protected id = ItemDecodeID(pnt)-1
 
-    If id>=0 And id < ListSize(*Me\items())
-      *Me\pick = id
-      SelectElement(*Me\items(),id)
-  
-      Protected *item.ControlExplorerItem_t = *Me\items()
-  
-      If *item <>#Null
-        Protected l = (*item\depth+2) * #SHIFTX
-        If Abs(l-mx)<20
-          If Not *item\isleaf
-            *item\expended = 1-*item\expended
-             RecurseExpended(*item, *item\expended)
-            
-            *Me\dirty = #True
-          EndIf
-          
-        Else
-  
-          Select key
-            
-            Case #PB_Canvas_Shift
-              ; Add All Items between last pick an pick
-               SelectList(*Me,*Me\lastpick,*Me\pick)
-  
-            Case #PB_Canvas_Control
-              *item\selected = #True
-              Selection(*Me,*item)
-              If *item\type = #TYPE_3DOBJECT
-                Scene::SelectObject(*Me\scene,*item\object)
-              Else
-                ; do nothing
-              EndIf
-              
-  
-            Default
-              ;Clear Selection before adding item
-              UnselectAll(*Me)
-              *item\selected = #True
-              AddElement(*Me\selected())
-              *Me\selected() = *item
-              ;             OScene_SelectObject_Do(*item\object)
-              If *item\type = #TYPE_3DOBJECT
-                Scene::SelectObject(*Me\scene,*item\object)
-              EndIf
-              
-          EndSelect
-         
-          *Me\dirty = #True
-        EndIf
-      EndIf
+    If FindMapElement(*Me\m_items(), Str(pick))  
+      PickItem(*Me, *Me\m_items(), mx, my, key)
     EndIf
     
-    If ListSize(*Me\selected())>0
-      ForEach *Me\selected()
-       Scene::AddToSelection(*Me\scene,*Me\selected())
-      Next
-    EndIf
-    
-    
-    If *Me\dirty
-      GetVisibles(*Me)
-      DrawPickImage(*Me)
-      DrawDisplayImage(*Me)
-      *Me\dirty = #False
-    EndIf
+    Draw(*Me)
     
     
     
@@ -842,13 +809,13 @@ Module ControlExplorer
     *Me\items() = *item\children()
     Select type
       Case #TYPE_ATTRIBUTE
-        *Me\items()\expended = *Me\show_attributes
+        *Me\items()\expended = #False
         *Me\items()\isleaf = #True
       Case #TYPE_PROPERTY
-        *Me\items()\expended = *Me\show_uniforms
+        *Me\items()\expended = #False
       Case #TYPE_GROUP
         *Me\items()\isleaf = #True
-        *Me\items()\expended = *Me\show_attributes
+        *Me\items()\expended = #False
       Case #TYPE_3DOBJECT
         *Me\items()\expended = #True
         *Me\items()\isleaf = #False
@@ -882,18 +849,17 @@ Module ControlExplorer
       Next
     EndIf
     
-  
     Protected *attributes.ControlExplorerItem_t = AddObject(*Me,*item,#Null,"Attributes",depth+2,#TYPE_PROPERTY)
     *attributes\expended = #True
     *attributes\havenext = #False
-    Protected nb = MapSize(*obj\m_attributes())
+    Protected nb = MapSize(*obj\geom\m_attributes())
     Protected a
     Protected *attr.Attribute::Attribute_t
 
     Protected cnt
     
-    ForEach  *obj\m_attributes()
-      *attr = *obj\m_attributes();\GetValue(a) 
+    ForEach  *obj\geom\m_attributes()
+      *attr = *obj\geom\m_attributes()
       *o = AddObject(*Me,*attributes,*attr,*attr\name,depth+3,#TYPE_ATTRIBUTE)
 
       If cnt < nbo-1
@@ -939,6 +905,11 @@ Module ControlExplorer
     ProcedureReturn #False
   EndProcedure
   
+  Procedure OnSelectionChange(*scene.Scene::Scene_t)
+    PostEvent(Globals::#EVENT_SELECTION_CHANGED)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
+  
   ; ----------------------------------------
   ;  Fill Explorer from Scene Description
   ; ----------------------------------------
@@ -953,7 +924,7 @@ Module ControlExplorer
     *Me\scene = *scene
   
     ;Reset counter to encoding color ID (0 is for Background)
-    *Me\itemcounter = 1
+    *Me\itemcounter = 0
     
     StartDrawing(ImageOutput(*Me\imageID))
     
@@ -978,61 +949,62 @@ Module ControlExplorer
     *Me\iwidth = Math::Max(*Me\sizX,*Me\iwidth)
     *Me\iheight = Math::Max(*Me\sizY,*Me\iheight)
     ResizeImage(*Me\imageID,*Me\iwidth,*Me\iheight)
-    
+    ResizeImage(*Me\pickID,*Me\iwidth,*Me\iheight)
     GetVisibles(*Me)
 ;     ConnectSignalsSlots(*Me)
     RecurseExpended(*Me\root,#False)
     *Me\dirty = #True
+    
+    Signal::CONNECTCALLBACK(*Me\on_selection, OnSelectionChange, *scene)
+    
   EndProcedure
-  
-  
+ 
   ;----------------------------------------
   ;  Event
   ;---------------------------------------------------
-  Procedure OnEvent(*e.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
-    ;   GetItems(*e)
+  Procedure OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
+    ;   GetItems(*Me)
     CompilerIf #PB_Compiler_Version < 560
         If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
       CompilerElse
         If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
     CompilerEndIf
-      *e\sizX = *ev_data\width
-      *e\sizY = *ev_data\height
-      Resize(*e)
-      Draw(*e)
+      *Me\sizX = *ev_data\width
+      *Me\sizY = *ev_data\height
+      Resize(*Me)
+      Draw(*Me)
       
     ElseIf event = #PB_Event_Gadget
       Protected evdt.Control::EventTypeDatas_t
-      Protected mx = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseX)
-      Protected my = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseY)
+      Protected mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+      Protected my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
 
   
         Protected key
         Select EventType()
           Case #PB_EventType_KeyDown
-            key = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_Key)
+            key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
 ;             If key = #PB_Shortcut_Space 
-;               *e\scrolling = #True
-;               *e\scrolllastx = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseX)
-;               *e\scrolllasty = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_MouseY)
-;               SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
+;               *Me\scrolling = #True
+;               *Me\scrolllastx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+;               *Me\scrolllasty = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
+;               SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
 ;             EndIf
             
           Case #PB_EventType_KeyUp
             
-            key = GetGadgetAttribute(*e\gadgetID,#PB_Canvas_Key)
-            If key = #PB_Shortcut_Space ;And *e\scrollable And *e\scrolling
-;               *e\scrolling = #False
-              SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)
+            key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
+            If key = #PB_Shortcut_Space ;And *Me\scrollable And *Me\scrolling
+;               *Me\scrolling = #False
+              SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Default)
             EndIf
             
           Case #PB_EventType_MouseMove
-            ;UI::Scroll(*e)
+            ;UI::Scroll(*Me)
             
             
           Case #PB_EventType_LeftButtonDown 
-            ;DrawPickImage(*e)
-            Pick(*e)
+            Pick(*Me)
           
             
         EndSelect
@@ -1042,24 +1014,32 @@ Module ControlExplorer
     
     
     ;Redraw Explorer
-    Draw(*e)
+    Draw(*Me)
+    
+  EndProcedure
+  
+  ;----------------------------------------
+  ;  Item Event
+  ;---------------------------------------------------
+  Procedure OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
     
   EndProcedure
   
   
+  
   Procedure OnMessage( id.i, *up)
-    Protected *sig.Signal::Signal_t = *up
-    Protected *explorer.ControlExplorer_t = *sig\rcv_inst
-    Debug "Explorer Signal Recieved..."
-    Debug "Slot : "+Str(*sig\rcv_slot)
-    Debug "Sender Class : "+Str(*sig\snd_class)
+;     Protected *sig.Signal::Signal_t = *up
+;     Protected *explorer.ControlExplorer_t = *sig\rcv_inst
+;     Debug "Explorer Signal Recieved..."
+;     Debug "Slot : "+Str(*sig\rcv_slot)
+;     Debug "Sender Class : "+Str(*sig\snd_class)
   ;   *explorer\SendEvent(#PB_Event_Repaint)
   ;     Protected *sig.CSignal_t = *up
   ;   Protected *c.CControlNumber_t = *sig\snd_inst
-  ;   Protected *e.ExplorerUI_t = *c\parent
+  ;   Protected *Me.ExplorerUI_t = *c\parent
   ;   Protected v.i = *c\value_n
   ; 
-  ;   Draw(*e)
+  ;   Draw(*Me)
   EndProcedure
   
   
@@ -1079,17 +1059,19 @@ Module ControlExplorer
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*e.ControlExplorer_t)
-    FreeMemory(*e)
+  Procedure Delete(*Me.ControlExplorer_t)
+    Object::TERM(ControlExplorer)
   EndProcedure
   
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
+  Procedure.i New(*parent.UI::UI_t,x.i,y.i,w.i,h.i)
     Protected *Me.ControlExplorer_t = AllocateMemory(SizeOf(ControlExplorer_t))
-    Object::INI( Explorer )
+    Object::INI( ControlExplorer )
     
+    *Me\parent = *parent
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX = x
     *Me\posY = y
     *Me\sizX = w
@@ -1097,8 +1079,6 @@ Module ControlExplorer
   
     *Me\name = "Explorer"
     
-    ;Initialize Structures
-    InitializeStructure(*Me,ControlExplorer_t)
     
     ; ---[ Explorer ]------------------------
     *Me\type = Globals::#VIEW_EXPLORER
@@ -1108,21 +1088,18 @@ Module ControlExplorer
     *Me\expended_level = 12
 ;     *Me\scrollable = #True
     
-
-    ; ---[ Set Canvas ]----------------------
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
-
     ; ---[ Set Controls ]----------------------
     Protected options.i = ControlGroup::#Autosize_V|ControlGroup::#Autosize_h
       
     ; ---[ Set Images ]----------------------
-    *Me\imageID = CreateImage(#PB_Any,*Me\sizX,*Me\sizY)
-    *Me\pickID = CreateImage(#PB_Any,*Me\sizX,*Me\sizY)
+    *Me\imageID = CreateImage(#PB_Any,*Me\sizX,*Me\sizY,32)
+    *Me\pickID = CreateImage(#PB_Any,*Me\sizX,*Me\sizY,32)
     
     ; ---[ Splitter ]-------------------------
     *Me\dirty = #True
     
-  
+    ; ---[ Signals ]-------------------------
+    *Me\on_selection = Object::NewSignal(*Me, "OnSelectionChange")
     
     
 ;     If Scene::*current_scene
@@ -1190,7 +1167,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 391
-; FirstLine = 335
-; Folding = fxXef-
+; CursorPosition = 658
+; FirstLine = 579
+; Folding = X-4---
 ; EnableXP

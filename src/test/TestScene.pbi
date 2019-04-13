@@ -126,12 +126,14 @@ Scene::Delete(*scene)
 Global *loader.Loader::Loader_t = Loader::New(filePath)
 *scene = Loader::Load(*loader)
 
+Application::Connect(*app, *scene)
+MessageRequester("SCENE", Scene::GetInfos(*scene))
 Scene::Setup(*scene,*app\context)
 ; Scene::Update(*scene)
 
 Application::Loop(*app,@Callback())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 7
+; CursorPosition = 128
+; FirstLine = 72
 ; Folding = -
 ; EnableXP

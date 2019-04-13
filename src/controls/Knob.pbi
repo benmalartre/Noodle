@@ -44,7 +44,7 @@ DeclareModule ControlKnob
     *onchanged_signal.Slot::Slot_t
   EndStructure
   
-  Declare New(*object.Object::Object_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
+  Declare New(*parent.Control::Control_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
   Declare Init()
   Declare Term()
   Declare SetTheme(theme.i)
@@ -105,8 +105,8 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_LABEL
-  Protected bgc.i = UIColor::COLORA_MAIN_BG
+  Protected tc.i = UIColor::COLOR_LABEL
+  Protected bgc.i = UIColor::COLOR_MAIN_BG
 
 ;   AddPathBox(xoff + *Me\posX, yoff+*Me\posY, *Me\sizX, *Me\sizY)
 ;   VectorSourceColor(bgc)
@@ -360,8 +360,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
             *Me\value = *Me\last_value - Radian(angle + *Me\angle_offset) 
           EndIf
 
-          Slot::Trigger(*Me\onchanged_signal, Signal::#SIGNAL_TYPE_PING, @*Me\value)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
+          Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
         EndIf
         Control::Invalidate(*Me)
       EndIf
@@ -449,19 +448,14 @@ EndProcedure
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlKnob_t )
-  Slot::Delete(*Me\onchanged_signal)
   Object::TERM(ControlKnob)
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  ClearStructure(*Me,ControlKnob_t)
-  FreeMemory( *Me )
-  
 EndProcedure
 
 
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
+Procedure.i New( *parent.Control::Control_t, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlKnob_t = AllocateMemory( SizeOf(ControlKnob_t) )
@@ -469,10 +463,10 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   Object::INI(ControlKnob)
   
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\object     = #Null
   *Me\type       = #PB_GadgetType_Knob
   *Me\name       = name
-  *Me\gadgetID   = gadgetID
+  *Me\parent     = *parent
+  *Me\gadgetID   = *parent\gadgetID
   *Me\posX       = x
   *Me\posY       = y
   *Me\sizX       = width
@@ -481,10 +475,10 @@ Procedure.i New( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 0
-  *Me\onchanged_signal = Slot::New(*Me)
+  *Me\on_change  = Object::NewSignal(*Me, "OnChange")
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
-Debug "ADD KNOB : "+Str(*Me\posX)+", "+Str(*Me\posY)
+
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
@@ -500,7 +494,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 133
+; CursorPosition = 108
+; FirstLine = 103
 ; Folding = ---
 ; EnableXP

@@ -49,7 +49,7 @@ Module Vector3Node
   ;------------------------------
   Procedure Init(*node.Vector3Node_t)
     Protected *input.NodePort::NodePort_t = Node::AddInputPort(*node,"Value",Attribute::#ATTR_TYPE_VECTOR3)
-    Protected *datas.CArray::CArrayV3F32 = *input\value
+    Protected *datas.CArray::CArrayV3F32 = *input\attribute\data
   
     Protected *value.v3f32 = CArray::GetValue(*datas,0)
     *node\label = "<"+StrF(*value\x,1)+","+StrF(*value\y,1)+","+StrF(*value\z,1)+">"
@@ -64,7 +64,7 @@ Module Vector3Node
     Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *ipos.CArray::CArrayV3F32 = NodePort::AcquireInputData(*input)
-    Protected *opos.CArray::CArrayV3F32 = *output\value
+    Protected *opos.CArray::CArrayV3F32 = *output\attribute\data
     CArray::Copy(*opos,*ipos)
 
     If CArray::GetCount(*ipos) = 1
@@ -113,9 +113,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 54
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 66
+; FirstLine = 55
 ; Folding = --
 ; EnableThread
 ; EnableXP

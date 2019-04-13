@@ -11,7 +11,6 @@ Module CompoundNode
   Procedure  New(*nodes.CArray::CArrayPtr,*parent.Node::Node_t,x.i,y.i,w.i,h.i,c.i)
     ; ---[ Allocate Node Memory ]---------------------------------------------
     Protected *Me.CompoundNode_t = AllocateMemory(SizeOf(CompoundNode_t))
-    InitializeStructure(*Me,CompoundNode_t)
     Object::INI(CompoundNode)
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\parent = *parent
@@ -266,9 +265,9 @@ Module CompoundNode
   Class::DEF(CompoundNode)
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 62
-; FirstLine = 59
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 13
+; FirstLine = 10
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

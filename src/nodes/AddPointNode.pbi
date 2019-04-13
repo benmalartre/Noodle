@@ -30,10 +30,8 @@ DeclareModule AddPointNode
   ;------------------------------
   ;  ADMINISTRATION
   ;------------------------------
-  ;{
   Define *desc.Nodes::NodeDescription_t = Nodes::NewNodeDescription("AddPointNode","Generators",@New())
   Nodes::AppendDescription(*desc)
-  ;}
   
   DataSection
     Node::DAT(AddPointNode)
@@ -57,18 +55,16 @@ Module AddPointNode
     Node::PortAffectByName(*node, "Reference", "Data")
     *node\label = "Add Point"
     
-    Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+    Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
     
-    If *obj\type = Object3D::#Object3D_PointCloud  Or *obj\type = Object3D::#Object3D_InstanceCloud
+    If *obj\type = Object3D::#PointCloud  Or *obj\type = Object3D::#InstanceCloud
       Protected *pc.PointCloud::PointCloud_t = *obj
       *node\geom = *pc\geom
-      *node\errorstr = "Add Point Node valid!!"
+      *node\errorstr = ""
     Else
       *node\errorstr = "Add Point only works on Point Cloud"
       *node\geom = #Null
     EndIf
-    
-    Debug "Error STr AddPointNode : "+*node\errorstr
     
   EndProcedure
   
@@ -83,31 +79,34 @@ Module AddPointNode
         
         If CArray::GetCount(*in_data)
           PointCloudGeometry::AddPoints(*node\geom,*in_data)
-          *obj = *node\parent3dobject
+          *obj = *node\geom\parent
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
         EndIf
       ElseIf *inP\currenttype = Attribute::#ATTR_TYPE_LOCATION
-        Protected *loc_data.CArray::CArrayPtr = NodePort::AcquireInputData(*node\inputs())
+        Protected *loc_data.CArray::CArrayLocation = NodePort::AcquireInputData(*node\inputs())
+        Define *emitG.Geometry::Geometry_t = *loc_data\geometry
+        Define *object3D.Object3D::Object3D_t = Geometry::GetParentObject3D(*emitG)
+        Define *emitT.Transform::Transform_t = *loc_data\transform
         Protected *pos_data.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-        Protected *loc.Geometry::Location_t
-        If CArray::GetCount(*loc_data)
+        Define numLocations= CArray::GetCount(*loc_data)
+        If numLocations
+          CArray::SetCount(*pos_data, numLocations)
+          Protected *loc.Geometry::Location_t
           Protected j
           Protected *pos.v3f32
-          For j=0 To CArray::GetCount(*loc_data)-1
-            *loc = CArray::GetValuePtr(*loc_data,j)
-            *pos = Location::GetPosition(*loc)
-            CArray::Append(*pos_data,*pos)
+          For j=0 To numLocations-1
+            *loc = CArray::GetValue(*loc_data,j)
+            Location::GetPosition(*loc, *emitG, *emitT)
+            CArray::SetValue(*pos_data, j, *loc\p)
           Next
           
           PointCloudGeometry::AddPoints(*node\geom,*pos_data)
-          *obj = *node\parent3dobject
+          *obj = *node\geom\parent
               
           *obj\dirty = Object3D::#DIRTY_STATE_TOPOLOGY
           CArray::Delete(*pos_data)
         EndIf
       EndIf
-    Else
-      MessageRequester("AddPointNode","No Point Cloud Geometry")
     EndIf
     
   EndProcedure
@@ -119,7 +118,6 @@ Module AddPointNode
   Procedure Delete(*node.AddPointNode_t)
     FreeMemory(*node)
   EndProcedure
-  
   
   
   ; ============================================================================
@@ -147,8 +145,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 51
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 57
 ; Folding = --
 ; EnableXP

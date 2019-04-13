@@ -58,10 +58,7 @@ Module DummyNode
     FirstElement(*node\inputs())
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *input.NodePort::NodePort_t
-    If *output\value = #Null
-      NodePort::Init(*output)
-    EndIf
-    
+
     If *output\value = #Null : ProcedureReturn : EndIf
     
     Protected i.i
@@ -201,8 +198,8 @@ EndModule
 ; ============================================================================
 
 
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 195
-; FirstLine = 163
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

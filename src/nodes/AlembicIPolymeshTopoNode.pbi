@@ -162,7 +162,7 @@ Module AlembicIPolymeshTopoNode
       ; Topology
       FirstElement(*node\outputs())
       Protected *topoPort.NodePort::NodePort_t = *node\outputs()
-      Protected *topoVal.CArray::CArrayPtr = *topoPort\value
+      Protected *topoVal.CArray::CArrayPtr = NodePort::AcquireOutputData(*topoPort)
       Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*topoVal,0)
       
       CArray::Copy(*topo\vertices,*node\positions)
@@ -182,37 +182,37 @@ Module AlembicIPolymeshTopoNode
       ; Position
       NextElement(*node\outputs())
       Protected *positionPort.NodePort::NodePort_t = *node\outputs()
-      Protected *positionVal.CArray::CArrayV3F32 = *positionPort\value
+      Protected *positionVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*positionPort)
       CArray::Copy(*positionVal,*node\positions)
       
       ; Velocities
       NextElement(*node\outputs())
       Protected *velocitiesPort.NodePort::NodePort_t = *node\outputs()
-      Protected *velocitiesVal.CArray::CArrayV3F32 = *velocitiesPort\value
+      Protected *velocitiesVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*velocitiesPort)
       CArray::Copy(*velocitiesVal,*node\velocities)
       
       ; Normals
       NextElement(*node\outputs())
       Protected *normalsPort.NodePort::NodePort_t = *node\outputs()
-      Protected *normalsVal.CArray::CArrayV3F32 = *normalsPort\value
+      Protected *normalsVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*normalsPort)
       CArray::Copy(*normalsVal,*node\normals)
       
       ; Tangents
       NextElement(*node\outputs())
       Protected *tangentsPort.NodePort::NodePort_t = *node\outputs()
-      Protected *tangentsVal.CArray::CArrayV3F32 = *tangentsPort\value
+      Protected *tangentsVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*tangentsPort)
       CArray::Copy(*tangentsVal,*node\tangents)
       
       ; UVWs
       NextElement(*node\outputs())
       Protected *uvwsPort.NodePort::NodePort_t = *node\outputs()
-      Protected *uvwsVal.CArray::CArrayV3F32 = *uvwsPort\value
+      Protected *uvwsVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*uvwsPort)
       CArray::Copy(*uvwsVal,*node\uvws)
       
       ; Colors
       NextElement(*node\outputs())
       Protected *colorsPort.NodePort::NodePort_t = *node\outputs()
-      Protected *colorsVal.CArray::CArrayV3F32 = *colorsPort\value
+      Protected *colorsVal.CArray::CArrayV3F32 = NodePort::AcquireOutputData(*colorsPort)
       CArray::Copy(*colorsVal,*node\colors)
       
       
@@ -232,7 +232,7 @@ Module AlembicIPolymeshTopoNode
   EndProcedure
   
 
- Procedure Terminate(*node.AlembicIPolymeshTopoNode_t)
+  Procedure Terminate(*node.AlembicIPolymeshTopoNode_t)
   
   EndProcedure
   
@@ -263,7 +263,7 @@ Module AlembicIPolymeshTopoNode
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 137
+; CursorPosition = 206
+; FirstLine = 177
 ; Folding = --
 ; EnableXP

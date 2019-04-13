@@ -7,28 +7,26 @@ XIncludeFile "../objects/Object3D.pbi"
 ;====================================================================================
 Module Graph
   Procedure ResolveGetReference(*port.NodePort::NodePort_t)
-    
+    Protected refname.s
     Protected *node.Node::Node_t = *port\node
-    Protected *obj.Object3D::Object3D_t = *node\parent3dobject
-  
-    Protected refname.s = NodePort::AcquireReferenceData(*port)
+    Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
+
+    refname.s = NodePort::AcquireReferenceData(*port)
 
     Protected fields.i = CountString(refname, ".")+1
     Protected base.s = StringField(refname, 1,".")
     ;*node\label = refname
     Protected *output.NodePort::NodePort_t = Node::GetPortByName(*node,"Data")
     If base ="Self" Or base ="This"
-      Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(StringField(refname, 2,"."))
+      Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(StringField(refname, 2,"."))
       If *attribute
         *output\currenttype = *attribute\datatype
         *output\currentcontext = *attribute\datacontext
         *output\currentstructure = *attribute\datastructure
-        NodePort::Init(*output)
-        *output\value = *attribute\data
+        NodePort::Init(*output, *obj\geom)
+        *output\attribute = *attribute
       EndIf
-      
     EndIf
-    
   EndProcedure  
   
   Procedure ResolveSetReference(*port.NodePort::NodePort_t)
@@ -40,12 +38,12 @@ Module Graph
       Protected base.s = StringField(refname, 1,".")
       
       If base ="Self" Or base ="This"
-        Protected *obj.Object3D::Object3D_t = *node\parent3dobject
+        Protected *obj.Object3D::Object3D_t = Node::GetParent3DObject(*node)
         Protected *input.NodePort::NodePort_t
         Protected name.s = StringField(refname, 2,".")
-        If FindMapElement(*obj\m_attributes(),name)
+        If FindMapElement(*obj\geom\m_attributes(),name)
           
-          Protected *attribute.Attribute::Attribute_t = *obj\m_attributes(name)
+          Protected *attribute.Attribute::Attribute_t = *obj\geom\m_attributes(name)
           *input = Node::GetPortByName(*node,"Data")
   
           NodePort::InitFromReference(*input,*attribute)
@@ -129,9 +127,9 @@ Module Graph
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 33
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

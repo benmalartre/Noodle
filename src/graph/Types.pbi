@@ -116,8 +116,15 @@ EndDeclareModule
 DeclareModule NodePort
   UseModule Math
   UseModule Graph
+  
+    ;---------------------------------------------------------------------------
+  ; Prototypes
   ;---------------------------------------------------------------------------
-  ; GraphNodePort
+  Prototype ONCONNECTPORT(*port)
+  Prototype ONDISCONNECTPORT(*port)
+
+  ;---------------------------------------------------------------------------
+  ; NodePort
   ;---------------------------------------------------------------------------
   Structure NodePort_t Extends Object::Object_t
     posx.i
@@ -125,12 +132,16 @@ DeclareModule NodePort
 
     io.b
     connected.b
+    connectioncallback.ONCONNECTPORT
+    disconnectioncallback.ONCONNECTPORT
     selected.b
     id.i
     name.s
     decoratedname.s
     
     polymorph.b
+    writable.b
+    readonly.b
     datatype.i
     datacontext.i
     datastructure.i
@@ -142,11 +153,6 @@ DeclareModule NodePort
     constant.b
     dirty.b
     
-    ; Reference
-    refchanged.b
-    reference.s
-    daisyreference.s
-    
     ;Connexions
     *source.NodePort_t
     List *targets.NodePort_t()
@@ -155,7 +161,7 @@ DeclareModule NodePort
     
     ;Parent Node
     *node       
-    *value
+    *attribute.Attribute::Attribute_t
 
     color.q
 
@@ -168,13 +174,15 @@ DeclareModule NodePort
   Declare Delete(*port.NodePort_t)
   Declare Echo(*port.NodePort_t)
   Declare GetColor(*port.NodePort_t)
-  Declare Init(*port.NodePort_t)
+  Declare Init(*port.NodePort_t, *geom.Geometry::Geometry_t)
   Declare InitFromReference(*port.NodePort_t,*attr.Attribute::Attribute_t)
   Declare.s AcquireReferenceData(*port.NodePort_t)
+  Declare AcquireInputAttribute(*port.NodePort_t)
   Declare AcquireInputData(*port.NodePort_t)
   Declare AcquireOutputData(*port.NodePort_t)
   Declare Update(*port.NodePort_t,type.i=Attribute::#ATTR_TYPE_UNDEFINED,context.i=Attribute::#ATTR_CTXT_ANY,struct.i=Attribute::#ATTR_STRUCT_ANY)
   Declare GetDataType(*Me.NodePort_t)
+  Declare IsAtomic(*Me.NodePort_t)
   Declare IsConnectable(*Me.NodePort_t,*Other.NodePort_t)
   Declare DecorateName(*Me.NodePort_t,width.i)
   Declare AcceptConnexion(*Me.NodePort_t,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
@@ -182,6 +190,9 @@ DeclareModule NodePort
   Declare SetValue(*Me.NodePort_t,*value)
   Declare SetReference(*Me.NodePort_t,ref.s)
   Declare GetValue(*Me.NodePort_t)
+  Declare GetReferenceSibling(*ref.NodePort_t)
+  Declare SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
+  Declare SetupDisconnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
   DataSection
     NodePortVT:
   EndDataSection
@@ -282,7 +293,6 @@ DeclareModule Node
     label.s
     type.s
     *parent.Node::Node_t
-    *parent3dobject.Object::Object_t
   
     ;Global infos 
     posx.l
@@ -306,34 +316,40 @@ DeclareModule Node
     leaf.b
     isroot.b
     dirty.b
-  
-    ;ports
+
+    ; ports
     List *inputs.NodePort::NodePort_t()
     List *outputs.NodePort::NodePort_t()
   
-    ;embedded nodes
+    ; embedded nodes
     List *nodes.Node::Node_t()
     List *connexions.Connexion::Connexion_t()
     List *exposers.Connexion::Connexion_t()
     
     ;current port
     *port.NodePort::NodePort_t
+    
+    ; signals
+    *on_delete.Signal::Signal_t
   EndStructure
   
   Interface INode
     Evaluate()
     Delete()
+    Init()
+    Terminate()
+    OnConnect(*port.NodePort::NodePort_t)
+    OnDisconnect(*port.NodePort::NodePort_t)
   EndInterface
   
   ; ============================================================================
-  ;  Constructor Macro
+  ;  Macros
   ; ============================================================================
   Macro INI(cls,p,t,x,y,w,h,c)
     
     Object::INI(cls)
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\parent = p
-    *Me\parent3dobject = p\parent3dobject
     *Me\type = t
     *Me\posx = x
     *Me\posy = y
@@ -343,6 +359,8 @@ DeclareModule Node
     *Me\state = Graph::#Node_StateUndefined
     *Me\leaf = #True
     *Me\name = Globals::GUILLEMETS#cls#Globals::GUILLEMETS
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    
     ; ---[ Initialize Structure ]-----------------------------------------------
     InitializeStructure(*Me,cls#_t)
   
@@ -355,6 +373,21 @@ DeclareModule Node
      cls#VT:
      Data.i @Evaluate()
      Data.i @Delete()
+     Data.i @Init()
+     Data.i @Terminate()
+     
+     CompilerIf Defined(cls#::OnConnect, #PB_Procedure)
+       Data.i cls#::@OnConnect()
+     CompilerElse
+       Data.i Node::@OnConnect()
+     CompilerEndIf
+     
+     CompilerIf Defined(cls#::OnDisconnect, #PB_Procedure)
+       Data.i cls#::@OnDisconnect()
+     CompilerElse
+       Data.i Node::@OnDisconnect()
+     CompilerEndIf
+     
   EndMacro
   
   Macro DEL(cls)
@@ -382,6 +415,7 @@ DeclareModule Node
   Declare Update(*node.Node_t)
   Declare.s GetName(*n.Node_t)
   Declare GetSize(*n.Node_t)
+  Declare GetParent3DObject(*n.Node_t)
   Declare Draw(*n.Node_t)
   Declare ViewPosition(*n.Node_t,x.i,y.i)
   Declare ViewSize(*n.Node_t)
@@ -404,10 +438,13 @@ DeclareModule Node
   Declare OnMessage(id.i,*up)
   Declare IsDirty(*n.Node_t)
   Declare UpdateDirty(*n.Node_t)
+  Declare PortAffectByTime(*n.Node_t, affect.b, targetName.s)
   Declare PortAffectByName(*n.Node_t, sourceName.s, targetNames.s)
   Declare PortAffectByPort(*n.Node_t, *source.NodePort::NodePort_t, *target.NodePort::NodePort_t)
   Declare UpdateAffects(*n.Node_t)
   Declare SetClean(*n.Node_t)
+  Declare OnConnect(*n.Node_t, *port.NodePort::NodePort_t)
+  Declare OnDisconnect(*n.Node_t, *port.NodePort::NodePort_t)
   
   Global CLASS.Class::Class_t
   
@@ -468,6 +505,7 @@ DeclareModule Tree
     dirty.b
     List *nodes.Node::Node_t()
     List *filter_nodes.Node::Node_t()
+    Map *unique_nodes.Node::Node_t()
   EndStructure
    
   Structure Tree_t Extends Node::Node_t
@@ -483,9 +521,13 @@ DeclareModule Tree
     List *data_modifiers.Node::Node_t()
     List *all_branches.Branch_t()
     List *filtered_branches.Branch_t()
+    Map *unique_nodes.Node::Node_t()
     
     ; ---[ current evaluate dbranch nodes ]------------------
     List *evaluation.NodePort::NodePort_t()
+    
+    ; ---[ callbacks ]---------------------------------------
+    *on_change.Signal::Signal_t
     
   EndStructure
 
@@ -495,8 +537,8 @@ DeclareModule Tree
   ; ----------------------------------------------------------------------------
   Declare New(*obj,name.s="Tree",context.i=Graph::#Graph_Context_Operator)
   Declare Delete(*tree.Tree_t)
-  Declare RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
-  Declare EvaluateBranch(*branch.Branch_t)
+  Declare RecurseNodes(*Me.Tree_t, *branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
+  Declare EvaluateBranch(*Me.Tree_t, *branch.Branch_t)
   Declare Evaluate(*Me.Tree_t)
   Declare AddNode(*Me.Tree_t,name.s,x.i,y.i,w.i,h.i,c.i)  
   Declare RemoveNode(*Me.Tree_t,*other.Node::Node_t)
@@ -511,6 +553,8 @@ DeclareModule Tree
   Declare GetDataProviders(*current.Node::Node_t,List *gets.Node::Node_t())
   Declare GetAllDataModifiers(*tree.Tree::Tree_t)
   Declare GetDataModifiers(*current.Node::Node_t,List *sets.Node::Node_t())
+  Declare.b CheckUniqueNode(*Me.Tree_t, *node.Node::Node_t)
+  Declare.b CheckUniqueBranchNode(*Me.Tree_t, *branch.Branch_t, *node.Node::Node_t)
  
   DataSection
     TreeVT:
@@ -568,8 +612,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 537
-; FirstLine = 530
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 529
+; FirstLine = 504
 ; Folding = ---
 ; EnableXP

@@ -10,7 +10,6 @@ XIncludeFile "../graph/Compound.pbi"
 ; ============================================================================
 Module Connexion
   UseModule Graph
-  
   ;---------------------------------------------------
   ; Constructor
   ;---------------------------------------------------
@@ -478,8 +477,6 @@ Module Connexion
   ;---------------------------------------------------
   Procedure.b Connect(*c.Connexion_t,*p.NodePort::NodePort_t,interactive.b)
     
-    
-
     If Not Possible(*c,*p)
       *c\start\selected = #False
       *p\selected = #False
@@ -530,22 +527,45 @@ Module Connexion
     *c\start\selected = #False
     *c\end = *p
     
-    ;Inputs ports only accept ONE connexion
+    ; Inputs ports only accept ONE connexion
     If Not *p\io
       If *p\connected
-        ;Reuse Existing connexion
+        ; Reuse Existing connexion
         Protected *connexion.Connexion_t = *p\connexion
-  ;       *connexion\end\connected = #False
-  ;       *connexion\end = *c\end
-  ;       *connexion\color = *c\end\color
+;         Define *oldsrc.NodePort::NodePort_t = *connexion\end\source
+;         
+;         ; Remove target from old source
+;         ForEach *oldsrc\targets()
+;           If *oldsrc\targets() = *connexion\start
+;             DeleteElement(*oldsrc\targets())
+;             Break
+;           EndIf
+;         Next
+;             
+;         *connexion\start\connected = #False
+;         *connexion\start = *c\start
+;         *connexion\color = *c\start\color
+;         *connexion\end\source = *connexion\start
         
-        *connexion\start\connected = #False
-        *connexion\start = *c\start
-        *connexion\color = *c\start\color
-        *connexion\end\source = *connexion\start
+        AddElement(*connexion\start\targets())
+        *connexion\start\targets() = *connexion\end
+        
         ProcedureReturn #False
+      Else
+        AddElement(*c\start\targets())
+        *c\start\targets() = *p
       EndIf 
+      
+    Else
+      AddElement(*p\targets())
+      *p\targets() = *c\start
     EndIf
+    
+    ; connection callback
+    Define inode.Node::INode = *p\node
+    inode\OnConnect(*p)
+    inode = *c\start\node
+    inode\OnConnect(*c\start)
 
     ProcedureReturn #True
   
@@ -555,10 +575,7 @@ Module Connexion
   ; Set Head
   ;---------------------------------------------------
   Procedure SetHead(*c.Connexion_t,*p.NodePort::NodePort_t)
-    Debug "Graph Connexion Set Head Called..."
     If Possible(*c.Connexion_t,*p.NodePort::NodePort_t)
-      ;Debug "Port "+*p\uniquename+" position :"+Str(*p\viewx)+","+Str(*p\viewy)
-      ;Debug "Node "+*p\node\uniquename+" position : "+Str(*p\node\viewx)+","+Str(*p\node\viewx+*p\node\width)
       Set(*c,*c\a\x,*c\a\y,*p\posx,*p\posy)
     EndIf
       
@@ -578,7 +595,6 @@ Module Connexion
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 561
-; FirstLine = 514
+; CursorPosition = 13
 ; Folding = ----
 ; EnableXP

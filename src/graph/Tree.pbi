@@ -10,43 +10,43 @@ Module Tree
   ;-----------------------------------------------------------------------------
   ; Recurse Node
   ;-----------------------------------------------------------------------------
-  Procedure RecurseNodes(*branch.Branch_t,*current.Node::Node_t, filter_dirty.b=#False)
+  Procedure RecurseNodes(*Me.Tree_t, *branch.Branch_t,*current.Node::Node_t, filterDirty.b=#False)
     If Not *current : ProcedureReturn : EndIf
     Protected *child.Node::Node_t
     
     If *current\class\name = "ExecuteNode"
       LastElement(*current\inputs())
-      If filter_dirty
+      If filterDirty
         Repeat
           If *current\inputs()\connected
             *child = *current\inputs()\source\node
-            If Node::IsDirty(*child)
+            If Node::IsDirty(*child) And Not CheckUniqueBranchNode(*Me, *branch, *child)
               AddElement(*branch\filter_nodes())
               *branch\filter_nodes() = *child
-              RecurseNodes(*branch, *child, filterDirty)
+              RecurseNodes(*Me, *branch, *child, filterDirty)
             EndIf
           EndIf
         Until Not PreviousElement(*current\inputs())
       Else
         Repeat
-           If *current\inputs()\connected
+           If *current\inputs()\connected And Not CheckUniqueBranchNode(*Me, *branch, *child)
              *child = *current\inputs()\source\node
             AddElement(*branch\nodes())
             *branch\nodes() = *child
-            RecurseNodes(*branch, *child, filterDirty)
+            RecurseNodes(*Me, *branch, *child, filterDirty)
           EndIf
         Until Not PreviousElement(*current\inputs())
       EndIf
       
     Else
-      If filter_dirty
+      If filterDirty
         ForEach *current\inputs()
           If *current\inputs()\connected
             *child = *current\inputs()\source\node
             If Node::IsDirty(*child):
               AddElement(*branch\filter_nodes())
               *branch\filter_nodes() = *current\inputs()\source\node
-              RecurseNodes(*branch, *current\inputs()\source\node, filterDirty)
+              RecurseNodes(*Me, *branch, *current\inputs()\source\node, filterDirty)
             EndIf
           EndIf
         Next
@@ -56,7 +56,7 @@ Module Tree
             *child = *current\inputs()\source\node
             AddElement(*branch\nodes())
             *branch\nodes() = *current\inputs()\source\node
-            RecurseNodes(*branch, *current\inputs()\source\node, filterDirty)
+            RecurseNodes(*Me, *branch, *current\inputs()\source\node, filterDirty)
           EndIf
         Next
       EndIf
@@ -75,6 +75,47 @@ Module Tree
     ClearList(*Me\all_branches())
   EndProcedure
   
+  
+  Procedure EchoBranch(*Me.Tree_t, *branch.Branch_t)
+
+    ForEach *branch\nodes()
+      Debug *branch\nodes()\name
+    Next
+    Debug "========================================================"
+    
+  EndProcedure
+  
+  Procedure EchoAllBranches(*Me.Tree_t)
+    Debug "========================================================"
+    Debug "   TREE : "+*Me\name
+    Debug "========================================================"
+    ForEach *Me\all_branches()
+      EchoBranch(*Me, *Me\all_branches()) 
+    Next
+  EndProcedure
+  
+  Procedure.b CheckUniqueNode(*Me.Tree_t, *node.Node::Node_t)
+    Define key.s = Str(*node)
+    If Not FindMapElement(*Me\unique_nodes(), key)
+      AddMapElement(*Me\unique_nodes(), key)
+      *Me\unique_nodes() = *node
+      ProcedureReturn 0
+    EndIf
+    ProcedureReturn 1
+  EndProcedure
+  
+  Procedure.b CheckUniqueBranchNode(*Me.Tree_t, *branch.Branch_t, *node.Node::Node_t)
+    Define key.s = Str(*node)
+    CheckUniqueNode(*Me, *node)
+    If Not FindMapElement(*branch\unique_nodes(), key)
+      AddMapElement(*branch\unique_nodes(), key)
+      *branch\unique_nodes() = *node
+      ProcedureReturn 0
+    EndIf
+    ProcedureReturn 1
+  EndProcedure
+  
+  
   ;-----------------------------------------------------------------------------
   ; Get All Branches
   ;-----------------------------------------------------------------------------
@@ -92,10 +133,11 @@ Module Tree
         *Me\all_branches() = *branch
         AddElement(*Me\all_branches()\nodes())
         *Me\all_branches()\nodes() = *current
-        RecurseNodes(*branch,*current, #False)
+        RecurseNodes(*Me, *branch,*current, #False)
       EndIf
     Next
     
+    EchoAllBranches(*Me)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -141,7 +183,7 @@ Module Tree
   ;-----------------------------------------------------------------------------
   ; Evaluate Branch
   ;-----------------------------------------------------------------------------
-  Procedure EvaluateBranch(*branch.Branch_t)    
+  Procedure EvaluateBranch(*Me.Tree_t, *branch.Branch_t)    
     Protected *current.Node::Node_t
     Protected current.Node::INode
     ClearList(*branch\filter_nodes())
@@ -157,6 +199,7 @@ Module Tree
     Until Not PreviousElement(*branch\nodes())
     ForEach *branch\filter_nodes()
       current = *branch\filter_nodes()
+      *current = current
       current\Evaluate()
     Next
     
@@ -176,7 +219,7 @@ Module Tree
     EndIf
     ForEach *Me\all_branches()
       UpdateBranchState(*Me\all_branches())
-      EvaluateBranch(*Me\all_branches())
+      EvaluateBranch(*Me, *Me\all_branches())
     Next
   EndProcedure
   
@@ -279,7 +322,7 @@ Module Tree
       
     EndIf
     
-    Connexion::Connect(*connexion,*connexion\end,interactive.b)
+    Connexion::Connect(*connexion,*connexion\end,interactive)
     *connexion\end\connected = #True
     *connexion\start\connected = #True
     LastElement(*parent\connexions())
@@ -334,7 +377,7 @@ Module Tree
     ForEach *Me\current\connexions()
       If *Me\current\connexions()\start\node = *n Or *Me\current\connexions()\end\node = *n
         *Me\current\connexions()\end\connected = #False
-        *Me\current\connexions()\end\value = #Null
+        *Me\current\connexions()\end\attribute = #Null
         Graph::ExtractListElement(*Me\current\connexions(),*connexion)
         FreeMemory(*connexion)
         *Me\dirty = #True
@@ -419,8 +462,7 @@ Module Tree
                 EndIf
               Next
             Else
-              Debug "----------------------------------------- Create Compound -----------------------------------"
-              Debug "Shared Connexion we have to Recreate It!!!"
+
             EndIf
             
           EndIf
@@ -487,7 +529,7 @@ Module Tree
 
     ; ---[ Deallocate Underlying Arrays ]---------------------------------------
     Protected *root.Node::Node_t = *Me\root
-    Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#Null)
+    Signal::Trigger(*Me\on_delete,Signal::#SIGNAL_TYPE_PING)
     ForEach *Me\root\connexions()
       Connexion::Delete(*Me\root\connexions())
     Next
@@ -499,8 +541,7 @@ Module Tree
     
     Node::Delete(*root)
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(Tree)
     
   EndProcedure
   
@@ -513,14 +554,13 @@ Module Tree
     Protected *Me.Tree_t = AllocateMemory( SizeOf(Tree_t) )
     
     ; ---[ Initialize Structures ]---------------------------------------------
-    InitializeStructure(*Me,Tree_t)
     Object::INI(Tree)
     
     ; ---[ Init Object ]-------------------------------------------------------
     *Me\name = name
     
     ; ---[ Init Members ]------------------------------------------------------
-    *Me\parent3dobject = *obj
+    *Me\parent = *obj
     ;*Me\root = OGraphTree_AddNode(*Me,"RootNode",0,0,100,100,RGB(100,100,100))
     Select context
       Case Graph::#Graph_Context_Operator
@@ -534,7 +574,12 @@ Module Tree
     *Me\current = *Me\root
     
     ; ---[ Push Parent Object Stack ]------------------------------------------
+    If Not *obj\stack : *obj\stack = Stack::New() : EndIf
     Stack::AddNode(*obj\stack,*Me,0)
+    
+    ; --- [ Create Signals ] --------------------------------------------------
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
     
     ProcedureReturn( *Me)
     
@@ -547,9 +592,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 421
-; FirstLine = 418
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 543
+; FirstLine = 526
 ; Folding = -----
 ; EnableThread
 ; EnableXP

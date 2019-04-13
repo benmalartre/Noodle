@@ -1,6 +1,5 @@
 ﻿XIncludeFile "../core/Application.pbi"
 
-EnableExplicit
 UseModule Math
 UseModule OpenGL
 UseModule OpenGLExt
@@ -29,12 +28,14 @@ Procedure Update()
   ViewportUI::FlipBuffer(*viewport)
 EndProcedure
 
-Procedure Callback(type.i, *sig.Signal::Signal_t)
-  MessageRequester("CALLBACK" , "CALL 911 : "+StrF(*sig\sigdata))  
+Procedure Callback( message.s)
+  MessageRequester("CALLBACK" , "CALL 911 : "+message)  
 EndProcedure
+Callback::DECLARECALLBACK(Callback, Arguments::#STRING)
 
 Procedure BunnyCallback(*bunny.Polymesh::Polymesh_t)
 EndProcedure
+Callback::DECLARECALLBACK(BunnyCallback, Arguments::#PTR)
 
 
 Structure MyObject_t Extends Object::Object_t
@@ -45,7 +46,8 @@ Procedure AddButton (*ui.PropertyUI::PropertyUI_t, name.s)
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, *ui\height)
   ControlProperty::AppendStart(*prop)
   Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 24)
-  Object::SignalConnect(*prop, *btn\onleftclick_signal, @Callback())
+  Define message.s = "ZOBINickVraimentTout"
+  Signal::CONNECTCALLBACK(*btn\on_click, Callback, message)
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
   CloseGadgetList()
@@ -76,7 +78,6 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
 
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
-  Object::SignalConnect(*ui,*head\slot,0)
 
   Define v.Math::v3f32
 
@@ -139,8 +140,8 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 79
+; CursorPosition = 80
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

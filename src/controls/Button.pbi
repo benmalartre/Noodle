@@ -20,11 +20,12 @@ DeclareModule ControlButton
     color_disabled.i
     color_over.i
     color_pressed.i
-    *onleftclick_signal.Slot::Slot_t
-    *onleftdoubleclick_signal.Slot::Slot_t
+    *on_click.Signal::Signal_t
+    
   EndStructure
   
-  Declare New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
+  Declare New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
+  Declare Draw(*Me.ControlButton_t, xoff.i = 0, yoff.i = 0)
   Declare Init()
   Declare Term()
   Declare SetTheme(theme.i)
@@ -36,8 +37,12 @@ DeclareModule ControlButton
   ; ============================================================================
   DataSection
     ControlButtonVT:
-    Data.i @OnEvent() ; mandatory override
+    Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+    
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -53,13 +58,13 @@ Module ControlButton
 ; ----------------------------------------------------------------------------
 ;  hlpDraw
 ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
   
   ;---[ Check Visible ]-------------------------------------------------------
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Label Color ]--------------------------------------------------------
-  Protected tc.i = UIColor::COLORA_LABEL
+  Protected tc.i = UIColor::COLOR_LABEL
   
   ; ---[ Set Font ]-----------------------------------------------------------
   VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
@@ -72,7 +77,7 @@ Module ControlButton
     AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
     VectorSourceColor(*Me\color_disabled)
     FillPath()
-    tc = UIColor::COLORA_LABEL_DISABLED
+    tc = UIColor::COLOR_LABEL_DISABLED
   Else
     ; ---[ Check Over ]-------------------------------------------------------
     If *Me\over
@@ -80,7 +85,7 @@ Module ControlButton
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_pressed)
         FillPath()
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       Else
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_over)
@@ -91,7 +96,7 @@ Module ControlButton
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_pressed)
         FillPath()
-        tc = UIColor::COLORA_LABEL_NEG
+        tc = UIColor::COLOR_LABEL_NEG
       Else
         AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(*Me\color_enabled)
@@ -102,7 +107,7 @@ Module ControlButton
   
   ; ---[ Draw Label ]---------------------------------------------------------
   MovePathCursor(tx, ty )
-  VectorSourceColor(UIColor::COLORA_TEXT)
+  VectorSourceColor(UIColor::COLOR_TEXT)
   DrawVectorText(*Me\label)
   
 ;   ; ---[ Check Visible ]----------------------------------------------------
@@ -166,7 +171,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
       ; ...[ Draw Control ]...................................................
-      hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+      Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
       
@@ -228,7 +233,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     Case #PB_EventType_LeftButtonDown
       If *Me\visible And *Me\enable And *Me\over
         *Me\down = #True
-        Slot::Trigger(*Me\onleftclick_signal, Signal::#SIGNAL_TYPE_PING, #Null)
+        Signal::Trigger(*Me\on_click, Signal::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
       EndIf
       
@@ -243,8 +248,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         EndIf
         Control::Invalidate(*Me)
         If *Me\over
-          Slot::Trigger(*Me\onleftclick_signal,Signal::#SIGNAL_TYPE_PING,@*Me\value)
-          PostEvent(Globals::#EVENT_BUTTON_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
+          Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
         EndIf
       EndIf
       
@@ -335,32 +339,26 @@ EndProcedure
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlButton_t )
-  Slot::Delete(*Me\onleftclick_signal)
-  Slot::Delete(*Me\onleftdoubleclick_signal)
+  ; ---[ Terminate Object (deallocate signals) ]------------------------------
   Object::TERM(ControlButton)
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  ClearStructure(*Me,ControlButton_t)
-  FreeMemory( *Me )
-  
 EndProcedure
 
 
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
-Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
+Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
   
   Object::INI(ControlButton)
-  
-  *Me\object = *object
-  
+    
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type       = #PB_GadgetType_Button
   *Me\name       = name
-  *Me\gadgetID   = #Null
+  *Me\parent     = *parent
+  *Me\gadgetID   = *parent\gadgetID
   *Me\posX       = x
   *Me\posY       = y
   *Me\sizX       = width
@@ -369,20 +367,21 @@ Procedure.i New( *object.Object::Object_t,name.s, label.s = "", value.i = #False
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 1
-  *Me\onleftclick_signal = Slot::New(*Me)
-  *Me\onleftdoubleclick_signal = Slot::New(*Me)
+  
   InitializeColors(*Me, color)
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
+  
+  ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
+  *Me\on_click = Object::NewSignal(*Me, "OnClick")
   
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
 EndProcedure
 
-
-  
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlButton )
 EndModule
@@ -391,7 +390,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 51
+; CursorPosition = 109
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP

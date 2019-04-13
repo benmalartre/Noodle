@@ -58,8 +58,9 @@ DeclareModule ControlNumber
   ;  Declares 
   ; ----------------------------------------------------------------------------
   
-  Declare New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlNumber_t)
+  Declare Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlNumber_t, value.s )
   Declare.s GetValue( *Me.ControlNumber_t )
@@ -84,6 +85,9 @@ DeclareModule ControlNumber
     ControlNumberVT: 
     Data.i @OnEvent()
     Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
    
   EndDataSection
   
@@ -280,9 +284,9 @@ Module ControlNumber
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
-    Procedure hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
@@ -371,19 +375,19 @@ Module ControlNumber
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
       ; ...[ Disabled Text ]....................................................
-      tc = UIColor::COLORA_LABEL_DISABLED
+      tc = UIColor::COLOR_LABEL_DISABLED
     ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_BG)
+      VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
@@ -393,7 +397,7 @@ Module ControlNumber
       
     Else
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-      VectorSourceColor(UIColor::COLORA_NUMBER_FG)
+      VectorSourceColor(UIColor::COLOR_SHADOW)
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
@@ -402,27 +406,27 @@ Module ControlNumber
       EndIf
       
 
-;       If slider_w > *Me\sizX * 0.5
-;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
-;         FillPath()
-;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-;         VectorSourceColor(RGBA(0,0,0,64))
-;         FillPath()
-;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-;         VectorSourceColor(UIColor::COLORA_CARET)
-;         FillPath()
-;       Else
-;         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_FG)
-;         FillPath()
-;         Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
-;         VectorSourceColor(UIColor::COLORA_NUMBER_BG)
-;         FillPath()
-;         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-;         VectorSourceColor(RGBA(0,255,0,255))
-;         FillPath()
-;       EndIf
+      If slider_w > *Me\sizX * 0.5
+        Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_BG)
+        FillPath()
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(RGBA(0,0,0,64))
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(UIColor::COLOR_CARET)
+        FillPath()
+      Else
+        Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+        FillPath()
+        Vector::RoundBoxPath( xoff, yoff, *Me\sizX, *Me\sizY , 2)
+        VectorSourceColor(UIColor::COLOR_NUMBER_BG)
+        FillPath()
+        AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
+        VectorSourceColor(RGBA(0,255,0,255))
+        FillPath()
+      EndIf
     EndIf
     
 ;     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
@@ -440,25 +444,25 @@ Module ControlNumber
         CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
           CompilerCase #PB_OS_Linux
             AddPathBox(tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
           CompilerCase #PB_OS_MacOS
             AddPathBox(tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLORA_SELECTED_BG)
+            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
             FillPath()
         CompilerEndSelect
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         DrawVectorText( dtext )
       ; ---[ Just Caret ]-------------------------------------------------------
       Else
         ; ---[ Draw Value ]-----------------------------------------------------
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT)
         DrawVectorText(  dtext)
         ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
@@ -466,17 +470,17 @@ Module ControlNumber
             CompilerCase #PB_OS_Windows
               MovePathCursor(tx + posXL + xoff, ty)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
             CompilerCase #PB_OS_Linux
                MovePathCursor(tx + posXL + xoff, ty+1)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
             CompilerCase #PB_OS_MacOS
                MovePathCursor(tx + posXL + xoff, ty+2)
               AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLORA_CARET)
+              VectorSourceColor(UIColor::COLOR_CARET)
               StrokePath(2)
           CompilerEndSelect
         EndIf
@@ -486,20 +490,20 @@ Module ControlNumber
       CompilerSelect #PB_Compiler_OS
           CompilerCase #PB_OS_Windows
             Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
           CompilerCase #PB_OS_Linux
             Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
           CompilerCase #PB_OS_MacOS
             Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLORA_NUMBER_BG )
+            VectorSourceColor( UIColor::COLOR_SHADOW )
             FillPath()
         CompilerEndSelect
 
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLORA_TEXT)
+        VectorSourceColor(UIColor::COLOR_NUMBER_FG)
         DrawVectorText( dtext)
     EndIf
     
@@ -526,7 +530,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If Not *ev_data : ProcedureReturn : EndIf
       
       ; ---[ Draw Control ]---------------------------------------------------
-      hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+      Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
@@ -573,7 +577,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ; ---[ Show Text From Start ]-------------------------------------------
       *Me\posG = 1 : *Me\posW = 1
       ; ---[ Redraw Me ]------------------------------------------------------
-      ;Me\Invalidate()
       Control::Invalidate(*Me)
       
       ; ---[ Processed ]------------------------------------------------------
@@ -656,8 +659,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf 
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
           
           ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
@@ -715,8 +717,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
         
-        Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
-        PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
+        Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
         
         ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -864,8 +865,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
           
-          Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,@*Me\value_n)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED,EventWindow(),*Me\object,#Null,@*Me\name)
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
           
           ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -1179,11 +1179,7 @@ Procedure.s GetValue( *Me.ControlNumber_t )
 EndProcedure
 ; ---[ Free ]-----------------------------------------------------------------
 Procedure Delete( *Me.ControlNumber_t )
- 
-  
-  ; ---[ Deallocate Memory ]--------------------------------------------------
-  FreeMemory( *Me )
-  
+  Object::TERM(ControlNumber)
 EndProcedure
 ;}
 
@@ -1200,29 +1196,23 @@ EndProcedure
 Procedure SetTheme(theme.i)
 EndProcedure
 
-
-
-
-
 ; ============================================================================
 ;  CONSTRUCTORS
 ; ============================================================================
 ;{
 ; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlNumber_t = AllocateMemory( SizeOf(ControlNumber_t) )
   
-;   *Me\VT = ?ControlNumberVT
-;   *Me\classname = "CONTROLNUMBER"
   Object::INI(ControlNumber)
-  *Me\object = *object
-  
+
   ; ---[ Init Members ]-------------------------------------------------------
   *Me\type         = Control::#NUMBER
   *Me\name         = name
-  *Me\gadgetID     = #Null
+  *Me\parent       = *parent
+  *Me\gadgetID     = *parent\gadgetID
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
@@ -1259,6 +1249,9 @@ Procedure.i New(*object.Object::Object_t, name.s, value.d = 0.0, options.i = 0, 
   ; ---[ Init Array ]---------------------------------------------------------
   InitializeStructure( *Me, ControlNumber_t )
   
+  ; ---[ Signals ]------------------------------------------------------------
+  *Me\on_change = Object::NewSignal(*Me, "OnChange")
+  
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
@@ -1276,7 +1269,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1222
-; FirstLine = 1218
+; CursorPosition = 505
+; FirstLine = 469
 ; Folding = ----
 ; EnableXP

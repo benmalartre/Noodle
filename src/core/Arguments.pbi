@@ -1,43 +1,40 @@
-﻿XIncludeFile "Math.pbi"
-XIncludeFile "Array.pbi"
-
-; ================================================================
+﻿; ================================================================================
 ; ARGUMENTS MODULE DECLARATION
-; ================================================================
+; ================================================================================
 DeclareModule Arguments
   UseModule Math
+  
   Enumeration
-    #ARGS_BYTE
-    #ARGS_BOOL
-    #ARGS_CHAR
-    #ARGS_INT
-    #ARGS_LONG
-    #ARGS_FLOAT
-    #ARGS_DOUBLE
-    #ARGS_V2F32
-    #ARGS_V3F32
-    #ARGS_V4F32
-    #ARGS_C4F32
-    #ARGS_Q4F32
-    #ARGS_M3F32
-    #ARGS_M4F32
-    #ARGS_PTR
-    #ARGS_STRING
-    #ARGS_ARRAY
-
+    #BYTE
+    #BOOL
+    #CHAR
+    #INT
+    #LONG
+    #FLOAT
+    #DOUBLE
+    #V2F32
+    #V3F32
+    #V4F32
+    #C4F32
+    #Q4F32
+    #M3F32
+    #M4F32
+    #PTR
+    #STRING
+    #ARRAY
   EndEnumeration
   
   Global Dim S_ARGS_TYPE.s(17)
-  S_ARGS_TYPE(0) = "BYTE"
-  S_ARGS_TYPE(1) = "BOOL"
-  S_ARGS_TYPE(2) = "CHAR"
-  S_ARGS_TYPE(3) = "INT"
-  S_ARGS_TYPE(4) = "LONG"
-  S_ARGS_TYPE(5) = "FLOAT"
-  S_ARGS_TYPE(6) = "DOUBLE"
-  S_ARGS_TYPE(7) = "V2F32"
-  S_ARGS_TYPE(8) = "V3F32"
-  S_ARGS_TYPE(9) = "V4F32"
+  S_ARGS_TYPE(0)  = "BYTE"
+  S_ARGS_TYPE(1)  = "BOOL"
+  S_ARGS_TYPE(2)  = "CHAR"
+  S_ARGS_TYPE(3)  = "INT"
+  S_ARGS_TYPE(4)  = "LONG"
+  S_ARGS_TYPE(5)  = "FLOAT"
+  S_ARGS_TYPE(6)  = "DOUBLE"
+  S_ARGS_TYPE(7)  = "V2F32"
+  S_ARGS_TYPE(8)  = "V3F32"
+  S_ARGS_TYPE(9)  = "V4F32"
   S_ARGS_TYPE(10) = "C4F32"
   S_ARGS_TYPE(11) = "Q4F32"
   S_ARGS_TYPE(12) = "M3F32"
@@ -45,10 +42,11 @@ DeclareModule Arguments
   S_ARGS_TYPE(14) = "PTR"
   S_ARGS_TYPE(15) = "STRING"
   S_ARGS_TYPE(16) = "ARRAY"
-
+  
+  ; ------------------------------------------------------------------------------
+  ; ARGUMENT STRUCTURE
+  ; ------------------------------------------------------------------------------
   Structure Argument_t
-    name.s
-    type.i
     StructureUnion
       a.a
       b.b
@@ -57,617 +55,310 @@ DeclareModule Arguments
       l.l
       f.f
       d.d
-      v2.v2f32
-      v3.v3f32
-      c4.c4f32
-      q4.q4f32
-      m3.m3f32
-      m4.m4f32
-      *ptr
-      *array.CArray::CArrayT
+      v2f.v2f32
+      v3f.v3f32
+      v4f.v4f32
+      c4f.c4f32
+      q4f.q4f32
+      m3f.m3f32
+      m4f.m4f32
+      *p
     EndStructureUnion
     str.s
+    type.c
   EndStructure
   
+  ; ------------------------------------------------------------------------------
+  ; ARGUMENTS STRUCTURE
+  ; ------------------------------------------------------------------------------
   Structure Arguments_t
-    List *args.Argument_t()
-    nb.i
+    Array args.Argument_t(0)
   EndStructure
   
-  Declare New()
+  ; ------------------------------------------------------------------------------
+  ; DECLARE
+  ; ------------------------------------------------------------------------------
+  Declare Copy(*dst.Arguments_t, *src.Arguments_t)
+  Declare New(numArguments.i=0)
   Declare Delete(*args.Arguments_t)
-  Declare Echo(*args.Arguments_t)
-  Declare Clear(*args.Arguments_t)
   
-  Declare AddByte(*args.Arguments_t,name.s,value.a)
-  Declare AddBool(*args.Arguments_t,name.s,value.b)
-  Declare AddChar(*args.Arguments_t,name.s,value.c)
-  Declare AddInt(*args.Arguments_t,name.s,value.i)
-  Declare AddLong(*args.Arguments_t,name.s,value.l)
-  Declare AddFloat(*args.Arguments_t,name.s,value.f)
-  Declare AddDouble(*args.Arguments_t,name.s,value.d)
-  Declare AddString(*args.Arguments_t,name.s,str.s)
-  Declare AddV2F32(*args.Arguments_t,name.s,*value.v2f32)
-  Declare AddV3F32(*args.Arguments_t,name.s,*value.v3f32)
-  Declare AddC4F32(*args.Arguments_t,name.s,*value.c4f32)
-  Declare AddQ4F32(*args.Arguments_t,name.s,*value.q4f32)
-  Declare AddM3F32(*args.Arguments_t,name.s,*value.m3f32)
-  Declare AddM4F32(*args.Arguments_t,name.s,*value.m4f32)
-  Declare AddPtr(*args.Arguments_t,name.s,*ptr)
-  Declare AddArray(*args.Arguments_t,name.s,*array.CArray::CArrayT)
+  ; ------------------------------------------------------------------------------
+  ; MACROS
+  ; ------------------------------------------------------------------------------
+  Macro VALUE_NAME(_name, _type)
+    _name#VALUE#_type
+  EndMacro
 
-  Declare SetByte(*args.Arguments_t,name.s,value.a,id.i)
-  Declare SetBool(*args.Arguments_t,name.s,value.b,id.i)
-  Declare SetChar(*args.Arguments_t,name.s,value.c,id.i)
-  Declare SetInt(*args.Arguments_t,name.s,value.i,id.i)
-  Declare SetLong(*args.Arguments_t,name.s,value.l,id.i)
-  Declare SetFloat(*args.Arguments_t,name.s,value.f,id.i)
-  Declare SetDouble(*args.Arguments_t,name.s,value.d,id.i)
-  Declare SetString(*args.Arguments_t,name.s,str.s,id.i)
-  Declare SetV2F32(*args.Arguments_t,name.s,*value.v2f32,id.i)
-  Declare SetV3F32(*args.Arguments_t,name.s,*value.v3f32,id.i)
-  Declare SetC4F32(*args.Arguments_t,name.s,*value.c4f32,id.i)
-  Declare SetQ4F32(*args.Arguments_t,name.s,*value.q4f32,id.i)
-  Declare SetM3F32(*args.Arguments_t,name.s,*value.m3f32,id.i)
-  Declare SetM4F32(*args.Arguments_t,name.s,*value.m4f32,id.i)
-  Declare SetPtr(*args.Arguments_t,name.s,*ptr,id.i)
+  Macro CREATEVALUE(_name, _type)
+    Define Arguments::VALUENAME(_name, _type)._type
+  EndMacro
+
+  Macro CREATEVALUEPTR(_name)
+    Define *_name#VALUE
+  EndMacro
+
+  Macro ARGCREATEVALUE(_funcname, _arg, _type, _index)
+    Define __s.s = Globals::TOSTRING(_arg)
+    Define __name.s = Globals::TOSTRING(_funcname#ARG#_index)
+    Define __type.s = StringField(__s, 2, ".")
+    
+    If __type = "a"
+      Arguments::CREATEVALUE(__name, a)
+      _type = #ARGS_BYTE
+    ElseIf __type = "b"
+      Arguments::CREATEVALUE(__name, b)
+      _type = #ARGS_BYTE
+    ElseIf __type = "c"
+      Arguments::CREATEVALUE(__name, c)
+      _type =  #ARGS_CHAR
+    ElseIf __type = "d"
+      Arguments::CREATEVALUE(__name, d)
+      _type =  #ARGS_DOUBLE
+    ElseIf __type = "f"
+      Arguments::CREATEVALUE(__name, f)
+      _type =  #ARGS_FLOAT
+    ElseIf __type = "i"
+      Arguments::CREATEVALUE(__name, i)
+      _type =  #ARGS_INT
+    ElseIf __type = "l"
+      Arguments::CREATEVALUE(__name, l)
+      _type =  #ARGS_LONG
+    ElseIf __type = "v2f32"
+      Arguments::CREATEVALUE(__name, v2f32)
+      _type =  #ARGS_V2F32
+    ElseIf __type = "v3f32"
+      Arguments::CREATEVALUE(__name, v3f32)
+      _type =  #ARGS_V3F32
+    ElseIf __type = "v4f32"
+      Arguments::CREATEVALUE(__name, v4f32)
+      _type =  #ARGS_V4F32
+    ElseIf __type = "c4f32"
+      Arguments::CREATEVALUE(__name, c4f32)
+      _type = #ARGS_C4F32
+    ElseIf __type = "q4f32"
+      Arguments::CREATEVALUE(__name, q4f32)
+      _type = #ARGS_Q4f32
+    ElseIf __type = "m3f32"
+      Arguments::CREATEVALUE(__name, m3f32)
+      _type = #ARGS_M3F32
+    ElseIf __type = "m4f32"
+      Arguments::CREATEVALUE(__name, m4f32)
+      _type = #ARGS_QUATERNION
+    ElseIf __type = "m3f32"
+      Arguments::CREATEVALUE(__name, s)
+      _type = #PB_String
+    Else
+      Arguments::CREATEVALUEPTR(__name)
+      _type = #PB_Integer
+    EndIf
+   
+  EndMacro
   
-  Declare Copy(*dest.Argument_t,*source.Argument_t)
-;   Declare GetByName(*args.Arguments_t)
+  Macro GET(_v)
+    CompilerSelect _type
+      CompilerCase #ARGS_BYTE
+        _A\args(_index)\b
+      CompilerCase #PB_Byte
+        _A\args(_index)\b
+      CompilerCase #PB_Long
+        _A\args(_index)\l
+      CompilerCase #PB_Integer
+        _A\args(_index)\i
+      CompilerCase #PB_Float
+        _A\args(_index)\f
+      CompilerCase #PB_Double
+        _A\args(_index)\d
+    CompilerEndSelect
+  EndMacro
+  
+  ; PASS ATRIBUTE VALUE
+  Macro PASS(_arg, _value)
+    CompilerSelect TypeOf(_arg)
+      CompilerCase #PB_String
+        _arg = Globals::QUOTE()_value#Globals::QUOTE()
+      CompilerDefault
+        _arg = _value
+    CompilerEndSelect
+  EndMacro
+  
+  ; SET EXISTING ATTRIBUTE
+  Declare SET_INTERNAL(*args.Arguments::Arguments_t, type.l, size.i, index.i, *value)
 
-;   Declare DeleteArgByID(*args.Arguments_t,id.i)
-;   Declare DeleteArgByName(*args.Arguments_t,id.i)
-;   
+  Macro SET(_args, _index, _value)
+    CompilerIf TypeOf(value) = #PB_Structure
+       Arguments::SET_INTERNAL(_args, #PB_Structure, #PB_Integer, _index, _value)
+    CompilerElse
+      Arguments::ADD_INTERNAL(_args, TypeOf(_value), SizeOf(_value), _index, @value)
+    CompilerEndIf
+  EndMacro
+
+  Declare ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
+  
+  ; ADD NEW ATTRIBUTE
+  Macro ADD(_args, value)
+    CompilerIf TypeOf(value) = #PB_Structure
+       Arguments::ADD_INTERNAL(_args, #PB_Structure, #PB_Integer, value)
+    CompilerElse
+      Arguments::ADD_INTERNAL(_args, TypeOf(value), SizeOf(value), @value)
+    CompilerEndIf
+  EndMacro
+  
+  ; DECLARE ATTRIBUTE
+  Macro DECL(_type, _index)
+    CompilerSelect _type
+      CompilerCase Arguments::#BYTE
+        __arg__#_index.a
+      CompilerCase Arguments::#BOOL
+        __arg__#_index.b
+      CompilerCase Arguments::#CHAR
+        __arg__#_index.c
+      CompilerCase Arguments::#DOUBLE
+        __arg__#_index.d
+      CompilerCase Arguments::#FLOAT
+        __arg__#_index.f
+      CompilerCase Arguments::#INT
+        __arg__#_index.i
+      CompilerCase Arguments::#LONG
+        __arg__#_index.l
+      CompilerCase Arguments::#V2F32
+        __arg__#_index.Math::v2f32
+      CompilerCase Arguments::#V3F32
+        __arg__#_index.Math::v3f32
+      CompilerCase Arguments::#V4F32
+        __arg__#_index.Math::v4f32
+      CompilerCase Arguments::#C4F32
+        __arg__#_index.Math::c4f32
+      CompilerCase Arguments::#Q4F32
+        __arg__#_index.Math::q4f32
+      CompilerCase Arguments::#M3F32
+        __arg__#_index.Math::cm3f32
+      CompilerCase Arguments::#M4F32
+        __arg__#_index.Math::m4f32
+      CompilerCase Arguments::#STRING
+        __arg__#_index.s
+      CompilerDefault
+        *__arg__#_index
+    CompilerEndSelect
+  EndMacro
+
 EndDeclareModule
 
-; ================================================================
+; ================================================================================
 ; ARGUMENTS MODULE IMPLEMENTATION
-; ================================================================
+; ================================================================================
 Module Arguments
+  ; ------------------------------------------------------------------------------
   ; CONSTRUCTOR
-  ;---------------------------------------------------------------
-  Procedure New()
+  ; ------------------------------------------------------------------------------
+  Procedure New(numArguments.i=0)
     Protected *args.Arguments_t = AllocateMemory(SizeOf(Arguments_t))
-    InitializeStructure(*args,Arguments_t)
-    ProcedureReturn *args  
+    InitializeStructure(*args, Arguments_t)
+    ReDim *args\args(numArguments)
+    ProcedureReturn *args
   EndProcedure
   
+  ; ------------------------------------------------------------------------------
   ; DESTRUCTOR
-  ;---------------------------------------------------------------
+  ; ------------------------------------------------------------------------------
   Procedure Delete(*args.Arguments_t)
-    
-    ForEach *args\args()
-      ClearStructure(*args\args(),Argument_t)
-      FreeMemory(*args\args())
-    Next
-    ClearStructure(*args,Arguments_t)
+    ClearStructure(*args, Arguments_t)
     FreeMemory(*args)
-    
   EndProcedure
   
-  ; ECHO
-  ;---------------------------------------------------------------
-  Procedure Echo(*args.Arguments_t)
-    Protected x = 0
-    ForEach *args\args()
-      Debug "------------------------------------ARGUMENT ID "+Str(x)
-      x+1
-      Debug *args\args()\name
-      Debug S_ARGS_TYPE(*args\args()\type)
-      Select *args\args()\type
-        Case #ARGS_BYTE
-          Debug "Value BYTE : "+Str(*args\args()\a)
-        Case #ARGS_BOOL
-          Debug "Value BOOL : "+Str(*args\args()\b)
-        Case #ARGS_CHAR
-          Debug "Value CHAR : "+Str(*args\args()\b)
-        Case #ARGS_INT
-          Debug "Value INT : "+Str(*args\args()\i)
-        Case #ARGS_LONG
-          Debug "Value LONG : "+Str(*args\args()\l)
-        Case #ARGS_FLOAT
-          Debug "Value FLOAT : "+Str(*args\args()\f)
-        Case #ARGS_DOUBLE
-          Debug "Value DOUBLE : "+Str(*args\args()\d)
-        Case #ARGS_V2F32
-          With *args\args()\v2
-            Debug "Value VECTOR2 : "+StrF(\x)+","+StrF(\y)
-          EndWith
-        Case #ARGS_V3F32
-          With *args\args()\v3
-            Debug "Value VECTOR3 : "+StrF(\x)+","+StrF(\y)+","+StrF(\z)
-          EndWith
-        Case #ARGS_C4F32
-          With *args\args()\c4
-            Debug "Value COLOR : "+StrF(\r)+","+StrF(\g)+","+StrF(\b)+","+StrF(\a)
-          EndWith
-        Case #ARGS_Q4F32
-          With *args\args()\q4
-            Debug "Value QUATERNION : "+StrF(\w)+","+StrF(\x)+","+StrF(\y)+","+StrF(\z)
-          EndWith
-        Case #ARGS_M3F32
-          With *args\args()\m3
-            Debug "Value MAtrix3 : "+StrF(\v[0])+","+StrF(\v[1])+","+StrF(\v[2])+","+StrF(\v[3])+StrF(\v[4])+","+StrF(\v[5])+","+StrF(\v[6])+","+StrF(\v[7])+StrF(\v[8])+","+StrF(\v[9])+","+StrF(\v[10])+","+StrF(\v[11])
-          EndWith
-          
-        Case #ARGS_M4F32
-          With *args\args()\m3
-            Debug "Value MAtrix4 : "+StrF(\v[0])+","+StrF(\v[1])+","+StrF(\v[2])+","+StrF(\v[3])+StrF(\v[4])+","+StrF(\v[5])+","+StrF(\v[6])+","+StrF(\v[7])+StrF(\v[8])+","+StrF(\v[9])+","+StrF(\v[10])+","+StrF(\v[11])+StrF(\v[12])+StrF(\v[13])+","+StrF(\v[14])+","+StrF(\v[15])
-          EndWith
-          
-        Case #ARGS_STRING
-          Debug "Value STRING : "+*args\args()\str
-        Case #ARGS_PTR
-          Debug "Value PTR : "+Str(*args\args()\ptr)
+  Procedure Copy(*dst.Arguments_t, *src.Arguments_t)
+    Define nb = ArraySize(*src\args())
+    ReDim *dst\args(nb)
+    Define i
+    For i=0 To nb-1
+      *dst\args(i)\type = *src\args(i)\type
+      Select *src\args(i)\type
+        Case #BYTE
+          *dst\args(i)\a = *src\args(i)\a
+        Case #BOOL
+          *dst\args(i)\b = *src\args(i)\b
+        Case #CHAR
+          *dst\args(i)\c = *src\args(i)\c
+        Case #INT
+          *dst\args(i)\i = *src\args(i)\i
+        Case #LONG
+          *dst\args(i)\l = *src\args(i)\l
+        Case #FLOAT
+          *dst\args(i)\f = *src\args(i)\f
+        Case #DOUBLE
+          *dst\args(i)\d = *src\args(i)\d
+        Case #V2F32
+          *dst\args(i)\v2f\x = *src\args(i)\v2f\x
+          *dst\args(i)\v2f\y = *src\args(i)\v2f\y
+        Case #V3F32
+          *dst\args(i)\v3f\x = *src\args(i)\v3f\x
+          *dst\args(i)\v3f\y = *src\args(i)\v3f\y
+          *dst\args(i)\v3f\z = *src\args(i)\v3f\z
+        Case #V4F32
+          *dst\args(i)\v4f\x = *src\args(i)\v4f\x
+          *dst\args(i)\v4f\y = *src\args(i)\v4f\y
+          *dst\args(i)\v4f\z = *src\args(i)\v4f\z
+          *dst\args(i)\v4f\w = *src\args(i)\v4f\w
+        Case #C4F32
+          *dst\args(i)\v4f\r = *src\args(i)\v4f\r
+          *dst\args(i)\v4f\g = *src\args(i)\v4f\g
+          *dst\args(i)\v4f\b = *src\args(i)\v4f\b
+          *dst\args(i)\v4f\a = *src\args(i)\v4f\a
+        Case #Q4F32
+          *dst\args(i)\v4f\x = *src\args(i)\v4f\x
+          *dst\args(i)\v4f\y = *src\args(i)\v4f\y
+          *dst\args(i)\v4f\z = *src\args(i)\v4f\z
+          *dst\args(i)\v4f\w = *src\args(i)\v4f\w
+        Case #M3F32
+          For i=0 To 8
+            *dst\args(i)\m3f\v[i] = *src\args(i)\m3f\v[i]
+          Next
+        Case #M4F32
+          For i=0 To 15
+            *dst\args(i)\m3f\v[i] = *src\args(i)\m3f\v[i]
+          Next
+        Case #STRING
+          *dst\args(i)\str = *src\args(i)\str
+          *dst\args(i)\p = @*dst\args(i)\str
+        Case #ARRAY
+          *dst\args(i)\p = *src\args(i)\p
       EndSelect
-      
     Next
   EndProcedure
   
-  ; DESTRUCTOR
-  ;---------------------------------------------------------------
-  Procedure Clear(*args.Arguments_t)
-    ForEach *args\args()
-      ClearStructure(*args\args(),Argument_t)
-      FreeMemory(*args\args())
-    Next
-  EndProcedure
-  
-  
-  ; ADD BYTE
-  ;---------------------------------------------------------------
-  Procedure AddByte(*args.Arguments_t,name.s,value.a)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_BYTE
-    *arg\name = name
-    *arg\a = value
+  Procedure ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
+    Protected index = ArraySize(*args\args())
+    ReDim *args\args(index + 1)
     
-    AddElement(*args\args())
-    *args\args() = *arg
-    *args\nb + 1
+    With *args\args(index)
+      \type = Type
+      If (Type = #PB_String)
+        \str = PeekS(*value)
+      Else
+        CopyMemory(*value, @*args\args(index)+ OffsetOf(Arguments::Argument_t\a), size)
+      EndIf
+    EndWith
   EndProcedure
   
-  ; ADD BOOL
-  ;---------------------------------------------------------------
-  Procedure AddBool(*args.Arguments_t,name.s,value.b)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_BOOL
-    *arg\name = name
-    *arg\b = value
-    
-    AddElement(*args\args())
-    *args\args() = *arg
-    *args\nb + 1
-  EndProcedure
-  
-  ; ADD CHAR
-  ;---------------------------------------------------------------
-  Procedure AddChar(*args.Arguments_t,name.s,value.c)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_CHAR
-    *arg\name = name
-    *arg\c = value
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD INT
-  ;---------------------------------------------------------------
-  Procedure AddInt(*args.Arguments_t,name.s,value.i)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_INT
-    *arg\name = name
-    *arg\i = value
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD LONG
-  ;---------------------------------------------------------------
-  Procedure AddLong(*args.Arguments_t,name.s,value.l)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_LONG
-    *arg\name = name
-    *arg\l = value
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD FLOAT
-  ;---------------------------------------------------------------
-  Procedure AddFloat(*args.Arguments_t,name.s,value.f)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_FLOAT
-    *arg\name = name
-    *arg\f = value
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD DOUBLE
-  ;---------------------------------------------------------------
-  Procedure AddDouble(*args.Arguments_t,name.s,value.d)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_DOUBLE
-    *arg\name = name
-    *arg\d = value
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD V2F32
-  ;---------------------------------------------------------------
-  Procedure AddV2F32(*args.Arguments_t,name.s,*value.v2f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_V2F32
-    *arg\name = name
-    Vector2::SetFromOther(*arg\v2,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD V3F32
-  ;---------------------------------------------------------------
-  Procedure AddV3F32(*args.Arguments_t,name.s,*value.v3f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_V3F32
-    *arg\name = name
-    Vector3::SetFromOther(*arg\v3,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD C4F32
-  ;---------------------------------------------------------------
-  Procedure AddC4F32(*args.Arguments_t,name.s,*value.c4f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_C4F32
-    *arg\name = name
-    Color::SetFromOther(*arg\c4,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD Q4F32
-  ;---------------------------------------------------------------
-  Procedure AddQ4F32(*args.Arguments_t,name.s,*value.q4f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_Q4F32
-    *arg\name = name
-    Quaternion::SetFromOther(*arg\q4,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-  ; ADD M3F32
-  ;---------------------------------------------------------------
-  Procedure AddM3F32(*args.Arguments_t,name.s,*value.m3f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_M3F32
-    *arg\name = name
-    Matrix3::SetFromOther(*arg\m3,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-   ; ADD M4F32
-  ;---------------------------------------------------------------
-  Procedure AddM4F32(*args.Arguments_t,name.s,*value.m4f32)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_M4F32
-    *arg\name = name
-    Matrix4::SetFromOther(*arg\m4,*value)
-    
-   AddElement(*args\args())
-   *args\args() = *arg
-   *args\nb + 1
-  EndProcedure
-  
-   ; ADD STRING
-  ;---------------------------------------------------------------
-  Procedure AddString(*args.Arguments_t,name.s,str.s)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_STRING
-    *arg\name = name
-    *arg\str = str
-    
-    AddElement(*args\args())
-    *args\args() = *arg
-    *args\nb + 1
-  EndProcedure
-  
-  ; ADD PTR
-  ;---------------------------------------------------------------
-  Procedure AddPtr(*args.Arguments_t,name.s,*ptr)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_PTR
-    *arg\name = name
-    *arg\ptr = *ptr
-    
-    AddElement(*args\args())
-    *args\args() = *arg
-    *args\nb + 1
-  EndProcedure
-  
-  ; ADD ARRAY
-  ;---------------------------------------------------------------
-  Procedure AddArray(*args.Arguments_t,name.s,*array.CArray::CArrayT)
-    Protected *arg.Argument_t = AllocateMemory(SizeOf(Argument_t))
-    *arg\type = #ARGS_ARRAY
-    *arg\name = name
-    *arg\array = *array
-    
-    AddElement(*args\args())
-    *args\args() = *arg
-    *args\nb + 1
-  EndProcedure
-  
-  ; SET BYTE
-  ;---------------------------------------------------------------
-  Procedure SetByte(*args.Arguments_t,name.s,value.a,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_BYTE
-      *arg\name = name
-      *arg\a = value
+   Procedure SET_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, index.i, *value)
+    Protected numArgs = ArraySize(*args\args())
+    If index >= 0 Or index < numArgs
+      With *args\args(index)
+        \type = Type
+        If (Type = #PB_String)
+          \str = PeekS(*value)
+        Else
+          CopyMemory(*value, @*args\args(index)+ OffsetOf(Arguments::Argument_t\a), size)
+        EndIf
+      EndWith
     EndIf
-  EndProcedure
-  
-  ;  SET BOOL
-  ;---------------------------------------------------------------
-  Procedure SetBool(*args.Arguments_t,name.s,value.b,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_BOOL
-      *arg\name = name
-      *arg\b = value
-    EndIf
-  EndProcedure
-  
-  ;  SET CHAR
-  ;---------------------------------------------------------------
-  Procedure SetChar(*args.Arguments_t,name.s,value.c,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_CHAR
-      *arg\name = name
-      *arg\c = value
-    EndIf
-  EndProcedure
-  
-  ;  SET INT
-  ;---------------------------------------------------------------
-  Procedure SetInt(*args.Arguments_t,name.s,value.i,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_INT
-      *arg\name = name
-      *arg\i = value
-    EndIf
-  EndProcedure
-  
-  ;  SET LONG
-  ;---------------------------------------------------------------
-  Procedure SetLong(*args.Arguments_t,name.s,value.l,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_LONG
-      *arg\name = name
-      *arg\l = value
-    EndIf
-  EndProcedure
-  
-  ;  SET FLOAT
-  ;---------------------------------------------------------------
-  Procedure SetFloat(*args.Arguments_t,name.s,value.f,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_FLOAT
-      *arg\name = name
-      *arg\f = value
-    EndIf
-  EndProcedure
-  
-  ;  SET DOUBLE
-  ;---------------------------------------------------------------
-  Procedure SetDouble(*args.Arguments_t,name.s,value.d,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_DOUBLE
-      *arg\name = name
-      *arg\d = value
-    EndIf
-  EndProcedure
-  
-  ;  SET V2F32
-  ;---------------------------------------------------------------
-  Procedure SetV2F32(*args.Arguments_t,name.s,*value.v2f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_V2F32
-      *arg\name = name
-      Vector2::SetFromOther(*arg\v2,*value)
-    EndIf
-  EndProcedure
-  
-  ;  SET V3F32
-  ;---------------------------------------------------------------
-  Procedure SetV3F32(*args.Arguments_t,name.s,*value.v3f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_V3F32
-      *arg\name = name
-      Vector3::SetFromOther(*arg\v3,*value)
-    EndIf
-  EndProcedure
-  
-;   ;  SET V4F32
-;   ;---------------------------------------------------------------
-;   Procedure SetV4F32(*args.Arguments_t,name.s,*value.v4f32,id.i)
-;     If SelectElement(*args\args(),id)
-;       Protected *arg.Argument_t = *args\args()
-;       *arg\type = #ARGS_V4F32
-;       *arg\name = name
-;       Vector4::SetFromOther(*arg\d,*value)
-;     EndIf
-;   EndProcedure
-  
-  ;  SET C4F32
-  ;---------------------------------------------------------------
-  Procedure SetC4F32(*args.Arguments_t,name.s,*value.c4f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_C4F32
-      *arg\name = name
-      Color::SetFromOther(*arg\c4,*value)
-    EndIf
-  EndProcedure
-  
-  ;  SET Q4F32
-  ;---------------------------------------------------------------
-  Procedure SetQ4F32(*args.Arguments_t,name.s,*value.q4f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_Q4F32
-      *arg\name = name
-      Quaternion::SetFromOther(*arg\q4,*value)
-    EndIf
-  EndProcedure
-  
-  ;  SET M3F32
-  ;---------------------------------------------------------------
-  Procedure SetM3F32(*args.Arguments_t,name.s,*value.m3f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_M3F32
-      *arg\name = name
-      Matrix3::SetFromOther(*arg\m3,*value)
-    EndIf
-  EndProcedure
-  
-  ;  SET M4F32
-  ;---------------------------------------------------------------
-  Procedure SetM4F32(*args.Arguments_t,name.s,*value.m4f32,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_M4F32
-      *arg\name = name
-      Matrix4::SetFromOther(*arg\m4,*value)
-    EndIf
-  EndProcedure
-  
-  ;  SET M4F32
-  ;---------------------------------------------------------------
-  Procedure SetPtr(*args.Arguments_t,name.s,*value,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_PTR
-      *arg\name = name
-      *arg\ptr =*value
-    EndIf
-  EndProcedure
-  
-  ;  SET M4F32
-  ;---------------------------------------------------------------
-  Procedure SetString(*args.Arguments_t,name.s,value.s,id.i)
-    If SelectElement(*args\args(),id)
-      Protected *arg.Argument_t = *args\args()
-      *arg\type = #ARGS_STRING
-      *arg\name = name
-      *arg\str = value
-    EndIf
-  EndProcedure
-  
-  ;  Copy
-  ;---------------------------------------------------------------
-  Procedure Copy(*dest.Argument_t,*src.Argument_t)
-    *dest\type = *src\type
-    *dest\name = *src\name
-    Select *dest\type
-      Case #ARGS_BYTE
-        *dest\a = *src\a
-      Case #ARGS_BOOL
-        *dest\b = *src\b
-      Case #ARGS_CHAR
-        *dest\c = *src\c
-      Case #ARGS_LONG
-        *dest\l = *src\l
-      Case #ARGS_INT
-        *dest\i = *src\i
-      Case #ARGS_FLOAT
-        *dest\f = *src\f
-      Case #ARGS_DOUBLE
-        *dest\d = *src\d
-      Case #ARGS_V2F32
-        CopyMemory(*src\v2,*dest\v2,SizeOf(v2f32))
-      Case #ARGS_V3F32
-        CopyMemory(*src\v3,*dest\v3,SizeOf(v3f32))
-;       Case #ARGS_V4F32
-;         CopyMemory(*src\v4,*dest\v4,SizeOf(v4f32))
-      Case #ARGS_C4F32
-        CopyMemory(*src\c4,*dest\c4,SizeOf(c4f32))
-      Case #ARGS_Q4F32
-        CopyMemory(*src\q4,*dest\q4,SizeOf(q4f32))
-      Case #ARGS_M3F32
-        CopyMemory(*src\m3,*dest\m3,SizeOf(m3f32))
-      Case #ARGS_M4F32
-        CopyMemory(*src\m4,*dest\m4,SizeOf(m4f32))
-      Case #ARGS_PTR
-        *dest\ptr = *src\ptr
-      Case #ARGS_ARRAY
-        *dest\array = *src\array
-      Case #ARGS_STRING
-        *dest\str = *src\str
-        
-    EndSelect
     
   EndProcedure
-  
   
 EndModule
-; 
-; UseModule Math
-; 
-; window = OpenWindow(#PB_Any,0,0,800,600,"")
-; Repeat
-;   Define *args.Arguments::Arguments_t = Arguments::New()
-;   Arguments::AddBool(*args,"Head",#True)
-;   Arguments::AddBool(*args,"Hip",#False)
-;   Arguments::AddString(*args,"Message","Hello this is an argument message!")
-;   Define *mem = AllocateMemory(12000)
-;   Arguments::AddPtr(*args,"Memory Pointer",*mem)
-;   
-;   Define v.v3f32
-;   Vector3::Set(v,3.33,4.56,7.258)
-;   Arguments::AddV3F32(*args,"Vec3",@v)
-;   
-;   Arguments::Echo(*args)
-;   Arguments::Delete(*args)
-; Until WaitWindowEvent() = #PB_Event_CloseWindow
+
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 574
-; FirstLine = 529
-; Folding = -------
+; CursorPosition = 335
+; FirstLine = 202
+; Folding = ---
 ; EnableXP
-; EnableUnicode

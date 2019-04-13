@@ -46,9 +46,15 @@ DeclareModule Scene
     
     Map *m_objects.Object3D::Object3D_t()
     Map *m_uuids.Object3D::Object3D_t()
+    
+    *on_new.Signal::Signal_t
+    *on_delete.Signal::Signal_t
+    *on_change.Signal::Signal_t
+    *on_time.Signal::Signal_t
+    *on_edit.Signal::Signal_t
+    *on_create.Signal::Signal_t
 
   EndStructure
-  
   
   Interface IScene Extends Object3D::IObject3D
   EndInterface
@@ -75,6 +81,7 @@ DeclareModule Scene
   Declare Save(*scn.Scene_t)
   Declare SaveAs(*scn.Scene_t, filename.s)
   Declare GetUniqueID(*scn.Scene_t, *o.Object3D::Object3D_t)
+  Declare.s GetInfos(*scn.Scene_t)
   
   DataSection 
     SceneVT: 
@@ -93,6 +100,9 @@ EndDeclareModule
 ; ============================================================================
 Module Scene
   
+  ;---------------------------------------------------------------------------
+  ; Create Unique ID
+  ;---------------------------------------------------------------------------
   Procedure GetUniqueID(*s.Scene_t, *o.Object3D::Object3D_t)
     Protected uuid.i = Random(1<<24)
     If FindMapElement(*s\m_uuids(), Str(uuid))
@@ -106,6 +116,20 @@ Module Scene
       Protected decoded = Object3D::DecodeID(v\x*255, v\y*255, v\z*255)
       ProcedureReturn uuid
     EndIf  
+  EndProcedure
+  
+  ;---------------------------------------------------------------------------
+  ; Get Infos
+  ;---------------------------------------------------------------------------
+  Procedure.s GetInfos(*Me.Scene_t)
+    Define infos.s 
+    infos + "Cameras : "+Str(*Me\cameras\itemCount)+Chr(10)
+    infos + "Lights : "+Str(*Me\lights\itemCount)+Chr(10)
+    infos + "Objects : "+Str(*Me\objects\itemCount)+Chr(10)
+    infos + "Helpers : "+Str(*Me\helpers\itemCount)+Chr(10)
+    
+    ProcedureReturn infos
+    
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -149,25 +173,16 @@ Module Scene
   ; Select Object
   ;---------------------------------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
-;     Protected nbs = CArray::GetCount(*Me\selection)
-;     Protected s
-;     Protected *o.Object3D::Object3D_t
-;     For s = 0 To nbs-1
-;       *o = CArray::GetValue(*Me\selection,s)
-;       If *o\selected : *o\selected = #False : EndIf
-;     Next s
-;     
-;     *obj\selected = #True
-;     CArray::SetCount(*Me\selection,0)
-;     CArray::AppendPtr(*Me\selection,*obj)
-    ;Handle::SetTarget(*Me\handle,*obj)
+    Debug "SCENE SELECT OBJECT"
+    Selection::Clear(*Me\selection)
+    Selection::AddObject(*Me\selection, *obj)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Add Object To Selection
   ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
-;     CArray::AppendPtr(*Me\selection,*obj)  
+;      Selection::AddObject(*Me\selection, *obj)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -178,23 +193,23 @@ Module Scene
     *scn\nbobjects  + 1
     *obj\uniqueID = GetUniqueID(*scn, *obj)
     Select *obj\type
-      Case Object3D::#Object3D_Drawer
+      Case Object3D::#Drawer
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Null
+      Case Object3D::#Locator
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Model
+      Case Object3D::#Model
         CArray::AppendUnique(*scn\models,*obj)
-      Case Object3D::#Object3D_Curve
+      Case Object3D::#Curve
         CArray::AppendUnique(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_PointCloud        
+      Case Object3D::#PointCloud        
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_InstanceCloud        
+      Case Object3D::#InstanceCloud        
         CArray::AppendUnique(*scn\objects,*obj)
-      Case Object3D::#Object3D_Light 
+      Case Object3D::#Light 
         CArray::AppendUnique(*scn\lights,*obj)
-      Case Object3D::#Object3D_Camera
+      Case Object3D::#Camera
         CArray::AppendUnique(*scn\cameras,*obj)
     EndSelect
   
@@ -206,21 +221,21 @@ Module Scene
   Procedure RemoveObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
 
     Select *obj\type
-      Case Object3D::#Object3D_Null
+      Case Object3D::#Locator
         CArray::Remove(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Model
+      Case Object3D::#Model
         CArray::Remove(*scn\models,*obj)
-      Case Object3D::#Object3D_Curve
+      Case Object3D::#Curve
         CArray::Remove(*scn\helpers,*obj)
-      Case Object3D::#Object3D_Polymesh
+      Case Object3D::#Polymesh
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_PointCloud        
+      Case Object3D::#PointCloud        
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_InstanceCloud        
+      Case Object3D::#InstanceCloud        
         CArray::Remove(*scn\objects,*obj)
-      Case Object3D::#Object3D_Light 
+      Case Object3D::#Light 
         CArray::Remove(*scn\lights,*obj)
-      Case Object3D::#Object3D_Camera
+      Case Object3D::#Camera
         CArray::Remove(*scn\cameras,*obj)
     EndSelect
   
@@ -241,7 +256,7 @@ Module Scene
     
     ForEach *obj\children()
       *child = *obj\children()
-      If *obj\type = Object3D::#Object3D_Model
+      If *obj\type = Object3D::#Model
         *child\model = *obj
       Else
         *child\model = *obj\model
@@ -374,18 +389,18 @@ Module Scene
       child = *obj\children()
       If Not *obj\children()\initialized
         Select *obj\children()\type
-          Case Object3D::#Object3D_Polymesh
+          Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
-          Case Object3D::#Object3D_PointCloud
+          Case Object3D::#PointCloud
             MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
-          Case Object3D::#Object3D_InstanceCloud
+          Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
-          Case Object3D::#Object3D_Null
+          Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
-          Case Object3D::#Object3D_Curve
+          Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
-          Case Object3D::#Object3D_Drawer
+          Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
         EndSelect
       EndIf
@@ -406,17 +421,17 @@ Module Scene
       child = *root\children()
       If Not *root\children()\initialized
         Select *root\children()\type
-          Case Object3D::#Object3D_Polymesh
+          Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
-          Case Object3D::#Object3D_PointCloud
+          Case Object3D::#PointCloud
             child\Setup(*ctx\shaders("cloud"))
-          Case Object3D::#Object3D_InstanceCloud
+          Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
-          Case Object3D::#Object3D_Null
+          Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
-          Case Object3D::#Object3D_Curve
+          Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
-          Case Object3D::#Object3D_Drawer
+          Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
       EndSelect
       EndIf
@@ -529,7 +544,7 @@ Module Scene
       Next
       
       *scn\dirty = #False
-;     EndIf
+      ;     EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -543,10 +558,12 @@ Module Scene
   ; Get Object By Name
   ;---------------------------------------------------------------------------
   Procedure GetObjectByName(*scn.Scene_t,name.s)
+    Debug "GET OBJECT BY NAME : "+name
     Protected i
     Protected *o.Object3D::Object3D_t
     For i =0 To CArray::GetCount(*scn\objects)-1
       *o = CArray::GetValuePtr(*scn\objects,i)
+      Debug "---> "+*o\name
       If *o\name = name
         ProcedureReturn *o
       EndIf
@@ -565,8 +582,8 @@ Module Scene
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t
     For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValue(*scn\objects,i)
-      If *o\type = Object3D::#Object3D_Polymesh
+      *o = CArray::GetValuePtr(*scn\objects,i)
+      If *o\type = Object3D::#Polymesh
         *m = *o
         *geom = *m\geom
         *scn\nbpolygons + *geom\nbpolygons
@@ -586,8 +603,8 @@ Module Scene
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
     For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValue(*scn\objects,i)
-      If *o\type = Object3D::#Object3D_Polymesh
+      *o = CArray::GetValuePtr(*scn\objects,i)
+      If *o\type = Object3D::#Polymesh
         *m = *o
          *geom = *m\geom
         *scn\nbtriangles + *geom\nbtriangles
@@ -735,6 +752,7 @@ Module Scene
     Protected *model.Model::Model_t
     Protected i
     
+    Signal::Trigger(*Me\on_delete, Signal::#SIGNAL_TYPE_PING)
     Root::Delete(*Me\root)
     Selection::Delete(*Me\selection)
     CArray::Delete(*Me\models)
@@ -750,7 +768,7 @@ Module Scene
     FreeMemory( *Me )
     
     Scene::*current_scene = #Null
-    PostEvent(Globals::#EVENT_GRAPH_CHANGED)
+   
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -791,6 +809,14 @@ Module Scene
     CArray::AppendPtr(*Me\lights,*light)
     Object3D::AddChild(*Me\root,*light)
     
+    ; ---[ Signals ] ---------------------------------------------------------
+    *Me\on_new = Object::NewSignal(*Me, "OnNew")
+    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_time = Object::NewSignal(*Me, "OnTime")
+    *Me\on_edit = Object::NewSignal(*Me, "OnEdit")
+    *Me\on_create = Object::NewSignal(*Me, "OnCreate")
+    
     ProcedureReturn( *Me )
   EndProcedure
   
@@ -799,7 +825,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 800
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 547
+; FirstLine = 503
 ; Folding = -------
 ; EnableXP

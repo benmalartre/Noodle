@@ -45,56 +45,41 @@ EndDeclareModule
 Module MatrixArrayNode
   UseModule Math
   Procedure Init(*node.MatrixArrayNode_t)
-
+    
+    Node::AddInputPort(*node,"Count", Attribute::#ATTR_TYPE_INTEGER)
+    Node::AddInputPort(*node,"Mode", Attribute::#ATTR_TYPE_ENUM)
     Node::AddOutputPort(*node,"Matrix",Attribute::#ATTR_TYPE_MATRIX4)
 
-    
+    Node::PortAffectByName(*node, "Count", "Matrix")
+    Node::PortAffectByName(*node, "Mode", "Matrix")
     *node\label = "Matrix Array"
   EndProcedure
   
   Procedure Evaluate(*node.MatrixArrayNode_t)
     
-      
-     
-      Protected nb = 12
-      SelectElement(*node\outputs(),0)
-      Protected *output.NodePort::NodePort_t = *node\outputs()
-      Protected *m_out.CArray::CArrayM4F32 = *output\value
-      CArray::SetCount(*m_out,nb)
+    FirstElement(*node\inputs())
+    Define *count.CArray::CarrayInt = NodePort::AcquireInputData(*node\inputs())
+    Define numMatrices = Carray::GetValueI(*count, 0)
+    
+
+    SelectElement(*node\outputs(),0)
+    Protected *output.NodePort::NodePort_t = *node\outputs()
+    Protected *matricesArray.CArray::CArrayM4F32 = NodePort::AcquireOutputData(*output)
+    If numMatrices
+      CArray::SetCount(*matricesArray,numMatrices)
       
       Protected i
-
-
       Protected scl.v3f32,ori.q4f32,pos.v3f32
       Vector3::Set(scl,1,1,1)
       Quaternion::SetIdentity(ori)
-      
-      For i=0 To nb - 1
-        Vector3::Set(pos,i,0,0)
-        Transform::SetMatrixFromSRT(CArray::GetValue(*m_out,i),@scl,@ori,@pos)
-
+      For i=0 To numMatrices - 1
+        Vector3::Set(pos,0,i,0)
+        Transform::SetMatrixFromSRT(CArray::GetValue(*matricesArray,i),scl,ori,pos)
       Next
-
-    ; ;   Protected *of.CArrayF32 = NodePort::AcquireOutputData(*output)
-    ; ;   Protected m_max = *of\GetCount();\Max(m_x\GetCount(),Max(m_y\GetCount(),m_z\GetCount()))
-    ;   
-    ;   Protected m_max = x_nb
-    ;   If y_nb>m_max : m_max = y_nb :EndIf
-    ;   If z_nb>m_max : m_max = z_nb :EndIf
-    ;   
-    ;   Protected m_out.CArrayV3F32 = NodePort::AcquireOutputData(*output)
-    ;   m_out\SetCount(m_max)
-    ;   
-    ;   Debug ">>>>>>>>>>>>>>>>>>> SRTToMatrixNode : Out Data Size : "+Str(m_out\GetCount())
-    ;   
-    ;   Protected i=0
-    ;   Protected v.v3f32
-    ;   For i=0 To m_max-1
-    ;     Vector3_Set(@v,m_x\GetValue(Min(i,x_nb)),m_y\GetValue(Min(i,y_nb)),m_z\GetValue(Min(i,z_nb)))
-    ;     m_out\SetValue(i,@v)
-    ;     Vector3_Log(@v,"-----> ")
-    ;   Next i
-     
+    Else
+      CArray::SetCount(*matricesArray, 0)
+    EndIf
+    
   EndProcedure
   
   Procedure Terminate(*node.MatrixArrayNode_t)
@@ -136,7 +121,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 65
+; CursorPosition = 81
+; FirstLine = 33
 ; Folding = --
 ; EnableXP
