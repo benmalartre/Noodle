@@ -147,6 +147,8 @@ CompilerIf (#USE_GLFW = #True)
   UseModule GLFW
 CompilerEndIf
 
+  #DEFAULT_WIDTH = 1024
+  #DEFAULT_HEIGHT = 720
   Structure Application_t
     name.s
     glfw.b
@@ -169,6 +171,7 @@ CompilerEndIf
     framecount.i
     lasttime.l
     dirty.b
+    dummy.i
   EndStructure
   
 ;   Enumeration 
@@ -230,9 +233,50 @@ CompilerEndIf
   ; Size Window Callback
   ;-----------------------------------------------------------------------------
   Procedure SizeWindowCallback()
-      ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
-    EndProcedure
+    ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
+  EndProcedure
     
+  Procedure CreateHiddenOpenGLContext(*Me.Application_t)
+    
+    *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+    ; Allocate Pixel Format Object
+    Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+    ; Set Pixel Format Attributes
+    Define pfa.NSOpenGLPixelFormatAttribute
+    With pfa
+      \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
+      \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
+      \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+      \v[6] = #NSOpenGLPFADoubleBuffer
+      \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
+      \v[8] = #NSOpenGLPFANoRecovery
+      \v[9] = #Null
+    EndWith
+
+    ; Choose Pixel Format
+    CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+    ; Allocate OpenGL Context
+    Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+    ; Create OpenGL Context
+    CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+    ; Set Current Context
+    CocoaMessage( 0, ctx, "makeCurrentContext" )
+    ; Swap Buffers
+    CocoaMessage( 0, ctx, "flushBuffer" )
+    ; Associate Context With OpenGLGadget NSView
+    *Me\dummy = CanvasGadget(#PB_Any,0,0,0,0,#PB_Canvas_Keyboard)
+    CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
+    *Me\context\ID = ctx
+      
+    CompilerElse
+      *Me\dummy = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
+      SetGadgetAttribute(*Me\dummy,#PB_OpenGL_SetContext,#True)
+      *Me\context = GLContext::New(0,0,#True, *Me\window)
+      GLContext::Setup(*Me\context)
+
+    CompilerEndIf
+  EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Constructor
@@ -267,6 +311,7 @@ CompilerEndIf
 
       *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
+      *app\dummy = CreateHiddenOpenGLContext(*app)
       
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
@@ -669,8 +714,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 655
-; FirstLine = 612
+; CursorPosition = 240
+; FirstLine = 220
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

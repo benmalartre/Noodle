@@ -134,9 +134,7 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
-     
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)     
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -236,8 +234,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 173
+; CursorPosition = 136
+; FirstLine = 117
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

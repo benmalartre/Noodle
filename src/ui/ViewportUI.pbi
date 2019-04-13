@@ -38,7 +38,7 @@ DeclareModule ViewportUI
   Interface IViewportUI Extends IUI
   EndInterface
 
-  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
+  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Init(*Me.ViewportUI_t)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
@@ -76,7 +76,7 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; New
   ;------------------------------------------------------------------
-  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
+  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     
     Object::INI(ViewportUI)
@@ -91,44 +91,45 @@ Module ViewportUI
     *Me\sizX = w
     *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *Me\context = GLContext::New(w,h,#False)
+    *Me\context = *ctx
     *Me\camera = *camera
 
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      ; Allocate Pixel Format Object
-      Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-      ; Set Pixel Format Attributes
-      Define pfa.NSOpenGLPixelFormatAttribute
-      With pfa
-        \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-        \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-        \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-        \v[6] = #NSOpenGLPFADoubleBuffer
-        \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-        \v[8] = #NSOpenGLPFANoRecovery
-        \v[9] = #Null
-      EndWith
-
-      ; Choose Pixel Format
-      CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-      ; Allocate OpenGL Context
-      Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-      ; Create OpenGL Context
-      CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-      ; Set Current Context
-      CocoaMessage( 0, ctx, "makeCurrentContext" )
-      ; Swap Buffers
-      CocoaMessage( 0, ctx, "flushBuffer" )
-      ; Associate Context With OpenGLGadget NSView
-      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
-      CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
-      *Me\context\ID = ctx
-      
-    CompilerElse
-      *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
-      SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-
-    CompilerEndIf
+;     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+;       ; Allocate Pixel Format Object
+;       Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+;       ; Set Pixel Format Attributes
+;       Define pfa.NSOpenGLPixelFormatAttribute
+;       With pfa
+;         \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
+;         \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
+;         \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+;         \v[6] = #NSOpenGLPFADoubleBuffer
+;         \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
+;         \v[8] = #NSOpenGLPFANoRecovery
+;         \v[9] = #Null
+;       EndWith
+; 
+;       ; Choose Pixel Format
+;       CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+;       ; Allocate OpenGL Context
+;       Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+;       ; Create OpenGL Context
+;       CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+;       ; Set Current Context
+;       CocoaMessage( 0, ctx, "makeCurrentContext" )
+;       ; Swap Buffers
+;       CocoaMessage( 0, ctx, "flushBuffer" )
+;       ; Associate Context With OpenGLGadget NSView
+;       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
+;       CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) )
+;       *Me\context\ID = ctx
+;       
+;     CompilerElse
+;       *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
+;       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
+; 
+;     CompilerEndIf
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
     
     CloseGadgetList()
 
@@ -387,7 +388,6 @@ Module ViewportUI
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
-    
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -729,7 +729,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 160
+; CursorPosition = 389
+; FirstLine = 383
 ; Folding = -----
 ; EnableXP

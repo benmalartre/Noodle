@@ -17,6 +17,7 @@ XIncludeFile "OpenGL.pbi"
 XIncludeFile "OpenGLExt.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Texture.pbi"
+XIncludeFile "../core/Math.pbi"
 
 DeclareModule FTGL
   UseModule OpenGL
@@ -468,8 +469,7 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 151
+; CursorPosition = 19
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
