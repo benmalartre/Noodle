@@ -240,6 +240,7 @@ CompilerEndIf
     
     *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      MessageRequester("BUILD A FUCKIN MAC OS CTXT", "GRRR")
     ; Allocate Pixel Format Object
     Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
     ; Set Pixel Format Attributes
@@ -308,6 +309,7 @@ CompilerEndIf
     CompilerElse
       *app\manager = ViewManager::New(name,0,0,width,height,options)
       *app\window = *app\manager\window
+      CreateHiddenOpenGLContext(*app)
 
       *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
@@ -713,9 +715,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 220
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 242
+; FirstLine = 231
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL
