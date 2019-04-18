@@ -75,7 +75,7 @@ Globals::Init()
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
      *app\context = *viewport\context
      
     View::SetContent(*app\manager\main,*viewport)
@@ -133,7 +133,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 68
+; CursorPosition = 77
+; FirstLine = 61
 ; Folding = -
 ; EnableXP

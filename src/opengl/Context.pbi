@@ -48,9 +48,12 @@ DeclareModule GLContext
     Map *shaders.Program::Program_t()
   EndStructure
   
-  Declare New(width.i, height.i, useGLFW.b=#False, *window=#Null)
+  Declare New(width.i, height.i, *context=#Null)
   Declare Setup(*Me.GLContext_t)
+  Declare Copy(*Me.GLContext_t, *shared.GLContext_t)
   Declare Delete(*Me.GLContext_t)
+  
+  Global *MAIN_GL_CTXT.GLContext_t
 EndDeclareModule
 
 ; ----------------------------------------------------------------------------
@@ -74,62 +77,109 @@ Module GLContext
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(width.i, height.i, useGLFW.b=#False, *window=#Null)
+  Procedure.i New(width.i, height.i, *context=#Null)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
     
-    *Me\useGLFW = useGLFW
+    *Me\useGLFW = #USE_GLFW
     *Me\width = width
     *Me\height = height
     *Me\ID = 0
     *Me\writer = #Null
     
     CompilerIf (#USE_GLFW = #True)
-      If useGLFW
-        If *window
-          *Me\window = *window
-          GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
-        Else
-          Protected *monitor.GLFW::GLFWmonitor  = GLFW::glfwGetPrimaryMonitor()
-          Protected *mode.GLFW::GLFWvidmode  = GLFW::glfwGetVideoMode(*monitor)
-          
-          GLFW::glfwWindowHint(GLFW::#GLFW_RED_BITS,*mode\RedBits)
-          GLFW::glfwWindowHint(GLFW::#GLFW_BLUE_BITS,*mode\BlueBits)
-          GLFW::glfwWindowHint(GLFW::#GLFW_GREEN_BITS,*mode\GreenBits)
-      
-          Protected title.s = "GLFW - "
-  
-          If Not #USE_LEGACY_OPENGL
-            GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MAJOR, 3)
-            GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MINOR, 3)
-            GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
-            GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_PROFILE, GLFW::#GLFW_OPENGL_CORE_PROFILE)
-            GLFW::glfwWindowHint(GLFW::#GLFW_STENCIL_BITS, 8)
-            GLFW::glfwWindowHint(GLFW::#GLFW_SAMPLES, 4)
-            title + "CORE"
-          Else
-            title + "LEGACY"
-          EndIf
-        
-          *Me\window = GLFW::glfwCreateWindow(*mode\Width,*mode\Height,"GLFW",*monitor,#Null)
-    
-          
-          If Not *Me\window
-            Delete(*Me)
-            MessageRequester("Noodle", "Fail To Initialize GLFW OpenGL Context!!")
-            ProcedureReturn #False
-          EndIf
-        
-          ; Connect Backward
-          GLFW::glfwSetWindowUserPointer(*Me\window,*Me)
-          GLFW::glfwMakeContextCurrent(*Me\window)
-          GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
-        EndIf
-    
+      If *context
+        *Me\window = *context
+        GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
       Else
-        *Me\window = #Null
+        Protected *monitor.GLFW::GLFWmonitor  = GLFW::glfwGetPrimaryMonitor()
+        Protected *mode.GLFW::GLFWvidmode  = GLFW::glfwGetVideoMode(*monitor)
+        
+        GLFW::glfwWindowHint(GLFW::#GLFW_RED_BITS,*mode\RedBits)
+        GLFW::glfwWindowHint(GLFW::#GLFW_BLUE_BITS,*mode\BlueBits)
+        GLFW::glfwWindowHint(GLFW::#GLFW_GREEN_BITS,*mode\GreenBits)
+    
+        Protected title.s = "GLFW - "
+
+        If Not #USE_LEGACY_OPENGL
+          GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MAJOR, 3)
+          GLFW::glfwWindowHint(GLFW::#GLFW_CONTEXT_VERSION_MINOR, 3)
+          GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_FORWARD_COMPAT, #GL_TRUE)
+          GLFW::glfwWindowHint(GLFW::#GLFW_OPENGL_PROFILE, GLFW::#GLFW_OPENGL_CORE_PROFILE)
+          GLFW::glfwWindowHint(GLFW::#GLFW_STENCIL_BITS, 8)
+          GLFW::glfwWindowHint(GLFW::#GLFW_SAMPLES, 4)
+          title + "CORE"
+        Else
+          title + "LEGACY"
+        EndIf
+      
+        *Me\window = GLFW::glfwCreateWindow(*mode\Width,*mode\Height,"GLFW",*monitor,#Null)
+  
+        
+        If Not *Me\window
+          Delete(*Me)
+          MessageRequester("Noodle", "Fail To Initialize GLFW OpenGL Context!!")
+          ProcedureReturn #False
+        EndIf
+      
+        ; Connect Backward
+        GLFW::glfwSetWindowUserPointer(*Me\window,*Me)
+        GLFW::glfwMakeContextCurrent(*Me\window)
+        GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
       EndIf
+    CompilerElse
+      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+        ; Allocate Pixel Format Object
+        Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+        ; Set Pixel Format Attributes
+        Define pfa.NSOpenGLPixelFormatAttribute
+        With pfa
+          \v[0] = #NSOpenGLPFAColorSize          
+          \v[1] = 24
+          \v[2] = #NSOpenGLPFAAlphaSize          
+          \v[3] =  8
+          \v[4] = #NSOpenGLPFAOpenGLProfile      
+          \v[5] = #NSOpenGLProfileVersion3_2Core  ; will give 4.1 version (or more recent) if available
+          \v[6] = #NSOpenGLPFADoubleBuffer
+          \v[7] = #NSOpenGLPFAAccelerated         ; we also want OpenCL available
+          \v[8] = #NSOpenGLPFANoRecovery
+          \v[9] = #Null
+        EndWith
+    
+        ; Choose Pixel Format
+        CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+        ; Allocate OpenGL Context
+        Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+        ; Create OpenGL Context
+        CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+        ; Set Current Context
+        CocoaMessage( 0, ctx, "makeCurrentContext" )
+        ; Swap Buffers
+        CocoaMessage( 0, ctx, "flushBuffer" )
+        
+        ; Associate Context With OpenGLGadget NSView
+;           *Me\gadgetID = CanvasGadget(#PB_Any,0,0,0,0)
+;           CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) )
+        *Me\ID = ctx
+      CompilerElse
+        *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+        SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+      CompilerEndIf
+      
+      ; load extensions and setup shaders
+      If Not *context
+        Setup(*Me)
+        *MAIN_GL_CTXT = *Me
+      Else
+        SetGadgetAttribute(*MAIN_GL_CTXT\ID, #PB_OpenGL_SetContext, #True)
+        Define hglrc1 = wglGetCurrentContext_()
+        SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
+        Define hglrc2 = wglGetCurrentContext_()
+        wglShareLists_(hglrc1, hglrc2)
+        Copy(*Me, *context)
+      EndIf
+      
     CompilerEndIf
     
     
@@ -176,6 +226,16 @@ Module GLContext
 
   EndProcedure
   
+  ;---------------------------------------------
+  ;  Copy Shaders
+  ;---------------------------------------------
+  Procedure Copy(*Me.GLContext_t, *shared.GLContext_t)
+    CopyMap(*shared\shaders(), *Me\shaders())
+    ; Build Font Writer
+    *Me\writer = FTGL::New()
+
+  EndProcedure
+  
   
 EndModule
 
@@ -186,8 +246,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 1
+; CursorPosition = 55
+; FirstLine = 2
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

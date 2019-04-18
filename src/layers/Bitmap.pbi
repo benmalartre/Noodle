@@ -24,6 +24,7 @@ DeclareModule LayerBitmap
   Declare Clean(*layer.LayerBitmap_t)
   Declare Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
+  Declare SetBitmapFromSource(*layer.LayerBitmap_t, filename.s)
   
   DataSection
     LayerBitmapVT:
@@ -41,7 +42,7 @@ Module LayerBitmap
   ; Setup
   ;------------------------------------
   Procedure Setup(*layer.LayerBitmap_t)
-    
+    Framebuffer::Check(*layer\buffer)
   EndProcedure
   
   ;------------------------------------
@@ -65,12 +66,22 @@ Module LayerBitmap
     
   EndProcedure
   
+  Procedure SetBitmapFromSource(*layer.LayerBitmap_t, filename.s)
+    Protected *texture.Texture::Texture_t = Texture::NewFromSource(filename)
+    *layer\bitmap = *texture\tex  
+  EndProcedure
+  
+  Procedure SetBitmapFromMemory(*layer.LayerBitmap_t, *datas)
+    
+  EndProcedure
+  
+  
   ;------------------------------------
   ; Draw
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
     Debug " --------------------------- Draw Bitmap Layer -----------------------------------"
-    
+
     Protected shader = *ctx\shaders("bitmap")\pgm
     glUseProgram(shader)
     
@@ -128,7 +139,8 @@ Module LayerBitmap
     Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
-  
+    
+    Debug "NUM SHJADERS : "+Str(MapSize(*ctx\shaders()))
     Layer::AddScreenSpaceQuad(*Me,*ctx)
     
     ProcedureReturn *Me
@@ -137,8 +149,8 @@ Module LayerBitmap
   
   Class::DEF(LayerBitmap)
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 103
-; FirstLine = 96
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

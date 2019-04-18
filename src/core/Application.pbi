@@ -238,7 +238,7 @@ CompilerEndIf
     
   Procedure CreateHiddenOpenGLContext(*Me.Application_t)
     *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
-    *Me\context = GLContext::New(0,0,#True, *Me\window)
+    *Me\context = GLContext::New(0,0,#Null)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       MessageRequester("BUILD A FUCKIN MAC OS CTXT", "GRRR")
     ; Allocate Pixel Format Object
@@ -714,9 +714,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 173
-; FirstLine = 149
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 240
+; FirstLine = 227
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

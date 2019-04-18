@@ -1,7 +1,7 @@
 XIncludeFile "../core/Math.pbi"
 
 XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile "../opengl/ContextShared.pbi"
+XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../opengl/ScreenQuad.pbi"
 
 XIncludeFile "../objects/Object3D.pbi"
@@ -725,8 +725,7 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 12
-; FirstLine = 6
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 3
 ; Folding = -----
 ; EnableXP
