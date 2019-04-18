@@ -4,17 +4,15 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "Object3D.pbi"
-XIncludeFile "../graph/Tree.pbi"
 
 DeclareModule Root
   UseModule Math
   UseModule OpenGL
   ; ----------------------------------------------------------------------------
-  ;  CCamera Instance
+  ;  Root Instance
   ; ----------------------------------------------------------------------------
   
   Structure Root_t Extends Object3D::Object3D_t 
-    *tree.Tree::Tree_t ; Hierarchy graph tree
   EndStructure
   
   Interface IRoot Extends Object3D::IObject3D
@@ -39,7 +37,7 @@ DeclareModule Root
 EndDeclareModule
 
 ; ============================================================================
-;  IMPLEMENTATION ( CRoot )
+;  IMPLEMENTATION ( Root )
 ; ============================================================================
 Module Root
   UseModule Math
@@ -54,14 +52,11 @@ Module Root
     Protected *Me.Root_t = AllocateMemory( SizeOf(Root_t) )
     InitializeStructure(*Me,Root_t)
     
-;     *Me\VT = ?RootVT
-;     *Me\classname = "ROOT"
     Object::INI(Root)
     
     ; ---[ Init CObject Base Class ]--------------------------------------------
     *Me\name = name
     *Me\type = Object3D::#Root
-    *Me\tree = #Null
     *Me\visible = #True
     *Me\stack = Stack::New()
     *Me\type = Object3D::#Root
@@ -81,20 +76,16 @@ Module Root
   ;  DESTRUCTOR
   ; ============================================================================
   ;{
-  ; ---[ _Free ]----------------------------------------------------------------
   Procedure Delete( *Me.Root_t )
     Protected child.Object3D::IObject3D
     ; ---[ Delete Childrens ]---------------------------------------------------
     ForEach *Me\children()
-      Debug "CHILD NAME : "+*Me\children()\name
-      Debug "CHILD CLASS : "+*Me\children()\class\name
       child = *Me\children()
       child\Delete()
     Next
   
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,Root_t)
-    FreeMemory( *Me )
+    Object::TERM(Root)
   
   EndProcedure
 
@@ -147,9 +138,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 58
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 81
+; FirstLine = 69
 ; Folding = --
 ; EnableThread
 ; EnableXP

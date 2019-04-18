@@ -1,21 +1,47 @@
-﻿DeclareModule Fibonacci
-  Structure Fibonacci_t
-    N.i
-    *P
+﻿XIncludeFile "Math.pbi"
+XIncludeFile "Array.pbi"
+DeclareModule Fibonacci
+  Structure Seed_t
+    radius.f
+    angle.f
   EndStructure
   
-  Declare Compute(*Me.Fibonacci_t, n.i)
-    
+  Structure Fibonacci_t
+    N.i
+    *positions.CArray::CArrayV3F32
+    *sizes.CArray::CArrayFloat
+  EndStructure
+  
+  Declare New(N.i)
+  Declare Delete(*Me.Fibonacci_t)
+  Declare ComputeTable(N.i)
+  
+  Declare Grid(*Me.Fibonacci_t)
+  Declare Disc(*Me.Fibonacci_t)
+  Declare Sphere(*Me.Fibonacci_t)
 EndDeclareModule
 
 Module Fibonacci
+  Procedure New(N.i)
+    Protected *Me.Fibonacci_t = AllocateMemory(SizeOf(Fibonacci_t))
+    *Me\positions = CArray::newCArrayV3F32()
+    *Me\sizes = CArray::newCArrayFloat()
+    *Me\N = N
+    ProcedureReturn *Me
+  EndProcedure
   
-  Procedure Compute(*Me.Fibonacci_t, n.i)
-    *Me\N = n
-    *Me\P = AllocateMemory(N*8)
-    
+  Procedure Delete(*Me.Fibonacci_t)
+    CArray::Delete(*Me\positions)
+    CArray::Delete(*Me\sizes)
+    FreeMemory(*Me)
+  EndProcedure
+  
+  ; Table (fibonacci sequence)
+  ;----------------------------------------------------------------------
+  Procedure ComputeTable(N.i)
+    Define *P = AllocateMemory(N*8)
     Define c, first=0, second=1, nxt
-    For c=0 To n-1
+    For c=0 To N-1
       If c<=1
         nxt = c
       Else
@@ -23,38 +49,88 @@ Module Fibonacci
         first = second
         second = nxt
       EndIf
-      PokeI(*Me\P + c * 8, nxt)
+      PokeI(*P + c * 8, nxt)
+    Next
+    ProcedureReturn *P
+  EndProcedure
+  
+  ; Grid (fibonacci grid)
+  ;----------------------------------------------------------------------
+  Procedure Grid(*Me.Fibonacci_t)
+    Define *table = ComputeTable(*Me\N)
+    CArray::SetCount(*Me\positions, *Me\N)
+    CArray::SetCount(*Me\sizes, *Me\N)
+    Define *p.Math::v3f32
+    Define x.i=0, y.i=0
+    ;Define sp.Math::v2f32, ep.Math::v2f32
+    For i=1 To *Me\N-2
+      c = Int(Mod(i, 4))
+      u = PeekI(*table+i*8)
+      v = PeekI(*table+(i-1)*8)
+      w = PeekI(*table+(i+1)*8)
+      *p = Carray::GetValue(*Me\positions, i)
+      Vector3::Set(*p, x, 0, y)
+      Select c
+        Case 0
+          x - v
+          y - w
+        Case 1
+          x - w
+        Case 2
+          y + u
+        Case 3
+          x + u
+          y - v
+      EndSelect
+      
+      CArray::SetValueF(*Me\sizes, i, u)
+    Next
+    
+    FreeMemory(*table)
+  EndProcedure
+  
+  ; Disc (sunflower head pattern on a disk)
+  ;----------------------------------------------------------------------
+  Procedure Disc(*Me.Fibonacci_t)
+    Define r.f, theta.f
+    Define *p.Math::v3f32
+    CArray::SetCount(*Me\positions, *Me\N)
+    CArray::SetCount(*Me\sizes, *Me\N)
+    
+    For i= 0 To *Me\N - 1
+      *p = CArray::GetValue(*Me\positions, i)
+      r = Sqr((i+0.5)/*Me\N)
+      theta = Radian(Math::#GOLDEN_ANGLE * (i+0.5))
+      Vector3::Set(*p, (r * Cos(theta)), 0, (r * Sin(theta)))
+      CArray::SetValueF(*Me\sizes, i, 1)
+    Next
+  EndProcedure
+  
+  ; Sphere (sunflower head pattern on a sphere)
+  ;----------------------------------------------------------------------
+  Procedure Sphere(*Me.Fibonacci_t)
+    Define phi.f, theta.f
+    Define *p.Math::v3f32
+    CArray::SetCount(*Me\positions, *Me\N)
+    CArray::SetCount(*Me\sizes, *Me\N)
+    
+    For i= 0 To *Me\N - 1
+      *p = CArray::GetValue(*Me\positions, i)
+      phi = ACos(1 - 2*(i+0.5)/*Me\N)
+      theta = Radian(Math::#GOLDEN_ANGLE * (i+0.5))
+
+      Vector3::Set(*p,
+                   Cos(theta) * Sin(phi),
+                   Sin(theta) * Sin(phi),
+                   Cos(phi))
+      
+      CArray::SetValueF(*Me\sizes, i, 1)
     Next
   EndProcedure
   
 EndModule
-
-Define N = 1024
-Define fib.Fibonacci::Fibonacci_t
-Fibonacci::Compute(fib, N)
-
-Define win = OpenWindow(#PB_Any, 0,0,800,800,"Fibonacci")
-Define can = CanvasGadget(#PB_Any,0,0,800,800)
-
-StartVectorDrawing(CanvasVectorOutput(can))
-
-AddPathBox(0,0,800,800)
-VectorSourceColor(RGBA(180,180,180,255))
-FillPath()
-
-MovePathCursor(400,400)
-For i=1 To N-1
-  Define f = 65000 >> PeekI(fib\P+i*8) 
-  AddPathLine(i, f+400)
-Next
-VectorSourceColor(RGBA(255,0,0,255))
-StrokePath(1)
-StopVectorDrawing()
-
-
-Repeat
-  Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 37
-; Folding = -
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 125
+; FirstLine = 98
+; Folding = --
 ; EnableXP

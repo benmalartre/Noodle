@@ -211,11 +211,11 @@ Module CubeMap
     LoadSide(*Me,#GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,*Me\bottom)
     LoadSide(*Me,#GL_TEXTURE_CUBE_MAP_POSITIVE_Y,*Me\top)
     
-    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_MAG_FILTER, #GL_LINEAR);
-    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_MIN_FILTER, #GL_LINEAR);
-    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_R, #GL_CLAMP_TO_EDGE);
-    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_EDGE);
-    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_EDGE);
+    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_MAG_FILTER, #GL_LINEAR)
+    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_MIN_FILTER, #GL_LINEAR)
+    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_R, #GL_CLAMP_TO_EDGE)
+    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_EDGE)
+    glTexParameteri (#GL_TEXTURE_CUBE_MAP, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_EDGE)
     
   EndProcedure
   
@@ -261,9 +261,8 @@ Module CubeMap
 
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 252
-; FirstLine = 210
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 215
+; FirstLine = 195
 ; Folding = --
 ; EnableXP

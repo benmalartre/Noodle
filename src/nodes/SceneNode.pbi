@@ -55,35 +55,35 @@ Procedure RemoveObjectNode(*tree.Tree::Tree_t,*node.SceneNode_t)
     Tree::RemoveNode(*tree,*node)
 EndProcedure
 
-Procedure RecurseBuildTree(*tree.Tree::Tree_t,*obj.Object3D::Object3D_t,x,y)
-  Protected nx, ny,i
-  Protected nbc = ListSize(*obj\children())
-  Protected color = RGB(30,120,60)
-  Select *obj\type
-    Case Object3D::#Model
-      color = RGB(30,120,60)
-    Case Object3D::#Polymesh
-      color = RGB(60,150,80)
-  EndSelect
-  
-  Protected *node.Node::Node_t = Tree::AddNode(*tree,"Object3DNode",x,y,100,50,color)
-  *node\label = *obj\name
-  
-  Protected *scenenode.SceneNode_t = *node
-  *scenenode\object = *obj
-  
-
-  Protected *child.Object3D::Object3D_t
-  nx = x-200
-  ny = y-(nbc/2)*100
-  ForEach *obj\children()
-    *child = *obj\children()
-    Debug "Recurse Build Tree for "+*child\name
-    RecurseBuildTree(*tree,*child,nx,ny)
-    ny+100
-  Next
-  
-EndProcedure
+; Procedure RecurseBuildTree(*tree.Tree::Tree_t,*obj.Object3D::Object3D_t,x,y)
+;   Protected nx, ny,i
+;   Protected nbc = ListSize(*obj\children())
+;   Protected color = RGB(30,120,60)
+;   Select *obj\type
+;     Case Object3D::#Model
+;       color = RGB(30,120,60)
+;     Case Object3D::#Polymesh
+;       color = RGB(60,150,80)
+;   EndSelect
+;   
+;   Protected *node.Node::Node_t = Tree::AddNode(*tree,"Object3DNode",x,y,100,50,color)
+;   *node\label = *obj\name
+;   
+;   Protected *scenenode.SceneNode_t = *node
+;   *scenenode\object = *obj
+;   
+; 
+;   Protected *child.Object3D::Object3D_t
+;   nx = x-200
+;   ny = y-(nbc/2)*100
+;   ForEach *obj\children()
+;     *child = *obj\children()
+;     Debug "Recurse Build Tree for "+*child\name
+;     RecurseBuildTree(*tree,*child,nx,ny)
+;     ny+100
+;   Next
+;   
+; EndProcedure
 
 Procedure Setup( *node.SceneNode_t,*root.Root::Root_t )
   Protected x,y,w,h
@@ -100,7 +100,7 @@ Procedure Setup( *node.SceneNode_t,*root.Root::Root_t )
   For i=0 To nbc-1
     SelectElement(*root\children(),i)
     *child = *root\children()
-    RecurseBuildTree(*root\tree,*child,x,y)
+;     RecurseBuildTree(*root\tree,*child,x,y)
   Next i
   
   
@@ -160,9 +160,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 58
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 102
+; FirstLine = 72
 ; Folding = ---
 ; EnableXP

@@ -6,12 +6,10 @@ XIncludeFile "../core/Array.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../opengl/Shader.pbi"
-XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
 XIncludeFile "Root.pbi"
 XIncludeFile "Model.pbi"
-XIncludeFile "Scene.pbi"
 XIncludeFile "Polymesh.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "Light.pbi"
@@ -825,8 +823,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 547
-; FirstLine = 503
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 24
+; FirstLine = 20
 ; Folding = -------
 ; EnableXP

@@ -250,7 +250,7 @@ Module LayerDefault
  
   
   ;---------------------------------------------------
-  ; Create
+  ; COnstructor
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
     Protected *Me.LayerDefault_t = AllocateMemory(SizeOf(LayerDefault_t))
@@ -280,8 +280,8 @@ Module LayerDefault
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 258
-; FirstLine = 222
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 270
+; FirstLine = 246
 ; Folding = --
 ; EnableXP

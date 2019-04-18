@@ -9,7 +9,7 @@ EndImport
 
 
 Procedure GLCheckError(message.s)
-    Protected err = glGetError()
+  Protected err = glGetError()
     If err
       While err <> #GL_NO_ERROR
         Protected error.s
@@ -24,6 +24,12 @@ Procedure GLCheckError(message.s)
             error = " ---> OUT OF MEMORY"
           Case #GL_INVALID_FRAMEBUFFER_OPERATION
             error = " ---> INVALID FRAMEBUFFER OPERATION"
+          Case #GL_STACK_UNDERFLOW
+            error = " ---> STACK UNDERFLOW"
+          Case #GL_STACK_OVERFLOW
+            error = " ---> STACK OVERFLOW"
+          Default 
+            error = "###"+Str(err)+"###"
         EndSelect  
         Debug "[OpenGL Error] "+message+error
         err = glGetError()
@@ -45,9 +51,9 @@ Repeat
   SetGadgetAttribute(gadget,#PB_OpenGL_FlipBuffers,#True)
   Delay(100)
 Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 7
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 31
+; FirstLine = 11
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -299,23 +299,21 @@ Module Topology
   ; --------------------------------------------------------------------------------- 
   Procedure MergeArray(*o.Topology_t,*topos.CArray::CArrayPtr)
     Protected nbt = CArray::GetCount(*topos)
-    Protected Dim v_offsets.l(nbt)
-    Protected Dim f_offsets.l(nbt)
-    Protected Dim f_counts.l(nbt)
+    Protected *v_offsets = AllocateMemory(nbt*4)
+    Protected *f_offsets =  AllocateMemory(nbt*4)
+    Protected *f_counts = AllocateMemory(nbt*4)
 
     Protected v_offset = 0
     Protected f_offset = 0
     Protected t
     Protected *topo.Topology_t
-    Protected v.v3f32
     Protected f.l
     Protected i
     For t=0 To nbt-1
       *topo = CArray::GetValuePtr(*topos ,t)
-
-      v_offsets(t) = v_offset
-      f_offsets(t) = f_offset
-      f_counts(t) = CArray::GetCount(*topo\faces)
+      PokeL(*v_offsets +t*4, v_offset)
+      PokeL(*f_offsets +t*4, f_offset)
+      PokeL(*f_counts + t*4, CArray::GetCount(*topo\faces))
       v_offset + CArray::GetCount(*topo\vertices)
       f_offset + CArray::GetCount(*topo\faces)
     Next
@@ -331,14 +329,17 @@ Module Topology
       Define offsetvertices = OffsetOf(Geometry::Topology_t\vertices)
       Define offsetfaces = OffsetOf(Geometry::Topology_t\faces)
       Define *outfaces = *o\faces\data
+      
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
-        CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
+        CopyMemory(*topo\vertices\data,
+                   CArray::GetPtr(*o\vertices,PeekL(*v_offsets+t*4)),
+                   CArray::GetCount(*topo\vertices)*SizeOf(v3f32))
       Next
-     
+      
       ! mov rcx, [p.v_nbt]                      ; load topo count
-      ! mov rax, [p.a_v_offsets]                ; load topo vertices offset
-      ! mov rdx, [p.a_f_counts]                 ; load topo faces count
+      ! mov rax, [p.p_v_offsets]                ; load topo vertices offset
+      ! mov rdx, [p.p_f_counts]                 ; load topo faces count
       ! mov rdi, [p.p_outfaces]                 ; load output faces
       
       ! mov r8, [p.v_offsetdata]                ; load offset to array data
@@ -359,7 +360,7 @@ Module Topology
       !   mov rsi, [r11]                        ; topo\faces\data to src register
       !   mov r14d, [rdx]                       ; load current topo face count
       
-      !   movss xmm0, [eax]                     ; load current topo vertices offset in xmm0
+      !   movdqu xmm0, [rax]                     ; load current topo vertices offset in xmm0
       !   pshufd xmm0, xmm0, 0                  ; shuffle offset, offset, offset, offset
    
       ! loop_merge_topo_array_one_topo:
@@ -388,23 +389,30 @@ Module Topology
       
       For t=0 To nbt-1
         *topo = CArray::GetValuePtr(*topos,t)
-        CopyMemory(*topo\vertices\data,CArray::GetPtr(*o\vertices,v_offsets(t)),CArray::GetCount(*topo\vertices)*SizeOf(v))
+        CopyMemory(*topo\vertices\data,
+                   CArray::GetPtr(*o\vertices,PeekL(*v_offsets + t*4)),
+                   CArray::GetCount(*topo\vertices)*SizeOf(v3f32))
   
         If t=0
-          CopyMemory(*topo\faces\data,CArray::GetPtr(*o\faces,f_offsets(t)),CArray::GetCount(*topo\faces)*SizeOf(f))
+          CopyMemory(*topo\faces\data,
+                     CArray::GetPtr(*o\faces,PeekL(*f_offsets+t*4)),
+                     CArray::GetCount(*topo\faces)*SizeOf(f))
         Else
-          For i=0 To f_counts(t)-1
+          For i=0 To PeekL(*f_counts+t*4)-1
             f = PeekL(*topo\faces\data + 4 * i)
             If f>-2
-              PokeL(*o\faces\data + (i+f_offsets(t))*4, f+v_offsets(t))
+              PokeL(*o\faces\data + (i+PeekL(*f_offsets+t*4))*4, f+PeekL(*v_offsets+t*4))
             Else
-              PokeL(*o\faces\data+ (i+f_offsets(t))*4, -2)
+              PokeL(*o\faces\data+ (i+PeekL(*f_offsets+t*4))*4, -2)
             EndIf
           Next
         EndIf
       Next
     CompilerEndIf
     
+    FreeMemory(*v_offsets)
+    FreeMemory(*f_offsets)
+    FreeMemory(*f_counts)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -914,8 +922,8 @@ Module Topology
  
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 86
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 337
+; FirstLine = 311
 ; Folding = -----
 ; EnableXP

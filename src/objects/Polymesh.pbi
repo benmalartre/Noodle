@@ -2,7 +2,6 @@ XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
@@ -563,8 +562,7 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 527
-; FirstLine = 505
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = ---
 ; EnableXP

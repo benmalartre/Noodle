@@ -99,11 +99,14 @@ Module LayerBitmap
 ;     Layer::WriteImage(*layer,"D:\Projects\RnD\PureBasic\Noodle\pictures\Test.png",#GL_RGBA)
   EndProcedure
   
-  ;------------------------------------
+  ;---------------------------------------------------
   ; Destructor
-  ;------------------------------------
-  Procedure Delete(*layer.LayerBitmap_t)
-    FreeMemory(*layer)
+  ;---------------------------------------------------
+  Procedure Delete(*Me.LayerBitmap_t)
+    Framebuffer::Delete(*Me\buffer)
+    If IsImage(*Me\image) : FreeImage(*Me\image) : EndIf
+    ScreenQuad::Delete(*Me\quad)
+    Object::TERM(LayerBitmap)
   EndProcedure
   
   
@@ -134,9 +137,8 @@ Module LayerBitmap
   
   Class::DEF(LayerBitmap)
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 77
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 103
+; FirstLine = 96
 ; Folding = --
 ; EnableXP

@@ -237,8 +237,8 @@ CompilerEndIf
   EndProcedure
     
   Procedure CreateHiddenOpenGLContext(*Me.Application_t)
-    
     *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
+    *Me\context = GLContext::New(0,0,#True, *Me\window)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       MessageRequester("BUILD A FUCKIN MAC OS CTXT", "GRRR")
     ; Allocate Pixel Format Object
@@ -267,13 +267,13 @@ CompilerEndIf
     CocoaMessage( 0, ctx, "flushBuffer" )
     ; Associate Context With OpenGLGadget NSView
     *Me\dummy = CanvasGadget(#PB_Any,0,0,0,0,#PB_Canvas_Keyboard)
-    CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
+    ;CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
     *Me\context\ID = ctx
+    GLContext::Setup(*Me\context)
       
     CompilerElse
       *Me\dummy = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
       SetGadgetAttribute(*Me\dummy,#PB_OpenGL_SetContext,#True)
-      *Me\context = GLContext::New(0,0,#True, *Me\window)
       GLContext::Setup(*Me\context)
 
     CompilerEndIf
@@ -309,11 +309,10 @@ CompilerEndIf
     CompilerElse
       *app\manager = ViewManager::New(name,0,0,width,height,options)
       *app\window = *app\manager\window
-      CreateHiddenOpenGLContext(*app)
 
       *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
       *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
-      *app\dummy = CreateHiddenOpenGLContext(*app)
+      CreateHiddenOpenGLContext(*app)
       
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
@@ -716,8 +715,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 242
-; FirstLine = 231
+; CursorPosition = 173
+; FirstLine = 149
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

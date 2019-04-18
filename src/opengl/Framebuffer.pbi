@@ -1,8 +1,8 @@
 ﻿XIncludeFile("../libs/OpenGL.pbi")
-; XIncludeFile("../libs/GLFW.pbi")
 XIncludeFile("../libs/OpenGLExt.pbi")
+
 ;====================================================================
-; Framebuffer Module Declaration(Shared)
+; Framebuffer Module Declaration
 ;====================================================================
 
 DeclareModule Framebuffer
@@ -585,9 +585,8 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 339
-; FirstLine = 331
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

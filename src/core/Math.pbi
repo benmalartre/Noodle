@@ -75,6 +75,9 @@ DeclareModule Math
   
   #RAND_MAX = 2147483647                ; according to help for Random()
   
+  #GOLDEN_NUMBER  = 1.6180339887
+  #GOLDEN_ANGLE   = 137.50776405
+  
   #ECHO_PRECISION = 9                   ; precison on debug string
   
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -4369,9 +4372,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2239
-; FirstLine = 2213
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 79
+; FirstLine = 68
 ; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

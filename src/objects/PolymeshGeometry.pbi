@@ -8,7 +8,7 @@ XIncludeFile "../objects/Sample.pbi"
 XIncludeFile "../objects/Topology.pbi"
 XIncludeFile "../objects/Shapes.pbi"
 XIncludeFile "../objects/Location.pbi"
-XIncludeFile "../objects/Object3D.pbi"
+
 ;========================================================================================
 ; PolymeshGeometry Module Declaration
 ;========================================================================================
@@ -2405,8 +2405,7 @@ Module PolymeshGeometry
   Class::DEF( PolymeshGeometry )
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1372
-; FirstLine = 1349
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 10
 ; Folding = ----P5----0-
 ; EnableXP

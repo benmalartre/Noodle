@@ -1474,8 +1474,14 @@ Module OpenGLExt
             error = " ---> INVALID VALUE"
           Case #GL_OUT_OF_MEMORY
             error = " ---> OUT OF MEMORY"
-          ;Case #GL_INVALID_FRAMEBUFFER_OPERATION
-          ;  error = " ---> INVALID FRAMEBUFFER OPERATION"
+          Case #GL_INVALID_FRAMEBUFFER_OPERATION
+            error = " ---> INVALID FRAMEBUFFER OPERATION"
+          Case #GL_STACK_UNDERFLOW
+            error = " ---> STACK UNDERFLOW"
+          Case #GL_STACK_OVERFLOW
+            error = " ---> STACK OVERFLOW"
+          Default 
+            error = "###"+Str(err)+"###"
         EndSelect  
         Debug "[OpenGL Error] "+message+error
         err = OpenGL::glGetError()
@@ -1491,8 +1497,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 15
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 1483
+; FirstLine = 1452
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

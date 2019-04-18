@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/UIColor.pbi"
+XIncludeFile "../core/Vector.pbi"
 XIncludeFile "Types.pbi"
 
 ;===============================================================================
@@ -695,9 +696,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 209
-; FirstLine = 206
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 3
 ; Folding = -------
 ; EnableThread
 ; EnableXP

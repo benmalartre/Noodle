@@ -4,6 +4,7 @@ XIncludeFile "../graph/Port.pbi"
 XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Compound.pbi"
 XIncludeFile "../objects/Object3D.pbi"
+XIncludeFile "../objects/Sampler.pbi"
 
 ; ==================================================================================================
 ; MULTIPLY NODE MODULE DECLARATION
@@ -121,8 +122,7 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 45
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 6
 ; Folding = --
 ; EnableXP

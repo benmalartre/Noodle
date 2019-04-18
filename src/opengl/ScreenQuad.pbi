@@ -101,13 +101,11 @@ Module ScreenQuad
   ; Setup
   ;----------------------------------------------------------------------------
   Procedure Setup(*Me.ScreenQuad_t,*pgm.Program::Program_t)
-    
     ;Generate Vertex Array Object
     If Not *Me\vao
       glGenVertexArrays(1,@*Me\vao)
     EndIf
     glBindVertexArray(*Me\vao)
-
     
     ; Create or ReUse Vertex Buffer Object
     If Not *Me\vbo
@@ -115,17 +113,14 @@ Module ScreenQuad
     EndIf
     glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
     
-    
     *Me\pgm = *pgm
     
     BuildGLDatas(*Me)
-    
     If *pgm
-
       glBindAttribLocation(*pgm\pgm, 0, "position")
       glBindAttribLocation(*pgm\pgm, 1, "coords")
       
-      glLinkProgram(*pgm\pgm);
+      glLinkProgram(*pgm\pgm)
     EndIf
     
     
@@ -137,7 +132,6 @@ Module ScreenQuad
   ; Draw
   ;----------------------------------------------------------------------------
   Procedure Draw(*Me.ScreenQuad_t)
-
     glBindVertexArray(*Me\vao)
     glDrawArrays(#GL_TRIANGLES,0,6)
     glBindVertexArray(0)
@@ -149,9 +143,8 @@ EndModule
 
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 76
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 135
+; FirstLine = 106
 ; Folding = --
 ; EnableXP
