@@ -29,51 +29,52 @@ EndStructure
 Global Dim views.Monitor_t(#NUM_WINDOWS)
 Global window = OpenWindow(#PB_Any,0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT,"Share GL Context")
 Global *context.GLContext::GLContext_t = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
-Global *bitmap.LayerBitmap::LayerBitmap_t
 ; Global 
 
 For i=0 To #NUM_WINDOWS-1
   views(i)\window = OpenWindow(#PB_Any, Random(200), Random(200), #DEFAULT_WIDTH, #DEFAULT_HEIGHT, "SUBVIEW"+Str(i),#PB_Window_Tool, WindowID(window))
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-     ; Allocate Pixel Format Object
-        Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-        ; Set Pixel Format Attributes
-        Define pfa.NSOpenGLPixelFormatAttribute
-        With pfa
-          \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-          \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-          \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-          \v[6] = #NSOpenGLPFADoubleBuffer
-          \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-          \v[8] = #NSOpenGLPFANoRecovery
-          \v[9] = #Null
-        EndWith
-  
-        ; Choose Pixel Format
-        CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-        ; Allocate OpenGL Context
-        Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-        ; Create OpenGL Context
-        CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-        ; Set Current Context
-        CocoaMessage( 0, ctx, "makeCurrentContext" )
-        ; Swap Buffers
-        CocoaMessage( 0, ctx, "flushBuffer" )
-      Global gadgetID = CanvasGadget(#PB_Any,0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-      CocoaMessage( 0, ctx, "setView:", GadgetID(gadgetID) )
-  
-      views(i)\bitmap = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, *context, #Null)
+;      ; Allocate Pixel Format Object
+;         Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
+;         ; Set Pixel Format Attributes
+;         Define pfa.NSOpenGLPixelFormatAttribute
+;         With pfa
+;           \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
+;           \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
+;           \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+;           \v[6] = #NSOpenGLPFADoubleBuffer
+;           \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
+;           \v[8] = #NSOpenGLPFANoRecovery
+;           \v[9] = #Null
+;         EndWith
+;   
+;         ; Choose Pixel Format
+;         CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
+;         ; Allocate OpenGL Context
+;         Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+;         ; Create OpenGL Context
+;         CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
+;         ; Set Current Context
+;         CocoaMessage( 0, ctx, "makeCurrentContext" )
+;         ; Swap Buffers
+;         CocoaMessage( 0, ctx, "flushBuffer" )
+;       
+    
+    Global gadgetID = CanvasGadget(#PB_Any,0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
+    views(i)\ctxt = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT,*context)
+    CocoaMessage( 0, views(i)\ctxt\ID, "setView:", GadgetID(gadgetID) )
+    
+      views(i)\bitmap = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, views(i)\ctxt, #Null)
       LayerBitmap::Setup(views(i)\bitmap )
       CocoaMessage( 0, *context\ID, "makeCurrentContext" )
-  CompilerElse
+      
+  CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
     Global gadgetID = OpenGLGadget(#PB_Any,0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
     SetGadgetAttribute(gadgetID,#PB_OpenGL_SetContext,#True)
   
     views(i)\ctxt = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT,*context)
     ResizeGadget(views(i)\ctxt\ID, 0,0,#DEFAULT_WIDTH, #DEFAULT_HEIGHT)
-   
-  
-    
+
     views(i)\bitmap  = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, views(i)\ctxt, #Null)
     LayerBitmap::Setup(views(i)\bitmap )
   ;     LayerBitmap::SetBitmapFromSource(*bitmap, "E:/Projects/RnD/Noodle/rsc/ico/bone_raw.png")
@@ -233,27 +234,26 @@ Repeat
   CompilerElse
     SetGadgetAttribute(*context\ID, #PB_OpenGL_SetContext, #True)
   CompilerEndIf
-  Framebuffer::BindOutput(*framebuffer)
-  glEnable(#GL_SCISSOR_TEST)
-  glViewport(0,0,100,100)
-  glScissor(0,0,100,100)
-  glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  
-  glViewport(100,100,100,100)
-  glScissor(100,100,100,100)
-  glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  
-  glViewport(200,200,100,100)
-  glScissor(200,200,100,100)
-  glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-
-  
-  glDisable(#GL_SCISSOR_TEST)
+;   Framebuffer::BindOutput(*framebuffer)
+;   glEnable(#GL_SCISSOR_TEST)
+;   glViewport(0,0,100,100)
+;   glScissor(0,0,100,100)
+;   glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   
+;   glViewport(100,100,100,100)
+;   glScissor(100,100,100,100)
+;   glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   
+;   glViewport(200,200,100,100)
+;   glScissor(200,200,100,100)
+;   glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+; 
+;   
+;   glDisable(#GL_SCISSOR_TEST)
   Draw()
-  
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
     CocoaMessage( 0, *context\ID, "flushBuffer" )
   CompilerElse
@@ -271,8 +271,9 @@ Repeat
     CompilerEndIf
     ;   Framebuffer::BindOutput(*bitmap\buffer)
     views(i)\bitmap\bitmap = tex
-    LayerBitmap::Draw(views(i)\bitmap, *context)
-    
+    GLCheckError("BEFORE")
+    LayerBitmap::Draw(views(i)\bitmap, views(i)\ctxt)
+    GLCheckError("AFTER")
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage( 0, views(i)\ctxt\ID, "flushBuffer" )
     CompilerElse
@@ -286,10 +287,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 273
-; FirstLine = 219
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 275
+; FirstLine = 248
 ; Folding = --
 ; EnableXP

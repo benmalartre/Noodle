@@ -81,14 +81,13 @@ Module LayerBitmap
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
     Debug " --------------------------- Draw Bitmap Layer -----------------------------------"
-
+GLCheckError("ENTER LAYER BITMAP")
     Protected shader = *ctx\shaders("bitmap")\pgm
     glUseProgram(shader)
     
     Framebuffer::BindOutput(*layer\buffer)
     Layer::Clear(*layer)
-    
-    glEnable(#GL_TEXTURE_2D)
+
     glActiveTexture(#GL_TEXTURE0)
     glBindTexture(#GL_TEXTURE_2D,*layer\bitmap)
     
@@ -149,8 +148,8 @@ Module LayerBitmap
   
   Class::DEF(LayerBitmap)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 77
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
+; CursorPosition = 87
+; FirstLine = 75
 ; Folding = --
 ; EnableXP
