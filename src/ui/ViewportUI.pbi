@@ -93,12 +93,11 @@ Module ViewportUI
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
     
-    Define *mem = AllocateMemory(GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4)
     ; setup pixel buffer object in main gl context
     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
     glGenBuffers(1, @*Me\pbo)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)
-    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, *mem, #GL_DYNAMIC_COPY)
+    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, #Null, #GL_DYNAMIC_COPY)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     
     ; init  texture objects
@@ -108,15 +107,14 @@ Module ViewportUI
     glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
     glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP)
     glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP)
-    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width , GLContext::*MAIN_GL_CTXT\height, 0, #GL_BGRA, #GL_UNSIGNED_BYTE, *mem)
+    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width , GLContext::*MAIN_GL_CTXT\height, 0, #GL_BGRA, #GL_UNSIGNED_BYTE, #Null)
     glBindTexture(#GL_TEXTURE_2D, 0)
     
-    FreeMemory(*mem)
     
     ; setup delegate gl context
     *Me\camera = *camera
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
-    *Me\layer = LayerBitmap::New(*Me\sizX, *Me\sizY, *Me\context, *Me\camera)
+    *Me\layer = LayerBitmap::New(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height , *Me\context, *Me\camera)
     LayerBitmap::Setup(*Me\layer)
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
@@ -683,7 +681,7 @@ Module ViewportUI
   ; Blit Between Contexts
   ;-------------------------------------------------------
   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
-    
+   
     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
     ; set the target framebuffer To Read 
     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
@@ -698,9 +696,10 @@ Module ViewportUI
     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
     glBindTexture(#GL_TEXTURE_2D, *Me\tex)
     glActiveTexture(#GL_TEXTURE0)
-    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, *Me\context\width, *Me\context\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
+    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
     GLContext::SetContext(*Me\context)
+    glViewport(0,0,GadgetWidth(*Me\gadgetID), GadgetHeight(*Me\gadgetID))
     *Me\layer\bitmap = *Me\tex
     LayerBitmap::Draw(*Me\layer, *Me\context)
 
@@ -709,8 +708,8 @@ Module ViewportUI
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 705
-; FirstLine = 673
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 95
+; FirstLine = 63
 ; Folding = ----
 ; EnableXP

@@ -46,14 +46,17 @@ Global *viewport.ViewportUI::ViewportUI_t
 Global *model.Model::Model_t
 Global texture.i
 
+#WIDTH = 1024
+#HEIGHT = 720
+
 Global numVertices
 
 Procedure Draw(*app.Application::Application_t)
 ;   Time::currentframe + 1
 ;   If Time::currentframe>100 : Time::currentframe = 1:EndIf
 ;   Scene::Update(Scene::*current_scene)
-  ViewportUI::SetContext(*viewport)
-  ViewportUI::Draw(*viewport, *app\context)
+  GLContext::SetContext(*app\context)
+  Application::Draw(*app, *layer)
 ;   ;   FTGL::BeginDraw(*app\context\writer)
 ;   LayerDefault::Draw(*layer, *app\context)
 ;   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -67,9 +70,8 @@ Procedure Draw(*app.Application::Application_t)
 ;   ViewportUI::FlipBuffer(*viewport)
 ;   layer\Draw(*app\context)
 
-  If Not #USE_GLFW
-    ViewportUI::FlipBuffer( *viewport )
-  EndIf
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
     
 Define model.m4f32
@@ -82,18 +84,17 @@ If Time::Init()
   FTGL::Init()
   Define f.f
   
-  *app = Application::New("Test",800,600)
+  *app = Application::New("Test",#WIDTH,#HEIGHT)
   
   Scene::*current_scene = Scene::New()
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
      
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
-  
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  GLContext::SetContext(*app\context)
+  *layer = LayerDefault::New(#WIDTH,#HEIGHT,*app\context,*app\camera)
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
 ;   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
@@ -164,8 +165,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 74
+; CursorPosition = 126
+; FirstLine = 103
 ; Folding = -
 ; EnableThread
 ; EnableXP

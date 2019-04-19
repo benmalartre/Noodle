@@ -13,8 +13,8 @@ XIncludeFile "../core/Application.pbi"
 XIncludeFile "../core/Application.pbi"
 
 UseModule Math
-Global width = 800
-Global height = 600
+Global width = 1024
+Global height = 720
 Global model.Math::m4f32
 
 Global *mesh.Polymesh::Polymesh_t
@@ -113,24 +113,25 @@ Procedure Update(*app.Application::Application_t)
     EndIf
   EndIf
   
-  ViewportUI::SetContext(*viewport)
-  
+  GLContext::SetContext(*app\context)
+  glViewport(0,0,*app\context\width, *app\context\height)
   Drawer::Flush(*drawer)
   DrawSelected(*mesh\geom)
 
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *layer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  viewportUI::Blit(*viewport, *layer\buffer)
 
 EndProcedure
 
@@ -146,17 +147,18 @@ FTGL::Init()
    *app = Application::New("Test Half Edge",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
      
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  
+  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -204,7 +206,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 25
+; CursorPosition = 130
+; FirstLine = 93
 ; Folding = -
 ; EnableXP

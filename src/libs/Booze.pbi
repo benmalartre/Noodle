@@ -200,7 +200,7 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Object Infos
   ;----------------------------------------
-  Structure ABC_Object_Infos
+  Structure ABC_Object_Infos Align #PB_Structure_AlignC
     *name
     type.l
     *obj
@@ -209,7 +209,7 @@ DeclareModule Alembic
   ;----------------------------------------
   ;XForm Sample
   ;----------------------------------------
-  Structure ABC_XForm_Sample
+  Structure ABC_XForm_Sample Align #PB_Structure_AlignC
     pos.f[3]
     ori.f[4]
     scl.f[3]
@@ -218,7 +218,7 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Polymesh Topology Sample
   ;-----------------------------------------
-  Structure ABC_Polymesh_Topo_Sample_Infos
+  Structure ABC_Polymesh_Topo_Sample_Infos Align #PB_Structure_AlignC
     nbpoints.l
     nbfacecount.l
     nbindices.l
@@ -233,13 +233,13 @@ DeclareModule Alembic
   	hasenvelope.b
   EndStructure
   
-  Structure ABC_Polymesh_TopoSimple_Sample
+  Structure ABC_Polymesh_TopoSimple_Sample Align #PB_Structure_AlignC
     *positions
   	*faceindices
   	*facecount  
   EndStructure
   
-  Structure ABC_Polymesh_Topo_Sample
+  Structure ABC_Polymesh_Topo_Sample Align #PB_Structure_AlignC
     *positions
     *velocities 
     *normals
@@ -250,7 +250,7 @@ DeclareModule Alembic
   	*facecount  
   EndStructure
   
-  Structure ABC_Envelope_Sample
+  Structure ABC_Envelope_Sample Align #PB_Structure_AlignC
     nbdeformers.l
     *indices
     *weights 
@@ -259,13 +259,13 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Polymesh Sample
   ;-----------------------------------------
-  Structure ABC_Polymesh_Sample_Infos
+  Structure ABC_Polymesh_Sample_Infos Align #PB_Structure_AlignC
     nbpoints.l
     hasvelocity.b
   	sampleindex.i
   EndStructure
 
-  Structure ABC_Polymesh_Sample
+  Structure ABC_Polymesh_Sample Align #PB_Structure_AlignC
     *positions
     *velocities 
   EndStructure
@@ -273,7 +273,7 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Points Sample
   ;-----------------------------------------
-  Structure ABC_PointCloud_Sample_Infos
+  Structure ABC_PointCloud_Sample_Infos Align #PB_Structure_AlignC
     nbpoints.l
     sampleindex.l
     b_velocity.b
@@ -283,7 +283,7 @@ DeclareModule Alembic
   	b_color.b
   EndStructure
   
-  Structure ABC_PointCloud_Sample
+  Structure ABC_PointCloud_Sample Align #PB_Structure_AlignC
     *id
     *position
     *velocity
@@ -296,7 +296,7 @@ DeclareModule Alembic
   ;----------------------------------------
   ; Curves Sample
   ;-----------------------------------------
-  Structure ABC_Curves_Sample_Infos
+  Structure ABC_Curves_Sample_Infos Align #PB_Structure_AlignC
     nbpoints.l
     nbcurves.l
     sampleindex.l
@@ -308,7 +308,7 @@ DeclareModule Alembic
     hasKnots.b
   EndStructure
 
-  Structure ABC_Curves_Sample
+  Structure ABC_Curves_Sample Align #PB_Structure_AlignC
     *positions
     *numVerticesPerCurve
     type.ABCCurveType
@@ -325,13 +325,13 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Skeleton Sample
   ;-----------------------------------------
-  Structure ABC_Skeleton_Sample_Infos
+  Structure ABC_Skeleton_Sample_Infos Align #PB_Structure_AlignC
   	nbpoints.i
   	sampleindex.i
   EndStructure
 
 
-  Structure ABC_Skeleton_Sample
+  Structure ABC_Skeleton_Sample Align #PB_Structure_AlignC
   	*id
   	*position
   	*orientation
@@ -346,14 +346,14 @@ DeclareModule Alembic
   ;----------------------------------------
   ;Property Sample
   ;-----------------------------------------
-  Structure ABC_Property_Sample_Infos
+  Structure ABC_Property_Sample_Infos Align #PB_Structure_AlignC
     nbitems.i
   	time.f
     type.ABCPropertyType
   	traits.ABCDataTraits
   EndStructure
 
-  Structure ABC_Property_Sample
+  Structure ABC_Property_Sample Align #PB_Structure_AlignC
   	*datas
   EndStructure
   
@@ -1569,7 +1569,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 220
+; CursorPosition = 355
+; FirstLine = 328
 ; Folding = --------
 ; EnableXP
