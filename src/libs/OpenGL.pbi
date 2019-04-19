@@ -1481,6 +1481,7 @@ DeclareModule OpenGL
   glStencilFunc                       ( func.GLenum, ref.GLint, mask.GLuint )
   glStencilOp                         ( fail.GLenum, zfail.GLenum, zpass.GLenum )
   glDepthFunc                         ( func.GLenum )
+  glPixelZoom                         (	xfactor.GLfloat, yfactor.GLfloat)
   glPixelStoref                       ( pname.GLenum, param.GLfloat )
   glPixelStorei                       ( pname.GLenum, param.GLint )
   glReadBuffer                        ( mode.GLenum )
@@ -1608,8 +1609,8 @@ EndDeclareModule
 Module OpenGL
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1463
-; FirstLine = 1434
+; CursorPosition = 1483
+; FirstLine = 1436
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

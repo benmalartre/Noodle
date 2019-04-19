@@ -268,7 +268,7 @@ EndProcedure
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   If EventType() = #PB_EventType_KeyDown
     If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
       BulletWorld::hlpReset(Bullet::*bullet_world)
@@ -284,29 +284,21 @@ Procedure Draw(*app.Application::Application_t)
  
 ;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
-  default_layer\Draw  (*app\context)
+  ;   default_layer\Draw(*app\context)
 
-;   gbuffer\Draw(*app\context  )
-;   shadowmap\Draw(*app\context)
+  GLCheckError("TEST BULLET BEGIN DRAW")
+  ViewportUI::Draw(*viewport)
   
-  ;*shadows\texture = Framebuffer::GetTex(*shadowmap\buffer,0)
-
-;   defered\Draw(*app\context)
-  ;*bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
-  ;bitmap\Draw(*app\context)
-  ;ssao\Draw(*app\context)
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*app\width
-  Define ratio.f = *app\width / *app\height
-  FTGL::Draw(*app\context\writer,"Bullet Demo",-0.9,0.9,ss,ss*ratio)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+  FTGL::EndDraw(*app\context\writer)
+
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  GLCheckError("TEST BULLET END DRAW")
   
 ;   Polymesh::Draw(*teapot)
 ; ;   Polymesh::Draw(*ground)
@@ -352,14 +344,19 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
+   
    *app = Application::New("TestBullet",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
-    
-   ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
+     
+    View::SetContent(*app\manager\main,*viewport)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  Else
+    GLContext::Setup(*app\context)
+    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
+
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
@@ -367,9 +364,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
-  Debug "Size "+Str(*app\width)+","+Str(*app\height)
+
   Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *Default)
+  ViewportUI::AddLayer(*viewport, *default)
   LayerDefault::Setup(*default)
   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
@@ -405,6 +402,7 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   Polymesh::Setup(*teapot,*s_polymesh)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*bunny,*s_polymesh)
+  GLContext::SetContext(*app\context)
   Scene::Setup(Scene::*current_scene,*app\context)
   
   Define nbb = Bullet::BTGetNumCollideObjects(Bullet::*bullet_world)
@@ -415,8 +413,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 284
-; FirstLine = 280
+; CursorPosition = 297
+; FirstLine = 264
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -99,30 +99,32 @@ Procedure Draw(*app.Application::Application_t)
 ;   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
 ;   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
 ;   Object3D::SetLocalTransform(*light, *t)
+;   
   
-  ViewportUI::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
   
+  GLContext::SetContext(*app\context)
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
-  
-  ViewportUI::Draw(*viewport, *app\context)
+   
+  Application::Draw(*app, *layer)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
-  
-  ViewportUI::FlipBuffer(*viewport)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
+;   
+;   ViewportUI::FlipBuffer(*viewport)
 
  EndProcedure
  
  Define useJoystick.b = #False
- width = 800
- height = 600
+ width = 1024
+ height = 720
  ; Main
  Globals::Init()
 ;  Bullet::Init( )
@@ -132,17 +134,19 @@ Procedure Draw(*app.Application::Application_t)
    Define startT.d = Time::Get ()
    Log::Init()
    *app = Application::New("TestMesh",width,height)
-
+    Debug "YEAH"
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)     
+     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\handle)     
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  
+  GLContext::SetContext(*app\context)
+  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
 
@@ -234,8 +238,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 117
+; CursorPosition = 138
+; FirstLine = 128
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

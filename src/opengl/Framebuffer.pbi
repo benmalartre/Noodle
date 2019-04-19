@@ -395,8 +395,8 @@ Module Framebuffer
   ; Bind Output
   ;------------------------------------------------------------------
   Procedure BindOutput(*Me.Framebuffer_t)
-    
-   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,*Me\frame_id)
+   
+   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, *Me\frame_id)
    GLCheckError("Can't Bind Output Framebuffer "+ *Me\name)
      
     Protected nbt = ArraySize(*Me\tbos())
@@ -585,8 +585,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 571
+; FirstLine = 524
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -52,6 +52,8 @@ DeclareModule GLContext
   Declare Setup(*Me.GLContext_t)
   Declare Copy(*Me.GLContext_t, *shared.GLContext_t)
   Declare Delete(*Me.GLContext_t)
+  Declare SetContext(*Me.GLContext_t)
+  Declare FlipBuffer(*Me.GLContext_t)
   
   Global *MAIN_GL_CTXT.GLContext_t
 EndDeclareModule
@@ -207,11 +209,8 @@ Module GLContext
         EndIf
         
       CompilerEndIf
-      
-      
-      
+
     CompilerEndIf
-    
     
     ProcedureReturn *Me
   EndProcedure
@@ -236,7 +235,6 @@ Module GLContext
     
   EndProcedure
   
-
   ;---------------------------------------------
   ;  Load Extensions and Build Shaders
   ;---------------------------------------------
@@ -266,6 +264,29 @@ Module GLContext
 
   EndProcedure
   
+  ;---------------------------------------------
+  ;  Set Current Context
+  ;---------------------------------------------
+  Procedure SetContext(*Me.GLContext_t)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      CocoaMessage( 0, *Me\ID, "makeCurrentContext" )
+    CompilerElse
+      SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
+    CompilerEndIf
+  EndProcedure
+  
+  ;---------------------------------------------
+  ;  Flip Buffers
+  ;---------------------------------------------
+  Procedure FlipBuffer(*Me.GLContext_t)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      CocoaMessage( 0, *Me\ID, "flushBuffer" )
+    CompilerElse
+      SetGadgetAttribute(*Me\ID, #PB_OpenGL_FlipBuffers, #True)
+    CompilerEndIf
+  EndProcedure
+  
+  
   
 EndModule
 
@@ -275,9 +296,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 36
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 213
+; FirstLine = 167
+; Folding = ---
 ; EnableXP
 ; EnableUnicode

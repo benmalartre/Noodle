@@ -81,7 +81,6 @@ Module LayerBitmap
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
     Debug " --------------------------- Draw Bitmap Layer -----------------------------------"
-GLCheckError("ENTER LAYER BITMAP")
     Protected shader = *ctx\shaders("bitmap")\pgm
     glUseProgram(shader)
     
@@ -148,8 +147,8 @@ GLCheckError("ENTER LAYER BITMAP")
   
   Class::DEF(LayerBitmap)
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 87
-; FirstLine = 75
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

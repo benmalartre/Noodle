@@ -101,10 +101,9 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,1
 
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera)
-*app\context = *viewport\context
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\context)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-
+GLContext::SetContext(*app\context)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
@@ -124,7 +123,7 @@ Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\c
 Scene::Setup(Scene::*current_scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   
   *layer\Draw( *app\context)
   
@@ -141,7 +140,10 @@ Procedure Update(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   
 
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  
+  Define *l.Layer::Layer_t = *layer
+  ViewportUI::Blit(*viewport, *l\buffer)
   
   
 EndProcedure
@@ -151,8 +153,8 @@ Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 66
+; CursorPosition = 105
+; FirstLine = 76
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

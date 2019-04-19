@@ -9,6 +9,8 @@ CompilerIf #USE_BULLET
 CompilerEndIf
 
 XIncludeFile "../objects/Camera.pbi"
+XIncludeFile "../objects/Handle.pbi"
+XIncludeFile "../layers/Selection.pbi"
 XIncludeFile "View.pbi"
 
 ; ============================================================================
@@ -20,10 +22,8 @@ DeclareModule ViewportUI
     *camera.Camera::Camera_t
     *context.GLContext::GLContext_t
     *handle.Handle::Handle_t
-    ray.Geometry::Ray_t
-    *layer.Layer::Layer_t
-    *select.LayerSelection::LayerSelection_t
-    List *layers.Layer::Layer_t()
+
+    pbo.i
     mx.f
     my.f
     oldX.f
@@ -38,15 +38,14 @@ DeclareModule ViewportUI
   Interface IViewportUI Extends IUI
   EndInterface
 
-  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
+  Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Init(*Me.ViewportUI_t)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
   Declare Term(*Me.ViewportUI_t)
   Declare SetContext(*Me.ViewportUI_t)
   Declare FlipBuffer(*Me.ViewportUI_t)
-  Declare Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
-  Declare AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
+  Declare Draw(*Me.ViewportUI_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
   Declare SetHandleTool(*Me.ViewportUI_t, tool.i)
@@ -56,6 +55,7 @@ DeclareModule ViewportUI
   Declare ViewToRay(*Me.ViewportUI_t,mx.f,my.f,*ray_dir.Math::v3f32)
   Declare Project(*v.ViewportUI_t,*pos.Math::v3f32,*io_pos.Math::v3f32, homogenous.b=#True)
   Declare Unproject(*v.ViewportUI_t, x.f, y.f,*world_pos.Math::v3f32)
+  Declare Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
   
   DataSection 
     ViewportUIVT: 
@@ -76,7 +76,7 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; New
   ;------------------------------------------------------------------
-  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *ctx.GLContext::GLContext_t)
+  Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
     Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
     
     Object::INI(ViewportUI)
@@ -91,54 +91,30 @@ Module ViewportUI
     *Me\sizX = w
     *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *Me\context = *ctx
+    *Me\handle = *handle
+    GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
+    glGenBuffers(1, @*Me\pbo)
+    glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)
+    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, #Null, #GL_DYNAMIC_COPY)
+    glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
+    
+    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
     *Me\camera = *camera
-
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      ; Allocate Pixel Format Object
-      Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-      ; Set Pixel Format Attributes
-      Define pfa.NSOpenGLPixelFormatAttribute
-      With pfa
-        \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-        \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-        \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-        \v[6] = #NSOpenGLPFADoubleBuffer
-        \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-        \v[8] = #NSOpenGLPFANoRecovery
-        \v[9] = #Null
-      EndWith
-
-      ; Choose Pixel Format
-      CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-      ; Allocate OpenGL Context
-      Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-      ; Create OpenGL Context
-      CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-      ; Set Current Context
-      CocoaMessage( 0, ctx, "makeCurrentContext" )
-      ; Swap Buffers
-      CocoaMessage( 0, ctx, "flushBuffer" )
-      ; Associate Context With OpenGLGadget NSView
-      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard)
-      CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) )
-      *Me\context\ID = ctx
-      
+    
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
+    
+      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
+      CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
+        
     CompilerElse
-      *Me\gadgetID = OpenGLGadget(#PB_Any,0,0,w,h,#PB_OpenGL_Keyboard)
+      *Me\gadgetID = *Me\context\ID
+      ResizeGadget(*Me\gadgetID, 0,0,w, h)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
 
     CompilerEndIf
     
     CloseGadgetList()
 
-    GLContext::Setup(*Me\context)
-    
-    *Me\handle = Handle::New()
-    *Me\handle\camera = *Me\camera
-    *Me\select = LayerSelection::New(*Me\sizX, *Me\sizY, *Me\context, *Me\camera)
-    Handle::Setup(*Me\handle, *Me\context)
-  
     View::SetContent(*parent,*Me)
     
     ProcedureReturn *Me
@@ -164,10 +140,6 @@ Module ViewportUI
   ; Event
   ;------------------------------------------------------------------
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
-;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-;     glClearColor(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01,1.0)
-;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
 
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
@@ -192,7 +164,6 @@ Module ViewportUI
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         ResizeGadget(*Me\container,*top\x,*top\y,width,height)
 
-        ForEach *Me\layers() : Layer::Resize(*Me\layers(), width, height) : Next
 
         If *Me\context  
           *Me\context\width = *Me\sizX
@@ -386,7 +357,8 @@ Module ViewportUI
   ;------------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------------
-  Procedure Draw(*Me.ViewportUI_t, *ctx.GLContext::GLContext_t)
+  Procedure Draw(*Me.ViewportUI_t)
+
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -394,24 +366,24 @@ Module ViewportUI
     Define i
     Define *pgm.Program::Program_t
     For i=0 To 2
-      *pgm = *ctx\shaders(shaderNames(i))
+      *pgm = *Me\context\shaders(shaderNames(i))
       glUseProgram(*pgm\pgm)
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
     Next
     
-    Protected ilayer.Layer::ILayer = *Me\layer
-    ilayer\Draw(*ctx)
+;     Protected ilayer.Layer::ILayer = *Me\layer
+;     ilayer\Draw(*Me\context)
     If *Me\tool
-      Protected *wireframe.Program::Program_t = *ctx\shaders("wireframe")
+      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
       
-      Handle::Draw( *Me\handle,*ctx) 
+      Handle::Draw( *Me\handle,*Me\context) 
     EndIf
     
   EndProcedure
@@ -423,14 +395,7 @@ Module ViewportUI
     Debug "ViewportUI Term Called!!!"
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; Add Layer
-  ;------------------------------------------------------------------
-  Procedure AddLayer(*Me.ViewportUI_t, *layer.Layer::Layer_t)
-    AddElement(*Me\layers())
-    *Me\layers() = *layer
-    *Me\layer = *layer
-  EndProcedure
+ 
   
   ;------------------------------------------------------------------
   ; Set Handle Target
@@ -722,13 +687,39 @@ Module ViewportUI
         EndIf
       CompilerEndIf
      CompilerEndIf
-  EndProcedure
+   EndProcedure
+   
+  ;-------------------------------------------------------
+  ; Blit Between Contexts
+  ;-------------------------------------------------------
+   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
+
+    ; set the target framebuffer To Read 
+    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
+    glReadBuffer(#GL_COLOR_ATTACHMENT0)
+     
+    ; read pixels from framebuffer To PBO
+    ; glReadPixels() should Return immediately.
+    glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)    
+    glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
+    glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
+    
+    GLContext::SetContext(*Me\context)
+    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, 0)
+    glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
+    glDrawPixels(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
+     
+    ; back To conventional pixel operation
+    glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
+    GLContext::FlipBuffer(*Me\context)
+   EndProcedure
+   
   
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 130
-; FirstLine = 99
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 695
+; FirstLine = 657
 ; Folding = -----
 ; EnableXP

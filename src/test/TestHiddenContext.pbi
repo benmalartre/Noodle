@@ -22,6 +22,7 @@ Structure Monitor_t
   window.i
   *ctxt.GLContext::GLContext_t
   *bitmap.LayerBitmap::LayerBitmap_t
+  pbo.GLuint
 EndStructure
 
 
@@ -29,6 +30,7 @@ EndStructure
 Global Dim views.Monitor_t(#NUM_WINDOWS)
 Global window = OpenWindow(#PB_Any,0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT,"Share GL Context")
 Global *context.GLContext::GLContext_t = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
+Global *framebuffer.Framebuffer::Framebuffer_t
 ; Global 
 
 For i=0 To #NUM_WINDOWS-1
@@ -74,6 +76,8 @@ For i=0 To #NUM_WINDOWS-1
   
     views(i)\ctxt = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT,*context)
     ResizeGadget(views(i)\ctxt\ID, 0,0,#DEFAULT_WIDTH, #DEFAULT_HEIGHT)
+    
+    
 
     views(i)\bitmap  = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, views(i)\ctxt, #Null)
     LayerBitmap::Setup(views(i)\bitmap )
@@ -81,6 +85,12 @@ For i=0 To #NUM_WINDOWS-1
     
     SetGadgetAttribute(*context\ID,#PB_OpenGL_SetContext,#True)
   CompilerEndIf
+  
+  glGenBuffers(1, @views(i)\pbo);
+  glBindBuffer(#GL_PIXEL_PACK_BUFFER, views(i)\pbo)
+  glBufferData(#GL_PIXEL_PACK_BUFFER, #DATA_SIZE, 0, #GL_READ_WRITE)
+
+  
 Next
 
 
@@ -104,7 +114,27 @@ Procedure UpdatePixels(*dst, size.i)
   color + 1
 EndProcedure
 
-Procedure Draw()
+Procedure Pack(*monitor.Monitor_t)
+  index = 1 - index
+  nextIndex = 1 - index
+  ; copy pixels from framebuffer To PBO
+  ; Use offset instead of pointer.
+  ; OpenGL should perform asynch DMA transfer, so glReadPixels() will Return immediately.
+  glBindBuffer(#GL_PIXEL_PACK_BUFFER, *monitor\pbo);
+  glReadPixels(0, 0, #DEFAULT_WIDTH, #DEFAULT_HEIGHT, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
+  
+  
+;   ; Map the PBO that contain framebuffer pixels before processing it
+;   glBindBuffer(#GL_PIXEL_PACK_BUFFER, *monitor\pbos[nextIndex])
+;   Define *src = glMapBuffer(#GL_PIXEL_PACK_BUFFER, #GL_READ_ONLY)
+;   If *src
+;       ; change brightness
+;       ;add(src, SCREEN_WIDTH, SCREEN_HEIGHT, shift, colorBuffer);
+;       glUnmapBuffer(#GL_PIXEL_PACK_BUFFER);        // release pointer to the mapped buffer
+;   EndIf
+EndProcedure
+
+Procedure Unpack()
   
   ; "index" is used To copy pixels from a PBO To a texture object
   ; "nextIndex" is used To update pixels in a PBO
@@ -152,54 +182,11 @@ Procedure Draw()
     ;it is good idea To release PBOs With ID 0 after use.
     ; Once bound With 0, all pixel operations behave normal ways.
     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
-;   GLCheckError("SHARED CONTEXT START DRAW")
-;   index = 1 - index
-;   Define nextIndex = 1 - index
-;   ; bind the texture And PBO
-;   glBindTexture(#GL_TEXTURE_2D, tex)
-;   If index = 0
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo1)
-;   Else
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo2)
-;   EndIf
-;   GLCheckError("SHARED CONTEXT BIND READ BUFFER")
-;   
-;   ; copy pixels from PBO To texture object
-;   ; Use offset instead of ponter.
-;   glTexSubImage2D(#GL_TEXTURE_2D, 0, 0, 0, #DEFAULT_WIDTH, #DEFAULT_HEIGHT, #GL_BGRA_EXT, #GL_UNSIGNED_BYTE, 0)
-;   
-;   ; bind PBO To update pixel values
-;   If index = 0
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo2)
-;   Else
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo1)
-;   EndIf
-;   GLCheckError("SHARED CONTEXT BIND WRITE BUFFER")
-; 
-;   ; Map the buffer object into client's memory
-;   ; Note that glMapBuffer() causes sync issue.
-;   ; If GPU is working With this buffer, glMapBuffer() will wait(stall)
-;   ; For GPU To finish its job. To avoid waiting (stall), you can call
-;   ; first glBufferData() With NULL pointer before glMapBuffer().
-;   ; If you do that, the previous Data in PBO will be discarded And
-;   ; glMapBuffer() returns a new allocated pointer immediately
-;   ; even If GPU is still working With the previous Data.
-;   glBufferData(#GL_PIXEL_UNPACK_BUFFER, #DATA_SIZE, 0, #GL_STREAM_DRAW)
-;   Define *ptr = glMapBuffer(#GL_PIXEL_UNPACK_BUFFER, #GL_WRITE_ONLY)
-;   If *ptr
-;     ; update Data directly on the mapped buffer
-;     UpdatePixels(*ptr, #DATA_SIZE)
-;     glUnmapBuffer( #GL_PIXEL_UNPACK_BUFFER)  ; release pointer To mapping buffer
-;   EndIf
-;     
-;    ; it is good idea To release PBOs With ID 0 after use.
-;    ; Once bound With 0, all pixel operations behave normal ways.
-;    glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0);
-;   GLCheckError("SHARED CONTEXT END DRAW")
+
 EndProcedure
 
 ; create framebuffer
-Global *framebuffer = Framebuffer::New("Default",#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
+*framebuffer = Framebuffer::New("Default",#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
 Framebuffer::AttachTexture(*framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
 Framebuffer::AttachRender( *framebuffer,"Depth",#GL_DEPTH_COMPONENT)
 
@@ -253,7 +240,7 @@ Repeat
 ; 
 ;   
 ;   glDisable(#GL_SCISSOR_TEST)
-  Draw()
+  Unpack()
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
     CocoaMessage( 0, *context\ID, "flushBuffer" )
   CompilerElse
@@ -263,22 +250,11 @@ Repeat
   
   
   For i=0 To #NUM_WINDOWS-1
-    ; pass image to secondary context via pbo
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      CocoaMessage( 0, views(i)\ctxt\ID, "makeCurrentContext" )
-    CompilerElse
-      SetGadgetAttribute(views(i)\ctxt\ID, #PB_OpenGL_SetContext, #True)
-    CompilerEndIf
+    GLContext::SetContext(views(i)\ctxt)
     ;   Framebuffer::BindOutput(*bitmap\buffer)
     views(i)\bitmap\bitmap = tex
-    GLCheckError("BEFORE")
     LayerBitmap::Draw(views(i)\bitmap, views(i)\ctxt)
-    GLCheckError("AFTER")
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      CocoaMessage( 0, views(i)\ctxt\ID, "flushBuffer" )
-    CompilerElse
-      SetGadgetAttribute(views(i)\ctxt\ID, #PB_OpenGL_FlipBuffers, #True)
-    CompilerEndIf
+    GLContext::FlipBuffer(views(i)\ctxt)
   Next
   
   
@@ -287,8 +263,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 275
-; FirstLine = 248
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 252
+; FirstLine = 202
 ; Folding = --
 ; EnableXP

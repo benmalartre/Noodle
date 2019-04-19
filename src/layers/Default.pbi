@@ -87,19 +87,19 @@ Module LayerDefault
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.LayerDefault_t,*ctx.GLContext::GLContext_t)
+
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
+    glEnable(#GL_DEPTH_TEST)
+;     glViewport(*ctx\,0,*layer\width,*layer\height)
     
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::BindOutput(*buffer)
     
     ;   Clear(*layer)
     glClearColor(0.63,0.63,0.63,1.0)
-    
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     glCheckError("[LayerDefault] Clear")
-    glEnable(#GL_DEPTH_TEST)
-    glViewport(0,0,*layer\width,*layer\height)
     
     ; Find Up View Point
     ;-----------------------------------------------
@@ -247,8 +247,6 @@ Module LayerDefault
     FreeMemory(*layer)
   EndProcedure
   
- 
-  
   ;---------------------------------------------------
   ; COnstructor
   ;---------------------------------------------------
@@ -280,8 +278,8 @@ Module LayerDefault
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 270
-; FirstLine = 246
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 230
+; FirstLine = 182
 ; Folding = --
 ; EnableXP

@@ -1,5 +1,5 @@
 InitScintilla()
-
+XIncludeFile "../core/Control.pbi"
 ; -----------------------------------------
 ; UI Module Declaration
 ; -----------------------------------------
@@ -134,6 +134,6 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 30
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP

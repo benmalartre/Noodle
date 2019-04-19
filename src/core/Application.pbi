@@ -156,6 +156,12 @@ CompilerEndIf
     *manager.ViewManager::ViewManager_t
     *context.GLContext::GLContext_t
     *camera.Camera::Camera_t
+    
+    *layer.Layer::Layer_t
+    *select.LayerSelection::LayerSelection_t
+    List *layers.Layer::Layer_t()
+    
+    *handle.Handle::Handle_t
     width.i
     height.i
     idle.i
@@ -197,11 +203,13 @@ CompilerEndIf
 ;   EndEnumeration
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-  Declare Delete(*app.Application_t)
-  Declare Loop(*app.Application_t,*callback)
+  Declare Delete(*Me.Application_t)
+  Declare Loop(*Me.Application_t,*callback)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
+  Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   
 CompilerIf (#USE_GLFW = #True)
-  Declare RegisterCallbacks(*app.Application_t)
+  Declare RegisterCallbacks(*Me.Application_t)
   Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
@@ -212,8 +220,8 @@ CompilerIf (#USE_GLFW = #True)
   Declare OnScroll(*window.GLFWwindow,x.d,y.d)
 CompilerEndIf
 
-  Declare.f GetFPS(*app.Application_t)
-  Prototype PFNDRAWFN(*app)
+  Declare.f GetFPS(*Me.Application_t)
+  Prototype PFNDRAWFN(*Me)
   
   Global *running.Application::Application_t
 
@@ -236,115 +244,81 @@ CompilerEndIf
     ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
   EndProcedure
     
-  Procedure CreateHiddenOpenGLContext(*Me.Application_t)
-    *Me\context = GLContext::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT,#False)
-    *Me\context = GLContext::New(0,0,#Null)
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      MessageRequester("BUILD A FUCKIN MAC OS CTXT", "GRRR")
-    ; Allocate Pixel Format Object
-    Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
-    ; Set Pixel Format Attributes
-    Define pfa.NSOpenGLPixelFormatAttribute
-    With pfa
-      \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-      \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-      \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
-      \v[6] = #NSOpenGLPFADoubleBuffer
-      \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-      \v[8] = #NSOpenGLPFANoRecovery
-      \v[9] = #Null
-    EndWith
-
-    ; Choose Pixel Format
-    CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
-    ; Allocate OpenGL Context
-    Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
-    ; Create OpenGL Context
-    CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
-    ; Set Current Context
-    CocoaMessage( 0, ctx, "makeCurrentContext" )
-    ; Swap Buffers
-    CocoaMessage( 0, ctx, "flushBuffer" )
-    ; Associate Context With OpenGLGadget NSView
-    *Me\dummy = CanvasGadget(#PB_Any,0,0,0,0,#PB_Canvas_Keyboard)
-    ;CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) ) ; oglcanvas_gadget is your OpenGLGadget#
-    *Me\context\ID = ctx
-    GLContext::Setup(*Me\context)
-      
-    CompilerElse
-      *Me\dummy = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
-      SetGadgetAttribute(*Me\dummy,#PB_OpenGL_SetContext,#True)
-      GLContext::Setup(*Me\context)
-
-    CompilerEndIf
+  Procedure CreateSharedOpenGLContext(*Me.Application_t)
+    *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Constructor
   ;-----------------------------------------------------------------------------
   Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-    Protected *app.Application_t = AllocateMemory(SizeOf(Application_t))
-    InitializeStructure(*app,Application_t)
-    *app\name = name
-    *running = *app
+    Protected *Me.Application_t = AllocateMemory(SizeOf(Application_t))
+    InitializeStructure(*Me,Application_t)
+    *Me\name = name
+    *running = *Me
     Protected w.i, h.i
     CompilerIf #USE_GLFW
       glfwInit()
-      ;*app\window = glfwCreateFullScreenWindow()
-      *app\window = glfwCreateWindowedWindow(width,height,"GLFW3.1")
+      ;*Me\window = glfwCreateFullScreenWindow()
+      *Me\window = glfwCreateWindowedWindow(width,height,"GLFW3.1")
       
-      glfwMakeContextCurrent(*app\window)
-      glfwSetWindowUserPointer(*app\window, *app)  
-      glfwGetWindowSize(*app\window,@w,@h)
-      *app\width = w
-      *app\height = h
-      *app\context = GLContext::New(width,height,#True, *app\window)
-      GLContext::Setup(*app\context)
-      *app\context\width = w
-      *app\context\height = h
-      *app\idle = #True
+      glfwMakeContextCurrent(*Me\window)
+      glfwSetWindowUserPointer(*Me\window, *Me)  
+      glfwGetWindowSize(*Me\window,@w,@h)
+      *Me\width = w
+      *Me\height = h
+      *Me\context = GLContext::New(width,height,#True, *Me\window)
+      GLContext::Setup(*Me\context)
+      *Me\context\width = w
+      *Me\context\height = h
+      *Me\idle = #True
      
-      RegisterCallbacks(*app)
+      RegisterCallbacks(*Me)
  
     CompilerElse
-      *app\manager = ViewManager::New(name,0,0,width,height,options)
-      *app\window = *app\manager\window
+      *Me\manager = ViewManager::New(name,0,0,width,height,options)
+      *Me\window = *Me\manager\window
 
-      *app\width = WindowWidth(*app\manager\window,#PB_Window_InnerCoordinate)
-      *app\height = WindowHeight(*app\manager\window,#PB_Window_InnerCoordinate)
-      CreateHiddenOpenGLContext(*app)
+      *Me\width = WindowWidth(*Me\manager\window,#PB_Window_InnerCoordinate)
+      *Me\height = WindowHeight(*Me\manager\window,#PB_Window_InnerCoordinate)
+      CreateSharedOpenGLContext(*Me)
       
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
-      AddKeyboardShortcut(*app\manager\window,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
+      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
     
-      *app\idle = #True
+      *Me\idle = #True
       
     CompilerEndIf  
     
-    *app\camera = Camera::New("Camera",Camera::#Camera_Perspective)
-    ProcedureReturn *app
+    *Me\camera = Camera::New("Camera",Camera::#Camera_Perspective)
+    *Me\handle = Handle::New()
+    *Me\handle\camera = *Me\camera
+    *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
+    Handle::Setup(*Me\handle, *Me\context)
+    
+    ProcedureReturn *Me
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Delete
   ;-----------------------------------------------------------------------------
-  Procedure Delete(*app.Application_t)
+  Procedure Delete(*Me.Application_t)
     Protected i
     CompilerIf #USE_GLFW
-      glfwDestroyWindow(*app\window)
+      glfwDestroyWindow(*Me\window)
 
     CompilerElse
-      ViewManager::Delete(*app\manager)
+      ViewManager::Delete(*Me\manager)
     CompilerEndIf
     
-    ClearStructure(*app,Application_t)
-    FreeMemory(*app)
+    ClearStructure(*Me,Application_t)
+    FreeMemory(*Me)
   EndProcedure
   
 CompilerIf #USE_GLFW
@@ -352,7 +326,7 @@ CompilerIf #USE_GLFW
   ; Key Changed Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *Me.Application_t = glfwGetWindowUserPointer(*window)
   
     If action = #GLFW_PRESS
       Select key
@@ -360,7 +334,7 @@ CompilerIf #USE_GLFW
           glfwSetWindowShouldClose(*window,#True)
           
         Case #GLFW_KEY_S
-          *app\idle =  #True
+          *Me\idle =  #True
         
         Case #GLFW_KEY_LEFT
           
@@ -377,7 +351,7 @@ CompilerIf #USE_GLFW
     ElseIf action = #GLFW_RELEASE
       Select key
         Case #GLFW_KEY_S
-          ;*app\idle = #False
+          ;*Me\idle = #False
         
         
         Case #GLFW_KEY_LEFT
@@ -399,18 +373,18 @@ CompilerIf #USE_GLFW
   ; Mouse Move Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnMouseMove(*window.GLFWwindow,x.d,y.d)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *Me.Application_t = glfwGetWindowUserPointer(*window)
     
-    If *app\down
-     Protected *c.Camera::Camera_t = *app\camera
+    If *Me\down
+     Protected *c.Camera::Camera_t = *Me\camera
      
-     Protected deltax.d = x-*app\mouseX
-     Protected deltay.d = y-*app\mouseY
+     Protected deltax.d = x-*Me\mouseX
+     Protected deltay.d = y-*Me\mouseY
      Protected w.i,h.i
      glfwGetWindowSize(*window,@w,@h)
-     If *app\idle
+     If *Me\idle
        ; Camera Events
-        Select *app\idle
+        Select *Me\idle
           Case Globals::#TOOL_PAN
             Camera::Pan(*c,deltax,deltay,w,h)
     
@@ -423,8 +397,8 @@ CompilerIf #USE_GLFW
       EndIf
     EndIf
       
-   *app\mouseX = x
-   *app\mouseY = y
+   *Me\mouseX = x
+   *Me\mouseY = y
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -438,38 +412,38 @@ CompilerIf #USE_GLFW
   ; Mouse Button Callback (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
-    Protected *app.Application_t = glfwGetWindowUserPointer(*window)
+    Protected *Me.Application_t = glfwGetWindowUserPointer(*window)
 
     Select action
       Case #GLFW_PRESS
         Select button
           Case #GLFW_MOUSE_BUTTON_LEFT
             If modifier&#GLFW_MOD_ALT
-              *app\rmb_p = #True
+              *Me\rmb_p = #True
             ElseIf modifier&#GLFW_MOD_CONTROL
-              *app\mmb_p = #True
+              *Me\mmb_p = #True
             Else
-              *app\lmb_p = #True
+              *Me\lmb_p = #True
             EndIf    
           
           Case #GLFW_MOUSE_BUTTON_MIDDLE
-            *app\mmb_p = #True
+            *Me\mmb_p = #True
 
           Case #GLFW_MOUSE_BUTTON_RIGHT
-            *app\rmb_p = #True
+            *Me\rmb_p = #True
             
           EndSelect
-          *app\down = #True
-          *app\idle = Globals::#TOOL_CAMERA
-          glfwGetCursorPos(*window,@*app\mouseX,@*app\mouseY)
-          If *app\idle = Globals::#TOOL_CAMERA
-            If *app\lmb_p : *app\idle = Globals::#Tool_Pan
-            ElseIf *app\mmb_p :*app\idle = Globals::#Tool_Dolly
-            ElseIf *app\rmb_p : *app\idle = Globals::#Tool_Orbit
+          *Me\down = #True
+          *Me\idle = Globals::#TOOL_CAMERA
+          glfwGetCursorPos(*window,@*Me\mouseX,@*Me\mouseY)
+          If *Me\idle = Globals::#TOOL_CAMERA
+            If *Me\lmb_p : *Me\idle = Globals::#Tool_Pan
+            ElseIf *Me\mmb_p :*Me\idle = Globals::#Tool_Dolly
+            ElseIf *Me\rmb_p : *Me\idle = Globals::#Tool_Orbit
             EndIf
             
-;           ElseIf *app\tool = #Tool_Translate Or *app\tool = #Tool_Rotate Or *app\tool = #Tool_Scale
-;             If *app\lmb_p : *s\handle\SetActiveAxis(#Handle_Active_X)
+;           ElseIf *Me\tool = #Tool_Translate Or *Me\tool = #Tool_Rotate Or *Me\tool = #Tool_Scale
+;             If *Me\lmb_p : *s\handle\SetActiveAxis(#Handle_Active_X)
 ;             ElseIf *s\mmb_p : *s\handle\SetActiveAxis(#Handle_Active_Y)
 ;               ElseIf *s\rmb_p : *s\handle\SetActiveAxis(#Handle_Active_Z) : EndIf 
             
@@ -482,12 +456,12 @@ CompilerIf #USE_GLFW
         Case #GLFW_RELEASE
   
   
-          *app\lmb_p = #False
-          *app\mmb_p = #False
-          *app\rmb_p = #False
-          *app\down = #False
-          If *app\idle = Globals::#Tool_Pan Or *app\idle = Globals::#Tool_Dolly Or *app\idle = Globals::#Tool_Orbit 
-            *app\idle = Globals::#Tool_Camera
+          *Me\lmb_p = #False
+          *Me\mmb_p = #False
+          *Me\rmb_p = #False
+          *Me\down = #False
+          If *Me\idle = Globals::#Tool_Pan Or *Me\idle = Globals::#Tool_Dolly Or *Me\idle = Globals::#Tool_Orbit 
+            *Me\idle = Globals::#Tool_Camera
           EndIf
     EndSelect
    
@@ -522,8 +496,8 @@ CompilerIf #USE_GLFW
     ; Cursor Scroll Callback (GLFW)
     ;-----------------------------------------------------------------------------
     Procedure OnScroll(*window.GLFWwindow,x.d,y.d)
-      Protected *app.Application_t = glfwGetWindowUserPointer(*window)
-      Protected *c.Camera::Camera_t = *app\camera
+      Protected *Me.Application_t = glfwGetWindowUserPointer(*window)
+      Protected *c.Camera::Camera_t = *Me\camera
      
       If *c
         Protected scrollx.d,scrolly.d
@@ -570,42 +544,51 @@ CompilerIf #USE_GLFW
   
 CompilerEndIf
 
+  ;------------------------------------------------------------------
+  ; Add Layer
+  ;------------------------------------------------------------------
+  Procedure AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
+    AddElement(*Me\layers())
+    *Me\layers() = *layer
+    *Me\layer = *layer
+  EndProcedure
+
   ;-----------------------------------------------------------------------------
   ; Get FPS
   ;-----------------------------------------------------------------------------
-  Procedure.f GetFPS(*app.Application_t)
+  Procedure.f GetFPS(*Me.Application_t)
 
-   *app\framecount +1
+   *Me\framecount +1
     Protected current.l = Time::Get()*1000
-    Protected elapsed.l = current - *app\lasttime
+    Protected elapsed.l = current - *Me\lasttime
     
     If elapsed > 1000
-      *app\fps = *app\framecount;*1.0/(elapsed /1000)
-      *app\lasttime = current
-      *app\framecount = 0
+      *Me\fps = *Me\framecount;*1.0/(elapsed /1000)
+      *Me\lasttime = current
+      *Me\framecount = 0
     EndIf  
-    ProcedureReturn *app\fps
+    ProcedureReturn *Me\fps
   EndProcedure
   
 
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*app.Application_t,*callback.PFNDRAWFN)
+  Procedure Loop(*Me.Application_t,*callback.PFNDRAWFN)
     Define event
     
     CompilerIf #USE_GLFW
-      While Not glfwWindowShouldClose(*app\window)
+      While Not glfwWindowShouldClose(*Me\window)
         ;glfwWaitEvents()
         glfwPollEvents()
-        glfwMakeContextCurrent(*app\window)
-        *callback(*app)
-        glfwSwapBuffers(*app\window)
+        glfwMakeContextCurrent(*Me\window)
+        *callback(*Me)
+        glfwSwapBuffers(*Me\window)
        
       Wend
     CompilerElse
-      ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
-      *callback(*app)
+      ViewManager::OnEvent(*Me\manager, #PB_Event_SizeWindow)
+      *callback(*Me)
       Repeat
         event = WaitWindowEvent(24)
         ; filter Windows events
@@ -618,23 +601,40 @@ CompilerEndIf
         
         Select event
           Case Globals::#EVENT_NEW_SCENE
-            Scene::Setup(Scene::*current_scene, *app\context)
-            ViewManager::OnEvent(*app\manager,Globals::#EVENT_NEW_SCENE)
+            Scene::Setup(Scene::*current_scene, *Me\context)
+            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
-            *callback(*app)
+            *callback(*Me)
+            
+          Case Globals::#EVENT_TOOL_CHANGED
+            Select EventData()
+              Case Globals::#TOOL_SCALE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+                *Me\tool = Globals::#TOOL_SCALE
+              Case Globals::#TOOL_ROTATE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+                *Me\tool = Globals::#TOOL_ROTATE
+              Case Globals::#TOOL_TRANSLATE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+                *Me\tool = Globals::#TOOL_TRANSLATE
+            EndSelect
+            
             
           Case Globals::#EVENT_SELECTION_CHANGED
-            ViewManager::OnEvent(*app\manager,Globals::#EVENT_SELECTION_CHANGED)
+            If Scene::*current_scene\selection\selected()
+              Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
+            EndIf
+            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
-            *callback(*app)
+            *callback(*Me)
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
-            Scene::Setup(Scene::*current_scene, *app\context)
-            ViewManager::OnEvent(*app\manager,Globals::#EVENT_HIERARCHY_CHANGED)
+            Scene::Setup(Scene::*current_scene, *Me\context)
+            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_HIERARCHY_CHANGED)
            
-            *callback(*app)
+            *callback(*Me)
             
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = ViewManager::*view_manager\uis("Graph")
@@ -642,35 +642,35 @@ CompilerEndIf
             If *graph
               GraphUI::SetContent(*graph,*tree)
             EndIf   
-            *callback(*app)
+            *callback(*Me)
           Case #PB_Event_Menu
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
-                *app\tool = Globals::#TOOL_TRANSLATE
+                *Me\tool = Globals::#TOOL_TRANSLATE
                 
               Case Globals::#SHORTCUT_ROTATE
-                *app\tool = Globals::#TOOL_ROTATE
+                *Me\tool = Globals::#TOOL_ROTATE
               Case Globals::#SHORTCUT_SCALE
-                *app\tool = Globals::#TOOL_SCALE
+                *Me\tool = Globals::#TOOL_SCALE
               Case Globals::#SHORTCUT_CAMERA
-                *app\tool = Globals::#TOOL_CAMERA
+                *Me\tool = Globals::#TOOL_CAMERA
               Default 
-                *app\tool = Globals::#TOOL_MAX
-                If event : ViewManager::OnEvent(*app\manager,event) : EndIf
+                *Me\tool = Globals::#TOOL_MAX
+                If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
             EndSelect
-            *callback(*app)
+            *callback(*Me)
             
           Case #PB_Event_SizeWindow
-            ViewManager::OnEvent(*app\manager,event)
-            *callback(*app)
+            ViewManager::OnEvent(*Me\manager,event)
+            *callback(*Me)
             
           Case #PB_Event_Gadget
-            If event : ViewManager::OnEvent(*app\manager,event) : EndIf
-            *callback(*app)
+            If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
+            *callback(*Me)
             
           Default
-            If event : ViewManager::OnEvent(*app\manager,event) : EndIf
-            *callback(*app)
+            If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
+            *callback(*Me)
         EndSelect
         
         
@@ -683,7 +683,6 @@ CompilerEndIf
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t)
-
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -715,8 +714,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 227
+; CursorPosition = 684
+; FirstLine = 652
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

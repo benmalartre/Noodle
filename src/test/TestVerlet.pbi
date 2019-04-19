@@ -49,7 +49,7 @@ Procedure Draw(*app.Application::Application_t)
     FTGL::EndDraw(*app\context\writer)
   CompilerElse
     
-    ViewportUI::Draw(*viewport, *app\context)
+    ViewportUI::Draw(*viewport)
   
     FTGL::BeginDraw(*app\context\writer)
     FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -93,9 +93,9 @@ Globals::Init()
   
 
   *mesh = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
-  Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  Topology::Grid(*geom\topo, 10,16,16)
-  PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
+;   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+;   Topology::Grid(*geom\topo, 10,16,16)
+;   PolymeshGeometry::Set2(*mesh\geom, *geom\topo)
   
   If Not #USE_GLFW
     ViewportUI::SetHandleTarget(*viewport, *mesh)
@@ -133,7 +133,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 61
+; CursorPosition = 51
+; FirstLine = 35
 ; Folding = -
 ; EnableXP

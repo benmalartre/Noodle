@@ -140,8 +140,7 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera)
-*app\context = *viewport\context
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\context)
 *viewport\camera = *app\camera
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
@@ -153,6 +152,7 @@ ExplorerUI::Connect(*explorer, Scene::*current_scene)
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 
+GLContext::SetContext(*app\context)
 ;ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
 Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ViewportUI::AddLayer(*viewport, *layer)
@@ -166,10 +166,10 @@ Scene::SelectObject(Scene::*current_scene, *teapot)
 ViewportUI::SetHandleTarget(*viewport, *teapot)
 
 Procedure Update(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   
   Scene::Update(Scene::*current_scene)
-  ViewportUI::Draw(*viewport, *app\context)
+  ViewportUI::Draw(*viewport)
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -180,7 +180,7 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
 
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
 EndProcedure
 
@@ -189,8 +189,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 129
+; CursorPosition = 154
+; FirstLine = 108
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

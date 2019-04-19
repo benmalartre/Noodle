@@ -34,6 +34,7 @@ DeclareModule Globals
     #EVENT_TIME_CHANGED
     #EVENT_SELECTION_CHANGED
     #EVENT_HIERARCHY_CHANGED
+    #EVENT_TOOL_CHANGED
     #EVENT_COMMAND_CALLED
     #EVENT_GRAPH_CHANGED
     #EVENT_TREE_CREATED
@@ -324,8 +325,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 144
+; CursorPosition = 36
+; FirstLine = 12
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
