@@ -189,8 +189,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.62 (MacOS X - x64)
 ; CursorPosition = 181
-; FirstLine = 126
+; FirstLine = 145
 ; Folding = -
 ; EnableXP
