@@ -92,6 +92,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  GLContext::SetContext(*app\context)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
@@ -103,7 +104,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::Update(Scene::*current_scene)
   
-  GLContext::SetContext(*app\context)
+  
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
@@ -238,8 +239,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 138
-; FirstLine = 128
+; CursorPosition = 112
+; FirstLine = 102
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

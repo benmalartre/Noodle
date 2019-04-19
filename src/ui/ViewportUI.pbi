@@ -24,6 +24,7 @@ DeclareModule ViewportUI
     *handle.Handle::Handle_t
 
     pbo.i
+    tex.i
     mx.f
     my.f
     oldX.f
@@ -43,8 +44,6 @@ DeclareModule ViewportUI
   Declare Init(*Me.ViewportUI_t)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
   Declare Term(*Me.ViewportUI_t)
-  Declare SetContext(*Me.ViewportUI_t)
-  Declare FlipBuffer(*Me.ViewportUI_t)
   Declare Draw(*Me.ViewportUI_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
@@ -92,13 +91,31 @@ Module ViewportUI
     *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
+    
+    Define *mem = AllocateMemory(GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4)
+    ; setup pixel buffer object in main gl context
     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
     glGenBuffers(1, @*Me\pbo)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)
-    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, #Null, #GL_DYNAMIC_COPY)
+    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, *mem, #GL_DYNAMIC_COPY)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     
+    ; init  texture objects
+    glGenTextures(1, @*Me\tex)
+    glBindTexture(#GL_TEXTURE_2D, *Me\tex)
+    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_NEAREST)
+    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
+    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP)
+    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP)
+    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width , GLContext::*MAIN_GL_CTXT\height, 0, #GL_BGRA, #GL_UNSIGNED_BYTE, *mem)
+    glBindTexture(#GL_TEXTURE_2D, 0)
+    
+    FreeMemory(*mem)
+    
+    ; setup delegate gl context
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
+
+    
     *Me\camera = *camera
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
@@ -660,66 +677,47 @@ Module ViewportUI
     
 
   EndProcedure
-  
-  ;-------------------------------------------------------
-  ; Set Context
-  ;-------------------------------------------------------
-  Procedure SetContext(*v.ViewportUI_t)
-    CompilerIf Not #USE_GLFW
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-        CocoaMessage( 0, *v\context\ID, "makeCurrentContext" )
-      CompilerElse
-        SetGadgetAttribute(*v\gadgetID, #PB_OpenGL_SetContext, #True)
-      CompilerEndIf
-    CompilerEndIf
-  EndProcedure
-  
-  ;-------------------------------------------------------
-  ; Flip Buffer
-  ;-------------------------------------------------------
-  Procedure FlipBuffer(*v.ViewportUI_t)
-    CompilerIf Not #USE_GLFW
-      CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-        CocoaMessage( 0, *v\context\ID, "flushBuffer" )
-      CompilerElse
-        If Not #USE_GLFW
-          SetGadgetAttribute(*v\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-        EndIf
-      CompilerEndIf
-     CompilerEndIf
-   EndProcedure
    
   ;-------------------------------------------------------
   ; Blit Between Contexts
   ;-------------------------------------------------------
-   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
-
+  Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
+    
+    GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
     ; set the target framebuffer To Read 
     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-     
     ; read pixels from framebuffer To PBO
     ; glReadPixels() should Return immediately.
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)    
     glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     
-    GLContext::SetContext(*Me\context)
-    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, 0)
+    
     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
-    glDrawPixels(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
-     
-    ; back To conventional pixel operation
-    glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
+    glBindTexture(#GL_TEXTURE_2D, *Me\tex)
+    glActiveTexture(#GL_TEXTURE0)
+    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, *Me\context\width, *Me\context\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
+    
+    GLContext::SetContext(*Me\context)
+;     glDisable(#GL_TEXTURE_2D);  //if you have more enabled, disable them all
+;     glDisable(#GL_LIGHTING)
+;     glDisable(#GL_DEPTH_TEST)
+;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, 0)
+;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
+;     glClear(#GL_DEPTH_BUFFER_BIT)
+;     glDrawBuffer(#GL_FRONT_AND_BACK)
+;     glDrawPixels(*Me\context\width, *Me\context\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
+;     glDrawBuffer(#GL_BACK)
+;     ; back To conventional pixel operation
+;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
     GLContext::FlipBuffer(*Me\context)
    EndProcedure
-   
-  
-  
+
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 695
-; FirstLine = 657
-; Folding = -----
+; CursorPosition = 697
+; FirstLine = 649
+; Folding = ----
 ; EnableXP

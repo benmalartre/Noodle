@@ -243,10 +243,6 @@ CompilerEndIf
   Procedure SizeWindowCallback()
     ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
   EndProcedure
-    
-  Procedure CreateSharedOpenGLContext(*Me.Application_t)
-    *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
-  EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Constructor
@@ -281,7 +277,7 @@ CompilerEndIf
 
       *Me\width = WindowWidth(*Me\manager\window,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\manager\window,#PB_Window_InnerCoordinate)
-      CreateSharedOpenGLContext(*Me)
+      *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
       
       AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
@@ -714,8 +710,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 684
-; FirstLine = 652
+; CursorPosition = 244
+; FirstLine = 242
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

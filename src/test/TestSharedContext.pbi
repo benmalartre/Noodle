@@ -26,6 +26,7 @@ Structure Monitor_t
   window.i
   *camera.Camera::Camera_t
   *viewport.ViewportUI::ViewportUI_t
+  *bitmap.LayerBitmap::LayerBitmap_t
 EndStructure
 
 
@@ -42,13 +43,12 @@ Global *main.View::View_t = *manager\main
 For i=0 To #NUM_WINDOWS-1
   
   views(i)\window = OpenWindow(#PB_Any, Random(200), Random(200), #DEFAULT_WIDTH, #DEFAULT_HEIGHT, "SUBVIEW"+Str(i),#PB_Window_Tool, WindowID(*manager\window))
-  Define *sub.View::View_t = View::New(0,0,WindowWidth(views(i)\window),WindowHeight(views(i)\window),#Null,#False,"SUBVIEW"+Str(i),#True)
+  Define *sub.View::View_t = View::New(0,0,WindowWidth(views(i)\window),WindowHeight(views(i)\window),#Null,#False,"SUBVIEW"+Str(i) ,#True)
   views(i)\camera = Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
   views(i)\viewport = ViewportUI::New(*sub, "VIEWPORT"+Str(i), views(i)\camera, *handle)
-
+  views(i)\bitmap = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, views(i)\viewport\context, views(i)\camera)
+  LayerBitmap::Setup(views(i)\bitmap)
 Next
-
-
 
 ;///////////////////////////////////////////////////////////////////////////////
 ;// copy an image Data To texture buffer
@@ -144,49 +144,26 @@ GLContext::SetContext(*context)
 ; create framebuffer
 *framebuffer = Framebuffer::New("Default",#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
 Framebuffer::AttachTexture(*framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
-; Framebuffer::AttachRender( *framebuffer,"Depth",#GL_DEPTH_COMPONENT)
+Framebuffer::AttachRender( *framebuffer,"Depth",#GL_DEPTH_COMPONENT)
 
-glPixelStorei(#GL_UNPACK_ALIGNMENT, 4)        ; 4-byte pixel alignment
 
-; ; init 1 texture objects
-; glGenTextures(1, @tex)
-; glBindTexture(#GL_TEXTURE_2D, tex)
-; glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_NEAREST)
-; glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
-; glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_BORDER)
-; glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_BORDER)
-; glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, #DEFAULT_WIDTH, #DEFAULT_HEIGHT, 0, #GL_BGRA_EXT, #GL_UNSIGNED_BYTE, *datas)
-; glBindTexture(#GL_TEXTURE_2D, 0)
-; ; *bitmap\bitmap = tex
-; 
-; ; init 2 pixel buffer object
-; glGenBuffers(1, @pbo1)
-; glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo1)
-; glBufferData(#GL_PIXEL_UNPACK_BUFFER, #DATA_SIZE, 0, #GL_STREAM_DRAW)
-; glGenBuffers(1, @pbo2)
-; glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, pbo2)
-; glBufferData(#GL_PIXEL_UNPACK_BUFFER, #DATA_SIZE, 0, #GL_STREAM_DRAW)
-; glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
-; 
-; pbos(0) = pbo1
-; pbos(1) = pbo2
 
 Repeat
   GLContext::SetContext(*context)
   Framebuffer::BindOutput(*framebuffer)
- 
+  glViewport(0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
+  glClearColor(0,0,0,1)
+  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
   glEnable(#GL_SCISSOR_TEST)
-  glViewport(0,0,100,100)
+  
   glScissor(0,0,100,100)
   glClearColor(Random(1000)*0.001,Random(1000)*0.001,Random(1000)*0.001,1)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
   
-  glViewport(100,100,100,100)
   glScissor(100,100,100,100)
   glClearColor(Random(1000)*0.001,Random(1000)*0.001,Random(1000)*0.001,1)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
   
-  glViewport(200,200,100,100)
   glScissor(200,200,100,100)
   glClearColor(Random(1000)*0.001,Random(1000)*0.001,Random(1000)*0.001,1)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -198,18 +175,14 @@ Repeat
   GLContext::FlipBuffer(*context)
 
   For i=0 To #NUM_WINDOWS-1
-
-;     GLContext::SetContext(views(i)\viewport\context)
-;     glViewport(0,0, views(i)\viewport\context\width, views(i)\viewport\context\height)
-;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, 0)
-;     glClearColor(Random(1000)*0.001,Random(1000)*0.001,Random(1000)*0.001,1.0)
-;     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;     GLContext::FlipBuffer(views(i)\viewport\context)
     
     GLContext::SetContext(*context)
+     
     ViewportUI::Blit(views(i)\viewport, *framebuffer)
+    views(i)\bitmap\bitmap = views(i)\viewport\tex
+    LayerBitmap::Draw(views(i)\bitmap, views(i)\viewport\context)
   Next
-;   
+  
   
 Until WaitWindowEvent() = #PB_Event_CloseWindow
 
@@ -217,7 +190,7 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 40
+; CursorPosition = 181
+; FirstLine = 126
 ; Folding = -
 ; EnableXP
