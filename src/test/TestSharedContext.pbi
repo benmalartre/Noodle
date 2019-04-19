@@ -26,7 +26,6 @@ Structure Monitor_t
   window.i
   *camera.Camera::Camera_t
   *viewport.ViewportUI::ViewportUI_t
-  *bitmap.LayerBitmap::LayerBitmap_t
 EndStructure
 
 
@@ -46,8 +45,7 @@ For i=0 To #NUM_WINDOWS-1
   Define *sub.View::View_t = View::New(0,0,WindowWidth(views(i)\window),WindowHeight(views(i)\window),#Null,#False,"SUBVIEW"+Str(i) ,#True)
   views(i)\camera = Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
   views(i)\viewport = ViewportUI::New(*sub, "VIEWPORT"+Str(i), views(i)\camera, *handle)
-  views(i)\bitmap = LayerBitmap::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, views(i)\viewport\context, views(i)\camera)
-  LayerBitmap::Setup(views(i)\bitmap)
+  
 Next
 
 ;///////////////////////////////////////////////////////////////////////////////
@@ -179,8 +177,7 @@ Repeat
     GLContext::SetContext(*context)
      
     ViewportUI::Blit(views(i)\viewport, *framebuffer)
-    views(i)\bitmap\bitmap = views(i)\viewport\tex
-    LayerBitmap::Draw(views(i)\bitmap, views(i)\viewport\context)
+    
   Next
   
   
@@ -190,7 +187,7 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 181
-; FirstLine = 145
+; CursorPosition = 178
+; FirstLine = 150
 ; Folding = -
 ; EnableXP

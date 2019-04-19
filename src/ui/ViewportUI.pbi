@@ -25,6 +25,7 @@ DeclareModule ViewportUI
 
     pbo.i
     tex.i
+    *layer.LayerBitmap::LayerBitmap_t
     mx.f
     my.f
     oldX.f
@@ -113,10 +114,10 @@ Module ViewportUI
     FreeMemory(*mem)
     
     ; setup delegate gl context
-    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
-
-    
     *Me\camera = *camera
+    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
+    *Me\layer = LayerBitmap::New(*Me\sizX, *Me\sizY, *Me\context, *Me\camera)
+    LayerBitmap::Setup(*Me\layer)
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
     
@@ -700,24 +701,16 @@ Module ViewportUI
     glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, *Me\context\width, *Me\context\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
     GLContext::SetContext(*Me\context)
-;     glDisable(#GL_TEXTURE_2D);  //if you have more enabled, disable them all
-;     glDisable(#GL_LIGHTING)
-;     glDisable(#GL_DEPTH_TEST)
-;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, 0)
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
-;     glClear(#GL_DEPTH_BUFFER_BIT)
-;     glDrawBuffer(#GL_FRONT_AND_BACK)
-;     glDrawPixels(*Me\context\width, *Me\context\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
-;     glDrawBuffer(#GL_BACK)
-;     ; back To conventional pixel operation
-;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, 0)
+    *Me\layer\bitmap = *Me\tex
+    LayerBitmap::Draw(*Me\layer, *Me\context)
+
     GLContext::FlipBuffer(*Me\context)
    EndProcedure
 
   
 EndModule
 ; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 701
-; FirstLine = 680
+; CursorPosition = 705
+; FirstLine = 673
 ; Folding = ----
 ; EnableXP
