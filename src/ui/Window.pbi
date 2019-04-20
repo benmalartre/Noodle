@@ -101,7 +101,7 @@ Module Window
     
     Select event
       Case #PB_Event_Gadget
-         Debug "WINDOW EVENT GADGET : "
+
         If *over
           Protected touch = View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
           If EventType() = #PB_EventType_LostFocus
@@ -306,5 +306,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 79
 ; Folding = ---
 ; EnableXP

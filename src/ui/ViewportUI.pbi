@@ -680,7 +680,7 @@ Module ViewportUI
   ; Blit Between Contexts
   ;-------------------------------------------------------
   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
-   
+    Debug GLContext::*MAIN_GL_CTXT
     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
     
     ; set the target framebuffer To Read 
@@ -708,7 +708,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 697
+; CursorPosition = 700
 ; FirstLine = 646
 ; Folding = ----
 ; EnableXP

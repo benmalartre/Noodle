@@ -102,8 +102,8 @@ EndProcedure
 Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*app\context)
   ;Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*Default,*app\context)
-  
+  ;LayerDefault::Draw(*Default,*app\context)
+  Application::Draw(*app, *default, *app\camera)
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer, 1,1,1,1)
 
@@ -115,14 +115,15 @@ Procedure Draw(*app.Application::Application_t)
   
   GLContext::FlipBuffer(*app\context)
   viewportUI::Blit(*viewport, *default\buffer)
+  Debug "VIEWPORT CTXT : "+Str(*viewport\context\width)+", "+Str(*viewport\context\height)
 
  EndProcedure
  
 
  
  Define useJoystick.b = #False
- width = 720
- height = 576
+ width = 1024 
+ height = 720
 ; Main
 ;--------------------------------------------
  If Time::Init()
@@ -268,8 +269,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 96
+; CursorPosition = 117
+; FirstLine = 89
 ; Folding = --
 ; EnableXP
 ; Executable = Test

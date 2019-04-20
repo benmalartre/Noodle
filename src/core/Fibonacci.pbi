@@ -9,7 +9,7 @@ DeclareModule Fibonacci
   Structure Fibonacci_t
     N.i
     *positions.CArray::CArrayV3F32
-    *sizes.CArray::CArrayFloat
+    *sizes.CArray::CArrayInt
   EndStructure
   
   Declare New(N.i)
@@ -25,7 +25,7 @@ Module Fibonacci
   Procedure New(N.i)
     Protected *Me.Fibonacci_t = AllocateMemory(SizeOf(Fibonacci_t))
     *Me\positions = CArray::newCArrayV3F32()
-    *Me\sizes = CArray::newCArrayFloat()
+    *Me\sizes = CArray::newCArrayInt()
     *Me\N = N
     ProcedureReturn *Me
   EndProcedure
@@ -83,7 +83,7 @@ Module Fibonacci
           y - v
       EndSelect
       
-      CArray::SetValueF(*Me\sizes, i, u)
+      CArray::SetValueI(*Me\sizes, i, u)
     Next
     
     FreeMemory(*table)
@@ -102,7 +102,7 @@ Module Fibonacci
       r = Sqr((i+0.5)/*Me\N)
       theta = Radian(Math::#GOLDEN_ANGLE * (i+0.5))
       Vector3::Set(*p, (r * Cos(theta)), 0, (r * Sin(theta)))
-      CArray::SetValueF(*Me\sizes, i, 1)
+      CArray::SetValueI(*Me\sizes, i, 1)
     Next
   EndProcedure
   
@@ -124,13 +124,13 @@ Module Fibonacci
                    Sin(theta) * Sin(phi),
                    Cos(phi))
       
-      CArray::SetValueF(*Me\sizes, i, 1)
+      CArray::SetValueI(*Me\sizes, i, 1)
     Next
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 125
-; FirstLine = 98
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 126
+; FirstLine = 68
 ; Folding = --
 ; EnableXP

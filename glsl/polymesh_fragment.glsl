@@ -36,7 +36,7 @@ if(lightPosition.w == 0.0) {
 } else {
   // NOT a directional light
 }
-
+		
 		vec3 lightDirection = -normalize(lightPosition);
 		float diffuse = max(0.0, dot(vertex_normal, normalize(lightPosition)));
 		outColor = vec4(diffuse, diffuse, diffuse, 1.0);
@@ -61,7 +61,7 @@ if(lightPosition.w == 0.0) {
 		//if((t.x+t.y+t.z)/3>0.5)a=0.0;
 		vec3 color = vertex_color.xyz*d;
 		outColor = vec4(color,a);
-		
+		*/
 		
 		vec3 lightDirection = -normalize(lightPosition);
 		float d = dot(vertex_normal, normalize(lightPosition));
@@ -75,8 +75,8 @@ if(lightPosition.w == 0.0) {
 			}
 		}
 		else outColor = vec4(0.5,0.5,0.5,1.0) * vertex_color;
-		*/
-		outColor = vec4((vertex_normal+vec3(1.0))*0.5, 1.0);
+		
+		//outColor = vec4((vertex_normal+vec3(1.0))*0.5, 1.0);
 
 	}
 

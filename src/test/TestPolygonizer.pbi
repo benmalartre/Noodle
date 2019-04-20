@@ -71,8 +71,13 @@ EndProcedure
 ; Draw
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  
-  ViewportUI::SetContext(*viewport)
+  Debug *app
+  Debug *app\context
+  Debug *app\context\ID
+  GLContext::SetContext(*app\context)
+  Debug *app
+  Debug *app\context
+  Debug *app\context\ID
   Scene::*current_scene\dirty= #True
   Define isolevel.f = Random(100)*0.0
 
@@ -88,8 +93,8 @@ Procedure Draw(*app.Application::Application_t)
   DrawPolygonizer(*polygonizer, ss, ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
-
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 
@@ -103,19 +108,18 @@ FTGL::Init()
    width = 800
    height = 600
    *app = Application::New("Test Polygonizer",width, height, options)
-
+   
+   
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
-    *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
- 
+ GLContext::SetContext(*app\context)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
     
@@ -146,7 +150,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 87
+; CursorPosition = 143
+; FirstLine = 88
 ; Folding = -
 ; EnableXP

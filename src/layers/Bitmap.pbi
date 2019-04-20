@@ -149,7 +149,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 101
+; CursorPosition = 85
 ; FirstLine = 77
 ; Folding = --
 ; EnableXP

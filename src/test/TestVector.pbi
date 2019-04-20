@@ -36,10 +36,10 @@ Procedure Draw(*app.Application::Application_t)
   Verlet::Draw(*verlet, *drawer)
   Verlet::Deform(*verlet)
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::Update(Scene::*current_scene)
   
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *layer, *app\camera)
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -48,7 +48,8 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 
  EndProcedure
  
@@ -63,17 +64,17 @@ Globals::Init()
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -101,7 +102,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 42
+; CursorPosition = 75
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

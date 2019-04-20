@@ -377,7 +377,6 @@ Module View
       
       If *affected And *affected\splitter
         StartDrawing(CanvasOutput(*affected\splitter  ))
-        ;         Box(0,0,GadgetWidth(*view\top\splitterID),GadgetHeight(*view\top\splitterID),RGB(Random(100)*0.01,Random(100)*0.01,Random(100)*0.01))
         Box(0,0,GadgetWidth(*affected\splitter),GadgetHeight(*affected\splitter),UIColor::COLOR_TERNARY_BG)
         StopDrawing() 
         ProcedureReturn *affected
@@ -567,7 +566,7 @@ Module View
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 525
-; FirstLine = 504
+; CursorPosition = 379
+; FirstLine = 358
 ; Folding = ----
 ; EnableXP

@@ -36,31 +36,21 @@ Procedure Draw(*app.Application::Application_t)
   Verlet::Draw(*verlet, *drawer)
   Verlet::Deform(*verlet)
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::Update(Scene::*current_scene)
   
-  CompilerIf #USE_GLFW
-    Application::Draw(*app, *layer)
-    FTGL::BeginDraw(*app\context\writer)
-    FTGL::SetColor(*app\context\writer,1,1,1,1)
-    Define ss.f = 0.85/width
-    Define ratio.f = width / height
-    FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-    FTGL::EndDraw(*app\context\writer)
-  CompilerElse
-    
-    ViewportUI::Draw(*viewport)
+
+  Application::Draw(*app, *layer, *app\camera)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
+
   
-    FTGL::BeginDraw(*app\context\writer)
-    FTGL::SetColor(*app\context\writer,1,1,1,1)
-    Define ss.f = 0.85/width
-    Define ratio.f = width / height
-    FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-    FTGL::EndDraw(*app\context\writer)
-    
-    ViewportUI::FlipBuffer(*viewport)
-  CompilerEndIf
-    
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 
  EndProcedure
  
@@ -75,15 +65,16 @@ Globals::Init()
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
-     *app\context = *viewport\context
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
+  
+  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
@@ -99,7 +90,7 @@ Globals::Init()
   
   If Not #USE_GLFW
     ViewportUI::SetHandleTarget(*viewport, *mesh)
-    ViewportUI::AddLayer(*viewport, *layer)
+    Application::AddLayer(*app, *layer)
   EndIf
   
   Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
@@ -133,7 +124,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 35
+; CursorPosition = 68
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

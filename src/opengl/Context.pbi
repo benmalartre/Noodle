@@ -181,8 +181,8 @@ Module GLContext
         
         ; load extensions and setup shaders
         If Not *context
-          Setup(*Me)
           *MAIN_GL_CTXT = *Me
+          Setup(*Me)
         Else
           Copy(*Me, *context)
         EndIf
@@ -196,8 +196,8 @@ Module GLContext
         
         ; load extensions and setup shaders
         If Not *context
-          Setup(*Me)
           *MAIN_GL_CTXT = *Me
+          Setup(*Me)
         Else
           ; share context
           SetGadgetAttribute(*MAIN_GL_CTXT\ID, #PB_OpenGL_SetContext, #True)
@@ -297,8 +297,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 152
+; CursorPosition = 184
+; FirstLine = 158
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode
