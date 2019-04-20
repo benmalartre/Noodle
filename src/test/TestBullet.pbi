@@ -102,7 +102,7 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 
-Global default_layer.Layer::ILayer
+Global *default.Layer::Layer_t
 Global gbuffer.Layer::ILayer
 Global shadowmap.Layer::ILayer
 Global defered.Layer::ILayer
@@ -287,7 +287,7 @@ Procedure Draw(*app.Application::Application_t)
   ;   default_layer\Draw(*app\context)
 
   GLCheckError("TEST BULLET BEGIN DRAW")
-  ViewportUI::Draw(*viewport)
+  Application::Draw(*app, *default, *viewport\camera  )
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -298,6 +298,7 @@ Procedure Draw(*app.Application::Application_t)
 
   
   GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *default\buffer)
   GLCheckError("TEST BULLET END DRAW")
   
 ;   Polymesh::Draw(*teapot)
@@ -356,7 +357,8 @@ Procedure Draw(*app.Application::Application_t)
     GLContext::Setup(*app\context)
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
-
+  
+  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
@@ -365,8 +367,8 @@ Procedure Draw(*app.Application::Application_t)
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
 
-  Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *default)
+  *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
+  Application::AddLayer(*app, *default)
   LayerDefault::Setup(*default)
   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
@@ -381,7 +383,6 @@ Procedure Draw(*app.Application::Application_t)
 ;   Global *defered.Layer::Layer_t = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
 ;   LayerShadowDefered::Setup(*defered)
   
-  Global default_layer.Layer::ILayer = *default
 ;   Global gbuffer.Layer::ILayer = *gbuffer
 ;   Global shadowmap.Layer::ILayer = *shadowmap
 ;   Global defered.Layer::ILayer = *defered
@@ -413,8 +414,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 297
-; FirstLine = 264
+; CursorPosition = 289
+; FirstLine = 285
 ; Folding = --
 ; EnableThread
 ; EnableXP

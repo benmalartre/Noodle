@@ -11,7 +11,7 @@ DeclareModule LogUI
     frame.i
   EndStructure
   
-  Declare New(*parent.View::View_t,name.s)
+  Declare New(*parent.View::View_t,name.s="LogUI")
   Declare Delete(*Me.LogUI_t)
 ;   Declare Draw(*Me.LogUI_t)
   Declare Init(*Me.LogUI_t)
@@ -32,7 +32,7 @@ EndDeclareModule
 Module LogUI
   ; Constructor
   ;-------------------------------
-  Procedure New(*parent.View::View_t,name.s)
+  Procedure New(*parent.View::View_t,name.s="LogUI")
     Protected x = *parent\x
     Protected y = *parent\y
     Protected w = *parent\width
@@ -168,8 +168,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 36
+; CursorPosition = 13
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

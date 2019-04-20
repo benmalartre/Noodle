@@ -96,8 +96,11 @@ Module Animation
         
     EndSelect
     
-    SelectElement(*animation\poses(),cframe)
-    ProcedureReturn *animation\poses()
+    If ListSize(*animation\poses())
+      SelectElement(*animation\poses(),cframe)
+      ProcedureReturn *animation\poses()
+    EndIf
+    
   EndProcedure
   
   ;--------------------------------------------
@@ -192,10 +195,10 @@ Module Animation
 ;           Protected *obj.AlembicIObject::AlembicIObject_t = AlembicIObject::New(archive\GetObject(1));ByName(identifier))
 ;           AlembicIObject::Init(*obj,#Null)
 ;           
-;           *animation\startframe = archive\GetStartTime()
-;           *animation\endframe = archive\GetEndTime()
-;           
-;           MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
+          *animation\startframe = archive\GetStartTime()
+          *animation\endframe = archive\GetEndTime()
+          
+          MessageRequester("Alembic Duration : ","("+StrF(*animation\startframe,3)+" TO "+StrF(*animation\endframe,3 )+")")
 ;   
 ;           Protected sample.Alembic::ABC_Skeleton_Sample
 ;           Protected infos.Alembic::ABC_Skeleton_Sample_Infos
@@ -417,7 +420,7 @@ Module Animation
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 145
+; CursorPosition = 82
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

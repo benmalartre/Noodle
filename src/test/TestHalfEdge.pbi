@@ -114,14 +114,13 @@ Procedure Update(*app.Application::Application_t)
   EndIf
   
   GLContext::SetContext(*app\context)
-  glViewport(0,0,*app\context\width, *app\context\height)
   Drawer::Flush(*drawer)
   DrawSelected(*mesh\geom)
 
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   
-  Application::Draw(*app, *layer)
+  Application::Draw(*app, *layer, *app\camera)
 
 ;   FTGL::BeginDraw(*app\context\writer)
 ;   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -147,9 +146,9 @@ FTGL::Init()
    *app = Application::New("Test Half Edge",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -157,7 +156,7 @@ FTGL::Init()
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -206,7 +205,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 93
+; CursorPosition = 158
+; FirstLine = 102
 ; Folding = -
 ; EnableXP

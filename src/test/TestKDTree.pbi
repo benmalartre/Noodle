@@ -305,7 +305,7 @@ Procedure KDTreeUpdate()
   BruteClosest(*kdtree)
 
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
@@ -315,8 +315,8 @@ Procedure KDTreeUpdate()
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*viewport\width
-  Define ratio.f = *viewport\width / *viewport\height
+  Define ss.f = 0.85/*viewport\sizX
+  Define ratio.f = *viewport\sizX / *viewport\sizY
   
   ; white first pass
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -350,7 +350,8 @@ Procedure KDTreeUpdate()
   
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 ; --------------------------------------------
@@ -362,17 +363,17 @@ If Time::Init()
 
   *app = Application::New("KDTree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-    *app\context = *viewport\context
-    *viewport\camera = *app\camera
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\handle)
+
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
+  GLContext::SetContext(*app\context)
   *drawer = Drawer::New("KDTree_Visualizer")
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,800,*app\context,*app\camera)
-  viewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
   Global *root.Model::Model_t = Model::New("Model")
   Object3D::AddChild(*root, *drawer)
   Scene::AddModel(Scene::*current_scene, *root)
@@ -404,7 +405,6 @@ If Time::Init()
   result = "Closest Point ID : "+Str(search\ID)+"\n"
   result + "Closest Distance : "+StrF(search\distance)+"\n"
 ;   result + "Num Queries : "+Str(*tree\m_cmps)+"\n"
-  MessageRequester("KDTree",result)
   Define.KDTree::KDPoint_t min,max
 ;   KDTree::GetBoundingBox(*tree,,@min,@max)
 ;   DrawKDTree(*kdtree)
@@ -419,8 +419,8 @@ If Time::Init()
   
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 379
-; FirstLine = 330
+; CursorPosition = 407
+; FirstLine = 357
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

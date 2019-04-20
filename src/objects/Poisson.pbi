@@ -134,7 +134,7 @@ Module Poisson
                        *Me\dimension\x*x+*Me\box\origin\x-*Me\box\extend\x,
                        *Me\dimension\y*y+*Me\box\origin\y-*Me\box\extend\y,
                        *Me\dimension\z*z+*Me\box\origin\z-*Me\box\extend\z)
-          If PolymeshGeometry::GetClosestLocation(*mesh, @p, @cp, CArray::GetPtr(*Me\distances, i))
+          If PolymeshGeometry::GetClosestLocation(*mesh, p, cp, CArray::GetPtr(*Me\distances, i))
             CArray::SetValueB(*Me\hits, i, #True)
           EndIf 
           i+1
@@ -248,7 +248,7 @@ Module Poisson
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 174
-; FirstLine = 170
+; CursorPosition = 136
+; FirstLine = 80
 ; Folding = ---
 ; EnableXP

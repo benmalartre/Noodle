@@ -100,9 +100,9 @@ EndProcedure
 ; Draw  
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   ;Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*default,*app\context)
+  LayerDefault::Draw(*Default,*app\context)
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer, 1,1,1,1)
@@ -113,7 +113,8 @@ Procedure Draw(*app.Application::Application_t)
 ; 
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  viewportUI::Blit(*viewport, *default\buffer)
 
  EndProcedure
  
@@ -135,13 +136,13 @@ Procedure Draw(*app.Application::Application_t)
    ExamineDesktops()
    *app = Application::New("Test Instances",width,height)
    If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-    *app\context = *viewport\context
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   
+  GLContext::SetContext(*app\context)
   Define glVersion.s = PeekS(glGetString(#GL_VERSION),-1,#PB_Ascii)
   MessageRequester("OpenGL Version",glVersion)
   
@@ -158,7 +159,7 @@ Procedure Draw(*app.Application::Application_t)
   *blur = LayerBlur::New(width,height,*app\context,*ssao\buffer,*app\camera)
   
   If Not #USE_GLFW
-    ViewportUI::AddLayer(*viewport, *default)
+    Application::AddLayer(*app, *default)
   EndIf
   
 ;   
@@ -267,8 +268,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 203
-; FirstLine = 171
+; CursorPosition = 139
+; FirstLine = 96
 ; Folding = --
 ; EnableXP
 ; Executable = Test

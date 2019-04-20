@@ -43,6 +43,7 @@ Global *ssao.LayerSSAO::LayerSSAO_t
 Global *cloud.PointCloud::PointCloud_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
+Global *viewport2.ViewportUI::ViewportUI_t
 Global *model.Model::Model_t
 Global texture.i
 
@@ -56,7 +57,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   If Time::currentframe>100 : Time::currentframe = 1:EndIf
 ;   Scene::Update(Scene::*current_scene)
   GLContext::SetContext(*app\context)
-  Application::Draw(*app, *layer)
+  Application::Draw(*app, *layer, *viewport\camera)
 ;   ;   FTGL::BeginDraw(*app\context\writer)
 ;   LayerDefault::Draw(*layer, *app\context)
 ;   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -94,6 +95,8 @@ If Time::Init()
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   GLContext::SetContext(*app\context)
+  
+  
   *layer = LayerDefault::New(#WIDTH,#HEIGHT,*app\context,*app\camera)
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
@@ -159,14 +162,16 @@ If Time::Init()
   
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   
+  Define *monitor = Application::AddWindow(*app,0,0,200,200)
+  *viewport2 = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
  
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 103
+; CursorPosition = 165
+; FirstLine = 107
 ; Folding = -
 ; EnableThread
 ; EnableXP

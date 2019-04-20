@@ -27,6 +27,7 @@ Global *A.Animation::Animation_t
 Global *B.Animation::Animation_t
 Global frame
 Procedure Draw(*app.Application::Application_t)
+  GLContext::SetContext(*app\context)
   layer\Draw(*app\context)
   
   frame +1
@@ -35,14 +36,15 @@ Procedure Draw(*app.Application::Application_t)
   EndIf
   
   Protected *pose.Pose::Pose_t = Animation::GetPoseAtFrame(*A,frame)
-  
-  Skeleton::UpdatePose(*skeleton,*pose)
-  Scene::Update(Scene::*current_scene)
+  If *pose : Skeleton::UpdatePose(*skeleton,*pose)
+  Scene::Update(Scene::*current_scene) : EndIf
 ;   Delay(250)
   
   If Not #USE_GLFW
-    ViewportUI::FlipBuffer(*viewport)
+    GLContext::FlipBuffer(*app\context)
+    ViewportUI::Blit(*viewport, *layer\buffer)
   EndIf
+  
   
 EndProcedure
     
@@ -63,12 +65,12 @@ If Time::Init()
    Scene::*current_scene = Scene::New()
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-    *app\context = *viewport\context
+    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
+
     *viewport\camera = *app\camera
     View::SetContent(*app\manager\main,*viewport)
   EndIf
-  
+  GLContext::SetContext(*app\context)
   Debug "Camera :: "+Str(*app\camera)
   
   Matrix4::SetIdentity(model)
@@ -133,8 +135,8 @@ Scene::AddModel(Scene::*current_scene,*model)
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 74
+; CursorPosition = 44
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

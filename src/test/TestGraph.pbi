@@ -129,8 +129,8 @@ Scene::AddChild(Scene::*current_scene,*teapot)
 
 Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
-Define *m.ViewManager::ViewManager_t = *app\manager
-Global *main.View::View_t = *m\main
+Define *window.Window::Window_t = *app\window
+Global *main.View::View_t = *window\main
 Global *view.View::View_t = View::Split(*main,0,50)
 Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
 
@@ -154,12 +154,12 @@ Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 GLContext::SetContext(*app\context)
 ;ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
-Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
-ViewportUI::AddLayer(*viewport, *layer)
+Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+Application::AddLayer(*app, *layer)
 
 Scene::Setup(Scene::*current_scene,*app\context)
-ViewManager::OnEvent(*app\manager, Globals::#EVENT_NEW_SCENE)
-ViewManager::OnEvent(*app\manager, #PB_Event_SizeWindow)
+Window::OnEvent(*app\window, Globals::#EVENT_NEW_SCENE)
+Window::OnEvent(*app\window, #PB_Event_SizeWindow)
 Controls::SetTheme(UIColor::#LIGHT_THEME)
 
 Scene::SelectObject(Scene::*current_scene, *teapot)
@@ -169,7 +169,7 @@ Procedure Update(*app.Application::Application_t)
   GLContext::SetContext(*app\context)
   
   Scene::Update(Scene::*current_scene)
-  ViewportUI::Draw(*viewport)
+  Application::Draw(*app, *layer, *viewport\camera)
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -181,7 +181,7 @@ Procedure Update(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
 
   GLContext::FlipBuffer(*app\context)
-
+  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 
@@ -189,8 +189,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 108
+; CursorPosition = 161
+; FirstLine = 127
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

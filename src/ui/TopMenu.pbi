@@ -186,10 +186,10 @@ Module TopMenuUI
     *Me\container = ContainerGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
                                   
 
-    Protected *manager.ViewManager::ViewManager_t = *parent\manager
+    Protected *window.Window::Window_t = *parent\window
     
     ; ---[ Menu ]------------------
-    *Me\menu = ControlMenu::New(*manager\window,*Me\container,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
+    *Me\menu = ControlMenu::New(*window\ID,*Me\container,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     *Me\gadgetID = *Me\menu\gadgetID
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")

@@ -80,18 +80,18 @@ Module LayerBitmap
   ; Draw
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
-    Debug " --------------------------- Draw Bitmap Layer -----------------------------------"
-    Protected shader = *ctx\shaders("bitmap")\pgm
-    glUseProgram(shader)
+    
+    glUseProgram(*layer\shader)
     
     Framebuffer::BindOutput(*layer\buffer)
     Layer::Clear(*layer)
-
+    
     glActiveTexture(#GL_TEXTURE0)
     glBindTexture(#GL_TEXTURE_2D,*layer\bitmap)
     
-    glUniform1i(glGetUniformLocation(shader,"tex"),0)
-    glUniform4f(glGetUniformLocation(shader,"color"),0.0,1.0,0.0,1.0)
+    
+    glUniform1i(glGetUniformLocation(*layer\shader,"tex"),0)
+    glUniform4f(glGetUniformLocation(*layer\shader,"color"),0.0,1.0,0.0,1.0)
     
     glDisable(#GL_CULL_FACE)
     glDisable(#GL_DEPTH_TEST)
@@ -137,6 +137,7 @@ Module LayerBitmap
     Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
+    *Me\shader = *ctx\shaders("bitmap")\pgm
     
     Debug "NUM SHJADERS : "+Str(MapSize(*ctx\shaders()))
     Layer::AddScreenSpaceQuad(*Me,*ctx)
@@ -148,7 +149,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
+; CursorPosition = 101
 ; FirstLine = 77
 ; Folding = --
 ; EnableXP

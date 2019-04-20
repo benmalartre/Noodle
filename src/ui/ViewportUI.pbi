@@ -159,7 +159,6 @@ Module ViewportUI
 
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
-    Protected *manager.ViewManager::ViewManager_t = *top\manager
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
         
@@ -683,23 +682,23 @@ Module ViewportUI
   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
    
     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
+    
     ; set the target framebuffer To Read 
     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
     ; read pixels from framebuffer To PBO
-    ; glReadPixels() should Return immediately.
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)    
-    glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_BGRA, #GL_UNSIGNED_BYTE, 0)
+    glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_RGBA, #GL_UNSIGNED_BYTE, 0)
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     
-    
+    ; copy pbo content to texture
     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
     glBindTexture(#GL_TEXTURE_2D, *Me\tex)
     glActiveTexture(#GL_TEXTURE0)
     glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
+    ; draw texture on screen space quad
     GLContext::SetContext(*Me\context)
-    glViewport(0,0,GadgetWidth(*Me\gadgetID), GadgetHeight(*Me\gadgetID))
     *Me\layer\bitmap = *Me\tex
     LayerBitmap::Draw(*Me\layer, *Me\context)
 
@@ -709,7 +708,7 @@ Module ViewportUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 63
+; CursorPosition = 697
+; FirstLine = 646
 ; Folding = ----
 ; EnableXP

@@ -462,8 +462,22 @@ Module Location
   ;------------------------------------------------------------------
   Procedure ClosestPoint( *Me.Location_t, *A.v3f32, *B.v3f32, *C.v3f32, *P.v3f32, *distance, maxDistance.f=Math::#F32_MAX)
     
+    Protected squaredDist.f = Pow(PeekF(*distance), 2)
     Protected edge0.v3f32
     Protected edge1.v3f32
+    
+    ; early reject too far triangles
+    Vector3::Sub(edge0, *A, *P)
+    If Vector3::LengthSquared(edge0) > squaredDist
+      Vector3::Sub(edge0, *B, *P)
+      If Vector3::LengthSquared(edge0) > squaredDist
+        Vector3::Sub(edge0, *C, *P)
+        If Vector3::LengthSquared(edge0) > squaredDist
+          ProcedureReturn #False
+        EndIf
+      EndIf
+    EndIf
+    
     
     Vector3::Sub(edge0, *B, *A)
     Vector3::Sub(edge1, *C, *A)
@@ -553,12 +567,12 @@ Module Location
     Vector3::AddInPlace(closest, edge1)
     
     Vector3::Sub(delta, *p, closest)
-    d.f = Vector3::Length(delta)
+    d.f = Vector3::LengthSquared(delta)
     
-    If d < maxDistance And d < PeekF(*distance)
+    If d < maxDistance * maxDistance And d < squaredDist
       Vector3::SetFromOther(*Me\p, closest)
       Vector3::Set(*Me\uvw, 1.0- s - t, s, t)
-      PokeF(*distance, d)
+      PokeF(*distance, Sqr(d))
       ProcedureReturn #True
     EndIf
     ProcedureReturn #False
@@ -581,7 +595,7 @@ Module Location
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 39
+; CursorPosition = 484
+; FirstLine = 457
 ; Folding = ---
 ; EnableXP

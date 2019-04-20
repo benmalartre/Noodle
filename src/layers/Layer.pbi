@@ -503,7 +503,7 @@ Module Layer
     glCheckError("Clear")
     glEnable(#GL_DEPTH_TEST)
     
-    glViewport(0,0,*layer\width,*layer\height)
+    glViewport(0,0,*ctx\width,*ctx\height)
     
     ; Find Up View Point
     ;-----------------------------------------------
@@ -726,6 +726,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 496
+; FirstLine = 603
 ; Folding = -----
 ; EnableXP

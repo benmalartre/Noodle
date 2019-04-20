@@ -2,6 +2,7 @@
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
 XIncludeFile "../ui/View.pbi"
+XIncludeFile "../ui/Window.pbi"
 ; ============================================================================
 ;  CONTROL MENU MODULE DECLARATION
 ; ============================================================================
@@ -62,7 +63,7 @@ DeclareModule ControlMenu
     imageID.i
     windowID.i
     *cache
-    *manager.ViewManager::ViewManager_t
+    *window.Window::Window_t
   EndStructure
 
   ; ============================================================================
@@ -81,7 +82,7 @@ DeclareModule ControlMenu
     
     *inspected.ControlSubMenu_t                     ; currently inspected submenu
     Array *submenus.ControlSubMenu_t(0)
-    *manager.ViewManager::ViewManager_t
+     *window.Window::Window_t
   EndStructure
   
   Declare Callback1()
@@ -590,8 +591,7 @@ Module ControlMenu
       StopVectorDrawing()
       *menu\dirty = #False
     EndIf
-    
-    
+
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -699,8 +699,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 149
+; CursorPosition = 593
+; FirstLine = 524
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

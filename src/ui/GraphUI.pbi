@@ -291,13 +291,13 @@ Module GraphUI
   Procedure InspectNode(*Me.GraphUI_t,*node.Node::Node_t)
     Protected *top.View::View_t = *Me\parent
 
-    Protected *manager.ViewManager::ViewManager_t = *top\manager
+    Protected *window.Window::Window_t = *top\window
     If *node
-      ForEach *manager\uis()
-        If *manager\uis()\name = "Property"
-          Protected *property.PropertyUI::PropertyUI_t = *manager\uis()
+      ForEach *window\uis()
+        If *window\uis()\name = "Property"
+          Protected *property.PropertyUI::PropertyUI_t = *window\uis()
           If Not PropertyUI::CheckNodeExists(*property, *node)
-            PropertyUI::Setup(*manager\uis(),*node)
+            PropertyUI::Setup(*window\uis(),*node)
           EndIf
           
          Break
@@ -1602,7 +1602,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1268
-; FirstLine = 1250
+; CursorPosition = 299
+; FirstLine = 293
 ; Folding = --------
 ; EnableXP

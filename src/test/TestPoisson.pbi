@@ -23,35 +23,35 @@ Global *viewport.ViewportUI::ViewportUI_t
 
 
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  Application::Draw(*app, *layer, *app\camera)
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*viewport\width
-  Define ratio.f = *viewport\width / *viewport\height
+  Define ss.f = 0.85/*viewport\sizX
+  Define ratio.f = *viewport\sizX / *viewport\sizY
   FTGL::Draw(*app\context\writer,"Testing Poisson Sampling",-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 Time::Init()
 Log::Init()
 
-*app = Application::New("Test Poisson Sampling",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
+*app = Application::New("Test Poisson Sampling",1024, 720, #PB_Window_ScreenCentered|#PB_Window_SystemMenu)
 
  If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-   *app\context = *viewport\context
+   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
   View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
 
-
+GLContext::SetContext(*app\context)
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
 *drawer = Drawer::New()
 
@@ -80,9 +80,11 @@ Object3D::AddChild(*root, *drawer)
 Scene::AddModel(Scene::*current_scene, *root)
 
 Define t.d = Time::Get()
-Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.2)
+Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.1)
 ; Define numSamples = Poisson::Sample(*poisson)
 Poisson::SignedDistances(*poisson, *mesh\geom)
+
+MessageRequester("TOOK", StrD(Time::Get() - t))
 Poisson::Setup(*poisson, *drawer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
@@ -136,8 +138,8 @@ Application::Loop(*app, @Draw())
 ;   Application::Loop(*app,@Draw())
 ; EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 43
+; CursorPosition = 82
+; FirstLine = 24
 ; Folding = -
 ; EnableThread
 ; EnableXP

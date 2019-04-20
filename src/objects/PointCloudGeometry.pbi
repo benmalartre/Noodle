@@ -269,9 +269,9 @@ Module PointCloudGeometry
     
     For i=0 To CArray::GetCount(*Me\a_color)-1
       *c = CArray::GetValue(*Me\a_color,i)
-      r = (Random(255)/255 - 0.5) * randomize
-      g = (Random(255)/255 - 0.5) * randomize
-      b = (Random(255)/255 - 0.5) * randomize
+      r = (Random(255)/255 + 0.5) * randomize
+      g = (Random(255)/255 + 0.5) * randomize
+      b = (Random(255)/255 + 0.5) * randomize
       a = 1
       Color::Set(*c,r,g,b,a)
     Next
@@ -398,7 +398,7 @@ Module PointCloudGeometry
   Class::DEF( PointCloudGeometry )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 386
-; FirstLine = 339
+; CursorPosition = 273
+; FirstLine = 254
 ; Folding = ---
 ; EnableXP

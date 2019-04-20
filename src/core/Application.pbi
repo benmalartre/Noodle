@@ -112,6 +112,7 @@ XIncludeFile "../commands/Graph.pbi"
 ; ============================================================================
 ;   UI MODULES
 ; ============================================================================
+XIncludeFile "../ui/Window.pbi"
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
@@ -152,8 +153,7 @@ CompilerEndIf
   Structure Application_t
     name.s
     glfw.b
-    *window.GLFWwindow
-    *manager.ViewManager::ViewManager_t
+    *window.Window::Window_t
     *context.GLContext::GLContext_t
     *camera.Camera::Camera_t
     
@@ -205,8 +205,9 @@ CompilerEndIf
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
   Declare Loop(*Me.Application_t,*callback)
-  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
+  Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
@@ -241,7 +242,7 @@ CompilerEndIf
   ; Size Window Callback
   ;-----------------------------------------------------------------------------
   Procedure SizeWindowCallback()
-    ViewManager::OnEvent(*running\manager,#PB_Event_SizeWindow)
+    Window::OnEvent(*running\window,#PB_Event_SizeWindow)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -272,21 +273,20 @@ CompilerEndIf
       RegisterCallbacks(*Me)
  
     CompilerElse
-      *Me\manager = ViewManager::New(name,0,0,width,height,options)
-      *Me\window = *Me\manager\window
+      *Me\window = Window::New(name,0,0,width,height,options)
 
-      *Me\width = WindowWidth(*Me\manager\window,#PB_Window_InnerCoordinate)
-      *Me\height = WindowHeight(*Me\manager\window,#PB_Window_InnerCoordinate)
+      *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
+      *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
       
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
-      AddKeyboardShortcut(*Me\manager\window,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
+      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
     
       *Me\idle = #True
       
@@ -310,12 +310,18 @@ CompilerEndIf
       glfwDestroyWindow(*Me\window)
 
     CompilerElse
-      ViewManager::Delete(*Me\manager)
+      Window::Delete(*Me\window)
     CompilerEndIf
     
     ClearStructure(*Me,Application_t)
     FreeMemory(*Me)
   EndProcedure
+  
+  Procedure AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
+    Define window = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window))
+    
+  EndProcedure
+  
   
 CompilerIf #USE_GLFW
   ;-----------------------------------------------------------------------------
@@ -583,7 +589,7 @@ CompilerEndIf
        
       Wend
     CompilerElse
-      ViewManager::OnEvent(*Me\manager, #PB_Event_SizeWindow)
+      Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
       *callback(*Me)
       Repeat
         event = WaitWindowEvent(24)
@@ -598,7 +604,7 @@ CompilerEndIf
         Select event
           Case Globals::#EVENT_NEW_SCENE
             Scene::Setup(Scene::*current_scene, *Me\context)
-            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_NEW_SCENE)
+            Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
@@ -622,18 +628,18 @@ CompilerEndIf
             If Scene::*current_scene\selection\selected()
               Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
             EndIf
-            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_SELECTION_CHANGED)
+            Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
             *callback(*Me)
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
             Scene::Setup(Scene::*current_scene, *Me\context)
-            ViewManager::OnEvent(*Me\manager,Globals::#EVENT_HIERARCHY_CHANGED)
+            Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
            
             *callback(*Me)
             
           Case Globals::#EVENT_TREE_CREATED
-            Protected *graph = ViewManager::*view_manager\uis("Graph")
+            Protected *graph = *Me\window\uis("Graph")
             Protected *tree = EventData()
             If *graph
               GraphUI::SetContent(*graph,*tree)
@@ -652,20 +658,20 @@ CompilerEndIf
                 *Me\tool = Globals::#TOOL_CAMERA
               Default 
                 *Me\tool = Globals::#TOOL_MAX
-                If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
+                If event : Window::OnEvent(*Me\window,event) : EndIf
             EndSelect
             *callback(*Me)
             
           Case #PB_Event_SizeWindow
-            ViewManager::OnEvent(*Me\manager,event)
+            Window::OnEvent(*Me\window,event)
             *callback(*Me)
             
           Case #PB_Event_Gadget
-            If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
+            If event : Window::OnEvent(*Me\window,event) : EndIf
             *callback(*Me)
             
           Default
-            If event : ViewManager::OnEvent(*Me\manager,event) : EndIf
+            If event : Window::OnEvent(*Me\window,event) : EndIf
             *callback(*Me)
         EndSelect
         
@@ -678,7 +684,7 @@ CompilerEndIf
   ;------------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------------
-  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t)
+  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -689,8 +695,8 @@ CompilerEndIf
       *pgm = *Me\context\shaders(shaderNames(i))
       glUseProgram(*pgm\pgm)
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
-      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *camera\projection)
     Next
     
     Protected ilayer.Layer::ILayer = *layer
@@ -700,8 +706,8 @@ CompilerEndIf
       glUseProgram(*wireframe\pgm)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
       
       ;Handle::Draw( *Me\handle,*ctx) 
     EndIf
@@ -710,8 +716,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 244
-; FirstLine = 242
+; CursorPosition = 636
+; FirstLine = 622
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

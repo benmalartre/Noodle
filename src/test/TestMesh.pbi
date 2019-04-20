@@ -109,7 +109,7 @@ Procedure Draw(*app.Application::Application_t)
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
    
-  Application::Draw(*app, *layer)
+  Application::Draw(*app, *layer, *app\camera)
   ViewportUI::Blit(*viewport, *layer\buffer)
 
 ;   FTGL::BeginDraw(*app\context\writer)
@@ -137,8 +137,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
     Debug "YEAH"
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\handle)     
-    View::SetContent(*app\manager\main,*viewport)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -240,7 +240,7 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 112
-; FirstLine = 102
+; FirstLine = 87
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

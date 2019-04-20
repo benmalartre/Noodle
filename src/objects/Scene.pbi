@@ -823,8 +823,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 24
-; FirstLine = 20
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 801
+; FirstLine = 762
 ; Folding = -------
 ; EnableXP
