@@ -66,10 +66,10 @@ EndProcedure
 
 
 Global *DAC.STK::RtAudio = STK::Init()
-Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC)
-Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#SINEWAVE_GENERATOR, 128, #True)
+Global *stream.STK::Stream = STK::StreamSetup(*DAC)
+Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 128, #True)
 
-*ui = PropertyUI::New(*app\manager\main, "STK", #Null)
+*ui = PropertyUI::New(*app\window\main, "STK", #Null)
 OpenGadgetList(*ui\container)
 
 Define *p.ControlProperty::ControlProperty_t = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window, #PB_Window_InnerCoordinate), WindowHeight(*app\window, #PB_Window_InnerCoordinate)) 
@@ -172,11 +172,11 @@ If *stream
           If key = #PB_Shortcut_Return
             Debug "ENTER PRESSED"
             If running
-              STK::GeneratorStreamStop(*stream)
+              STK::StreamStop(*stream)
               running = #False  
               DrawCanvas()
             Else
-              Define result.b = STK::GeneratorStreamStart(*stream)
+              Define result.b = STK::StreamStart(*stream)
               ; STK::EnvelopeKeyOn(*envelope)
               running = #True
               DrawCanvas()
@@ -192,7 +192,7 @@ If *stream
           If down
             mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
             v = mx / width
-            STK::SetGeneratorScalar(*wave, STK::#GENERATOR_FREQUENCY, v * 220 +60)
+            STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, v * 220 +60)
             Debug "FREQUENCY : "+Str(v *220 + 60)
 ;             STK::SetArythmeticScalar(*final, v)
 ;             STK::SetEffectScalar(*rev, v, STK::#EFFECT_MIX)
@@ -204,14 +204,14 @@ If *stream
     EndIf 
   Until event = #PB_Event_CloseWindow
 
-  STK::GeneratorStreamClean(*stream)
+  STK::StreamClean(*stream)
   STK::Term(*DAC)
 Else
   MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 64
+; CursorPosition = 86
+; FirstLine = 55
 ; Folding = -
 ; EnableXP

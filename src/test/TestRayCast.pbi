@@ -204,8 +204,9 @@ Procedure Draw(*app.Application::Application_t)
     Scene::Update(Scene::*current_scene)
    
     
-    ViewportUI::Draw(*viewport)
-    GLContext::FlipBuffer(*app\context)
+    Application::Draw(*app, *layer, *app\camera)
+    ViewportUI::Blit(*viewport, *layer\buffer)
+    
   CompilerEndIf
   
 
@@ -213,8 +214,8 @@ Procedure Draw(*app.Application::Application_t)
 
 
  Define useJoystick.b = #False
- Define width = 800
- Define height = 600
+ Define width = 2048
+ Define height = 360
  Define model.m4f32
  ; Main
  Globals::Init()
@@ -235,11 +236,8 @@ Procedure Draw(*app.Application::Application_t)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
 
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-;   CompilerIf Not #USE_GLFW
-;     GLContext::AddLayer(*app\context, *layer)
-;   CompilerEndIf
-  
+  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
   
   Scene::*current_scene = Scene::New()
   
@@ -252,8 +250,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 240
-; FirstLine = 195
+; CursorPosition = 216
+; FirstLine = 169
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

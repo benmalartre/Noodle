@@ -98,10 +98,12 @@ Module ViewportUI
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
     
+    MessageRequester("VIEWPORT", Str(w)+","+Str(h)+","+Str(GLContext::*MAIN_GL_CTXT\width)+","+Str(GLContext::*MAIN_GL_CTXT\height))
+    
     ; setup delegate gl context
     *Me\camera = *camera
-    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
-    *Me\layer = LayerBitmap::New(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height , *Me\context, *Me\camera)
+    *Me\context = GLContext::New(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, GLContext::*MAIN_GL_CTXT)
+    *Me\layer = LayerBitmap::New(*Me\sizX,  *Me\sizY, *Me\context, *Me\camera)
     LayerBitmap::Setup(*Me\layer)
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
@@ -717,7 +719,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 20
+; CursorPosition = 105
+; FirstLine = 62
 ; Folding = -----
 ; EnableXP

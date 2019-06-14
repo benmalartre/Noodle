@@ -72,12 +72,12 @@ EndProcedure
 ; Update
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
   *select\mouseX = *viewport\mx
-  *select\mouseY = *viewport\height -*viewport\my
+  *select\mouseY = *app\context\height -*viewport\my
   
   
   If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
@@ -96,11 +96,11 @@ Procedure Update(*app.Application::Application_t)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-  Define numSelected = MapSize(*select\selection\selected())
+  Define numSelected = MapSize(*select\selection\items())
   FTGL::Draw(*app\context\writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
 
@@ -118,9 +118,9 @@ Procedure Update(*app.Application::Application_t)
    *app = Application::New("Test Drawer",width,height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
@@ -155,8 +155,8 @@ Procedure Update(*app.Application::Application_t)
   Application::Loop(*app, @Update())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 100
+; CursorPosition = 120
+; FirstLine = 98
 ; Folding = -
 ; EnableThread
 ; EnableXP
