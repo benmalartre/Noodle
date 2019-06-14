@@ -120,7 +120,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   CArray::SetCount(*tri, 3)
   Protected frontFacing.b
   
-  Protected *red_col.c4f32 = Color::_RED()
+  Protected *red_col.c4f32 = Color::RED
   Define msg.s
   For i=0 To *geom\nbtriangles-1
     *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
@@ -139,7 +139,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
       
       *pnt = Drawer::AddLoop(*tr\drawer, *tri)
       Drawer::SetSize(*pnt, 1)
-      Drawer::SetColor(*pnt, Color::_MAGENTA())
+      Drawer::SetColor(*pnt, Color::MAGENTA)
       
       Vector3::SetFromOther(*tr\location\uvw, *tr\uvw)
       *tr\location\tid = i
@@ -199,13 +199,13 @@ Procedure Draw(*app.Application::Application_t)
     Application::Draw(*app, *layer)
   CompilerElse
     
-    ViewportUI::SetContext(*viewport)
+    GLContext::SetContext(*app\context)
     TestRay_Update(*ray, *viewport)
     Scene::Update(Scene::*current_scene)
    
     
-    ViewportUI::Draw(*viewport, *app\context)
-    ViewportUI::FlipBuffer(*viewport)
+    ViewportUI::Draw(*viewport)
+    GLContext::FlipBuffer(*app\context)
   CompilerEndIf
   
 
@@ -226,19 +226,19 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Ray Cast",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      *app\context = *viewport\context
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
 
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  CompilerIf Not #USE_GLFW
-    ViewportUI::AddLayer(*viewport, *layer)
-  CompilerEndIf
+;   CompilerIf Not #USE_GLFW
+;     GLContext::AddLayer(*app\context, *layer)
+;   CompilerEndIf
   
   
   Scene::*current_scene = Scene::New()
@@ -252,8 +252,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 177
+; CursorPosition = 240
+; FirstLine = 195
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

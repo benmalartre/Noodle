@@ -6,26 +6,28 @@ XIncludeFile "UI.pbi"
 ; DummyUI Module Declaration
 ; -----------------------------------------
 DeclareModule DummyUI
-  UseModule UI
-  Structure DummyUI_t Extends UI_t
+  Structure DummyUI_t Extends UI::UI_t
     ;*menu.ControlMenu::ControlMenu_t
   EndStructure
   
-  Interface IDummyUI Extends IUI
+  Interface IDummyUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*Me.DummyUI_t)
   Declare Init(*Me.DummyUI_t)
-  Declare OnEvent(*Me.DummyUI_t,event.i)
   Declare Term(*Me.DummyUI_t)
   Declare Draw(*Me.DummyUI_t)
+  Declare OnEvent(*Me.DummyUI_t,event.i)
   
   DataSection 
     DummyUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i UI::@Resize()
+    Data.i @Draw()
+    Data.i UI::@DrawPickImage()
+    Data.i UI::@Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
   
 EndDeclareModule
@@ -163,7 +165,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 2
+; CursorPosition = 29
+; FirstLine = 6
 ; Folding = --
 ; EnableXP

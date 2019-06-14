@@ -74,7 +74,7 @@ Module View
       Protected ui.UI::IUI = *ui
       If *ui
         ResizeGadget(*ui\container,x,y,width,height)  
-        ui\Event(#PB_Event_SizeWindow)
+;         ui\OnEvent(#PB_Event_SizeWindow)
       EndIf
      
     Else
@@ -475,7 +475,7 @@ Module View
     If *Me\leaf
       If *Me\content <> #Null
         Protected *content.UI::IUI = *Me\content
-        *content\Event(event)
+        *content\OnEvent(event)
       EndIf
       
     Else
@@ -566,7 +566,7 @@ Module View
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 379
-; FirstLine = 358
+; CursorPosition = 76
+; FirstLine = 61
 ; Folding = ----
 ; EnableXP

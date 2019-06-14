@@ -58,18 +58,16 @@ Procedure Draw(*app.Application::Application_t)
 ;   Scene::Update(Scene::*current_scene)
   GLContext::SetContext(*app\context)
   Application::Draw(*app, *layer, *viewport\camera)
-;   ;   FTGL::BeginDraw(*app\context\writer)
-;   LayerDefault::Draw(*layer, *app\context)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/*app\width
-;   Define ratio.f = *app\width / *app\height
-;   FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
-;   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-;   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
-;   
-;   ViewportUI::FlipBuffer(*viewport)
-;   layer\Draw(*app\context)
+  ;   FTGL::BeginDraw(*app\context\writer)
+  LayerDefault::Draw(*layer, *app\context)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/*app\width
+  Define ratio.f = *app\width / *app\height
+  FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
+
 
   GLContext::FlipBuffer(*app\context)
   ViewportUI::Blit(*viewport, *layer\buffer)
@@ -89,9 +87,9 @@ If Time::Init()
   
   Scene::*current_scene = Scene::New()
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
      
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   GLContext::SetContext(*app\context)
@@ -162,16 +160,18 @@ If Time::Init()
   
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   
-  Define *monitor = Application::AddWindow(*app,0,0,200,200)
-  *viewport2 = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
- 
+  
+  Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
+  *viewport2 = ViewportUI::New(*monitor\main,"ViewportUI", *app\camera, *app\context)
+  
+  GLContext::SetContext(*app\context)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 165
-; FirstLine = 107
+; CursorPosition = 69
+; FirstLine = 66
 ; Folding = -
 ; EnableThread
 ; EnableXP

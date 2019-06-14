@@ -22,7 +22,7 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   glUseProgram(*s_simple\pgm)
   Define.m4f32 model,view,proj
   Matrix4::SetIdentity(model)
@@ -58,7 +58,7 @@ Procedure Draw(*app.Application::Application_t)
   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
   glDisable(#GL_DEPTH_TEST)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
   
 EndProcedure
     
@@ -70,9 +70,9 @@ If Time::Init()
   *app = Application::New("Test",800,400)
 
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
     *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -101,9 +101,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 68
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 45
 ; Folding = -
 ; EnableThread
 ; EnableXP

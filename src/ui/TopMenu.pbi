@@ -7,13 +7,12 @@ XIncludeFile "UI.pbi"
 ; TopMenuUI Module Declaration
 ; ============================================================================
 DeclareModule TopMenuUI
-  UseModule UI
   
-  Structure TopMenuUI_t Extends UI_t
+  Structure TopMenuUI_t Extends UI::UI_t
     *menu.ControlMenu::ControlMenu_t
   EndStructure
   
-  Interface ITopMenuUI Extends IUI
+  Interface ITopMenuUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s="TopMenuUI")
@@ -274,7 +273,6 @@ Module TopMenuUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 187
+; CursorPosition = 14
 ; Folding = ---
 ; EnableXP

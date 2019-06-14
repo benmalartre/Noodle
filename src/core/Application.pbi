@@ -119,6 +119,7 @@ XIncludeFile "../ui/LogUI.pbi"
 XIncludeFile "../ui/TimelineUI.pbi"
 XIncludeFile "../ui/ShaderUI.pbi"
 XIncludeFile "../ui/ViewportUI.pbi"
+XIncludeFile "../ui/CanvasUI.pbi"
 XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
@@ -318,7 +319,12 @@ CompilerEndIf
   EndProcedure
   
   Procedure AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
-    Define window = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window))
+
+    Define *window.Window::Window_t = AllocateMemory(SizeOf(Window::Window_t))
+    InitializeStructure(*window, Window::Window_t)
+    *window\main = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
+    
+    ProcedureReturn *window
     
   EndProcedure
   
@@ -625,9 +631,9 @@ CompilerEndIf
             
             
           Case Globals::#EVENT_SELECTION_CHANGED
-            If Scene::*current_scene\selection\selected()
-              Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
-            EndIf
+;             If Scene::*current_scene\selection\selected()
+;               Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
+;             EndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
             *callback(*Me)
@@ -716,8 +722,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 250
-; FirstLine = 246
+; CursorPosition = 324
+; FirstLine = 317
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

@@ -256,7 +256,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 141
+; CursorPosition = 160
+; FirstLine = 156
 ; Folding = --
 ; EnableXP

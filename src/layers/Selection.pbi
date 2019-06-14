@@ -163,10 +163,10 @@ EndProcedure
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
   
-  If MapSize(*layer\selection\selected())
+  If MapSize(*layer\selection\items())
     Define *selected.Selection::SelectionItem_t 
-    ForEach *layer\selection\selected()
-      *selected = *layer\selection\selected()
+    ForEach *layer\selection\items()
+      *selected = *layer\selection\items()
       If *selected\type = Selection::#ITEM_OBJECT
         
       EndIf
@@ -244,7 +244,8 @@ EndModule
 ; FirstLine = 142
 ; Folding = --
 ; EnableXP
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 168
+; FirstLine = 161
 ; Folding = --
 ; EnableXP

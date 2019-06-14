@@ -14,7 +14,6 @@ XIncludeFile "View.pbi"
 ; GRAPHUI MODULE DECLARATION
 ; ============================================================================
 DeclareModule GraphUI
-  UseModule UI
   ;---------------------------------------------------------------------------
   ;  Global
   ;---------------------------------------------------------------------------
@@ -24,13 +23,13 @@ DeclareModule GraphUI
   ;---------------------------------------------------------------------------
   ;  INTERFACE
   ;---------------------------------------------------------------------------
-  Interface IGraphUI Extends IUI
+  Interface IGraphUI Extends UI::IUI
   EndInterface
 
   ;---------------------------------------------------------------------------
   ;  STRUCTURE
   ;---------------------------------------------------------------------------
-  Structure GraphUI_t Extends UI_t
+  Structure GraphUI_t Extends UI::UI_t
     ; Fonts
     font_node.i
     font_port.i
@@ -1602,7 +1601,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 299
-; FirstLine = 293
+; CursorPosition = 31
+; FirstLine = 21
 ; Folding = --------
 ; EnableXP

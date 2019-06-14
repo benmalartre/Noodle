@@ -7,13 +7,12 @@ XIncludeFile "UI.pbi"
 ; TimelineUI Module Declaration
 ; -----------------------------------------
 DeclareModule TimelineUI
-  UseModule UI
-  
-  Structure TimelineUI_t Extends UI_t
+
+  Structure TimelineUI_t Extends UI::UI_t
     *timeline.ControlTimeline::ControlTimeline_t
   EndStructure
   
-  Interface ITimelineUI Extends IUI
+  Interface ITimelineUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s="TimelineUI")
@@ -144,7 +143,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 85
+; CursorPosition = 14
+; FirstLine = 10
 ; Folding = --
 ; EnableXP

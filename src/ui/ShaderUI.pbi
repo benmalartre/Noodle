@@ -8,9 +8,8 @@ XIncludeFile "UI.pbi"
 ; Shader Module Declaration
 ; -----------------------------------------
 DeclareModule ShaderUI
-  UseModule UI
 
-  Structure ShaderUI_t Extends UI_t
+  Structure ShaderUI_t Extends UI::UI_t
     panel.i
     vertex.i
     frag.i
@@ -20,7 +19,7 @@ DeclareModule ShaderUI
     *shader.Program::Program_t
   EndStructure
   
-  Interface IShaderUI Extends IUI
+  Interface IShaderUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s,*shader.Shader::Shader_t)
@@ -257,7 +256,7 @@ Module ShaderUI
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 19
+; CursorPosition = 21
+; FirstLine = 3
 ; Folding = --
 ; EnableXP

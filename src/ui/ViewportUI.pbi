@@ -17,14 +17,11 @@ XIncludeFile "View.pbi"
 ; ViewportUI Module Declaration
 ; ============================================================================
 DeclareModule ViewportUI
-  UseModule UI
-  Structure ViewportUI_t Extends UI_t
+  Structure ViewportUI_t Extends UI::UI_t
     *camera.Camera::Camera_t
     *context.GLContext::GLContext_t
     *handle.Handle::Handle_t
 
-    pbo.i
-    tex.i
     *layer.LayerBitmap::LayerBitmap_t
     mx.f
     my.f
@@ -37,12 +34,15 @@ DeclareModule ViewportUI
     rmb_p.b
   EndStructure
   
-  Interface IViewportUI Extends IUI
+  Interface IViewportUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Init(*Me.ViewportUI_t)
+  Declare Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
+  Declare DrawPickImage(*Me.ViewportUI_t)
+  Declare Pick(*Me.ViewportUI_t, mx.i, my.i)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
   Declare Term(*Me.ViewportUI_t)
   Declare Draw(*Me.ViewportUI_t)
@@ -59,10 +59,15 @@ DeclareModule ViewportUI
   
   DataSection 
     ViewportUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
+  
+  Global CLASS.Class::Class_t
   
 EndDeclareModule
 
@@ -92,24 +97,6 @@ Module ViewportUI
     *Me\sizY = h
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
-    
-    ; setup pixel buffer object in main gl context
-    GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
-    glGenBuffers(1, @*Me\pbo)
-    glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)
-    glBufferData(#GL_PIXEL_PACK_BUFFER, GLContext::*MAIN_GL_CTXT\width * GLContext::*MAIN_GL_CTXT\height * 4, #Null, #GL_DYNAMIC_COPY)
-    glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
-    
-    ; init  texture objects
-    glGenTextures(1, @*Me\tex)
-    glBindTexture(#GL_TEXTURE_2D, *Me\tex)
-    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_NEAREST)
-    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
-    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP)
-    glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP)
-    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width , GLContext::*MAIN_GL_CTXT\height, 0, #GL_BGRA, #GL_UNSIGNED_BYTE, #Null)
-    glBindTexture(#GL_TEXTURE_2D, 0)
-    
     
     ; setup delegate gl context
     *Me\camera = *camera
@@ -144,6 +131,27 @@ Module ViewportUI
     If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
     Object::TERM(ViewportUI)
   EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Delete
+  ;------------------------------------------------------------------
+  Procedure Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
+    
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Pick
+  ;------------------------------------------------------------------
+  Procedure Pick(*Me.ViewportUi_t, mx.i, my.i)
+    
+  EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; Delete
+  ;------------------------------------------------------------------
+  Procedure DrawPickImage(*Me.ViewportUi_t)
+    
+  EndProcedure
 
   ;------------------------------------------------------------------
   ; Init
@@ -156,15 +164,14 @@ Module ViewportUI
   ; Event
   ;------------------------------------------------------------------
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
-
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
         
       Case Globals::#EVENT_SELECTION_CHANGED
-        If Scene::*current_scene\selection\selected()
-          Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
+        If Scene::*current_scene\selection\items()
+          Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\items()\obj)
         EndIf
     
       Case #PB_Event_SizeWindow
@@ -367,6 +374,7 @@ Module ViewportUI
 ;           EndSelect
 
     EndSelect
+    
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -680,35 +688,36 @@ Module ViewportUI
   ; Blit Between Contexts
   ;-------------------------------------------------------
   Procedure Blit(*Me.ViewportUI_t, *framebuffer.Framebuffer::Framebuffer_t)
-    Debug GLContext::*MAIN_GL_CTXT
-    GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
-    
-    ; set the target framebuffer To Read 
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
-    glReadBuffer(#GL_COLOR_ATTACHMENT0)
-    ; read pixels from framebuffer To PBO
-    glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)    
-    glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_RGBA, #GL_UNSIGNED_BYTE, 0)
-    glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
-    
-    ; copy pbo content to texture
-    glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
-    glBindTexture(#GL_TEXTURE_2D, *Me\tex)
-    glActiveTexture(#GL_TEXTURE0)
-    glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
+;     Debug GLContext::*MAIN_GL_CTXT
+;     GLContext::SetContext(GLContext::*MAIN_GL_CTXT)
+;     
+;     ; set the target framebuffer To Read 
+;     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *framebuffer\frame_id)
+;     glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;     ; read pixels from framebuffer To PBO
+;     glBindBuffer(#GL_PIXEL_PACK_BUFFER, *Me\pbo)    
+;     glReadPixels(0, 0, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, #GL_RGBA, #GL_UNSIGNED_BYTE, 0)
+;     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
+;     
+;     ; copy pbo content to texture
+;     glBindBuffer(#GL_PIXEL_UNPACK_BUFFER, *Me\pbo)
+;     glBindTexture(#GL_TEXTURE_2D, *Me\tex)
+;     glActiveTexture(#GL_TEXTURE0)
+;     glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
     ; draw texture on screen space quad
     GLContext::SetContext(*Me\context)
-    *Me\layer\bitmap = *Me\tex
+    *Me\layer\bitmap = *framebuffer\tbos(0)\textureID
     LayerBitmap::Draw(*Me\layer, *Me\context)
 
     GLContext::FlipBuffer(*Me\context)
    EndProcedure
 
-  
+  ; ---[ Reflection ]-----------------------------------------------------------
+  Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 700
-; FirstLine = 646
-; Folding = ----
+; CursorPosition = 44
+; FirstLine = 20
+; Folding = -----
 ; EnableXP

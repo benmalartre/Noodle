@@ -76,16 +76,31 @@ Procedure DrawSpiral(*fibonacci.Fibonacci::Fibonacci_t, canvas.i)
 EndProcedure
   
 Procedure DrawDisc(*fibonacci.Fibonacci::Fibonacci_t, canvas, scl.f)
-  
+  Static T = 0
   VectorSourceColor(RGBA(0,255,0,255))
   Define i
   Define *p.Math::v3f32
   For i=0 To CArray::GetCount(*fibonacci\positions)-1
-    VectorSourceColor(RGBA(0,255,0,255))
+    VectorSourceColor(RGBA(T +i,255,0,255))
     *p = CArray::GetValue(*fibonacci\positions, i)
-    AddPathCircle(*p\x, *p\z, 8/scl)
-    StrokePath(1/scl)
+    AddPathCircle(*p\x, *p\z, 12/scl)
+;     StrokePath(1/scl)
+    FillPath()
   Next
+  
+  *p = CArray::GetValue(*fibonacci\positions, 0)
+  MovePathCursor(*p\x, *p\z)
+  For i=1 To CArray::GetCount(*fibonacci\positions)-1
+
+    *p = CArray::GetValue(*fibonacci\positions, i)
+    AddPathLine(*p\x, *p\z)
+
+  Next
+  
+      VectorSourceColor(RGBA(255,255,0,255))
+      StrokePath(1/scl)
+
+  T + 1
 EndProcedure
 
 Procedure DrawSphere(*fibonacci.Fibonacci::Fibonacci_t, canvas, scl.f)
@@ -96,15 +111,16 @@ Procedure DrawSphere(*fibonacci.Fibonacci::Fibonacci_t, canvas, scl.f)
   For i=0 To CArray::GetCount(*fibonacci\positions)-1
     VectorSourceColor(RGBA(0,255,0,255))
     *p = CArray::GetValue(*fibonacci\positions, i)
-    AddPathCircle(*p\x, *p\y, 8/scl)
+    AddPathCircle(*p\x, *p\y, 16/scl)
     StrokePath(1/scl)
   Next
 EndProcedure
 
-Define scl.f = 1
+Define scl.f = 0.5
 Define width = GadgetWidth(canvas)
 Define height = GadgetHeight(canvas)
 Repeat
+  
 ;   Fibonacci::Sphere(*fibonacci)
 ;   DrawVogel(*fibonacci, canvas)
   Fibonacci::Grid(*fibonacci)
@@ -116,16 +132,20 @@ Repeat
   VectorSourceColor(RGBA(0,0,0,255))
   TranslateCoordinates(width * 0.5, height*0.5)
   ScaleCoordinates(scl, scl)
-  
+;   
   DrawGrid(*fibonacci,canvas)
   DrawSpiral(*fibonacci, canvas)
-;   DrawSphere(*fibonacci, canvas, scl)
+;   *fibonacci\N + 1
+;   Fibonacci::Disc(*fibonacci)
+;   ;   DrawSphere(*fibonacci, canvas, scl)
+;   DrawDisc(*fibonacci, canvas, 1024)
   ;*fibonacci\N+1
   StopVectorDrawing()
     
 
 Until WaitWindowEvent(10) = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 118
+; FirstLine = 83
 ; Folding = -
 ; EnableXP

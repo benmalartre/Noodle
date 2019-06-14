@@ -7,9 +7,8 @@ XIncludeFile "UI.pbi"
 ; ColorUI Module Declaration
 ; -----------------------------------------
 DeclareModule ColorUI
-  UseModule UI
   
-  Structure ColorUI_t Extends UI_t
+  Structure ColorUI_t Extends UI::UI_t
     red_txt.i
     green_txt.i
     blue_txt.i
@@ -28,7 +27,7 @@ DeclareModule ColorUI
     
   EndStructure
   
-  Interface IColorUI Extends IUI
+  Interface IColorUI Extends UI::IUI
   EndInterface
 
   Declare New(*parent.View::View_t,name.s)
@@ -208,8 +207,7 @@ EndModule
 ; Until e = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 134
+; CursorPosition = 29
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

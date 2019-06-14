@@ -1120,7 +1120,7 @@ Module Octree
     Next
     Define *L.Drawer::Line_t = Drawer::AddStrip(*drawer, *positions)
     Drawer::SetSize(*L, 1)
-    Drawer::SetColor(*L, Color::_GREEN())
+    Drawer::SetColor(*L, Color::GREEN)
     CArray::Delete(*positions)
   EndProcedure
   
@@ -1145,13 +1145,13 @@ Module Octree
       
       Select *cell\state
         Case Octree::#STATE_DEFAULT
-           Drawer::SetColor(*box,Color::_WHITE())
+           Drawer::SetColor(*box,Color::WHITE)
         Case Octree::#STATE_HIT
-           Drawer::SetColor(*box,Color::_RED())
+           Drawer::SetColor(*box,Color::Red)
         Case Octree::#STATE_NEARBY
-          Drawer::SetColor(*box,Color::_YELLOW())
+          Drawer::SetColor(*box,Color::YELLOW)
         Default
-          Drawer::SetColor(*box,Color::_WHITE())
+          Drawer::SetColor(*box,Color::WHITE)
       EndSelect
       
       
@@ -1216,7 +1216,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 525
-; FirstLine = 498
+; CursorPosition = 1122
+; FirstLine = 1118
 ; Folding = ---------
 ; EnableXP

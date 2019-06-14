@@ -48,7 +48,7 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 
-Global default_layer.Layer::ILayer
+Global *layer.Layer::Layer_t
 
 Structure BTCharacter_t
   *pelvis.Object3D::Object3D_t
@@ -251,7 +251,7 @@ EndProcedure
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   If EventType() = #PB_EventType_KeyDown
     Protected key.i = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key)
     Select key
@@ -265,7 +265,7 @@ Procedure Draw(*app.Application::Application_t)
     EndSelect
   EndIf
   
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *layer, *app\camera)
   
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -275,7 +275,8 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\buffer)
   
 ;   Polymesh::Draw(*teapot)
 ; ;   Polymesh::Draw(*ground)
@@ -324,11 +325,12 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Bullet Arm",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
-  EndIf
+   EndIf
+   
+   GLCOntext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
@@ -338,8 +340,8 @@ Procedure Draw(*app.Application::Application_t)
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   ;Debug "Size "+Str(*app\width)+","+Str(*app\height)
-  Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *default)
+  *layer.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
 ;   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ;   LayerGBuffer::Setup(*gbuffer)
@@ -353,7 +355,6 @@ Procedure Draw(*app.Application::Application_t)
 ;   Global *defered.Layer::Layer_t = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
 ;   LayerShadowDefered::Setup(*defered)
   
-  Global default_layer.Layer::ILayer = *default
 ;   Global gbuffer.Layer::ILayer = *gbuffer
 ;   Global shadowmap.Layer::ILayer = *shadowmap
 ;   Global defered.Layer::ILayer = *defered
@@ -383,8 +384,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 327
-; FirstLine = 322
+; CursorPosition = 332
+; FirstLine = 320
 ; Folding = --
 ; EnableThread
 ; EnableXP

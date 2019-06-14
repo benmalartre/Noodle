@@ -260,9 +260,9 @@ EndModule
 
 
 ; TEST CODE
-Define folder.s = "E:\Projects\RnD\Alembic\booze\PureBasic";"C:\Program Files\Autodesk\Maya2018"
+Define folder.s = "E:\Projects\RnD\Alembic";"C:\Program Files\Autodesk\Maya2018"
 Define pattern.s = ".h;.cpp"
-Define token.s =  "BOOZE"
+Define token.s =  "bite"
 
 Define search.Txtsch::Search_t
 InitializeStructure(search, Txtsch::Search_t)
@@ -310,6 +310,6 @@ MessageRequester("SEARCH", "SINGLE THREAD : "+StrD((E1-T1)*0.001)+" : "+Str(numH
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 264
-; FirstLine = 252
+; FirstLine = 247
 ; Folding = ---
 ; EnableXP

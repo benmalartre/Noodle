@@ -336,8 +336,8 @@ Procedure Draw(*app.Application::Application_t)
 
  
  Define useJoystick.b = #False
- width = 800
- height = 600
+ width = 1024
+ height = 720
  ; Main
  Globals::Init()
  Bullet::Init( )
@@ -367,7 +367,7 @@ Procedure Draw(*app.Application::Application_t)
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
 
-  *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
+  *default.Layer::Layer_t = LayerDefault::New(width,height,*app\context,*app\camera)
   Application::AddLayer(*app, *default)
   LayerDefault::Setup(*default)
   
@@ -414,8 +414,7 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 353
-; FirstLine = 349
+; CursorPosition = 11
 ; Folding = --
 ; EnableThread
 ; EnableXP

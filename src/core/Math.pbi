@@ -1894,6 +1894,8 @@ DeclareModule Color
     Data.f 0,0,1,1
     COLOR_YELLOW:
     Data.f 1,1,0,1
+    COLOR_ORANGE:
+    Data.f 1,0.25,0.5,1
     COLOR_PURPLE:
     Data.f 0,1,1,1
     COLOR_MAGENTA:
@@ -1904,36 +1906,44 @@ DeclareModule Color
     Data.f 1,1,1,1
   EndDataSection
   
-  Macro _RED()
+  Macro RED
     Color::?COLOR_RED
   EndMacro
   
-  Macro _GREEN()
+  Macro GREEN
     Color::?COLOR_GREEN
   EndMacro
   
-  Macro _BLUE()
+  Macro BLUE
     Color::?COLOR_BLUE
   EndMacro
   
-  Macro _YELLOW()
+  Macro YELLOW
     Color::?COLOR_YELLOW
   EndMacro
   
-  Macro _PURPLE()
+  Macro ORANGE
+    Color::?COLOR_ORANGE
+  EndMacro
+  
+  Macro PURPLE
     Color::?COLOR_PURPLE
   EndMacro
   
-  Macro _MAGENTA()
+  Macro MAGENTA
     Color::?COLOR_MAGENTA
   EndMacro
   
-  Macro _WHITE()
+  Macro WHITE
     Color::?COLOR_WHITE
   EndMacro
   
-  Macro _BLACK()
+  Macro BLACK
     Color::?COLOR_BLACK
+  EndMacro
+  
+  Macro RANDOMIZED
+    
   EndMacro
   
   ;------------------------------------------------------------------
@@ -4372,9 +4382,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 68
-; Folding = --------------------------------------------------------
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 1927
+; FirstLine = 1894
+; Folding = -------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

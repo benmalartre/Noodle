@@ -46,10 +46,10 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 
-Global default_layer.Layer::ILayer
-Global gbuffer.Layer::ILayer
-Global shadowmap.Layer::ILayer
-Global defered.Layer::ILayer
+Global *layer.Layer::Layer_t
+Global *gbuffer.Layer::Layer_t
+Global *shadowmap.Layer::Layer_t
+Global *defered.Layer::Layer_t
 
 ; Resize
 ;--------------------------------------------
@@ -142,12 +142,19 @@ Protected *t.Transform::Transform_t
 Protected color.c4f32
 Protected factor.v3f32
 
-*cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("RigidBodies",Shape::#SHAPE_TEAPOT)
-Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
-;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
-Object3D::AddChild(*root,*mesh)
+Protected *cloud.InstanceCloud::InstanceCloud_t = InstanceCloud::New("RigidBodies",Shape::#SHAPE_NONE,0)
 
-Object3D::SetShader(*mesh,*s)
+
+PointCloudGeometry::PointsOnSphere(*cloud\geom, 12)
+Protected *mesh.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
+
+  PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
+  
+;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
+; Object3D::AddChild(*root,*mesh)
+Object3D::AddChild(*root, *cloud)
+; Object3D::SetShader(*mesh,*s)
 Vector3::Set(factor,1,1,1)
 Color::Set(color,1.0,0.5,0.4,1)
   For x=0 To 7
@@ -181,7 +188,8 @@ Color::Set(color,1.0,0.5,0.4,1)
   Next x
   
     BTCreateCurvedGroundData(*s)
-  
+    
+    InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
   Scene::AddModel(Scene::*current_scene,*root)
   ProcedureReturn Scene::*current_scene
 EndProcedure
@@ -190,15 +198,15 @@ EndProcedure
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  
+  GLContext::SetContext(*app\context)
   
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
   BulletWorld::AddGroundPlane(Bullet::*bullet_world)
 ;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
+  Application::Draw(*app, *layer, *app\camera)
   
- default_layer\Draw  (*app\context)
 ;   gbuffer\Draw(*app\context  )
 ;   shadowmap\Draw(*app\context)
 ;   
@@ -208,20 +216,16 @@ Procedure Draw(*app.Application::Application_t)
 ;   *bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
 ;   bitmap\Draw(*app\context)
 ;   ssao\Draw(*app\context)
-  glDisable(#GL_DEPTH_TEST)
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
+  FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/*app\width
   Define ratio.f = *app\width / *app\height
   FTGL::Draw(*app\context\writer,"Bullet Demo",-0.9,0.9,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  glDisable(#GL_BLEND)
+  FTGL::EndDraw(*app\context\writer)
   
-  CompilerIf Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
-  CompilerEndIf
+  GLContext::FlipBuffer(*app\context)
+  viewportUI::Blit(*viewport, *layer\buffer)
 ;   Polymesh::Draw(*teapot)
 ; ;   Polymesh::Draw(*ground)
 ; ; ;   Polymesh::Draw(*null)
@@ -257,8 +261,8 @@ Procedure Draw(*app.Application::Application_t)
 
  
  Define useJoystick.b = #False
- width = 800
- height = 600
+ width = 1024
+ height = 720
  ; Main
  Globals::Init()
  Bullet::Init( )
@@ -269,11 +273,11 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestBullet",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
 
    ; ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
-  EndIf
+   EndIf
+   GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
@@ -282,28 +286,21 @@ Procedure Draw(*app.Application::Application_t)
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
-  Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*app\camera)
-  LayerDefault::Setup(*default)
+  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  LayerDefault::Setup(*layer)
   
-  Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
+  *gbuffer = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
   LayerGBuffer::Setup(*gbuffer)
   
 
-  Global *shadowmap.Layer::Layer_t = LayerShadowMap::New(1024,1024,*app\context,*light)
+  *shadowmap = LayerShadowMap::New(1024,1024,*app\context,*light)
   LayerShadowMap::Setup(*shadowmap)
   
   Light::Update(*light)
   ; Debug *app\context\shaders("simple2D")  
-  Global *defered.Layer::Layer_t = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
+  *defered = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
   LayerShadowDefered::Setup(*defered)
   
-  Global default_layer.Layer::ILayer = *default
-  Global gbuffer.Layer::ILayer = *gbuffer
-  Global shadowmap.Layer::ILayer = *shadowmap
-  Global defered.Layer::ILayer = *defered
-  
-  
-
   ;*torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
 ; ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
 ;   *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
@@ -326,9 +323,9 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 194
-; Folding = --
+; CursorPosition = 191
+; FirstLine = 136
+; Folding = -
 ; EnableThread
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

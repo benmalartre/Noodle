@@ -130,7 +130,7 @@ Module Fibonacci
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 68
+; CursorPosition = 96
+; FirstLine = 53
 ; Folding = --
 ; EnableXP

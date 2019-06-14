@@ -21,7 +21,7 @@ DeclareModule Selection
   EndStructure
   
   Structure Selection_t
-    Map *selected.SelectionItem_t()
+    Map *items.SelectionItem_t()
   EndStructure
   
   Declare New()
@@ -49,38 +49,38 @@ Module Selection
   EndProcedure
   
    Procedure Clear(*Me.Selection_t)
-     ForEach *Me\selected()
-       RemoveObject(*Me, *Me\selected())
+     ForEach *Me\items()
+       RemoveObject(*Me, *Me\items())
      Next
-     ClearMap(*Me\selected())
+     ClearMap(*Me\items())
   EndProcedure
   
   Procedure AddObject(*Me.Selection_t, *obj.Object3D::Object3D_t)
     If Not *obj : ProcedureReturn : EndIf
     
     Debug "ADD OBJECT : "+Str(*obj);\name
-    If Not FindMapElement(*Me\selected(), Str(*obj))
+    If Not FindMapElement(*Me\items(), Str(*obj))
       Protected *item.SelectionItem_t = AllocateMemory(SizeOf(SelectionItem_t))
       *item\obj = *obj
       *item\type = #ITEM_OBJECT
       Define key.s = Str(*obj)
       Debug "KEY : "+key
-      AddMapElement(*Me\selected(), key)
-      *Me\selected(key) = *item
+      AddMapElement(*Me\items(), key)
+      *Me\items(key) = *item
       *item\key = key
       
-      Debug "ADD OBJECT TO SELECTION : "+*Me\selected()\obj\fullname
+      Debug "ADD OBJECT TO SELECTION : "+*Me\items()\obj\fullname
     EndIf  
   EndProcedure
   
   Procedure RemoveObject(*Me.Selection_t, *item.SelectionItem_t)
-    If *Me\selected(*item\key)
-      Define *item.SelectionItem_t = *Me\selected(*item\key)
+    If *Me\items(*item\key)
+      Define *item.SelectionItem_t = *Me\items(*item\key)
       If *item\type <> #ITEM_OBJECT
         Define *subItem.SelectionComponentItem_t = *item
         CArray::Delete(*subItem\components)
       EndIf
-     DeleteMapElement(*Me\selected(), *item\key)
+     DeleteMapElement(*Me\items(), *item\key)
      FreeMemory(*item)
    EndIf
   EndProcedure
@@ -102,8 +102,8 @@ Module Selection
         hash+".Face"
     EndSelect
     
-    If Not FindMapElement(*Me\selected(), hash)
-      *Me\selected(hash) = *obj
+    If Not FindMapElement(*Me\items(), hash)
+      *Me\items(hash) = *obj
     EndIf  
     ProcedureReturn *item
   EndProcedure
@@ -118,14 +118,14 @@ Module Selection
       Case #ITEM_FACE
         hash+".Face"
     EndSelect
-    If FindMapElement(*Me\selected(), hash)
-      DeleteMapElement(*Me\selected())
+    If FindMapElement(*Me\items(), hash)
+      DeleteMapElement(*Me\items())
     EndIf
   EndProcedure
   
   Procedure Get(*Me.Selection_t)
-    If MapSize(*Me\selected())
-      ProcedureReturn *Me\selected()
+    If MapSize(*Me\items())
+      ProcedureReturn *Me\items()
     EndIf
     
   EndProcedure 
@@ -156,7 +156,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 53
+; CursorPosition = 127
+; FirstLine = 96
 ; Folding = ---
 ; EnableXP

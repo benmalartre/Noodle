@@ -585,7 +585,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 496
-; FirstLine = 491
+; CursorPosition = 570
+; FirstLine = 528
 ; Folding = ---
 ; EnableXP

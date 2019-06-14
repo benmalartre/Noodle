@@ -38,32 +38,32 @@ DeclareModule UI
     scrollMaxY.i
     scrollLastX.i
     scrollLastY.i
+    last_x.i
+    last_y.i
     
     active.b
   EndStructure
   
   Interface IUI
-    Init()
-    Event(event.i)
-    Term()
+    Delete()
+    Resize(x.i, y.i, width.i, height.i)
+    Draw()
+    DrawPickImage()
+    Pick(mx.f, my.f)
+    OnEvent(event.i)
   EndInterface
   
   
-;   Global img_local_only.i
-;   Global img_server_only.i
-;   Global img_local_new.i
-;   Global img_server_new.i
-;   Global img_sync.i
-;   Global img_folder_sync.i
-;   Global img_folder_server_only.i
-;   Global img_folder_local_only.i
-;   
-;   Declare Init()
-;   Declare Term()
-  
+  ; ------------------------------------------------------------------
+  ;   DECLARE
+  ; ------------------------------------------------------------------
+  Declare Resize(*ui.UI_t, x.i, y.i, width.i, height.i)
+  Declare Draw(*ui.UI_t)
+  Declare DrawPickImage(*ui.UI_t)
+  Declare Pick(*ui.UI_t, mx.f, my.f)
+  Declare OnEvent(*ui.UI_t)
   Declare GetScrollArea(*Me.UI_t)
   Declare Scroll(*Me.UI_t,mode.b =#False)
-   
   
 EndDeclareModule
 
@@ -71,6 +71,68 @@ EndDeclareModule
 ; UI Module Implementation
 ; -----------------------------------------
 Module UI
+  ; -------------------------------------------------------------------
+  ;   RESIZE (DUMMY)
+  ; -------------------------------------------------------------------
+  Procedure Resize(*ui.UI_t, x.i, y.i, width.i, height.i)
+    
+  EndProcedure
+  
+  ; -------------------------------------------------------------------
+  ;   DRAW
+  ; -------------------------------------------------------------------
+  Procedure Draw(*ui.UI_t)
+    StartVectorDrawing(CanvasVectorOutput(*ui\gadgetID))
+    AddPathBox(0,0,GadgetWidth(*ui\gadgetID), GadgetHeight(*ui\gadgetID))
+    VectorSourceColor(UICOLOR::BACK)
+    FillPath()
+    
+;     Define ctrl.Control::IControl
+;     For i=0 To ArraySize(*ui\())-1
+;       ctrl = *ui\items(i)
+;       ctrl\Draw()
+;     Next
+    StopVectorDrawing()
+    
+  EndProcedure
+  
+  ; -------------------------------------------------------------------
+  ;   DRAW PICK IMAGE
+  ; -------------------------------------------------------------------
+  Procedure DrawPickImage(*ui.UI_t)
+    StartVectorDrawing(ImageVectorOutput(*ui\imageID))
+    AddPathBox(0,0,ImageWidth(*ui\imageID), ImageHeight(*ui\imageID))
+    VectorSourceColor(RGBA(0,0,0,255))
+    FillPath()
+    
+;     Define ctrl.Control::IControl
+;     For i=0 To ArraySize(*ui\childrens())-1
+;       ctrl = *ui\childrens(i)
+;       ctrl\DrawPickImage(i+1)
+;     Next
+    StopVectorDrawing()
+    
+  EndProcedure
+  
+  ; -------------------------------------------------------------------
+  ;   PICK
+  ; -------------------------------------------------------------------
+  Procedure Pick(*ui.UI_t, mx.f, my.f)
+    Define pick = 0
+    StartDrawing(ImageOutput(*ui\imageID))
+    If mx >-1 And mx < ImageWidth(*ui\imageID) And my> -1 And my < ImageHeight(*ui\imageID)
+      pick = Point(mx, my)
+    EndIf
+    StopDrawing()
+    ProcedureReturn pick-1
+  EndProcedure
+  
+  ; -------------------------------------------------------------------
+  ;   ON EVENT
+  ; -------------------------------------------------------------------
+  Procedure OnEvent(*ui.UI_t)
+  EndProcedure
+  
   Procedure GetName(*ui.UI_t)
     MessageRequester(*ui\name,*ui\name)
   EndProcedure
@@ -134,6 +196,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1
-; Folding = -
+; CursorPosition = 81
+; FirstLine = 69
+; Folding = --
 ; EnableXP

@@ -1,16 +1,14 @@
 ﻿XIncludeFile "../core/Application.pbi"
-XIncludeFile "../objects/Verlet.pbi"
+XIncludeFile "../core/Vector.pbi"
+
 Global width = 1024
 Global height = 1024
 
 UseModule Math
 
 Global *app.Application::Application_t
-Global *viewport.ViewportUI::ViewportUI_t
-Global *layer.LayerDefault::LayerDefault_t
-Global *mesh.Polymesh::Polymesh_t
-Global *verlet.Verlet::Verlet_t 
-Global *drawer.Drawer::Drawer_t 
+Global *canvas.CanvasUI::CanvasUI_t
+
 
 Global offset.m4f32
 Global model.m4f32
@@ -102,7 +100,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 24
+; CursorPosition = 2
+; FirstLine = 30
 ; Folding = -
 ; EnableXP

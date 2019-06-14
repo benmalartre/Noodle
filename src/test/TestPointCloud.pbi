@@ -1,10 +1,9 @@
 ﻿
-
 XIncludeFile "../core/Application.pbi"
 
 
-UseModule Math
 UseModule Time
+UseModule Math
 UseModule OpenGL
 CompilerIf #USE_GLFW
   UseModule GLFW
@@ -58,37 +57,33 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-    CocoaMessage( 0, *viewport\context\ID, "makeCurrentContext" )
-  CompilerEndIf
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Framebuffer::BindOutput(*buffer)
-  glClearColor(0.25,0.25,0.25,1.0)
-  glViewport(0, 0, *buffer\width,*buffer\height)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glEnable(#GL_DEPTH_TEST)
-  
-  Protected shader.i = *s_pointcloud\pgm
-  
-  glUseProgram(shader)
-  Matrix4::SetIdentity(offset)
-  Framebuffer::BindOutput(*buffer)
-  
-  glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,model)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*app\camera\projection)
-  glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-  T+0.01
-
-  PointCloud::Draw(*cloud)
-  
-  glDisable(#GL_DEPTH_TEST)
-  glViewport(0,0,width,height)
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
+;   glClearColor(0.25,0.25,0.25,1.0)
+;   glViewport(0, 0, *buffer\width,*buffer\height)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   glEnable(#GL_DEPTH_TEST)
+;   
+;   Protected shader.i = *s_pointcloud\pgm
+;   
+;   glUseProgram(shader)
+;   Matrix4::SetIdentity(offset)
+;   
+;   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,model)
+;   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
+;   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*app\camera\projection)
+;   glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+;   T+0.01
+; 
+;   PointCloud::Draw(*cloud)
+;   
+;   glDisable(#GL_DEPTH_TEST)
+;   glViewport(0,0,width,height)
+;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
+;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *app\width,*app\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
   
 ;   FTGL::BeginDraw(*ftgl_drawer)
 ;   FTGL::SetColor(*ftgl_drawer,1,1,1,1)
@@ -97,7 +92,8 @@ Procedure Draw(*app.Application::Application_t)
 ;   FTGL::Draw(*ftgl_drawer,"Point Cloud Nb Vertices : "+Str(*cloud\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
 ;   FTGL::EndDraw(*ftgl_drawer)
   
- ViewportUI::FlipBuffer(*viewport)
+  Framebuffer::Unbind(*buffer)
+ GLContext::FlipBuffer(*app\context)
 
  EndProcedure
 
@@ -112,14 +108,14 @@ Procedure Draw(*app.Application::Application_t)
   
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
-    View::SetContent(*app\manager\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
+    MessageRequester("T", *viewport\class\name)
+    View::SetContent(*app\window\main,*viewport)
   EndIf
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  
-  Debug "Size "+Str(*app\width)+","+Str(*app\height)
+  GLContext::SetContext(*app\context)
   *buffer = Framebuffer::New("Color",*app\width,*app\height)
   
   Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
@@ -186,9 +182,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 114
-; FirstLine = 106
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 94
+; FirstLine = 54
 ; Folding = -
 ; EnableXP
 ; Executable = Test

@@ -115,7 +115,6 @@ Procedure Draw(*app.Application::Application_t)
   
   GLContext::FlipBuffer(*app\context)
   viewportUI::Blit(*viewport, *default\buffer)
-  Debug "VIEWPORT CTXT : "+Str(*viewport\context\width)+", "+Str(*viewport\context\height)
 
  EndProcedure
  

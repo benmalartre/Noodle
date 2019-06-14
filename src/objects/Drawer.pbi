@@ -612,7 +612,7 @@ Module Drawer
     *point\type = #ITEM_POINT
     *point\positions = CArray::newCArrayV3F32()
     *point\colors = CArray::newCArrayC4F32()
-    SetColor(*point, Color::_BLACK())
+    SetColor(*point, Color::BLACK)
     CArray::SetCount(*point\positions, 1)
     CArray::SetCount(*point\colors, 1)
     If *position : CArray::SetValue(*point\positions, 0, *position) : EndIf
@@ -634,7 +634,7 @@ Module Drawer
       CArray::SetCount(*point\colors, CArray::GetCount(*point\positions))
     EndIf
     
-    SetColor(*point, Color::_BLACK())
+    SetColor(*point, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *point
     *Me\dirty = #True
@@ -668,7 +668,7 @@ Module Drawer
     CArray::SetValue(*line\positions, 0, *start)
     CArray::SetValue(*line\positions, 1, *end)
     CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
-    SetColor(*line, Color::_BLACK())
+    SetColor(*line, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -685,7 +685,7 @@ Module Drawer
       CArray::Copy(*line\positions, *positions)
       CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
     EndIf
-    SetColor(*line, Color::_BLACK())
+    SetColor(*line, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -708,7 +708,7 @@ Module Drawer
           CArray::SetValue(*line\positions, i*2+1, CArray::GetValue(*end,i))
         Next
     EndIf
-    SetColor(*line, Color::_BLACK())
+    SetColor(*line, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -848,7 +848,7 @@ Module Drawer
     *triangle\colors = CArray::newCArrayC4F32()
     CArray::Copy(*triangle\positions, *positions)
     CArray::SetCount(*triangle\colors, CArray::GetCount(*triangle\positions))
-    SetColor(*triangle, Color::_BLACK())
+    SetColor(*triangle, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *triangle
     *Me\dirty = #True
@@ -877,7 +877,7 @@ Module Drawer
     *text\colors = CArray::newCArrayC4F32()
     *text\text = text
     *text\size = size
-    SetColor(*text, Color::_BLACK())
+    SetColor(*text, Color::BLACK)
     CArray::SetCount(*text\positions, 1)
     CArray::SetCount(*text\colors, 1)
     If *position : CArray::SetValue(*text\positions, 0, *position) : EndIf
@@ -897,6 +897,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25
+; CursorPosition = 859
+; FirstLine = 837
 ; Folding = ---------
 ; EnableXP
