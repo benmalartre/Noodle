@@ -8,7 +8,7 @@ XIncludeFile "Types.pbi"
 ;============================================================
 ; View module Implementation
 ;============================================================
- 
+ Module View
   ;----------------------------------------------------------
   ; Constructor
   ;----------------------------------------------------------
@@ -564,8 +564,7 @@ XIncludeFile "Types.pbi"
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
 ; CursorPosition = 10
 ; FirstLine = 6
 ; Folding = ----
