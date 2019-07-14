@@ -131,6 +131,7 @@ Module GLContext
         GLFW::glfwGetWindowSize(*Me\window,@*Me\width,@*Me\height)
       EndIf
     CompilerElse
+      
       ; =======================================================================
       ;   MACOS
       ; =======================================================================
@@ -177,6 +178,7 @@ Module GLContext
         CompilerElse
           *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
           SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+
         CompilerEndIf
         
         ; load extensions and setup shaders
@@ -207,10 +209,25 @@ Module GLContext
           wglShareLists_(hglrc1, hglrc2)
           Copy(*Me, *context)
         EndIf
-        
+      
+      ; =======================================================================
+      ;   LINUX
+      ; =======================================================================
+      CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+          SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+          
+          ; load extensions and setup shaders
+          If Not *context
+            *MAIN_GL_CTXT = *Me
+            Setup(*Me)
+          Else
+            ; copy context
+            Copy(*Me, *context)
+          EndIf
+          
+        CompilerEndIf
       CompilerEndIf
-
-    CompilerEndIf
     
     ProcedureReturn *Me
   EndProcedure
@@ -296,9 +313,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 158
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 216
+; FirstLine = 211
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode
