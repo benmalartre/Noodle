@@ -1,6 +1,5 @@
 ﻿
 XIncludeFile "../objects/Scene.pbi"
-XIncludeFile "../core/commands.pbi"
 XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/UI.pbi"
 
@@ -116,8 +115,7 @@ DeclareModule Window
   Declare TearOff(*Me.Window_t, x.i, y.i, width.i, height.i)
 
 EndDeclareModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 55
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP

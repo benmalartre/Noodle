@@ -53,10 +53,12 @@ DeclareModule OpenGLExt
       CompilerCase #PB_OS_Linux
         ImportC "-lGL"
           glXGetProcAddress(s.p-ascii) As "glXGetProcAddress"
+          glXGetCurrentContext() As "glXGetCurrentContext"
         EndImport 
         
         Macro setGLEXT(var, extname)
           var = glXGetProcAddress(extname)
+          Debug extname +","+Str(var)
         EndMacro
         
       CompilerCase #PB_OS_Windows
@@ -1497,9 +1499,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 1483
-; FirstLine = 1452
+; IDE Options = PureBasic 5.70 LTS (Linux - x64)
+; CursorPosition = 56
+; FirstLine = 38
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode
