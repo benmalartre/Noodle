@@ -36,7 +36,7 @@ Procedure Update()
   LayerStroke::Update(*stroke)
   LayerStroke::Draw(*stroke, *viewport\context)
   
- ViewportUI::FlipBuffer(*viewport)
+ GLContext::FlipBuffer(*app\context)
   ;*stroke\Draw(*viewport\context,0)
 
   If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
@@ -72,7 +72,7 @@ Scene::AddChild(*scene, *sphere)
 ; Define *view.View::View_t = View::Split(*app\manager\main,#False)
 
 ; Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
-*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\manager\main, "Viewport", *app\camera);*manager\main\gadgetID,*manager\window)
+*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\window\main, "Viewport", *app\camera, *app\handle);*manager\main\gadgetID,*manager\window)
 *app\context = *viewport\context
 
 ; Define *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*view\right)
@@ -82,27 +82,27 @@ Scene::AddChild(*scene, *sphere)
 Scene::Setup(Scene::*current_scene,*viewport\context)
 
 
-*stroke.LayerStroke::LayerStroke_t = LayerStroke::New(*viewport\width,*viewport\height,*viewport\context, *app\camera)
+*stroke.LayerStroke::LayerStroke_t = LayerStroke::New(*viewport\sizX,*viewport\sizY,*viewport\context, *app\camera)
 LayerStroke::Setup(*stroke, *app\context)
 
 Define i, j
 For j=0 To 6
   LayerStroke::StartStroke(*stroke)
-  For i=0 To *viewport\width /100
-    LayerStroke::AddPoint(*stroke,i*100, j*10 +Sin(i*0.1)*8 + *viewport\height * 0.5 + Random(5)-2.5)
+  For i=0 To *viewport\sizX/100
+    LayerStroke::AddPoint(*stroke,i*100, j*10 +Sin(i*0.1)*8 + *viewport\sizY * 0.5 + Random(5)-2.5)
   Next
   LayerStroke::EndStroke(*stroke)
 Next
 
 
 
-ViewportUI::AddLayer(*viewport, *stroke)
+Application::AddLayer(*app, *stroke)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 47
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 53
 ; Folding = -
 ; EnableXP

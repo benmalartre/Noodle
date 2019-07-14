@@ -10,7 +10,7 @@ EndEnumeration
 #BUFFER_SIZE = 1024
 Global CURRENT_PATH.s
 Global IP_ADRESS.s = "192.168.1.41"
-Global PORT_ID   = 6832
+Global PORT_ID   = 6833
 Global DISK_NAME.s = "C:\"
 Global COLOR_BG = 8
 Global COLOR_FG = 8
@@ -132,8 +132,7 @@ End
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; ExecutableFormat = Console
-; CursorPosition = 83
-; FirstLine = 57
+; CursorPosition = 12
 ; Folding = -
 ; EnableXP
 ; Executable = ..\..\build\windows\Client.exe

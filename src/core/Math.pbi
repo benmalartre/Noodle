@@ -4383,8 +4383,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1927
-; FirstLine = 1894
-; Folding = -------------------------------------------------------
+; CursorPosition = 431
+; FirstLine = 418
+; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

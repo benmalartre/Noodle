@@ -24,7 +24,10 @@ DeclareModule Utils
   Declare BuildMatrixArray(*io.CArray::CArrayM4F32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,*up.v3f32)
   Declare RotateVector(*v.v3f32,*q.q4f32,*io.v3f32)
   Declare DirectionToRotation(*io.m3f32,*dir.v3f32,*up.v3f32=#Null)
-  
+  Declare EvenlyInterpolate1D(A.f, B.f, N.i, *mem)
+  Declare EvenlyInterpolate2D(*A.v2f32, *B.v2f32, N.i, *mem)
+  Declare EvenlyInterpolate3D(*A.v3f32, *B.v3f32, N.i, *mem)
+  Declare EvenlyInterpolate4D(*A.v4f32, *B.v4f32, N.i, *mem)
 EndDeclareModule
 
 Module Utils
@@ -426,11 +429,51 @@ Module Utils
   
     ProcedureReturn (dlift * abc - clift * dab) + (blift * cda - alift * bcd)
   EndProcedure
+  
+  Procedure EvenlyInterpolate1D(A.f, B.f, N.i, *mem)
+    For i=0 To N-1
+      PokeF(*mem + i * 4, A + i * (B-A) / N)
+    Next
+  EndProcedure
+  
+  Procedure EvenlyInterpolate2D(*A.v2f32, *B.v2f32, N.i, *mem)
+    Define *v.v2f32
+    Define.f blend = 1.0 / N
+    For i=0 To N-1
+      *v = *mem + i*SizeOf(v2f32)
+      LINEAR_INTERPOLATE(*mem, *A\x, *B\x, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\y, *B\y, blend * i)
+    Next
+  EndProcedure
+  
+  Procedure EvenlyInterpolate3D(*A.v3f32, *B.v3f32, N.i, *mem)
+    Define *v.v3f32
+    Define.f blend = 1.0 / N
+    For i=0 To N-1
+      *v = *mem + i*SizeOf(v3f32)
+      LINEAR_INTERPOLATE(*mem, *A\x, *B\x, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\y, *B\y, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\z, *B\z, blend * i)
+    Next
+  EndProcedure
+  
+  Procedure EvenlyInterpolate4D(*A.v4f32, *B.v4f32, N.i, *mem)
+    Define *v.v4f32
+    Define.f blend = 1.0 / N
+    For i=0 To N-1
+      *v = *mem + i*SizeOf(v4f32)
+      LINEAR_INTERPOLATE(*mem, *A\x, *B\x, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\y, *B\y, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\z, *B\z, blend * i)
+      LINEAR_INTERPOLATE(*mem, *A\w, *B\w, blend * i)
+    Next
+  EndProcedure
+  
 
 
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 256
-; FirstLine = 238
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 447
+; FirstLine = 413
 ; Folding = ----
 ; EnableXP

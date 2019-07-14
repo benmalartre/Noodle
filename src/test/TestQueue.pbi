@@ -90,6 +90,8 @@ Repeat
 Until e = #PB_Event_CloseWindow
 Queue::StopThread(*queue)
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 55
+; FirstLine = 44
 ; Folding = -
 ; EnableXP

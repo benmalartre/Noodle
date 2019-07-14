@@ -5,6 +5,7 @@ XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
+XIncludeFile "LocatorGeometry.pbi"
 XIncludeFile "PolymeshGeometry.pbi"
 
 ;==============================================================================
@@ -320,11 +321,7 @@ Module Locator
   ;----------------------------------------------------------------------------
   Procedure Delete( *Me.Locator_t )
 
-;     *Me\bbox\InstanceDestroy()
-    
-    ; ---[ Deallocate Memory ]-------------------------------------------------
-    ClearStructure(*Me,Locator_t)
-    FreeMemory( *Me )
+    Object::TERM(Locator)
   
   EndProcedure
 
@@ -334,14 +331,10 @@ Module Locator
   ;----------------------------------------------------------------------------
   ;{
   Procedure.i New( name.s = "Locator")
-    
     ; ---[ Allocate Object Memory ]--------------------------------------------
     Protected *Me.Locator_t = AllocateMemory( SizeOf(Locator_t) )
-;     *Me\VT = ?LocatorVT
-;     *Me\classname = "Locator"
+
     Object::INI(Locator)
-    ; ---[ Initialize Structure ]----------------------------------------------
-    InitializeStructure(*Me,Locator_t)
     
     ; ---[ Init Members ]------------------------------------------------------
     *Me\type     = Object3D::#Locator
@@ -352,6 +345,7 @@ Module Locator
     *Me\wireframe_r = Random(255)/255;
     *Me\wireframe_g = Random(255)/255;
     *Me\wireframe_b = Random(255)/255;
+    *Me\geom = LocatorGeometry::New(*Me)
     
     Object3D::OBJECT3DATTR()
     
@@ -372,8 +366,7 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 23
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 7
 ; Folding = ---
 ; EnableXP

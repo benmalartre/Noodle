@@ -98,7 +98,6 @@ Module ViewportUI
     *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
     
-    MessageRequester("VIEWPORT", Str(w)+","+Str(h)+","+Str(GLContext::*MAIN_GL_CTXT\width)+","+Str(GLContext::*MAIN_GL_CTXT\height))
     
     ; setup delegate gl context
     *Me\camera = *camera
@@ -719,7 +718,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 105
+; CursorPosition = 100
 ; FirstLine = 62
 ; Folding = -----
 ; EnableXP

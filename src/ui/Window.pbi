@@ -1,4 +1,5 @@
 ﻿XIncludeFile "../ui/Types.pbi"
+XIncludeFile "../ui/View.pbi"
 
 ;==========================================================================
 ; Window module Implementation
@@ -305,8 +306,7 @@ Module Window
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = ---
 ; EnableXP

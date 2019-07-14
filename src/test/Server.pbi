@@ -79,7 +79,6 @@ ProcedureDLL ActivateFirewall(active.c)
     ;state = "?/c netsh firewall set opmode enable"
   EndIf
   Define prg = RunProgram(cmd, state,"",#PB_Program_Hide | #PB_Program_Open |#PB_Program_Wait)
-  MessageRequester("CAROT", "FIREWALL DEACTIVATEED!!!")
 EndProcedure
 
 
@@ -92,7 +91,8 @@ ProcedureDLL StartServer(*address, port.i)
   Define *buffer = AllocateMemory(bufferSize)
 
   ;Define window = OpenWindow(#PB_Any, 0,0,258,258,"P3RV SERVER")
-  Define server = CreateNetworkServer(#PB_Any, port, #PB_Network_TCP, PeekS(*address, -1, #PB_UTF8 )) 
+  MessageRequester("CONNECT", PeekS(*address, -1, #PB_UTF8 )+" : "+Str( port ))
+  Define server = CreateNetworkServer(#PB_Any, port, #PB_Network_TCP|#PB_Network_IPv4, PeekS(*address, -1, #PB_UTF8 )) 
   If server
     Repeat
       event = NetworkServerEvent()
@@ -135,8 +135,8 @@ EndProcedure
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; ExecutableFormat = Shared dll
-; CursorPosition = 68
-; FirstLine = 54
+; CursorPosition = 93
+; FirstLine = 71
 ; Folding = --
 ; EnableXP
 ; Executable = ..\..\build\windows\server.dll

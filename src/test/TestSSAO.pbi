@@ -15,7 +15,7 @@ EnableExplicit
 Global framecount.l
 Global lasttime.l
 
-Global WIDTH = 1280
+Global WIDTH = 1024
 Global HEIGHT = 720
 
 Global *camera.Camera::Camera_t 
@@ -125,7 +125,7 @@ Procedure Draw(*app.Application::Application_t)
   CompilerElse
     occ_blur = 2
     occ_radius = 0.5
-    SetGadgetAttribute(*viewport\gadgetID, #PB_OpenGL_SetContext, #True)
+    GLContext::SetContext(*app\context)
     mx = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseX)
     my = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseY)
     vwidth = GadgetWidth(*viewport\gadgetID)
@@ -236,67 +236,67 @@ Procedure Draw(*app.Application::Application_t)
   glReadBuffer(#GL_COLOR_ATTACHMENT2)
   glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-3*bh, vwidth, vheight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
   
-  ;2. Create SSAO texture
-  glDisable(#GL_DEPTH_TEST)
-  Framebuffer::BindInput(*gbuffer)
-  Framebuffer::BindOutput(*ssao)
-  glClear(#GL_COLOR_BUFFER_BIT);
-  shader = *s_ssao\pgm
-  glUseProgram(shader)
-  glViewport(0,0,*ssao\width,*ssao\height)
-  glUniform1i(u_ssao_position_map,0)
-  glUniform1i(u_ssao_normal_map,1)
-  glActiveTexture(#GL_TEXTURE2)
-  glBindTexture(#GL_TEXTURE_2D,noise_tex)
-  glUniform1i(u_ssao_noise_map,2)
-  glUniform1f(u_ssao_occ_radius,occ_radius)
-  glUniform1i(u_ssao_occ_power,3)
-  glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
-  glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
-;         For i=0 To nbsamples-1
-;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
-;         Next
-  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-    glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
-  CompilerElse
-    glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
-  CompilerEndIf
-  
-  glUniform1i(u_ssao_kernel_size,nbsamples)
-  glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
-  ;       
-  ScreenQuad::Draw(*quad)
-  ;       
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-  
-  
-  If occ_blur
-    ;3. Blur SSAO texture To remove noise
-    shader = *s_ssao_blur\pgm
-    glUseProgram(shader)
-    glViewport(0,0,*blur\width,*blur\height)
-    Framebuffer::BindInput(*ssao)
-    Framebuffer::BindOutput(*blur)
-    glClear(#GL_COLOR_BUFFER_BIT);
-    ScreenQuad::Draw(*quad)
-    
-    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
-    glReadBuffer(#GL_COLOR_ATTACHMENT0)
-    glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-    Framebuffer::Unbind(*blur)
-  EndIf
-  
-  ;4. Lighting
-  Framebuffer::BindInput(*gbuffer)
-  If occ_blur
-    Framebuffer::BindInput(*blur,3)
-  Else
-    Framebuffer::BindInput(*ssao,3)
-  EndIf
+;   ;2. Create SSAO texture
+;   glDisable(#GL_DEPTH_TEST)
+;   Framebuffer::BindInput(*gbuffer)
+;   Framebuffer::BindOutput(*ssao)
+;   glClear(#GL_COLOR_BUFFER_BIT);
+;   shader = *s_ssao\pgm
+;   glUseProgram(shader)
+;   glViewport(0,0,*ssao\width,*ssao\height)
+;   glUniform1i(u_ssao_position_map,0)
+;   glUniform1i(u_ssao_normal_map,1)
+;   glActiveTexture(#GL_TEXTURE2)
+;   glBindTexture(#GL_TEXTURE_2D,noise_tex)
+;   glUniform1i(u_ssao_noise_map,2)
+;   glUniform1f(u_ssao_occ_radius,occ_radius)
+;   glUniform1i(u_ssao_occ_power,3)
+;   glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
+;   glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
+; ;         For i=0 To nbsamples-1
+; ;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
+; ;         Next
+;   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+;     glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+;   CompilerElse
+;     glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+;   CompilerEndIf
+;   
+;   glUniform1i(u_ssao_kernel_size,nbsamples)
+;   glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
+;   ;       
+;   ScreenQuad::Draw(*quad)
+;   ;       
+;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
+;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;   glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+;   
+;   
+;   If occ_blur
+;     ;3. Blur SSAO texture To remove noise
+;     shader = *s_ssao_blur\pgm
+;     glUseProgram(shader)
+;     glViewport(0,0,*blur\width,*blur\height)
+;     Framebuffer::BindInput(*ssao)
+;     Framebuffer::BindOutput(*blur)
+;     glClear(#GL_COLOR_BUFFER_BIT);
+;     ScreenQuad::Draw(*quad)
+;     
+;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+;     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
+;     glReadBuffer(#GL_COLOR_ATTACHMENT0)
+;     glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+;     Framebuffer::Unbind(*blur)
+;   EndIf
+;   
+;   ;4. Lighting
+;   Framebuffer::BindInput(*gbuffer)
+;   If occ_blur
+;     Framebuffer::BindInput(*blur,3)
+;   Else
+;     Framebuffer::BindInput(*ssao,3)
+;   EndIf
   
 ;   Framebuffer::BindOutput(*deferred)
 ;   glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
@@ -337,14 +337,14 @@ If Time::Init()
   Log::Init()
    *app = Application::New("SSAO",800,600)
    CompilerIf Not #USE_GLFW
-     Define *view.View::View_t = View::Split(*app\manager\main,#PB_Splitter_Vertical,75)
-     *viewport = ViewportUI::New(*view\left,"ViewportUI", *app\camera)
+     Define *view.View::View_t = View::Split(*app\window\main,#PB_Splitter_Vertical,75)
+     *viewport = ViewportUI::New(*view\left,"ViewportUI", *app\camera, *app\handle)
      *app\context = *viewport\context
      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
      
     *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
-    *app\manager\active = *app\manager\main
+    View::SetContent(*app\window\main,*viewport)
+    *app\window\active = *app\window\main
    CompilerEndIf
    
 ;   CompilerIf #USE_GLFW
@@ -510,8 +510,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 340
-; FirstLine = 336
+; CursorPosition = 237
+; FirstLine = 183
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

@@ -77,7 +77,7 @@ Procedure DrawSelected(*geom.Geometry::PolymeshGeometry_t)
 
   Define *O = Drawer::AddPoint(*drawer, CArray::GetValue(*geom\a_positions, rootIndex))
   Drawer::SetSize(*O, 8)
-  Drawer::SetColor(*O, Color::_RED())
+  Drawer::SetColor(*O, Color::RED)
   Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
   CArray::SetCount(*positions, CArray::GetCount(*selected))
   Define i
@@ -87,7 +87,7 @@ Procedure DrawSelected(*geom.Geometry::PolymeshGeometry_t)
   
   Define *P = Drawer::AddPoints(*drawer, *positions)
   Drawer::SetSize(*P, 4)
-  Drawer::SetColor(*P, Color::_GREEN())
+  Drawer::SetColor(*P, Color::GREEN)
   
   CArray::Delete(*positions)
 EndProcedure
@@ -204,8 +204,8 @@ FTGL::Init()
 EndIf
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 102
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 89
+; FirstLine = 75
 ; Folding = -
 ; EnableXP

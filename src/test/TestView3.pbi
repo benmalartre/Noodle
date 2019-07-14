@@ -22,10 +22,10 @@ Global *default.Layer::Layer_t
 Global *app.Application::Application_t
 
 Procedure Update()
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*viewport)
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*default,*app\context)
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*viewport)
 EndProcedure
 
 Procedure Callback( message.s)
@@ -43,9 +43,9 @@ EndStructure
 
 Procedure AddButton (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
-  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, *ui\height)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\sizX, *ui\sizY)
   ControlProperty::AppendStart(*prop)
-  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\width, 24)
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\sizX, 24)
   Define message.s = "ZOBINickVraimentTout"
   Signal::CONNECTCALLBACK(*btn\on_click, Callback, message)
   ControlProperty::AppendStop(*prop)
@@ -55,12 +55,12 @@ EndProcedure
 
 Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
-  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\width, 128)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\sizX, 128)
   ControlProperty::AppendStart(*prop)
   ControlProperty::RowStart(*prop)
   Define i
   For i=0 To 3
-     Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddknobControl(*prop, name, RGBA(128,128,128,255), *ui\width/4)
+     Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddknobControl(*prop, name, RGBA(128,128,128,255), *ui\sizX/4)
   Next
   ControlProperty::RowEnd(*prop)
   *prop\dy + 128
@@ -74,7 +74,7 @@ EndProcedure
 Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
   OpenGadgetList(*ui\container)
   
-  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\width, *ui\height-128)
+  Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\sizX, *ui\sizY-128)
 
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
@@ -93,7 +93,7 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
 ;   ControlProperty::AddColorControl(*prop, "Color1", "Color1", Color::_GREEN(), #Null)
 ;   ControlProperty::EndGroup(*prop)
 
-  Define *color.ControlColor::ControlColor_t = ControlProperty::AddColorControl(*prop, "Color2", "Color2", Color::_BLUE(), #Null)
+  Define *color.ControlColor::ControlColor_t = ControlProperty::AddColorControl(*prop, "Color2", "Color2", UIColor::BLUE, #Null)
   Define icolor.ControlColor::IControlColor = *color
   
   
@@ -118,14 +118,12 @@ Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Scene::*current_scene = Scene::New()
 Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
 Scene::AddChild(Scene::*current_scene,*bunny)
-Define *m.ViewManager::ViewManager_t = *app\manager
-Global *main.View::View_t = *m\main
-Global *splitted.View::View_t = View::Split(*m\main, 0,75)
+
+Global *splitted.View::View_t = View::Split(*app\window\main, 0,75)
 
 
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport", *app\camera)
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport", *app\camera, *app\handle)
 *app\context = *viewport\context
-ViewportUI::SetContext(*viewport)
 
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
 AddButton(*ui, "Button One")
@@ -134,14 +132,15 @@ AddButton(*ui, "Button Three")
 AddKnobs(*ui, "FUCK")
 ; AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
-*default = LayerDefault::New(*viewport\width, *viewport\height, *app\context, *app\camera)
-ViewportUI::AddLayer(*viewport, *default)
+GLContext::SetContext(*app\context)
+*layer = LayerDefault::New(*viewport\sizX, *viewport\sizY,*app\context,*app\camera)
+Application::AddLayer(*app, *layer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 49
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 136
+; FirstLine = 88
 ; Folding = --
 ; EnableXP
 ; EnableUnicode
