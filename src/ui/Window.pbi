@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../ui/Types.pbi"
 XIncludeFile "../ui/View.pbi"
+XIncludeFile "../core/Commands.pbi"
 
 ;==========================================================================
 ; Window module Implementation

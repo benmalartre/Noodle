@@ -87,8 +87,7 @@ If Time::Init()
   
   Scene::*current_scene = Scene::New()
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
-     
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
@@ -96,6 +95,7 @@ If Time::Init()
   
   
   *layer = LayerDefault::New(#WIDTH,#HEIGHT,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
 ;   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
@@ -169,9 +169,9 @@ If Time::Init()
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 66
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 163
+; FirstLine = 123
 ; Folding = -
 ; EnableThread
 ; EnableXP

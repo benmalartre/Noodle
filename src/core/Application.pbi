@@ -323,7 +323,8 @@ CompilerEndIf
     Define *window.Window::Window_t = AllocateMemory(SizeOf(Window::Window_t))
     InitializeStructure(*window, Window::Window_t)
     *window\main = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
-    
+    *window\main\width = width
+    *window\main\height = height
     ProcedureReturn *window
     
   EndProcedure
@@ -721,9 +722,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 317
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 328
+; FirstLine = 314
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL
