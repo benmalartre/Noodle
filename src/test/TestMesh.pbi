@@ -138,6 +138,7 @@ Procedure Draw(*app.Application::Application_t)
     Debug "YEAH"
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+    *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -238,12 +239,18 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 166
 ; FirstLine = 126
+=======
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 236
+; FirstLine = 203
+>>>>>>> 5129a1ad760d113e4d71678278c41116b0f958d6
 ; Folding = -
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
