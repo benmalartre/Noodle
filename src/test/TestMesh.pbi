@@ -164,7 +164,7 @@ Procedure Draw(*app.Application::Application_t)
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
   Define *samples.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
-  Sampler::SamplePolymesh(*ground\geom,*samples,1024,7)
+  Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*bunny,*s_polymesh)
@@ -238,9 +238,9 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 87
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 166
+; FirstLine = 126
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app
