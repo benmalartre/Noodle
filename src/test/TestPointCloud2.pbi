@@ -1,10 +1,12 @@
 ;#USE_GLFW = #False
 XIncludeFile "../core/Application.pbi"
-
+XIncludeFile "../ui/Window.pbi"
+XIncludeFile "../ui/View.pbi"
 EnableExplicit
 UseModule Math
 UseModule OpenGL
 UseModule OpenGLExt
+
 
 
 Globals::Init()
@@ -90,8 +92,7 @@ Define width = DesktopWidth(0)
 Define height = DesktopHeight(0)
 Define *app.Application::Application_t = Application::New("Point Cloud Tree",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
 
-Define *m.ViewManager::ViewManager_t = *app\manager
-Global *main.View::View_t = *m\main
+Global *main.View::View_t = *app\window\main
 Global *view.View::View_t = View::Split(*main,0,50)
 Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
 
@@ -152,9 +153,9 @@ EndProcedure
 Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 76
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 94
+; FirstLine = 90
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

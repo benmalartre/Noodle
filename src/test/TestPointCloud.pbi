@@ -44,6 +44,7 @@ Global view.m4f32
 Global proj.m4f32
 Global T.f
 Global *ftgl_drawer.FTGL::FTGL_Drawer
+Global *layer.Layer::Layer_t
 
 ; Resize
 ;--------------------------------------------
@@ -57,8 +58,28 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  
   GLContext::SetContext(*app\context)
-  Framebuffer::BindOutput(*buffer)
+;   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  
+;   Protected *t.Transform::Transform_t = *light\localT
+  
+;   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
+;   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
+;   Object3D::SetLocalTransform(*light, *t)
+;   
+  
+  Scene::Update(Scene::*current_scene)
+  
+  
+  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+  glUseProgram(*s\pgm)
+;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
+   
+  Application::Draw(*app, *layer, *app\camera)
+  ViewportUI::Blit(*viewport, *layer\buffer)
+;   GLContext::SetContext(*app\context)
+;   Framebuffer::BindOutput(*buffer)
 ;   glClearColor(0.25,0.25,0.25,1.0)
 ;   glViewport(0, 0, *buffer\width,*buffer\height)
 ;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -92,36 +113,36 @@ Procedure Draw(*app.Application::Application_t)
 ;   FTGL::Draw(*ftgl_drawer,"Point Cloud Nb Vertices : "+Str(*cloud\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
 ;   FTGL::EndDraw(*ftgl_drawer)
   
-  Framebuffer::Unbind(*buffer)
- GLContext::FlipBuffer(*app\context)
+;   Framebuffer::Unbind(*buffer)
+;  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
 
  Define useJoystick.b = #False
- width = 600
+ width = 800
  height = 600
 ; Main
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("Test",800,600)
+   *app = Application::New("Test",width,height)
   
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
-    MessageRequester("T", *viewport\class\name)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+    *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
+  Scene::*current_scene = Scene::New()
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   GLContext::SetContext(*app\context)
-  *buffer = Framebuffer::New("Color",*app\width,*app\height)
   
-  Framebuffer::AttachTexture(*buffer,"position",#GL_RGBA,#GL_LINEAR,#GL_REPEAT)
-  Framebuffer::AttachTexture(*buffer,"normal",#GL_RGBA,#GL_LINEAR,#GL_REPEAT) 
-  Framebuffer::AttachRender(*buffer,"depth",#GL_DEPTH_COMPONENT)
-
+  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
+ 
   ; FTGL Drawer
   ;-----------------------------------------------------
   FTGL::Init()
@@ -133,6 +154,9 @@ Procedure Draw(*app.Application::Application_t)
   shader = *s_pointcloud\pgm
   
   *cloud.PointCloud::PointCloud_t = PointCloud::New("cloud",1000)
+  
+  Scene::AddChild(Scene::*current_scene,*cloud)
+  Scene::Setup(Scene::*current_scene,*app\context)
   
 ;   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
 ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
@@ -182,9 +206,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 54
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 127
+; FirstLine = 110
 ; Folding = -
 ; EnableXP
 ; Executable = Test
