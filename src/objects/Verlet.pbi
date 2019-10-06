@@ -49,6 +49,9 @@ EndDeclareModule
 
 Module Verlet
   
+  ; ------------------------------------------------------------------------
+  ;   Add Spring
+  ; ------------------------------------------------------------------------
   Procedure AddSpring(*Me.Verlet_t, a.i, b.i, ks.f, kd.f, type.i)
     Define *spring.Spring_t = AllocateMemory(SizeOf(Spring_t))
   	
@@ -65,6 +68,9 @@ Module Verlet
   	ProcedureReturn *spring
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ;   Is Real Edge
+  ; ------------------------------------------------------------------------
   Procedure.b IsRealEdge(*geom.Geometry::PolymeshGeometry_t, a.i, b.i)
     Define i, x, y
     Define *cur.Geometry::HalfEdge_t, *nxt.Geometry::HalfEdge_t
@@ -79,6 +85,9 @@ Module Verlet
 
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ;   Is Vertices in First Ring
+  ; ------------------------------------------------------------------------
   Procedure InFirstRing( *geom.Geometry::PolymeshGeometry_t, idx.i, *firstring.CArray::CArrayLong)
     Define i
     For i=0 To CArray::GetCount(*firstring)-1
@@ -89,6 +98,9 @@ Module Verlet
     ProcedureReturn #False
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ; Rig Geometry
+  ; ------------------------------------------------------------------------
   Procedure RigGeometry(*Me.Verlet_t)
     Define *geom.Geometry::PolymeshGeometry_t = *Me\geom
     Define i, j, k, a, b
@@ -148,7 +160,10 @@ Module Verlet
     CArray::Delete(*neighbors)  
     CArray::Delete(*secondary)  
   EndProcedure
-
+  
+  ; ------------------------------------------------------------------------
+  ; Initialize
+  ; ------------------------------------------------------------------------
   Procedure Init(*Me.Verlet_t)
     Select *Me\geom\type
       Case Geometry::#Polymesh
@@ -158,17 +173,22 @@ Module Verlet
     
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ; Deform
+  ; ------------------------------------------------------------------------
    Procedure Deform(*Me.Verlet_t)
     Select *Me\geom\type
       Case Geometry::#Polymesh
         Define *geom.Geometry::PolymeshGeometry_t = *Me\geom
         CArray::Copy(*geom\a_positions, *Me\X)
         Polymesh::SetDirtyState(Geometry::GetParentObject3D(*Me\geom), Object3D::#DIRTY_STATE_DEFORM)
-        Debug "I PERFORM SOME DEFORM ON THSI FUCKIN BUNNY WITH MY DICK "
     EndSelect
     
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ; Draw
+  ; ------------------------------------------------------------------------
   Procedure Draw(*Me.Verlet_t, *drawer.Drawer::Drawer_t)
     Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
     Define *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
@@ -217,6 +237,9 @@ Module Verlet
     
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ; Integrate
+  ; ------------------------------------------------------------------------
   Procedure Integrate(*verlet.Verlet_t, deltaTime.f) 
   	Define deltaTime2Mass.f = (deltaTime*deltaTime)/ *verlet\mass
   	Define i=0
@@ -238,12 +261,18 @@ Module Verlet
       If *Xi\y<0 : *Xi\y = 0 : EndIf
     Next
   EndProcedure
-    
+  
+  ; ------------------------------------------------------------------------
+  ; Get Velocity Macro
+  ; ------------------------------------------------------------------------
   Macro GetVelocity(_velocity, _Xi, _Xi_last, _dt )
     Vector3::Sub(_velocity, _Xi, _Xi_last)
     Vector3::ScaleInPlace(_velocity, 1.0/_dt)
   EndMacro
   
+  ; ------------------------------------------------------------------------
+  ; Compute Forces
+  ; ------------------------------------------------------------------------
   Procedure ComputeForces(*Me.Verlet_t, dt.f)
   	Define i=0
   	Define *Fi.Math::v3f32, *Xi.Math::v3f32, *Xi_last.Math::v3f32
@@ -294,7 +323,10 @@ Module Verlet
   	Next
   
   EndProcedure
-
+  
+  ; ------------------------------------------------------------------------
+  ;   CONSTRUCTOR
+  ; ------------------------------------------------------------------------
   Procedure New(*geom.Geometry::Geometry_t, mass.f)
     Define *Me.Verlet_t = AllocateMemory(SizeOf(Verlet_t))
 
@@ -315,6 +347,9 @@ Module Verlet
     ProcedureReturn *Me
   EndProcedure
   
+  ; ------------------------------------------------------------------------
+  ;   DESTRUCTOR
+  ; ------------------------------------------------------------------------
   Procedure Delete(*Me.Verlet_t)
     CArray::Delete(*Me\X)
     CArray::Delete(*Me\X_last)
@@ -407,12 +442,13 @@ Module Verlet
     EndIf
   
   EndProcedure
+  
 EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 99
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 1
 ; Folding = ---
 ; EnableXP

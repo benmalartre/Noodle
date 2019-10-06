@@ -471,9 +471,9 @@ XIncludeFile "Types.pbi"
   ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
     If Not event : ProcedureReturn : EndIf
-    
     If *Me\leaf
       If *Me\content <> #Null
+        Debug *Me\content\class\name
         Protected *content.UI::IUI = *Me\content
         *content\OnEvent(event)
       EndIf
@@ -564,8 +564,8 @@ XIncludeFile "Types.pbi"
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Linux - x64)
-; CursorPosition = 10
-; FirstLine = 6
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 475
+; FirstLine = 467
 ; Folding = ----
 ; EnableXP

@@ -39,7 +39,7 @@ DeclareModule CanvasUI
   Interface ICanvasUI Extends UI::IUI
   EndInterface
    
-  Declare New(x.i=0,y.i=0,width.i=800, height.i=800,resx=32,resy=32)
+  Declare New(*parent.View::View_t,name.s="CanvasUI")
   Declare Delete(*Me.CanvasUI_t)
   Declare Resize(*Me.CanvasUI_t, x.i, y.i, width.i, height.i)
   Declare Draw(*Me.CanvasUI_t)
@@ -59,6 +59,7 @@ DeclareModule CanvasUI
 
   Declare SetActiveTool(*Me.CanvasUI_t, tool.i)
   Declare NewSheet(*Me.CanvasUI_t)
+  Declare AddSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
   Declare DeleteSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
   Declare SetActiveSheet(*Me.CanvasUI_t, index.i)
   
@@ -85,18 +86,18 @@ Module CanvasUI
   ; --------------------------------------------------------------------
   ;   CONSTRUCTOR
   ; --------------------------------------------------------------------
-  Procedure New(x.i=0,y.i=0,width.i=800, height.i=800,resx=32,resy=32)
+  Procedure New(*parent.View::View_t,name.s="CanvasUI")
     *Me.CanvasUI_t = AllocateMemory(SizeOf(CanvasUI_t))
     Object::INI(CanvasUI)
     Protected l.l
-    *Me\resx = resx
-    *Me\resy = resy
-    *Me\pixelratio = 1
+    *Me\resx = *parent\width
+    *Me\resy = *parent\height
+    *Me\pixelratio = *parent\height / *parent\width
     *Me\secondary = RGBA(120,12,66,255)
-    *Me\container = ContainerGadget(#PB_Any, x, y, width, height, #PB_Container_BorderLess)
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,width,height,#PB_Canvas_Keyboard)
+    *Me\container = ContainerGadget(#PB_Any, x, y, *parent\width, *parent\height, #PB_Container_BorderLess)
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*parent\width, *parent\height,#PB_Canvas_Keyboard)
     *Me\zoom = 100
-    *Me\imageID = CreateImage(#PB_Any,*Me\resx,*Me\resy,32)
+    *Me\imageID = CreateImage(#PB_Any,*parent\width,*parent\height,32)
     *Me\tool = Tool::New(Tool::#TOOL_SELECT, *Me\gadgetID)
     *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
     *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
@@ -129,6 +130,16 @@ Module CanvasUI
   ; ---------------------------------------------------------
   Procedure NewSheet(*Me.CanvasUI_t)
     Define *sheet.Sheet::Sheet_t = Sheet::New(GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
+    AddElement(*Me\sheets())
+    *Me\sheets() = *sheet
+    *Me\sheet = *sheet
+    ProcedureReturn *Me\sheet
+  EndProcedure
+  
+  ; ---------------------------------------------------------
+  ;   ADD LAYER
+  ; ---------------------------------------------------------
+  Procedure AddSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
     AddElement(*Me\sheets())
     *Me\sheets() = *sheet
     *Me\sheet = *sheet
@@ -218,6 +229,7 @@ Module CanvasUI
   ;   DRAW 
   ; ---------------------------------------------------------
   Procedure Draw(*Me.CanvasUI_t)
+    Debug "DRAW CANVAS UI..."
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
     ResetCoordinates(#PB_Coordinate_User)
     AddPathBox(0,0,GadgetWidth(*Me\gadgetID), GadgetHeight(*Me\gadgetID))
@@ -396,6 +408,7 @@ Module CanvasUI
   ;   ON EVENT
   ; --------------------------------------------------------------------
   Procedure OnEvent(*Me.CanvasUI_t)
+    Debug "CANVAS UI ON EVENT..."
     Protected mx,my,x.f,y.f,w,h,m,key
     
     mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
@@ -509,8 +522,8 @@ Module CanvasUI
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 12
-; FirstLine = 6
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 410
+; FirstLine = 391
 ; Folding = ----
 ; EnableXP

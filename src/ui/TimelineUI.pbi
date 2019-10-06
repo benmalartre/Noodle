@@ -17,20 +17,29 @@ DeclareModule TimelineUI
 
   Declare New(*parent.View::View_t,name.s="TimelineUI")
   Declare Delete(*Me.TimelineUI_t)
-  Declare Init(*Me.TimelineUI_t)
+  Declare Resize(*Me.TimelineUI_t)
+  Declare Draw(*Me.TimelineUI_t)
+  Declare DrawPickImage(*Me.TimelineUI_t)
+  Declare Pick(*Me.TimelineUI_t)
   Declare OnEvent(*Me.TimelineUI_t,event.i)
-  Declare Term(*Me.TimelineUI_t)
   Declare Draw(*Me.TimelineUI_t)
   
   
   
   DataSection 
     TimelineUIVT: 
-      Data.i @Init()
+      Data.i @Delete()
+      Data.i @Resize()
+      Data.i @Draw()
+      Data.i @DrawPickImage()
+      Data.i @Pick()
       Data.i @OnEvent()
-      Data.i @Term()
   
-  EndDataSection 
+    EndDataSection 
+    
+    
+  Global CLASS.Class::Class_t
+
   
 EndDeclareModule
 
@@ -86,11 +95,24 @@ Module TimelineUI
     ControlTimeline::Draw(*Me\timeline)
   EndProcedure
   
-  ; Init
+  ; Draw Pick Image
   ;-------------------------------
-  Procedure Init(*Me.TimelineUI_t)
-    Debug "TimelineUI Init Called!!!"
+  Procedure DrawPickImage(*Me.TimelineUI_t)
+    
   EndProcedure
+  
+  ; Pick
+  ;-------------------------------
+  Procedure Pick(*Me.TimelineUI_t)
+    
+  EndProcedure
+  
+  ; Resize
+  ;-------------------------------
+  Procedure Resize(*Me.TimelineUI_t)
+    
+  EndProcedure
+  
   
   ; Event
   ;-------------------------------
@@ -127,12 +149,7 @@ Module TimelineUI
     ;SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Image,ImageID(*e\imageID))
   EndProcedure
   
-  ; Term
-  ;-------------------------------
-  Procedure Term(*Me.TimelineUI_t)
-    Debug "TimelineUI Term Called!!!"
-  EndProcedure
-  
+  Class::DEF(TimelineUI)
   
 EndModule
 
@@ -142,8 +159,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 10
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 150
+; FirstLine = 113
 ; Folding = --
 ; EnableXP

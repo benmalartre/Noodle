@@ -32,17 +32,21 @@ DeclareModule ColorUI
 
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*Me.ColorUI_t)
-  Declare Init(*Me.ColorUI_t)
-  Declare OnEvent(*Me.ColorUI_t,event.i)
-  Declare Term(*Me.ColorUI_t)
+  Declare Resize(*Me.ColorUI_t)
   Declare Draw(*Me.ColorUI_t)
+  Declare DrawPickImage(*Me.ColorUI_t)
+  Declare Pick(*Me.ColorUI_t)
+  Declare OnEvent(*Me.ColorUI_t,event.i)
   Declare Update(*Me.ColorUI_t)
   
   DataSection 
     ColorUIVT: 
-      Data.i @Init()
-      Data.i @OnEvent()
-      Data.i @Term()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
+    Data.i @OnEvent()
   EndDataSection 
   
 EndDeclareModule
@@ -155,10 +159,16 @@ Module ColorUI
     StopDrawing()
   EndProcedure
   
-  ; Init
-  ;-------------------------------
-  Procedure Init(*Me.ColorUI_t)
-    Debug "ColorUI Init Called!!!"
+  Procedure DrawPickImage(*Me.COlorUI_t)
+    
+  EndProcedure
+  
+  Procedure Pick(*Me.COlorUI_t)
+    
+  EndProcedure
+  
+  Procedure Resize(*Me.COlorUI_t)
+    
   EndProcedure
   
   ; Event
@@ -188,12 +198,6 @@ Module ColorUI
     
   EndProcedure
   
-  ; Term
-  ;-------------------------------
-  Procedure Term(*Me.ColorUI_t)
-    Debug "ColorUI Term Called!!!"
-  EndProcedure
-  
   
 EndModule
 
@@ -206,8 +210,9 @@ EndModule
 ;   ColorUI::Event(*colorUI,e)
 ; Until e = #PB_Event_CloseWindow
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 29
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 161
+; FirstLine = 136
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

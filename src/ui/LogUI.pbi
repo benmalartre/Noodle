@@ -13,16 +13,20 @@ DeclareModule LogUI
   
   Declare New(*parent.View::View_t,name.s="LogUI")
   Declare Delete(*Me.LogUI_t)
-;   Declare Draw(*Me.LogUI_t)
-  Declare Init(*Me.LogUI_t)
+  Declare Resize(*Me.LogUI_t)
+  Declare Draw(*Me.LogUI_t)
+  Declare DrawPickImage(*Me.LogUI_t)
+  Declare Pick(*Me.LogUI_t)
   Declare OnEvent(*Me.LogUI_t,event.i)
-  Declare Term(*Me.LogUI_t)
   
   DataSection 
     LogUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
 EndDeclareModule
 
@@ -68,13 +72,31 @@ Module LogUI
     FreeMemory(*Me)
   EndProcedure
   
-  ; Init
+  ; Resize
   ;-------------------------------
-  Procedure Init(*Me.LogUI_t)
+  Procedure Resize(*Me.LogUI_t)
     
   EndProcedure
   
-   ; Scroll To End
+  ; Draw
+  ;-------------------------------
+  Procedure Draw(*Me.LogUI_t)
+    
+  EndProcedure
+  
+  ; Draw Pick Image
+  ;-------------------------------
+  Procedure DrawPickImage(*Me.LogUI_t)
+    
+  EndProcedure
+  
+  ; Pick
+  ;-------------------------------
+  Procedure Pick(*Me.LogUI_t)
+    
+  EndProcedure
+
+  ; Scroll To End
   ;-------------------------------
   Procedure ScrollToEnd(*Me.LogUI_t)
     
@@ -149,12 +171,6 @@ EndProcedure
     
   EndProcedure
   
-  ; Term
-  ;-------------------------------
-  Procedure Term(*Me.LogUI_t)
-    
-  EndProcedure
-  
   
 ;   Procedure Draw(*Me.LogUI_t)
 ;     ClearGadgetItems(*Me\area)
@@ -167,8 +183,8 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 20
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

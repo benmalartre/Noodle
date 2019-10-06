@@ -20,18 +20,22 @@ DeclareModule ExplorerUI
   Declare New(*parent.View::View_t,name.s="Explorer")
   Declare Delete(*Me.ExplorerUI_t)
   Declare Draw(*Me.ExplorerUI_t)
-  Declare Init()
+  Declare DrawPickImage(*Me.ExplorerUI_t)
+  Declare Pick(*Me.ExplorerUI_t)
+  Declare Resize(*Me.ExplorerUI_t)
   Declare OnEvent(*Me.ExplorerUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  Declare Term()
   Declare Clear(*Me.ExplorerUI_t)
   Declare Setup(*Me.ExplorerUI_t)
   Declare Connect(*Me.ExplorerUI_t, *scene.Scene::Scene_t)
   
   DataSection 
     ExplorerUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -110,7 +114,9 @@ Module ExplorerUI
     
   EndProcedure
   
-  
+  ;---------------------------------------------------------
+  ; Draw
+  ;---------------------------------------------------------
   Procedure Draw(*Me.ExplorerUI_t)
     StartDrawing(CanvasOutput(*Me\explorer\gadgetID))
     Box(0,0,*Me\explorer\sizX,*Me\explorer\sizY,UIColor::COLOR_MAIN_BG)
@@ -118,17 +124,27 @@ Module ExplorerUI
     StopDrawing()
   EndProcedure
   
-  Procedure Clear(*Me.ExplorerUI_t)
+  ;---------------------------------------------------------
+  ; Draw Pick Image
+  ;---------------------------------------------------------
+  Procedure DrawPickImage(*Me.ExplorerUI_t)
+
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Pick
+  ;---------------------------------------------------------
+  Procedure Pick(*Me.ExplorerUI_t)
       
   EndProcedure
   
-   Procedure Init()
+  ;---------------------------------------------------------
+  ; Clear
+  ;---------------------------------------------------------
+  Procedure Clear(*Me.ExplorerUI_t)
       
-  EndProcedure 
-  
-  Procedure Term()
-      
-  EndProcedure 
+  EndProcedure
+
   
   ;---------------------------------------------------------
   ;  OnEvent
@@ -213,8 +229,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 17
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 25
+; FirstLine = 8
 ; Folding = ----
 ; EnableXP

@@ -15,8 +15,6 @@ DeclareModule DummyUI
 
   Declare New(*parent.View::View_t,name.s)
   Declare Delete(*Me.DummyUI_t)
-  Declare Init(*Me.DummyUI_t)
-  Declare Term(*Me.DummyUI_t)
   Declare Draw(*Me.DummyUI_t)
   Declare OnEvent(*Me.DummyUI_t,event.i)
   
@@ -117,12 +115,6 @@ Module DummyUI
     StopVectorDrawing()
   EndProcedure
   
-  ; Init
-  ;-------------------------------
-  Procedure Init(*Me.DummyUI_t)
-    Debug "DUmmyUI Init Called!!!"
-  EndProcedure
-  
   ; Event
   ;-------------------------------
   Procedure OnEvent(*Me.DummyUI_t,event.i)
@@ -157,15 +149,11 @@ Module DummyUI
      Draw(*Me)
   EndProcedure
   
-  ; Term
-  ;-------------------------------
-  Procedure Term(*Me.DummyUI_t)
-    Debug "DUmmyUI Term Called!!!"
-  EndProcedure
+
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 6
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 106
 ; Folding = --
 ; EnableXP

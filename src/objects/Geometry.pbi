@@ -594,6 +594,7 @@ Module Geometry
       
     CompilerElse
       Protected i
+      Protected v.v3f32
       Protected *v.v3f32
       Protected bmin.v3f32, bmax.v3f32
       Vector3::Set(bmin,#F32_MAX,#F32_MAX,#F32_MAX)
@@ -602,14 +603,14 @@ Module Geometry
       For i=0 To *geom\nbpoints-1
         *v = CArray::GetValue(*geom\a_positions,i)
     
-        If worldSpace : Vector3::MulByMatrix4InPlace(*v,*m) : EndIf 
-        If *v\x < bmin\x : bmin\x = *v\x : EndIf
-        If *v\y < bmin\y : bmin\y = *v\y : EndIf
-        If *v\z < bmin\z : bmin\z = *v\z : EndIf
+        If worldSpace : Vector3::MulByMatrix4(v,*v,*m) : EndIf 
+        If v\x < bmin\x : bmin\x = v\x : EndIf
+        If v\y < bmin\y : bmin\y = v\y : EndIf
+        If v\z < bmin\z : bmin\z = v\z : EndIf
         
-        If *v\x > bmax\x : bmax\x = *v\x : EndIf
-        If *v\y > bmax\y : bmax\y = *v\y : EndIf
-        If *v\z > bmax\z : bmax\z = *v\z : EndIf
+        If v\x > bmax\x : bmax\x = v\x : EndIf
+        If v\y > bmax\y : bmax\y = v\y : EndIf
+        If v\z > bmax\z : bmax\z = v\z : EndIf
       Next i
       
       Protected *box.Geometry::Box_t = *geom\bbox
@@ -645,7 +646,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 271
+; CursorPosition = 604
+; FirstLine = 581
 ; Folding = -----
 ; EnableXP

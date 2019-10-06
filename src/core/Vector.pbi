@@ -320,6 +320,7 @@ EndModule
 ; ===============================================================================
 DeclareModule Vector
   Enumeration
+    #ATOM_COMPOUND
     #ATOM_POINT
     #ATOM_LINE
     #ATOM_BEZIER
@@ -330,7 +331,7 @@ DeclareModule Vector
     #ATOM_IMAGE
     #ATOM_PDF
     #ATOM_ITEM
-    #ATOM_COMPOUND
+    
   EndEnumeration
   
   Enumeration
@@ -404,6 +405,9 @@ DeclareModule Vector
     List *childrens.Item_t()
   EndStructure
   
+  Structure Compound_t Extends Item_t
+  EndStructure
+  
   Structure Line_t Extends Item_t
     List points.Point_t()
     List closed.i()
@@ -447,6 +451,7 @@ DeclareModule Vector
   EndStructure
   
   DataSection
+    CompoundVT:
     PointVT:
     LineVT:
     BezierVT:
@@ -457,6 +462,7 @@ DeclareModule Vector
     ImageVT:
   EndDataSection
   
+  Declare NewCompound(*parent.Item_t=#Null)
   Declare NewPoint(*parent.Item_t=#Null)
   Declare NewLine(*parent.Item_t=#Null)
   Declare NewBezier(*parent.Item_t=#Null)
@@ -552,6 +558,14 @@ Module Vector
   ; -----------------------------------------------------------------------------
   ;   CONSTRUCTORS
   ; -----------------------------------------------------------------------------
+  Procedure NewCompound(*parent.Item_t=#Null)
+    Define *Me.Compound_t = AllocateMemory(SizeOf(Compound_t))
+    Object::INI(Compound)
+    *Me\type = #ATOM_COMPOUND
+    Parent(*Me, *parent)
+    ProcedureReturn *Me
+  EndProcedure
+  
   Procedure NewPoint(*parent.Item_t=#Null)
     Define *Me.Point_t = AllocateMemory(SizeOf(Point_t))
     Object::INI(Point)
@@ -1326,11 +1340,11 @@ Module Vector
   ;   DRAW ITEM
   ; -----------------------------------------------------------------------------
   Procedure DrawItem(*item.Item_t)
-    Debug "DRAW ITEM : "+*item\name
     SaveVectorState()
     Transform(*item)
     
     Select *item\type
+        
       Case #ATOM_LINE
       
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
@@ -1378,7 +1392,7 @@ Module Vector
           DrawCircle(*item, *item\filled, #False, UIColor::SELECTED, 1, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED,Globals::#SELECTION_BORDER)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
           DrawBoundingBox(*item, UIColor::OVER)
-          DrawCircle(*item, *item\filled, #False, UIColor::SELECTED, 1, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED,Globals::#SELECTION_BORDER)
+          DrawCircle(*item, *item\filled, *item\stroked, UIColor::SELECTED, 1, *item\stroke_width, *item\stroke_type, UIColor::SELECTED,Globals::#SELECTION_BORDER)
         Else
           DrawCircle(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
         EndIf
@@ -2046,8 +2060,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 692
-; FirstLine = 688
-; Folding = ----------------
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 1390
+; FirstLine = 1372
+; Folding = -----------------
 ; EnableXP

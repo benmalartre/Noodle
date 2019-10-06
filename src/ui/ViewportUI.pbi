@@ -39,12 +39,10 @@ DeclareModule ViewportUI
 
   Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
   Declare Delete(*Me.ViewportUI_t)
-  Declare Init(*Me.ViewportUI_t)
   Declare Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
   Declare DrawPickImage(*Me.ViewportUI_t)
   Declare Pick(*Me.ViewportUI_t, mx.i, my.i)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
-  Declare Term(*Me.ViewportUI_t)
   Declare Draw(*Me.ViewportUI_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
@@ -151,13 +149,6 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure DrawPickImage(*Me.ViewportUi_t)
     
-  EndProcedure
-
-  ;------------------------------------------------------------------
-  ; Init
-  ;------------------------------------------------------------------
-  Procedure Init(*Me.ViewportUI_t)
-    Debug "ViewportUI Init Called!!!"
   EndProcedure
     
   ;------------------------------------------------------------------
@@ -410,15 +401,6 @@ Module ViewportUI
     EndIf
     
   EndProcedure
-  
-  ;------------------------------------------------------------------
-  ; Term
-  ;------------------------------------------------------------------
-  Procedure Term(*Me.ViewportUI_t)
-    Debug "ViewportUI Term Called!!!"
-  EndProcedure
-  
- 
   
   ;------------------------------------------------------------------
   ; Set Handle Target
@@ -717,7 +699,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 83
-; Folding = -----
+; CursorPosition = 45
+; FirstLine = 12
+; Folding = ----
 ; EnableXP

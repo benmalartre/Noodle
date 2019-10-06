@@ -82,9 +82,10 @@ DeclareModule GraphUI
   ;---------------------------------------------------------------------------
   Declare New(*parent.View::View_t,name.s="GraphUI")
   Declare Delete(*Me.GraphUI_t)
-  Declare Init(*Me.GraphUI_t)
+  Declare Draw(*Me.GraphUI_t)
+  Declare DrawPickImage(*Me.GraphUI_t)
+  Declare Pick(*Me.GraphUI_t)
   Declare OnEvent(*Me.GraphUI_t,event.i)
-  Declare Term(*Me.GraphUI_t)
   
   Declare Resize(*Me.GraphUI_t)
   Declare NodeInfos(*Me.GraphUI_t)
@@ -117,9 +118,12 @@ DeclareModule GraphUI
   
   DataSection 
     GraphUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -186,12 +190,17 @@ Module GraphUI
     If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
     Object::TERM(GraphUI)
   EndProcedure
-
+  
   ;---------------------------------------------------------------------------
-  ; Init
+  ; Draw
   ;---------------------------------------------------------------------------
-  Procedure Init(*Me.GraphUI_t)
-    Debug "ViewportUI Init Called!!!"
+  Procedure Draw(*Me.GraphUI_t)
+  EndProcedure
+  
+  ;---------------------------------------------------------------------------
+  ; DrawPickImage
+  ;---------------------------------------------------------------------------
+  Procedure DrawPickImage(*Me.GraphUI_t)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -199,7 +208,6 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   Procedure OnEvent(*Me.GraphUI_t,event.i)
     Protected Me.IGraphUI = *Me
-    
     Select event
       Case #PB_Event_Menu
         Select EventMenu()
@@ -264,13 +272,6 @@ Module GraphUI
         
     EndSelect
 
-  EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Term
-  ;---------------------------------------------------------------------------
-  Procedure Term(*Me.GraphUI_t)
-    Debug "ViewportUI Term Called!!!"
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -1600,8 +1601,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 21
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 425
+; FirstLine = 422
 ; Folding = --------
 ; EnableXP

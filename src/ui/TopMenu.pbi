@@ -17,6 +17,10 @@ DeclareModule TopMenuUI
 
   Declare New(*parent.View::View_t,name.s="TopMenuUI")
   Declare Delete(*ui.TopMenuUI_t)
+  Declare Resize(*ui.TopMenuUI_t)
+  Declare Draw(*ui.TopMenuUI_t)
+  Declare DrawPickImage(*ui.TopMenuUI_t)
+  Declare Pick(*ui.TopMenuUI_t)
   Declare Init(*ui.TopMenuUI_t)
   Declare OnEvent(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare Term(*ui.TopMenuUI_t)
@@ -25,11 +29,15 @@ DeclareModule TopMenuUI
   
   DataSection 
     TopMenuUIVT: 
-      Data.i @Init()
-      Data.i @OnEvent()
-      Data.i @Term()
-  
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
+    Data.i @OnEvent()
   EndDataSection 
+    
+  Global CLASS.Class::Class_t
   
 EndDeclareModule
 
@@ -58,6 +66,21 @@ Module TopMenuUI
   Procedure Draw(*Me.TopMenuUI_t)
   
   EndProcedure
+  
+  ; ----------------------------------------
+  ;  Draw Pick Image
+  ; ----------------------------------------
+  Procedure DrawPickImage(*Me.TopMenuUI_t)
+  
+  EndProcedure
+  
+  ; ----------------------------------------
+  ;  Resize
+  ; ----------------------------------------
+  Procedure Resize(*Me.TopMenuUI_t)
+  
+  EndProcedure
+  
   
   ; ----------------------------------------
   ;  Clear Explorer Data
@@ -270,9 +293,10 @@ Module TopMenuUI
     ProcedureReturn *Me
   EndProcedure
   
-  
+   Class::DEF(TopMenuUI)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
-; Folding = ---
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 13
+; Folding = ----
 ; EnableXP

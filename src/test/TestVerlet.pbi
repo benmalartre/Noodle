@@ -1,7 +1,7 @@
 ﻿XIncludeFile "../core/Application.pbi"
 XIncludeFile "../objects/Verlet.pbi"
 Global width = 1024
-Global height = 1024
+Global height = 720
 
 UseModule Math
 
@@ -123,8 +123,7 @@ Globals::Init()
 EndIf
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 33
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP

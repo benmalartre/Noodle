@@ -257,3 +257,8 @@ EndIf
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 94
+; FirstLine = 91
+; Folding = -
+; EnableXP

@@ -20,9 +20,11 @@ DeclareModule PropertyUI
   
   Declare New(*parent.View::View_t,name.s,*obj.Object3D::Object3D_t)
   Declare Delete(*Me.PropertyUI_t)
-  Declare Init(*Me.PropertyUI_t)
+  Declare Resize(*Me.PropertyUI_t)
+  Declare Draw(*Me.PropertyUI_t)
+  Declare DrawPickImage(*Me.PropertyUI_t)
+  Declare Pick(*Me.PropertyUI_t)
   Declare OnEvent(*Me.PropertyUI_t,event.i)
-  Declare Term(*Me.PropertyUI_t)
   Declare Clear(*Me.PropertyUI_t)
   Declare.b CheckObject3DExists(*Me.PropertyUI_t, *object.Object3D::Object3D_t)
   Declare SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
@@ -41,9 +43,12 @@ DeclareModule PropertyUI
   
   DataSection 
     PropertyUIVT: 
-    Data.i @Init()
+    Data.i @Delete()
+    Data.i @Resize()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
     Data.i @OnEvent()
-    Data.i @Term()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -99,9 +104,27 @@ Module PropertyUI
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Init
+  ;  Draw
   ; ----------------------------------------------------------------------------
-  Procedure Init(*Me.PropertyUI_t)
+  Procedure Draw(*Me.PropertyUI_t)
+    
+  EndProcedure
+  
+  ; Draw Pick Image
+  ; ----------------------------------------------------------------------------
+  Procedure DrawPickImage(*Me.PropertyUI_t)
+    
+  EndProcedure
+  
+  ; Pick
+  ; ----------------------------------------------------------------------------
+  Procedure Pick(*Me.PropertyUI_t)
+    
+  EndProcedure
+  
+  ; Resize
+  ; ----------------------------------------------------------------------------
+  Procedure Resize(*Me.PropertyUI_t)
     
   EndProcedure
   
@@ -209,13 +232,6 @@ Module PropertyUI
     Next
   EndProcedure
   Callback::DECLARECALLBACK(OnDeleteObject, Arguments::#PTR, Arguments::#PTR)
-  
-  ; ----------------------------------------------------------------------------
-  ;  Terminate
-  ; ----------------------------------------------------------------------------
-  Procedure Term(*Me.PropertyUI_t)
-    
-  EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  On Message
@@ -563,9 +579,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 411
-; FirstLine = 366
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 27
+; FirstLine = 6
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -25,7 +25,7 @@ Procedure Draw(*app.Application::Application_t)
   layer\Draw(*app\context)
 
   If Not #USE_GLFW
-    ViewportUI::FlipBuffer( *viewport )
+    GLContext::FlipBuffer( *app\context )
   EndIf
 EndProcedure
     
@@ -46,10 +46,10 @@ If Time::Init()
   Scene::*current_scene = Scene::New("Scene")
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
     *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::SetContext(*viewport)
+    View::SetContent(*app\window\main,*viewport)
+    GLContext::SetContext(*app\context)
   EndIf
   
   Debug "Camera :: "+Str(*app\camera)
@@ -59,7 +59,7 @@ If Time::Init()
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
   layer = *layer
   *pgm = *app\context\shaders("instances")
   
@@ -120,8 +120,8 @@ If Time::Init()
   
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 44
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 61
+; FirstLine = 57
 ; Folding = -
 ; EnableXP
