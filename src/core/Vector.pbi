@@ -532,9 +532,9 @@ DeclareModule Vector
   Declare Rotate(*atom.Atom_t, angle.f)
   Declare Transform(*item.Item_t)
   Declare.b Parent(*item.Item_t, *parent.Item_t)
-;   Declare AccumulatedTransform(*item.Item_t)
-;   Declare InverseTransform(*item.Item_t)
-;   Declare AccumulatedInverseTransform(*item.Item_t, Transform2D::Matrix_t)
+  Declare AccumulatedTransform(*item.Item_t)
+  Declare InverseTransform(*item.Item_t)
+  Declare AccumulatedInverseTransform(*item.Item_t, Transform2D::Matrix_t)
   
   Macro SETSTATE(_atom, _bit)
     _atom\state | 1 << _bit  
@@ -1061,9 +1061,9 @@ Module Vector
       SaveVectorState()
       ResetPath()
     Else
-      
+      Transform(*item)
     EndIf
-    Transform(*item)
+    
 
     Select *item\type
       Case #ATOM_BOX
@@ -1129,12 +1129,13 @@ Module Vector
         w + 2 * stroke_width
         h + 2 * stroke_width
       EndIf
+      
+      Vector::Transform(
 
       RestoreVectorState()
       Vector3::Set(*item\bbox\origin, x + w*0.5, y+h*0.5, 0)
       Vector3::Set(*item\bbox\extend, w*0.5, h*0.5, 0)
       VectorSourceColor(RGBA(255,222,111,255))
-      FillPath()
       ResetPath()
     EndIf
 
@@ -1891,63 +1892,63 @@ Module Vector
     ScaleCoordinates(*item\T\scale\x, *item\T\scale\y)
   EndProcedure
   
-;   ; ----------------------------------------------------------------------------
-;   ;   ACCUMULATED TRANSFORM
-;   ; ----------------------------------------------------------------------------
-;   Procedure AccumulatedTransform(*item.Item_t, *m.Transform2D::Matrix_t)
-;     If *item\parent
-;       Define NewList *parents.Item_t()
-;       Define *parent.Item_t = *item
-;       While *parent\parent
-;         AddElement(*parents())
-;         *parents() = *parent\parent
-;         *parent = *parent\parent
-;       Wend
-;       ResetCoordinates()
-;       Define recurse.i = 0
-;       Repeat
-;         recurse + 1
-;         Transform2D::Compute(*parents()\T)
-;         Transform(*parents())
-;       Until PreviousElement(*parents()) = #False
-;       FreeList(*parents())
-;     EndIf
-; ;     Transform(*item)
-; 
-;   EndProcedure
-;   
-;   ; ----------------------------------------------------------------------------
-;   ;   INVERSE TRANSFORM
-;   ; ----------------------------------------------------------------------------
-;   Procedure InverseTransform(*item.Item_t)
-; ;     ScaleCoordinates(1-(1-*item\T\scale\x), 1-(1-*item\T\scale\y))
-;     RotateCoordinates(0,0,-*item\T\rotate)
-;     TranslateCoordinates(-*item\T\translate\x, -*item\T\translate\y)  
-;   EndProcedure
-;   
-;   ; ----------------------------------------------------------------------------
-;   ;   ACCUMULATED TRANSFORM
-;   ; ----------------------------------------------------------------------------
-;   Procedure AccumulatedInverseTransform(*item.Item_t)
-;     If *item\parent
-;       Define NewList *parents.Item_t()
-;       Define *parent.Item_t = *item
-;       While *parent\parent
-;         AddElement(*parents())
-;         *parents() = *parent\parent
-;         *parent = *parent\parent
-;       Wend
-;       ResetCoordinates()
-;       Define recurse.i = 0
-;       Repeat
-;         recurse + 1
-;         InverseTransform(*parents())
-;       Until PreviousElement(*parents()) = #False
-;       FreeList(*parents())
-;     EndIf
-; ;     Transform(*item)
-; 
-;   EndProcedure
+  ; ----------------------------------------------------------------------------
+  ;   ACCUMULATED TRANSFORM
+  ; ----------------------------------------------------------------------------
+  Procedure AccumulatedTransform(*item.Item_t, *m.Transform2D::Matrix_t)
+    If *item\parent
+      Define NewList *parents.Item_t()
+      Define *parent.Item_t = *item
+      While *parent\parent
+        AddElement(*parents())
+        *parents() = *parent\parent
+        *parent = *parent\parent
+      Wend
+      ResetCoordinates()
+      Define recurse.i = 0
+      Repeat
+        recurse + 1
+        Transform2D::Compute(*parents()\T)
+        Transform(*parents())
+      Until PreviousElement(*parents()) = #False
+      FreeList(*parents())
+    EndIf
+    Transform(*item)
+
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;   INVERSE TRANSFORM
+  ; ----------------------------------------------------------------------------
+  Procedure InverseTransform(*T.Transform::Matrix_t)
+    ScaleCoordinates(1-(1-*T\scale\x), 1-(1-*T\scale\y))
+    RotateCoordinates(0,0,-*T\rotate)
+    TranslateCoordinates(-*T\translate\x, -*T\translate\y)  
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;   ACCUMULATED TRANSFORM
+  ; ----------------------------------------------------------------------------
+  Procedure AccumulatedInverseTransform(*item.Item_t)
+    If *item\parent
+      Define NewList *parents.Item_t()
+      Define *parent.Item_t = *item
+      While *parent\parent
+        AddElement(*parents())
+        *parents() = *parent\parent
+        *parent = *parent\parent
+      Wend
+      ResetCoordinates()
+      Define recurse.i = 0
+      Repeat
+        recurse + 1
+        InverseTransform(*parents())
+      Until PreviousElement(*parents()) = #False
+      FreeList(*parents())
+    EndIf
+    Transform(*item)
+
+  EndProcedure
   
   ; -----------------------------------------------------------------------------
   ;   ROUND BOX PATH
@@ -2121,7 +2122,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1065
-; FirstLine = 1047
+; CursorPosition = 1913
+; FirstLine = 1927
 ; Folding = -----------------
 ; EnableXP

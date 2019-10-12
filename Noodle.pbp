@@ -8,7 +8,7 @@
   <section name="data">
     <explorer view="C:\Documents and Settings\Administrator\My Documents\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2019-10-11 00:37" user="benjamin" host="HATE_ROCKET"/>
+    <lastopen date="2019-10-12 16:56" user="benjamin" host="HATE_ROCKET"/>
   </section>
   <section name="files">
     <file name="src\bullet\Constraint.pbi">
@@ -1602,7 +1602,7 @@
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\test\TestVerlet.pbi"/>
+      <inputfile value="src\test\TestVector.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 5.70 LTS (Windows - x64)"/>
       <executable value="build\windows\Graph.exe"/>
