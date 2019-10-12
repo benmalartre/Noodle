@@ -408,7 +408,6 @@ Module CanvasUI
   ;   ON EVENT
   ; --------------------------------------------------------------------
   Procedure OnEvent(*Me.CanvasUI_t)
-    Debug "CANVAS UI ON EVENT..."
     Protected mx,my,x.f,y.f,w,h,m,key
     
     mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
@@ -524,6 +523,6 @@ EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 410
-; FirstLine = 391
+; FirstLine = 406
 ; Folding = ----
 ; EnableXP

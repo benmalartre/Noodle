@@ -22,21 +22,30 @@ Procedure Draw(*app.Application::Application_t)
   CanvasUI::OnEvent(*canvas)
 EndProcedure
 
-Procedure AddCircleGroup(*sheet.Sheet::Sheet_t)
-  Define *grp.Vector::Item_t = Vector::NewCompound()
+Procedure AddCircleGroup(*sheet.Sheet::Sheet_t)  
+  Define *master.Vector::Compound_t = Vector::NewCompound()
+  *master\T\translate\x = 200
+  *master\T\translate\y = 200
+  *master\T\rotate = 45
+  *master\T\scale\x = 4
+  
+  
+  Vector::SETSTATE(*master, Vector::#STATE_ACTIVE)
+  
   For i=0 To 2
-   Define *circle.Vector::Circle_t = Vector::NewCircle(*grp)
+   Define *circle.Vector::Circle_t = Vector::NewCircle(*master)
    *circle\radius = 12
    *circle\stroke_color = RGBA(Random(255),Random(255),Random(255),255)
    *circle\stroked = #True
    *circle\filled = #False
    *circle\stroke_width = 4
-   *circle\T\translate\x = 100 + i*20
-   *circle\T\translate\y = 100 + Mod(i, 2)*20
-  Next
+   *circle\T\translate\x = i*20
+   *circle\T\translate\y = Mod(i, 2)*20
+ Next
  
-   Sheet::AddItem(*sheet, *grp)
+ Sheet::AddItem(*sheet, *master)
 EndProcedure
+
 
 Globals::Init()
 ;  Bullet::Init( )
@@ -45,7 +54,7 @@ Globals::Init()
  If Time::Init()
    Define startT.d = Time::Get ()
    Log::Init()
-   *app = Application::New("TestMesh",width,height)
+   *app = Application::New("Test Vector Library",width,height)
 
    *canvas = CanvasUI::New(*app\window\main)
    Define *sheet1.Sheet::Sheet_t = Sheet::New(*canvas\sizX,*canvas\sizY,0, "Sheet")
@@ -69,7 +78,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 39
-; FirstLine = 22
+; CursorPosition = 56
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

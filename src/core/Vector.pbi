@@ -399,6 +399,7 @@ DeclareModule Vector
     segments.s
     edit.b
     name.s
+    bbox.Geometry::Box_t
     T.Transform2D::Transform_t
     *over.Atom_t
     *active.Atom_t
@@ -406,7 +407,9 @@ DeclareModule Vector
   EndStructure
   
   Structure Compound_t Extends Item_t
+    
   EndStructure
+  
   
   Structure Line_t Extends Item_t
     List points.Point_t()
@@ -493,6 +496,8 @@ DeclareModule Vector
   Declare AddImage(*item.Item_t, img.i, x.f=0, y.f=0)
   Declare SetFont(*text.Text_t, font.i, font_size.f)
   
+  Declare ComputeBoundingBox(*item.Item_t, init.b=#True)
+  Declare DrawBoundingBox(*item.Item_t, color.i, stroked.b=#True, stroke_width=4)
   Declare DrawItem(*item.Item_t)
   Declare DrawLine(*line.Line_t, filled.b, stroked.b, fill_color.i, stroke_width.f=1, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_color=-16777216, expand.i=0)
   Declare DrawPoint(*pnt.Point_t, radius.f, stroke_color.i)
@@ -554,13 +559,14 @@ EndDeclareModule
 ; Vector Module Implementation
 ;===============================================================================
 Module Vector
-
+  
   ; -----------------------------------------------------------------------------
   ;   CONSTRUCTORS
   ; -----------------------------------------------------------------------------
   Procedure NewCompound(*parent.Item_t=#Null)
     Define *Me.Compound_t = AllocateMemory(SizeOf(Compound_t))
     Object::INI(Compound)
+    Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_COMPOUND
     Parent(*Me, *parent)
     ProcedureReturn *Me
@@ -684,6 +690,10 @@ Module Vector
       Case #ATOM_IMAGE
         *item = NewImage(0, 0, 0, *parent)
         *item\name = "IMAGE"
+        
+      Case #ATOM_COMPOUND
+        *item = NewCompound(*parent)
+        *item\name = "COMPOUND"
         
       Default
         ProcedureReturn #Null
@@ -1044,21 +1054,28 @@ Module Vector
   EndProcedure
   
   ; -----------------------------------------------------------------------------
-  ;   DRAW BOUNDING BOX
+  ;   COMPUTE BOUNDING BOX
   ; -----------------------------------------------------------------------------
-  Procedure DrawBoundingBox(*atom.Atom_t, color.i, stroked.b=#True, stroke_width=4)
+  Procedure ComputeBoundingBox(*item.Item_t, init.b=#True)
+    If init
+      SaveVectorState()
+      ResetPath()
+    Else
+      
+    EndIf
+    Transform(*item)
 
-    Select *atom\type
+    Select *item\type
       Case #ATOM_BOX
-        Define *box.Box_t = *atom
+        Define *box.Box_t = *item
         AddPathBox(-*box\halfsize\x, -*box\halfsize\y, 2 * *box\halfsize\x, 2 * *box\halfsize\y)
         
       Case #ATOM_CIRCLE
-        Define *circle.Circle_t = *atom
+        Define *circle.Circle_t = *item
         AddPathCircle(0, 0, *circle\radius)
         
       Case #ATOM_LINE
-        Define *line.Line_t = *atom
+        Define *line.Line_t = *item
         FirstElement(*line\points())
         MovePathCursor(*line\points()\x, *line\points()\y)
         While NextElement(*line\points())
@@ -1066,7 +1083,7 @@ Module Vector
         Wend  
         
       Case #ATOM_BEZIER
-        Define *bezier.Bezier_t = *atom
+        Define *bezier.Bezier_t = *item
         Define *a.BezierPoint_t, *b.BezierPoint_t
         FirstElement(*bezier\points())
         *a = *bezier\points()
@@ -1082,7 +1099,7 @@ Module Vector
         Wend  
         
       Case #ATOM_TEXT
-        Define *txt.Text_t = *atom
+        Define *txt.Text_t = *item
         MovePathCursor(0, 0)
         If *txt\font_size > 0
           VectorFont(FontID(*txt\font), *txt\font_size)
@@ -1090,27 +1107,60 @@ Module Vector
         EndIf
         
       Case #ATOM_IMAGE
-        Define *img.Image_t = *atom
+        Define *img.Image_t = *item
         MovePathCursor(0, 0)
         AddPathBox(0,0,*img\width, *img\height)
-        
     EndSelect
     
-    Define x.f = PathBoundsX()
-    Define y.f = PathBoundsY()
-    Define w.f = PathBoundsWidth()
-    Define h.f = PathBoundsHeight()
-    If stroked
-      x - stroke_width
-      y - stroke_width
-      w + 2 * stroke_width
-      h + 2 * stroke_width
+    ForEach *item\childrens()
+      SaveVectorState()
+      ComputeBoundingBox(*item\childrens(), #False)
+      RestoreVectorState()
+    Next
+
+    If init
+      Define x.f = PathBoundsX()
+      Define y.f = PathBoundsY()
+      Define w.f = PathBoundsWidth()
+      Define h.f = PathBoundsHeight()
+      If stroked
+        x - stroke_width
+        y - stroke_width
+        w + 2 * stroke_width
+        h + 2 * stroke_width
+      EndIf
+
+      RestoreVectorState()
+      Vector3::Set(*item\bbox\origin, x + w*0.5, y+h*0.5, 0)
+      Vector3::Set(*item\bbox\extend, w*0.5, h*0.5, 0)
+      VectorSourceColor(RGBA(255,222,111,255))
+      FillPath()
+      ResetPath()
     EndIf
+
+  EndProcedure
+  
+  ; -----------------------------------------------------------------------------
+  ;   DRAW BOUNDING BOX
+  ; -----------------------------------------------------------------------------
+  Procedure DrawBoundingBox(*item.Item_t, color.i, stroked.b=#True, stroke_width=4)
+    ComputeBoundingBox(*item, #True)
     
-    ResetPath()
+    SaveVectorState()
+    AddPathBox(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, *item\bbox\extend\x*2, *item\bbox\extend\y*2)
+    VectorSourceColor(color)
+    DashPath(1,3)
+    
+    Define x.f = ConvertCoordinateX(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, #PB_Coordinate_User, #PB_Coordinate_Device)
+    Define y.f = ConvertCoordinateY(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, #PB_Coordinate_User, #PB_Coordinate_Device)
+    Define w.f = ConvertCoordinateX(*item\bbox\extend\x*2, *item\bbox\extend\y*2, #PB_Coordinate_User, #PB_Coordinate_Device)
+    Define h.f = ConvertCoordinateY(*item\bbox\extend\x*2, *item\bbox\extend\y*2, #PB_Coordinate_User, #PB_Coordinate_Device)
+    
+    ResetCoordinates()
     AddPathBox(x, y, w, h)
     VectorSourceColor(color)
     DashPath(1,3)
+    RestoreVectorState()
 
   EndProcedure
   
@@ -1342,7 +1392,7 @@ Module Vector
   Procedure DrawItem(*item.Item_t)
     SaveVectorState()
     Transform(*item)
-    
+   
     Select *item\type
         
       Case #ATOM_LINE
@@ -1417,6 +1467,16 @@ Module Vector
             DrawImageAtom(*item)
           Else 
             DrawImageAtom(*item)
+          EndIf
+          
+        Case #ATOM_COMPOUND
+          AddPathCircle(0,0,12)
+          VectorSourceColor(RGBA(255,0,0,255))
+          FillPath()
+          If Vector::GETSTATE(*item, #STATE_ACTIVE)
+            DrawBoundingBox(*item, UIColor::ACTIVE)
+          ElseIf Vector::GETSTATE(*item, #STATE_OVER)
+            DrawBoundingBox(*item, UIColor::OVER)
           EndIf
     
     EndSelect
@@ -2061,7 +2121,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1390
-; FirstLine = 1372
+; CursorPosition = 1065
+; FirstLine = 1047
 ; Folding = -----------------
 ; EnableXP
