@@ -54,6 +54,8 @@ DeclareModule Transform2D
   Declare TransformInPlace(*p.Vector_t, *m.Matrix_t)
   Declare Initialize(*t.Transform_t)
   Declare Compute(*t.Transform_t, *p.Transform_t=#Null)
+  Declare MatrixToSRT(*m.Matrix_t, *t.Transform_t)
+  Declare SRTToMatrix(*t.Transform_t, *m.Matrix_t)
   
   ; ------------------------------------------------------------------
   ;   INDENTITY MATRIX
@@ -532,9 +534,9 @@ DeclareModule Vector
   Declare Rotate(*atom.Atom_t, angle.f)
   Declare Transform(*item.Item_t)
   Declare.b Parent(*item.Item_t, *parent.Item_t)
-  Declare AccumulatedTransform(*item.Item_t)
-  Declare InverseTransform(*item.Item_t)
-  Declare AccumulatedInverseTransform(*item.Item_t, Transform2D::Matrix_t)
+  Declare AccumulatedTransform(*item.Item_t, *m.Transform2D::Matrix_t)
+  Declare InverseTransform(*T.Transform2D::Matrix_t)
+  Declare AccumulatedInverseTransform(*item.Item_t, *T.Transform2D::Matrix_t)
   
   Macro SETSTATE(_atom, _bit)
     _atom\state | 1 << _bit  
@@ -1118,7 +1120,7 @@ Module Vector
       RestoreVectorState()
     Next
 
-    If init
+    If Not init
       Define x.f = PathBoundsX()
       Define y.f = PathBoundsY()
       Define w.f = PathBoundsWidth()
@@ -1130,7 +1132,7 @@ Module Vector
         h + 2 * stroke_width
       EndIf
       
-      Vector::Transform(
+;       Vector::AccumulatedTransform(
 
       RestoreVectorState()
       Vector3::Set(*item\bbox\origin, x + w*0.5, y+h*0.5, 0)
@@ -1920,7 +1922,7 @@ Module Vector
   ; ----------------------------------------------------------------------------
   ;   INVERSE TRANSFORM
   ; ----------------------------------------------------------------------------
-  Procedure InverseTransform(*T.Transform::Matrix_t)
+  Procedure InverseTransform(*T.Transform2D::Matrix_t)
     ScaleCoordinates(1-(1-*T\scale\x), 1-(1-*T\scale\y))
     RotateCoordinates(0,0,-*T\rotate)
     TranslateCoordinates(-*T\translate\x, -*T\translate\y)  
@@ -1942,7 +1944,7 @@ Module Vector
       Define recurse.i = 0
       Repeat
         recurse + 1
-        InverseTransform(*parents())
+        InverseTransform(*parents()\T)
       Until PreviousElement(*parents()) = #False
       FreeList(*parents())
     EndIf
@@ -2122,7 +2124,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1913
-; FirstLine = 1927
+; CursorPosition = 570
+; FirstLine = 567
 ; Folding = -----------------
 ; EnableXP
