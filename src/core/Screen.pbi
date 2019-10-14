@@ -6,113 +6,8 @@ XIncludeFile "Signal.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
-XIncludeFile "Pose.pbi"
 XIncludeFile "Image.pbi"
 
-
-
-XIncludeFile "../libs/OpenGL.pbi"
-CompilerIf #USE_GLFW
-  XIncludeFile "../libs/GLFW.pbi"
-CompilerEndIf
-
-XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../libs/FTGL.pbi"
-
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile "../opengl/Texture.pbi"
-XIncludeFile "../opengl/ScreenQuad.pbi"
-XIncludeFile "../opengl/Context.pbi"
-XIncludeFile "../opengl/CubeMap.pbi"
-
-XIncludeFile "../objects/Location.pbi"
-XIncludeFile "../objects/Camera.pbi"
-XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Locator.pbi"
-XIncludeFile "../objects/Curve.pbi"
-XIncludeFile "../objects/Polymesh.pbi"
-XIncludeFile "../objects/PointCloud.pbi"
-XIncludeFile "../objects/InstanceCloud.pbi"
-XIncludeFile "../objects/Light.pbi"
-XIncludeFile "../objects/Scene.pbi"
-XIncludeFile "../objects/Handle.pbi"
-XIncludeFile "../objects/Selection.pbi"
-XIncludeFile "../objects/Sampler.pbi"
-XIncludeFile "../objects/Ray.pbi"
-XIncludeFile "../objects/Poisson.pbi"
-XIncludeFile "../objects/Triangle.pbi"
-XIncludeFile "../objects/Octree.pbi"
-
-XIncludeFile "../layers/Layer.pbi"
-XIncludeFile "../layers/Default.pbi"
-XIncludeFile "../layers/Bitmap.pbi"
-XIncludeFile "../layers/Selection.pbi"
-XIncludeFile "../layers/GBuffer.pbi"
-XIncludeFile "../layers/Defered.pbi"
-XIncludeFile "../layers/ShadowMap.pbi"
-XIncludeFile "../layers/ShadowSimple.pbi"
-XIncludeFile "../layers/ShadowDefered.pbi"
-XIncludeFile "../layers/CascadedShadowMap.pbi"
-XIncludeFile "../layers/Toon.pbi"
-XIncludeFile "../layers/SSAO.pbi"
-XIncludeFile "../layers/Blur.pbi"
-XIncludeFile "../layers/Strokes.pbi"
-
-XIncludeFile "../graph/Types.pbi"
-XIncludeFile "../graph/Port.pbi"
-XIncludeFile "../graph/CompoundPort.pbi"
-XIncludeFile "../graph/Node.pbi"
-XIncludeFile "../graph/Compound.pbi"
-XIncludeFile "../graph/Nodes.pbi"
-XIncludeFile "../graph/Connexion.pbi"
-XIncludeFile "../graph/Graph.pbi"
-XIncludeFile "../graph/Tree.pbi"
-
-XIncludeFile "../controls/Dummy.pbi"
-XIncludeFile "../controls/Button.pbi"
-XIncludeFile "../controls/Check.pbi"
-XIncludeFile "../controls/Color.pbi"
-XIncludeFile "../controls/Combo.pbi"
-XIncludeFile "../controls/Divot.pbi"
-XIncludeFile "../controls/Edit.pbi"
-XIncludeFile "../controls/Label.pbi"
-XIncludeFile "../controls/Group.pbi"
-XIncludeFile "../controls/Controls.pbi"
-XIncludeFile "../controls/Property.pbi"
-XIncludeFile "../controls/Menu.pbi"
-XIncludeFile "../controls/Head.pbi"
-XIncludeFile "../controls/Knob.pbi"
-XIncludeFile "../controls/ColorWheel.pbi"
-
-XIncludeFile "../commands/Scene.pbi"
-XIncludeFile "../commands/Graph.pbi"
-
-XIncludeFile "../ui/View.pbi"
-XIncludeFile "../ui/DummyUI.pbi"
-XIncludeFile "../ui/LogUI.pbi"
-XIncludeFile "../ui/TimelineUI.pbi"
-XIncludeFile "../ui/ShaderUI.pbi"
-XIncludeFile "../ui/ViewportUI.pbi"
-XIncludeFile "../ui/GraphUI.pbi"
-XIncludeFile "../ui/PropertyUI.pbi"
-XIncludeFile "../ui/ExplorerUI.pbi"
-XIncludeFile "../ui/TopMenu.pbi"
-XIncludeFile "../ui/ColorUI.pbi"
-
-CompilerIf #USE_BULLET
-  XIncludeFile "../libs/Bullet.pbi"
-  XIncludeFile "../bullet/RigidBody.pbi"
-  XIncludeFile "../bullet/World.pbi"
-  XIncludeFile "../bullet/Constraint.pbi"
-CompilerEndIf
-
-CompilerIf #USE_ALEMBIC
-  XIncludeFile "../libs/Booze.pbi"
-  XIncludeFile "../objects/Animation.pbi"
-CompilerEndIf
-
-XIncludeFile "Saver.pbi"
-XIncludeFile "Loader.pbi"
 
 ; ============================================================================
 ;  Screen Module Declaration
@@ -639,10 +534,9 @@ EndProcedure
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 80
-; Folding = -----
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 4
+; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL
 ; EnableUnicode

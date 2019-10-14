@@ -239,26 +239,8 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-<<<<<<< HEAD
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 126
-=======
 ; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 236
+; CursorPosition = 240
 ; FirstLine = 203
->>>>>>> 5129a1ad760d113e4d71678278c41116b0f958d6
-; Folding = -
-; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
-; Debugger = Standalone
-; Constant = #USE_GLFW=0
-; Constant = #USE_GLFW=0
-; Constant = #USE_GLFW=0
-; Constant = #USE_GLFW=0
-; EnableUnicode
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 91
 ; Folding = -
 ; EnableXP

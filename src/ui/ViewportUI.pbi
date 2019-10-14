@@ -2,11 +2,11 @@
 XIncludeFile "UI.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-CompilerIf #USE_BULLET
-  XIncludeFile "../libs/Bullet.pbi"
-  XIncludeFile "../bullet/World.pbi"
-  XIncludeFile "../bullet/RigidBody.pbi"
-CompilerEndIf
+; CompilerIf #USE_BULLET
+;   XIncludeFile "../libs/Bullet.pbi"
+;   XIncludeFile "../bullet/World.pbi"
+;   XIncludeFile "../bullet/RigidBody.pbi"
+; CompilerEndIf
 
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Handle.pbi"
@@ -513,90 +513,90 @@ Module ViewportUI
   EndProcedure
   
   
-  CompilerIf #USE_BULLET
-  ; ------------------------------------------------------------------
-  ;  Ray Pick
-  ; ------------------------------------------------------------------
-  Procedure RayPick2(*v.ViewportUI_t)
-    Define.d mx,my
-  
-    mx = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
-    my = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseY)
-    Protected ray_end.v3f32
-  
-    ViewToRay(*v,mx,my,@ray_end)
-    
-    Vector3::ScaleInPlace(ray_end,*v\camera\farplane)
-    Vector3::AddInPlace(ray_end,*v\camera\pos)
-    
-    Protected *scn.Scene::Scene_t = Scene::*current_scene
-    Protected *hit.Object3D::Object3D_t =*scn\rayhit
-    
-    Protected rcr.Bullet::btRaycastResult
-    If Not Bullet::*pick_world
-      Bullet::*pick_world = Bullet::BTCreateDynamicsWorld(Bullet::*bullet_sdk)
-    EndIf
-   
-    
-    Protected i
-    Protected *obj.Object3D::Object3D_t 
-    Protected *bodies.CArray::CArrayPtr = CArray::newCArrayPtr()
-    Protected *body.Bullet::btRigidBody
-    For  i= 0 To CArray::GetCount(*scn\objects)-1
-      *obj = CArray::GetValuePtr(*scn\objects,i)
-      If *obj\type = Object3D::#Polymesh
-        *body = BulletRigidBody::BTCreateRigidBodyFrom3DObject(*obj,Bullet::#TRIANGLEMESH_SHAPE,0.0,Bullet::*pick_world)
-        CArray::AppendPtr(*bodies,*body)
-      EndIf
-    Next
-   
-    If Bullet::BTRayCast(Bullet::*pick_world,*v\camera\pos,@ray_end,@rcr)
-      Protected rcr_worldNorm.v3f32
-      Vector3::Set(rcr_worldNorm, rcr\m_normalWorld\v[0], rcr\m_normalWorld\v[1], rcr\m_normalWorld\v[2])
-      *body = rcr\m_body
-      Protected *shape.Bullet::btCollisionShape = rcr\m_shape
-      
-      If Not *body : ProcedureReturn : EndIf
-      *obj.Object3D::Object3D_t = Bullet::BTGetUserData(*body)
-      
-      If *hit
-        
-        Debug "Hit Object : "+*obj\name
-        Debug "Hit Triangle Index : "+Str(rcr\m_triangleindex)
-        
-        Protected *outT.Transform::Transform_t = *hit\localT
-        Protected *outQ.q4f32 = *outT\t\rot
-        
-        Protected up.v3f32
-        Vector3::Set(up,0,1,0)
-  
-        Quaternion::LookAt(*outQ,rcr_worldNorm,up, #False)
-        Transform::SetRotationFromQuaternion(*outT,*outQ)
-        Transform::SetTranslationFromXYZValues(*outT,rcr\m_positionWorld\v[0],rcr\m_positionWorld\v[1],rcr\m_positionWorld\v[2])
-        Transform::SetScaleFromXYZValues(*outT,1,1,1)
-        
-        Object3D::SetLocalTransform(*hit,*outT)
-        ;         Object3D::SetWireframeColor(*hi,1,0,0)`
-        Object3D::UpdateTransform(*hit,Scene::*current_scene\root\globalT)
-      Else
-        
-        Debug "Ray cast done but NO 3D Object"
-      EndIf
-      
-  
-    Else
-      ;*hit\SetWireframeColor(0,1,0)
-      Debug "Raycast Failed..."
-    EndIf
-    For  i= 0 To CArray::GetCount(*bodies)-1
-      Bullet::BTRemoveRigidBody(*pick_world,CArray::GetValuePtr(*bodies,i))
-    Next
-    CArray::Delete(*bodies)
-  
-    
-    
-  EndProcedure
-  CompilerEndIf
+;   CompilerIf #USE_BULLET
+;   ; ------------------------------------------------------------------
+;   ;  Ray Pick
+;   ; ------------------------------------------------------------------
+;   Procedure RayPick2(*v.ViewportUI_t)
+;     Define.d mx,my
+;   
+;     mx = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseX)
+;     my = GetGadgetAttribute(*v\gadgetID,#PB_OpenGL_MouseY)
+;     Protected ray_end.v3f32
+;   
+;     ViewToRay(*v,mx,my,@ray_end)
+;     
+;     Vector3::ScaleInPlace(ray_end,*v\camera\farplane)
+;     Vector3::AddInPlace(ray_end,*v\camera\pos)
+;     
+;     Protected *scn.Scene::Scene_t = Scene::*current_scene
+;     Protected *hit.Object3D::Object3D_t =*scn\rayhit
+;     
+;     Protected rcr.Bullet::btRaycastResult
+;     If Not Bullet::*pick_world
+;       Bullet::*pick_world = Bullet::BTCreateDynamicsWorld(Bullet::*bullet_sdk)
+;     EndIf
+;    
+;     
+;     Protected i
+;     Protected *obj.Object3D::Object3D_t 
+;     Protected *bodies.CArray::CArrayPtr = CArray::newCArrayPtr()
+;     Protected *body.Bullet::btRigidBody
+;     For  i= 0 To CArray::GetCount(*scn\objects)-1
+;       *obj = CArray::GetValuePtr(*scn\objects,i)
+;       If *obj\type = Object3D::#Polymesh
+;         *body = BulletRigidBody::BTCreateRigidBodyFrom3DObject(*obj,Bullet::#TRIANGLEMESH_SHAPE,0.0,Bullet::*pick_world)
+;         CArray::AppendPtr(*bodies,*body)
+;       EndIf
+;     Next
+;    
+;     If Bullet::BTRayCast(Bullet::*pick_world,*v\camera\pos,@ray_end,@rcr)
+;       Protected rcr_worldNorm.v3f32
+;       Vector3::Set(rcr_worldNorm, rcr\m_normalWorld\v[0], rcr\m_normalWorld\v[1], rcr\m_normalWorld\v[2])
+;       *body = rcr\m_body
+;       Protected *shape.Bullet::btCollisionShape = rcr\m_shape
+;       
+;       If Not *body : ProcedureReturn : EndIf
+;       *obj.Object3D::Object3D_t = Bullet::BTGetUserData(*body)
+;       
+;       If *hit
+;         
+;         Debug "Hit Object : "+*obj\name
+;         Debug "Hit Triangle Index : "+Str(rcr\m_triangleindex)
+;         
+;         Protected *outT.Transform::Transform_t = *hit\localT
+;         Protected *outQ.q4f32 = *outT\t\rot
+;         
+;         Protected up.v3f32
+;         Vector3::Set(up,0,1,0)
+;   
+;         Quaternion::LookAt(*outQ,rcr_worldNorm,up, #False)
+;         Transform::SetRotationFromQuaternion(*outT,*outQ)
+;         Transform::SetTranslationFromXYZValues(*outT,rcr\m_positionWorld\v[0],rcr\m_positionWorld\v[1],rcr\m_positionWorld\v[2])
+;         Transform::SetScaleFromXYZValues(*outT,1,1,1)
+;         
+;         Object3D::SetLocalTransform(*hit,*outT)
+;         ;         Object3D::SetWireframeColor(*hi,1,0,0)`
+;         Object3D::UpdateTransform(*hit,Scene::*current_scene\root\globalT)
+;       Else
+;         
+;         Debug "Ray cast done but NO 3D Object"
+;       EndIf
+;       
+;   
+;     Else
+;       ;*hit\SetWireframeColor(0,1,0)
+;       Debug "Raycast Failed..."
+;     EndIf
+;     For  i= 0 To CArray::GetCount(*bodies)-1
+;       Bullet::BTRemoveRigidBody(*pick_world,CArray::GetValuePtr(*bodies,i))
+;     Next
+;     CArray::Delete(*bodies)
+;   
+;     
+;     
+;   EndProcedure
+;   CompilerEndIf
   
   ;-------------------------------------------------------
   ; Unproject
@@ -698,8 +698,7 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 12
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 8
 ; Folding = ----
 ; EnableXP

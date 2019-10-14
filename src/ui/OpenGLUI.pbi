@@ -2,11 +2,6 @@
 XIncludeFile "UI.pbi"
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-CompilerIf #USE_BULLET
-  XIncludeFile "../libs/Bullet.pbi"
-  XIncludeFile "../bullet/World.pbi"
-  XIncludeFile "../bullet/RigidBody.pbi"
-CompilerEndIf
 
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "View.pbi"
@@ -728,8 +723,7 @@ Module OpenGLUI
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 70
+; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = -----
 ; EnableXP
