@@ -413,12 +413,14 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 160
+; FirstLine = 129
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
+; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

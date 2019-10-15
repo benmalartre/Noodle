@@ -1,5 +1,4 @@
 XIncludeFile "../objects/Object3D.pbi"
-XIncludeFile "../libs/Bullet.pbi"
 XIncludeFile "RigidBody.pbi"
 
 ; Macro btConstraintType:i:EndMacro
@@ -45,7 +44,7 @@ DeclareModule BulletConstraint
   Declare NewGear(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
   Declare NewSlider(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
   Declare NewGeneric6Dof(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
-  Declare NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
+;   Declare NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
   Declare Delete(*cns.BTConstraint_t)
 EndDeclareModule
 
@@ -106,7 +105,7 @@ Module BulletConstraint
     ProcedureReturn *Me
   EndProcedure
   
-  ; Gear Constraint
+  ; Slider Constraint
   ;-------------------------------------------------------------
   Procedure NewSlider(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
     Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
@@ -136,20 +135,20 @@ Module BulletConstraint
     ProcedureReturn *Me
   EndProcedure
   
-  ; ConeTwist Constraint
-  ;-------------------------------------------------------------
-  Procedure NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
-    
-    *Me\objA  = *objA
-    *Me\objB = *objB
-    *Me\bodyA = *objA\rigidbody
-    *Me\bodyB = *objB\rigidbody
-    
-    *Me\cns = Bullet::BTNewConeTwistConstraint(*objA\rigidbody,*objB\rigidbody,*frameA,*frameB)
-
-    ProcedureReturn *Me
-  EndProcedure
+;   ; ConeTwist Constraint
+;   ;-------------------------------------------------------------
+;   Procedure NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
+;     Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+;     
+;     *Me\objA  = *objA
+;     *Me\objB = *objB
+;     *Me\bodyA = *objA\rigidbody
+;     *Me\bodyB = *objB\rigidbody
+;     
+;     *Me\cns = Bullet::BTNewConeTwistConstraint(*objA\rigidbody,*objB\rigidbody,*frameA,*frameB)
+; 
+;     ProcedureReturn *Me
+;   EndProcedure
   
   ; Constructor
   ;-------------------------------------------------------------
@@ -176,7 +175,7 @@ Module BulletConstraint
         *Me\cns = Bullet::BTNewPoint2PointConstraint(*objA\rigidbody,*objB\rigidbody,*pivot1,*pivot2)
         
        Case Bullet::#CONSTRAINT_HINGE
-          *Me\cns = Bullet::BTNewHingeConstraint(*objA\rigidbody,*objB\rigidbody,*pivot1,*pivot2,*axis2,@*axis2,#True)
+          *Me\cns = Bullet::BTNewHingeConstraint(*objA\rigidbody,*objB\rigidbody,*pivot1,*pivot2,*axis2,*axis2,#True)
         
       Case Bullet::#CONSTRAINT_CONETWIST
         
@@ -201,11 +200,10 @@ Module BulletConstraint
   Procedure Delete(*body.BTConstraint_t)
     
   EndProcedure
-  
-  
+ 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 152
-; Folding = ---
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 135
+; FirstLine = 131
+; Folding = --
 ; EnableXP
