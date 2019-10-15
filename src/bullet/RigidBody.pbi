@@ -199,18 +199,17 @@ Module BulletRigidBody
     Protected *geom.Geometry::PolymeshGeometry_t = *obj\geom
     
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, CArray::GetPtr(*geom\a_positions,0),#True)
-      CompilerElse   
-        Define size_t = *geom\nbpoints * 16
-        Protected *mem = AllocateMemory(size_t)
-        CopyMemory(*geom\a_positions\data, *mem, size_t)
-        Memory::UnshiftAlign(*mem, *geom\nbpoints, 16, 12)
-        *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, CArray::GetPtr(*geom\a_positions,0),#True)
-        FreeMemory(*mem)
-      CompilerEndIf
+      *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,
+                                                 CArray::GetPtr(*geom\a_triangleindices,0),
+                                                 *geom\nbpoints, 
+                                                 CArray::GetPtr(*geom\a_positions,0), 
+                                                 #True)
     CompilerElse
-      *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,CArray::GetPtr(*geom\a_triangleindices,0),*geom\nbpoints, CArray::GetPtr(*geom\a_positions,0),#False)
+      *shape = Bullet::BTNewBvhTriangleMeshShape(*geom\nbtriangles,
+                                                 CArray::GetPtr(*geom\a_triangleindices,0),
+                                                 *geom\nbpoints, 
+                                                 CArray::GetPtr(*geom\a_positions,0), 
+                                                 #False)
     CompilerEndIf
           
     ProcedureReturn *shape
@@ -471,7 +470,7 @@ Module BulletRigidBody
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 209
-; FirstLine = 192
+; CursorPosition = 201
+; FirstLine = 191
 ; Folding = ---
 ; EnableXP

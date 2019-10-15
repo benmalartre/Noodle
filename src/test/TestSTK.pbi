@@ -63,8 +63,7 @@ Procedure Update(*app.Application::Application_t)
 EndProcedure
 
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-
-
+  
 Global *DAC.STK::RtAudio = STK::Init()
 Global *stream.STK::Stream = STK::StreamSetup(*DAC)
 Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 128, #True)
@@ -72,7 +71,7 @@ Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAV
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
 OpenGadgetList(*ui\container)
 
-Define *p.ControlProperty::ControlProperty_t = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window, #PB_Window_InnerCoordinate), WindowHeight(*app\window, #PB_Window_InnerCoordinate)) 
+Define *p.ControlProperty::ControlProperty_t = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
 AddElement(*ui\props())
 *ui\props() = *p
 *ui\prop = *p
@@ -209,9 +208,8 @@ If *stream
 Else
   MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
 EndIf
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 55
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 72
+; FirstLine = 147
 ; Folding = -
 ; EnableXP
