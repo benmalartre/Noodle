@@ -11,11 +11,9 @@ UIColor::Init()
 
 Global *app.Application::Application_t
 Global *ui.PropertyUI::PropertyUI_t 
-Global *DAC.STK::RtAudio = STK::Initialize()
-Global *stream.STK::Stream = STK::StreamSetup(*DAC)
+Global *stream.STK::Stream
 Global *p.ControlProperty::ControlProperty_t
 Global running.b = #False
-STK::SetNodeVolume(*stream, 100)
 
 Procedure OnFrequencyChange(*wave.STK::Generator, frequency.f)
   STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, frequency)
@@ -30,7 +28,7 @@ Procedure Update(*app.Application::Application_t, event.i)
           If key = #PB_Shortcut_Return
             
             If running
-              MessageRequester("K", "Return KEY PRESSED ---> STOP STREAM")Graph
+              MessageRequester("K", "Return KEY PRESSED ---> STOP STREAM")
               STK::StreamStop(*stream)
               
               running = #False  
@@ -61,8 +59,9 @@ EndProcedure
 
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   
-Global *DAC.STK::RtAudio = STK::Init()
-Global *stream.STK::Stream = STK::StreamSetup(*DAC)
+STK::Initialize()
+*stream.STK::Stream = STK::StreamSetup(STK::*DAC)
+STK::SetNodeVolume(*stream, 0.5)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
 OpenGadgetList(*ui\container)
@@ -74,15 +73,18 @@ AddElement(*ui\props())
     
 ControlProperty::AppendStart(*p)
 Define i
+Define base_frequency = 24
 For i=0 To 7
-  ;   Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, i*128, #True)
-  ;   STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
-  ;   STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
-  Define *noise.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
-  STK::SetNodeVolume(*noise, *node\volume)
-  STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, *node\seed)
+    Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, base_frequency, #True)
+    STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
+    STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+    
+;   Define *noise.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
+;   STK::SetNodeVolume(*noise, 12)
+;   STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, 7)
 
-  ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), i*10, #Null) 
+    ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency, #Null) 
+    base_frequency * 2
   
 Next
 
@@ -151,9 +153,8 @@ STK::Terminate()
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 65
+; CursorPosition = 85
+; FirstLine = 58
 ; Folding = -
 ; EnableXP
