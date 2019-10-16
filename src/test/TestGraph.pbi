@@ -121,8 +121,8 @@ Log::Message("Hello User : Beginning session "+FormatDate("%hh:%ii:%ss", Date())
 Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 
 ;AddEmptyTree(*tree)
- AddPushTree(*tree)
-;  AddAudioTree(*tree)
+; AddPushTree(*tree)
+;   AddAudioTree(*tree)
 
 Scene::AddChild(Scene::*current_scene,*obj)
 Scene::AddChild(Scene::*current_scene,*teapot)
@@ -140,8 +140,10 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 
 Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\context)
-*viewport\camera = *app\camera
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
+*app\context = *viewport\context
+View::SetContent(*center\right,*viewport)
+ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
@@ -188,9 +190,9 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 127
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 144
+; FirstLine = 136
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

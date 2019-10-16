@@ -56,16 +56,15 @@ Controls::Init()
 FTGL::Init()
 
 Define *app.Application::Application_t = Application::New("Solar System",1200,600)
-Define *m.ViewManager::ViewManager_t = *app\manager
 
 
 
-Define *s1.View::View_t = View::Split(*m\main,#PB_Splitter_Vertical,66)
+Define *s1.View::View_t = View::Split(*app\window\main,#PB_Splitter_Vertical,66)
 ; Define *s2.View::View_t = View::Split(*s1\left)
 Define *s2.View::View_t = View::Split(*s1\right,0,60)
 Define *s3.View::View_t = View::Split(*s2\right,#PB_Splitter_SecondFixed,60)
-ViewManager::OnEvent(*m,#PB_Event_SizeWindow)
-Define *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*s1\left,"ViewportUI", *app\camera)
+Window::OnEvent(*app\window,#PB_Event_SizeWindow)
+Define *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*s1\left,"ViewportUI", *app\camera, *app\handle)
 Define viewport.UI::IUI = *viewport
 *app\context = *viewport\context
 Define shaders.UI::IUI = ShaderUI::New(*s2\left,"Shader",#Null)
@@ -75,12 +74,6 @@ Define timeline.UI::IUI = TimelineUI::New(*s3\right,"TimelineUI")
 ; FTGL Drawer
 ;-----------------------------------------------------
 FTGL::Init()
-
-
-viewport\Init()
-shaders\Init()
-log\Init()
-timeline\Init()
 
 ; CompilerIf #PB_Compiler_Unicode
 ;   Global *shader.Program::Program_t = Program::New("custom",Shader::DeCodeUnicodeShader(s_vert),Shader::DeCodeUnicodeShader(s_frag))
@@ -190,11 +183,11 @@ Repeat
 ;   
 ;   glDisable(#GL_DEPTH_TEST)
   
-  ViewManager::OnEvent(*m,e)
+  Window::OnEvent(*app\window,e)
 Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 63
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 185
+; FirstLine = 154
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

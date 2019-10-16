@@ -11,67 +11,63 @@ UIColor::Init()
 
 Global *app.Application::Application_t
 Global *ui.PropertyUI::PropertyUI_t 
-Global *DAC.STK::RtAudio = STK::Init()
+Global *DAC.STK::RtAudio = STK::Initialize()
 Global *stream.STK::Stream = STK::StreamSetup(*DAC)
-Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_ASYMP, 64, #True)
-STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
-STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+Global *p.ControlProperty::ControlProperty_t
+Global running.b = #False
+STK::SetNodeVolume(*stream, 100)
 
 Procedure OnFrequencyChange(*wave.STK::Generator, frequency.f)
   STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, frequency)
 EndProcedure
 Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#FLOAT)
 
-Procedure Update(*app.Application::Application_t)
-  
-;     event = WaitWindowEvent()
-;     If event = #PB_Event_Gadget And EventGadget() = canvas
-;       Select EventType()
-;         Case #PB_EventType_KeyDown
-;           key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
-;           If key = #PB_Shortcut_Return
-;             If running
-;               STK::GeneratorStreamStop(*stream)
-;               running = #False  
-;               DrawCanvas()
-;             Else
-;               Define result.b = STK::GeneratorStreamStart(*stream)
-;               running = #True
-;               DrawCanvas()
-;             EndIf
-;           ElseIf key = #PB_Shortcut_Space
-;             ; STK::EnvelopeKeyOn(*envelope) 
-;           EndIf
-;         Case #PB_EventType_LeftButtonDown
-;           down = #True
-;         Case #PB_EventType_LeftButtonUp
-;           down=#False
-;         Case #PB_EventType_MouseMove
-;           If down
-;             mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
-;             v = mx / width
-;             STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
-; 
-;           EndIf
-;           
-;       EndSelect
-;     EndIf 
-;   Until event = #PB_Event_CloseWindow
-; 
-
-
+Procedure Update(*app.Application::Application_t, event.i)
+    If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
+      Select EventType()
+        Case #PB_EventType_KeyDown
+          key = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_Key)
+          If key = #PB_Shortcut_Return
+            
+            If running
+              MessageRequester("K", "Return KEY PRESSED ---> STOP STREAM")Graph
+              STK::StreamStop(*stream)
+              
+              running = #False  
+            Else
+              MessageRequester("K", "Return KEY PRESSED ---> START STREAM")
+              Define result.b = STK::StreamStart(*stream)
+              
+              running = #True
+            EndIf
+          ElseIf key = #PB_Shortcut_Space
+            ; STK::EnvelopeKeyOn(*envelope) 
+          EndIf
+        Case #PB_EventType_LeftButtonDown
+          down = #True
+        Case #PB_EventType_LeftButtonUp
+          down=#False
+        Case #PB_EventType_MouseMove
+          If down
+            mx = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_MouseX)
+            v = mx / width
+            STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
+            STK::SetNodeVolume(*wave, 100)
+          EndIf
+          
+      EndSelect
+    EndIf 
 EndProcedure
 
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   
 Global *DAC.STK::RtAudio = STK::Init()
 Global *stream.STK::Stream = STK::StreamSetup(*DAC)
-Global *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 128, #True)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
 OpenGadgetList(*ui\container)
 
-Define *p.ControlProperty::ControlProperty_t = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
+*p = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
 AddElement(*ui\props())
 *ui\props() = *p
 *ui\prop = *p
@@ -79,7 +75,15 @@ AddElement(*ui\props())
 ControlProperty::AppendStart(*p)
 Define i
 For i=0 To 7
+  ;   Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, i*128, #True)
+  ;   STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
+  ;   STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+  Define *noise.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
+  STK::SetNodeVolume(*noise, *node\volume)
+  STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, *node\seed)
+
   ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), i*10, #Null) 
+  
 Next
 
   
@@ -87,7 +91,7 @@ ControlProperty::AppendStop(*p)
 
 CloseGadgetList()
 
-STK::StreamStart(*stream)
+; STK::StreamStart(*stream)
 Application::Loop(*app, @Update())
 
 STK::StreamClean(*stream)
@@ -148,68 +152,8 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 
-Procedure DrawCanvas()
-  StartDrawing(CanvasOutput(canvas))
-  If running
-    Box(0,0,WIDTH, HEIGHT, RGB(128,255,128))
-  Else
-    Box(0,0,WIDTH, HEIGHT, RGB(255,128,128))
-  EndIf
-  StopDrawing()
-EndProcedure
-
-DrawCanvas()
-Global down.b
-Define mx.i, v.f
-If *stream
-  Repeat
-    event = WaitWindowEvent()
-    If event = #PB_Event_Gadget And EventGadget() = canvas
-      Select EventType()
-        Case #PB_EventType_KeyDown
-          key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
-          If key = #PB_Shortcut_Return
-            Debug "ENTER PRESSED"
-            If running
-              STK::StreamStop(*stream)
-              running = #False  
-              DrawCanvas()
-            Else
-              Define result.b = STK::StreamStart(*stream)
-              ; STK::EnvelopeKeyOn(*envelope)
-              running = #True
-              DrawCanvas()
-            EndIf
-          ElseIf key = #PB_Shortcut_Space
-            ; STK::EnvelopeKeyOn(*envelope) 
-          EndIf
-        Case #PB_EventType_LeftButtonDown
-          down = #True
-        Case #PB_EventType_LeftButtonUp
-          down=#False
-        Case #PB_EventType_MouseMove
-          If down
-            mx = GetGadgetAttribute(canvas, #PB_Canvas_MouseX)
-            v = mx / width
-            STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, v * 220 +60)
-            Debug "FREQUENCY : "+Str(v *220 + 60)
-;             STK::SetArythmeticScalar(*final, v)
-;             STK::SetEffectScalar(*rev, v, STK::#EFFECT_MIX)
-;             STK::SetArythmeticScalar(*adder1, v)
-;             STK::SetArythmeticScalar(*adder1, v*4)
-          EndIf
-          
-      EndSelect
-    EndIf 
-  Until event = #PB_Event_CloseWindow
-
-  STK::StreamClean(*stream)
-  STK::Term(*DAC)
-Else
-  MessageRequester("STK", "FAIL TO START GENERATOR STREAM")
-EndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 72
-; FirstLine = 147
+; CursorPosition = 83
+; FirstLine = 65
 ; Folding = -
 ; EnableXP

@@ -46,7 +46,7 @@ Procedure AddButton (*ui.PropertyUI::PropertyUI_t, name.s)
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\sizX, *ui\sizY)
   ControlProperty::AppendStart(*prop)
   Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, name, name, RGBA(128,128,128,255), *ui\sizX, 24)
-  Define message.s = "ZOBINickVraimentTout"
+  Define message.s = "ZobiNickVraimentTout"
   Signal::CONNECTCALLBACK(*btn\on_click, Callback, message)
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
@@ -112,8 +112,10 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
   CloseGadgetList()
 EndProcedure
 
+width = 400
+height = 600
 
-*app = Application::New("Test Property",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
+*app = Application::New("Test Property",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Scene::*current_scene = Scene::New()
 Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
@@ -122,8 +124,19 @@ Scene::AddChild(Scene::*current_scene,*bunny)
 Global *splitted.View::View_t = View::Split(*app\window\main, 0,75)
 
 
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport", *app\camera, *app\handle)
-*app\context = *viewport\context
+If Not #USE_GLFW
+  *viewport = ViewportUI::New(*splitted\left,"ViewportUI", *app\camera, *app\handle)     
+  *app\context = *viewport\context
+  View::SetContent(*splitted\left,*viewport)
+  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+EndIf
+
+Camera::LookAt(*app\camera)
+Scene::*current_scene = Scene::New()
+
+GLContext::SetContext(*app\context)
+*layer = LayerDefault::New(*viewport\sizX,*viewport\sizY,*app\context,*app\camera)
+Application::AddLayer(*app, *layer)
 
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
 AddButton(*ui, "Button One")
@@ -132,15 +145,15 @@ AddButton(*ui, "Button Three")
 AddKnobs(*ui, "FUCK")
 ; AddProperty(*ui.PropertyUI::PropertyUI_t, "TOTO")
 
-GLContext::SetContext(*app\context)
+; GLContext::SetContext(*app\context)
 *layer = LayerDefault::New(*viewport\sizX, *viewport\sizY,*app\context,*app\camera)
 Application::AddLayer(*app, *layer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 88
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 129
+; FirstLine = 112
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

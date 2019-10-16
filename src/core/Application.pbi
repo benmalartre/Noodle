@@ -223,7 +223,7 @@ CompilerIf (#USE_GLFW = #True)
 CompilerEndIf
 
   Declare.f GetFPS(*Me.Application_t)
-  Prototype PFNDRAWFN(*Me)
+  Prototype PFNCALLBACKFN(*Me, event.i)
   
   Global *running.Application::Application_t
 
@@ -279,7 +279,7 @@ CompilerEndIf
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
-      
+      *Me\context\writer = FTGL::New()
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
@@ -583,7 +583,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*Me.Application_t,*callback.PFNDRAWFN)
+  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN)
     Define event
     
     CompilerIf #USE_GLFW
@@ -597,7 +597,7 @@ CompilerEndIf
       Wend
     CompilerElse
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
-      *callback(*Me)
+      *callback(*Me, #PB_Event_SizeWindow)
       Repeat
         event = WaitWindowEvent(24)
         ; filter Windows events
@@ -615,7 +615,7 @@ CompilerEndIf
             
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED)
             
           Case Globals::#EVENT_TOOL_CHANGED
             Select EventData()
@@ -637,13 +637,13 @@ CompilerEndIf
 ;             EndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_SELECTION_CHANGED)
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
             Scene::Setup(Scene::*current_scene, *Me\context)
             Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
            
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED)
             
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = *Me\window\uis("Graph")
@@ -651,7 +651,7 @@ CompilerEndIf
             If *graph
               GraphUI::SetContent(*graph,*tree)
             EndIf   
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_TREE_CREATED)
           Case #PB_Event_Menu
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
@@ -667,19 +667,19 @@ CompilerEndIf
                 *Me\tool = Globals::#TOOL_MAX
                 If event : Window::OnEvent(*Me\window,event) : EndIf
             EndSelect
-            *callback(*Me)
+            *callback(*Me, event)
             
           Case #PB_Event_SizeWindow
             Window::OnEvent(*Me\window,event)
-            *callback(*Me)
+            *callback(*Me, event)
             
           Case #PB_Event_Gadget
             If event : Window::OnEvent(*Me\window,event) : EndIf
-            *callback(*Me)
+            *callback(*Me, event)
             
           Default
             If event : Window::OnEvent(*Me\window,event) : EndIf
-            *callback(*Me)
+            *callback(*Me, event)
         EndSelect
         
         
@@ -723,8 +723,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 132
-; FirstLine = 114
+; CursorPosition = 281
+; FirstLine = 271
 ; Folding = -----
 ; EnableXP
 ; SubSystem = OpenGL

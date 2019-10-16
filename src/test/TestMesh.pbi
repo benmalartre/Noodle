@@ -110,16 +110,16 @@ Procedure Draw(*app.Application::Application_t)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
    
   Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+  
 
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/width
-;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
-;   
-;   ViewportUI::FlipBuffer(*viewport)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
+  
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
  
@@ -239,8 +239,8 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 240
-; FirstLine = 203
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 121
+; FirstLine = 96
 ; Folding = -
 ; EnableXP

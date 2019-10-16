@@ -401,9 +401,6 @@ DeclareModule STK
       CompilerCase  #PB_OS_Windows
         STK_LIB = OpenLibrary(#PB_Any, "../../libs/x64/windows/STK.dll")
       CompilerCase #PB_OS_MacOS
-;         ImportC "-lstdc++" : EndImport
-;         ImportC "-lasound" : EndImport
-;         ImportC "-lpthread" : EndImport
         STK_LIB = OpenLibrary(#PB_Any, "../../libs/x64/macosx/STK.so")
       CompilerCase #PB_OS_Linux
         ImportC "-lstdc++" : EndImport
@@ -416,9 +413,6 @@ DeclareModule STK
       CompilerCase  #PB_OS_Windows
         STK_LIB = OpenLibrary(#PB_Any, "libs/x64/windows/STK.dll")
       CompilerCase #PB_OS_MacOS
-;         ImportC "-lstdc++" : EndImport
-;         ImportC "-lasound" : EndImport
-;         ImportC "-lpthread" : EndImport
         STK_LIB = OpenLibrary(#PB_Any, "libs/x64/macosx/STK.so")
       CompilerCase #PB_OS_Linux
         ImportC "-lstdc++" : EndImport
@@ -475,8 +469,14 @@ DeclareModule STK
 
   Global *DAC.RTAudio
   Global initialized.b
+  CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+    Global RAWWAVEPATH.s = "E:/Projects/RnD/STK/rawwaves"
+  CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+    Global RAWWAVEPATH.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves"
+  CompilerElse
+    Global RAWWAVEPATH.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves"
+  CompilerEndIf
   
-  Global RAWWAVEPATH.s = "E:/Projects/RnD/STK/rawwaves"
   
   Declare Initialize()
   Declare Terminate()
@@ -577,16 +577,17 @@ Module STK
   Procedure Initialize()
     *DAC = STK::Init()
     STK::InitRawWaves()
-    
+    ProcedureReturn *DAC
   EndProcedure
   
   Procedure Terminate()  
     STK::Term(*DAC)
+    *DAC = #Null
   EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 579
-; FirstLine = 419
+; CursorPosition = 584
+; FirstLine = 554
 ; Folding = ---
 ; EnableXP
