@@ -55,6 +55,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Define *geom.Geometry::PolymeshGeometry_t = *torus\geom
   
+  *app\context\writer\background = #False
   Protected sx.f = 0.001
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -73,7 +74,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"This is Font Drawing in OpenGL",-1,0.75,sx,sx)
   FTGL::Draw(*app\context\writer,"Using FreeType C Library",-1,0.6,sx,sx)
   FTGL::EndDraw(*app\context\writer)
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
   
 EndProcedure
     
@@ -87,7 +88,7 @@ If Time::Init()
   Global *scene = Scene::New()
   Scene::*current_scene = *scene
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"Viewport3D", *app\camera)
+    *viewport = ViewportUI::New(*app\window\main,"Viewport3D", *app\camera, *app\handle)
     *app\context = *viewport\context
     *viewport\camera = *app\camera
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -102,7 +103,7 @@ If Time::Init()
 
   *layer.LayerDefault::LayerDefault_t = LayerDefault::New(*app\width,*app\height,*app\context,*app\camera)
   LayerDefault::Setup(*layer)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
 
   *torus = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
   *cloud = PointCloud::New("Cloud",Shape::#SHAPE_SPHERE)
@@ -117,9 +118,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 59
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 57
+; FirstLine = 47
 ; Folding = -
 ; EnableXP
 ; Executable = Test

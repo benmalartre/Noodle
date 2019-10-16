@@ -43,8 +43,6 @@ DeclareModule FTGL
     width.i
     height.i
     size_px.i
-    resx.l
-    resy.l
     *buffer
     
   EndStructure
@@ -471,8 +469,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 36
+; CursorPosition = 44
+; FirstLine = 35
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
