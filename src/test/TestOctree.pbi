@@ -169,8 +169,8 @@ Procedure Draw(*app.Application::Application_t)
   Define numCells.l
 
   Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *layer\buffer)
   
+  GLContext::FlipBuffer(*app\context)
 ;   FTGL::BeginDraw(*app\context\writer)
 ;   FTGL::SetColor(*app\context\writer,1,1,1,1)
 ;   Define ss.f = 0.85/*viewport\sizX
@@ -195,7 +195,8 @@ Log::Init()
  *app = Application::New("Octree",width, height, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
  If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+   *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
+   *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
@@ -252,9 +253,9 @@ ViewportUI::SetHandleTarget(*viewport, *query)
 Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 161
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 198
+; FirstLine = 184
 ; Folding = -
 ; EnableThread
 ; EnableXP

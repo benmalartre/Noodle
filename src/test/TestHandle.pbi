@@ -76,9 +76,9 @@ Procedure Draw(*app.Application::Application_t)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
   Light::Update(*light)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::Update(Scene::*current_scene)
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *layer, *app\camera)
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -95,11 +95,13 @@ Procedure Draw(*app.Application::Application_t)
       FTGL::Draw(*app\context\writer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_CAMERA
       FTGL::Draw(*app\context\writer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
+    Default
+      FTGL::Draw(*app\context\writer,"Active Tool : NONE",-0.9,0.8,ss,ss*ratio)
   EndSelect
   
 
   FTGL::EndDraw(*app\context\writer)
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
  
@@ -117,17 +119,17 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Handle",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
 ;   *shadows = LayerShadowMap::New(800,800,*app\context,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
 ;   *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
@@ -144,7 +146,7 @@ Procedure Draw(*app.Application::Application_t)
   shader = *s_polymesh\pgm
   
   Global *model.Model::Model_t = Model::New("Model")
-  *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
+  *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TEAPOT)
   Object3D::SetShader(*torus,*s_polymesh)
   Object3D::AddChild(*model,*torus)
   Scene::AddModel(Scene::*current_scene,*model)
@@ -152,15 +154,16 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::SelectObject(Scene::*current_scene, *torus)
   ViewportUI::SetHandleTarget(*viewport, *torus)
+  Application::AddShortcuts(*app)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 63
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 148
+; FirstLine = 126
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

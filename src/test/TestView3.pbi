@@ -11,6 +11,7 @@ FTGL::Init()
 Controls::Init()
 Commands::Init()
 UIColor::Init()
+ 
 CompilerIf #USE_ALEMBIC
   Alembic::Init()
 CompilerEndIf
@@ -112,8 +113,8 @@ Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
   CloseGadgetList()
 EndProcedure
 
-width = 400
-height = 600
+width = 1024
+height = 720
 
 *app = Application::New("Test Property",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Controls::SetTheme(Globals::#GUI_THEME_DARK)
@@ -137,7 +138,7 @@ Scene::*current_scene = Scene::New()
 GLContext::SetContext(*app\context)
 *layer = LayerDefault::New(*viewport\sizX,*viewport\sizY,*app\context,*app\camera)
 Application::AddLayer(*app, *layer)
-
+  
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*splitted\right, "Property", #Null)
 AddButton(*ui, "Button One")
 AddButton(*ui, "Button Two")
@@ -152,8 +153,8 @@ Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 112
+; CursorPosition = 116
+; FirstLine = 111
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -227,18 +227,18 @@ Module ViewportUI
 ;           EndSelect
           Case #PB_EventType_Focus
             *Me\context\focus = #True
-;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+;             AddKeyboardShortcut(*app\window\ID, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
 ;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
 ;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
 ;             AddKeyboardShortcut(*manager\window, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
-                    
+;                     
           Case #PB_EventType_LostFocus
             *Me\context\focus = #False
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_T)
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_R)
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_S)
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
-                    
+;                     
           Case #PB_EventType_MouseMove
             If *Me\down
               deltax = *Me\mx-*Me\oldX
@@ -698,7 +698,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 236
+; FirstLine = 210
 ; Folding = ----
 ; EnableXP

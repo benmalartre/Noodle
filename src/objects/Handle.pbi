@@ -581,7 +581,7 @@ Module Handle
   ; Draw Axis
   ;-----------------------------------------------------------------------------
   Procedure DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
-    
+    Debug "DRAW TOOL AXIS..."
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
     Select *Me\tool
@@ -589,6 +589,7 @@ Module Handle
         *shape = *Me\translate_handle
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0)
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
+        GLCheckError("TRANSLATE AXIS")
       Case Globals::#TOOL_ROTATE
         *shape = *Me\rotate_handle
         glDrawArrays(#GL_LINE_LOOP,2,20)
@@ -1444,8 +1445,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1174
-; FirstLine = 1115
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 534
+; FirstLine = 519
 ; Folding = -------
 ; EnableXP

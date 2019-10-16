@@ -135,10 +135,10 @@ Procedure Draw(*app.Application::Application_t)
    Define startT.d = Time::Get ()
    Log::Init()
    *app = Application::New("TestMesh",width,height)
-    Debug "YEAH"
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-    *app\context = *viewport\context
+     *app\context = *viewport\context
+     *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -240,7 +240,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 121
-; FirstLine = 96
+; CursorPosition = 140
+; FirstLine = 131
 ; Folding = -
 ; EnableXP

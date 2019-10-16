@@ -266,14 +266,16 @@ Module FTGL
     Protected atlas_height = *Me\atlas\height
     
     w = 0
-    h = Math::#U32_MIN
+    h = 0
+    Define nh.f
     If *Me\background
       For a=1 To Len(text)
         c = Mid(text,a,1)
         *infos = *Me\atlas\metadata[Asc(c)]
         
         w + *infos\bl * sx + *infos\ax * sx 
-        h  - *infos\bt * sy + *infos\ay * sy
+        nh = *infos\bt * sy + *infos\ay * sy
+        If h<nh : h=nh : EndIf
       Next
       
       Define size_t = 6*SizeOf(FTGL_Point)
@@ -469,8 +471,8 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 44
-; FirstLine = 35
+; CursorPosition = 268
+; FirstLine = 253
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

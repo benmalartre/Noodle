@@ -55,7 +55,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Define *geom.Geometry::PolymeshGeometry_t = *torus\geom
   
-  *app\context\writer\background = #False
+  *app\context\writer\background = #True
   Protected sx.f = 0.001
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
