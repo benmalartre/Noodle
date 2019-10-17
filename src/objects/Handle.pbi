@@ -570,7 +570,6 @@ Module Handle
   ; Draw Axis
   ;-----------------------------------------------------------------------------
   Procedure DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
-    GLCheckError("BEFORE AXIS")
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
     Select *Me\tool
@@ -578,7 +577,6 @@ Module Handle
         *shape = *Me\translate_handle
         glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,0)
         glDrawElements(#GL_TRIANGLES,CArray::GetCount(*shape\indices)-2,#GL_UNSIGNED_INT,8)
-        GLCheckError("TRANSLATE AXIS")
       Case Globals::#TOOL_ROTATE
         *shape = *Me\rotate_handle
         glDrawArrays(#GL_LINE_LOOP,2,20)
@@ -1324,6 +1322,7 @@ Module Handle
         Else
           Select *Me\tool
             Case Globals::#TOOL_TRANSLATE
+              Debug "RAYCAST AXIS TRANSLATE..."
               Camera::MousePositionToRayDirection(*Me\camera, *ev_data\x, *ev_data\y, *ev_data\width, *ev_data\height, *Me\ray\direction)
               Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
               PickTranslate(*Me)
@@ -1443,7 +1442,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 603
-; FirstLine = 601
+; CursorPosition = 1324
+; FirstLine = 1304
 ; Folding = -------
 ; EnableXP

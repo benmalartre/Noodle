@@ -262,20 +262,23 @@ Module ViewportUI
                   If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 EndIf
               Else
-                Select *Me\tool
-                  Case Globals::#TOOL_TRANSLATE
-                    ev_datas\x = *Me\mx
-                    ev_datas\y = *Me\my
-                    ev_datas\width = *Me\sizX
-                    ev_datas\height = *Me\sizY
-                    Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)
-                EndSelect
+                If *Me\handle
+                  Select *Me\handle\tool
+                    Case Globals::#TOOL_TRANSLATE
+                      ev_datas\x = *Me\mx
+                      ev_datas\y = *Me\my
+                      ev_datas\width = *Me\sizX
+                      ev_datas\height = *Me\sizY
+                      Handle::OnEvent(*Me\handle, #PB_EventType_MouseMove, ev_datas)
+                  EndSelect
+                EndIf
+              
               EndIf
               
               *Me\oldX = *Me\mx
               *Me\oldY = *Me\my
             Else
-              If *Me\tool <> Globals::#TOOL_SELECT
+              If *Me\handle And *Me\handle\tool <> Globals::#TOOL_SELECT
                 ev_datas\x = *Me\mx
                 ev_datas\y = *Me\my
                 ev_datas\width = *Me\sizX
@@ -699,7 +702,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 236
-; FirstLine = 210
+; CursorPosition = 285
+; FirstLine = 262
 ; Folding = ----
 ; EnableXP
