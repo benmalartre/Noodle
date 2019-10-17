@@ -83,7 +83,7 @@ DeclareModule ControlProperty
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=64)
-  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, *obj.Object::Object_t)
+  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *obj.Object::Object_t)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
   Declare EndGroup( *Me.ControlProperty_t)
@@ -676,7 +676,7 @@ Module ControlProperty
     
     
     *Me\dy + 22
-    ProcedureReturn(#True)
+    ProcedureReturn(*ctl)
   
   EndProcedure
   
@@ -723,13 +723,13 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + 22
-    ProcedureReturn(#True)
+    ProcedureReturn(*ctl)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Add Slider Control 
   ;-----------------------------------------------------------------------------
-  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, *obj.Object::Object_t)
+  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *obj.Object::Object_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -741,12 +741,12 @@ Module ControlProperty
     ; Add Parameter
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
-      *ctl =  ControlSlider::New(*Me, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width-20,32) 
+      *ctl =  ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value,min_value,max_value,*Me\dx,*Me\dy,width-20,32) 
       ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
-      *ctl = ControlSlider::New(*Me, name+"Slider", value, #Null, 0, 100,0,100,*Me\dx,*Me\dy,width,32)
+      *ctl = ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value, min_value, max_value,*Me\dx,*Me\dy,width,32)
       Append(*Me, *ctl)
       RowEnd(*Me)
     EndIf
@@ -766,7 +766,7 @@ Module ControlProperty
     ; Offset for Next Control
     *Me\dy + 36
     
-    ProcedureReturn(#True)
+    ProcedureReturn(*ctl)
   EndProcedure
   
   
@@ -814,7 +814,7 @@ Module ControlProperty
     ; Offset for Next Control
     *Me\dy + 22
     
-    ProcedureReturn(#True)
+    ProcedureReturn(*ctl)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -878,7 +878,7 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + *group\sizY
-    ProcedureReturn(#True)
+    ProcedureReturn(*group)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -952,7 +952,7 @@ Module ControlProperty
     
     ; Offset for Next Control
     *Me\dy + *group\sizY
-    ProcedureReturn(#True)
+    ProcedureReturn(*group)
   EndProcedure
 
 ;--------------------------------------------------------------------
@@ -1120,7 +1120,7 @@ EndProcedure
     ;---------------------------------
     *Me\dy + *group\sizY
     
-    ProcedureReturn(#True)
+    ProcedureReturn(*group)
   
   EndProcedure
 
@@ -1187,7 +1187,7 @@ EndProcedure
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy + *group\sizY
-    ProcedureReturn(#True)
+    ProcedureReturn(*group)
   EndProcedure
 
   ; ---[ Add Reference Control  ]------------------------------------------
@@ -2048,8 +2048,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 528
-; FirstLine = 511
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 748
+; FirstLine = 736
 ; Folding = ----------
 ; EnableXP

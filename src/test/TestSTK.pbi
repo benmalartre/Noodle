@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../libs/STK.pbi"
 XIncludeFile "../core/Application.pbi"
+XIncludeFile "../core/Notes.pbi"
 XIncludeFile "../core/Callback.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../controls/Slider.pbi"
@@ -14,13 +15,46 @@ Global *ui.PropertyUI::PropertyUI_t
 Global *stream.STK::Stream
 Global *p.ControlProperty::ControlProperty_t
 Global running.b = #False
+Global counter.i = 0
+Global NewList *waves.STK::Generator()
 
-Procedure OnFrequencyChange(*wave.STK::Generator, frequency.f)
-  STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, frequency)
+; Slider Frequency Callback
+;-----------------------------------------------------
+Procedure OnFrequencyChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Generator)
+  Debug "SLIDE CHANGE : "+*control\name+" ---> "+Str(*control\value)+" : "+Str(*wave)
+  Define value.f = Random(1024)+128
+  Debug "RETURN VALUE : "+Str(STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, Random(256)+128))
 EndProcedure
 Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#FLOAT)
 
+Global note.i = Notes::#NOTE_DO
+Global numVoices = 1
+Global baseOctave = 3
+
+; Update Note On Tick
+;-----------------------------------------------------
+Procedure UpdateOnTime()
+  If counter%60 = 0
+    Define octave = baseOctave
+    ForEach *waves()
+      Debug Notes::NoteAt(octave, note)
+      STK::SetGeneratorScalar(*waves(), STK::#GEN_FREQUENCY, Notes::NoteAt(octave, note))
+      octave + 1
+    Next
+    note + 1
+    If note > Notes::#NUM_NOTES
+      note = 0
+    EndIf
+  EndIf
+  counter +1
+EndProcedure
+
+
+
 Procedure Update(*app.Application::Application_t, event.i)
+  
+  UpdateOnTime()
+  
     If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
       Select EventType()
         Case #PB_EventType_KeyDown
@@ -28,14 +62,12 @@ Procedure Update(*app.Application::Application_t, event.i)
           If key = #PB_Shortcut_Return
             
             If running
-              MessageRequester("K", "Return KEY PRESSED ---> STOP STREAM")
               STK::StreamStop(*stream)
               
               running = #False  
             Else
-              MessageRequester("K", "Return KEY PRESSED ---> START STREAM")
+              Define numRoots =  STK::StreamNumRoots(*stream)
               Define result.b = STK::StreamStart(*stream)
-              
               running = #True
             EndIf
           ElseIf key = #PB_Shortcut_Space
@@ -46,12 +78,13 @@ Procedure Update(*app.Application::Application_t, event.i)
         Case #PB_EventType_LeftButtonUp
           down=#False
         Case #PB_EventType_MouseMove
-          If down
-            mx = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_MouseX)
-            v = mx / width
-            STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
-            STK::SetNodeVolume(*wave, 100)
-          EndIf
+;           If down
+;             mx = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_MouseX)
+;             v = mx / width
+;             STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
+;             STK::SetNodeVolume(*wave, 100)
+;             
+;           EndIf
           
       EndSelect
     EndIf 
@@ -73,19 +106,24 @@ AddElement(*ui\props())
     
 ControlProperty::AppendStart(*p)
 Define i
-Define base_frequency = 24
-For i=0 To 7
-    Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, base_frequency, #True)
-    STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
-    STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+Define base_frequency = 128
+
+For i=0 To numVoices-1
+  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, base_frequency, #True)
+;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
+;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
+;     STK::SetNodeVolume(*wave,0.666)
     
+    AddElement(*waves())
+    *waves() = *wave
+   
 ;   Define *noise.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
 ;   STK::SetNodeVolume(*noise, 12)
 ;   STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, 7)
 
-    ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency, #Null) 
+    Define *slider.Control::Control_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency,0, 1024, #Null) 
+    Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *waves())
     base_frequency * 2
-  
 Next
 
   
@@ -93,7 +131,8 @@ ControlProperty::AppendStop(*p)
 
 CloseGadgetList()
 
-; STK::StreamStart(*stream)
+STK::StreamStart(*stream)
+running = #True
 Application::Loop(*app, @Update())
 
 STK::StreamClean(*stream)
@@ -154,7 +193,7 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 85
-; FirstLine = 58
+; CursorPosition = 111
+; FirstLine = 91
 ; Folding = -
 ; EnableXP

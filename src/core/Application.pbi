@@ -624,7 +624,7 @@ CompilerEndIf
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
       *callback(*Me, #PB_Event_SizeWindow)
       Repeat
-        event = WaitWindowEvent(24)
+        event = WaitWindowEvent(1)
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -757,8 +757,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 695
-; FirstLine = 672
+; CursorPosition = 626
+; FirstLine = 608
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
