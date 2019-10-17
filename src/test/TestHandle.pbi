@@ -66,12 +66,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  
-; ;    Handle::SetActiveTool(*handle, *app\tool)
-; ;    Handle::InitTransform(*handle, *torus\globalT)
-; ;    Handle::Resize(*handle,*app\camera)
-; ;    Handle::Setup(*handle, *app\context)
-; ;    Handle::Update(*handle)
+   
 ; ;    
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
@@ -158,8 +153,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 148
-; FirstLine = 126
+; CursorPosition = 68
+; FirstLine = 64
 ; Folding = -
 ; EnableThread
 ; EnableXP

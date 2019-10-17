@@ -531,11 +531,6 @@ Module Handle
     glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
     glBufferData(#GL_ARRAY_BUFFER,*shape\nbp*SizeOf(v3f32),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
     
-    ; element array buffer
-    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
-    
     ; Attibute Position
     glEnableVertexAttribArray(0)
     CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
@@ -544,7 +539,11 @@ Module Handle
       glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     CompilerEndIf
     
-    
+    ; element array buffer
+    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
+
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(*Me\shader\pgm,"view")
     *Me\u_proj.GLint = glGetUniformLocation(*Me\shader\pgm,"projection")
@@ -565,23 +564,13 @@ Module Handle
     ;Setup GL
     SetupHandle(*Me,Globals::#TOOL_TRANSLATE,*ctx)
     
-;     ; cursor
-;     *Me\cursor_vao = glGenVertexArrays(1, @*Me\cursor_vao)
-;     glBindVertexArray(*Me\cursor_vao)
-;     Protected vbo.GLint
-;     glGenBuffers(1, @vbo)
-;     glBindBuffer(#GL_ARRAY_BUFFER, vbo)
-;     
-;     ; Push Buffer to GPU
-;     glBufferData(#GL_ARRAY_BUFFER,48,?shape_cursor_positions,#GL_DYNAMIC_DRAW)
-    
   EndProcedure
   
   ;-----------------------------------------------------------------------------
   ; Draw Axis
   ;-----------------------------------------------------------------------------
   Procedure DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
-    Debug "DRAW TOOL AXIS..."
+    GLCheckError("BEFORE AXIS")
     Protected GLint_s.GLint
     Protected *shape.Shape::Shape_t
     Select *Me\tool
@@ -613,10 +602,12 @@ Module Handle
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-    glEnable(#GL_POINT_SMOOTH)
+;     glEnable(#GL_POINT_SMOOTH)
   
     glDisable(#GL_CULL_FACE)
-    glLineWidth(2)
+    glDisable(#GL_DEPTH_TEST)
+    glFrontFace(#GL_CCW)
+;     glLineWidth(2)
     Protected pos.v3f32
     Protected d.f = *Me\distance/20
     
@@ -626,7 +617,11 @@ Module Handle
     
     Protected offset.m4f32
     Protected quat.q4f32
-  
+    
+    Define identity.Math::m4f32
+    Matrix4::SetIdentity(identity)
+    
+    Matrix4::Echo(*Me\globalT\m, "HANDLE GLOBAL MATRIX")
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*Me\globalT\m)
 
     If *Me\tool = Globals::#TOOL_TRANSFORM
@@ -912,50 +907,50 @@ Module Handle
       Transform::SetTranslation(*Me\localT, hitPoint)
       Transform::SetTranslation(*Me\globalT, hitPoint)
     EndIf
-;     
-;     Select *Me\active_axis
-;       Case #AXIS_ACTIVE_X
-;         Protected x.f = *Me\localT\t\pos\x
-;         x+ delta
-;         *Me\localT\t\pos\x = x
-;         Transform::UpdateMatrixFromSRT(*Me\localT)
-;         *Me\globalT\t\pos\x = x
-;         Transform::UpdateMatrixFromSRT(*Me\globalT)
-;         
-;       Case #AXIS_ACTIVE_Y
-;         Protected y.f = *Me\localT\t\pos\y
-;         y- delta
-;        *Me\localT\t\pos\y = y
-;         Transform::UpdateMatrixFromSRT(*Me\localT)
-;         *Me\globalT\t\pos\y = y
-;         Transform::UpdateMatrixFromSRT(*Me\globalT)
-;       Case #AXIS_ACTIVE_Z
-;         Protected z.f = *Me\localT\t\pos\z
-;         z- delta
-;         *Me\localT\t\pos\z = z
-;         Transform::UpdateMatrixFromSRT(*Me\localT)
-;         *Me\globalT\t\pos\z = z
-;         Transform::UpdateMatrixFromSRT(*Me\globalT)
-;       Case #AXIS_ACTIVE_All
-;         If *Me\camera
-;           Define plane.Geometry::Plane_t
-;           Define nrm.v3f32
-;           Camera::GetViewPlaneNormal(*Me\camera, nrm)
-;           Plane::Set(plane, nrm, *Me\localT\t\pos)
-;           
-;           Define ray.Geometry::Ray_t
-;           Define p.v3f32
-;           Vector3::Set(p, deltax/width, deltay/height, 0)
-;           Define view.m4f32 
-;           Camera::GetViewTransform(*Me\camera, view)
-;           Transform::SetTranslation(*Me\localT, p)
-;           Transform::SetTranslation(*Me\globalT, p)
-;           
-;           Transform::UpdateMatrixFromSRT(*Me\localT)
-;           Transform::UpdateMatrixFromSRT(*Me\globalT)
-;         EndIf
-;         
-;     EndSelect
+    
+    Select *Me\active_axis
+      Case #AXIS_ACTIVE_X
+        Protected x.f = *Me\localT\t\pos\x
+        x+ delta
+        *Me\localT\t\pos\x = x
+        Transform::UpdateMatrixFromSRT(*Me\localT)
+        *Me\globalT\t\pos\x = x
+        Transform::UpdateMatrixFromSRT(*Me\globalT)
+        
+      Case #AXIS_ACTIVE_Y
+        Protected y.f = *Me\localT\t\pos\y
+        y- delta
+       *Me\localT\t\pos\y = y
+        Transform::UpdateMatrixFromSRT(*Me\localT)
+        *Me\globalT\t\pos\y = y
+        Transform::UpdateMatrixFromSRT(*Me\globalT)
+      Case #AXIS_ACTIVE_Z
+        Protected z.f = *Me\localT\t\pos\z
+        z- delta
+        *Me\localT\t\pos\z = z
+        Transform::UpdateMatrixFromSRT(*Me\localT)
+        *Me\globalT\t\pos\z = z
+        Transform::UpdateMatrixFromSRT(*Me\globalT)
+      Case #AXIS_ACTIVE_All
+        If *Me\camera
+          Define plane.Geometry::Plane_t
+          Define nrm.v3f32
+          Camera::GetViewPlaneNormal(*Me\camera, nrm)
+          Plane::Set(plane, nrm, *Me\localT\t\pos)
+          
+          Define ray.Geometry::Ray_t
+          Define p.v3f32
+          Vector3::Set(p, deltax/width, deltay/height, 0)
+          Define view.m4f32 
+          Camera::GetViewTransform(*Me\camera, view)
+          Transform::SetTranslation(*Me\localT, p)
+          Transform::SetTranslation(*Me\globalT, p)
+          
+          Transform::UpdateMatrixFromSRT(*Me\localT)
+          Transform::UpdateMatrixFromSRT(*Me\globalT)
+        EndIf
+        
+    EndSelect
     
     If *Me\target <> #Null
       Protected pos.v3f32 
@@ -1271,7 +1266,7 @@ Module Handle
   ;-----------------------------------------------------------------------------
   Procedure PickTranslate(*Me.Handle_t)
     Protected enterDistance.f, exitDistance.f
-    
+  
     Protected sphere.Geometry::Sphere_t
     Vector3::SetFromOther(sphere\center, *Me\localT\t\pos)
     sphere\radius = 0.1
@@ -1310,6 +1305,7 @@ Module Handle
   ; On Event
   ;-----------------------------------------------------------------------------
   Procedure OnEvent(*Me.Handle_t, event.i,  *ev_data.Control::EventTypeDatas_t = #Null)
+    
     Select event
       Case #PB_EventType_LeftButtonDown
         *Me\down = #True
@@ -1410,14 +1406,19 @@ Module Handle
     Protected *Me.Handle_t = AllocateMemory(SizeOf(Handle_t))
     Object::INI( Handle )
     InitializeStructure(*Me,Handle_t)
-  
+    
+    Matrix4::SetIdentity(*Me\matrix)
+    Object3D::ResetGlobalKinematicState(*Me)
+    Object3D::ResetLocalKinematicState(*Me)
+    Object3D::ResetStaticKinematicState(*Me)
+
     *Me\posX = -1
     *Me\posY = -1
     *Me\visible = #False
     *Me\tool = Globals::#TOOL_Select
     *Me\targets = CArray::newCArrayPtr()
     *Me\radius = 5
-    
+        
     Protected m.m4f32
     Protected pos.v3f32
   
@@ -1446,7 +1447,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 534
-; FirstLine = 519
+; CursorPosition = 1413
+; FirstLine = 1383
 ; Folding = -------
 ; EnableXP

@@ -726,6 +726,8 @@ CompilerEndIf
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
+    Handle::Resize(*Me\handle,*camera)
+    
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -750,15 +752,15 @@ CompilerEndIf
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
       
-      Handle::Draw( *Me\handle,*ctx) 
+      Handle::Draw( *Me\handle,*Me\context) 
     EndIf
     
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 626
-; FirstLine = 608
+; CursorPosition = 728
+; FirstLine = 724
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

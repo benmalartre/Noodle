@@ -559,8 +559,8 @@ Module Object3D
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 157
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 217
+; FirstLine = 207
 ; Folding = -------
 ; EnableXP

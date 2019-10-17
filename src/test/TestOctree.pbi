@@ -193,7 +193,7 @@ Time::Init()
 Log::Init()
 
  *app = Application::New("Octree",width, height, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
-
+  Application::AddShortcuts(*app)
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
    *app\context = *viewport\context
@@ -254,7 +254,7 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 198
+; CursorPosition = 195
 ; FirstLine = 184
 ; Folding = -
 ; EnableThread

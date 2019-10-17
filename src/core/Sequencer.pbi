@@ -37,10 +37,14 @@ DeclareModule Sequencer
   Declare SetupTrack(*track.Track_t, blocks.i, rythm.i)
   Declare CleanTrack(*track.Track_t)
   
+  Declare NewNote(time.i, duration.i, frequency.f, intensity.f)
+  Declare DeleteNote(*note)
+  Declare AddNote(*block.Block_t, index.i, *note.Note_t)
+  
 EndDeclareModule
 
 ;========================================================================================
-; Sequencer Module Declaration
+; Sequencer Module Implementation
 ;========================================================================================
 Module Sequencer
   ;--------------------------------------------------------------------------------------
@@ -114,17 +118,52 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure CleanTrack(*track.Track_t)
     Define numBlocks = ArraySize(*track\blocks())
+    Define i, j
     For i=numBlocks-1 To 0
       Define *block.Block_t = *track\blocks(i)
       Define numCells = ArraySize(*block\cells())
+      For j=numCells-1 To 0
+        If *block\cells(j)
+          Define *note = RemoveNote(*block, j)
+          If *note : DeleteNote(*note, j)
+        EndIf
+      Next
     Next
     
   EndProcedure
   
+  Procedure NewNote(time.i, duration.i, frequency.f, intensity.f)
+    Define *note.Note_t = AllocateMemory(SizeOf(Note_t))
+    *note\time = time
+    *note\duration = duration
+    *note\frequency = frequency
+    *note\intensity = intensity
+    ProcedureReturn *note
+  EndProcedure
+  
+  Procedure DeleteNote(*note)
+    FreeMemory(*note)
+  EndProcedure
+  
+  Procedure AddNote(*block.Block_t, index.i, *note.Note_t)
+    *block\cells(index) = *note
+  EndProcedure
+  
+  Procedure RemoveNote(*block.Block_t, index.i)
+    Define *note.Note_t = *block\cells(index)\note
+    If *note 
+      *block\cells(index)\note = #Null
+      ProcedureReturn *note
+    Else
+      ProcedureReturn *note
+    EndIf
+  EndProcedure
+  
+  
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 18
-; FirstLine = 9
-; Folding = --
+; CursorPosition = 129
+; FirstLine = 117
+; Folding = ---
 ; EnableXP
