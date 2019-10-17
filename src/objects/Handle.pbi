@@ -602,12 +602,11 @@ Module Handle
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-;     glEnable(#GL_POINT_SMOOTH)
   
     glDisable(#GL_CULL_FACE)
     glDisable(#GL_DEPTH_TEST)
     glFrontFace(#GL_CCW)
-;     glLineWidth(2)
+    
     Protected pos.v3f32
     Protected d.f = *Me\distance/20
     
@@ -618,10 +617,6 @@ Module Handle
     Protected offset.m4f32
     Protected quat.q4f32
     
-    Define identity.Math::m4f32
-    Matrix4::SetIdentity(identity)
-    
-    Matrix4::Echo(*Me\globalT\m, "HANDLE GLOBAL MATRIX")
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*Me\globalT\m)
 
     If *Me\tool = Globals::#TOOL_TRANSFORM
@@ -901,6 +896,7 @@ Module Handle
     Camera::MousePositionToRayDirection(*Me\camera, mx, my, width, height, *Me\ray\direction)
     Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
     Define distance.f = #F32_MAX
+    Debug "LAUNCH AGAINST PLANE..."
     If Ray::PlaneIntersection(*Me\ray, *Me\plane, @distance)
       Define hitPoint.v3f32
       Ray::GetIntersectionPoint(*Me\ray, distance, hitPoint)
@@ -1447,7 +1443,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1413
-; FirstLine = 1383
+; CursorPosition = 603
+; FirstLine = 601
 ; Folding = -------
 ; EnableXP

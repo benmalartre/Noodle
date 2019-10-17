@@ -7,6 +7,9 @@ DeclareModule GLContext
   UseModule OpenGL
   #MAX_GL_CONTEXT = 5
   Global counter = 0
+  Global GL_LINE_WIDTH_MIN.f
+  Global GL_LINE_WIDTH_MAX.f
+  
   Global Dim shadernames.s(26)
   shadernames(0) = "selection"
   shadernames(1) = "simple"
@@ -54,6 +57,7 @@ DeclareModule GLContext
   Declare Delete(*Me.GLContext_t)
   Declare SetContext(*Me.GLContext_t)
   Declare FlipBuffer(*Me.GLContext_t)
+  Declare GetSupportedLineWidth(*Me.GLContext_t)
   
   Global *MAIN_GL_CTXT.GLContext_t
 EndDeclareModule
@@ -253,6 +257,17 @@ Module GLContext
   EndProcedure
   
   ;---------------------------------------------
+  ;  Get Supported Line Width
+  ;---------------------------------------------
+  Procedure GetSupportedLineWidth(*Me.GLCOntext_t)
+    Dim lineWidth.l(2)
+    glGetIntegerv(#GL_ALIASED_LINE_WIDTH_RANGE, @lineWidth(0))
+    GL_LINE_WIDTH_MIN = lineWidth(0)
+    GL_LINE_WIDTH_MAX = lineWidth(1)
+  EndProcedure
+  
+  
+  ;---------------------------------------------
   ;  Load Extensions and Build Shaders
   ;---------------------------------------------
   Procedure Setup(*Me.GLContext_t)
@@ -314,8 +329,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 288
-; FirstLine = 266
+; CursorPosition = 259
+; FirstLine = 229
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode
