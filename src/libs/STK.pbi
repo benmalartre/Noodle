@@ -185,6 +185,22 @@ DeclareModule STK
     #EFFECT_MODFREQUENCY      ; chorus/moog mod frequency
   EndEnumeration
   
+  Macro ReaderMode: l : EndMacro
+  Enumeration
+    #READER_FILEWVIN
+    #READER_FILELOOP
+  EndEnumeration
+  
+  Macro ReaderParam: l : EndMacro
+  Enumeration
+    #READER_RATE
+    #READER_FREQUENCY
+    #READER_ADDTIME
+    #READER_ADDPHASE 
+    #READER_ADDPHASEOFFSET
+  EndEnumeration
+  
+  
 
   Structure RtAudio           ; opaque cpp structure
   EndStructure
@@ -207,6 +223,9 @@ DeclareModule STK
   Structure Buffer
   EndStructure
   
+  Structure Reader
+  EndStructure
+  
   Structure Stream
   EndStructure
   
@@ -216,6 +235,7 @@ DeclareModule STK
   PrototypeC INIT()
   PrototypeC TERM(*DAC.RtAudio)
   PrototypeC GETDEVICES()
+  PrototypeC SETSAMPLERATE(rate.i)
   
   PrototypeC.b ISROOT(*node.Node)
   PrototypeC SETASROOT(*node.Node, isRoot.b)
@@ -224,7 +244,7 @@ DeclareModule STK
   PrototypeC SETNODEVOLUME(*node.Node, volume.f=1.0)
   PrototypeC NODERESET(*node.Node)
     
-  PrototypeC STREAMSETUP(*DAC.RtAudio)
+  PrototypeC STREAMSETUP(*DAC.RtAudio, numChannels.l)
   PrototypeC STREAMCLEAN(*stream.Stream)
   PrototypeC STREAMSTART(*stream.Stream)
   PrototypeC STREAMSTOP(*stream.Stream)
@@ -237,6 +257,7 @@ DeclareModule STK
   PrototypeC ADDEFFECT(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
   PrototypeC ADDFILTER(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
   PrototypeC ADDBUFFER(*stream.Stream, *source.Node, asRoot.b=#False)
+  PrototypeC ADDREADER(*stream.Stream, filename.p-utf8, asRoot.b=#False)
   
   PrototypeC SETGENERATORTYPE(*stream.Generator, type.l)
   PrototypeC SETGENERATORSCALAR(*stream.Generator, param.l, scalar.f)
@@ -254,6 +275,12 @@ DeclareModule STK
   
   PrototypeC SETEFFECTTYPE(*effect.Effect, type.l)
   PrototypeC SETEFFECTSCALAR(*effect.Effect, param.l, scalar.f)
+  
+  PrototypeC SETREADERMODE(*reader.Reader, mode.l)
+  PrototypeC SETREADERSCALAR(*reader.Reader, param.l, scalar.f)
+  PrototypeC SETREADERFILENAME(*reader.Reader, filename.p-utf8)
+  PrototypeC RESETREADER(*reader.Reader)
+  PrototypeC.f GETREADERFILESAMPLERATE(*reader.Reader)
   
   ;----------------------------------------------------------------------------------
   ; Import Functions
@@ -289,6 +316,8 @@ DeclareModule STK
     Global Init.INIT = GetFunction(STK_LIB, "STKInit")
     Global Term.TERM = GetFunction(STK_LIB, "STKTerm")
     Global GetDevices.GETDEVICES = GetFunction(STK_LIB, "STKGetDevices")
+    Global SetSampleRate.SETSAMPLERATE = GetFunction(STK_LIB, "STKSetSampleRate")
+    
     
     Global.b IsRoot.ISROOT = GetFunction(STK_LIB, "STKIsRoot")
     Global SetAsRoot.SETASROOT = GetFunction(STK_LIB, "STKSetAsRoot")
@@ -309,6 +338,7 @@ DeclareModule STK
     Global AddEffect.ADDEFFECT = GetFunction(STK_LIB, "STKAddEffect")
     Global AddFilter.ADDFILTER = GetFunction(STK_LIB, "STKAddFilter")
     Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKAddBuffer")
+    Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKAddReader")
     
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
@@ -326,7 +356,12 @@ DeclareModule STK
     
     Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
     Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
-        
+    
+    Global SetReaderMode.SETREADERMODE = GetFunction(STK_LIB, "STKSetReaderMode")
+    Global SetReaderScalar.SETREADERSCALAR = GetFunction(STK_LIB, "STKSetReaderScalar")
+    Global SetReaderFilename.SETREADERFILENAME = GetFunction(STK_LIB, "STKSetReaderFilename")
+    Global ResetReader.RESETREADER = GetFunction(STK_LIB, "STKResetReader")
+    Global GetReaderFileSampleRate.GETREADERFILESAMPLERATE = GetFunction(STK_LIB, "STKGetReaderFileSampleRate")
   Else
     MessageRequester("STK Error","Can't Find STK Library!!")
   EndIf 
@@ -452,7 +487,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 54
+; CursorPosition = 278
+; FirstLine = 270
 ; Folding = ---
 ; EnableXP

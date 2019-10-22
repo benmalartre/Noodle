@@ -67,7 +67,6 @@ Define startT1.d = Time::Get()
 ; Next
 Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *elements, *geom\nbtriangles, box, *hits1)
 Define elapsedT1.d = Time::Get() - startT1
-
 ; THREADED
 Define numThreads.i = 4
 Dim threadDatas.threadData_t(numThreads)
@@ -78,7 +77,7 @@ Define numTriPerThread = Round(numTris / numThreads, #PB_Round_Down)
 Define startT2.d = Time::Get()
 For i=0 To ArraySize(threadDatas())-1
   With threadDatas(i)
-    \box = @box
+    \box = box
     \threadID = i
     \count = numTriPerThread
     \hits = *hits2 + i * numTriPerThread
@@ -107,10 +106,8 @@ MessageRequester("THREADED",
 
 
 
-
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 24
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 94
+; FirstLine = 63
 ; Folding = -
 ; EnableXP

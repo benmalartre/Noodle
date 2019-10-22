@@ -62,7 +62,7 @@ EndProcedure
 
 Procedure Update(*app.Application::Application_t, event.i)
   
-;   UpdateOnTime()
+  UpdateOnTime()
   
     If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
       Select EventType()
@@ -102,7 +102,7 @@ EndProcedure
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   
 STK::Initialize()
-*stream.STK::Stream = STK::StreamSetup(STK::*DAC)
+*stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
 STK::SetNodeVolume(*stream, 0.5)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
@@ -119,6 +119,7 @@ Define base_frequency = 128
 
 For i=0 To numVoices-1
   Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINGWAVE, base_frequency, #True)
+  
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
 ;     STK::SetNodeVolume(*wave,0.666)
@@ -130,9 +131,9 @@ For i=0 To numVoices-1
 ;   STK::SetNodeVolume(*noise, 12)
 ;   STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, 7)
 
-    Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency,64, 1024, #Null) 
-    ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-    Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *wave)
+;     Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency,64, 1024, #Null) 
+;     ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
+;     Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *wave)
     base_frequency * 2
 Next
 
@@ -203,7 +204,7 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 120
-; FirstLine = 99
+; CursorPosition = 135
+; FirstLine = 110
 ; Folding = -
 ; EnableXP
