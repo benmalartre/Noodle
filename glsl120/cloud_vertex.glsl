@@ -68,4 +68,5 @@ void main(){
 	vec3 tmp = vec3(0,0,1);
 	mat4 rot = directionFromTwoVectors(normal,tmp);
 	gl_Position = projection * view * model * vec4(position,1.0);
+	gl_PointSize = 12.0;
 }

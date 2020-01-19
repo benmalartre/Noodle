@@ -62,5 +62,7 @@ void main(){
 	vec4 rshape = vec4(position,1.0);
 	gl_Position = projection * view * model * rshape;
 	*/
+	
 	gl_Position = projection * view * model * position;
+	gl_PointSize = 6.0f;
 }

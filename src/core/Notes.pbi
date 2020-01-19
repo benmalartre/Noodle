@@ -169,14 +169,33 @@
     PeekF(Notes::?NOTES + (_octave % Notes::#NUM_OCTAVES * Notes::#NUM_NOTES + _note) * 4)
   EndMacro
   
+  Declare.f Closest(frequency.f)
+  
+  
 EndDeclareModule
 
 Module Notes
-  
+  Procedure.f Closest(frequency.f)
+    Define delta.f
+    Define minDelta.f = Math::#F32_MAX
+    Define i, j
+    Define result
+    For i=0 To Notes::#NUM_OCTAVES -1
+      For j=0 To Notes::#NUM_NOTES - 1
+        delta = Abs(frequency - Notes::NoteAt(i, j))
+        If delta > minDelta
+          Break
+        ElseIf delta <= minDelta
+          minDelta = delta
+          result = Notes::NoteAt(i, j)
+        EndIf
+      Next
+    Next
+    ProcedureReturn result
+  EndProcedure
 EndModule
-
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 168
-; FirstLine = 144
+; CursorPosition = 191
+; FirstLine = 162
 ; Folding = -
 ; EnableXP

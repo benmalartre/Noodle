@@ -44,6 +44,6 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 STK::StreamStop(*stream)
 STK::StreamClean(*stream)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 7
+; CursorPosition = 28
+; FirstLine = 12
 ; EnableXP

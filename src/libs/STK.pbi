@@ -61,9 +61,9 @@ DeclareModule STK
 	  #GENERATOR_BLITSAW
 	  #GENERATOR_BLITSQUARE
 	  #GENERATOR_SINEWAVE
-	  #GENERATOR_SINGWAVE
-	  #GENERATOR_MODULATE
-    #GENERATOR_GRANULATE
+; 	  #GENERATOR_SINGWAVE
+; 	  #GENERATOR_MODULATE
+;     #GENERATOR_GRANULATE
   EndEnumeration
 	
 	Dim generator_names.s(9)
@@ -97,8 +97,8 @@ DeclareModule STK
 	EndEnumeration
   
   Dim envelope_names.s(2)
-  envelope_names(0)  = "ENVELOPE_GENERATOR"
-  envelope_names(1)  = "ADSR_GENERATOR"
+  envelope_names(0)  = "ENVELOPE"
+  envelope_names(1)  = "ADSR"
   
   Enumeration
     #ENV_ATTACK_RATE
@@ -166,7 +166,7 @@ DeclareModule STK
   effect_types(8)  = "CHORUS"
   effect_types(9)  = "MOOG"
   
-  Macro Attributes : l : EndMacro
+  Macro EffectParam : l : EndMacro
   Enumeration
     #EFFECT_RATE              ; envelope rate
     #EFFECT_TIME              ; envelope time
@@ -185,11 +185,32 @@ DeclareModule STK
     #EFFECT_MODFREQUENCY      ; chorus/moog mod frequency
   EndEnumeration
   
+  Dim effect_params.s(15)
+  effect_params(0)  = "RATE"
+  effect_params(1)  = "TIME"
+  effect_params(2)  = "TARGET" 
+  effect_params(3)  = "VALUE"
+  effect_params(4)  = "T60"
+  effect_params(5)  = "MIX" 
+  effect_params(6)  = "ROOMSIZE"
+  effect_params(7)  = "DAMPING"
+  effect_params(8)  = "WIDTH"
+  effect_params(9)  = "MODE"
+  effect_params(10)  = "DELAY"
+  effect_params(11)  = "MAXIMUMDELAY"
+  effect_params(12)  = "SHIFT"
+  effect_params(13)  = "MODDEPTH"
+  effect_params(14)  = "MODFREQUENCY"
+  
   Macro ReaderMode: l : EndMacro
   Enumeration
     #READER_FILEWVIN
     #READER_FILELOOP
   EndEnumeration
+  
+  Dim reader_modes.s(2)
+  reader_modes(0)  = "FILEWVIN"
+  reader_modes(1)  = "FILELOOP"
   
   Macro ReaderParam: l : EndMacro
   Enumeration
@@ -199,6 +220,23 @@ DeclareModule STK
     #READER_ADDPHASE 
     #READER_ADDPHASEOFFSET
   EndEnumeration
+  
+  Dim reader_params.s(5)
+  reader_params(0)  = "RATE"
+  reader_params(1)  = "FREQUENCY"
+  reader_params(2)  = "ADDTIME"
+  reader_params(3)  = "ADDPHASE"
+  reader_params(4)  = "ADDPHASEOFFSET"
+  
+  Macro WriterFormat: l : EndMacro
+  Enumeration
+    #WRITER_FORMAT_RAW
+    #WRITER_FORMAT_WAV
+    #WRITER_FORMAT_SND
+    #WRITER_FORMAT_AIFF
+    #WRITER_FORMAT_MAT 
+  EndEnumeration
+  
   
   
 
@@ -258,6 +296,8 @@ DeclareModule STK
   PrototypeC ADDFILTER(*stream.Stream, type.l, *source.Node, asRoot.b=#False)
   PrototypeC ADDBUFFER(*stream.Stream, *source.Node, asRoot.b=#False)
   PrototypeC ADDREADER(*stream.Stream, filename.p-utf8, asRoot.b=#False)
+  
+  PrototypeC REMOVENODE(*stream.Stream, *node.Node)
   
   PrototypeC SETGENERATORTYPE(*stream.Generator, type.l)
   PrototypeC SETGENERATORSCALAR(*stream.Generator, param.l, scalar.f)
@@ -339,6 +379,8 @@ DeclareModule STK
     Global AddFilter.ADDFILTER = GetFunction(STK_LIB, "STKAddFilter")
     Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKAddBuffer")
     Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKAddReader")
+    
+    Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKRemoveNode")
     
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
@@ -487,7 +529,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 278
-; FirstLine = 270
-; Folding = ---
+; CursorPosition = 383
+; FirstLine = 369
+; Folding = ----
 ; EnableXP

@@ -25,10 +25,9 @@ Global NewList *waves.STK::Generator()
 ; Slider Frequency Callback
 ;-----------------------------------------------------
 Procedure OnFrequencyChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Generator)
-  Debug Notes::NoteAt(Random(8), Random(12))
-  STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, Notes::NoteAt(Random(8), Random(12)))
+  STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
 EndProcedure
-Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#FLOAT)
+Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#PTR)
 
 ; Slider Octave Callback
 ;-----------------------------------------------------
@@ -58,11 +57,9 @@ Procedure UpdateOnTime()
   counter +1
 EndProcedure
 
-
-
 Procedure Update(*app.Application::Application_t, event.i)
   
-  UpdateOnTime()
+;   UpdateOnTime()
   
     If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
       Select EventType()
@@ -118,7 +115,7 @@ Define i
 Define base_frequency = 128
 
 For i=0 To numVoices-1
-  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINGWAVE, base_frequency, #True)
+  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, base_frequency, #True)
   
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
@@ -131,9 +128,9 @@ For i=0 To numVoices-1
 ;   STK::SetNodeVolume(*noise, 12)
 ;   STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, 7)
 
-;     Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency,64, 1024, #Null) 
-;     ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-;     Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *wave)
+    Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), base_frequency,64, 1024, #Null) 
+    ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
+    Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *waves())
     base_frequency * 2
 Next
 
@@ -145,6 +142,9 @@ CloseGadgetList()
 STK::StreamStart(*stream)
 running = #True
 Application::Loop(*app, @Update())
+
+STK::RemoveNode(*stream, *generator)
+STK::RemoveNode(*stream, *generator2)
 
 STK::StreamClean(*stream)
 STK::Terminate()
@@ -204,7 +204,7 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 135
-; FirstLine = 110
+; CursorPosition = 117
+; FirstLine = 109
 ; Folding = -
 ; EnableXP

@@ -715,9 +715,6 @@ CompilerEndIf
             If event : Window::OnEvent(*Me\window,event) : EndIf
             *callback(*Me, event)
         EndSelect
-        
-        
-        
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
@@ -759,8 +756,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 728
-; FirstLine = 724
+; CursorPosition = 716
+; FirstLine = 703
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
