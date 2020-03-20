@@ -183,7 +183,6 @@ Procedure Update(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
 
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 
@@ -191,8 +190,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 144
-; FirstLine = 136
+; CursorPosition = 185
+; FirstLine = 158
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe
