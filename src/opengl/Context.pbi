@@ -251,7 +251,6 @@ Module GLContext
     *Me\layers() = *layer
   EndProcedure
   
-  
   ;---------------------------------------------
   ;  Resize Context
   ;---------------------------------------------
@@ -260,6 +259,9 @@ Module GLContext
     *Me\height = height
     glBindFramebuffer(#GL_FRAMEBUFFER, 0)
     glViewport(0,0, *Me\width, *Me\height)
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      CocoaMessage(0,*Me\ID, "update")
+    CompilerEndIf
     ForEach *Me\layers()
       Protected *layer.Layer::Layer_t = *me\layers()
       If Not *layer\fixed
@@ -291,8 +293,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 115
-; FirstLine = 107
-; Folding = ---
+; CursorPosition = 252
+; FirstLine = 242
+; Folding = ----
 ; EnableXP
 ; EnableUnicode

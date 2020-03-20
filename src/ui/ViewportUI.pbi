@@ -702,7 +702,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 182
-; FirstLine = 164
+; CursorPosition = 566
+; FirstLine = 563
 ; Folding = ----
 ; EnableXP
