@@ -27,6 +27,7 @@ DeclareModule Framebuffer
     filter.i
     attachment.GLenum
     textureID.i
+    wrap.i
   EndStructure
   
   Structure FrameBuffer_t
@@ -177,6 +178,7 @@ Module Framebuffer
 
     *tbo\iformat = iformat
     *tbo\filter = filter
+    *tbo\wrap = wrap
     
     If iformat = #GL_RGBA16F Or iformat = #GL_RGBA32F
       *tbo\format = #GL_RGBA
@@ -232,8 +234,8 @@ Module Framebuffer
 
     EndIf
     
-    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, wrap);
-    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, wrap)
+    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, *tbo\wrap);
+    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, *tbo\wrap)
        
     ReDim *Me\attachments(id+1)
     *Me\attachments(id) = *tbo\attachment
@@ -336,32 +338,53 @@ Module Framebuffer
   Procedure.i Resize(*buffer.FrameBuffer_t,width.i,height.i)
     *buffer\width = width
     *buffer\height = height
-    
     Protected i
     Protected *rbo.RenderBuffer_t
     
+    glBindFramebuffer(#GL_FRAMEBUFFER, 0)
+    glDeleteFramebuffers(1, @*buffer\frame_id)
+    glGenFramebuffers(1, @*buffer\frame_id)
     glBindFramebuffer(#GL_FRAMEBUFFER,*buffer\frame_id)
+    glViewport(0,0, *buffer\width, *buffer\height)
+    
     For i=0 To ArraySize( *buffer\rbos())-1
       *rbo = *buffer\rbos(i)
-      
+      glDeleteRenderbuffers(1, @*rbo\bufferID)
+      glGenRenderbuffers(1, @*rbo\bufferID)
       glBindRenderbuffer(#GL_RENDERBUFFER,*rbo\bufferID)
       glRenderbufferStorage(#GL_RENDERBUFFER,*rbo\format,*buffer\width,*buffer\height)
+      glFramebufferRenderbuffer(#GL_FRAMEBUFFER,*rbo\attachment,#GL_RENDERBUFFER,*rbo\bufferID)
     Next
     
     Protected *tbo.TextureBuffer_t
     For i=0 To ArraySize( *buffer\tbos())-1
       *tbo = *buffer\tbos(i)
+      glDeleteTextures(1, @*tbo\textureID)
+      glGenTextures(1, @*tbo\textureID)
       glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)
-      glTexImage2D( #GL_TEXTURE_2D, 0, *tbo\iformat, width, height, 0, *tbo\format, *tbo\type, #Null )
+      glTexImage2D( #GL_TEXTURE_2D, 0, *tbo\iformat, *buffer\width, *buffer\height, 0, *tbo\format, *tbo\type, #Null )
+      
+      glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MAG_FILTER,*tbo\filter)
+      glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MIN_FILTER,*tbo\filter)
+  
+      If *tbo\format = #GL_DEPTH_STENCIL
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_DEPTH_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_STENCIL_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
+      Else
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D,*tbo\textureID,0)
+        ;glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID,0)
+  
+      EndIf
+      
+      glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, *tbo\wrap)
+      glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, *tbo\wrap)
     Next
-
   EndProcedure
   
   ;------------------------------------------------------------------
   ; Unbind
   ;------------------------------------------------------------------
   Procedure Unbind(*Me.Framebuffer_t)
-
     glBindFramebuffer(#GL_FRAMEBUFFER,0)
   EndProcedure
   
@@ -475,8 +498,6 @@ Module Framebuffer
       glClearColor(0.25,0.25,0.25,1.0)
       glClear(#GL_COLOR_BUFFER_BIT)
       
-;       GLint fbWidth = dims[2];
-;       GLint fbHeight = dims[3];
       Protected bufferX = PeekL(*mem)
       Protected bufferY = PeekL(*mem+4)
       Protected bufferWidth = PeekL(*mem+8)
@@ -487,9 +508,7 @@ Module Framebuffer
       nx = (bufferWidth-*Me\width)*0.5
       nh = *Me\height
       ny = (bufferHeight-*Me\height)*0.5
-;       
-;       glGetRenderbufferParameteriv(#GL_RENDERBUFFER, #GL_RENDERBUFFER_WIDTH, @bufferWidth);
-;       glGetRenderbufferParameteriv(#GL_RENDERBUFFER, #GL_RENDERBUFFER_HEIGHT, @bufferHeight);
+
       glBlitFramebuffer(0,0,*Me\width,*Me\height,0,0,bufferWidth,bufferHeight,mask,filter)
       FreeMemory(*mem)
     EndIf
@@ -585,9 +604,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 571
-; FirstLine = 524
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 348
+; FirstLine = 328
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

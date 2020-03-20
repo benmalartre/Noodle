@@ -98,12 +98,14 @@ Module ViewportUI
         
     ; setup delegate gl context
     *Me\camera = *camera
-    *Me\context = GLContext::New(GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, GLContext::*MAIN_GL_CTXT)
+    *Me\context = GLContext::New(GLContext::*MAIN_GL_CTXT\width, 
+                                 GLContext::*MAIN_GL_CTXT\height, 
+                                 GLContext::*MAIN_GL_CTXT)
+        
     *Me\layer = LayerBitmap::New(*Me\sizX,  *Me\sizY, *Me\context, *Me\camera)
     LayerBitmap::Setup(*Me\layer)
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
-    
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
       CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
         
@@ -174,13 +176,11 @@ Module ViewportUI
         *Me\posX = *top\x
         *Me\posY = *top\y
         
-        ResizeGadget(*Me\gadgetID,0,0,width,height)
-        ResizeGadget(*Me\container,*top\x,*top\y,width,height)
-
-
+        ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
+        ResizeGadget(*Me\container,*top\x,*top\y,*Me\sizX,*Me\sizY)
+        
         If *Me\context  
-          *Me\context\width = *Me\sizX
-          *Me\context\height = *Me\sizY
+          GLContext::Resize(*Me\context, *Me\sizX, *Me\sizY)
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
         
@@ -702,7 +702,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 285
-; FirstLine = 262
+; CursorPosition = 182
+; FirstLine = 164
 ; Folding = ----
 ; EnableXP

@@ -142,9 +142,9 @@ EndProcedure
 
 Global *cloud.PointCloud::PointCloud_t
 Define scz = 100
-Global nx = 100
-Global ny = 5
-Global nz = 5
+Global nx = 32
+Global ny = 16
+Global nz = 16
 Define kappa = 1
 Define dx.f = #PI / scz
 Define dt.f = Pow(dx, 2)/(8*kappa)
@@ -315,7 +315,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 101
-; FirstLine = 240
+; CursorPosition = 146
+; FirstLine = 125
 ; Folding = ---
 ; EnableXP

@@ -1,8 +1,4 @@
-XIncludeFile "../core/Math.pbi"
-
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile "../opengl/Context.pbi"
-XIncludeFile "../opengl/ScreenQuad.pbi"
+XIncludeFile "Types.pbi"
 
 XIncludeFile "../objects/Object3D.pbi"
 XIncludeFile "../objects/Camera.pbi"
@@ -13,111 +9,9 @@ XIncludeFile "../objects/InstanceCloud.pbi"
 XIncludeFile "../objects/Drawer.pbi"
 XIncludeFile "../objects/Scene.pbi"
 
-
 ; ============================================================================
-; Layer Base Module Declaration
+;  GLLayer Module Implementation
 ; ============================================================================
-DeclareModule Layer
-  UseModule Math
-  ;---------------------------------------------------
-  ; Structure
-  ;---------------------------------------------------
-  Structure Layer_t Extends Object3D::Object3D_t
-    *pov.Object3D::Object3D_t
-    *viewport.Viewport_t
-    *buffer.Framebuffer::Framebuffer_t
-    *quad.ScreenQuad::ScreenQuad_t
-    width.i
-    height.i
-  
-    *context.GLContext::GLContext_t
-    color.Math::c4f32
-    background_color.Math::c4f32
-    active.b
-    fixed.b
-    mask.l
-    
-    *items.CArray::CArrayPtr
-    *dependencies.CArray::CArrayPtr
-    image.i
-  EndStructure
-  
-  ;---------------------------------------------------
-  ; Interface
-  ;---------------------------------------------------
-  Interface ILayer
-    Delete()
-    Setup(*ctx.GLContext::GLContext_t)
-    Update()
-    Clean(*ctx.GLContext::GLContext_t)
-    Draw(*ctx.GLContext::GLContext_t)
-  EndInterface
-  
-  Enumeration
-    #LAYER_DEFAULT
-    #LAYER_GBUFFER
-    #LAYER_SELECTION
-    #LAYER_SSAO
-    #LAYER_STROKE
-    #LAYER_DEPTH
-    #LAYER_COMPONENT
-    
-  EndEnumeration
-  
-  ;---------------------------------------------------
-  ; Per Viewport Layer Manager
-  ;---------------------------------------------------
-  Structure LayerManager_t Extends Object::Object_t
-    *layers.CArrayPtr
-    *current.Layer
-  EndStructure
-  
-  Declare SetPOV(*layer.Layer_t,*pov.Object3D::Object3D_t)
-  Declare SetColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-  Declare SetBackgroundColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-  Declare IsFixed(*layer.Layer_t)
-  Declare GetTree(*layer.Layer_t)
-  Declare SetShader(*layer.Layer_t,*shader.Program::Program_t)
-  
-  Declare Clear(*layer.Layer_t)
-  Declare Resize(*layer.Layer_t,width,height.i)
-  Declare AddScreenSpaceQuad(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-  Declare DrawChildren(*Me.Layer_t,*obj.Object3D::Object3D_t)
-  Declare Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-  Declare Delete()
-  
-  Declare GetViewMatrix(*layer.Layer_t)
-  Declare GetProjectionMatrix(*layer.Layer_t)
-  Declare WriteImage(*layer.Layer_t,path.s,format)
-  Declare WriteFramebuffer(*layer.Layer_t,path.s,format.i)
-  
-  Declare DrawDrawers(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader.i)
-  Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
-  Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
-  
-  Declare AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
-  Declare RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
-  
-  Declare GetImage(*layer.Layer::Layer_t, path.s)
-   ; ============================================================================
-  ;  MACROS ( Layer )
-  ; ============================================================================
-
-  Macro DAT()
-    Data.i @Delete()
-    Data.i @Setup()
-    Data.i @Update()
-    Data.i @Clean()
-    Data.i @Draw()
-  EndMacro
-  
-  Global CLASS.Class::Class_t
-
-EndDeclareModule
-
 Module Layer
   UseModule OpenGL
   UseModule OpenGLExt
@@ -185,9 +79,6 @@ Module Layer
   Procedure Resize(*layer.Layer_t,width,height.i)
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::Resize(*buffer,width,height)
-
-    glViewport(0,0,width,height)
-    
     *layer\width = width
     *layer\height = height
        
@@ -725,8 +616,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 496
-; FirstLine = 603
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 80
+; FirstLine = 70
 ; Folding = -----
 ; EnableXP

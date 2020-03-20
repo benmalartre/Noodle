@@ -3,43 +3,57 @@
 Define.s Options
 ;Define File$="pbPDF-Acroforms.pdf"
 
-Define File$ = "/Users/benmalartre/Documents/Documents/Fin_Bail.pdf"
+Define File$ = "/Users/benmalartre/Documents/Documents/JCube-Invoice.pdf"
 #PDF = 1
 
+Define header.s
+header + "INVOICE"+Chr(10)
+header + "==========================================="+Chr(10)+Chr(10)
+
+header + "FROM:"+Chr(10)
+header + "  Benjamin-Quentin Jonas Malartre"+Chr(10)
+header + "  Address: 19 Rue Etienne Dolet"+Chr(10)
+header + "  75020 Paris, France"+Chr(10)+Chr(10)
+
+header + "To:"+Chr(10)
+header + "  J Cube Inc"+Chr(10)
+header + "  Address: 10F Sangyo Boeki Center"+Chr(10)
+header + "  2 Yamashita-cho Naka-ku, Yokohama"+Chr(10)
+header + "  Kanagawa 231-0023, Japan"+Chr(10)+Chr(10)
+
+
+
 Define body.s
-body = "    Je, soussigné Benjamin-Quentin Jonas Malartre,"+Chr(10)
-body + "atteste avoir mis fin au bail de la location du meublé de Claire Nazikian, situé au 19 rue Etienne Dolet 75020."+Chr(10)
-body + "Nous avons procédé a l'état des lieux et à la restitution des clefs le Dimanche 13 Octobre."+Chr(10)
-body + "Pour justifier et faire valoir ce que de droit."+Chr(10)
+body + "==========================================="+Chr(10)+Chr(10)
+body + "DESCRIPTION:"+Chr(10)
+body + "  Consulting Work for V-Ray Procedural for Multiverse | USD"+Chr(10)+Chr(10)
 
+body + "  FEE AMOUNT: 240.000 JPY"+Chr(10)
+body + "  JAPAN SALES TAX: 0 JPY"+Chr(10)
+body + "  TOTAL: 240.000 JPY"+Chr(10)+Chr(10)
 
+body + "BANK DETAIL:"+Chr(10)
+body + "  Agency: Société Générale"+Chr(10)
+body + "  Address: 40 Avenue des États Unis 63000 Clermont-Ferrand"+Chr(10)
+body + "  Beneficiary: Benjamin-Quentin Jonas Malartre"+Chr(10)
+body + "  IBAN: FR76 3000 3006 5900 0518 3221 148"+Chr(10)
+body + "  BIC-ADDRESS SWIFT: SOGEFRPP"+Chr(10)+Chr(10)
+
+body + "==========================================="+Chr(10)+Chr(10)
 signature.s = "/Users/benmalartre/Documents/Documents/signature.jpg"
 If PDF::Create(#PDF)
   
   Define link = PDF::AddLinkURL(#PDF, "http://benmalartre.free.fr/")
   PDF::AddPage(#PDF)
   
-  PDF::SetFont(#PDF, "Arial", "B", 10)
+  PDF::SetFont(#PDF, "Arial", "", 12)
+  PDF::MultiCell(#PDF, header, 120, 6, #False, PDF::#LeftAlign, #False)
   PDF::Ln(#PDF)
-  PDF::Cell(#PDF, "Benjamin-Quentin Jonas Malartre", 80, 6, #False, PDF::#NextLine, PDF::#LeftAlign)
-  PDF::Cell(#PDF, "3 Rue Sous-les-Orgues", 80, 6, #False, PDF::#NextLine, PDF::#LeftAlign)
-  PDF::Cell(#PDF, "63490 Usson", 80, 6, #False, PDF::#NextLine, PDF::#LeftAlign)
-  PDF::Cell(#PDF, "Doha le 19/10/2019", 80, 10, #False, PDF::#NextLine, PDF::#LeftAlign)
-  PDF::Ln(#PDF)
-  PDF::Ln(#PDF)
-  
-  PDF::SetFont(#PDF, "Arial", "B", 18) 
-  PDF::Cell(#PDF, "Fin de bail de location d'un meublé", #PB_Default, #PB_Default, #False, PDF::#NextLine, PDF::#CenterAlign)
+  PDF::MultiCell(#PDF, body, 240, 6, #False, PDF::#LeftAlign, #False)
   
   PDF::Ln(#PDF)
   PDF::Ln(#PDF)
-  
-  PDF::SetFont(#PDF, "Arial", "", 11)
-  PDF::MultiCell(#PDF, body, 240, 10, #False, PDF::#LeftAlign, #False)
-  
-  PDF::Ln(#PDF)
-  PDF::Ln(#PDF)
-  
+  ;header = "DATE: March 11, 2020"+Chr(10)+Chr(10)
   PDF::Image(#PDF, signature, 128)
 ;   PDF::Image(#PDF, signature, 10,  10, 30, 0, link)
   
@@ -70,6 +84,6 @@ RunProgram(File$)
 ; 
 ; RunProgram(File$)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 40
-; FirstLine = 15
+; CursorPosition = 37
+; FirstLine = 11
 ; EnableXP

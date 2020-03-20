@@ -494,9 +494,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 241
-; FirstLine = 231
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 93
+; FirstLine = 80
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

@@ -1,70 +1,9 @@
-﻿XIncludeFile "../libs/FTGL.pbi"
+﻿XIncludeFile "Types.pbi"
+XIncludeFile "Layer.pbi"
 
 ; ============================================================================
-;  GLContext Object ( CGLContext)
+;  GLContext Module Implementation
 ; ============================================================================
-DeclareModule GLContext
-  UseModule OpenGL
-  #MAX_GL_CONTEXT = 5
-  Global counter = 0
-  Global GL_LINE_WIDTH_MIN.f
-  Global GL_LINE_WIDTH_MAX.f
-  
-  Global Dim shadernames.s(26)
-  shadernames(0) = "selection"
-  shadernames(1) = "simple"
-  shadernames(2) = "wireframe"
-  shadernames(3) = "polymesh"
-  shadernames(4) = "cloud"
-  shadernames(5) = "instances"
-  shadernames(6) = "cubemap"
-  shadernames(7) = "defered"
-  shadernames(8) = "gbuffer"
-  shadernames(9) = "gbufferic"
-  shadernames(10) = "reflection"
-  shadernames(11) = "ssao"
-  shadernames(12) = "ssao_blur"
-  shadernames(13) = "shadowmap"
-  shadernames(14) = "shadowmapic"
-  shadernames(15) = "shadowsimple"
-  shadernames(16) = "shadowdefered"
-  shadernames(17) = "shadowmapCSM"
-  shadernames(18) = "shadowCSM"
-  shadernames(19) = "shadowCSMdefered"
-  shadernames(20) = "simple2D"
-  shadernames(21) = "bitmap"
-  shadernames(22) = "curve"
-  shadernames(23) = "drawer"
-  shadernames(24) = "stroke2D"
-  shadernames(25) = "normal"
-
-  Structure GLContext_t
-    *window.GLFWwindow      ;main window holding shared gl context
-    *writer.FTGL::FTGL_Drawer
-    width.d
-    height.d
-    useGLFW.b
-    ID.i
-    focus.b
-    shader.GLuint
-    
-    Map *shaders.Program::Program_t()
-  EndStructure
-  
-  Declare New(width.i, height.i, *context=#Null)
-  Declare Setup(*Me.GLContext_t)
-  Declare Copy(*Me.GLContext_t, *shared.GLContext_t)
-  Declare Delete(*Me.GLContext_t)
-  Declare SetContext(*Me.GLContext_t)
-  Declare FlipBuffer(*Me.GLContext_t)
-  Declare GetSupportedLineWidth(*Me.GLContext_t)
-  
-  Global *MAIN_GL_CTXT.GLContext_t
-EndDeclareModule
-
-; ----------------------------------------------------------------------------
-;  Implementation
-; ----------------------------------------------------------------------------
 Module GLContext
   UseModule OpenGL
   UseModule OpenGLExt
@@ -174,10 +113,7 @@ Module GLContext
           CocoaMessage( 0, ctx, "makeCurrentContext" )
           ; Swap Buffers
           CocoaMessage( 0, ctx, "flushBuffer" )
-          
-          ; Associate Context With OpenGLGadget NSView
-  ;           *Me\gadgetID = CanvasGadget(#PB_Any,0,0,0,0)
-  ;           CocoaMessage( 0, ctx, "setView:", GadgetID(*Me\gadgetID) )
+
           *Me\ID = ctx
         CompilerElse
           *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
@@ -308,6 +244,32 @@ Module GLContext
   EndProcedure
   
   ;---------------------------------------------
+  ;  Add Layer
+  ;---------------------------------------------
+  Procedure AddLayer(*Me.GLContext_t, *layer)
+    AddElement(*Me\layers())
+    *Me\layers() = *layer
+  EndProcedure
+  
+  
+  ;---------------------------------------------
+  ;  Resize Context
+  ;---------------------------------------------
+  Procedure Resize(*Me.GLContext_t, width.i, height.i)
+    *Me\width = width
+    *Me\height = height
+    glBindFramebuffer(#GL_FRAMEBUFFER, 0)
+    glViewport(0,0, *Me\width, *Me\height)
+    ForEach *Me\layers()
+      Protected *layer.Layer::Layer_t = *me\layers()
+      If Not *layer\fixed
+        Layer::Resize(*layer, width, height)
+      EndIf
+    Next
+      
+  EndProcedure
+  
+  ;---------------------------------------------
   ;  Flip Buffers
   ;---------------------------------------------
   Procedure FlipBuffer(*Me.GLContext_t)
@@ -329,8 +291,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 259
-; FirstLine = 229
+; CursorPosition = 115
+; FirstLine = 107
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

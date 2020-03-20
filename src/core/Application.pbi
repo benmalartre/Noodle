@@ -25,6 +25,7 @@ CompilerEndIf
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../libs/FTGL.pbi"
 
+XIncludeFile "../opengl/Types.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
 XIncludeFile "../opengl/Texture.pbi"
 XIncludeFile "../opengl/ScreenQuad.pbi"
@@ -55,7 +56,7 @@ XIncludeFile "../objects/Octree.pbi"
 ; ============================================================================
 ;   LAYER MODULES
 ; ============================================================================
-XIncludeFile "../layers/Layer.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
 XIncludeFile "../layers/Bitmap.pbi"
 XIncludeFile "../layers/Selection.pbi"
@@ -756,8 +757,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 716
-; FirstLine = 703
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

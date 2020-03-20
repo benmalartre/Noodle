@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  ShadowMap Layer Module Declaration
 ; ============================================================================
-XIncludeFile "Layer.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 DeclareModule LayerShadowMap
   UseModule Math
   ;---------------------------------------------------
@@ -199,8 +199,7 @@ Module LayerShadowMap
   
   Class::DEF(LayerShadowMap)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 122
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP
