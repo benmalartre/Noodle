@@ -243,7 +243,7 @@ Module Camera
     delta\x = -deltax/(width/2)*d
     delta\y = deltay/(height/2)*d
     delta\z = 0
-    
+  
     Protected q.q4f32
     Matrix4::GetQuaternion(*Me\view,q)
     Vector3::MulByQuaternionInPlace(delta,q)
@@ -495,8 +495,8 @@ Module Camera
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 93
-; FirstLine = 80
+; CursorPosition = 245
+; FirstLine = 236
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier
