@@ -54,8 +54,8 @@ DeclareModule Transform2D
   Declare TransformInPlace(*p.Vector_t, *m.Matrix_t)
   Declare Initialize(*t.Transform_t)
   Declare Compute(*t.Transform_t, *p.Transform_t=#Null)
-  Declare MatrixToSRT(*m.Matrix_t, *t.Transform_t)
-  Declare SRTToMatrix(*t.Transform_t, *m.Matrix_t)
+;   Declare MatrixToSRT(*m.Matrix_t, *t.Transform_t)
+;   Declare SRTToMatrix(*t.Transform_t, *m.Matrix_t)
   
   ; ------------------------------------------------------------------
   ;   INDENTITY MATRIX
@@ -1922,7 +1922,7 @@ Module Vector
   ; ----------------------------------------------------------------------------
   ;   INVERSE TRANSFORM
   ; ----------------------------------------------------------------------------
-  Procedure InverseTransform(*T.Transform2D::Matrix_t)
+  Procedure InverseTransform(*T.Transform2D::Transform_t)
     ScaleCoordinates(1-(1-*T\scale\x), 1-(1-*T\scale\y))
     RotateCoordinates(0,0,-*T\rotate)
     TranslateCoordinates(-*T\translate\x, -*T\translate\y)  
@@ -1931,7 +1931,7 @@ Module Vector
   ; ----------------------------------------------------------------------------
   ;   ACCUMULATED TRANSFORM
   ; ----------------------------------------------------------------------------
-  Procedure AccumulatedInverseTransform(*item.Item_t)
+  Procedure AccumulatedInverseTransform(*item.Item_t, *m.Transform2D::Matrix_t)
     If *item\parent
       Define NewList *parents.Item_t()
       Define *parent.Item_t = *item
@@ -2124,7 +2124,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 570
-; FirstLine = 567
+; CursorPosition = 1933
+; FirstLine = 1930
 ; Folding = -----------------
 ; EnableXP

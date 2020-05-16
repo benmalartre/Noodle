@@ -126,6 +126,7 @@ DeclareModule FTGL
   Declare Delete(*Me.FTGL_Drawer)
   Declare SetPoint(*mem,id.i,x.f,y.f,s.f,t.f)
   Declare SetColor(*Me.FTGL_Drawer,r.f,g.f,b.f,a.f)
+  Declare SetBackgroundColor(*Me.FTGL_Drawer,r.f,g.f,b.f,a.f)
   Declare BeginDraw(*Me.FTGL_Drawer)
   Declare EndDraw(*Me.FTGL_Drawer)
   Declare Draw(*Me.FTGL_Drawer,text.s,x.f,y.f,sx.f,sy.f)
@@ -468,8 +469,9 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 19
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 235
+; FirstLine = 232
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

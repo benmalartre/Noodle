@@ -30,9 +30,7 @@ mat4 directionFromTwoVectors(vec3 dir,vec3 up){
 				norm.y,up.y,-dir.y,0.0,
 				norm.z,up.z,-dir.z,0.0,
 				0.0,0.0,0.0,1.0);
-     */	
-	
-				
+     */				
 }
 uniform int selected; 
 uniform mat4 model;

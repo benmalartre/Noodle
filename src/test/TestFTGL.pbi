@@ -66,14 +66,15 @@ Procedure Draw(*app.Application::Application_t)
     *p = CArray::GetValue(*geom\a_positions, i)
     ViewportUI::Project(*viewport,*p,proj)
     FTGL::SetColor(*app\context\writer,Math::Random_0_1(), Math::Random_0_1(),Math::Random_0_1(),1.0)
+    FTGL::SetBackgroundColor(*app\context\writer,Math::Random_0_1(), Math::Random_0_1(),Math::Random_0_1(),0.0)
     FTGL::Draw(*app\context\writer, "HELLO", proj\x, proj\y,sx,sx)
   Next
-  
+
   FTGL::Draw(*app\context\writer,"Hello everybody,",-1,0.9,sx,sx)
   FTGL::Draw(*app\context\writer,"This is Font Drawing in OpenGL",-1,0.75,sx,sx)
   FTGL::Draw(*app\context\writer,"Using FreeType C Library",-1,0.6,sx,sx)
   FTGL::EndDraw(*app\context\writer)
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
   
 EndProcedure
     
@@ -87,7 +88,7 @@ If Time::Init()
   Global *scene = Scene::New()
   Scene::*current_scene = *scene
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"Viewport3D", *app\camera)
+    *viewport = ViewportUI::New(*app\window\main,"Viewport3D", *app\camera, *app\handle)
     *app\context = *viewport\context
     *viewport\camera = *app\camera
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -102,7 +103,7 @@ If Time::Init()
 
   *layer.LayerDefault::LayerDefault_t = LayerDefault::New(*app\width,*app\height,*app\context,*app\camera)
   LayerDefault::Setup(*layer)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
 
   *torus = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
   *cloud = PointCloud::New("Cloud",Shape::#SHAPE_SPHERE)
@@ -117,9 +118,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 59
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 68
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; Executable = Test
