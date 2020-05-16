@@ -59,7 +59,7 @@
   ; PDF::DividingLine()                - Draws a line with the specified width.
   ; PDF::GetFontSize()                 - Get current fontsize (#Point/#Unit)
   ; PDF::GetMargin()                   - Get left, top, right or cell margin.
-  ; PDF::GetMultiCellLines()           - Get the last value of newlines for pdf_MultiCell()
+  ; PDF::GetMultiCellLines()           - Get the last value of newlines For pdf_MultiCell()
   ; PDF::GetPageHeight()               - Get current height of page.
   ; PDF::GetPageNumber()               - Returns the current page number.
   ; PDF::GetPageWidth()                - Get current width of page. 
@@ -7144,10 +7144,10 @@ CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf 
 
 ;- ========================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 135
-; Folding = OAABAMgPQAIgAAAAhQCQACBAAHPAABAAAACAgZQFAoTUCAAAAAAAoAy-9--9DS0n8CACAA+
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 318
+; FirstLine = 203
+; Folding = eAABAMgPQAIgAAAAhQCQACBAAHPAABAAAACAgZQFAoTUCAAAAAAAoAy-9--9DS0n8CACAA+
 ; Markers = 573,1005,3767,3832
 ; EnableXP
 ; DPIAware

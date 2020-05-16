@@ -588,6 +588,9 @@ DeclareModule OpenGL
   GL_DECLARE_CONSTANT(GL_BLEND_DST_ALPHA                                    , $80CA)
   GL_DECLARE_CONSTANT(GL_BLEND_SRC_ALPHA                                    , $80CB)
   GL_DECLARE_CONSTANT(GL_POINT_FADE_THRESHOLD_SIZE                          , $8128)
+  GL_DECLARE_CONSTANT(GL_POINT_SIZE_MIN                                     , $8126)
+  GL_DECLARE_CONSTANT(GL_POINT_SIZE_MAX                                     , $8127)
+  GL_DECLARE_CONSTANT(GL_POINT_SPRITE                                       , $8861)
   GL_DECLARE_CONSTANT(GL_DEPTH_COMPONENT16                                  , $81A5)
   GL_DECLARE_CONSTANT(GL_DEPTH_COMPONENT24                                  , $81A6)
   GL_DECLARE_CONSTANT(GL_DEPTH_COMPONENT32                                  , $81A7)
@@ -638,7 +641,7 @@ DeclareModule OpenGL
   GL_DECLARE_CONSTANT(GL_VERTEX_ATTRIB_ARRAY_STRIDE                         , $8624)
   GL_DECLARE_CONSTANT(GL_VERTEX_ATTRIB_ARRAY_TYPE                           , $8625)
   GL_DECLARE_CONSTANT(GL_CURRENT_VERTEX_ATTRIB                              , $8626)
-  GL_DECLARE_CONSTANT(GL_VERTEX_PROGRAM_POINT_SIZE                          , $8642)
+  GL_DECLARE_CONSTANT(GL_VERTEX__POINT_SIZE                          , $8642)
   GL_DECLARE_CONSTANT(GL_VERTEX_ATTRIB_ARRAY_POINTER                        , $8645)
   GL_DECLARE_CONSTANT(GL_STENCIL_BACK_FUNC                                  , $8800)
   GL_DECLARE_CONSTANT(GL_STENCIL_BACK_FAIL                                  , $8801)
@@ -1608,9 +1611,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1483
-; FirstLine = 1436
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 591
+; FirstLine = 586
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

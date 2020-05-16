@@ -59,6 +59,7 @@ void main(){
 
 	vec3 tmp = vec3(0,0,1);
 	gl_Position = projection * view * model * vec4(position,1.0);
+	gl_PointSize = size;
 	inVelocity = velocity;
 	inUpdate = scale * size;
 }

@@ -1,7 +1,7 @@
 ﻿; ============================================================================
 ;  Blur Layer Module
 ; ============================================================================
-XIncludeFile "Layer.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 DeclareModule LayerBlur
   UseModule Math
   ;---------------------------------------------------
@@ -124,9 +124,8 @@ Module LayerBlur
   
   Class::DEF(LayerBlur)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 66
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

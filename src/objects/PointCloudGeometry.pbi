@@ -17,6 +17,10 @@ DeclareModule PointCloudGeometry
   Declare RandomizeColor(*Me.PointCloudGeometry_t,*base.c4f32 = #Null,randomize.f = 0.5)
   Declare AddPoints(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32 )
   Declare Reset(*p.PointCloudGeometry_t)
+  Declare SetPositions(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32)
+  Declare SetColors(*p.PointCloudGeometry_t, *col.CArray::CArrayC4F32)
+  Declare SetSizes(*p.PointCloudGeometry_t, *siz.CArray::CArrayFloat)
+  Declare SetSize(*p.PointCloudGeometry_t, siz.f)
   
   DataSection 
     PointCloudGeometryVT: 
@@ -118,7 +122,7 @@ Module PointCloudGeometry
       CArray::SetValue(*Me\a_scale,i,s)
       
       ; Set Size
-      CArray::SetValueF(*Me\a_size,i,1)
+      CArray::SetValueF(*Me\a_size,i,Random_0_1() * 12)
       
     Next 
 
@@ -295,6 +299,7 @@ Module PointCloudGeometry
     For i=0 To nbp-1
       *p\nbpoints + 1
       CArray::Append(*p\a_positions,CArray::GetValue(*pos,i))
+      CArray::Append(*p\a_velocities,CArray::GetValue(*pos,i))
       Vector3::Set(n,0,1,0)
       CArray::Append(*p\a_normals,n)
       Vector3::Set(c,1,0,0)
@@ -347,6 +352,44 @@ Module PointCloudGeometry
 
   EndProcedure
   
+  ;---------------------------------------------------------
+  ; Set Positions
+  ;---------------------------------------------------------
+  Procedure SetPositions(*p.PointCloudGeometry_t, *pos.CArray::CArrayV3F32)
+    If CArray::GetCount(*pos) = *p\nbpoints
+      CArray::Copy(*p\a_positions, *pos) 
+    EndIf
+    
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Set Colors
+  ;---------------------------------------------------------
+  Procedure SetColors(*p.PointCloudGeometry_t, *col.CArray::CArrayC4F32)
+    If CArray::GetCount(*col) = *p\nbpoints
+      CArray::Copy(*p\a_color, *col)
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Set Sizes
+  ;---------------------------------------------------------
+  Procedure SetSizes(*p.PointCloudGeometry_t, *siz.CArray::CArrayFloat)
+    If CArray::GetCount(*siz) = *p\nbpoints
+      CArray::Copy(*p\a_size, *siz)
+    EndIf
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Set Size
+  ;---------------------------------------------------------
+  Procedure SetSize(*p.PointCloudGeometry_t, siz.f)
+    For i=0 To *p\nbpoints-1
+      CArray::SetValueF(*p\a_size, i, siz)
+    Next
+  EndProcedure
+  
+  
   ; Destructor
   ;-----------------------------------------------------------
   Procedure Delete(*Me.PointCloudGeometry_t)
@@ -397,8 +440,8 @@ Module PointCloudGeometry
 
   Class::DEF( PointCloudGeometry )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 273
-; FirstLine = 254
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 369
+; FirstLine = 350
 ; Folding = ---
 ; EnableXP

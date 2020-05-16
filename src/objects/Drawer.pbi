@@ -15,6 +15,13 @@ DeclareModule Drawer
   UseModule OpenGLExt
   
   Enumeration
+    #DIRTY_CLEAN
+    #DIRTY_TRANSFORM
+    #DIRTY_DEFORM
+    #DIRTY_TOPOLOGY
+  EndEnumeration
+  
+  Enumeration
     #ITEM_POINT
     #ITEM_LINE
     #ITEM_STRIP
@@ -36,6 +43,7 @@ DeclareModule Drawer
     vbo.i
     eab.i
     wireframe.b
+    dirty.i
   EndStructure
   
   Structure Point_t Extends Item_t
@@ -198,6 +206,8 @@ Module Drawer
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
   Procedure Setup(*Me.Drawer_t,*shader.Program::Program_t)
+    
+    MessageRequester("DRAWER SETUP", "CALLED XXX")
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -240,7 +250,23 @@ Module Drawer
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1,4,#GL_FLOAT,#GL_FALSE,0,plength)
       
+      Select *item\type
+        Case #ITEM_POINT
+        Case #ITEM_LINE
+        Case #ITEM_STRIP
+        Case #ITEM_BOX
+           ; Create or ReUse Vertex Buffer Object
+          If Not *item\eab : glGenBuffers(1,@*item\eab) : EndIf
+          glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
+          If *item\wireframe
+            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 24 * 4, Shape::GetEdges(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
+          Else
+            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 48 * 4, Shape::GetFaces(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
+          EndIf
+      EndSelect
+      *item\dirty = #DIRTY_CLEAN
     Next
+    
     
     *Me\initialized = #True
   EndProcedure
@@ -266,6 +292,8 @@ Module Drawer
        
     ForEach *Me\items()
       *item = *me\items()
+      If *item\dirty = #DIRTY_CLEAN : Continue : EndIf
+      
       ;Create Or ReUse Vertex Array Object
       If Not *item\vao
         glGenVertexArrays(1,@*item\vao)
@@ -306,6 +334,25 @@ Module Drawer
           glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
         CompilerEndIf
       EndIf
+      
+      ; Create or ReUse Vertex Buffer Object
+      Select *item\type
+        Case #ITEM_POINT
+        Case #ITEM_LINE
+        Case #ITEM_STRIP
+        Case #ITEM_BOX
+          If Not *item\eab
+            glGenBuffers(1,@*item\eab)
+          EndIf
+          
+          glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
+          If *item\wireframe
+            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 24*4, Shape::GetEdges(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
+          Else
+            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 48*4, Shape::GetFaces(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
+          EndIf
+      EndSelect
+      
     Next
   EndProcedure
   
@@ -367,7 +414,7 @@ Module Drawer
   Procedure DrawStrip(*Me.Strip_t)
     Protected i.i, cnt.i, base.i
     base = 0
-    glLineWidth(*Me\size)
+;     glLineWidth(*Me\size)
     For i=0 To CArray::GetCount(*Me\indices)-1
       cnt = CArray::GetValueL(*Me\indices, i)
       glDrawArrays(#GL_LINE_STRIP,base,cnt)
@@ -378,11 +425,11 @@ Module Drawer
   ; ---[ Draw Box Item ]-----------------------------------------------------
   Procedure DrawBox(*Me.Box_t, *pgm)
     If *Me\wireframe
-      glLineWidth(Math::Max(Int(*Me\size),1))
-      glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,Shape::GetEdges(Shape::#SHAPE_CUBE))
+      ;       glLineWidth(Math::Max(Int(*Me\size),1))
+      glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,0)
     Else
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
-      glDrawElements(#GL_TRIANGLES,48,#GL_UNSIGNED_INT,Shape::GetFaces(Shape::#SHAPE_CUBE))
+      glDrawElements(#GL_TRIANGLES,48,#GL_UNSIGNED_INT,0)
     EndIf
   EndProcedure
   
@@ -447,30 +494,38 @@ Module Drawer
     Else
       glEnable(#GL_DEPTH_TEST)
     EndIf
-    
-    
+   
     glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
     glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
+        
     ForEach *Me\items()
       With *Me\items()
         glBindVertexArray(\vao)
         Select \type
           Case #ITEM_POINT
             DrawPoint(*Me\items())
+            GLCheckError("DRAW ITEM POINT")
           Case #ITEM_LINE
             DrawLine(*Me\items())
+            GLCheckError("DRAW ITEM LINE")
           Case #ITEM_LOOP
             DrawLoop(*me\items())
+            GLCheckError("DRAW ITEM LOOP")
           Case #ITEM_STRIP
             DrawStrip(*Me\items())
+            GLCheckError("DRAW ITEM STRIP")
           Case #ITEM_BOX
             DrawBox(*Me\items(), *Me\shader\pgm)
+            GLCheckError("DRAW ITEM BOX")
           Case #ITEM_SPHERE
             DrawSphere(*Me\items(), *Me\shader\pgm)
+            GLCheckError("DRAW ITEM SPHERE")
           Case #ITEM_MATRIX
             DrawMatrix(*Me\items(), *Me\shader\pgm)
+            GLCheckError("DRAW ITEM MATRIX")
           Case #ITEM_TRIANGLE
             DrawTriangle(*Me\items())
+            GLCheckError("DRAW ITEM TRIANGLE")
           Case #ITEM_COMPOUND
             Debug "[DRAWER] Compound Shape NOT Implemented"
         EndSelect
@@ -612,6 +667,7 @@ Module Drawer
     *point\type = #ITEM_POINT
     *point\positions = CArray::newCArrayV3F32()
     *point\colors = CArray::newCArrayC4F32()
+    *point\dirty  = #DIRTY_TOPOLOGY
     SetColor(*point, Color::BLACK)
     CArray::SetCount(*point\positions, 1)
     CArray::SetCount(*point\colors, 1)
@@ -633,7 +689,7 @@ Module Drawer
       CArray::Copy(*point\positions, *positions)
       CArray::SetCount(*point\colors, CArray::GetCount(*point\positions))
     EndIf
-    
+    *point\dirty  = #DIRTY_TOPOLOGY
     SetColor(*point, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *point
@@ -651,6 +707,7 @@ Module Drawer
       CArray::Copy(*point\positions, *positions)
       CArray::Copy(*point\colors, *colors)
     EndIf
+    *point\dirty  = #DIRTY_TOPOLOGY
     AddElement(*Me\items())
     *Me\items() = *point
     *Me\dirty = #True
@@ -664,6 +721,7 @@ Module Drawer
     *line\type = #ITEM_LINE
     *line\positions = CArray::newCArrayV3F32()
     *line\colors = CArray::newCArrayC4F32()
+    *line\dirty  = #DIRTY_TOPOLOGY
     CArray::SetCount(*line\positions, 2)
     CArray::SetValue(*line\positions, 0, *start)
     CArray::SetValue(*line\positions, 1, *end)
@@ -685,6 +743,7 @@ Module Drawer
       CArray::Copy(*line\positions, *positions)
       CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
     EndIf
+    *line\dirty = #DIRTY_TOPOLOGY
     SetColor(*line, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *line
@@ -698,16 +757,17 @@ Module Drawer
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
     If nbp And nbp = CArray::GetCount(*end)
-        *line\positions = CArray::newCArrayV3F32()
-        *line\colors = CArray::newCArrayC4F32()
-        CArray::SetCount(*line\positions, nbp*2)
-        CArray::SetCount(*line\colors, nbp*2)
-        Define i
-        For i=0 To nbp-1
-          CArray::SetValue(*line\positions, i*2, CArray::GetValue(*start,i))
-          CArray::SetValue(*line\positions, i*2+1, CArray::GetValue(*end,i))
-        Next
+      *line\positions = CArray::newCArrayV3F32()
+      *line\colors = CArray::newCArrayC4F32()
+      CArray::SetCount(*line\positions, nbp*2)
+      CArray::SetCount(*line\colors, nbp*2)
+      Define i
+      For i=0 To nbp-1
+        CArray::SetValue(*line\positions, i*2, CArray::GetValue(*start,i))
+        CArray::SetValue(*line\positions, i*2+1, CArray::GetValue(*end,i))
+      Next
     EndIf
+    *line\dirty = #DIRTY_TOPOLOGY
     SetColor(*line, Color::BLACK)
     AddElement(*Me\items())
     *Me\items() = *line
@@ -725,6 +785,7 @@ Module Drawer
       CArray::Copy(*line\positions, *positions)
       CArray::Copy(*line\colors, *colors)
     EndIf
+    *line\dirty  = #DIRTY_TOPOLOGY
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -747,6 +808,7 @@ Module Drawer
         CArray::AppendL(*strip\indices, CArray::GetCount(*strip\positions))
       EndIf
     EndIf
+    *strip\dirty  = #DIRTY_TOPOLOGY
     AddElement(*Me\items())
     *Me\items() = *strip
     *Me\dirty = #True
@@ -769,6 +831,7 @@ Module Drawer
         CArray::AppendL(*loop\indices, CArray::GetCount(*loop\positions))
       EndIf
     EndIf
+    *loop\dirty  = #DIRTY_TOPOLOGY
     AddElement(*Me\items())
     *Me\items() = *loop
     *Me\dirty = #True
@@ -786,7 +849,7 @@ Module Drawer
     CArray::SetCount(*box\positions, 8)
     CArray::SetCount(*box\colors, 8)
     CopyMemory(Shape::?shape_cube_positions, CArray::GetPtr(*box\positions, 0), 8 * CArray::GetItemSize(*box\positions))
-    
+    *box\dirty  = #DIRTY_TOPOLOGY
     ; Transform vertex positions
     Protected i
     Protected *p.Math::v3f32
@@ -807,6 +870,7 @@ Module Drawer
     *sphere\type = #ITEM_SPHERE
     *sphere\positions = CArray::newCArrayV3F32()
     *sphere\colors = CArray::newCArrayC4F32()
+    *sphere\dirty  = #DIRTY_TOPOLOGY
     Matrix4::SetFromOther(*sphere\m, *m)
     CArray::SetCount(*sphere\positions, Shape::#SPHERE_NUM_VERTICES)
     CArray::SetCount(*sphere\colors, Shape::#SPHERE_NUM_VERTICES)
@@ -830,6 +894,7 @@ Module Drawer
     Protected *matrix.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
     *matrix\type = #ITEM_MATRIX
     *matrix\positions = CArray::newCArrayV3F32()
+    *matrix\dirty  = #DIRTY_TOPOLOGY
     Matrix4::SetFromOther(*matrix\m, *m)
     CArray::SetCount(*matrix\positions, Shape::#AXIS_NUM_VERTICES)
     CopyMemory(Shape::?shape_axis_positions, CArray::GetPtr(*matrix\positions, 0), Shape::#AXIS_NUM_VERTICES * CArray::GetItemSize(*matrix\positions))
@@ -846,6 +911,7 @@ Module Drawer
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::newCArrayV3F32()
     *triangle\colors = CArray::newCArrayC4F32()
+    *triangle\dirty  = #DIRTY_TOPOLOGY
     CArray::Copy(*triangle\positions, *positions)
     CArray::SetCount(*triangle\colors, CArray::GetCount(*triangle\positions))
     SetColor(*triangle, Color::BLACK)
@@ -861,6 +927,7 @@ Module Drawer
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::newCArrayV3F32()
     *triangle\colors = CArray::newCArrayC4F32()
+    *triangle\dirty  = #DIRTY_TOPOLOGY
     CArray::Copy(*triangle\positions, *positions)
     CArray::Copy(*triangle\colors, *colors)
     AddElement(*Me\items())
@@ -877,6 +944,7 @@ Module Drawer
     *text\colors = CArray::newCArrayC4F32()
     *text\text = text
     *text\size = size
+    *text\dirty  = #DIRTY_TOPOLOGY
     SetColor(*text, Color::BLACK)
     CArray::SetCount(*text\positions, 1)
     CArray::SetCount(*text\colors, 1)
@@ -896,8 +964,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 859
-; FirstLine = 837
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 263
+; FirstLine = 250
 ; Folding = ---------
 ; EnableXP

@@ -43,8 +43,8 @@ DeclareModule FTGL
     width.i
     height.i
     size_px.i
-    
     *buffer
+    
   EndStructure
   
   Structure FTGL_Face Align #PB_Structure_AlignC
@@ -267,14 +267,16 @@ Module FTGL
     Protected atlas_height = *Me\atlas\height
     
     w = 0
-    h = Math::#U32_MIN
+    h = 0
+    Define nh.f
     If *Me\background
       For a=1 To Len(text)
         c = Mid(text,a,1)
         *infos = *Me\atlas\metadata[Asc(c)]
         
         w + *infos\bl * sx + *infos\ax * sx 
-        h  - *infos\bt * sy + *infos\ay * sy
+        nh = *infos\bt * sy + *infos\ay * sy
+        If h<nh : h=nh : EndIf
       Next
       
       Define size_t = 6*SizeOf(FTGL_Point)
@@ -469,9 +471,15 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 235
 ; FirstLine = 232
+=======
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 268
+; FirstLine = 253
+>>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

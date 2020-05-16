@@ -55,6 +55,7 @@ Procedure Draw(*app.Application::Application_t)
   
   Define *geom.Geometry::PolymeshGeometry_t = *torus\geom
   
+  *app\context\writer\background = #True
   Protected sx.f = 0.001
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -118,9 +119,15 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 68
 ; FirstLine = 35
+=======
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 57
+; FirstLine = 47
+>>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
 ; Folding = -
 ; EnableXP
 ; Executable = Test

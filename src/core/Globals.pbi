@@ -18,6 +18,7 @@ DeclareModule Globals
     #SHORTCUT_SCALE
     #SHORTCUT_ROTATE
     #SHORTCUT_TRANSLATE
+    #SHORTCUT_TRANSFORM
     #SHORTCUT_CAMERA
     #SHORTCUT_SELECT
     #SHORTCUT_UP
@@ -324,9 +325,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 12
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 20
+; FirstLine = 6
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -25,6 +25,7 @@ CompilerEndIf
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../libs/FTGL.pbi"
 
+XIncludeFile "../opengl/Types.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
 XIncludeFile "../opengl/Texture.pbi"
 XIncludeFile "../opengl/ScreenQuad.pbi"
@@ -55,7 +56,7 @@ XIncludeFile "../objects/Octree.pbi"
 ; ============================================================================
 ;   LAYER MODULES
 ; ============================================================================
-XIncludeFile "../layers/Layer.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
 XIncludeFile "../layers/Bitmap.pbi"
 XIncludeFile "../layers/Selection.pbi"
@@ -209,6 +210,8 @@ CompilerEndIf
   Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
+  Declare AddShortcuts(*Me.Application_t)
+  Declare RemoveShortcuts(*Me.Application_t)
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
@@ -223,7 +226,7 @@ CompilerIf (#USE_GLFW = #True)
 CompilerEndIf
 
   Declare.f GetFPS(*Me.Application_t)
-  Prototype PFNDRAWFN(*Me)
+  Prototype PFNCALLBACKFN(*Me, event.i)
   
   Global *running.Application::Application_t
 
@@ -279,7 +282,7 @@ CompilerEndIf
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
-      
+      *Me\context\writer = FTGL::New()
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
@@ -328,6 +331,29 @@ CompilerEndIf
     ProcedureReturn *window
     
   EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Shortcuts
+  ;-----------------------------------------------------------------------------
+  Procedure AddShortcuts(*Me.Application_t)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X, Globals::#SHORTCUT_TRANSFORM)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Remove Shortcuts
+  ;-----------------------------------------------------------------------------
+  Procedure RemoveShortcuts(*Me.Application_t)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_T)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_R)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space)
+  EndProcedure
+  
   
   
 CompilerIf #USE_GLFW
@@ -583,7 +609,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*Me.Application_t,*callback.PFNDRAWFN)
+  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN)
     Define event
     
     CompilerIf #USE_GLFW
@@ -597,9 +623,9 @@ CompilerEndIf
       Wend
     CompilerElse
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
-      *callback(*Me)
+      *callback(*Me, #PB_Event_SizeWindow)
       Repeat
-        event = WaitWindowEvent(24)
+        event = WaitWindowEvent()
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -615,7 +641,7 @@ CompilerEndIf
             
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(Scene::*current_scene)
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED)
             
           Case Globals::#EVENT_TOOL_CHANGED
             Select EventData()
@@ -628,6 +654,9 @@ CompilerEndIf
               Case Globals::#TOOL_TRANSLATE
                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
                 *Me\tool = Globals::#TOOL_TRANSLATE
+              Case Globals::#TOOL_TRANSFORM
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+                *Me\tool = Globals::#TOOL_TRANSFORM
             EndSelect
             
             
@@ -637,13 +666,13 @@ CompilerEndIf
 ;             EndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_SELECTION_CHANGED)
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
             Scene::Setup(Scene::*current_scene, *Me\context)
             Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
            
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED)
             
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = *Me\window\uis("Graph")
@@ -651,39 +680,42 @@ CompilerEndIf
             If *graph
               GraphUI::SetContent(*graph,*tree)
             EndIf   
-            *callback(*Me)
+            *callback(*Me, Globals::#EVENT_TREE_CREATED)
           Case #PB_Event_Menu
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
-                *Me\tool = Globals::#TOOL_TRANSLATE
-                
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+                *Me\tool = Globals::#TOOL_TRANSLATE                
               Case Globals::#SHORTCUT_ROTATE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
                 *Me\tool = Globals::#TOOL_ROTATE
               Case Globals::#SHORTCUT_SCALE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
                 *Me\tool = Globals::#TOOL_SCALE
+              Case Globals::#SHORTCUT_TRANSFORM
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+                *Me\tool = Globals::#TOOL_TRANSFORM
               Case Globals::#SHORTCUT_CAMERA
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_CAMERA)
                 *Me\tool = Globals::#TOOL_CAMERA
               Default 
                 *Me\tool = Globals::#TOOL_MAX
                 If event : Window::OnEvent(*Me\window,event) : EndIf
             EndSelect
-            *callback(*Me)
+            *callback(*Me, event)
             
           Case #PB_Event_SizeWindow
             Window::OnEvent(*Me\window,event)
-            *callback(*Me)
+            *callback(*Me, event)
             
           Case #PB_Event_Gadget
             If event : Window::OnEvent(*Me\window,event) : EndIf
-            *callback(*Me)
+            *callback(*Me, event)
             
           Default
             If event : Window::OnEvent(*Me\window,event) : EndIf
-            *callback(*Me)
+            *callback(*Me, event)
         EndSelect
-        
-        
-        
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
   EndProcedure
@@ -692,6 +724,8 @@ CompilerEndIf
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
+    Handle::Resize(*Me\handle,*camera)
+    
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -716,16 +750,16 @@ CompilerEndIf
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
       
-      ;Handle::Draw( *Me\handle,*ctx) 
+      Handle::Draw( *Me\handle,*Me\context) 
     EndIf
     
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 328
-; FirstLine = 314
-; Folding = -----
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 627
+; FirstLine = 607
+; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
 ; EnableUnicode

@@ -107,7 +107,6 @@ Module PointCloud
   ; Buil GL Data 
   ;-----------------------------------------------------
   Procedure BuildGLData(*p.PointCloud_t)
-    MessageRequester("FRAMEWORK","POINTCLOUD BUILLD GL DATAS")
     ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
     Protected nbv = *geom\nbpoints
@@ -206,7 +205,7 @@ Module PointCloud
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*p.PointCloud_t,*pgm.Program::Program_t)
-    MessageRequester("SETUP POINT CLOUD", "SHADER ---> "+Str(*pgm))
+
     *p\shader = *pgm
 
     ;---[ Get Underlying Geometry ]--------------------
@@ -307,12 +306,16 @@ Module PointCloud
     If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
 
     Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
-    glPointSize(*p\pointsize)
-    glEnable(#GL_POINT_SMOOTH)
+
+;   glPointSize(24);*p\pointsize)
+
+    glEnable( #GL_PROGRAM_POINT_SIZE )
+  
+    ;glEnable(#GL_POINT_SMOOTH)
     glBindVertexArray(*p\vao)
 ;     glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
     glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
-    
+    glDisable( #GL_PROGRAM_POINT_SIZE )
     glBindVertexArray(0)
   EndProcedure
   ;}
@@ -386,8 +389,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 16
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 246
+; FirstLine = 243
 ; Folding = ---
 ; EnableXP

@@ -74,6 +74,7 @@ Procedure RandomCubes(numItems.i,y.f=0)
   Define position.Math::v3f32
   Define color.Math::c4f32
   Protected *item.Drawer::Item_t
+  
   Protected m.m4f32
   Protected p.v3f32
   Define i,j
@@ -84,6 +85,7 @@ Procedure RandomCubes(numItems.i,y.f=0)
 
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::AddBox(*drawer, @m)
+    *item\wireframe = Bool(Random(10)>5)
     Drawer::SetColor(*item,  @color)
   Next
 EndProcedure
@@ -149,13 +151,9 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  ViewportUI::SetContext(*viewport)
-  Drawer::Flush(*drawer)
-;   RandomSpheres(Random(64,16), Random(10)-5)
-  RandomCubes(Random(64,16), Random(10)-5)
-  RandomStrips(32)
-  RandomTexts(32,"HELLO")
-;   RandomPoints(Random(256, 64))
+  GLContext::SetContext(*app\context)
+;   Drawer::Flush(*drawer)
+
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
@@ -169,7 +167,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   glDisable(#GL_BLEND)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
 
@@ -187,9 +185,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Drawer",width,height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI",*app\camera, *app\handle)
      *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
@@ -217,17 +215,24 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root, *drawer)
   Scene::AddModel(Scene::*current_scene,*root)
+  
+  RandomSpheres(Random(64,16), Random(10)-5)
+  RandomPoints(Random(256, 64))
+  RandomCubes(Random(64,16), Random(10)-5)
+  RandomStrips(32)
+;   RandomTexts(32,"HELLO")
+  
   Scene::Setup(Scene::*current_scene,*app\context)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 86
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 218
+; FirstLine = 195
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

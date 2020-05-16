@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Default Layer Module
 ; ============================================================================
-XIncludeFile "Layer.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 DeclareModule LayerDefault
   UseModule Math
   ;---------------------------------------------------
@@ -91,15 +91,15 @@ Module LayerDefault
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
     glEnable(#GL_DEPTH_TEST)
-;     glViewport(*ctx\,0,*layer\width,*layer\height)
-    
+
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::BindOutput(*buffer)
-    
+
     ;   Clear(*layer)
-    glClearColor(0.63,0.63,0.63,1.0)
+    glViewport(0,0, *layer\width, *layer\height)
+    glClearColor(0.666,0.666,0.666,1.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-    glCheckError("[LayerDefault] Clear")
+    
     
     ; Find Up View Point
     ;-----------------------------------------------
@@ -271,15 +271,15 @@ Module LayerDefault
     *Me\image = CreateImage(#PB_Any,width,height)
   ;   Protected img = LoadImage(#PB_Any,"/home/benmalartre/RnD/IconMaker/icons/pen.png")
   ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
-      
+    GLContext::AddLayer(*ctx, *Me)
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 182
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 99
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

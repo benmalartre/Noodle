@@ -72,9 +72,9 @@ XIncludeFile "Types.pbi"
 
       Protected *ui.UI::UI_t = *view\content
       Protected ui.UI::IUI = *ui
-      If *ui
+      If *ui And *ui\container
         ResizeGadget(*ui\container,x,y,width,height)  
-;         ui\OnEvent(#PB_Event_SizeWindow)
+        ui\OnEvent(#PB_Event_SizeWindow)
       EndIf
      
     Else
@@ -564,8 +564,8 @@ XIncludeFile "Types.pbi"
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 475
-; FirstLine = 467
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 64
 ; Folding = ----
 ; EnableXP

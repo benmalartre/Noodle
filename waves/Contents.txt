@@ -1,0 +1,449 @@
+ Volume in drive C has no label.
+ Volume Serial Number is 82CA-20E7
+
+ Directory of \SimPhonics Tones Collection
+
+06/04/2014  16:45    <DIR>          B747
+06/04/2014  16:49    <DIR>          B777
+06/04/2014  16:57    <DIR>          Beech 1900
+06/04/2014  16:58    <DIR>          Citation II
+06/04/2014  17:01    <DIR>          DC-10
+06/04/2014  17:00    <DIR>          DC-9
+06/04/2014  17:10    <DIR>          Generic Tones
+06/04/2014  17:07    <DIR>          GPWS
+06/04/2014  17:03    <DIR>          MH-53J
+06/04/2014  17:11    <DIR>          MISC
+06/04/2014  17:09    <DIR>          Nav Stations
+06/04/2014  17:09    <DIR>          TCAS
+06/04/2014  17:04    <DIR>          UH-1N
+               0 File(s)              0 bytes
+
+ Directory of \SimPhonics Tones Collection\B747
+
+04/19/2004  12:27            57,148 V1.WAV
+               1 File(s)         57,148 bytes
+
+ Directory of \SimPhonics Tones Collection\B777
+
+07/23/2005  07:39           192,224 APU Fire Horn.wav
+09/25/2000  11:25           117,948 Autopilot Disconnect.wav
+07/28/1999  08:10           241,290 Fire Bell.wav
+02/04/2006  11:50           247,588 Gear Warning.wav
+02/04/2006  12:00           156,826 Overspeed Warning.wav
+               5 File(s)        955,876 bytes
+
+ Directory of \SimPhonics Tones Collection\Beech 1900
+
+02/18/1997  17:59            11,915 Altitude Alert.wav
+09/25/2000  12:25           117,948 Autopilot Disconnect.wav
+09/26/2000  16:38            90,796 baro altimeter fault.wav
+06/22/1999  14:53            28,664 decisionheight.wav
+09/26/2000  17:06           123,816 Gear Warning.wav
+11/17/2000  08:52            37,914 GPWS_MODE_1_PULLUP_URGENT.WAV
+11/16/2000  10:51            33,221 GPWS_MODE_1_SINKRATE.WAV
+11/17/2000  08:53            38,424 GPWS_MODE_2_PULLUP.WAV
+11/17/2000  08:53            38,424 GPWS_MODE_2_PULLUP_copy(1).WAV
+11/16/2000  17:43            34,589 GPWS_MODE_2A_TERRAIN.WAV
+11/16/2000  17:44            33,169 GPWS_MODE_2B_TERRAIN.WAV
+11/16/2000  17:45           132,564 GPWS_MODE_3_DONTSINK.WAV
+11/16/2000  17:46            33,227 GPWS_MODE_4_TOO_LOW_GEAR.WAV
+11/16/2000  17:47            33,241 GPWS_MODE_4_TOO_LOW_TERRAIN.WAV
+11/16/2000  17:46            33,091 GPWS_MODE_4_TOO_LOWFLAPS.WAV
+11/16/2000  17:48            11,105 GPWS_MODE_5_GLIDESLOPE_1SEC.WAV
+11/16/2000  17:58            33,155 GPWS_MODE_5_GLIDESLOPE_2SEC.WAV
+11/17/2000  09:13            33,280 GPWS_MODE_5_GLIDESLOPE_3SEC.WAV
+11/16/2000  17:50             7,939 GPWS_MODE_6_200.WAV
+11/16/2000  17:50            10,117 GPWS_MODE_6_500.WAV
+11/16/2000  17:51            20,460 GPWS_MODE_6_MINIMUMS.WAV
+11/16/2000  17:58            60,610 GPWS_SELF_TEST_NORMAL.WAV
+02/19/1997  16:34            10,117 GPWS500.wav
+05/08/2000  16:34           165,892 GPWSDontSinkAndPause3Seconds.wav
+02/19/1997  16:35             6,657 GPWSGlideSlope.wav
+05/08/2000  16:47            20,460 GPWSMinimumsMinimums.wav
+02/19/1997  16:36            29,644 GPWSSinkRateWhoopWhoopPullUp.wav
+05/08/2000  16:24            12,846 GPWSTerrainTerrain.wav
+02/19/1997  16:36            26,521 GPWSTerrainWhoopWhoopPullUp.wav
+05/08/2000  16:45            43,375 GPWSTooLowFlapsAndPause3Seconds.wav
+05/08/2000  16:38            43,284 GPWSTooLowGearAndPause3Seconds.wav
+05/08/2000  16:36            44,400 GPWSTooLowTerrainAndPause3Seconds.wav
+09/26/2000  11:14            45,996 gyro power horn.wav
+09/19/2000  11:30            50,752 Gyro Power.wav
+09/25/2000  12:27           209,412 Overspeed Warning.wav
+09/26/2000  16:39            79,306 radio altimeter fault.wav
+09/25/2000  12:27           135,582 Stall Warning.wav
+04/28/2000  17:08            12,646 TCAS_Failed.wav
+04/28/2000  17:08            11,246 TCAS_Passed.wav
+04/28/2000  17:08            20,520 TCAS_Test.wav
+04/28/2000  17:08            18,046 TCAS_Traffic.wav
+              41 File(s)      1,984,371 bytes
+
+ Directory of \SimPhonics Tones Collection\Citation II
+
+08/13/1999  04:13           882,044 Altitude Alert.wav
+08/12/1999  13:02           876,262 AutoPilot Disconnect.wav
+03/25/2000  06:19            32,017 DME A_OK.WAV
+07/28/1999  09:10           241,290 FireBell.wav
+08/12/1999  12:10           459,896 Gear Warning.wav
+08/12/1999  12:45           141,632 Overspeed Warning.wav
+06/22/1999  13:53            28,664 seatbelttone.wav
+07/28/1999  09:17           279,880 Solid Tone.wav
+               8 File(s)      2,941,685 bytes
+
+ Directory of \SimPhonics Tones Collection\DC-10
+
+06/22/1999  07:14            29,250 1020Hz.wav
+02/23/1999  16:59            24,936 ATTENDANT CALL.WAV
+06/22/1999  12:53            28,664 attendantcall.wav
+06/22/1999  12:54            14,484 crewcall.wav
+02/23/1999  16:59            24,936 DC9 ATTENDANT CALL.WAV
+09/23/1999  00:39            98,716 INS HORN.WAV
+01/20/1999  20:03            18,060 IOSCall.wav
+08/16/1999  17:12           138,122 MAINT CALL.WAV
+               8 File(s)        377,168 bytes
+
+ Directory of \SimPhonics Tones Collection\DC-9
+
+06/22/1999  11:53            28,664 attendantcall.wav
+06/22/1999  11:54            14,484 crewcall.wav
+02/23/1999  15:59            24,936 DC9 ATTENDANT CALL.WAV
+06/22/1999  11:58            28,664 Horn.wav
+01/20/1999  19:03            18,060 IOSCall.wav
+02/18/1997  15:54            11,403 ringsound1.wav
+               6 File(s)        126,211 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones
+
+06/04/2014  17:10    <DIR>          ARC164 TONES
+06/04/2014  17:10    <DIR>          ARC222 TONES
+06/04/2014  17:10    <DIR>          HAVE QUICK
+06/04/2014  17:10    <DIR>          KY100
+06/04/2014  17:10    <DIR>          KY58
+06/04/2014  17:10    <DIR>          KYV-5 ANDVT
+06/04/2014  17:10    <DIR>          Miscellaneous Cipher
+06/04/2014  17:10    <DIR>          SPECTRAL NOISE
+06/04/2014  17:10    <DIR>          Telephone
+03/16/2001  14:51            16,432 1000Hz.wav
+04/04/2001  19:28           102,070 1020Hz.wav
+08/13/1999  04:13           152,932 1300Hz.wav
+08/12/1999  15:45           152,934 1350Hz.wav
+03/16/2001  14:51            16,432 1KHz.wav
+08/13/1999  04:16           152,940 3000Hz.wav
+08/13/1999  04:12           152,926 400Hz.wav
+08/12/1999  10:27           882,044 6600hz.wav
+08/06/2001  12:55            32,062 AndvtNoCode.wav
+08/02/2001  18:59            12,438 AndvtNoFill.wav
+04/03/2001  17:05            25,882 AndvtPreamble.wav
+08/02/2001  19:02            64,176 AndvtStartup.wav
+08/02/2001  19:04            57,656 AndvtZeroize.wav
+04/28/2003  14:21            52,464 busy.wav
+08/02/2001  19:01            15,882 CallTone.wav
+05/20/1999  13:47            83,026 CommNoise.wav
+05/20/1999  13:47            83,026 CommNoiseFrequencyHopping.wav
+04/28/2003  14:04            20,640 DialTone.wav
+02/02/2004  12:43            38,804 elt.wav
+04/28/2003  14:22            32,234 fast_busy.wav
+09/15/2009  18:07            58,092 HF TUNNG TONE.wav
+08/07/2001  20:18             2,146 KY58Load.wav
+08/06/2001  12:55            32,062 KY58NoCode.wav
+08/02/2001  18:59            12,438 KY58NoFill.wav
+04/09/2001  20:35             2,586 KY58Preamble.wav
+03/16/2001  14:51            16,432 PDTPCardFault.wav
+04/28/2003  14:10            10,026 PhoneRinging_bells.wav
+04/28/2003  16:51            61,810 Ring.wav
+04/28/2003  14:13            25,182 SIT-NC.wav
+08/07/2001  20:00            25,722 SquelchNoise.wav
+08/02/2001  18:59            12,438 UHFNoFill.wav
+08/07/2001  20:00            25,722 UHFNoise.wav
+02/25/1999  19:32           102,962 VHFNoise.wav
+              33 File(s)      2,534,618 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\ARC164 TONES
+
+09/15/2003  18:10           114,272 ARC164 1024 HERTZ TONE.wav
+09/15/2003  17:51            32,942 ARC164 DOUBLE BEEP.wav
+09/15/2003  17:51            65,292 ARC164 INVALID NET BEEPING.wav
+09/15/2003  18:34           176,444 ARC164 INVALID WOD TOD TONE.wav
+09/15/2003  21:18            71,930 ARC164 POWER ON.wav
+09/15/2003  17:49             8,854 ARC164 SINGLE BEEP.wav
+09/16/2003  19:25            26,410 ARC164 TOD.wav
+09/16/2003  18:46            31,092 ARC164 WOD LOAD.wav
+               8 File(s)        527,236 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\ARC222 TONES
+
+09/15/2003  17:47             4,386 ARC222 POWER OFF.wav
+09/14/2003  19:27         1,034,018 ARC222 POWER ON.wav
+               2 File(s)      1,038,404 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\HAVE QUICK
+
+10/16/2006  14:22            66,342 HAVE QUICK Hop Cicks Only.wav
+06/30/2000  14:04            82,828 HAVE QUICK Hop clicking.wav
+06/30/2000  14:07            70,110 HAVE QUICK Hop clickingt2.wav
+01/13/2007  17:00            29,128 HAVE QUICK Mickey.wav
+               4 File(s)        248,408 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\KY100
+
+08/02/2001  18:59            12,438 AndvtNoFill.wav
+04/03/2001  17:05            25,882 AndvtPreamble.wav
+08/02/2001  19:02            64,176 AndvtStartup.wav
+08/02/2001  19:04            57,656 AndvtZeroize.wav
+02/20/2003  00:07            44,144 ky100 3200Hz tone.wav
+02/19/2003  23:26            53,784 ky100 coldstart.wav
+02/24/2003  18:14            70,626 ky100 hi low tone.wav
+02/19/2003  23:27            19,832 ky100 post and preamble.wav
+               8 File(s)        348,538 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\KY58
+
+09/30/2009  02:31            34,756 KY58 CONSTANT ALARM TONE.wav
+09/30/2009  02:29            46,226 KY58 LOAD KEYS.wav
+09/16/2009  21:31            35,814 KY-58 RX PREAMBLE.wav
+09/17/2009  17:50            48,432 KY-58 TX PREAMBLE.wav
+08/07/2001  20:18             2,146 KY58Load.wav
+12/14/2005  10:19           225,680 KY58NOKEY.wav
+09/15/2009  18:48           319,716 UHF KY58 RX Secure.wav
+               7 File(s)        712,770 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\KYV-5 ANDVT
+
+09/16/2009  23:14           114,758 HF ANDVT PREAMBLE.wav
+09/21/2009  23:35           349,458 Sound of receiving secure ANDVT on non secure RADIO.WAV
+               2 File(s)        464,216 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\Miscellaneous Cipher
+
+06/30/2000  14:17            14,242 BeepingNoCipherCodeLoaded.wav
+06/30/2000  16:50            46,544 CipherOnPlain1.wav
+06/30/2000  14:20            43,138 CipherOnPlainVoice2.wav
+04/20/2001  12:02             3,888 HQDOUBLE.wav
+06/30/2000  14:23            48,458 KeyedTwiceBeepLoadingCipherCode1.wav
+06/30/2000  14:21            46,512 RecLOScipherOnLOSplainVoice.wav
+06/30/2000  13:49            10,990 RecMicky2.wav
+06/30/2000  14:20            30,858 RecSatcom5KonLOS.wav
+06/30/2000  14:19            17,960 RecSatcomWBonLOS.wav
+06/30/2000  14:19            14,242 SideToneBeepingNoCipherCodeLoaded.wav
+06/30/2000  14:11            26,956 SideToneCipherPreambleWithVoice2.wav
+06/30/2000  14:18            17,334 SideToneInvalidNetBeeping.wav
+06/30/2000  14:18            46,482 SideToneInvalidTODWhine.wav
+06/30/2000  14:36            48,470 SideToneKeyedTwiceBeepLoadingCipherCode1.wav
+06/30/2000  13:49            15,258 SideToneMicky.wav
+06/30/2000  14:10            20,752 SideToneSatcom5KwithVoice.wav
+06/30/2000  13:33             6,074 SideToneWODentryBeep.Wav
+06/30/2000  13:33             5,596 SideToneWODentryDoubleBeep.wav
+              18 File(s)        463,754 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\SPECTRAL NOISE
+
+09/17/2009  14:52           375,738 HF NOISE.wav
+09/17/2009  14:55           301,478 UHF NOISE.WAV
+09/17/2009  14:51           885,970 VHF NOISE.wav
+               3 File(s)      1,563,186 bytes
+
+ Directory of \SimPhonics Tones Collection\Generic Tones\Telephone
+
+12/16/2003  12:55            52,464 busy.wav
+12/16/2003  12:55            61,166 callRing.wav
+09/25/2010  17:45            28,368 Connect.wav
+12/16/2003  12:55            20,640 DialTone.wav
+09/25/2010  17:43            15,556 Disconnect.wav
+12/16/2003  12:55            85,340 DTMF 0.WAV
+12/16/2003  12:55            38,130 DTMF 1.WAV
+12/16/2003  12:55            54,842 DTMF 2.WAV
+12/16/2003  12:55            81,914 DTMF 3.WAV
+12/16/2003  12:55            79,200 DTMF 4.WAV
+12/16/2003  12:55            57,548 DTMF 5.WAV
+12/16/2003  12:55            81,258 DTMF 6.WAV
+12/16/2003  12:55            23,028 DTMF 7.WAV
+12/16/2003  12:55            57,084 DTMF 8.WAV
+12/16/2003  12:55            58,328 DTMF 9.WAV
+12/16/2003  12:55            80,184 DTMF POUND.WAV
+12/16/2003  12:55            72,778 DTMF STAR.WAV
+12/16/2003  12:55           293,508 ring.wav
+              18 File(s)      1,241,336 bytes
+
+ Directory of \SimPhonics Tones Collection\GPWS
+
+06/04/2014  17:07    <DIR>          ALLIED_SIGNAL_MARK_IV
+06/04/2014  17:07    <DIR>          GENERIC_GPWS
+               0 File(s)              0 bytes
+
+ Directory of \SimPhonics Tones Collection\GPWS\ALLIED_SIGNAL_MARK_IV
+
+11/17/2000  08:52            37,914 GPWS_MODE_1_PULLUP_URGENT.WAV
+11/16/2000  10:51            33,221 GPWS_MODE_1_SINKRATE.WAV
+11/17/2000  08:53            38,424 GPWS_MODE_2_PULLUP.WAV
+11/16/2000  17:43            34,589 GPWS_MODE_2A_TERRAIN.WAV
+11/16/2000  17:44            33,169 GPWS_MODE_2B_TERRAIN.WAV
+11/16/2000  17:45           132,564 GPWS_MODE_3_DONTSINK.WAV
+11/16/2000  17:46            33,227 GPWS_MODE_4_TOO_LOW_GEAR.WAV
+11/16/2000  17:47            33,241 GPWS_MODE_4_TOO_LOW_TERRAIN.WAV
+11/16/2000  17:46            33,091 GPWS_MODE_4_TOO_LOWFLAPS.WAV
+11/16/2000  17:48            11,105 GPWS_MODE_5_GLIDESLOPE_1SEC.WAV
+11/16/2000  17:58            33,155 GPWS_MODE_5_GLIDESLOPE_2SEC.WAV
+11/17/2000  09:13            33,280 GPWS_MODE_5_GLIDESLOPE_3SEC.WAV
+11/16/2000  17:50             7,939 GPWS_MODE_6_200.WAV
+11/16/2000  17:50            10,117 GPWS_MODE_6_500.WAV
+11/16/2000  17:51            20,460 GPWS_MODE_6_MINIMUMS.WAV
+11/16/2000  17:58            60,610 GPWS_SELF_TEST_NORMAL.WAV
+              16 File(s)        586,106 bytes
+
+ Directory of \SimPhonics Tones Collection\GPWS\GENERIC_GPWS
+
+09/30/1998  20:48            15,639 Approaching Minimums.WAV
+10/26/1998  22:31            57,858 AutoPilotDisconnect.WAV
+09/30/1998  20:57             3,973 GPWS10.WAV
+09/30/1998  21:02             9,243 GPWS100.WAV
+09/30/1998  21:05            10,351 GPWS1000.WAV
+09/30/1998  20:58             4,605 GPWS20.WAV
+09/30/1998  21:02             8,557 GPWS200.WAV
+09/30/1998  21:05            15,115 GPWS2500.WAV
+09/30/1998  20:58             4,454 GPWS30.WAV
+09/30/1998  21:03            10,638 GPWS300.WAV
+09/30/1998  20:59             5,007 GPWS40.WAV
+09/30/1998  21:04             9,454 GPWS400.WAV
+09/30/1998  20:59             5,251 GPWS50.WAV
+09/30/1998  21:04            10,705 GPWS500.WAV
+09/30/1998  21:28             9,872 GPWSBankAngle.WAV
+09/30/1998  20:37             8,405 GPWSDontSink.wav
+09/30/1998  21:17             9,229 GPWSGlideSlope.wav
+09/30/1998  20:43             8,361 GPWSMinimums.wav
+09/30/1998  21:17             8,092 GPWSSinkRate.wav
+02/19/1997  16:36            29,644 GPWSSinkRateWhoopWhoopPullUp.wav
+09/30/1998  21:18             5,688 GPWSTerrain.WAV
+05/08/2000  16:24            12,846 GPWSTerrainTerrain.wav
+02/19/1997  16:36            26,521 GPWSTerrainWhoopWhoopPullUp.wav
+09/30/1998  20:37            13,077 GPWSTooLowFlaps.wav
+02/19/1997  16:35            10,266 GPWSTooLowGear.wav
+09/30/1998  20:38            11,154 GPWSTooLowTerrain.wav
+09/30/1998  21:17            13,998 GPWSWhoopWhoopPullUp.wav
+02/19/1997  16:37            25,096 GPWSWindShear3.wav
+              28 File(s)        363,099 bytes
+
+ 
+ Directory of \SimPhonics Tones Collection\MH-53J
+
+12/11/2001  18:57           404,512 attitude warning 10 deg nose up.wav
+12/11/2001  16:48           525,868 cypher text ky100.wav
+12/11/2001  16:58         4,020,812 external power trans rect.wav
+12/11/2001  18:56           711,078 gear up warning tone.wav
+12/11/2001  18:58           535,806 hover coupler altitude warn low.wav
+12/11/2001  16:47         1,487,052 KY100 NO KEYS LOAded self test.wav
+12/11/2001  16:28           788,556 MODE A UHF.WAV
+12/11/2001  16:49           690,028 plain text vhf.wav
+12/11/2001  16:34         1,336,556 SATCOM.WAV
+12/11/2001  16:50         1,048,780 uhf no codes loaded.wav
+12/11/2001  16:52           793,804 uhf radio cipher.wav
+12/11/2001  16:31           614,284 VHF 1 QUE TONE.WAV
+12/11/2001  16:43           671,052 VHF FM PLAIN TEXT.WAV
+12/11/2001  16:40           672,876 VHF SECURE LOAD TONE.WAV
+12/11/2001  16:32           574,956 VHF2 QUE TONES.WAV
+12/11/2001  16:26         1,614,476 VVWS Tones.wav
+              16 File(s)     16,490,496 bytes
+
+ Directory of \SimPhonics Tones Collection\MISC
+
+02/18/1997  16:59            11,915 altitude Alert.wav
+02/19/1997  16:54            11,403 apdisco.wav
+02/25/1997  22:54            48,294 clacker.wav
+12/08/1998  16:50            33,128 elt.wav
+01/21/1999  15:03            18,060 IOSCall.wav
+08/25/1999  15:01         1,043,360 MasterCaution.wav
+10/09/1998  15:26            70,674 pjgearwarn.wav
+11/19/1998  00:09            76,784 pjoversp.wav
+10/13/1999  05:19            14,764 Ring.wav
+               9 File(s)      1,328,382 bytes
+
+ Directory of \SimPhonics Tones Collection\Nav Stations
+
+02/26/1999  18:47           561,464 ADF PCM Sample.wav
+06/02/2003  17:27            43,814 BACK COURSE MARKER.wav
+06/02/2003  17:24            14,784 INNER MARKER.wav
+06/26/2003  07:52            27,756 MIDDLE MARKER.wav
+06/05/2003  11:45            44,100 OUTER MARKER.wav
+01/25/2005  10:06           102,962 VHF Background Static.wav
+               6 File(s)        794,880 bytes
+
+ Directory of \SimPhonics Tones Collection\TCAS
+
+06/04/2014  17:09    <DIR>          MISC
+06/04/2014  17:09    <DIR>          TCAS 2000 RT-951
+               0 File(s)              0 bytes
+
+ Directory of \SimPhonics Tones Collection\TCAS\MISC
+
+04/28/2000  16:08            12,646 TCAS_Failed.wav
+04/28/2000  16:08            11,246 TCAS_Passed.wav
+04/28/2000  16:08            20,520 TCAS_Test.wav
+04/28/2000  16:08            18,046 TCAS_Traffic.wav
+               4 File(s)         62,458 bytes
+
+ Directory of \SimPhonics Tones Collection\TCAS\TCAS 2000 RT-951
+
+08/03/1999  15:01            53,708 lisa01.wav
+08/03/1999  15:03            50,888 lisa02.wav
+08/03/1999  15:04            66,344 lisa03.wav
+08/03/1999  15:04           138,930 lisa04.wav
+08/03/1999  15:05           158,714 lisa05.wav
+08/03/1999  15:06           182,820 lisa06.wav
+08/03/1999  15:07           149,950 lisa07.wav
+08/03/1999  15:08           192,938 lisa08.wav
+08/03/1999  15:08           245,166 lisa09.wav
+08/03/1999  15:09           138,514 lisa10.wav
+08/03/1999  15:09           157,708 lisa11.wav
+08/03/1999  15:10           175,150 lisa12.wav
+08/03/1999  15:10           238,564 lisa13.wav
+08/03/1999  15:11           124,822 lisa14.wav
+08/03/1999  15:11            50,024 lisa15.wav
+08/03/1999  15:12            44,004 lisa16.wav
+08/03/1999  15:12            74,384 lisa17.wav
+08/03/1999  15:13           180,560 lisa18.wav
+08/03/1999  15:14            50,440 lisa19.wav
+08/03/1999  15:16            56,116 lisa20.wav
+08/03/1999  15:19            56,538 lisa21.wav
+08/03/1999  15:22           315,294 lisa22.wav
+08/03/1999  15:24           337,694 lisa23.wav
+08/03/1999  15:25           385,490 lisa24.wav
+08/03/1999  15:29            63,404 lisa25.wav
+08/03/1999  15:30           180,560 lisa26.wav
+08/16/2013  13:32           336,380 lisa27.wav
+08/16/2013  13:40           193,370 lisa28.wav
+08/16/2013  13:41           173,970 lisa29.wav
+08/03/1999  15:51           138,204 mel32a.wav
+08/03/1999  15:32            51,680 mely27.wav
+08/03/1999  15:48            59,870 mely28.wav
+08/03/1999  15:49            74,144 mely29.wav
+08/03/1999  15:49           115,588 mely30.wav
+08/03/1999  15:50           110,170 mely31.wav
+08/03/1999  15:50           173,460 mely32.wav
+08/03/1999  15:52           162,700 mely33.wav
+08/03/1999  15:52           182,800 mely34.wav
+08/03/1999  15:52           109,222 mely35.wav
+08/03/1999  15:53           109,336 mely36.wav
+08/03/1999  15:55           148,622 mely37.wav
+08/03/1999  15:55           177,686 mely38.wav
+08/03/1999  16:00           111,792 mely39.wav
+08/03/1999  16:00            52,824 mely40.wav
+08/03/1999  16:01            36,674 mely41.wav
+08/03/1999  16:01            61,876 mely42.wav
+08/03/1999  16:02           180,560 mely43.wav
+08/03/1999  16:02            32,644 mely44.wav
+08/03/1999  16:03            42,604 mely45.wav
+08/03/1999  16:03            38,572 mely46.wav
+08/03/1999  16:04           238,692 mely47.wav
+08/03/1999  16:04           273,080 mely48.wav
+08/03/1999  16:05           335,488 mely49.wav
+08/03/1999  16:05            63,800 mely50.wav
+08/16/2013  13:34           268,114 mely51.wav
+08/16/2013  13:43           169,760 mely52.wav
+01/16/2014  22:23           183,596 mely52a.wav
+08/16/2013  13:44           153,610 mely53.wav
+08/16/2013  13:51           269,618 silence.wav
+08/03/1999  15:11           124,822 spacer.wav
+              60 File(s)      8,824,052 bytes
+
+ Directory of \SimPhonics Tones Collection\UH-1N
+
+03/13/1999  15:22             8,516 UH-1NPAXAlarm.wav
+               1 File(s)          8,516 bytes

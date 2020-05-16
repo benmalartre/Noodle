@@ -39,9 +39,9 @@ DeclareModule Transform2D
     localT.Matrix_t
     globalT.Matrix_t
     scale.Vector_t
-    rotate.f
     translate.Vector_t
-    skew.Vector_t
+    rotate.f
+    shear.f
     dirty.b
   EndStructure
   
@@ -73,6 +73,14 @@ DeclareModule Transform2D
     Transform2D::IDENTITIZE(_M)
     _M\m00 = _x
     _M\m11 = _y
+  EndMacro
+  
+  ; ------------------------------------------------------------------
+  ;   SHEARING MATRIX
+  ; ------------------------------------------------------------------
+  Macro SHEARING(_M, _s)
+    Transform2D::IDENTITIZE(_M)
+    _M\m01 = _s
   EndMacro
   
   ; ------------------------------------------------------------------
@@ -122,6 +130,14 @@ DeclareModule Transform2D
   EndMacro
   
   ; ------------------------------------------------------------------
+  ;   SHEAR
+  ; ------------------------------------------------------------------
+  Macro SHEAR(_T, _x, _y)
+    _T\shear + _y
+    _T\dirty = Transform2D::#DIRTY_SRT
+  EndMacro
+  
+  ; ------------------------------------------------------------------
   ;   USEFUL MATRICES
   ; ------------------------------------------------------------------
   Global IDENTITY.Matrix_t
@@ -129,11 +145,11 @@ DeclareModule Transform2D
   
   Global FLIPX.Matrix_t
   IDENTITIZE(FLIPX)
-  FLIPX\m00 = -1
+  FLIPX\m11 = -1
   
   Global FLIPY.Matrix_t
   IDENTITIZE(FLIPY)
-  FLIPY\m11 = -1
+  FLIPY\m00 = -1
   
   Global FLIPXY.Matrix_t
   IDENTITIZE(FLIPXY)
@@ -281,10 +297,9 @@ Module Transform2D
     *t\scale\x = 1
     *t\scale\y = 1
     *t\rotate = 0
+    *t\shear = 0
     *t\translate\x = 0
     *t\translate\y = 0
-    *t\skew\x = 0
-    *t\skew\y = 0
   EndProcedure
   
   ; -----------------------------------------------------------------------------
@@ -292,6 +307,14 @@ Module Transform2D
   ; -----------------------------------------------------------------------------
   Procedure Compute(*t.Transform_t, *p.Transform_t=#Null)
     If *t\dirty = #DIRTY_SRT
+;       Define.Matrix_t S, R, T, H
+;       SHEARING(H, *t\shear)
+;       SCALING(S, *t\scale\x, *t\scale\y)
+;       ROTATION(R, *t\rotate)
+;       TRANSLATION(T, *t\translate\x, *t\translate\y)
+;       Multiply(*t\localT, S, H)
+;       MultiplyInPlace(*t\localT, R)
+;       MultiplyInPlace(*t\localT, T)
       Define.Matrix_t S, R, T
       SCALING(S, *t\scale\x, *t\scale\y)
       ROTATION(R, *t\rotate)
@@ -314,6 +337,31 @@ Module Transform2D
       
     *t\dirty = #DIRTY_CLEAN
   EndProcedure
+  
+  ; -----------------------------------------------------------------------------
+  ;   MATRIX TO SRT
+  ; -----------------------------------------------------------------------------
+  Procedure MatrixToSRT(*m.Matrix_t, *t.Transform_t)
+    ; rotation
+    *t\rotate = ATan2(*m\m01, *m\m00)
+    ; shear
+    *t\shear = ATan2(*m\m11, *m\m20) - Math::#F32_PI_2 - *t\rotate
+    ; scale
+    *t\scale\x = Sqr(*m\m00 * *m\m00 + *m\m01 * *m\m01)
+    *t\scale\y = Sqr(*m\m10 * *m\m10 + *m\m11 * *m\m11) * Cos(*t\shear)
+    ; translate
+    *t\translate\x = *m\m20
+    *t\translate\y = *m\m21
+  EndProcedure
+  
+  ; -----------------------------------------------------------------------------
+  ;   SRT TO MATRIX
+  ; -----------------------------------------------------------------------------
+  Procedure SRTToMatrix(*t.Transform_t, *m.Matrix_t)
+    Compute(*t)
+    CopyMemory(*t\localT, *m, SizeOf(Matrix_t)) 
+  EndProcedure
+  
 
 EndModule
 
@@ -1134,10 +1182,11 @@ Module Vector
       
 ;       Vector::AccumulatedTransform(
 
-      RestoreVectorState()
+      
       Vector3::Set(*item\bbox\origin, x + w*0.5, y+h*0.5, 0)
       Vector3::Set(*item\bbox\extend, w*0.5, h*0.5, 0)
       VectorSourceColor(RGBA(255,222,111,255))
+      RestoreVectorState()
       ResetPath()
     EndIf
 
@@ -1931,7 +1980,11 @@ Module Vector
   ; ----------------------------------------------------------------------------
   ;   ACCUMULATED TRANSFORM
   ; ----------------------------------------------------------------------------
+<<<<<<< HEAD
   Procedure AccumulatedInverseTransform(*item.Item_t, *m.Transform2D::Matrix_t)
+=======
+  Procedure AccumulatedInverseTransform(*item.Item_t, *T.Transform2D::Matrix_t)
+>>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
     If *item\parent
       Define NewList *parents.Item_t()
       Define *parent.Item_t = *item
@@ -2121,10 +2174,17 @@ Module Vector
 EndModule
 
 
+<<<<<<< HEAD
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 1933
 ; FirstLine = 1930
 ; Folding = -----------------
+=======
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 1188
+; FirstLine = 1171
+; Folding = ------------------
+>>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
 ; EnableXP

@@ -214,8 +214,8 @@ Procedure Draw(*app.Application::Application_t)
 
 
  Define useJoystick.b = #False
- Define width = 2048
- Define height = 360
+ Define width = 1024
+ Define height = 720
  Define model.m4f32
  ; Main
  Globals::Init()
@@ -249,9 +249,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 216
-; FirstLine = 169
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 217
+; FirstLine = 194
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

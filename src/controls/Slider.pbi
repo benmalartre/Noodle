@@ -188,10 +188,9 @@ Module ControlSlider
   Class::DEF( ControlSlider )
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 98
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 130
+; FirstLine = 118
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

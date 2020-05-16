@@ -10,12 +10,12 @@ Global model.Math::m4f32
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  ViewportUI::SetContext(*viewport)
-;   Scene::Update(Scene::*current_scene)
+  GLContext::SetContext(*app\context)
+;   Scne::Update(Scene::*current_scene)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *layer, *app\camera)
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -24,7 +24,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
 EndProcedure
 
@@ -47,17 +47,16 @@ If Time::Init()
  *app = Application::New("TestMesh",width,height)
 
  If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+   *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
    *app\context = *viewport\context
    
-  View::SetContent(*app\manager\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
   
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -101,9 +100,8 @@ If Time::Init()
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 36
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 58
+; FirstLine = 54
 ; Folding = -
 ; EnableXP

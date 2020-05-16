@@ -3919,7 +3919,7 @@ Module Matrix3
     det + *o\m01 * (*o\m12 * *o\m20 - *o\m10 * *o\m22)
     det + *o\m02 * (*o\m10 * *o\m21 - *o\m11 * *o\m20)
     
-    If determinant <> 0
+    If det <> 0
       Define invdet.f = 1 / det
       *m\m00 = (*o\m11 * *o\m22 - *o\m12 * *o\m21) * invdet
       *m\m01 = (*o\m21 * *o\m02 - *o\m22 * *o\m01) * invdet
@@ -4382,9 +4382,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 418
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 3916
+; FirstLine = 3907
 ; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

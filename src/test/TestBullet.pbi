@@ -229,7 +229,7 @@ Color::Set(color,1.0,0.5,0.4,1.0)
   For x=0 To 4
     For y=0 To 12
       For z=0 To 4
-        Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_TEAPOT)
+        Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_BUNNY)
         Object3D::SetShader(*cube,*s)
         ;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
         Object3D::AddChild(*root,*cube)
@@ -295,10 +295,10 @@ Procedure Draw(*app.Application::Application_t)
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
-
   
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *default\buffer)
+
+    
   GLCheckError("TEST BULLET END DRAW")
   
 ;   Polymesh::Draw(*teapot)
@@ -349,9 +349,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestBullet",width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
-     
-    View::SetContent(*app\window\main,*viewport)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+     *app\context = *viewport\context
+;     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
@@ -413,12 +413,14 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 289
+; FirstLine = 289
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
+; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode
