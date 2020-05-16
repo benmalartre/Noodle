@@ -471,15 +471,8 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-<<<<<<< HEAD
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 232
-=======
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 268
-; FirstLine = 253
->>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
+; CursorPosition = 445
+; FirstLine = 410
 ; Folding = ----
 ; EnableXP
-; EnableUnicode

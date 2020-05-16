@@ -126,7 +126,7 @@ Module BulletConstraint
     Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
     
     *Me\objA  = *objA
-    *Me\    objB = *objB
+    *Me\objB = *objB
     *Me\bodyA = *objA\rigidbody
     *Me\bodyB = *objB\rigidbody
     
@@ -202,8 +202,8 @@ Module BulletConstraint
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 128
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 131
 ; FirstLine = 124
 ; Folding = ---
 ; EnableXP

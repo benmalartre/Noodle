@@ -1980,11 +1980,7 @@ Module Vector
   ; ----------------------------------------------------------------------------
   ;   ACCUMULATED TRANSFORM
   ; ----------------------------------------------------------------------------
-<<<<<<< HEAD
-  Procedure AccumulatedInverseTransform(*item.Item_t, *m.Transform2D::Matrix_t)
-=======
   Procedure AccumulatedInverseTransform(*item.Item_t, *T.Transform2D::Matrix_t)
->>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
     If *item\parent
       Define NewList *parents.Item_t()
       Define *parent.Item_t = *item
@@ -2173,18 +2169,8 @@ Module Vector
 
 EndModule
 
-
-<<<<<<< HEAD
-
-
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1933
-; FirstLine = 1930
-; Folding = -----------------
-=======
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1188
-; FirstLine = 1171
+; CursorPosition = 1984
+; FirstLine = 1978
 ; Folding = ------------------
->>>>>>> 80fd5cb362d80b22ca7a29c82ec8a880bd072697
 ; EnableXP
