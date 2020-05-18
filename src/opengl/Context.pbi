@@ -116,7 +116,7 @@ Module GLContext
 
           *Me\ID = ctx
         CompilerElse
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0, #PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
 
         CompilerEndIf
@@ -133,7 +133,7 @@ Module GLContext
       ;   WINDOWS
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+        *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0, #PB_OpenGL_Keyboard)
         SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
         
         ; load extensions and setup shaders
@@ -154,7 +154,7 @@ Module GLContext
       ;   LINUX
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
           
           ; load extensions and setup shaders
@@ -292,9 +292,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 252
-; FirstLine = 242
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 156
+; FirstLine = 101
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

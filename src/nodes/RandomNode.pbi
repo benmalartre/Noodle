@@ -64,6 +64,7 @@ Module RandomNode
   EndProcedure
   
   Procedure Evaluate(*node.RandomNode_t)
+    Protected *output.NodePort::NodePort_t = *node\outputs()
     FirstElement(*node\inputs())
     Protected *seedArray.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
     NextElement(*node\inputs())
@@ -73,16 +74,29 @@ Module RandomNode
     Protected *meanValueArray.CArray::CArrayT = NodePort::AcquireInputData(*node\inputs())
     NextElement(*node\inputs())
     Protected *varianceArray.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs())
+    
+    If Not CArray::GetCount(*seedArray) Or
+       Not CArray::GetCount(*timeVaryingArray) Or
+       Not CArray::GetCount(*meanValueArray) Or
+       Not CArray::GetCount(*varianceArray) :
+      Protected *out.CArray::CArrayT
+      *out = *output\attribute\data
+      CArray::SetCount(*out, 0)
+      ProcedureReturn
+    EndIf
+
+      
     Protected varianceConstant.b = Bool(CArray::GetCount(*varianceArray)=1)
     Protected variance.f = CArray::GetValueF(*varianceArray,0)
     variance = Max(variance,0)
     
     Protected variancei.f
-    Protected *output.NodePort::NodePort_t = *node\outputs()
+    
     Protected *input.NodePort::NodePort_t
     
     Protected i.i
     Protected time.f = Time::currentframe
+    Protected r.f
     If CArray::GetValueB(*timeVaryingArray,0)
       RandomSeed(CArray::GetValueI(*seedArray,0)+time+i)
     Else
@@ -104,15 +118,15 @@ Module RandomNode
         If varianceConstant Or Not CArray::GetCount(*varianceArray) = CArray::GetCount(*iIn)
           For i=0 To *iIn\itemCount-1
             
-            Protected r.f = Random(variance*2)
-            int = CArray::GetValueI(*iOut,i)-variance+r
+            r.f = Random(variance*2)
+            int = CArray::GetValueI(*iIn,i)-variance+r
             CArray::SetValueI(*iOut,i,int)
           Next i
         Else
           For i=0 To CArray::GetCount(*iIn)-1
             variancei = CArray::GetValueI(*varianceArray,i)
             r.f = Random(variancei*2)
-            int = CArray::GetValueI(*iOut,i)-variancei+r
+            int = CArray::GetValueI(*iIn,i)-variancei+r
             CArray::SetValueI(*iOut,i,int)
           Next i
         EndIf
@@ -133,15 +147,14 @@ Module RandomNode
           For i=0 To *fIn\itemCount-1
             
             r.f = Random(variance*2)
-            float = CArray::GetValueF(*iOut,i)-variance+r
-            CArray::SetValueI(*iOut,i,float)
+            float = CArray::GetValueF(*fIn,i)-variance+r
+            CArray::SetValueF(*fOut,i,float)
           Next i
         Else
-          For i=0 To CArray::GetCount(*iIn)-1
-            variancef = CArray::GetValueF(*varianceArray,i)
-            r.f = Random(variancef*2)
-            float = CArray::GetValueF(*iOut,i)-variancef+r
-            CArray::SetValueF(*iOut,i,float)
+          For i=0 To CArray::GetCount(*fIn)-1
+            r.f = Random(CArray::GetValueF(*varianceArray,i) * 2)
+            float = CArray::GetValueF(*fIn,i)-variance+r
+            CArray::SetValueF(*fOut,i,float)
           Next i
         EndIf
         
@@ -167,7 +180,7 @@ Module RandomNode
             rx.f = -variance + (Random(100)/50)*variance
             ry.f = -variance + (Random(100)/50)*variance
             rz.f = -variance + (Random(100)/50)*variance
-            *v = CArray::GetValue(*vOut,i);-variance+r
+            *v = CArray::GetValue(*vIn,i);-variance+r
             Vector3::Set(v2,rx,ry,rz)
             Vector3::AddInPlace(*v,v2)
             CArray::SetValue(*vOut,i,*v)
@@ -180,17 +193,14 @@ Module RandomNode
             rx.f = -variance + (Random(100)/50)*variance
             ry.f = -variance + (Random(100)/50)*variance
             rz.f = -variance + (Random(100)/50)*variance
-            *v = CArray::GetValue(*vOut,i);-variance+r
+            *v = CArray::GetValue(*vIn,i);-variance+r
             Vector3::Set(v2,rx,ry,rz)
             Vector3::AddInPlace(*v,v2)
             CArray::SetValue(*vOut,i,*v)
     
           Next i
         EndIf
-        
-  
-      
-        
+
       Case Attribute::#ATTR_TYPE_UNDEFINED
         Debug *output\name + "DataType UNDEFIEND"
         
@@ -237,8 +247,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 79
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 139
+; FirstLine = 101
 ; Folding = --
 ; EnableXP

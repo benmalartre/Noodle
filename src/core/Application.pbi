@@ -724,7 +724,7 @@ CompilerEndIf
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
-    Handle::Resize(*Me\handle,*camera)
+    ;Handle::Resize(*Me\handle,*camera)
     
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
@@ -742,23 +742,23 @@ CompilerEndIf
     
     Protected ilayer.Layer::ILayer = *layer
     ilayer\Draw(*Me\context)
-    If *Me\tool
-      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
-      glUseProgram(*wireframe\pgm)
-
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
-      
-      Handle::Draw( *Me\handle,*Me\context) 
-    EndIf
+;     If *Me\tool
+;       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
+;       glUseProgram(*wireframe\pgm)
+; 
+;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
+;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
+;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
+;       
+;       Handle::Draw( *Me\handle,*Me\context) 
+;     EndIf
     
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 627
-; FirstLine = 607
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 726
+; FirstLine = 695
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

@@ -115,7 +115,6 @@ Module AudioDACNode
       STK::Initialize()
     EndIf
     
-      
     *node\node = STK::StreamSetup(STK::*DAC, 1)
 
     NodePort::SetupConnectionCallback(*input0, @OnConnectInput())
@@ -131,7 +130,7 @@ Module AudioDACNode
     Protected *volume.NodePort::NodePort_t = *node\inputs()
     Protected *aVolume.CArray::CArrayBool  =  NodePort::AcquireInputData(*volume)
     
-    STK::SetNodeVolume(*node\node, CArray::GetValueF(*aVolume, 0))
+    ;STK::SetNodeVolume(*node\node, CArray::GetValueF(*aVolume, 0))
     
     Protected *input.NodePort::NodePort_t
     While NextElement(*node\inputs())
@@ -184,8 +183,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 118
-; FirstLine = 114
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 49
 ; Folding = ---
 ; EnableXP

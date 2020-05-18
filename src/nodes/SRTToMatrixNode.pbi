@@ -71,14 +71,21 @@ Module SRTToMatrixNode
 
       Protected *m_ori.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*node\inputs())
       Protected ori_nb = CArray::GetCount(*m_ori)
+      If ori_nb = 0 : ProcedureReturn : EndIf
       Protected ori_const.b = Bool(ori_nb=1);*node\inputs()\constant
       SelectElement(*node\inputs(),2)
       Protected *m_pos.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
       Protected pos_nb = CArray::GetCount(*m_pos)
       Protected pos_const.b = Bool(pos_nb=1);*node\inputs()\constant
-      Protected nb = pos_nb;
-      If scl_nb>nb:nb=scl_nb:EndIf
-      If ori_nb>nb:nb=ori_nb:EndIf
+      
+      Protected nb
+      If pos_nb = 0 Or ori_nb = 0 Or scl_nb = 0
+        nb = 0
+      Else
+        nb = pos_nb
+        If scl_nb>nb:nb=scl_nb:ElseIf scl_nb = 0 : nb = 0 : EndIf
+        If ori_nb>nb:nb=ori_nb:ElseIf ori_nb = 0 : nb = 0 : EndIf
+      EndIf
       
       SelectElement(*node\outputs(),0)
       Protected *output.NodePort::NodePort_t = *node\outputs()
@@ -145,8 +152,8 @@ EndModule
 ;  EOF
 ; ==============================================================================
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 28
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

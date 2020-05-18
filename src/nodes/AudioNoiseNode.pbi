@@ -99,7 +99,7 @@ Module AudioNoiseNode
       If *dst\class\name = "AudioDACNode"
         Define *DAC.AudioDACNode::AudioDACNode_t = *dst
         *stream = *DAC\node
-        *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
+        *node\node = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 220, #True)
       Else
         Define *audio.AudioNode::AudioNode_t = *dst
         If *audio And *audio\node
@@ -158,8 +158,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 45
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 67
 ; Folding = --
 ; EnableXP

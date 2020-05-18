@@ -100,7 +100,7 @@ EndProcedure
   
 STK::Initialize()
 *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
-STK::SetNodeVolume(*stream, 0.5)
+;STK::SetNodeVolume(*stream, 0.5)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
 OpenGadgetList(*ui\container)
@@ -203,8 +203,8 @@ STK::Terminate()
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 117
-; FirstLine = 109
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 102
+; FirstLine = 76
 ; Folding = -
 ; EnableXP

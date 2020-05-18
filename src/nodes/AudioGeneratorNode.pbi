@@ -72,6 +72,7 @@ Module AudioGeneratorNode
 
     ; attributes affects
     Node::PortAffectByName(*node, "Mute", "Output")
+    Node::PortAffectByName(*node, "Volume", "Output")
     Node::PortAffectByName(*node, "Mode", "Output")
     Node::PortAffectByName(*node, "Frequency", "Output")
     Node::PortAffectByName(*node, "T60", "Output")
@@ -93,18 +94,23 @@ Module AudioGeneratorNode
     SelectElement(*node\inputs(), 0)
     Protected *mute.NodePort::NodePort_t = *node\inputs()
     SelectElement(*node\inputs(), 1)
-    Protected *mode.NodePort::NodePort_t = *node\inputs()
+    Protected *volume.NodePort::NodePort_t = *node\inputs()
     SelectElement(*node\inputs(), 2)
+    Protected *mode.NodePort::NodePort_t = *node\inputs()
+    SelectElement(*node\inputs(), 3)
     Protected *frequency.NodePort::NodePort_t = *node\inputs()
     
-    
+
     Protected *aMute.CArray::CArrayBool =  NodePort::AcquireInputData(*mute)
+    Protected *aVolume.CArray::CArrayFloat =  NodePort::AcquireInputData(*volume)
     Protected *aFrequency.CArray::CArrayFloat =  NodePort::AcquireInputData(*frequency)
     Protected *aMode.CArray::CArrayInt =  NodePort::AcquireInputData(*mode)
     Protected *aOutput.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
     CArray::SetCount(*aOutput,1)
     
     *node\label = STK::generator_names(CArray::GetValueI(*aMode, 0))
+    
+    ;Stk::SetGeneratorScalar(*node\node)
     
   EndProcedure
   
@@ -143,7 +149,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

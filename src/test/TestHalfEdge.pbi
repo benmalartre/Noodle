@@ -1,15 +1,11 @@
 ﻿; TEST HALF EDGE
 XIncludeFile "../objects/Geometry.pbi"
-XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../core/Slot.pbi"
 
 XIncludeFile "../objects/Octree.pbi"
-XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../core/Morton.pbi"
-XIncludeFile "../core/Application.pbi"
-
 XIncludeFile "../core/Application.pbi"
 
 UseModule Math
@@ -114,13 +110,14 @@ Procedure Update(*app.Application::Application_t)
   EndIf
   
   GLContext::SetContext(*app\context)
-  Drawer::Flush(*drawer)
-  DrawSelected(*mesh\geom)
+
 
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   
   Application::Draw(*app, *layer, *app\camera)
+  Drawer::Flush(*drawer)
+  DrawSelected(*mesh\geom)
 
 ;   FTGL::BeginDraw(*app\context\writer)
 ;   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -130,7 +127,6 @@ Procedure Update(*app.Application::Application_t)
 ;   FTGL::EndDraw(*app\context\writer)
   
   GLContext::FlipBuffer(*app\context)
-  viewportUI::Blit(*viewport, *layer\buffer)
 
 EndProcedure
 
@@ -146,8 +142,9 @@ FTGL::Init()
    *app = Application::New("Test Half Edge",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\context)
-     
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+     *app\context = *viewport\context
+     *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -205,7 +202,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 75
+; CursorPosition = 105
+; FirstLine = 70
 ; Folding = -
 ; EnableXP

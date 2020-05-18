@@ -165,7 +165,7 @@ Window::OnEvent(*app\window, #PB_Event_SizeWindow)
 Controls::SetTheme(UIColor::#LIGHT_THEME)
 
 Scene::SelectObject(Scene::*current_scene, *teapot)
-ViewportUI::SetHandleTarget(*viewport, *teapot)
+;ViewportUI::SetHandleTarget(*viewport, *teapot)
 
 Procedure Update(*app.Application::Application_t)
   GLContext::SetContext(*app\context)
@@ -189,9 +189,9 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 185
-; FirstLine = 158
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 167
+; FirstLine = 128
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -93,7 +93,7 @@ Module AnimCurve
     While cx < width + ox
       cx + stepx
       cy = AnimX::evaluateCurve(cx, *crv\crv)
-      LineXY(lx - ox,ly - oy,cx - ox,cy - oy,RGB(*crv\color[0], *crv\color[1],*crv\color[2]))
+      LineXY(lx - ox,ly - oy, cx * (zoomx/100) - ox, cy * (zoomx/100) - oy,RGB(*crv\color[0], *crv\color[1],*crv\color[2]))
       lx = cx* (zoomx/100)
       ly = cy* (zoomx/100)
     Wend
@@ -101,8 +101,8 @@ Module AnimCurve
   EndProcedure
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 45
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 95
+; FirstLine = 40
 ; Folding = --
 ; EnableXP

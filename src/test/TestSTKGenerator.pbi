@@ -54,7 +54,10 @@
               running = #False  
             Else
               Define numRoots =  STK::StreamNumRoots(*stream)
+              Debug "### NUM ROOTS : "+Str(numRoots)
               Define result.b = STK::StreamStart(*stream)
+              Debug "### START STREAM : "+Str(result)
+
               running = #True
             EndIf
           ElseIf key = #PB_Shortcut_Space
@@ -94,7 +97,8 @@
       
     Define baseFrequency = 128
     For i=0 To numGenerators-1     
-      Define *generator.STK::Generator= STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, baseFrequency, #True)
+      Define *generator.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, baseFrequency, #True)
+      STK::SetNodeVolume(*generator, 1.0)
       AddElement(*generators())
       *generators() = *generator
       baseFrequency + Random(128)
@@ -104,7 +108,7 @@
       Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *generator, *slider)
       AddElement(*sliders())
      *sliders = *slider
-    Next
+   Next
     
     ControlProperty::AppendStop(*p)
     CloseGadgetList()
@@ -131,7 +135,8 @@
   
   STK::Initialize()
   *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
-  STK::SetNodeVolume(*stream, 1.0)
+
+  ;STK::SetNodeVolume(*stream, 1.0)
   
   For i=0 To 12
     *app = BuildApp(Random(5)+2)
@@ -142,8 +147,8 @@
   
   ;STK::StreamStop(*stream)
   STK::StreamClean(*stream)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 96
-; FirstLine = 85
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 137
+; FirstLine = 86
 ; Folding = -
 ; EnableXP

@@ -31,9 +31,9 @@ Module NodeSearch
     *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess,WindowID(window))
     SetWindowColor(*Me\window,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     *Me\input = StringGadget(#PB_Any,0,0,WindowWidth(*Me\window),30,"")
-    SetGadgetColor(*Me\input,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
+    SetGadgetColor(*Me\input,#PB_Gadget_BackColor,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     *Me\tree = ListViewGadget(#PB_Any,0,30,WindowWidth(*Me\window),WindowHeight(*Me\window)-30)
-    SetGadgetColor(*Me\tree,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG)
+    SetGadgetColor(*Me\tree,#PB_Gadget_BackColor,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Return,Globals::#SHORTCUT_ENTER)
     AddKeyboardShortcut(*Me\window,#PB_Shortcut_Up,Globals::#SHORTCUT_UP)
@@ -174,9 +174,8 @@ Module NodeSearch
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 31
-; FirstLine = 4
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 35
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

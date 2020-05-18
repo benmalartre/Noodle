@@ -64,18 +64,19 @@ DeclareModule STK
 ; 	  #GENERATOR_SINGWAVE
 ; 	  #GENERATOR_MODULATE
 ;     #GENERATOR_GRANULATE
-  EndEnumeration
+	EndEnumeration
 	
-	Dim generator_names.s(9)
+	Dim generator_names.s(6)
   generator_names(0)  = "ASYMP_GENERATOR" 
   generator_names(1)  = "NOISE_GENERATOR"
   generator_names(2)  = "BLIT_GENERATOR"
   generator_names(3)  = "BLITSAW_GENERATOR"  
   generator_names(4)  = "BLITSQUARE_GENERATOR" 
   generator_names(5)  = "SINEWAVE_GENERATOR"
-  generator_names(6)  = "SINGWAVE_GENERATOR"
-  generator_names(7)  = "GRANULATE_GENERATOR"
-  generator_names(8)  = "MODULATE_GENERATOR"
+  
+;   generator_names(6)  = "SINGWAVE_GENERATOR"
+;   generator_names(7)  = "GRANULATE_GENERATOR"
+;   generator_names(8)  = "MODULATE_GENERATOR"
   
   Enumeration
     #GEN_T60					; asymp t60
@@ -359,11 +360,11 @@ DeclareModule STK
     Global SetSampleRate.SETSAMPLERATE = GetFunction(STK_LIB, "STKSetSampleRate")
     
     
-    Global.b IsRoot.ISROOT = GetFunction(STK_LIB, "STKIsRoot")
-    Global SetAsRoot.SETASROOT = GetFunction(STK_LIB, "STKSetAsRoot")
+    Global.b IsRoot.ISROOT = GetFunction(STK_LIB, "STKNodeIsRoot")
+    Global SetAsRoot.SETASROOT = GetFunction(STK_LIB, "STKSetNodeIsRoot")
     Global GetStream.GETSTREAM = GetFunction(STK_LIB, "STKGetStream")
     Global SetHasNoEffects.SETHASNOEFFECTS = GetFunction(STK_LIB, "STKSetHasNoEffects")
-    Global SetNodeVolume.SETNODEVOLUME = GetFunction(STK_LIB, "STKSetNodeVolume")
+    Global SetNodeVolume.SETNODEVOLUME = GetFunction(STK_LIB, "STKNodeSetVolume")
     Global NodeReset.NODERESET = GetFunction(STK_LIB, "STKNodeReset")
 
     Global StreamSetup.STREAMSETUP = GetFunction(STK_LIB, "STKStreamSetup")
@@ -372,13 +373,13 @@ DeclareModule STK
     Global StreamStop.STREAMSTOP = GetFunction(STK_LIB, "STKStreamStop")
     Global StreamNumRoots.STREAMNUMROOTS = GetFunction(STK_LIB, "STKStreamNumRoots")
     
-    Global AddGenerator.ADDGENERATOR = GetFunction(STK_LIB, "STKAddGenerator")
-    Global AddEnvelope.ADDENVELOPE= GetFunction(STK_LIB, "STKAddEnvelope")
-    Global AddArythmetic.ADDARYTHMETIC = GetFunction(STK_LIB, "STKAddArythmetic")
-    Global AddEffect.ADDEFFECT = GetFunction(STK_LIB, "STKAddEffect")
-    Global AddFilter.ADDFILTER = GetFunction(STK_LIB, "STKAddFilter")
-    Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKAddBuffer")
-    Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKAddReader")
+    Global AddGenerator.ADDGENERATOR = GetFunction(STK_LIB, "STKStreamAddGenerator")
+    Global AddEnvelope.ADDENVELOPE= GetFunction(STK_LIB, "STKStreamAddEnvelope")
+    Global AddArythmetic.ADDARYTHMETIC = GetFunction(STK_LIB, "STKStreamAddArythmetic")
+    Global AddEffect.ADDEFFECT = GetFunction(STK_LIB, "STKStreamAddEffect")
+    Global AddFilter.ADDFILTER = GetFunction(STK_LIB, "STKStreamAddFilter")
+    Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKStreamAddBuffer")
+    Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKStreamAddReader")
     
     Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKRemoveNode")
     
@@ -391,6 +392,7 @@ DeclareModule STK
     Global EnvelopeKeyOn.ENVELOPEKEYON = GetFunction(STK_LIB, "STKEnvelopeKeyOn")
     Global EnvelopeKeyOff.ENVELOPEKEYOFF = GetFunction(STK_LIB, "STKEnvelopeKeyOff")
     
+    Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticScalar.SETARYTHMETICSCALAR = GetFunction(STK_LIB, "STKSetArythmeticScalar")
     Global SetArythmeticLHS.SETARYTHMETICLHS = GetFunction(STK_LIB, "STKSetArythmeticLHS")
@@ -517,7 +519,9 @@ Module STK
 ;   EndProcedure
   
   Procedure Initialize()
+    Debug "STK INITIALIZE !!!"
     *DAC = STK::Init()
+    Debug "DAC : "+Str(*DAC)
     STK::InitRawWaves()
     ProcedureReturn *DAC
   EndProcedure
@@ -528,8 +532,8 @@ Module STK
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 383
-; FirstLine = 369
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 71
+; FirstLine = 65
 ; Folding = ----
 ; EnableXP
