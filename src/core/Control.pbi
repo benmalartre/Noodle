@@ -17,10 +17,6 @@ DeclareModule Control
     #PB_EventType_Hide
     #PB_EventType_Enable
     #PB_EventType_Disable
-    CompilerIf #PB_Compiler_Version < 560
-      #PB_EventType_Resize
-    CompilerEndIf
-    
     #PB_EventType_Attribute
   EndEnumeration
   
@@ -28,6 +24,7 @@ DeclareModule Control
   Enumeration
     #CHECK
     #ICON
+    #BUTTON
     #RADIO
     #COMBO
     #ENUM
@@ -36,6 +33,7 @@ DeclareModule Control
     #DIVOT
     #EDIT
     #POPUP
+    #TEXT
     #INPUT
     #NUMBER
     #GROUP
@@ -86,7 +84,7 @@ DeclareModule Control
     enable     .i
     options    .i
     state      .i
-    *on_change .Signal::Signal_t 
+    *on_change.Signal::Signal_t 
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -96,7 +94,6 @@ DeclareModule Control
     OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
     Pick(*Me.Control_t, mx, my)
-    
   EndInterface
   
   Declare Delete(*Me.Control_t)
@@ -271,7 +268,7 @@ Module Control
   ; ---[ Invalidate ]-----------------------------------------------------------
   Procedure.i Invalidate( *Me.Control_t )
     ; ---[ Sanity Check ]-------------------------------------------------------
-    If *Me\parent
+    If *Me\parent And Not *Me\parent\class\name = "View"
       Protected *obj.IControl = *Me\parent
       ; ...[ Ask Parent To Redraw Me ]..........................................
       *obj\OnEvent( #PB_EventType_DrawChild, *Me )
@@ -318,8 +315,9 @@ Module Control
 ;   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 3
-; Folding = -B+-
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 95
+; FirstLine = 87
+; Folding = -A--
 ; EnableXP
 ; EnableUnicode

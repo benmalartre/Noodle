@@ -12,6 +12,7 @@ XIncludeFile "Group.pbi"
 XIncludeFile "Head.pbi"
 XIncludeFile "Knob.pbi"
 XIncludeFile "Slider.pbi"
+XIncludeFile "Color.pbi"
 XIncludeFile "ColorWheel.pbi"
 
 ;========================================================================================
@@ -50,7 +51,6 @@ DeclareModule ControlProperty
     decoration.i
     lock.Control::IControl
     refresh.Control::IControl
-    ; drawing position
     dx.i
     dy.i
     
@@ -62,29 +62,31 @@ DeclareModule ControlProperty
   EndInterface
   
   Declare New( *object.Object::Object_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
-  Declare Delete(*ctrl.ControlProperty_t)
+  Declare Delete(*Me.ControlProperty_t)
   Declare OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
+  Declare Draw( *Me.ControlProperty_t)
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
   Declare AppendStop( *Me.ControlProperty_t )
   Declare RowStart( *Me.ControlProperty_t )
   Declare RowEnd( *Me.ControlProperty_t )
   Declare AddHead( *Me.ControlProperty_t)
-  Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
-  Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
-  Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*obj.Object::Object_t)
-  Declare AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
-  Declare AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*obj.Object::Object_t)
-  Declare AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*obj.Object::Object_t)
-  Declare AddMatrix4Control(*Me.ControlProperty_t,name.s,label.s,*value.m4f32,*obj.Object::Object_t)
-  Declare AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attr.Attribute::Attribute_t)
+  Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
+  Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*attr.Attribute::Attribute_t)
+  Declare AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*attr.Attribute::Attribute_t)
+  Declare AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*attr.Attribute::Attribute_t)
+  Declare AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*attr.Attribute::Attribute_t)
+  Declare AddMatrix4Control(*Me.ControlProperty_t,name.s,label.s,*value.m4f32,*attr.Attribute::Attribute_t)
+  Declare AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddColorWheelControl( *Me.ControlProperty_t,name.s)
-  Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
-  Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
+  Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
+  Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
+  Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=64)
-  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *obj.Object::Object_t)
-  Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
+  Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
   Declare EndGroup( *Me.ControlProperty_t)
   Declare Init( *Me.ControlProperty_t)
@@ -96,13 +98,13 @@ DeclareModule ControlProperty
   Declare GetControlByIndex(*Me.ControlProperty_t, index.i)
   Declare GetControlByName(*Me.ControlProperty_t, name.s)
   
-  Declare Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
-  
   DataSection 
     ControlPropertyVT: 
     Data.i @OnEvent()
     Data.i @Delete()
-    
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -117,144 +119,125 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   ;   CALLBACKS
   ; ----------------------------------------------------------------------------
-  Procedure OnCheckChange(*ctl.ControlCheck::ControlCheck_t, *obj.Object::Object_t, id.i=0, offset.i=0)    
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        Define *array.CArray::CArrayBool = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-        *attribute\dirty = #True
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t  = *port\attribute
-        Define *array.CArray::CArrayBool = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-        *port\dirty = #True
-        *attribute\dirty = #True
-
-    EndSelect
+  Procedure OnCheckChange(*ctl.ControlCheck::ControlCheck_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
+    Define *array.CArray::CArrayBool = *attr\data
+    PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+    *attr\dirty = #True
+    
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnCheckChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)    
-     Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        Define *array.CArray::CArrayLong = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-        *attribute\dirty = #True
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t  = *port\attribute
-        Define *array.CArray::CArrayLong = *attribute\data
-        PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-        *port\dirty = #True
-        *attribute\dirty = #True
-
-    EndSelect
+  Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)    
+    Define *array.CArray::CArrayLong = *attr\data
+    PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
+    *attr\dirty = #True
+    
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnLongChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)   
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        Define *array.CArray::CArrayInt = *attribute\data
-        PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
-        *attribute\dirty = #True
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t  = *port\attribute
-        Define *array.CArray::CArrayInt = *attribute\data
-        PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
-        *port\dirty = #True
-        *attribute\dirty = #True
-    EndSelect
+  Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
+    Define *array.CArray::CArrayInt = *attr\data
+    PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
+    *attr\dirty = #True
+
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnIntegerChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *obj.Object::Object_t, id.i=0, offset.i=0)
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        Define *array.CArray::CArrayFloat = *attribute\data
-        PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value)) 
-        *attribute\dirty = #True
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t  = *port\attribute
-        Define *array.CArray::CArrayFloat = *attribute\data
-        PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value))
-        *port\dirty = #True
-        *attribute\dirty = #True
-    EndSelect
+  Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
+    Debug "FLOAT CHANGE : "+ StrF(ValF(*ctl\value))
+    Define *array.CArray::CArrayFloat = *attr\data
+    PokeF(*array\data + id * *array\itemSize + offset, ValF(*ctl\value)) 
+    *attr\dirty = #True
+    
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnFloatChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *obj.Object::Object_t, id.i=0, offset.i=0)
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        
-        If *attribute
-          Define *array.CArray::CArrayStr = *attribute\data
-          *attribute\dirty = #True
-        EndIf
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *node.Node::Node_t = *port\node
-        Select *node\type 
-          Case "SetDataNode"
-            NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
-            *port\dirty = #True
-            
-          Case "GetDataNode"
-            NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
-            GetDataNode::ResolveReference(*port\node)
-
-            *port\dirty = #True
-            
-        EndSelect
-    EndSelect
+  Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
+;     Select *obj\class\name
+;       Case "Attribute"
+;         Define *attribute.Attribute::Attribute_t = *obj
+;         
+;         If *attribute
+;           Define *array.CArray::CArrayStr = *attribute\data
+;           *attribute\dirty = #True
+;         EndIf
+;         
+;       Case "NodePort"
+;         Define *port.NodePort::NodePort_t = *obj
+;         Define *node.Node::Node_t = *port\node
+;         Select *node\type 
+;           Case "SetDataNode"
+;             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
+;             *port\dirty = #True
+;             
+;           Case "GetDataNode"
+;             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
+;             GetDataNode::ResolveReference(*port\node)
+; 
+;             *port\dirty = #True
+;             
+;         EndSelect
+;     EndSelect
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
-  Procedure OnFileChange(*ctl.ControlEdit::ControlEdit_t, *obj.Object::Object_t, id.i=0, offset.i=0)
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        
-        If *attribute
-          Define *array.CArray::CArrayStr = *attribute\data
-          CArray::SetCount(*array, 1)
-          CArray::SetValueStr(*array, 0, *ctl\value)
-          *attribute\dirty = #True
-        EndIf
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Define *attribute.Attribute::Attribute_t = *port\attribute
-        If *attribute
-          Define *array.CArray::CArrayStr = *attribute\data
-          CArray::SetCount(*array, 1)
-          CArray::SetValueStr(*array, 0, *ctl\value)
-          *attribute\dirty = #True
-        EndIf
-    EndSelect
-    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
+  Procedure OnFileChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
+;     Select *obj\class\name
+;       Case "Attribute"
+;         Define *attribute.Attribute::Attribute_t = *obj
+;         
+;         If *attribute
+;           Define *array.CArray::CArrayStr = *attribute\data
+;           CArray::SetCount(*array, 1)
+;           CArray::SetValueStr(*array, 0, *ctl\value)
+;           *attribute\dirty = #True
+;         EndIf
+;         
+;       Case "NodePort"
+;         Define *port.NodePort::NodePort_t = *obj
+;         Define *attribute.Attribute::Attribute_t = *port\attribute
+;         If *attribute
+;           Define *array.CArray::CArrayStr = *attribute\data
+;           CArray::SetCount(*array, 1)
+;           CArray::SetValueStr(*array, 0, *ctl\value)
+;           *attribute\dirty = #True
+;         EndIf
+;     EndSelect
+;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnFileChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
-
+  
+  Procedure OnStringChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
+;     Select *obj\class\name
+;       Case "Attribute"
+;         Define *attribute.Attribute::Attribute_t = *obj
+;         
+;         If *attribute
+;           Define *array.CArray::CArrayStr = *attribute\data
+;           CArray::SetCount(*array, 1)
+;           CArray::SetValueStr(*array, 0, *ctl\value)
+;           *attribute\dirty = #True
+;         EndIf
+;         
+;       Case "NodePort"
+;         Define *port.NodePort::NodePort_t = *obj
+;         Define *attribute.Attribute::Attribute_t = *port\attribute
+;         If *attribute
+;           Define *array.CArray::CArrayStr = *attribute\data
+;           CArray::SetCount(*array, 1)
+;           CArray::SetValueStr(*array, 0, *ctl\value)
+;           *attribute\dirty = #True
+;         EndIf
+;     EndSelect
+;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
+  EndProcedure
+  Callback::DECLARECALLBACK(OnStringChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
   ; ----------------------------------------------------------------------------
@@ -318,8 +301,8 @@ Module ControlProperty
 
     If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
     
-     ; First get gadget under mouse
     StartDrawing( ImageOutput(*Me\imageID) )
+    DrawingMode(#PB_2DDrawing_AllChannels)
     *Me\pickID = Point(xm,ym)-1
     StopDrawing()
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
@@ -351,7 +334,7 @@ Module ControlProperty
         ; ---[ Draw ]---------------------------------------------------------------
         StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
         AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
-        VectorSourceColor(RGBA(0,0,0,255))
+        VectorSourceColor(RGBA(0,255,255,255))
         FillPath()
         
         For i=0 To iBound
@@ -373,7 +356,7 @@ Module ControlProperty
         ; ---[ Draw ]---------------------------------------------------------------
         StartVectorDrawing( ImageVectorOutput(*Me\imageID) )        
         AddPathBox( 0, 0, *Me\sizX, *Me\sizY )
-        VectorSourceColor(RGBA(0,0,0,255))
+        VectorSourceColor(RGBA(0,255,255,255))
         FillPath()
         *son = *Me\children(0)
         AddPathBox(*son\posX,*son\posY,*son\sizX,*son\sizY)
@@ -399,9 +382,6 @@ Module ControlProperty
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
     Protected curW .i
-   
-    ; ---[ Tag Picking Surface ]------------------------------------------------
-    DrawPickImage( *Me)    
     
     If *Me\chilcount
       ; ---[ Local Variables ]----------------------------------------------------
@@ -522,11 +502,8 @@ Module ControlProperty
     *Me\append = #False
     
     ; ---[ Recompute Size ]-----------------------------------------------------
-    *Me\sizY = *Me\dy
-    ResizeGadget(*Me\gadgetID,#PB_Ignore,#PB_Ignore,#PB_Ignore,*Me\sizY)
-    
-    ; ---[ Update Control And Children ]----------------------------------------
-    Draw( *Me )
+    *Me\sizY = Math::Max(*Me\dy, *Me\sizY)
+    ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
 
   EndProcedure
   
@@ -555,6 +532,7 @@ Module ControlProperty
 
     ; Update Status
     *Me\row = #False
+    
   EndProcedure
   
 ;   ; ---[ Draw Title Bar ]-------------------------------------------------------
@@ -601,9 +579,35 @@ Module ControlProperty
     Else
       *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       Append( *Me, *btn)
-      If Not *Me\row : *Me\dy + height : EndIf
+      If Not *Me\row : *Me\dy + height : Else : *Me\dx + width : EndIf
     EndIf
     ProcedureReturn(*btn)
+  
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Icon Control
+  ;-----------------------------------------------------------------------------
+  Procedure AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
+    ; Sanity Check
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.IControlProperty = *Me
+    Protected *icon.ControlIcon::ControlIcon_t
+    Protected *ctl.Control::Control_t
+    
+    ; Add Parameter
+    If  ListSize(*Me\groups()) And *Me\groups()
+      *icon = ControlIcon::New( *Me ,name, type, #False, #False , *Me\dx, *Me\dy, width, height )
+      ControlGroup::Append(*Me\groups(),*icon)
+      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
+    Else
+      *icon = ControlIcon::New( *Me ,name, type, #False, #False , *Me\dx, *Me\dy, width, height )
+      Append( *Me, *icon)
+      If *Me\row  : *Me\dx + width : Else : *Me\dy + height : EndIf
+    EndIf
+    
+    ProcedureReturn(*icon)
   
   EndProcedure
   
@@ -621,6 +625,7 @@ Module ControlProperty
     
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
+      *knob = ControlKnob::New(*Me,name,0, 0,*Me\dx,*Me\dy,width,height, color )
       ControlGroup::Append(*Me\groups(),*knob)
       If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
@@ -636,7 +641,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Bool Control
   ;-----------------------------------------------------------------------------
-  Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*obj.Object::Object_t)
+  Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -662,16 +667,8 @@ Module ControlProperty
     EndIf
     
      ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attribute, 0, 0)
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *port, 0, 0)
-      EndSelect
-      
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attr, 0, 0)
     EndIf
     
     
@@ -683,7 +680,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Long Control
   ;-----------------------------------------------------------------------------
-  Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*obj.Object::Object_t)
+  Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not*Me : ProcedureReturn : EndIf
     
@@ -710,15 +707,8 @@ Module ControlProperty
     EndIf
 
      ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attribute, 0, 0)
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *port, 0, 0)
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -729,7 +719,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Slider Control 
   ;-----------------------------------------------------------------------------
-  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *obj.Object::Object_t)
+  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -752,15 +742,8 @@ Module ControlProperty
     EndIf
     
     ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attribute, 0, 0)
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *port, 0, 0)
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -773,7 +756,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Float Control 
   ;-----------------------------------------------------------------------------
-  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f, *obj.Object::Object_t)
+  Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f, *attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -800,15 +783,8 @@ Module ControlProperty
     EndIf
     
     ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attribute, 0, 0)
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *port, 0, 0)
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -820,7 +796,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Vector2 Control
   ;-----------------------------------------------------------------------------
-  Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*obj.Object::Object_t)
+  Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -862,18 +838,9 @@ Module ControlProperty
     EndIf
     
     ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
-          
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
     EndIf
     
     ; Offset for Next Control
@@ -884,7 +851,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Vector3 Control
   ;-----------------------------------------------------------------------------
-  Procedure AddVector3Control(*Me.ControlProperty_t, name.s, label.s, *value.v3f32,*obj.Object::Object_t)
+  Procedure AddVector3Control(*Me.ControlProperty_t, name.s, label.s, *value.v3f32,*attr.Attribute::Attribute_t)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -933,21 +900,10 @@ Module ControlProperty
     EndIf
 
     ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
-          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
-          
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
-          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
-          
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+      Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
     EndIf
     
     ; Offset for Next Control
@@ -958,7 +914,7 @@ Module ControlProperty
 ;--------------------------------------------------------------------
 ;  Add Vector4 Control
 ;--------------------------------------------------------------------
-Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*obj.Object::Object_t)
+Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*attr.Attribute::Attribute_t)
   ; Sanity Check
   ;------------------------------
   If Not *Me : ProcedureReturn : EndIf
@@ -1009,22 +965,10 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*o
   
   ; Connect Signal
   If *obj
-    Select *obj\class\name
-      Case "Attribute"
-        Define *attribute.Attribute::Attribute_t = *obj
-        Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
-        Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
-        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
-        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *wCtl, *attribute, 0, 12)
-        
-      Case "NodePort"
-        Define *port.NodePort::NodePort_t = *obj
-        Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
-        Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
-        Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
-        Signal::CONNECTCALLBACK(*wCtl\on_change, OnFloatChange, *wCtl, *port, 0, 12)
-        
-    EndSelect
+    Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+    Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+    Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
+    Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *wCtl, *attr, 0, 12)
   EndIf
   
   
@@ -1038,7 +982,7 @@ EndProcedure
   ;-----------------------------------------------------------------------------
   ; Add Quaternion Control
   ;-----------------------------------------------------------------------------
-  Procedure AddQuaternionControl(*Me.ControlProperty_t, name.s, label.s, *value.q4f32, *obj.Object::Object_t)
+  Procedure AddQuaternionControl(*Me.ControlProperty_t, name.s, label.s, *value.q4f32, *attr.Attribute::Attribute_t)
     ; Sanity Check
     ;------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -1097,23 +1041,11 @@ EndProcedure
     EndIf
     
     ; Connect Signal
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attribute, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attribute, 0, 4)
-          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attribute, 0, 8)
-          Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *attribute, 0, 12)
-          
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *port, 0, 0)
-          Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *port, 0, 4)
-          Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *port, 0, 8)
-          Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *port, 0, 12)
-          
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+      Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
+      Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *attr, 0, 12)
     EndIf
     
     ; Offset for Next Control
@@ -1192,7 +1124,7 @@ EndProcedure
 
   ; ---[ Add Reference Control  ]------------------------------------------
   ;--------------------------------------------------------------------
-  Procedure AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Procedure AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -1217,17 +1149,8 @@ EndProcedure
     
     ; Connect Signal
     ;---------------------------------
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attribute, 0, 0)
-          
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *port, 0, 0)
-          
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Add Group to PPG
@@ -1242,7 +1165,7 @@ EndProcedure
   
   ; ---[ Add File Control  ]------------------------------------------
   ;--------------------------------------------------------------------
-  Procedure AddFileControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Procedure AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -1258,8 +1181,6 @@ EndProcedure
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
     *ctl = ControlInput::New(*Me,*Me\dx,*Me\dy+2,(width-110),32, "File") 
-;     *ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
-    ;New(gadgetID.i,x.i, y.i, width.i, height.i, name.s, options.i=0)
     ControlGroup::Append( *group,*ctl)
     *btn = ControlButton::New(*Me, "Pick", "...",#False,0,0)
     ControlGroup::Append( *group,*btn)
@@ -1268,17 +1189,8 @@ EndProcedure
     
     ; Connect Signal
     ;---------------------------------
-    If *obj
-      Select *obj\class\name
-        Case "Attribute"
-          Define *attribute.Attribute::Attribute_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFileChange, *ctl, *attribute, 0, 0)
-          
-        Case "NodePort"
-          Define *port.NodePort::NodePort_t = *obj
-          Signal::CONNECTCALLBACK(*ctl\on_change, OnFileChange, *ctl, *port, 0, 0)
-          
-      EndSelect
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnFileChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Add Group to PPG
@@ -1293,12 +1205,12 @@ EndProcedure
   
   ; ---[ Add String Control  ]------------------------------------------
   ;--------------------------------------------------------------------
-  Procedure AddStringControl( *Me.ControlProperty_t,name.s,value.s,*obj.Object::Object_t)
+  Procedure AddStringControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
-    Protected *Ctl.Control::Control_t
+    Protected *ctl.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
@@ -1308,8 +1220,8 @@ EndProcedure
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    *Ctl = ControlEdit::New(*obj,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
-    ControlGroup::Append( *group,*Ctl)
+    *ctl = ControlEdit::New(*Me,name+"_Edit",value,5,*Me\dx,*Me\dy+2,(width-110),18) 
+    ControlGroup::Append( *group,*ctl)
 
     
     ControlGroup::RowEnd(*group)
@@ -1321,20 +1233,19 @@ EndProcedure
     
     ; Connect Signal
     ;---------------------------------
-    If *obj
-;        Object::SignalConnect(*obj,*Ctl\slot,0)
+    If *attr
+      Signal::CONNECTCALLBACK(*ctl\on_change, OnStringChange, *ctl, *attr, 0, 0)
     EndIf
-    
     
     ; Offset for Next Control
     ;---------------------------------
     *Me\dy +*group\sizY
-    ProcedureReturn(#True)
+    ProcedureReturn *ctl
   EndProcedure
 
   ; ---[ Add Color Control  ]------------------------------------------
   ;--------------------------------------------------------------------
-  Procedure AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*obj.Object::Object_t)
+  Procedure AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
   
     ; ---[ Sanity Check ]----------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -1524,8 +1435,6 @@ EndProcedure
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If Not *Me : ProcedureReturn : EndIf
-  
-    ; ---[ Add Parameter ]--------------------------------------------
     
     ; ---[ Draw Pick Image ]------------------------------------------
     DrawPickImage(*Me)
@@ -1578,7 +1487,7 @@ EndProcedure
   ; ============================================================================
   ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
-    
+    Debug "PROPERTY ON EVENT : "+Str(ev_code)
     Protected *c.Control::IControl = *Me\children(*Me\current)
     ; ---[ Local Variables ]----------------------------------------------------
     Protected  ev_data.Control::EventTypeDatas_t
@@ -1600,16 +1509,13 @@ EndProcedure
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version < 560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
+
         *Me\posX = *ev_data\x
         *Me\posY = *ev_data\y
         *Me\sizX = *ev_data\width 
 
-        ResizeGadget(*Me\gadgetID,#PB_Ignore,#PB_Ignore,*Me\sizX,#PB_Ignore)
+        ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
  
         ev_data\x = 0
         ev_data\y = #PB_Ignore
@@ -1632,31 +1538,25 @@ EndProcedure
               ev_data\width = wi
               ev_data\x     = *Me\posX + wi * d
               ev_data\y     = #PB_Ignore
-              CompilerIf #PB_Compiler_Version <560
-                son\OnEvent(Control::#PB_EventType_Resize, ev_data)
-              CompilerElse
-                son\OnEvent(#PB_EventType_Resize, ev_data)
-              CompilerEndIf
+              son\OnEvent(#PB_EventType_Resize, ev_data)
+
               If Not *Me\rowflags(c) : walk = #False : EndIf
             Next
             c + nbc_row - 1
           Else
             son = *Me\children(c)
             *son = son
+            If *son\type = Control::#ICON Or *son\type = Control::#TEXT: Continue : EndIf
             ev_data\width = *ev_data\width
             ev_data\x     = *son\posX
             ev_data\y     = *son\posY
-            CompilerIf #PB_Compiler_Version <560
-              son\OnEvent(Control::#PB_EventType_Resize, ev_data)
-            CompilerElse
-              son\OnEvent(#PB_EventType_Resize, ev_data)
-            CompilerEndIf
+            son\OnEvent(#PB_EventType_Resize, ev_data)
+
           EndIf
         Next
         
-        Draw( *Me )
         DrawPickImage(*Me)
-        
+        Draw( *Me )
         ProcedureReturn( #True )
           
       ; ------------------------------------------------------------------------
@@ -1934,46 +1834,47 @@ EndProcedure
       ;Debug ">> PopupWindow"
         
     EndSelect
-  
+    
+    Debug "PROPERTY ON EVENT : DONE!"
     ; ---[ Process Default ]----------------------------------------------------
     ProcedureReturn( #False )
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Test
-  ; ----------------------------------------------------------------------------
-  Procedure Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
-   
-    AppendStart(*prop)
-    AddBoolControl(*prop,"boolean","boolean",#False,*mesh)
-    AddFloatControl(*prop,"float","float",#False,*mesh)
-    AddIntegerControl(*prop,"integer","integer",#False,*mesh)
-    AddReferenceControl(*prop,"reference1","ref1",*mesh)
-    AddReferenceControl(*prop,"reference2","ref2",*mesh)
-    AddReferenceControl(*prop,"reference3","ref3",*mesh)
-    *group = AddGroup(*prop,"BUTTON")
-    
-    ControlGroup::Append(*group,ControlButton::New(*prop,"button","button",#True,#PB_Button_Toggle))
-    EndGroup(*prop)
-    
-    
-    
-    Define q.Math::q4f32
-    Quaternion::SetIdentity(q)
-    AddQuaternionControl(*prop,"quaternion","quat",@q,*mesh)
-    
-    *group = AddGroup(*prop,"ICONS")
-    ControlGroup::RowStart(*group)
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Back",ControlIcon::#Icon_Back,0))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Stop",ControlIcon::#Icon_Stop,0))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Play",ControlIcon::#Icon_Play,#PB_Button_Toggle))
-    ControlGroup::Append(*group,ControlIcon::New(*mesh,"Loop",ControlIcon::#Icon_Loop,0))
-    ControlGroup::RowEnd(*group)
-    EndGroup(*prop)
-        
-    AppendStop(*prop)
-  EndProcedure
+;   ; ----------------------------------------------------------------------------
+;   ;  Test
+;   ; ----------------------------------------------------------------------------
+;   Procedure Test(*prop.ControlProperty_t,*mesh.Polymesh::Polymesh_t)
+;    
+;     AppendStart(*prop)
+;     AddBoolControl(*prop,"boolean","boolean",#False,*mesh)
+;     AddFloatControl(*prop,"float","float",#False,*mesh)
+;     AddIntegerControl(*prop,"integer","integer",#False,*mesh)
+;     AddReferenceControl(*prop,"reference1","ref1",*mesh)
+;     AddReferenceControl(*prop,"reference2","ref2",*mesh)
+;     AddReferenceControl(*prop,"reference3","ref3",*mesh)
+;     *group = AddGroup(*prop,"BUTTON")
+;     
+;     ControlGroup::Append(*group,ControlButton::New(*prop,"button","button",#True,#PB_Button_Toggle))
+;     EndGroup(*prop)
+;     
+;     
+;     
+;     Define q.Math::q4f32
+;     Quaternion::SetIdentity(q)
+;     AddQuaternionControl(*prop,"quaternion","quat",@q,*mesh)
+;     
+;     *group = AddGroup(*prop,"ICONS")
+;     ControlGroup::RowStart(*group)
+;     ControlGroup::Append(*group,ControlIcon::New(*mesh,"Back",ControlIcon::#Icon_Back,0))
+;     ControlGroup::Append(*group,ControlIcon::New(*mesh,"Stop",ControlIcon::#Icon_Stop,0))
+;     ControlGroup::Append(*group,ControlIcon::New(*mesh,"Play",ControlIcon::#Icon_Play,#PB_Button_Toggle))
+;     ControlGroup::Append(*group,ControlIcon::New(*mesh,"Loop",ControlIcon::#Icon_Loop,0))
+;     ControlGroup::RowEnd(*group)
+;     EndGroup(*prop)
+;         
+;     AppendStop(*prop)
+;   EndProcedure
   
   ; ============================================================================
   ;  DESTRUCTOR
@@ -2001,7 +1902,6 @@ EndProcedure
   ;  CONSTRUCTORS
   ; ============================================================================
   Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
-    
     ; Allocate Object Memory
     Protected *Me.ControlProperty_t = AllocateMemory( SizeOf(ControlProperty_t) )
     
@@ -2009,7 +1909,7 @@ EndProcedure
     
     ; Init Members
     *Me\object     = #Null
-    *Me\parent      = *parent
+    *Me\parent     = *parent
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
@@ -2031,6 +1931,8 @@ EndProcedure
     ; Init Structure
     InitializeStructure( *Me, ControlProperty_t ) ; List
     DrawEmpty(*Me)
+    
+    View::SetContent(*parent,*Me)
    
     ; Return Initialized Object
     ProcedureReturn( *Me )
@@ -2048,8 +1950,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 748
-; FirstLine = 736
-; Folding = ----------
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 54
+; Folding = ---------
 ; EnableXP

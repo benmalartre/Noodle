@@ -281,11 +281,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-    CompilerIf #PB_Compiler_Version < 560
-      Case Control::#PB_EventType_Resize
-    CompilerElse
-      Case #PB_EventType_Resize
-    CompilerEndIf
+    Case #PB_EventType_Resize
       ; ...[ Sanity Check ]...................................................
       If Not *ev_data : ProcedureReturn : EndIf
       ; ...[ Update Topology ]................................................
@@ -493,8 +489,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 103
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 283
+; FirstLine = 280
 ; Folding = ---
 ; EnableXP

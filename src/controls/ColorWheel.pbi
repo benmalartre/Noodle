@@ -71,9 +71,6 @@ DeclareModule ControlColorWheel
   ;  Functions Declaration
   ; ============================================================================
   Declare New(*parent.Control::Control_t,x.i=0,y.i=0,width.i=200,height.i=200 )
-  Declare Init()
-  Declare Term()
-  Declare SetTheme(theme.i)
   Declare Delete(*Me.ControlColorWheel_t)
   Declare OnEvent( *Me.ControlColorWheel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlColorWheel_t, r.f,g.f,b.f,a.f )
@@ -319,7 +316,7 @@ Module ControlColorWheel
         Circle         ( xoff, yoff, 128 )
   ;       
   ;       Select *Me\mode
-  ;         Case #RAA_COLORWHEEL_MODE_CUBE
+  ;         Case #COLORWHEEL_MODE_CUBE
   ;           DrawingMode( #PB_2DDrawing_Default|#PB_2DDrawing_CustomFilter )
   ;           CustomFilterCallback( @OControlColorWheel_CubeGradient() )
   ;           csiz  = 0.56*xsiz*wradius
@@ -776,18 +773,7 @@ Module ControlColorWheel
     ProcedureReturn( #False )
     
   EndProcedure
-  
-  ; ============================================================================
-  ;  ADMINISTARTION ( ControlColorWheel )
-  ; ============================================================================
-  Procedure Init()
-    
-  EndProcedure
-  
-  Procedure Term()
-    
-  EndProcedure
-  
+ 
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlColorWheel )
   ; ============================================================================
@@ -839,27 +825,6 @@ Module ControlColorWheel
     
   EndProcedure
  
-  
-  
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  Procedure SetTheme( theme.i )
-    
-    Select theme
-        
-      ; ---[ Light ]------------------------------------------------------------
-      Case Globals::#GUI_THEME_LIGHT
-
-        
-      ; ---[ Dark ]-------------------------------------------------------------
-      Case Globals::#GUI_THEME_DARK
-
-        
-    EndSelect
-    
-  EndProcedure
- 
   ; ============================================================================
   ;  REFLECTION
   ; ============================================================================
@@ -868,8 +833,8 @@ Module ControlColorWheel
 EndModule
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 597
-; FirstLine = 593
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 70
 ; Folding = ----
 ; EnableXP

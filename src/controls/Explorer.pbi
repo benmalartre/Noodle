@@ -1,4 +1,5 @@
 
+XIncludeFile "../objects/Scene.pbi"
 
 ; -----------------------------------------
 ; ExplorerUI Module Declaration
@@ -444,28 +445,28 @@ Module ControlExplorer
         Select *o\type
           Case Object3D::#Model
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_model))
+;             DrawVectorImage(ImageID(explorer_icon_model))
           Case Object3D::#Light
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_light))
+;             DrawVectorImage(ImageID(explorer_icon_light))
           Case Object3D::#Camera
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_camera))
+;             DrawVectorImage(ImageID(explorer_icon_camera))
           Case Object3D::#Polymesh
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_polymesh))
+;             DrawVectorImage(ImageID(explorer_icon_polymesh))
           Case Object3D::#Locator
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_null))
+;             DrawVectorImage(ImageID(explorer_icon_null))
           Case Object3D::#Curve
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_curve))
+;             DrawVectorImage(ImageID(explorer_icon_curve))
           Case Object3D::#PointCloud
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_pointcloud))
+;             DrawVectorImage(ImageID(explorer_icon_pointcloud))
           Case Object3D::#InstanceCloud
             MovePathCursor(x,*Me\ioffsety+2)
-            DrawVectorImage(ImageID(explorer_icon_instancecloud))
+;             DrawVectorImage(ImageID(explorer_icon_instancecloud))
             
         EndSelect
         MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT+4)
@@ -964,11 +965,7 @@ Module ControlExplorer
   ;---------------------------------------------------
   Procedure OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
     ;   GetItems(*Me)
-    CompilerIf #PB_Compiler_Version < 560
-        If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
-      CompilerElse
-        If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
-    CompilerEndIf
+    If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
       *Me\sizX = *ev_data\width
       *Me\sizY = *ev_data\height
       Resize(*Me)
@@ -1166,8 +1163,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 658
-; FirstLine = 579
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 966
+; FirstLine = 922
 ; Folding = X-4---
 ; EnableXP

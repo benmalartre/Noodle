@@ -35,7 +35,6 @@ Define model.m4f32
 ;--------------------------------------------
 If Time::Init()
   Globals::Init()
-  Controls::Init()
   Log::Init()
   Alembic::Init()
   FTGL::Init()
@@ -121,7 +120,7 @@ If Time::Init()
  Application::Loop(*app,@Draw())
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 61
-; FirstLine = 57
+; CursorPosition = 37
+; FirstLine = 33
 ; Folding = -
 ; EnableXP

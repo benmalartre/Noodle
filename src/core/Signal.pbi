@@ -144,8 +144,8 @@ Module Signal
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 34
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 139
+; FirstLine = 80
 ; Folding = --
 ; EnableXP

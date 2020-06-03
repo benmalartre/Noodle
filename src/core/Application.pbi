@@ -93,6 +93,7 @@ XIncludeFile "../controls/Check.pbi"
 XIncludeFile "../controls/Color.pbi"
 XIncludeFile "../controls/Combo.pbi"
 XIncludeFile "../controls/Divot.pbi"
+XIncludeFile "../controls/Text.pbi"
 XIncludeFile "../controls/Edit.pbi"
 XIncludeFile "../controls/Label.pbi"
 XIncludeFile "../controls/Group.pbi"
@@ -326,8 +327,8 @@ CompilerEndIf
     Define *window.Window::Window_t = AllocateMemory(SizeOf(Window::Window_t))
     InitializeStructure(*window, Window::Window_t)
     *window\main = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
-    *window\main\width = width
-    *window\main\height = height
+    *window\main\sizX = width
+    *window\main\sizY = height
     ProcedureReturn *window
     
   EndProcedure
@@ -681,6 +682,7 @@ CompilerEndIf
               GraphUI::SetContent(*graph,*tree)
             EndIf   
             *callback(*Me, Globals::#EVENT_TREE_CREATED)
+            
           Case #PB_Event_Menu
             Select EventMenu()
               Case Globals::#SHORTCUT_TRANSLATE
@@ -709,7 +711,7 @@ CompilerEndIf
             *callback(*Me, event)
             
           Case #PB_Event_Gadget
-            If event : Window::OnEvent(*Me\window,event) : EndIf
+            Window::OnEvent(*Me\window,event)
             *callback(*Me, event)
             
           Default
@@ -757,8 +759,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 726
-; FirstLine = 695
+; CursorPosition = 330
+; FirstLine = 325
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

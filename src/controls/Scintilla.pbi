@@ -126,12 +126,7 @@ Module ControlScintilla
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version <560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
-        
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -359,8 +354,8 @@ Module ControlScintilla
   
   Class::DEF(ControlScintilla)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 94
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 128
+; FirstLine = 125
 ; Folding = ---
 ; EnableXP

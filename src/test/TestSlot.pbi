@@ -162,7 +162,6 @@ datas\y = 0
 datas\width = *property\width
 datas\height = *property\height
 
-; ; ControlProperty::Event(*property\prop,Control::#PB_EventType_Resize,@datas)
 Define *c.ControlNumber::ControlNumber_t = ControlNumber::New(*A, "Param", 5, ControlNumber::#NUMBER_INTEGER, -50, 50, -10, 10, 0, 0, 80, 18 )
 
 ; GraphUI::SetContent(*graph,*tree)
@@ -201,8 +200,8 @@ EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 38
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 151
+; FirstLine = 136
 ; Folding = -
 ; EnableXP

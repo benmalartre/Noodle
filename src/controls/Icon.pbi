@@ -25,6 +25,8 @@ DeclareModule ControlIcon
     #Icon_Next
     #Icon_Last
     #Icon_Loop
+    #Icon_Record
+    #Icon_Cross
     
     #Icon_Max
   EndEnumeration
@@ -45,20 +47,6 @@ DeclareModule ControlIcon
   s_gui_controls_icon_name(8) = "last"
   s_gui_controls_icon_name(9) = "loop"
 
-  
-  ; ----------------------------------------------------------------------------
-  ; Dark Icon Colors
-  ;-----------------------------------------------------------------------------
-  Global RAA_COLOR_DARK_ICON_RED             = 200
-  Global RAA_COLOR_DARK_ICON_GREEN           = 210
-  Global RAA_COLOR_DARK_ICON_BLUE            = 200
-  
-  ; ----------------------------------------------------------------------------
-  ; Light Icon Colors
-  ;-----------------------------------------------------------------------------
-  Global RAA_COLOR_LIGHT_ICON_RED             = 40
-  Global RAA_COLOR_LIGHT_ICON_GREEN           = 50
-  Global RAA_COLOR_LIGHT_ICON_BLUE            = 60
 
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlIcon_t )
@@ -70,71 +58,40 @@ DeclareModule ControlIcon
     value.i
     over.i
     down.i
+    scale.f
+    *item.Vector::Item_t
     *on_click.Signal::Signal_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
   ;  Interface
   ; ----------------------------------------------------------------------------
-  Interface IControlicon Extends Control::IControl
+  Interface IControlIcon Extends Control::IControl
   EndInterface
   
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Declare New( *parent.Control::Control_t ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
   Declare Delete(*Me.ControlIcon_t)
   Declare OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
-  Declare.b Init()
-  Declare.b Term()
-  Declare SetTheme(theme.i)
+  Declare EmptyIcon(*Me.ControlIcon_t)
+  Declare PlayIcon(*Me.ControlIcon_t)
+  Declare StopIcon(*Me.ControlIcon_t)
+  Declare RecordIcon(*Me.ControlIcon_t)
+  Declare CrossIcon(*Me.ControlIcon_t)
 
   ; ============================================================================
   ;  VTABLE ( CObject + CControl + ControlIcon )
   ; ============================================================================
-  CompilerSelect #PB_Compiler_OS
-    CompilerCase #PB_OS_Windows
-      Macro ICON_IMG_FOLDER
-        "..\..\rsc\skins\grey\control_icon4\"
-      EndMacro
-    CompilerDefault
-      Macro ICON_IMG_FOLDER
-        "../../rsc/skins/grey/control_icon4/"
-      EndMacro
-  CompilerEndSelect
   
   DataSection
     ControlIconVT:
     Data.i @OnEvent()            ; mandatory override
     Data.i @Delete()             ; mandatory override
-   
-    ; Images
-    VIControlIcon_Default:  
-    IncludeBinary ICON_IMG_FOLDER+"default.png"
-    VIControlIcon_Close:    
-    IncludeBinary ICON_IMG_FOLDER+"close.png"
-    VIControlIcon_Play:     
-    IncludeBinary ICON_IMG_FOLDER+"play.png"
-    VIControlIcon_Stop:     
-    IncludeBinary ICON_IMG_FOLDER+"stop.png"
-    VIControlIcon_Back:     
-    IncludeBinary ICON_IMG_FOLDER+"back.png"
-    VIControlIcon_First:    
-    IncludeBinary ICON_IMG_FOLDER+"first.png"
-    VIControlIcon_Last:     
-    IncludeBinary ICON_IMG_FOLDER+"last.png"
-    VIControlIcon_Previous: 
-    IncludeBinary ICON_IMG_FOLDER+"previous.png"
-    VIControlIcon_Next:     
-    IncludeBinary ICON_IMG_FOLDER+"next.png"
-    VIControlIcon_Loop:     
-    IncludeBinary ICON_IMG_FOLDER+"loop.png"
-    
-    
   EndDataSection
 
-  
   Global CLASS.Class::Class_t
 EndDeclareModule
 
@@ -143,76 +100,73 @@ EndDeclareModule
 ;  CONTROL ICON MODULE IMPLEMENTATION 
 ; ==============================================================================
 Module ControlIcon
-  
-  ;{
-  ; ----------------------------------------------------------------------------
-  ;  hlpDraw
-  ; ToDo : implement Disable Mode
-  ; ----------------------------------------------------------------------------
-  ;{
+ 
   ; ----------------------------------------------------------------------------
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
   Procedure hlpDraw( *Me.ControlIcon_t, xoff.i = 0, yoff.i = 0 )
-  
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Reset Clipping ]-----------------------------------------------------
-
+    SaveVectorState()
+    TranslateCoordinates(xoff, yoff)
+    
     ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable 
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       EndIf
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_OVER)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_OVER)
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0 Or *Me\down
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
+        ScaleCoordinates(*Me\scale, *Me\scale)
+        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       EndIf
     EndIf
-      
-    ; ---[ Draw Icon ]----------------------------------------------------------
-    ;DrawingMode(#PB_2DDrawing_AllChannels)
-    
-    Protected offx,offy
-    offx = (*Me\sizX-ImageWidth(s_gui_controls_icon_img(*Me\icon)))/2
-    offy = (*Me\sizY-ImageHeight(s_gui_controls_icon_img(*Me\icon)))/2
-    MovePathCursor(xoff+offx, yoff+offy)
-    DrawVectorImage(ImageID(s_gui_controls_icon_img(*Me\icon)))
-    ;DrawImage(ImageID(s_gui_controls_icon_img(*Me\icon)),xoff,yoff,*Me\sizX,*Me\sizY)
+    RestoreVectorState()
  
   EndProcedure
-  ;}
 
   ; ============================================================================
   ;  OVERRIDE ( CControl )
@@ -240,11 +194,7 @@ Module ControlIcon
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version < 560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         ; ...[ Update Topology ]................................................
@@ -306,14 +256,8 @@ Module ControlIcon
             *Me\value*-1
           EndIf
           Control::Invalidate(*Me)
-          Debug ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OVER : "+Str(*Me\over)
           If *Me\over
             Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
-            ; TODO : >>> TRIGGER ACTION <<<
-;             Debug ">> Trigger ["+ *Me\label +"]/["+ Str(*Me\value) +"]"
-;             Protected *slot.CSlot = *Me\sig_onchanged
-;             *slot\Trigger(#RAA_SIGNAL_TYPE_PING, #Null)
-  
           EndIf
         EndIf
         
@@ -347,7 +291,90 @@ Module ControlIcon
   EndProcedure
   ;}
   
- 
+  ; ============================================================================
+  ;  EMPTY ICON
+  ; ============================================================================
+  Procedure EmptyIcon(*Me.ControlIcon_t)
+    Protected *icon.Vector::Item_t = *Me\item
+    Vector::ClearAtoms(*icon)
+    *icon\type = Vector::#ATOM_CUSTOM
+    *icon\filled = #True
+    *icon\segments = ""
+    *icon\stroke_color = RGBA(0,200,64,255)
+    *icon\fill_color = RGBA(0,255,32,255)
+    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *icon\stroke_width = 12
+  EndProcedure
+  
+  ; ============================================================================
+  ;  PLAY ICON
+  ; ============================================================================
+  Procedure PlayIcon(*Me.ControlIcon_t)
+    Protected *icon.Vector::Item_t = *Me\item
+    Vector::ClearAtoms(*icon)
+    *icon\type = Vector::#ATOM_CUSTOM
+    *icon\filled = #True
+    *icon\segments = "M 20 20 L 80 50 L 20 80 Z"
+    *icon\stroke_color = RGBA(0,200,64,255)
+    *icon\fill_color = RGBA(0,255,32,255)
+    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *icon\stroke_width = 12
+  EndProcedure
+  
+  ; ============================================================================
+  ;  STOP ICON
+  ; ============================================================================
+  Procedure StopIcon(*Me.ControlIcon_t)
+     Protected *icon.Vector::Item_t = *Me\item
+    Vector::ClearAtoms(*icon)
+    *icon\type = Vector::#ATOM_CUSTOM
+    *icon\filled = #True
+    *icon\segments = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
+    *icon\stroke_color = RGBA(220,32,0,255)
+    *icon\fill_color = RGBA(255,32,0,255)
+    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *icon\stroke_width = 12
+  EndProcedure
+  
+  ; ============================================================================
+  ;  RECORD ICON
+  ; ============================================================================
+  Procedure RecordIcon(*Me.ControlIcon_t)
+     Protected *icon.Vector::Item_t = *Me\item
+    Vector::ClearAtoms(*icon)
+    *icon\type = Vector::#ATOM_CUSTOM
+    *icon\filled = #True
+    *icon\segments = "M 80 50 C 80 66.5685 66.5685 80 50 80 C 33.4315 80 20 66.5686 20 50 C 20 33.4315 33.4314 20 50 20 C 66.5685 20 80 33.4314 80 50 Z"
+    *icon\stroke_color = RGBA(220,32,0,255)
+    *icon\fill_color = RGBA(255,32,0,255)
+    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *icon\stroke_width = 12
+  EndProcedure
+  
+  ; ============================================================================
+  ;  CROSS ICON
+  ; ============================================================================
+  Procedure CrossIcon(*Me.ControlIcon_t)
+    Protected *icon.Vector::Item_t = *Me\item
+    Vector::ClearAtoms(*icon)
+    *icon\type = Vector::#ATOM_CUSTOM
+    *icon\filled = #False
+    *icon\segments = ""
+    
+    Define *item.Vector::Item_t = Vector::AddCustom(*icon)
+    *item\filled = #False
+    *item\stroke_color = RGBA(0,0,0,255)
+    *item\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *item\stroke_width = 12
+    *item\segments = "M 20 20 L 80 80"
+    
+    *item.Vector::Item_t = Vector::AddCustom(*icon)
+    *item\filled = #False
+    *item\stroke_color = RGBA(0,0,0,255)
+    *item\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+    *item\stroke_width = 12
+    *item\segments = "M 20 80 L 80 20"
+  EndProcedure
   
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlIcon )
@@ -368,7 +395,7 @@ Module ControlIcon
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( gadgetID.i ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Procedure.i New( *parent.Control::Control_t ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlIcon_t = AllocateMemory( SizeOf(ControlIcon_t) )
@@ -378,9 +405,10 @@ Module ControlIcon
     Object::INI(ControlIcon)
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = #PB_GadgetType_Button
+    *Me\type       = Control::#ICON
     *Me\name       = name
-    *Me\gadgetID   = gadgetID
+    *Me\parent     = *parent
+    *Me\gadgetID   = *parent\gadgetID
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -391,6 +419,21 @@ Module ControlIcon
     *Me\value      = 1
     *Me\label      = name
     *Me\icon       = icon 
+    *Me\scale      = ((width + height) * 0.5) / 100.0
+    *Me\item       = Vector::NewItem(Vector::#ATOM_CUSTOM)
+    
+    Select *Me\icon
+      Case #Icon_Play
+        PlayIcon(*Me)
+      Case #Icon_Stop
+        StopIcon(*Me)
+      Case #Icon_Record
+        RecordIcon(*Me)
+      Default
+        CrossIcon(*Me)
+    EndSelect
+  
+    
     If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
     
     ; ---[ Signals ]------------------------------------------------------------
@@ -402,150 +445,6 @@ Module ControlIcon
   EndProcedure
 
   
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  ; ----------------------------------------------------------------------------
-  ;  hlpSetTheme
-  ; ----------------------------------------------------------------------------
-  Procedure SetTheme( theme.i )
-    ControlButton::SetTheme( theme )
-    Protected i
-    For i=0 To #Icon_Max - 1
-      Select theme
-        ;---[ Dark ]-------------------------------------------------------
-        Case Globals::#GUI_THEME_DARK
-          s_gui_controls_icon_img(i) = s_gui_controls_dark_icon_img(i)
-        ;---[ Light ]-------------------------------------------------------
-        Case Globals::#GUI_THEME_LIGHT
-          s_gui_controls_icon_img(i) = s_gui_controls_light_icon_img(i)
-          
-      EndSelect
-    Next i
-    
-  EndProcedure
-  
-  ;----------------------------------------------------------------------------
-  ; We extract alpha channel from input image
-  ; We store it in a new image
-  ;----------------------------------------------------------------------------
-  Procedure GetImage( label.i ,icon.i, resx.i=-1,resy.i=-1)
-    ; Catch Image in Memory
-    Protected src.i = CatchImage(#PB_Any,label)
-    
-    ; Create IconData Structure
-  
-  ;   Protected x, y, pt
-  ;   
-  ;   If resx>0 And resy>0
-  ;     ResizeImage(src,resx,resy,#PB_Image_Raw)
-  ;   Else
-  ;     Protected rx = ImageWidth(src)
-  ;     Protected ry = ImageHeight(src)
-  ;     resx = rx
-  ;     resy = ry
-  ;   EndIf
-  ;   
-  ;   ; Create new images
-  ;   Protected light = CreateImage(#PB_Any,resx,resy,32)
-  ;   Protected dark = CreateImage(#PB_Any,resx,resy,32)
-  ;   
-  ;   Protected size_p.i
-  ;   Protected *dat = AllocateMemory(resx*resy*SizeOf(size_p)*4)
-  ;   
-  ;   ;Get Source Alpha in Memory
-  ;   StartDrawing(ImageOutput(src))
-  ;   DrawingMode(#PB_2DDrawDrawing_AllChannels)
-  ;   For x = 0 To resx -1
-  ;     For y = 0 To resy - 1
-  ;       PokeI(*dat + (x + resx * y),Red(Point(x,y)))
-  ;       PokeI(*dat + (x + resx * y+size_p),Green(Point(x,y)))
-  ;       PokeI(*dat + (x + resx * y+2*size_p),Blue(Point(x,y)))
-  ;       PokeI(*dat + (x + resx * y+3*size_p),Alpha(Point(x,y)))
-  ;     Next y
-  ;   Next x
-  ;   StopDrawing()
-  ;   
-  ;   ;Draw Dark Icon
-  ;   StartDrawing(ImageOutput(dark))
-  ;   DrawingMode(#PB_2DDrawing_AllChannels)
-  ;   For x=0 To resx-1
-  ;     For y = 0 To resy-1
-  ;       Plot(x,y,RGBA(RAA_COLOR_DARK_ICON_RED,RAA_COLOR_DARK_ICON_GREEN,RAA_COLOR_DARK_ICON_BLUE,PeekI(*dat + (x + resx * y))))
-  ;    Next y
-  ;   Next x
-  ;   StopDrawing()
-  ;   
-  ;   ;Draw Light Icon
-  ;   StartDrawing(ImageOutput(light))
-  ;   DrawingMode(#PB_2DDrawing_AllChannels)
-  ;   For x=0 To resx-1
-  ;    For y = 0 To resy-1
-  ;        Plot(x,y,RGBA(RAA_COLOR_LIGHT_ICON_RED,RAA_COLOR_LIGHT_ICON_GREEN,RAA_COLOR_LIGHT_ICON_BLUE,PeekI(*dat + (x + resx * y))))
-  ;    Next y
-  ;   Next x
-  ;   StopDrawing()
-  ;   
-  ;   ; Free Memory
-  ;   FreeMemory(*dat)
-  
-    ; Add Images to Global Array
-    s_gui_controls_dark_icon_img(icon) = src
-    s_gui_controls_light_icon_img(icon) = src
-    
-  EndProcedure
-  
-
-  ; ----------------------------------------------------------------------------
-  ;  Init
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init( )
-
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; ---[ Create Icons Images ]------------------------------------------------
-    GetImage(?VIControlIcon_Default  ,#Icon_Default  , 32,32)
-    GetImage(?VIControlIcon_Close    ,#Icon_Close    , 32,32)
-    GetImage(?VIControlIcon_First    ,#Icon_First    , 32,32)
-    GetImage(?VIControlIcon_Previous ,#Icon_Previous , 32,32)
-    GetImage(?VIControlIcon_Back     ,#Icon_Back     , 32,32)
-    GetImage(?VIControlIcon_Stop     ,#Icon_Stop     , 32,32)
-    GetImage(?VIControlIcon_Play     ,#Icon_Play     , 32,32)
-    GetImage(?VIControlIcon_Next     ,#Icon_Next     , 32,32)
-    GetImage(?VIControlIcon_Last     ,#Icon_Last     , 32,32)
-    GetImage(?VIControlIcon_Loop     ,#Icon_Loop     , 32,32)
-
-    
-    ; ---[ Set Initial Theme ]--------------------------------------------------
-    SetTheme( Globals::#GUI_THEME_LIGHT )
-    
-
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  Term
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-  ;CHECK_INIT  
-
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; ...[ Delete Icons Images ]................................................
-    ;{
-    Protected i
-    For i=0 To #Icon_Max -1
-      FreeImage(s_gui_controls_dark_icon_img(i))
-      FreeImage(s_gui_controls_light_icon_img(i))
-    Next i
-    ;}
-    
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-    
-  EndProcedure
-  
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlIcon )
 EndModule
@@ -554,8 +453,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 176
-; Folding = ----
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 103
+; Folding = ---
 ; EnableXP

@@ -1,7 +1,13 @@
-﻿
+﻿XIncludeFile "UI.pbi"
 XIncludeFile "../core/Log.pbi"
+XIncludeFile "../opengl/Layer.pbi"
 XIncludeFile "../controls/Property.pbi"
-XIncludeFile "UI.pbi"
+XIncludeFile "../objects/Object3D.pbi"
+XIncludeFile "../graph/Types.pbi"
+XIncludeFile "../graph/Nodes.pbi"
+XIncludeFile "../graph/Compound.pbi"
+XIncludeFile "../graph/Port.pbi"
+XIncludeFile "../graph/CompoundPort.pbi"
 
 ;========================================================================================
 ; PropertyUI Module Declaration
@@ -18,7 +24,7 @@ DeclareModule PropertyUI
     anchorY.i
   EndStructure
   
-  Declare New(*parent.View::View_t,name.s,*obj.Object3D::Object3D_t)
+  Declare New(*parent.View::View_t,name.s,*obj.Object::Object_t)
   Declare Delete(*Me.PropertyUI_t)
   Declare Resize(*Me.PropertyUI_t)
   Declare Draw(*Me.PropertyUI_t)
@@ -64,10 +70,10 @@ Module PropertyUI
   ;  Constructor
   ; ----------------------------------------------------------------------------
   Procedure New(*parent.View::View_t, name.s,*obj. Object3D::Object3D_t)
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
    
     Protected *Me.PropertyUI_t = AllocateMemory(SizeOf(PropertyUI_t))
     InitializeStructure(*Me,PropertyUI_t)
@@ -146,18 +152,16 @@ Module PropertyUI
   ;  OnEvent
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
+    Debug "PROPERTY ON EVENT!!!"
     If *Me
       Protected *top.View::View_t = *Me\parent
       Protected ev_datas.Control::EventTypeDatas_t
       ev_datas\x = 0
       ev_datas\y = 0
-      ev_datas\width = *top\width 
+      ev_datas\width = *top\sizX 
       Select event
         Case #PB_Event_SizeWindow
-          *Me\sizX = *top\width
-          ResizeGadget(*Me\container,*top\x,*top\y,*top\width,*top\height)
-          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\sizX)
-          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\sizY)
+          *Me\sizX = *top\sizX
          
           ev_datas\x = #PB_Ignore
           ev_datas\y = #PB_Ignore
@@ -165,13 +169,13 @@ Module PropertyUI
 
           If ListSize(*Me\props())
             ForEach *Me\props()
-              CompilerIf #PB_Compiler_Version <560
-                ControlProperty::OnEvent(*Me\props(),Control::#PB_EventType_Resize,@ev_datas)
-              CompilerElse
-                ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
-              CompilerEndIf
+              ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
             Next
           EndIf
+          
+          ResizeGadget(*Me\container,*top\posX,*top\posY,*top\sizX,*top\sizY)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\sizX)
+          SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\sizY)
           
         Case #PB_Event_Gadget
           If EventType()  = #PB_EventType_LeftButtonDown
@@ -191,7 +195,7 @@ Module PropertyUI
             ForEach *Me\props()
               If *Me\props()\gadgetID = currentGadget
                 ControlProperty::OnEvent(*Me\props(),EventType(),@ev_datas)
-                *Me\focus = *Me\props()
+                If ListSize(*Me\props()) : *Me\focus = *Me\props() : Else : *Me\focus = #Null : EndIf
               EndIf
             Next
           EndIf
@@ -324,7 +328,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Check Node Exists
   ; ----------------------------------------------------------------------------
-  Procedure.b CheckNodeExists(*Me.PropertyUI_t, *node.Node::Node_t)
+  Procedure.b CheckNodeExists(*Me.PropertyUI_t, *node.Object::Object_t)
     Define index.i = 0
     If ListSize(*Me\props())
       FirstElement(*Me\props())
@@ -370,50 +374,50 @@ Module PropertyUI
           Select \currenttype
             Case Attribute::#ATTR_TYPE_BOOL
               Protected *bVal.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),*node\inputs())
+              ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_FLOAT
               Protected *fVal.CArray::CArrayFloat = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddFloatControl(*p,\name,\name,CArray::GetValueF(*fVal,0),*node\inputs())
+              ControlProperty::AddFloatControl(*p,\name,\name,CArray::GetValueF(*fVal,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_INTEGER
               Protected *iVal.CArray::CArrayInt = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddIntegerControl(*p,\name,\name,CArray::GetValueI(*iVal,0),*node\inputs())
+              ControlProperty::AddIntegerControl(*p,\name,\name,CArray::GetValueI(*iVal,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR2
               Protected *vVal2.CArray::CArrayV2F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddVector2Control(*p,\name,\name,CArray::GetValue(*vVal2,0),*node\inputs())
+              ControlProperty::AddVector2Control(*p,\name,\name,CArray::GetValue(*vVal2,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR3
               Protected *vVal3.CArray::CArrayV3F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddVector3Control(*p,\name,\name,CArray::GetValue(*vVal3,0),*node\inputs())
+              ControlProperty::AddVector3Control(*p,\name,\name,CArray::GetValue(*vVal3,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_VECTOR4
               Protected *vVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*vVal4,0),*node\inputs())
+              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*vVal4,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_QUATERNION
               Protected *qVal4.CArray::CArrayQ4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddQuaternionControl(*p,\name,\name,CArray::GetValue(*qVal4,0),*node\inputs())
+              ControlProperty::AddQuaternionControl(*p,\name,\name,CArray::GetValue(*qVal4,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_COLOR
               Protected *cVal4.CArray::CArrayC4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),*node\inputs())
+              ControlProperty::AddColorControl(*p,\name,\name,CArray::GetValue(*cVal4,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_MATRIX4
               Protected *mVal4.CArray::CArrayM4F32 = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddMatrix4Control(*p,\name,\name,CArray::GetValue(*mVal4,0),*node\inputs())
+              ControlProperty::AddMatrix4Control(*p,\name,\name,CArray::GetValue(*mVal4,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_REFERENCE
               Protected *ref.Globals::Reference_t = NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddReferenceControl(*p,\name,*ref\reference,*node\inputs())
+              ControlProperty::AddReferenceControl(*p,\name,*ref\reference,*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_FILE
-              ControlProperty::AddFileControl(*p,\name,\name,*node\inputs())
+              ControlProperty::AddFileControl(*p,\name,\name,*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_STRING
               Protected *sVal.CArray::CArrayStr =  NodePort::AcquireInputData(*node\inputs())
-              ControlProperty::AddStringControl(*p,\name,CArray::GetValueStr(*sVal,0),*node\inputs())
+              ControlProperty::AddStringControl(*p,\name,CArray::GetValueStr(*sVal,0),*node\inputs()\attribute)
           EndSelect
         EndIf
         
@@ -580,8 +584,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 6
+; CursorPosition = 90
+; FirstLine = 76
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

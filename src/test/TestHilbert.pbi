@@ -453,8 +453,8 @@ Procedure DrawPolygonizer(*polygonizer.Polygonizer::Grid_t, ss.f, ratio.f)
   Protected i
   
   For i=0 To numPoints -1
-    Vector3::Set(@world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
-    MapWorldPositionToScreenSpace(*view, *proj, *viewport\width, *viewport\height, @world, @screen)
+    Vector3::Set(world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
+    MapWorldPositionToScreenSpace(*view, *proj, *viewport\sizX, *viewport\sizY, world, screen)
     FTGL::Draw(*app\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
   Next
   
@@ -466,7 +466,7 @@ EndProcedure
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
 
   Scene::*current_scene\dirty= #True
   
@@ -481,7 +481,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   glDisable(#GL_BLEND)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
 EndProcedure
 
@@ -500,13 +500,13 @@ Procedure DrawCells(*grid.Hilbert::Grid_t)
     Morton::Decode3D(*grid\cells()\morton, @p2)
     ;     u = Hilbert::MapHilbertSpaceTo1DSpace(*grid\cells(), @p2)  
     u = index * inc_c
-    Color::Set(@c, u , 1-u, 0, 1.0)
+    Color::Set(c, u , 1-u, 0, 1.0)
     
     If index > 0
       CArray::SetValue(*colors, index*2, c)
       CArray::SetValue(*colors, index*2+1, c)
-      Hilbert::MapHilbertSpaceToWorldSpace(*grid, @p1, CArray::GetValue(*positions, index*2))
-      Hilbert::MapHilbertSpaceToWorldSpace(*grid, @p2, CArray::GetValue(*positions, index*2+1))
+      Hilbert::MapHilbertSpaceToWorldSpace(*grid, p1, CArray::GetValue(*positions, index*2))
+      Hilbert::MapHilbertSpaceToWorldSpace(*grid, p2, CArray::GetValue(*positions, index*2+1))
     EndIf
     p1\x = p2\x
     p1\y = p2\y
@@ -527,14 +527,14 @@ Procedure DrawCell(*cell.Hilbert::Cell_t)
       Define m.Math::m4f32
       Define s.Math::v3f32
       Vector3::Scale(@s, *cell\extand, 1.9)
-      Matrix4::SetIdentity(@m)
+      Matrix4::SetIdentity(m)
       Define c.Math::c4f32
-      Matrix4::SetScale(@m, @s)
-      Matrix4::SetTranslation(@m, *cell\pos)
-      Color::Randomize(@c)
-      Protected *box.Drawer::Item_t = Drawer::AddBox(*drawer, @m)
+      Matrix4::SetScale(m, s)
+      Matrix4::SetTranslation(m, *cell\pos)
+      Color::Randomize(c)
+      Protected *box.Drawer::Item_t = Drawer::AddBox(*drawer, m)
       Drawer::SetSize(*box, 3)
-      Drawer::SetColor(*box, @c)
+      Drawer::SetColor(*box, c)
     EndIf
     
     If *cell\children
@@ -563,10 +563,10 @@ FTGL::Init()
    *app = Application::New("Test Hilbert Curve",width, height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
+     *viewport = ViewportUI::New(*app\window\main,"Test Hilbert", *app\camera, *app\handle)     
      *app\context = *viewport\context
-    *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -594,22 +594,22 @@ FTGL::Init()
   Define box.Geometry::Box_t
   Vector3::Set(box\extend, 4, 4, 4)
   Define m.Math::m4f32
-  Matrix4::SetIdentity(@m)
+  Matrix4::SetIdentity(m)
   Define s.v3f32
-  Vector3::Scale(@s, @box\extend, 2)
-  Matrix4::SetScale(@m, @s)
-  Matrix4::SetTranslation(@m, @box\origin)
+  Vector3::Scale(s, box\extend, 2)
+  Matrix4::SetScale(m, s)
+  Matrix4::SetTranslation(m, box\origin)
   
-  Drawer::AddBox(*drawer, @m)
-  Define *grid.Hilbert::Grid_t = Hilbert::New(@box,3)
+  Drawer::AddBox(*drawer, m)
+  Define *grid.Hilbert::Grid_t = Hilbert::New(box,3)
   DrawCells(*grid)
   
   Scene::AddModel(Scene::*current_scene, *root)
   Scene::Setup(Scene::*current_scene, *app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 2
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 603
+; FirstLine = 544
 ; Folding = ---
 ; EnableXP

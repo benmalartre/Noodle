@@ -628,12 +628,7 @@ Module ControlMenu
   ;  Event
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*menu.ControlMenu_t,eventID.i)
-    CompilerIf #PB_Compiler_Version < 560
-      If eventID = #PB_Event_SizeWindow Or eventID = Control::#PB_EventType_Resize
-    CompilerElse
-      If eventID = #PB_Event_SizeWindow Or eventID = #PB_EventType_Resize
-    CompilerEndIf
-      
+    If eventID = #PB_Event_SizeWindow Or eventID = #PB_EventType_Resize
       *menu\dirty = #True
       Draw(*menu)
     Else
@@ -698,9 +693,9 @@ Module ControlMenu
 EndModule
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 593
-; FirstLine = 524
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 630
+; FirstLine = 600
 ; Folding = -Qt---
 ; EnableThread
 ; EnableXP

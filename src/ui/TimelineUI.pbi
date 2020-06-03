@@ -57,10 +57,10 @@ Module TimelineUI
     
     Object::INI(TimelineUI)
     
-    *Me\posX = *parent\x
-    *Me\posY = *parent\y
-    *Me\sizX = *parent\width
-    *Me\sizY = *parent\height
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizX
+    *Me\sizY = *parent\sizY
    
     *Me\name = "Timeline"
     ;*Me\type = Globals::::#VIEW_TIMELINE
@@ -118,17 +118,13 @@ Module TimelineUI
   ;-------------------------------
   Procedure OnEvent(*Me.TimelineUI_t,event.i)
     Protected Me.ITimelineUI = *Me
-    CompilerIf #PB_Compiler_Version < 560
-      If event =  Control::#PB_EventType_Resize Or event = #PB_Event_SizeWindow
-    CompilerElse
-      If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow  
-    CompilerEndIf
+    If event =  #PB_EventType_Resize Or event = #PB_Event_SizeWindow  
       Protected ev_data.Control::EventTypeDatas_t
       Protected *top.View::View_t = *Me\parent
-      *Me\posX = *top\x
-      *Me\posY = *top\y
-      *Me\sizX = *top\width
-      *Me\sizY = *top\height
+      *Me\posX = *top\posX
+      *Me\posY = *top\posY
+      *Me\sizX = *top\sizX
+      *Me\sizY = *top\sizY
       ev_data\x = *Me\posX
       ev_data\y = *Me\posY
       ev_data\width = *Me\sizX
@@ -141,12 +137,9 @@ Module TimelineUI
     Else
       ControlTimeline::OnEvent(*Me\timeline,EventType(),#Null)
     EndIf
-   
-    ;Redraw Timeline
+
     Draw(*Me)
-    
-   ;SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Image,ImageID(*e\imageID))
-    ;SetGadgetAttribute(*e\gadgetID,#PB_Canvas_Image,ImageID(*e\imageID))
+   
   EndProcedure
   
   Class::DEF(TimelineUI)
@@ -160,7 +153,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 113
+; CursorPosition = 126
+; FirstLine = 88
 ; Folding = --
 ; EnableXP

@@ -9,11 +9,24 @@ Structure q4f32
   w.f
 EndStructure
 
-Macro MConjugate(_out,_q)
-  _out\x = -_q\x
-  _out\y = -_q\y
-  _out\z = -_q\z
-  _out\w = _q\w
+Procedure PBConjugate(*out.q4f32, *q.q4f32)
+  *out\x = -*q\x
+  *out\y = -*q\y
+  *out\z = -*q\z
+  *out\w = *q\w
+EndProcedure
+
+Procedure PBConjugateInPlace(*q.q4f32)
+  *q\x = -*q\x
+  *q\y = -*q\y
+  *q\z = -*q\z
+EndProcedure
+
+Macro MConjugate()
+  *q2\x = -q1\x
+  *q2\y = -q1\y
+  *q2\z = -q1\z
+  *q2\w = q1\w
 EndMacro
 
 Macro MConjugateInPlace(_q)
@@ -60,7 +73,7 @@ Define mem2 = AllocateMemory(numTests * SizeOf(Math::q4f32))
 Define T1.d = Time::Get()
 For i=0 To numTests-1
   *q2 = mem1 + i * SizeOf(Math::q4f32)
-  MConjugate(*q2, q1)
+  PBConjugate(*q2, q1)
 Next
 
 Define E1.d = Time::Get() - T1
@@ -75,8 +88,8 @@ Next
 Define E2.d = Time::Get() - T2
 
 MessageRequester("CONJUGATE", StrD(E1)+" vs "+StrD(E2)+" = "+Str(CompareMemory(mem1, mem2, numTests * SizeOf(Math::q4f32))))
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 16
-; Folding = -
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 24
+; Folding = --
 ; EnableXP

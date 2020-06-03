@@ -307,7 +307,7 @@ Module PointCloud
 
     Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
 
-;   glPointSize(24);*p\pointsize)
+    glPointSize(6);*p\pointsize)
 
     glEnable( #GL_PROGRAM_POINT_SIZE )
   
@@ -389,8 +389,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 246
-; FirstLine = 243
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 309
+; FirstLine = 291
 ; Folding = ---
 ; EnableXP

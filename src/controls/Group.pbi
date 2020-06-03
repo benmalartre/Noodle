@@ -402,11 +402,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-  CompilerIf #PB_Compiler_Version < 560
-      Case Control::#PB_EventType_Resize
-    CompilerElse
-      Case #PB_EventType_Resize
-    CompilerEndIf
+    Case #PB_EventType_Resize
       ; ...[ Update & Check Dirty ]...........................................
      hlpResize( *Me, *ev_data.Control::EventTypeDatas_t )
 
@@ -777,6 +773,7 @@ EndProcedure
   
     ; ---[ One More Control ]---------------------------------------------------
     *Me\chilcount + 1
+    
   
     ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
@@ -940,8 +937,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 425
-; FirstLine = 366
-; Folding = ---0
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 775
+; FirstLine = 739
+; Folding = ---+
 ; EnableXP

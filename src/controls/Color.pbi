@@ -211,11 +211,7 @@ Module ControlColor
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version < 560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -457,9 +453,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 74
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 225
+; FirstLine = 210
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

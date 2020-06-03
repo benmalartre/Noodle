@@ -104,11 +104,7 @@ Module ScintillaUI
 
           If ListSize(*Me\props())
             ForEach *Me\props()
-              CompilerIf #PB_Compiler_Version <550
-                ControlProperty::OnEvent(*Me\props(),Control::#PB_EventType_Resize,@ev_datas)
-              CompilerElse
-                ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
-              CompilerEndIf
+              ControlProperty::OnEvent(*Me\props(),#PB_EventType_Resize,@ev_datas)
               ev_datas\y = ev_datas\y + *Me\props()\sizY
             Next
           EndIf
@@ -437,8 +433,8 @@ Module ScintillaUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ScintillaUI )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 54
-; Folding = ----
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 103
+; Folding = ---
 ; EnableXP

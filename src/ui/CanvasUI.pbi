@@ -90,14 +90,14 @@ Module CanvasUI
     *Me.CanvasUI_t = AllocateMemory(SizeOf(CanvasUI_t))
     Object::INI(CanvasUI)
     Protected l.l
-    *Me\resx = *parent\width
-    *Me\resy = *parent\height
-    *Me\pixelratio = *parent\height / *parent\width
+    *Me\resx = *parent\sizX
+    *Me\resy = *parent\sizY
+    *Me\pixelratio = *parent\sizY / *parent\sizX
     *Me\secondary = RGBA(120,12,66,255)
-    *Me\container = ContainerGadget(#PB_Any, x, y, *parent\width, *parent\height, #PB_Container_BorderLess)
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*parent\width, *parent\height,#PB_Canvas_Keyboard)
+    *Me\container = ContainerGadget(#PB_Any, x, y, *parent\sizX, *parent\sizY, #PB_Container_BorderLess)
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*parent\sizX, *parent\sizY,#PB_Canvas_Keyboard)
     *Me\zoom = 100
-    *Me\imageID = CreateImage(#PB_Any,*parent\width,*parent\height,32)
+    *Me\imageID = CreateImage(#PB_Any,*parent\sizX,*parent\sizY,32)
     *Me\tool = Tool::New(Tool::#TOOL_SELECT, *Me\gadgetID)
     *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
     *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
@@ -522,7 +522,7 @@ Module CanvasUI
 EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 410
-; FirstLine = 406
+; CursorPosition = 105
+; FirstLine = 88
 ; Folding = ----
 ; EnableXP

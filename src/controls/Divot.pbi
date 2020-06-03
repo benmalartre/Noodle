@@ -10,7 +10,7 @@ DeclareModule ControlDivot
   ; ============================================================================
   ;{
   ; ----------------------------------------------------------------------------
-  ;  RAA_DIVOT_ANIM
+  ;  DIVOT_ANIM
   ; ----------------------------------------------------------------------------
   Enumeration
     #ANIM_NONE = 0
@@ -160,9 +160,6 @@ DeclareModule ControlDivot
  Global CLASS.Class::Class_t
 EndDeclareModule
 
-
-
-
 ; ==============================================================================
 ;  CONTROL DIVOT MODULE IMPLEMENTATION
 ; ==============================================================================
@@ -245,12 +242,7 @@ Module ControlDivot
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version <560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
-        
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         
@@ -491,7 +483,7 @@ Module ControlDivot
     
   EndProcedure
   ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsDivotTermOnce
+  ;  GuiControlsDivotTermOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Term( )
   ;CHECK_INIT  
@@ -538,8 +530,8 @@ Module ControlDivot
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlDivot )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 174
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 161
+; FirstLine = 151
 ; Folding = ---
 ; EnableXP

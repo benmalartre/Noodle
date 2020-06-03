@@ -5,6 +5,7 @@ XIncludeFile "../graph/Node.pbi"
 XIncludeFile "../graph/Compound.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
+XIncludeFile "../objects/PointCloud.pbi"
 XIncludeFile "../objects/Topology.pbi"
 
 ; ==================================================================================================
@@ -346,9 +347,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 51
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 7
 ; Folding = --
 ; EnableThread
 ; EnableXP

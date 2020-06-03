@@ -271,15 +271,15 @@ Module LayerDefault
     *Me\image = CreateImage(#PB_Any,width,height)
   ;   Protected img = LoadImage(#PB_Any,"/home/benmalartre/RnD/IconMaker/icons/pen.png")
   ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
-    GLContext::AddLayer(*ctx, *Me)
+;     GLContext::AddLayer(*ctx, *Me)
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 99
-; FirstLine = 76
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 273
+; FirstLine = 214
 ; Folding = --
 ; EnableXP

@@ -70,7 +70,7 @@ Repeat
       datas\y = 0
       datas\width = WindowWidth(window)
       datas\height = WindowHeight(window)
-      ControlProperty::Event(*prop,Control::#PB_EventType_Resize,@datas)
+      ControlProperty::Event(*prop,#PB_EventType_Resize,@datas)
       Case Globals::#EVENT_PARAMETER_CHANGED
         Debug("PARAMETER CHANGED -------------> EVENT")
         d = EventData()
@@ -113,7 +113,7 @@ Until e = #PB_Event_CloseWindow
 ;   EndIf
 ;   
 ; Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 34
-; FirstLine = 30
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 49
 ; EnableXP

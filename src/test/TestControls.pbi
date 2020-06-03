@@ -1,7 +1,6 @@
 ﻿XIncludeFile "../core/Application.pbi"
 
 
-EnableExplicit
 UseModule Math
 UseModule OpenGL
 UseModule OpenGLExt
@@ -14,7 +13,6 @@ Globals::Init()
 Time::Init()
 Log::Init()
 FTGL::Init()
-Controls::Init()
 Commands::Init()
 UIColor::Init()
 
@@ -25,16 +23,14 @@ Callback::DECLARECALLBACK(KissThatButton, Arguments::#PTR)
 
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 ; Controls::SetTheme(Globals::#GUI_THEME_DARK)
-Controls::SetTheme(Globals::#GUI_THEME_LIGHT)
-Define *m.ViewManager::ViewManager_t = *app\manager
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*m\main, "Property", #Null)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
 
 OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
 
-  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name+Str(i+1), name+Str(i+1),0,128,*ui\width, *ui\height-128)
+  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name+Str(i+1), name+Str(i+1),0,128,*ui\sizX, *ui\sizY-128)
   
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
@@ -86,8 +82,7 @@ CloseGadgetList()
 
 Application::Loop(*app,@Update())
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 14
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP

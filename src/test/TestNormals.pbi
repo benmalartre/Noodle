@@ -123,14 +123,14 @@ Procedure UpdateNormals()
   Next
   
   Define *L.Drawer::Item_t = Drawer::AddLines2(*drawer, *bunny\geom\a_positions, *offsetedNormals)
-  Drawer::SetColor(*L, Color::_RED())
+  Drawer::SetColor(*L, Color::RED)
   
   CArray::Delete(*offsetedNormals)
   
   Define m.m4f32
   Box::GetMatrixRepresentation(*geom\bbox, m)
   Define *B.Drawer::Box_t = Drawer::AddBox(*drawer, m)
-  Drawer::SetColor(*B, Color::_MAGENTA())
+  Drawer::SetColor(*B, Color::MAGENTA)
   
   
 EndProcedure
@@ -138,7 +138,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
@@ -155,11 +155,8 @@ Procedure Draw(*app.Application::Application_t)
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
   
-;   LayerDefault::Draw(*layer, *app\context)
-  ViewportUI::Draw(*viewport, *app\context)
-  
-  
-  
+  Application::Draw(*app, *layer, *app\camera)
+
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -167,7 +164,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
 
@@ -214,10 +211,10 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Normals", width, height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
      *app\context = *viewport\context
-     
-    View::SetContent(*app\manager\main,*viewport)
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -225,7 +222,7 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+;   ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
 
@@ -268,9 +265,9 @@ Procedure Draw(*app.Application::Application_t)
 
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 105
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 224
+; FirstLine = 201
 ; Folding = --
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

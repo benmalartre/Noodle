@@ -21,9 +21,7 @@ DeclareModule TopMenuUI
   Declare Draw(*ui.TopMenuUI_t)
   Declare DrawPickImage(*ui.TopMenuUI_t)
   Declare Pick(*ui.TopMenuUI_t)
-  Declare Init(*ui.TopMenuUI_t)
   Declare OnEvent(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  Declare Term(*ui.TopMenuUI_t)
   Declare Draw(*ui.TopMenuUI_t)
   
   
@@ -88,65 +86,21 @@ Module TopMenuUI
   Procedure Clear(*Me.TopMenuUI_t)
     
   EndProcedure
-  
-  ; ----------------------------------------
-  ;  Init TopMenu Data
-  ; ----------------------------------------
-  Procedure Init(*Me.TopMenuUI_t)
-    
-  EndProcedure
-  
-  ; ----------------------------------------
-  ;  Term TopMenu Data
-  ; ----------------------------------------
-  Procedure Term(*Me.TopMenuUI_t)
-    
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Callbacks
-  ;---------------------------------------------------
-  Procedure SetThemeLight(*args.Arguments::Arguments_t)
-    Protected *arg.Arguments::Argument_t = *args\args(0)
-  
-    Protected windowID = *arg\l
-  
-    SetWindowColor(windowID,UIColor::COLOR_MAIN_BG)
-    Controls::SetTheme( Globals::#GUI_THEME_LIGHT )
-   EndProcedure
-   
-   Procedure SetThemeDark(*args.Arguments::Arguments_t)
-    Protected *arg.Arguments::Argument_t = *args\args(0)
-  
-    Protected windowID = *arg\l
-  
-     SetWindowColor(windowID,UIColor::COLOR_MAIN_BG)
-     Controls::SetTheme( Globals::#GUI_THEME_DARK )
-  EndProcedure
+
   
   ;---------------------------------------------------
   ; Send Events
   ;---------------------------------------------------
   Procedure OnEvent(*Me.TopMenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
     
-    CompilerIf #PB_Compiler_Version < 560
-      If event =  Control::#PB_EventType_Resize
-        Protected *top.View::View_t = *Me\top
-        *Me\x = *top\x
-        *Me\y = *top\y
-        *Me\width = *top\width
-        *Me\height = *top\height
-        ControlMenu::OnEvent(*me\menu,Control::#PB_EventType_Resize)
-    CompilerElse
-      If event =  #PB_EventType_Resize
-        Protected *top.View::View_t = *Me\parent
-        *Me\posX = *top\x
-        *Me\posY = *top\y
-        *Me\sizX = *top\width
-        *Me\sizY = *top\height
-        ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
-        ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
-    CompilerEndIf
+    If event =  #PB_EventType_Resize
+      Protected *top.View::View_t = *Me\parent
+      *Me\posX = *top\posX
+      *Me\posY = *top\posY
+      *Me\sizX = *top\sizX
+      *Me\sizY = *top\sizY
+      ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
+      ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
       
     ElseIf event = #PB_Event_Gadget
       
@@ -198,9 +152,9 @@ Module TopMenuUI
     Protected *Me.TopMenuUI_t = AllocateMemory(SizeOf(TopMenuUI_t))
     ;Initialize Structures
     Object::INI( TopMenuUI )
-    *Me\posX = *parent\x
-    *Me\posY = *parent\y
-    *Me\sizX = *parent\width
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizY
     *Me\sizY = 25
     
     *Me\name = "Top Menu"
@@ -296,7 +250,7 @@ Module TopMenuUI
    Class::DEF(TopMenuUI)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 13
-; Folding = ----
+; CursorPosition = 164
+; FirstLine = 150
+; Folding = ---
 ; EnableXP

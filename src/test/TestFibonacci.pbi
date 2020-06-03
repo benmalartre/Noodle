@@ -121,31 +121,29 @@ Define width = GadgetWidth(canvas)
 Define height = GadgetHeight(canvas)
 Repeat
   
-;   Fibonacci::Sphere(*fibonacci)
-;   DrawVogel(*fibonacci, canvas)
-  Fibonacci::Grid(*fibonacci)
+  Fibonacci::Sphere(*fibonacci)
+;   Fibonacci::Grid(*fibonacci)
   StartVectorDrawing(CanvasVectorOutput(canvas))  
-  AddPathBox(0,0, width, height)
-  VectorSourceColor(RGBA(0,0,0,255))
-  FillPath()
-  
-  VectorSourceColor(RGBA(0,0,0,255))
-  TranslateCoordinates(width * 0.5, height*0.5)
-  ScaleCoordinates(scl, scl)
-;   
-  DrawGrid(*fibonacci,canvas)
-  DrawSpiral(*fibonacci, canvas)
-;   *fibonacci\N + 1
-;   Fibonacci::Disc(*fibonacci)
-;   ;   DrawSphere(*fibonacci, canvas, scl)
-;   DrawDisc(*fibonacci, canvas, 1024)
-  ;*fibonacci\N+1
+; ;   AddPathBox(0,0, width, height)
+; ;   VectorSourceColor(RGBA(0,0,0,255))
+; ;   FillPath()
+; ;   
+; ;   VectorSourceColor(RGBA(0,0,0,255))
+; ;   TranslateCoordinates(width * 0.5, height*0.5)
+; ;   ScaleCoordinates(scl, scl)
+; ; ;   
+; ;   DrawGrid(*fibonacci,canvas)
+; ;   DrawSpiral(*fibonacci, canvas)
+; ;   *fibonacci\N + 1
+; ;   Fibonacci::Disc(*fibonacci)
+    DrawSphere(*fibonacci, canvas, scl)
+; ;   DrawDisc(*fibonacci, canvas, 1024)
+;   ;*fibonacci\N+1
   StopVectorDrawing()
     
 
 Until WaitWindowEvent(10) = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 83
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 123
 ; Folding = -
 ; EnableXP

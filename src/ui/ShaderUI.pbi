@@ -47,10 +47,10 @@ Module ShaderUI
   Procedure New(*parent.View::View_t,name.s,*shader.Shader::Shader_t)
     Protected *Me.ShaderUI_t = AllocateMemory(SizeOf(ShaderUI_t))
     
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     
     Object::INI(ShaderUI)
     *Me\shader = *shader
@@ -255,8 +255,8 @@ Module ShaderUI
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 52
+; FirstLine = 45
 ; Folding = --
 ; EnableXP

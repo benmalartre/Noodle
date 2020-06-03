@@ -52,7 +52,7 @@ DeclareModule GLContext
     focus.b
     shader.GLuint
     
-    List *layers()
+;     List *layers()
     
     Map *shaders.Program::Program_t()
   EndStructure
@@ -65,7 +65,7 @@ DeclareModule GLContext
   Declare FlipBuffer(*Me.GLContext_t)
   Declare GetSupportedLineWidth(*Me.GLContext_t)
   Declare Resize(*Me.GLContext_t, width.i, height.i)
-  Declare AddLayer(*Me.GLContext_t, *layer)
+;   Declare AddLayer(*Me.GLContext_t, *layer)
   
   Global *MAIN_GL_CTXT.GLContext_t
 EndDeclareModule
@@ -174,9 +174,9 @@ DeclareModule Layer
   Global CLASS.Class::Class_t
 
 EndDeclareModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 67
-; FirstLine = 40
+; FirstLine = 64
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

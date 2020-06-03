@@ -119,8 +119,8 @@ DeclareModule UIColor
   
   Global BLACK          = RGBA(0,0,0,255)
   Global RED            = RGBA(255,0,0,255)
-  Global BLUE           = RGBA(0,255,0,255)
-  Global GREEN          = RGBA(0,0,255,255)
+  Global BLUE           = RGBA(0,0,255,255)
+  Global GREEN          = RGBA(0,255,0,255)
   Global WHITE          = RGBA(255,255,255,255)
   Global YELLOW         = RGBA(255,255,0,255)
   Global CYAN           = RGBA(0,255,255,255)
@@ -143,6 +143,7 @@ DeclareModule UIColor
   
   Declare Init()
   Declare SetTheme(theme.i)
+  Declare Hovered(color.i)
   
 EndDeclareModule
 
@@ -209,13 +210,19 @@ Module UIColor
     SetTheme(Globals::#GUI_THEME_LIGHT)
   EndProcedure
   
+  Procedure Hovered(color.i)
+    ProcedureReturn RGBA(Math::Min(Red(color) + 32, 255), Math::Min(Green(color) + 32, 255), Math::Min(Blue(color) + 32,255), 255)
+  EndProcedure
+  
+  
 
 EndModule
 
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 213
+; FirstLine = 157
 ; Folding = ---
 ; EnableXP

@@ -1,9 +1,10 @@
-﻿
+﻿XIncludeFile "../core/Eval.pbi"
 Prototype.f FNGRAPHCURVE(*crv, x.f)
 
 Structure GraphCurve_t
   *callback.FNGRAPHCURVE
   color.i
+  func.s
 EndStructure
 
 Procedure.f LinearCallback(*crv.GraphCurve_t, x.f)
@@ -38,9 +39,23 @@ Procedure.f TanCallback(*crv.GraphCurve_t, x.f)
   ProcedureReturn Cos(x)
 EndProcedure
 
+Procedure.f EvalCallback(*crv.GraphCurve_t, x.f)
+  Define func.s = ReplaceString(*crv\func, "x", StrF(x), #PB_String_NoCase)
+  ProcedureReturn Eval::d(func)
+EndProcedure
+
+
 Procedure NewCurve(*callback.FNGRAPHCURVE, r.f=255, g.f=0, b.f=0)
   Define *Me.GraphCurve_t = AllocateMemory(SizeOf(GraphCurve_t))
   *Me\callback = *callback 
+  *Me\color = RGBA(r,g,b,255)
+  ProcedureReturn *Me
+EndProcedure
+
+Procedure NewEvalCurve(func.s, r.f=255, g.f=0, b.f=0)
+  Define *Me.GraphCurve_t = AllocateMemory(SizeOf(GraphCurve_t))
+  *Me\callback = @EvalCallback()
+  *Me\func = func
   *Me\color = RGBA(r,g,b,255)
   ProcedureReturn *Me
 EndProcedure
@@ -129,7 +144,7 @@ EndProcedure
 Procedure DrawCurve(*Me.GraphView_t, *crv.GraphCurve_t, startT.f, endT.f, N.i)
   Define px.d, py.d, T.d
   Define nxt.f = (endT-startT)/N
-  Debug "NEXT : "+StrF(nxt)
+
   px = startT
   py = *crv\callback(*crv, px)
   Define nbp = 0
@@ -151,7 +166,7 @@ Procedure DrawCurve(*Me.GraphView_t, *crv.GraphCurve_t, startT.f, endT.f, N.i)
     px = startT + i * nxt
     py =  *crv\callback(*crv, px)
     If IsNAN(py) 
-      continue
+      Continue
     ElseIf IsInfinity(py)
       AddPathLine(ConvertCoordinateX(px, 0,#PB_Coordinate_Device, #PB_Coordinate_Output),
                   0)
@@ -176,7 +191,7 @@ Procedure CanvasDraw(*Me.GraphView_t)
   StartVectorDrawing(CanvasVectorOutput(*Me\gadget))
   DrawBG(*Me)
   TranslateCoordinates(*Me\posX, *Me\posY)
-  ScaleCoordinates(*Me\zoom, *Me\zoom)
+  ScaleCoordinates(*Me\zoom, -*Me\zoom)
   
   Define startT.f, endT.f
   Define invZoom.f = 1 / *Me\zoom
@@ -188,7 +203,6 @@ Procedure CanvasDraw(*Me.GraphView_t)
   
   StopVectorDrawing()
 EndProcedure
-
 
 
 Define *view.GraphView_t = NewView(800,600)
@@ -205,6 +219,8 @@ AddElement(*view\curves())
 AddElement(*view\curves())
 *view\curves() = NewCurve(@ExpCallback(), 0, 255, 255)
 
+AddElement(*view\curves())
+*view\curves() = NewEvalCurve("Cos(x)+Abs(x*0.2)", 255,0,255)
 
 Define e
 Repeat
@@ -222,8 +238,8 @@ Repeat
 Until e = #PB_Event_CloseWindow
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 107
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 206
+; FirstLine = 174
 ; Folding = ---
 ; EnableXP

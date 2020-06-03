@@ -67,12 +67,12 @@ EndProcedure
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
-
+  
   glEnable(#GL_BLEND)
   glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   glDisable(#GL_DEPTH_TEST)
@@ -82,8 +82,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
 
   glDisable(#GL_BLEND)
-  
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
 EndProcedure
 
@@ -125,6 +124,7 @@ EndProcedure
 Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointCloud_t)
   Protected *geom.Geometry::PointCloudGeometry_t = *cloud\geom
   Drawer::Flush(*drawer)
+  Drawer::SetSize(*drawer, 4)
   Protected nrm.v3f32, upv.v3f32
   If *geom\nbpoints < 3
     MessageRequester("TestCovariance", "Best Fitting Plane : At least three points required!")
@@ -147,7 +147,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     CArray::SetValue(*positions, 0, centroid)
     Protected *point.Drawer::Point_t = Drawer::AddPoint(*drawer, *positions)
     *point\size = 4
-    Drawer::SetColor(*point, Color::_RED())
+    Drawer::SetColor(*point, Color::RED)
 
     ; calc full 3x3 covariance matrix, excluding symmetries:
     Define xx.f = 0.0
@@ -234,9 +234,10 @@ FTGL::Init()
    *app = Application::New("Test Covariance",width, height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
      *app\context = *viewport\context
-    View::SetContent(*app\manager\main,*viewport)
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -287,8 +288,8 @@ FTGL::Init()
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 238
-; FirstLine = 229
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 126
+; FirstLine = 122
 ; Folding = --
 ; EnableXP

@@ -110,7 +110,6 @@ Module ControlCheck
 ;     EndIf
     
     ; ---[ Draw Label ]---------------------------------------------------------
-    ;   raaClipBoxHole( 23 + xoff,  + yoff, *Me\sizX-24, *Me\sizY-6 )
     MovePathCursor( 23 + xoff, ty)
     VectorSourceColor(tc)
     DrawVectorText("FUCK THAQT : "+*Me\label )
@@ -142,11 +141,7 @@ Module ControlCheck
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version <560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
       
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
@@ -219,8 +214,6 @@ Module ControlCheck
           Control::Invalidate(*Me)
           If *Me\over
             Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-;             Protected sig.CSlot = *Me\sig_onchanged
-;             sig\Trigger( #RAA_SIGNAL_TYPE_PING, @*Me\value )
           EndIf
           
         EndIf
@@ -337,8 +330,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 74
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 142
 ; Folding = --
 ; EnableXP

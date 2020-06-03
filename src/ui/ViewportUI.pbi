@@ -84,10 +84,10 @@ Module ViewportUI
     
     Object::INI(ViewportUI)
     
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     
     *Me\name = name
     *Me\type = Globals::#VIEW_VIEWPORT
@@ -168,16 +168,16 @@ Module ViewportUI
         EndIf
     
       Case #PB_Event_SizeWindow
-        width = *top\width
-        height = *top\height
+        width = *top\sizX
+        height = *top\sizY
 
         *Me\sizX = width
         *Me\sizY = height
-        *Me\posX = *top\x
-        *Me\posY = *top\y
+        *Me\posX = *top\posX
+        *Me\posY = *top\posY
         
         ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
-        ResizeGadget(*Me\container,*top\x,*top\y,*Me\sizX,*Me\sizY)
+        ResizeGadget(*Me\container,*top\posX,*top\posY,*Me\sizX,*Me\sizY)
         
         If *Me\context  
           GLContext::Resize(*Me\context, *Me\sizX, *Me\sizY)
@@ -289,15 +289,7 @@ Module ViewportUI
             EndIf
 
           Case #PB_EventType_LeftButtonDown
-;               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
-;               If modifiers = #PB_OpenGL_Alt
-;                 *Me\rmb_p = #True
-;               ElseIf modifiers = #PB_OpenGL_Control
-;                 *Me\mmb_p = #True
-;               Else
-;                 *Me\lmb_p = #True
-;               EndIf  
-;               
+         
             *Me\lmb_p = #True
             *Me\down = #True
             *Me\oldX = *Me\mx
@@ -701,8 +693,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 566
-; FirstLine = 563
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 179
+; FirstLine = 175
 ; Folding = ----
 ; EnableXP

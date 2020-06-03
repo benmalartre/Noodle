@@ -317,14 +317,6 @@ Module ControlTimeline
     
     hlpDrawPickImage(*Me)
   
-    
-  ;    ; ---[ Number Controls ]------------------------------------------------------
-  ;   *Me\c_startframe = ControlNumber::New("StartFrame",Time::startframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,0,6,45,30)
-  ;   *Me\c_endframe   = ControlNumber::New("EndFrame",Time::endframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,*Me\sizX-45,6,45,30)
-  ;   *Me\c_startrange = ControlNumber::New("StartRange",Time::startrange,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,0,36,45,30)
-  ;   *Me\c_endrange   = ControlNumber::New("EndRange",Time::endrange,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,*Me\sizX-45,36,45,30)
-  ;   *Me\c_currentframe = ControlNumber::New("CurrentFrame",Time::currentframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,*Me\sizX/4*3,36,45,30)
-    
     ProcedureReturn(#True)
     
   EndProcedure
@@ -383,12 +375,7 @@ Module ControlTimeline
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
-        
-        CompilerIf #PB_Compiler_Version < 560
-          Case Control::#PB_EventType_Resize
-        CompilerElse
-          Case #PB_EventType_Resize
-        CompilerEndIf
+        Case #PB_EventType_Resize
           ;CHECK_PTR1_BOO(*ev_data);
           ; ...[ Update & Check Dirty ]...........................................
           w = GadgetWidth(*Me\gadgetID)
@@ -1102,7 +1089,6 @@ Module ControlTimeline
     
     
     ; ---[ Combo Controls ]------------------------------------------------------
-;     *Me\c_playbackrate = ControlCombo::New(*Me,"Playback","Playback",0,80,30,120,30)
     Append(*Me,*Me\c_playbackrate)
     
     ; ---[ Init Icon Buttons ]-------------------------------------------------
@@ -1156,8 +1142,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 189
-; FirstLine = 157
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 509
+; FirstLine = 506
 ; Folding = -------
 ; EnableXP

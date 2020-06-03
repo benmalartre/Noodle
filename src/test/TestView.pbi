@@ -52,7 +52,6 @@ CompilerEndIf
 Globals::Init()
 Time::Init()
 Log::Init()
-Controls::Init()
 FTGL::Init()
 
 Define *app.Application::Application_t = Application::New("Solar System",1200,600)
@@ -185,9 +184,9 @@ Repeat
   
   Window::OnEvent(*app\window,e)
 Until e = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 185
-; FirstLine = 154
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 54
+; FirstLine = 50
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -42,10 +42,10 @@ Module DummyUI
   ; New
   ;-------------------------------
   Procedure New(*parent.View::View_t,name.s)
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     
     Protected *Me.DummyUI_t = AllocateMemory(SizeOf(DummyUI_t))
     Object::INI(DummyUI)
@@ -123,12 +123,12 @@ Module DummyUI
     Select event
       Case #PB_Event_SizeWindow
         Protected *top.View::View_t = *Me\parent
-        Protected width.i = *top\width
-        Protected height.i = *top\height
+        Protected width.i = *top\sizX
+        Protected height.i = *top\sizY
         
         *Me\sizX = width
         *Me\sizY = height
-        ResizeGadget(*Me\container,*top\x,*top\y,width,height)
+        ResizeGadget(*Me\container,*top\posX,*top\posY,width,height)
         ResizeGadget(*Me\gadgetID,0,0,width,height)
   
       Case #PB_Event_Gadget
@@ -153,7 +153,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 106
+; CursorPosition = 130
+; FirstLine = 88
 ; Folding = --
 ; EnableXP

@@ -19,7 +19,6 @@ Globals::Init()
 Time::Init()
 Log::Init()
 FTGL::Init()
-Controls::Init()
 Commands::Init()
 UIColor::Init()
 CompilerIf #USE_ALEMBIC
@@ -128,8 +127,8 @@ Scene::AddChild(Scene::*current_scene,*obj)
 Scene::AddChild(Scene::*current_scene,*teapot)
 
 Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
-Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Define *window.Window::Window_t = *app\window
+AddKeyboardShortcut(*window\ID, #PB_Shortcut_P, 666)
 Global *main.View::View_t = *window\main
 Global *view.View::View_t = View::Split(*main,0,50)
 Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
@@ -162,7 +161,6 @@ Application::AddLayer(*app, *layer)
 Scene::Setup(Scene::*current_scene,*app\context)
 Window::OnEvent(*app\window, Globals::#EVENT_NEW_SCENE)
 Window::OnEvent(*app\window, #PB_Event_SizeWindow)
-Controls::SetTheme(UIColor::#LIGHT_THEME)
 
 Scene::SelectObject(Scene::*current_scene, *teapot)
 ;ViewportUI::SetHandleTarget(*viewport, *teapot)
@@ -181,6 +179,13 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
+  
+  If Event() = #PB_Event_Menu
+    If EventMenu() = 666
+      Window::Capture(*app\window)
+    EndIf
+  EndIf
+  
 
   GLContext::FlipBuffer(*app\context)
 EndProcedure
@@ -190,8 +195,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 128
+; CursorPosition = 184
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

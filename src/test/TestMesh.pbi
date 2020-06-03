@@ -136,7 +136,7 @@ Procedure Draw(*app.Application::Application_t)
    Log::Init()
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+     *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
      *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
@@ -239,8 +239,8 @@ Procedure Draw(*app.Application::Application_t)
   MessageRequester("ELAPSED", StrD(Time::Get()-startT))
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 140
-; FirstLine = 131
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 138
+; FirstLine = 127
 ; Folding = -
 ; EnableXP

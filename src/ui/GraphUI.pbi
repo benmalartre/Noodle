@@ -144,10 +144,10 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s="GraphUI")
     Protected *Me.GraphUI_t = AllocateMemory(SizeOf(GraphUI_t))
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     
     InitializeStructure(*Me,GraphUI_t)
     Object::INI(GraphUI)
@@ -250,13 +250,13 @@ Module GraphUI
         
       Case #PB_Event_SizeWindow
         Protected *top.View::View_t = *Me\parent
-        Protected width.i = *top\width
-        Protected height.i = *top\height
+        Protected width.i = *top\sizX
+        Protected height.i = *top\sizY
         
         *Me\sizX = width
         *Me\sizY = height
 
-        ResizeGadget(*Me\container,*top\x,*top\y,width,height)
+        ResizeGadget(*Me\container,*top\posX,*top\posY,width,height)
         ResizeGadget(*Me\gadgetID,0,0,width,height)
         CanvasEvent(*Me,#PB_Event_SizeWindow)
         
@@ -541,8 +541,8 @@ Module GraphUI
   Procedure ChangePortName(*Me.GraphUI_t,x.i,y.i)
     Protected *top.View::View_t = *Me\parent
     If *Me\focus And *Me\focus\port
-      Protected mx = x+*top\x
-      Protected my = y+*top\y
+      Protected mx = x+*top\posX
+      Protected my = y+*top\posY
       
       OpenGadgetList(*me\container)
       Protected input = StringGadget(#PB_Any,mx,my,120,30,"")
@@ -1602,7 +1602,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 425
-; FirstLine = 422
+; CursorPosition = 544
+; FirstLine = 539
 ; Folding = --------
 ; EnableXP

@@ -86,14 +86,7 @@ Module UI
     AddPathBox(0,0,GadgetWidth(*ui\gadgetID), GadgetHeight(*ui\gadgetID))
     VectorSourceColor(UICOLOR::BACK)
     FillPath()
-    
-;     Define ctrl.Control::IControl
-;     For i=0 To ArraySize(*ui\())-1
-;       ctrl = *ui\items(i)
-;       ctrl\Draw()
-;     Next
     StopVectorDrawing()
-    
   EndProcedure
   
   ; -------------------------------------------------------------------
@@ -104,14 +97,7 @@ Module UI
     AddPathBox(0,0,ImageWidth(*ui\imageID), ImageHeight(*ui\imageID))
     VectorSourceColor(RGBA(0,0,0,255))
     FillPath()
-    
-;     Define ctrl.Control::IControl
-;     For i=0 To ArraySize(*ui\childrens())-1
-;       ctrl = *ui\childrens(i)
-;       ctrl\DrawPickImage(i+1)
-;     Next
     StopVectorDrawing()
-    
   EndProcedure
   
   ; -------------------------------------------------------------------
@@ -196,7 +182,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 102
+; CursorPosition = 48
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

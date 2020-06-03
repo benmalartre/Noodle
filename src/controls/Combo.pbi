@@ -37,9 +37,6 @@ DeclareModule ControlCombo
   Declare Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
   Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare OnPress(*Me.ControlCombo_t)
-  Declare SetTheme( theme.i )
-  Declare.b Init()
-  Declare.b Term()
   
   
   ; ============================================================================
@@ -162,11 +159,7 @@ Module ControlCombo
       ; ------------------------------------------------------------------------
       ;    Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version < 560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         ; ...[ Reset Height ]...................................................
@@ -327,47 +320,6 @@ Module ControlCombo
   EndProcedure
 
   
-  
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  Procedure SetTheme( theme.i)
-    
-    Select theme
-        
-      ; ---[ Light ]------------------------------------------------------------
-      Case Globals::#GUI_THEME_LIGHT
-      
-        
-      ; ---[ Dark ]-------------------------------------------------------------
-      Case Globals::#GUI_THEME_DARK
-        
-
-    EndSelect
-    
-  EndProcedure
-  ;}
-  
-  ; ----------------------------------------------------------------------------
-  ;  ControlsComboInitOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init(  )
-
-    SetTheme(Globals::#GUI_THEME_LIGHT)
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  ControlsComboTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn #True
-    
-  EndProcedure
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlCombo )
 EndModule
@@ -375,8 +327,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 75
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 179
+; FirstLine = 158
 ; Folding = ---
 ; EnableXP

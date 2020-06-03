@@ -176,11 +176,7 @@ Module ControlPopup
       ; ------------------------------------------------------------------------
       ;    Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version < 560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
       
@@ -238,6 +234,7 @@ Module ControlPopup
       ;    LeftButtonUp
       ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonUp
+        Debug "WTHEFUCK POPUP : "+*Me\name
         If *Me\visible And *Me\enable
           *Me\down = #False
           Control::Invalidate(*Me)
@@ -339,9 +336,9 @@ Module ControlPopup
   Class::DEF( ControlPopup )
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 54
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 236
+; FirstLine = 178
 ; Folding = ---
 ; EnableThread
 ; EnableXP

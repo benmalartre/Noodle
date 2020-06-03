@@ -145,11 +145,7 @@ Module ControlHead
       ; ------------------------------------------------------------------------
       ;  Resize
       ; ------------------------------------------------------------------------
-      CompilerIf #PB_Compiler_Version <560
-        Case Control::#PB_EventType_Resize
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         
         ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
@@ -373,8 +369,8 @@ Module ControlHead
   
   Class::DEF(ControlHead)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 363
-; FirstLine = 315
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 147
+; FirstLine = 144
 ; Folding = ---
 ; EnableXP

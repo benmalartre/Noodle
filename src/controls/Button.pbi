@@ -26,9 +26,6 @@ DeclareModule ControlButton
   
   Declare New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21, color.i=8421504 )
   Declare Draw(*Me.ControlButton_t, xoff.i = 0, yoff.i = 0)
-  Declare Init()
-  Declare Term()
-  Declare SetTheme(theme.i)
   Declare Delete(*Me.ControlButton_t)
   Declare OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -42,7 +39,6 @@ DeclareModule ControlButton
     Data.i @Draw()
     Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
-    
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -178,11 +174,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-    CompilerIf #PB_Compiler_Version < 560
-      Case Control::#PB_EventType_Resize
-    CompilerElse
-      Case #PB_EventType_Resize
-    CompilerEndIf
+    Case #PB_EventType_Resize
       ; ...[ Sanity Check ]...................................................
       If Not *ev_data : ProcedureReturn : EndIf
       
@@ -302,23 +294,6 @@ Procedure.s GetLabel( *Me.ControlButton_t )
   
 EndProcedure
 
-; ============================================================================
-;  INIT
-; ============================================================================
-Procedure Init(  )
-  
-EndProcedure
-
-; ============================================================================
-;  TERM
-; ============================================================================
-Procedure Term(  )
-
-EndProcedure
-
-Procedure SetTheme(theme.i)
-  
-EndProcedure
 
 Procedure InitializeColors(*Me.ControlButton_t, color.i)
   Protected r.i  =Red(color)
@@ -355,7 +330,7 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   Object::INI(ControlButton)
     
   ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type       = #PB_GadgetType_Button
+  *Me\type       = Control::#BUTTON
   *Me\name       = name
   *Me\parent     = *parent
   *Me\gadgetID   = *parent\gadgetID
@@ -389,8 +364,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 75
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 332
+; FirstLine = 300
 ; Folding = ---
 ; EnableXP

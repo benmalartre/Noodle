@@ -114,7 +114,6 @@ width = 1024
 height = 720
 
 *app = Application::New("Test Property",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
-Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Scene::*current_scene = Scene::New()
 Define *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
 Scene::AddChild(Scene::*current_scene,*bunny)
@@ -146,9 +145,9 @@ AddKnobs(*ui, "FUCK")
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 144
-; FirstLine = 115
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 81
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

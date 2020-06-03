@@ -8,12 +8,12 @@ Procedure Update()
 EndProcedure
 
 Procedure OnEcho(message.s)
-  MessageRequester("SLD", "SLD SLD : "+message)
+  Debug("SLD:  SLD SLD : "+message)
 EndProcedure
 Callback::DECLARECALLBACK(OnEcho, Arguments::#STRING)
 
 Procedure OnButtonClick(msg.s)
-  MessageRequester("CLK", "BTN CLK : "+msg)
+  Debug("CLK : BTN CLK : "+msg)
 EndProcedure
 Callback::DECLARECALLBACK(OnButtonClick, Arguments::#STRING)
 
@@ -31,7 +31,7 @@ UIColor::Init()
 Procedure AddButtonControl(*ui.PropertyUI::PropertyUI_t, name.s)
 
 
-   Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\width, *ui\height-128)
+   Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\sizX, *ui\sizY-128)
   
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
@@ -53,13 +53,13 @@ EndProcedure
 
 
 Procedure AddInputControl(*ui.PropertyUI::PropertyUI_t, name.s)
-  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\width, 128)
+  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\sizX, 128)
   
   ControlProperty::AppendStart(*prop)
   Define *head.ControlHead::ControlHead_t = ControlProperty::AddHead(*prop)
   
   ControlProperty::RowStart(*prop)
-  ControlProperty::AddSliderControl(*prop, name, name,0, #Null)
+  ControlProperty::AddSliderControl(*prop, name, name,0, 0,100,#Null)
   Define *slider.ControlSlider::ControlSlider_t = ControlProperty::GetControlByName(*prop, name+"Slider")
   Debug "SLIDER = "+Str(*slider)
   Signal::CONNECTCALLBACK(*slider\on_change, OnEcho, SLIDIN)
@@ -71,17 +71,16 @@ EndProcedure
 
 
 Global *app.Application::Application_t = Application::New("Test Control Simple",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
-; Controls::SetTheme(Globals::#GUI_THEME_DARK)
-Controls::SetTheme(Globals::#GUI_THEME_LIGHT)
-Define *m.ViewManager::ViewManager_t = *app\manager
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*m\main, "Property", #Null)
+Controls::SetTheme(Globals::#GUI_THEME_DARK)
+;Controls::SetTheme(Globals::#GUI_THEME_LIGHT)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
 
 OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
-AddInputControl(*ui, "Input")
-;AddButtonControl(*ui, "Button")
+;AddInputControl(*ui, "Input")
+AddButtonControl(*ui, "Button")
 
  
   ;   
@@ -118,8 +117,8 @@ CloseGadgetList()
 
 Application::Loop(*app,@Update())
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 17
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

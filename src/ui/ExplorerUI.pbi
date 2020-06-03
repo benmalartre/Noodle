@@ -106,8 +106,8 @@ Module ExplorerUI
   ;---------------------------------------------------------
   Procedure Resize(*Me.ExplorerUI_t)
     Protected *top.View::View_t = *Me\parent
-    *Me\sizX = *top\width
-    *Me\sizY = *top\height
+    *Me\sizX = *top\sizX
+    *Me\sizY = *top\sizY
     *Me\scrollMaxX = ImageWidth(*Me\explorer\imageID)
     *Me\scrollMaxY = 200
   ;   *Me\grp\Event(#PB_EventType_Resize,@ed)
@@ -154,11 +154,7 @@ Module ExplorerUI
     Select event
       Case Globals::#EVENT_NEW_SCENE
         ControlExplorer::Fill(*Me\explorer,Scene::*current_scene) 
-      CompilerIf #PB_Compiler_Version < 560
-        Case  Control::#PB_EventType_Resize 
-      CompilerElse
-        Case #PB_EventType_Resize
-      CompilerEndIf
+      Case #PB_EventType_Resize
         If *Me\parent
           Resize(*Me)
           
@@ -207,15 +203,15 @@ Module ExplorerUI
     Protected *Me.ExplorerUI_t = AllocateMemory(SizeOf(ExplorerUI_t))
     Object::INI(ExplorerUI)
     
-    *Me\container = ContainerGadget(#PB_Any,*view\x,*view\y,*view\width,*view\height)
+    *Me\container = ContainerGadget(#PB_Any,*view\posX,*view\posY,*view\sizX,*view\sizY)
     *Me\name = name
-    *Me\sizX = *view\width
-    *Me\sizY = *view\height
+    *Me\sizX = *view\sizX
+    *Me\sizY = *view\sizY
     *Me\scrollX = 0
     *Me\scrollY = 0
     *Me\scrollable = #True
     *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard)
-    *Me\explorer = ControlExplorer::New(*Me,0,0,*view\width,*view\height)
+    *Me\explorer = ControlExplorer::New(*Me,0,0,*view\sizX,*view\sizY)
 
     CloseGadgetList()
     
@@ -230,7 +226,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 8
-; Folding = ----
+; CursorPosition = 213
+; FirstLine = 161
+; Folding = ---
 ; EnableXP

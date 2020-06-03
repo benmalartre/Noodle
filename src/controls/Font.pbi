@@ -23,7 +23,7 @@ Module Font
   ;   DRAW
   ; ---------------------------------------------------------
   Procedure Init()
-    RegisterFontFile("E:/Projects\RnD/PureBasic/IconMaker/fonts/OpenSans-Regular.ttf")
+    RegisterFontFile("../../fonts/Arial/arial.ttf")
     Define font.i = LoadFont(#PB_Any, "OpenSans-Regular", 12) ; Maintenant, nous pouvons charger la police, le système d'exploitation la connait
     *CURRENT_FONT = AllocateMemory(SizeOf(Font_t))
     *CURRENT_FONT\name = "OpenSans-Regular"
@@ -52,7 +52,7 @@ Debug Font::*CURRENT_FONT\name +" : "+Str(Font::*CURRENT_FONT\font)
 Font::Term()
 
 Debug "ALL IS FINE..."
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 25
 ; Folding = -
 ; EnableXP

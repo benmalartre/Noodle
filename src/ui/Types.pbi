@@ -1,7 +1,4 @@
-﻿
-XIncludeFile "../objects/Scene.pbi"
-XIncludeFile "../ui/View.pbi"
-XIncludeFile "../ui/UI.pbi"
+﻿XIncludeFile "../ui/UI.pbi"
 
 ;============================================================
 ; View Module Declaration
@@ -19,20 +16,13 @@ DeclareModule View
     #VIEW_OTHER
   EndEnumeration
  
-  Structure View_t
+  Structure View_t Extends Control::Control_t
     *window                         ; window
     *content.UI::UI_t               ; view content
     *right.View_t
     *left.View_t
-    *parent.View_t
     
-    name.s                          ; view name
     lorr.b                          ; left or right view
-    
-    x.i                             ; view position X
-    y.i                             ; view position Y
-    width.i                         ; view actual width
-    height.i                        ; view actual height
     id.i                            ; unique ID
     axis.b                          ; splitter axis
     perc.i                          ; splitter percentage
@@ -53,13 +43,11 @@ DeclareModule View
     active.b
     dirty.b                         ; view need a refresh
     down.b
-    type.i
     
     lsplitter.i
     rsplitter.i
     tsplitter.i
-    bsplitter.i
-    
+    bsplitter.i    
   EndStructure
   
   Declare New(x.i,y.i,width.i,height.i,*top,axis.b=#False,name.s="View",lorr.b=#True,scroll.b=#True)
@@ -78,6 +66,20 @@ DeclareModule View
   Declare EventSplitter(*view.View_t,border.i)
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   Declare GetWindowID(*view)
+  
+  ; ============================================================================
+  ;  VTABLE ( Object + Control + ControlButton )
+  ; ============================================================================
+  DataSection
+    ViewVT:
+    Data.i @OnEvent()
+    Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
+  EndDataSection
+  
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 ;============================================================
@@ -90,8 +92,7 @@ DeclareModule Window
     #SHORTCUT_REDO
   EndEnumeration
   
-    
-  Structure Window_t
+  Structure Window_t Extends Object::Object_t
     name.s
     *main.View::View_t
     *active.View::View_t
@@ -104,6 +105,11 @@ DeclareModule Window
   
   EndStructure
   
+  Interface IWindow
+    Delete()
+    OnEvent()
+  EndInterface
+  
   Global *MAIN_WINDOW.Window_t
   
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget, parentID.i=0)
@@ -113,9 +119,17 @@ DeclareModule Window
   Declare Draw(*Me.Window_t)
   Declare Pick(*Me.Window_t, mx.i, my.i)
   Declare TearOff(*Me.Window_t, x.i, y.i, width.i, height.i)
-
+  
+  DataSection 
+    WindowVT: 
+    Data.i @Delete()
+    Data.i @OnEvent()
+  EndDataSection 
+  
+  Global CLASS.Class::Class_t
 EndDeclareModule
-; IDE Options = PureBasic 5.70 LTS (Linux - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

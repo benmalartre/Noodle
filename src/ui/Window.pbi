@@ -87,6 +87,7 @@ Module Window
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
+    
     If *Me = #Null Or event = -1: ProcedureReturn: EndIf
     
     Protected mx = WindowMouseX(*Me\ID)
@@ -98,14 +99,14 @@ Module Window
       If *old\content And IsGadget(*old\content\gadgetID)
         PostEvent(#PB_Event_Gadget, *Me\ID, *old\content\gadgetID, #PB_EventType_LostFocus)
       EndIf
-      ;View::OnEvent(*old, #PB_EventType_LostFocus)
+;       View::OnEvent(*old, #PB_EventType_LostFocus)
     EndIf
     
     Select event
       Case #PB_Event_Gadget
-
         If *over
           Protected touch = View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
+          
           If EventType() = #PB_EventType_LostFocus
             gadgetID = EventGadget()
             If FindMapElement(*Me\uis(), Str(gadgetID))
@@ -124,9 +125,8 @@ Module Window
             View::OnEvent(*over,event)
           EndIf
         EndIf
-          
+ 
       Case #PB_Event_Timer
-        Scene::Update(Scene::*current_scene)
         View::OnEvent(*Me\main,#PB_Event_Timer)
         
       Case Globals::#EVENT_NEW_SCENE
@@ -138,7 +138,6 @@ Module Window
         View::OnEvent(*Me\main,Globals::#EVENT_COMMAND_CALLED)
       Case Globals::#EVENT_PARAMETER_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_PARAMETER_CHANGED)
-        Scene::Update(Scene::*current_scene)
       Case Globals::#EVENT_SELECTION_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
         
@@ -147,9 +146,8 @@ Module Window
         
       Case Globals::#EVENT_GRAPH_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_GRAPH_CHANGED)
-         Scene::Update(Scene::*current_scene)
       Case #PB_Event_Repaint
-        View::OnEvent(*Me\main,#PB_Event_Repaint)
+;         View::OnEvent(*Me\main,#PB_Event_Repaint)
       Case #PB_Event_Timer
 ;         Select EventTimer()
 ;           Case #RAA_TIMELINE_TIMER
@@ -220,10 +218,10 @@ Module Window
     If *view\leaf And *view\content
       Define uuid.i = GetUniqueID(*Me, *view)
       DrawingMode(#PB_2DDrawing_Default)
-      Box(*view\x-View::#VIEW_BORDER_SENSIBILITY*0.5,
-          *view\y-View::#VIEW_BORDER_SENSIBILITY*0.5,
-          *view\width+View::#VIEW_BORDER_SENSIBILITY,
-          *view\height+View::#VIEW_BORDER_SENSIBILITY, uuid)
+      Box(*view\posX-View::#VIEW_BORDER_SENSIBILITY*0.5,
+          *view\posY-View::#VIEW_BORDER_SENSIBILITY*0.5,
+          *view\sizX+View::#VIEW_BORDER_SENSIBILITY,
+          *view\sizY+View::#VIEW_BORDER_SENSIBILITY, uuid)
     Else
       If *view\left : RecurseDrawPickImage(*Me,*view\left) : EndIf
       If *view\right : RecurseDrawPickImage(*Me,*view\right) : EndIf
@@ -235,7 +233,7 @@ Module Window
   ; ----------------------------------------------------------------------------------
   Procedure DrawPickImage(*Me.Window_t)
     ClearMap(*Me\uis())
-    ResizeImage(*Me\imageID, *Me\main\width, *Me\main\height)
+    ResizeImage(*Me\imageID, *Me\main\sizX, *Me\main\sizY)
     StartDrawing(ImageOutput(*Me\imageID))
     RecurseDrawPickImage(*Me,*Me\main)
     StopDrawing()
@@ -250,7 +248,7 @@ Module Window
     DrawImage(ImageID(*Me\imageID),0,0)
     If *Me\active
       DrawingMode(#PB_2DDrawing_Default)
-      Box(*Me\active\x, *Me\active\y, *Me\active\width, *Me\active\height, RGBA(255,255,255,128))
+      Box(*Me\active\posX, *Me\active\posY, *Me\active\sizX, *Me\active\sizY, RGBA(255,255,255,128))
     EndIf
     StopDrawing()
   EndProcedure
@@ -264,6 +262,7 @@ Module Window
     DrawingMode(#PB_2DDrawing_Default)
     If mx>=0 And mx<ImageWidth(*Me\imageID) And my>=0 And my<ImageHeight(*Me\imageID)
       picked = Point(mx, my)
+
       If FindMapElement(*Me\uis(), Str(picked))
         StopDrawing()
         ProcedureReturn *Me\uis()\parent
@@ -291,11 +290,11 @@ Module Window
     Protected *Me.Window_t = AllocateMemory(SizeOf(Window_t))
     
     InitializeStructure(*Me,Window_t)
-  
+    Object::INI(Window)
     *Me\name = name
-    *Me\ID = OpenWindow(#PB_Any, 0, 0, width, height, *Me\name, options, parentID)  
+    *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
     EnableWindowDrop(*Me\ID,#PB_Drop_Private,#PB_Drag_Move,View::#VIEW_SPLITTER_DROP)
-    *Me\main = View::New(x.i,y.i,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
+    *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
     *Me\main\window = *Me
     *Me\active = *Me\main
     *Me\imageID = CreateImage(#PB_Any, width, height, 32)
@@ -308,6 +307,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 124
+; FirstLine = 83
 ; Folding = ---
 ; EnableXP

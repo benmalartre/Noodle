@@ -1,4 +1,5 @@
 ﻿XIncludeFile "Object.pbi"
+XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "UIColor.pbi"
 
 ;===============================================================================
@@ -381,7 +382,7 @@ DeclareModule Vector
     #ATOM_IMAGE
     #ATOM_PDF
     #ATOM_ITEM
-    
+    #ATOM_CUSTOM
   EndEnumeration
   
   Enumeration
@@ -505,6 +506,7 @@ DeclareModule Vector
   
   DataSection
     CompoundVT:
+    ItemVT:
     PointVT:
     LineVT:
     BezierVT:
@@ -530,12 +532,14 @@ DeclareModule Vector
   Declare AddAtom(*item.Item_t, *atom.Atom_t)
   Declare RemoveAtom(*item.Item_t, *atom.Atom_t)
   Declare DeleteAtom(*atom.Atom_t)
+  Declare ClearAtoms(*item.Item_t)
   Declare WriteToFile(*item.Item_t, filename.s)
   Declare ReadFromFile(*item.Item_t, filename.s)
   
   Declare RoundBoxPath(x.f, y.f, width.f, height.f, radius.f=6)
   Declare MoveCursorPathOnCircle(cx.f, cy.f, radius.f, angle.f)
   
+  Declare AddCustom(*item.Item_t)
   Declare AddPoint(*item.Item_t)
   Declare AddLine(*item.Item_t)
   Declare AddBezier(*item.Item_t)
@@ -555,6 +559,7 @@ DeclareModule Vector
   Declare DrawCircle(*circle.Circle_t, filled.b, stroked.b, fill_color.i, stroke_width.f=1, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_color=-16777216, expand.i=0)
   Declare DrawTextAtom(*text.Text_t, filled.b, stroked.b, fill_color.i, stroke_width.f=1, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_color=-16777216)
   Declare DrawImageAtom(*im.Image_t)
+  Declare DrawIcon(*item.Item_t, state.i)
   
   Declare PickItem(*item.Item_t, mx.f, my.f)
   Declare ResetPick(*item.Item_t)
@@ -703,11 +708,22 @@ Module Vector
     ProcedureReturn *Me
   EndProcedure
   
+  Procedure New()
+    Define *Me.Item_t = AllocateMemory(SizeOf(Item_t))
     
+    InitializeStructure(*Me, Item_t)
+    Object::INI(Item)
+    *Me\name = "ITEM"
+    *Me\type = #ATOM_CUSTOM
+    ProcedureReturn *Me
+  EndProcedure
+  
   Procedure NewItem(type.i=#ATOM_LINE, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_width.f=2, stroke_color.i=0, filled.b=#False, fill_color.i=0, *parent.Item_t=#Null)
 
     Define *item.Item_t = #Null
     Select type
+      Case #ATOM_CUSTOM
+        *item = New()
 ;       Case #ATOM_POINT
 ;         
 ;         *item = NewPoint(stroke_type, stroke_style, stroke_width, stroke_color, filled, fill_color, *parent)
@@ -750,7 +766,7 @@ Module Vector
     
     EndSelect
     
-    If *item <> #Null
+    If *item <> #Null And type <> #ATOM_CUSTOM
       
       Transform2D::IDENTITIZE(*item\T\localT)
       Transform2D::IDENTITIZE(*item\T\globalT)
@@ -836,6 +852,20 @@ Module Vector
       ClearStructure(*item, Item_t)
       FreeMemory(*item)
     EndIf
+  EndProcedure
+  
+  ; -----------------------------------------------------------------------------
+  ;   ADD CUSTOM
+  ; -----------------------------------------------------------------------------
+  Procedure AddCustom(*item.Item_t)
+    AddElement(*item\childrens())
+    Define *Me.Item_t = AllocateMemory(SizeOf(Item_t))
+    Object::INI(Item)
+    *Me\type = #ATOM_CUSTOM
+    *Me\parent = *item
+    *item\childrens() = *Me
+    *item\active = *Me
+    ProcedureReturn *Me
   EndProcedure
   
   ; -----------------------------------------------------------------------------
@@ -984,7 +1014,11 @@ Module Vector
   ;   DELETE ATOM
   ; -----------------------------------------------------------------------------
   Procedure DeleteAtom(*Me.Atom_t)
+    Debug "DELETE FUCKIN ATOM : "+Str(*Me\type)
     Select *Me\type
+      Case #ATOM_CUSTOM
+        Debug "DELETE FUCKIN ATOM!!!"
+        Object::Term(Item)
       Case #ATOM_POINT
         Object::TERM(Point)
       Case #ATOM_LINE
@@ -1027,9 +1061,23 @@ Module Vector
         Define *atom.Atom_t = *item\childrens()
         DeleteAtom(*atom)
         DeleteElement(*item\childrens())
+        Break
       EndIf
     Next
   EndProcedure
+  
+  ; -----------------------------------------------------------------------------
+  ;   CLEAR ATOMS
+  ; -----------------------------------------------------------------------------
+  Procedure ClearAtoms(*item.Item_t)
+    If ListSize(*item\childrens())
+      ForEach *item\childrens()
+        DeleteAtom(*item\childrens())
+      Next
+      ClearList(*item\childrens())
+    EndIf
+  EndProcedure
+  
   
   ;-----------------------------------------------------------------------------
   ;   WRITE TO FILE
@@ -1438,6 +1486,45 @@ Module Vector
     EndIf
   EndProcedure
   
+  Procedure DrawIcon(*item.Item_t, state.i)
+    SaveVectorState()
+    Transform(*item)
+    If *item\segments
+      AddPathSegments(*item\segments)
+  
+      If *item\filled
+        If state & #STATE_OVER
+          VectorSourceColor(UIColor::WHITE)
+          StrokePath(*item\stroke_width, *item\stroke_style | #PB_Path_Preserve)
+          VectorSourceColor(UIColor::Hovered(*item\fill_color))
+          FillPath()
+        Else
+          VectorSourceColor(*item\stroke_color)
+          StrokePath(*item\stroke_width, *item\stroke_style | #PB_Path_Preserve)
+          VectorSourceColor(*item\fill_color)
+          FillPath()
+        EndIf
+        
+      Else
+        If state & #STATE_OVER
+          VectorSourceColor(UIColor::WHITE)
+          StrokePath(*item\stroke_width, *item\stroke_style)
+        Else
+          VectorSourceColor(*item\stroke_color)
+          StrokePath(*item\stroke_width, *item\stroke_style)
+        EndIf
+      EndIf
+    EndIf
+    If ListSize(*item\childrens())
+      ForEach *item\childrens()
+        DrawIcon(*item\childrens(), state)
+      Next
+    EndIf
+    
+    RestoreVectorState()
+  EndProcedure
+  
+  
   ; -----------------------------------------------------------------------------
   ;   DRAW ITEM
   ; -----------------------------------------------------------------------------
@@ -1446,6 +1533,27 @@ Module Vector
     Transform(*item)
    
     Select *item\type
+        
+      Case #ATOM_CUSTOM
+        AddPathSegments(*item\segments)
+  
+        If *item\filled
+          If Vector::GETSTATE(*item, #STATE_OVER)
+            VectorSourceColor(UIColor::Hovered(*item\stroke_color))
+            StrokePath(*item\stroke_width, *item\stroke_style | #PB_Path_Preserve)
+            VectorSourceColor(UIColor::Hovered(*item\fill_color))
+            FillPath()
+          Else
+            VectorSourceColor(*item\stroke_color)
+            StrokePath(*item\stroke_width, *item\stroke_style | #PB_Path_Preserve)
+            VectorSourceColor(*item\fill_color)
+            FillPath()
+          EndIf
+          
+        Else
+          VectorSourceColor(*item\stroke_color)
+          StrokePath(*item\stroke_width, *item\stroke_style)
+        EndIf
         
       Case #ATOM_LINE
       
@@ -1539,35 +1647,6 @@ Module Vector
     Next
     
     RestoreVectorState()
-;     ForEach *item\childrens()
-;       If *item\childrens()\type = #ATOM_LINE
-;         DrawLine(*item\childrens())
-;       EndIf
-;       
-;       With *item\childrens()
-;         AddPathSegments(\segments)
-;         If \filled
-;           VectorSourceColor(\fill_color)
-;           FillPath(#PB_Path_Preserve)
-;         EndIf
-;         If \stroked
-;           VectorSourceColor(\stroke_color)
-;           StrokePath(\stroke_width)
-;         EndIf
-;       EndWith
-;     Next
-;     
-;     If *compound\segments
-;       AddPathSegments(*compound\segments)
-;       If *compound\filled
-;         VectorSourceColor(*compound\fill_color)
-;         FillPath(#PB_Path_Preserve)
-;       EndIf
-;       If *compound\stroked
-;         VectorSourceColor(*compound\stroke_color)
-;         StrokePath(*compound\stroke_width)
-;       EndIf
-;     EndIf
   EndProcedure 
   
   ; ----------------------------------------------------------------------------
@@ -2170,7 +2249,7 @@ Module Vector
 EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1984
-; FirstLine = 1978
-; Folding = ------------------
+; CursorPosition = 1072
+; FirstLine = 1068
+; Folding = -------------------
 ; EnableXP

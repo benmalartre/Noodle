@@ -59,10 +59,10 @@ Module ColorUI
   ; New
   ;-------------------------------
   Procedure New(*parent.View::View_t,name.s)
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     Protected tw = 50
     Protected iw = 50
     Protected pw = h
@@ -211,8 +211,8 @@ EndModule
 ; Until e = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 136
+; CursorPosition = 64
+; FirstLine = 57
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

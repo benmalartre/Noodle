@@ -1420,6 +1420,9 @@ Module PolymeshGeometry
     CArray::SetCount(*neighbors, 0)
 
     *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
+    CArray::AppendL(*neighbors, *first\next_he\vertex)
+    CArray::AppendL(*neighbors, *first\prev_he\vertex)
+    
     If *first\opposite_he
       CArray::AppendL(*neighbors, *first\opposite_he\vertex)
       
@@ -1444,8 +1447,6 @@ Module PolymeshGeometry
         Wend  
       EndIf
     EndIf
-    
-
   EndProcedure
   
   ;---------------------------------------------------------
@@ -2404,8 +2405,8 @@ Module PolymeshGeometry
   Class::DEF( PolymeshGeometry )
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 2036
-; FirstLine = 2024
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 1448
+; FirstLine = 1399
 ; Folding = ----P5----0-
 ; EnableXP

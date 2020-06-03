@@ -58,9 +58,9 @@ EndProcedure
 Procedure Draw(*app.Application::Application_t)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
 
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Scene::Update(Scene::*current_scene)
-  ViewportUI::Draw(*viewport, *app\context)
+  Application::Draw(*app, *app\layers(), *app\camera)
 
  
   FTGL::BeginDraw(*app\context\writer)
@@ -70,7 +70,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Test Curves ",-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
  
@@ -87,16 +87,18 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestCurve",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI",*app\camera)
-     *app\context = *viewport\context
-     View::SetContent(*app\manager\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+   *app\context = *viewport\context
+   *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  Application::AddLayer(*app, *layer)
+;   ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -118,9 +120,9 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 60
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 20
 ; Folding = -
 ; EnableThread
 ; EnableXP

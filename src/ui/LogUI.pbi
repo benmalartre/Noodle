@@ -37,10 +37,10 @@ Module LogUI
   ; Constructor
   ;-------------------------------
   Procedure New(*parent.View::View_t,name.s="LogUI")
-    Protected x = *parent\x
-    Protected y = *parent\y
-    Protected w = *parent\width
-    Protected h = *parent\height
+    Protected x = *parent\posX
+    Protected y = *parent\posY
+    Protected w = *parent\sizX
+    Protected h = *parent\sizY
     
     
     Protected *Me.LogUI_t = AllocateMemory(SizeOf(LogUI_t))
@@ -184,7 +184,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 42
+; FirstLine = 35
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

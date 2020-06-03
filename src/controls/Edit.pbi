@@ -467,12 +467,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
     ; ------------------------------------------------------------------------
     ;  Resize
     ; ------------------------------------------------------------------------
-    CompilerIf #PB_Compiler_Version < 560
-      Case Control::#PB_EventType_Resize
-    CompilerElse
-      Case #PB_EventType_Resize
-    CompilerEndIf
-    
+    Case #PB_EventType_Resize
       ; ---[ Sanity Check ]---------------------------------------------------
       If Not( *ev_data ):ProcedureReturn : EndIf
       ; ---[ Cancel Height ]--------------------------------------------------
@@ -1059,7 +1054,7 @@ EndProcedure
     
   EndProcedure
   ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsEditTermOnce
+  ;  GuiControlsEditTermOnce
   ; ----------------------------------------------------------------------------
   Procedure.b Term( )
  
@@ -1080,8 +1075,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 616
-; FirstLine = 596
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 469
+; FirstLine = 466
 ; Folding = ----
 ; EnableXP

@@ -1,5 +1,5 @@
 ﻿XIncludeFile "Types.pbi"
-XIncludeFile "Layer.pbi"
+; XIncludeFile "Layer.pbi"
 
 ; ============================================================================
 ;  GLContext Module Implementation
@@ -243,13 +243,13 @@ Module GLContext
     CompilerEndIf
   EndProcedure
   
-  ;---------------------------------------------
-  ;  Add Layer
-  ;---------------------------------------------
-  Procedure AddLayer(*Me.GLContext_t, *layer)
-    AddElement(*Me\layers())
-    *Me\layers() = *layer
-  EndProcedure
+;   ;---------------------------------------------
+;   ;  Add Layer
+;   ;---------------------------------------------
+;   Procedure AddLayer(*Me.GLContext_t, *layer)
+;     AddElement(*Me\layers())
+;     *Me\layers() = *layer
+;   EndProcedure
   
   ;---------------------------------------------
   ;  Resize Context
@@ -262,12 +262,12 @@ Module GLContext
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage(0,*Me\ID, "update")
     CompilerEndIf
-    ForEach *Me\layers()
-      Protected *layer.Layer::Layer_t = *me\layers()
-      If Not *layer\fixed
-        Layer::Resize(*layer, width, height)
-      EndIf
-    Next
+;     ForEach *Me\layers()
+;       Protected *layer.Layer::Layer_t = *me\layers()
+;       If Not *layer\fixed
+;         Layer::Resize(*layer, width, height)
+;       EndIf
+;     Next
       
   EndProcedure
   
@@ -293,8 +293,6 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 101
-; Folding = ----
+; Folding = ---
 ; EnableXP
 ; EnableUnicode
