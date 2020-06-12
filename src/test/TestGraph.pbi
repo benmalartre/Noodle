@@ -127,28 +127,28 @@ Scene::AddChild(Scene::*current_scene,*obj)
 Scene::AddChild(Scene::*current_scene,*teapot)
 
 Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
+UIColor::SetTheme(UIColor::#DARK_THEME)
 Define *window.Window::Window_t = *app\window
-AddKeyboardShortcut(*window\ID, #PB_Shortcut_P, 666)
 Global *main.View::View_t = *window\main
 Global *view.View::View_t = View::Split(*main,0,50)
 Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
-
 Global *middle.View::View_t = View::Split(*top\right,#PB_Splitter_Vertical,60)
 Global *center.View::View_t = View::Split(*middle\left,#PB_Splitter_Vertical,30)
 Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,60)
 
-Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
+
+Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
+ExplorerUI::Connect(*explorer, Scene::*current_scene)
+
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
 *app\context = *viewport\context
-View::SetContent(*center\right,*viewport)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 GraphUI::SetContent(*graph,*tree)
-ExplorerUI::Connect(*explorer, Scene::*current_scene)
 ; ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
@@ -180,12 +180,6 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  If Event() = #PB_Event_Menu
-    If EventMenu() = 666
-      Window::Capture(*app\window)
-    EndIf
-  EndIf
-  
 
   GLContext::FlipBuffer(*app\context)
 EndProcedure
@@ -195,8 +189,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 122
+; CursorPosition = 129
+; FirstLine = 89
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

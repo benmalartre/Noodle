@@ -724,8 +724,7 @@ Module ScreenUI
   
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 625
-; FirstLine = 613
 ; Folding = -----
 ; EnableXP

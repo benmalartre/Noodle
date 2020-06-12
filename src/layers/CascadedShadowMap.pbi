@@ -104,12 +104,12 @@ Module LayerCascadedShadowMap
       Debug "CascadedShadowMap Error: Cascade Index Out of Bound!"
       ProcedureReturn
     EndIf
-    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, *layer\buffer\frame_id)
+    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, *layer\datas\buffer\frame_id)
     
     glFramebufferTexture2D(#GL_FRAMEBUFFER,
                            #GL_DEPTH_ATTACHMENT,
                            #GL_TEXTURE_2D,
-                           *layer\buffer\tbos(cascadeIndex)\textureID,
+                           *layer\datas\buffer\tbos(cascadeIndex)\textureID,
                            0)
   EndProcedure
 
@@ -120,7 +120,7 @@ Module LayerCascadedShadowMap
     Protected i
     For i=0 To #NUM_CASCADES-1
       glActiveTexture(#GL_TEXTURE+i)
-      glBindTexture(#GL_TEXTURE_2D, *layer\buffer\tbos(i)\textureID)
+      glBindTexture(#GL_TEXTURE_2D, *layer\datas\buffer\tbos(i)\textureID)
     Next
   EndProcedure
   
@@ -156,7 +156,7 @@ Module LayerCascadedShadowMap
     ;Camera::GetViewTransform(*light, @lightM)
     Matrix4::GetViewMatrix( lightM, *light\pos, *light\lookat, *light\up)
     
-    Protected ar.f = *layer\height / *layer\width
+    Protected ar.f = *layer\datas\height / *layer\datas\width
     Protected tanHalfHFOV.f = Tan(Radian(*camera\fov / 2))
     Protected tanHalfVFOV.f = Tan(Radian(*camera\fov * ar) /2)
     
@@ -256,12 +256,12 @@ Module LayerCascadedShadowMap
     Debug "[CSM] Cascade Ends Updated"
     ComputeOrthogonalProjections(*layer)
     Debug "[CSM] Orthogonal Projections Updated"
-    glViewport(0,0,*layer\width,*layer\height)
+    glViewport(0,0,*layer\datas\width,*layer\datas\height)
     GLCheckError("[CSM] Set Viewport")
     shader = *ctx\shaders("shadowmapCSM")\pgm
     glUseProgram(shader)
     GLCheckError("[CSM] Use Program")
-    Framebuffer::BindOutput(*layer\buffer)
+    Framebuffer::BindOutput(*layer\datas\buffer)
     GLCheckError("[CSM] Bind Framebuffer")
     
     glEnable(#GL_DEPTH_TEST)
@@ -302,7 +302,7 @@ Module LayerCascadedShadowMap
     glColorMask(#GL_TRUE, #GL_TRUE, #GL_TRUE, #GL_TRUE);
     
     glActiveTexture(#GL_TEXTURE0)
-    glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,0))
+    glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\datas\buffer,0))
     Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm1.png")
 ;      glActiveTexture(#GL_TEXTURE1)
 ;     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,1))
@@ -329,21 +329,21 @@ Module LayerCascadedShadowMap
     Protected *Me.LayerCascadedShadowMap_t = AllocateMemory(SizeOf(LayerCascadedShadowMap_t))
     Object::INI( LayerCascadedShadowMap )
     Color::Set(*Me\background_color,0,0,0,1)
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *camera
     *Me\light = *light
-    *Me\buffer = Framebuffer::New("CSMShadowMap",width,height)
+    *Me\datas\buffer = Framebuffer::New("CSMShadowMap",width,height)
     *Me\farplane = 100
-    *Me\image = CreateImage(#PB_Any,*Me\width,*Me\height)
+    *Me\datas\image = CreateImage(#PB_Any,*Me\datas\width,*Me\datas\height)
     *Me\mask = #GL_DEPTH_BUFFER_BIT
     *Me\cullfrontface = #True
     
     ReDim *Me\cascadeEnds(#NUM_CASCADES+1)
     ReDim *Me\cascadeProjections(#NUM_CASCADES)
     
-    Framebuffer::AttachCascadedShadowMap(*me\buffer, #NUM_CASCADES)
+    Framebuffer::AttachCascadedShadowMap(*me\datas\buffer, #NUM_CASCADES)
 
     Setup(*Me)
    
@@ -352,7 +352,8 @@ Module LayerCascadedShadowMap
   
   Class::DEF(LayerCascadedShadowMap)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 345
+; FirstLine = 280
 ; Folding = ---
 ; EnableXP

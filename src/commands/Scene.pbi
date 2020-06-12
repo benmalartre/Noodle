@@ -318,9 +318,8 @@ Module CreatePolymeshCmd
     Commands::Do(Commands::*manager)
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 313
-; FirstLine = 260
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 5
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

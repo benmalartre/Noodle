@@ -114,6 +114,5 @@ Until e = #PB_Event_CloseWindow
 ;   
 ; Until e = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 49
+; CursorPosition = 3
 ; EnableXP

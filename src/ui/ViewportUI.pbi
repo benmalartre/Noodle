@@ -57,12 +57,11 @@ DeclareModule ViewportUI
   
   DataSection 
     ViewportUIVT: 
-    Data.i @Delete()
-    Data.i @Resize()
-    Data.i @Draw()
-    Data.i @DrawPickImage()
-    Data.i @Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i @DrawPickImage()
+      Data.i @Pick()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -163,6 +162,7 @@ Module ViewportUI
     Select event
         
       Case Globals::#EVENT_SELECTION_CHANGED
+        Debug "VIEWPORT EVENET SELECTION CHANGE!!"
         If Scene::*current_scene\selection\items()
           Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\items()\obj)
         EndIf
@@ -177,12 +177,12 @@ Module ViewportUI
         *Me\posY = *top\posY
         
         ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
-        ResizeGadget(*Me\container,*top\posX,*top\posY,*Me\sizX,*Me\sizY)
         
         If *Me\context  
           GLContext::Resize(*Me\context, *Me\sizX, *Me\sizY)
         EndIf
         If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+        Control::Invalidate(*Me)
         
       Case #PB_Event_Gadget
         Protected deltax.d, deltay.d
@@ -694,7 +694,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 175
+; CursorPosition = 164
+; FirstLine = 152
 ; Folding = ----
 ; EnableXP

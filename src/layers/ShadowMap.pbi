@@ -79,14 +79,14 @@ Module LayerShadowMap
   Procedure Draw(*layer.LayerShadowMap_t,*ctx.GLContext::GLContext_t)
 
  Debug "-------------------------------- LAYER SHADOW MAP DRAW CALLED -----------------------------------"
-  Framebuffer::BindOutput(*layer\buffer)
+  Framebuffer::BindOutput(*layer\datas\buffer)
   
 ;   OLayer_Draw(*layer,*ctx)
   ;clear depth-buffer
   glClearColor(0.0,1.0,0.0,0.0)
   glClearDepth(1)
   glClear(#GL_DEPTH_BUFFER_BIT)
-  glViewport(0,0,*layer\width,*layer\height)
+  glViewport(0,0,*layer\datas\width,*layer\datas\height)
   ;Disable color rendering, we only want To write To the Z-Buffer
   glColorMask(#GL_FALSE, #GL_FALSE, #GL_FALSE, #GL_FALSE);
   
@@ -156,9 +156,9 @@ Module LayerShadowMap
     glColorMask(#GL_TRUE, #GL_TRUE, #GL_TRUE, #GL_TRUE);
     
     glActiveTexture(#GL_TEXTURE0)
-    glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,0))
+    glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\datas\buffer,0))
     
-    Framebuffer::Unbind(*layer\buffer)
+    Framebuffer::Unbind(*layer\datas\buffer)
     glUseProgram(0)
     
     Debug "-------------------------------- LAYER SHADOW MAP DRAW ENDED -----------------------------------"
@@ -169,7 +169,7 @@ Module LayerShadowMap
   ; Destructor
   ;------------------------------------
   Procedure Delete(*layer.LayerShadowMap_t)
-    Framebuffer::Delete(*layer\buffer)
+    Framebuffer::Delete(*layer\datas\buffer)
     FreeMemory(*layer)
   EndProcedure
   
@@ -182,14 +182,14 @@ Module LayerShadowMap
     InitializeStructure(*Me,LayerShadowMap_t)
     Object::INI( LayerShadowMap )
     Color::Set(*Me\background_color,1,1,1,0)
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *light
-    *Me\image = CreateImage(#PB_Any,*Me\width,*Me\height)
-    *Me\buffer = Framebuffer::New("ShadowMap",*Me\width,*Me\height)
+    *Me\datas\image = CreateImage(#PB_Any,*Me\datas\width,*Me\datas\height)
+    *Me\datas\buffer = Framebuffer::New("ShadowMap",*Me\datas\width,*Me\datas\height)
     *Me\cullfrontface = #False
-    Framebuffer::AttachShadowMap(*Me\buffer)
+    Framebuffer::AttachShadowMap(*Me\datas\buffer)
 ;     Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
 ;     Framebuffer::AttachRender( *Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
    
@@ -199,7 +199,8 @@ Module LayerShadowMap
   
   Class::DEF(LayerShadowMap)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 191
+; FirstLine = 126
 ; Folding = --
 ; EnableXP

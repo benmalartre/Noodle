@@ -66,10 +66,12 @@ Module Selection
       Define key.s = Str(*obj)
       Debug "KEY : "+key
       AddMapElement(*Me\items(), key)
-      *Me\items(key) = *item
+      *Me\items() = *item
       *item\key = key
-      
-      Debug "ADD OBJECT TO SELECTION : "+*Me\items()\obj\fullname
+;       Debug *Me\items()
+;       Debug *Me\items()\obj
+;       Debug *Me\items()\obj\fullname
+;       Debug "ADD OBJECT TO SELECTION : "+*Me\items()\obj\fullname
     EndIf  
   EndProcedure
   
@@ -155,8 +157,8 @@ Module ComponentSelection
 EndModule
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 96
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 73
+; FirstLine = 27
 ; Folding = ---
 ; EnableXP

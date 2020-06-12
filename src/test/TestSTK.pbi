@@ -6,7 +6,6 @@ XIncludeFile "../core/Control.pbi"
 XIncludeFile "../controls/Slider.pbi"
 
 Globals::Init()
-Controls::Init()
 Time::Init()
 UIColor::Init()
 
@@ -103,12 +102,10 @@ STK::Initialize()
 ;STK::SetNodeVolume(*stream, 0.5)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
-OpenGadgetList(*ui\container)
+PropertyUI::AppendStart(*ui)
 
-*p = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
-AddElement(*ui\props())
-*ui\props() = *p
-*ui\prop = *p
+*p = ControlProperty::New(*ui,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
+PropertyUI::AddProperty(*ui, *p)
 
 ControlProperty::AppendStart(*p)
 Define i
@@ -136,8 +133,7 @@ Next
 
   
 ControlProperty::AppendStop(*p)
-
-CloseGadgetList()
+PropertyUI::AppendStop(*ui)
 
 STK::StreamStart(*stream)
 running = #True
@@ -204,7 +200,7 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 76
+; CursorPosition = 106
+; FirstLine = 52
 ; Folding = -
 ; EnableXP

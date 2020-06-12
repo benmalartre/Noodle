@@ -159,15 +159,15 @@ Module LayerDefered
 ;     glUseProgram(0)
     
     Define nb_lights = CArray::GetCount(Scene::*current_scene\lights)
-    glViewport(0,0,*layer\width,*layer\height)
+    glViewport(0,0,*layer\datas\width,*layer\datas\height)
       shader = *ctx\shaders("defered")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
       Framebuffer::BindInput(*layer\shadowmap,ArraySize(*layer\gbuffer\tbos()))
-      Framebuffer::BindOutput(*layer\buffer)
+      Framebuffer::BindOutput(*layer\datas\buffer)
       glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
       
-      glViewport(0,0,*layer\buffer\width,*layer\buffer\height)
+      glViewport(0,0,*layer\datas\buffer\width,*layer\datas\buffer\height)
       glUniform1i(glGetUniformLocation(shader,"position_map"),0)
       glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
       glUniform1i(glGetUniformLocation(shader,"color_map"),2)
@@ -201,9 +201,9 @@ Module LayerDefered
       glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
       glClearColor(1.0,1.0,1.0,1.0)
       glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\buffer\frame_id);
+      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\datas\buffer\frame_id);
       glReadBuffer(#GL_COLOR_ATTACHMENT0)
-      glBlitFramebuffer(0, 0, *layer\buffer\width,*layer\buffer\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_LINEAR);
+      glBlitFramebuffer(0, 0, *layer\datas\buffer\width,*layer\datas\buffer\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_LINEAR);
      
       glEnable(#GL_DEPTH_TEST)
 
@@ -225,29 +225,28 @@ Module LayerDefered
     Object::INI( LayerDefered )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
 
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\gbuffer = *gbuffer
     *Me\shadowmap = *shadowmap
     *Me\pov = *camera
   
-    *Me\buffer = Framebuffer::New("Deferred",width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    *Me\datas\buffer = Framebuffer::New("Deferred",width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     *Me\mask = #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT
     
     Layer::AddScreenSpaceQuad(*Me,*ctx)
 
     Setup(*Me)
     
-  ;   Protected img = LoadImage(#PB_Any,RAAFAL_BASE_PATH+"/rsc/ico/pointcloud.png")
-  ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 235
+; FirstLine = 170
 ; Folding = --
 ; EnableXP

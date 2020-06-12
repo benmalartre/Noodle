@@ -133,8 +133,8 @@ Module LayerStroke
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.LayerStroke_t,*ctx.GLContext::GLContext_t)
-    Framebuffer::BindOutput(*layer\buffer)
-    glViewport(0,0,*layer\width,*layer\height)
+    Framebuffer::BindOutput(*layer\datas\buffer)
+    glViewport(0,0,*layer\datas\width,*layer\datas\height)
 
     glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a);
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -170,8 +170,8 @@ Module LayerStroke
       glBindVertexArray(#GL_NONE)
     EndIf
     
-    Framebuffer::Unbind(*layer\buffer)
-    Framebuffer::BlitTo(*layer\buffer, 0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::Unbind(*layer\datas\buffer)
+    Framebuffer::BlitTo(*layer\datas\buffer, 0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
    
      glDisable(#GL_POINT_SMOOTH)
      glDisable(#GL_BLEND)
@@ -182,8 +182,8 @@ Module LayerStroke
   ; Add Point
   ;---------------------------------------------------
   Procedure AddPoint(*layer.LayerStroke_t,x.i,y.i)
-    Protected w = *layer\width
-    Protected h = *layer\height
+    Protected w = *layer\datas\width
+    Protected h = *layer\datas\height
   
     If *layer\current
       Protected pos.v3f32
@@ -245,15 +245,14 @@ Module LayerStroke
     InitializeStructure(*Me,LayerStroke_t)
     Object::INI( LayerStroke )
     Color::Set(*Me\background_color,0.5,0.5,0.5,0.0)
-    *Me\type = Layer::#LAYER_STROKE
     *Me\name = "LayerStroke2D"
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\shader = *ctx\shaders("stroke2D")
-    *Me\buffer = Framebuffer::New("Strokes",width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender( *Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    *Me\datas\buffer = Framebuffer::New("Strokes",width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
     
 
     *Me\pov = *pov
@@ -268,7 +267,8 @@ Module LayerStroke
   ; ----------------------------------------------------------------------------
   Class::DEF( LayerStroke )
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 254
+; FirstLine = 189
 ; Folding = ---
 ; EnableXP

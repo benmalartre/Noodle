@@ -37,8 +37,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-; Global *polygonizer.Polygonizer::Grid_t
-; Global *grid.Geometry::Grid3D_t
 
 DeclareModule Hilbert
   UseModule Math
@@ -601,7 +599,7 @@ FTGL::Init()
   Matrix4::SetTranslation(m, box\origin)
   
   Drawer::AddBox(*drawer, m)
-  Define *grid.Hilbert::Grid_t = Hilbert::New(box,3)
+  Define *grid.Hilbert::Grid_t = Hilbert::New(box,4)
   DrawCells(*grid)
   
   Scene::AddModel(Scene::*current_scene, *root)
@@ -609,7 +607,7 @@ FTGL::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 603
-; FirstLine = 544
+; CursorPosition = 601
+; FirstLine = 542
 ; Folding = ---
 ; EnableXP

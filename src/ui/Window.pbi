@@ -11,7 +11,7 @@ Module Window
     If Not *Me : ProcedureReturn : EndIf
     Protected w = WindowWidth(*Me\ID,#PB_Window_InnerCoordinate)
     Protected h = WindowHeight(*Me\ID,#PB_Window_InnerCoordinate)
-
+    Debug "RESIZE WINDOW : ("+Str(w)+","+Str(h)+")"
     View::Resize(*Me\main,0,0,w,h)
     DrawPickImage(*Me)
   EndProcedure
@@ -95,13 +95,7 @@ Module Window
     
     Protected *old.View::View_t = *Me\active
     Protected *over.View::View_t = Pick(*Me, mx, my)
-    If *old And *old <> *over
-      If *old\content And IsGadget(*old\content\gadgetID)
-        PostEvent(#PB_Event_Gadget, *Me\ID, *old\content\gadgetID, #PB_EventType_LostFocus)
-      EndIf
-;       View::OnEvent(*old, #PB_EventType_LostFocus)
-    EndIf
-    
+  
     Select event
       Case #PB_Event_Gadget
         If *over
@@ -233,6 +227,10 @@ Module Window
   ; ----------------------------------------------------------------------------------
   Procedure DrawPickImage(*Me.Window_t)
     ClearMap(*Me\uis())
+    If Not *Me\main\sizX Or Not *Me\main\sizY 
+      ProcedureReturn 
+    EndIf
+
     ResizeImage(*Me\imageID, *Me\main\sizX, *Me\main\sizY)
     StartDrawing(ImageOutput(*Me\imageID))
     RecurseDrawPickImage(*Me,*Me\main)
@@ -279,21 +277,27 @@ Module Window
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*e.Window_t)
-    FreeMemory(*e)
+  Procedure Delete(*Me.Window_t)
+    ; remove window from global map
+    ForEach *ALL_WINDOWS()
+      If MapKey(*ALL_WINDOWS()) = Str(*Me\ID)
+        DeleteMapElement(*ALL_WINDOWS())
+        Break
+      EndIf
+    Next
+    FreeMemory(*Me)
   EndProcedure
   
   ; ----------------------------------------------------------------------------------
   ; Constructor
   ; ----------------------------------------------------------------------------------
-  Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget, parentID.i=0)
+  Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
     Protected *Me.Window_t = AllocateMemory(SizeOf(Window_t))
-    
     InitializeStructure(*Me,Window_t)
     Object::INI(Window)
     *Me\name = name
     *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
-    EnableWindowDrop(*Me\ID,#PB_Drop_Private,#PB_Drag_Move,View::#VIEW_SPLITTER_DROP)
+
     *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
     *Me\main\window = *Me
     *Me\active = *Me\main
@@ -301,13 +305,17 @@ Module Window
 
     *view_manager = *Me
     
+    ; add window to global map
+    AddMapElement(*ALL_WINDOWS(), Str(*Me\ID))
+    *ALL_WINDOWS() = *Me
+    
     ProcedureReturn *Me
     
   EndProcedure
  
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 83
+; CursorPosition = 221
+; FirstLine = 180
 ; Folding = ---
 ; EnableXP

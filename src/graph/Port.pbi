@@ -674,6 +674,20 @@ Module NodePort
     EndSelect
   EndProcedure
   
+  ;-----------------------------------------------
+  ; Set Minimum
+  ;-----------------------------------------------
+  Procedure SetMinimum(*port.NodePort_t, value.d)
+    *port\minimum = value
+  EndProcedure
+  
+  ;-----------------------------------------------
+  ; Set Maximum
+  ;-----------------------------------------------
+  Procedure SetMaximum(*port.NodePort_t, value.d)
+    *port\maximum = value
+  EndProcedure
+  
   
   ;-----------------------------------------------
   ; Set Value
@@ -857,8 +871,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 258
-; FirstLine = 250
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 687
+; FirstLine = 656
 ; Folding = -----
 ; EnableXP

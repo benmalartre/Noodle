@@ -37,12 +37,9 @@ DeclareModule ControlMenu
     callback.MenuItemCallback
     *args.Arguments::Arguments_t
     name.s
-    
     gadgetID.i
     item.i
     *menu
-    
-    
   EndStructure
   
   ; ============================================================================
@@ -55,14 +52,9 @@ DeclareModule ControlMenu
     last.i
     close.b
     dirty.b
-    x.i
-    y.i
-    width.i
-    height.i
     inspected.b
     imageID.i
     windowID.i
-    *cache
     *window.Window::Window_t
   EndStructure
 
@@ -71,12 +63,7 @@ DeclareModule ControlMenu
   ; ============================================================================
   Structure ControlMenu_t Extends Control::Control_t
     windowID.i
-    parentID.i
     imageID.i
-    x.i
-    y.i
-    width.i
-    height.i
     last.i       ; last inspected submenu id
     dirty.b       ; menu should redraw
     
@@ -85,12 +72,7 @@ DeclareModule ControlMenu
      *window.Window::Window_t
   EndStructure
   
-  Declare Callback1()
-  Declare Callback1()
-  Declare Callback2()
-  Declare Callback4()
-  
-  Declare New(windowID.i,parentID.i,x.i,y.i,width.i,height.i)
+  Declare New(*parent.Control::Control_t,x.i,y.i,width.i,height.i)
   Declare Delete(*menu.ControlMenu_t)
   Declare Init(*menu.ControlMenu_t,name.s)
   Declare NewSubMenu(*menu.ControlMenu_t,x.i,y.i,name.s)
@@ -114,37 +96,52 @@ DeclareModule ControlMenu
   Declare DrawPickImage(*menu.ControlMenu_t)
   Declare OnEvent(*menu.ControlMenu_t,eventID.i)
   
+  ; ============================================================================
+  ;  VTABLE ( Object + Control + ControlMenu )
+  ; ============================================================================
+  DataSection
+    ControlMenuVT:
+    Data.i @OnEvent()
+    Data.i @Delete()
+    Data.i @Draw()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
+  EndDataSection
+  
+  Global CLASS.Class::Class_t
+  
   
 EndDeclareModule
 
 
 
 ; ============================================================================
-;  IMPLEMENTATION ( CControlSubMenu )
+;  IMPLEMENTATION ( CControlMenu )
 ; ============================================================================
 
-  
 Module ControlMenu
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  Procedure New(windowID.i,parentID.i,x.i,y.i,width.i,height.i)
+  Procedure New(*parent.Control::Control_t,x.i,y.i,width.i,height.i)
     Protected *Me.ControlMenu_t = AllocateMemory(SizeOf(ControlMenu_t))
     InitializeStructure(*Me,ControlMenu_t)
-  
-    *Me\gadgetID = CanvasGadget(#PB_Any,x,y,width+1,height+1,#PB_Canvas_Keyboard)
-    *Me\windowID = windowID
-    *Me\parentID = parentID
+;     Object::INI(ControlMenu)
+    Protected *view.View::View_t = *parent\parent
+    Protected *window.Window::Window_t = *view\window
+    *Me\gadgetID = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard)
+    *Me\parent = *parent
+    *Me\windowID = *window\ID
     *Me\imageID = CreateImage(#PB_Any,width,height)
-    *Me\x = x
-    *Me\y = y
-    *Me\width = width+1
-    *Me\height = height+1
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = width+1
+    *Me\sizY = height+1
+    *Me\percX = 100
+    *Me\percY = 100
     *Me\last = -1
     *Me\dirty = #True
     
-    ; ---[ Init 'OnChanged' Slot ]----------------------------------------------
-  ;   *Me\sig_onchanged = newCSlot( *Me )
     
     ProcedureReturn *Me
   EndProcedure
@@ -161,17 +158,18 @@ Module ControlMenu
   ; ==========================================================================
   ;  CONSTRUCTOR
   ; ==========================================================================
-  Procedure NewSubMenu(*menu.ControlMenu_t,x.i,y.i,name.s)
+  Procedure NewSubMenu(*parent.ControlMenu_t,x.i,y.i,name.s)
     Protected *Me.ControlSubMenu_t = AllocateMemory(SizeOf(ControlSubMenu_t))
     InitializeStructure(*Me,ControlSubMenu_t)
+;     Object::INI(ControlSubMenu)
   
     *Me\selected = -1
     *Me\last = -1
     
-    If *menu<>#Null
-      *Me\windowID = *menu\windowID
-      *Me\parent = *menu
-      *Me\gadgetID = *menu\gadgetID
+    If *parent<>#Null
+      *Me\windowID = *parent\windowID
+      *Me\parent = *parent
+      *Me\gadgetID = *parent\gadgetID
     Else
       *Me\windowID = 0
       *Me\parent = #Null
@@ -179,20 +177,19 @@ Module ControlMenu
     EndIf
     
     *Me\imageID = CreateImage(#PB_Any,32,32)
-    *Me\cache = #Null
   
     *Me\close = #False
     *Me\name = name
     *Me\dirty = #True
-    *Me\x = x
-    *Me\y = y
+    *Me\posX = x
+    *Me\posY = y
     
     ; ---[ Init 'OnChanged' Slot ]----------------------------------------------
     ;*Me\sig_onchanged = newCSlot( *Me )
     
-    If *menu<>#Null
-      ReDim *menu\submenus(ArraySize(*menu\submenus())+1)
-      *menu\submenus(ArraySize(*menu\submenus())-1) = *Me
+    If *parent<>#Null
+      ReDim *parent\submenus(ArraySize(*parent\submenus())+1)
+      *parent\submenus(ArraySize(*parent\submenus())-1) = *Me
     EndIf
    
     ProcedureReturn *Me
@@ -201,10 +198,11 @@ Module ControlMenu
   ; ==========================================================================
   ;  DESTRUCTOR
   ; ==========================================================================
-  Procedure DeleteSubMenu(*menu.ControlSubMenu_t)
+  Procedure DeleteSubMenu(*Me.ControlSubMenu_t)
     ;OSlot_Release(*menu\sig_onchanged)
-    FreeMemory(*menu)
-    FreeImage(*menu\imageID)
+    Object::TERM(ControlSubMenu)
+    FreeMemory(*Me)
+    FreeImage(*Me\imageID)
   EndProcedure
   
   Procedure Callback1()
@@ -265,15 +263,15 @@ Module ControlMenu
   ;  Get Width
   ; ----------------------------------------------------------------------------
   Procedure.i  GetSubMenuWidth(*menu.ControlSubMenu_t)
-    *menu\width.i = -1
+    *menu\sizX.i = -1
   
     StartDrawing(ImageOutput(*menu\imageID))
     Protected a
     For a=0 To ArraySize(*menu\items())-1
       
       Protected width = TextWidth(*menu\items(a)\name)+#MenuItemSpacing
-      If  *menu\width< width
-        *menu\width = width
+      If  *menu\sizX< width
+        *menu\sizX = width
       EndIf  
     Next a
     StopDrawing()
@@ -297,7 +295,7 @@ Module ControlMenu
     
     Protected i
     StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
-    AddPathBox(0,0,*menu\width,*menu\height)
+    AddPathBox(0,0,*menu\sizX,*menu\sizY)
     VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath()
     
@@ -306,22 +304,21 @@ Module ControlMenu
     For a=0 To ArraySize(*menu\items())-1
       If *menu\items(a)\type = #MenuItemType_Separator
         MovePathCursor(10,a*#MenuItemHeight+0.5*#MenuItemHeight)
-        AddPathLine(*menu\width-20,0, #PB_Path_Relative)
-        VectorSourceColor(UIColor::COLOR_TEXT)
+        AddPathLine(*menu\sizX-20,0, #PB_Path_Relative)
+        VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
         StrokePath(2)
       Else
         
         If a = *menu\selected
-          Vector::RoundBoxPath(0,a*#MenuItemHeight,*menu\width,#MenuItemHeight,2)
+          Vector::RoundBoxPath(0,a*#MenuItemHeight,*menu\sizX,#MenuItemHeight,2)
           VectorSourceColor(UIColor::COLOR_SELECTED_BG)
           FillPath()
           MovePathCursor(5,a*#MenuItemHeight)
           VectorSourceColor(UIColor::COLOR_SELECTED_FG)
           DrawVectorText(*menu\items(a)\name)
-         ; DrawingMode(#PB_2DDrawing_Transparent)
         Else
           MovePathCursor(5,a*#MenuItemHeight)
-          VectorSourceColor(UIColor::COLOR_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
           DrawVectorText(*menu\items(a)\name)
         EndIf
       EndIf   
@@ -388,12 +385,11 @@ Module ControlMenu
     Protected mx, my
     Protected down = #False
     Protected init = #False
-;     Protected sig.CSlot
     Protected leftbutton.b
     *menu\close = #False
-    *menu\windowID = OpenWindow(#PB_Any,*menu\x,*menu\y+25,*menu\width,*menu\height,"Menu",#PB_Window_BorderLess)
+    *menu\windowID = OpenWindow(#PB_Any,*menu\posX,*menu\posY+25,*menu\sizX,*menu\sizY,"Menu",#PB_Window_BorderLess)
     StickyWindow(*menu\windowID,#True)
-    *menu\gadgetID = CanvasGadget(#PB_Any,0,0,*menu\width,*menu\height)
+    *menu\gadgetID = CanvasGadget(#PB_Any,0,0,*menu\sizX,*menu\sizY)
     DrawSubMenu(*menu,#False)
     
     Protected debounce.i = 60
@@ -407,14 +403,10 @@ Module ControlMenu
         leftbutton = Bool(event = #PB_Event_Gadget And EventType()=#PB_EventType_LeftClick); Or EventType() = #PB_EventType_LostFocus )
     
         If init = #True And PickSubMenu(*menu, leftbutton)
-;           sig.CSlot = menu\SignalOnChanged()
-;           sig\Trigger(#RAA_SIGNAL_TYPE_PING,0)
           *menu\dirty = #True
           *menu\selected = -1
           *menu\close = #True
         EndIf
-        
-     
         
         If *menu\dirty
           DrawSubMenu(*menu,#True)
@@ -434,8 +426,6 @@ Module ControlMenu
     FreeGadget(*menu\gadgetID)
     CloseWindow(*menu\windowID)
     
-;     sig.CSlot = menu\SignalOnChanged()
-;     sig\Trigger(#RAA_SIGNAL_TYPE_PING,0)
     *menu\dirty = #True
     *menu\selected = -1
   
@@ -445,13 +435,13 @@ Module ControlMenu
   ;  Init
   ; ----------------------------------------------------------------------------
   Procedure InitSubMenu(*menu.ControlSubMenu_t,*parent.ControlMenu_t=#Null)
-    *menu\height = ArraySize(*menu\items())*#MenuItemHeight
+    *menu\sizY = ArraySize(*menu\items())*#MenuItemHeight
     
     GetSubMenuWidth(*menu)
     
     If *parent<>#Null
-      *menu\x = WindowX(*parent\windowID,#PB_Window_InnerCoordinate)+WindowMouseX(*parent\windowID);*parent\x+GadgetX(*parent\parentID)+*parent\width
-      *menu\y = WindowY(*parent\windowID,#PB_Window_InnerCoordinate)+WindowMouseY(*parent\windowID);*parent\y+GadgetY(*parent\parentID)
+      *menu\posX = WindowX(*parent\windowID,#PB_Window_InnerCoordinate)+WindowMouseX(*parent\windowID);*parent\x+GadgetX(*parent\parentID)+*parent\width
+      *menu\posY = WindowY(*parent\windowID,#PB_Window_InnerCoordinate)+WindowMouseY(*parent\windowID);*parent\y+GadgetY(*parent\parentID)
     Else
   ;     Debug "--------------------------------------- NO PARENt -------------------------------------------------"
   ;     ExamineDesktops()
@@ -481,13 +471,11 @@ Module ControlMenu
   ; ============================================================================
   ;  IMPLEMENTATION ( CControlMenu )
   ; ============================================================================
-  ;{
-  
   ; ----------------------------------------------------------------------------
   ;  Add Sub Menu
   ; ----------------------------------------------------------------------------
   Procedure Add(*menu.ControlMenu_t,name.s)
-    Protected *submenu.ControlSubMenu_t = NewSubMenu(*menu,*menu\x,*menu\y+*menu\height+30,name)
+    Protected *submenu.ControlSubMenu_t = NewSubMenu(*menu,*menu\posX,*menu\posY+*menu\sizY+30,name)
     ProcedureReturn *submenu
   EndProcedure
   
@@ -544,13 +532,13 @@ Module ControlMenu
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw(*menu.ControlMenu_t)
-  
+    Debug "Menu Control DRAW : ("+Str(*menu\sizX)+","+Str(*menu\sizY)+")"
     If *menu\dirty
       StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
       VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
       
       
-      AddPathBox(0,0,*menu\width,*menu\height)
+      AddPathBox(0,0,*menu\sizX,*menu\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
       Protected x,y, a
@@ -568,20 +556,20 @@ Module ControlMenu
           StrokePath(2)
           
           MovePathCursor(x, y)
-          VectorSourceColor(UIColor::COLOR_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
           DrawVectorText(*menu\submenus(a)\name)
      
         Else
           MovePathCursor(x, y)
-          VectorSourceColor(UIColor::COLOR_TEXT)
+          VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
           DrawVectorText(*menu\submenus(a)\name)
         EndIf
         
         With *menu\submenus(a)
-          \height =ArraySize( \items())*#MenuItemHeight
+          \sizY =ArraySize( \items())*#MenuItemHeight
          
-          \x = x + WindowX(*menu\windowID,#PB_Window_InnerCoordinate) - #MenuItemSpacing/2+GadgetX(*menu\parentID)
-          \y = WindowY(*menu\windowID)+GadgetHeight(*menu\gadgetID)+GadgetY(*menu\parentID)
+          \posX = x + WindowX(*menu\windowID,#PB_Window_InnerCoordinate) - #MenuItemSpacing/2+GadgetX(*menu\parent\gadgetID)
+          \posY = WindowY(*menu\windowID)+GadgetHeight(*menu\gadgetID)+GadgetY(*menu\parent\gadgetID)
         EndWith
         x+#MenuItemSpacing+VectorTextWidth(*menu\submenus(a)\name)
       Next a
@@ -601,7 +589,7 @@ Module ControlMenu
   
     StartVectorDrawing(ImageVectorOutput(*menu\imageID))
     VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
-    AddPathBox(*menu\x,*menu\y,*menu\width,*menu\height)
+    AddPathBox(*menu\posX,*menu\posY,*menu\sizX,*menu\sizY)
     VectorSourceColor(RGBA(0,0,0,255))
     FillPath()
     
@@ -612,7 +600,6 @@ Module ControlMenu
     height = GadgetHeight(*menu\gadgetID)
     For a=0 To ArraySize(*menu\submenus())-1
       width = VectorTextWidth(*menu\submenus(a)\name)+#MenuItemSpacing
-      ;OControlSubMenu_GetWidth(*menu\submenus(a))
       AddPathBox(x,y,width,height)
       VectorSourceColor(RGBA(a+1,0,0,255))
       FillPath()
@@ -627,24 +614,21 @@ Module ControlMenu
   ; ----------------------------------------------------------------------------
   ;  Event
   ; ----------------------------------------------------------------------------
-  Procedure OnEvent(*menu.ControlMenu_t,eventID.i)
+  Procedure OnEvent(*Me.ControlMenu_t,eventID.i)
     If eventID = #PB_Event_SizeWindow Or eventID = #PB_EventType_Resize
-      *menu\dirty = #True
-      Draw(*menu)
+      *Me\dirty = #True
+      Draw(*Me)
     Else
-      Pick(*menu)
-      Draw(*menu)
+      Pick(*Me)
+      Draw(*Me)
       
-      If *menu\inspected<>#Null And EventType() = #PB_EventType_LeftClick
-        InspectSubMenu(*menu\inspected)
-        *menu\inspected = #Null
-        *menu\dirty = #True
-        *menu\last = -1
+      If *Me\inspected<>#Null And EventType() = #PB_EventType_LeftClick
+        InspectSubMenu(*Me\inspected)
+        *Me\inspected = #Null
+        *Me\dirty = #True
+        *Me\last = -1
       EndIf
     EndIf
-    
-      
-     
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -669,7 +653,6 @@ Module ControlMenu
   ;   Protected *sig.CSignal_t = *up
   ;   Protected  menu.CControlMenu = *sig\rcv_inst
   ;   Protected sig.CSlot = menu\SignalOnChanged()
-  ;   sig\Trigger(#RAA_SIGNAL_TYPE_PING,0)
   EndProcedure
   
   
@@ -689,14 +672,13 @@ Module ControlMenu
     DrawPickImage(*menu)  
   EndProcedure
 
-
 EndModule
 
   
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 630
-; FirstLine = 600
-; Folding = -Qt---
+; CursorPosition = 387
+; FirstLine = 329
+; Folding = -w---
 ; EnableThread
 ; EnableXP
 ; EnableUnicode

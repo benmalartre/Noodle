@@ -11,15 +11,11 @@ DeclareModule ControlButton
   ;  Object ( ControlButton_t )
   ; ----------------------------------------------------------------------------
   Structure ControlButton_t Extends Control::Control_t
-    ; CControlButton
     value.i
     label.s
     over.i
     down.i
-    color_enabled.i
-    color_disabled.i
-    color_over.i
-    color_pressed.i
+
     *on_click.Signal::Signal_t
     
   EndStructure
@@ -68,83 +64,66 @@ Module ControlButton
   Protected ty = (*Me\sizY - VectorTextHeight( *Me\label ) )*0.5+ yoff
   tx = Math::Max( tx, 3 + xoff )
   
+  Define ft = Control::FRAME_THICKNESS
+  AddPathBox(xoff-ft, yoff-ft, *Me\sizX + 2* ft, *Me\sizY + 2* ft)
+  VectorSourceColor(UIColor::COLOR_MAIN_BG)
+  FillPath()
+  
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
-    VectorSourceColor(*Me\color_disabled)
-    FillPath()
+    Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
+    VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
+    If Control::FRAME_THICKNESS
+      FillPath(#PB_Path_Preserve)
+      VectorSourceColor(UIColor::COLOR_FRAME_DISABLED)
+      StrokePath(Control::FRAME_THICKNESS)
+    Else
+      FillPath()
+    EndIf
     tc = UIColor::COLOR_LABEL_DISABLED
   Else
     ; ---[ Check Over ]-------------------------------------------------------
-    If *Me\over
-      If *Me\down Or  *Me\value < 0 
-        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
-        VectorSourceColor(*Me\color_pressed)
-        FillPath()
-        tc = UIColor::COLOR_LABEL_NEG
+    
+    If *Me\down Or  *Me\value < 0 
+      Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
+      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
+      If Control::FRAME_THICKNESS
+        FillPath(#PB_Path_Preserve)
+        VectorSourceColor(UIColor::COLOR_FRAME_ACTIVE)
+        StrokePath(Control::FRAME_THICKNESS)
       Else
-        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
-        VectorSourceColor(*Me\color_over)
         FillPath()
       EndIf
-    Else
-      If *Me\down
-        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
-        VectorSourceColor(*Me\color_pressed)
-        FillPath()
-        tc = UIColor::COLOR_LABEL_NEG
+      tc = UIColor::COLOR_LABEL_NEG
+    ElseIf *Me\over
+      Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
+      VectorSourceColor(UIColor::COLOR_TERNARY_BG)
+      If Control::FRAME_THICKNESS
+        FillPath(#PB_Path_Preserve)
+        VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
+        StrokePath(Control::FRAME_THICKNESS)
       Else
-        AddPathBox(xoff, yoff, *Me\sizX, *Me\sizY)
-        VectorSourceColor(*Me\color_enabled)
+        FillPath()
+      EndIf
+      tc = UIColor::COLOR_LABEL_NEG
+    Else
+      Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
+      VectorSourceColor(UIColor::COLOR_TERNARY_BG)
+      If Control::FRAME_THICKNESS
+        FillPath(#PB_Path_Preserve)
+        VectorSourceColor(UIColor::COLOR_FRAME_DEFAULT)
+        StrokePath(Control::FRAME_THICKNESS)
+      Else
         FillPath()
       EndIf
     EndIf
+    
   EndIf  
   
   ; ---[ Draw Label ]---------------------------------------------------------
   MovePathCursor(tx, ty )
-  VectorSourceColor(UIColor::COLOR_TEXT)
+  VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
   DrawVectorText(*Me\label)
-  
-;   ; ---[ Check Visible ]----------------------------------------------------
-;   If Not *Me\visible : ProcedureReturn( void ) : EndIf
-;   
-;   ; ---[ Label Color ]------------------------------------------------------
-;   Protected tc.i = UIColor::Color_LABEL
-;   
-;   ; ---[ Set Font ]---------------------------------------------------------
-;   DrawingFont(FontID(Globals::#FONT_LABEL ))
-;   Protected tx = ( *Me\sizX - TextWidth ( *Me\label ) )/2 + xoff
-;   Protected ty = ( *Me\sizY - TextHeight( *Me\label ) )/2 + yoff
-;   tx = Math::Max( tx, 3 + xoff )
-;   
-;   DrawingMode(#PB_2DDrawing_Default)
-;   ; ---[ Check Disabled ]---------------------------------------------------
-;   If Not *Me\enable
-;     Box(xoff, yoff, *Me\sizX, *Me\sizY, *Me\color_disabled)
-;     tc = UIColor::Color_LABEL_DISABLED
-;   Else
-;     ; ---[ Check Over ]-----------------------------------------------------
-;     If *Me\over
-;       If *Me\down Or  *Me\value < 0 
-;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2, *Me\color_pressed)
-;         tc = UIColor::Color_LABEL_NEG
-;       Else
-;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_over)
-;       EndIf
-;     Else
-;       If *Me\down
-;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_pressed)
-;         tc = UIColor::Color_LABEL_NEG
-;       Else
-;         RoundBox(xoff, yoff, *Me\sizX, *Me\sizY, 2, 2,*Me\color_enabled)
-;       EndIf
-;     EndIf
-;   EndIf  
-; 
-;   ; ---[ Draw Label ]---------------------------------------------------------
-;   DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-;   DrawText( tx, ty, *Me\label, tc )
   
 EndProcedure
 ;}
@@ -225,7 +204,6 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     Case #PB_EventType_LeftButtonDown
       If *Me\visible And *Me\enable And *Me\over
         *Me\down = #True
-        Signal::Trigger(*Me\on_click, Signal::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
       EndIf
       
@@ -235,13 +213,12 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
         *Me\down = #False
-        If *Me\over And ( *Me\options & #PB_Button_Toggle )
+        *Me\over = #False
+        If *Me\options & #PB_Button_Toggle
           *Me\value*-1
         EndIf
+        Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
-        If *Me\over
-          Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
-        EndIf
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -294,22 +271,6 @@ Procedure.s GetLabel( *Me.ControlButton_t )
   
 EndProcedure
 
-
-Procedure InitializeColors(*Me.ControlButton_t, color.i)
-  Protected r.i  =Red(color)
-  Protected g.i = Green(color)
-  Protected b.i = Blue(color)
-  
-  Protected avg.i = (r+g+b)/3
-  
-  *Me\color_disabled = RGBA((r+avg)/2, (g+avg)/2, (b+avg)/2, 255)
-  *Me\color_enabled = color
-  *Me\color_over = RGBA(r+avg/3, g+avg/3, b+avg/3, 255)
-  *Me\color_pressed = RGBA(r+avg/2, g+avg/2, b+avg/2, 255)
-EndProcedure
-
-
-
 ; ============================================================================
 ;  DESTRUCTOR
 ; ============================================================================
@@ -338,12 +299,14 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   *Me\posY       = y
   *Me\sizX       = width
   *Me\sizY       = height
+  *Me\fixedX     = #True
+  *Me\fixedY     = #True
+  *Me\percX      = -1
+  *Me\percY      = -1
   *Me\visible    = #True
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 1
-  
-  InitializeColors(*Me, color)
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
@@ -365,7 +328,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 300
-; Folding = ---
+; CursorPosition = 88
+; FirstLine = 81
+; Folding = --
 ; EnableXP

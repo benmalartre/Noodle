@@ -164,6 +164,8 @@ DeclareModule NodePort
     *attribute.Attribute::Attribute_t
 
     color.q
+    minimum.d
+    maximum.d
 
   EndStructure
   
@@ -188,6 +190,8 @@ DeclareModule NodePort
   Declare AcceptConnexion(*Me.NodePort_t,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
   Declare OnMessage(id.i, *up)
   Declare SetValue(*Me.NodePort_t,*value)
+  Declare SetMinimum(*Me.NodePort_t, value.d)
+  Declare SetMaximum(*Me.NodePort_t, value.d)
   Declare SetReference(*Me.NodePort_t,ref.s)
   Declare GetValue(*Me.NodePort_t)
   Declare GetReferenceSibling(*ref.NodePort_t)
@@ -316,6 +320,7 @@ DeclareModule Node
     leaf.b
     isroot.b
     dirty.b
+    alwaysDirty.b
 
     ; ports
     List *inputs.NodePort::NodePort_t()
@@ -612,8 +617,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 529
-; FirstLine = 504
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 141
+; FirstLine = 111
 ; Folding = ---
 ; EnableXP

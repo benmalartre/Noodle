@@ -11,9 +11,7 @@ XIncludeFile "View.pbi"
 DeclareModule ExplorerUI
 
   Structure ExplorerUI_t Extends UI::UI_t
-    
     *explorer.ControlExplorer::ControlExplorer_t
-    
     *scene.Scene::Scene_t
   EndStructure
   
@@ -30,12 +28,11 @@ DeclareModule ExplorerUI
   
   DataSection 
     ExplorerUIVT: 
-    Data.i @Delete()
-    Data.i @Resize()
-    Data.i @Draw()
-    Data.i @DrawPickImage()
-    Data.i @Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i @DrawPickImage()
+      Data.i @Pick()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -73,6 +70,7 @@ Module ExplorerUI
   Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
   
   Procedure OnSelectionChange(*Me.ExplorerUI_t)
+    Debug "ON SELECTION CHANGE!!!!"
     ControlExplorer::Clear(*Me\explorer)
     ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
     ControlExplorer::Draw(*Me\explorer)
@@ -92,6 +90,7 @@ Module ExplorerUI
   ; --------------------------------------------------------
   Procedure Connect(*Me.ExplorerUI_t, *scn.Scene::Scene_t)
     Signal::CONNECTCALLBACK(*scn\on_delete, OnDeleteScene, *Me)
+    Signal::CONNECTCALLBACK(*scn\on_selection, OnSelectionChange, *Me)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -110,7 +109,7 @@ Module ExplorerUI
     *Me\sizY = *top\sizY
     *Me\scrollMaxX = ImageWidth(*Me\explorer\imageID)
     *Me\scrollMaxY = 200
-  ;   *Me\grp\Event(#PB_EventType_Resize,@ed)
+    COntrol::Invalidate(*Me)
     
   EndProcedure
   
@@ -119,7 +118,7 @@ Module ExplorerUI
   ;---------------------------------------------------------
   Procedure Draw(*Me.ExplorerUI_t)
     StartDrawing(CanvasOutput(*Me\explorer\gadgetID))
-    Box(0,0,*Me\explorer\sizX,*Me\explorer\sizY,UIColor::COLOR_MAIN_BG)
+    Box(0,0,*Me\sizX,*Me\sizY,UIColor::COLOR_MAIN_BG)
     DrawImage(ImageID(*Me\explorer\imageID),*Me\scrollx,*Me\scrolly)
     StopDrawing()
   EndProcedure
@@ -177,7 +176,8 @@ Module ExplorerUI
         ev_datas\yoff = *Me\scrollY
         ev_datas\width = *Me\sizX
         ev_datas\height = *Me\sizY
-        ControlExplorer::OnEvent(*Me\explorer,event,#Null)
+     
+        ControlExplorer::OnEvent(*Me\explorer,event,ev_datas)
         If EventType() = #PB_EventType_MouseWheel
           UI::Scroll(*Me,#True)
         EndIf
@@ -226,7 +226,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 161
+; CursorPosition = 120
+; FirstLine = 114
 ; Folding = ---
 ; EnableXP

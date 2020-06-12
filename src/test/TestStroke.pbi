@@ -1,14 +1,3 @@
-
-; ============================================================================
-;  raafal viewport with 3D Objects + WIP Alembic + WIP Manipulator
-; ............................................................................
-;  this is he main file
-; ============================================================================
-;  2013/04/01 | Ben Malartre
-;  - creation
-; ============================================================================
-
-
 XIncludeFile "../core/Application.pbi"
 
 Global *app.Application::Application_t 
@@ -102,7 +91,5 @@ Scene::Setup(Scene::*current_scene, *app\context)
 Application::Loop(*app,@Update())
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 53
 ; Folding = -
 ; EnableXP

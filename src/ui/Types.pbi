@@ -111,8 +111,9 @@ DeclareModule Window
   EndInterface
   
   Global *MAIN_WINDOW.Window_t
+  Global NewMap *ALL_WINDOWS.Window_t()
   
-  Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget, parentID.i=0)
+  Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
   Declare Delete(*Me.Window_t)
   Declare OnEvent(*Me.Window_t,event.i)
   Declare DrawPickImage(*Me.Window_t)
@@ -129,7 +130,7 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 31
+; CursorPosition = 115
+; FirstLine = 65
 ; Folding = -
 ; EnableXP

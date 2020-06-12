@@ -68,12 +68,11 @@ DeclareModule CanvasUI
   ; -------------------------------------------------------------------
   DataSection
     CanvasUIVT:
-    Data.i @Delete()
-    Data.i @Resize()
-    Data.i @Draw()
-    Data.i UI::@DrawPickImage()
-    Data.i UI::@Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i UI::@DrawPickImage()
+      Data.i UI::@Pick()
   EndDataSection
   
 EndDeclareModule
@@ -86,18 +85,17 @@ Module CanvasUI
   ; --------------------------------------------------------------------
   ;   CONSTRUCTOR
   ; --------------------------------------------------------------------
-  Procedure New(*parent.View::View_t,name.s="CanvasUI")
+  Procedure New(*view.View::View_t,name.s="CanvasUI")
     *Me.CanvasUI_t = AllocateMemory(SizeOf(CanvasUI_t))
     Object::INI(CanvasUI)
-    Protected l.l
-    *Me\resx = *parent\sizX
-    *Me\resy = *parent\sizY
-    *Me\pixelratio = *parent\sizY / *parent\sizX
+    *Me\container = ContainerGadget(#PB_Any,*view\posX,*view\posY,*view\sizX,*view\sizY)
+    *Me\resx = *view\sizX
+    *Me\resy = *view\sizY
+    *Me\pixelratio = *view\sizY / *view\sizX
     *Me\secondary = RGBA(120,12,66,255)
-    *Me\container = ContainerGadget(#PB_Any, x, y, *parent\sizX, *parent\sizY, #PB_Container_BorderLess)
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*parent\sizX, *parent\sizY,#PB_Canvas_Keyboard)
+    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*view\sizX, *view\sizY,#PB_Canvas_Keyboard)
     *Me\zoom = 100
-    *Me\imageID = CreateImage(#PB_Any,*parent\sizX,*parent\sizY,32)
+    *Me\imageID = CreateImage(#PB_Any,*view\sizX,*view\sizY,32)
     *Me\tool = Tool::New(Tool::#TOOL_SELECT, *Me\gadgetID)
     *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
     *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
@@ -105,6 +103,7 @@ Module CanvasUI
     UpdateZoom(*Me,0)
     ResetSheets(*Me)
     ClearDatas(*Me)
+    View::SetContent(*view, *Me)
     ProcedureReturn *Me
   EndProcedure
   
@@ -522,7 +521,7 @@ Module CanvasUI
 EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 88
+; CursorPosition = 97
+; FirstLine = 72
 ; Folding = ----
 ; EnableXP

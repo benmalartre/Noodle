@@ -1,11 +1,10 @@
 DeclareModule ControlGroup
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
+
   ; ---[ Constants ]------------------------------------------------------------
   #Autosize_H = 1<<20
   #Autosize_V = 1<<21
   #Autostack  = 1<<22
+  #NoFrame    = 1<<23
   
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlGroup_t )
@@ -43,8 +42,6 @@ DeclareModule ControlGroup
   Declare AppendStop( *Me.ControlGroup_t )
   Declare RowStart( *Me.ControlGroup_t )
   Declare RowEnd( *Me.ControlGroup_t )
-  Declare GetImageID( *Me.ControlGroup_t)
-  Declare OnClick(*Me.ControlGroup_t)
   DataSection 
     ControlGroupVT: 
     Data.i @OnEvent()
@@ -52,7 +49,6 @@ DeclareModule ControlGroup
     Data.i @Draw()
     Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
-    Data.i @OnClick()
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -68,9 +64,9 @@ Module ControlGroup
 
   ;{
   ; ----------------------------------------------------------------------------
-  ;  hlpResize
+  ;  Resize
   ; ----------------------------------------------------------------------------
-  Procedure.i hlpResize( *Me.ControlGroup::ControlGroup_t, *ev_data.Control::EventTypeDatas_t )
+  Procedure.i Resize( *Me.ControlGroup::ControlGroup_t, *ev_data.Control::EventTypeDatas_t )
     ; If #PB_Control_Group_Autosize_H:
     ;   Set this Group (client) width to the max width of children width
     ; Else
@@ -86,7 +82,6 @@ Module ControlGroup
     
     ; ---[ Local Variables ]----------------------------------------------------
     Protected dirty   .i = #False
-    Protected dirtyPos.i = #False
     Protected i       .i = 0
     Protected j       .i = 0
     Protected iBound  .i = *Me\chilcount - 1
@@ -108,12 +103,12 @@ Module ControlGroup
       ; ---[ Position ]---------------------------------------------------------
       ; ...[ X ]................................................................
       If ( *ev_data\x <> #PB_Ignore ) And ( *ev_data\x <> *Me\posX )
-        dirtyPos = #True
+        dirty = #True
         *Me\posX = *ev_data\x
       EndIf
       ; ...[ Y ]................................................................
       If ( *ev_data\y <> #PB_Ignore ) And ( *ev_data\y <> *Me\posY )
-        dirtyPos = #True
+        dirty = #True
         *Me\posY = *ev_data\y
       EndIf
       
@@ -161,7 +156,7 @@ Module ControlGroup
     ; 같�[ Horizontal Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같
     ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
   
-    ; ---[ Size Gorup ]---------------------------------------------------------
+    ; ---[ Size Group ]---------------------------------------------------------
     ;If #True
     If *Me\options & #Autosize_H
       ; ...[ Reset Values ].....................................................
@@ -181,8 +176,10 @@ Module ControlGroup
       curV = *Me\sizX - 20
       curH = curV
       maxV = 0
+  
       ; ...[ Loop Over Children ]...............................................
       For i=0 To iBound
+        *Son = *Me\children(i)
         If *Me\rowflags(i) And Not inRow
           curH = 0
           For j=i To iBound
@@ -208,23 +205,23 @@ Module ControlGroup
     EndIf
   
     
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Vertical Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Size Parent ]--------------------------------------------------------
-    If *Me\options & #Autosize_V
-      ; ...[ Reset Max Value ]..................................................
-      maxV = 0
-      ; ...[ Look For Children Max Height ].....................................
-      For i=0 To iBound
-        *Son  = *Me\children(i)
-        curV = *Son\posY + *Son\sizY
-        If curV > maxV : maxV = curV : EndIf
-      Next
-      ; ...[ Update Group Height ]..............................................
-      If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
-    EndIf
+;     ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
+;     ; 같�[ Vertical Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
+;     ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
+;     
+;     ; ---[ Size Parent ]--------------------------------------------------------
+;     If *Me\options & #Autosize_V
+;       ; ...[ Reset Max Value ]..................................................
+;       maxV = 0
+;       ; ...[ Look For Children Max Height ].....................................
+;       For i=0 To iBound
+;         *Son  = *Me\children(i)
+;         curV = *Son\posY + *Son\sizY
+;         If curV > maxV : maxV = curV : EndIf
+;       Next
+;       ; ...[ Update Group Height ]..............................................
+;       If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
+;     EndIf
     
     ; ---[ Check Need Redraw ]--------------------------------------------------
     If #True = dirty
@@ -259,34 +256,18 @@ Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
     label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
   EndIf
  
+  If Not *Me\options & #NoFrame
+    Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
+    VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
+    StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)  
+  EndIf
   
-  AddPathBox( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0)
-  VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
-  StrokePath(1, #PB_Path_RoundCorner)   
-
-  CompilerSelect #PB_Compiler_OS
-    CompilerCase #PB_OS_Windows
-      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
-      FillPath()
-      MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
-      DrawVectorText( label )
-    CompilerCase #PB_OS_Linux
-      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
-      FillPath()
-      MovePathCursor(*Me\posX+15,  *Me\posY)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
-      DrawVectorText( label )
-    CompilerCase #PB_OS_MacOS
-      AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12 )
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
-      FillPath()
-       MovePathCursor(*Me\posX+15, *Me\posY-3)
-      VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
-      DrawVectorText( label )
-  CompilerEndSelect
+  AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
+  VectorSourceColor(UIColor::COLOR_MAIN_BG )
+  FillPath()
+  MovePathCursor(*Me\posX+15,  *Me\posY)
+  VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+  DrawVectorText( label )
   
   ; ---[ Sanity Check ]-------------------------------------------------------
   If *Me\chilcount < 1 : ProcedureReturn : EndIf
@@ -313,7 +294,7 @@ EndProcedure
 
 
 ; ----------------------------------------------------------------------------
-;  hlpPick
+;  Pick
 ; ----------------------------------------------------------------------------
 Procedure Pick(*Me.ControlGroup_t)
   Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
@@ -330,9 +311,9 @@ Procedure Pick(*Me.ControlGroup_t)
 EndProcedure
 
 ; ----------------------------------------------------------------------------
-;  hlpDrawPickImage
+;  DrawPickImage
 ; ----------------------------------------------------------------------------
-Procedure hlpDrawPickImage( *Me.ControlGroup_t )
+Procedure DrawPickImage( *Me.ControlGroup_t )
   ; ---[ Local Variables ]----------------------------------------------------
   Protected i     .i = 0
   Protected iBound.i = *Me\chilcount-1;ArraySize(*Me\children()) - 1
@@ -362,9 +343,9 @@ EndProcedure
 
 
 ; ----------------------------------------------------------------------------
-;  hlpNextItem
+;  NextItem
 ; ----------------------------------------------------------------------------
-Procedure hlpNextItem( *Me.ControlGroup_t )
+Procedure NextItem( *Me.ControlGroup_t )
   ; ---[ Get Current Item ID ]------------------------------------------------
   StartDrawing( ImageOutput(*Me\imageID) )
     Protected *focuschild.Control::Control_t = *Me\focuschild
@@ -404,7 +385,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     Case #PB_EventType_Resize
       ; ...[ Update & Check Dirty ]...........................................
-     hlpResize( *Me, *ev_data.Control::EventTypeDatas_t )
+     Resize( *Me, *ev_data.Control::EventTypeDatas_t )
 
     ; ...[ Processed ]......................................................
     ProcedureReturn( #True )
@@ -670,7 +651,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
 ;         ; ---[ Do We Have A Focused Child ? ]-------------------------------------
 ;         If *Me\focuschild
 ;           ; ---[ Go To Next Item ]------------------------------------------------
-;           hlpNextItem( *Me ) 
+;           NextItem( *Me ) 
 ;         EndIf
 ;         
 ;       ;------------------------------------------------------------------------
@@ -702,13 +683,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
   
 EndProcedure
 
-Procedure OnClick(*Me.ControlGroup_t)
-  MessageRequester("CONTROl GROUP", "ON CLIK")
-EndProcedure
-
-
-
-
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlGroup_t )
   ; ============================================================================
@@ -720,7 +694,7 @@ EndProcedure
     *Me\label = value
     
     ; ---[ Redraw Control ]-----------------------------------------------------
-    ;hlpDraw( *Me )
+    ;Draw( *Me )
     
   EndProcedure
   ; ---[ GetLabel ]-------------------------------------------------------------
@@ -789,9 +763,9 @@ EndProcedure
     *Me\append = #False
     
     ;   ; ---[ Update Control And Children ]----------------------------------------
-    hlpResize( *Me, #Null )
+    Resize( *Me, #Null )
   
-    hlpDrawPickImage(*Me)
+    DrawPickImage(*Me)
   
   EndProcedure
   ; ---[ RowStart ]-------------------------------------------------------------
@@ -870,18 +844,7 @@ EndProcedure
     FreeMemory( *Me )
     
   EndProcedure
-  ; ---[ GetImageID ]-------------------------------------------------------------
-  Procedure.i GetImageID( *Me.ControlGroup_t)
-    
-    ; ---[ Return  Image ID]---------------------------------------------------
-    ProcedureReturn(*Me\imageID)
-    
-  EndProcedure
-  ; ---[ DrawTagImage(Debugging) ]-------------------------------------------------------------
-  Procedure.i DrawTagImage( *Me.ControlGroup_t)
-    hlpDrawPickImage( *Me )
-  EndProcedure
-  
+
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
@@ -916,13 +879,13 @@ EndProcedure
     *Me\enable     = #True
     *Me\options    = options
     *Me\down       = #False
-    *Me\append     = #False ; can't add children without AppendStart()
-    *Me\chilcount  = 0      ; no children yet
+    *Me\append     = #False
+    *Me\chilcount  = 0
     *Me\overchild  = #Null
     *Me\focuschild = #Null
     
     ; ---[ Init Structure ]-----------------------------------------------------
-    InitializeStructure( *Me, ControlGroup_t ) ; Arrays
+    InitializeStructure( *Me, ControlGroup_t )
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -938,7 +901,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 775
-; FirstLine = 739
-; Folding = ---+
+; CursorPosition = 839
+; FirstLine = 784
+; Folding = ----
 ; EnableXP

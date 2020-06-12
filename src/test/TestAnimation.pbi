@@ -42,7 +42,7 @@ Procedure Draw(*app.Application::Application_t)
   
   If Not #USE_GLFW
     GLContext::FlipBuffer(*app\context)
-    ViewportUI::Blit(*viewport, *layer\buffer)
+    ViewportUI::Blit(*viewport, *layer\datas\buffer)
   EndIf
   
   
@@ -54,7 +54,6 @@ Define model.m4f32
 ;--------------------------------------------
 If Time::Init()
   Globals::Init()
-  Controls::Init()
   Log::Init()
   Alembic::Init()
   FTGL::Init()
@@ -65,10 +64,11 @@ If Time::Init()
    Scene::*current_scene = Scene::New()
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\context)
-
-    *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
+     *app\context = *viewport\context
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   GLContext::SetContext(*app\context)
   Debug "Camera :: "+Str(*app\camera)
@@ -78,6 +78,7 @@ If Time::Init()
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  Application::AddLayer(*app, *layer)
   layer = *layer
   *pgm = *app\context\shaders("instances")
   
@@ -111,20 +112,20 @@ Stack::Delete(*A\skeleton\cloud\stack)
   ;Define *t = Alembic::ABC_TestString("Test")
   
   
-;   Define i
-;   Define pos.v3f32
-;   For i=0 To 12
-;     Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Star",Shape::#SHAPE_BUNNY)
-;     Vector3::Set(pos,Random(10),Random(10),Random(10))
-;     Object3D::AddChild(*model,*mesh)
-;     Matrix4::SetTranslation(*mesh\model,@pos)
-;   Next
+  Define i
+  Define pos.v3f32
+  For i=0 To 12
+    Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Star",Shape::#SHAPE_BUNNY)
+    Vector3::Set(pos,Random(10),Random(10),Random(10))
+    Object3D::AddChild(*model,*mesh)
+    Matrix4::SetTranslation(*mesh\globalT\m,pos)
+  Next
   
-  ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
+;   Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   
 
-;   *cloud = PointCloud::New("PointCloud",100)
-;   PointCloud::Setup(*cloud,*pgm)
+  *cloud = PointCloud::New("PointCloud",100)
+  PointCloud::Setup(*cloud,*pgm)
    
 Scene::AddModel(Scene::*current_scene,*model)
 
@@ -134,9 +135,9 @@ Scene::AddModel(Scene::*current_scene,*model)
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 34
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 123
+; FirstLine = 76
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

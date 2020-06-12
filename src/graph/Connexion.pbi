@@ -296,10 +296,7 @@ Module Connexion
         
       ;Draw Arrow Head
       If Not *c\connected
-        ;raaLine(*b\d\x,*b\d\y-2,*b\d\x,*b\d\y+2,*b\color)
-        ;raaLine(*b\d\x,*b\d\y+2,*b\d\x+4,*b\d\y,*b\color)
-        ;raaLine(*b\d\x,*b\d\y-2,*b\d\x+4,*b\d\y,*b\color)
-        ;FillArea(*b\d\x+1,*b\d\y,*b\color)
+
       EndIf
      ;-------------------------------------------------------------------------------------
      ; USE VECTOR DRAWING
@@ -594,7 +591,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 298
+; FirstLine = 285
 ; Folding = ----
 ; EnableXP

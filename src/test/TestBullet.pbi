@@ -162,10 +162,6 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   Protected *body.Bullet::btRigidBody = *ground\rigidbody
   Bullet::BTSetAngularFactorF(*body,0.5)
   Bullet::BTSetFriction(*body,100)
-; ; 
-;     With *mesh
-;       BTCreateCurvedGround(*raa_bullet_sdk,\nbtriangles,\nbpoints,\a_positions\GetPtr(),\a_triangleindices\GetPtr())
-;     EndWith
   
 EndProcedure
 
@@ -213,13 +209,6 @@ Procedure BulletScene(*s.Program::Program_t)
     Vector3::Set(v,0,i,0)
     CArray::Append(*pos,@v)
   Next
-  ;BTCreateSphereSoftBody()
-  
-;   Protected *sb.btSoftBody = BTCreateSoftBodyFromConvexHull(*raa_bullet_sdk,pos\GetPtr(0),nb)
-  
-;   BTAddSoftBody(*raa_bullet_world,*sb)
-  
-;OPolymesh_Dummy(*sphere,1000000)
 
 Protected *t.Transform::Transform_t
 Protected color.c4f32
@@ -413,13 +402,13 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 289
-; FirstLine = 289
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 210
+; FirstLine = 200
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

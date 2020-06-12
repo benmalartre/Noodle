@@ -141,16 +141,14 @@ Module LayerSSAOBlur
 
     Setup(*Me)
     
-  ;   Protected img = LoadImage(#PB_Any,RAAFAL_BASE_PATH+"/rsc/ico/pointcloud.png")
-  ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF(LayerSSAOBlur)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 63
-; FirstLine = 47
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 143
+; FirstLine = 82
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

@@ -3,7 +3,7 @@
 ; ============================================================================
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-
+XIncludeFile "../opengl/Shader.pbi"
 
 DeclareModule ScreenQuad
 
@@ -143,8 +143,7 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 78
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 5
 ; Folding = --
 ; EnableXP

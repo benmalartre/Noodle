@@ -103,10 +103,6 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   Protected *body.Bullet::btRigidBody = *ground\rigidbody
   Bullet::BTSetAngularFactorF(*body,0.5)
   Bullet::BTSetFriction(*body,100)
-; ; 
-;     With *mesh
-;       BTCreateCurvedGround(*raa_bullet_sdk,\nbtriangles,\nbpoints,\a_positions\GetPtr(),\a_triangleindices\GetPtr())
-;     EndWith
   
 EndProcedure
 
@@ -130,13 +126,6 @@ Procedure BulletScene(*s.Program::Program_t)
     Vector3::Set(v,0,i,0)
     CArray::Append(*pos,v)
   Next
-  ;BTCreateSphereSoftBody()
-  
-;   Protected *sb.btSoftBody = BTCreateSoftBodyFromConvexHull(*raa_bullet_sdk,pos\GetPtr(0),nb)
-  
-;   BTAddSoftBody(*raa_bullet_world,*sb)
-  
-;OPolymesh_Dummy(*sphere,1000000)
 
 Protected *t.Transform::Transform_t
 Protected color.c4f32
@@ -322,9 +311,9 @@ Scene::Setup(Scene::*current_scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 136
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 132
+; FirstLine = 128
 ; Folding = -
 ; EnableThread
 ; EnableXP

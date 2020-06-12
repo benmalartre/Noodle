@@ -207,16 +207,13 @@ Module LayerShadowDeferedCSM
     Layer::AddScreenSpaceQuad(*Me,*ctx)
 
     Setup(*Me)
-    
-  ;   Protected img = LoadImage(#PB_Any,RAAFAL_BASE_PATH+"/rsc/ico/pointcloud.png")
-  ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF(LayerShadowDeferedCSM)
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 114
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 207
+; FirstLine = 148
 ; Folding = --
 ; EnableXP

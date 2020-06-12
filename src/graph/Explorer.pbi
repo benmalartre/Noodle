@@ -91,9 +91,7 @@ Procedure New(x.i,y.i,width.i,height.i)
   *Me\y = y
   *Me\width = width
   *Me\height = height
-;   *Me\search = newCControlEdit("Search","",0,5,5,100,20)
-;   *Me\refresh = newCControlIcon("Refresh",#RAA_Icon_Loop,#False,0,100,5,16,16)
-;   *Me\clear = newCControlIcon("Clear",#RAA_Icon_Close,#False,0,120,5,16,16)
+
   
   GetImageSize(*Me)
   DrawPickImage(*Me)
@@ -455,9 +453,9 @@ EndProcedure
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 202
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 81
 ; Folding = ---
 ; EnableThread
 ; EnableXP

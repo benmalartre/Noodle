@@ -11,6 +11,7 @@ XIncludeFile "Object3D.pbi"
 XIncludeFile "Root.pbi"
 XIncludeFile "Model.pbi"
 XIncludeFile "Polymesh.pbi"
+XIncludeFile "PointCloud.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "Light.pbi"
 XIncludeFile "Selection.pbi"
@@ -48,6 +49,7 @@ DeclareModule Scene
     *on_new.Signal::Signal_t
     *on_delete.Signal::Signal_t
     *on_change.Signal::Signal_t
+    *on_selection.Signal::Signal_t
     *on_time.Signal::Signal_t
     *on_edit.Signal::Signal_t
     *on_create.Signal::Signal_t
@@ -59,12 +61,12 @@ DeclareModule Scene
   
   Declare New( name.s = "ActiveScene")
   Declare Delete(*Me.Scene_t)
-  Declare Setup(*scn.Scene_t,*ctx.GLContext::GLContext_t)
+  Declare Setup(*Me.Scene_t,*ctx.GLContext::GLContext_t)
   Declare Update(*Me.Scene_t)
   Declare Draw(*Me.Scene_t,*shader.Program::Program_t,filter.i=-1)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
-  Declare AddObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
+  Declare AddObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   Declare AddChild(*Me.Scene_t,*obj.Object3D::Object3d_t)
   Declare AddModel(*Me.Scene_t,*model.Model::Model_t)
   Declare AddObjectChildren(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -76,10 +78,10 @@ DeclareModule Scene
   Declare GetNbLights(*Me.Scene_t)
   Declare GetNbObjects(*Me.Scene_t)
   Declare GetObjectByName(*Me.Scene_t,name.s)
-  Declare Save(*scn.Scene_t)
-  Declare SaveAs(*scn.Scene_t, filename.s)
-  Declare GetUniqueID(*scn.Scene_t, *o.Object3D::Object3D_t)
-  Declare.s GetInfos(*scn.Scene_t)
+  Declare Save(*Me.Scene_t)
+  Declare SaveAs(*Me.Scene_t, filename.s)
+  Declare GetUniqueID(*Me.Scene_t, *o.Object3D::Object3D_t)
+  Declare.s GetInfos(*Me.Scene_t)
   
   DataSection 
     SceneVT: 
@@ -171,72 +173,73 @@ Module Scene
   ; Select Object
   ;---------------------------------------------------------------------------
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
-    Debug "SCENE SELECT OBJECT"
     Selection::Clear(*Me\selection)
     Selection::AddObject(*Me\selection, *obj)
+    Signal::Trigger(*Me\on_selection)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Add Object To Selection
   ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
-;      Selection::AddObject(*Me\selection, *obj)
+    Selection::AddObject(*Me\selection, *obj)
+    Signal::Trigger(*Me\on_selection)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Add Object To Scene Graph
   ;---------------------------------------------------------------------------
-  Procedure AddObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
-    ResolveUniqueName(*scn,*obj)
-    *scn\nbobjects  + 1
-    *obj\uniqueID = GetUniqueID(*scn, *obj)
+  Procedure AddObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
+    ResolveUniqueName(*Me,*obj)
+    *Me\nbobjects  + 1
+    *obj\uniqueID = GetUniqueID(*Me, *obj)
     Select *obj\type
       Case Object3D::#Drawer
-        CArray::AppendUnique(*scn\helpers,*obj)
+        CArray::AppendUnique(*Me\helpers,*obj)
       Case Object3D::#Locator
-        CArray::AppendUnique(*scn\helpers,*obj)
+        CArray::AppendUnique(*Me\helpers,*obj)
       Case Object3D::#Model
-        CArray::AppendUnique(*scn\models,*obj)
+        CArray::AppendUnique(*Me\models,*obj)
       Case Object3D::#Curve
-        CArray::AppendUnique(*scn\helpers,*obj)
+        CArray::AppendUnique(*Me\helpers,*obj)
       Case Object3D::#Polymesh
-        CArray::AppendUnique(*scn\objects,*obj)
+        CArray::AppendUnique(*Me\objects,*obj)
       Case Object3D::#PointCloud        
-        CArray::AppendUnique(*scn\objects,*obj)
+        CArray::AppendUnique(*Me\objects,*obj)
       Case Object3D::#InstanceCloud        
-        CArray::AppendUnique(*scn\objects,*obj)
+        CArray::AppendUnique(*Me\objects,*obj)
       Case Object3D::#Light 
-        CArray::AppendUnique(*scn\lights,*obj)
+        CArray::AppendUnique(*Me\lights,*obj)
       Case Object3D::#Camera
-        CArray::AppendUnique(*scn\cameras,*obj)
+        CArray::AppendUnique(*Me\cameras,*obj)
     EndSelect
-  
+    Signal::Trigger(*Me\on_create)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Remove Object To Scene Graph
   ;---------------------------------------------------------------------------
-  Procedure RemoveObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
+  Procedure RemoveObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
 
     Select *obj\type
       Case Object3D::#Locator
-        CArray::Remove(*scn\helpers,*obj)
+        CArray::Remove(*Me\helpers,*obj)
       Case Object3D::#Model
-        CArray::Remove(*scn\models,*obj)
+        CArray::Remove(*Me\models,*obj)
       Case Object3D::#Curve
-        CArray::Remove(*scn\helpers,*obj)
+        CArray::Remove(*Me\helpers,*obj)
       Case Object3D::#Polymesh
-        CArray::Remove(*scn\objects,*obj)
+        CArray::Remove(*Me\objects,*obj)
       Case Object3D::#PointCloud        
-        CArray::Remove(*scn\objects,*obj)
+        CArray::Remove(*Me\objects,*obj)
       Case Object3D::#InstanceCloud        
-        CArray::Remove(*scn\objects,*obj)
+        CArray::Remove(*Me\objects,*obj)
       Case Object3D::#Light 
-        CArray::Remove(*scn\lights,*obj)
+        CArray::Remove(*Me\lights,*obj)
       Case Object3D::#Camera
-        CArray::Remove(*scn\cameras,*obj)
+        CArray::Remove(*Me\cameras,*obj)
     EndSelect
-  
+    Signal::Trigger(*Me\on_delete)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -380,7 +383,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Setup Children
   ;---------------------------------------------------------------------------
-  Procedure SetupChildren(*scn.Scene_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
+  Procedure SetupChildren(*Me.Scene_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
     Protected j
     Protected child.Object3D::IObject3D
     ForEach *obj\children()
@@ -402,16 +405,16 @@ Module Scene
             child\Setup(*ctx\shaders("drawer"))
         EndSelect
       EndIf
-      SetupChildren(*scn,child,*ctx)
+      SetupChildren(*Me,child,*ctx)
     Next
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; SetupObject
   ;---------------------------------------------------------------------------
-  Procedure Setup(*scn.Scene_t,*ctx.GLContext::GLContext_t)
+  Procedure Setup(*Me.Scene_t,*ctx.GLContext::GLContext_t)
     Protected i,j
-    Protected *root.Root::Root_t = *scn\root
+    Protected *root.Root::Root_t = *Me\root
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
   
@@ -434,11 +437,11 @@ Module Scene
       EndSelect
       EndIf
       
-      SetupChildren(*scn,child,*ctx)
+      SetupChildren(*Me,child,*ctx)
     Next
     
     ; Setup Handle
-    ;OHandle::Setup(*scn\handle,*ctx)
+    ;OHandle::Setup(*Me\handle,*ctx)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -464,7 +467,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Object in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure CleanObject(*scn.Scene_t,*obj.Object3D::Object3D_t)
+  Procedure CleanObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   
     Protected i
     Protected child.Object3D::IObject3D
@@ -483,14 +486,14 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Clean(*scn.Scene_t)
+  Procedure Clean(*Me.Scene_t)
   
     Protected i,j
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
     
-    For i = 0 To CArray::GetCount(*scn\models)-1
-      *model = CArray::GetValue(*scn\models,i)
+    For i = 0 To CArray::GetCount(*Me\models)-1
+      *model = CArray::GetValue(*Me\models,i)
       ForEach *model\children()
         child = *model\children()
         child\Clean()
@@ -524,11 +527,11 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Update(*scn.Scene_t)
-    If Not *scn : ProcedureReturn : EndIf
-;     If *scn\dirty
+  Procedure Update(*Me.Scene_t)
+    If Not *Me : ProcedureReturn : EndIf
+;     If *Me\dirty
       Protected i
-      Protected *root.Object3D::Object3D_t = *scn\root
+      Protected *root.Object3D::Object3D_t = *Me\root
       Protected child.Object3D::IObject3D
       Protected *c.Object3D::Object3D_t
 
@@ -541,26 +544,25 @@ Module Scene
         UpdateChildren( child)
       Next
       
-      *scn\dirty = #False
+      *Me\dirty = #False
       ;     EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Get Num 3D Objects
   ;---------------------------------------------------------------------------
-  Procedure GetNbObjects(*scn.Scene_t)
-    ProcedureReturn CArray::GetCount(*scn\objects)
+  Procedure GetNbObjects(*Me.Scene_t)
+    ProcedureReturn CArray::GetCount(*Me\objects)
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Get Object By Name
   ;---------------------------------------------------------------------------
-  Procedure GetObjectByName(*scn.Scene_t,name.s)
-    Debug "GET OBJECT BY NAME : "+name
+  Procedure GetObjectByName(*Me.Scene_t,name.s)
     Protected i
     Protected *o.Object3D::Object3D_t
-    For i =0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValuePtr(*scn\objects,i)
+    For i =0 To CArray::GetCount(*Me\objects)-1
+      *o = CArray::GetValuePtr(*Me\objects,i)
       Debug "---> "+*o\name
       If *o\name = name
         ProcedureReturn *o
@@ -573,66 +575,66 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Get Num Polygons In Scene
   ;---------------------------------------------------------------------------
-  Procedure GetNbPolygons(*scn.Scene_t)
-    *scn\nbpolygons=0
+  Procedure GetNbPolygons(*Me.Scene_t)
+    *Me\nbpolygons=0
     Protected i
     Protected *o.Object3D::Object3D_t
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t
-    For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValuePtr(*scn\objects,i)
+    For i=0 To CArray::GetCount(*Me\objects)-1
+      *o = CArray::GetValuePtr(*Me\objects,i)
       If *o\type = Object3D::#Polymesh
         *m = *o
         *geom = *m\geom
-        *scn\nbpolygons + *geom\nbpolygons
+        *Me\nbpolygons + *geom\nbpolygons
       EndIf
     Next
     
-    ProcedureReturn *scn\nbpolygons
+    ProcedureReturn *Me\nbpolygons
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Get Num Triangles In Scene
   ;---------------------------------------------------------------------------
-  Procedure GetNbTriangles(*scn.Scene_t)
-    *scn\nbtriangles=0
+  Procedure GetNbTriangles(*Me.Scene_t)
+    *Me\nbtriangles=0
     Protected i
     Protected *o.Object3D::Object3D_t
     Protected *m.Polymesh::Polymesh_t
     Protected *geom.Geometry::PolymeshGeometry_t = *m\geom
-    For i=0 To CArray::GetCount(*scn\objects)-1
-      *o = CArray::GetValuePtr(*scn\objects,i)
+    For i=0 To CArray::GetCount(*Me\objects)-1
+      *o = CArray::GetValuePtr(*Me\objects,i)
       If *o\type = Object3D::#Polymesh
         *m = *o
          *geom = *m\geom
-        *scn\nbtriangles + *geom\nbtriangles
+        *Me\nbtriangles + *geom\nbtriangles
       EndIf
     Next
     
-    ProcedureReturn *scn\nbtriangles
+    ProcedureReturn *Me\nbtriangles
   EndProcedure
 
   ;---------------------------------------------------------------------------
   ; Get Active Camera
   ;---------------------------------------------------------------------------
-  Procedure GetActiveCamera(*scn.Scene_t)
-    If Not *scn\camera
-      *scn\camera = CArray::GetValue(*scn\cameras,0)
+  Procedure GetActiveCamera(*Me.Scene_t)
+    If Not *Me\camera
+      *Me\camera = CArray::GetValue(*Me\cameras,0)
     EndIf
-    ProcedureReturn *scn\camera
+    ProcedureReturn *Me\camera
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Get Scene Root
   ;---------------------------------------------------------------------------
-  Procedure GetRoot(*scn.Scene_t)
-    ProcedureReturn *scn\root
+  Procedure GetRoot(*Me.Scene_t)
+    ProcedureReturn *Me\root
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Save Scene
   ;---------------------------------------------------------------------------
-  Procedure Save(*scn.Scene_t)
+  Procedure Save(*Me.Scene_t)
     Debug "------------------------ SAVE SCENE ------------------------------"
     
     Debug "Scene Save Called"
@@ -641,19 +643,19 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Save SCene As
   ;---------------------------------------------------------------------------
-  Procedure SaveAs(*scn.Scene_t, filename.s)
+  Procedure SaveAs(*Me.Scene_t, filename.s)
     Debug "Scene Save As Called"
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Select By ID
   ;---------------------------------------------------------------------------
-  Procedure SelectByID(*scn.Scene_t,uuid.i)
+  Procedure SelectByID(*Me.Scene_t,uuid.i)
     Protected i
     Protected *object.Object3D::Object3D_t
     Protected *out.Object3D::IObject3D = #Null
-    For i=0 To CArray::GetCount(*scn\objects)-1
-      *object = CArray::GetValue(*scn\objects,i)
+    For i=0 To CArray::GetCount(*Me\objects)-1
+      *object = CArray::GetValue(*Me\objects,i)
       If id = *object\uniqueID
 ;         *object\selected = #True
         *out = *object
@@ -663,8 +665,8 @@ Module Scene
     
     ;Update others selectivity
     If *out<>#Null
-      For i=0 To CArray::GetCount(*scn\objects)-1
-        *object = CArray::GetValue(*scn\objects,i)
+      For i=0 To CArray::GetCount(*Me\objects)-1
+        *object = CArray::GetValue(*Me\objects,i)
       If Not *object = *out
         *object\selected = #False
       EndIf 
@@ -711,13 +713,13 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Draw
   ;---------------------------------------------------------------------------
-  Procedure Draw(*scn.Scene_t,*shader.Program::Program_t,filter.i=-1)
+  Procedure Draw(*Me.Scene_t,*shader.Program::Program_t,filter.i=-1)
    
     Protected i
     Protected obj.Object3D::IObject3D
     Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*scn\objects)-1
-      *obj = CArray::GetValuePtr(*scn\objects,i)
+    For i=0 To CArray::GetCount(*Me\objects)-1
+      *obj = CArray::GetValuePtr(*Me\objects,i)
       If filter
         If *obj\type & filter
           obj = *obj
@@ -729,8 +731,8 @@ Module Scene
       EndIf
     Next
     
-    For i=0 To CArray::GetCount(*scn\helpers)-1
-      *obj = CArray::GetValuePtr(*scn\helpers,i)
+    For i=0 To CArray::GetCount(*Me\helpers)-1
+      *obj = CArray::GetValuePtr(*Me\helpers,i)
       If filter
         If *obj\type & filter
           obj = *obj
@@ -811,6 +813,7 @@ Module Scene
     *Me\on_new = Object::NewSignal(*Me, "OnNew")
     *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
     *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_selection = Object::NewSignal(*Me, "OnSelection")
     *Me\on_time = Object::NewSignal(*Me, "OnTime")
     *Me\on_edit = Object::NewSignal(*Me, "OnEdit")
     *Me\on_create = Object::NewSignal(*Me, "OnCreate")
@@ -823,8 +826,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 801
-; FirstLine = 762
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 560
+; FirstLine = 539
 ; Folding = -------
 ; EnableXP

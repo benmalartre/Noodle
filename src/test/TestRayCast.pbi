@@ -26,7 +26,7 @@ Global *layer.Layer::Layer_t
 ;---------------------------------------------------
 ; Constructor
 ;---------------------------------------------------
-Procedure newTestRay(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32)
+Procedure TestRay_New(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32)
   
   Protected *tr.TestRay_t = AllocateMemory(SizeOf(TestRay_t))
   
@@ -187,10 +187,8 @@ Procedure AddRay()
   Vector3::Set(ep,0,0,0)
   
   Color::Set(color,1,0,0,1)
-  *ray = newTestRay(*bunny,sp,ep,color)
+  *ray = TestRay_New(*bunny,sp,ep,color)
 EndProcedure
-
-
 
 Procedure Draw(*app.Application::Application_t)
   CompilerIf #USE_GLFW
@@ -211,7 +209,6 @@ Procedure Draw(*app.Application::Application_t)
   
 
  EndProcedure
-
 
  Define useJoystick.b = #False
  Define width = 1024
@@ -249,9 +246,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 217
-; FirstLine = 194
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 211
+; FirstLine = 182
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

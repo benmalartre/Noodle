@@ -190,8 +190,6 @@ Module ControlEnum
         leftbutton = Bool(event = #PB_Event_Gadget And EventType()=#PB_EventType_LeftClick); Or EventType() = #PB_EventType_LostFocus )
     
         If init = #True And leftbutton And pick > -1
-;           sig.CSlot = menu\SignalOnChanged()
-;           sig\Trigger(#RAA_SIGNAL_TYPE_PING,0)
           done = #True
           *Me\current = pick
         EndIf
@@ -234,8 +232,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 6
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 191
+; FirstLine = 168
 ; Folding = --
 ; EnableXP

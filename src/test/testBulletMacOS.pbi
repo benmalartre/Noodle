@@ -135,7 +135,7 @@ XIncludeFile "../ui/CanvasUI.pbi"
 XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
-XIncludeFile "../ui/TopMenu.pbi"
+XIncludeFile "../ui/MenuUI.pbi"
 XIncludeFile "../ui/ColorUI.pbi"
 
 XIncludeFile "../core/Saver.pbi"
@@ -736,9 +736,9 @@ CompilerEndIf
 ;   EndProcedure
 ; 
 ; EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 149
-; FirstLine = 124
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 137
+; FirstLine = 133
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_SSE=1

@@ -1,5 +1,6 @@
-﻿XIncludeFile "UI.pbi"
-XIncludeFile "Font.pbi"
+﻿XIncludeFile "../controls/Font.pbi"
+XIncludeFile "UI.pbi"
+
 ; ==========================================================================================
 ;   SCINTILLA GLSL DECLARATION
 ; ==========================================================================================
@@ -51,7 +52,7 @@ DeclareModule ScintillaGLSLUI
   ; -------------------------------------------------------------------
   Declare Init()
   Declare New(x.i, y.i, width.i, height.i)
-  Declare Delete(*Me.ScintillaGLSL_t)
+  Declare Delete(*Me.ScintillaGLSLUI_t)
   Declare GetLineEndPosition(gadget, line)
   Declare LineFromPosition(gadget, pos)
   Declare KeywordIs(key.s)
@@ -78,13 +79,13 @@ EndDeclareModule
 ProcedureDLL ScintillaCallBack(gadget, *scinotify.SCNotification)
   Select *scinotify\nmhdr\code
     Case #SCN_STYLENEEDED
-      ScintillaGLSL::Highlight(gadget, *scinotify\position)
+      ScintillaGLSLUI::Highlight(gadget, *scinotify\position)
       
     Case #SCN_MARGINCLICK
       ScintillaSendMessage(gadget, #SCI_TOGGLEFOLD, ScintillaSendMessage(gadget, #SCI_LINEFROMPOSITION, *scinotify\Position))
   EndSelect
 EndProcedure
-ScintillaGLSL::SCINTILLACALLBACK = @ScintillaCallBack()
+ScintillaGLSLUI::SCINTILLACALLBACK = @ScintillaCallBack()
 
 ; ==========================================================================================
 ;   SCINTILLA GLSL IMPLEMENTATION
@@ -103,8 +104,8 @@ Module ScintillaGLSLUI
   ;   NEW
   ; ----------------------------------------------------------------------------------------
   Procedure New(x.i, y.i, width.i, height.i)
-    Define *Me.ScintillaGLSLUI_t = AllocateMemory(SizeOf(ScintillaGLSL_t))
-    Object::INI(ScintillaGLSL)
+    Define *Me.ScintillaGLSLUI_t = AllocateMemory(SizeOf(ScintillaGLSLUI_t))
+    Object::INI(ScintillaGLSLUI)
     
     *Me\gadgetID = ScintillaGadget(#PB_Any, x, y, width, height, SCINTILLACALLBACK)
     ; choose a lexer
@@ -115,7 +116,7 @@ Module ScintillaGLSLUI
     ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBACK, #STYLE_DEFAULT, BG_COLOR)
     
     ; set default font
-    Define *font_ascii_name = Ascii(Font::DEFAULT_FONT_NAME)
+    Define *font_ascii_name = Ascii(Font::*CURRENT_FONT\name)
     ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFONT, #STYLE_DEFAULT, *font_ascii_name)
     FreeMemory(*font_ascii_name)
     ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETSIZE, #STYLE_DEFAULT, 10)
@@ -410,12 +411,12 @@ EndModule
 ;   TEST CODE
 ; =======================================================================================================
 Procedure TestScintillaGLSLUI()
-  ScintillaGLSL::Init()
+  ScintillaGLSLUI::Init()
   
   If OpenWindow(0, 0, 0, 800, 600, "Scintilla GLSL", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
        
     If UseGadgetList(WindowID(0))
-      *ui = ScintillaGLSL::New(0,0,WindowWidth(0, #PB_Window_InnerCoordinate), WindowHeight(0, #PB_Window_InnerCoordinate))
+      *ui = ScintillaGLSLUI::New(0,0,WindowWidth(0, #PB_Window_InnerCoordinate), WindowHeight(0, #PB_Window_InnerCoordinate))
     EndIf
        
     
@@ -432,7 +433,8 @@ EndProcedure
 ; =======================================================================================================
 ;   EOF
 ; =======================================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 17
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 431
+; FirstLine = 374
+; Folding = ---
 ; EnableXP

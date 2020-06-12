@@ -49,15 +49,15 @@ Module LayerShadowSimple
   Procedure GetImage(*layer.LayerShadowSimple_t)
     Protected x,y
     Protected l.l
-    Protected *mem = AllocateMemory(*layer\width * *layer\height * SizeOf(l))
+    Protected *mem = AllocateMemory(*layer\datas\width * *layer\datas\height * SizeOf(l))
     
     OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH,#GL_UNSIGNED_INT,*mem)
     
-    StartDrawing(ImageOutput(*layer\image))
-    Protected row_size = *layer\width
+    StartDrawing(ImageOutput(*layer\datas\image))
+    Protected row_size = *layer\datas\width
     Protected color.l
-    For y=0 To *layer\height-1
-      For x=0 To *layer\width-1
+    For y=0 To *layer\datas\height-1
+      For x=0 To *layer\datas\width-1
         color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
         Plot(x,y,color)
       Next x
@@ -65,7 +65,7 @@ Module LayerShadowSimple
     
     StopDrawing()
     FreeMemory(*mem)
-    SaveImage(*layer\image,"D:\Projects\RnD\PureBasic\Noodle\textures\shadowmapsimple.png")
+    SaveImage(*layer\datas\image,"D:\Projects\RnD\PureBasic\Noodle\textures\shadowmapsimple.png")
   EndProcedure
   
   ;------------------------------------
@@ -140,7 +140,7 @@ Module LayerShadowSimple
     
   
     Protected *camera.Camera::Camera_t = *layer\pov
-    Framebuffer::BindOutput(*layer\buffer)
+    Framebuffer::BindOutput(*layer\datas\buffer)
     Layer::Clear(*layer)
     
     Protected shader.GLuint = *ctx\shaders("shadowsimple")\pgm
@@ -180,45 +180,7 @@ Module LayerShadowSimple
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
     
     GLCheckError("ShadowSimple Bind Polymesh Draw")
-; ;   ;   ;---[ Instance Cloud ]---------------------------------------
-; ;     shader.GLuint = *ctx\s_simpleshadowpc
-; ;     glUseProgram(shader)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"bias"),1,#GL_FALSE,@bias)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*camera\view)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*camera\projection)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"light_view"),1,#GL_FALSE,*light\view)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"light_proj"),1,#GL_FALSE,*light\projection)
-; ;     
-; ;     
-; ;     
-; ;     glUniform1i(glGetUniformLocation(shader,"shadow_map"),0)
-; ;     glFrontFace(#GL_CCW)
-; ;     glUniform1f(glGetUniformLocation(shader,"x_pixel_offset"),1/2048)
-; ;     glUniform1f(glGetUniformLocation(shader,"y_pixel_offset"),1/2048)
-; ;     
-; ;     ;---[ Bind ]---------------------------------------
-; ;     glBindAttribLocation(shader,0,"s_pos")
-; ;     glBindAttribLocation(shader,1,"s_norm")
-; ;     glBindAttribLocation(shader,2,"s_uvws")
-; ;     glBindAttribLocation(shader,3,"position")
-; ;     glBindAttribLocation(shader,4,"normal")
-; ;     glBindAttribLocation(shader,5,"tangent")
-; ;     glBindAttribLocation(shader,6,"color")
-; ;     glBindAttribLocation(shader,7,"scale")
-; ;     glBindAttribLocation(shader,8,"size")
-; ;   
-; ;     ;---[ Draw ]---------------------------------------
-; ;     For i=0 To nbo-1
-; ;       *obj = *raa_current_scene\objects\GetValue(i)
-; ;       If *obj\GetType() = #RAA_3DObject_PointCloud
-; ;         *t = *obj\GetGlobalTransform()
-; ;         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*t\m)
-; ;         *obj\Draw(*ctx,#GL_TRIANGLES)
-; ;       EndIf
-; ;       
-; ;     Next i
-; 
-;     
+
     glActiveTexture(#GL_TEXTURE0)
     glBindTexture(#GL_TEXTURE_2D,*layer\texture);Framebuffer::GetTex(*layer\shadowmap,0))
     GLCheckError("Bind Texture")
@@ -228,9 +190,9 @@ Module LayerShadowSimple
     glDisable(#GL_DEPTH_TEST)
     glDisable(#GL_CULL_FACE)
     
-    Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
      GLCheckError("BlitTo")
-    Framebuffer::Unbind(*layer\buffer)
+    Framebuffer::Unbind(*layer\datas\buffer)
     
     GLCheckError("Unbind")
     
@@ -254,20 +216,20 @@ Module LayerShadowSimple
 
     Object::INI( LayerShadowSimple )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *camera
   
-    *Me\buffer = Framebuffer::New("ShadowSimple",width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender(*Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    *Me\datas\buffer = Framebuffer::New("ShadowSimple",width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachRender(*Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
     *Me\mask = #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT
     *Me\shadowmap = *shadowmap
     *Me\light = #Null
     *Me\once = #False
 
-    *Me\image = CreateImage(#PB_Any,width,height)
+    *Me\datas\image = CreateImage(#PB_Any,width,height)
     
     Setup(*Me)
     
@@ -279,7 +241,8 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 231
+; FirstLine = 166
 ; Folding = --
 ; EnableXP

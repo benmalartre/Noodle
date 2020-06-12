@@ -106,8 +106,7 @@ MessageRequester("THREADED",
 
 
 
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 63
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP

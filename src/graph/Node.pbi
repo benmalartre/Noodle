@@ -63,6 +63,7 @@ Module Node
   ;   Get Node Parent 3D Object
   ; ----------------------------------------------------------------------------
   Procedure GetParent3DObject(*n.Node_t)
+    Debug "NODE : GET PARENT 3D OBJECT --> "+*n\name
     Define *node.Node::Node_t = *n
     Define *parent.Object::Object_t = *n\parent
     Define search.b = #True
@@ -117,7 +118,7 @@ Module Node
  
    ; Draw Node Name
   VectorFont(FontID(Globals::#FONT_BOLD),14 )
-  VectorSourceColor(UIColor::COLOR_TEXT)
+  VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
   MovePathCursor(*n\posx+(10 ),*n\posy-(20 ))
   AddPathText(*n\label)
   FillPath()
@@ -173,7 +174,7 @@ Module Node
     
     
     Protected w = VectorTextWidth(*n\outputs()\name)
-    VectorSourceColor(UIColor::COLOR_TEXT)
+    VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
     MovePathCursor(x-w-2*Graph::#Node_PortRadius ,y+4-(Graph::#Node_PortSpacing / 2))
     AddPathText(*n\outputs()\name)
     FillPath()
@@ -208,7 +209,7 @@ Module Node
       StrokePath(1)
     EndIf
 
-    VectorSourceColor(UIColor::COLOR_TEXT)
+    VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
     MovePathCursor(x+2*Graph::#Node_PortRadius,y+4-(Graph::#Node_PortSpacing/2))
     AddPathText(*n\inputs()\name)
     FillPath()
@@ -596,6 +597,7 @@ Module Node
   ;   Is Node Dirty
   ; ----------------------------------------------------------------------------
   Procedure IsDirty(*n.Node_t)
+    If *n\alwaysDirty : ProcedureReturn #True : EndIf
     ForEach(*n\outputs())
       If *n\outputs()\dirty
         ProcedureReturn #True
@@ -609,7 +611,7 @@ Module Node
   Procedure UpdateDirty(*n.Node_t)
     ForEach(*n\inputs())
       If *n\inputs()\connected
-        If *n\inputs()\source\dirty
+        If *n\inputs()\source\dirty Or *n\alwaysDirty
           *n\inputs()\dirty = #True
         EndIf
       EndIf
@@ -696,8 +698,9 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 599
+; FirstLine = 594
 ; Folding = -------
 ; EnableThread
 ; EnableXP

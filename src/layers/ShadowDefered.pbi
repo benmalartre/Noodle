@@ -91,16 +91,16 @@ Module LayerShadowDefered
     
   
     
-    glViewport(0,0,*layer\width,*layer\height)
+    glViewport(0,0,*layer\datas\width,*layer\datas\height)
       shader = *ctx\shaders("shadowdefered")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
       Framebuffer::BindInput(*layer\shadowmap,ArraySize(*layer\gbuffer\tbos()))
-      Framebuffer::BindOutput(*layer\buffer)
+      Framebuffer::BindOutput(*layer\datas\buffer)
       glClearColor(0.5,0.5,0.5,0.5)
       glClear(#GL_COLOR_BUFFER_BIT);
       
-      glViewport(0,0,*layer\buffer\width,*layer\buffer\height)
+      glViewport(0,0,*layer\datas\buffer\width,*layer\datas\buffer\height)
       glUniform1i(glGetUniformLocation(shader,"position_map"),0)
       glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
       glUniform1i(glGetUniformLocation(shader,"color_map"),2)
@@ -145,9 +145,9 @@ Module LayerShadowDefered
       ScreenQuad::Draw(*layer\quad)
       Protected vwidth = *ctx\width
       Protected vheight = *ctx\height
-      Protected ratio.f = *layer\width/*layer\height
+      Protected ratio.f = *layer\datas\width/*layer\datas\height
       
-      Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+      Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
       GLCheckError("ShadowDefered Done")
       
   EndProcedure
@@ -166,15 +166,15 @@ Module LayerShadowDefered
     Protected *Me.LayerShadowDefered_t = AllocateMemory(SizeOf(LayerShadowDefered_t))
     Object::INI( LayerShadowDefered )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\gbuffer = *gbuffer
     *Me\shadowmap = *shadowmap
     *Me\pov = *camera
-    *Me\image = CreateImage(#PB_Any,width,height,32)
-    *Me\buffer = Framebuffer::New("ShadowDefered",width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    *Me\datas\image = CreateImage(#PB_Any,width,height,32)
+    *Me\datas\buffer = Framebuffer::New("ShadowDefered",width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
 ;     Framebuffer::AttachRender(*Me\buffer,"Depth",#GL_DEPTH)
     *Me\mask = #GL_COLOR_BUFFER_BIT
     *Me\quad = ScreenQuad::New()
@@ -183,15 +183,14 @@ Module LayerShadowDefered
     Layer::AddScreenSpaceQuad(*Me,*ctx)
 
     Setup(*Me)
-    
-  ;   Protected img = LoadImage(#PB_Any,RAAFAL_BASE_PATH+"/rsc/ico/pointcloud.png")
-  ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
+
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF(LayerShadowDefered)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 176
+; FirstLine = 111
 ; Folding = --
 ; EnableXP

@@ -439,17 +439,12 @@ Module Bullet
     Quaternion::Echo(T\t\rot,"Bullet Test XForm Rotation")
     Vector3::Echo(T\t\scl,"Bullet Test XForm Scale")
   
-  ;   *raa_pick_world = BTCreateDynamicsWorld(*raa_bullet_sdk)
     *bullet_world = BTCreateSoftRigidDynamicsWorld(*bullet_sdk)
 ; *bullet_world = BTCreateDynamicsWorld(*bullet_sdk)
 ;     *bullet_world = BTTestWorld(#True)
 
     
     Debug "Bullet_World --> "+Str(*bullet_world)
-;     Debug "SDK_Bullet_World --> "+Str(BTGetDynamicsWorld(*bullet_sdk))
-;     Debug "Soft Body Solver --> "+Str(BTCheckSoftBodySolver(*bullet_sdk))
-;     Debug "SoftBodyWorldInfos SDF Nb Cells : "+Str(BTCheckSoftBodySolver(*bullet_sdk))
-  ;   Debug "Sdk_Bullet_World --> "+Str(*raa_bullet_sdk\m_world)
   
     Protected gravity.v3f32
     Vector3::Set(gravity,0,-10,0)
@@ -476,8 +471,8 @@ Module Bullet
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 341
-; FirstLine = 338
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 446
+; FirstLine = 407
 ; Folding = ---
 ; EnableXP

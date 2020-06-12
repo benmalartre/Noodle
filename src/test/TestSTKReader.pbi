@@ -6,7 +6,6 @@ XIncludeFile "../core/Control.pbi"
 XIncludeFile "../controls/Slider.pbi"
 
 Globals::Init()
-Controls::Init()
 Time::Init()
 UIColor::Init()
 
@@ -46,5 +45,5 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 STK::StreamStop(*stream)
 STK::StreamClean(*stream)
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 39
+; CursorPosition = 8
 ; EnableXP

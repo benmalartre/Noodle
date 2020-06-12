@@ -8,6 +8,80 @@ CompilerIf #USE_GLFW
   UseModule GLFW
 CompilerEndIf
 
+Globals::Init()
+Time::Init()
+Log::Init()
+FTGL::Init()
+Commands::Init()
+UIColor::Init()
+
+
+Structure SSAOControls_t
+  *ui.PropertyUI::PropertyUI_t
+  *occ_radius.ControlNumber::ControlNumber_t
+  *occ_blur.ControlCheck::ControlCheck_t
+  *nb_samples.ControlNumber::COntrolNumber_t
+  *noise_size.ControlNumber::ControlNumber_t
+EndStructure
+
+Global *app.Application::Application_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global controls.SSAOControls_t
+
+
+Procedure SetupSSAOCOntrols(*Me.SSAOControls_t)
+  *Me\ui = PropertyUI::New(*app\window\main\right, "UI", #Null)
+  PropertyUI::AppendStart(*Me\ui)
+  
+  ControlProperty::Clear(*Me\ui\prop)
+  Control::SetPercentage(*Me\ui\prop, 100, 100)
+  ControlProperty::AppendStart(*Me\ui\prop)
+  ControlProperty::RowStart(*Me\ui\prop)
+  
+  *Me\occ_radius = ControlProperty::AddFloatControl(*Me\ui\prop, "Radius", "Radius", 1.0, #Null)
+  *Me\occ_blur = ControlProperty::AddBoolControl(*Me\ui\prop, "Blur", "Blur", #False, #Null)
+  
+  
+;   *Me\folder_group = ControlGroup::New(*Me\ui\prop, "FolderGroup", "Folder :",0,10,300,#HEIGHT-20)
+;   ControlGroup::AppendStart(*Me\folder_group)
+;   
+;   ControlGroup::RowStart(*Me\folder_group)
+;   *Me\folder = ControlEdit::New(*Me\ui\prop, "Folder", "", #False, 80, 20, 200, 30)
+;   ControlGroup::Append(*Me\folder_group, *Me\folder)
+;   
+;   *Me\browser = ControlButton::New(*Me\ui\prop, "Browse", "...", #False, #False, 320, 20, 40 , 30)
+;   Signal::CONNECTCALLBACK(*Me\browser\on_click, OnBrowse, *Me)
+;   ControlGroup::Append(*Me\folder_group, *Me\browser)
+;   
+;   ControlGroup::RowEnd(*Me\folder_group)
+;   ControlGroup::AppendStop(*Me\folder_group)
+;   ControlProperty::Append(*Me\ui\prop, *Me\folder_group)
+;   
+;   *Me\filename_group = ControlGroup::New(*Me\ui\prop, "FilenameGroup", "Filename :", 300,10,300,#HEIGHT-20)
+;   ControlGroup::AppendStart(*Me\filename_group)
+;   
+;   ControlGroup::RowStart(*Me\filename_group)
+;   *Me\filename = ControlEdit::New(*Me\filename_group, "Filename", "", #False, 80, 20, 200, 30)
+;   ControlGroup::Append(*Me\filename_group, *Me\filename)
+;   
+;   *Me\extension = ControlText::New(*Me\filename_group, "Extension", ".gif", #False, 280, 30, 60, 30)
+;   ControlGroup::Append(*Me\filename_group, *Me\extension)
+;   
+;   ControlGroup::RowEnd(*Me\filename_group)
+;   ControlGroup::AppendStop(*Me\filename_group)
+;   ControlProperty::Append(*Me\ui\prop, *Me\filename_group)
+;      
+;   *Me\button = ControlIcon::New( *Me\ui\prop ,"Record", ControlIcon::#Icon_Play, #False, #False , 360, 13, 60, 60 )
+;   Signal::CONNECTCALLBACK(*Me\button\on_click, OnRecord, *Me)
+;   ControlProperty::Append(*Me\ui\prop, *Me\button)
+  
+  ControlProperty::RowEnd(*Me\ui\prop)
+  ControlProperty::AppendStop(*Me\ui\prop)
+  Control::Invalidate(*Me\ui\prop)
+  
+  PropertyUI::AppendStop(*Me\ui)
+EndProcedure
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -94,9 +168,6 @@ Global my.i
   Globals::Init()
   Time::Init()
   
-Global *app.Application::Application_t
-Global *viewport.ViewportUI::ViewportUI_t
-Global *prop.PropertyUI::PropertyUI_t
 
 Define i
 
@@ -236,41 +307,41 @@ Procedure Draw(*app.Application::Application_t)
   glReadBuffer(#GL_COLOR_ATTACHMENT2)
   glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-3*bh, vwidth, vheight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
   
-;   ;2. Create SSAO texture
-;   glDisable(#GL_DEPTH_TEST)
-;   Framebuffer::BindInput(*gbuffer)
-;   Framebuffer::BindOutput(*ssao)
-;   glClear(#GL_COLOR_BUFFER_BIT);
-;   shader = *s_ssao\pgm
-;   glUseProgram(shader)
-;   glViewport(0,0,*ssao\width,*ssao\height)
-;   glUniform1i(u_ssao_position_map,0)
-;   glUniform1i(u_ssao_normal_map,1)
-;   glActiveTexture(#GL_TEXTURE2)
-;   glBindTexture(#GL_TEXTURE_2D,noise_tex)
-;   glUniform1i(u_ssao_noise_map,2)
-;   glUniform1f(u_ssao_occ_radius,occ_radius)
-;   glUniform1i(u_ssao_occ_power,3)
-;   glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
-;   glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
-; ;         For i=0 To nbsamples-1
-; ;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
-; ;         Next
-;   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-;     glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
-;   CompilerElse
-;     glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
-;   CompilerEndIf
-;   
-;   glUniform1i(u_ssao_kernel_size,nbsamples)
-;   glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
-;   ;       
-;   ScreenQuad::Draw(*quad)
-;   ;       
-;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  ;2. Create SSAO texture
+  glDisable(#GL_DEPTH_TEST)
+  Framebuffer::BindInput(*gbuffer)
+  Framebuffer::BindOutput(*ssao)
+  glClear(#GL_COLOR_BUFFER_BIT);
+  shader = *s_ssao\pgm
+  glUseProgram(shader)
+  glViewport(0,0,*ssao\width,*ssao\height)
+  glUniform1i(u_ssao_position_map,0)
+  glUniform1i(u_ssao_normal_map,1)
+  glActiveTexture(#GL_TEXTURE2)
+  glBindTexture(#GL_TEXTURE_2D,noise_tex)
+  glUniform1i(u_ssao_noise_map,2)
+  glUniform1f(u_ssao_occ_radius,occ_radius)
+  glUniform1i(u_ssao_occ_power,3)
+  glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
+  glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
+;         For i=0 To nbsamples-1
+;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
+;         Next
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+    glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+  CompilerElse
+    glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+  CompilerEndIf
+  
+  glUniform1i(u_ssao_kernel_size,nbsamples)
+  glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
+  ;       
+  ScreenQuad::Draw(*quad)
+  ;       
+  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
+  glReadBuffer(#GL_COLOR_ATTACHMENT0)
+  glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
 ;   
 ;   
 ;   If occ_blur
@@ -337,10 +408,12 @@ If Time::Init()
   Log::Init()
    *app = Application::New("SSAO",800,600)
    CompilerIf Not #USE_GLFW
-     Define *view.View::View_t = View::Split(*app\window\main,#PB_Splitter_Vertical,75)
+     Define *view.View::View_t = View::Split(*app\window\main,#False,90)
      *viewport = ViewportUI::New(*view\left,"ViewportUI", *app\camera, *app\handle)
      *app\context = *viewport\context
-     *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
+     SetupSSAOCOntrols(controls)
+;      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
+;      *controls = AddControls(*prop)
      
     *viewport\camera = *app\camera
     View::SetContent(*app\window\main,*viewport)
@@ -509,9 +582,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 237
-; FirstLine = 183
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 42
+; FirstLine = 27
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

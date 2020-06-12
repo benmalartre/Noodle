@@ -27,11 +27,6 @@ DeclareModule OpenGLExt
   #ENABLEGL3_2 = #True
   #ENABLEGL3_3 = #True
   #ENABLEGLMISC = #True
-  
-  ; ; Load GL Extensions
-  ; CompilerIf Not Defined(RAA_USE_GLFW,#PB_Constant)
-  ;   #RAA_USE_GLFW = #False
-  ; CompilerEndIf
  
   CompilerIf #USE_GLFW
     CompilerIf #GLFW_GETPROCADDRESS_DEBUG
@@ -1499,9 +1494,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Linux - x64)
-; CursorPosition = 56
-; FirstLine = 38
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 27
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

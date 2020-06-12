@@ -68,9 +68,8 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
 
-
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+  ViewportUI::Blit(*viewport, *layer\datas\buffer)
 EndProcedure
     
 Define model.m4f32
@@ -170,8 +169,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 123
+; CursorPosition = 86
+; FirstLine = 68
 ; Folding = -
 ; EnableThread
 ; EnableXP

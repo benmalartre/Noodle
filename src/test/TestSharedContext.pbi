@@ -60,7 +60,7 @@ GLContext::SetContext(*context)
 *layer = LayerDefault::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT, *context, children(0)\camera)
 
 ; create framebuffer
-*framebuffer = *layer\buffer
+*framebuffer = *layer\datas\buffer
 
 *bunny = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
 Scene::*current_scene = Scene::New("CurrentScene")
@@ -89,7 +89,7 @@ Repeat
           Window::OnEvent(*active\window, event)
           GLContext::SetContext(*context)
           *layer\pov = *active\camera
-          Layer::Draw(*layer, *active\viewport\context)
+          LayerDefault::Draw(*layer, *active\viewport\context)
           ViewportUI::Blit(*active\viewport, *framebuffer)
            
         EndIf
@@ -101,7 +101,7 @@ Repeat
       Window::OnEvent(*active\window, event) 
       GLContext::SetContext(*context)
       *layer\pov = *active\camera
-      Layer::Draw(*layer, *active\viewport\context)
+      LayerDefault::Draw(*layer, *active\viewport\context)
       ViewportUI::Blit(*active\viewport, *framebuffer)
     EndIf
     
@@ -115,7 +115,7 @@ Until event = #PB_Event_CloseWindow
 
 
 ; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 91
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 103
 ; FirstLine = 54
 ; EnableXP

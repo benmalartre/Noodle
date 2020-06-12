@@ -327,10 +327,11 @@ Procedure Draw(*app.Application::Application_t)
    Log::Init()
    *app = Application::New("TestMesh",width,height)
 
-   If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = GLContext::New(0,#False,*viewport\gadgetID)
-    View::SetContent(*app\manager\main,*viewport)
+  If Not #USE_GLFW
+     *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
+     *app\context = *viewport\context
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -372,8 +373,8 @@ Scene::Setup(*scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 332
-; FirstLine = 314
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 329
+; FirstLine = 310
 ; Folding = --
 ; EnableXP

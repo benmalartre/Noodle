@@ -80,7 +80,7 @@ Module AudioSineWaveNode
   ;   EVALUATE
   ; ------------------------------------------------------------------------------------------------
   Procedure Evaluate(*node.AudioSineWaveNode_t)
-    
+    Debug "EVALUATE AUDIO SINE NODE..."
     Protected *output.NodePort::NodePort_t      = *node\outputs()
     SelectElement(*node\inputs(), 0)
     Protected *mute.NodePort::NodePort_t        = *node\inputs()
@@ -111,6 +111,7 @@ Module AudioSineWaveNode
     
     If *node\node
       STK::SetNodeVolume(*node\node, *node\volume)
+      Debug "SET NODE FREQUENCY : "+Str(*node\frequency)
       STK::SetGeneratorScalar(*node\node, STK::#GEN_FREQUENCY, *node\frequency)
       STK::SetGeneratorScalar(*node\node, STK::#GEN_TIME, *node\time)
       STK::SetGeneratorScalar(*node\node, STK::#GEN_PHASE, *node\phase)
@@ -180,7 +181,7 @@ Module AudioSineWaveNode
     
     ; ---[ Allocate Node Memory ]------------------------------------------------------------------
     Protected *Me.AudioSineWaveNode_t = AllocateMemory(SizeOf(AudioSineWaveNode_t))
-    
+    *Me\alwaysDirty = #True
     ; ---[ Init Node]------------------------------------------------------------------------------
     Node::INI(AudioSineWaveNode,*tree,type,x,y,w,h,c)
     
@@ -196,8 +197,8 @@ EndModule
 ; =================================================================================================
 ;  EOF
 ; =================================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 69
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 183
+; FirstLine = 138
 ; Folding = --
 ; EnableXP

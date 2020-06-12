@@ -1322,7 +1322,6 @@ Module Handle
         Else
           Select *Me\tool
             Case Globals::#TOOL_TRANSLATE
-              Debug "RAYCAST AXIS TRANSLATE..."
               Camera::MousePositionToRayDirection(*Me\camera, *ev_data\x, *ev_data\y, *ev_data\width, *ev_data\height, *Me\ray\direction)
               Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
               PickTranslate(*Me)
@@ -1441,8 +1440,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 1324
-; FirstLine = 1304
+; FirstLine = 1320
 ; Folding = -------
 ; EnableXP

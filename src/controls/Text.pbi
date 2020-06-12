@@ -68,8 +68,8 @@ Procedure Draw( *Me.ControlText_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  Protected tc.i = UIColor::COLOR_TEXT
-  VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
+  Protected tc.i = UIColor::COLOR_TEXT_DEFAULT
+  VectorFont( FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
   Protected ty.i
   If Len(*Me\text)
@@ -229,7 +229,11 @@ EndProcedure
     *Me\posX         = x
     *Me\posY         = y
     *Me\sizX         = width
-    *Me\sizY         = 18
+    *Me\sizY         = height
+    *Me\fixedX       = #True
+    *Me\fixedY       = #True
+    *Me\percX        = -1
+    *Me\percY        = -1
     *Me\visible      = #True
     *Me\enable       = #True
     *Me\options      = options
@@ -255,7 +259,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 40
+; CursorPosition = 70
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

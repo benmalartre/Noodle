@@ -431,7 +431,7 @@ DeclareModule Squirrel
         ImportC "../../libs/x64/linux/libsquirrel.a"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        ;CompilerError "*> raafal x32 on Linux is not supported at this time."
+        ;CompilerError "*> x32 on Linux is not supported at this time."
         ImportC "../../libs/x32/linux/libsquirrel.a"
       CompilerEndIf
     ;___________________________________________________________________________
@@ -443,7 +443,7 @@ DeclareModule Squirrel
         ImportC "../../libs/x64/macosx/libsquirrel.a"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        CompilerError "*> raafal x32 on Mac OS/X is not supported at this time."
+        CompilerError "*> x32 on Mac OS/X is not supported at this time."
         ImportC "../../libs/x64/macosx/libsquirrel.a"
       CompilerEndIf
   CompilerEndSelect
@@ -665,7 +665,7 @@ DeclareModule Squirrel
         ImportC "../../libs/x64/linux/libsqstdlib.a"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        ;CompilerError "*> raafal x32 on Linux is not supported at this time."
+        ;CompilerError "*> x32 on Linux is not supported at this time."
         ImportC "../../libs/x32/linux/libsqstdlib.a"
       CompilerEndIf
     ;___________________________________________________________________________
@@ -677,7 +677,7 @@ DeclareModule Squirrel
         ImportC "../../libs/x64/macosx/libsqstdlib.a"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        CompilerError "*> raafal x32 on Mac OS/X is not supported at this time."
+        CompilerError "*> x32 on Mac OS/X is not supported at this time."
         ImportC "../../libs/x32/macosx/libsqstdlib.a"
       CompilerEndIf
   CompilerEndSelect
@@ -764,8 +764,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.42 LTS (Windows - x64)
-; CursorPosition = 680
-; FirstLine = 704
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 679
+; FirstLine = 663
 ; Folding = -----------------
 ; EnableXP

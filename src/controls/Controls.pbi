@@ -11,18 +11,6 @@ XIncludeFile "Icon.pbi"
 XIncludeFile "Combo.pbi"
 XIncludeFile "Timeline.pbi"
 XIncludeFile "Explorer.pbi"
-
-; ==============================================================================
-;  CONTROL EDIT MODULE DECLARATION
-; ==============================================================================
-DeclareModule Controls
-  
-EndDeclareModule
-
-Module Controls
-
-EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 17
-; Folding = -
+; CursorPosition = 12
 ; EnableXP

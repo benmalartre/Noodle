@@ -20,12 +20,11 @@ DeclareModule DummyUI
   
   DataSection 
     DummyUIVT: 
-    Data.i @Delete()
-    Data.i UI::@Resize()
-    Data.i @Draw()
-    Data.i UI::@DrawPickImage()
-    Data.i UI::@Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i UI::@DrawPickImage()
+      Data.i UI::@Pick()
   EndDataSection 
   
 EndDeclareModule
@@ -153,7 +152,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 88
+; CursorPosition = 26
+; FirstLine = 22
 ; Folding = --
 ; EnableXP

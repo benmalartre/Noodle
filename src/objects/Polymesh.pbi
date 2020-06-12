@@ -9,7 +9,6 @@ XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
 XIncludeFile "PolymeshGeometry.pbi"
 
-
 DeclareModule Polymesh
   UseModule OpenGL
   UseModule OpenGLExt
@@ -565,6 +564,6 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 23
+; CursorPosition = 16
 ; Folding = ---
 ; EnableXP

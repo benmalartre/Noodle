@@ -125,7 +125,7 @@ XIncludeFile "../ui/CanvasUI.pbi"
 XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
-XIncludeFile "../ui/TopMenu.pbi"
+XIncludeFile "../ui/MenuUI.pbi"
 XIncludeFile "../ui/ColorUI.pbi"
 
 CompilerIf #USE_BULLET
@@ -207,7 +207,7 @@ CompilerEndIf
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
-  Declare Loop(*Me.Application_t,*callback)
+  Declare Loop(*Me.Application_t,*callback=#Null)
   Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
@@ -381,9 +381,7 @@ CompilerIf #USE_GLFW
         Case #GLFW_KEY_DOWN
 
       EndSelect
-    ;   Else
-    ;     *s\tool = #RAA_Tool_Select
-    ;   EndIf
+
     ElseIf action = #GLFW_RELEASE
       Select key
         Case #GLFW_KEY_S
@@ -568,7 +566,6 @@ CompilerIf #USE_GLFW
   ; Register Callbacks (GLFW)
   ;-----------------------------------------------------------------------------
   Procedure RegisterCallbacks(*Me.Application_t)
-    ;Register Callbacks
     glfwSetKeyCallback(*Me\window,@OnKeyChanged())
     glfwSetCursorPosCallback(*Me\window,@OnMouseMove())
     glfwSetMouseButtonCallback(*Me\window,@OnMouseButton())
@@ -610,7 +607,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN)
+  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN=#Null)
     Define event
     
     CompilerIf #USE_GLFW
@@ -624,9 +621,10 @@ CompilerEndIf
       Wend
     CompilerElse
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
-      *callback(*Me, #PB_Event_SizeWindow)
+      If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
-        event = WaitWindowEvent()
+        event = WaitWindowEvent(1/60)
+
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -641,8 +639,9 @@ CompilerEndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
+            Debug "SCENE UPDTAE !!!"
             Scene::Update(Scene::*current_scene)
-            *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED)
+            If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
           Case Globals::#EVENT_TOOL_CHANGED
             Select EventData()
@@ -660,20 +659,16 @@ CompilerEndIf
                 *Me\tool = Globals::#TOOL_TRANSFORM
             EndSelect
             
-            
           Case Globals::#EVENT_SELECTION_CHANGED
-;             If Scene::*current_scene\selection\selected()
-;               Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\selected()\obj)
-;             EndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(Scene::*current_scene)
-            *callback(*Me, Globals::#EVENT_SELECTION_CHANGED)
+            If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
             Scene::Setup(Scene::*current_scene, *Me\context)
             Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
            
-            *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED)
+            If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
             
           Case Globals::#EVENT_TREE_CREATED
             Protected *graph = *Me\window\uis("Graph")
@@ -681,7 +676,7 @@ CompilerEndIf
             If *graph
               GraphUI::SetContent(*graph,*tree)
             EndIf   
-            *callback(*Me, Globals::#EVENT_TREE_CREATED)
+            If *callback : *callback(*Me, Globals::#EVENT_TREE_CREATED) : EndIf
             
           Case #PB_Event_Menu
             Select EventMenu()
@@ -704,19 +699,16 @@ CompilerEndIf
                 *Me\tool = Globals::#TOOL_MAX
                 If event : Window::OnEvent(*Me\window,event) : EndIf
             EndSelect
-            *callback(*Me, event)
+            If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_SizeWindow
             Window::OnEvent(*Me\window,event)
-            *callback(*Me, event)
+            If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_Gadget
             Window::OnEvent(*Me\window,event)
-            *callback(*Me, event)
-            
-          Default
-            If event : Window::OnEvent(*Me\window,event) : EndIf
-            *callback(*Me, event)
+            If *callback : *callback(*Me, event) : EndIf
+
         EndSelect
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
@@ -759,8 +751,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 330
-; FirstLine = 325
+; CursorPosition = 641
+; FirstLine = 636
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

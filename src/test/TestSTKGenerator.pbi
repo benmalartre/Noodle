@@ -14,7 +14,6 @@
   Global *p.ControlProperty::ControlProperty_t
   
   Globals::Init()
-  Controls::Init()
   Time::Init()
   UIColor::Init()
   
@@ -89,10 +88,8 @@
     *app = Application::New("Test Generator",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
     *ui = PropertyUI::New(*app\window\main, "STK", #Null)
     OpenGadgetList(*ui\container)
-    *p = ControlProperty::New(#Null,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
-    AddElement(*ui\props())
-    *ui\props() = *p
-    *ui\prop = *p
+    *p = *ui\prop
+
     ControlProperty::AppendStart(*p)
       
     Define baseFrequency = 128
@@ -148,7 +145,7 @@
   ;STK::StreamStop(*stream)
   STK::StreamClean(*stream)
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 86
+; CursorPosition = 91
+; FirstLine = 66
 ; Folding = -
 ; EnableXP

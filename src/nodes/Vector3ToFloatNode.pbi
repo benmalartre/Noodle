@@ -115,6 +115,9 @@ Module Vector3ToFloatNode
     ProcedureReturn( *Me)
     
   EndProcedure
+  
+   Class::DEF(Vector3ToFloatNode)
+  
 
 EndModule
 
@@ -122,8 +125,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 52
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 63
 ; Folding = --
 ; EnableXP

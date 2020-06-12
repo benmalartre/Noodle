@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Default Layer Module
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "../objects/Layer.pbi"
 DeclareModule LayerDefault
   UseModule Math
   ;---------------------------------------------------
@@ -92,11 +92,11 @@ Module LayerDefault
     glFrontFace(#GL_CW)
     glEnable(#GL_DEPTH_TEST)
 
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\datas\buffer
     Framebuffer::BindOutput(*buffer)
 
     ;   Clear(*layer)
-    glViewport(0,0, *layer\width, *layer\height)
+    glViewport(0,0, *layer\datas\width, *layer\datas\height)
     glClearColor(0.666,0.666,0.666,1.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     
@@ -106,7 +106,7 @@ Module LayerDefault
     Protected *view.m4f32,proj.m4f32,view.m4f32
     *view = Layer::GetViewMatrix(*layer)
     Protected *camera.Camera::Camera_t = *layer\pov
-    Protected aspect.f = *layer\width / *layer\height
+    Protected aspect.f = *layer\datas\width / *layer\datas\height
     Matrix4::GetProjectionMatrix(proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
     
     ;Draw Shaded Polymeshes 
@@ -219,16 +219,16 @@ Module LayerDefault
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
-  Protected basewidth = *layer\width
-  If(*ctx\width < *layer\width) 
+  Protected basewidth = *layer\datas\width
+  If(*ctx\width < *layer\datas\width) 
     
-  ElseIf *ctx\height < *layer\height
+  ElseIf *ctx\height < *layer\datas\height
     
   EndIf
   
-  Framebuffer::Unbind(*layer\buffer)
+  Framebuffer::Unbind(*layer\datas\buffer)
   glViewport(0,0,*ctx\width,*ctx\height)
-  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
   glDisable(#GL_DEPTH_TEST)
   glDisable(#GL_BLEND)
   
@@ -254,24 +254,19 @@ Module LayerDefault
     Protected *Me.LayerDefault_t = AllocateMemory(SizeOf(LayerDefault_t))
     Object::INI(LayerDefault)
     
-    *Me\type = Object3D::#Layer
     *Me\name = "LayerDefault"
-
-    
     Color::Set(*Me\background_color,0.33,0.33,0.33,1.0)
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *pov
-    *Me\buffer = Framebuffer::New("Default",width,height)
+    *Me\datas\buffer = Framebuffer::New("Default",width,height)
     
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender( *Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
     
-    *Me\image = CreateImage(#PB_Any,width,height)
-  ;   Protected img = LoadImage(#PB_Any,"/home/benmalartre/RnD/IconMaker/icons/pen.png")
-  ;   If img : *Me\image = GL_LoadImage(img,#True) : EndIf
-;     GLContext::AddLayer(*ctx, *Me)
+    *Me\datas\image = CreateImage(#PB_Any,width,height)
+    GLContext::AddLayer(*ctx, *Me\datas)
     ProcedureReturn *Me
   EndProcedure
   
@@ -279,7 +274,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 273
-; FirstLine = 214
+; CursorPosition = 234
+; FirstLine = 209
 ; Folding = --
 ; EnableXP

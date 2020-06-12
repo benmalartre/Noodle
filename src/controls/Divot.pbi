@@ -1,5 +1,6 @@
 XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
+XIncludeFile "../core/Vector.pbi"
 
 ; ==============================================================================
 ;  CONTROL DIVOT MODULE DECLARATION
@@ -21,45 +22,6 @@ DeclareModule ControlDivot
     #ANIM_SCRIPTED_OPERATOR
   EndEnumeration
   
-  ; ----------------------------------------------------------------------------
-  ;  Light
-  ; ----------------------------------------------------------------------------
-  Global s_gui_controls_light_divot_over.i
-  Global s_gui_controls_light_divot_down.i
-  ; ----------------------------------------------------------------------------
-  ;  Dark
-  ; ----------------------------------------------------------------------------
-  Global s_gui_controls_dark_divot_over.i
-  Global s_gui_controls_dark_divot_down.i
-  ; ----------------------------------------------------------------------------
-  ;  Current
-  ; ----------------------------------------------------------------------------
-  Global s_gui_controls_divot_disabled         .i
-  Global s_gui_controls_divot_normal           .i
-  Global s_gui_controls_divot_over             .i
-  Global s_gui_controls_divot_down             .i
-  Global s_gui_controls_divot_anim_cns_disabled.i
-  Global s_gui_controls_divot_anim_cns_down    .i
-  Global s_gui_controls_divot_anim_cns_normal  .i
-  Global s_gui_controls_divot_anim_cns_over    .i
-  Global s_gui_controls_divot_anim_exp_disabled.i
-  Global s_gui_controls_divot_anim_exp_down    .i
-  Global s_gui_controls_divot_anim_exp_normal  .i
-  Global s_gui_controls_divot_anim_exp_over    .i
-  Global s_gui_controls_divot_anim_key_disabled.i
-  Global s_gui_controls_divot_anim_key_down    .i
-  Global s_gui_controls_divot_anim_key_normal  .i
-  Global s_gui_controls_divot_anim_key_over    .i
-  Global s_gui_controls_divot_anim_op_disabled .i
-  Global s_gui_controls_divot_anim_op_down     .i
-  Global s_gui_controls_divot_anim_op_normal   .i
-  Global s_gui_controls_divot_anim_op_over     .i
-  Global s_gui_controls_divot_anim_sop_disabled.i
-  Global s_gui_controls_divot_anim_sop_down    .i
-  Global s_gui_controls_divot_anim_sop_normal  .i
-  Global s_gui_controls_divot_anim_sop_over    .i
-  
-
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlDivot_t )
   ; ----------------------------------------------------------------------------
@@ -84,9 +46,6 @@ DeclareModule ControlDivot
   Declare OnEvent( *Me.ControlDivot_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Declare SetValue( *Me.ControlDivot_t, value.i )
   Declare GetValue( *Me.ControlDivot_t)
-  Declare SetTheme( theme.i )
-  Declare.b Init()
-  Declare.b Term()
   
   ; ----------------------------------------------------------------------------
   ;  Datas 
@@ -99,62 +58,6 @@ DeclareModule ControlDivot
     Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
     Data.i @OnEvent()
-    
-    VIControlDivot_light_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/light.divot.over.png"
-    VIControlDivot_light_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/light.divot.down.png"
-    
-    ; (Dark)
-    VIControlDivot_dark_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/dark.divot.over.png"
-    VIControlDivot_dark_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/dark.divot.down.png"
-    ; (All)
-    VIControlDivot_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.disabled.png"
-    VIControlDivot_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.normal.png"
-    VIControlDivot_anim_cns_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.cns.disabled.png"
-    VIControlDivot_anim_cns_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.cns.down.png"
-    VIControlDivot_anim_cns_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.cns.normal.png"
-    VIControlDivot_anim_cns_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.cns.over.png"
-    VIControlDivot_anim_exp_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.exp.disabled.png"
-    VIControlDivot_anim_exp_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.exp.down.png"
-    VIControlDivot_anim_exp_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.exp.normal.png"
-    VIControlDivot_anim_exp_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.exp.over.png"
-    VIControlDivot_anim_key_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.key.disabled.png"
-    VIControlDivot_anim_key_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.key.down.png"
-    VIControlDivot_anim_key_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.key.normal.png"
-    VIControlDivot_anim_key_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.key.over.png"
-    VIControlDivot_anim_op_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.op.disabled.png"
-    VIControlDivot_anim_op_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.op.down.png"
-    VIControlDivot_anim_op_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.op.normal.png"
-    VIControlDivot_anim_op_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.op.over.png"
-    VIControlDivot_anim_sop_disabled: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.sop.disabled.png"
-    VIControlDivot_anim_sop_down: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.sop.down.png"
-    VIControlDivot_anim_sop_normal: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.sop.normal.png"
-    VIControlDivot_anim_sop_over: 
-    IncludeBinary "../../rsc/skins/grey/control_divot/divot.anim.sop.over.png"
   EndDataSection
   
  Global CLASS.Class::Class_t
@@ -171,56 +74,12 @@ Module ControlDivot
 
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn : EndIf
-    MovePathCursor( 0 + xoff, 0 + yoff )
-    ; 같�[ Disabled ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    If Not *Me\enable
-      ; ...[ Dispatch Value ]...................................................
-      Select *Me\value
-        Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_disabled          ))
-        Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_disabled ))
-        Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_disabled ))
-        Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_disabled ))
-        Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_disabled  ))
-        Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_disabled ))
-      EndSelect
-    ; 같�[ Over ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    ElseIf *Me\over
-      ; ---[ Down ]-------------------------------------------------------------
-      If *Me\down
-        ; ...[ Dispatch Value ].................................................
-        Select *Me\value
-          Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_down          ))
-          Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_down ))
-          Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_down ))
-          Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_down ))
-          Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_down  ))
-          Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_down ))
-        EndSelect    
-      ; ---[ Up ]---------------------------------------------------------------
-      Else
-        ; ...[ Dispatch Value ].................................................
-        Select *Me\value
-          Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_over          ))
-          Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_over ))
-          Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_over ))
-          Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_over ))
-          Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_over  ))
-          Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_over ))
-        EndSelect
-      EndIf
-    ; 같�[ Normal ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같�
-    Else
-      ; ...[ Dispatch Value ]...................................................
-      Select *Me\value
-        Case #ANIM_NONE              : DrawVectorImage( ImageID(s_gui_controls_divot_normal          ))
-        Case #ANIM_CONSTRAINT        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_cns_normal ))
-        Case #ANIM_EXPRESSION        : DrawVectorImage( ImageID(s_gui_controls_divot_anim_exp_normal ))
-        Case #ANIM_KEYFRAME          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_key_normal ))
-        Case #ANIM_OPERATOR          : DrawVectorImage( ImageID(s_gui_controls_divot_anim_op_normal  ))
-        Case #ANIM_SCRIPTED_OPERATOR : DrawVectorImage( ImageID(s_gui_controls_divot_anim_sop_normal ))
-      EndSelect
-    EndIf
-    
+    Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::RANDOMIZED)
+    FillPath(#PB_Path_Preserve)
+    VectorSourceColor(UICOlor::COLOR_FRAME_OVERED)
+    StrokePath(Control::FRAME_THICKNESS)
+
   EndProcedure
   ;}
 
@@ -385,8 +244,6 @@ Module ControlDivot
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlDivot_t = AllocateMemory( SizeOf(ControlDivot_t) ) 
     
-;     *Me\VT = ?ControlDivotVT
-;     *Me\classname = "CONTROLDIVOT"
     Object::INI(ControlDivot)
     
     ; ---[ Init Members ]-------------------------------------------------------
@@ -397,7 +254,11 @@ Module ControlDivot
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
-    *Me\sizY     = 18
+    *Me\sizY     = height
+    *Me\fixedX   = #True
+    *Me\fixedY   = #True
+    *Me\percX    = -1
+    *Me\percY    = -1
     *Me\visible  = #True
     *Me\enable   = #True
     *Me\options  = options
@@ -410,128 +271,11 @@ Module ControlDivot
     
   EndProcedure
 
-
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  Procedure SetTheme( theme.i )
-    
-    Select theme
-        
-      ; ---[ Light ]------------------------------------------------------------
-      Case Globals::#GUI_THEME_LIGHT
-        s_gui_controls_divot_over = s_gui_controls_light_divot_over
-        s_gui_controls_divot_down = s_gui_controls_light_divot_down
-        
-      ; ---[ Dark ]-------------------------------------------------------------
-      Case Globals::#GUI_THEME_DARK
-        s_gui_controls_divot_over = s_gui_controls_dark_divot_over
-        s_gui_controls_divot_down = s_gui_controls_dark_divot_down
-        
-    EndSelect
-    
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Init
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init( )
-  ;CHECK_INIT
-    
-    ; ---[ Init Once ]----------------------------------------------------------
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  LIGHT
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    s_gui_controls_light_divot_over = CatchImage( #PB_Any, ?VIControlDivot_light_over )
-    s_gui_controls_light_divot_down = CatchImage( #PB_Any, ?VIControlDivot_light_down )
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  DARK
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    s_gui_controls_dark_divot_over = CatchImage( #PB_Any, ?VIControlDivot_dark_over )
-    s_gui_controls_dark_divot_down = CatchImage( #PB_Any, ?VIControlDivot_dark_down )
-
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ;  ALL
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    s_gui_controls_divot_disabled          = CatchImage( #PB_Any, ?VIControlDivot_disabled          )
-    s_gui_controls_divot_normal            = CatchImage( #PB_Any, ?VIControlDivot_normal            )
-    s_gui_controls_divot_anim_cns_disabled = CatchImage( #PB_Any, ?VIControlDivot_anim_cns_disabled )
-    s_gui_controls_divot_anim_cns_down     = CatchImage( #PB_Any, ?VIControlDivot_anim_cns_down     )
-    s_gui_controls_divot_anim_cns_normal   = CatchImage( #PB_Any, ?VIControlDivot_anim_cns_normal   )
-    s_gui_controls_divot_anim_cns_over     = CatchImage( #PB_Any, ?VIControlDivot_anim_cns_over     )
-    s_gui_controls_divot_anim_exp_disabled = CatchImage( #PB_Any, ?VIControlDivot_anim_exp_disabled )
-    s_gui_controls_divot_anim_exp_down     = CatchImage( #PB_Any, ?VIControlDivot_anim_exp_down     )
-    s_gui_controls_divot_anim_exp_normal   = CatchImage( #PB_Any, ?VIControlDivot_anim_exp_normal   )
-    s_gui_controls_divot_anim_exp_over     = CatchImage( #PB_Any, ?VIControlDivot_anim_exp_over     )
-    s_gui_controls_divot_anim_key_disabled = CatchImage( #PB_Any, ?VIControlDivot_anim_key_disabled )
-    s_gui_controls_divot_anim_key_down     = CatchImage( #PB_Any, ?VIControlDivot_anim_key_down     )
-    s_gui_controls_divot_anim_key_normal   = CatchImage( #PB_Any, ?VIControlDivot_anim_key_normal   )
-    s_gui_controls_divot_anim_key_over     = CatchImage( #PB_Any, ?VIControlDivot_anim_key_over     )
-    s_gui_controls_divot_anim_op_disabled  = CatchImage( #PB_Any, ?VIControlDivot_anim_op_disabled  )
-    s_gui_controls_divot_anim_op_down      = CatchImage( #PB_Any, ?VIControlDivot_anim_op_down      )
-    s_gui_controls_divot_anim_op_normal    = CatchImage( #PB_Any, ?VIControlDivot_anim_op_normal    )
-    s_gui_controls_divot_anim_op_over      = CatchImage( #PB_Any, ?VIControlDivot_anim_op_over      )
-    s_gui_controls_divot_anim_sop_disabled = CatchImage( #PB_Any, ?VIControlDivot_anim_sop_disabled )
-    s_gui_controls_divot_anim_sop_down     = CatchImage( #PB_Any, ?VIControlDivot_anim_sop_down     )
-    s_gui_controls_divot_anim_sop_normal   = CatchImage( #PB_Any, ?VIControlDivot_anim_sop_normal   )
-    s_gui_controls_divot_anim_sop_over     = CatchImage( #PB_Any, ?VIControlDivot_anim_sop_over     )
-
-    SetTheme(Globals::#GUI_THEME_LIGHT) 
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  GuiControlsDivotTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-  ;CHECK_INIT  
-  
-    
-    ; ---[ Term Once ]----------------------------------------------------------
-    ; 같�[ Free Images ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; ...[ All ]................................................................
-    FreeImage( s_gui_controls_divot_anim_sop_over     )
-    FreeImage( s_gui_controls_divot_anim_sop_normal   )
-    FreeImage( s_gui_controls_divot_anim_sop_down     )
-    FreeImage( s_gui_controls_divot_anim_sop_disabled )
-    FreeImage( s_gui_controls_divot_anim_op_over      )
-    FreeImage( s_gui_controls_divot_anim_op_normal    )
-    FreeImage( s_gui_controls_divot_anim_op_down      )
-    FreeImage( s_gui_controls_divot_anim_op_disabled  )
-    FreeImage( s_gui_controls_divot_anim_key_over     )
-    FreeImage( s_gui_controls_divot_anim_key_normal   )
-    FreeImage( s_gui_controls_divot_anim_key_down     )
-    FreeImage( s_gui_controls_divot_anim_key_disabled )
-    FreeImage( s_gui_controls_divot_anim_exp_over     )
-    FreeImage( s_gui_controls_divot_anim_exp_normal   )
-    FreeImage( s_gui_controls_divot_anim_exp_down     )
-    FreeImage( s_gui_controls_divot_anim_exp_disabled )
-    FreeImage( s_gui_controls_divot_anim_cns_over     )
-    FreeImage( s_gui_controls_divot_anim_cns_normal   )
-    FreeImage( s_gui_controls_divot_anim_cns_down     )
-    FreeImage( s_gui_controls_divot_anim_cns_disabled )
-    FreeImage( s_gui_controls_divot_normal            )
-    FreeImage( s_gui_controls_divot_disabled          )
-    ; ...[ Dark ]...............................................................
-    FreeImage( s_gui_controls_dark_divot_down )
-    FreeImage( s_gui_controls_dark_divot_over )
-    ; ...[ Light ]..............................................................
-    FreeImage( s_gui_controls_light_divot_down )
-    FreeImage( s_gui_controls_light_divot_over )
-  
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 151
-; Folding = ---
+; CursorPosition = 81
+; FirstLine = 63
+; Folding = --
 ; EnableXP

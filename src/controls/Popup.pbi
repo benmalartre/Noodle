@@ -140,7 +140,7 @@ Module ControlPopup
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     ; ---[ Label Color ]--------------------------------------------------------
-    Protected tc.i = RAA_COLORA_LABEL
+    Protected tc.i = UIColor::COLOR_LABEL
     
     ; ---[ Set Font ]-----------------------------------------------------------
     VectorFont(FontID(Globals::#FONT_DEFAULT))
@@ -337,8 +337,8 @@ Module ControlPopup
 EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 236
-; FirstLine = 178
+; CursorPosition = 142
+; FirstLine = 138
 ; Folding = ---
 ; EnableThread
 ; EnableXP

@@ -194,9 +194,7 @@ CompilerIf #USE_GLFW
         Case #GLFW_KEY_DOWN
 
       EndSelect
-    ;   Else
-    ;     *s\tool = #RAA_Tool_Select
-    ;   EndIf
+
     ElseIf action = #GLFW_RELEASE
       Select key
         Case #GLFW_KEY_S
@@ -534,8 +532,9 @@ EndProcedure
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 196
+; FirstLine = 193
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

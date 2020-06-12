@@ -47,7 +47,6 @@ DeclareModule ControlLabel
   Global CLASS.Class::Class_t
 EndDeclareModule
 
-
 ; ==============================================================================
 ;  CONTROL LABEL MODULE IMPLEMENTATTION
 ; ==============================================================================
@@ -99,11 +98,6 @@ Module ControlLabel
     If Len(label) <> lalen
       lalen = Len(label)
       label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
-    Else
-      MovePathCursor(VectorTextWidth(label)+5.0 + xoff, ty + 10)
-      AddPathLine(*Me\sizX-1 + xoff, ty + 10)
-      VectorSourceColor(UIColor::COLOR_LABEL_DISABLED )
-      StrokePath(1)
     EndIf
     
 ;     AddPathBox( -6 + xoff, ty-3, 6, 20)
@@ -338,7 +332,11 @@ Module ControlLabel
     *Me\posX     = x
     *Me\posY     = y
     *Me\sizX     = width
-    *Me\sizY     = 21
+    *Me\sizY     = height
+    *Me\fixedX   = #True
+    *Me\fixedY   = #True
+    *Me\percX    = - 1
+    *Me\percY    = - 1
     *Me\visible  = #True
     *Me\enable   = #True
     *Me\options  = options
@@ -359,7 +357,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 156
-; FirstLine = 153
+; CursorPosition = 46
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

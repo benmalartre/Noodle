@@ -325,9 +325,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 20
-; FirstLine = 6
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 14
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

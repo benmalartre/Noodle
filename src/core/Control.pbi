@@ -63,7 +63,6 @@ DeclareModule Control
     modif .i
   EndStructure
   
-  
   ; ----------------------------------------------------------------------------
   ;   Control Instance
   ; ----------------------------------------------------------------------------
@@ -114,6 +113,13 @@ DeclareModule Control
   Declare Focused( *Me.Control_t )
   Declare DeFocused( *Me.Control_t )
   Declare SetCursor( *Me.Control_t, cursor_id.i )
+  Declare SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
+  Declare SetPercentage(*Me.Control_t, percX.i, percY.i)
+  
+  Global MARGING.i = 6
+  Global PADDING.i = 4
+  Global CORNER_RADIUS.f = 4
+  Global FRAME_THICKNESS.f = 2
   
 EndDeclareModule
 
@@ -206,6 +212,7 @@ Module Control
     ProcedureReturn( #Null )
     
   EndProcedure
+  
   ; ---[ Disable ]--------------------------------------------------------------
   Procedure.i Disable( *Me.Control_t )
     Protected Me.IControl = *Me
@@ -219,8 +226,8 @@ Module Control
     
     ; ---[ Return Null ]--------------------------------------------------------
     ProcedureReturn( #Null )
-    
   EndProcedure
+  
   ; ---[ Resize ]---------------------------------------------------------------
   Procedure Resize( *Me.Control_t, x.i, y.i, width.i, height.i = 22 )
     If Not *Me : ProcedureReturn : EndIf
@@ -239,7 +246,6 @@ Module Control
 
     ; ---[ Send Event ]---------------------------------------------------------
     If Not Me\OnEvent( #PB_EventType_Resize, @ev_datas )
-      
       ; ...[ Update Status ]....................................................
       If #PB_Ignore <> x      : *Me\posX = x      : EndIf
       If #PB_Ignore <> y      : *Me\posY = y      : EndIf
@@ -306,8 +312,18 @@ Module Control
       ; ...[ Ask Parent To Set Cursor For Me ]..................................
       *obj\OnEvent( #PB_EventType_ChildCursor, cursor_id )
     EndIf
-    
   EndProcedure
+  
+  Procedure SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
+    If fixedX <> #PB_Ignore : *Me\fixedX = fixedX : EndIf
+    If fixedY <> #PB_Ignore : *Me\fixedY = fixedY : EndIf
+  EndProcedure
+  
+  Procedure SetPercentage(*Me.Control_t, percX.i, percY.i)
+    If percX <> #PB_Ignore : *Me\percX = percX : EndIf
+    If percY <> #PB_Ignore : *Me\percY = percY : EndIf
+  EndProcedure
+  
   ; ---[ SignalOnChange ]-------------------------------------------------------
 ;   Procedure.i SignalOnChanged( *Me.Control_t )
 ;     ; ---[ Return 'OnChanged' Slot ]-----------------------------------------------
@@ -316,8 +332,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 87
-; Folding = -A--
+; CursorPosition = 121
+; FirstLine = 105
+; Folding = ----
 ; EnableXP
 ; EnableUnicode

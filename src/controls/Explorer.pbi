@@ -71,7 +71,7 @@ DeclareModule ControlExplorer
     *parent.ControlExplorerItem_t
     type.i
     over.b
-    expended.b
+    expanded.b
     selected.b
     depth.i
     isroot.b
@@ -97,7 +97,7 @@ DeclareModule ControlExplorer
     show_attributes.b
     show_materials.b
     
-    expended_level.i
+    expanded_level.i
     linebinary.l
     lastpick.i
     pick.i
@@ -124,8 +124,8 @@ DeclareModule ControlExplorer
   DataSection 
     ExplorerVT: 
     ControlIconVT:
-    Data.i @OnEvent() ; mandatory override
-    Data.i @Delete(); mandatory override
+    Data.i @OnEvent()
+    Data.i @Delete()
     
     VIExplorer_Model_Icon:
     IncludeBinary "../../rsc/ico/model.png"
@@ -158,26 +158,15 @@ DeclareModule ControlExplorer
   EndDataSection 
   
 
-;   Declare NewItem(*object.Object::Object_t,*parent.ControlExplorerItem_t,id,depth.i,havenext.b)
-;   Declare DeleteItem(*item.ControlExplorerItem_t)
   Declare Resize(*Me.ControlExplorer_t)
-;   Declare ResetVisited(*Me.ControlExplorer_t,*root.Object3D::Object3D_t)
-;   Declare GetVisibles(*Me.ControlExplorer_t)
-;   Declare SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
-;   Declare DrawItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
-;   Declare DrawDisplayImage(*Me.ControlExplorer_t)
-;   Declare DrawPickItem(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,depth.i)
-;   Declare DrawPickImage(*Me.ControlExplorer_t)
   Declare Draw(*Me.ControlExplorer_t)
   Declare UnselectAll(*Me.ControlExplorer_t)
   Declare Selection(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare SelectList(*Me.ControlExplorer_t,first.i,last.i)
-;   Declare RecurseExpended(*item.ControlExplorerItem_t,expended.b = #False)
-  Declare Pick(*Me.ControlExplorer_t)
+  Declare Pick(*Me.ControlExplorer_t, offsetX.i, offsetY.i)
   Declare Clear(*Me.ControlExplorer_t)
   Declare AddObject(*Me.ControlExplorer_t,*item.ControlExplorerItem_t,*object.Object::Object_t,name.s,depth,type.i)
   Declare Add3DObject(*Me.ControlExplorer_t,*parent.ControlExplorerItem_t,*obj.Object3D::Object3D_t,depth.i)  
-;   Declare IsInList(*Me.ControlExplorer_t,*item.ControlExplorerItem_t)
   Declare Fill(*Me.ControlExplorer_t,*scene.Scene::Scene_t)
   Declare OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
   Declare OnItemEvent(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, event.i, *ev_data.Control::Control_t)
@@ -207,7 +196,7 @@ Module ControlExplorer
     *Me\depth = depth
 
     *Me\isroot = Bool(*Me\object And *Me\object\class\name = "Model")
-    *Me\expended = #False
+    *Me\expanded = #True
     *Me\havechildren = *Me
     *Me\parent = *parent
     *Me\havenext = havenext
@@ -303,21 +292,21 @@ Module ControlExplorer
   ;---------------------------------------------------------
   Procedure GetVisibles(*Me.ControlExplorer_t)
 ;     Protected depth.i,lastdepth.i
-;     Protected expended.b,lastexpended.i
+;     Protected expanded.b,lastexpanded.i
     If *Me\root
       ResetVisited(*Me,*Me\root\object)
       ClearList(*Me\visibles())
       ForEach(*Me\items())
-        If (*Me\items()\parent And *Me\items()\parent\expended) Or *Me\items()\isroot = #True
+        If (*Me\items()\parent And *Me\items()\parent\expanded) Or *Me\items()\isroot = #True
           AddElement(*Me\visibles())
           *Me\visibles() = *Me\items()
         EndIf
       Next
     EndIf
     
-  ;     expended = *Me\allitems()\expended
+  ;     expanded = *Me\allitems()\expanded
   ;     depth = *Me\allitems()\depth
-  ;     If lastexpended And depth<=lastdepth
+  ;     If lastexpanded And depth<=lastdepth
   ;       AddElement(*Me\items())
   ;       *Me\items()=*Me\allitems()
   ;      
@@ -327,13 +316,13 @@ Module ControlExplorer
   ;       *Me\items()=*Me\allitems()
   ;     EndIf
   ;   EndIf
-  ;     lastexpended = expended
+  ;     lastexpanded = expanded
   ;     lastdepth = depth
   ;   Next
   
   EndProcedure
   
-    ; ----------------------------------------
+  ; ----------------------------------------
   ;  Set Binary Lines
   ; ----------------------------------------
   Procedure SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
@@ -353,7 +342,7 @@ Module ControlExplorer
     Protected shiftx.i = #SHIFTX
     Protected shifty.i = #SHIFTY
     Protected x = 25 + shiftx * (*item\depth)
-    Protected tc = UIColor::COLOR_TEXT
+    Protected tc = UIColor::COLOR_TEXT_DEFAULT
     VectorFont(FontID(Globals::#FONT_DEFAULT));, Globals::#FONT_SIZE_TEXT)
     ; Draw Background
     If Mod(*Me\itemcounter,2) = 1
@@ -413,31 +402,25 @@ Module ControlExplorer
     AddPathLine(shiftx-5,0, #PB_Path_Relative)
     StrokePath(2)
     
-    ; Expended button
+    ; expanded button
     If Not *item\isleaf
-
-      AddPathBox(x-shiftx+2,*Me\ioffsety+7,3,3)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG)
-      FillPath()
-      
       VectorSourceColor(UIColor::COLOR_GROUP_FRAME)
-      If *item\expended
-        MovePathCursor(x-shiftx+4,*Me\ioffsety+10)
-        AddPathLine(3,0,#PB_Path_Relative)
-        
+      If *item\expanded
+        MovePathCursor(x-shiftx+6, *Me\ioffsety+10)
+        AddPathLine(2,4,#PB_Path_Relative)
+        AddPathLine(2,-4, #PB_Path_Relative)
+        ClosePath()
+
         StrokePath(2)
       Else
         MovePathCursor(x-shiftx+6,*Me\ioffsety+8)
-        AddPathLine(0,3, #PB_Path_Relative)
-        StrokePath(2)
-        
-        MovePathCursor(x-shiftx+4,*Me\ioffsety+10)
-        AddPathLine(3,0, #PB_Path_Relative)
+        AddPathLine(4,2,#PB_Path_Relative)
+        AddPathLine(-4,2, #PB_Path_Relative)
+        ClosePath()
         StrokePath(2)
       EndIf
     EndIf
-    
-    
+
     ;  Draw Icon
     Select *item\type  
       Case #TYPE_3DOBJECT
@@ -475,7 +458,7 @@ Module ControlExplorer
         
       Case #TYPE_GROUP
         MovePathCursor(x,*Me\ioffsety+2)
-        DrawVectorImage(ImageID(explorer_icon_group))
+;         DrawVectorImage(ImageID(explorer_icon_group))
         MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT)
         VectorSourceColor(tc)
         DrawVectorText("Fucking Group")
@@ -489,75 +472,81 @@ Module ControlExplorer
         
       Case #TYPE_FOLDER
         MovePathCursor(x,*Me\ioffsety+2)
-        DrawVectorImage(ImageID(explorer_icon_folder))
+;         DrawVectorImage(ImageID(explorer_icon_folder))
         MovePathCursor(x+20,*Me\ioffsety+#OFFSETY_TEXT+4)
         VectorSourceColor(RGBA(0,0,0,255))
         DrawVectorText("Attributes")
         
 ;       Case #TYPE_PROPERTY
-;         DrawImage(ImageID(explorer_icon_kinematics),x,*Me\ioffsety+2)
-;         DrawingMode(#PB_2DDrawing_Transparent)
+;         DrawVectorImage(ImageID(explorer_icon_kinematics),x,*Me\ioffsety+2)
 ;         DrawText(x+20,*Me\ioffsety+#OFFSETY_TEXT,"Global",RGBA(0,0,0,255))
-;         
-;       Case #TYPE_ATTRIBUTE
-; 
-;         Protected *a.Attribute::Attribute_t = *item\object
-;         tc  =RGBA(255,0,0,255)
-;         Select *a\datatype
-;           Case Attribute::#ATTR_TYPE_BOOL
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;           Case Attribute::#ATTR_TYPE_FLOAT
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;           Case Attribute::#ATTR_TYPE_VECTOR3
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;   ;           Box(x+2,*Me\ioffsety+6,7,7,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;           Case Attribute::#ATTR_TYPE_MATRIX4
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;           Case Attribute::#ATTR_TYPE_COLOR
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;           Case Attribute::#ATTR_TYPE_TOPOLOGY
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,tc)
-;             Circle(x+2,*Me\ioffsety+6,4,Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,255))
-;             DrawingMode(#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;             
-;           Default 
-;   ;           Box(x+1,*Me\ioffsety+5,8,8,RGBA(0,0,0,255))
-;             Circle(x+2,*Me\ioffsety+6,4,RGBA(255,255,255,255))
-;             DrawingMode(#PB_2DDrawing_Default|#PB_2DDrawing_Transparent)
-;             DrawText(x+15,*Me\ioffsety+#OFFSETY_TEXT,*a\name,tc)
-;         EndSelect
         
-      
+      Case #TYPE_ATTRIBUTE
+
+        Protected *a.Attribute::Attribute_t = *item\object
+        tc  =RGBA(255,0,0,255)
+        Select *a\datatype
+          Case Attribute::#ATTR_TYPE_BOOL
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_BOOL,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Case Attribute::#ATTR_TYPE_FLOAT
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_FLOAT,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Case Attribute::#ATTR_TYPE_VECTOR3
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_VECTOR3,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Case Attribute::#ATTR_TYPE_MATRIX4
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_MATRIX4,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Case Attribute::#ATTR_TYPE_COLOR
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_COLOR,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Case Attribute::#ATTR_TYPE_TOPOLOGY
+            VectorSourceColor(Globals::RGB2RGBA(Attribute::#ATTR_COLOR_TOPOLOGY,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+          Default 
+            VectorSourceColor(RGBA(255,255,255,120))
+            AddPathCircle(x+2,*Me\ioffsety+6,4)
+            FillPath()
+            MovePathCursor(x+15,*Me\ioffsety+#OFFSETY_TEXT)
+            VectorSourceColor(tc)
+            DrawVectorText(*a\name)
+            
+        EndSelect
     EndSelect
     
     *Me\ioffsety + #LINEHEIGHT
     *Me\itemcounter + 1
-  ;   Protected nbc.i = ListSize(*item\children())
-  ;   If nbc>0 And *item\expended = #True
-  ;     ForEach *item\children()
-  ;       Define *item2.CControlExplorerItem_t = *item\children()
-  ;       If *item2\expended
-  ;         DrawItem(*Me,*item2,depth+1)
-  ;       EndIf
-  ;     Next
-  ;   EndIf
   
   EndProcedure
   
@@ -587,10 +576,11 @@ Module ControlExplorer
     If *item\type = #TYPE_PROPERTY And Not *Me\show_uniforms : *Me\itemcounter + 1 : ProcedureReturn : EndIf
     If *item\type = #TYPE_ATTRIBUTE And Not *Me\show_attributes : *Me\itemcounter + 1 : ProcedureReturn : EndIf
     
-    Define colorid = Random(Pow(256,3))
+    Define colorid = Random(Pow(256,3));UIColor::RANDOMIZED
     AddMapElement(*Me\m_items(), Str(colorid),#PB_Map_NoElementCheck)
     *Me\m_items() = *item
     Box(0,*Me\ioffsety,*Me\iwidth,#LINEHEIGHT, colorid)
+
     
     *Me\ioffsety + #LINEHEIGHT
     *Me\itemcounter + 1
@@ -617,7 +607,7 @@ Module ControlExplorer
       DrawPickItem(*Me,*Me\visibles(),0)
     Next
     StopDrawing()
-    
+    Debug "PICK ITEMS MAP SIZE : "+Str(MapSize(*Me\m_items()))
     
   EndProcedure
   
@@ -630,6 +620,7 @@ Module ControlExplorer
       GetVisibles(*Me)
       DrawPickImage(*Me)
       DrawDisplayImage(*Me)
+      *Me\dirty = #False
     EndIf
   
   EndProcedure
@@ -686,13 +677,13 @@ Module ControlExplorer
   EndProcedure
   
   ; ----------------------------------------
-  ; Recurse Expended
+  ; Recurse expanded
   ; ----------------------------------------
-  Procedure RecurseExpended(*item.ControlExplorerItem_t,expended.b = #False)
-  
-    *item\expended = expended
+  Procedure RecurseExpanded(*item.ControlExplorerItem_t,expanded.b = #False, depth.i = -1)
+    If Not depth : ProcedureReturn : EndIf
+    *item\expanded = expanded
     ForEach *item\children()
-      RecurseExpended(*item\children(),expended)
+      RecurseExpanded(*item\children(),expanded, depth - 1)
     Next
     
   EndProcedure
@@ -701,19 +692,18 @@ Module ControlExplorer
   ; Pick Item
   ; ----------------------------------------
   Procedure PickItem(*Me.ControlExplorer_t, *item.ControlExplorerItem_t, mx, my, key)
-    
     If *item <>#Null
       
       Protected l = (*item\depth+2) * #SHIFTX
-;       If Abs(l-mx)<20
-;         If Not *item\isleaf
-;           *item\expended = 1-*item\expended
-;            RecurseExpended(*item, *item\expended)
-;           
-;           *Me\dirty = #True
-;         EndIf
+      If Abs(l-mx)<20
+        If Not *item\isleaf
+          *item\expanded = 1-*item\expanded
+           RecurseExpanded(*item, *item\expanded, 1)
+          
+          *Me\dirty = #True
+        EndIf
         
-;       Else
+      Else
 
         Select key
           
@@ -738,6 +728,7 @@ Module ControlExplorer
             *item\selected = #True
             AddElement(*Me\selected())
             *Me\selected() = *item
+            Debug "Selected Item : "+Str(*item)
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
               Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
@@ -746,7 +737,7 @@ Module ControlExplorer
         EndSelect
         
         *Me\dirty = #True
-;       EndIf
+      EndIf
     EndIf
   EndProcedure
   
@@ -754,14 +745,13 @@ Module ControlExplorer
   ; ----------------------------------------
   ; Pick
   ; ----------------------------------------
-  Procedure Pick(*Me.ControlExplorer_t)
+  Procedure Pick(*Me.ControlExplorer_t, offsetX.i, offsetY.i)
+    Protected mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX) - offsetx
+    Protected my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY) - offsety
    
-    Protected mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
-    Protected my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
-   
-    
     ; Return if OUT of picking area
     If mx<0 Or mx>=*Me\iwidth Or my<0 Or my>*Me\iheight:ProcedureReturn:EndIf
+    
     ; Get Point Color 
     StartDrawing(ImageOutput(*Me\pickID))
     DrawingMode(#PB_2DDrawing_AllChannels)
@@ -772,12 +762,9 @@ Module ControlExplorer
     If FindMapElement(*Me\m_items(), Str(pick))  
       PickItem(*Me, *Me\m_items(), mx, my, key)
     EndIf
-    
+
     Draw(*Me)
-    
-    
-    
-   
+
   EndProcedure
   
   ; ----------------------------------------
@@ -800,7 +787,7 @@ Module ControlExplorer
     AddElement(*item\children())
     AddElement(*Me\items())
     *item\children() = NewItem(*object,*item,*Me\itemcounter,depth,#False)
-    If *item\depth>*Me\expended_level : *item\expended = #False : EndIf
+    If *item\depth>*Me\expanded_level : *item\expanded = #False : EndIf
     
     *Me\itemcounter +1
     *Me\type = type
@@ -810,21 +797,21 @@ Module ControlExplorer
     *Me\items() = *item\children()
     Select type
       Case #TYPE_ATTRIBUTE
-        *Me\items()\expended = #False
+        *Me\items()\expanded = #False
         *Me\items()\isleaf = #True
       Case #TYPE_PROPERTY
-        *Me\items()\expended = #False
+        *Me\items()\expanded = #False
       Case #TYPE_GROUP
         *Me\items()\isleaf = #True
-        *Me\items()\expended = #False
+        *Me\items()\expanded = #False
       Case #TYPE_3DOBJECT
-        *Me\items()\expended = #True
+        *Me\items()\expanded = #True
         *Me\items()\isleaf = #False
       Case #TYPE_STACK
-        *Me\items()\expended = #True
+        *Me\items()\expanded = #True
         *Me\items()\isleaf = #False
       Case #TYPE_TREE
-        *Me\items()\expended = #True
+        *Me\items()\expanded = #True
         *Me\items()\isleaf = #False
     EndSelect
     
@@ -840,7 +827,7 @@ Module ControlExplorer
     If *obj\visited = #True : ProcedureReturn : EndIf
     *obj\visited = #True
     Protected *item.ControlExplorerItem_t = AddObject(*Me,*parent,*obj,*obj\name,depth+1,#TYPE_3DOBJECT)
-    *item\expended = #True
+    *item\expanded = #True
     Protected *o.ControlExplorerItem_t
     
     If *obj\stack
@@ -851,7 +838,7 @@ Module ControlExplorer
     EndIf
     
     Protected *attributes.ControlExplorerItem_t = AddObject(*Me,*item,#Null,"Attributes",depth+2,#TYPE_PROPERTY)
-    *attributes\expended = #True
+    *attributes\expanded = #True
     *attributes\havenext = #False
     Protected nb = MapSize(*obj\geom\m_attributes())
     Protected a
@@ -952,8 +939,8 @@ Module ControlExplorer
     ResizeImage(*Me\imageID,*Me\iwidth,*Me\iheight)
     ResizeImage(*Me\pickID,*Me\iwidth,*Me\iheight)
     GetVisibles(*Me)
-;     ConnectSignalsSlots(*Me)
-    RecurseExpended(*Me\root,#False)
+
+    RecurseExpanded(*Me\root,#False)
     *Me\dirty = #True
     
     Signal::CONNECTCALLBACK(*Me\on_selection, OnSelectionChange, *scene)
@@ -964,7 +951,6 @@ Module ControlExplorer
   ;  Event
   ;---------------------------------------------------
   Procedure OnEvent(*Me.ControlExplorer_t,event.i,*ev_data.Control::EventTypeDatas_t)
-    ;   GetItems(*Me)
     If event = #PB_EventType_Resize Or event = #PB_Event_SizeWindow
       *Me\sizX = *ev_data\width
       *Me\sizY = *ev_data\height
@@ -999,9 +985,8 @@ Module ControlExplorer
           Case #PB_EventType_MouseMove
             ;UI::Scroll(*Me)
             
-            
           Case #PB_EventType_LeftButtonDown 
-            Pick(*Me)
+            Pick(*Me, *ev_data\xoff, *ev_data\yoff)
           
             
         EndSelect
@@ -1082,7 +1067,7 @@ Module ControlExplorer
     *Me\show_uniforms = #True
     *Me\show_attributes = #True
     *Me\show_materials = #True
-    *Me\expended_level = 12
+    *Me\expanded_level = 12
 ;     *Me\scrollable = #True
     
     ; ---[ Set Controls ]----------------------
@@ -1103,7 +1088,7 @@ Module ControlExplorer
 ;       Fill(*Me,Scene::*current_scene)
 ; 
 ;       ConnectSignalsSlots(*Me)
-;       RecurseExpended(*Me\root,#False);
+;       RecurseExpanded(*Me\root,#False);
 ;     EndIf
     
     Resize(*Me)
@@ -1164,7 +1149,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 966
-; FirstLine = 922
-; Folding = X-4---
+; CursorPosition = 294
+; FirstLine = 266
+; Folding = 4-4---
 ; EnableXP

@@ -96,7 +96,6 @@ Procedure InstanceGrid(*cloud.InstanceCloud::InstanceCloud_t, nx.i, nz.i)
   CArray::Delete(*positions)
 EndProcedure
 
-
 ; Draw  
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
@@ -110,15 +109,12 @@ Procedure Draw(*app.Application::Application_t)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
   FTGL::Draw(*app\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-; 
   FTGL::EndDraw(*app\context\writer)
   
   GLContext::FlipBuffer(*app\context)
-  viewportUI::Blit(*viewport, *default\buffer)
+  viewportUI::Blit(*viewport, *default\datas\buffer)
 
  EndProcedure
- 
-
  
  Define useJoystick.b = #False
  width = 1024 
@@ -155,8 +151,8 @@ Procedure Draw(*app.Application::Application_t)
   
   *default = LayerDefault::New(width,height,*app\context,*app\camera)
   *gbuffer = LayerGBuffer::New(width,height,*app\context,*app\camera)
-  *ssao = LayerSSAO::New(width,height,*app\context,*gbuffer\buffer,*app\camera)
-  *blur = LayerBlur::New(width,height,*app\context,*ssao\buffer,*app\camera)
+  *ssao = LayerSSAO::New(width,height,*app\context,Layer::GetDatas(*gbuffer),*app\camera)
+  *blur = LayerBlur::New(width,height,*app\context,Layer::GetDatas(*ssao),*app\camera)
   
   If Not #USE_GLFW
     Application::AddLayer(*app, *default)
@@ -204,7 +200,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   
   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
-  PointCloudGeometry::PointsOnGrid(*cloud\geom,64,64)
+  PointCloudGeometry::PointsOnGrid(*cloud\geom,100,100)
 ;   Define startP.v3f32, endP.v3f32
 ;   Vector3::Set(startP, -10,0,0)
 ;   Vector3::Set(endP, 10,0,0)
@@ -267,9 +263,9 @@ Procedure Draw(*app.Application::Application_t)
   
 
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 89
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 202
+; FirstLine = 163
 ; Folding = --
 ; EnableXP
 ; Executable = Test

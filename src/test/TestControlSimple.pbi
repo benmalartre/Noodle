@@ -21,7 +21,6 @@ Globals::Init()
 Time::Init()
 Log::Init()
 FTGL::Init()
-Controls::Init()
 Commands::Init()
 UIColor::Init()
 
@@ -71,8 +70,6 @@ EndProcedure
 
 
 Global *app.Application::Application_t = Application::New("Test Control Simple",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
-Controls::SetTheme(Globals::#GUI_THEME_DARK)
-;Controls::SetTheme(Globals::#GUI_THEME_LIGHT)
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
 
 OpenGadgetList(*ui\container)
@@ -118,7 +115,7 @@ CloseGadgetList()
 Application::Loop(*app,@Update())
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 26
+; CursorPosition = 71
+; FirstLine = 50
 ; Folding = -
 ; EnableXP

@@ -44,13 +44,7 @@ DeclareModule UI
     active.b
   EndStructure
   
-  Interface IUI
-    Delete()
-    Resize(x.i, y.i, width.i, height.i)
-    Draw()
-    DrawPickImage()
-    Pick(mx.f, my.f)
-    OnEvent(event.i)
+  Interface IUI Extends Control::IControl
   EndInterface
   
   
@@ -182,7 +176,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 48
+; CursorPosition = 43
 ; FirstLine = 21
 ; Folding = --
 ; EnableXP

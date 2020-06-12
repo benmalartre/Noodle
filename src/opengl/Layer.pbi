@@ -1,72 +1,58 @@
 XIncludeFile "Types.pbi"
 
-XIncludeFile "../objects/Object3D.pbi"
-XIncludeFile "../objects/Camera.pbi"
-XIncludeFile "../objects/Light.pbi"
-XIncludeFile "../objects/Polymesh.pbi"
-XIncludeFile "../objects/PointCloud.pbi"
-XIncludeFile "../objects/InstanceCloud.pbi"
-XIncludeFile "../objects/Drawer.pbi"
-XIncludeFile "../objects/Scene.pbi"
-
 ; ============================================================================
 ;  GLLayer Module Implementation
 ; ============================================================================
-Module Layer
+Module GLLayer
   UseModule OpenGL
   UseModule OpenGLExt
-  Procedure Init(*layer.Layer_t)
-    *layer\shader = #Null
-    ;*layer\tree = #Null
-  EndProcedure
   
-  ;---------------------------------------------------
-  ; Set Point Of View
-  ;---------------------------------------------------
-  Procedure SetPOV(*layer.Layer_t,*pov.Object3D::Object3D_t)
-    *layer\pov = *pov
+  Procedure Initialize(*layer.GLLayer_t, width, height, name.s, *ctxt.GLContext::GLContext_t)
+    *layer\width = width
+    *layer\height = height
+    *layer\name = name
+    *layer\context = *ctxt
   EndProcedure
-  
   
   ;---------------------------------------------------
   ; Set Color
   ;---------------------------------------------------
-  Procedure SetColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
+  Procedure SetColor(*layer.GLLayer_t,r.f,g.f,b.f,a.f)
     Color::Set(*layer\color,r,g,b,a)  
   EndProcedure
   
   ;---------------------------------------------------
   ; Set BackgroundColor
   ;---------------------------------------------------
-  Procedure SetBackgroundColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
+  Procedure SetBackgroundColor(*layer.GLLayer_t,r.f,g.f,b.f,a.f)
     Color::Set(*layer\background_color,r,g,b,a)  
   EndProcedure
   
   ;---------------------------------------------------
   ; Is Bound
   ;---------------------------------------------------
-  Procedure IsFixed(*layer.Layer_t)
+  Procedure IsFixed(*layer.GLLayer_t)
     ProcedureReturn *layer\fixed
   EndProcedure
   
   ;---------------------------------------------------
   ; Get Tree
   ;---------------------------------------------------
-  Procedure GetTree(*layer.Layer_t)
+  Procedure GetTree(*layer.GLLayer_t)
 ;     ProcedureReturn *layer\tree
   EndProcedure
   
   ;---------------------------------------------------
   ; Set Shader
   ;---------------------------------------------------
-  Procedure SetShader(*layer.Layer_t,*shader.Program::Program_t)
+  Procedure SetShader(*layer.GLLayer_t,*shader.Program::Program_t)
     *layer\shader = *shader
   EndProcedure
   
   ;---------------------------------------------------
   ; Clear
   ;---------------------------------------------------
-  Procedure Clear(*layer.Layer_t)
+  Procedure Clear(*layer.GLLayer_t)
     glViewport(0,0,*layer\width,*layer\height)
     glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
     glClear(*layer\mask)
@@ -76,44 +62,18 @@ Module Layer
   ;---------------------------------------------------
   ; Resize
   ;---------------------------------------------------
-  Procedure Resize(*layer.Layer_t,width,height.i)
+  Procedure Resize(*layer.GLLayer_t,width,height.i)
+    Debug "RESIZE FRAME BUFFER : "+*layer\name
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::Resize(*buffer,width,height)
     *layer\width = width
     *layer\height = height
-       
   EndProcedure
-  
-  ;---------------------------------------------------
-  ; Get View Matrix
-  ;---------------------------------------------------
-  Procedure GetViewMatrix(*layer.Layer_t)
-    If *layer\pov\type = Object3D::#Camera
-      Protected *camera.Camera::Camera_t = *layer\pov
-      ProcedureReturn *camera\view
-    ElseIf *layer\pov\type = Object3D::#Light
-      Protected *light.Light::Light_t = *layer\pov
-      ProcedureReturn *light\view
-    EndIf
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Get Projection Matrix
-  ;---------------------------------------------------
-  Procedure GetProjectionMatrix(*layer.Layer_t)
-    If *layer\pov\type = Object3D::#Camera
-      Protected *camera.Camera::Camera_t = *layer\pov
-      ProcedureReturn *camera\projection
-    ElseIf *layer\pov\type = Object3D::#Light
-      Protected *light.Light::Light_t = *layer\pov
-      ProcedureReturn *light\projection
-    EndIf
-  EndProcedure
-  
+ 
   ;---------------------------------------------------
   ; Write Image to Disk
   ;---------------------------------------------------
-  Procedure WriteImage(*layer.Layer_t,path.s,format)
+  Procedure WriteImage(*layer.GLLayer_t,path.s,format)
     
     Define.GLint wtex,htex,comp,rs,gs,bs,a_s;
     Protected subsample = *layer\buffer\tbos(0)\textureID
@@ -162,7 +122,7 @@ Module Layer
   ;---------------------------------------------------
   ; Write Framebuffer to Disk
   ;---------------------------------------------------
-  Procedure WriteFramebuffer(*layer.Layer_t,path.s,format.i)
+  Procedure WriteFramebuffer(*layer.GLLayer_t,path.s,format.i)
     Protected x,y
     x = *layer\width
     y = *layer\height
@@ -193,7 +153,7 @@ Module Layer
   ;---------------------------------------------------
   ; Add Screen Space Quad
   ;---------------------------------------------------
-  Procedure AddScreenSpaceQuad(*layer.Layer_t,*ctx.GLContext::GLContext_t)
+  Procedure AddScreenSpaceQuad(*layer.GLLayer_t,*ctx.GLContext::GLContext_t)
     
     *layer\quad = ScreenQuad::New()
     
@@ -225,7 +185,7 @@ Module Layer
   ;-----------------------------------------------
   ; Draw Children
   ;-----------------------------------------------
-  Procedure DrawChildren(*Me.Layer_t,*obj.Object3D::Object3D_t)
+  Procedure DrawChildren(*Me.GLLayer_t,*obj.Object3D::Object3D_t)
   ;   Protected i
   ;   Protected *child.C3DObject
   ;   Protected *t.CTransform_t
@@ -268,302 +228,11 @@ Module Layer
   ;   Next i
     
   EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Drawers
-  ;---------------------------------------------------
-  Procedure DrawDrawers(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr, shader.i)
-    Protected i
-    Protected *obj.Object3D::Object3D_t
-    
-    For i=0 To CArray::GetCount(*objects)-1
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Drawer        
-        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        Drawer::Draw(*obj)
-      EndIf
-    Next
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Polymeshes
-  ;---------------------------------------------------
-  Procedure DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    Protected *mesh.Polymesh::Polymesh_t
-    For i=0 To CArray::GetCount(*objects)-1
-      
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Polymesh
-        *mesh = *obj
-        *mesh\wireframe = wireframe
-        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        obj = *obj
-        obj\Draw()
-      EndIf
-      
-    Next
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Instance Clouds
-  ;---------------------------------------------------
-  Procedure DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*objects)-1
-      
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#InstanceCloud
-        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        obj = *obj
-        obj\Draw()
-      EndIf
-    Next
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Point Clouds
-  ;---------------------------------------------------
-  Procedure DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-    GLCheckError("DRAW POINT CLOUD BEGIN")
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*objects)-1
-      
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#PointCloud
-        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        GLCheckError("SET MODEL MATRIX")
-        obj = *obj
-        obj\Draw()
-        GLCheckError("DRAW POINT CLOUD")
-      EndIf
-    Next
-    GLCheckError("DRAW POINT CLOUD END")
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Nulls
-  ;---------------------------------------------------
-  Procedure DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*objects)-1
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Locator
-        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        glUniform4f(glGetUniformLocation(shader,"color"),*obj\wireframe_r, *obj\wireframe_g, *obj\wireframe_b, 1.0)
-        obj = *obj
-        obj\Draw()
-      EndIf
-    Next
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Draw Curves
-  ;---------------------------------------------------
-  Procedure DrawCurves(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*objects)-1
-      *obj = CArray::GetValuePtr(*objects,i)
-      If *obj\type = Object3D::#Curve
-        obj = *obj
-        obj\Draw()
-      EndIf
-    Next
-  EndProcedure
-  
 
-  ;---------------------------------------------------
-  ; Draw
-  ;---------------------------------------------------
-  Procedure Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
-    Framebuffer::BindOutput(*buffer)
-    ;   Clear(*layer)
-    glClearColor(0.66,0.66,0.66,1.0)
-    glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-    glCheckError("Clear")
-    glEnable(#GL_DEPTH_TEST)
-    
-    glViewport(0,0,*ctx\width,*ctx\height)
-    
-    ; Find Up View Point
-    ;-----------------------------------------------
-    Protected *view.m4f32,proj.m4f32,view.m4f32
-    Protected *camera.Camera::Camera_t = *layer\pov
-    Protected aspect.f = *layer\width / *layer\height
-    *view = Layer::GetViewMatrix(*layer)
-    Matrix4::GetProjectionMatrix(proj, *camera\fov, aspect, *camera\nearplane, *camera\farplane)
-    
-    ;Draw Polymeshes 
-    ;-----------------------------------------------
-    Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
-    Protected shader.GLuint =  *shader\pgm
-    glUseProgram(shader)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-    glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-    glUniform1i(glGetUniformLocation(shader,"tex"),0)
-    
-    DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
-      
-    ; Draw Instance Clouds 
-    ;-----------------------------------------------
-    Protected *pgm.Program::Program_t = *ctx\shaders("instances")
-    glUseProgram(*pgm\pgm)
-    Define.m4f32 model,view,proj
-    Matrix4::SetIdentity(model)
-   
-  ;   glDepthMask(#GL_TRUE);
-    glEnable(#GL_DEPTH_TEST)
-    
-    glEnable(#GL_TEXTURE_2D)
-    glBindTexture(#GL_TEXTURE_2D,texture)
-    glUniform1i(glGetUniformLocation(*pgm\pgm,"texture"),0)
-    
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,@model)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
-    
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
-    glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-    glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
-    
-    ;   PointCloud::Draw(*cloud)
-    ;   Model::Update(*model)
-    DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
-  ;   Model::Draw(*model)
-    glCheckError("Draw Instance Cloud")
-;   glDepthMask(#GL_FALSE);
-  
-;   ;Framebuffer::BlitTo(*buffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
-;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *buffer\frame_id);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *buffer\width,*buffer\height,0, 0, *ctx\width,*ctx\height,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-;   glDisable(#GL_DEPTH_TEST)
-;     
-;     Protected *cloud.InstanceCloud::InstanceCloud_t
-;   *shader.Program::Program_t = *ctx\shaders("instances")
-;     shader.GLuint =  *shader\pgm
-;     glUseProgram(shader)
-;   Define.m4f32 model,view,proj
-;   Matrix4::SetIdentity(@model)
-;   
-;   glDepthMask(#GL_TRUE);
-;   glEnable(#GL_DEPTH_TEST)
-;   
-;   glEnable(#GL_TEXTURE_2D)
-;   glBindTexture(#GL_TEXTURE_2D,texture)
-;   glUniform1i(glGetUniformLocation(shader,"texture"),0)
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@model)
-;   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@model)
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-;   glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-;   glUniform3f(glGetUniformLocation(shader,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
-;   glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-;   
-;   uModelMatrix = glGetUniformLocation(shader,"model")
-;     uSelected = glGetUniformLocation(shader,"selected")
-;     Protected uDatas = glGetUniformLocation(shader,"datas")
-;     
-;     For i=0 To nbo-1
-;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
-;       If *obj\type = Object3D::#InstanceCloud
-;         *cloud = *obj
-;         If *cloud\texture
-;           glActiveTexture(#GL_TEXTURE0)
-;           glBindTexture(#GL_TEXTURE_2D,*cloud\texture)
-;         EndIf
-;         If *cloud\selected 
-;           glUniform1i(uSelected,*cloud\selected)
-;         Else
-;           glUniform1i(uSelected,#False)
-;         EndIf
-;         *t = *obj\globalT
-;         glUniformMatrix4fv(uModelMatrix,1,#GL_TRUE,*t\m)
-; 
-;         obj = *obj
-;         
-;         obj\Draw()
-;       EndIf 
-;     Next i
-;     
-;      glDepthMask(#GL_FALSE); glDepthMask(#GL_TRUE);
-; ;     
-; ;     ; Draw Helpers
-; ;     ;-----------------------------------------------
-; ;     *shader = *ctx\shaders("wireframe")
-; ;     shader = *shader\pgm
-; ;     glUseProgram(shader)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-; ;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-; ;     
-; ;     uModelMatrix = glGetUniformLocation(shader,"model")
-; ;     nbo = CArray::GetCount(Scene::*current_scene\helpers)
-; ;     For i=0 To nbo-1
-; ;       *obj = CArray::GetValue(Scene::*current_scene\helpers,i)
-; ;       *t = *obj\globalT
-; ;       glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*t\m)
-; ;       If *obj\type = Object3D::#Null
-; ;         obj = *obj
-; ;         obj\Draw()
-; ;       ElseIf *obj\type =  Object3D::#Curve
-; ;         obj = *obj
-; ;         obj\Draw()
-; ;       EndIf 
-; ;     Next i
-; ;     
-; ;     glDisable(#GL_DEPTH_TEST)
-; ;   
-; ; ;     ; Draw Lights
-; ; ;     ;-----------------------------------------------
-; ; ;     Define nbl = *raa_current_scene\lights\GetCount()
-; ; ;   
-; ; ;     For i=0 To nbl-1
-; ; ;       
-; ; ;       *obj = *raa_current_scene\lights\GetValue(i)
-; ; ;       *obj\Draw(*ctx,#GL_LINES)
-; ; ;   
-; ; ;     Next i
-; ; ;     
-; ; ;     ; Draw Cameras
-; ; ;     ;-----------------------------------------------
-; ; ;     Define nbc = *raa_current_scene\cameras\GetCount()
-; ; ;     For i=0 To nbc-1
-; ; ;       
-; ; ;       *obj = *raa_current_scene\cameras\GetValue(i)
-; ; ;       ; Don't draw if active Camera
-; ; ;       If *layer\pov <> *obj
-; ; ;         *obj\Draw(*ctx,#GL_LINES)
-; ; ;       EndIf
-; ; ;       
-; ; ;     Next i
-; ;     
-;     
-    Framebuffer::Unbind(*layer\buffer)
-    Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
-; ; ;     *layer\buffer\Unbind()
-; ;     *layer\buffer\BlitTo(0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
-  EndProcedure
-  
   ;------------------------------------------------------------------
   ; Get Image
   ;------------------------------------------------------------------
-  Procedure GetImage(*layer.Layer::Layer_t, path.s)
+  Procedure GetImage(*layer.GLLayer_t, path.s)
     Protected x,y
     Protected l.l
     Protected *mem = AllocateMemory(*layer\width * *layer\height * SizeOf(l))
@@ -585,39 +254,12 @@ Module Layer
     SaveImage(*layer\image,path)
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; Layer Dependencies (ie shadow map)
-  ;------------------------------------------------------------------
-  Procedure AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
-    Define i
-    For i=0 To CArray::GetCount(*layer\dependencies)-1
-      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
-        ProcedureReturn
-      EndIf
-    Next
-    CArray::AppendPtr(*layer\dependencies, *dependency)
-  EndProcedure
   
-  Procedure RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
-    Define i
-    For i = 0 To CArray::GetCount(*layer\dependencies)-1
-      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
-        CArray::Remove(*layer\dependencies, i)
-        ProcedureReturn
-      EndIf
-    Next
-  EndProcedure
-  
-  Procedure Delete()
-    
-  EndProcedure
-  
-  
-  Class::DEF( Layer )
+  Class::DEF( GLLayer )
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 80
-; FirstLine = 70
-; Folding = -----
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 65
+; FirstLine = 9
+; Folding = ---
 ; EnableXP

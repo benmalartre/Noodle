@@ -67,17 +67,7 @@ DeclareModule ControlNumber
   Declare SetTheme( theme.i )
   Declare Init()
   Declare Term()
-  
-;   Declare.i hlpNextWordStart( text.s, cur_pos.i )
-;   Declare hlpPrevWordStart( text.s, cur_pos.i )
-;   Declare hlpPrevWord( text.s, cur_pos.i )
-;   Declare hlpNextWord( text.s, cur_pos.i )
-;   Declare hlpSelectWord( *Me.ControlNumber_t, cur_pos.i )
-;   Declare hlpCharPosFromMousePos( *Me.ControlNumber_t, xpos.i )
-;   Declare hlpDraw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
-  
- 
-  
+
   ; ----------------------------------------------------------------------------
   ;  Datas 
   ; ----------------------------------------------------------------------------
@@ -313,7 +303,6 @@ Module ControlNumber
     
     ; ---[ Handle Left Overflow ]-----------------------------------------------
     *Me\posS = Math::Min( *Me\posS, *Me\posW )
-  
     ; ---[ Handle Right Overflow ]----------------------------------------------
     Protected rof    .i = *Me\sizX - 12
     Protected x_start.i = *Me\lookup(*Me\posS)
@@ -391,7 +380,7 @@ Module ControlNumber
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-        VectorSourceColor(RGBA(255,0,0,64))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
       
@@ -401,17 +390,16 @@ Module ControlNumber
       FillPath()
       If Not *Me\options & #NUMBER_NOSLIDER
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-        VectorSourceColor(RGBA(255,0,0,64))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
       EndIf
       
-
       If slider_w > *Me\sizX * 0.5
         Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
         FillPath()
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
-        VectorSourceColor(RGBA(0,0,0,64))
+        VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
         VectorSourceColor(UIColor::COLOR_CARET)
@@ -424,14 +412,10 @@ Module ControlNumber
         VectorSourceColor(UIColor::COLOR_NUMBER_BG)
         FillPath()
         AddPathBox(xoff+slider_w-1, yoff, 2, *Me\sizY)
-        VectorSourceColor(RGBA(0,255,0,255))
+        VectorSourceColor(UIColor::COLOR_CARET)
         FillPath()
       EndIf
     EndIf
-    
-;     AddPathBox(xoff + slider_w, yoff, 2, *Me\sizY)
-;     VectorSourceColor(RGBA(255,222,255,255))
-;     FillPath()
     
     ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
@@ -456,13 +440,13 @@ Module ControlNumber
             FillPath()
         CompilerEndSelect
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLOR_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText( dtext )
       ; ---[ Just Caret ]-------------------------------------------------------
       Else
         ; ---[ Draw Value ]-----------------------------------------------------
         MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLOR_TEXT)
+        VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText(  dtext)
         ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
@@ -656,6 +640,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
           Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
+          PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
           
           ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
@@ -1265,7 +1250,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 539
-; FirstLine = 536
+; CursorPosition = 305
+; FirstLine = 296
 ; Folding = ----
 ; EnableXP

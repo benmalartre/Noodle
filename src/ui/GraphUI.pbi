@@ -118,12 +118,11 @@ DeclareModule GraphUI
   
   DataSection 
     GraphUIVT: 
-    Data.i @Delete()
-    Data.i @Resize()
-    Data.i @Draw()
-    Data.i @DrawPickImage()
-    Data.i @Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i @DrawPickImage()
+      Data.i @Pick()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -1108,7 +1107,10 @@ Module GraphUI
   ; Frame All
   ;---------------------------------------------------------------------------
   Procedure FrameAll(*Me.GraphUI_t)
-    Define.i minx,maxx,miny,maxy,width,height
+   
+    If Not ListSize(*Me\tree\current\nodes()) : ProcedureReturn : EndIf
+    
+    Protected.i minx,maxx,miny,maxy,width,height
     FirstElement(*Me\tree\current\nodes())
     With *Me\tree\current\nodes()
       minx = \posx
@@ -1491,11 +1493,9 @@ Module GraphUI
               *Me\redraw = #True
             EndIf     
       EndSelect 
-      ;}  
       
       ;-----------------------------------------------------------------------  
       ; GadgetDrop Event
-      ;{
       Case #PB_Event_GadgetDrop
         If *Me\tree
           Protected text.s = EventDropText()
@@ -1506,15 +1506,13 @@ Module GraphUI
         Else
           MessageRequester("Noodle", "[Graph View] There is no current graph tree.")
         EndIf
-      ;}
-        
+
       ;-----------------------------------------------------------------------  
       ; SizeWindow Event
-      ;{ 
       Case #PB_Event_SizeWindow
-        ;Resize(*Me)
+        Resize(*Me)
         *Me\redraw = #True
-      ;}
+        
     EndSelect
     
     If *Me\redraw
@@ -1547,10 +1545,10 @@ Module GraphUI
 ;     If Not *e : MessageRequester("SwitchContext","Graph is NULL") : ProcedureReturn :  EndIf
 ;     Protected ctxt.i = *mu2\value\vU32
 ;     Debug "Graph View Switch Context ---> "+Str(ctxt)
-;     Debug "Graph View Switch Context ---> "+raa_graph_context(ctxt)
+;     Debug "Graph View Switch Context ---> "+graph_context(ctxt)
 ;     Select ctxt
 ;       Case #Graph_Context_Hierarchy
-;         Protected *root.CRoot_t = *raa_current_scene\root
+;         Protected *root.CRoot_t = Scene::*current_scene\root
 ;         Protected *node.CGraphNode_t
 ;         If *root\tree = #Null
 ;           *root\tree = newCGraphTree(*root,"Hierarchy",#Graph_Context_Hierarchy)
@@ -1568,8 +1566,8 @@ Module GraphUI
 ;         Protected *children.CArrayPtr
 ;         
 ;       Case #Graph_Context_Operator
-;         ;Protected *obj.C3DObject_t = *raa_current_scene\selection\GetValue(0)
-;         Protected *obj.C3DObject_t = *raa_current_scene\objects\GetValue(0)
+;         ;Protected *obj.Object3D::Object3D_t = Scene::*current_scene\selection\GetValue(0)
+;         Protected *obj.Object3D::Object3D_t = Scene::*current_scene\objects\GetValue(0)
 ;         *e\tree = #Null
 ;         *e\dirty = #True
 ;         
@@ -1602,7 +1600,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 544
-; FirstLine = 539
+; CursorPosition = 1112
+; FirstLine = 1094
 ; Folding = --------
 ; EnableXP

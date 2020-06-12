@@ -1428,7 +1428,7 @@ DeclareModule OpenGL
         ImportC ""
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        ;CompilerError "*> raafal x32 on Linux is not supported at this time."
+        ;CompilerError "*> x32 on Linux is not supported at this time."
         ImportC ""
       CompilerEndIf
     ;___________________________________________________________________________
@@ -1440,7 +1440,7 @@ DeclareModule OpenGL
         ImportC "/System/Library/Frameworks/OpenGL.framework/OpenGL"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
-        CompilerError "*> raafal x32 on Mac OS/X is not supported at this time."
+        CompilerError "*> x32 on Mac OS/X is not supported at this time."
         ImportC ""
       CompilerEndIf
   CompilerEndSelect
@@ -1611,9 +1611,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 591
-; FirstLine = 586
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 1437
+; FirstLine = 1393
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

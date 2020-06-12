@@ -268,7 +268,7 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   ; ---[ Set Font ]-----------------------------------------------------------
-  Protected tc.i = UIColor::COLOR_TEXT
+  Protected tc.i = UIColor::COLOR_TEXT_DEFAULT
   VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
   Protected tx.i = 7
   Protected ty.i
@@ -278,13 +278,11 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
     ty.i = (*Me\sizY - Globals::#FONT_SIZE_LABEL)/2 + yoff
   EndIf
   
-  AddPathBox(xoff-1, yoff-1, *Me\sizX+2, *Me\sizY+2)
+  AddPathBox(xoff-Control::FRAME_THICKNESS, yoff-Control::FRAME_THICKNESS, *Me\sizX+2*Control::FRAME_THICKNESS, *Me\sizY+2*Control::FRAME_THICKNESS)
   VectorSourceColor(UIColor::COLOR_MAIN_BG)
   FillPath()
   
-  Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, 4)
-  VectorSourceColor(UIColor::COLOR_NUMBER_BG)
-  FillPath(#PB_Path_Preserve)
+  Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, Control::CORNER_RADIUS)
   
   ; ---[ Check Positions Lookup Table ]---------------------------------------
   If *Me\lookup_dirty
@@ -355,30 +353,31 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   
   ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
-    VectorSourceColor(RGBA(255,255,255,32))
+    VectorSourceColor(UIColor::COLOR_DISABLED_FG)
     FillPath(#PB_Path_Preserve)
-    VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(2)
+    VectorSourceColor(UIColor::COLOR_FRAME_DISABLED)
+    StrokePath(Control::FRAME_THICKNESS)
     
   ; ---[ Check Focused ]------------------------------------------------------
   ElseIf *Me\focused
-    VectorSourceColor(RGBA(255,0,0,32))
+    VectorSourceColor(UIColor::COLOR_ACTIVE_BG)
     FillPath(#PB_Path_Preserve)
-    VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(2)
+    VectorSourceColor(UIColor::COLOR_FRAME_ACTIVE)
+    StrokePath(Control::FRAME_THICKNESS)
+    tc = UIColor::COLOR_TEXT_ACTIVE
 
   ; ---[ Check Over ]---------------------------------------------------------
   ElseIf *Me\over
-    VectorSourceColor(RGBA(0,255,0,32))
+    VectorSourceColor(UIColor::COLOR_TERNARY_BG)
     FillPath(#PB_Path_Preserve)
-    VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(2)
+    VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
+    StrokePath(Control::FRAME_THICKNESS)
 
   Else
-    VectorSourceColor(RGBA(0,0,255,32))
+    VectorSourceColor(UIColor::COLOR_TERNARY_BG)
     FillPath(#PB_Path_Preserve)
-    VectorSourceColor(RGBA(0,0,0,32))
-    StrokePath(2)
+    VectorSourceColor(UICOlor::COLOR_FRAME_DEFAULT)
+    StrokePath(Control::FRAME_THICKNESS)
 
   EndIf
 
@@ -428,7 +427,7 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
             VectorSourceColor(UIColor::COLOR_CARET )
         CompilerEndSelect
       EndIf
-      StrokePath(1)
+      StrokePath(2)
     EndIf
   Else
     ; ---[ Draw Value ]-------------------------------------------------------
@@ -470,8 +469,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
     Case #PB_EventType_Resize
       ; ---[ Sanity Check ]---------------------------------------------------
       If Not( *ev_data ):ProcedureReturn : EndIf
-      ; ---[ Cancel Height ]--------------------------------------------------
-      *Me\sizY = 18
       ; ---[ Update Topology ]------------------------------------------------
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
       If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
@@ -989,7 +986,7 @@ Procedure.i New(*parent.Control::Control_t ,name.s, value.s = "", options.i = 0,
   *Me\posX         = x
   *Me\posY         = y
   *Me\sizX         = width
-  *Me\sizY         = 18
+  *Me\sizY         = height
   *Me\visible      = #True
   *Me\enable       = #True
   *Me\options      = options
@@ -1076,7 +1073,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 469
-; FirstLine = 466
+; CursorPosition = 362
+; FirstLine = 344
 ; Folding = ----
 ; EnableXP

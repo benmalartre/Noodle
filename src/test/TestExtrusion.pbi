@@ -47,10 +47,10 @@ If Time::Init()
  *app = Application::New("TestMesh",width,height)
 
  If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+   *viewport = ViewportUI::New(*app\window\main,"Viewport", *app\camera, *app\handle)
    *app\context = *viewport\context
    
-  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
@@ -60,8 +60,7 @@ If Time::Init()
   
   Global *root.Model::Model_t = Model::New("Model")
   
-  
-  
+ 
   Define *section.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
   Utils::BuildCircleSection(*section, 12)
       
@@ -91,17 +90,13 @@ If Time::Init()
   
   Object3D::AddChild(*root,*mesh)
   Next
-  
 
-  
-  
   
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 58
-; FirstLine = 54
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP

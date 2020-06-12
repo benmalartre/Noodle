@@ -31,10 +31,6 @@ DeclareModule ControlIcon
     #Icon_Max
   EndEnumeration
   
-  Global Dim s_gui_controls_dark_icon_img.i(#Icon_Max)
-  Global Dim s_gui_controls_light_icon_img.i(#Icon_Max)
-  Global Dim s_gui_controls_icon_img.i(#Icon_Max)
-  
   Global Dim s_gui_controls_icon_name.s(#Icon_Max)
   s_gui_controls_icon_name(0) = "default"
   s_gui_controls_icon_name(1) = "close"
@@ -102,9 +98,9 @@ EndDeclareModule
 Module ControlIcon
  
   ; ----------------------------------------------------------------------------
-  ;  hlpDraw
+  ;  Draw
   ; ----------------------------------------------------------------------------
-  Procedure hlpDraw( *Me.ControlIcon_t, xoff.i = 0, yoff.i = 0 )
+  Procedure Draw( *Me.ControlIcon_t, xoff.i = 0, yoff.i = 0 )
     ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
@@ -116,14 +112,14 @@ Module ControlIcon
     If Not *Me\enable 
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
         Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
@@ -133,14 +129,14 @@ Module ControlIcon
     ElseIf *Me\over
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\down Or ( *Me\value < 0 )
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
         Vector::DrawIcon(*Me\item, Vector::#STATE_OVER)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
@@ -150,14 +146,14 @@ Module ControlIcon
     Else
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0 Or *Me\down
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
         Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
       ; ---[ Up ]---------------------------------------------------------------
       Else
-        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, 2)
+        Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
@@ -187,7 +183,7 @@ Module ControlIcon
       ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
         ; ...[ Draw Control ]...................................................
-        hlpDraw( *Me, *ev_data\xoff, *ev_data\yoff )
+        Draw( *Me, *ev_data\xoff, *ev_data\yoff )
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -413,6 +409,10 @@ Module ControlIcon
     *Me\posY       = y
     *Me\sizX       = width
     *Me\sizY       = height
+    *Me\fixedX     = #True
+    *Me\fixedY     = #True
+    *Me\percX      = -1
+    *Me\percY      = -1
     *Me\options    = options
     *Me\visible    = #True
     *Me\enable     = #True
@@ -454,7 +454,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 103
+; CursorPosition = 148
+; FirstLine = 109
 ; Folding = ---
 ; EnableXP

@@ -61,19 +61,16 @@ XIncludeFile "Types.pbi"
     
     *Me\posX = x
     *Me\posY = y
-    *Me\sizY = width
+    *Me\sizX = width
     *Me\sizY = height
     Protected mx,my
-
     If *Me\leaf
-
       Protected *ui.UI::UI_t = *Me\content
       Protected ui.UI::IUI = *ui
       If *ui And *ui\container
         ResizeGadget(*ui\container,x,y,width,height)  
         ui\OnEvent(#PB_Event_SizeWindow)
       EndIf
-     
     Else
       Protected hs = #VIEW_BORDER_SENSIBILITY/2
       If *Me\fixed
@@ -164,8 +161,6 @@ XIncludeFile "Types.pbi"
   
   Procedure Split(*Me.View_t,options.i=0,perc.i=50)
     If *Me\leaf
-      
-;       If *Me\gadgetID : FreeGadget(*Me\gadgetID):EndIf
       Protected hs = #VIEW_BORDER_SENSIBILITY/2
       Protected *content = *Me\content
 
@@ -181,9 +176,7 @@ XIncludeFile "Types.pbi"
            *Me\fixed_side = #PB_Splitter_SecondFixed
         EndIf
       EndIf
-         
-         
-;       OpenGadgetList(*Me\gadgetID)
+
       If options & #PB_Splitter_Vertical
         Protected mx
         If *Me\fixed
@@ -205,15 +198,14 @@ XIncludeFile "Types.pbi"
         SetSplitter(*Me\right,*Me,*Me\rsplitter,*Me\tsplitter,*Me\bsplitter)
         *Me\right\window = *Me\window
         
-        
         *Me\splitter = CanvasGadget(#PB_Any,*Me\posX+mx-hs,*Me\posY,2*hs,*Me\sizY)
         StartDrawing(CanvasOutput(*Me\splitter))
         Box(0,0,GadgetWidth(*Me\splitter), GadgetHeight(*Me\splitter), UIColor::COLOR_SPLITTER)
         StopDrawing()
 
-      If Not *Me\fixed : SetGadgetAttribute(*Me\splitter,#PB_Canvas_Cursor,#PB_Cursor_LeftRight) : EndIf
+        If Not *Me\fixed : SetGadgetAttribute(*Me\splitter,#PB_Canvas_Cursor,#PB_Cursor_LeftRight) : EndIf
       
-    Else
+      Else
         Protected my
         If *Me\fixed
           
@@ -249,8 +241,6 @@ XIncludeFile "Types.pbi"
     Else
       ProcedureReturn #Null
     EndIf
-    
-    
   EndProcedure
   
   ;----------------------------------------------------------------------------------
@@ -272,21 +262,15 @@ XIncludeFile "Types.pbi"
       Define e
       Repeat 
         e = WaitWindowEvent()
-        ; Get Mouse Position
         mx = WindowMouseX(windowID)
         my = WindowMouseY(windowID)
-        ; Resize Window Event
-        ;If EventType() = #PB_EventType_LeftButtonUp
-        
-        ;If e = #PB_Event_WindowDrop Or e = #PB_Event_GadgetDrop
+
         If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
           GetPercentage(*Me,mx,my)
           drag = #False
         EndIf
-  
       Until drag = #False
       PostEvent(#PB_Event_SizeWindow)
-;       ViewManager::OnEvent(*Me,#PB_Event_SizeWindow)
     EndIf
     
   EndProcedure
@@ -470,8 +454,8 @@ XIncludeFile "Types.pbi"
     If Not event : ProcedureReturn : EndIf
     If *Me\leaf
       If *Me\content <> #Null
-        Protected *content.Control::IControl = *Me\content
-        *content\OnEvent(EventType())
+        Protected *content.UI::IUI = *Me\content
+        *content\OnEvent(event)
       EndIf
     Else
       Select event:
@@ -496,6 +480,7 @@ XIncludeFile "Types.pbi"
   ; Set Content
   ;-----------------------------------------------------------------------------------
   Procedure SetContent(*Me.View_t,*content.UI::UI_t)
+    Debug *Me\name
     If *Me\content
       Debug "Delete OLD content!!!"
     EndIf
@@ -562,7 +547,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 473
-; FirstLine = 456
+; CursorPosition = 482
+; FirstLine = 432
 ; Folding = ----
 ; EnableXP

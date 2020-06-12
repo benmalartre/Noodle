@@ -41,12 +41,11 @@ DeclareModule ColorUI
   
   DataSection 
     ColorUIVT: 
-    Data.i @Delete()
-    Data.i @Resize()
-    Data.i @Draw()
-    Data.i @DrawPickImage()
-    Data.i @Pick()
-    Data.i @OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
+      Data.i @DrawPickImage()
+      Data.i @Pick()
   EndDataSection 
   
 EndDeclareModule
@@ -211,8 +210,8 @@ EndModule
 ; Until e = #PB_Event_CloseWindow
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 57
+; CursorPosition = 43
+; FirstLine = 15
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -4,7 +4,6 @@ XIncludeFile("../libs/OpenGLExt.pbi")
 ;====================================================================
 ; Framebuffer Module Declaration
 ;====================================================================
-
 DeclareModule Framebuffer
   UseModule OpenGL
   UseModule OpenGLExt
@@ -333,7 +332,7 @@ Module Framebuffer
     glBindFramebuffer(#GL_FRAMEBUFFER,0)
   EndProcedure
 
-  ; Resize Frame Buffer // Not Working
+  ; Resize Frame Buffer
   ;----------------------------------------------------------
   Procedure.i Resize(*buffer.FrameBuffer_t,width.i,height.i)
     *buffer\width = width
@@ -604,9 +603,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 348
-; FirstLine = 328
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 341
+; FirstLine = 301
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

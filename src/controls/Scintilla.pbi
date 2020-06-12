@@ -35,9 +35,6 @@ DeclareModule ControlScintilla
   Declare New( name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlScintilla_t)
   Declare OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  Declare SetTheme( theme.i )
-  Declare.b Init()
-  Declare.b Term()
   
   ; ----------------------------------------------------------------------------
   ;  Datas 
@@ -319,43 +316,12 @@ Module ControlScintilla
 
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
-    
-  EndProcedure
-
-
-  ; ============================================================================
-  ;  PROCEDURES
-  ; ============================================================================
-  Procedure SetTheme( theme.i )
-    
-    
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Init
-  ; ----------------------------------------------------------------------------
-  Procedure.b Init( )
-    
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
-  EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  raaGuiControlsHeadTermOnce
-  ; ----------------------------------------------------------------------------
-  Procedure.b Term( )
-  
-    
-    ; ---[ OK ]-----------------------------------------------------------------
-    ProcedureReturn( #True )
-    
   EndProcedure
   
   Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 125
-; Folding = ---
+; CursorPosition = 37
+; FirstLine = 12
+; Folding = --
 ; EnableXP

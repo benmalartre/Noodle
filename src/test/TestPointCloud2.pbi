@@ -100,7 +100,7 @@ Global *middle.View::View_t = View::Split(*top\right,#PB_Splitter_Vertical,60)
 Global *center.View::View_t = View::Split(*middle\left,#PB_Splitter_Vertical,30)
 Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,120)
 
-Global *topmenu.TopMenuUI::TopMenuUI_t = TopMenuUI::New(*top\left,"TopMenu")
+Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\context)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -153,9 +153,9 @@ EndProcedure
 Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (MacOS X - x64)
-; CursorPosition = 94
-; FirstLine = 90
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 107
+; FirstLine = 94
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

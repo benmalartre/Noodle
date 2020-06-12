@@ -74,18 +74,18 @@ Module LayerBlur
     ; Blur SSAO texture To remove noise
     Protected shader = *ctx\shaders("ssao_blur")\pgm
     glUseProgram(shader)
-    glViewport(0,0,*layer\width,*layer\height)
+    glViewport(0,0,*layer\datas\width,*layer\datas\height)
     Framebuffer::BindInput(*layer\input)
-    Framebuffer::BindOutput(*layer\buffer)
+    Framebuffer::BindOutput(*layer\datas\buffer)
     glClear(#GL_COLOR_BUFFER_BIT);
     ScreenQuad::Draw(*layer\quad)
     
     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\buffer);
+    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\datas\buffer);
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-    glBlitFramebuffer(0, 0, *layer\width,*layer\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+    glBlitFramebuffer(0, 0, *layer\datas\width,*layer\datas\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
     
-    Framebuffer::Unbind(*layer\buffer)
+    Framebuffer::Unbind(*layer\datas\buffer)
     
 ;     Layer::WriteImage(*layer,"D:\Projects\RnD\PureBasic\Noodle\pictures\Test.png",#GL_RGBA)
   EndProcedure
@@ -106,13 +106,13 @@ Module LayerBlur
     Object::INI( LayerBlur )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\name = "LayerBlur"
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\input = *input
     *Me\context = *ctx
     *Me\pov = *camera
-    *Me\buffer = Framebuffer::New("Blur",width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    *Me\datas\buffer = Framebuffer::New("Blur",width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
   
@@ -124,8 +124,9 @@ Module LayerBlur
   
   Class::DEF(LayerBlur)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 114
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

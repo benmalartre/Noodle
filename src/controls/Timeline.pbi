@@ -103,8 +103,11 @@ DeclareModule ControlTimeline
   Declare OnTimer(*Me.ControlTimeline_t)
   DataSection
     ControlTimelineVT:
-    Data.i @OnEvent() ; mandatory override
-    Data.i @Delete()  ; mandatory override 
+    Data.i @OnEvent()
+    Data.i @Delete()
+    Data.i @Draw()
+    Data.i Control::@DrawPickImage()
+    Data.i Control::@Pick()
     Data.i @SetCurrentFrame()
     Data.i @SetStartFrame()
     Data.i @SetEndFrame()
@@ -981,7 +984,6 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARECALLBACK(OnSetCurrentFrame, Arguments::#PTR)
   
-  
   ; ---[ Append Control ]---------------------------------------------------------------
   Procedure.i Append( *Me.ControlTimeline_t, *ctl.Control::Control_t )
     
@@ -1010,7 +1012,7 @@ Module ControlTimeline
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlTimeline_t )
-    
+    Debug "CONTROL TIMELINE : DELETE !!! "
     ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = 4
@@ -1019,6 +1021,8 @@ Module ControlTimeline
     Protected child.Control::IControl
     For i=0 To iBound
       child = *Me\children()
+      Define *ctrl.Control::Control_t = child
+      Debug *ctrl\name
       child\Delete()
     Next
     
@@ -1143,7 +1147,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 509
-; FirstLine = 506
+; CursorPosition = 1014
+; FirstLine = 1006
 ; Folding = -------
 ; EnableXP

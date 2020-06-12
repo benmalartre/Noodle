@@ -52,8 +52,7 @@ DeclareModule GLContext
     focus.b
     shader.GLuint
     
-;     List *layers()
-    
+    List *layers()
     Map *shaders.Program::Program_t()
   EndStructure
   
@@ -65,7 +64,7 @@ DeclareModule GLContext
   Declare FlipBuffer(*Me.GLContext_t)
   Declare GetSupportedLineWidth(*Me.GLContext_t)
   Declare Resize(*Me.GLContext_t, width.i, height.i)
-;   Declare AddLayer(*Me.GLContext_t, *layer)
+  Declare AddLayer(*Me.GLContext_t, *layer)
   
   Global *MAIN_GL_CTXT.GLContext_t
 EndDeclareModule
@@ -74,91 +73,43 @@ EndDeclareModule
 ; ============================================================================
 ; Layer Module Declaration
 ; ============================================================================
-DeclareModule Layer
+DeclareModule GLLayer
   UseModule Math
   ;---------------------------------------------------
   ; Structure
   ;---------------------------------------------------
-  Structure Layer_t Extends Object3D::Object3D_t
-    *pov.Object3D::Object3D_t
-    *viewport.Viewport_t
+  Structure GLLayer_t
+    name.s
     *buffer.Framebuffer::Framebuffer_t
     *quad.ScreenQuad::ScreenQuad_t
     width.i
     height.i
   
-    *context.GLContext::GLContext_t
     color.Math::c4f32
     background_color.Math::c4f32
     active.b
     fixed.b
     mask.l
-    
-    *items.CArray::CArrayPtr
-    *dependencies.CArray::CArrayPtr
+    *context.GLContext::GLContext_t
+    *shader.Program::Program_t
+
     image.i
   EndStructure
+
+  Declare Initialize(*layer.GLLayer_t, width, height, name.s, *ctxt.GLContext::GLContext_t)
+  Declare SetColor(*layer.GLLayer_t,r.f,g.f,b.f,a.f)
+  Declare SetBackgroundColor(*layer.GLLayer_t,r.f,g.f,b.f,a.f)
+  Declare IsFixed(*layer.GLLayer_t)
+  Declare SetShader(*layer.GLLayer_t,*shader.Program::Program_t)
   
-  ;---------------------------------------------------
-  ; Interface
-  ;---------------------------------------------------
-  Interface ILayer
-    Delete()
-    Setup(*ctx.GLContext::GLContext_t)
-    Update()
-    Clean(*ctx.GLContext::GLContext_t)
-    Draw(*ctx.GLContext::GLContext_t)
-  EndInterface
+  Declare Clear(*layer.GLLayer_t)
+  Declare Resize(*layer.GLLayer_t,width,height.i)
+  Declare AddScreenSpaceQuad(*layer.GLLayer_t,*ctx.GLContext::GLContext_t)
   
-  Enumeration
-    #LAYER_DEFAULT
-    #LAYER_GBUFFER
-    #LAYER_SELECTION
-    #LAYER_SSAO
-    #LAYER_STROKE
-    #LAYER_DEPTH
-    #LAYER_COMPONENT
-    
-  EndEnumeration
+  Declare WriteImage(*layer.GLLayer_t,path.s,format)
+  Declare WriteFramebuffer(*layer.GLLayer_t,path.s,format.i)
   
-  ;---------------------------------------------------
-  ; Per Viewport Layer Manager
-  ;---------------------------------------------------
-  Structure LayerManager_t Extends Object::Object_t
-    *layers.CArrayPtr
-    *current.Layer
-  EndStructure
-  
-  Declare SetPOV(*layer.Layer_t,*pov.Object3D::Object3D_t)
-  Declare SetColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-  Declare SetBackgroundColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-  Declare IsFixed(*layer.Layer_t)
-  Declare GetTree(*layer.Layer_t)
-  Declare SetShader(*layer.Layer_t,*shader.Program::Program_t)
-  
-  Declare Clear(*layer.Layer_t)
-  Declare Resize(*layer.Layer_t,width,height.i)
-  Declare AddScreenSpaceQuad(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-  Declare DrawChildren(*Me.Layer_t,*obj.Object3D::Object3D_t)
-  Declare Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-  Declare Delete()
-  
-  Declare GetViewMatrix(*layer.Layer_t)
-  Declare GetProjectionMatrix(*layer.Layer_t)
-  Declare WriteImage(*layer.Layer_t,path.s,format)
-  Declare WriteFramebuffer(*layer.Layer_t,path.s,format.i)
-  
-  Declare DrawDrawers(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader.i)
-  Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
-  Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-  Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
-  
-  Declare AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
-  Declare RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
-  
-  Declare GetImage(*layer.Layer::Layer_t, path.s)
+  Declare GetImage(*layer.GLLayer::GLLayer_t, path.s)
    ; ============================================================================
   ;  MACROS ( Layer )
   ; ============================================================================
@@ -175,8 +126,8 @@ DeclareModule Layer
 
 EndDeclareModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 64
+; CursorPosition = 93
+; FirstLine = 61
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

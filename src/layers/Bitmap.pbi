@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Bitmap Layer Module
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "../objects/Layer.pbi"
 DeclareModule LayerBitmap
   UseModule Math
   ;---------------------------------------------------
@@ -42,7 +42,7 @@ Module LayerBitmap
   ; Setup
   ;------------------------------------
   Procedure Setup(*layer.LayerBitmap_t)
-    Framebuffer::Check(*layer\buffer)
+    Framebuffer::Check(*layer\datas\buffer)
   EndProcedure
   
   ;------------------------------------
@@ -80,18 +80,17 @@ Module LayerBitmap
   ; Draw
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t,*ctx.GLContext::GLContext_t)
+    Define shader.i = *ctx\shaders("bitmap")\pgm
+    glUseProgram(shader)
     
-    glUseProgram(*layer\shader)
-    
-    Framebuffer::BindOutput(*layer\buffer)
+    Framebuffer::BindOutput(*layer\datas\buffer)
     Layer::Clear(*layer)
     
     glActiveTexture(#GL_TEXTURE0)
     glBindTexture(#GL_TEXTURE_2D,*layer\bitmap)
     
-    
-    glUniform1i(glGetUniformLocation(*layer\shader,"tex"),0)
-    glUniform4f(glGetUniformLocation(*layer\shader,"color"),0.0,1.0,0.0,1.0)
+    glUniform1i(glGetUniformLocation(shader,"tex"),0)
+    glUniform4f(glGetUniformLocation(shader,"color"),0.0,1.0,0.0,1.0)
     
     glDisable(#GL_CULL_FACE)
     glDisable(#GL_DEPTH_TEST)
@@ -99,11 +98,11 @@ Module LayerBitmap
     
     ScreenQuad::Draw(*layer\quad)
     
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER,*layer\buffer\frame_id)
+    glBindFramebuffer(#GL_READ_FRAMEBUFFER,*layer\datas\buffer\frame_id)
     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-    Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
-    Framebuffer::Unbind(*layer\buffer)
+    Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::Unbind(*layer\datas\buffer)
     
 ;     Layer::WriteImage(*layer,"D:\Projects\RnD\PureBasic\Noodle\pictures\Test.png",#GL_RGBA)
   EndProcedure
@@ -112,10 +111,10 @@ Module LayerBitmap
   ; Destructor
   ;---------------------------------------------------
   Procedure Delete(*Me.LayerBitmap_t)
-    Framebuffer::Delete(*Me\buffer)
-    If IsImage(*Me\image) : FreeImage(*Me\image) : EndIf
+    Framebuffer::Delete(*Me\datas\buffer)
+    If IsImage(*Me\datas\image) : FreeImage(*Me\datas\image) : EndIf
     ScreenQuad::Delete(*Me\quad)
-    Object::TERM(LayerBitmap)
+;     Object::TERM(LayerBitmap)
   EndProcedure
   
   
@@ -124,17 +123,17 @@ Module LayerBitmap
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
     Protected *Me.LayerBitmap_t = AllocateMemory(SizeOf(LayerBitmap_t))
-    Object::INI( LayerBitmap )
+;     Object::INI( LayerBitmap )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\name = "LayerBitmap"
-    *Me\width = width
-    *Me\height = height
+    *Me\datas\width = width
+    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *camera
     *Me\bitmap = #Null
-    *Me\buffer = Framebuffer::New("Bitmap",width,height)
-    *Me\image = CreateImage(#PB_Any,width,height)
-    Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    *Me\datas\buffer = Framebuffer::New("Bitmap",width,height)
+    *Me\datas\image = CreateImage(#PB_Any,width,height)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
     *Me\shader = *ctx\shaders("bitmap")\pgm
@@ -148,7 +147,7 @@ Module LayerBitmap
   
   Class::DEF(LayerBitmap)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 3
 ; Folding = --
 ; EnableXP

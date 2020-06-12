@@ -23,24 +23,17 @@ DeclareModule TimelineUI
   Declare Pick(*Me.TimelineUI_t)
   Declare OnEvent(*Me.TimelineUI_t,event.i)
   Declare Draw(*Me.TimelineUI_t)
-  
-  
-  
+
   DataSection 
     TimelineUIVT: 
+      Data.i @OnEvent()
       Data.i @Delete()
-      Data.i @Resize()
       Data.i @Draw()
       Data.i @DrawPickImage()
       Data.i @Pick()
-      Data.i @OnEvent()
-  
     EndDataSection 
-    
-    
-  Global CLASS.Class::Class_t
 
-  
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 ; -----------------------------------------
@@ -51,38 +44,35 @@ Module TimelineUI
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  ;{
   Procedure.i New(*parent.View::View_t,name.s="TimelineUI")
     Protected *Me.TimelineUI_t = AllocateMemory(SizeOf(TimelineUI_t))
-    
+    InitializeStructure(*Me, TimelineUI_t)
     Object::INI(TimelineUI)
     
     *Me\posX = *parent\posX
     *Me\posY = *parent\posY
     *Me\sizX = *parent\sizX
     *Me\sizY = *parent\sizY
-   
     *Me\name = "Timeline"
-    ;*Me\type = Globals::::#VIEW_TIMELINE
-    
-    ; ---[ View Content ]-----------------------
-    *parent\content = *Me
-    *Me\parent = *parent
     
     ; ---[ Time line Control ]------------------
     *Me\container = ContainerGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-    *Me\timeline = ControlTimeline::New(*parent,0,0,*Me\sizX,*Me\sizY)
+    *Me\timeline = ControlTimeline::New(*Me,0,0,*Me\sizX,*Me\sizY)
     *Me\gadgetID = *Me\timeline\gadgetID
     CloseGadgetList()
     
+    ; ---[ View Content ]-----------------------
+    *Me\parent = *parent
+    View::SetContent(*parent, *Me)
     OnEvent(*Me,#PB_Event_SizeWindow)
-  
+    
     ProcedureReturn *Me
   EndProcedure
   
   ; Delete
   ;-------------------------------
   Procedure Delete(*Me.TimelineUI_t)
+    Debug "TIMELINE UI DELTE !!!"
     ControlTimeline::Delete(*Me\timeline)
     FreeGadget(*Me\container)
     Object::TERM(TimelineUI)
@@ -112,7 +102,6 @@ Module TimelineUI
   Procedure Resize(*Me.TimelineUI_t)
     
   EndProcedure
-  
   
   ; Event
   ;-------------------------------
@@ -153,7 +142,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 88
+; CursorPosition = 118
+; FirstLine = 75
 ; Folding = --
 ; EnableXP

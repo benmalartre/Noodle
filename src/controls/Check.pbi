@@ -70,49 +70,54 @@ Module ControlCheck
     VectorFont(FontID( Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
-    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    AddPathBox(*Me\posX-Control::FRAME_THICKNESS, *Me\posY-Control::FRAME_THICKNESS, *Me\sizX+2*Control::FRAME_THICKNESS, *Me\sizY+2*Control::FRAME_THICKNESS)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
-    MovePathCursor(0 + xoff, 0 + yoff)
-    AddPathBox(0+ xoff +*Me\sizX-(#CHECK_WIDTH+#CHECK_MARGIN), 0 +yoff+#CHECK_MARGIN, #CHECK_WIDTH, #CHECK_WIDTH)
-    VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
-    FillPath(#PB_Path_Preserve)
-    VectorSourceColor(UIColor::BLACK)
-    StrokePath(#CHECK_STROKE_WIDTH, #PB_Path_RoundCorner)
+    Define left = xoff +*Me\sizX-(#CHECK_WIDTH+#CHECK_MARGIN)
+    Define top = yoff+#CHECK_MARGIN
     
-;     ; ---[ Check Disabled ]-----------------------------------------------------
-;     If Not *Me\enable
-;       ; ...[ Dispatch Value ]...................................................
-;       Select *Me\value
-;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_checked     ))
-;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_unchecked   ))
-;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_disabled_undetermined))
-;       EndSelect
-;       ; ...[ Disabled Text ]....................................................
-;       tc = UIColor::COLOR_LABEL_DISABLED
-;     ; ---[ Check Over ]---------------------------------------------------------
-;     ElseIf *Me\over
-;       ; ...[ Dispatch Value ]...................................................
+    AddPathBox(left, top, #CHECK_WIDTH, #CHECK_WIDTH)
+    VectorSourceColor(UIColor::COLOR_NUMBER_BG)
+    FillPath(#PB_Path_Preserve)
+   
+    
+    ; ---[ Check Disabled ]-----------------------------------------------------
+    If Not *Me\enable
+       VectorSourceColor(UIColor::COLOR_FRAME_ACTIVE)
+       StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)
+       VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+    ; ---[ Check Over ]---------------------------------------------------------
+    ElseIf *Me\over
+      VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
+      StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)
+      ; ...[ Dispatch Value ]...................................................
 ;       Select *Me\value
 ;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_over_checked     ) )
 ;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_over_unchecked   ) )
 ;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_over_undetermined) )
 ;       EndSelect
-;     ; ---[ Normal State ]-------------------------------------------------------
-;     Else
-;       ; ...[ Dispatch Value ]...................................................
+    ; ---[ Normal State ]-------------------------------------------------------
+    Else
+      VectorSourceColor(UIColor::COLOR_FRAME_DEFAULT)
+      StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)
+      ; ...[ Dispatch Value ]...................................................
 ;       Select *Me\value
 ;         Case  1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_checked     ) )
 ;         Case  0 : DrawVectorImage( ImageID(s_gui_controls_check_normal_unchecked   ) )
 ;         Case -1 : DrawVectorImage( ImageID(s_gui_controls_check_normal_undetermined) )
 ;       EndSelect
-;     EndIf
+    EndIf
     
-    ; ---[ Draw Label ]---------------------------------------------------------
-    MovePathCursor( 23 + xoff, ty)
-    VectorSourceColor(tc)
-    DrawVectorText("FUCK THAQT : "+*Me\label )
+     Select *Me\value
+       Case  1 :
+         MovePathCursor(left + 2, top + #CHECK_WIDTH / 2)
+         AddPathLine(#CHECK_WIDTH / 4, #CHECK_WIDTH / 4, #PB_Path_Relative)
+         AddPathLine( 2 * #CHECK_WIDTH / 4, -#CHECK_WIDTH + 8, #PB_Path_Relative)
+         VectorSourceColor(UIColor::COLOR_CARET)
+         StrokePath(2.4, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
+      EndSelect
+    
   EndProcedure
   ;}
   
@@ -212,10 +217,7 @@ Module ControlCheck
         If *Me\visible And *Me\enable
           *Me\down = #False
           Control::Invalidate(*Me)
-          If *Me\over
-            Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
-          EndIf
-          
+          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)          
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -331,7 +333,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 142
+; CursorPosition = 116
+; FirstLine = 60
 ; Folding = --
 ; EnableXP

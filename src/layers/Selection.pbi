@@ -2,7 +2,7 @@
 ;  OpenGl Layer For 3D Picking Using GLSL Shaders
 ; ============================================================================
 XIncludeFile "../opengl/Layer.pbi"
-; XIncludeFile "../opengl/Context.pbi"
+XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../objects/Selection.pbi"
 
 DeclareModule LayerSelection
@@ -120,8 +120,8 @@ Procedure Pick(*layer.LayerSelection_t)
   Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
   
   ; ---[ Bind Framebuffer and Clean ]-------------------
-  Framebuffer::BindOutput(*layer\buffer)
-  glViewport(0,0,*layer\width,*layer\height)
+  Framebuffer::BindOutput(*layer\datas\buffer)
+  glViewport(0,0,*layer\datas\width,*layer\datas\height)
 
   glClearColor(0,0,0,0)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
@@ -139,9 +139,9 @@ Procedure Pick(*layer.LayerSelection_t)
   DrawChildren(*layer,Scene::*current_scene\root,*ctx)
 
   
-  Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
 
-  Framebuffer::Unbind(*layer\buffer)
+  Framebuffer::Unbind(*layer\datas\buffer)
   
   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
   
@@ -216,12 +216,12 @@ Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object
   Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
   Object::INI( LayerSelection )
   Color::Set(*Me\background_color,0.5,1.0,0.5,1)
-  *Me\width = width
-  *Me\height = height
+  *Me\datas\width = width
+  *Me\datas\height = height
   *Me\context = *ctx
-  *Me\buffer = Framebuffer::New("Selection",width,height)
-  Framebuffer::AttachTexture(*Me\buffer,"Color",#GL_RGBA8,#GL_LINEAR)
-  Framebuffer::AttachRender(*Me\buffer,"Depth",#GL_DEPTH_COMPONENT)
+  *Me\datas\buffer = Framebuffer::New("Selection",width,height)
+  Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA8,#GL_LINEAR)
+  Framebuffer::AttachRender(*Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
   
     
   *Me\shader = *ctx\shaders("selection")
@@ -244,7 +244,8 @@ EndModule
 ; FirstLine = 142
 ; Folding = --
 ; EnableXP
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 223
+; FirstLine = 158
 ; Folding = --
 ; EnableXP
