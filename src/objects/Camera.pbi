@@ -134,17 +134,17 @@ Module Camera
       
   EndSelect
   
-    Protected *position = Attribute::New("Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#True,#False,#True)
+    Protected *position = Attribute::New(*Me,"Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#True,#False,#True)
     Object3D::AddAttribute(*Me,*position)
-    Protected *lookat = Attribute::New("LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#True,#False,#True)
+    Protected *lookat = Attribute::New(*Me,"LookAt",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\lookat,#True,#False,#True)
     Object3D::AddAttribute(*Me,*lookat)
-    Protected *up = Attribute::New("UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#True,#False,#True)
+    Protected *up = Attribute::New(*Me,"UpVector",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\up,#True,#False,#True)
     Object3D::AddAttribute(*Me,*up)
-    Protected *fov = Attribute::New("FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#True,#False,#True)
+    Protected *fov = Attribute::New(*Me,"FOV",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\fov,#True,#False,#True)
     Object3D::AddAttribute(*Me,*fov)
-    Protected *near = Attribute::New("nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#True,#False,#True)
+    Protected *near = Attribute::New(*Me,"nearplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\nearplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*near)
-    Protected *far = Attribute::New("farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#True,#False,#True)
+    Protected *far = Attribute::New(*Me,"farplane",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\farplane,#True,#False,#True)
     Object3D::AddAttribute(*Me,*far)
     
     ProcedureReturn *Me
@@ -494,9 +494,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 245
-; FirstLine = 236
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 132
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

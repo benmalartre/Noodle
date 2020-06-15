@@ -115,7 +115,7 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     *app\context = *viewport\context
+     Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   GLContext::SetContext(*app\context)
@@ -152,13 +152,13 @@ Procedure Draw(*app.Application::Application_t)
   Application::AddShortcuts(*app)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 64
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 117
+; FirstLine = 93
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

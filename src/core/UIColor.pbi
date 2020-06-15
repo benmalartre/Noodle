@@ -85,14 +85,14 @@ DeclareModule UIColor
   #COLOR_DARK_CARET               = $FF000000
   #COLOR_DARK_TEXT_DEFAULT        = $FFFFFFFF
   #COLOR_DARK_TEXT_ACTIVE         = $FF000000
-  #COLOR_DARK_SELECTED_BG         = $FFEEEEEE
+  #COLOR_DARK_SELECTED_BG         = $FFFF0000
   #COLOR_DARK_SELECTED_FG         = $FF111111
   #COLOR_DARK_ACTIVE_BG           = $FFEEEEEE
   #COLOR_DARK_ACTIVE_FG           = $FF111111
   #COLOR_DARK_DISABLED_BG         = $FF333333
   #COLOR_DARK_DISABLED_FG         = $FF666666
   #COLOR_DARK_NUMBER_BG           = $FF454545
-  #COLOR_DARK_NUMBER_FG           = $FFFFFFFF
+  #COLOR_DARK_NUMBER_FG           = $FFCCCCCC
   #COLOR_LIGHT_SPLITTER           = $FFFFFFFF
   ;}
   
@@ -266,7 +266,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 35
+; CursorPosition = 87
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP

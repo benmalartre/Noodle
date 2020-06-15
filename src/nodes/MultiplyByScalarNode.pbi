@@ -26,9 +26,7 @@ DeclareModule MultiplyByScalarNode
   Declare Init(*node.MultiplyByScalarNode_t)
   Declare Evaluate(*node.MultiplyByScalarNode_t)
   Declare Terminate(*node.MultiplyByScalarNode_t)
-  
-;   Declare ResolveReference(*node.MultiplyByScalarNode_t)
-  
+    
   ; ============================================================================
   ;  ADMINISTRATION
   ; ============================================================================
@@ -177,7 +175,7 @@ Module MultiplyByScalarNode
         Debug *output\name + ": DataType OTHER"
     EndSelect
     
-    *output\dirty = #False
+    *output\attribute\dirty = #False
   
   EndProcedure
   
@@ -216,8 +214,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 71
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 177
+; FirstLine = 155
 ; Folding = --
 ; EnableXP

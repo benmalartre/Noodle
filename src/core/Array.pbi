@@ -128,7 +128,7 @@ DeclareModule CArray
   Structure CArrayStr Extends CArrayT
     List _str.s()
   EndStructure
-  
+
   ;----------------------------------------------------------------
   ; GetValue
   ;----------------------------------------------------------------
@@ -1234,8 +1234,7 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 321
-; FirstLine = 285
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 25
 ; Folding = ------------
 ; EnableXP

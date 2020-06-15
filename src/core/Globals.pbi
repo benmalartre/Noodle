@@ -211,10 +211,10 @@ DeclareModule Globals
     #FONT_BOLD
   EndEnumeration
   
-  #FONT_SIZE_TEXT = 10
-  #FONT_SIZE_LABEL = 12
+  #FONT_SIZE_TEXT = 9
+  #FONT_SIZE_LABEL = 11
   #FONT_SIZE_MENU = 13
-  #FONT_SIZE_TITLE = 14
+  #FONT_SIZE_TITLE = 15
   
   ;---------------------------------------------------------
   ; MACROS
@@ -285,16 +285,16 @@ Module Globals
      ; ---[ Init Once ]----------------------------------------------------
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
-        LoadFont( #FONT_DEFAULT, "Consolas", 8)
-        LoadFont( #FONT_BOLD,    "Consolas", 8, #PB_Font_Bold )
+        LoadFont( #FONT_DEFAULT, "lucida", 24)
+        LoadFont( #FONT_BOLD,    "lucida", 24, #PB_Font_Bold )
 
       CompilerCase #PB_OS_MacOS
-        LoadFont( #FONT_DEFAULT, "Verdana", 8)
-        LoadFont( #FONT_BOLD,    "Verdana", 8, #PB_Font_Bold )
+        LoadFont( #FONT_DEFAULT, "lucida", 24)
+        LoadFont( #FONT_BOLD,    "lucida", 24, #PB_Font_Bold )
         
       CompilerCase #PB_OS_Linux
-        LoadFont( #FONT_DEFAULT, "Verdana", 8)
-        LoadFont( #FONT_BOLD,    "Verdana", 8, #PB_Font_Bold ) 
+        LoadFont( #FONT_DEFAULT, "lucida", 24)
+        LoadFont( #FONT_BOLD,    "lucida", 24, #PB_Font_Bold ) 
         
     CompilerEndSelect
   EndProcedure
@@ -326,8 +326,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 38
-; FirstLine = 14
+; CursorPosition = 216
+; FirstLine = 208
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

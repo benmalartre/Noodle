@@ -142,14 +142,13 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 ExplorerUI::Connect(*explorer, Scene::*current_scene)
 
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
-*app\context = *viewport\context
+Application::SetContext(*app, *viewport\context)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 GraphUI::SetContent(*graph,*tree)
-; ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 
@@ -167,8 +166,10 @@ Scene::SelectObject(Scene::*current_scene, *teapot)
 
 Procedure Update(*app.Application::Application_t)
   GLContext::SetContext(*app\context)
+  If Event() = #PB_Event_Menu And EventMenu() > #PB_Event_FirstCustomValue
+    Scene::Update(Scene::*current_scene)
+  EndIf
   
-  Scene::Update(Scene::*current_scene)
   Application::Draw(*app, *layer, *viewport\camera)
   
   FTGL::BeginDraw(*app\context\writer)
@@ -189,8 +190,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 89
+; CursorPosition = 148
+; FirstLine = 126
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

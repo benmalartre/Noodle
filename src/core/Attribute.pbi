@@ -113,7 +113,8 @@ DeclareModule Attribute
     datatype.i
     datastructure.i
     datacontext.i
-    *data     ; Pointer to data
+    *parent 
+    *data
     atomic.b
     isarray.b
     constant.b
@@ -139,7 +140,7 @@ DeclareModule Attribute
     EndSelect
   EndMacro
   
-  Declare New(name.s,datatype.i,datastructure.i,datacontext.i,*Data,atomic.b,read_only.b,constant.b,writable.b=#True,isarray.b=#False)
+  Declare New(*parent,name.s,datatype.i,datastructure.i,datacontext.i,*Data,atomic.b,read_only.b,constant.b,writable.b=#True,isarray.b=#False)
   Declare Delete(*attribute.Attribute_t)
   Declare GetSize(*attribute.Attribute_t)
   Declare Get(*attribute.Attribute_t,*out_datas)
@@ -602,12 +603,13 @@ Module Attribute
   ; ============================================================================
   ;  CONSTRUCTOR
   ; ============================================================================
-  Procedure New(name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True, isarray.b=#False)
+  Procedure New(*parent,name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True, isarray.b=#False)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
     Object::INI(Attribute)
     
     ; ---[ Init Members ]-------------------------------------------------------
+    *Me\parent        = *parent
     *Me\datatype      = datatype
     *Me\datastructure = datastructure
     *Me\datacontext   = datacontext
@@ -626,7 +628,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 111
+; CursorPosition = 122
+; FirstLine = 90
 ; Folding = ---
 ; EnableXP

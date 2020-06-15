@@ -63,7 +63,6 @@ Module Node
   ;   Get Node Parent 3D Object
   ; ----------------------------------------------------------------------------
   Procedure GetParent3DObject(*n.Node_t)
-    Debug "NODE : GET PARENT 3D OBJECT --> "+*n\name
     Define *node.Node::Node_t = *n
     Define *parent.Object::Object_t = *n\parent
     Define search.b = #True
@@ -599,7 +598,7 @@ Module Node
   Procedure IsDirty(*n.Node_t)
     If *n\alwaysDirty : ProcedureReturn #True : EndIf
     ForEach(*n\outputs())
-      If *n\outputs()\dirty
+      If *n\outputs()\attribute\dirty
         ProcedureReturn #True
       EndIf
     Next
@@ -611,14 +610,14 @@ Module Node
   Procedure UpdateDirty(*n.Node_t)
     ForEach(*n\inputs())
       If *n\inputs()\connected
-        If *n\inputs()\source\dirty Or *n\alwaysDirty
-          *n\inputs()\dirty = #True
+        If *n\inputs()\source\attribute\dirty Or *n\alwaysDirty
+          *n\inputs()\attribute\dirty = #True
         EndIf
       EndIf
     Next
     UpdateAffects(*n)
     ForEach(*n\inputs())
-      *n\inputs()\dirty = #False
+      *n\inputs()\attribute\dirty = #False
     Next
     
   EndProcedure
@@ -657,11 +656,11 @@ Module Node
   Procedure UpdateAffects(*n.Node_t)
     ForEach *n\outputs()
       ForEach *n\outputs()\affects()
-        If *n\outputs()\affects()\dirty : *n\outputs()\dirty = #True : EndIf
+        If *n\outputs()\affects()\attribute\dirty : *n\outputs()\attribute\dirty = #True : EndIf
       Next
     Next
     ForEach *n\inputs()
-      *n\inputs()\dirty = #False
+      *n\inputs()\attribute\dirty = #False
     Next
     
   EndProcedure
@@ -670,8 +669,8 @@ Module Node
   ;   Set Clean
   ; ----------------------------------------------------------------------------
   Procedure SetClean(*n.Node_t)
-    ForEach *n\inputs() : *n\inputs()\dirty = #False : Next
-    ForEach *n\outputs() : *n\outputs()\dirty = #False : Next
+    ForEach *n\inputs() : *n\inputs()\attribute\dirty = #False : Next
+    ForEach *n\outputs() : *n\outputs()\attribute\dirty = #False : Next
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -699,8 +698,8 @@ EndModule
 ;  EOF
 ; ==============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 599
-; FirstLine = 594
+; CursorPosition = 65
+; FirstLine = 61
 ; Folding = -------
 ; EnableThread
 ; EnableXP

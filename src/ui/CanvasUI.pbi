@@ -88,12 +88,15 @@ Module CanvasUI
   Procedure New(*view.View::View_t,name.s="CanvasUI")
     *Me.CanvasUI_t = AllocateMemory(SizeOf(CanvasUI_t))
     Object::INI(CanvasUI)
-    *Me\container = ContainerGadget(#PB_Any,*view\posX,*view\posY,*view\sizX,*view\sizY)
+    *Me\posX = *view\posX
+    *Me\posY = *view\posY
+    *Me\sizX = *view\sizX
+    *Me\sizY = *view\sizY
     *Me\resx = *view\sizX
     *Me\resy = *view\sizY
     *Me\pixelratio = *view\sizY / *view\sizX
     *Me\secondary = RGBA(120,12,66,255)
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*view\sizX, *view\sizY,#PB_Canvas_Keyboard)
+    *Me\gadgetID = CanvasGadget(#PB_Any,*view\posX,*view\posY,*view\sizX, *view\sizY,#PB_Canvas_Keyboard)
     *Me\zoom = 100
     *Me\imageID = CreateImage(#PB_Any,*view\sizX,*view\sizY,32)
     *Me\tool = Tool::New(Tool::#TOOL_SELECT, *Me\gadgetID)
@@ -113,7 +116,6 @@ Module CanvasUI
   Procedure Delete(*Me.CanvasUI_t)
     FreeGadget(*Me\gadgetID)
     FreeImage(*Me\imageID)
-    FreeGadget(*Me\container)
     Object::TERM(CanvasUI)
   EndProcedure
   
@@ -397,8 +399,11 @@ Module CanvasUI
   ;   RESIZE
   ; --------------------------------------------------------------------
   Procedure Resize(*Me.CanvasUI_t, x.i, y.i, width.i, height.i)
-    ResizeGadget(*Me\container, x, y, width, height)
-    ResizeGadget(*Me\gadgetID, 0, 0, width, height)
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = width
+    *Me\sizY = height
+    ResizeGadget(*Me\gadgetID, x, y, width, height)
     Draw(*Me)
   EndProcedure
   
@@ -521,7 +526,7 @@ Module CanvasUI
 EndModule
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 72
+; CursorPosition = 404
+; FirstLine = 397
 ; Folding = ----
 ; EnableXP

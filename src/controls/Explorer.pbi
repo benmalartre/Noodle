@@ -261,11 +261,14 @@ Module ControlExplorer
   ; Resize
   ;---------------------------------------------------------
   Procedure Resize(*Me.ControlExplorer_t)
+    *Me\posX = *Me\parent\posX
+    *Me\posY = *Me\parent\posY
+    *Me\sizX = *Me\parent\sizX
+    *Me\sizY = *Me\parent\sizY
     *Me\iwidth = *Me\sizX
     *Me\iheight = *Me\sizY
     *Me\dirty = #True
-    ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
-  ;   *Me\grp\Event(#PB_EventType_Resize,@ed)
+    ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     
   EndProcedure
   
@@ -343,7 +346,7 @@ Module ControlExplorer
     Protected shifty.i = #SHIFTY
     Protected x = 25 + shiftx * (*item\depth)
     Protected tc = UIColor::COLOR_TEXT_DEFAULT
-    VectorFont(FontID(Globals::#FONT_DEFAULT));, Globals::#FONT_SIZE_TEXT)
+    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
     ; Draw Background
     If Mod(*Me\itemcounter,2) = 1
       AddPathBox(0,*Me\ioffsety,*Me\iwidth,shifty)
@@ -559,6 +562,7 @@ Module ControlExplorer
     *Me\itemcounter = 0
 
     StartVectorDrawing(ImageVectorOutput(*Me\imageID))
+    ResetCoordinates()
     AddPathBox(0,0,*Me\iwidth,*Me\iheight)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
@@ -1149,7 +1153,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 294
-; FirstLine = 266
+; CursorPosition = 564
+; FirstLine = 546
 ; Folding = 4-4---
 ; EnableXP

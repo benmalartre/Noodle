@@ -67,27 +67,27 @@ Module PointCloud
     
      ; ---[ Attributes ]---------------------------------------------------------
     Protected *cloud.Geometry::PointCloudGeometry_t = *Me\geom
-    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*cloud,#True,#True,#True,#True,#False)
+    Protected *geom = Attribute::New(*Me,"Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*cloud,#True,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*geom)
-    Protected *nbpoints = Attribute::New("NbPoints",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*cloud\nbpoints,#True,#True,#True, #True, #False)
+    Protected *nbpoints = Attribute::New(*Me,"NbPoints",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*cloud\nbpoints,#True,#True,#True, #True, #False)
     Object3D::AddAttribute(*Me,*nbpoints)
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#True,#False,#False,#True,#True)
+    Protected *pointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#True,#False,#False,#True,#True)
+    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointvelocity)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#True,#False,#False,#True,#True)
+    Protected *pointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointtangent = Attribute::New("PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#True,#False,#False,#True,#True)
+    Protected *pointtangent = Attribute::New(*Me,"PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointtangent)
-    Protected *pointcolor = Attribute::New("PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#True,#False,#False,#True,#True)
+    Protected *pointcolor = Attribute::New(*Me,"PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointcolor)
-    Protected *pointsize = Attribute::New("PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#True,#False,#False,#True,#True)
+    Protected *pointsize = Attribute::New(*Me,"PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointsize)
-    Protected *pointscale = Attribute::New("PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#True,#False,#False,#True,#True)
+    Protected *pointscale = Attribute::New(*Me,"PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointscale)
-    Protected *pointindices = Attribute::New("PointID",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#True,#False,#False,#True,#True)
+    Protected *pointindices = Attribute::New(*Me,"PointID",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointindices)
-    Protected *pointuvws = Attribute::New("PointUVW",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#True,#False,#False,#True,#True)
+    Protected *pointuvws = Attribute::New(*Me,"PointUVW",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointuvws)
   
     ProcedureReturn *Me
@@ -390,7 +390,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 309
-; FirstLine = 291
+; CursorPosition = 366
+; FirstLine = 330
 ; Folding = ---
 ; EnableXP

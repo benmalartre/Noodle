@@ -56,10 +56,9 @@ Module TimelineUI
     *Me\name = "Timeline"
     
     ; ---[ Time line Control ]------------------
-    *Me\container = ContainerGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-    *Me\timeline = ControlTimeline::New(*Me,0,0,*Me\sizX,*Me\sizY)
-    *Me\gadgetID = *Me\timeline\gadgetID
-    CloseGadgetList()
+    *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
+    *Me\timeline = ControlTimeline::New(*Me,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
+    
     
     ; ---[ View Content ]-----------------------
     *Me\parent = *parent
@@ -72,9 +71,7 @@ Module TimelineUI
   ; Delete
   ;-------------------------------
   Procedure Delete(*Me.TimelineUI_t)
-    Debug "TIMELINE UI DELTE !!!"
     ControlTimeline::Delete(*Me\timeline)
-    FreeGadget(*Me\container)
     Object::TERM(TimelineUI)
   EndProcedure
 
@@ -118,8 +115,7 @@ Module TimelineUI
       ev_data\y = *Me\posY
       ev_data\width = *Me\sizX
       ev_data\height = *Me\sizY
-      *Me\gadgetID = *Me\timeline\gadgetID
-      ResizeGadget(*Me\timeline\gadgetID,0,0,*Me\sizX,*Me\sizY)
+      ResizeGadget(*Me\timeline\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
       ControlTimeline::OnEvent(*Me\timeline,#PB_Event_SizeWindow,@ev_data)
     ElseIf event = #PB_Event_Timer
       ControlTimeline::OnEvent(*Me\timeline,#PB_Event_Timer,#Null)
@@ -142,7 +138,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 75
+; CursorPosition = 56
+; FirstLine = 32
 ; Folding = --
 ; EnableXP

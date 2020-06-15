@@ -2,40 +2,10 @@
 ; CAPTURE TO GIF (WINDOWS ONLY)
 ;================================================================================================
 
-; XIncludeFile "../core/ScreenCapture.pbi"
-; XIncludeFile "../core/Vector.pbi"
-; XIncludeFile "../ui/Window.pbi"
-; XIncludeFile "../ui/PropertyUI.pbi"
-; ; XIncludeFile "../ui/View.pbi"
-; XIncludeFile "../controls/Property.pbi"
-; XIncludeFile "../controls/Icon.pbi"
-; XIncludeFile "../controls/Font.pbi"
-; 
-; Globals::Init()
-; Font::Init()
-; 
-; Define *window.Window::Window_t = Window::New("ScreenCapture",200,200,400,100)
-; Define *property.PropertyUI::PropertyUI_t = PropertyUI::New(*window\main,"Property",#Null)
-; Define *controls.ControlProperty::ControlProperty_t = ControlProperty::New( *property, "Controls", "Controls",0,0,400,100)
-; ControlProperty::AppendStart(*controls)
-; ControlProperty::AddBoolControl(*controls, "Fuck","Fuck", #False, #Null)
-; ControlProperty::AddFloatControl(*controls, "Suck", "Suck", 32, #Null)
-; ; Define *record = ControlIcon::New(*controls\gadgetID, "Record", ControlIcon::#Icon_Play)
-; ; Define *test = ControlButton::New(*controls\gadgetID, "FCK")
-; ControlProperty::AppendStop(*controls)
-; Define event.i
-; 
-; Repeat
-;   event = WaitWindowEvent(1/60)
-;   PropertyUI::OnEvent(*property, event)
-; ;   Window::OnEvent(*window, event)
-;   
-; ;   PropertyUI::Draw(*property)
-; Until event = #PB_Event_CloseWindow
-
 XIncludeFile "../core/Application.pbi"
+XIncludeFile "../core/ScreenCapture.pbi"
 
-#WIDTH = 400
+#WIDTH = 500
 #HEIGHT = 84
 
 Structure ScreenCaptureControl_t
@@ -50,7 +20,6 @@ Structure ScreenCaptureControl_t
   *filename_group.ControlGroup::ControlGroup_t
   *filename.ControlEdit::ControlEdit_t
   *extension.ControlText::ControlText_t
-  
 EndStructure
 
 Global *app.Application::Application_t
@@ -58,6 +27,30 @@ Global control.ScreenCaptureControl_t
 
 Declare ConnectRecordSignal(*ctrl.ScreenCaptureControl_t)
 Declare ConnectStopSignal(*ctrl.ScreenCaptureControl_t)
+
+Procedure.s GetSettingsFile()
+  Define home.s = GetHomeDirectory() + Globals::SLASH + "ScreenCapture"
+  Define dir = ExamineDirectory(#PB_Any, home, "*.settings")
+  If Not dir : CreateDirectory(home)
+  Else : FinishDirectory(dir) : EndIf
+ 
+  ProcedureReturn home+Globals::SLASH+"settings.txt"
+EndProcedure
+
+Procedure.s GetInitialFolder()
+  Define filename.s = GetSettingsFile()
+  Define file = ReadFile(#PB_Any, filename)
+  Define folder.s = GetPathPart(filename)
+  If Not file 
+    file = CreateFile(#PB_Any, filename) 
+    WriteString(file, folder)
+  Else 
+    folder = ReadString(file)
+  EndIf
+  CloseFile(file)
+  ProcedureReturn folder
+EndProcedure
+
 
 Procedure OnStop(*ctrl.ScreenCaptureControl_t)
   ControlIcon::PlayIcon(*ctrl\button)
@@ -84,12 +77,20 @@ Procedure ConnectStopSignal(*ctrl.ScreenCaptureControl_t)
 EndProcedure
 
 Procedure OnBrowse(*ctrl.ScreenCaptureControl_t)
-  Define folder.s = PathRequester("Choose Folder", "")
-  MessageRequester("FOLDER : ", folder)
+  Define initialFolder.s = GetInitialFolder()
+  Define folder.s = PathRequester("Choose Folder", initialFolder)
+  If folder
+    file = CreateFile(#PB_Any, GetSettingsFile())
+    WriteString(file, folder)
+    CloseFile(file)
+    *ctrl\folder\value = folder
+    Control::Invalidate(*ctrl\folder)
+  EndIf
 EndProcedure
 Callback::DECLARECALLBACK(OnBrowse, Arguments::#PTR)
 
 Procedure AddControls(*Me.ScreenCaptureControl_t)  
+  Define initialFolder.s = GetInitialFolder()
   *Me\ui = PropertyUI::New(*app\window\main, "UI", #Null)
   PropertyUI::AppendStart(*Me\ui)
   
@@ -101,14 +102,16 @@ Procedure AddControls(*Me.ScreenCaptureControl_t)
   
   *Me\folder_group = ControlGroup::New(*Me\property, "FolderGroup", "Folder :",0,10,300,#HEIGHT-20)
   ControlGroup::AppendStart(*Me\folder_group)
+  Control::SetPercentage(*Me\folder_group, 70, 100)
   
   ControlGroup::RowStart(*Me\folder_group)
-  *Me\folder = ControlEdit::New(*Me\property, "Folder", "", #False, 80, 20, 200, 30)
+  *Me\folder = ControlEdit::New(*Me\property, "Folder", initialFolder, #False, 80, 20, 200, 30)
   ControlGroup::Append(*Me\folder_group, *Me\folder)
   
   *Me\browser = ControlButton::New(*Me\property, "Browse", "...", #False, #False, 320, 20, 40 , 30)
   Signal::CONNECTCALLBACK(*Me\browser\on_click, OnBrowse, *Me)
   ControlGroup::Append(*Me\folder_group, *Me\browser)
+  Control::SetFixed(*Me\browser, 100, -1)
   
   ControlGroup::RowEnd(*Me\folder_group)
   ControlGroup::AppendStop(*Me\folder_group)
@@ -116,12 +119,13 @@ Procedure AddControls(*Me.ScreenCaptureControl_t)
   
   *Me\filename_group = ControlGroup::New(*Me\property, "FilenameGroup", "Filename :", 300,10,300,#HEIGHT-20)
   ControlGroup::AppendStart(*Me\filename_group)
+  Control::SetPercentage(*Me\filename_group, 30, 100)
   
   ControlGroup::RowStart(*Me\filename_group)
-  *Me\filename = ControlEdit::New(*Me\filename_group, "Filename", "", #False, 80, 20, 200, 30)
+  *Me\filename = ControlEdit::New(*Me\filename_group, "Filename", "capture", #False, 80, 20, 200, 30)
   ControlGroup::Append(*Me\filename_group, *Me\filename)
   
-  *Me\extension = ControlText::New(*Me\filename_group, "Extension", ".gif", #False, 280, 30, 60, 30)
+  *Me\extension = ControlText::New(*Me\filename_group, "Extension", ".gif", #False, 280, 25, 60, 30)
   ControlGroup::Append(*Me\filename_group, *Me\extension)
   
   ControlGroup::RowEnd(*Me\filename_group)
@@ -141,9 +145,6 @@ Procedure AddControls(*Me.ScreenCaptureControl_t)
 EndProcedure
 
 
-Procedure Update()
-EndProcedure
-
 Globals::Init()
 Time::Init()
 Log::Init()
@@ -152,16 +153,16 @@ Commands::Init()
 UIColor::Init()
 
 *app = Application::New("ScreenCapture", #WIDTH, #HEIGHT)
-; UIColor::SetTheme(UIColor::#DARK_THEME)
+UIColor::SetTheme(UIColor::#DARK_THEME)
 AddControls(control)
 
-Application::Loop(*app,@Update())
+Application::Loop(*app,#Null, 0.1)
 
 
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 101
+; CursorPosition = 99
+; FirstLine = 84
 ; Folding = --
 ; EnableXP

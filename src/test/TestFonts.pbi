@@ -1,7 +1,7 @@
 ﻿Global window = OpenWindow(#PB_Any,0,0,800,600, "FONT")
 Global canvas = CanvasGadget(#PB_Any,0,0,800,600)
 
-#SIZE_FONT = 8
+#SIZE_FONT = 12
 #NUM_FONTS = 5
 Global Dim fontNames.s(#NUM_FONTS)
 fontNames(0) = "corbel"
@@ -13,7 +13,7 @@ fontNames(4) = "lucida"
 Global Dim fonts(#NUM_FONTS)
 
 Macro MLoadFont(_name, _index)
-  fonts(_index) = LoadFont(#PB_Any, _name, #SIZE_FONT, #PB_FONT_BOLD)
+  fonts(_index) = LoadFont(#PB_Any, _name, #SIZE_FONT, #PB_Font_Bold)
 EndMacro
 
 Define f
@@ -61,7 +61,7 @@ VectorDraw(200)
 
 Repeat
 Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 15
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 33
 ; Folding = -
 ; EnableXP

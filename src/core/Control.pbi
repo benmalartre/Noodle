@@ -308,6 +308,7 @@ Module Control
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
+      Debug "PARENT CONTROL : "+*Me\parent\name
       Protected *obj.IControl = *Me\parent
       ; ...[ Ask Parent To Set Cursor For Me ]..................................
       *obj\OnEvent( #PB_EventType_ChildCursor, cursor_id )
@@ -332,8 +333,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 105
+; CursorPosition = 310
+; FirstLine = 273
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

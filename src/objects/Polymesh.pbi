@@ -82,45 +82,45 @@ Module Polymesh
     Protected *mesh.Geometry::PolymeshGeometry_t = *Me\geom
     Object3D::OBJECT3DATTR()
     ; Singleton Attributes
-    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\geom,#True,#True,#True,#True,#False)
+    Protected *geom = Attribute::New(*Me,"Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\geom,#True,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*geom)
-    Protected *nbp = Attribute::New("NbVertices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpoints,#True,#True,#True,#False)
+    Protected *nbp = Attribute::New(*Me,"NbVertices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpoints,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbp)
-    Protected *nbe = Attribute::New("NbEdges",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbedges,#True,#True,#True,#False)
+    Protected *nbe = Attribute::New(*Me,"NbEdges",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbedges,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbe)
-    Protected *nbf = Attribute::New("NbPolygons",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpolygons,#True,#True,#True,#False)
+    Protected *nbf = Attribute::New(*Me,"NbPolygons",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbpolygons,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbf)
-    Protected *nbt = Attribute::New("NbTriangles",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbtriangles,#True,#True,#True,#False)
+    Protected *nbt = Attribute::New(*Me,"NbTriangles",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbtriangles,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbt)
-    Protected *nbs = Attribute::New("NbSamples",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbsamples,#True,#True,#True,#False)
+    Protected *nbs = Attribute::New(*Me,"NbSamples",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbsamples,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbs)
-    Protected *nbi = Attribute::New("NbIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbindices,#True,#True,#True,#False)
+    Protected *nbi = Attribute::New(*Me,"NbIndices",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*mesh\nbindices,#True,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nbi)
     
     ; Singleton Arrays
-    Protected *fc = Attribute::New("FaceCount",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_facecount,#True,#True,#False,#True,#True)
+    Protected *fc = Attribute::New(*Me,"FaceCount",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_facecount,#True,#True,#False,#True,#True)
     Object3D::AddAttribute(*Me,*fc)
-    Protected *fi = Attribute::New("FaceIndices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_faceindices,#True,#True,#False,#True,#True)
+    Protected *fi = Attribute::New(*Me,"FaceIndices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*mesh\a_faceindices,#True,#True,#False,#True,#True)
     Object3D::AddAttribute(*Me,*fi)
     
     ; Per Point Attributes
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_positions,#True,#False,#False,#True,#True)
+    Protected *pointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_positions,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_pointnormals,#True,#False,#False,#True,#True)
+    Protected *pointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_pointnormals,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_velocities,#True,#False,#False,#True,#True)
+    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*mesh\a_velocities,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointvelocity)
     
     ; Per Sample Attributes
-    Protected *normals = Attribute::New("Normals",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_normals,#True,#False,#False,#True,#True)
+    Protected *normals = Attribute::New(*Me,"Normals",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_normals,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*normals)
-    Protected *uvws = Attribute::New("UVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_uvws,#True,#False,#False,#True,#True)
+    Protected *uvws = Attribute::New(*Me,"UVWs",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_uvws,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*uvws)
-    Protected *pointcolor = Attribute::New("Colors",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_colors,#True,#False,#False,#True,#True)
+    Protected *pointcolor = Attribute::New(*Me,"Colors",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D2D,*mesh\a_colors,#True,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointcolor)
     
     ; Topology Attribute
-    Protected *topology = Attribute::New("Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*mesh\topo,#True,#False,#True,#True,#True)
+    Protected *topology = Attribute::New(*Me,"Topology",Attribute::#ATTR_TYPE_TOPOLOGY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*mesh\topo,#True,#False,#True,#True,#True)
     Object3D::AddAttribute(*Me,*topology)
 ;     *Me\texture = 0
     Object3D::Freeze(*Me)
@@ -564,6 +564,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 16
+; CursorPosition = 222
+; FirstLine = 212
 ; Folding = ---
 ; EnableXP

@@ -529,7 +529,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   Procedure Update(*Me.Scene_t)
     If Not *Me : ProcedureReturn : EndIf
-;     If *Me\dirty
+    ;If *Me\dirty
       Protected i
       Protected *root.Object3D::Object3D_t = *Me\root
       Protected child.Object3D::IObject3D
@@ -545,7 +545,7 @@ Module Scene
       Next
       
       *Me\dirty = #False
-      ;     EndIf
+     ;EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -563,7 +563,6 @@ Module Scene
     Protected *o.Object3D::Object3D_t
     For i =0 To CArray::GetCount(*Me\objects)-1
       *o = CArray::GetValuePtr(*Me\objects,i)
-      Debug "---> "+*o\name
       If *o\name = name
         ProcedureReturn *o
       EndIf
@@ -827,7 +826,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 560
-; FirstLine = 539
+; CursorPosition = 547
+; FirstLine = 525
 ; Folding = -------
 ; EnableXP

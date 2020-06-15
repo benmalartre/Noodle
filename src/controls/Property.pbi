@@ -156,31 +156,24 @@ Module ControlProperty
   Callback::DECLARECALLBACK(OnFloatChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
   
   Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
-;     Select *obj\class\name
-;       Case "Attribute"
-;         Define *attribute.Attribute::Attribute_t = *obj
-;         
-;         If *attribute
-;           Define *array.CArray::CArrayStr = *attribute\data
-;           *attribute\dirty = #True
-;         EndIf
-;         
-;       Case "NodePort"
-;         Define *port.NodePort::NodePort_t = *obj
-;         Define *node.Node::Node_t = *port\node
-;         Select *node\type 
-;           Case "SetDataNode"
-;             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
-;             *port\dirty = #True
-;             
-;           Case "GetDataNode"
-;             NodePort::SetReference(*port.NodePort::NodePort_t,*ctl\value)
-;             GetDataNode::ResolveReference(*port\node)
-; 
-;             *port\dirty = #True
-;             
-;         EndSelect
-;     EndSelect
+    Protected *obj.Object::Object_t = *attr\parent
+    Select *obj\class\name
+      Case "SetDataNode"
+        Define *port.NodePort::NodePort_t = Node::GetPortByName(*obj, *attr\name)
+        NodePort::SetReference(*port,*ctl\value)
+        *port\attribute\dirty = #True
+
+      Case "GetDataNode"
+        Define *port.NodePort::NodePort_t = Node::GetPortByName(*obj, *attr\name)
+        NodePort::SetReference(*port,*ctl\value)
+        GetDataNode::ResolveReference(*port\node)
+        *port\attribute\dirty = #True
+        
+      Default
+        Define *array.CArray::CArrayStr = *attr\data
+        *attr\dirty = #True
+            
+    EndSelect
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
@@ -293,8 +286,8 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure Pick(*Me.ControlProperty_t)
     If Not *Me Or Not *Me\valid : ProcedureReturn 0 : EndIf
-    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
-    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
+    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
     
     Protected iw = ImageWidth(*Me\imageID)
     Protected ih = ImageHeight(*Me\imageID)
@@ -334,18 +327,19 @@ Module ControlProperty
     If *Me\chilcount
       ; ---[ Draw ]---------------------------------------------------------------
       StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
-      AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
+      ResetCoordinates()
+      AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
       VectorSourceColor(RGBA(0,255,255,255))
       FillPath()
       
       For i=0 To iBound
         *son = *Me\children(i)
         If *son\type = Control::#GROUP
-          AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+          AddPathBox( *Me\posX + *son\posX, *Me\posY + *son\posY, *son\sizX, *son\sizY)
           VectorSourceColor(RGBA(i+1,0,0,255))
           FillPath()
         Else
-          AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+          AddPathBox( *Me\posX + *son\posX, *Me\posY + *son\posY, *son\sizX, *son\sizY)
           VectorSourceColor(RGBA(i+1,0,0,255))
           FillPath()
         EndIf
@@ -369,11 +363,8 @@ Module ControlProperty
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     ResetCoordinates()
     AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    VectorSourceColor(UIColor::RANDOMIZED)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
-    
-    ; ---[ Drawing End ]--------------------------------------------------------
-    StopVectorDrawing()
     
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
@@ -387,27 +378,19 @@ Module ControlProperty
       Protected  son  .Control::IControl
       Protected *son  .Control::Control_t
       Protected ev_data.Control::EventTypeDatas_t
-        
-      ; ---[ Drawing Start ]------------------------------------------------------
-      StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-      ResetCoordinates()
-      AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG)
-      FillPath()
 
       ; ---[ Redraw Children ]----------------------------------------------------
       For i=0 To iBound
          son = *Me\children(i)
         *son = son
-        ev_data\xoff = *son\posX
-        ev_data\yoff = *son\posY      
+        ev_data\xoff = *son\posX + *Me\posX
+        ev_data\yoff = *son\posY + *Me\posY
         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
       Next
-      
-      ; ---[ Drawing End ]--------------------------------------------------------
-      StopVectorDrawing()
-    
     EndIf
+    
+    ; ---[ Drawing End ]--------------------------------------------------------
+    StopVectorDrawing()
 
   EndProcedure
   
@@ -415,11 +398,9 @@ Module ControlProperty
   ;  Draw Empty
   ; ----------------------------------------------------------------------------
   Procedure.i DrawEmpty( *Me.ControlProperty_t)
-    Protected w = GadgetWidth(*Me\gadgetID)
-    Protected h = GadgetHeight(*Me\gadgetID)
-    
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-    AddPathBox( 0, 0, w,h);
+    ResetCoordinates()
+    AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     VectorSourceColor( UIColor::COLOR_MAIN_BG )
     FillPath()
     StopVectorDrawing()
@@ -481,8 +462,8 @@ Module ControlProperty
     *Me\append = #False
     
     ; ---[ Recompute Size ]-----------------------------------------------------
-    *Me\sizY = GetHeight(*Me)
-    ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
+;     *Me\sizY = GetHeight(*Me)
+;     ResizeGadget(*Me\gadgetID,*Me\parent\posX +*Me\posY,*Me\parent\posY + *Me\posY,*Me\sizX,*Me\sizY)
 
   EndProcedure
   
@@ -1335,23 +1316,23 @@ EndProcedure
   
   ; ---[ Get Height ]-----------------------------------------------
   Procedure GetHeight( *Me.ControlProperty_t)
-    ; ---[ Sanity Check ]-----------------------------------------------
-    If Not *Me : ProcedureReturn : EndIf
-    If *Me\percY > 0
-      *Me\sizY = *Me\parent\sizY * (*Me\percY / 100)
-    Else
-      Protected *son.Control::Control_t
-      *Me\sizY = 0
-      For i=0 To *Me\chilcount-1
-      
-        *son = *Me\children(i)
-        If (*son\posY+*son\sizY) > *Me\sizY
-          *Me\sizY = *son\posY+*son\sizY
-        EndIf
-      Next
-    EndIf
-    
-    ProcedureReturn *Me\sizY
+;     ; ---[ Sanity Check ]-----------------------------------------------
+;     If Not *Me : ProcedureReturn : EndIf
+;     If *Me\percY > 0
+;       *Me\sizY = *Me\parent\sizY * (*Me\percY / 100)
+;     Else
+;       Protected *son.Control::Control_t
+;       *Me\sizY = 0
+;       For i=0 To *Me\chilcount-1
+;       
+;         *son = *Me\children(i)
+;         If (*son\posY+*son\sizY) > *Me\sizY
+;           *Me\sizY = *son\posY+*son\sizY
+;         EndIf
+;       Next
+;     EndIf
+;     
+    ProcedureReturn *Me\parent\sizY
   EndProcedure
   
   ; ---[ Get Control By Index ]-----------------------------------------------
@@ -1509,8 +1490,6 @@ EndProcedure
         
         If *Me\percX > 0 : *Me\sizX = *Me\parent\sizX * (*Me\percX / 100) : EndIf
         If *Me\percY > 0 : *Me\sizY = *Me\parent\sizY * (*Me\percY / 100) : EndIf
-        
-        ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
  
         ev_data\x = 0
         ev_data\y = #PB_Ignore
@@ -1548,7 +1527,8 @@ EndProcedure
         ev_data\xoff    = *son\posX
         ev_data\yoff    = *son\posY
         StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-        AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
+        ResetCoordinates()
+        AddPathBox( *son\posX-Control::FRAME_THICKNESS, *son\posY-Control::FRAME_THICKNESS, *son\sizX+2*Control::FRAME_THICKNESS, *son\sizY+2*Control::FRAME_THICKNESS)
         VectorSourceColor(UIColor::COLOR_MAIN_BG )
         FillPath()
         son\OnEvent( Control::#PB_EventType_Draw, ev_data )
@@ -1636,14 +1616,17 @@ EndProcedure
     Case #PB_EventType_LeftButtonDown
       *Me\down = #True
       If *Me\overchild
+        Define *overchild.Control::Control_t = *Me\overchild
         If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
           *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+          Define *focuschild.Control::Control_t = *Me\focuschild
         EndIf
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
         ev_data\xoff = *Me\posX
         ev_data\yoff = *Me\posY
         *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
+        *Me\focuschild = *Me\overchild
       ElseIf *Me\focuschild
         Define focuschild.Control::IControl = *Me\focuschild
         *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
@@ -1892,7 +1875,7 @@ EndProcedure
     *Me\type       = #PB_GadgetType_Container
     *Me\decoration = decoration
     *Me\name       = name
-    *Me\gadgetID   = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard) 
+    *Me\gadgetID   = *parent\gadgetID
     *Me\imageID    = CreateImage(#PB_Any,width,height)
     *Me\pickID     = CreateImage(#PB_Any,width,height)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
@@ -1910,8 +1893,6 @@ EndProcedure
     InitializeStructure( *Me, ControlProperty_t ) ; List
     DrawEmpty(*Me)
     
-    Debug "PROPERTY PARENt = "+*parent\name
-    Debug "PROPERTY SET CONTENT : PARENT = "+Str(*parent)+", ME = "+Str(*Me) 
     View::SetContent(*parent,*Me)
    
     ; Return Initialized Object
@@ -1931,7 +1912,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 117
+; CursorPosition = 400
+; FirstLine = 397
 ; Folding = ----------
 ; EnableXP

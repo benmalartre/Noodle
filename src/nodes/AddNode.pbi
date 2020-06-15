@@ -172,7 +172,7 @@ Module AddNode
     EndSelect
     
     ForEach *node\outputs()
-      *node\outputs()\dirty = #False
+      *node\outputs()\attribute\dirty = #False
     Next
     
   EndProcedure
@@ -211,9 +211,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 45
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 174
+; FirstLine = 152
 ; Folding = --
 ; EnableThread
 ; EnableXP

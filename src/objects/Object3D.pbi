@@ -84,12 +84,12 @@ DeclareModule Object3D
     *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
     *Me\stack = Stack::New()
     Protected *t.Transform::Transform_t = *Me\globalT
-    Protected *global = Attribute::New("GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
+    Protected *global = Attribute::New(*Me,"GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
     Object3D::AddAttribute(*Me,*global)
     *t = *Me\localT
-    Protected *local = Attribute::New("LocalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
+    Protected *local = Attribute::New(*Me,"LocalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
     Object3D::AddAttribute(*Me,*local)
-    Protected *viewvis = Attribute::New("ViewVisibility",Attribute::#ATTR_TYPE_BOOL,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\visible,#True,#False,#True)
+    Protected *viewvis = Attribute::New(*Me,"ViewVisibility",Attribute::#ATTR_TYPE_BOOL,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*Me\visible,#True,#False,#True)
     Object3D::AddAttribute(*Me,*viewvis)
   EndMacro
   
@@ -559,8 +559,8 @@ Module Object3D
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 217
-; FirstLine = 207
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 476
+; FirstLine = 466
 ; Folding = -------
 ; EnableXP

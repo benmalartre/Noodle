@@ -15,12 +15,6 @@ XIncludeFile "View.pbi"
 ; ============================================================================
 DeclareModule GraphUI
   ;---------------------------------------------------------------------------
-  ;  Global
-  ;---------------------------------------------------------------------------
-  Global graph_font_node
-  Global graph_font_port
-  
-  ;---------------------------------------------------------------------------
   ;  INTERFACE
   ;---------------------------------------------------------------------------
   Interface IGraphUI Extends UI::IUI
@@ -30,11 +24,6 @@ DeclareModule GraphUI
   ;  STRUCTURE
   ;---------------------------------------------------------------------------
   Structure GraphUI_t Extends UI::UI_t
-    ; Fonts
-    font_node.i
-    font_port.i
-    font_debug.i
-    
     ; Expended
     l_expended.b
     r_expended.b
@@ -152,9 +141,8 @@ Module GraphUI
     Object::INI(GraphUI)
     *Me\name = name
     *Me\parent = *parent
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
 
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h,#PB_Canvas_Keyboard) 
+    *Me\gadgetID = CanvasGadget(#PB_Any,x,y,w,h,#PB_Canvas_Keyboard) 
     EnableGadgetDrop(*Me\gadgetID,#PB_Drop_Text,#PB_Drag_Copy)
     
     *Me\sizX = w
@@ -166,10 +154,6 @@ Module GraphUI
     *Me\redraw = #True
     *Me\connect = #False
     *Me\a_selected = CArray::newCArrayPtr()
-   
-    *Me\font_debug = LoadFont(#PB_Any,"Tahoma",10)
-    
-    CloseGadgetList()
 
     ; Init
     *Me\dirty = #True
@@ -186,7 +170,6 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   Procedure Delete(*Me.GraphUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
-    If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
     Object::TERM(GraphUI)
   EndProcedure
   
@@ -238,7 +221,7 @@ Module GraphUI
               Tree::AddNode(*Me\tree,*search\selected\name,*Me\mouseX - *Me\canvasX, *Me\mouseY - *Me\canvasY,100,50,RGB(120,120,140))
               NodeInfos(*Me)
               *Me\redraw = #True
-              *Me\tree\dirty = #True
+;               *Me\tree\dirty = #True
             EndIf
             
             NodeSearch::Delete(*search)
@@ -255,8 +238,7 @@ Module GraphUI
         *Me\sizX = width
         *Me\sizY = height
 
-        ResizeGadget(*Me\container,*top\posX,*top\posY,width,height)
-        ResizeGadget(*Me\gadgetID,0,0,width,height)
+        ResizeGadget(*Me\gadgetID,*top\posX,*top\posY,width,height)
         CanvasEvent(*Me,#PB_Event_SizeWindow)
         
       Case #PB_Event_Gadget
@@ -277,11 +259,11 @@ Module GraphUI
   ; Resize
   ;---------------------------------------------------------------------------
   Procedure  Resize(*Me.GraphUI_t)
-    *Me\posX = GadgetX(*Me\container)
-    *Me\posY = GadgetY(*Me\container)
-    *Me\sizX = GadgetWidth(*Me\container)
-    *Me\sizY = GadgetHeight(*Me\container)
-    ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)    
+    *Me\posX = *Me\parent\posX
+    *Me\posY = *Me\parent\posY
+    *Me\sizX = *Me\parent\sizX
+    *Me\sizY = *Me\parent\sizY
+    ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)    
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -295,9 +277,9 @@ Module GraphUI
       ForEach *window\uis()
         If *window\uis()\name = "Property"
           Protected *property.PropertyUI::PropertyUI_t = *window\uis()
-          If Not PropertyUI::CheckNodeExists(*property, *node)
+          ;If Not PropertyUI::CheckNodeExists(*property, *node)
             PropertyUI::Setup(*window\uis(),*node)
-          EndIf
+          ;EndIf
           
          Break
        EndIf
@@ -543,7 +525,6 @@ Module GraphUI
       Protected mx = x+*top\posX
       Protected my = y+*top\posY
       
-      OpenGadgetList(*me\container)
       Protected input = StringGadget(#PB_Any,mx,my,120,30,"")
       
       Protected quit = #False
@@ -565,7 +546,6 @@ Module GraphUI
       *Me\dirty = #True
       FreeGadget(input)
     EndIf
-    CloseGadgetList()
     
   EndProcedure
   
@@ -914,7 +894,7 @@ Module GraphUI
 ;         EndIf
 ;         
       ;Debug
-      VectorFont(FontID(*Me\font_debug))
+      VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)
       VectorSourceColor(RGBA(120,90,66,255))
       MovePathCursor(10,10)
       AddPathText("Nb Nodes : "+Str(ListSize(*Me\tree\current\nodes())-1))
@@ -1168,11 +1148,9 @@ Module GraphUI
       EndWith
     Next
     
-    msg + "BBox : "+Str(minx)+","+Str(miny)+","+Str(maxx)+","+Str(maxy)
     *Me\canvasX = -(minx+maxx) * 0.5 +*Me\sizX * 0.5
     *Me\canvasY = -(miny+maxy) * 0.5 + *Me\sizY * 0.5
     *Me\zoom = 1.0
-    ;MessageRequester("Frame Selected", msg)
     ForEach *Me\tree\root\nodes()
       Node::ViewPosition(*Me\tree\root\nodes(),*Me\canvasX,*Me\canvasY)
     Next
@@ -1249,25 +1227,18 @@ Module GraphUI
 
           ;Wheel Event
           Case #PB_EventType_MouseWheel
-
-       
-            StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-            TranslateCoordinates(*Me\canvasX, *Me\canvasY)
-            ScaleCoordinates(*Me\zoom, *Me\zoom)
-            Define ox.d = ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
-            Define oy.d = ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
             Protected wheel.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
+            Define ox.d = (*Me\mouseX - *Me\canvasX) / *Me\zoom
+            Define oy.d = (*Me\mouseY - *Me\canvasY) / *Me\zoom
             
-            *Me\zoom + wheel * (*Me\zoom * 250 / 1000)
+            *Me\zoom + wheel * (*Me\zoom * 100 / 1000)
             Clamp(*Me\zoom,0.01,2.5)
             
-            ScaleCoordinates(*Me\zoom, *Me\zoom)
-            Define nx.d = ConvertCoordinateX(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
-            Define ny.d = ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User)
-            StopVectorDrawing()
+            Define nx.d = (*Me\mouseX - *Me\canvasX) / *Me\zoom
+            Define ny.d = (*Me\mouseY - *Me\canvasY) / *Me\zoom
             
-            *Me\canvasX + (nx - ox) * *Me\zoom
-            *Me\canvasY + (ny - oy) * *Me\zoom
+            *Me\canvasX - (ox - nx) * *Me\zoom
+            *Me\canvasY - (oy - ny) * *Me\zoom
 
             *Me\redraw = #True
 
@@ -1501,7 +1472,7 @@ Module GraphUI
           Protected text.s = EventDropText()
           Tree::AddNode(*Me\tree,text,*Me\canvasX+*Me\mouseX,*Me\canvasY+*Me\mouseY,200,100,RGB(166,166,166))
           
-          *Me\tree\dirty = #True
+;           *Me\tree\dirty = #True
           *Me\redraw = #True
         Else
           MessageRequester("Noodle", "[Graph View] There is no current graph tree.")
@@ -1600,7 +1571,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1112
-; FirstLine = 1094
+; CursorPosition = 1474
+; FirstLine = 1470
 ; Folding = --------
 ; EnableXP

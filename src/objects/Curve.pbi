@@ -296,19 +296,19 @@ Module Curve
     Object3D::OBJECT3DATTR()
     ; Singleton Attributes
     
-    Protected *geom = Attribute::New("Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*curve,#True,#True,#True)
+    Protected *geom = Attribute::New(*Me,"Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*curve,#True,#True,#True)
     Object3D::AddAttribute(*Me,*geom)
     
     ; Singleton Arrays
-    Protected *nv = Attribute::New("NumVertices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*curve\a_numVertices,#True,#True,#False)
+    Protected *nv = Attribute::New(*Me,"NumVertices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*curve\a_numVertices,#True,#True,#False)
     Object3D::AddAttribute(*Me,*nv)
     
     ; Per Point Attributes
-    Protected *pointposition = Attribute::New("PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_positions,#False,#False,#False,#True,#True)
+    Protected *pointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_positions,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointnormal = Attribute::New("PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_normals,#False,#False,#False,#True,#True)
+    Protected *pointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_normals,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointvelocity = Attribute::New("PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_velocities,#False,#False,#False,#True,#True)
+    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_velocities,#False,#False,#False,#True,#True)
     Object3D::AddAttribute(*Me,*pointvelocity)
     
     ProcedureReturn *Me
@@ -321,8 +321,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
 ; CursorPosition = 310
-; FirstLine = 263
+; FirstLine = 262
 ; Folding = ---
 ; EnableXP

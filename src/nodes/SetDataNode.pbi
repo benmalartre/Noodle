@@ -110,7 +110,7 @@ Module SetDataNode
                   CArray::Copy(*datas, *input\source\attribute\data)
               EndSelect
               
-              *node\attribute = Attribute::New(name,*obj\geom,\datatype,\datastructure,\datacontext,*datas,#True,#False,#True)
+              *node\attribute = Attribute::New(*node,name,*obj\geom,\datatype,\datastructure,\datacontext,*datas,#True,#False,#True)
               Object3D::AddAttribute(*obj,*node\attribute)
               *node\state = Graph::#Node_StateOK
               NodePort::Init(*input, *obj\geom)
@@ -310,7 +310,7 @@ Module SetDataNode
       EndSelect
     EndIf
 
-    *node\outputs()\dirty = #False
+    *node\outputs()\attribute\dirty = #False
   EndProcedure
 
   Procedure Terminate(*node.SetDataNode_t)
@@ -348,7 +348,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 7
+; CursorPosition = 312
+; FirstLine = 288
 ; Folding = --
 ; EnableThread
 ; EnableXP

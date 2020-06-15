@@ -51,8 +51,7 @@ Module LogUI
     *Me\posY = y
     *Me\sizX = w
     *Me\sizY = h
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
-    *Me\frame = FrameGadget(#PB_Any,0,0,w,h,"Log")
+    *Me\frame = FrameGadget(#PB_Any,x,y,w,h,"Log")
     
     
     *Me\area = EditorGadget(#PB_Any,5,20,w-10,h-25,s)
@@ -68,7 +67,6 @@ Module LogUI
   ; Destructor
   ;-------------------------------
   Procedure Delete(*Me.LogUI_t)
-    If IsGadget(*Me\container): FreeGadget(*Me\container): EndIf
     FreeMemory(*Me)
   EndProcedure
   
@@ -147,8 +145,7 @@ EndProcedure
         
 ;           
       Case #PB_Event_SizeWindow
-        ResizeGadget(*Me\frame,0,0,GadgetWidth(*Me\container),GadgetHeight(*Me\container))
-        ResizeGadget(*Me\area,5,20,GadgetWidth(*Me\container)-10,GadgetHeight(*Me\container)-25)
+        ResizeGadget(*Me\area,*Me\parent\posX,*Me\parent\posY,*Me\parent\sizX,*Me\parent\sizY)
       Case #PB_Event_Menu
         Select EventMenu()
           
@@ -184,8 +181,8 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 35
+; CursorPosition = 147
+; FirstLine = 121
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -98,7 +98,7 @@ Module MenuUI
       *Me\posY = *top\posY
       *Me\sizX = *top\sizX
       *Me\sizY = *top\sizY
-      ResizeGadget(*Me\container, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+      ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
       Debug "MenuUI Resize : ("+Str(*Me\posX)+","+Str(*Me\posY)+","+Str(*Me\sizX)+","+Str(*Me\sizY)+")"
       ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
       
@@ -160,14 +160,13 @@ Module MenuUI
     
     *Me\name = "Top Menu"
     *Me\type = Globals::#VIEW_TOPMENU
-    *Me\container = ContainerGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
+    *Me\gadgetID = CanvasGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY, #PB_Canvas_Keyboard)
                                   
 
     Protected *window.Window::Window_t = *parent\window
     
     ; ---[ Menu ]------------------
     *Me\menu = ControlMenu::New(*Me,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-    *Me\gadgetID = *Me\menu\gadgetID
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
     Protected *args.Arguments::Arguments_t = Arguments::New(1)
@@ -202,9 +201,7 @@ Module MenuUI
 
     
     ControlMenu::Init(*Me\menu,"")
-    
-    CloseGadgetList()
-    
+        
     ConnectSignalSlot(*Me)
     
     ; ---[ View Content ]-----------------------
@@ -216,7 +213,7 @@ Module MenuUI
    Class::DEF(MenuUI)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 157
+; CursorPosition = 203
 ; FirstLine = 147
 ; Folding = ---
 ; EnableXP

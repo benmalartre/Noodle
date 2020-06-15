@@ -110,6 +110,12 @@ Module SimpleTopoNode
     *fVal = NodePort::AcquireInputData(*input)
     radius = CArray::GetValueF(*fVal,0)
     
+    Debug "SIMPLE TOPO NODE EVALUATE ..."
+    Debug "U : "+Str(u)
+    Debug "V : "+Str(v)
+    Debug "W : "+Str(w)
+    Debug "RADIUS : "+Str(radius)
+    
     ; Get Output
     Protected *output.NodePort::NodePort_t = *node\outputs()
     Protected *topoArray.CArray::CArrayPtr =  NodePort::AcquireOutputData(*output)
@@ -131,7 +137,7 @@ Module SimpleTopoNode
           
     EndSelect
     ForEach *node\outputs()
-      *node\outputs()\dirty = #False
+      *node\outputs()\attribute\dirty = #False
     Next
   EndProcedure
   
@@ -168,8 +174,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 81
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 139
+; FirstLine = 115
 ; Folding = --
 ; EnableXP

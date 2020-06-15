@@ -173,12 +173,12 @@ Module Tree
           Protected func.Node::PGETDATAPROVIDERATTRIBUTE = GetRuntimeInteger("GetDataNode::GetNodeAttribute()")
           Protected *attribute.Attribute::Attribute_t = func(*current)
           If *attribute And *attribute\dirty = #True
-            *current\inputs()\dirty = #True
+            *current\inputs()\attribute\dirty = #True
           EndIf
         Next
         Node::UpdateDirty(*current)
       ElseIf *current\class\name = "SetDataNode"
-        *current\outputs()\dirty = #True
+        *current\outputs()\attribute\dirty = #True
       Else
         Node::UpdateDirty(*current)
       EndIf
@@ -217,13 +217,13 @@ Module Tree
   ; Evaluate
   ;-----------------------------------------------------------------------------
   Procedure Evaluate(*Me.Tree_t)
-    If *Me\dirty
+;     If *Me\dirty
       GetAllBranches(*Me)
       ForEach *Me\all_branches()
         GetBranchState(*Me\all_branches()) 
       Next
-      *Me\dirty = #False
-    EndIf
+;       *Me\dirty = #False
+;     EndIf
     ForEach *Me\all_branches()
       UpdateBranchState(*Me\all_branches())
       EvaluateBranch(*Me, *Me\all_branches())
@@ -242,7 +242,7 @@ Module Tree
       Log::Message("[Tree]"+*Me\name+" : AddNode Succeeded ---> "+name+"(ROOT)")
     Else
       Graph::AttachListElement(*Me\current\nodes(),*node) 
-      *Me\dirty = #True
+;       *Me\dirty = #True
       Log::Message("[Tree]"+*Me\name+" : AddNode Succeeded ---> "+name)
     EndIf
     
@@ -280,7 +280,7 @@ Module Tree
       
       Protected node.Node::INode = *node
       node\Delete()
-      *Me\dirty = #True
+;       *Me\dirty = #True
     EndIf
     
   EndProcedure
@@ -294,7 +294,7 @@ Module Tree
     Protected *node.Node::Node_t
     Graph::ExtractListElement(*Me\current\nodes(),*node)
     Node::Delete(*node)
-    *Me\dirty = #True
+;     *Me\dirty = #True
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -334,7 +334,7 @@ Module Tree
     *connexion\start\connected = #True
     LastElement(*parent\connexions())
     Graph::AttachListElement(*parent\connexions(),*connexion)
-    *Me\dirty = #True
+;     *Me\dirty = #True
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -367,7 +367,7 @@ Module Tree
       *end\connected = #False
       
       ; Set Dirty Flag
-      *Me\dirty = #True
+;       *Me\dirty = #True
     EndIf
     
   EndProcedure
@@ -387,7 +387,7 @@ Module Tree
         *Me\current\connexions()\end\attribute = #Null
         Graph::ExtractListElement(*Me\current\connexions(),*connexion)
         FreeMemory(*connexion)
-        *Me\dirty = #True
+;         *Me\dirty = #True
       EndIf
       
     Next
@@ -430,7 +430,7 @@ Module Tree
     
     Protected *compound.CompoundNode::CompoundNode_t = CompoundNode::New(*nodes,*parent,0,0,200,100,RGB(100,100,100))
   
-    *tree\dirty = #True
+;     *tree\dirty = #True
     Protected *n.Node::Node_t
     Protected *extracted.Node::Node_t
     Protected *cnx.Connexion::Connexion_t
@@ -600,8 +600,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 218
-; FirstLine = 178
+; CursorPosition = 432
+; FirstLine = 428
 ; Folding = -----
 ; EnableThread
 ; EnableXP

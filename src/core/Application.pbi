@@ -119,14 +119,12 @@ XIncludeFile "../ui/View.pbi"
 XIncludeFile "../ui/DummyUI.pbi"
 XIncludeFile "../ui/LogUI.pbi"
 XIncludeFile "../ui/TimelineUI.pbi"
-XIncludeFile "../ui/ShaderUI.pbi"
 XIncludeFile "../ui/ViewportUI.pbi"
 XIncludeFile "../ui/CanvasUI.pbi"
 XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
 XIncludeFile "../ui/MenuUI.pbi"
-XIncludeFile "../ui/ColorUI.pbi"
 
 CompilerIf #USE_BULLET
   XIncludeFile "../libs/Bullet.pbi"
@@ -207,12 +205,13 @@ CompilerEndIf
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
-  Declare Loop(*Me.Application_t,*callback=#Null)
+  Declare Loop(*Me.Application_t,*callback=#Null, waitTime.f=-1)
   Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   Declare AddShortcuts(*Me.Application_t)
   Declare RemoveShortcuts(*Me.Application_t)
+  Declare SetContext(*Me.Application_t, *ctxt.GLContext::GLContext_t)
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
@@ -301,7 +300,7 @@ CompilerEndIf
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
-    Handle::Setup(*Me\handle, *Me\context)
+;     Handle::Setup(*Me\handle, *Me\context)
     
     ProcedureReturn *Me
   EndProcedure
@@ -353,6 +352,11 @@ CompilerEndIf
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S)
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X)
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space)
+  EndProcedure
+  
+  Procedure SetContext(*Me.Application_t, *ctxt.GLContext::GLContext_t)
+    *Me\context = *ctxt
+    Handle::Setup(*Me\handle, *Me\context)
   EndProcedure
   
   
@@ -607,7 +611,7 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Main Loop
   ;-----------------------------------------------------------------------------
-  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN=#Null)
+  Procedure Loop(*Me.Application_t,*callback.PFNCALLBACKFN=#Null, waitTime.f=-1)
     Define event
     
     CompilerIf #USE_GLFW
@@ -623,7 +627,12 @@ CompilerEndIf
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
       If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
-        event = WaitWindowEvent(1/60)
+        If waitTime >0
+          event = WaitWindowEvent(1/60)
+        Else
+          event = WaitWindowEvent()
+        EndIf
+        
 
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
@@ -639,7 +648,6 @@ CompilerEndIf
             Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
-            Debug "SCENE UPDTAE !!!"
             Scene::Update(Scene::*current_scene)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
@@ -718,7 +726,7 @@ CompilerEndIf
   ; Draw
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
-    ;Handle::Resize(*Me\handle,*camera)
+    Handle::Resize(*Me\handle,*camera)
     
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
@@ -736,23 +744,23 @@ CompilerEndIf
     
     Protected ilayer.Layer::ILayer = *layer
     ilayer\Draw(*Me\context)
-;     If *Me\tool
-;       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
-;       glUseProgram(*wireframe\pgm)
-; 
-;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
-;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
-;       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
-;       
-;       Handle::Draw( *Me\handle,*Me\context) 
-;     EndIf
+    If *Me\tool
+      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
+      glUseProgram(*wireframe\pgm)
+
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
+      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
+      
+      Handle::Draw( *Me\handle,*Me\context) 
+    EndIf
     
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 641
-; FirstLine = 636
+; CursorPosition = 127
+; FirstLine = 123
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

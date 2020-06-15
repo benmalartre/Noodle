@@ -32,6 +32,7 @@ DeclareModule LayerCascadedShadowMap
     *light.Light::Light_t
     Array cascadeEnds.f(0)
     Array cascadeProjections.OrthographicProjectionInfo_t(0)
+    imgIdx.i
   EndStructure
   
   ;------------------------------------------------------------------
@@ -47,6 +48,7 @@ DeclareModule LayerCascadedShadowMap
   Declare Clean(*layer.LayerCascadedShadowMap_t)
   Declare Pick(*layer.LayerCascadedShadowMap_t)
   Declare Draw(*layer.LayerCascadedShadowMap_t,*ctx.GLContext::GLContext_t)
+  Declare SaveImageToDisk(*layer.LayerCascadedShadowMap_t)
   
   DataSection 
     LayerCascadedShadowMapVT:  
@@ -148,13 +150,20 @@ Module LayerCascadedShadowMap
     ;Camera::GetViewTransform(*camera, @view)
     Matrix4::GetViewMatrix(view, *camera\pos, *camera\lookat, *camera\up)
     Protected invview.m4f32
-    Matrix4::Inverse(@invview, @view)
+    Matrix4::Inverse(invview, view)
     
     ;Get the light space tranform
     Protected *light.Light::Light_t = *layer\light
     Protected lightM.m4f32
-    ;Camera::GetViewTransform(*light, @lightM)
-    Matrix4::GetViewMatrix( lightM, *light\pos, *light\lookat, *light\up)
+    Protected lightPos.Math::v3f32
+    Vector3::Set(lightPos, 0, 0, 0)
+    Protected lightDir.Math::v3f32
+    Vector3::Sub(lightDir, *light\lookat, *light\pos)
+    Vector3::NormalizeInPlace(lightDir)
+    Protected lightUp.Math::v3f32
+    Vector3::Set(lightUp, 0, 1, 0)
+    Matrix4::GetViewMatrix( lightM, lightPos,lightDir, lightUp)
+    ;Matrix4::GetViewMatrix( lightM, *light\pos, *light\lookat, *light\up)
     
     Protected ar.f = *layer\datas\height / *layer\datas\width
     Protected tanHalfHFOV.f = Tan(Radian(*camera\fov / 2))
@@ -243,19 +252,42 @@ Module LayerCascadedShadowMap
   EndProcedure
   
   ;------------------------------------
+  ; Save Images to Disk
+  ;------------------------------------
+  Procedure SaveImageToDisk(*layer.LayerCascadedShadowMap_t)
+    Define i
+    glColorMask(#GL_TRUE, #GL_TRUE, #GL_TRUE, #GL_TRUE);
+    
+    glActiveTexture(#GL_TEXTURE0)
+    For i=0 To #NUM_CASCADES - 1
+      glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\datas\buffer,i))
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        Debug "WRITE IMAGE TO DISK !!!"
+        Layer::GetImage(*layer, "E:/Projects/RnD/Noodle/images/csm_"+Str(i)+"_"+Str(*layer\imgIdx)+".png")
+       
+      CompilerElse
+        Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm1.png")
+      CompilerEndIf
+    Next
+    *layer\imgIdx +1
+  EndProcedure
+  
+  
+  ;------------------------------------
   ; Draw
   ;------------------------------------
   Procedure Draw(*layer.LayerCascadedShadowMap_t,*ctx.GLContext::GLContext_t)
-    Debug "[CSM] Draw Called"
+    
+    GLCheckError("[CSM] Draw Called")
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
-    Debug "[CSM] Light Updated"
+    GLCheckError("[CSM] Light Updated")
     ; Update Cascades Orthographic Projection
     UpdateCascadesEnd(*layer)
-    Debug "[CSM] Cascade Ends Updated"
+    GLCheckError("[CSM] Cascade Ends Updated")
     ComputeOrthogonalProjections(*layer)
-    Debug "[CSM] Orthogonal Projections Updated"
+    GLCheckError("[CSM] Orthogonal Projections Updated")
     glViewport(0,0,*layer\datas\width,*layer\datas\height)
     GLCheckError("[CSM] Set Viewport")
     shader = *ctx\shaders("shadowmapCSM")\pgm
@@ -282,7 +314,6 @@ Module LayerCascadedShadowMap
       GLCheckError("[CSM] Bind for writing")
       glClear(#GL_DEPTH_BUFFER_BIT)
       With *layer\cascadeProjections(i) 
-        Debug "Light Projection:("+Str(\left)+","+Str(\right)+","+Str(\bottom)+","+Str(\top)+","+Str(\near)+","+Str(\far)+")"
         Matrix4::GetOrthoMatrix(projection,\left,\right,\bottom,\top,\near,\far)
       EndWith
       Matrix4::Echo(projection, "Ortho "+Str(i))
@@ -298,12 +329,6 @@ Module LayerCascadedShadowMap
       glFrontFace(#GL_CCW)
     EndIf
     
-
-    glColorMask(#GL_TRUE, #GL_TRUE, #GL_TRUE, #GL_TRUE);
-    
-    glActiveTexture(#GL_TEXTURE0)
-    glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\datas\buffer,0))
-    Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm1.png")
 ;      glActiveTexture(#GL_TEXTURE1)
 ;     glBindTexture(#GL_TEXTURE_2D,Framebuffer::GetTex(*layer\buffer,1))
 ;     Layer::GetImage(*layer, "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/images/csm2.png")
@@ -321,6 +346,7 @@ Module LayerCascadedShadowMap
   Procedure Delete(*layer.LayerCascadedShadowMap_t)
     FreeMemory(*layer)
   EndProcedure
+  
   
   ;---------------------------------------------------
   ; Create
@@ -353,7 +379,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 345
-; FirstLine = 280
+; CursorPosition = 152
+; FirstLine = 127
 ; Folding = ---
 ; EnableXP

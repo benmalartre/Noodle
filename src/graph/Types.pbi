@@ -151,7 +151,7 @@ DeclareModule NodePort
     currentstructure.i
     
     constant.b
-    dirty.b
+;     dirty.b
     
     ;Connexions
     *source.NodePort_t
@@ -319,7 +319,7 @@ DeclareModule Node
     errorstr.s
     leaf.b
     isroot.b
-    dirty.b
+;     dirty.b
     alwaysDirty.b
 
     ; ports
@@ -618,7 +618,7 @@ EndDeclareModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 111
+; CursorPosition = 153
+; FirstLine = 114
 ; Folding = ---
 ; EnableXP

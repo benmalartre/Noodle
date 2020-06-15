@@ -53,7 +53,7 @@ Module TransformTopoNode
   EndProcedure
   
   Procedure Evaluate(*node.TransformTopoNode_t)
-    
+    Debug "EVALUATE TRANSFORM TOPO NODE.."
     Protected *outTopo.NodePort::NodePort_t = *node\outputs()
     FirstElement(*node\inputs())
     Protected *inTopo.NodePort::NodePort_t = *node\inputs()
@@ -74,7 +74,6 @@ Module TransformTopoNode
     CArray::SetCount(*outTopoArray,0)
        
     Protected *topo.Geometry::Topology_t = CArray::GetValuePtr(*inTopoArray,0)
-          
     If *topo And CArray::GetCount(*inTsArray)>1
       Topology::TransformArray(*topo,*inTsArray,*outTopoArray)
     ElseIf *topo And CArray::GetCount(*inTsArray)=1
@@ -124,8 +123,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 45
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 36
 ; Folding = --
 ; EnableXP

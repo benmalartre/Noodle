@@ -1895,7 +1895,7 @@ DeclareModule Color
     COLOR_YELLOW:
     Data.f 1,1,0,1
     COLOR_ORANGE:
-    Data.f 1,0.25,0.5,1
+    Data.f 1,0.5,0.25,1
     COLOR_PURPLE:
     Data.f 0,1,1,1
     COLOR_MAGENTA:
@@ -2296,9 +2296,9 @@ DeclareModule Matrix3
     Vector3::Cross(_V, _N, _U)
     Vector3::NormalizeInPlace(_V)
     
-    _m\v[0] = _V\x : _m\v[1] = _V\y : _m\v[2] = _V\z
-    _m\v[3] = _N\x : _m\v[4] = _N\y : _m\v[5] = _N\z
-    _m\v[6] = _U\x : _m\v[7] = _U\y : _m\v[8] = _U\z
+    _m\v[0] = _U\x : _m\v[1] = _U\y : _m\v[2] = _U\z
+    _m\v[3] = _V\x : _m\v[4] = _V\y : _m\v[5] = _V\z
+    _m\v[6] = _N\x : _m\v[7] = _N\y : _m\v[8] = _N\z
   EndMacro
   
   ;------------------------------------------------------------------
@@ -4382,9 +4382,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 3916
-; FirstLine = 3907
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 2300
+; FirstLine = 2273
 ; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

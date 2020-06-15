@@ -49,51 +49,12 @@ Module Graph
           NodePort::InitFromReference(*input,*attribute)
           *node\state = Graph::#Node_StateOK
           *node\errorstr = ""
-        ; If Attribute NOT Exist Create It
-;         Else
-;           *input = Node::GetPortByName(*node,"Data")
-;           If *input\connected
-;             MessageRequester("SetDataNode","Create New Attribute ---> "+name  )
-;             With *input\source
-;               Protected *datas.CArray::CArrayT
-;               Select \datatype
-;                 Case Attribute::#ATTR_TYPE_BOOL
-;                   *datas = CArray::newCArrayBool()
-;                 Case Attribute::#ATTR_TYPE_LONG
-;                   *datas = CArray::newCArrayLong()
-;                 Case Attribute::#ATTR_TYPE_INTEGER
-;                   *datas = CArray::newCArrayInt()
-;                 Case Attribute::#ATTR_TYPE_FLOAT
-;                   *datas = CArray::newCArrayFloat()
-;                 Case Attribute::#ATTR_TYPE_VECTOR2
-;                   *datas = CArray::newCArrayV2F32()
-;                 Case Attribute::#ATTR_TYPE_VECTOR3
-;                   *datas = CArray::newCArrayV3F32()
-;                 Case Attribute::#ATTR_TYPE_QUATERNION
-;                   *datas = CArray::newCArrayQ4F32()
-;                 Case Attribute::#ATTR_TYPE_MATRIX3
-;                   *datas = CArray::newCArrayM3F32()
-;                 Case Attribute::#ATTR_TYPE_MATRIX4
-;                   *datas = CArray::newCArrayM4F32()
-;               EndSelect
-;               
-;               *node\attribute = Attribute::New(name,\datatype,\datastructure,\datacontext,*datas,#False,#True)
-;               Object3D::AddAttribute(*obj,*node\attribute)
-;               *node\state = Graph::#Node_StateOK
-;               *node\errorstr = ""
-;             EndWith
-            
-;           EndIf
-          
-          
         EndIf
         
-;         Debug "Search Attribute Named : "+StringField(refname, 2,".")+" ---> "+Str(*node\attribute)
       EndIf
     Else
       *node\state = Graph::#Node_StateError
       *node\errorstr = "[ERROR] Input Empty"
-;       *node\attribute = #Null
     EndIf
     
   EndProcedure
@@ -127,9 +88,9 @@ Module Graph
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 24
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 57
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

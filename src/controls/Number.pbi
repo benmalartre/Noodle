@@ -269,7 +269,7 @@ Module ControlNumber
       EndIf
     Next
     
-    ProcedureReturn( *Me\lookup_count )
+    ProcedureReturn( *Me\lookup_count - 1 )
     
   EndProcedure
   
@@ -280,7 +280,7 @@ Module ControlNumber
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
-    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
+    VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_LABEL)
 
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
@@ -425,20 +425,10 @@ Module ControlNumber
       ; ---[ Has Selection ]----------------------------------------------------
       If *Me\selected
         ; ---[ Draw Regular Text + Selection ]----------------------------------
-        CompilerSelect #PB_Compiler_OS
-          CompilerCase #PB_OS_Windows
-            AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
-            FillPath()
-          CompilerCase #PB_OS_Linux
-            AddPathBox(tx + xoff + posXL - 1, ty,   (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
-            FillPath()
-          CompilerCase #PB_OS_MacOS
-            AddPathBox(tx + xoff + posXL - 1, ty+1, (posXR - posXL) + 2, 14)
-            VectorSourceColor(UIColor::COLOR_SELECTED_BG)
-            FillPath()
-        CompilerEndSelect
+        AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
+        VectorSourceColor(UIColor::COLOR_SELECTED_BG)
+        FillPath()
+          
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText( dtext )
@@ -450,45 +440,21 @@ Module ControlNumber
         DrawVectorText(  dtext)
         ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
-          CompilerSelect #PB_Compiler_OS
-            CompilerCase #PB_OS_Windows
-              MovePathCursor(tx + posXL + xoff, ty)
-              AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLOR_CARET)
-              StrokePath(2)
-            CompilerCase #PB_OS_Linux
-               MovePathCursor(tx + posXL + xoff, ty+1)
-              AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLOR_CARET)
-              StrokePath(2)
-            CompilerCase #PB_OS_MacOS
-               MovePathCursor(tx + posXL + xoff, ty+2)
-              AddPathLine(1, 13, #PB_Path_Relative)
-              VectorSourceColor(UIColor::COLOR_CARET)
-              StrokePath(2)
-          CompilerEndSelect
+          MovePathCursor(tx + posXL + xoff, ty)
+          AddPathLine(1, 13, #PB_Path_Relative)
+          VectorSourceColor(UIColor::COLOR_CARET)
+          StrokePath(2)
         EndIf
       EndIf
     Else
-      ; ---[ Draw Value ]-------------------------------------------------------
-      CompilerSelect #PB_Compiler_OS
-          CompilerCase #PB_OS_Windows
-            Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_SHADOW )
-            FillPath()
-          CompilerCase #PB_OS_Linux
-            Vector::RoundBoxPath( -3 + tx + xoff, ty+1, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_SHADOW )
-            FillPath()
-          CompilerCase #PB_OS_MacOS
-            Vector::RoundBoxPath( -3 + tx + xoff, ty+2, tw+5, 12, 4)
-            VectorSourceColor( UIColor::COLOR_SHADOW )
-            FillPath()
-        CompilerEndSelect
+    ; ---[ Draw Value ]-------------------------------------------------------
+      Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
+      VectorSourceColor( UIColor::COLOR_SHADOW )
+      FillPath()
 
-        MovePathCursor(tx + xoff, ty)
-        VectorSourceColor(UIColor::COLOR_NUMBER_FG)
-        DrawVectorText( dtext)
+      MovePathCursor(tx + xoff, ty)
+      VectorSourceColor(UIColor::COLOR_NUMBER_FG)
+      DrawVectorText( dtext)
     EndIf
     
   EndProcedure
@@ -1250,7 +1216,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 305
-; FirstLine = 296
+; CursorPosition = 445
+; FirstLine = 424
 ; Folding = ----
 ; EnableXP

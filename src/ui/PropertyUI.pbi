@@ -68,30 +68,20 @@ Module PropertyUI
   ;  Constructor
   ; ----------------------------------------------------------------------------
   Procedure New(*parent.View::View_t, name.s,*obj. Object3D::Object3D_t)
-    Protected x = *parent\posX
-    Protected y = *parent\posY
-    Protected w = *parent\sizX
-    Protected h = *parent\sizY
-   
     Protected *Me.PropertyUI_t = AllocateMemory(SizeOf(PropertyUI_t))
     InitializeStructure(*Me,PropertyUI_t)
     Object::INI(PropertyUI)
     *Me\name = name
-    *Me\posX = x
-    *Me\posY = y
-    *Me\sizX = w
-    *Me\sizY = h
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizX
+    *Me\sizY = *parent\sizY
     
     *Me\parent = *parent
-    *Me\container = ScrollAreaGadget(#PB_Any,x,y,w,h,w,h,10,#PB_ScrollArea_BorderLess)
-    *Me\gadgetID = *Me\container
-    
-    SetGadgetColor(*Me\container,#PB_Gadget_BackColor, UIColor::COLOR_MAIN_BG)
-    
-    *Me\prop = ControlProperty::New(*Me, name, name, 0,0,w,h)
+    *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
+    *Me\prop = ControlProperty::New(*Me, name, name, 0,0,*Me\sizX,*Me\sizY)
    
     View::SetContent(*parent,*Me)
-    CloseGadgetList()
     ProcedureReturn *Me
   EndProcedure
   
@@ -127,20 +117,20 @@ Module PropertyUI
   ; Resize
   ; ----------------------------------------------------------------------------
   Procedure Resize(*Me.PropertyUI_t)
+    *Me\posX = *Me\parent\posX
+    *Me\posY = *Me\parent\posY
     *Me\sizX = *Me\parent\sizX
     *Me\sizY = *Me\parent\sizY
-
-    Protected ev_datas.Control::EventTypeDatas_t
-    ev_datas\width = *Me\parent\sizX 
-    ev_datas\height = *Me\parent\sizY
-   
-    ev_datas\x = #PB_Ignore
-    ev_datas\y = #PB_Ignore
     
+    ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    Protected ev_datas.Control::EventTypeDatas_t
+    ev_datas\x = 0
+    ev_datas\y = 0
+    ev_datas\width = *Me\sizX 
+    ev_datas\height = *Me\sizY
+
     ControlProperty::OnEvent(*Me\prop,#PB_EventType_Resize,@ev_datas)
     
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerWidth, *Me\sizX)
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea3D_InnerHeight, *Me\sizY)
     Control::Invalidate(*Me)
   EndProcedure
   
@@ -148,14 +138,12 @@ Module PropertyUI
   ;  Append Start
   ; ----------------------------------------------------------------------------
   Procedure AppendStart(*Me.PropertyUI_t)
-    OpenGadgetList(*Me\container)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;  Append End
   ; ----------------------------------------------------------------------------
   Procedure AppendStop(*Me.PropertyUI_t)
-    CloseGadgetList()
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -165,8 +153,8 @@ Module PropertyUI
     If Not *Me\prop : ProcedureReturn : EndIf
     Protected *top.View::View_t = *Me\parent
     Protected ev_datas.Control::EventTypeDatas_t
-    ev_datas\x = 0
-    ev_datas\y = 0
+    ev_datas\x = *Me\posX
+    ev_datas\y = *Me\posY
     ev_datas\width = *top\sizX 
     Select event
       Case #PB_Event_SizeWindow
@@ -324,7 +312,6 @@ Module PropertyUI
           Select \currenttype
             Case Attribute::#ATTR_TYPE_BOOL
               Protected *bVal.CArray::CArrayBool = NodePort::AcquireInputData(*node\inputs())
-              Debug "NODE BOOL VALUE : "+Str(CArray::GetValueB(*bVal,0))
               ControlProperty::AddBoolControl(*p,\name,\name,CArray::GetValueB(*bVal,0),*node\inputs()\attribute)
               
             Case Attribute::#ATTR_TYPE_FLOAT
@@ -377,11 +364,7 @@ Module PropertyUI
     
     ControlProperty::AppendStop(*p)
     Control::Invalidate(*p)
-    *Me\anchorY + *p\dy
-   
-    
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerWidth, *Me\sizX)
-    SetGadgetAttribute(*Me\container, #PB_ScrollArea_InnerHeight, *Me\anchorY)
+
     ProcedureReturn *p
 
   EndProcedure
@@ -404,7 +387,6 @@ Module PropertyUI
   ;  Setup
   ; ----------------------------------------------------------------------------
   Procedure Setup(*Me.PropertyUI_t,*object.Object::Object_t)
-    OpenGadgetList(*Me\container)
     Protected cName.s = *object\class\name
     
     If Right(cName,4) = "Node"
@@ -415,7 +397,6 @@ Module PropertyUI
       Protected *obj.Object3D::Object3D_t = *object
        SetupFromObject3D(*Me,*obj)
     EndIf
-    CloseGadgetList()
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -533,8 +514,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 326
-; FirstLine = 301
+; CursorPosition = 130
+; FirstLine = 113
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -207,7 +207,6 @@ Module Drawer
   ;---------------------------------------------------------------------------- 
   Procedure Setup(*Me.Drawer_t,*shader.Program::Program_t)
     
-    MessageRequester("DRAWER SETUP", "CALLED XXX")
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -394,7 +393,7 @@ Module Drawer
   
   ; ---[ Draw Line Item ]------------------------------------------------------
   Procedure DrawLine(*Me.Line_t)
-    glLineWidth(*Me\size)
+;     glLineWidth(*Me\size)
     glDrawArrays(#GL_LINES,0,CArray::GetCount(*Me\positions))
   EndProcedure
   
@@ -964,8 +963,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 263
-; FirstLine = 250
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 220
+; FirstLine = 205
 ; Folding = ---------
 ; EnableXP

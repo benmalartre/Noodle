@@ -26,9 +26,7 @@ DeclareModule FileExistsNode
   Declare Init(*node.FileExistsNode_t)
   Declare Evaluate(*node.FileExistsNode_t)
   Declare Terminate(*node.FileExistsNode_t)
-  
-;   Declare ResolveReference(*node.FileExistsNode_t)
-  
+    
   ; ============================================================================
   ;  ADMINISTRATION
   ; ============================================================================
@@ -116,9 +114,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 58
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 25
 ; Folding = --
 ; EnableThread
 ; EnableXP

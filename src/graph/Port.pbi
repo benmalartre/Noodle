@@ -157,67 +157,67 @@ Module NodePort
   ;   Select *port\currentstructure
     Select *port\currenttype
       Case Attribute::#ATTR_TYPE_UNDEFINED
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#False)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#False)
         
       Case Attribute::#ATTR_TYPE_BOOL
         Protected *bVal.CArray::CArrayBool = CArray::newCArrayBool()
         CArray::AppendB(*bVal,#False)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *bVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *bVal, #False, *port\readonly, *port\constant, *port\writable,#True)
 
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected *fVal.CArray::CArrayFloat = CArray::newCArrayFloat()
         CArray::AppendF(*fVal,0)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *fVal, #False, *port\readonly, *port\constant, *port\writable, #True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *fVal, #False, *port\readonly, *port\constant, *port\writable, #True)
 
       Case Attribute::#ATTR_TYPE_LONG
         Protected *lVal.CArray::CArrayLong = CArray::newCArrayLong()
         CArray::AppendL(*lVal,0)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *lVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *lVal, #False, *port\readonly, *port\constant, *port\writable,#True)
 
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *iVal.CArray::CArrayInt = CArray::newCArrayInt()
         CArray::AppendI(*iVal,0)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *iVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *iVal, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_ENUM
-;         Protected *eVal.CArray::CArrayStr = CArray::newCArrayStr()
-;         CArray::AppendStr(*eVal,"SALUT ! CA vA ??")
-;         *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *eVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        Protected *eVal.CArray::CArrayStr = CArray::newCArrayStr()
+        CArray::AppendStr(*eVal,"SALUT ! CA vA ??")
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *eVal, #False, *port\readonly, *port\constant, *port\writable,#True)
 
       Case Attribute::#ATTR_TYPE_VECTOR2
         Protected *vVal2.CArray::CArrayV2F32 = CArray::newCArrayV2F32()
         Protected v2.v2f32
         Vector2::Set(v2,0,0)
         CArray::Append(*vVal2,v2)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal2, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal2, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *vVal3.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
         Protected v3.v3f32
         Vector3::Set(v3,0,0,0)
         CArray::Append(*vVal3,v3)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal3, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal3, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_VECTOR4
         Protected *vVal4.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
         Protected v4.c4f32
         Color::Set(v4,0,0,0,0)
         CArray::Append(*vVal4,v4)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *vVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_QUATERNION
         Protected *qVal4.CArray::CArrayQ4F32 = CArray::newCArrayQ4F32()
         Protected q4.q4f32
         Quaternion::SetIdentity(q4)
         CArray::Append(*qVal4,q4)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *qVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *qVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_MATRIX3
         Protected *mVal3.CArray::CArrayM3F32 = CArray::newCArrayM3F32()
         Protected m3.m3f32
         Matrix3::SetIdentity(m3)
         CArray::Append(*mVal3,m3)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *mVal3, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *mVal3, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_MATRIX4
 
@@ -225,63 +225,63 @@ Module NodePort
         Protected m4.m4f32
         Matrix4::SetIdentity(m4)
         CArray::Append(*mVal4,m4)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *mVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *mVal4, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *cVal.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
         Protected c.c4f32
         Color::Set(c,0,0,0,1)
         CArray::Append(*cVal,c)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *cVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *cVal, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_STRING
         Protected *sVal.CArray::CArrayStr = CArray::newCArrayStr()
         Protected s.s = ""
         CArray::AppendStr(*sVal,s)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *sVal, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *sVal, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_REFERENCE
         Protected *ref.Globals::Reference_t = AllocateMemory(SizeOf(Globals::Reference_t))
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *ref, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *ref, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *data.CArray::CArrayPtr = CArray::newCArrayPtr()
         Protected *topo.Geometry::Topology_t = Topology::New()
         CArray::AppendPtr(*data,*topo)
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *data, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *data, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_LOCATION
         Define *object3D.Object3D::Object3D_t = Geometry::GetParentObject3D(*geom)
         *loc.CArray::CArrayLocation = CArray::newCArrayLocation(*geom, *object3D\globalT)
-       *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *loc, #False, *port\readonly, *port\constant, *port\writable,#True)
+       *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *loc, #False, *port\readonly, *port\constant, *port\writable,#True)
         
      Case Attribute::#ATTR_TYPE_GEOMETRY
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *geom, #False, *port\readonly, *port\constant, *port\writable,#False)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *geom, #False, *port\readonly, *port\constant, *port\writable,#False)
         
       Case Attribute::#ATTR_TYPE_AUDIO
         *audio.CArray::CArrayPtr = CArray::newCArrayPtr()
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *audio, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *audio, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_FILE
         *file.CArray::CArrayStr = CArray::newCArrayStr()
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *file, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *file, #False, *port\readonly, *port\constant, *port\writable,#True)
        
       Case Attribute::#ATTR_TYPE_3DOBJECT
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_EXECUTE
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_NEW
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Default
-        *port\attribute = Attribute::New(*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
+        *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, #Null, #False, *port\readonly, *port\constant, *port\writable,#True)
         
     EndSelect
     
-    If *port\io = #False
-      *port\dirty = #True
+    If *port\io = #False And *port\attribute
+      *port\attribute\dirty = #True
     EndIf
     
     GetColor(*port)
@@ -408,7 +408,7 @@ Module NodePort
         Else
           *data = *port\attribute\data
           If Not *data : Init(*port, #Null) : *data = *port\attribute\data: EndIf
-          *port\dirty = #False
+          *port\attribute\dirty = #False
         EndIf
         
       Case Attribute::#ATTR_STRUCT_SINGLE
@@ -419,7 +419,7 @@ Module NodePort
         Else
           *data = *port\attribute\data
           If Not *data : Init(*port, #Null) : *data = *port\attribute\data: EndIf
-          *port\dirty = #False
+          *port\attribute\dirty = #False
         EndIf
 
       Case Attribute::#ATTR_STRUCT_ANY
@@ -431,7 +431,7 @@ Module NodePort
         
           *data = *port\attribute\data
           If Not *data : Init(*port, #Null) : *data = *port\attribute\data: EndIf
-          *port\dirty = #False
+          *port\attribute\dirty = #False
         EndIf
     EndSelect
     
@@ -469,21 +469,21 @@ Module NodePort
         ;-----------------------------------------------------------------------
         *data = *port\attribute\data
         If Not *data : Init(*port, #Null) : *data = *port\attribute\data: EndIf
-        *port\dirty = #False
+        *port\attribute\dirty = #False
         
       Case Attribute::#ATTR_STRUCT_SINGLE
         ; Case STRUCT_SINGLE
         ;-----------------------------------------------------------------------
         *data = *port\attribute\data
         If Not *data : Init(*port,#Null) : *data = *port\attribute\data: EndIf
-        *port\dirty = #False
+        *port\attribute\dirty = #False
         
       Case Attribute::#ATTR_STRUCT_ANY
         ; Case STRUCT_ANY
         ;-----------------------------------------------------------------------
         *data = *port\attribute\data
         If Not *data : Init(*port, #Null) : *data = *port\attribute\data: EndIf
-        *port\dirty = #False
+        *port\attribute\dirty = #False
 
     EndSelect
     
@@ -872,7 +872,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 687
-; FirstLine = 656
+; CursorPosition = 184
+; FirstLine = 164
 ; Folding = -----
 ; EnableXP

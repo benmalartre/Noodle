@@ -995,7 +995,6 @@ Module PolymeshGeometry
       nbv = CArray::GetValueL(*mesh\a_facecount,f)
       nbt = nbv-2
       vid = CArray::GetValueL(*mesh\a_faceindices, offset)
-      Debug "ISLAND : "+Str(CArray::GetValueL(*mesh\a_islands, vid))
       *color = CArray::GetValue(*colors, CArray::GetValueL(*mesh\a_islands, vid))
       For v=0 To nbt-1
         CArray::SetValue(*mesh\a_colors,tid+2,*color)
@@ -2406,7 +2405,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1448
-; FirstLine = 1399
+; CursorPosition = 997
+; FirstLine = 974
 ; Folding = ----P5----0-
 ; EnableXP

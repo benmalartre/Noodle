@@ -50,7 +50,7 @@ Procedure Draw(*app.Application::Application_t)
 
   
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+  ViewportUI::Blit(*viewport, *layer\datas\buffer)
 
  EndProcedure
  
@@ -65,9 +65,8 @@ Globals::Init()
    *app = Application::New("TestMesh",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     
-    View::SetContent(*app\window\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+     Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
@@ -116,7 +115,7 @@ Globals::Init()
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
  
-  Application::Loop(*app, @Draw())
+  Application::Loop(*app, @Draw(),0.1)
 
 
   Verlet::Delete(*verlet)
@@ -124,6 +123,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 3
+; CursorPosition = 117
+; FirstLine = 63
 ; Folding = -
 ; EnableXP

@@ -48,6 +48,22 @@ Procedure AddButtonControl(*ui.PropertyUI::PropertyUI_t, name.s)
   Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "fuck","fuck", UIColor::RANDOMIZED, 256,32)
   
   Signal::CONNECTCALLBACK(*btn\on_click, OnButtonClick, HELLO)
+  
+  ControlProperty::AddStringControl(*prop, "String", "Fuck Dat Shit", #Null)
+  
+  Define *group.ControlGroup::ControlGroup_t = ControlProperty::AddGroup(*prop, "GROUP")
+  ControlGroup::AppendStart(*group)
+  ControlGroup::RowStart(*group)
+  For i=0 To 5
+    Define *ctrl.ControlNumber::ControlNumber_t = ControlNumber::New(*group, "Number"+Str(i), i)
+    ControlGroup::Append(*group, *ctrl)
+  Next
+  
+  ControlGroup::RowEnd(*group)
+  ControlGroup::AppendStop(*group)
+  
+  
+  
 EndProcedure
 
 
@@ -72,12 +88,12 @@ EndProcedure
 Global *app.Application::Application_t = Application::New("Test Control Simple",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
 
-OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
 ;AddInputControl(*ui, "Input")
 AddButtonControl(*ui, "Button")
+
 
  
   ;   
@@ -107,15 +123,12 @@ AddButtonControl(*ui, "Button")
   
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
-
-
-CloseGadgetList()
-
-
+  
+;   UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 50
+; CursorPosition = 126
+; FirstLine = 64
 ; Folding = -
 ; EnableXP

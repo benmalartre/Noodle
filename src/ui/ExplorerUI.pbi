@@ -192,7 +192,6 @@ Module ExplorerUI
   ; ======================================================================================
   Procedure Delete(*Me.ExplorerUI_t)
     ControlExplorer::Delete(*Me\explorer)
-    FreeGadget(*Me\container)
     Object::TERM(ExplorerUI)
   EndProcedure
   
@@ -203,17 +202,16 @@ Module ExplorerUI
     Protected *Me.ExplorerUI_t = AllocateMemory(SizeOf(ExplorerUI_t))
     Object::INI(ExplorerUI)
     
-    *Me\container = ContainerGadget(#PB_Any,*view\posX,*view\posY,*view\sizX,*view\sizY)
     *Me\name = name
+    *Me\posX = *view\posX
+    *Me\posY = *view\posY
     *Me\sizX = *view\sizX
     *Me\sizY = *view\sizY
     *Me\scrollX = 0
     *Me\scrollY = 0
     *Me\scrollable = #True
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,0,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard)
+    *Me\gadgetID = CanvasGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard)
     *Me\explorer = ControlExplorer::New(*Me,0,0,*view\sizX,*view\sizY)
-
-    CloseGadgetList()
     
     View::SetContent(*view,*Me)
     
@@ -226,7 +224,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 114
+; CursorPosition = 214
+; FirstLine = 164
 ; Folding = ---
 ; EnableXP

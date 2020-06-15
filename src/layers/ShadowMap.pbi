@@ -200,7 +200,7 @@ Module LayerShadowMap
   Class::DEF(LayerShadowMap)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 126
+; CursorPosition = 188
+; FirstLine = 140
 ; Folding = --
 ; EnableXP

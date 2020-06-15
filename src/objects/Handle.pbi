@@ -505,6 +505,7 @@ Module Handle
   ; Setup Handle
   ;-----------------------------------------------------------------------------
   Procedure SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
+
     *Me\shader = *ctx\shaders("wireframe")
     glUseProgram(*Me\shader\pgm)
     If Not *Me\vao : glGenVertexArrays(1,@*Me\vao) : EndIf
@@ -529,7 +530,12 @@ Module Handle
     ; vertex buffer object
     If Not *Me\vbo : glGenBuffers(1,@*Me\vbo) : EndIf
     glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-    glBufferData(#GL_ARRAY_BUFFER,*shape\nbp*SizeOf(v3f32),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    
+    ; element array buffer
+    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
     
     ; Attibute Position
     glEnableVertexAttribArray(0)
@@ -539,10 +545,8 @@ Module Handle
       glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
     CompilerEndIf
     
-    ; element array buffer
-    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
+    ; Bind Attributes Locations
+    glBindAttribLocation(*Me\shader\pgm,0,"position")
 
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(*Me\shader\pgm,"view")
@@ -594,7 +598,6 @@ Module Handle
   ; Draw
   ;------------------------------------------------------------
   Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
-
     If Not *Me\target : ProcedureReturn : EndIf
     glBindVertexArray(*me\vao)
     
@@ -611,7 +614,6 @@ Module Handle
     Transform::SetScaleFromXYZValues(*Me\globalT,d,d,d)
     Transform::UpdateMatrixFromSRT(*Me\globalT)
 
-    
     Protected offset.m4f32
     Protected quat.q4f32
     
@@ -948,26 +950,26 @@ Module Handle
     
     If *Me\target <> #Null
       Protected pos.v3f32 
-      If *Me\target\type = Object3D::#Light
-        Protected *light.Light::Light_t = *Me\target
-  
-        Vector3::SetFromOther(*light\pos,*Me\localT\t\pos)
-        Light::LookAt(*light)
-      ElseIf *Me\target\type = Object3D::#Camera
-        Protected *camera.Camera::Camera_t = *Me\target
-  
-        Vector3::SetFromOther(*camera\pos,*Me\localT\t\pos)
-        Camera::LookAt(*camera)
-      Else
+;       If *Me\target\type = Object3D::#Light
+;         Protected *light.Light::Light_t = *Me\target
+;   
+;         Vector3::SetFromOther(*light\pos,*Me\localT\t\pos)
+;         Light::LookAt(*light)
+;       ElseIf *Me\target\type = Object3D::#Camera
+;         Protected *camera.Camera::Camera_t = *Me\target
+;   
+;         Vector3::SetFromOther(*camera\pos,*Me\localT\t\pos)
+;         Camera::LookAt(*camera)
+;       Else
         Protected *parent.Object3D::Object3D_t = *Me\target\parent
         Protected *t.Transform::Transform_t = *parent\globalT
         Protected mat.m4f32
-        Matrix4::Inverse(mat,*t\m)
+        If *parent : Matrix4::Inverse(mat,*t\m) : Else : Matrix4::SetIdentity(mat) : EndIf
      
         Vector3::MulByMatrix4(pos,*Me\localT\t\pos,mat)
         Transform::SetTranslationFromXYZValues(*Me\target\localT,pos\x,pos\y,pos\z)
         Transform::UpdateMatrixFromSRT(*Me\target\localT)
-      EndIf
+;       EndIf
     EndIf
     
   EndProcedure
@@ -1441,7 +1443,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1324
-; FirstLine = 1320
+; CursorPosition = 947
+; FirstLine = 928
 ; Folding = -------
 ; EnableXP

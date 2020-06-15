@@ -11,7 +11,10 @@ XIncludeFile "../ui/ViewportUI.pbi"
 UseModule Math
 UseModule Time
 UseModule OpenGL
-UseModule GLFW
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+
 UseModule OpenGLExt
 
 EnableExplicit
@@ -56,7 +59,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*app\context)
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -64,7 +67,7 @@ Procedure Draw(*app.Application::Application_t)
   glEnable(#GL_DEPTH_TEST)
   
   glUseProgram(shader)
-  Matrix4::SetIdentity(@offset)
+  Matrix4::SetIdentity(offset)
   Framebuffer::BindOutput(*buffer)
   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,@model)
   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
@@ -77,7 +80,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Polymesh::Draw(*ground)
 ;   Polymesh::Draw(*null)
 ;   Polymesh::Draw(*cube)
-  Polymesh::Draw(*bunny)
+  Polymesh::Draw(*bunny, *app\context)
   
   glDisable(#GL_DEPTH_TEST)
   
@@ -100,8 +103,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   FTGL::Draw(*ftgl_drawer,"Yeahhhhhh",-0.9,0.9,ss,ss*ratio)
 ; 
 ;   glDisable(#GL_BLEND)
-  
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*app\context)
 
  EndProcedure
  
@@ -116,13 +118,13 @@ Procedure Draw(*app.Application::Application_t)
    Log::Init()
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main, "Viewport")
+     *viewport = ViewportUI::New(*app\window\main, "Viewport", *app\camera, *app\handle)
+     *app\context = *viewport\context
     *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
-    ViewportUI::Event(*viewport,#PB_Event_SizeWindow)
+    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(@model)
+  Matrix4::SetIdentity(model)
   
   Debug "Size "+Str(*app\width)+","+Str(*app\height)
   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -156,9 +158,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 100
-; FirstLine = 96
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 121
+; FirstLine = 98
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

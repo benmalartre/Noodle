@@ -26,9 +26,7 @@ DeclareModule IfNode
   Declare Init(*node.IfNode_t)
   Declare Evaluate(*node.IfNode_t)
   Declare Terminate(*node.IfNode_t)
-  
-;   Declare ResolveReference(*node.IfNode_t)
-  
+    
   ; ============================================================================
   ;  ADMINISTRATION
   ; ============================================================================
@@ -163,9 +161,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 78
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 25
 ; Folding = --
 ; EnableThread
 ; EnableXP

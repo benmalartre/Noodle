@@ -114,7 +114,7 @@ Module ScreenCapture
   EndProcedure 
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 49
+; CursorPosition = 74
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

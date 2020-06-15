@@ -49,10 +49,9 @@ Module DummyUI
     Protected *Me.DummyUI_t = AllocateMemory(SizeOf(DummyUI_t))
     Object::INI(DummyUI)
     *Me\name = name
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\sizX = w
     *Me\sizY = h
-    *Me\gadgetID = CanvasGadget(#PB_Any,0,20,w,h-20)
+    *Me\gadgetID = CanvasGadget(#PB_Any,x,y,w,h)
     *Me\active = #False
     View::SetContent(*parent,*Me)
     
@@ -81,7 +80,6 @@ Module DummyUI
   ;-------------------------------
   Procedure Delete(*Me.DummyUI_t)
     FreeGadget(*Me\gadgetID)
-    FreeGadget(*Me\container)
     Object::TERM(DummyUI)
   EndProcedure
 
@@ -127,8 +125,7 @@ Module DummyUI
         
         *Me\sizX = width
         *Me\sizY = height
-        ResizeGadget(*Me\container,*top\posX,*top\posY,width,height)
-        ResizeGadget(*Me\gadgetID,0,0,width,height)
+        ResizeGadget(*Me\gadgetID,*top\posX,*top\posY,width,height)
   
       Case #PB_Event_Gadget
         Protected g = EventGadget()
@@ -152,7 +149,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 22
+; CursorPosition = 127
+; FirstLine = 89
 ; Folding = --
 ; EnableXP

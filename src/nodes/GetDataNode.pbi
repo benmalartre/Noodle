@@ -81,7 +81,7 @@ Module GetDataNode
         *output\currentcontext = *node\attribute\datacontext
         *output\currentstructure = *node\attribute\datastructure
         NodePort::Init(*output, *geom)
-        *output\dirty = #True
+        *output\attribute\dirty = #True
       EndIf
             
 ;       If Not *node\attribute :
@@ -113,7 +113,7 @@ Module GetDataNode
           *output\currentstructure = *node\attribute\datastructure
           NodePort::Init(*output, *p\geom)
 ;           *output\attribute = *node\attribute
-          *output\dirty = #True
+          *output\attribute\dirty = #True
         EndIf
         
       Else
@@ -126,7 +126,7 @@ Module GetDataNode
             *output\currentstructure = *node\attribute\datastructure
             NodePort::Init(*output, *p\geom)
 ;             *output\attribute = *node\attribute
-            *output\dirty = #True
+            *output\attribute\dirty = #True
           EndIf
         EndIf
       EndIf
@@ -168,7 +168,6 @@ Module GetDataNode
   
     If *output\attribute = #Null : ProcedureReturn : EndIf
     If *node\need_compute And *src\connected
-      Debug "HDHDLIHDLSHUMUIHBMUYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGYGBHHM/LIJ%KMK%M"
       Define *srcArray.CArray::CArrayLocation = NodePort::AcquireInputData(*src)
       Define *dstArray.CArray::CArrayT = NodePort::AcquireOutputData(*output)
       Define numSamples.i = CArray::GetCount(*srcArray)
@@ -182,7 +181,7 @@ Module GetDataNode
     EndIf
 
     ForEach *node\outputs()
-      *node\outputs()\dirty = #False
+      *node\outputs()\attribute\dirty = #False
     Next
     
   EndProcedure
@@ -193,7 +192,7 @@ Module GetDataNode
   Procedure OnChange(*node.GetDataNode_t)
 ;     Protected *signal.Signal::Signal_t = *up
 ;     Protected *node.Object::Object_t = *signal\rcv_inst
-;     If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
+    If *node And *node\class\name = "GetDataNode": ResolveReference(*node) : EndIf
   EndProcedure
   
   Runtime Procedure GetNodeAttribute(*node.GetDataNode_t)
@@ -243,9 +242,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 105
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 183
+; FirstLine = 179
 ; Folding = --
 ; EnableThread
 ; EnableXP

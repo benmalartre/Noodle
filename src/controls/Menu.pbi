@@ -129,7 +129,7 @@ Module ControlMenu
 ;     Object::INI(ControlMenu)
     Protected *view.View::View_t = *parent\parent
     Protected *window.Window::Window_t = *view\window
-    *Me\gadgetID = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard)
+    *Me\gadgetID = *parent\gadgetID
     *Me\parent = *parent
     *Me\windowID = *window\ID
     *Me\imageID = CreateImage(#PB_Any,width,height)
@@ -676,8 +676,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 387
-; FirstLine = 329
+; CursorPosition = 133
+; FirstLine = 121
 ; Folding = -w---
 ; EnableThread
 ; EnableXP

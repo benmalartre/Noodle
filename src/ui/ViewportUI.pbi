@@ -90,9 +90,10 @@ Module ViewportUI
     
     *Me\name = name
     *Me\type = Globals::#VIEW_VIEWPORT
+    *Me\posX = x
+    *Me\posY = y
     *Me\sizX = w
     *Me\sizY = h
-    *Me\container = ContainerGadget(#PB_Any,x,y,w,h)
     *Me\handle = *handle
         
     ; setup delegate gl context
@@ -115,8 +116,6 @@ Module ViewportUI
 
     CompilerEndIf
     
-    CloseGadgetList()
-
     View::SetContent(*parent,*Me)
     
     ProcedureReturn *Me
@@ -127,7 +126,6 @@ Module ViewportUI
   ;------------------------------------------------------------------
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
-    If IsGadget(*Me\container) : FreeGadget(*Me\container):EndIf
     Object::TERM(ViewportUI)
   EndProcedure
   
@@ -162,21 +160,17 @@ Module ViewportUI
     Select event
         
       Case Globals::#EVENT_SELECTION_CHANGED
-        Debug "VIEWPORT EVENET SELECTION CHANGE!!"
         If Scene::*current_scene\selection\items()
           Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\items()\obj)
         EndIf
     
       Case #PB_Event_SizeWindow
-        width = *top\sizX
-        height = *top\sizY
-
-        *Me\sizX = width
-        *Me\sizY = height
+        *Me\sizX = *top\sizX
+        *Me\sizY = *top\sizY
         *Me\posX = *top\posX
         *Me\posY = *top\posY
         
-        ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
+        ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
         
         If *Me\context  
           GLContext::Resize(*Me\context, *Me\sizX, *Me\sizY)
@@ -384,6 +378,7 @@ Module ViewportUI
     
 ;     Protected ilayer.Layer::ILayer = *Me\layer
 ;     ilayer\Draw(*Me\context)
+    Debug "VIEWPORT :: DRAW !!!!!"
     If *Me\tool
       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
@@ -694,7 +689,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 152
+; CursorPosition = 169
+; FirstLine = 157
 ; Folding = ----
 ; EnableXP

@@ -18,10 +18,14 @@ UIColor::Init()
 
 Structure SSAOControls_t
   *ui.PropertyUI::PropertyUI_t
-  *occ_radius.ControlNumber::ControlNumber_t
-  *occ_blur.ControlCheck::ControlCheck_t
-  *nb_samples.ControlNumber::COntrolNumber_t
-  *noise_size.ControlNumber::ControlNumber_t
+  *radiusLabel.ControlLabel::ControlLabel_t
+  *radius.ControlNumber::ControlNumber_t
+  *blurLabel.ControlLabel::ControlLabel_t
+  *blur.ControlCheck::ControlCheck_t
+  *numSamplesLabel.ControlLabel::ControlLabel_t
+  *numSamples.ControlNumber::ControlNumber_t
+  *noiseSizeLabel.ControlLabel::ControlLabel_t
+  *noiseSize.ControlNumber::ControlNumber_t
 EndStructure
 
 Global *app.Application::Application_t
@@ -38,8 +42,15 @@ Procedure SetupSSAOCOntrols(*Me.SSAOControls_t)
   ControlProperty::AppendStart(*Me\ui\prop)
   ControlProperty::RowStart(*Me\ui\prop)
   
-  *Me\occ_radius = ControlProperty::AddFloatControl(*Me\ui\prop, "Radius", "Radius", 1.0, #Null)
-  *Me\occ_blur = ControlProperty::AddBoolControl(*Me\ui\prop, "Blur", "Blur", #False, #Null)
+  *Me\radiusLabel = ControlLabel::New(*Me\ui\prop, "RadiusLabel", "Radius")
+  ControlProperty::Append(*Me\ui\prop, *Me\radiusLabel)
+  *Me\radius = ControlNumber::New(*Me\ui\prop, "Radius", 1.0, 0, 0.0, 10, 0.0, 1.0)
+  ControlProperty::Append(*Me\ui\prop, *Me\radius)
+  
+  *Me\blurLabel = ControlLabel::New(*Me\ui\prop, "BlurLabel", "Blur")
+  ControlProperty::Append(*Me\ui\prop, *Me\blurLabel)
+  *Me\blur = ControlCheck::New(*Me\ui\prop, "Blur", "Blur",#False)
+  ControlProperty::Append(*Me\ui\prop, *Me\blur)
   
   
 ;   *Me\folder_group = ControlGroup::New(*Me\ui\prop, "FolderGroup", "Folder :",0,10,300,#HEIGHT-20)
@@ -414,9 +425,8 @@ If Time::Init()
      SetupSSAOCOntrols(controls)
 ;      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
 ;      *controls = AddControls(*prop)
-     
+     Application::SetContext(*app, *viewport\context)
     *viewport\camera = *app\camera
-    View::SetContent(*app\window\main,*viewport)
     *app\window\active = *app\window\main
    CompilerEndIf
    
@@ -524,7 +534,7 @@ If Time::Init()
   
   ; SSAO Buffer
   ;-----------------------------------------------------
-   *ssao = Framebuffer::New("SSAO",WIDTH/2,HEIGHT/2)
+   *ssao = Framebuffer::New("SSAO",WIDTH,HEIGHT)
   Framebuffer::AttachTexture(*ssao,"ao",#GL_RED,#GL_NEAREST,#GL_CLAMP)
   
   ; Blur SSAO Buffer
@@ -583,8 +593,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 27
+; CursorPosition = 22
+; FirstLine = 18
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

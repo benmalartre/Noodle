@@ -359,7 +359,6 @@ Procedure NextItem( *Me.ControlGroup_t )
       Protected ev_data.Control::EventTypeDatas_t 
       *Me\focuschild = *Me\children(n)
       *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
-      ;*Me\focuschild\OnEvent( #PB_EventType_Focus, #Null);*ev_data )
     EndIf
     
 EndProcedure
@@ -399,6 +398,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       ev_data\xoff    = *son\posX+*Me\posX
       ev_data\yoff    = *son\posY+*Me\posY
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+      ResetCoordinates()
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
@@ -465,9 +465,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
         If *Me\overchild
           *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
         EndIf
-        
-        SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-        
+         
       ElseIf pickID >= 0 And pickID <*Me\chilcount
         Protected ctl.Control::IControl = *Me\children( pickID )
         If ( ctl <> *Me\overchild ) And  Not *Me\down
@@ -482,8 +480,8 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
           EndIf
         ElseIf *Me\overchild
           Define *overchild.Control::Control_t = *Me\overchild
-          ev_data\x    = xm - *overchild\posX + *Me\posX
-          ev_data\y    = ym - *overchild\posY + *Me\posY
+          ev_data\x    = xm - *overchild\posX
+          ev_data\y    = ym - *overchild\posY
           Define overchild.Control::IControl = *Me\overchild
           overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
         EndIf
@@ -494,6 +492,8 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
         ev_data\yoff = 50
         Define overchild.Control::IControl = *Me\overchild
         overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+       Else
+          SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
       EndIf
       
     ; ------------------------------------------------------------------------
@@ -505,10 +505,13 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
           If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
-          ev_data\xoff = *Me\posX
-          ev_data\yoff = *Me\posY
+          xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+          ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
+          xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+          ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+           Define *overchild.Control::Control_t = *Me\overchild
+          ev_data\x = xm - *overchild\posX
+          ev_data\y = ym - *overchild\posY
           *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
         ElseIf *Me\focuschild
           Define focuschild.Control::IControl = *Me\focuschild
@@ -520,7 +523,8 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonUp
       If *Me\overchild
-         Define *overchild.Control::Control_t = *Me\overchild
+        Define *overchild.Control::Control_t = *Me\overchild
+        
         ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
         ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
         *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
@@ -901,7 +905,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 839
-; FirstLine = 784
+; CursorPosition = 508
+; FirstLine = 470
 ; Folding = ----
 ; EnableXP

@@ -293,7 +293,7 @@ Module ControlTimeline
     *Me\sizX = width
     *Me\sizY = height
     
-    ResizeGadget(*Me\gadgetID,0,0,*Me\sizX,*Me\sizY)
+    ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     ResizeImage(*Me\imageID,*Me\sizX,*Me\sizY)
 
     Protected t = height-26
@@ -1063,7 +1063,7 @@ Module ControlTimeline
     *Me\type       = #PB_GadgetType_Canvas
     *Me\name       = "Timeline"
     *Me\parent     = *parent
-    *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
+    *Me\gadgetID   = *parent\gadgetID
     *Me\imageID    = CreateImage( #PB_Any, width, height )
     *Me\posX       = x
     *Me\posY       = y
@@ -1147,7 +1147,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1014
-; FirstLine = 1006
+; CursorPosition = 295
+; FirstLine = 284
 ; Folding = -------
 ; EnableXP

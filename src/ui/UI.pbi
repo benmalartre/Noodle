@@ -20,8 +20,7 @@ DeclareModule UI
     lastY.i
     offsetX.i
     offsetY.i
-
-    container.i
+    
     dirty.b
     down.b
     zoom.f
@@ -176,7 +175,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 21
+; CursorPosition = 22
+; FirstLine = 6
 ; Folding = --
 ; EnableXP

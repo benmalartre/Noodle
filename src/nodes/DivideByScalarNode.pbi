@@ -26,9 +26,7 @@ DeclareModule DivideByScalarNode
   Declare Init(*node.DivideByScalarNode_t)
   Declare Evaluate(*node.DivideByScalarNode_t)
   Declare Terminate(*node.DivideByScalarNode_t)
-  
-;   Declare ResolveReference(*node.DivideByScalarNode_t)
-  
+    
   ; ============================================================================
   ;  ADMINISTRATION
   ; ============================================================================
@@ -219,8 +217,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 63
+; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; CursorPosition = 28
+; FirstLine = 25
 ; Folding = --
 ; EnableXP

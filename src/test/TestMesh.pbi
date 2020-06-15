@@ -137,7 +137,7 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
-     *app\context = *viewport\context
+     Application::SetContext(*app, *viewport\context)
      *app\context\writer\background = #True
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -212,10 +212,9 @@ Procedure Draw(*app.Application::Application_t)
  Next
   
  Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
- Debug "NUM MATRICES : "+Str(CArray::GetCount(*matrices))
+ 
  
  Topology::TransformArray(*topo,*matrices,*topos)
-  Debug "NUM TOPOS : "+Str(CArray::GetCount(*topos))
   Topology::MergeArray(*topo,*topos)
  
   Define sT.d = Time::Get()
@@ -239,7 +238,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 127
+; CursorPosition = 214
+; FirstLine = 172
 ; Folding = -
 ; EnableXP
