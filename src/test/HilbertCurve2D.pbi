@@ -62,7 +62,7 @@ Procedure HilbertD (*crv.HilbertCurve_t, level.i)
 EndProcedure
 
 Procedure Draw(*crv.HilbertCurve_t) 
-  Protected level=3
+  Protected level=6
   *crv\dist0 = 1024
   *crv\dist=*crv\dist0
   Protected i = level
@@ -71,8 +71,8 @@ Procedure Draw(*crv.HilbertCurve_t)
     MovePathCursor(*crv\dist * 0.5, *crv\dist * 0.5)
     HilbertA(*crv, level)
     i - 1
-    VectorSourceColor(RGBA(255, Random(128)+128, 0, 255))
-    StrokePath(3, #PB_Path_RoundCorner)
+    VectorSourceColor(RGBA((i * 255 / level), 255 - (i * 255 / level), 0, 255))
+    StrokePath(i, #PB_Path_RoundCorner)
   Wend  
   
  
@@ -94,8 +94,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 23
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 74
+; FirstLine = 48
 ; Folding = -
 ; EnableXP

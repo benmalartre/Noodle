@@ -18,10 +18,20 @@ Enumeration
   #ICON_LOCKED
   #ICON_UNLOCKED
   #ICON_OP
+  #ICON_TRASH
+  #ICON_LAYER
+  #ICON_PEN
+  #ICON_FOLDER
+  #ICON_FILE
   #ICON_LAST
 EndEnumeration
 
-Global iconFolder.s = "E:/Projects/RnD/Amnesie/build/icons/"
+CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+  Global iconFolder.s = "E:/Projects/RnD/Amnesie/build/icons/"
+CompilerElseIf #PB_Compiler_OS  = #PB_OS_MacOS
+  Global iconFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/icons/"
+CompilerEndIf
+
 
 Global Dim IconName.s(#ICON_LAST)
 IconName(#ICON_VISIBLE) = "visible"
@@ -41,16 +51,21 @@ IconName(#ICON_SPLITH) = "splith"
 IconName(#ICON_LOCKED) = "locked"
 IconName(#ICON_UNLOCKED) = "unlocked"
 IconName(#ICON_OP) = "op"
+IconName(#ICON_TRASH) =  "trash"
+IconName(#ICON_LAYER) = "layer"
+IconName(#ICON_PEN) = "pen"
+IconName(#ICON_FOLDER) = "folder"
+IconName(#ICON_FILE) = "file"
 
 #RESOLUTION = 64
 Define window = OpenWindow(#PB_Any, 0,0,800,800,"Icons")
 Define  canvas = CanvasGadget(#PB_Any, 0,0,800,800)
 
 
-Global STROKE_WIDTH = 6
-Global BACKGROUND_COLOR = RGBA(100,100,100,0)
-Global STROKE_COLOR = RGBA(200,200,200,255)
-Global FILL_COLOR = RGBA(200,200,200,255)
+Global STROKE_WIDTH = 7
+Global BACKGROUND_COLOR = RGBA(255,200,100,255)
+Global STROKE_COLOR = RGBA(220,220,220,255)
+Global FILL_COLOR = RGBA(230,230,230,255)
   
 Procedure.d OffsetXOut(x.d, a.d, l.d)
   ProcedureReturn x + l*Cos(Radian(a - 90))
@@ -100,7 +115,7 @@ Procedure InvisibleIcon()
 EndProcedure
 
 Procedure PlayForwardIcon()
-  Define segments.s = "M 10 10 L 90 50 L 10 90 Z"
+  Define segments.s = "M 20 20 L 80 50 L 20 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
@@ -109,7 +124,7 @@ Procedure PlayForwardIcon()
 EndProcedure
 
 Procedure PlayBackwardIcon()
-  Define segments.s = "M 90 10 L 90 90 L 10 50 Z"
+  Define segments.s = "M 80 20 L 80 80 L 20 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
@@ -119,7 +134,7 @@ Procedure PlayBackwardIcon()
 EndProcedure
 
 Procedure StopIcon()
-  Define segments.s = "M 10 10 L 90 10 L 90 90 L 10 90 Z"
+  Define segments.s = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
@@ -128,42 +143,42 @@ Procedure StopIcon()
 EndProcedure
 
 Procedure FirstFrameIcon()
-  Define segments.s = "M 90 15 L 90 85 L 40 50 Z"
+  Define segments.s = "M 80 20 L 80 80 L 40 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 60 10 L 60 90 L 10 50 Z"
+  segments = "M 60 20 L 60 80 L 20 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 10 15 L 10 85"
+  segments = "M 20 20 L 20 80"
   AddPathSegments(segments)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
 EndProcedure
 
 Procedure LastFrameIcon()
-  Define segments.s = "M 10 15 L 10 85 L 60 50 Z"
+  Define segments.s = "M 20 20 L 20 80 L 60 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 40 10 L 40 90 L 90 50 Z"
+  segments = "M 40 20 L 40 80 L 80 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 90 15 L 90 85"
+  segments = "M 80 20 L 80 80"
   AddPathSegments(segments)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
@@ -173,7 +188,7 @@ Procedure LoopIcon()
   Define h.d = 8
   Define w.d = 4
   Define r.d = 30
-
+  
   AddPathCircle(50,50,r, 60, -70, #PB_Path_CounterClockwise)
   Define l.d = PathLength()
   Define x1.d = PathPointX(l)
@@ -197,29 +212,23 @@ Procedure LoopIcon()
   AddPathLine(x2, y2)
   AddPathLine(OffsetXIn(x1, a, h-w*0.5), OffsetYIn(y1, a, h-w*0.5))
   AddPathLine(x1, y1)
-;   Define segments.s
-;   segments + "M 61.9707 17.1107 C 80.1349 23.722 89.5005 43.8064 82.8893 61.9706 C 78.6126 73.7208 68.3921 82.2969 56.0777 84.4683 "
-;   segments + "M 61.9707 17.1107 L 74.6643 14.7665 L 65.4954 27.8787 Z"
-;   segments + "M 43.9223 84.4683 C 24.886 81.1117 12.1751 62.9586 15.5317 43.9224 C 18.4812 27.1951 33.0147 15 49.9999 15 "
-;   segments + "M 43.9223 84.4683 L 30.4621 88.3152 L 37.7507 74.0718 Z"
-;   AddPathSegments(segments)
-;   VectorSourceColor(FILL_COLOR)
-;   FillPath(#PB_Path_Preserve)
+
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
 EndProcedure
 
 Procedure TranslateIcon()
   
-  Define segments.s = "M 50 10 L 40 20 L 60 20 Z"
-  segments + "M 50 90 L 40 80 L 60 80 Z"
-  segments + "M 10 50 L 20 40 L 20 60 Z"
-  segments + "M 90 50 L 80 40 L 80 60 Z"
+  Define segments.s
+  segments + "M 50 15 L 40 25 L 60 25 Z"
+  segments + "M 50 85 L 40 75 L 60 75 Z"
+  segments + "M 15 50 L 25 40 L 25 60 Z"
+  segments + "M 85 50 L 75 40 L 75 60 Z"
   AddPathSegments(segments)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 30 30 L 70 30 L 70 70 L 30 70 Z"
+  segments = "M 35 35 L 65 35 L 65 65 L 35 65 Z"
   AddPathSegments(segments)
   
   VectorSourceColor(FILL_COLOR)
@@ -258,7 +267,7 @@ Procedure RotateIcon()
 EndProcedure
 
 Procedure ScaleIcon()
-  Define segments.s = "M 10 90 L 10 50 L 50 50 L 50 90 Z"
+  Define segments.s = "M 20 80 L 20 50 L 50 50 L 50 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
@@ -266,7 +275,7 @@ Procedure ScaleIcon()
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments = "M 10 10 L 90 10 L 90 90 L 10 90 Z"
+  segments = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
   AddPathSegments(segments)
   DashPath(STROKE_WIDTH, 2*STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
@@ -278,13 +287,13 @@ Procedure ScaleIcon()
 EndProcedure
 
 Procedure SelectIcon()
-  MovePathCursor(30,15)
-  AddPathLine(30,70)
-  AddPathLine(40,60)
-  AddPathLine(50,85)
-  AddPathLine(60,80)
-  AddPathLine(50,55)
-  AddPathLine(65,55)
+  MovePathCursor(40,15)
+  AddPathLine(40,70)
+  AddPathLine(50,60)
+  AddPathLine(60,85)
+  AddPathLine(70,80)
+  AddPathLine(60,55)
+  AddPathLine(75,55)
   ClosePath()
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
@@ -384,8 +393,90 @@ Procedure OpIcon()
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure TrashIcon()
+  Define segments.s = "M 30 30 L 35 80 L 65 80 L 70 30 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-    
+  segments.s = "M 25 25 L 75 25"
+  segments + "M 40 25 L 42 15 L 58 15 L 60 25" 
+  segments + "M 42 40 L 44 70 M 58 40 L 56 70"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  
+  
+EndProcedure
+
+Procedure LayerIcon()
+  Define segments.s = "M 20 80 L 60 80 L 80 60 L 40 60 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments.s = "M 20 70 L 60 70 L 80 50 L 40 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+;   segments.s = "M 20 60 L 60 60 L 80 40 L 40 40 Z"
+;   AddPathSegments(segments)
+;   VectorSourceColor(FILL_COLOR)
+;   FillPath(#PB_Path_Preserve)
+;   VectorSourceColor(STROKE_COLOR)
+;   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 70 20 L 70 40 M 60 30 L 80 30"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure PenIcon()
+  Define segments.s = "M 20 80 L 20 60 L 40 70 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments.s = "M 20 60 L 50 20 L 70 30 L 40 70 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(BACKGROUND_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure FolderIcon()
+  Define segments.s = "M 10 25 L 10 75 L 70 75 L 70 15 L 40 15 L 40 25 Z"
+  AddPathSegments(segments)
+  segments.s = "M 70 75 L 90 30 L 70 30"
+  AddPathSegments(segments)
+  VectorSourceColor(BACKGROUND_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure FileIcon()
+  Define segments.s
+  segments + "M 30 20 L 30 80 L 70 80 L 70 40  L 50 20 L 50 40 L 70 40 L 50 20 Z"
+  segments + "M 40 55 L 60 55 M 40 65 L 60 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
 EndProcedure
 
 StartVectorDrawing(CanvasVectorOutput(canvas))
@@ -424,6 +515,16 @@ TranslateCoordinates(100, 0)
 UnlockedIcon()
 TranslateCoordinates(-700, 100)
 OpIcon()
+TranslateCoordinates(100, 0)
+TrashIcon()
+TranslateCoordinates(100, 0)
+LayerIcon()
+TranslateCoordinates(100, 0)
+PenIcon()
+TranslateCoordinates(100, 0)
+FolderIcon()
+TranslateCoordinates(100, 0)
+FileIcon()
 StopVectorDrawing()
 
 Procedure SaveIcon(icon.i)
@@ -474,6 +575,16 @@ Procedure SaveIcon(icon.i)
        LockedIcon()
      Case #ICON_OP
        OpIcon()
+     Case #ICON_TRASH
+       TrashIcon()
+     Case #ICON_LAYER
+       LayerIcon()
+     Case #ICON_PEN
+       PenIcon()
+     Case #ICON_FOLDER
+       FolderIcon()
+     Case #ICON_FILE
+       FileIcon()
   EndSelect
   
   StopVectorDrawing()
@@ -490,9 +601,8 @@ Repeat
   event = WaitWindowEvent()
   
 Until event = #PB_Event_CloseWindow
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 9
-; Folding = PAA+
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 472
+; FirstLine = 377
+; Folding = --b9-
 ; EnableXP

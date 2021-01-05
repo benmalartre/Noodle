@@ -224,7 +224,7 @@ MessageRequester("Octree",
                  "NUM HITS : " +Str(numHits1) + ","+Str(numHits2)+Chr(10)+
                  "TOOK : " +StrD(elapsed)  +", "+StrD(elapsed2)+Chr(10)+"NUM HITS : "+Str(numHits))
 ;                  "EQUALS : "+Str(Compare(*soup1, *soup2, numTris)))                ;
-; IDE Options = PureBasic 5.62 (Windows - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; CursorPosition = 148
 ; FirstLine = 137
 ; Folding = -

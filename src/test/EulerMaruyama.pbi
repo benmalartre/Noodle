@@ -43,8 +43,8 @@ For i=0 To #NUM_SIMS-1
     t = (i-1) * dt
     y = PeekF(*ys+(i-1)*4)
     PokeF(*ys+i*4, y + mu(y,t) * dt + sigma(y, t) * dW(dt))
-    ;Circle(PeekF(*ts+i*4)*1000-1000, PeekF(*ys+i*4)*1000, 2, RGB(255,0,0))
-    Circle(Random(1200), Random(800), Random(5)+2, RGB(Random(255), Random(255), Random(255)))
+    Circle(PeekF(*ts+i*4)*1000, PeekF(*ys+i*4)*1000, 2, RGB(255,0,0))
+    ;Circle(Random(1200), Random(800), Random(5)+2, RGB(Random(255), Random(255), Random(255)))
   Next
 Next
 StopDrawing()
@@ -52,8 +52,8 @@ StopDrawing()
 Repeat
 Until WaitWindowEvent() = #PB_Event_CloseWindow
   
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 6
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 45
+; FirstLine = 17
 ; Folding = -
 ; EnableXP
