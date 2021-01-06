@@ -23,6 +23,11 @@ Enumeration
   #ICON_PEN
   #ICON_FOLDER
   #ICON_FILE
+  #ICON_HOME
+  #ICON_BACK
+  #ICON_WARNING
+  #ICON_ERROR
+  #ICON_OK
   #ICON_LAST
 EndEnumeration
 
@@ -56,6 +61,11 @@ IconName(#ICON_LAYER) = "layer"
 IconName(#ICON_PEN) = "pen"
 IconName(#ICON_FOLDER) = "folder"
 IconName(#ICON_FILE) = "file"
+IconName(#ICON_HOME) = "home"
+IconName(#ICON_BACK) = "back"
+IconName(#ICON_WARNING) = "warning"
+IconName(#ICON_ERROR) = "error"
+IconName(#ICON_OK) = "ok"
 
 #RESOLUTION = 64
 Define window = OpenWindow(#PB_Any, 0,0,800,800,"Icons")
@@ -66,6 +76,12 @@ Global STROKE_WIDTH = 7
 Global BACKGROUND_COLOR = RGBA(255,200,100,255)
 Global STROKE_COLOR = RGBA(220,220,220,255)
 Global FILL_COLOR = RGBA(230,230,230,255)
+Global BLACK_COLOR = RGBA(32,32,32,255)
+Global WHITE_COLOR = RGBA(222,222,222,255)
+Global ORANGE_COLOR = RGBA(255,160,0,255)
+Global RED_COLOR = RGBA(255,0,0,255)
+Global GREEN_COLOR = RGBA(0,255,0,255)
+Global BLUE_COLOR = RGBA(120,120,255,255)
   
 Procedure.d OffsetXOut(x.d, a.d, l.d)
   ProcedureReturn x + l*Cos(Radian(a - 90))
@@ -396,16 +412,16 @@ Procedure OpIcon()
 EndProcedure
 
 Procedure TrashIcon()
-  Define segments.s = "M 30 30 L 35 80 L 65 80 L 70 30 Z"
+  Define segments.s = "M 25 30 L 30 80 L 70 80 L 75 30 Z"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   
-  segments.s = "M 25 25 L 75 25"
+  segments.s = "M 20 25 L 80 25"
   segments + "M 40 25 L 42 15 L 58 15 L 60 25" 
-  segments + "M 42 40 L 44 70 M 58 40 L 56 70"
+  segments + "M 35 40 L 38 70 M 50 40 L 50 70 M 65 40 L 62 70"
   AddPathSegments(segments)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
@@ -451,18 +467,18 @@ Procedure PenIcon()
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
   segments.s = "M 20 60 L 50 20 L 70 30 L 40 70 Z"
   AddPathSegments(segments)
-  VectorSourceColor(BACKGROUND_COLOR)
+  VectorSourceColor(ORANGE_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
 EndProcedure
 
 Procedure FolderIcon()
-  Define segments.s = "M 10 25 L 10 75 L 70 75 L 70 15 L 40 15 L 40 25 Z"
+  Define segments.s = "M 20 30 L 20 80 L 80 80 L 80 20 L 50 20 L 50 30 Z"
   AddPathSegments(segments)
-  segments.s = "M 70 75 L 90 30 L 70 30"
+  segments.s = "M 80 80 L 90 40 L 80 40"
   AddPathSegments(segments)
-  VectorSourceColor(BACKGROUND_COLOR)
+  VectorSourceColor(BLUE_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
@@ -470,14 +486,60 @@ EndProcedure
 
 Procedure FileIcon()
   Define segments.s
-  segments + "M 30 20 L 30 80 L 70 80 L 70 40  L 50 20 L 50 40 L 70 40 L 50 20 Z"
-  segments + "M 40 55 L 60 55 M 40 65 L 60 65"
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
   AddPathSegments(segments)
   VectorSourceColor(FILL_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
 EndProcedure
+
+Procedure HomeIcon()
+  Define segments.s
+  segments + "M 25 80 L 42 80 L 42 50 L 58 50  L 58 80 L 75 80"
+  segments + "L 75 40 L 85 40 L 50 20 L 15 40 L 25 40 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure BackIcon()
+  Define segments.s
+  segments + "M 20 40 L 40 60 L 40 50 L 60 50 L 60 80"
+  segments + "L 80 80 L 80 30 L 40 30 L 40 20 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure WarningIcon()
+  Define segments.s
+  segments + "M 15 80 L 85 80 L 50 20 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath(#PB_Path_Preserve)
+  Define segments.s = "M 50 40 L 50 60 M 50 70 L 50 70"
+  AddPathSegments(segments)
+  VectorSourceColor(BLACK_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure ErrorIcon()
+  AddPathCircle(50, 50, 35)
+  VectorSourceColor(RED_COLOR)
+  FillPath(#PB_Path_Preserve)
+  Define segments.s = "M 35 35 L 65 65 M 35 65 L 65 35"
+  AddPathSegments(segments)
+  VectorSourceColor(WHITE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+
 
 StartVectorDrawing(CanvasVectorOutput(canvas))
 ResetCoordinates()
@@ -525,6 +587,14 @@ TranslateCoordinates(100, 0)
 FolderIcon()
 TranslateCoordinates(100, 0)
 FileIcon()
+TranslateCoordinates(100, 0)
+HomeIcon()
+TranslateCoordinates(100, 0)
+BackIcon()
+TranslateCoordinates(-700, 100)
+WarningIcon()
+TranslateCoordinates(100, 0)
+ErrorIcon()
 StopVectorDrawing()
 
 Procedure SaveIcon(icon.i)
@@ -585,6 +655,14 @@ Procedure SaveIcon(icon.i)
        FolderIcon()
      Case #ICON_FILE
        FileIcon()
+     Case #ICON_HOME
+       HomeIcon()
+     Case #ICON_BACK
+       BackIcon()
+     Case #ICON_WARNING
+       WarningIcon()
+     Case #ICON_ERROR
+       ErrorIcon()
   EndSelect
   
   StopVectorDrawing()
@@ -602,7 +680,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 472
-; FirstLine = 377
-; Folding = --b9-
+; CursorPosition = 83
+; FirstLine = 56
+; Folding = --b9--
 ; EnableXP
