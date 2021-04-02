@@ -446,9 +446,7 @@ Module Verlet
 EndModule
 
 
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 1
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 4
 ; Folding = ---
 ; EnableXP

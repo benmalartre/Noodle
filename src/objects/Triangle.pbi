@@ -719,11 +719,11 @@ Module Triangle
     !   jmp edge0_test
     
     ! edge0_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                          ; reset axis counter
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask is stored in r9
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge0_test
     
@@ -744,7 +744,7 @@ Module Triangle
     !   jmp edge1_test
     
     ! edge1_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                        ; reset axis counter
     !   movaps xmm0, xmm15                  ; move p2 to xmm1
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -771,11 +771,11 @@ Module Triangle
     !   jmp edge2_test
     
     ! edge2_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                        ; reset axis counter
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
-    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask stored in r9
+    !   movups xmm6, [math.l_sse_1111_sign_mask]; load sign bit mask
     !   andps xmm7, xmm6                    ; bitmask removing sign (Abs(e0))
     !   jmp edge2_test
   
@@ -936,11 +936,11 @@ Module Triangle
     ; compute radius and store it in xmm8
     ; ------------------------------------------------------------------
     ! compute_radius:
-    !   cmp r15, 0
+    !   cmp r9, 0
     !   je radius_0
-    !   cmp r15, 1
+    !   cmp r9, 1
     !   je radius_1
-    !   cmp r15, 2
+    !   cmp r9, 2
     !   je radius_2
     
     ; ------------------------------------------------------------------
@@ -975,7 +975,7 @@ Module Triangle
     ; finalize compute radius
     ; ------------------------------------------------------------------
     ! finalize_radius:
-    !   inc r15                            ; increment axis counter
+    !   inc r9                             ; increment axis counter
     !   movss xmm8, xmm6                   ; r0
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
@@ -1291,41 +1291,41 @@ CompilerEndIf
 
 CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   Procedure TouchArray(*positions, *indices, *elements, numTris.i, *box.Geometry::Box_t, *hits)
-    
     Define *center.v3f32 = *box\origin
     Define *boxhalfsize.v3f32 = *box\extend
     Define numHits.i = 0
     
     ! mov rdi, [p.p_hits]
     ! mov rcx, [p.v_numTris]
+    
     ! mov rdx, [p.p_indices]            ; move indices to edx register
-    ! mov r14, [p.p_elements]           ; move indices to r14 register
+    ! mov r15, [p.p_elements]           ; move elements to r15 register
     ! mov rsi, [p.p_center]             ; move center address to rsi
     ! movups xmm11, [rsi]               ; move center packed data to xmm11
     ! mov rsi, [p.p_boxhalfsize]        ; move boxhalfsize address to rsi
     ! movups xmm12, [rsi]               ; move boxhalfsize packed data to xmm12
     ! mov rsi, [p.p_positions]          ; move positions address to rsi
     
-    ! xor r8, r8                              ; edge counter
-    ! xor r11, r11                            ; hits counter
-
+    ! xor r8, r8                        ; edge counter
+    ! xor r11, r11                      ; hits counter
+    
     ; ----------------------------------------------------
     ; load triangle
     ; ----------------------------------------------------
     ! array_load_triangle:
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r15]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
     !   mov eax, [rdx + rax]              ; get index for desired point A
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm13, [rsi + rax]         ; load point A to xmm13
     
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r15]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
     !   mov eax, [rdx + rax + 4]          ; get value for desired point B
     !   imul rax, 16                      ; compute offset in position array
     !   movaps xmm14, [rsi + rax]         ; load point B to xmm14
     
-    !   mov eax, [r14]                    ; load triangle index
+    !   mov eax, [r15]                    ; load triangle index
     !   imul rax, 12                      ; compute offset in indices array
     !   mov eax, [rdx + rax + 8]          ; get value for desired point C
     !   imul rax, 16                      ; compute offset in position array
@@ -1335,7 +1335,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   subps xmm14, xmm11                ; p1 = b - center 
     !   subps xmm15, xmm11                ; p2 = c - center
     
-    !   add r14, 4
+    !   add r15, 4
 
     ; ----------------------------------------------------
     ; build edge
@@ -1357,7 +1357,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge0_test
     
     ! array_edge0_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                          ; reset axis counter
     !   movaps xmm0, xmm14                  ; move p1 to xmm0
     !   subps xmm0, xmm13                   ; e0 = p1 - p0
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1382,7 +1382,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge1_test
     
     ! array_edge1_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                          ; reset axis counter
     !   movaps xmm0, xmm15                  ; move p2 to xmm1
     !   subps xmm0, xmm14                   ; e1 = p2 - p1
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1409,7 +1409,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     !   jmp array_edge2_test
     
     ! array_edge2_load:
-    !   xor r15, r15                        ; reset axis counter
+    !   xor r9, r9                          ; reset axis counter
     !   movaps xmm0, xmm13                  ; move p0 to xmm1
     !   subps xmm0, xmm15                   ; e2 = p0 - p2
     !   movaps xmm7, xmm0                   ; make a copy in xmm7
@@ -1574,11 +1574,11 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; compute radius and store it in xmm8
     ; ------------------------------------------------------------------
     ! array_compute_radius:
-    !   cmp r15, 0
+    !   cmp r9, 0
     !   je array_radius_0
-    !   cmp r15, 1
+    !   cmp r9, 1
     !   je array_radius_1
-    !   cmp r15, 2
+    !   cmp r9, 2
     !   je array_radius_2
     
     ; ------------------------------------------------------------------
@@ -1613,7 +1613,7 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
     ; finalize compute radius
     ; ------------------------------------------------------------------
     ! array_finalize_radius:
-    !   inc r15                            ; increment axis counter
+    !   inc r9                             ; increment axis counter
     !   movss xmm8, xmm6                   ; r0
     !   psrldq xmm6, 8                     ; shift right 8 bytes
     !   addss xmm8, xmm6                   ; rad = r0 + r1
@@ -1988,7 +1988,7 @@ CompilerEndIf
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1319
-; FirstLine = 1319
+; CursorPosition = 1831
+; FirstLine = 1829
 ; Folding = -----
 ; EnableXP

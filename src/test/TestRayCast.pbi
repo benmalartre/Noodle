@@ -203,7 +203,8 @@ Procedure Draw(*app.Application::Application_t)
    
     
     Application::Draw(*app, *layer, *app\camera)
-    ViewportUI::Blit(*viewport, *layer\buffer)
+    ViewportUI::Blit(*viewport, *layer\datas\buffer) 
+    ;ViewportUI::Blit(*viewport, *layer\buffer)
     
   CompilerEndIf
   
@@ -246,9 +247,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 182
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 205
+; FirstLine = 194
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

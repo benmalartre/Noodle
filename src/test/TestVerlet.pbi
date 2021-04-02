@@ -28,7 +28,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
 ;   Object3D::SetLocalTransform(*light, *t)
   
-  For i=0 To 12
+  For i=0 To 16
     Verlet::StepPhysics(*verlet, 1/60)
   Next
   
@@ -121,9 +121,8 @@ Globals::Init()
   Verlet::Delete(*verlet)
 EndIf
 
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 63
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 30
+; FirstLine = 16
 ; Folding = -
 ; EnableXP

@@ -2404,8 +2404,8 @@ Module PolymeshGeometry
   Class::DEF( PolymeshGeometry )
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 997
-; FirstLine = 974
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 1932
+; FirstLine = 1904
 ; Folding = ----P5----0-
 ; EnableXP

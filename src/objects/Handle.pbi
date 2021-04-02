@@ -1442,8 +1442,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 947
-; FirstLine = 928
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 1262
+; FirstLine = 1265
 ; Folding = -------
 ; EnableXP

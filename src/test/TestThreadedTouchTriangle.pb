@@ -1,6 +1,7 @@
 ﻿XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../objects/Geometry.pbi"
+XIncludeFile "../objects/Box.pbi"
 XIncludeFile "../objects/Triangle.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 
@@ -30,6 +31,56 @@ Procedure NumHits(*hits, nb)
 EndProcedure
 
 
+Procedure.s Payload(numThreads.i, *geom.Geometry::PolymeshGeometry_t, *box.Geometry::Box_t)
+  Define *hits = AllocateMemory(*geom\nbtriangles)
+  Define *elements = AllocateMemory(*geom\nbtriangles * 4)
+  Define i
+  For i=0 To *geom\nbtriangles - 1 : PokeL(*elements + i * 4, i) : Next
+  
+  Dim threadDatas.threadData_t(numThreads)
+  Dim threads.i(numThreads)
+  Define numTris = *geom\nbtriangles
+  Define numTriPerThread = Round(numTris / numThreads, #PB_Round_Down)
+  Define numTriLastThread = *geom\nbtriangles - (numThreads - 1) * numTriPerThread
+
+  Define startT.d = Time::Get()
+  For i=0 To numThreads-1
+    With threadDatas(i)
+      \box = *box
+      \threadID = i
+      If i < numThreads -1
+        \count = numTriPerThread
+      Else
+        \count = numTriLastThread
+      EndIf 
+      \hits = *hits + i * numTriPerThread
+      \positions = *geom\a_positions\data
+      \indices = *geom\a_triangleindices\data
+      \elements = *elements + (i*4*numTriPerThread)
+    EndWith
+    threads(i) = CreateThread(@ThreadedTriangleArrayTouchCell(), threadDatas(i))
+  Next
+  
+  working = #True
+  While working
+    working = #False
+    For i = 0 To numThreads - 1    ;Wait for all threads to finish... not sure if this is the bes way
+      If IsThread(threads(i)) 
+        working=#True
+      EndIf
+    Next
+  Wend  
+  
+  
+  Define elapsedT.d = Time::Get() - startT
+  
+  ProcedureReturn "NUM THREAD : "+Str(numThreads) +" : " + Chr(10) + 
+                                  StrD(elapsedT) + " seconds (" +
+                                  Str(NumHits(*hits, *geom\nbtriangles)) +
+                                  " hits)"
+    
+EndProcedure
+
 Time::Init()
 
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Test", Shape::#Shape_Sphere)
@@ -41,72 +92,44 @@ Global box.Geometry::Box_t
 Vector3::Set(box\origin, 0,0,0)
 Vector3::Set(box\extend, 10,10,10)
 
-Global *hits1 = AllocateMemory(*geom\nbtriangles)
-Global *hits2 = AllocateMemory(*geom\nbtriangles)
-Global *elements = AllocateMemory(*geom\nbtriangles * 4)
-Define i
-For i=0 To *geom\nbtriangles - 1 : PokeL(*elements + i*4, i) : Next
 
-; BRUTE FORCE
-Define startT1.d = Time::Get()
-; Define i
-; Define i
-; Define.v3f32 *a, *b, *c
-; Define a,b,c
-; Define v3s = SizeOf(v3f32)
-; For i=0 To *geom\nbtriangles - 1
-;   a = CArray::GetValueL(*geom\a_triangleindices, i*3)
-;   b = CArray::GetValueL(*geom\a_triangleindices, i*3+1)
-;   c = CArray::GetValueL(*geom\a_triangleindices, i*3+2)
-;   *a = CArray::GetValue(*geom\a_positions, a)
-;   *b = CArray::GetValue(*geom\a_positions, b)
-;   *c = CArray::GetValue(*geom\a_positions, c)
-;   If Triangle::Touch( box, *a, *b, *c)
-;     PokeB(*hits1 + i, #True)
-;   EndIf
-; Next
-Triangle::TouchArray(*geom\a_positions\data, *geom\a_triangleindices\data, *elements, *geom\nbtriangles, box, *hits1)
-Define elapsedT1.d = Time::Get() - startT1
-; THREADED
-Define numThreads.i = 4
-Dim threadDatas.threadData_t(numThreads)
-Dim threads.i(numThreads)
-Define numTris = *geom\nbtriangles
-Define numTriPerThread = Round(numTris / numThreads, #PB_Round_Down)
+Define N.i = 1
+Define result1.s = Payload(N, *geom, box)
 
-Define startT2.d = Time::Get()
-For i=0 To ArraySize(threadDatas())-1
-  With threadDatas(i)
-    \box = box
-    \threadID = i
-    \count = numTriPerThread
-    \hits = *hits2 + i * numTriPerThread
-    \positions = *geom\a_positions\data
-    \indices = *geom\a_triangleindices\data
-    \elements = *elements + (i*4*numTriPerThread)
-  EndWith
-  threads(i) = CreateThread(@ThreadedTriangleArrayTouchCell(), threadDatas(i))
-Next
+N = 2
+Define result2.s = Payload(N, *geom, box)
 
-For i = 1 To numThreads - 1    ;Wait for all threads to finish... not sure if this is the bes way
- If IsThread(threads(i)) 
-   WaitThread(threads(i))
- EndIf   
-Next 
+N = 4
+Define result3.s = Payload(N, *geom, box)
 
-Define elapsedT2.d = Time::Get() - startT2
+N = 8
+Define result4.s = Payload(N, *geom, box)
 
-MessageRequester("THREADED", 
-                 StrD(elapsedT1)+" vs "+StrD(elapsedT2)+
-                 " : "+Str(CompareMemory(*hits1, *hits2, *geom\nbtriangles))+
-                 ", "+Str(NumHits(*hits1, *geom\nbtriangles))+
-                 ", "+Str(NumHits(*hits2, *geom\nbtriangles))+Chr(10)+
-                 "NUM TRIANGLES : "+Str(*geom\nbtriangles))
+N = 16
+Define result5.s = Payload(N, *geom, box)
+
+N = 32
+Define result6.s = Payload(N, *geom, box)
+
+N = 64
+Define result7.s = Payload(N, *geom, box)
+MessageRequester("Intersect "+Str(*geom\nbtriangles) + " Triangles", 
+                 result1 + Chr(10) + 
+                 result2 + Chr(10) + 
+                 result3 + Chr(10) + 
+                 result4 + Chr(10) + 
+                 result5 + Chr(10) + 
+                 result6 + Chr(10) +
+                 result7)
 
 
 
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 2
+
+
+
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 66
+; FirstLine = 50
 ; Folding = -
 ; EnableXP
