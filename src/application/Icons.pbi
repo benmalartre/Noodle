@@ -23,6 +23,8 @@ Enumeration
   #ICON_PEN
   #ICON_FOLDER
   #ICON_FILE
+  #ICON_OPEN
+  #ICON_SAVE
   #ICON_HOME
   #ICON_BACK
   #ICON_WARNING
@@ -61,6 +63,8 @@ IconName(#ICON_LAYER) = "layer"
 IconName(#ICON_PEN) = "pen"
 IconName(#ICON_FOLDER) = "folder"
 IconName(#ICON_FILE) = "file"
+IconName(#ICON_OPEN) = "open"
+IconName(#ICON_SAVE) = "save"
 IconName(#ICON_HOME) = "home"
 IconName(#ICON_BACK) = "back"
 IconName(#ICON_WARNING) = "warning"
@@ -478,7 +482,7 @@ Procedure FolderIcon()
   AddPathSegments(segments)
   segments.s = "M 80 80 L 90 40 L 80 40"
   AddPathSegments(segments)
-  VectorSourceColor(BLUE_COLOR)
+  VectorSourceColor(ORANGE_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
@@ -493,6 +497,36 @@ Procedure FileIcon()
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(STROKE_COLOR)
   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure SaveIcon()
+  Define segments.s
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments = "M 50 50 L 50 30 L 40 30 L 60 10 L 80 30 L 70 30 L 70 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath()
+EndProcedure
+
+Procedure OpenIcon()
+  Define segments.s
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments = "M 50 10 L 50 30 L 40 30 L 60 50 L 80 30 L 70 30 L 70 10 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath()
 EndProcedure
 
 Procedure HomeIcon()
@@ -595,9 +629,13 @@ TranslateCoordinates(-700, 100)
 WarningIcon()
 TranslateCoordinates(100, 0)
 ErrorIcon()
+TranslateCoordinates(100, 0)
+SaveIcon()
+TranslateCoordinates(100, 0)
+OpenIcon()
 StopVectorDrawing()
 
-Procedure SaveIcon(icon.i)
+Procedure SaveIconAsImage(icon.i)
   Define image.i = CreateImage(#PB_Any, #RESOLUTION, #RESOLUTION, 32)
   
   StartDrawing(ImageOutput(image))
@@ -655,6 +693,10 @@ Procedure SaveIcon(icon.i)
        FolderIcon()
      Case #ICON_FILE
        FileIcon()
+     Case #ICON_SAVE
+       SaveIcon()
+     Case #ICON_OPEN
+       OpenIcon()
      Case #ICON_HOME
        HomeIcon()
      Case #ICON_BACK
@@ -671,7 +713,7 @@ Procedure SaveIcon(icon.i)
 EndProcedure
 
 For i=0 To #ICON_LAST - 1
-  SaveIcon(i)
+  SaveIconAsImage(i)
 Next
 
   
@@ -680,7 +722,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 83
-; FirstLine = 56
+; CursorPosition = 529
+; FirstLine = 433
 ; Folding = --b9--
 ; EnableXP
