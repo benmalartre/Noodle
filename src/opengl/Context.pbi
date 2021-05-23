@@ -117,7 +117,6 @@ Module GLContext
         CompilerElse
           *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
-
         CompilerEndIf
         
         ; load extensions and setup shaders
@@ -133,11 +132,10 @@ Module GLContext
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
         If Not *context
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height)
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
         Else
           *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
         EndIf
-        
         SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
         
         ; load extensions and setup shaders
@@ -158,20 +156,24 @@ Module GLContext
       ;   LINUX
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height,#PB_OpenGL_Keyboard)
-          SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
-          
-          ; load extensions and setup shaders
-          If Not *context
-            *MAIN_GL_CTXT = *Me
-            Setup(*Me)
-          Else
-            ; copy context
-            Copy(*Me, *context)
-          EndIf
-          
-        CompilerEndIf
+        If Not *context
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
+        Else
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
+        EndIf
+        SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+        
+        ; load extensions and setup shaders
+        If Not *context
+          *MAIN_GL_CTXT = *Me
+          Setup(*Me)
+        Else
+          ; copy context
+          Copy(*Me, *context)
+        EndIf
+        
       CompilerEndIf
+    CompilerEndIf
     
     ProcedureReturn *Me
   EndProcedure
@@ -297,8 +299,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 68
+; CursorPosition = 169
+; FirstLine = 126
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

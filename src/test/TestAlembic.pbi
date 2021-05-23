@@ -62,8 +62,9 @@ Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*app\context)
   Application::Draw(*app, *layer, *app\camera, *app\context)
   ViewportUI::Blit(*viewport, *layer\datas\buffer)
-;   GLContext::SetContext(*viewport2\context)
-;   Application::Draw(*app, *layer, *viewport2\camera, *viewport2\context)
+  GLContext::SetContext(*viewport2\context)
+  Application::Draw(*app, *layer, *viewport2\camera, *viewport2\context)
+  ViewportUI::Blit(*viewport2, *layer\datas\buffer)
 ;   GLContext::FlipBuffer(*viewport2\context)
 ;   GLContext::FlipBuffer(*viewport\context)
 ;   GLContext::SetContext(*viewport2\context)
@@ -171,8 +172,8 @@ If Time::Init()
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   
   
-;   Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
-;   *viewport2 = ViewportUI::New(*monitor\main,"Viewport_XXX", *app\camera, *app\handle)
+  Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
+  *viewport2 = ViewportUI::New(*monitor\main,"Viewport_XXX", *app\camera, *app\handle)
   
   GLContext::SetContext(*app\context)
   Scene::Setup(Scene::*current_scene,*app\context)
@@ -180,8 +181,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 45
+; CursorPosition = 175
+; FirstLine = 121
 ; Folding = -
 ; EnableThread
 ; EnableXP
