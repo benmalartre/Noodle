@@ -339,7 +339,6 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     *app\context = *viewport\context
 ;     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
@@ -402,9 +401,9 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 210
-; FirstLine = 200
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 341
+; FirstLine = 337
 ; Folding = --
 ; EnableThread
 ; EnableXP

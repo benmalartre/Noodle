@@ -48,7 +48,6 @@ If Time::Init()
 
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"Viewport", *app\camera, *app\handle)
-   *app\context = *viewport\context
    
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -62,7 +61,7 @@ If Time::Init()
   
  
   Define *section.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
-  Utils::BuildCircleSection(*section, 12)
+  MathUtils::BuildCircleSection(*section, 12)
       
   Define *points.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
   
@@ -96,7 +95,8 @@ If Time::Init()
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 15
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 50
+; FirstLine = 36
 ; Folding = -
 ; EnableXP

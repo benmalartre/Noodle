@@ -196,7 +196,6 @@ Log::Init()
   Application::AddShortcuts(*app)
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
-   *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
@@ -253,9 +252,9 @@ ViewportUI::SetHandleTarget(*viewport, *query)
 Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 195
-; FirstLine = 184
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 198
+; FirstLine = 193
 ; Folding = -
 ; EnableThread
 ; EnableXP

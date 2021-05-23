@@ -23,7 +23,7 @@ Topology::Teapot(*topo3)
 ; Define *m.m4f32
 ; Define *p.v3f32
 ; RandomSeed(666)
-; Utils::BuildCircleSection(*positions, numTopos+1, 8)
+; MathUtils::BuildCircleSection(*positions, numTopos+1, 8)
 ; For i=0 To numTopos-1
 ; ;     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
 ;   *m = CArray::GetPtr(*matrices, i)
@@ -54,6 +54,6 @@ Topology::Delete(*topo1)
 Topology::Delete(*topo2)
 Topology::Delete(*topo3)
 Debug "ALL IS FINE..."
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 25
 ; EnableXP

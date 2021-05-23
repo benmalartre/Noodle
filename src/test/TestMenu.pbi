@@ -30,7 +30,6 @@ Debug "APP GL CONTEXT : "+Str(*app\context)
 ; Scene::Setup(Scene::*current_scene ,*app\context)
 ; ; Application::OnEvent(*app,#PB_Event_SizeWindow)
 ; 
-; *app\context = GLContext::New(0,#False,*viewport\gadgetID)
 ; *viewport\camera = *app\camera     
 ; 
 ; *mesh.Polymesh::Polymesh_t = Polymesh::New("Test",Shape::#SHAPE_BUNNY)
@@ -53,7 +52,7 @@ Procedure Update(*app.Application::Application_t)
 EndProcedure
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 20
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 32
 ; Folding = -
 ; EnableXP

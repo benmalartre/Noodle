@@ -15,7 +15,6 @@ Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*main,"ViewportUI", 
 ; Global *view.View::View_t = View::Split(*main,0,50)
 ; 
 ; Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*view\left,"ViewportUI")
-; *app\context = GLContext::New(0,#False,*viewport\gadgetID)
 ; Global *log.LogUI::LogUI_t = LogUI::New(*view\right, "LogUI")
 
 
@@ -132,8 +131,8 @@ Scene::Setup(*scene,*app\context)
 ; Scene::Update(*scene)
 
 Application::Loop(*app,@Callback())
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 72
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 17
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

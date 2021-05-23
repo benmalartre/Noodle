@@ -75,7 +75,7 @@ Procedure UpdateCamera(*object.Object3D::Object3D_t,*camera.Camera::Camera_t,x.f
   Protected m3.m3f32
   Vector3::Set(delta,x,y)
   Vector3::Set(delta,delta\x,0,delta\y)
-  Utils::DirectionToRotation(@m3,@dir,@up)
+  MathUtils::DirectionToRotation(@m3,@dir,@up)
   Vector3::MulByMatrix3InPlace(@delta,@m3)
   
 EndProcedure
@@ -240,9 +240,9 @@ Procedure Update(*app.Application::Application_t)
   Scene::Setup(Scene::*current_scene)
   Application::Loop(*app, @Update())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 170
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 77
+; FirstLine = 73
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

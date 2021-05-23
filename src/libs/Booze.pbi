@@ -61,18 +61,18 @@ DeclareModule Alembic
   Enumeration
   	#ABC_PropertyType_Compound        ; 0 < A compound property which may contain other properties */
   	#ABC_PropertyType_Scalar          ; 1 < A single value property */
-  	#ABC_PropertyType_Array           ; 2 < A property With an Array of values */
-  	#ABC_PropertyType_Unknown = 127   ;   < Unknown To the framework */
+  	#ABC_PropertyType_Array           ; 2 < A property with an array of values */
+  	#ABC_PropertyType_Unknown = 127   ;   < Unknown to the framework */
 	EndEnumeration
 
   Macro ABCGeometryScope : l : EndMacro
   Enumeration
-    #ABC_kConstantScope
-    #ABC_kUniformScope
-    #ABC_kVaryingScope
-    #ABC_kVertexScope
-    #ABC_kFacevaryingScope
-    #ABC_kUnknownScope = 127
+    #ABC_ConstantScope
+    #ABC_UniformScope
+    #ABC_VaryingScope
+    #ABC_VertexScope
+    #ABC_FacevaryingScope
+    #ABC_UnknownScope = 127
   EndEnumeration
   
   Macro ABCTopoVariance : l : EndMacro
@@ -1568,8 +1568,8 @@ Module AlembicIObject
 EndModule
 
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1253
-; FirstLine = 1204
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 65
 ; Folding = --------
 ; EnableXP

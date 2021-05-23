@@ -206,7 +206,7 @@ CompilerEndIf
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
   Declare Loop(*Me.Application_t,*callback=#Null, waitTime.f=-1)
-  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GlContext_t=#Null)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   Declare AddShortcuts(*Me.Application_t)
@@ -300,6 +300,8 @@ CompilerEndIf
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
+    *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, 
+                                 GLContext::MAIN_GL_CTXT_HEIGHT)
 ;     Handle::Setup(*Me\handle, *Me\context)
     
     ProcedureReturn *Me
@@ -325,7 +327,11 @@ CompilerEndIf
 
     Define *window.Window::Window_t = AllocateMemory(SizeOf(Window::Window_t))
     InitializeStructure(*window, Window::Window_t)
-    *window\main = OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
+    
+;     *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
+;     *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
+    *window\ID= OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
+    *window\main = View::New(0,0,WindowWidth(*window\ID),WindowHeight(*window\ID),#Null,#False,"MainView",#True)
     *window\main\sizX = width
     *window\main\sizY = height
     ProcedureReturn *window
@@ -725,8 +731,11 @@ CompilerEndIf
   ;------------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------------
-  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
+  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GLContext_t=#Null)
     Handle::Resize(*Me\handle,*camera)
+    If *context = #Null
+      *context = *Me\context
+    EndIf
     
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
@@ -735,7 +744,7 @@ CompilerEndIf
     Define i
     Define *pgm.Program::Program_t
     For i=0 To 2
-      *pgm = *Me\context\shaders(shaderNames(i))
+      *pgm = *context\shaders(shaderNames(i))
       glUseProgram(*pgm\pgm)
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *camera\view)
@@ -743,24 +752,24 @@ CompilerEndIf
     Next
     
     Protected ilayer.Layer::ILayer = *layer
-    ilayer\Draw(*Me\context)
+    ilayer\Draw(*context)
     If *Me\tool
-      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
+      Protected *wireframe.Program::Program_t = *context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
       
-      Handle::Draw( *Me\handle,*Me\context) 
+      Handle::Draw( *Me\handle,*context) 
     EndIf
     
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 123
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 763
+; FirstLine = 708
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

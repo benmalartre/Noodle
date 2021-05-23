@@ -13,6 +13,7 @@ XIncludeFile "../libs/Booze.pbi"
 
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
+XIncludeFile "../opengl/Utils.pbi"
 
 XIncludeFile "../objects/Shapes.pbi"
 XIncludeFile "../objects/KDTree.pbi"
@@ -56,20 +57,30 @@ Procedure Draw(*app.Application::Application_t)
 ;   Time::currentframe + 1
 ;   If Time::currentframe>100 : Time::currentframe = 1:EndIf
 ;   Scene::Update(Scene::*current_scene)
+  Scene::*current_scene\dirty = #True
+  Scene::Update(Scene::*current_scene)
   GLContext::SetContext(*app\context)
-  Application::Draw(*app, *layer, *viewport\camera)
-  ;   FTGL::BeginDraw(*app\context\writer)
-  LayerDefault::Draw(*layer, *app\context)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*app\width
-  Define ratio.f = *app\width / *app\height
-  FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
-
-  GLContext::FlipBuffer(*app\context)
+  Application::Draw(*app, *layer, *app\camera, *app\context)
   ViewportUI::Blit(*viewport, *layer\datas\buffer)
+;   GLContext::SetContext(*viewport2\context)
+;   Application::Draw(*app, *layer, *viewport2\camera, *viewport2\context)
+;   GLContext::FlipBuffer(*viewport2\context)
+;   GLContext::FlipBuffer(*viewport\context)
+;   GLContext::SetContext(*viewport2\context)
+;   Application::Draw(*app, *layer, *viewport2\camera)
+;   GLContext::FlipBuffer(*viewport2\context)
+  ;   FTGL::BeginDraw(*app\context\writer)
+  
+;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/*app\width
+;   Define ratio.f = *app\width / *app\height
+;   FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"NUM VERTICES : "+Str(numVertices),-0.9,0.7,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
+
+;   GLContext::FlipBuffer(*app\context)
+;   ViewportUI::Blit(*viewport, *layer\datas\buffer)
 EndProcedure
     
 Define model.m4f32
@@ -87,11 +98,11 @@ If Time::Init()
   Scene::*current_scene = Scene::New()
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+    *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   GLContext::SetContext(*app\context)
-  
   
   *layer = LayerDefault::New(#WIDTH,#HEIGHT,*app\context,*app\camera)
   Application::AddLayer(*app, *layer)
@@ -144,7 +155,7 @@ If Time::Init()
   ;glGetIntegerv(#GL_MAX_ELEMENTS_VERTICES, @maxNumVertices)
   ;MessageRequester("MAXIMUM NUM VERTICES : ",Str(maxNumVertices))
 ;   Define img = LoadImage(#PB_Any,"D:\Projects\PureBasic\Modules\textures\earth.jpg")
-;   texture = Utils::GL_LoadImage(img)
+;   texture = GLUtils::GL_LoadImage(img)
   ;Define *t = Alembic::ABC_TestString("Test")
   
   
@@ -160,17 +171,17 @@ If Time::Init()
   ;Define *compo.Framebuffer::Framebuffer_t = Framebuffer::New("Compo",GadgetWidth(gadget),GadgetHeight(gadget))
   
   
-  Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
-  *viewport2 = ViewportUI::New(*monitor\main,"ViewportUI", *app\camera, *app\context)
+;   Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
+;   *viewport2 = ViewportUI::New(*monitor\main,"Viewport_XXX", *app\camera, *app\handle)
   
   GLContext::SetContext(*app\context)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 68
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 62
+; FirstLine = 45
 ; Folding = -
 ; EnableThread
 ; EnableXP

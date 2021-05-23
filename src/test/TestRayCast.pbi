@@ -225,9 +225,7 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Ray Cast",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     *app\context = *viewport\context
-     
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -247,9 +245,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 205
-; FirstLine = 194
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 227
+; FirstLine = 186
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

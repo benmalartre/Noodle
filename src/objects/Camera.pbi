@@ -14,9 +14,8 @@ DeclareModule Camera
   EndEnumeration
   
   ; ----------------------------------------------------------------------------
-  ;  CCamera Instance
+  ;  Camera Structure
   ; ----------------------------------------------------------------------------
-  
   Structure Camera_t Extends Object3D::Object3D_t 
     cameratype.i
     fov.f
@@ -36,6 +35,9 @@ DeclareModule Camera
     
   EndStructure
   
+  ; ----------------------------------------------------------------------------
+  ;  Camera Interface
+  ; ----------------------------------------------------------------------------
   Interface ICamera Extends Object3D::IObject3D
   EndInterface
   
@@ -83,18 +85,35 @@ Module Camera
   ;------------------------------------------------------------------
   Procedure New(name.s,type.i)
     Protected *Me.Camera_t = AllocateMemory(SizeOf(Camera_t))
-        InitializeStructure(*Me,Camera_t)
-;     *Me\VT = ?CameraVT
-;     *Me\class = 
-        Object::INI(Camera)
+      InitializeStructure(*Me,Camera_t)
+      Object::INI(Camera)
+          
+      *Me\cameratype = type
+      *Me\type = Object3D::#Camera
+      *Me\name = name
+      *Me\geom = CameraGeometry::New(*Me)
+      
+      Select *Me\cameratype
+        Case #Camera_Perspective
+          *Me\lookat\x = 0
+          *Me\lookat\y = 0
+          *Me\lookat\z = 1
+          *Me\pos\x = 5
+          *Me\pos\y = 8
+          *Me\pos\z = 8
+          *Me\up\x = 0
+          *Me\up\y = 1
+          *Me\up\z = 0
+          *Me\fov = 66
+          *Me\aspect = 1.33
+          *Me\nearplane = 0.1
+          *Me\farplane = 100000
+          
+          LookAt(*Me)
+          UpdateProjection(*Me)
+          GetSphericalCoordinates(*Me)
         
-    *Me\cameratype = type
-    *Me\type = Object3D::#Camera
-    *Me\name = name
-    *Me\geom = CameraGeometry::New(*Me)
-    
-    Select *Me\cameratype
-      Case #Camera_Perspective
+      Case #Camera_Orthographic
         *Me\lookat\x = 0
         *Me\lookat\y = 0
         *Me\lookat\z = 1
@@ -104,35 +123,16 @@ Module Camera
         *Me\up\x = 0
         *Me\up\y = 1
         *Me\up\z = 0
-        *Me\fov = 66
+        *Me\fov = 33
         *Me\aspect = 1.33
         *Me\nearplane = 0.1
         *Me\farplane = 100000
-        
+  
         LookAt(*Me)
         UpdateProjection(*Me)
         GetSphericalCoordinates(*Me)
-      
-    Case #Camera_Orthographic
-      *Me\lookat\x = 0
-      *Me\lookat\y = 0
-      *Me\lookat\z = 1
-      *Me\pos\x = 5
-      *Me\pos\y = 8
-      *Me\pos\z = 8
-      *Me\up\x = 0
-      *Me\up\y = 1
-      *Me\up\z = 0
-      *Me\fov = 33
-      *Me\aspect = 1.33
-      *Me\nearplane = 0.1
-      *Me\farplane = 100000
-
-      LookAt(*Me)
-      UpdateProjection(*Me)
-      GetSphericalCoordinates(*Me)
-      
-  EndSelect
+        
+    EndSelect
   
     Protected *position = Attribute::New(*Me,"Position",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*Me\pos,#True,#False,#True)
     Object3D::AddAttribute(*Me,*position)
@@ -431,7 +431,7 @@ Module Camera
     Vector3::ScaleInPlace(v,vLength)
     Vector3::ScaleInPlace(h,hLength)
     
-    ;Remap mouse coordinates
+    ; remap mouse coordinates
     mx - width/2
     my - height/2
     
@@ -464,11 +464,11 @@ Module Camera
     Define ray_nds.v3f32
     Vector3::Set(ray_nds, x, y, z)
     
-    ; 4d Homogeneous Clip Coordinates
+    ; 4d homogeneous clip coordinates
     Define ray_clip.v4f32
     Vector4::Set(ray_clip,ray_nds\x,ray_nds\y,-1.0,1.0)
     
-    ; 4d Eye (Camera) Coordinates
+    ; 4d eye (camera) coordinates
     Define inv_proj.m4f32
     Matrix4::Inverse(inv_proj,*Me\projection)
     Define ray_eye.v4f32
@@ -476,7 +476,7 @@ Module Camera
     ray_eye\z = -1
     ray_eye\w = 0
     
-    ; 4d World Coordinates
+    ; 4d world coordinates
     Define inv_view.m4f32
     Define ray_world.v4f32
     Matrix4::Inverse(inv_view,*Me\view)
@@ -494,9 +494,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 132
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 489
+; FirstLine = 435
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

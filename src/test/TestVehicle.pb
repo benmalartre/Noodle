@@ -329,7 +329,6 @@ Procedure Draw(*app.Application::Application_t)
 
   If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
-     *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -373,8 +372,8 @@ Scene::Setup(*scene,*app\context)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 329
-; FirstLine = 310
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 331
+; FirstLine = 313
 ; Folding = --
 ; EnableXP

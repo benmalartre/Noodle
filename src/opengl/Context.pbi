@@ -116,7 +116,7 @@ Module GLContext
 
           *Me\ID = ctx
         CompilerElse
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0, #PB_OpenGL_Keyboard)
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
 
         CompilerEndIf
@@ -133,8 +133,8 @@ Module GLContext
       ;   WINDOWS
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0, #PB_OpenGL_Keyboard)
-        SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+        *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
+        SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
         
         ; load extensions and setup shaders
         If Not *context
@@ -147,14 +147,14 @@ Module GLContext
           SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
           Define hglrc2 = wglGetCurrentContext_()
           wglShareLists_(hglrc1, hglrc2)
-          Copy(*Me, *context)
+          Copy(*Me, *MAIN_GL_CTXT)
         EndIf
       
       ; =======================================================================
       ;   LINUX
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0,#PB_OpenGL_Keyboard)
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height,#PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
           
           ; load extensions and setup shaders
@@ -292,9 +292,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 228
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 118
+; FirstLine = 115
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -71,7 +71,6 @@ If Time::Init()
 
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-    *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -101,9 +100,9 @@ If Time::Init()
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 45
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 73
+; FirstLine = 41
 ; Folding = -
 ; EnableThread
 ; EnableXP

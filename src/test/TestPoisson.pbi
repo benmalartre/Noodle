@@ -47,7 +47,6 @@ Log::Init()
 
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"Poisson", *app\camera, *app\handle)     
-   *app\context = *viewport\context
    *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -113,7 +112,6 @@ Application::Loop(*app, @Draw())
 ;   If Not #USE_GLFW
 ;     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
 ;     *app\context = *viewport\context
-;     *viewport\camera = *app\camera
 ;     View::SetContent(*app\manager\main,*viewport)
 ;     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 ;   EndIf
@@ -139,9 +137,9 @@ Application::Loop(*app, @Draw())
 ;   
 ;   Application::Loop(*app,@Draw())
 ; EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 44
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 114
+; FirstLine = 78
 ; Folding = -
 ; EnableThread
 ; EnableXP

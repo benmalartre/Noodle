@@ -235,7 +235,6 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
-     *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -288,8 +287,8 @@ FTGL::Init()
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 122
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 237
+; FirstLine = 228
 ; Folding = --
 ; EnableXP

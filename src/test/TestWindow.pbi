@@ -17,6 +17,6 @@ Repeat
 Until event = #PB_Event_CloseWindow
 
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 18
 ; EnableXP

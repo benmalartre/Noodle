@@ -186,7 +186,6 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI",*app\camera, *app\handle)
-     *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -226,13 +225,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 195
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 188
+; FirstLine = 166
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

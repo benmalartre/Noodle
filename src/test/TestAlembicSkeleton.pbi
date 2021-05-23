@@ -46,7 +46,6 @@ If Time::Init()
   
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-    *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     GLContext::SetContext(*app\context)
   EndIf
@@ -83,7 +82,7 @@ If Time::Init()
 ;     Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
 ;   CompilerEndIf
 ;   
-;   texture = Utils::GL_LoadImage(img)
+;   texture = GLUtils::GL_LoadImage(img)
 ;   Scene::Setup(Scene::*current_scene,*app\context)
 ;   Global *skeleton.Skeleton::Skeleton_t = Skeleton::New()
 ; Global *model.Model::Model_t = Model::New("Character")
@@ -119,8 +118,8 @@ If Time::Init()
   
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 33
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 48
+; FirstLine = 44
 ; Folding = -
 ; EnableXP

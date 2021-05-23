@@ -27,7 +27,7 @@ Procedure.f dW(delta_t.f)
 EndProcedure
 
 Define *ts = AllocateMemory(N * 4)
-Utils::EvenlyInterpolate1D(t_init, t_end, N, *ts)
+MathUtils::EvenlyInterpolate1D(t_init, t_end, N, *ts)
 Define *ys = AllocateMemory(N * 4)
 PokeF(*ys, y_init)
 
@@ -52,8 +52,7 @@ StopDrawing()
 Repeat
 Until WaitWindowEvent() = #PB_Event_CloseWindow
   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 45
-; FirstLine = 17
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 29
 ; Folding = -
 ; EnableXP

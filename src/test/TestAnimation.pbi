@@ -65,7 +65,6 @@ If Time::Init()
   
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
-     *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -91,7 +90,7 @@ If Time::Init()
 ;     Define img = LoadImage(#PB_Any,"..\..\textures\earth.jpg")
 ;   CompilerEndIf
 ;   
-;   texture = Utils::GL_LoadImage(img)
+;   texture = GLUtils::GL_LoadImage(img)
   
 *skeleton = Skeleton::New()
 Global *model.Model::Model_t = Model::New("Character")
@@ -135,9 +134,9 @@ Scene::AddModel(Scene::*current_scene,*model)
   Debug "Setup Model Done!!!"
  Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 76
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 67
+; FirstLine = 63
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

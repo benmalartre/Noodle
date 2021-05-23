@@ -40,7 +40,7 @@ Procedure PolygonSoup(numTopos=9)
   Define *m.m4f32
   Define *p.v3f32
   RandomSeed(666)
-  Utils::BuildCircleSection(*positions, numTopos, 8)
+  MathUtils::BuildCircleSection(*positions, numTopos, 8)
   For i=0 To numTopos-1
 ;     Vector3::Set(p, Random(50)-25, Random(50)-25, Random(50)-25)
     *m = CArray::GetPtr(*matrices, i)
@@ -183,7 +183,6 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
      
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -233,8 +232,8 @@ FTGL::Init()
 EndIf
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 201
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 185
 ; FirstLine = 173
 ; Folding = -
 ; EnableXP

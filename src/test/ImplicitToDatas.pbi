@@ -63,8 +63,8 @@ Procedure Sphere()
   Vector3::Set(target,0,1,0)
   Vector3::Set(upv,1,0,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
-  Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
-  Utils::TransformPositionArrayInPlace(*pnts,@m)
+  MathUtils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
+  MathUtils::TransformPositionArrayInPlace(*pnts,@m)
   For i=0 To 15
     *p = CArray::GetValue(*pnts, i)
     AddLineTwo("Data.f " + StrF(*p\x,5) + "," + StrF(*p\y) + "," + StrF(*p\z))
@@ -73,8 +73,8 @@ Procedure Sphere()
   Vector3::Set(target,0,0,1)
   Vector3::Set(upv,0,1,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
-  Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
-  Utils::TransformPositionArrayInPlace(*pnts,@m)
+  MathUtils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
+  MathUtils::TransformPositionArrayInPlace(*pnts,@m)
   For i=0 To 15
     *p = CArray::GetValue(*pnts, i)
     AddLineTwo("Data.f " + StrF(*p\x,5) + "," + StrF(*p\y) + "," + StrF(*p\z))
@@ -83,8 +83,8 @@ Procedure Sphere()
   Vector3::Set(target,1,0,0)
   Vector3::Set(upv,0,1,0)
   Matrix4::DirectionMatrix(@m, @target, @upv)
-  Utils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
-  Utils::TransformPositionArrayInPlace(*pnts,@m)
+  MathUtils::BuildCircleSection(*pnts, 16, 0.5, 0.0, 360.0)
+  MathUtils::TransformPositionArrayInPlace(*pnts,@m)
   For i=0 To 15
     *p = CArray::GetValue(*pnts, i)
     AddLineTwo("Data.f " + StrF(*p\x,5) + "," + StrF(*p\y) + "," + StrF(*p\z))
@@ -98,8 +98,8 @@ EndProcedure
 Sphere()
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 46
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 39
 ; Folding = -
 ; EnableXP

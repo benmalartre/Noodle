@@ -438,7 +438,7 @@ Module Topology
       For ip=0 To CArray::GetCount(*points)-1
         *m = CArray::GetValue(*points,ip)
         ;Matrix4_TransposeInPlace(*m)
-        Utils::TransformPositionArray(*oP,*section,*m)
+        MathUtils::TransformPositionArray(*oP,*section,*m)
     
         CArray::AppendArray(*extrusion\vertices,*oP)
         If ip>0
@@ -458,7 +458,7 @@ Module Topology
       For ip=0 To CArray::GetCount(*points)-1
         *m = CArray::GetValue(*points,ip)
         ;Matrix4_TransposeInPlace(*m)
-        Utils::TransformPositionArray(*oP,*section,*m)
+        MathUtils::TransformPositionArray(*oP,*section,*m)
     
         CArray::AppendArray(*extrusion\vertices,*oP)
         Protected last = CArray::GetCount(*section)
@@ -922,8 +922,8 @@ Module Topology
  
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 337
-; FirstLine = 311
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 460
+; FirstLine = 456
 ; Folding = -----
 ; EnableXP

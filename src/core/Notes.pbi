@@ -176,26 +176,36 @@ EndDeclareModule
 
 Module Notes
   Procedure.f Closest(frequency.f)
-    Define delta.f
-    Define minDelta.f = Math::#F32_MAX
-    Define i, j
-    Define result
-    For i=0 To Notes::#NUM_OCTAVES -1
-      For j=0 To Notes::#NUM_NOTES - 1
-        delta = Abs(frequency - Notes::NoteAt(i, j))
-        If delta > minDelta
+    If frequency < Notes::NoteAt(0, 0)
+      ProcedureReturn Notes::NoteAt(0, 0)
+    ElseIf frequency > Notes::NoteAt(#NUM_OCTAVES-1, #NUM_NOTES-1)
+      ProcedureReturn Notes::NoteAt(#NUM_OCTAVES-1, #NUM_NOTES-1)
+    Else
+      Define delta.f
+      Define minDelta.f = Math::#F32_MAX
+      Define i, j
+      Define result
+      For i=0 To Notes::#NUM_OCTAVES -1
+        If frequency >= Notes::NoteAt(i, 0) And frequency < Notes::NoteAt(i, #NUM_NOTES-1):
+          For j=0 To Notes::#NUM_NOTES - 1
+            delta = Abs(frequency - Notes::NoteAt(i, j))
+            If delta > minDelta
+              Break
+            ElseIf delta <= minDelta
+              minDelta = delta
+              result = Notes::NoteAt(i, j)
+            EndIf
+          Next
           Break
-        ElseIf delta <= minDelta
-          minDelta = delta
-          result = Notes::NoteAt(i, j)
         EndIf
       Next
-    Next
-    ProcedureReturn result
+      ProcedureReturn result
+    EndIf
+    
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 191
-; FirstLine = 162
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 176
+; FirstLine = 145
 ; Folding = -
 ; EnableXP

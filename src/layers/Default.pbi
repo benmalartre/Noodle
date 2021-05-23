@@ -86,7 +86,7 @@ Module LayerDefault
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerDefault_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerDefault_t, *ctx.GLContext::GLContext_t)
 
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
@@ -273,8 +273,8 @@ Module LayerDefault
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 234
-; FirstLine = 209
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 88
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

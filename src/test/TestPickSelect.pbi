@@ -119,7 +119,6 @@ Procedure Update(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -154,9 +153,9 @@ Procedure Update(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   Application::Loop(*app, @Update())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 98
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 121
+; FirstLine = 94
 ; Folding = -
 ; EnableThread
 ; EnableXP

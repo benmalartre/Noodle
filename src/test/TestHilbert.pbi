@@ -562,7 +562,6 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Hilbert", *app\camera, *app\handle)     
-     *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -606,8 +605,8 @@ FTGL::Init()
   Scene::Setup(Scene::*current_scene, *app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 601
-; FirstLine = 542
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 564
+; FirstLine = 546
 ; Folding = ---
 ; EnableXP

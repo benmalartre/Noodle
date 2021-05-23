@@ -20,7 +20,6 @@ Define useJoystick.b = #False
   
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"SpringSystem", *app\camera, *app\handle)     
-     *app\context = *viewport\context
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -88,7 +87,7 @@ Define useJoystick.b = #False
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 24
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 22
+; FirstLine = 18
 ; EnableXP

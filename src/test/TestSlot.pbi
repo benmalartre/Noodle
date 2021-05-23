@@ -28,7 +28,6 @@ CompilerIf Not #USE_GLFW
   Global *view.View::View_t = View::Split(*main,0,50)
   Global *view2.View::view_t = View::Split(*view\left,#PB_Splitter_Vertical,60)
   Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*view2\left,"ViewportUI")
-  *app\context = *viewport\context
   
   Global *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view2\right,"Property",#Null)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -200,8 +199,8 @@ EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 136
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 30
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

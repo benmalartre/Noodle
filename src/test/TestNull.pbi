@@ -150,7 +150,6 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-     *app\context = *viewport\context
      *layer = LayerDefault::New(width, height, *app\context, *app\camera)
      *viewport\camera = *app\camera
      ViewportUI::AddLayer(*viewport, *layer)
@@ -170,9 +169,9 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Setup(Scene::*current_scene,*app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 83
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 152
+; FirstLine = 110
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

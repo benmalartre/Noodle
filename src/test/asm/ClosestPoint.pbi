@@ -588,11 +588,11 @@ Procedure UpdateQuery()
         Vector3::AddInPlace(*p, worldPos)
       Next
     Case #QUERY_MODE_CIRCLE
-      Utils::BuildCircleSection(*query, CARray::GetCount(*query), radius)
+      MathUtils::BuildCircleSection(*query, CARray::GetCount(*query), radius)
       Define m.m4f32
       Matrix4::SetIdentity(m)
       Matrix4::SetTranslation(m, worldPos)
-      Utils::TransformPositionArrayInPlace(*query, m)
+      MathUtils::TransformPositionArrayInPlace(*query, m)
       
     Case #QUERY_MODE_SPHERE
       RandomSeed(256)
@@ -605,12 +605,12 @@ Procedure UpdateQuery()
 ;       Define m.m4f32
 ;       Matrix4::SetIdentity(m)
 ;       Matrix4::SetTranslation(m, worldPos)
-;       Utils::TransformPositionArrayInPlace(*query, m)
+;       MathUtils::TransformPositionArrayInPlace(*query, m)
 ;       (*query, CARray::GetCount(*query), 12)
 ;       Define m.m4f32
 ;       Matrix4::SetIdentity(m)
 ;       Matrix4::SetTranslation(m, worldPos)
-;       Utils::TransformPositionArrayInPlace(*query, m)
+;       MathUtils::TransformPositionArrayInPlace(*query, m)
   EndSelect
   
 EndProcedure
@@ -813,7 +813,6 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     *app\context = *viewport\context
     View::SetContent(*app\manager\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -865,8 +864,8 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 178
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 815
+; FirstLine = 805
 ; Folding = --
 ; EnableXP

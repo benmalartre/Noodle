@@ -67,6 +67,8 @@ DeclareModule GLContext
   Declare AddLayer(*Me.GLContext_t, *layer)
   
   Global *MAIN_GL_CTXT.GLContext_t
+  Global MAIN_GL_CTXT_WIDTH = 1024
+  Global MAIN_GL_CTXT_HEIGHT = 1024
 EndDeclareModule
 
 
@@ -125,9 +127,9 @@ DeclareModule GLLayer
   Global CLASS.Class::Class_t
 
 EndDeclareModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 61
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

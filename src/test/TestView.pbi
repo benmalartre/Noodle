@@ -122,7 +122,6 @@ Global *splitted.View::View_t = View::Split(*app\window\main, 0,75)
 Define model.Math::m4f32
 If Not #USE_GLFW
    *viewport = ViewportUI::New(*splitted\left,"ViewportUI", *app\camera, *app\handle)     
-   *app\context = *viewport\context
    *app\context\writer\background = #True
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
@@ -145,9 +144,9 @@ AddKnobs(*ui, "FUCK")
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 81
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 85
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

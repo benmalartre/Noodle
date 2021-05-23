@@ -34,7 +34,7 @@ Enumeration
 EndEnumeration
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  Global iconFolder.s = "E:/Projects/RnD/Amnesie/build/icons/"
+  Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/icons/ "
 CompilerElseIf #PB_Compiler_OS  = #PB_OS_MacOS
   Global iconFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/icons/"
 CompilerEndIf
@@ -721,8 +721,7 @@ Repeat
   event = WaitWindowEvent()
   
 Until event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 529
-; FirstLine = 433
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 36
 ; Folding = --b9--
 ; EnableXP

@@ -98,9 +98,7 @@ Module ViewportUI
         
     ; setup delegate gl context
     *Me\camera = *camera
-    *Me\context = GLContext::New(GLContext::*MAIN_GL_CTXT\width, 
-                                 GLContext::*MAIN_GL_CTXT\height, 
-                                 GLContext::*MAIN_GL_CTXT)
+    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
         
     *Me\layer = LayerBitmap::New(*Me\sizX,  *Me\sizY, *Me\context, *Me\camera)
     LayerBitmap::Setup(*Me\layer)
@@ -111,9 +109,8 @@ Module ViewportUI
         
     CompilerElse
       *Me\gadgetID = *Me\context\ID
-      ResizeGadget(*Me\gadgetID, 0,0,w, h)
+      ResizeGadget(*Me\gadgetID, 0, 0,w, h)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
-
     CompilerEndIf
     
     View::SetContent(*parent,*Me)
@@ -688,8 +685,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 157
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 73
 ; Folding = ----
 ; EnableXP

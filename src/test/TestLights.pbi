@@ -90,8 +90,6 @@ Procedure Update()
                            
    CompilerIf Not #USE_GLFW
    *viewport = ViewportUI::New(*app\manager\main,"Viewport 3D")
-   *app\context = *viewport\context
-
     *viewport\camera = *app\camera
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   CompilerEndIf
@@ -200,9 +198,9 @@ Procedure Update()
   Application::Loop(*app,@Update())
   
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 81
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 91
+; FirstLine = 88
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

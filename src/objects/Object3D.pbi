@@ -187,7 +187,7 @@ Module Object3D
         Define *mesh.Geometry::PolymeshGeometry_t = *obj\geom
         Define invM.Math::m4f32
  
-        Utils::TransformPositionArrayInPlace(*mesh\a_positions, *obj\globalT\m)
+        MathUtils::TransformPositionArrayInPlace(*mesh\a_positions, *obj\globalT\m)
         Matrix4::SetIdentity(*obj\localT\m)
         Transform::UpdateSRTFromMatrix(*obj\localT)
         Object3D::UpdateTransform(*obj)
@@ -559,8 +559,8 @@ Module Object3D
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 476
-; FirstLine = 466
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 189
+; FirstLine = 185
 ; Folding = -------
 ; EnableXP
