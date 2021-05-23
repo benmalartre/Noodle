@@ -109,24 +109,19 @@ Procedure Update(*app.Application::Application_t)
     EndIf
   EndIf
   
-  GLContext::SetContext(*app\context)
-
-
+  GLContext::SetContext(*viewport\context)
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   
-  Application::Draw(*app, *layer, *app\camera)
-  Drawer::Flush(*drawer)
-  DrawSelected(*mesh\geom)
-
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/width
-;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
+  LayerDefault::Draw(*layer, *viewport\context)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+  Define ss.f = 0.85/*viewport\sizX
+  Define ratio.f = *viewport\sizX / *viewport\sizY
+  FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
 EndProcedure
 
@@ -148,11 +143,10 @@ FTGL::Init()
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -179,7 +173,7 @@ FTGL::Init()
   Object3D::Freeze(*mesh)
   Debug "FREEZE OK"
   *drawer = Drawer::New("DRAWER")
-  Object3D::SetShader(*drawer, *app\context\shaders("drawer"))
+  ;Object3D::SetShader(*drawer, \context\shaders("drawer"))
   
   Define bmin.v3f32, bmax.v3f32
   Vector3::Sub(bmin, *mesh\geom\bbox\origin, *mesh\geom\bbox\extend)
@@ -201,7 +195,7 @@ EndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 141
+; CursorPosition = 111
+; FirstLine = 114
 ; Folding = -
 ; EnableXP

@@ -159,31 +159,49 @@ Procedure TestHit()
 EndProcedure
  
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+;   GLContext::SetContext(*viewport\context)
+;   Scene::*current_scene\dirty= #True
+;   
+;   ;Drawer::Flush(*drawer)
+;   TestHit()
+; 
+;   Scene::Update(Scene::*current_scene)
+;   Define numCells.l
+;   
+;   LayerDefault::Draw(*layer, *viewport\context)
+; ;   FTGL::BeginDraw(*viewport\context\writer)
+; ;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+; ;   Define ss.f = 0.85/*viewport\sizX
+; ;   Define ratio.f = *viewport\sizX / *viewport\sizY
+; ;   FTGL::Draw(*viewport\context\writer,"OCTREE : ",-0.9,0.9,ss,ss*ratio)
+; ;   FTGL::SetColor(*viewport\context\writer,1,0.5,0.75,1)
+; ;   FTGL::Draw(*viewport\context\writer,"Num Leaves : "+Str(numCells),-0.9,0.8,ss,ss*ratio)
+; ;   FTGL::Draw(*viewport\context\writer, "RADIUS : "+Str(666), -0.9, 0.7, ss, ss*ratio)
+; ;   
+; ;   FTGL::EndDraw(*viewport\context\writer)
+; ;   
+;   GLContext::FlipBuffer(*viewport\context)
+  
+  GLContext::SetContext(*viewport\context)
+;   Drawer::Flush(*drawer)
+
   Scene::*current_scene\dirty= #True
   
-  Drawer::Flush(*drawer)
-  TestHit()
-
   Scene::Update(Scene::*current_scene)
-  Define numCells.l
-
-  Application::Draw(*app, *layer, *app\camera)
+;   GLContext::SetContext(*viewport\context)
+  LayerDefault::Draw(*layer, *viewport\context)
   
-  GLContext::FlipBuffer(*app\context)
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/*viewport\sizX
-;   Define ratio.f = *viewport\sizX / *viewport\sizY
-;   FTGL::Draw(*app\context\writer,"OCTREE : ",-0.9,0.9,ss,ss*ratio)
-;   FTGL::SetColor(*app\context\writer,1,0.5,0.75,1)
-;   FTGL::Draw(*app\context\writer,"Num Leaves : "+Str(numCells),-0.9,0.8,ss,ss*ratio)
-;   FTGL::Draw(*app\context\writer, "RADIUS : "+Str(666), -0.9, 0.7, ss, ss*ratio)
-;   
-;   FTGL::EndDraw(*app\context\writer)
-;   
-;   GLContext::FlipBuffer(*app\context)
-
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+  
+  Define ss.f = 0.85/*viewport\sizX
+  Define ratio.f = *viewport\sizX / *viewport\sizy
+  FTGL::Draw(*viewport\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
+  glDisable(#GL_BLEND)
+  
+ GLContext::FlipBuffer(*viewport\context)
+  
 EndProcedure
 
 
@@ -234,9 +252,8 @@ buildMessage + "Num Leaves : "+Str(numCells)+Chr(10)
 buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
 
 Scene::*current_scene = Scene::New()
-GLContext::SetContext(*app\context)
-*layer = LayerDefault::New(*viewport\sizX,*viewport\sizY,*app\context,*app\camera)
-Application::AddLayer(*app, *layer)
+GLContext::SetContext(*viewport\context)
+*layer = LayerDefault::New(*viewport\sizX,*viewport\sizY,*viewport\context,*app\camera)
 Global *root.Model::Model_t = Model::New("Model")
 Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
@@ -253,8 +270,8 @@ Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 198
-; FirstLine = 193
+; CursorPosition = 254
+; FirstLine = 204
 ; Folding = -
 ; EnableThread
 ; EnableXP

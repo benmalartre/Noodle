@@ -119,7 +119,7 @@ EndProcedure
 ;-----------------------------------------------
 ; Create Curved Ground Data
 ;-----------------------------------------------
-Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
+Procedure BTCreateCurvedGroundData()
 
 ;   Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
 ;   BulletRigidBody::BTCreateRigidBodyFrom3DObject(*ground,Bullet::#GROUNDPLANE_SHAPE,0,Bullet::*bullet_world)
@@ -127,7 +127,6 @@ Procedure BTCreateCurvedGroundData(*shader.Program::Program_t)
   *ground.Polymesh::Polymesh_t = Polymesh::New("Bullet_Curved_Ground",Shape::#SHAPE_GRID)
   Protected *mesh.Geometry::PolymeshGeometry_t = *ground\geom
   ;PolymeshGeometry::InvertNormals(*mesh)
-  Object3D::SetShader(*ground,*shader)
   
   Protected i
   Protected pos.v3f32
@@ -188,7 +187,7 @@ EndProcedure
 
 
 
-Procedure BulletScene(*s.Program::Program_t)
+Procedure BulletScene()
 
   Scene::*current_scene = Scene::New("Test Bullet")
   Protected scene.Scene::IScene = Scene::*current_scene
@@ -219,7 +218,6 @@ Color::Set(color,1.0,0.5,0.4,1.0)
     For y=0 To 12
       For z=0 To 4
         Protected *cube.Polymesh::Polymesh_t = Polymesh::New("RigidBody"+Str(x*10*10+y*10+z+1),Shape::#SHAPE_BUNNY)
-        Object3D::SetShader(*cube,*s)
         ;Protected *cube.CPolymesh = newCPolymesh("RigidBody"+Str(x*10*10+y*10+z+1),#RAA_Shape_Cube,Random(20)*0.2+0.1)
         Object3D::AddChild(*root,*cube)
 
@@ -248,7 +246,7 @@ Color::Set(color,1.0,0.5,0.4,1.0)
   Next x
   
     ;Ground
-   BTCreateCurvedGroundData(*s)
+   BTCreateCurvedGroundData()
   
   Scene::AddModel(Scene::*current_scene,*root)
   ProcedureReturn Scene::*current_scene
@@ -257,7 +255,7 @@ EndProcedure
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   If EventType() = #PB_EventType_KeyDown
     If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
       BulletWorld::hlpReset(Bullet::*bullet_world)
@@ -270,22 +268,18 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
   
- 
-;   Scene::Draw(Scene::*current_scene,*s_polymesh,Object3D::#Polymesh)
   
-  ;   default_layer\Draw(*app\context)
-
   GLCheckError("TEST BULLET BEGIN DRAW")
-  Application::Draw(*app, *default, *viewport\camera  )
+  LayerDefault::Draw(*default, *viewport\context)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
     
   GLCheckError("TEST BULLET END DRAW")
@@ -339,25 +333,22 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-;     View::SetContent(*app\window\main,*viewport)
+     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
   
-  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
-  BulletScene(*app\context\shaders("polymesh"))
+  BulletScene()
   
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
 
-  *default.Layer::Layer_t = LayerDefault::New(width,height,*app\context,*app\camera)
-  Application::AddLayer(*app, *default)
-  LayerDefault::Setup(*default)
+  *default.Layer::Layer_t = LayerDefault::New(width,height,*viewport\context,*app\camera)
   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ;   LayerGBuffer::Setup(*gbuffer)
@@ -391,7 +382,6 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   Polymesh::Setup(*teapot,*s_polymesh)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*bunny,*s_polymesh)
-  GLContext::SetContext(*app\context)
   Scene::Setup(Scene::*current_scene,*app\context)
   
   Define nbb = Bullet::BTGetNumCollideObjects(Bullet::*bullet_world)
@@ -402,8 +392,8 @@ EndIf
 Bullet::Term()
 Globals::Term()
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 341
-; FirstLine = 337
+; CursorPosition = 384
+; FirstLine = 330
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -151,13 +151,13 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
 ;   Drawer::Flush(*drawer)
 
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
-  GLContext::SetContext(*viewport\context)
+;   GLContext::SetContext(*viewport\context)
   LayerDefault::Draw(*layer, *viewport\context)
   
   FTGL::BeginDraw(*viewport\context\writer)
@@ -192,7 +192,7 @@ Procedure Draw(*app.Application::Application_t)
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
- 
+   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
@@ -227,8 +227,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 194
-; FirstLine = 156
+; CursorPosition = 154
+; FirstLine = 145
 ; Folding = --
 ; EnableThread
 ; EnableXP
