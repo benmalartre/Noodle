@@ -157,17 +157,20 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene\dirty= #True
   
   Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
-;   
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/width
-;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
-;   glDisable(#GL_BLEND)
-;   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::SetContext(*viewport\context)
+  LayerDefault::Draw(*layer, *viewport\context)
+  
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+  
+  Define ss.f = 0.85/*viewport\sizX
+  Define ratio.f = *viewport\sizX / *viewport\sizy
+  FTGL::Draw(*viewport\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
+  glDisable(#GL_BLEND)
+  
+ GLContext::FlipBuffer(*viewport\context)
+  
 
  EndProcedure
 
@@ -190,12 +193,10 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
-  GLContext::SetContext(*app\context)
-  
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
     
@@ -226,8 +227,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 142
+; CursorPosition = 194
+; FirstLine = 156
 ; Folding = --
 ; EnableThread
 ; EnableXP

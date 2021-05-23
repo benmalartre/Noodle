@@ -103,9 +103,8 @@ If Time::Init()
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
-  GLContext::SetContext(*app\context)
   
-  *layer = LayerDefault::New(#WIDTH,#HEIGHT,*app\context,*app\camera)
+  *layer = LayerDefault::New(#WIDTH,#HEIGHT,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
@@ -181,8 +180,8 @@ If Time::Init()
   Alembic::Terminate()
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 121
+; CursorPosition = 104
+; FirstLine = 67
 ; Folding = -
 ; EnableThread
 ; EnableXP
