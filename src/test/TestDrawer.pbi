@@ -158,15 +158,15 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
-  
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
-  glDisable(#GL_BLEND)
-  
+;   
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
+;   glDisable(#GL_BLEND)
+;   
   GLContext::FlipBuffer(*app\context)
 
  EndProcedure
@@ -190,7 +190,7 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
-  
+  GLContext::SetContext(*app\context)
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
@@ -226,8 +226,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 166
+; CursorPosition = 169
+; FirstLine = 142
 ; Folding = --
 ; EnableThread
 ; EnableXP

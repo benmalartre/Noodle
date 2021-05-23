@@ -466,7 +466,6 @@ Module Framebuffer
   ;------------------------------------------------------------------
   Procedure GetTex(*Me.Framebuffer_t,id.i)
     If id>=0 And id<ArraySize(*Me\tbos())
-    Debug id
       ProcedureReturn *Me\tbos(id)\textureID
    EndIf
     
@@ -603,9 +602,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 341
-; FirstLine = 301
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 536
+; FirstLine = 533
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

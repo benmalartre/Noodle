@@ -87,7 +87,6 @@ Module Window
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
-    
     If *Me = #Null Or event = -1: ProcedureReturn: EndIf
     
     Protected mx = WindowMouseX(*Me\ID)
@@ -98,6 +97,9 @@ Module Window
   
     Select event
       Case #PB_Event_Gadget
+        If EventType() = #PB_EventType_KeyDown
+          Debug "FUCKIN KEY DOWN"
+        EndIf
         If *over
           Protected touch = View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
           
@@ -314,8 +316,8 @@ Module Window
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 180
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 84
 ; Folding = ---
 ; EnableXP

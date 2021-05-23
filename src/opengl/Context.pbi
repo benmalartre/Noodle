@@ -23,7 +23,6 @@ Module GLContext
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(width.i, height.i, *context=#Null)
-
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
     
@@ -117,7 +116,7 @@ Module GLContext
           *Me\ID = ctx
         CompilerElse
           *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
-          SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
+          SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
 
         CompilerEndIf
         
@@ -133,7 +132,12 @@ Module GLContext
       ;   WINDOWS
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
+        If Not *context
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height)
+        Else
+          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
+        EndIf
+        
         SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
         
         ; load extensions and setup shaders
@@ -294,7 +298,7 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; CursorPosition = 118
-; FirstLine = 115
+; FirstLine = 68
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

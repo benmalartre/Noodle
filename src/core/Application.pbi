@@ -268,7 +268,7 @@ CompilerEndIf
       glfwGetWindowSize(*Me\window,@w,@h)
       *Me\width = w
       *Me\height = h
-      *Me\context = GLContext::New(width,height,#True, *Me\window)
+      *Me\context = GLContext::New(width, height, *Me\window)
       GLContext::Setup(*Me\context)
       *Me\context\width = w
       *Me\context\height = h
@@ -281,7 +281,7 @@ CompilerEndIf
 
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
-      *Me\context = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
+      *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, GLContext::MAIN_GL_CTXT_HEIGHT)
       *Me\context\writer = FTGL::New()
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
       AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
@@ -300,8 +300,6 @@ CompilerEndIf
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
-    *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, 
-                                 GLContext::MAIN_GL_CTXT_HEIGHT)
 ;     Handle::Setup(*Me\handle, *Me\context)
     
     ProcedureReturn *Me
@@ -639,85 +637,86 @@ CompilerEndIf
           event = WaitWindowEvent()
         EndIf
         
-
-        ; filter Windows events
-        CompilerSelect #PB_Compiler_OS 
-          CompilerCase #PB_OS_Windows
-            If event = 512  Or event = 160:  Continue : EndIf
-          CompilerCase #PB_OS_Linux
-            If event = 24 : Continue : EndIf
-        CompilerEndSelect
+        Debug "EVENT : "+Str(event) +" ("+#PB_Event_Gadget+")"
+        
+;         ; filter Windows events
+;         CompilerSelect #PB_Compiler_OS 
+;           CompilerCase #PB_OS_Windows
+;             If event = 512  Or event = 160:  Continue : EndIf
+;           CompilerCase #PB_OS_Linux
+;             If event = 24 : Continue : EndIf
+;         CompilerEndSelect
         
         Select event
-          Case Globals::#EVENT_NEW_SCENE
-            Scene::Setup(Scene::*current_scene, *Me\context)
-            Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
-            
-          Case Globals::#EVENT_PARAMETER_CHANGED
-            Scene::Update(Scene::*current_scene)
-            If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
-            
-          Case Globals::#EVENT_TOOL_CHANGED
-            Select EventData()
-              Case Globals::#TOOL_SCALE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
-                *Me\tool = Globals::#TOOL_SCALE
-              Case Globals::#TOOL_ROTATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
-                *Me\tool = Globals::#TOOL_ROTATE
-              Case Globals::#TOOL_TRANSLATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
-                *Me\tool = Globals::#TOOL_TRANSLATE
-              Case Globals::#TOOL_TRANSFORM
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
-                *Me\tool = Globals::#TOOL_TRANSFORM
-            EndSelect
-            
-          Case Globals::#EVENT_SELECTION_CHANGED
-            Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
-            Scene::Update(Scene::*current_scene)
-            If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
-           
-          Case Globals::#EVENT_HIERARCHY_CHANGED
-            Scene::Setup(Scene::*current_scene, *Me\context)
-            Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
-           
-            If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
-            
-          Case Globals::#EVENT_TREE_CREATED
-            Protected *graph = *Me\window\uis("Graph")
-            Protected *tree = EventData()
-            If *graph
-              GraphUI::SetContent(*graph,*tree)
-            EndIf   
-            If *callback : *callback(*Me, Globals::#EVENT_TREE_CREATED) : EndIf
-            
-          Case #PB_Event_Menu
-            Select EventMenu()
-              Case Globals::#SHORTCUT_TRANSLATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
-                *Me\tool = Globals::#TOOL_TRANSLATE                
-              Case Globals::#SHORTCUT_ROTATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
-                *Me\tool = Globals::#TOOL_ROTATE
-              Case Globals::#SHORTCUT_SCALE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
-                *Me\tool = Globals::#TOOL_SCALE
-              Case Globals::#SHORTCUT_TRANSFORM
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
-                *Me\tool = Globals::#TOOL_TRANSFORM
-              Case Globals::#SHORTCUT_CAMERA
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_CAMERA)
-                *Me\tool = Globals::#TOOL_CAMERA
-              Default 
-                *Me\tool = Globals::#TOOL_MAX
-                If event : Window::OnEvent(*Me\window,event) : EndIf
-            EndSelect
-            If *callback : *callback(*Me, event) : EndIf
-            
-          Case #PB_Event_SizeWindow
-            Window::OnEvent(*Me\window,event)
-            If *callback : *callback(*Me, event) : EndIf
+;           Case Globals::#EVENT_NEW_SCENE
+;             Scene::Setup(Scene::*current_scene, *Me\context)
+;             Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
+;             
+;           Case Globals::#EVENT_PARAMETER_CHANGED
+;             Scene::Update(Scene::*current_scene)
+;             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
+;             
+;           Case Globals::#EVENT_TOOL_CHANGED
+;             Select EventData()
+;               Case Globals::#TOOL_SCALE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+;                 *Me\tool = Globals::#TOOL_SCALE
+;               Case Globals::#TOOL_ROTATE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+;                 *Me\tool = Globals::#TOOL_ROTATE
+;               Case Globals::#TOOL_TRANSLATE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+;                 *Me\tool = Globals::#TOOL_TRANSLATE
+;               Case Globals::#TOOL_TRANSFORM
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+;                 *Me\tool = Globals::#TOOL_TRANSFORM
+;             EndSelect
+;             
+;           Case Globals::#EVENT_SELECTION_CHANGED
+;             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
+;             Scene::Update(Scene::*current_scene)
+;             If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
+;            
+;           Case Globals::#EVENT_HIERARCHY_CHANGED
+;             Scene::Setup(Scene::*current_scene, *Me\context)
+;             Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
+;            
+;             If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
+;             
+;           Case Globals::#EVENT_TREE_CREATED
+;             Protected *graph = *Me\window\uis("Graph")
+;             Protected *tree = EventData()
+;             If *graph
+;               GraphUI::SetContent(*graph,*tree)
+;             EndIf   
+;             If *callback : *callback(*Me, Globals::#EVENT_TREE_CREATED) : EndIf
+;             
+;           Case #PB_Event_Menu
+;             Select EventMenu()
+;               Case Globals::#SHORTCUT_TRANSLATE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+;                 *Me\tool = Globals::#TOOL_TRANSLATE                
+;               Case Globals::#SHORTCUT_ROTATE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+;                 *Me\tool = Globals::#TOOL_ROTATE
+;               Case Globals::#SHORTCUT_SCALE
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+;                 *Me\tool = Globals::#TOOL_SCALE
+;               Case Globals::#SHORTCUT_TRANSFORM
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+;                 *Me\tool = Globals::#TOOL_TRANSFORM
+;               Case Globals::#SHORTCUT_CAMERA
+;                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_CAMERA)
+;                 *Me\tool = Globals::#TOOL_CAMERA
+;               Default 
+;                 *Me\tool = Globals::#TOOL_MAX
+;                 If event : Window::OnEvent(*Me\window,event) : EndIf
+;             EndSelect
+;             If *callback : *callback(*Me, event) : EndIf
+;             
+;           Case #PB_Event_SizeWindow
+;             Window::OnEvent(*Me\window,event)
+;             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_Gadget
             Window::OnEvent(*Me\window,event)
@@ -768,8 +767,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 763
-; FirstLine = 708
+; CursorPosition = 639
+; FirstLine = 615
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

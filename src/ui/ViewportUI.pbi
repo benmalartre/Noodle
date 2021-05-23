@@ -231,13 +231,18 @@ Module ViewportUI
 ;             RemoveKeyboardShortcut(*manager\window, #PB_Shortcut_Space)
 ;                     
           Case #PB_EventType_MouseMove
+            
             If *Me\down
               deltax = *Me\mx-*Me\oldX
               deltay = *Me\my-*Me\oldY 
               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
-            
+              Debug "MOUSE FUCKIN MOVE ... DOWN ? " + Str(*Me\down)
+              Debug *Me\gadgetID
+              Debug modifiers
               If modifiers & #PB_OpenGL_Alt
+                Debug "MOUSE FUCKIN ALT KEY !!"
                 If *Me\lmb_p
+                  Debug "ORBIT FUCKIN CAMERA"
                   Camera::Orbit(*Me\camera,deltax,deltay,width,height)
                   If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 ElseIf *Me\mmb_p
@@ -375,7 +380,6 @@ Module ViewportUI
     
 ;     Protected ilayer.Layer::ILayer = *Me\layer
 ;     ilayer\Draw(*Me\context)
-    Debug "VIEWPORT :: DRAW !!!!!"
     If *Me\tool
       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
@@ -686,7 +690,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 73
+; CursorPosition = 94
+; FirstLine = 75
 ; Folding = ----
 ; EnableXP

@@ -896,7 +896,6 @@ Module Handle
     Camera::MousePositionToRayDirection(*Me\camera, mx, my, width, height, *Me\ray\direction)
     Vector3::SetFromOther(*Me\ray\origin, *Me\camera\pos)
     Define distance.f = #F32_MAX
-    Debug "LAUNCH AGAINST PLANE..."
     If Ray::PlaneIntersection(*Me\ray, *Me\plane, @distance)
       Define hitPoint.v3f32
       Ray::GetIntersectionPoint(*Me\ray, distance, hitPoint)
@@ -1442,8 +1441,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1262
-; FirstLine = 1265
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 920
+; FirstLine = 894
 ; Folding = -------
 ; EnableXP

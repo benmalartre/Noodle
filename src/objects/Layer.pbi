@@ -178,7 +178,6 @@ Module Layer
   ; Resize
   ;---------------------------------------------------
   Procedure Resize(*layer.Layer_t,width,height.i)
-    Debug "RESIZE LAYER : "+*layer\name
     GLLayer::Resize(*layer\datas, width, height)
   EndProcedure
   
@@ -721,8 +720,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 396
-; FirstLine = 384
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 201
+; FirstLine = 177
 ; Folding = ------
 ; EnableXP

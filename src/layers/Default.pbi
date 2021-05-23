@@ -100,7 +100,7 @@ Module LayerDefault
     glClearColor(0.666,0.666,0.666,1.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     
-    
+
     ; Find Up View Point
     ;-----------------------------------------------
     Protected *view.m4f32,proj.m4f32,view.m4f32
@@ -124,7 +124,7 @@ Module LayerDefault
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
-    
+
     ;Draw Drawer Objects
     ;-----------------------------------------------
     *shader.Program::Program_t = *ctx\shaders("drawer")
@@ -134,7 +134,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
     GLCheckError("DRAW DRAWER")
-    
+
     ;Draw Curve Objects
     ;-----------------------------------------------
     *shader.Program::Program_t = *ctx\shaders("curve")
@@ -167,7 +167,7 @@ Module LayerDefault
     glUseProgram(*pgm\pgm)
     Define.m4f32 model,view,proj
     Matrix4::SetIdentity(model)
- 
+         
     glEnable(#GL_DEPTH_TEST)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE,@model)
     
@@ -274,7 +274,7 @@ Module LayerDefault
   
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 64
+; CursorPosition = 269
+; FirstLine = 214
 ; Folding = --
 ; EnableXP
