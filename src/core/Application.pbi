@@ -632,7 +632,7 @@ CompilerEndIf
       If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
         If waitTime >0
-          event = WaitWindowEvent(1/60)
+          event = WaitWindowEvent(waitTime)
         Else
           event = WaitWindowEvent()
         EndIf
@@ -764,9 +764,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 713
-; FirstLine = 675
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 634
+; FirstLine = 694
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

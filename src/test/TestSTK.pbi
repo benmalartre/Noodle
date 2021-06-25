@@ -11,7 +11,7 @@ UIColor::Init()
 
 Global note.i = Notes::#NOTE_DO
 Global numVoices = 5
-Global baseOctave = 3
+Global baseOctave = 0
 
 Global *app.Application::Application_t
 Global *ui.PropertyUI::PropertyUI_t 
@@ -58,7 +58,7 @@ EndProcedure
 
 Procedure Update(*app.Application::Application_t, event.i)
   
-;   UpdateOnTime()
+    UpdateOnTime()
   
     If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
       Select EventType()
@@ -98,6 +98,9 @@ EndProcedure
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   
 STK::Initialize()
+
+Debug "DAC : " + Str(STK::*DAC)
+
 *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
 ;STK::SetNodeVolume(*stream, 0.5)
 
@@ -109,10 +112,10 @@ PropertyUI::AddProperty(*ui, *p)
 
 ControlProperty::AppendStart(*p)
 Define i
-Define base_frequency = 128
+Define base_frequency = 55
 
 For i=0 To numVoices-1
-  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, base_frequency, #True)
+  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_BLITSQUARE, base_frequency, #True)
   
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
@@ -137,10 +140,15 @@ PropertyUI::AppendStop(*ui)
 
 STK::StreamStart(*stream)
 running = #True
-Application::Loop(*app, @Update())
+Application::Loop(*app, @Update(), 0)
 
-STK::RemoveNode(*stream, *generator)
-STK::RemoveNode(*stream, *generator2)
+Debug *stream
+Debug *generator
+Debug *generator2
+
+ForEach *waves()
+  STK::RemoveNode(*stream, *waves())
+Next
 
 STK::StreamClean(*stream)
 STK::Terminate()
@@ -199,8 +207,8 @@ STK::Terminate()
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 52
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 142
+; FirstLine = 119
 ; Folding = -
 ; EnableXP

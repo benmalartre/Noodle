@@ -1,8 +1,10 @@
-﻿;========================================================================================
+﻿XIncludeFile "Time.pbi"
+
+;========================================================================================
 ; Sequencer Module Declaration
 ;========================================================================================
 DeclareModule Sequencer
-  #NUM_TIMES_PER_BLOCK = 4
+  #NUM_TIMES_PER_BLOCK = 3
   
   Structure Note_t
     time.i
@@ -24,6 +26,7 @@ DeclareModule Sequencer
   EndStructure
   
   Structure Sequencer_t
+    Time::Timeable_t timer
     tempo.i
     rythm.i
     blocks.i
@@ -40,6 +43,9 @@ DeclareModule Sequencer
   Declare NewNote(time.i, duration.i, frequency.f, intensity.f)
   Declare DeleteNote(*note)
   Declare AddNote(*block.Block_t, index.i, *note.Note_t)
+  
+  Declare Start(*sequencer.Sequencer_t)
+  Declare Stop(*sequencer.Sequencer_t)
   
 EndDeclareModule
 
@@ -72,6 +78,25 @@ Module Sequencer
     
     ClearStructure(*sequencer, Sequencer_t)
     FreeMemory(*sequencer)
+    
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; START
+  ;--------------------------------------------------------------------------------------
+  Procedure Start(*sequencer.Sequencer_t)
+    Debug "START SEQUENCER !"
+    Time::StartTimer(*sequencer\timer, *sequencer\callback, 33)
+    
+    
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; STOP
+  ;--------------------------------------------------------------------------------------
+  Procedure Stop(*sequencer.Sequencer_t)
+     Debug "STOP SEQUENCER !"
+    Time::StopTimer(*sequencer\timer)
     
   EndProcedure
   
@@ -163,7 +188,7 @@ Module Sequencer
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 117
+; CursorPosition = 98
+; FirstLine = 81
 ; Folding = ---
 ; EnableXP

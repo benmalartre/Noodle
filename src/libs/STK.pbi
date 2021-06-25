@@ -352,7 +352,7 @@ DeclareModule STK
         STK_LIB = OpenLibrary(#PB_Any, "libs/x64/linux/STK.so")
     CompilerEndSelect
   EndIf
-  
+    
   If STK_LIB
     Global Init.INIT = GetFunction(STK_LIB, "STKInit")
     Global Term.TERM = GetFunction(STK_LIB, "STKTerm")
@@ -381,7 +381,7 @@ DeclareModule STK
     Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKStreamAddBuffer")
     Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKStreamAddReader")
     
-    Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKRemoveNode")
+    Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKRemoveRootNode")
     
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
@@ -532,8 +532,8 @@ Module STK
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 65
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 383
+; FirstLine = 380
 ; Folding = ----
 ; EnableXP

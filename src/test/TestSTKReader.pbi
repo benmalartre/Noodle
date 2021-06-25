@@ -9,12 +9,12 @@ Globals::Init()
 Time::Init()
 UIColor::Init()
 
-;Global rawwave.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves/snardrum.raw"
-; Global rawwave.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/waves/B747/V1.WAV"
-; Global rawwave2.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/waves/B777/Autopilot Disconnect.wav"
+Global rawwave.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves/snardrum.raw"
+;Global rawwave.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/waves/B747/V1.WAV"
+Global rawwave2.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/waves/B777/Autopilot Disconnect.wav"
 ;Global rawwave.s = "/Users/benmalartre/Documents/RnD/PureBasic/Noodle/waves/Generic Tones/400Hz.wav"
-Global rawwave.s = "E:/Projects/RnD/Noodle/waves/B747/V1.WAV"
-Global rawwave2.s = "E:\Projects\RnD\Noodle\waves\B777\Autopilot Disconnect.wav"
+;Global rawwave.s = "E:/Projects/RnD/Noodle/waves/B747/V1.WAV"
+;Global rawwave2.s = "E:\Projects\RnD\Noodle\waves\B777\Autopilot Disconnect.wav"
 
 Global *app.Application::Application_t
 Global *stream.STK::Stream
@@ -25,7 +25,9 @@ STK::Initialize()
 *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
 
 ;STK::SetNodeVolume(*stream, 1.0)
-
+Debug *stream
+Debug rawwave
+Debug STK::AddReader
 *reader.STK::Reader = STK::AddReader(*stream, rawwave, #True)
 *reader2.STK::Reader = STK::AddReader(*stream, rawwave2, #True)
 STK::SetNodeVolume(*reader, 1.0)
@@ -44,6 +46,7 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; STK::DeleteNode(*reader)
 STK::StreamStop(*stream)
 STK::StreamClean(*stream)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 8
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 29
+; FirstLine = 8
 ; EnableXP

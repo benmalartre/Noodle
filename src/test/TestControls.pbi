@@ -17,6 +17,7 @@ Commands::Init()
 UIColor::Init()
 
 Procedure KissThatButton(*Me.Object::Object_t)
+  Debug "KISS THAT BUTTON BI-ATCH!"
 EndProcedure
 Callback::DECLARECALLBACK(KissThatButton, Arguments::#PTR)
 
@@ -24,8 +25,6 @@ Callback::DECLARECALLBACK(KissThatButton, Arguments::#PTR)
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 ; Controls::SetTheme(Globals::#GUI_THEME_DARK)
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
-
-OpenGadgetList(*ui\container)
 
 Define name.s = "Prop"
 Define i
@@ -76,13 +75,9 @@ Define i
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
 
-
-CloseGadgetList()
-
-
 Application::Loop(*app,@Update())
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 19
+; FirstLine = 15
 ; Folding = -
 ; EnableXP

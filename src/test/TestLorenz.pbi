@@ -119,7 +119,7 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*viewport\context)
   Drawer::Flush(*drawer)
   ;   RandomSpheres(Random(64,16), Random(10)-5)
   UpdateLorenz(lorenz)
@@ -138,7 +138,7 @@ Procedure Draw(*app.Application::Application_t)
   FTGL::EndDraw(*app\context\writer)
   glDisable(#GL_BLEND)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
  
@@ -158,9 +158,9 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Lorenz",width,height, options)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
     *viewport\camera = *app\camera
-    View::SetContent(*app\manager\main,*viewport)
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
@@ -177,15 +177,15 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
    
-  Application::Loop(*app, @Draw())
+  Application::Loop(*app, @Draw(), 1/60)
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 120
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 179
+; FirstLine = 147
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

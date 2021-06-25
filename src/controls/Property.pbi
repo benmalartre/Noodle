@@ -295,7 +295,6 @@ Module ControlProperty
     If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
     
     StartDrawing( ImageOutput(*Me\imageID) )
-    DrawingMode(#PB_2DDrawing_AllChannels)
     *Me\pickID = Point(xm,ym)-1
     StopDrawing()
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
@@ -1911,8 +1910,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 400
-; FirstLine = 397
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 297
+; FirstLine = 283
 ; Folding = ----------
 ; EnableXP

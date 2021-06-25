@@ -69,9 +69,11 @@ DeclareModule Time
     timer.i
     delay.i
   EndStructure
-
+  
+  Declare CreateTimer(*obj, callback.PFNTIMERCALLBACK, delay=250)
+  Declare DeleteTimer(*Me.Timeable_t)
   Declare OnTimer(*Me.Timeable_t)
-  Declare StartTimer(*Me.Timeable_t, *callback.PFNTIMERCALLBACK, delay.i=250)
+  Declare StartTimer(*Me.Timeable_t)
   Declare StopTimer(*Me.Timeable_t)
   
  
@@ -146,22 +148,37 @@ Module Time
     
   EndProcedure
   
-
+  
   ; -----------------------------------------------------------------------------
   ;   TIMER
   ; -----------------------------------------------------------------------------
+  Procedure CreateTimer(*obj, callback.PFNTIMERCALLBACK, delay=250)
+    Define *Me.Timeable_t = AllocateMemory(SizeOf(Timeable_t))
+    InitializeStructure(*Me, Timeable_t)
+    *Me\obj = *obj
+    *Me\delay = delay
+    *Me\callback = callback
+    *Me\timer = #Null
+    ProcedureReturn *Me
+  EndProcedure
+  
+  Procedure DeleteTimer(*Me.Timeable_t)
+    If *Me\timer : StopTimer(*Me) : EndIf
+    ClearStructure(*Me, Timeable_t)
+    FreeMemory(*Me)
+  EndProcedure
+  
   Procedure OnTimer(*Me.Timeable_t)
     Repeat
       Delay(*Me\delay)
-      PostEvent(#PB_Event_Timer)
+      ;PostEvent(#PB_Event_Timer)
+      *Me\callback(*Me\obj)
     ForEver
   EndProcedure
   
-  Procedure StartTimer(*Me.Timeable_t, *callback.PFNTIMERCALLBACK, delay.i=250)
-    *Me\delay = delay
+  Procedure StartTimer(*Me.Timeable_t)
     If Not IsThread(*Me\timer)
-      *Me\callback = *callback
-      *Me\timer = CreateThread(*callback, *Me)
+      *Me\timer = CreateThread(OnTimer, *Me)
     EndIf
   EndProcedure
   
@@ -172,9 +189,9 @@ Module Time
     *Me\timer = #Null
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 26
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 72
+; FirstLine = 48
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

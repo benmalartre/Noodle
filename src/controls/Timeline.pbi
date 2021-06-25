@@ -35,7 +35,7 @@ DeclareModule ControlTimeline
     down.b
     
     ; timer
-    timer.Time::Timeable_t
+    *timer.Time::Timeable_t
     window.i
     
     ; Nb Controls
@@ -831,7 +831,7 @@ Module ControlTimeline
       ;--- [ Start Playback / Create Timer Event ]------------------------------
       Time::play = #True
       Time::forward = forward
-      Time::StartTimer(*Me\timer, @OnTimer(), 1000/Time::framerate)
+      Time::StartTimer(*Me\timer)
   
       If forward
         NextFrame(*Me)
@@ -1012,7 +1012,6 @@ Module ControlTimeline
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlTimeline_t )
-    Debug "CONTROL TIMELINE : DELETE !!! "
     ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = 4
@@ -1025,6 +1024,9 @@ Module ControlTimeline
       Debug *ctrl\name
       child\Delete()
     Next
+    
+    ; ---[ Delete Timer ]-------------------------------------------------------
+    Time::DeleteTimer(*Me\timer)
     
     ; ---[ Release Arrays ]-----------------------------------------------------
     FreeArray( *Me\children() )
@@ -1071,9 +1073,7 @@ Module ControlTimeline
     *Me\sizY       = height
     
     *Me\controls = 0
-    *Me\timer\callback = @OnTimer()
-    *Me\timer\obj = *Me
-    *Me\timer\delay = 1000 / Time::FRAMERATE
+    *Me\timer = Time::CreateTimer(*Me, @OnTimer(), 1000 / Time::FRAMERATE)
     
     ; ---[ Init Structure ]-----------------------------------------------------
     InitializeStructure( *Me, ControlTimeline_t ) ; Arrays
@@ -1146,8 +1146,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 295
-; FirstLine = 284
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 1075
+; FirstLine = 1071
 ; Folding = -------
 ; EnableXP

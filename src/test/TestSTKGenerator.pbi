@@ -53,9 +53,7 @@
               running = #False  
             Else
               Define numRoots =  STK::StreamNumRoots(*stream)
-              Debug "### NUM ROOTS : "+Str(numRoots)
               Define result.b = STK::StreamStart(*stream)
-              Debug "### START STREAM : "+Str(result)
 
               running = #True
             EndIf
@@ -87,13 +85,14 @@
   Procedure BuildApp(numGenerators)
     *app = Application::New("Test Generator",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
     *ui = PropertyUI::New(*app\window\main, "STK", #Null)
-    OpenGadgetList(*ui\container)
+    OpenGadgetList(*ui\gadgetID)
     *p = *ui\prop
 
     ControlProperty::AppendStart(*p)
       
     Define baseFrequency = 128
     For i=0 To numGenerators-1     
+      Debug STK::AddGenerator
       Define *generator.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, baseFrequency, #True)
       STK::SetNodeVolume(*generator, 1.0)
       AddElement(*generators())
@@ -108,7 +107,7 @@
    Next
     
     ControlProperty::AppendStop(*p)
-    CloseGadgetList()
+    ;CloseGadgetList()
     
     STK::StreamStart(*stream)
     running = #True
@@ -144,8 +143,8 @@
   
   ;STK::StreamStop(*stream)
   STK::StreamClean(*stream)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 66
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 56
+; FirstLine = 42
 ; Folding = -
 ; EnableXP

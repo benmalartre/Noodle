@@ -146,8 +146,8 @@ EndProcedure
 Time::Init()
 
 
-#width = 1024
-#height = 1024
+#width = 512
+#height = 512
 Define *turb.TurbulenceDatas_t = NewTurbulenceDatas(#width, #height, 0)
 InitPositions(*turb,0.02)
 Define image = CreateImage(#PB_Any,#width,#height,24)
@@ -157,7 +157,7 @@ Define image = CreateImage(#PB_Any,#width,#height,24)
 Define starttime.d = Time::Get()
 ; ShowTurbulence(image, *turb)
 Define TotalSeconds.d = (Time::Get() - starttime)
-OpenWindow(0, 100, 100, #width, #height, "Perlin Noise - " + Str(TotalSeconds))
+OpenWindow(0, 100, 100, #width * 2, #height * 2, "Perlin Noise - " + Str(TotalSeconds))
 ImageGadget(0, 0, 0, #width, #height, ImageID(image))
 Define Event
 Repeat
@@ -172,7 +172,7 @@ Repeat
   EndIf  
 Until Event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 100
-; FirstLine = 83
+; CursorPosition = 170
+; FirstLine = 140
 ; Folding = --
 ; EnableXP
