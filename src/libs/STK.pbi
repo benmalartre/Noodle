@@ -298,6 +298,7 @@ DeclareModule STK
   PrototypeC ADDBUFFER(*stream.Stream, *source.Node, asRoot.b=#False)
   PrototypeC ADDREADER(*stream.Stream, filename.p-utf8, asRoot.b=#False)
   
+  PrototypeC ADDNODE(*stream.Stream, *node.Node, isRoot.b)
   PrototypeC REMOVENODE(*stream.Stream, *node.Node)
   
   PrototypeC SETGENERATORTYPE(*stream.Generator, type.l)
@@ -381,8 +382,8 @@ DeclareModule STK
     Global AddBuffer.ADDBUFFER = GetFunction(STK_LIB, "STKStreamAddBuffer")
     Global AddReader.ADDREADER = GetFunction(STK_LIB, "STKStreamAddReader")
     
-    Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKRemoveRootNode")
-    
+    Global AddNode.ADDNODE = GetFunction(STK_LIB, "STKStreamAddNode")
+    Global RemoveNode.REMOVENODE = GetFunction(STK_LIB, "STKStreamRemoveNode")
     Global SetGeneratorType.SETGENERATORTYPE = GetFunction(STK_LIB, "STKSetGeneratorType")
     Global SetGeneratorScalar.SETGENERATORSCALAR = GetFunction(STK_LIB, "STKSetGeneratorScalar")
     Global GetGeneratorType.GETGENERATORTYPE = GetFunction(STK_LIB, "STKGetGeneratorType")
@@ -533,7 +534,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 383
-; FirstLine = 380
+; CursorPosition = 384
+; FirstLine = 381
 ; Folding = ----
 ; EnableXP

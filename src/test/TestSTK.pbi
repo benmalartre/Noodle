@@ -3,6 +3,7 @@ XIncludeFile "../core/Application.pbi"
 XIncludeFile "../core/Notes.pbi"
 XIncludeFile "../core/Callback.pbi"
 XIncludeFile "../core/Control.pbi"
+XIncludeFile "../core/Sequencer.pbi"
 XIncludeFile "../controls/Slider.pbi"
 
 Globals::Init()
@@ -10,16 +11,18 @@ Time::Init()
 UIColor::Init()
 
 Global note.i = Notes::#NOTE_DO
-Global numVoices = 5
+Global numVoices = 1
 Global baseOctave = 0
 
 Global *app.Application::Application_t
 Global *ui.PropertyUI::PropertyUI_t 
 Global *stream.STK::Stream
+
 Global *p.ControlProperty::ControlProperty_t
 Global running.b = #False
 Global counter.i = 0
 Global NewList *waves.STK::Generator()
+Global *sequencer.Sequencer::Sequencer_t
 
 ; Slider Frequency Callback
 ;-----------------------------------------------------
@@ -36,22 +39,20 @@ Procedure OnOctaveChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Gen
 EndProcedure
 Callback::DECLARECALLBACK(OnOctaveChange, Arguments::#PTR, Arguments::#INT)
 
-
-
 ; Update Note On Tick
 ;-----------------------------------------------------
 Procedure UpdateOnTime()
   If counter%60 = 0
     Define octave = baseOctave
-    ForEach *waves()
-      Debug Notes::NoteAt(octave, note)
-      STK::SetGeneratorScalar(*waves(), STK::#GEN_FREQUENCY, Notes::NoteAt(octave, note))
+    Define *track.Sequencer::Track_t
+    For i = O To ListSize(*waves()) - 1
+      SelectElement(*waves(), i)
+      SelectElement(*sequencer\tracks(), i)
+      *track = *sequencer\tracks()
+      STK::SetGeneratorScalar(*waves(), STK::#GEN_FREQUENCY, *track\frequency)
+      STK::SetNodeVolume(*waves(), *track\amplitude)
       octave + 1
     Next
-    note + 1
-    If note > Notes::#NUM_NOTES
-      note = 0
-    EndIf
   EndIf
   counter +1
 EndProcedure
@@ -99,8 +100,6 @@ EndProcedure
   
 STK::Initialize()
 
-Debug "DAC : " + Str(STK::*DAC)
-
 *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
 ;STK::SetNodeVolume(*stream, 0.5)
 
@@ -113,9 +112,22 @@ PropertyUI::AddProperty(*ui, *p)
 ControlProperty::AppendStart(*p)
 Define i
 Define base_frequency = 55
+Define *track.Sequencer::Track_t
+Define *note.Sequencer::Note_t
 
+*sequencer = Sequencer::New(60, 3)
 For i=0 To numVoices-1
+  
   Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_BLITSQUARE, base_frequency, #True)
+  *track = Sequencer::AddTrack(*sequencer)
+  Sequencer::AddNote(*track, 0, 250, Notes::#B0, 1)
+  Sequencer::AddNote(*track, 500, 250, Notes::#B2, 1)
+  Sequencer::AddNote(*track, 1000, 250, Notes::#B1, 1)
+  Sequencer::AddNote(*track, 1500, 250, Notes::#B3, 1)
+  Sequencer::AddNote(*track, 2000, 250, Notes::#B3, 1)
+  Sequencer::AddNote(*track, 2500, 250, Notes::#B0, 1)
+  
+  Sequencer::SampleTrack(*sequencer, *track)
   
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
 ;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
@@ -138,6 +150,7 @@ Next
 ControlProperty::AppendStop(*p)
 PropertyUI::AppendStop(*ui)
 
+Sequencer::Start(*sequencer)
 STK::StreamStart(*stream)
 running = #True
 Application::Loop(*app, @Update(), 0)
@@ -152,6 +165,7 @@ Next
 
 STK::StreamClean(*stream)
 STK::Terminate()
+Sequencer::Stop(*sequencer)
 
 
 ; STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, 64)
@@ -208,7 +222,7 @@ STK::Terminate()
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 142
-; FirstLine = 119
+; CursorPosition = 61
+; FirstLine = 42
 ; Folding = -
 ; EnableXP

@@ -478,18 +478,9 @@ XIncludeFile "Types.pbi"
   ;-----------------------------------------------------------------------------------
   ; Set Content
   ;-----------------------------------------------------------------------------------
-  Procedure SetContent(*Me.View_t,*content.UI::UI_t)
-    Debug *Me\name
-    If *Me\content
-      Debug "Delete OLD content!!!"
-    EndIf
-   
+  Procedure SetContent(*Me.View_t,*content.UI::UI_t)   
     *Me\content = *content
     *content\parent = *Me
-;     
-;     Protected *manager.ViewManager::ViewManager_t = *Me\manager
-;     If *manager : *manager\uis(*content\name) = *content : EndIf
-  
   EndProcedure
   
   ;-----------------------------------------------------------------------------------
@@ -545,8 +536,8 @@ XIncludeFile "Types.pbi"
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( View )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 65
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 482
+; FirstLine = 479
 ; Folding = ----
 ; EnableXP
