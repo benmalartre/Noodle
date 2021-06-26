@@ -28,6 +28,9 @@ DeclareModule Sequencer
     List notes.Note_t()
     frequency.f
     amplitude.f
+    offset.f
+    volume.f
+    mutex.i
   EndStructure
   
   Structure Sequencer_t
@@ -36,7 +39,7 @@ DeclareModule Sequencer
     rythm.i
     blocks.i
     tick.i
-    List *tracks.Track_t()
+    Array *tracks.Track_t(0)
   EndStructure
   
   Declare New(tempo.i, rythm.i, blocks.i=4)
@@ -45,7 +48,10 @@ DeclareModule Sequencer
   Declare DeleteTrack(*sequencer.Sequencer_t, index.i)
   Declare SetupTrack(*track.Track_t, blocks.i, tempo.i, rythm.i)
   Declare CleanTrack(*track.Track_t)
+  Declare.f GetFrequency(*track.Track_t)
+  Declare.f GetAmplitude(*track.Track_t)
   
+  Declare UpdateTrack(*sequencer.Sequencer_t, *track.Track_t, block.i, sample.i)
   Declare SampleTrack(*sequencer.Sequencer_t, *track.Track_t)
   Declare AddNote(*track.Track_t, time.i, duration.i, frequency.f, amplitude.f)
   Declare RemoveNote(*track.Block_t, index.i)
@@ -79,8 +85,8 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure Delete(*Me.Sequencer_t)
     Define i
-    Define numTracks = ListSize(*Me\tracks())
-    For i = numTracks-1 To 0
+    Define numTracks = ArraySize(*Me\tracks())
+    For i = numTracks - 1 To 0
       DeleteTrack(*Me, i)
     Next
     
@@ -108,22 +114,15 @@ Module Sequencer
   ; ON TIMER
   ;--------------------------------------------------------------------------------------
   Procedure OnTimer(*Me.Sequencer_t)
-    ;Debug "ON SEQUENCER TIMER :)"
     Define *sample.Sample_t
     Define *block.Block_t
     Define block.i = *Me\tick / (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
     Define sample.i = *Me\tick % (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
-    Define numBlocks
-    ;Debug "NUM TRACKS : " + Str(ListSize(*Me\tracks()))
-    ForEach *Me\tracks()
-      numBlocks = ArraySize(*Me\tracks()\blocks())
-      ;Debug "NUM BLOCKS : "+Str(numBlocks)
-      *block = *Me\tracks()\blocks(block % numBlocks)
-      *sample = *block\samples(sample % #NUM_SAMPLES_PER_BEAT)
-      *Me\tracks()\frequency = *sample\frequency
-      *Me\tracks()\amplitude = *sample\amplitude
-      ;Debug "FREQUENCY : "+StrF(*sample\frequency)+","+StrF(*sample\amplitude)
+    Define numBlocks, i
+    For i=0 To ArraySize(*Me\tracks()) - 1
+      UpdateTrack(*Me, *Me\tracks(i), block, sample)
     Next
+    Delay(1000 / (*Me\tempo * *Me\rythm))
     *Me\tick + 1
     If *Me\tick >= *Me\tempo * *Me\rythm * #NUM_SAMPLES_PER_BEAT
       *Me\tick = 0
@@ -131,14 +130,34 @@ Module Sequencer
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
+  ; GET FREQUENCY
+  ;--------------------------------------------------------------------------------------
+  Procedure.f GetFrequency(*track.Track_t)
+    Define frequency.f = *track\frequency + *track\offset
+    ProcedureReturn frequency
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; GET AMPLITUDE
+  ;--------------------------------------------------------------------------------------
+  Procedure.f GetAmplitude(*track.Track_t)
+    Define amplitude.f = *track\amplitude + *track\volume
+    ProcedureReturn amplitude
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
   ; ADD TRACK
   ;--------------------------------------------------------------------------------------
   Procedure AddTrack(*Me.Sequencer_t)
+    Define size = ArraySize(*Me\tracks())
     Define *track.Track_t = AllocateMemory(SizeOf(Track_t))
     InitializeStructure(*track, Track_t)
     SetupTrack(*track, *Me\blocks, *Me\tempo, *Me\rythm)
-    AddElement(*Me\tracks())
-    *Me\tracks() = *track
+    *track\mutex = CreateMutex()
+    *track\volume = 1.0
+    *track\offset = 0.0
+    ReDim *Me\tracks(size + 1)
+    *Me\tracks(size) = *track
     ProcedureReturn *track
   EndProcedure
   
@@ -146,12 +165,16 @@ Module Sequencer
   ; DELETE TRACK
   ;--------------------------------------------------------------------------------------
   Procedure DeleteTrack(*Me.Sequencer_t, index.i)
-    If index >=0 And index < ListSize(*Me\tracks())
-      SelectElement(*Me\tracks(), index)
-      Define *track.Track_t = *Me\tracks()
+    Define size = ArraySize(*Me\tracks())
+    If index >=0 And index < size
+      Define *track.Track_t = *Me\tracks(index)
+      FreeMutex(*track\mutex)
       CleanTrack(*track)
-      DeleteElement(*Me\tracks())
-    EndIf
+      For i = index + 1 To size - 1
+        Swap *Me\tracks(i-1), *Me\tracks(i)
+      Next
+      ReDim *Me\tracks(size - 1)
+    EndIf 
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
@@ -159,16 +182,20 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure SetupTrack(*track.Track_t, blocks.i, tempo.i, rythm.i)
     ReDim *track\blocks(blocks)
+    Define *sample.Sample_t
     Define i, j, t = 0
     Define rate.i = (1000 / tempo) * #NUM_SAMPLES_PER_BEAT
-    Debug "NUM BLOCKS : " +Str(blocks)
-    Debug "SAMPLING RATE : " + Str(rate)
     For i=0 To blocks-1
       Define *block.Block_t = AllocateMemory(SizeOf(Block_t))
       InitializeStructure(*block, Block_t)
+      For j=0 To #NUM_SAMPLES_PER_BEAT -1
+        *sample = *block\samples(j)
+        *sample\frequency = 0.0
+        *sample\amplitude = 0.0
+      Next
+      
       *block\time = t
       t + rate
-      Debug "BLOCK TIME : " +Str(*block\time)
     Next
     
   EndProcedure
@@ -211,10 +238,24 @@ Module Sequencer
             *block\samples(j)\frequency = *note\frequency
             *block\samples(j)\amplitude = *note\amplitude
             Debug "ADD SAMPLE : "+StrF(*note\frequency) +","+ Str(*note\amplitude)
+            Continue
           EndIf
         Next
       Next
     Next
+  EndProcedure
+  
+  ;--------------------------------------------------------------------------------------
+  ; UPDATE TRACK
+  ;--------------------------------------------------------------------------------------
+  Procedure UpdateTrack(*sequencer.Sequencer_t, *track.Track_t, block.i, sample.i)
+    LockMutex(*track\mutex)
+    Define numBlocks = ArraySize(*track\blocks())
+    Define *block.Block_t = *track\blocks(block % numBlocks)
+    Define *sample.Sample_t = *block\samples(sample % #NUM_SAMPLES_PER_BEAT)
+    *track\frequency = *sample\frequency
+    *track\amplitude = *sample\amplitude
+    UnlockMutex(*track\mutex)
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
@@ -241,7 +282,7 @@ Module Sequencer
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 38
-; FirstLine = 34
+; CursorPosition = 50
+; FirstLine = 25
 ; Folding = ---
 ; EnableXP

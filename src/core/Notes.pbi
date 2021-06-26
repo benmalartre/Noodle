@@ -189,9 +189,7 @@ Module Notes
         If frequency >= Notes::NoteAt(i, 0) And frequency < Notes::NoteAt(i, #NUM_NOTES-1):
           For j=0 To Notes::#NUM_NOTES - 1
             delta = Abs(frequency - Notes::NoteAt(i, j))
-            If delta > minDelta
-              Break
-            ElseIf delta <= minDelta
+            If delta <= minDelta
               minDelta = delta
               result = Notes::NoteAt(i, j)
             EndIf
@@ -204,8 +202,8 @@ Module Notes
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 176
-; FirstLine = 145
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 191
+; FirstLine = 171
 ; Folding = -
 ; EnableXP
