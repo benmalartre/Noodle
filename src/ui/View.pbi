@@ -450,7 +450,7 @@ XIncludeFile "Types.pbi"
   ; View Event
   ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
-    If Not event : ProcedureReturn : EndIf
+    If Not event Or Not *Me : ProcedureReturn : EndIf
     If *Me\leaf
       If *Me\content <> #Null
         Protected *content.UI::IUI = *Me\content
@@ -537,7 +537,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 482
-; FirstLine = 479
+; CursorPosition = 452
+; FirstLine = 439
 ; Folding = ----
 ; EnableXP

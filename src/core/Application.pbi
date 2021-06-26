@@ -631,7 +631,7 @@ CompilerEndIf
       Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
       If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
-        If waitTime >0
+        If waitTime >= 0
           event = WaitWindowEvent(waitTime)
         Else
           event = WaitWindowEvent()
@@ -719,6 +719,11 @@ CompilerEndIf
           Case #PB_Event_Gadget
             Window::OnEvent(*Me\window,event)
             If *callback : *callback(*Me, event) : EndIf
+          Default
+            If waitTime >= 0 And *callback
+              *callback(*Me, #PB_Event_Timer)
+            EndIf
+            
 
         EndSelect
       Until event = #PB_Event_CloseWindow
@@ -765,8 +770,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 634
-; FirstLine = 694
+; CursorPosition = 633
+; FirstLine = 623
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

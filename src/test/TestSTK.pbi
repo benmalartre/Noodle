@@ -61,39 +61,39 @@ Procedure Update(*app.Application::Application_t, event.i)
   
     UpdateOnTime()
   
-    If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
-      Select EventType()
-        Case #PB_EventType_KeyDown
-          key = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_Key)
-          If key = #PB_Shortcut_Return
-            
-            If running
-              STK::StreamStop(*stream)
-              
-              running = #False  
-            Else
-              Define numRoots =  STK::StreamNumRoots(*stream)
-              Define result.b = STK::StreamStart(*stream)
-              running = #True
-            EndIf
-          ElseIf key = #PB_Shortcut_Space
-            ; STK::EnvelopeKeyOn(*envelope) 
-          EndIf
-        Case #PB_EventType_LeftButtonDown
-          down = #True
-        Case #PB_EventType_LeftButtonUp
-          down=#False
-        Case #PB_EventType_MouseMove
-;           If down
-;             mx = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_MouseX)
-;             v = mx / width
-;             STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
-;             STK::SetNodeVolume(*wave, 100)
+;     If event = #PB_Event_Gadget And EventGadget() = *p\gadgetID
+;       Select EventType()
+;         Case #PB_EventType_KeyDown
+;           key = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_Key)
+;           If key = #PB_Shortcut_Return
 ;             
+;             If running
+;               STK::StreamStop(*stream)
+;               
+;               running = #False  
+;             Else
+;               Define numRoots =  STK::StreamNumRoots(*stream)
+;               Define result.b = STK::StreamStart(*stream)
+;               running = #True
+;             EndIf
+;           ElseIf key = #PB_Shortcut_Space
+;             ; STK::EnvelopeKeyOn(*envelope) 
 ;           EndIf
-          
-      EndSelect
-    EndIf 
+;         Case #PB_EventType_LeftButtonDown
+;           down = #True
+;         Case #PB_EventType_LeftButtonUp
+;           down=#False
+;         Case #PB_EventType_MouseMove
+; ;           If down
+; ;             mx = GetGadgetAttribute(*p\gadgetID, #PB_Canvas_MouseX)
+; ;             v = mx / width
+; ;             STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, STK::NoteAt(Random(3)+2, Random(STK::#NUM_NOTES)))
+; ;             STK::SetNodeVolume(*wave, 100)
+; ;             
+; ;           EndIf
+;           
+;       EndSelect
+;     EndIf 
 EndProcedure
 
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
@@ -222,7 +222,7 @@ Sequencer::Stop(*sequencer)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 61
-; FirstLine = 42
+; CursorPosition = 155
+; FirstLine = 129
 ; Folding = -
 ; EnableXP

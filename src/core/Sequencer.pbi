@@ -39,7 +39,7 @@ DeclareModule Sequencer
     List *tracks.Track_t()
   EndStructure
   
-  Declare New(tempo.i, rythm.i)
+  Declare New(tempo.i, rythm.i, blocks.i=4)
   Declare Delete(*sequencer.Sequencer_t)
   Declare AddTrack(*sequencer.Sequencer_t)
   Declare DeleteTrack(*sequencer.Sequencer_t, index.i)
@@ -63,14 +63,14 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   ; CONSTRUCTOR
   ;--------------------------------------------------------------------------------------
-  Procedure New(tempo.i, rythm.i)
+  Procedure New(tempo.i, rythm.i, blocks.i=4)
     Define *Me.Sequencer_t = AllocateMemory(SizeOf(Sequencer_t))
     Define rate.i = 1000 / (tempo * #NUM_SAMPLES_PER_BEAT)
     InitializeStructure(*Me, Sequencer_t)
     *Me\timer = Time::CreateTimer(*Me, @OnTimer(), rate)
     *Me\tempo = tempo
     *Me\rythm = rythm
-    *Me\blocks = *Me\tempo * *Me\rythm
+    *Me\blocks = blocks
     ProcedureReturn *Me
   EndProcedure
   
@@ -108,18 +108,21 @@ Module Sequencer
   ; ON TIMER
   ;--------------------------------------------------------------------------------------
   Procedure OnTimer(*Me.Sequencer_t)
+    ;Debug "ON SEQUENCER TIMER :)"
     Define *sample.Sample_t
     Define *block.Block_t
     Define block.i = *Me\tick / (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
     Define sample.i = *Me\tick % (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
     Define numBlocks
-    Debug "SAMPLE INDEX : " +Str(sample)
+    ;Debug "NUM TRACKS : " + Str(ListSize(*Me\tracks()))
     ForEach *Me\tracks()
       numBlocks = ArraySize(*Me\tracks()\blocks())
+      ;Debug "NUM BLOCKS : "+Str(numBlocks)
       *block = *Me\tracks()\blocks(block % numBlocks)
       *sample = *block\samples(sample % #NUM_SAMPLES_PER_BEAT)
       *Me\tracks()\frequency = *sample\frequency
       *Me\tracks()\amplitude = *sample\amplitude
+      ;Debug "FREQUENCY : "+StrF(*sample\frequency)+","+StrF(*sample\amplitude)
     Next
     *Me\tick + 1
     If *Me\tick >= *Me\tempo * *Me\rythm * #NUM_SAMPLES_PER_BEAT
@@ -156,12 +159,16 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure SetupTrack(*track.Track_t, blocks.i, tempo.i, rythm.i)
     ReDim *track\blocks(blocks)
-    Define i, j
-    Define rate.i = 1000 / (tempo * rythm)
-    Debug "SAMPLING RATE : "
+    Define i, j, t = 0
+    Define rate.i = (1000 / tempo) * #NUM_SAMPLES_PER_BEAT
+    Debug "NUM BLOCKS : " +Str(blocks)
+    Debug "SAMPLING RATE : " + Str(rate)
     For i=0 To blocks-1
       Define *block.Block_t = AllocateMemory(SizeOf(Block_t))
       InitializeStructure(*block, Block_t)
+      *block\time = t
+      t + rate
+      Debug "BLOCK TIME : " +Str(*block\time)
     Next
     
   EndProcedure
@@ -196,12 +203,14 @@ Module Sequencer
       For j=0 To #NUM_SAMPLES_PER_BEAT-1
         ForEach *track\notes()
           *note = *track\notes()
-          t = *block\time + j
+          t = *block\time + j * (1000 / *sequencer\tempo)
           st = *note\time
           et = st + *note\duration
-          If t >= nt And t < et
+          Debug "TIME : "+Str(t)+","+Str(st)+","+Str(et)
+          If t >= st And t < et
             *block\samples(j)\frequency = *note\frequency
             *block\samples(j)\amplitude = *note\amplitude
+            Debug "ADD SAMPLE : "+StrF(*note\frequency) +","+ Str(*note\amplitude)
           EndIf
         Next
       Next
@@ -232,7 +241,7 @@ Module Sequencer
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 119
-; FirstLine = 109
+; CursorPosition = 38
+; FirstLine = 34
 ; Folding = ---
 ; EnableXP
