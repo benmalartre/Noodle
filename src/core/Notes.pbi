@@ -166,19 +166,21 @@
   EndDataSection
   
   Macro NoteAt(_octave, _note)
-    PeekF(Notes::?NOTES + (_octave % Notes::#NUM_OCTAVES * Notes::#NUM_NOTES + _note) * 4)
+    PeekF(Notes::?NOTES + (((_octave) % Notes::#NUM_OCTAVES) * Notes::#NUM_NOTES + (_note)) * 4)
   EndMacro
   
   Declare.f Closest(frequency.f)
-  
   
 EndDeclareModule
 
 Module Notes
   Procedure.f Closest(frequency.f)
+    Debug "FREQUENCY : "+StrF(frequency)
     If frequency < Notes::NoteAt(0, 0)
+      Debug "LESS THAN MINIMUM !"
       ProcedureReturn Notes::NoteAt(0, 0)
     ElseIf frequency > Notes::NoteAt(#NUM_OCTAVES-1, #NUM_NOTES-1)
+      Debug "MORE THAN MAXIMUM"
       ProcedureReturn Notes::NoteAt(#NUM_OCTAVES-1, #NUM_NOTES-1)
     Else
       Define delta.f
@@ -189,6 +191,7 @@ Module Notes
         If frequency >= Notes::NoteAt(i, 0) And frequency < Notes::NoteAt(i, #NUM_NOTES-1):
           For j=0 To Notes::#NUM_NOTES - 1
             delta = Abs(frequency - Notes::NoteAt(i, j))
+            Debug Str(i) + "," + Str(j) + ": "+ delta
             If delta <= minDelta
               minDelta = delta
               result = Notes::NoteAt(i, j)
@@ -203,7 +206,7 @@ Module Notes
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 191
-; FirstLine = 171
+; CursorPosition = 172
+; FirstLine = 150
 ; Folding = -
 ; EnableXP

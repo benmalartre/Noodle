@@ -10,7 +10,7 @@ Globals::Init()
 Time::Init()
 UIColor::Init()
 
-#NUM_VOICES = 1
+#NUM_VOICES = 2
 Global note.i = Notes::#NOTE_DO
 Global baseOctave = 0
 
@@ -28,7 +28,7 @@ Global *sequencer.Sequencer::Sequencer_t
 ;-----------------------------------------------------
 Procedure OnFrequencyChange(*control.ControlSlider::ControlSlider_t, *track.Sequencer::Track_t)
   ;STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
-  *track\offset = *control\value
+  *track\offset = Notes::Closest(*control\value)
 EndProcedure
 Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#PTR)
 
@@ -46,8 +46,9 @@ Procedure UpdateOnTime(*sequencer.Sequencer::Sequencer_t)
   For i = O To #NUM_VOICES - 1
     SelectElement(*waves(), i)
     Define frequency.f = Sequencer::GetFrequency(*sequencer\tracks(i))
+    Define amplitude.f = Sequencer::GetAmplitude(*sequencer\tracks(i))
     STK::SetGeneratorScalar(*waves(), STK::#GEN_FREQUENCY, frequency)
-;     STK::SetNodeVolume(*waves(), Sequencer::GetAmplitude(*sequencer\tracks()))
+    STK::SetNodeVolume(*waves(), amplitude)
   Next
 EndProcedure
 
@@ -104,18 +105,13 @@ PropertyUI::AppendStart(*ui)
 PropertyUI::AddProperty(*ui, *p)
 
 ControlProperty::AppendStart(*p)
-Define i
+Define i, j
 Define *track.Sequencer::Track_t
 Define *note.Sequencer::Note_t
 Define offset.f = -62
 
 *sequencer = Sequencer::New(60, 3)
-For i=0 To #NUM_VOICES-1
-  
-  Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_SINEWAVE, 220, #True)
-  *track = Sequencer::AddTrack(*sequencer)
-  *track\offset = offset
-  
+
 ;   #C0	  = 16.35   ; DO
 ;   #Db0  = 17.32   ; DO#
 ;   #D0	  = 18.35   ; RE
@@ -128,32 +124,52 @@ For i=0 To #NUM_VOICES-1
 ;   #A0	  = 27.50   ; LA
 ;   #Bb0  = 29.14   ; SIb
 ;   #B0	  = 30.87   ; SI
-  
-  Sequencer::AddNote(*track, 0, 200, Notes::#C2, 1)
-  Sequencer::AddNote(*track, 200, 200, Notes::#E2, 1)
-  Sequencer::AddNote(*track, 400, 200, Notes::#G2, 1)
-  Sequencer::AddNote(*track, 600, 200, Notes::#Gb0, 1)
-  Sequencer::AddNote(*track, 800, 200, Notes::#F2, 1)
 
-  
-  Sequencer::SampleTrack(*sequencer, *track)
-  
-;     STK::SetGeneratorScalar(*wave, STK::#GEN_TAU, 1.0)
-;     STK::SetGeneratorScalar(*wave, STK::#GEN_T60, 3.66)
-;     STK::SetNodeVolume(*wave,0.666)
-    
-    AddElement(*waves())
-    *waves() = *wave
-   
+
+; BASS
+Define *wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_BLITSAW, Notes::#C2, #True)
+Define *track_bass.Sequencer::Track_t = Sequencer::AddTrack(*sequencer)
+*track_bass\offset = offset
+
+For j=0 To 3
+  Sequencer::AddNote(*track_bass, j * 512 + 0, 128, Notes::#C1, 1)
+  Sequencer::AddNote(*track_bass, j * 512 + 256, 64, Notes::#C1, 1)
+  Sequencer::AddNote(*track_bass, j * 512 + 374, 64, Notes::#E1, 1)
+Next
+Sequencer::SampleTrack(*sequencer, *track_bass)
+
+AddElement(*waves())
+*waves() = *wave
+
+Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), offset, -64, 128, #Null) 
+;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
+Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *track_bass)
+base_frequency * 2
+
+; DRUM
+*wave.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, Notes::#C0, #True)
+Define *track_drum.Sequencer::Track_t = Sequencer::AddTrack(*sequencer)
+*track_drum\offset = offset
+
+For j=0 To 3
+  Sequencer::AddNote(*track_drum, j * 512 + 64, 32, Notes::#C0, 1)
+  Sequencer::AddNote(*track_drum, j * 512 + 192, 32, Notes::#C0, 0.5)
+  Sequencer::AddNote(*track_drum, j * 512 + 224, 32, Notes::#C0, 1)
+  Sequencer::AddNote(*track_drum, j * 512 + 256, 32, Notes::#C0, 0.25)
+Next
+Sequencer::SampleTrack(*sequencer, *track_drum)
+
+AddElement(*waves())
+*waves() = *wave
 ;   Define *noise.STK::Generator = STK::AddGenerator(*stream, STK::#GENERATOR_NOISE, 128, #True)
 ;   STK::SetNodeVolume(*noise, 12)
 ;   STK::SetGeneratorScalar(*noise, STK::#GEN_SEED, 7)
 
-    Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), offset,-64, 512, #Null) 
-    ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-    Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *track)
-    base_frequency * 2
-Next
+Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), offset, -64, 220, #Null) 
+;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
+Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *track_drum)
+
+    
   
 ControlProperty::AppendStop(*p)
 PropertyUI::AppendStop(*ui)
@@ -230,7 +246,7 @@ Sequencer::Stop(*sequencer)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 96
-; FirstLine = 90
+; CursorPosition = 30
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

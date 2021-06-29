@@ -178,9 +178,6 @@ Module Time
   
   Procedure StartTimer(*Me.Timeable_t)
     If Not IsThread(*Me\timer)
-      Debug "TIMEABLE : "+Str(*Me)
-      Debug "OBJECT : "+Str(*Me\obj)
-      Debug "CALLBACK : "+ Str(OnTimer)
       *Me\timer = CreateThread(@OnTimer(), *Me)
     EndIf
   EndProcedure
@@ -193,7 +190,7 @@ Module Time
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 183
+; CursorPosition = 172
 ; FirstLine = 158
 ; Folding = --
 ; EnableXP

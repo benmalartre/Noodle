@@ -53,7 +53,6 @@ DeclareModule OpenGLExt
         
         Macro setGLEXT(var, extname)
           var = glXGetProcAddress(extname)
-          Debug extname +","+Str(var)
         EndMacro
         
       CompilerCase #PB_OS_Windows
@@ -69,11 +68,6 @@ DeclareModule OpenGLExt
       CompilerCase #PB_OS_MacOS
         Macro setGLEXT(var, extname)
           var = dlsym_(#RTLD_DEFAULT,extname)
-          If Not var
-            Debug(extname+": Not found !!!")
-          Else
-            Debug(extname+": 0x"+Hex(var))
-          EndIf
         EndMacro
         
     CompilerEndSelect
@@ -1494,9 +1488,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 27
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 69
+; FirstLine = 45
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

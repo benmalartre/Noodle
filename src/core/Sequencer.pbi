@@ -4,7 +4,7 @@
 ; Sequencer Module Declaration
 ;========================================================================================
 DeclareModule Sequencer
-  #NUM_SAMPLES_PER_BEAT = 64
+  #NUM_SAMPLES_PER_BEAT = 512
   
   Structure Sample_t
     frequency.f
@@ -39,6 +39,8 @@ DeclareModule Sequencer
     rythm.i
     blocks.i
     tick.i
+    block.i
+    sample.i
     Array *tracks.Track_t(0)
   EndStructure
   
@@ -71,7 +73,7 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure New(tempo.i, rythm.i, blocks.i=4)
     Define *Me.Sequencer_t = AllocateMemory(SizeOf(Sequencer_t))
-    Define rate.i = 1000 / (tempo * #NUM_SAMPLES_PER_BEAT)
+    Define rate.i =  1000 / #NUM_SAMPLES_PER_BEAT
     InitializeStructure(*Me, Sequencer_t)
     *Me\timer = Time::CreateTimer(*Me, @OnTimer(), rate)
     *Me\tempo = tempo
@@ -99,7 +101,6 @@ Module Sequencer
   ; START
   ;--------------------------------------------------------------------------------------
   Procedure Start(*Me.Sequencer_t)
-    Debug "START SEQUENCER !"
     Time::StartTimer(*Me\timer)
   EndProcedure
   
@@ -107,42 +108,37 @@ Module Sequencer
   ; STOP
   ;--------------------------------------------------------------------------------------
   Procedure Stop(*Me.Sequencer_t)
-     Debug "STOP SEQUENCER !"
     Time::StopTimer(*Me\timer)
   EndProcedure
   
   ; ON TIMER
   ;--------------------------------------------------------------------------------------
   Procedure OnTimer(*Me.Sequencer_t)
-    Define *sample.Sample_t
-    Define *block.Block_t
-    Define block.i = *Me\tick / (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
-    Define sample.i = *Me\tick % (*Me\rythm * #NUM_SAMPLES_PER_BEAT)
-    Define numBlocks, i
-    For i=0 To ArraySize(*Me\tracks()) - 1
-      UpdateTrack(*Me, *Me\tracks(i), block, sample)
-    Next
-    Delay(1000 / (*Me\tempo * *Me\rythm))
     *Me\tick + 1
-    If *Me\tick >= *Me\tempo * *Me\rythm * #NUM_SAMPLES_PER_BEAT
-      *Me\tick = 0
+    
+    If *Me\tick % #NUM_SAMPLES_PER_BEAT = 0
+      *Me\block = *Me\block + 1
     EndIf
+    *Me\sample = *Me\tick % #NUM_SAMPLES_PER_BEAT
+    
+    For i=0 To ArraySize(*Me\tracks()) - 1
+      UpdateTrack(*Me, *Me\tracks(i), *Me\block, *Me\sample)
+    Next
+    Delay(*Me\timer\delay)
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; GET FREQUENCY
   ;--------------------------------------------------------------------------------------
   Procedure.f GetFrequency(*track.Track_t)
-    Define frequency.f = *track\frequency + *track\offset
-    ProcedureReturn frequency
+    ProcedureReturn *track\frequency + *track\offset
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; GET AMPLITUDE
   ;--------------------------------------------------------------------------------------
   Procedure.f GetAmplitude(*track.Track_t)
-    Define amplitude.f = *track\amplitude + *track\volume
-    ProcedureReturn amplitude
+    ProcedureReturn *track\amplitude * *track\volume
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
@@ -180,13 +176,13 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   ; SETUP TRACK
   ;--------------------------------------------------------------------------------------
-  Procedure SetupTrack(*track.Track_t, blocks.i, tempo.i, rythm.i)
+  Procedure SetupTrack(*track.Track_t, blocks.i, tempo.i, rythm.i)    
     ReDim *track\blocks(blocks)
     Define *sample.Sample_t
     Define i, j, t = 0
-    Define rate.i = (1000 / tempo) * #NUM_SAMPLES_PER_BEAT
+    Define rate.i =  #NUM_SAMPLES_PER_BEAT
     For i=0 To blocks-1
-      Define *block.Block_t = AllocateMemory(SizeOf(Block_t))
+      Define *block.Block_t = *track\blocks(i)
       InitializeStructure(*block, Block_t)
       For j=0 To #NUM_SAMPLES_PER_BEAT -1
         *sample = *block\samples(j)
@@ -197,7 +193,6 @@ Module Sequencer
       *block\time = t
       t + rate
     Next
-    
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
@@ -220,35 +215,36 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   ; SAMPLE TRACK
   ;--------------------------------------------------------------------------------------
-  Procedure SampleTrack(*sequencer.Sequencer_t, *track.Track_t)
+  Procedure SampleTrack(*Me.Sequencer_t, *track.Track_t)
     Define numBlocks = ArraySize(*track\blocks())
     Define i, j, t, st, et
     Define *block.Block_t
     Define *note.Note_t
+     
     For i=0 To numBlocks - 1
       *block = *track\blocks(i)
       For j=0 To #NUM_SAMPLES_PER_BEAT-1
+        t = *block\time + j
         ForEach *track\notes()
           *note = *track\notes()
-          t = *block\time + j * (1000 / *sequencer\tempo)
           st = *note\time
           et = st + *note\duration
-          Debug "TIME : "+Str(t)+","+Str(st)+","+Str(et)
           If t >= st And t < et
             *block\samples(j)\frequency = *note\frequency
             *block\samples(j)\amplitude = *note\amplitude
-            Debug "ADD SAMPLE : "+StrF(*note\frequency) +","+ Str(*note\amplitude)
             Continue
           EndIf
         Next
       Next
     Next
+    Delay(2000)
   EndProcedure
   
   ;--------------------------------------------------------------------------------------
   ; UPDATE TRACK
   ;--------------------------------------------------------------------------------------
   Procedure UpdateTrack(*sequencer.Sequencer_t, *track.Track_t, block.i, sample.i)
+    
     LockMutex(*track\mutex)
     Define numBlocks = ArraySize(*track\blocks())
     Define *block.Block_t = *track\blocks(block % numBlocks)
@@ -282,7 +278,7 @@ Module Sequencer
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 50
-; FirstLine = 25
+; CursorPosition = 126
+; FirstLine = 109
 ; Folding = ---
 ; EnableXP

@@ -410,8 +410,7 @@ DeclareModule STK
   Else
     MessageRequester("STK Error","Can't Find STK Library!!")
   EndIf 
-  
-
+ 
   Global *DAC.RTAudio
   Global initialized.b
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
@@ -421,7 +420,6 @@ DeclareModule STK
   CompilerElse
     Global RAWWAVEPATH.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves"
   CompilerEndIf
-  
   
   Declare Initialize()
   Declare Terminate()
@@ -534,7 +532,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 384
-; FirstLine = 381
+; CursorPosition = 412
+; FirstLine = 398
 ; Folding = ----
 ; EnableXP
