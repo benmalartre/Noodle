@@ -83,7 +83,7 @@ DeclareModule ControlProperty
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
   Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
-  Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=64)
+  Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=82)
   Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
@@ -548,7 +548,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Knob Control
   ;-----------------------------------------------------------------------------
-  Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=64)
+  Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=82)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -1911,7 +1911,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 297
-; FirstLine = 283
+; CursorPosition = 85
+; FirstLine = 85
 ; Folding = ----------
 ; EnableXP

@@ -22,7 +22,7 @@ Global *reader.STK::Reader
 Global *wave.STK::Generator
 
 STK::Initialize()
-*stream.STK::Stream = STK::StreamSetup(STK::*DAC, 1)
+*stream.STK::Stream = STK::StreamSetup(STK::*DAC, 2)
 
 ;STK::SetNodeVolume(*stream, 1.0)
 Debug *stream
@@ -47,6 +47,6 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 STK::StreamStop(*stream)
 STK::StreamClean(*stream)
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 29
+; CursorPosition = 12
 ; FirstLine = 8
 ; EnableXP

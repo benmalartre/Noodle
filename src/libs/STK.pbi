@@ -396,8 +396,8 @@ DeclareModule STK
     Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticMode.SETARYTHMETICMODE = GetFunction(STK_LIB, "STKSetArythmeticMode")
     Global SetArythmeticScalar.SETARYTHMETICSCALAR = GetFunction(STK_LIB, "STKSetArythmeticScalar")
-    Global SetArythmeticLHS.SETARYTHMETICLHS = GetFunction(STK_LIB, "STKSetArythmeticLHS")
-    Global SetArythmeticRHS.SETARYTHMETICRHS = GetFunction(STK_LIB, "STKSetArythmeticRHS")
+    Global SetArythmeticLHS.SETARYTHMETICLHS = GetFunction(STK_LIB, "STKSetArythmeticLhs")
+    Global SetArythmeticRHS.SETARYTHMETICRHS = GetFunction(STK_LIB, "STKSetArythmeticRhs")
     
     Global SetEffectType.SETEFFECTTYPE = GetFunction(STK_LIB, "STKSetEffectType")
     Global SetEffectScalar.SETEFFECTSCALAR= GetFunction(STK_LIB, "STKSetEffectScalar")
@@ -532,7 +532,7 @@ Module STK
   
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 412
-; FirstLine = 398
+; CursorPosition = 399
+; FirstLine = 387
 ; Folding = ----
 ; EnableXP

@@ -95,7 +95,15 @@ Procedure.f hlpGetSide( *Me.ControlKnob_t)
   Define dot.f = Vector2::Dot(a, b)
   ProcedureReturn dot
 EndProcedure
-  
+
+; ----------------------------------------------------------------------------
+;  hlpClip
+; ----------------------------------------------------------------------------
+Procedure hlpClip(*Me.ControlKnob_t)
+  AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+  ClipPath()
+EndProcedure
+
 ; ----------------------------------------------------------------------------
 ;  hlpDraw
 ; ----------------------------------------------------------------------------
@@ -107,16 +115,14 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   ; ---[ Label Color ]--------------------------------------------------------
   Protected tc.i = UIColor::COLOR_LABEL
   Protected bgc.i = UIColor::COLOR_MAIN_BG
-
-;   AddPathBox(xoff + *Me\posX, yoff+*Me\posY, *Me\sizX, *Me\sizY)
-;   VectorSourceColor(bgc)
-;   FillPath()
   
   Define cx.i = *Me\sizX * 0.5 + *Me\posX ;+ xoff
   Define cy.i = *Me\sizY * 0.5 + *Me\posY ;+ yoff
   
   BeginVectorLayer() 
   ResetCoordinates()
+  hlpClip(*Me)
+  
   RotateCoordinates(cx, cy, *Me\angle)
   
   ; bottom part
@@ -160,12 +166,6 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   VectorSourceColor(RGBA(16, 16, 16, 255))
   StrokePath(#KNOB_MARKER_WIDTH, #PB_Path_RoundCorner|#PB_Path_RoundEnd)  
   
-  ; zero marker
-;   MovePathCursor(cx, cy - #KNOB_OUTER_RADIUS)
-;   AddPathLine(cx + #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
-;   AddPathLine(cx - #KNOB_ZERO_SIZE * 0.12, cy - #KNOB_INNER_RADIUS)
-;   AddPathLine(cx, cy - #KNOB_OUTER_RADIUS)
-;   FillPath()
   MovePathCursor(cx, cy - (#KNOB_OUTER_RADIUS + 8))
   AddPathLine(cx + #KNOB_ZERO_SIZE * 0.16, cy - #KNOB_OUTER_RADIUS)
   AddPathLine(cx - #KNOB_ZERO_SIZE * 0.16, cy - #KNOB_OUTER_RADIUS)
@@ -218,6 +218,10 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
     
     VectorSourceColor(RGBA(255,128,0,128))
     StrokePath(#KNOB_MARKER_WIDTH *2, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
+    
+    AddPathCircle(*Me\oldX, *Me\oldY, 4)
+    VectorSourceColor(RGBA(0, 255, 128, 255))
+    FillPath()
   EndIf
   
   ResetCoordinates()
@@ -246,15 +250,23 @@ Procedure hlpDraw( *Me.ControlKnob_t, xoff.i = 0, yoff.i = 0 )
   EndIf
   
   ; display value
-  VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
+  VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_TITLE)
   Define value_s.s = StrF(*Me\value, 3)
+  AddPathBox(cx - #KNOB_OUTER_RADIUS, cy + #KNOB_OUTER_RADIUS * 1.4 - 2, #KNOB_OUTER_RADIUS * 2, 32)
+  VectorSourceColor(RGBA(255,255,255,222))
+  FillPath()
   MovePathCursor(cx - VectorTextWidth(value_s) * 0.5, cy + #KNOB_OUTER_RADIUS * 1.4)
-  VectorSourceColor(RGBA(255,0,128,128))
+  VectorSourceColor(RGBA(0,0,0,222))
   DrawVectorText(value_s)
   EndVectorLayer()
   
 EndProcedure
 ;}
+
+Procedure.f AngleToValue(*Me.ControlKnob_t, angle.f)
+  
+EndProcedure
+
 
 ; ============================================================================
 ;  OVERRIDE ( CControl )
@@ -343,6 +355,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
             EndIf
           Else
             *Me\angle = *Me\last_angle -( angle + *Me\angle_offset)
+            
             If *Me\angle < *Me\last_angle
               *Me\ascending = #True
             Else 
@@ -350,10 +363,13 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
             EndIf
           EndIf
           
+          If *Me\angle < -140 : *Me\angle =  -140 : EndIf
+          If *Me\angle > 140 : *Me\angle =  140 : EndIf
+          
           If *Me\ascending
-            *Me\value = *Me\last_value + Radian(angle + *Me\angle_offset) 
+            *Me\value = Math::RESCALE(*Me\angle + *Me\angle_offset, -140, 140, *Me\min_limit, *Me\max_limit)
           Else
-            *Me\value = *Me\last_value - Radian(angle + *Me\angle_offset) 
+            *Me\value = Math::RESCALE(*Me\angle - *Me\angle_offset, -140, 140, *Me\min_limit, *Me\max_limit)
           EndIf
 
           Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
@@ -489,8 +505,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 283
-; FirstLine = 280
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 366
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

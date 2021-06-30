@@ -23,20 +23,20 @@ Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
   ControlProperty::RowStart(*prop)
   Define i
   For i=0 To 2
-    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 64, 64)
+    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 64, 100)
     ControlKnob::SetLimits(*knob, 1000,9000)
 ;     ( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   Next
   ControlProperty::RowEnd(*prop)
-  *prop\dy + 64
+  *prop\dy + 120
   ControlProperty::RowStart(*prop)
   Define i
   For i=0 To 2
-    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 64, 64)
+    Define *knob.ControlKnob::ControlKnob_t = ControlProperty::AddKnobControl(*prop, name, RGBA(128,128,128,255), 64, 100)
     ControlKnob::SetLimits(*knob, 1000,9000)
 ;     ( gadgetID.i, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   Next
-  *prop\dy + 64
+  *prop\dy + 100
   ControlProperty::RowEnd(*prop)
   ControlProperty::AppendStop(*prop)
   PropertyUI::AddProperty(*ui, *prop)
@@ -50,7 +50,7 @@ AddKnobs(*ui, "KNOB")
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 18
+; CursorPosition = 30
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
