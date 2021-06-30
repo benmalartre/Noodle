@@ -9,41 +9,89 @@ XIncludeFile "Button.pbi"
 ;  CONTROL ICON MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlIcon
+  Global STROKE_WIDTH = 7
+  Global BACKGROUND_COLOR = RGBA(255,200,100,255)
+  Global STROKE_COLOR = RGBA(220,220,220,255)
+  Global FILL_COLOR = RGBA(230,230,230,255)
+  Global BLACK_COLOR = RGBA(32,32,32,255)
+  Global WHITE_COLOR = RGBA(222,222,222,255)
+  Global ORANGE_COLOR = RGBA(255,160,0,255)
+  Global RED_COLOR = RGBA(255,0,0,255)
+  Global GREEN_COLOR = RGBA(0,255,0,255)
+  Global BLUE_COLOR = RGBA(120,120,255,255)
+
   Macro IconType
     b
   EndMacro
   
   Enumeration
-    #Icon_Custom = -1
-    #Icon_Default = 0
-    #Icon_Close
-    #Icon_First
-    #Icon_Previous
-    #Icon_Back
-    #Icon_Stop
-    #Icon_Play
-    #Icon_Next
-    #Icon_Last
-    #Icon_Loop
-    #Icon_Record
-    #Icon_Cross
-    
-    #Icon_Max
+    #ICON_VISIBLE
+    #ICON_INVISIBLE
+    #ICON_PLAYFORWARD
+    #ICON_PLAYBACKWARD
+    #ICON_STOP
+    #ICON_FIRSTFRAME
+    #ICON_LASTFRAME
+    #ICON_LOOP
+    #ICON_TRANSLATE
+    #ICON_ROTATE
+    #ICON_SCALE
+    #ICON_SELECT
+    #ICON_SPLITV
+    #ICON_SPLITH
+    #ICON_LOCKED
+    #ICON_UNLOCKED
+    #ICON_OP
+    #ICON_TRASH
+    #ICON_LAYER
+    #ICON_PEN
+    #ICON_FOLDER
+    #ICON_FILE
+    #ICON_OPEN
+    #ICON_SAVE
+    #ICON_HOME
+    #ICON_BACK
+    #ICON_WARNING
+    #ICON_ERROR
+    #ICON_OK
+    #ICON_LAST
   EndEnumeration
   
-  Global Dim s_gui_controls_icon_name.s(#Icon_Max)
-  s_gui_controls_icon_name(0) = "default"
-  s_gui_controls_icon_name(1) = "close"
-  s_gui_controls_icon_name(2) = "first"
-  s_gui_controls_icon_name(3) = "previous"
-  s_gui_controls_icon_name(4) = "back"
-  s_gui_controls_icon_name(5) = "stop"
-  s_gui_controls_icon_name(6) = "play"
-  s_gui_controls_icon_name(7) = "next"
-  s_gui_controls_icon_name(8) = "last"
-  s_gui_controls_icon_name(9) = "loop"
+  
+  Global Dim IconName.s(#ICON_LAST)
+  IconName(#ICON_VISIBLE) = "visible"
+  IconName(#ICON_INVISIBLE) = "invisible"
+  IconName(#ICON_PLAYFORWARD) = "playforward"
+  IconName(#ICON_PLAYBACKWARD) = "playbackward"
+  IconName(#ICON_STOP) = "stop"
+  IconName(#ICON_FIRSTFRAME) = "firstframe"
+  IconName(#ICON_LASTFRAME) = "lastframe"
+  IconName(#ICON_LOOP) = "loop"
+  IconName(#ICON_TRANSLATE) = "translate"
+  IconName(#ICON_ROTATE) = "rotate"
+  IconName(#ICON_SCALE) = "scale"
+  IconName(#ICON_SELECT) = "select"
+  IconName(#ICON_SPLITV) = "splitv"
+  IconName(#ICON_SPLITH) = "splith"
+  IconName(#ICON_LOCKED) = "locked"
+  IconName(#ICON_UNLOCKED) = "unlocked"
+  IconName(#ICON_OP) = "op"
+  IconName(#ICON_TRASH) =  "trash"
+  IconName(#ICON_LAYER) = "layer"
+  IconName(#ICON_PEN) = "pen"
+  IconName(#ICON_FOLDER) = "folder"
+  IconName(#ICON_FILE) = "file"
+  IconName(#ICON_OPEN) = "open"
+  IconName(#ICON_SAVE) = "save"
+  IconName(#ICON_HOME) = "home"
+  IconName(#ICON_BACK) = "back"
+  IconName(#ICON_WARNING) = "warning"
+  IconName(#ICON_ERROR) = "error"
+  IconName(#ICON_OK) = "ok"
 
-
+    
+  Prototype DrawIconImpl()
+  
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlIcon_t )
   ; ----------------------------------------------------------------------------
@@ -55,7 +103,7 @@ DeclareModule ControlIcon
     over.i
     down.i
     scale.f
-    *item.Vector::Item_t
+    draw.DrawIconImpl
     *on_click.Signal::Signal_t
   EndStructure
   
@@ -68,20 +116,47 @@ DeclareModule ControlIcon
   ; ----------------------------------------------------------------------------
   ;  Declares
   ; ----------------------------------------------------------------------------
-  Declare New( *parent.Control::Control_t ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Declare New( *parent.Control::Control_t ,name.s,icon.IconType = #ICON_VISIBLE, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
   Declare Delete(*Me.ControlIcon_t)
   Declare OnEvent( *Me.ControlIcon_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
-  Declare EmptyIcon(*Me.ControlIcon_t)
-  Declare PlayIcon(*Me.ControlIcon_t)
-  Declare StopIcon(*Me.ControlIcon_t)
-  Declare RecordIcon(*Me.ControlIcon_t)
-  Declare CrossIcon(*Me.ControlIcon_t)
-
+  Declare.d OffsetXOut(x.d, a.d, l.d)
+  Declare.d OffsetYOut(y.d, a.d, l.d)
+  Declare.d OffsetXIn(x.d, a.d, l.d)
+  Declare.d OffsetYIn(y.d, a.d, l.d)
+  
+  Declare VisibleIcon()
+  Declare InvisibleIcon()
+  Declare PlayForwardIcon()
+  Declare PlayBackwardIcon()
+  Declare StopIcon()
+  Declare FirstFrameIcon()
+  Declare LastFrameIcon()
+  Declare LoopIcon()  
+  Declare TranslateIcon()
+  Declare RotateIcon()
+  Declare ScaleIcon()
+  Declare SelectIcon()
+  Declare SplitVIcon()  
+  Declare SplitHIcon()
+  Declare LockedIcon()
+  Declare UnlockedIcon()
+  Declare OpIcon()
+  Declare TrashIcon()
+  Declare LayerIcon()
+  Declare PenIcon()
+  Declare FolderIcon()
+  Declare FileIcon()
+  Declare SaveIcon()  
+  Declare OpenIcon()
+  Declare HomeIcon()
+  Declare BackIcon()
+  Declare WarningIcon()
+  Declare ErrorIcon()
+  
   ; ============================================================================
   ;  VTABLE ( CObject + CControl + ControlIcon )
   ; ============================================================================
-  
   DataSection
     ControlIconVT:
     Data.i @OnEvent()            ; mandatory override
@@ -96,7 +171,67 @@ EndDeclareModule
 ;  CONTROL ICON MODULE IMPLEMENTATION 
 ; ==============================================================================
 Module ControlIcon
- 
+  Procedure GetDrawImplementation(icon.i)
+    Select icon
+      Case #ICON_VISIBLE
+        ProcedureReturn @VisibleIcon()  
+      Case #ICON_INVISIBLE
+        ProcedureReturn @InvisibleIcon()
+      Case #ICON_PLAYFORWARD
+        ProcedureReturn @PlayForwardIcon()
+      Case #ICON_PLAYBACKWARD
+        ProcedureReturn @PlayBackwardIcon()
+      Case #ICON_STOP
+        ProcedureReturn @StopIcon()
+      Case #ICON_FIRSTFRAME
+        ProcedureReturn @FirstFrameIcon()
+      Case #ICON_LASTFRAME
+        ProcedureReturn @LastFrameIcon()
+      Case #ICON_LOOP
+        ProcedureReturn @LoopIcon()
+      Case #ICON_TRANSLATE
+        ProcedureReturn @TranslateIcon()
+      Case #ICON_ROTATE
+        ProcedureReturn @RotateIcon()
+      Case #ICON_SCALE
+        ProcedureReturn @ScaleIcon()
+       Case #ICON_SELECT
+         ProcedureReturn @SelectIcon()
+       Case #ICON_SPLITH
+         ProcedureReturn @SplitHIcon()
+       Case #ICON_SPLITV
+         ProcedureReturn @SplitVIcon()
+       Case #ICON_LOCKED
+         ProcedureReturn @LockedIcon()
+       Case #ICON_UNLOCKED
+         ProcedureReturn @LockedIcon()
+       Case #ICON_OP
+         ProcedureReturn @OpIcon()
+       Case #ICON_TRASH
+         ProcedureReturn @TrashIcon()
+       Case #ICON_LAYER
+         ProcedureReturn @LayerIcon()
+       Case #ICON_PEN
+         ProcedureReturn @PenIcon()
+       Case #ICON_FOLDER
+         ProcedureReturn @FolderIcon()
+       Case #ICON_FILE
+         ProcedureReturn @FileIcon()
+       Case #ICON_SAVE
+         ProcedureReturn @SaveIcon()
+       Case #ICON_OPEN
+         ProcedureReturn @OpenIcon()
+       Case #ICON_HOME
+         ProcedureReturn @HomeIcon()
+       Case #ICON_BACK
+         ProcedureReturn @BackIcon()
+       Case #ICON_WARNING
+         ProcedureReturn @WarningIcon()
+       Case #ICON_ERROR
+         ProcedureReturn @ErrorIcon()
+    EndSelect
+  EndProcedure
+  
   ; ----------------------------------------------------------------------------
   ;  Draw
   ; ----------------------------------------------------------------------------
@@ -112,18 +247,19 @@ Module ControlIcon
     If Not *Me\enable 
       ; ---[ Down ]-------------------------------------------------------------
       If *Me\value < 0
+        
         Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
+        *Me\draw()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
+        *Me\draw()
       EndIf
     ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
@@ -133,14 +269,14 @@ Module ControlIcon
         VectorSourceColor(UIColor::COLOR_MAIN_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_OVER)
+        *Me\draw()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_OVER)
+        *Me\draw()
       EndIf
     ; ---[ Normal State ]-------------------------------------------------------
     Else
@@ -150,14 +286,14 @@ Module ControlIcon
         VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
+        *Me\draw()
       ; ---[ Up ]---------------------------------------------------------------
       Else
         Vector::RoundBoxPath(0, 0, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
         ScaleCoordinates(*Me\scale, *Me\scale)
-        Vector::DrawIcon(*Me\item, Vector::#STATE_NONE)
+        *Me\draw()
       EndIf
     EndIf
     RestoreVectorState()
@@ -287,90 +423,490 @@ Module ControlIcon
   EndProcedure
   ;}
   
-  ; ============================================================================
-  ;  EMPTY ICON
-  ; ============================================================================
-  Procedure EmptyIcon(*Me.ControlIcon_t)
-    Protected *icon.Vector::Item_t = *Me\item
-    Vector::ClearAtoms(*icon)
-    *icon\type = Vector::#ATOM_CUSTOM
-    *icon\filled = #True
-    *icon\segments = ""
-    *icon\stroke_color = RGBA(0,200,64,255)
-    *icon\fill_color = RGBA(0,255,32,255)
-    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *icon\stroke_width = 12
+  Procedure.d OffsetXOut(x.d, a.d, l.d)
+    ProcedureReturn x + l*Cos(Radian(a - 90))
   EndProcedure
   
-  ; ============================================================================
-  ;  PLAY ICON
-  ; ============================================================================
-  Procedure PlayIcon(*Me.ControlIcon_t)
-    Protected *icon.Vector::Item_t = *Me\item
-    Vector::ClearAtoms(*icon)
-    *icon\type = Vector::#ATOM_CUSTOM
-    *icon\filled = #True
-    *icon\segments = "M 20 20 L 80 50 L 20 80 Z"
-    *icon\stroke_color = RGBA(0,200,64,255)
-    *icon\fill_color = RGBA(0,255,32,255)
-    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *icon\stroke_width = 12
+  Procedure.d OffsetYOut(y.d, a.d, l.d)
+    ProcedureReturn y + l*Sin(Radian(a - 90))
   EndProcedure
   
-  ; ============================================================================
-  ;  STOP ICON
-  ; ============================================================================
-  Procedure StopIcon(*Me.ControlIcon_t)
-     Protected *icon.Vector::Item_t = *Me\item
-    Vector::ClearAtoms(*icon)
-    *icon\type = Vector::#ATOM_CUSTOM
-    *icon\filled = #True
-    *icon\segments = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
-    *icon\stroke_color = RGBA(220,32,0,255)
-    *icon\fill_color = RGBA(255,32,0,255)
-    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *icon\stroke_width = 12
+  Procedure.d OffsetXIn(x.d, a.d, l.d)
+    ProcedureReturn x + l*Cos(Radian(a + 90))
   EndProcedure
   
-  ; ============================================================================
-  ;  RECORD ICON
-  ; ============================================================================
-  Procedure RecordIcon(*Me.ControlIcon_t)
-     Protected *icon.Vector::Item_t = *Me\item
-    Vector::ClearAtoms(*icon)
-    *icon\type = Vector::#ATOM_CUSTOM
-    *icon\filled = #True
-    *icon\segments = "M 80 50 C 80 66.5685 66.5685 80 50 80 C 33.4315 80 20 66.5686 20 50 C 20 33.4315 33.4314 20 50 20 C 66.5685 20 80 33.4314 80 50 Z"
-    *icon\stroke_color = RGBA(220,32,0,255)
-    *icon\fill_color = RGBA(255,32,0,255)
-    *icon\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *icon\stroke_width = 12
+  Procedure.d OffsetYIn(y.d, a.d, l.d)
+    ProcedureReturn y + l*Sin(Radian(a + 90))
   EndProcedure
+
+Procedure VisibleIcon()
+  Define segments.s
+  segments + "M 10 50 C 30 20 70 20 90 50 "
+  segments + "M 10 50 C 30 80 70 80 90 50 "
+  segments + "M 23.1526 36.2483 L 13.8411 23.237 "
+  segments + "M 50.0001 27.5 L 50.0001 11.5 "
+  segments + "M 76.8475 36.2484 L 86.159 23.2371"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd)
   
-  ; ============================================================================
-  ;  CROSS ICON
-  ; ============================================================================
-  Procedure CrossIcon(*Me.ControlIcon_t)
-    Protected *icon.Vector::Item_t = *Me\item
-    Vector::ClearAtoms(*icon)
-    *icon\type = Vector::#ATOM_CUSTOM
-    *icon\filled = #False
-    *icon\segments = ""
-    
-    Define *item.Vector::Item_t = Vector::AddCustom(*icon)
-    *item\filled = #False
-    *item\stroke_color = RGBA(0,0,0,255)
-    *item\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *item\stroke_width = 12
-    *item\segments = "M 20 20 L 80 80"
-    
-    *item.Vector::Item_t = Vector::AddCustom(*icon)
-    *item\filled = #False
-    *item\stroke_color = RGBA(0,0,0,255)
-    *item\stroke_style = #PB_Path_RoundCorner | #PB_Path_RoundEnd
-    *item\stroke_width = 12
-    *item\segments = "M 20 80 L 80 20"
-  EndProcedure
+  segments = "M 66 50 C 66 58.8366 58.8366 66 50 66 C 41.1635 66 34 58.8366 34 50 C 34 41.1635 41.1634 34 50 34 C 58.8365 34 66 41.1634 66 50 Z "
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd)
+  
+EndProcedure
+
+Procedure InvisibleIcon()
+  Define segments.s
+  segments + "M 10 50 C 30 70 70 70 90 50 "
+  segments + "M 24.436 59.7602 L 17.9105 74.3691 "
+  segments + "M 50.0001 65 L 50.0001 81 "
+  segments + "M 75.5642 59.7602 L 82.0896 74.369 "
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd)
+EndProcedure
+
+Procedure PlayForwardIcon()
+  Define segments.s = "M 20 20 L 80 50 L 20 80 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure PlayBackwardIcon()
+  Define segments.s = "M 80 20 L 80 80 L 20 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure StopIcon()
+  Define segments.s = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure FirstFrameIcon()
+  Define segments.s = "M 80 20 L 80 80 L 40 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 60 20 L 60 80 L 20 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 20 20 L 20 80"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure LastFrameIcon()
+  Define segments.s = "M 20 20 L 20 80 L 60 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 40 20 L 40 80 L 80 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 80 20 L 80 80"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure LoopIcon()  
+  Define h.d = 8
+  Define w.d = 4
+  Define r.d = 30
+  
+  AddPathCircle(50,50,r, 60, -70, #PB_Path_CounterClockwise)
+  Define l.d = PathLength()
+  Define x1.d = PathPointX(l)
+  Define y1.d = PathPointY(l)
+  Define a.d = PathPointAngle(l)
+  Define x2.d = 50 + r * Cos(Radian(-90))
+  Define y2.d = 50 + r * Sin(Radian(-90))
+  AddPathLine(OffsetXOut(x1, a, h), OffsetYOut(y1, a , h))
+  AddPathLine(x2, y2)
+  AddPathLine(OffsetXIn(x1, a, h-w*0.5), OffsetYIn(y1, a, h-w*0.5))
+  AddPathLine(x1, y1)
+  
+  AddPathCircle(50,50,r, -120, 110, #PB_Path_CounterClockwise)
+  Define l.d = PathLength()
+  Define x1.d = PathPointX(l)
+  Define y1.d = PathPointY(l)
+  Define a.d = PathPointAngle(l)
+  Define x2.d = 50 + r * Cos(Radian(90))
+  Define y2.d = 50 + r * Sin(Radian(90))
+  AddPathLine(OffsetXOut(x1, a, h), OffsetYOut(y1, a , h))
+  AddPathLine(x2, y2)
+  AddPathLine(OffsetXIn(x1, a, h-w*0.5), OffsetYIn(y1, a, h-w*0.5))
+  AddPathLine(x1, y1)
+
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure TranslateIcon()
+  
+  Define segments.s
+  segments + "M 50 15 L 40 25 L 60 25 Z"
+  segments + "M 50 85 L 40 75 L 60 75 Z"
+  segments + "M 15 50 L 25 40 L 25 60 Z"
+  segments + "M 85 50 L 75 40 L 75 60 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 35 35 L 65 35 L 65 65 L 35 65 Z"
+  AddPathSegments(segments)
+  
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  
+EndProcedure
+
+Procedure RotateIcon()
+  Define r.d = 35
+  Define segments.s = "M 50 25 L 75 50 L 50 75 L 25 50 Z"
+  AddPathSegments(segments)
+
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+
+  AddPathCircle(50,50,r, 0, 300)
+  Define l.d = PathLength()
+  
+  Define x.d = PathPointX(l)
+  Define y.d = PathPointY(l)
+  Define a.d = PathPointAngle(l)
+  MovePathCursor(r*Cos(Radian(320)) + 50, r*Sin(Radian(320)) + 50)
+  AddPathLine(OffsetXOut(x, a, 5), OffsetYOut(y, a, 5))
+  AddPathLine(OffsetXIn(x, a, 5), OffsetYIn(y, a, 5))
+  
+  ClosePath()
+  
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure ScaleIcon()
+  Define segments.s = "M 20 80 L 20 50 L 50 50 L 50 80 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
+  AddPathSegments(segments)
+  DashPath(STROKE_WIDTH, 2*STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 70 20 L 80 20 L 80 30 M 80 20 L 60 40 M 60 30 L 60 40 L 70 40"
+  AddPathSegments(segments)
+  ;   MovePathCursor(
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure SelectIcon()
+  MovePathCursor(40,15)
+  AddPathLine(40,70)
+  AddPathLine(50,60)
+  AddPathLine(60,85)
+  AddPathLine(70,80)
+  AddPathLine(60,55)
+  AddPathLine(75,55)
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure SplitVIcon()
+  Define segments.s = "M 20 20 L 40 20 L 40 80 L 20 80 Z"
+  segments + "M 60 20 L 80 20 L 80 80 L 60 80 Z"
+  segments + "M 50 10 L 50 90"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure SplitHIcon()
+  Define segments.s = "M 20 20 L 80 20 L 80 40  L 20 40 Z"
+  segments + "M 20 60 L 80 60 L 80 80 L 20 80 Z"
+  segments + "M 10 50 L 90 50"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure LockedIcon()
+  AddPathBox(20,50,60,40)
+  MovePathCursor(55, 80)
+  AddPathLine(55,80)
+  AddPathCircle(50, 65, 8, 45, 135, #PB_Path_CounterClockwise|#PB_Path_Connected)
+  AddPathLine(45,80)
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  MovePathCursor(25, 50)
+  AddPathLine(25, 45)
+  AddPathCircle(50, 45, 25, 180, 0, #PB_Path_Connected)
+  AddPathLine(75, 50)
+  AddPathLine(65, 50)
+  AddPathCircle(50, 45, 15, 0, 180, #PB_Path_Connected|#PB_Path_CounterClockwise)
+  AddPathLine(35,50)
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+EndProcedure
+
+Procedure UnlockedIcon()
+  
+  AddPathBox(20,50,60,40)
+  MovePathCursor(55, 80)
+  AddPathLine(55,80)
+  AddPathCircle(50, 65, 8, 45, 135, #PB_Path_CounterClockwise|#PB_Path_Connected)
+  AddPathLine(45,80)
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  
+  AddPathCircle(50, 35, 25, 200, 0)
+  AddPathLine(75,50)
+  AddPathLine(65,50)
+  AddPathCircle(50,35, 15, 0, 200, #PB_Path_Connected|#PB_Path_CounterClockwise)
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure OpIcon()
+  AddPathCircle(50,50,8)
+  
+  MovePathCursor(80,50)
+  
+  Define l.f = 360 / 16
+  For i =0 To 15
+    If i % 2 = 0
+      AddPathCircle(50,50,30, i*l+2,(i+1)*l-2, #PB_Path_Connected)
+    Else
+      AddPathCircle(50,50,24, i*l,(i+1)*l, #PB_Path_Connected)
+    EndIf
+  Next
+  ClosePath()
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure TrashIcon()
+  Define segments.s = "M 25 30 L 30 80 L 70 80 L 75 30 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments.s = "M 20 25 L 80 25"
+  segments + "M 40 25 L 42 15 L 58 15 L 60 25" 
+  segments + "M 35 40 L 38 70 M 50 40 L 50 70 M 65 40 L 62 70"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  
+  
+EndProcedure
+
+Procedure LayerIcon()
+  Define segments.s = "M 20 80 L 60 80 L 80 60 L 40 60 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments.s = "M 20 70 L 60 70 L 80 50 L 40 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+;   segments.s = "M 20 60 L 60 60 L 80 40 L 40 40 Z"
+;   AddPathSegments(segments)
+;   VectorSourceColor(FILL_COLOR)
+;   FillPath(#PB_Path_Preserve)
+;   VectorSourceColor(STROKE_COLOR)
+;   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  
+  segments = "M 70 20 L 70 40 M 60 30 L 80 30"
+  AddPathSegments(segments)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure PenIcon()
+  Define segments.s = "M 20 80 L 20 60 L 40 70 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments.s = "M 20 60 L 50 20 L 70 30 L 40 70 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure FolderIcon()
+  Define segments.s = "M 20 30 L 20 80 L 80 80 L 80 20 L 50 20 L 50 30 Z"
+  AddPathSegments(segments)
+  segments.s = "M 80 80 L 90 40 L 80 40"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure FileIcon()
+  Define segments.s
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure SaveIcon()
+  Define segments.s
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments = "M 50 50 L 50 30 L 40 30 L 60 10 L 80 30 L 70 30 L 70 50 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath()
+EndProcedure
+
+Procedure OpenIcon()
+  Define segments.s
+  segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
+  segments + "M 35 55 L 65 55 M 35 65 L 65 65"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  segments = "M 50 10 L 50 30 L 40 30 L 60 50 L 80 30 L 70 30 L 70 10 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath()
+EndProcedure
+
+Procedure HomeIcon()
+  Define segments.s
+  segments + "M 25 80 L 42 80 L 42 50 L 58 50  L 58 80 L 75 80"
+  segments + "L 75 40 L 85 40 L 50 20 L 15 40 L 25 40 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure BackIcon()
+  Define segments.s
+  segments + "M 20 40 L 40 60 L 40 50 L 60 50 L 60 80"
+  segments + "L 80 80 L 80 30 L 40 30 L 40 20 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(FILL_COLOR)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(STROKE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure WarningIcon()
+  Define segments.s
+  segments + "M 15 80 L 85 80 L 50 20 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(ORANGE_COLOR)
+  FillPath(#PB_Path_Preserve)
+  Define segments.s = "M 50 40 L 50 60 M 50 70 L 50 70"
+  AddPathSegments(segments)
+  VectorSourceColor(BLACK_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
+
+Procedure ErrorIcon()
+  AddPathCircle(50, 50, 35)
+  VectorSourceColor(RED_COLOR)
+  FillPath(#PB_Path_Preserve)
+  Define segments.s = "M 35 35 L 65 65 M 35 65 L 65 35"
+  AddPathSegments(segments)
+  VectorSourceColor(WHITE_COLOR)
+  StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+EndProcedure
   
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlIcon )
@@ -391,7 +927,7 @@ Module ControlIcon
   ;  CONSTRUCTORS
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
-  Procedure.i New( *parent.Control::Control_t ,name.s,icon.IconType = #Icon_Default, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
+  Procedure.i New( *parent.Control::Control_t ,name.s,icon.IconType = #ICON_VISIBLE, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlIcon_t = AllocateMemory( SizeOf(ControlIcon_t) )
@@ -401,6 +937,7 @@ Module ControlIcon
     Object::INI(ControlIcon)
     
     ; ---[ Init Members ]-------------------------------------------------------
+    *Me\draw       = GetDrawImplementation(icon)
     *Me\type       = Control::#ICON
     *Me\name       = name
     *Me\parent     = *parent
@@ -420,19 +957,6 @@ Module ControlIcon
     *Me\label      = name
     *Me\icon       = icon 
     *Me\scale      = ((width + height) * 0.5) / 100.0
-    *Me\item       = Vector::NewItem(Vector::#ATOM_CUSTOM)
-    
-    Select *Me\icon
-      Case #Icon_Play
-        PlayIcon(*Me)
-      Case #Icon_Stop
-        StopIcon(*Me)
-      Case #Icon_Record
-        RecordIcon(*Me)
-      Default
-        CrossIcon(*Me)
-    EndSelect
-  
     
     If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
     
@@ -453,8 +977,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 109
-; Folding = ---
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 487
+; FirstLine = 484
+; Folding = --------
 ; EnableXP

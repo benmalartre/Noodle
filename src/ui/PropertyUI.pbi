@@ -124,8 +124,8 @@ Module PropertyUI
     
     ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     Protected ev_datas.Control::EventTypeDatas_t
-    ev_datas\x = 0
-    ev_datas\y = 0
+    ev_datas\x = *Me\posX
+    ev_datas\y = *Me\posY
     ev_datas\width = *Me\sizX 
     ev_datas\height = *Me\sizY
 
@@ -153,9 +153,10 @@ Module PropertyUI
     If Not *Me\prop : ProcedureReturn : EndIf
     Protected *top.View::View_t = *Me\parent
     Protected ev_datas.Control::EventTypeDatas_t
-    ev_datas\x = *Me\posX
-    ev_datas\y = *Me\posY
+    ev_datas\x = 0
+    ev_datas\y = 0
     ev_datas\width = *top\sizX 
+    ev_datas\height = *top\sizY
     Select event
       Case #PB_Event_SizeWindow
         Resize(*Me)
@@ -224,7 +225,7 @@ Module PropertyUI
   Procedure SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
     Clear(*Me)
-    *Me\prop = ControlProperty::New(*Me, *object\name, *object\name, *object)
+    *Me\prop = ControlProperty::New(*Me, *object\name, *object\name, 0, 0)
 
     *Me\prop\label = *object\name
     ControlProperty::AppendStart(*Me\prop)
@@ -513,9 +514,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 113
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 127
+; FirstLine = 122
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

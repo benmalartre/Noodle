@@ -1099,14 +1099,14 @@ Module ControlTimeline
     Protected w = *Me\sizX/2-128
     Protected t = height/5*2+2
     
-    *Me\c_firstframe =    ControlIcon::New(*Me,"FirstFrame"    ,ControlIcon::#Icon_First   ,0                 ,#False,w,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_previousframe = ControlIcon::New(*Me,"PreviousFrame" ,ControlIcon::#Icon_Previous,0                 ,#False,w+32,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playbackward =  ControlIcon::New(*Me,"PlayBackward"  ,ControlIcon::#Icon_Back    ,#PB_Button_Toggle ,#False,w+64,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_stopplayback =  ControlIcon::New(*Me,"StopPlayback"  ,ControlIcon::#Icon_Stop    ,0                 ,#False,w+96,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playforward =   ControlIcon::New(*Me,"PlayForward"   ,ControlIcon::#Icon_Play    ,#PB_Button_Toggle ,#False,w+128,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_nextframe =     ControlIcon::New(*Me,"NextFrame"     ,ControlIcon::#Icon_Next    ,0                 ,#False,w+160,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_lastframe =     ControlIcon::New(*Me,"LastFrame"     ,ControlIcon::#Icon_Last    ,0                 ,#False,w+192,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playloop =      ControlIcon::New(*Me,"PlayLoop"      ,ControlIcon::#Icon_Loop    ,#PB_Button_Toggle ,#False,w+224,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_firstframe =    ControlIcon::New(*Me,"FirstFrame"    ,ControlIcon::#ICON_FIRSTFRAME   ,0                 ,#False,w,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_previousframe = ControlIcon::New(*Me,"PreviousFrame" ,ControlIcon::#ICON_FIRSTFRAME   ,0                 ,#False,w+32,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_playbackward =  ControlIcon::New(*Me,"PlayBackward"  ,ControlIcon::#ICON_PLAYBACKWARD ,#PB_Button_Toggle ,#False,w+64,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_stopplayback =  ControlIcon::New(*Me,"StopPlayback"  ,ControlIcon::#ICON_STOP         ,0                 ,#False,w+96,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_playforward =   ControlIcon::New(*Me,"PlayForward"   ,ControlIcon::#ICON_PLAYFORWARD  ,#PB_Button_Toggle ,#False,w+128,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_nextframe =     ControlIcon::New(*Me,"NextFrame"     ,ControlIcon::#ICON_LASTFRAME    ,0                 ,#False,w+160,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_lastframe =     ControlIcon::New(*Me,"LastFrame"     ,ControlIcon::#ICON_LASTFRAME    ,0                 ,#False,w+192,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_playloop =      ControlIcon::New(*Me,"PlayLoop"      ,ControlIcon::#ICON_LOOP         ,#PB_Button_Toggle ,#False,w+224,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
     
     Append(*Me,*Me\c_firstframe)
     Append(*Me,*Me\c_previousframe)
@@ -1147,7 +1147,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1075
-; FirstLine = 1071
+; CursorPosition = 1105
+; FirstLine = 1097
 ; Folding = -------
 ; EnableXP

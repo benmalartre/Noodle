@@ -211,10 +211,18 @@ DeclareModule Globals
     #FONT_BOLD
   EndEnumeration
   
-  #FONT_SIZE_TEXT = 9
-  #FONT_SIZE_LABEL = 11
-  #FONT_SIZE_MENU = 13
-  #FONT_SIZE_TITLE = 15
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_MacOS
+      #FONT_SIZE_TEXT = 18
+      #FONT_SIZE_LABEL = 22
+      #FONT_SIZE_MENU = 26
+      #FONT_SIZE_TITLE = 30
+    CompilerDefault
+      #FONT_SIZE_TEXT = 9
+      #FONT_SIZE_LABEL = 11
+      #FONT_SIZE_MENU = 13
+      #FONT_SIZE_TITLE = 15
+  CompilerEndSelect
   
   ;---------------------------------------------------------
   ; MACROS
@@ -325,8 +333,8 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 216
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 218
 ; FirstLine = 208
 ; Folding = -----
 ; EnableXP

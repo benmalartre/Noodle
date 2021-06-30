@@ -285,16 +285,18 @@ Module ControlProperty
   ; Select Gadget Under Mouse 
   ; ----------------------------------------------------------------------------
   Procedure Pick(*Me.ControlProperty_t)
-    If Not *Me Or Not *Me\valid : ProcedureReturn 0 : EndIf
+    Debug "PICK CONTROL PROPERTY : " +Str(*Me)
+    If Not *Me : ProcedureReturn 0 : EndIf
     Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
     Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
     
     Protected iw = ImageWidth(*Me\imageID)
     Protected ih = ImageHeight(*Me\imageID)
-
+    Debug Str(xm)+","+ Str(ym)+","+Str(iw)+","+Str(ih)
     If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
     
     StartDrawing( ImageOutput(*Me\imageID) )
+    
     *Me\pickID = Point(xm,ym)-1
     StopDrawing()
     If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
@@ -1474,6 +1476,8 @@ EndProcedure
     Else
       *overchild = #Null
     EndIf
+    
+    Debug "CONTROL PROPERTY EVENT , PICK ID = "+Str(*Me\pickID)
 
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
@@ -1911,7 +1915,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 85
-; FirstLine = 85
+; CursorPosition = 290
+; FirstLine = 259
 ; Folding = ----------
 ; EnableXP

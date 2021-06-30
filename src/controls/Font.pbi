@@ -24,7 +24,7 @@ Module Font
   ; ---------------------------------------------------------
   Procedure Init()
     RegisterFontFile("../../fonts/Arial/arial.ttf")
-    Define font.i = LoadFont(#PB_Any, "OpenSans-Regular", 12) ; Maintenant, nous pouvons charger la police, le système d'exploitation la connait
+    Define font.i = LoadFont(#PB_Any, "OpenSans-Regular", 12)
     *CURRENT_FONT = AllocateMemory(SizeOf(Font_t))
     *CURRENT_FONT\name = "OpenSans-Regular"
     *CURRENT_FONT\font = font
@@ -52,8 +52,9 @@ Debug Font::*CURRENT_FONT\name +" : "+Str(Font::*CURRENT_FONT\font)
 Font::Term()
 
 Debug "ALL IS FINE..."
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 26
+; FirstLine = 12
 ; Folding = -
 ; EnableXP
 ; EnablePurifier
