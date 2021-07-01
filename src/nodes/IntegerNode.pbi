@@ -51,16 +51,21 @@ Module IntegerNode
   
   Procedure Evaluate(*node.IntegerNode_t)
     
+    Protected *input.NodePort::NodePort_t = *node\inputs()
     Protected *output.NodePort::NodePort_t = *node\outputs()
-    Protected *input.NodePort::NodePort_t = *node\Inputs()
-    Protected *bIn.CArray::CArrayInt = *input\attribute\data
-    Protected *bOut.CArray::CArrayInt = *output\attribute\data
-    CArray::SetCount(*bOut,CArray::GetCount(*bIn))
-    CArray::Copy(*bOut,*bIn)
+    Protected *value.CArray::CArrayInt = NodePort::AcquireInputData(*input)
     
-    *node\label = Str(CArray::GetValueI(*bOut,0))
-    If Carray::GetCount(*bOut)>1
-      *node\label + "[]"
+    If *value
+      Protected *outdata.CArray::CArrayInt = *output\attribute\data
+      Protected i
+    
+      CArray::SetCount(*outdata,CArray::GetCount(*value))
+    
+      For i=0 To CArray::GetCount(*value)-1
+        CArray::SetValue(*outdata,i,CArray::GetValue(*value,i))
+      Next i
+    
+      *node\label = Str(CArray::GetValueI(*outdata,0))
     EndIf
     
   EndProcedure
@@ -100,10 +105,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 43
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 68
+; FirstLine = 50
 ; Folding = --
 ; EnableThread
 ; EnableXP

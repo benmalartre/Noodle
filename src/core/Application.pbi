@@ -283,14 +283,7 @@ CompilerEndIf
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, GLContext::MAIN_GL_CTXT_HEIGHT)
       *Me\context\writer = FTGL::New()
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_C,Globals::#SHORTCUT_COPY)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_V,Globals::#SHORTCUT_PASTE)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_X,Globals::#SHORTCUT_CUT)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_Z,Globals::#SHORTCUT_UNDO)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_Y,Globals::#SHORTCUT_REDO)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Command|#PB_Shortcut_R,Globals::#SHORTCUT_RESET)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Escape,Globals::#SHORTCUT_QUIT)
-      AddKeyboardShortcut(*Me\window\ID,#PB_Shortcut_Tab,Globals::#SHORTCUT_TAB)
+      AddShortcuts(*Me)
     
       *Me\idle = #True
       
@@ -340,11 +333,20 @@ CompilerEndIf
   ; Add Shortcuts
   ;-----------------------------------------------------------------------------
   Procedure AddShortcuts(*Me.Application_t)
-    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_T, Globals::#SHORTCUT_TRANSLATE)
-    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_R, Globals::#SHORTCUT_ROTATE)
-    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S, Globals::#SHORTCUT_SCALE)
-    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X, Globals::#SHORTCUT_TRANSFORM)
-    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space, Globals::#SHORTCUT_SELECT)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_T                     , Globals::#SHORTCUT_TRANSLATE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_R                     , Globals::#SHORTCUT_ROTATE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S                     , Globals::#SHORTCUT_SCALE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X                     , Globals::#SHORTCUT_TRANSFORM)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space                 , Globals::#SHORTCUT_SELECT)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_C, Globals::#SHORTCUT_COPY)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_V, Globals::#SHORTCUT_PASTE)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_X, Globals::#SHORTCUT_CUT)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_Z, Globals::#SHORTCUT_UNDO)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_Y, Globals::#SHORTCUT_REDO)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_R, Globals::#SHORTCUT_RESET)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Escape                , Globals::#SHORTCUT_QUIT)
+    AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Tab                   , Globals::#SHORTCUT_TAB)
+;     AddKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Back                  , Globals::#SHORTCUT_DELETE)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -356,6 +358,15 @@ CompilerEndIf
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_S)
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_X)
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Space)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_C)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_V)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_X)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_Z)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_Y)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Command|#PB_Shortcut_R)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Escape)
+    RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Tab)
+;     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Back)
   EndProcedure
   
   Procedure SetContext(*Me.Application_t, *ctxt.GLContext::GLContext_t)
@@ -654,6 +665,9 @@ CompilerEndIf
             Scene::Update(Scene::*current_scene)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
+          Case Globals::#EVENT_REPAINT_WINDOW
+            Window::OnEvent(*Me\window, Globals::#EVENT_REPAINT_WINDOW)
+            
           Case Globals::#EVENT_TOOL_CHANGED
             Select EventData()
               Case Globals::#TOOL_SCALE
@@ -706,6 +720,9 @@ CompilerEndIf
               Case Globals::#SHORTCUT_CAMERA
                 Handle::SetActiveTool(*Me\handle, Globals::#TOOL_CAMERA)
                 *Me\tool = Globals::#TOOL_CAMERA
+                
+              Case Globals::#SHORTCUT_DELETE
+                MessageRequester("DELETE", "FUCKIN SOMETHING")
               Default 
                 *Me\tool = Globals::#TOOL_MAX
                 If event : Window::OnEvent(*Me\window,event) : EndIf
@@ -770,8 +787,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 633
-; FirstLine = 623
+; CursorPosition = 368
+; FirstLine = 340
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

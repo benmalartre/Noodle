@@ -243,7 +243,7 @@ Module GraphUI
         
       Case #PB_Event_Gadget
         If EventGadget() = *Me\gadgetID
-            GraphUI::CanvasEvent(*Me,#PB_Event_Gadget)
+          GraphUI::CanvasEvent(*Me,#PB_Event_Gadget)
         EndIf
         
       Case #PB_Event_GadgetDrop
@@ -277,16 +277,11 @@ Module GraphUI
       ForEach *window\uis()
         If *window\uis()\name = "Property"
           Protected *property.PropertyUI::PropertyUI_t = *window\uis()
-          ;If Not PropertyUI::CheckNodeExists(*property, *node)
-            PropertyUI::Setup(*window\uis(),*node)
-          ;EndIf
-          
+          PropertyUI::Setup(*window\uis(),*node)  
          Break
        EndIf
      Next
     Else
-      ;Open Floating *property View
-;       MessageRequester("[GRAPH UI]","Inspect Node Property doesn' exists!!! Create It Floating!!!")
       Protected window = OpenWindow(#PB_Any,0,0,800,600,"NodeProperty",#PB_Window_BorderLess|#PB_Window_Tool)
       
       Repeat
@@ -553,6 +548,7 @@ Module GraphUI
   ; Delete Selected
   ;---------------------------------------------------------------------------
   Procedure DeleteSelected(*Me.GraphUI_t)
+    Debug "DELETE SELECTED NODE..."
     If Not *Me\tree
       Debug "NO Graph Tree in this view Graph!!!"
       ProcedureReturn
@@ -1203,13 +1199,13 @@ Module GraphUI
           Case #PB_EventType_DragStart
             Debug "Drag Start On View Graph!!!"
             
-          ;Left Double Click Event
+          ; Right Button Down
           Case #PB_EventType_RightButtonDown
             Define *popup.ControlPopup::ControlPopup_t = ControlPopup::New(*Me, *Me\mouseX, *Me\mouseY-32, 240, 120)
            ControlPopup::StartLoop(*popup)
             
             
-          ;Left Double Click Event
+          ; Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
             Pick(*Me)
             GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
@@ -1389,7 +1385,7 @@ Module GraphUI
                Case #PB_Shortcut_F
                  *me\keydown = #PB_Shortcut_F
                  FrameSelected(*Me)
-               Case #PB_Shortcut_Delete
+               Case #PB_Shortcut_Back
                  *me\keydown = #PB_Shortcut_Delete
                  DeleteSelected(*Me)
                Case #PB_Shortcut_Return
@@ -1570,8 +1566,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1474
-; FirstLine = 1470
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 1387
+; FirstLine = 1364
 ; Folding = --------
 ; EnableXP

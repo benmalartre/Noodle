@@ -88,9 +88,9 @@ Module Graph
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
 ; CursorPosition = 57
-; FirstLine = 29
+; FirstLine = 25
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

@@ -371,7 +371,6 @@ Module ControlProperty
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
     Protected curW .i
-    
     If *Me\chilcount
       ; ---[ Local Variables ]----------------------------------------------------
       Protected i     .i = 0
@@ -1477,8 +1476,6 @@ EndProcedure
       *overchild = #Null
     EndIf
     
-    Debug "CONTROL PROPERTY EVENT , PICK ID = "+Str(*Me\pickID)
-
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
         
@@ -1486,6 +1483,7 @@ EndProcedure
       ;  Resize
       ; ------------------------------------------------------------------------
       Case #PB_EventType_Resize
+        Debug "CONTROL PROPERTY RESIZE!!!!"
         If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
         If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
         If *ev_data\width <> #PB_Ignore : *Me\sizX = *ev_data\width : EndIf
@@ -1493,17 +1491,19 @@ EndProcedure
         
         If *Me\percX > 0 : *Me\sizX = *Me\parent\sizX * (*Me\percX / 100) : EndIf
         If *Me\percY > 0 : *Me\sizY = *Me\parent\sizY * (*Me\percY / 100) : EndIf
- 
+;  
         ev_data\x = 0
-        ev_data\y = #PB_Ignore
+        ev_data\y = 0
         ev_data\width = *ev_data\width
-        ev_data\height = #PB_Ignore
-
+        ev_data\height = *ev_data\height
+        Debug "NUM CHILDREN : " +Str(*Me\chilcount)
         ; Resize Controls
         For c=0 To *Me\chilcount - 1
           If *Me\rowflags(c) 
             nbc_row = GetNumControlInRow(*Me, c)
             ResizeControlsInRow(*Me, c, nbc_row)
+                        Debug "RESIZE CONTROL PROPERTY CHILD ROW"
+
             c + nbc_row - 1
           Else
             son = *Me\children(c)
@@ -1513,10 +1513,10 @@ EndProcedure
             ev_data\x     = *son\posX
             ev_data\y     = *son\posY
             son\OnEvent(#PB_EventType_Resize, ev_data)
+            Debug "RESIZE CONTROL PROPERTY CHILD"
 
           EndIf
         Next
-        
         DrawPickImage(*Me)
         Draw( *Me )
         ProcedureReturn( #True )
@@ -1915,7 +1915,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 290
-; FirstLine = 259
+; CursorPosition = 1485
+; FirstLine = 1461
 ; Folding = ----------
 ; EnableXP

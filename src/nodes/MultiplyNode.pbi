@@ -71,7 +71,7 @@ Module MultiplyNode
         ;
         ; Integer
         ;....................................................
-      Case Attribute::#ATTR_TYPE_INTEGER
+      Case Attribute::#ATTR_TYPE_INTEGER        
         Protected int.i
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
         *lOut = *output\attribute\data
@@ -203,9 +203,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 60
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 73
+; FirstLine = 64
 ; Folding = --
 ; EnableXP

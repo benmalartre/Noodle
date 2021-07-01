@@ -124,14 +124,12 @@ Module PropertyUI
     
     ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     Protected ev_datas.Control::EventTypeDatas_t
-    ev_datas\x = *Me\posX
-    ev_datas\y = *Me\posY
+    ev_datas\x = 0
+    ev_datas\y = 0
     ev_datas\width = *Me\sizX 
     ev_datas\height = *Me\sizY
 
     ControlProperty::OnEvent(*Me\prop,#PB_EventType_Resize,@ev_datas)
-    
-    Control::Invalidate(*Me)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -397,7 +395,8 @@ Module PropertyUI
     Else
       Protected *obj.Object3D::Object3D_t = *object
        SetupFromObject3D(*Me,*obj)
-    EndIf
+     EndIf
+     Resize(*Me)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -515,8 +514,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 127
-; FirstLine = 122
+; CursorPosition = 398
+; FirstLine = 383
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

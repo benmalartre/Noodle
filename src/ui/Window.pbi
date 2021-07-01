@@ -11,7 +11,6 @@ Module Window
     If Not *Me : ProcedureReturn : EndIf
     Protected w = WindowWidth(*Me\ID,#PB_Window_InnerCoordinate)
     Protected h = WindowHeight(*Me\ID,#PB_Window_InnerCoordinate)
-    Debug "RESIZE WINDOW : ("+Str(w)+","+Str(h)+")"
     View::Resize(*Me\main,0,0,w,h)
     DrawPickImage(*Me)
   EndProcedure
@@ -97,9 +96,6 @@ Module Window
   
     Select event
       Case #PB_Event_Gadget
-        If EventType() = #PB_EventType_KeyDown
-          Debug "FUCKIN KEY DOWN"
-        EndIf
         If *over
           Protected touch = View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
           
@@ -142,8 +138,11 @@ Module Window
         
       Case Globals::#EVENT_GRAPH_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_GRAPH_CHANGED)
+        
+      Case Globals::#EVENT_REPAINT_WINDOW
+         Resize(*Me)
       Case #PB_Event_Repaint
-;         View::OnEvent(*Me\main,#PB_Event_Repaint)
+         Resize(*Me)
       Case #PB_Event_Timer
 ;         Select EventTimer()
 ;           Case #RAA_TIMELINE_TIMER
@@ -167,10 +166,8 @@ Module Window
 ;             Debug "View Manager : SHORTCUT PASTE"
 ;             View::OnEvent(*Me\active,#PB_Event_Menu)
           Case Globals::#SHORTCUT_UNDO
-            MessageRequester("View Manager","Undo Called")
             Commands::Undo(Commands::*manager)
           Case Globals::#SHORTCUT_REDO
-            MessageRequester("View Manager","Redo Called")
             Commands::Redo(Commands::*manager)
           Default
             View::OnEvent(*over,#PB_Event_Menu)
@@ -316,8 +313,8 @@ Module Window
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 84
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 170
+; FirstLine = 168
 ; Folding = ---
 ; EnableXP

@@ -40,6 +40,7 @@ DeclareModule Globals
     #EVENT_GRAPH_CHANGED
     #EVENT_TREE_CREATED
     #EVENT_NEW_SCENE
+    #EVENT_REPAINT_WINDOW
   EndEnumeration
   
   Enumeration
@@ -334,8 +335,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 218
-; FirstLine = 208
+; CursorPosition = 42
+; FirstLine = 13
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
