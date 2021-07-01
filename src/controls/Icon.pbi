@@ -10,6 +10,7 @@ XIncludeFile "Button.pbi"
 ; ==============================================================================
 DeclareModule ControlIcon
   #STROKE_WIDTH           = 7
+  #STROKE_STYLE           = #PB_Path_Default
   #BACKGROUND_COLOR       = -10172161 ; RGBA(255,200,100,255)
   #STROKE_COLOR_DEFAULT   = -2302756  ; RGBA(220,220,220,255)
   #STROKE_COLOR_SELECTED  = -12566464 ; RGBA(64, 64, 64, 255)
@@ -100,7 +101,8 @@ DeclareModule ControlIcon
   IconName(#ICON_OK) = "ok"
 
     
-  Prototype DrawIconImpl(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+  Prototype DrawIconImpl(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
+                         thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlIcon_t )
@@ -135,36 +137,36 @@ DeclareModule ControlIcon
   Declare.d OffsetXIn(x.d, a.d, l.d)
   Declare.d OffsetYIn(y.d, a.d, l.d)
   
-  Declare VisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare InvisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare PlayForwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare PlayBackwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare StopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare PreviousFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare NextFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare FirstFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare LastFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare LoopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)  
-  Declare TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)  
-  Declare SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)  
-  Declare OpenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare HomeIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Declare ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+  Declare VisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare InvisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare PlayForwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare PlayBackwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare StopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare PreviousFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare NextFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare FirstFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare LastFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare LoopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
+  Declare TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
+  Declare SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
+  Declare OpenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare HomeIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
   ; ============================================================================
   ;  VTABLE ( CObject + CControl + ControlIcon )
@@ -455,7 +457,7 @@ Module ControlIcon
     ProcedureReturn y + l*Sin(Radian(a + 90))
   EndProcedure
 
-Procedure VisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure VisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 10 50 C 30 20 70 20 90 50 "
   segments + "M 10 50 C 30 80 70 80 90 50 "
@@ -475,7 +477,7 @@ Procedure VisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT
   
 EndProcedure
 
-Procedure InvisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure InvisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 10 50 C 30 70 70 70 90 50 "
   segments + "M 24.436 59.7602 L 17.9105 74.3691 "
@@ -486,104 +488,104 @@ Procedure InvisibleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAU
   StrokePath(thickness, #PB_Path_RoundEnd)
 EndProcedure
 
-Procedure PlayForwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure PlayForwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 20 L 80 50 L 20 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure PlayBackwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure PlayBackwardIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 80 20 L 80 80 L 20 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure StopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure StopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure PreviousFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Define segments.s = "M 75 20 L 75 80 L 25 50 Z"
+Procedure PreviousFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 75 20 L 75 80 L 30 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 25 20 L 25 80"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure NextFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
-  Define segments.s = "M 25 20 L 25 80 L 75 50 Z"
+Procedure NextFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 25 20 L 25 80 L 70 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 75 20 L 75 80"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure FirstFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure FirstFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 80 20 L 80 80 L 40 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
-  segments = "M 60 20 L 60 80 L 20 50 Z"
+  segments = "M 60 20 L 60 80 L 25 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 20 20 L 20 80"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure LastFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure LastFrameIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 20 L 20 80 L 60 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
-  segments = "M 40 20 L 40 80 L 80 50 Z"
+  segments = "M 40 20 L 40 80 L 75 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 80 20 L 80 80"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure LoopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)  
+Procedure LoopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
   Define h.d = 8
   Define w.d = 4
   Define r.d = 30
@@ -613,10 +615,10 @@ Procedure LoopIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   AddPathLine(x1, y1)
 
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
   Define segments.s
   segments + "M 50 15 L 40 25 L 60 25 Z"
@@ -625,7 +627,7 @@ Procedure TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAU
   segments + "M 85 50 L 75 40 L 75 60 Z"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 35 35 L 65 35 L 65 65 L 35 65 Z"
   AddPathSegments(segments)
@@ -634,10 +636,10 @@ Procedure TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAU
   FillPath(#PB_Path_Preserve)
   
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define r.d = 35
   Define segments.s = "M 50 25 L 75 50 L 50 75 L 25 50 Z"
   AddPathSegments(segments)
@@ -646,7 +648,7 @@ Procedure RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   FillPath(#PB_Path_Preserve)
   
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 
   AddPathCircle(50,50,r, 0, 300)
   Define l.d = PathLength()
@@ -660,30 +662,30 @@ Procedure RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   
   ClosePath()
   
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 80 L 20 50 L 50 50 L 50 80 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments = "M 20 20 L 80 20 L 80 80 L 20 80 Z"
   AddPathSegments(segments)
-  DashPath(thickness, 2 * thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  DashPath(thickness, 2 * thickness, style)
   
   segments = "M 70 20 L 80 20 L 80 30 M 80 20 L 60 40 M 60 30 L 60 40 L 70 40"
   AddPathSegments(segments)
   ;   MovePathCursor(
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   MovePathCursor(40,15)
   AddPathLine(40,70)
   AddPathLine(50,60)
@@ -695,10 +697,10 @@ Procedure SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 20 L 40 20 L 40 80 L 20 80 Z"
   segments + "M 60 20 L 80 20 L 80 80 L 60 80 Z"
   segments + "M 50 10 L 50 90"
@@ -706,10 +708,10 @@ Procedure SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 20 L 80 20 L 80 40  L 20 40 Z"
   segments + "M 20 60 L 80 60 L 80 80 L 20 80 Z"
   segments + "M 10 50 L 90 50"
@@ -717,10 +719,10 @@ Procedure SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   AddPathBox(20,50,60,40)
   MovePathCursor(55, 80)
   AddPathLine(55,80)
@@ -730,7 +732,7 @@ Procedure LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   MovePathCursor(25, 50)
   AddPathLine(25, 45)
@@ -743,11 +745,11 @@ Procedure LockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
 EndProcedure
 
-Procedure UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
   AddPathBox(20,50,60,40)
   MovePathCursor(55, 80)
@@ -758,7 +760,7 @@ Procedure UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAUL
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   
   AddPathCircle(50, 35, 25, 200, 0)
@@ -769,10 +771,10 @@ Procedure UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAUL
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   AddPathCircle(50,50,8)
   
   MovePathCursor(80,50)
@@ -789,69 +791,69 @@ Procedure OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thic
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 25 30 L 30 80 L 70 80 L 75 30 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments.s = "M 20 25 L 80 25"
   segments + "M 40 25 L 42 15 L 58 15 L 60 25" 
   segments + "M 35 40 L 38 70 M 50 40 L 50 70 M 65 40 L 62 70"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 80 L 60 80 L 80 60 L 40 60 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
   segments.s = "M 20 70 L 60 70 L 80 50 L 40 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   
 ;   segments.s = "M 20 60 L 60 60 L 80 40 L 40 40 Z"
 ;   AddPathSegments(segments)
 ;   VectorSourceColor(FILL_COLOR)
 ;   FillPath(#PB_Path_Preserve)
 ;   VectorSourceColor(STROKE_COLOR)
-;   StrokePath(STROKE_WIDTH, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+;   StrokePath(STROKE_WIDTH, style)
   
   segments = "M 70 20 L 70 40 M 60 30 L 80 30"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 80 L 20 60 L 40 70 Z"
   AddPathSegments(segments)
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   segments.s = "M 20 60 L 50 20 L 70 30 L 40 70 Z"
   AddPathSegments(segments)
   VectorSourceColor(#ORANGE_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 30 L 20 80 L 80 80 L 80 20 L 50 20 L 50 30 Z"
   AddPathSegments(segments)
   segments.s = "M 80 80 L 90 40 L 80 40"
@@ -859,10 +861,10 @@ Procedure FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
   VectorSourceColor(#ORANGE_COLOR)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
   segments + "M 35 55 L 65 55 M 35 65 L 65 65"
@@ -870,10 +872,10 @@ Procedure FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
   segments + "M 35 55 L 65 55 M 35 65 L 65 65"
@@ -881,14 +883,14 @@ Procedure SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   segments = "M 50 50 L 50 30 L 40 30 L 60 10 L 80 30 L 70 30 L 70 50 Z"
   AddPathSegments(segments)
   VectorSourceColor(#ORANGE_COLOR)
   FillPath()
 EndProcedure
 
-Procedure OpenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure OpenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 25 20 L 25 80 L 75 80 L 75 40  L 55 20 L 55 40 L 75 40 L 55 20 Z"
   segments + "M 35 55 L 65 55 M 35 65 L 65 65"
@@ -896,14 +898,14 @@ Procedure OpenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
   segments = "M 50 10 L 50 30 L 40 30 L 60 50 L 80 30 L 70 30 L 70 10 Z"
   AddPathSegments(segments)
   VectorSourceColor(#ORANGE_COLOR)
   FillPath()
 EndProcedure
 
-Procedure HomeIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure HomeIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 25 80 L 42 80 L 42 50 L 58 50  L 58 80 L 75 80"
   segments + "L 75 40 L 85 40 L 50 20 L 15 40 L 25 40 Z"
@@ -911,10 +913,10 @@ Procedure HomeIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 20 40 L 40 60 L 40 50 L 60 50 L 60 80"
   segments + "L 80 80 L 80 30 L 40 30 L 40 20 Z"
@@ -922,10 +924,10 @@ Procedure BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,th
   VectorSourceColor(fill)
   FillPath(#PB_Path_Preserve)
   VectorSourceColor(stroke)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s
   segments + "M 15 80 L 85 80 L 50 20 Z"
   AddPathSegments(segments)
@@ -934,17 +936,17 @@ Procedure WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT
   Define segments.s = "M 50 40 L 50 60 M 50 70 L 50 70"
   AddPathSegments(segments)
   VectorSourceColor(#BLACK_COLOR)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
 
-Procedure ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,thickness.i=#STROKE_WIDTH)
+Procedure ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   AddPathCircle(50, 50, 35)
   VectorSourceColor(#RED_COLOR)
   FillPath(#PB_Path_Preserve)
   Define segments.s = "M 35 35 L 65 65 M 35 65 L 65 35"
   AddPathSegments(segments)
   VectorSourceColor(#WHITE_COLOR)
-  StrokePath(thickness, #PB_Path_RoundEnd|#PB_Path_RoundCorner)
+  StrokePath(thickness, style)
 EndProcedure
   
   ; ============================================================================
@@ -1017,6 +1019,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 18
+; CursorPosition = 869
+; FirstLine = 863
 ; Folding = --------
 ; EnableXP
