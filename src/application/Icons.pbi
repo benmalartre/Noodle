@@ -139,6 +139,7 @@ Procedure SaveIconAsImage(icon.i)
   
   StopVectorDrawing()
   SaveImage(image, iconFolder+ControlIcon::IconName(icon)+".png", #PB_ImagePlugin_PNG, #False, 32)
+  Debug "SAVED ICON : " + iconFolder+ControlIcon::IconName(icon)+".png"
   FreeImage(image)
 EndProcedure
 
@@ -152,6 +153,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 60
+; CursorPosition = 141
+; FirstLine = 68
 ; Folding = -
 ; EnableXP

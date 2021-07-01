@@ -66,8 +66,8 @@ DeclareModule ControlIcon
   IconName(#ICON_PLAYFORWARD) = "playforward"
   IconName(#ICON_PLAYBACKWARD) = "playbackward"
   IconName(#ICON_STOP) = "stop"
-  IconName(#ICON_FIRSTFRAME) = "previousframe"
-  IconName(#ICON_LASTFRAME) = "nextframe"
+  IconName(#ICON_PREVIOUSFRAME) = "previousframe"
+  IconName(#ICON_NEXTFRAME) = "nextframe"
   IconName(#ICON_FIRSTFRAME) = "firstframe"
   IconName(#ICON_LASTFRAME) = "lastframe"
   IconName(#ICON_LOOP) = "loop"
@@ -1011,7 +1011,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 939
-; FirstLine = 918
+; CursorPosition = 69
+; FirstLine = 43
 ; Folding = --------
 ; EnableXP
