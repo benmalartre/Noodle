@@ -14,68 +14,51 @@ CompilerEndIf
 Define window = OpenWindow(#PB_Any, 0,0,800,800,"Icons")
 Define  canvas = CanvasGadget(#PB_Any, 0,0,800,800)
   
+Global iconCounter = 0
 
+
+Procedure DrawIcon(func.ControlIcon::DrawIconImpl)
+  Define currentX = (iconCounter % 8) * 100
+  Define currentY = (iconCounter / 8) * 100
+  iconCounter + 1
+  ResetCoordinates()
+  TranslateCoordinates(currentX, currentY)
+  func()
+EndProcedure
 
 
 
 StartVectorDrawing(CanvasVectorOutput(canvas))
-ResetCoordinates()
-TranslateCoordinates(0,0)
-ControlIcon::LoopIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::PlayForwardIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::PlayBackwardIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::StopIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::FirstFrameIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::LastFrameIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::VisibleIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::InvisibleIcon()
-TranslateCoordinates(-700, 100)
-ControlIcon::TranslateIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::RotateIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::ScaleIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::SelectIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::SplitVIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::SplitHIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::LockedIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::UnlockedIcon()
-TranslateCoordinates(-700, 100)
-ControlIcon::OpIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::TrashIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::LayerIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::PenIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::FolderIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::FileIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::HomeIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::BackIcon()
-TranslateCoordinates(-700, 100)
-ControlIcon::WarningIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::ErrorIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::SaveIcon()
-TranslateCoordinates(100, 0)
-ControlIcon::OpenIcon()
+DrawIcon(ControlIcon::@LoopIcon())
+DrawIcon(ControlIcon::@PlayForwardIcon())
+DrawIcon(ControlIcon::@PlayBackwardIcon())
+DrawIcon(ControlIcon::@StopIcon())
+DrawIcon(ControlIcon::@PreviousFrameIcon())
+DrawIcon(ControlIcon::@NextFrameIcon())
+DrawIcon(ControlIcon::@FirstFrameIcon())
+DrawIcon(ControlIcon::@LastFrameIcon())
+DrawIcon(ControlIcon::@VisibleIcon())
+DrawIcon(ControlIcon::@InvisibleIcon())
+DrawIcon(ControlIcon::@TranslateIcon())
+DrawIcon(ControlIcon::@RotateIcon())
+DrawIcon(ControlIcon::@ScaleIcon())
+DrawIcon(ControlIcon::@SelectIcon())
+DrawIcon(ControlIcon::@SplitVIcon())
+DrawIcon(ControlIcon::@SplitHIcon())
+DrawIcon(ControlIcon::@LockedIcon())
+DrawIcon(ControlIcon::@UnlockedIcon())
+DrawIcon(ControlIcon::@OpIcon())
+DrawIcon(ControlIcon::@TrashIcon())
+DrawIcon(ControlIcon::@LayerIcon())
+DrawIcon(ControlIcon::@PenIcon())
+DrawIcon(ControlIcon::@FolderIcon())
+DrawIcon(ControlIcon::@FileIcon())
+DrawIcon(ControlIcon::@HomeIcon())
+DrawIcon(ControlIcon::@BackIcon())
+DrawIcon(ControlIcon::@WarningIcon())
+DrawIcon(ControlIcon::@ErrorIcon())
+DrawIcon(ControlIcon::@SaveIcon())
+DrawIcon(ControlIcon::@OpenIcon())
 StopVectorDrawing()
 
 Procedure SaveIconAsImage(icon.i)
@@ -102,6 +85,10 @@ Procedure SaveIconAsImage(icon.i)
       ControlIcon::PlayBackwardIcon()
     Case ControlIcon::#ICON_STOP
       ControlIcon::StopIcon()
+    Case ControlIcon::#ICON_PREVIOUSFRAME
+      ControlIcon::PreviousFrameIcon()
+    Case ControlIcon::#ICON_NEXTFRAME
+      ControlIcon::NextFrameIcon()
     Case ControlIcon::#ICON_FIRSTFRAME
       ControlIcon::FirstFrameIcon()
     Case ControlIcon::#ICON_LASTFRAME
@@ -165,7 +152,6 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 152
-; FirstLine = 133
+; CursorPosition = 60
 ; Folding = -
 ; EnableXP
