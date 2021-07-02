@@ -16,7 +16,7 @@ DeclareModule ControlIcon
   #STROKE_COLOR_SELECTED  = -12566464 ; RGBA(64, 64, 64, 255)
   #STROKE_COLOR_DISABLED  = -6908266  ; RGBA(150,150,150,255)
   #FILL_COLOR_DEFAULT     = -1644826  ; RGBA(230,230,230,255)
-  #FILL_COLOR_SELECTED    = -14671840 ; RGBA(32, 32, 32, 255)
+  #FILL_COLOR_SELECTED    = -10461088 ; RGBA(96, 96, 96, 255)
   #FILL_COLOR_DISABLED    = -8355712  ; RGBA(128,128,128,255)
   #BLACK_COLOR            = -14671840 ; RGBA(32,  32, 32,255)
   #WHITE_COLOR            = -2171170  ; RGBA(222,222,222,255)
@@ -1019,7 +1019,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 869
-; FirstLine = 863
+; CursorPosition = 18
 ; Folding = --------
 ; EnableXP

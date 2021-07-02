@@ -4,7 +4,7 @@ UsePNGImageEncoder()
 
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/icons/ "
+  Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/icons/"
 CompilerElseIf #PB_Compiler_OS  = #PB_OS_MacOS
   Global iconFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/icons/"
 CompilerEndIf
@@ -24,6 +24,23 @@ Procedure DrawIcon(func.ControlIcon::DrawIconImpl)
   ResetCoordinates()
   TranslateCoordinates(currentX, currentY)
   func()
+EndProcedure
+
+Procedure CopyFolder(srcFolder.S, dstFolder.s)
+  Debug "COPY FOLDER CALLED"
+  DeleteDirectory(dstFolder, "*", #PB_FileSystem_Recursive | #PB_FileSystem_Force)
+  CreateDirectory(dstFolder)
+  Define dir.i = ExamineDirectory(#PB_Any, srcFolder, "*")
+  Debug "DIrectory : "+Str(dir)
+  While NextDirectoryEntry(dir)
+    Debug "DIRECTORY ENTRY NAME : "+DirectoryEntryName(dir)
+    If DirectoryEntryType(dir) = #PB_DirectoryEntry_File
+      Define filename.s = DirectoryEntryName(dir)
+      Debug "COPY TO "+ dstFolder + filename
+      CopyFile(srcFolder + filename, dstFolder + filename)
+    EndIf
+  Wend  
+  FinishDirectory(dir)
 EndProcedure
 
 
@@ -140,7 +157,6 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFA
   
   StopVectorDrawing()
   SaveImage(image, iconFolder+ControlIcon::IconName(icon)+"_"+suffix+".png", #PB_ImagePlugin_PNG, #False, 32)
-  Debug "SAVED ICON : " + iconFolder+ControlIcon::IconName(icon)+"_"+suffix+".png"
   FreeImage(image)
 EndProcedure
 
@@ -150,13 +166,22 @@ For i=0 To ControlIcon::#ICON_LAST - 1
   SaveIconAsImage(i, "disabled", ControlIcon::#FILL_COLOR_DISABLED, ControlIcon::#STROKE_COLOR_DISABLED)
 Next
 
+
+CompilerSelect #PB_Compiler_OS
+  CompilerCase #PB_OS_MacOS
+    Define dstFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/build/src/icons/"
+    CopyFolder(iconFolder, dstFolder)
+CompilerEndSelect
+
+
+
   
 Repeat
   event = WaitWindowEvent()
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 142
-; FirstLine = 118
+; CursorPosition = 36
+; FirstLine = 21
 ; Folding = -
 ; EnableXP
