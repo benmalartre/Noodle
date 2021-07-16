@@ -159,14 +159,14 @@ DeclareModule Math
   ;  Maximum Macro
   ; ----------------------------------------------------------------------------
   Macro MAXIMUM(_a,_b)
-    If _a<_b : _a=_b : EndIf
+    (Bool((_a)>=(_b)) * (_a) + Bool((_b)>(_a)) * (_b))
   EndMacro
-  
+
   ; ----------------------------------------------------------------------------
   ;  Minimum Macro
   ; ----------------------------------------------------------------------------
   Macro MINIMUM(_a,_b)
-    If _a>_b : _a=_b : EndIf
+    (Bool((_a)<=(_b)) * (_a) + Bool((_b)<(_a)) * (_b))
   EndMacro
   
   ; ----------------------------------------------------------------------------
@@ -180,11 +180,12 @@ DeclareModule Math
   ;  Clamp Macro
   ; ----------------------------------------------------------------------------
   Macro CLAMP(_x,_min,_max)
-    If (_x<_min)
-      _x = _min 
-    ElseIf (_x>_max)
-      _x=_max 
-    EndIf
+    (Bool((_x)<=(_min)) * (_min) + Bool((_x)>=(_max)) * (_max)) + Bool((_x)>(_min)And(_x)<(_max)) * (_x)
+;     If (_x<_min)
+;       _x = _min 
+;     ElseIf (_x>_max)
+;       _x=_max 
+;     EndIf
   EndMacro
 
   ; ----------------------------------------------------------------------------
@@ -4382,9 +4383,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 2300
-; FirstLine = 2273
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 187
+; FirstLine = 156
 ; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

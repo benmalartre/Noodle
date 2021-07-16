@@ -12,7 +12,7 @@ DeclareModule ControlIcon
   #STROKE_WIDTH           = 7
   #STROKE_STYLE           = #PB_Path_Default
   #BACKGROUND_COLOR       = -10172161 ; RGBA(255,200,100,255)
-  #STROKE_COLOR_DEFAULT   = -2302756  ; RGBA(220,220,220,255)
+  #STROKE_COLOR_DEFAULT   = -986896   ; RGBA(240,240,240,255)
   #STROKE_COLOR_SELECTED  = -12566464 ; RGBA(64, 64, 64, 255)
   #STROKE_COLOR_DISABLED  = -6908266  ; RGBA(150,150,150,255)
   #FILL_COLOR_DEFAULT     = -1644826  ; RGBA(230,230,230,255)
@@ -45,6 +45,8 @@ DeclareModule ControlIcon
     #ICON_TRANSLATE
     #ICON_ROTATE
     #ICON_SCALE
+    #ICON_BRUSH
+    #ICON_PEN
     #ICON_SELECT
     #ICON_SPLITV
     #ICON_SPLITH
@@ -52,8 +54,8 @@ DeclareModule ControlIcon
     #ICON_UNLOCKED
     #ICON_OP
     #ICON_TRASH
+    #ICON_STAGE
     #ICON_LAYER
-    #ICON_PEN
     #ICON_FOLDER
     #ICON_FILE
     #ICON_OPEN
@@ -81,6 +83,8 @@ DeclareModule ControlIcon
   IconName(#ICON_TRANSLATE) = "translate"
   IconName(#ICON_ROTATE) = "rotate"
   IconName(#ICON_SCALE) = "scale"
+  IconName(#ICON_BRUSH) = "brush"
+  IconName(#ICON_PEN) = "pen"
   IconName(#ICON_SELECT) = "select"
   IconName(#ICON_SPLITV) = "splitv"
   IconName(#ICON_SPLITH) = "splith"
@@ -88,8 +92,8 @@ DeclareModule ControlIcon
   IconName(#ICON_UNLOCKED) = "unlocked"
   IconName(#ICON_OP) = "op"
   IconName(#ICON_TRASH) =  "trash"
+  IconName(#ICON_STAGE) = "stage"
   IconName(#ICON_LAYER) = "layer"
-  IconName(#ICON_PEN) = "pen"
   IconName(#ICON_FOLDER) = "folder"
   IconName(#ICON_FILE) = "file"
   IconName(#ICON_OPEN) = "open"
@@ -150,6 +154,8 @@ DeclareModule ControlIcon
   Declare TranslateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare RotateIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare BrushIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare SplitVIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
   Declare SplitHIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
@@ -157,8 +163,8 @@ DeclareModule ControlIcon
   Declare UnlockedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare OpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-  Declare PenIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare FolderIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare FileIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare SaveIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)  
@@ -213,40 +219,46 @@ Module ControlIcon
         ProcedureReturn @RotateIcon()
       Case #ICON_SCALE
         ProcedureReturn @ScaleIcon()
-       Case #ICON_SELECT
-         ProcedureReturn @SelectIcon()
-       Case #ICON_SPLITH
-         ProcedureReturn @SplitHIcon()
-       Case #ICON_SPLITV
-         ProcedureReturn @SplitVIcon()
-       Case #ICON_LOCKED
-         ProcedureReturn @LockedIcon()
-       Case #ICON_UNLOCKED
-         ProcedureReturn @LockedIcon()
-       Case #ICON_OP
-         ProcedureReturn @OpIcon()
-       Case #ICON_TRASH
-         ProcedureReturn @TrashIcon()
-       Case #ICON_LAYER
-         ProcedureReturn @LayerIcon()
-       Case #ICON_PEN
-         ProcedureReturn @PenIcon()
-       Case #ICON_FOLDER
-         ProcedureReturn @FolderIcon()
-       Case #ICON_FILE
-         ProcedureReturn @FileIcon()
-       Case #ICON_SAVE
-         ProcedureReturn @SaveIcon()
-       Case #ICON_OPEN
-         ProcedureReturn @OpenIcon()
-       Case #ICON_HOME
-         ProcedureReturn @HomeIcon()
-       Case #ICON_BACK
-         ProcedureReturn @BackIcon()
-       Case #ICON_WARNING
-         ProcedureReturn @WarningIcon()
-       Case #ICON_ERROR
-         ProcedureReturn @ErrorIcon()
+      Case #ICON_BRUSH
+        ProcedureReturn @BrushIcon()
+      Case #ICON_PEN
+        ProcedureReturn @PenIcon()
+      Case #ICON_SELECT
+        ProcedureReturn @SelectIcon()
+      Case #ICON_SPLITH
+       ProcedureReturn @SplitHIcon()
+      Case #ICON_SPLITV
+       ProcedureReturn @SplitVIcon()
+      Case #ICON_LOCKED
+       ProcedureReturn @LockedIcon()
+      Case #ICON_UNLOCKED
+       ProcedureReturn @LockedIcon()
+      Case #ICON_OP
+       ProcedureReturn @OpIcon()
+      Case #ICON_TRASH
+        ProcedureReturn @TrashIcon()
+      Case #ICON_STAGE
+       ProcedureReturn @StageIcon()
+      Case #ICON_LAYER
+       ProcedureReturn @LayerIcon()
+      Case #ICON_PEN
+       ProcedureReturn @PenIcon()
+      Case #ICON_FOLDER
+       ProcedureReturn @FolderIcon()
+      Case #ICON_FILE
+       ProcedureReturn @FileIcon()
+      Case #ICON_SAVE
+       ProcedureReturn @SaveIcon()
+      Case #ICON_OPEN
+       ProcedureReturn @OpenIcon()
+      Case #ICON_HOME
+       ProcedureReturn @HomeIcon()
+      Case #ICON_BACK
+       ProcedureReturn @BackIcon()
+      Case #ICON_WARNING
+       ProcedureReturn @WarningIcon()
+      Case #ICON_ERROR
+       ProcedureReturn @ErrorIcon()
     EndSelect
   EndProcedure
   
@@ -685,6 +697,34 @@ Procedure ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   StrokePath(thickness, style)
 EndProcedure
 
+Procedure BrushIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+;   Define segments.s = "M 10 10 C 10 90 40 90 40 70 C 40 50 25 50 25 50"
+;   AddPathSegments(segments)
+   AddPathCircle(25,75,20)
+  VectorSourceColor(#ORANGE_COLOR)
+  DashPath(thickness, thickness*0.5)
+  
+  segments.s = "M 5 75 C 35 90 45 70 45 50 L 50 45 C 10 60 25 80 5 80"
+  AddPathSegments(segments)
+  VectorSourceColor(fill)
+  FillPath()
+  
+  segments.s = "M 35 50 L 45 55 L 70 15 L 60 10 Z"
+  AddPathSegments(segments)
+  VectorSourceColor(fill)
+  FillPath(#PB_Path_Preserve)
+  
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+  
+;   segments.s = "M 10 75 C 30 95 50 75 10 25"
+;   AddPathSegments(segments)
+;   VectorSourceColor(#ORANGE_COLOR)
+;   DashPath(thickness, thickness)
+  
+  
+EndProcedure
+
 Procedure SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   MovePathCursor(40,15)
   AddPathLine(40,70)
@@ -810,6 +850,39 @@ Procedure TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   StrokePath(thickness, style)
 EndProcedure
 
+; Procedure StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+;   Define segments.s = "M 25 75 L 60 75 L 80 45 L 45 45 Z"
+;   AddPathSegments(segments)
+;   VectorSourceColor(fill)
+;   FillPath()
+;   
+;   segments.s = "M 50 20 L 50 60 M 50 60 L 90 60 M 50 60 L 35 90"
+;   AddPathSegments(segments)
+;   VectorSourceColor(stroke)
+;   StrokePath(thickness, style)
+;   
+; EndProcedure
+
+Procedure StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 25 45 L 25 85 M 25 65 L 40 65 M 25 85 L 40 85"
+  AddPathSegments(segments)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+  
+  AddPathBox(10, 37, 45, 16)
+  AddPathBox(40, 57, 40, 16)
+  AddPathBox(40, 77, 40, 16)
+  
+  VectorSourceColor(fill)
+  FillPath()
+  
+  segments = "M 70 20 L 70 40 M 60 30 L 80 30"
+  AddPathSegments(segments)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+  
+EndProcedure
+
 Procedure LayerIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 20 80 L 60 80 L 80 60 L 40 60 Z"
   AddPathSegments(segments)
@@ -933,10 +1006,12 @@ Procedure WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT
   AddPathSegments(segments)
   VectorSourceColor(#ORANGE_COLOR)
   FillPath(#PB_Path_Preserve)
-  Define segments.s = "M 50 40 L 50 60 M 50 70 L 50 70"
+  Define segments.s = "M 50 40 L 50 60"
   AddPathSegments(segments)
   VectorSourceColor(#BLACK_COLOR)
   StrokePath(thickness, style)
+  AddPathCircle(50, 68, thickness * 0.5)
+  FillPath()
 EndProcedure
 
 Procedure ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
@@ -1018,7 +1093,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 873
+; FirstLine = 857
 ; Folding = --------
 ; EnableXP
