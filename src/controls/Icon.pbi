@@ -871,7 +871,7 @@ Procedure StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   
   AddPathBox(10, 37, 45, 16)
   AddPathBox(40, 57, 40, 16)
-  AddPathBox(40, 77, 40, 16)
+  AddPathBox(40, 77 , 40, 16)
   
   VectorSourceColor(fill)
   FillPath()
@@ -1094,7 +1094,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 873
-; FirstLine = 857
+; CursorPosition = 863
+; FirstLine = 811
 ; Folding = --------
 ; EnableXP
