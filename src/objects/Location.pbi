@@ -502,21 +502,21 @@ Module Location
         If ( t < 0.0 )
           If ( d < 0.0 )
             s = -d/a
-            CLAMP( s, 0.0, 1.0 )
+            s = CLAMP( s, 0.0, 1.0 )
             t = 0.0
           Else
             s = 0.0
             t = -e/c
-            CLAMP( t, 0.0, 1.0 )
+            t = CLAMP( t, 0.0, 1.0 )
           EndIf
         Else
           s = 0.0
           t = -e/c
-          CLAMP( t, 0.0, 1.0 )
+          t = CLAMP( t, 0.0, 1.0 )
         EndIf 
       ElseIf ( t < 0.0 )
         s = -d/a
-        CLAMP( s, 0.0, 1.0 )
+        s = CLAMP( s, 0.0, 1.0 )
         t = 0.0
       Else
         Define invDet.f = 1.0 / det
@@ -531,11 +531,11 @@ Module Location
           Define numer.f = tmp1 - tmp0
           Define denom.f = a-2*b+c
           s = numer/denom
-          CLAMP( s, 0.0, 1.0 )
+          s = CLAMP( s, 0.0, 1.0 )
           t = 1-s
         Else
           t = -e/c
-          CLAMP( t, 0.0, 1.0 )
+          t = CLAMP( t, 0.0, 1.0 )
           s = 0.0
         EndIf
       ElseIf ( t < 0.0 )
@@ -543,18 +543,18 @@ Module Location
           Define numer.f = c+e-b-d
           Define denom.f = a-2*b+c
           s = numer/denom
-          CLAMP( s, 0.0, 1.0)
+          s = CLAMP( s, 0.0, 1.0)
           t = 1-s
         Else
           s = -e/c
-          CLAMP( s, 0.0, 1.0 )
+          s = CLAMP( s, 0.0, 1.0 )
           t = 0.0
         EndIf
       Else
         Define numer.f = c+e-b-d
         Define denom.f = a-2*b+c
         s = numer/denom
-        CLAMP( s, 0.0, 1.0 )
+        s = CLAMP( s, 0.0, 1.0 )
         t = 1.0 - s
       EndIf
     EndIf
@@ -594,8 +594,8 @@ Module Location
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 484
-; FirstLine = 457
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 556
+; FirstLine = 521
 ; Folding = ---
 ; EnableXP

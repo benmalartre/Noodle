@@ -709,8 +709,8 @@ Module Topology
   ;     GRID
   ; ---------------------------------------------------------
   Procedure Grid(*topo.Topology_t,radius.f=1,u.i=12,v.i=12)
-    Math::MAXIMUM(u,2)
-    Math::MAXIMUM(v,2)
+    u = Math::MAXIMUM(u,2)
+    v = Math::MAXIMUM(v,2)
     
     Protected nbp = (u-1)*(v-1)
   
@@ -923,7 +923,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 460
-; FirstLine = 456
+; CursorPosition = 712
+; FirstLine = 707
 ; Folding = -----
 ; EnableXP

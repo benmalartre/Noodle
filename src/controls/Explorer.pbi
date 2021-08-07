@@ -797,7 +797,7 @@ Module ControlExplorer
     *Me\type = type
     *Me\iheight + #LINEHEIGHT
     Protected nw.i = TextWidth(name)+(depth+1)*#SHIFTX
-    Math::MAXIMUM(*Me\iwidth,nw)
+    *Me\iwidth = Math::MAXIMUM(*Me\iwidth,nw)
     *Me\items() = *item\children()
     Select type
       Case #TYPE_ATTRIBUTE
@@ -1152,8 +1152,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 564
-; FirstLine = 546
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 799
+; FirstLine = 757
 ; Folding = 4-4---
 ; EnableXP

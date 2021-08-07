@@ -612,7 +612,7 @@ DeclareModule Vector2
       _angle = 0
     Else
       _fCosAngle = (_v\x* _o\x + _v\y * _o\y)/_fLen
-      Math::Clamp(_fCosAngle,-1,1)
+      _fCosAngle = Math::CLAMP(_fCosAngle,-1,1)
       _angle = ACos(_fCosAngle)
     EndIf
   EndMacro
@@ -2743,7 +2743,7 @@ DeclareModule Matrix4
   ;-------------------------------------------
   Macro GetProjectionMatrix(_m,_fov,_aspect,_znear,_zfar)
     Define _m4_invf.f = 1 / Tan(Radian(_fov)*0.5)
-    Maximum(_znear,0.000001)
+    _near = MAXIMUM(_znear,0.000001)
     Matrix4::SetIdentity(_m)
 
     _m\v[0] = _m4_invf/_aspect
@@ -4384,8 +4384,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 187
-; FirstLine = 156
+; CursorPosition = 619
+; FirstLine = 601
 ; Folding = --------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

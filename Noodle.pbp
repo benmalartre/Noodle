@@ -7,12 +7,16 @@
   <section name="data">
     <explorer view="..\..\..\Applications\PureBasic.app\Contents\Resources\Examples\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2021-07-22 00:23" user="graph" host="frapcanim2244"/>
+    <lastopen date="2021-08-07 10:07" user="graph" host="frapcanim2244"/>
   </section>
   <section name="files">
     <file name="src\application\Icons.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="1120a03de6573c230283a76073d7fb1f"/>
+    </file>
+    <file name="src\application\IconsLibrary.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="ac8d7fa7adf609252fddbbf35349e0e8"/>
     </file>
     <file name="src\application\ScreenCapture.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -83,8 +87,8 @@
       <fingerprint md5="3a968cb75fc5b0365b3f4e6689f83fd4"/>
     </file>
     <file name="src\controls\Explorer.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="5af9efdbe6aa4124ff9a6c6bc2f6902b"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="36a4f2581fc1b5d70b25a8c48b3b9954"/>
     </file>
     <file name="src\controls\Font.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -107,7 +111,7 @@
       <fingerprint md5="837af690f3819d02b73326b5156cff24"/>
     </file>
     <file name="src\controls\Knob.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="c3411247d65e30aa4e461db06173adc2"/>
     </file>
     <file name="src\controls\Label.pbi">
@@ -212,7 +216,7 @@
     </file>
     <file name="src\core\Math.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="02e1bf0ac22bf790a27ee754cb34aed3"/>
+      <fingerprint md5="f108c50059109c1321fa3f518d24836b"/>
     </file>
     <file name="src\core\Matrix.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -371,8 +375,8 @@
       <fingerprint md5="5372e89aec60a58fb808dd3bfb48dddc"/>
     </file>
     <file name="src\graph\Connexion.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
-      <fingerprint md5="8bef099a863bfde530d99f0e95a62c1d"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="++-"/>
+      <fingerprint md5="7fc2c02dbbf385c7336fbf9aa9ad15f3"/>
     </file>
     <file name="src\graph\Explorer.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="++-"/>
@@ -827,7 +831,7 @@
       <fingerprint md5="1191c41f2073f36d9f12bd757f006bbc"/>
     </file>
     <file name="src\objects\Camera.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="3f076787c8b91efb10c4ee7237c2697b"/>
     </file>
     <file name="src\objects\CameraGeometry.pbi">
@@ -903,8 +907,8 @@
       <fingerprint md5="719dd424b2e87cbe64e1c2952ae4a002"/>
     </file>
     <file name="src\objects\Location.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="ed4fc59ee70217389a93bcacab7b5c71"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="a1b2f47afa6bcda9034df02acdd94229"/>
     </file>
     <file name="src\objects\Locator.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -991,7 +995,7 @@
       <fingerprint md5="9a037a11019ccd1f20aaf1cf826c6d87"/>
     </file>
     <file name="src\objects\Sampler.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
       <fingerprint md5="779437f9e8319b5e8c5c1d020d10301d"/>
     </file>
     <file name="src\objects\Scene.pbi">
@@ -1023,8 +1027,8 @@
       <fingerprint md5="9898addbc5509f8c303c095b0580eabe"/>
     </file>
     <file name="src\objects\Topology.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="7a56307c0ff4f5f9a5d1e6b77841245f"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="ea2484d644eda7683eacf24195bd71af"/>
     </file>
     <file name="src\objects\Triangle.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1579,8 +1583,8 @@
       <fingerprint md5="76bd76774927bba2f06e1fcd628d96bf"/>
     </file>
     <file name="src\ui\GraphUI.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
-      <fingerprint md5="d1e6c8a89736b95a455328363a8b32ef"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
+      <fingerprint md5="72ffcff454856065c801aa4fa2686c1f"/>
     </file>
     <file name="src\ui\LogUI.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
@@ -1634,19 +1638,16 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" panelstate="+++"/>
       <fingerprint md5="edd3e4b2610a3264ee613193311223a5"/>
     </file>
-    <file name="src\application\IconsLibrary.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+++"/>
-      <fingerprint md5="ac8d7fa7adf609252fddbbf35349e0e8"/>
-    </file>
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\application\IconsLibrary.pbi"/>
+      <inputfile value="src\test\TestHalfEdge.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 5.73 LTS (Windows - x64)"/>
       <executable value="..\Tests\TestIconsLibrary\x64\Release\Icons.dll"/>
       <options asm="1" thread="1" xpskin="1" debug="1"/>
       <format exe="dll" cpu="0"/>
+      <debugger custom="1" type="standalone"/>
       <constants>
         <constant value="#USE_SSE=1" enable="1"/>
         <constant value="#USE_ALEMBIC=1" enable="1"/>

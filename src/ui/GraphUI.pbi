@@ -1097,10 +1097,10 @@ Module GraphUI
   
     ForEach *Me\tree\current\nodes()
       With *Me\tree\current\nodes()
-        Minimum(minx,\posx) 
-        Minimum(miny,\posy)
-        Maximum(maxx,\posx+\width)
-        Maximum(maxy,\posy+\height)
+        minx = MINIMUM(minx,\posx) 
+        miny = MINIMUM(miny,\posy)
+        maxx = MAXIMUM(maxx,\posx+\width)
+        maxy = MAXIMUM(maxy,\posy+\height)
       EndWith
     Next
     
@@ -1110,8 +1110,8 @@ Module GraphUI
     *Me\canvasX = -(maxx-minx)/2
     *Me\canvasY = -(maxy-miny)/2
     *Me\zoom = (*Me\sizX/width/2 + *Me\sizY/height/2)
-    MINIMUM(*Me\zoom,2.5)
-    MAXIMUM(*Me\zoom,0.01)
+    *Me\zoom = MINIMUM(*Me\zoom,2.5)
+    *Me\zoom = MAXIMUM(*Me\zoom,0.01)
    
     ForEach *Me\tree\current\nodes()
       Node::ViewPosition(*Me\tree\root\nodes(),*Me\canvasX,*Me\canvasY)
@@ -1228,7 +1228,7 @@ Module GraphUI
             Define oy.d = (*Me\mouseY - *Me\canvasY) / *Me\zoom
             
             *Me\zoom + wheel * (*Me\zoom * 100 / 1000)
-            Clamp(*Me\zoom,0.01,2.5)
+            *Me\zoom = CLAMP(*Me\zoom,0.01,2.5)
             
             Define nx.d = (*Me\mouseX - *Me\canvasX) / *Me\zoom
             Define ny.d = (*Me\mouseY - *Me\canvasY) / *Me\zoom
@@ -1566,8 +1566,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1387
-; FirstLine = 1364
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 1253
+; FirstLine = 1226
 ; Folding = --------
 ; EnableXP

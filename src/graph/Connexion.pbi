@@ -335,7 +335,7 @@ Module Connexion
     Protected a.i = *c\d\x - *c\a\x
     Protected b.i = *c\d\y - *c\a\y
     Protected l.f = Sqr(a*a+b*b)
-    Maximum(l,0.01)
+    l = MAXIMUM(l,0.01)
     *c\samples = 1/l * 5
     
   EndProcedure
@@ -396,7 +396,7 @@ Module Connexion
     Protected b.i = *c\a\y - *c\d\y
     Protected l.f = Sqr(a*a+b*b)
     
-    Maximum(l,0.01)
+    l = MAXIMUM(l,0.01)
     *c\samples = 1/l*10
   EndProcedure
 
@@ -591,8 +591,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 298
-; FirstLine = 285
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 398
+; FirstLine = 395
 ; Folding = ----
 ; EnableXP
