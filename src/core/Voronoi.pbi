@@ -73,7 +73,6 @@ DeclareModule Voronoi
     fill_fn.PFNFILLGAP
     min.Point_t       ; The bounding rect min
     max.Point_t       ; The bounding rect max
-    *ctx              ; User defined context
   EndStructure
   
   Prototype PFNPRIORITYQUEUEPRINT(*node, pos.i)
@@ -95,7 +94,7 @@ DeclareModule Voronoi
     queue.PriorityQueue_t
     
     Array sites.Site_t(0)
-    *bottomsite.Site_t
+    *bottomSite.Site_t
     numSites.i
     currentSite.i
     padding.i
@@ -138,11 +137,14 @@ DeclareModule Voronoi
   Declare EdgeNew(*diagram.Diagram_t, *s1.Site_t, *s2.Site_t)
   Declare HalfEdgeNew(*diagram.Diagram_t, *e.Edge_t, direction.i)
   Declare GraphEdgeNew(*diagram.Diagram_t, *site.Site_t, *clipper.Clipper_t)
-  Declare DiagramNew(numPoints.i, *points, Rect_t)
+  Declare DiagramNew(numPoints.i, Array points.Point_t(1), Rect_t)
   Declare DiagramDelete(*diagram.Diagram_t)
   Declare DiagramGetFirstEdge(*diagram.Diagram_t)
   Declare DiagramGetNextEdge( *edge.Edge_t )
-
+  
+  Declare DiagramGetEdges(*diagram.Diagram_t)
+  Declare DiagramNextEdge(*edge.Edge_t)
+ 
 EndDeclareModule
 
 Module Voronoi
@@ -205,15 +207,15 @@ Module Voronoi
     *e\c = dx * (*s1\p\x + dx * 0.5) + dy * (*s1\p\y + dy * 0.5)
 
     If dxIsLarger
-        *e\a = 1.0
-        *e\b = dy / dx
-        *e\c / dx
+      *e\a = 1.0
+      *e\b = dy / dx
+      *e\c / dx
     Else
-        *e\a = dx / dy
-        *e\b = 1.0
-        *e\c / dy
-      EndIf
-      ProcedureReturn *e
+      *e\a = dx / dy
+      *e\b = 1.0
+      *e\c / dy
+    EndIf
+    ProcedureReturn *e
   EndProcedure
   
   Procedure HalfEdgeNew(*diagram.Diagram_t, *e.Edge_t, direction.i)
@@ -237,10 +239,10 @@ Module Voronoi
     *ge\pos[1]\x * *clipper\min\x
     *ge\angle = CalcSortMetric(*site, *ge)
     *ge\next = #Null
- 
+    ProcedureReturn *ge
   EndProcedure
   
-  Procedure CornerEdgeNew(*diagram.Diagram_t, *site.SIte_t, *current.GraphEdge_t)
+  Procedure CornerEdgeNew(*diagram.Diagram_t, *site.Site_t, *current.GraphEdge_t)
     AddElement(*diagram\graphEdges())
     Define *ge.GraphEdge_t = *diagram\graphEdges()
     *ge\neighbor = #Null
@@ -262,7 +264,7 @@ Module Voronoi
     EndIf
     
     *ge\angle = CalcSortMetric(*site, *ge)
-    ProcedureReturn 
+    ProcedureReturn *ge
   EndProcedure
   
   Procedure GapEdgeNew(*diagram.Diagram_t, *site.Site_t, *ge.GraphEdge_t)
@@ -346,7 +348,7 @@ Module Voronoi
   ; ========================================================================================
   ; CLIPPING
   Procedure BoxShapeTest(*clipper.Clipper_t, *p.Point_t)
-    ProcedureReturn Bool(*p\x >= *clipper\min\x And *p\x <= *clipper\max\x And *p\y >= *clipper\min\y And *p\y <= *clipper\max\y)
+    ProcedureReturn #True;Bool(*p\x >= *clipper\min\x And *p\x <= *clipper\max\x And *p\y >= *clipper\min\y And *p\y <= *clipper\max\y)
   EndProcedure
 
 
@@ -627,8 +629,8 @@ Module Voronoi
   
   Procedure HalfEdgeCircleEvent(*he1.HalfEdge_t, *he2.HalfEdge_t, *vertex.Point_t)
     Define *e1.Edge_t = *he1\edge
-    Define *e2.Edge_t = *he2\edge;
-    If e1 = 0 Or e2 = 0 Or *e1\sites[1] = *e2\sites[1]
+    Define *e2.Edge_t = *he2\edge
+    If *e1 = #Null Or *e2 = #Null Or *e1\sites[1] = *e2\sites[1]
       ProcedureReturn 0
     EndIf
 
@@ -643,30 +645,28 @@ Module Voronoi
     Define *node.HalfEdge_t = *queue\items(pos)
     Define *current.HalfEdge_t
     Define parent.i = pos >> 1
-    While #True
-      If pos > 1 And HalfEdgeCompare(*queue\items(parent), *node)
-        *queue\items(pos) = *queue\items(parent)
-        *current = *queue\items(pos)
-        *current\pqpos = pos
-        pos = parent
-        parent = parent >> 1
-      Else
-        Break
-      EndIf
+    While pos > 1 And HalfEdgeCompare(*queue\items(parent), *node)
+      *current = *queue\items(parent)
+      *current\pqpos = pos
+      *queue\items(pos) = *current
+      pos = parent
+      parent = parent >> 1
     Wend
     *node\pqpos = pos
     *queue\items(pos) = *node
+    ProcedureReturn pos
   EndProcedure
-  
+
   Procedure PriorityQueueMaxChild(*queue.PriorityQueue_t, pos.i)
     Define child = pos << 1
+   
     If child >= *queue\numItems
       ProcedureReturn 0
     EndIf
     
     Define *he1.HalfEdge_t = *queue\items(child)
     Define *he2.HalfEdge_t = *queue\items(child + 1)
-    If child + 1 < *queue\numItems And HalfEdgeCompare(*he1, *he2)
+    If (child + 1) < *queue\numItems And HalfEdgeCompare(*he1, *he2)
       ProcedureReturn child + 1
     EndIf
     ProcedureReturn child
@@ -676,6 +676,7 @@ Module Voronoi
     Define *node.HalfEdge_t = *queue\items(pos)
     Define *current.HalfEdge_t
     Define child.i = PriorityQueueMaxChild(*queue, pos)
+
     While child And HalfEdgeCompare(*node, *queue\items(child)) 
       *queue\items(pos) = *queue\items(child)
       *current = *queue\items(pos)
@@ -684,10 +685,10 @@ Module Voronoi
       child = PriorityQueueMaxChild(*queue, pos)
     Wend
 
-    *queue\items(pos) = node
+    *queue\items(pos) = *node
     *current = *queue\items(pos)
     *current\pqpos = pos
-    ProcedureReturn pos             ;
+    ProcedureReturn pos
   EndProcedure
   
 
@@ -716,6 +717,8 @@ Module Voronoi
     *queue\numItems - 1
     *queue\items(1) = *queue \items(*queue\numItems)
     PriorityQueueMoveDown(*queue, 1)
+    ReDim *queue\items(*queue\numItems)
+    ProcedureReturn *node
   EndProcedure
   
   Procedure PriorityQueueTop(*queue.PriorityQueue_t)
@@ -729,15 +732,28 @@ Module Voronoi
     
     *queue\numItems - 1
     *queue\items(pos) = *queue\items(*queue\numItems)
-    If HalfEdgeCompare( node, *queue\items(pos) ) 
+    If HalfEdgeCompare( *node, *queue\items(pos) ) 
         PriorityQueueMoveUp( *queue, pos )
     Else
       PriorityQueueMoveDown( *queue, pos )
     EndIf
   EndProcedure
   
+  Procedure DiagramGetEdges( *diagram.Diagram_t )
+    FirstElement(*diagram\edges())
+    ProcedureReturn *diagram\edges()
+  EndProcedure
+  
+  Procedure DiagramNextEdge(*edge.Edge_t)
+    Define *next.Edge_t = *edge\next
+    While *next And POINT_EQ(*next\pos[0], *next\pos[1])
+      *next = *next\next
+    Wend
+    ProcedureReturn *next
+  EndProcedure
+ 
   Procedure PruneDuplicates(*diagram.Diagram_t, *rect.Rect_t)
-    Define numSites = *diagram\numsites
+    Define numSites = *diagram\numSites
 
     Define *r.Rect_t = *diagram\rect
     *r\min\x = Math::#F32_MAX
@@ -760,7 +776,8 @@ Module Voronoi
         RectUnion(*r, *site\p)
     Next
     *diagram\numSites - offset
-    ReDim *diagram\sites(*diagram\numSites)
+    
+    ;ReDim *diagram\sites(*diagram\numSites)
 
     ProcedureReturn offset
   EndProcedure
@@ -779,17 +796,18 @@ Module Voronoi
     Define *site.Site_t
     For i = 0 To numSites - 1
       *site = *diagram\sites(i)
-
-      If Not *diagram\clipper\test_fn(*diagram\clipper, *site\p)
-          offset+1
+      If Not Bool(*diagram\clipper\test_fn(*diagram\clipper, *site\p))
+          offset + 1
           Continue
       EndIf
 
       *diagram\sites(i - offset) = *diagram\sites(i)
       RectUnion(*r, *site\p)
     Next
-      
+    
     *diagram\numSites - offset
+    
+    ;ReDim *diagram\sites(*diagram\numSites)
 
     ProcedureReturn offset
   EndProcedure
@@ -798,36 +816,34 @@ Module Voronoi
   
   ; internal functions
   Procedure DiagramSiteNext(*diagram.Diagram_t)
-    *diagram\currentSite + 1
-    If ArraySize(*diagram\sites()) > *diagram\currentSite
-      ProcedureReturn *diagram\sites(*diagram\currentSite)
+    If *diagram\currentSite < *diagram\numSites
+      Define *next.Site_t = *diagram\sites(*diagram\currentSite)
+      *diagram\currentSite + 1
+      ProcedureReturn *next
     EndIf
   EndProcedure
   
   Procedure DiagramGetEdgeAboveX(*diagram.Diagram_t, *p.Point_t)
-    ; Gets the arc on the beach line at the x coordinate (i.e. right above the new site event)
 
-    ; A good guess it's close by (Can be optimized)
     Define *he.HalfEdge_t = *diagram\lastInserted
     If Not *he
-        If *p\x < ((*diagram\rect\max\x - *diagram\rect\min\x) / 2 )
-          *he = *diagram\beachLineStart
-        Else
-          *he = *diagram\beachLineEnd
-        EndIf
+       If *p\x < (*diagram\rect\max\x - *diagram\rect\min\x) / 2
+        *he = *diagram\beachLineStart
+      Else
+        *he = *diagram\beachLineEnd
+      EndIf
     EndIf
-
-    If *he = *diagram\beachLineStart 
-      Repeat
-        *he = *he\right
-      Until Not *he = *diagram\beachLineEnd And HalfEdgeRightOf(*he, *p) 
-      *he = *he\left
-    Else
-        Repeat
-          *he = *he\left
-        Until Not *he = *diagram\beachLineStart And Not HalfEdgeRightof(*he, *p)
+    
+     If *he = *diagram\beachLineStart Or (Not Bool(*he = *diagram\beachLineEnd) And HalfEdgeRightOf(*he, *p)) 
+       Repeat
+         *he = *he\right
+       Until *he = *diagram\beachLineEnd Or Not HalfEdgeRightOf(*he, *p)
+       *he = *he\left
+     Else
+       Repeat
+         *he = *he\left
+       Until *he = *diagram\beachLineStart Or HalfEdgeRightOf(*he, *p)
     EndIf
-
     ProcedureReturn *he
   EndProcedure
   
@@ -847,6 +863,7 @@ Module Voronoi
   Procedure DiagramFinishLine(*diagram.Diagram_t, *e.Edge_t)
     If Not EdgeClipLine(*diagram, *e)
       ProcedureReturn 
+      
     EndIf
   
     ; Make sure the graph edges are CCW
@@ -893,9 +910,9 @@ Module Voronoi
     
     Define *site.Site_t
     For i = 0 To *diagram\numsites - 1
-        *site = *diagram\sites(i)
-        *diagram\clipper\fill_fn(*diagram, *diagram\clipper, *site);
-     Next
+      *site = *diagram\sites(i)
+      *diagram\clipper\fill_fn(*diagram, *diagram\clipper, *site);
+    Next
    EndProcedure
    
   Procedure DiagramCircleEvent(*diagram.Diagram_t)
@@ -923,15 +940,15 @@ Module Voronoi
     Define direction = #DIRECTION_LEFT
     If *bottom\p\y > *top\p\y
         Define *tmp.Site_t = *bottom
-        *bottom = *top;
-        *top = *tmp;
+        *bottom = *top
+        *top = *tmp
         direction = #DIRECTION_RIGHT
     EndIf
 
     Define *edge.Edge_t = EdgeNew(*diagram, *bottom, *top)
     *edge\next = *diagram\currentEdge
     *diagram\currentEdge = *edge
-
+    
     Define *he.HalfEdge_t = HalfEdgeNew(*diagram, *edge, direction)
     HalfEdgeLink(*leftleft, *he)
     DiagramEndPos(*diagram, *edge, vertex, #DIRECTION_RIGHT - direction)
@@ -955,7 +972,7 @@ Module Voronoi
   Procedure DiagramSiteEvent(*diagram.Diagram_t, *site.Site_t)
     Define *left.HalfEdge_t   = DiagramGetEdgeAboveX(*diagram, *site\p)
     Define *right  = *left\right
-    Define *bottom.Site_t = HalfEdgeRightSite(left);
+    Define *bottom.Site_t = HalfEdgeRightSite(*left)
     If Not *bottom : *bottom =*diagram\bottomsite : EndIf
     
 
@@ -988,14 +1005,16 @@ Module Voronoi
     
   EndProcedure
   
-  
-
-  Procedure DiagramNew(numPoints.i, *points, Rect_t)
+  Procedure DiagramNew(numPoints.i, Array points.Point_t(1), Rect_t)
     Define *diagram.Diagram_t = AllocateMemory(SizeOf(Diagram_t))
     InitializeStructure(*diagram, Diagram_t)
     
-    *diagram\beachLineStart = HalfEdgeNew(*diagram\halfEdges(), 0, 0)
-    *diagram\beachLineEnd = HalfEdgeNew(*diagram\halfEdges(), 0, 0)
+    *diagram\lastInserted = #Null
+
+    
+    *diagram\beachLineStart = HalfEdgeNew(*diagram, 0, 0)
+    *diagram\beachLineEnd = HalfEdgeNew(*diagram, 0, 0)
+    
     *diagram\beachLineStart\left = #Null
     *diagram\beachLineStart\right = *diagram\beachLineEnd
     *diagram\beachLineEnd\left = *diagram\beachLineStart
@@ -1004,33 +1023,31 @@ Module Voronoi
     Define maxNumEvents = numPoints * 2 ; beachline can have max 2*n-5 parabolas
     PriorityQueueInit(*diagram\queue, maxNumEvents)
     
-    *diagram\numsites = numPoints
+    *diagram\numSites = numPoints
     ReDim *diagram\sites(numPoints)
     Define *site.Site_t
-    Define *current.Point_t
     For i=0 To numPoints - 1
       *site = *diagram\sites(i)
-      InitializeStructure(*site, Site_t)
-      *current = *points + i * SizeOf(Point_t)
-      *site\p\x = *current\x
-      *site\p\y = *current\y
+      *site\edges = #Null
+      *site\p\x = points(i)\x
+      *site\p\y = points(i)\y
       *site\index = i
     Next
     
-    SortStructuredArray(*diagram\sites(), #PB_Sort_Ascending, OffsetOf(Site_t\p), #PB_Float)
-    SortStructuredArray(*diagram\sites(), #PB_Sort_Ascending, OffsetOf(Site_t\p) + 4, #PB_Float)
+    SortStructuredArray(*diagram\sites(), #PB_Sort_Descending, OffsetOf(Site_t\p), #PB_Float)
+    SortStructuredArray(*diagram\sites(), #PB_Sort_Descending, OffsetOf(Site_t\p) + 1, #PB_Float)
     
-    *diagram\clipper\test_fn = @BoxShapeTest
-    *diagram\clipper\clip_fn = @BoxShapeClip
-    *diagram\clipper\fill_fn = @BoxShapeFillGaps
+    *diagram\clipper\test_fn = @BoxShapeTest()
+    *diagram\clipper\clip_fn = @BoxShapeClip()
+    *diagram\clipper\fill_fn = @BoxShapeFillGaps()
     
     Define *rect.Rect_t = *diagram\rect
     *rect\min\x = Math::#F32_MAX
     *rect\min\y = Math::#F32_MAX
     *rect\max\x = -Math::#F32_MAX
     *rect\max\y = -Math::#F32_MAX
-    PruneDuplicates(*diagram, tmp_rect)
-
+    PruneDuplicates(*diagram, *rect)
+    
     ; Prune using the test second
     If (*diagram\clipper\test_fn)
       ; e.g. used by the box clipper in the test_fn
@@ -1039,10 +1056,10 @@ Module Voronoi
       *diagram\clipper\max\x = *rect\max\x
       *diagram\clipper\max\y = *rect\max\y
       
-      PruneNotInShape(*diagram, rect)
+      PruneNotInShape(*diagram, *rect)
       
-      RectRound(rect)
-      RectInflate(rect, 10)
+      RectRound(*rect)
+      RectInflate(*rect, 10)
 
       *diagram\clipper\min\x = *rect\min\x
       *diagram\clipper\min\y = *rect\min\y
@@ -1100,11 +1117,56 @@ Module Voronoi
     FreeMemory(*diagram)
   EndProcedure
  
-  
 EndModule 
 
+
+Define WIDTH = 800
+Define N = 12
+Dim points.Voronoi::Point_t(N)
+Define i
+Define *p.Voronoi::Point_t
+For i = 0 To N - 1
+  *p = points(i)
+  *p\x = 200 + Random(400)
+  *p\y = 200 + Random(400)
+  Debug Str(*p\x)+","+Str(*p\y)
+Next
+
+Define rect.Voronoi::Rect_t
+
+Define *diagram.Voronoi::Diagram_t = Voronoi::DiagramNew(N, points(), rect)
+
+Define window = OpenWindow(#PB_Any , 0, 0, WIDTH, WIDTH, "VORONOI")
+Define canvas = CanvasGadget(#PB_Any, 0, 0, WIDTH, WIDTH)
+
+SortStructuredArray(points(), #PB_Sort_Descending, 0, #PB_Float)
+SortStructuredArray(points(), #PB_Sort_Descending, 1, #PB_Float)
+
+StartVectorDrawing(CanvasVectorOutput(canvas))
+For i = 0 To *diagram\numSites - 1
+  VectorSourceColor(RGBA(0,0,0,255))
+  AddPathCircle(*diagram\sites(i)\p\x, *diagram\sites(i)\p\y, 12)
+  Debug Str(*diagram\sites(i)\p\x)+","+Str(*diagram\sites(i)\p\y)
+  FillPath()
+  VectorSourceColor(RGBA(255,0,0,255))
+  AddPathCircle(points(i)\x, points(i)\y, 4)
+  FillPath()
+Next
+VectorSourceColor(RGBA(255,255,0,255))
+Define *edges = Voronoi::DiagramGetEdges(*diagram)
+
+ForEach *diagram\edges()
+  AddPathLine(*diagram\edges()\pos\x, *diagram\edges()\pos\y)
+Next
+StrokePath(4)
+StopVectorDrawing()
+
+Repeat
+Until WaitWindowEvent() = #PB_Event_CloseWindow
+
+
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 1097
-; FirstLine = 1042
+; CursorPosition = 734
+; FirstLine = 725
 ; Folding = ----------
 ; EnableXP
