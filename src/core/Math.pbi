@@ -593,6 +593,10 @@ DeclareModule Vector2
     Sqr(Pow(_v\x - _o\x, 2) + Pow(_v\y - _o\y, 2))
   EndMacro
   
+  Macro DistanceSquared(_v, _o)
+    Pow(_v\x - _o\x, 2) + Pow(_v\y - _o\y, 2)
+  EndMacro
+  
   ;------------------------------------------------------------------
   ; VECTOR2 DETERMINANT
   ;------------------------------------------------------------------
@@ -4414,8 +4418,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 466
-; FirstLine = 458
+; CursorPosition = 596
+; FirstLine = 556
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

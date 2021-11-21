@@ -96,9 +96,9 @@ Procedure.i ShowTurbulence(img.i, *datas.TurbulenceDatas_t)
   Protected width = ImageWidth(img)
   Protected height = ImageHeight(img)
   UpdatePositions(*datas)
-  MonoTurbulence(*datas)
+  ;MonoTurbulence(*datas)
 
-  ;Thread::SplitTask(*pool, *datas, ThreadedTurbulenceDatas_t, @ThreadedTurbulence())
+  Thread::SplitTask(*pool, *datas, ThreadedTurbulenceDatas_t, @ThreadedTurbulence())
   
   Define x, y
   Define *noise.Math::v3f32
@@ -171,8 +171,8 @@ Repeat
     SetGadgetState(0, ImageID(image))
   EndIf  
 Until Event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 170
-; FirstLine = 140
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 95
+; FirstLine = 80
 ; Folding = --
 ; EnableXP
