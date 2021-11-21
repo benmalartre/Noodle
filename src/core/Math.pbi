@@ -464,9 +464,9 @@ DeclareModule Vector2
   ;------------------------------------------------------------------
   ; VECTOR2 SET
   ;------------------------------------------------------------------
-  Macro Set(_v,_x,_f)
+  Macro Set(_v,_x,_y)
     _v\x = _x
-    _v\y = _f
+    _v\y = _y
   EndMacro
   
   Macro SetFromOther(_v,_o)
@@ -576,6 +576,28 @@ DeclareModule Vector2
   ;------------------------------------------------------------------
   Macro Dot(_v,_o)
     (_v\x * _o\x + _v\y * _o\y)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 ORTHOGONAL
+  ;------------------------------------------------------------------
+  Macro Orthogonal(_v, _o)
+    _v\x = -_o\y
+    _v\y = _o\x
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 DISTANCE
+  ;------------------------------------------------------------------
+  Macro Distance(_v, _o)
+    Sqr(Pow(_v\x - _o\x, 2) + Pow(_v\y - _o\y, 2))
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 DETERMINANT
+  ;------------------------------------------------------------------
+  Macro Determinant(_v, _o)
+    _v\x * _o\y - _v\y * _o\x 
   EndMacro
   
   ;------------------------------------------------------------------
@@ -704,6 +726,7 @@ DeclareModule Vector2
     EndIf
   EndMacro
   
+  Declare.f Cross(*p0.v2f32, *p1.v2f32)
  
 EndDeclareModule
 
@@ -3008,6 +3031,13 @@ EndModule
 ; v2f32 Module Implementation
 ;====================================================================
 Module Vector2
+  ;------------------------------------------------------------------
+  ; VECTOR2 CROSS PRODUCT
+  ;------------------------------------------------------------------
+  Procedure.f Cross(*p0.v2f32, *p1.v2f32)
+    ProcedureReturn  *p0\x * *p1\y - *p0\y * *p1\x
+  EndProcedure
+ 
 EndModule
 
 ;====================================================================
@@ -4384,8 +4414,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 619
-; FirstLine = 601
-; Folding = --------------------------------------------------------
+; CursorPosition = 466
+; FirstLine = 458
+; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

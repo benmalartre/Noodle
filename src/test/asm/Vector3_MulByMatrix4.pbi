@@ -1,6 +1,6 @@
 ﻿
 
-XIncludeFile "E:/Projects/RnD/Noodle/src/core/Math.pbi"
+XIncludeFile "../../core/Math.pbi"
 UseModule Math
 
 
@@ -174,8 +174,7 @@ MessageRequester("MULTIPLY", Str(T1)+" ---> "+Str(T2)+" EQUALS : "+Str(Compare(*
                              ArrayString(*V2, nb))
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 117
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 2
 ; Folding = -
 ; EnableXP
