@@ -2,13 +2,10 @@
 ; Shader Module Declararion
 ;============================================================================================
 XIncludeFile "../libs/OpenGL.pbi"
-; XIncludeFile "../libs/GLFW.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
 XIncludeFile "../core/Log.pbi"
 
-DeclareModule Shader
-;   UseModule GLFW
-  
+DeclareModule Shader  
   Enumeration 
     #SHADER_VERTEX
     #SHADER_GEOMETRY
@@ -335,8 +332,8 @@ Module Program
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 157
-; FirstLine = 147
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 7
+; FirstLine = 301
 ; Folding = ---
 ; EnableXP

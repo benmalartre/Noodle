@@ -255,7 +255,7 @@ EndProcedure
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*viewport\context)
+  GLContext::SetContext(*app\context)
   If EventType() = #PB_EventType_KeyDown
     If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
       BulletWorld::hlpReset(Bullet::*bullet_world)
@@ -334,10 +334,12 @@ Procedure Draw(*app.Application::Application_t)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      View::SetContent(*app\window\main,*viewport)
-    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+     *default.Layer::Layer_t = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Else
     GLContext::Setup(*app\context)
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
+    *default.Layer::Layer_t = LayerDefault::New(width,height,*app\context,*app\camera)
   EndIf
   
   Camera::LookAt(*app\camera)
@@ -348,7 +350,7 @@ Procedure Draw(*app.Application::Application_t)
   Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
 
-  *default.Layer::Layer_t = LayerDefault::New(width,height,*viewport\context,*app\camera)
+  
   
 ;   Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ;   LayerGBuffer::Setup(*gbuffer)
@@ -391,13 +393,13 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 384
-; FirstLine = 330
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 257
+; FirstLine = 247
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

@@ -788,8 +788,8 @@ Module GLFW
   ;}
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 759
-; FirstLine = 743
+; CursorPosition = 28
+; FirstLine = 26
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
