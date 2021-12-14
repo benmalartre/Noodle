@@ -1,11 +1,5 @@
 ﻿; TEST HALF EDGE
-XIncludeFile "../objects/Geometry.pbi"
-XIncludeFile "../core/Slot.pbi"
 
-XIncludeFile "../objects/Octree.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Slot.pbi"
-XIncludeFile "../core/Morton.pbi"
 XIncludeFile "../core/Application.pbi"
 
 UseModule Math
@@ -109,6 +103,7 @@ Procedure Update(*app.Application::Application_t)
     EndIf
   EndIf
   
+ If Not #USE_GLFW
   GLContext::SetContext(*viewport\context)
   Scene::*current_scene\dirty = #True
   Scene::Update(Scene::*current_scene)
@@ -122,6 +117,22 @@ Procedure Update(*app.Application::Application_t)
   FTGL::EndDraw(*viewport\context\writer)
   
   GLContext::FlipBuffer(*viewport\context)
+Else
+  GLContext::SetContext(*app\context)
+  Scene::*current_scene\dirty = #True
+  Scene::Update(Scene::*current_scene)
+  
+  LayerDefault::Draw(*layer, *app\context)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/*viewport\sizX
+;   Define ratio.f = *viewport\sizX / *viewport\sizY
+;   FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*viewport\context\writer)
+  
+  GLContext::FlipBuffer(*app\context)
+EndIf
+
 
 EndProcedure
 
@@ -141,12 +152,17 @@ FTGL::Init()
      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+    *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
+  Else
+    GLContext::Setup(*app\context)
+    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
+    *layer = LayerDefault::New(width,height,*app\context,*app\camera)
   EndIf
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
+  
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -193,9 +209,8 @@ FTGL::Init()
 
 EndIf
 
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 114
+; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; CursorPosition = 158
+; FirstLine = 154
 ; Folding = -
 ; EnableXP

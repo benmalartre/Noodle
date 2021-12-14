@@ -215,7 +215,7 @@ CompilerEndIf
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
-  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GlContext_t=#Null)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -634,7 +634,7 @@ CompilerEndIf
         ;glfwWaitEvents()
         glfwPollEvents()
         glfwMakeContextCurrent(*Me\window)
-        *callback(*Me)
+        *callback(*Me, 0)
         glfwSwapBuffers(*Me\window)
        
       Wend
@@ -787,8 +787,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 368
-; FirstLine = 340
+; CursorPosition = 636
+; FirstLine = 635
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
