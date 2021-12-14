@@ -159,14 +159,14 @@ DeclareModule Math
   ;  Maximum Macro
   ; ----------------------------------------------------------------------------
   Macro MAXIMUM(_a,_b)
-    If _a<_b : _a=_b : EndIf
+    (Bool((_a)>=(_b)) * (_a) + Bool((_b)>(_a)) * (_b))
   EndMacro
-  
+
   ; ----------------------------------------------------------------------------
   ;  Minimum Macro
   ; ----------------------------------------------------------------------------
   Macro MINIMUM(_a,_b)
-    If _a>_b : _a=_b : EndIf
+    (Bool((_a)<=(_b)) * (_a) + Bool((_b)<(_a)) * (_b))
   EndMacro
   
   ; ----------------------------------------------------------------------------
@@ -180,11 +180,12 @@ DeclareModule Math
   ;  Clamp Macro
   ; ----------------------------------------------------------------------------
   Macro CLAMP(_x,_min,_max)
-    If (_x<_min)
-      _x = _min 
-    ElseIf (_x>_max)
-      _x=_max 
-    EndIf
+    (Bool((_x)<=(_min)) * (_min) + Bool((_x)>=(_max)) * (_max)) + Bool((_x)>(_min)And(_x)<(_max)) * (_x)
+;     If (_x<_min)
+;       _x = _min 
+;     ElseIf (_x>_max)
+;       _x=_max 
+;     EndIf
   EndMacro
 
   ; ----------------------------------------------------------------------------
@@ -463,9 +464,9 @@ DeclareModule Vector2
   ;------------------------------------------------------------------
   ; VECTOR2 SET
   ;------------------------------------------------------------------
-  Macro Set(_v,_x,_f)
+  Macro Set(_v,_x,_y)
     _v\x = _x
-    _v\y = _f
+    _v\y = _y
   EndMacro
   
   Macro SetFromOther(_v,_o)
@@ -578,6 +579,32 @@ DeclareModule Vector2
   EndMacro
   
   ;------------------------------------------------------------------
+  ; VECTOR2 ORTHOGONAL
+  ;------------------------------------------------------------------
+  Macro Orthogonal(_v, _o)
+    _v\x = -_o\y
+    _v\y = _o\x
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 DISTANCE
+  ;------------------------------------------------------------------
+  Macro Distance(_v, _o)
+    Sqr(Pow(_v\x - _o\x, 2) + Pow(_v\y - _o\y, 2))
+  EndMacro
+  
+  Macro DistanceSquared(_v, _o)
+    Pow(_v\x - _o\x, 2) + Pow(_v\y - _o\y, 2)
+  EndMacro
+  
+  ;------------------------------------------------------------------
+  ; VECTOR2 DETERMINANT
+  ;------------------------------------------------------------------
+  Macro Determinant(_v, _o)
+    _v\x * _o\y - _v\y * _o\x 
+  EndMacro
+  
+  ;------------------------------------------------------------------
   ; VECTOR2 NORMALIZE
   ;------------------------------------------------------------------
   Macro Normalize(_v, _o)
@@ -611,7 +638,7 @@ DeclareModule Vector2
       _angle = 0
     Else
       _fCosAngle = (_v\x* _o\x + _v\y * _o\y)/_fLen
-      Math::Clamp(_fCosAngle,-1,1)
+      _fCosAngle = Math::CLAMP(_fCosAngle,-1,1)
       _angle = ACos(_fCosAngle)
     EndIf
   EndMacro
@@ -703,6 +730,7 @@ DeclareModule Vector2
     EndIf
   EndMacro
   
+  Declare.f Cross(*p0.v2f32, *p1.v2f32)
  
 EndDeclareModule
 
@@ -2742,7 +2770,7 @@ DeclareModule Matrix4
   ;-------------------------------------------
   Macro GetProjectionMatrix(_m,_fov,_aspect,_znear,_zfar)
     Define _m4_invf.f = 1 / Tan(Radian(_fov)*0.5)
-    Maximum(_znear,0.000001)
+    _near = MAXIMUM(_znear,0.000001)
     Matrix4::SetIdentity(_m)
 
     _m\v[0] = _m4_invf/_aspect
@@ -3007,6 +3035,13 @@ EndModule
 ; v2f32 Module Implementation
 ;====================================================================
 Module Vector2
+  ;------------------------------------------------------------------
+  ; VECTOR2 CROSS PRODUCT
+  ;------------------------------------------------------------------
+  Procedure.f Cross(*p0.v2f32, *p1.v2f32)
+    ProcedureReturn  *p0\x * *p1\y - *p0\y * *p1\x
+  EndProcedure
+ 
 EndModule
 
 ;====================================================================
@@ -4382,9 +4417,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 2300
-; FirstLine = 2273
-; Folding = --------------------------------------------------------
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 596
+; FirstLine = 556
+; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

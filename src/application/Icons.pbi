@@ -4,7 +4,7 @@ UsePNGImageEncoder()
 
 
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-  Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/icons/"
+  Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/icons/"
 CompilerElseIf #PB_Compiler_OS  = #PB_OS_MacOS
   Global iconFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/icons/"
 CompilerEndIf
@@ -27,16 +27,13 @@ Procedure DrawIcon(func.ControlIcon::DrawIconImpl)
 EndProcedure
 
 Procedure CopyFolder(srcFolder.S, dstFolder.s)
-  Debug "COPY FOLDER CALLED"
   DeleteDirectory(dstFolder, "*", #PB_FileSystem_Recursive | #PB_FileSystem_Force)
   CreateDirectory(dstFolder)
+  
   Define dir.i = ExamineDirectory(#PB_Any, srcFolder, "*")
-  Debug "DIrectory : "+Str(dir)
   While NextDirectoryEntry(dir)
-    Debug "DIRECTORY ENTRY NAME : "+DirectoryEntryName(dir)
     If DirectoryEntryType(dir) = #PB_DirectoryEntry_File
       Define filename.s = DirectoryEntryName(dir)
-      Debug "COPY TO "+ dstFolder + filename
       CopyFile(srcFolder + filename, dstFolder + filename)
     EndIf
   Wend  
@@ -59,6 +56,8 @@ DrawIcon(ControlIcon::@InvisibleIcon())
 DrawIcon(ControlIcon::@TranslateIcon())
 DrawIcon(ControlIcon::@RotateIcon())
 DrawIcon(ControlIcon::@ScaleIcon())
+DrawIcon(ControlIcon::@BrushIcon())
+DrawIcon(ControlIcon::@PenIcon())
 DrawIcon(ControlIcon::@SelectIcon())
 DrawIcon(ControlIcon::@SplitVIcon())
 DrawIcon(ControlIcon::@SplitHIcon())
@@ -66,8 +65,8 @@ DrawIcon(ControlIcon::@LockedIcon())
 DrawIcon(ControlIcon::@UnlockedIcon())
 DrawIcon(ControlIcon::@OpIcon())
 DrawIcon(ControlIcon::@TrashIcon())
+DrawIcon(ControlIcon::@StageIcon())
 DrawIcon(ControlIcon::@LayerIcon())
-DrawIcon(ControlIcon::@PenIcon())
 DrawIcon(ControlIcon::@FolderIcon())
 DrawIcon(ControlIcon::@FileIcon())
 DrawIcon(ControlIcon::@HomeIcon())
@@ -119,6 +118,10 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFA
       ControlIcon::RotateIcon(fill, stroke, thickness) 
     Case ControlIcon::#ICON_SCALE
       ControlIcon::ScaleIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_BRUSH
+       ControlIcon::BrushIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_PEN
+       ControlIcon::PenIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_SELECT
        ControlIcon::SelectIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_SPLITH
@@ -133,10 +136,10 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFA
        ControlIcon::OpIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_TRASH
        ControlIcon::TrashIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_STAGE
+       ControlIcon::StageIcon(fill, stroke, thickness)
      Case ControlIcon::#ICON_LAYER
        ControlIcon::LayerIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_PEN
-       ControlIcon::PenIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_FOLDER
        ControlIcon::FolderIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_FILE
@@ -171,6 +174,9 @@ CompilerSelect #PB_Compiler_OS
   CompilerCase #PB_OS_MacOS
     Define dstFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/build/src/icons/"
     CopyFolder(iconFolder, dstFolder)
+  CompilerCase #PB_OS_Windows
+    Define dstFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/src/Release/icons/"
+    CopyFolder(iconFolder, dstFolder)
 CompilerEndSelect
 
 
@@ -180,8 +186,8 @@ Repeat
   event = WaitWindowEvent()
   
 Until event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 36
-; FirstLine = 21
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 131
+; FirstLine = 125
 ; Folding = -
 ; EnableXP

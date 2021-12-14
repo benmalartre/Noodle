@@ -45,7 +45,9 @@ Module ModelGeometry
 
   Class::DEF( ModelGeometry )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 26
+
+
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 48
 ; Folding = -
 ; EnableXP

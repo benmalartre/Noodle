@@ -10,6 +10,7 @@ Global model.Math::m4f32
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
+  
   GLContext::SetContext(*app\context)
 ;   Scne::Update(Scene::*current_scene)
   
@@ -47,15 +48,19 @@ If Time::Init()
  *app = Application::New("TestMesh",width,height)
 
  If Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\window\main,"Viewport", *app\camera, *app\handle)
-   
+   *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+   *app\context = *viewport\context
+     *app\context\writer\background = #True
+    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
+
   
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -82,7 +87,6 @@ If Time::Init()
       Vector3::Set(p, Math::Random_Neg1_1()+bx, i*3, Math::Random_Neg1_1()+bz)
       Matrix4::SetTranslation(*m, p)
     Next
-    
     PolymeshGeometry::Extrusion(*mesh\geom, *points, *section)
   
   Object3D::Freeze(*mesh)
@@ -96,7 +100,7 @@ If Time::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 50
-; FirstLine = 36
+; CursorPosition = 89
+; FirstLine = 38
 ; Folding = -
 ; EnableXP
