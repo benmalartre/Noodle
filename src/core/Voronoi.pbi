@@ -8,6 +8,7 @@ DeclareModule Voronoi
   Structure Site_t
     seed.Math::v2f32
     id.i
+    Map *neighbors.Site_t()
   EndStructure
   
   Structure Voronoi_t 
@@ -20,6 +21,7 @@ DeclareModule Voronoi
     offsets.Math::v2f32[8]
     flip.b
     List sites.Site_t()
+    active.i
   EndStructure
   
   Structure JFATaskDatas_t Extends Thread::TaskDatas_t
@@ -40,6 +42,7 @@ DeclareModule Voronoi
   Declare IndexFromPosition(*voronoi.Voronoi_t, *pos.Math::v2f32)
   Declare ColorTable(*voronoi.Voronoi_t, seed.i=0)
   Declare ColorFromIndex(*voronoi.Voronoi_t, index.i)
+  Declare ComputeNeighbors(*voronoi.Voronoi_t)
 EndDeclareModule
 
 Module Voronoi
@@ -70,6 +73,7 @@ Module Voronoi
     Protected i.i
     For s = 0 To CArray::GetCount(*points) - 1
       AddElement(*voronoi\sites())
+      InitializeStructure(*voronoi\sites(), Site_t)
       *site = *voronoi\sites()
       *site\id = s
       *p = CArray::GetValue(*points, s)
@@ -179,6 +183,7 @@ Module Voronoi
       y = idx / *taskdatas\voronoi\resolution
       Vector2::Set(pos, (x + 0.5) * *taskdatas\voronoi\cellSize\x + *taskdatas\voronoi\minimum\x, (y + 0.5) * *taskdatas\voronoi\cellSize\y + *taskdatas\voronoi\minimum\y)
       current = (y * *taskdatas\voronoi\resolution + x)
+      *current_site = PeekI(*taskdatas\voronoi\cells[1 - *taskdatas\voronoi\flip] + current * #PB_Integer)
       
       For z = 0 To 7
         neighborX = x + *taskdatas\voronoi\offsets[z]\x * k
@@ -188,7 +193,6 @@ Module Voronoi
         EndIf
         neighbor = neighborX + neighborY * *taskdatas\voronoi\resolution
         
-        *current_site = PeekI(*taskdatas\voronoi\cells[1 - *taskdatas\voronoi\flip] + current * #PB_Integer)
         *neighbor_site = PeekI(*taskdatas\voronoi\cells[*taskdatas\voronoi\flip] + neighbor * #PB_Integer)
         If *neighbor_site
           If *neighbor_site = *current_site
@@ -197,11 +201,13 @@ Module Voronoi
           
           If *current_site = #Null
             PokeI(*taskdatas\voronoi\cells[1 - *taskdatas\voronoi\flip] + current * #PB_Integer, *neighbor_site)
+            *current_site = *neighbor_site
           Else
             d1 = Vector2::DistanceSquared(*current_site\seed, pos)
             d2 = Vector2::DistanceSquared(*neighbor_site\seed, pos)
             If d1 > d2
               PokeI(*taskdatas\voronoi\cells[1 - *taskdatas\voronoi\flip] + current * #PB_Integer, *neighbor_site)
+              *current_site = *neighbor_site
             EndIf
           EndIf
         EndIf
@@ -210,16 +216,44 @@ Module Voronoi
     *datas\job_state = Thread::#THREAD_JOB_DONE
   EndProcedure
   
+  Procedure ComputeNeighbors(*voronoi.Voronoi_t)
+    Define *currentSite.Site_t, *neighborSite.Site_t
+    Define key.s, key2.s
+    For y = 0 To *voronoi\resolution - 1
+      For x = 0 To *voronoi\resolution - 2
+        *currentSite = PeekI(*voronoi\cells[*voronoi\flip] + (x + y * *voronoi\resolution) * #PB_Integer)
+        *neighborSite = PeekI(*voronoi\cells[*voronoi\flip] + (x + 1 + y * *voronoi\resolution) * #PB_Integer)
+        If Not *currentSite = *neighborSite
+          key = Str(*neighborSite)
+          key2 = Str(*currentSite)
+          If Not FindMapElement(*neighborSite\neighbors(), key)
+            AddMapElement(*currentSite\neighbors(), key)
+            *currentSite\neighbors() = *neighborSite
+            AddMapElement(*neighborSite\neighbors(), key2)
+            *neighborSite\neighbors() = *currentSite
+          EndIf
+        EndIf
+      Next
+    Next
+  EndProcedure
   
   Procedure Draw(*voronoi.Voronoi_t)
     Protected p.i
     Protected *site.Site_t
+    SelectElement(*voronoi\sites(), *voronoi\active)
+    Protected *active.Site_t = *voronoi\sites()
     For y = 0 To *voronoi\resolution - 1
       For x = 0 To *voronoi\resolution - 1
         p = (x + y * *voronoi\resolution) * #PB_Integer
         *site = PeekI(*voronoi\cells[*voronoi\flip] + p)
         If Not *site = #Null
           Plot(x, y, ColorFromIndex(*voronoi, *site\id))
+          If *site = *active
+            Plot(x, y, RGBA(255,255,255,65))
+          ElseIf FindMapElement(*active\neighbors(), Str(*site))
+            Plot(x, y, RGBA(128,128,128,65))
+          EndIf
+          
         EndIf
       Next
     Next
@@ -229,6 +263,7 @@ EndModule
 
 Procedure _Draw(*voronoi.voronoi::Voronoi_t, canvas, image)
   StartDrawing(ImageOutput(image))
+  DrawingMode(#PB_2DDrawing_AllChannels)
   Voronoi::Draw(*voronoi)
   StopDrawing()
 
@@ -242,10 +277,10 @@ Global *pool.Thread::ThreadPool_t = Thread::NewPool()
 Define resolution.i = 1024
 Define size.i = 1024
 Define window.i = OpenWindow(#PB_Any, 0, 0, size, size, "Jump Flood Algorithm")
-Define canvas.i = CanvasGadget(#PB_Any, 0, 0, size, size)
+Define canvas.i = CanvasGadget(#PB_Any, 0, 0, size, size, #PB_Canvas_Keyboard)
 Define image.i = CreateImage(#PB_Any, resolution, resolution)
 
-Define n.i = 4096
+Define n.i = 1024
 Define *points.CArray::CArrayV2F32 = CArray::newCArrayV2F32()
 Define *p.Math::v2f32
 CArray::SetCount(*points, n)
@@ -274,17 +309,42 @@ Wend
 ; voronoi::JFA(voronoi)
 
 Define jfaT.d = Time::Get() - startT
+
+startT = Time::Get()
+Voronoi::ComputeNeighbors(voronoi)
+Define neighboringT.d = Time::Get() - startT
+
 _Draw(voronoi, canvas, image)
 
-MessageRequester("JFA", "Init Time : "+StrD(initT)+Chr(10)+"JFA Time : "+StrD(jfaT))
+MessageRequester("JFA", "Init Time : "+StrD(initT)+Chr(10)+"JFA Time : "+StrD(jfaT)+Chr(10)+"Neighboring Time : "+StrD(neighboringT))
 
-  
+Define event, eventType, key
 Repeat
-Until WaitWindowEvent() = #PB_Event_CloseWindow
+  event = WaitWindowEvent()
+  If event = #PB_Event_Gadget
+    eventType = EventType()
+    If eventType = #PB_EventType_KeyDown
+      key = GetGadgetAttribute(canvas, #PB_Canvas_Key)
+      If key = #PB_Shortcut_Down
+        voronoi\active - 1
+      ElseIf key = #PB_Shortcut_Up
+        voronoi\active + 1
+      EndIf 
+      If voronoi\active < 0
+        voronoi\active = n -1
+      ElseIf voronoi\active >= n
+        voronoi\active = 0
+      EndIf
+     
+      _Draw(voronoi, canvas, image)
+    EndIf
+  EndIf   
+Until event = #PB_Event_CloseWindow
 
 Thread::DeletePool(*pool)
+CArray::Delete(*points)
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 229
+; CursorPosition = 337
+; FirstLine = 289
 ; Folding = ---
 ; EnableXP
