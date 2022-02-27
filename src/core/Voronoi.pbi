@@ -344,7 +344,7 @@ Until event = #PB_Event_CloseWindow
 Thread::DeletePool(*pool)
 CArray::Delete(*points)
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 337
-; FirstLine = 289
+; CursorPosition = 308
+; FirstLine = 279
 ; Folding = ---
 ; EnableXP

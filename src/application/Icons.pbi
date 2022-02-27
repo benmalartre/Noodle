@@ -40,8 +40,6 @@ Procedure CopyFolder(srcFolder.S, dstFolder.s)
   FinishDirectory(dir)
 EndProcedure
 
-
-
 StartVectorDrawing(CanvasVectorOutput(canvas))
 DrawIcon(ControlIcon::@LoopIcon())
 DrawIcon(ControlIcon::@PlayForwardIcon())
@@ -75,6 +73,13 @@ DrawIcon(ControlIcon::@WarningIcon())
 DrawIcon(ControlIcon::@ErrorIcon())
 DrawIcon(ControlIcon::@SaveIcon())
 DrawIcon(ControlIcon::@OpenIcon())
+DrawIcon(ControlIcon::@ExpendedIcon())
+DrawIcon(ControlIcon::@ConnectedIcon())
+DrawIcon(ControlIcon::@CollapsedIcon())
+DrawIcon(ControlIcon::@ArrowLeftIcon())
+DrawIcon(ControlIcon::@ArrowRightIcon())
+DrawIcon(ControlIcon::@ArrowUpIcon())
+DrawIcon(ControlIcon::@ArrowDownIcon())
 StopVectorDrawing()
 
 Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFAULT, 
@@ -87,8 +92,7 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFA
   StopDrawing()
 
   StartVectorDrawing(ImageVectorOutput(image))
-  
-
+ 
   ResetCoordinates()
   ScaleCoordinates(#RESOLUTION / 100, #RESOLUTION / 100)
   Select icon
@@ -156,6 +160,20 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=ControlIcon::#FILL_COLOR_DEFA
        ControlIcon::WarningIcon(fill, stroke, thickness) 
      Case ControlIcon::#ICON_ERROR
        ControlIcon::ErrorIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_EXPENDED
+       ControlIcon::ExpendedIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_CONNECTED
+       ControlIcon::ConnectedIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_COLLAPSED
+       ControlIcon::CollapsedIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_ARROWLEFT
+       ControlIcon::ArrowLeftIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_ARROWRIGHT
+       ControlIcon::ArrowRightIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_ARROWUP
+       ControlIcon::ArrowUpIcon(fill, stroke, thickness) 
+     Case ControlIcon::#ICON_ARROWDOWN
+       ControlIcon::ArrowDownIcon(fill, stroke, thickness) 
   EndSelect
   
   StopVectorDrawing()
@@ -175,7 +193,7 @@ CompilerSelect #PB_Compiler_OS
     Define dstFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/build/src/icons/"
     CopyFolder(iconFolder, dstFolder)
   CompilerCase #PB_OS_Windows
-    Define dstFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/build/src/Release/icons/"
+    Define dstFolder.s = "C:/Users/graph/Documents/bmal/src/Jivaro/build/src/Release/icons/"
     CopyFolder(iconFolder, dstFolder)
 CompilerEndSelect
 
@@ -187,7 +205,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 125
+; CursorPosition = 41
+; FirstLine = 19
 ; Folding = -
 ; EnableXP

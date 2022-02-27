@@ -10,7 +10,7 @@ XIncludeFile "Button.pbi"
 ; ==============================================================================
 DeclareModule ControlIcon
   #STROKE_WIDTH           = 7
-  #STROKE_STYLE           = #PB_Path_Default
+  #STROKE_STYLE           = #PB_Path_RoundCorner | #PB_Path_RoundEnd
   #BACKGROUND_COLOR       = -10172161 ; RGBA(255,200,100,255)
   #STROKE_COLOR_DEFAULT   = -986896   ; RGBA(240,240,240,255)
   #STROKE_COLOR_SELECTED  = -12566464 ; RGBA(64, 64, 64, 255)
@@ -25,8 +25,6 @@ DeclareModule ControlIcon
   #GREEN_COLOR            = -16711936 ; RGBA(120,255,120,255)
   #BLUE_COLOR             = -34696    ; RGBA(120,120,255,255)
   
-
-
   Macro IconType
     b
   EndMacro
@@ -65,6 +63,13 @@ DeclareModule ControlIcon
     #ICON_WARNING
     #ICON_ERROR
     #ICON_OK
+    #ICON_EXPENDED
+    #ICON_CONNECTED
+    #ICON_COLLAPSED
+    #ICON_ARROWLEFT
+    #ICON_ARROWRIGHT
+    #ICON_ARROWUP
+    #ICON_ARROWDOWN
     #ICON_LAST
   EndEnumeration
   
@@ -103,8 +108,14 @@ DeclareModule ControlIcon
   IconName(#ICON_WARNING) = "warning"
   IconName(#ICON_ERROR) = "error"
   IconName(#ICON_OK) = "ok"
+  IconName(#ICON_EXPENDED) = "expended"
+  IconName(#ICON_CONNECTED) = "connected"
+  IconName(#ICON_COLLAPSED) = "collapsed"
+  IconName(#ICON_ARROWLEFT) = "arrowleft"
+  IconName(#ICON_ARROWRIGHT) = "arrowright"
+  IconName(#ICON_ARROWUP) = "arrowup"
+  IconName(#ICON_ARROWDOWN) = "arrowdown"
 
-    
   Prototype DrawIconImpl(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
                          thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
@@ -173,6 +184,14 @@ DeclareModule ControlIcon
   Declare BackIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare WarningIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare OKIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ExpendedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ConnectedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare CollapsedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ArrowLeftIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ArrowRightIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ArrowUpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare ArrowDownIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   
   ; ============================================================================
   ;  VTABLE ( CObject + CControl + ControlIcon )
@@ -258,7 +277,23 @@ Module ControlIcon
       Case #ICON_WARNING
        ProcedureReturn @WarningIcon()
       Case #ICON_ERROR
-       ProcedureReturn @ErrorIcon()
+        ProcedureReturn @ErrorIcon()
+      Case #ICON_OK
+        ProcedureReturn @OKIcon()
+      Case #ICON_EXPENDED
+        ProcedureReturn @ExpendedIcon()
+      Case #ICON_CONNECTED
+        ProcedureReturn @ConnectedIcon()
+      Case #ICON_COLLAPSED
+        ProcedureReturn @CollapsedIcon()
+      Case #ICON_ARROWLEFT
+        ProcedureReturn @ArrowLeftIcon()
+      Case #ICON_ARROWRIGHT
+        ProcedureReturn @ArrowRightIcon()
+      Case #ICON_ARROWUP
+        ProcedureReturn @ArrowUpIcon()
+      Case #ICON_ARROWDOWN
+       ProcedureReturn @ArrowDownIcon()
     EndSelect
   EndProcedure
   
@@ -698,12 +733,7 @@ Procedure ScaleIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
 EndProcedure
 
 Procedure BrushIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-;   Define segments.s = "M 10 10 C 10 90 40 90 40 70 C 40 50 25 50 25 50"
-;   AddPathSegments(segments)
-   AddPathCircle(25,75,20)
-  VectorSourceColor(#ORANGE_COLOR)
-  DashPath(thickness, thickness*0.5)
-  
+  Define segments.s
   segments.s = "M 5 75 C 35 90 45 70 45 50 L 50 45 C 10 60 25 80 5 80"
   AddPathSegments(segments)
   VectorSourceColor(fill)
@@ -716,13 +746,6 @@ Procedure BrushIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   
   VectorSourceColor(stroke)
   StrokePath(thickness, style)
-  
-;   segments.s = "M 10 75 C 30 95 50 75 10 25"
-;   AddPathSegments(segments)
-;   VectorSourceColor(#ORANGE_COLOR)
-;   DashPath(thickness, thickness)
-  
-  
 EndProcedure
 
 Procedure SelectIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
@@ -842,26 +865,13 @@ Procedure TrashIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   VectorSourceColor(stroke)
   StrokePath(thickness, style)
   
-  segments.s = "M 20 25 L 80 25"
+  segments.s = "M 18 25 L 82 25"
   segments + "M 40 25 L 42 15 L 58 15 L 60 25" 
-  segments + "M 35 40 L 38 70 M 50 40 L 50 70 M 65 40 L 62 70"
+  segments + "M 42 40 L 44 70 M 58 40 L 56 70"
   AddPathSegments(segments)
   VectorSourceColor(stroke)
   StrokePath(thickness, style)
 EndProcedure
-
-; Procedure StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-;   Define segments.s = "M 25 75 L 60 75 L 80 45 L 45 45 Z"
-;   AddPathSegments(segments)
-;   VectorSourceColor(fill)
-;   FillPath()
-;   
-;   segments.s = "M 50 20 L 50 60 M 50 60 L 90 60 M 50 60 L 35 90"
-;   AddPathSegments(segments)
-;   VectorSourceColor(stroke)
-;   StrokePath(thickness, style)
-;   
-; EndProcedure
 
 Procedure StageIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Define segments.s = "M 25 45 L 25 85 M 25 65 L 40 65 M 25 85 L 40 85"
@@ -1023,6 +1033,83 @@ Procedure ErrorIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, 
   VectorSourceColor(#WHITE_COLOR)
   StrokePath(thickness, style)
 EndProcedure
+
+Procedure OKIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  AddPathCircle(50, 50, 35)
+  VectorSourceColor(#RED_COLOR)
+  FillPath(#PB_Path_Preserve)
+  Define segments.s = "M 35 35 L 65 65 M 35 65 L 65 35"
+  AddPathSegments(segments)
+  VectorSourceColor(#WHITE_COLOR)
+  StrokePath(thickness, style)
+EndProcedure
+
+Procedure ExpendedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  AddPathBox(20, 20, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+  AddPathBox(20, 40, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+  AddPathBox(20, 60, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+EndProcedure
+
+Procedure ConnectedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  AddPathBox(20, 40, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+  AddPathBox(20, 60, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+EndProcedure
+
+Procedure CollapsedIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  AddPathBox(20, 60, 60, 15)
+  VectorSourceColor(fill)
+  FillPath()
+EndProcedure
+
+Procedure ArrowLeftIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 40 30 L 20 50 L 40 70 L 40 60 L 80 60 L 80 40 L 40 40"
+  AddPathSegments(segments)
+  ClosePath()
+  VectorSourceColor(fill)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+EndProcedure
+
+Procedure ArrowRightIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 60 30 L 80 50 L 60 70 L 60 60 L 20 60 L 20 40 L 60 40"
+  AddPathSegments(segments)
+  ClosePath()
+  VectorSourceColor(fill)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+EndProcedure
+
+Procedure ArrowUpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 30 40 L 50 20 L 70 40 L 60 40 L 60 80 L 40 80 L 40 40"
+  AddPathSegments(segments)
+  ClosePath()
+  VectorSourceColor(fill)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+EndProcedure
+
+Procedure ArrowDownIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Define segments.s = "M 30 60 L 50 80 L 70 60 L 60 60 L 60 20 L 40 20 L 40 60"
+  AddPathSegments(segments)
+  ClosePath()
+  VectorSourceColor(fill)
+  FillPath(#PB_Path_Preserve)
+  VectorSourceColor(stroke)
+  StrokePath(thickness, style)
+EndProcedure
   
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlIcon )
@@ -1094,7 +1181,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 863
-; FirstLine = 811
-; Folding = --------
+; CursorPosition = 743
+; FirstLine = 731
+; Folding = ----------
 ; EnableXP
