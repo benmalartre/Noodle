@@ -404,7 +404,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 10
+; CursorPosition = 27
 ; Folding = --
 ; EnableXP

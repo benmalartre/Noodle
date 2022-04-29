@@ -101,8 +101,8 @@ EndProcedure
 *app = Application::New("Test STK",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   
 STK::Initialize()
-
 *stream.STK::Stream = STK::StreamSetup(STK::*DAC, 2)
+Debug "STREAM : "+Str(*stream)
 ;STK::SetNodeVolume(*stream, 0.5)
 
 *ui = PropertyUI::New(*app\window\main, "STK", #Null)
@@ -209,7 +209,6 @@ Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderContro
 ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
 Signal::CONNECTCALLBACK(*slider\on_change, OnLFOChange, *slider, *lfo)
 
-
 MessageRequester("NUM ROOTS", Str(STK::StreamNumRoots(*stream)))
   
 ControlProperty::AppendStop(*p)
@@ -286,8 +285,8 @@ Sequencer::Stop(*sequencer)
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 194
-; FirstLine = 93
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 80
 ; Folding = -
 ; EnableXP

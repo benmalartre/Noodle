@@ -414,12 +414,12 @@ Module Icon
 
   Procedure BrushIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
     Define segments.s
-    segments.s = "M 5 75 C 35 90 45 70 45 50 L 50 45 C 10 60 25 80 5 80"
+    segments.s = "M 10 80 C 30 90 50 70 45 55 L 30 50 C 10 60 10 70 10 80"
     AddPathSegments(segments)
     VectorSourceColor(fill)
     FillPath()
     
-    segments.s = "M 35 50 L 45 55 L 70 15 L 60 10 Z"
+    segments.s = "M 35 50 L 45 55 L 77 15 L 65 10 Z"
     AddPathSegments(segments)
     VectorSourceColor(fill)
     FillPath(#PB_Path_Preserve)
@@ -750,50 +750,38 @@ Module Icon
   EndProcedure
   
   Procedure ArrowLeftIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-    Define segments.s = "M 40 30 L 20 50 L 40 70 L 40 60 L 80 60 L 80 40 L 40 40"
+    Define segments.s = "M 40 20 L 10 50 L 40 80 M 10 50 L 90 50"
     AddPathSegments(segments)
-    ClosePath()
-    VectorSourceColor(fill)
-    FillPath(#PB_Path_Preserve)
     VectorSourceColor(stroke)
-    StrokePath(thickness, style)
+    StrokePath(thickness * 2, style)
   EndProcedure
 
   Procedure ArrowRightIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-    Define segments.s = "M 60 30 L 80 50 L 60 70 L 60 60 L 20 60 L 20 40 L 60 40"
+    Define segments.s = "M 60 20 L 90 50 L 60 80 M 10 50 L 90 50"
     AddPathSegments(segments)
-    ClosePath()
-    VectorSourceColor(fill)
-    FillPath(#PB_Path_Preserve)
     VectorSourceColor(stroke)
-    StrokePath(thickness, style)
+    StrokePath(thickness * 2, style)
   EndProcedure
   
   Procedure ArrowUpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-    Define segments.s = "M 30 40 L 50 20 L 70 40 L 60 40 L 60 80 L 40 80 L 40 40"
+    Define segments.s = "M 20 40 L 50 10 L 80 40 M 50 10 L 50 90"
     AddPathSegments(segments)
-    ClosePath()
-    VectorSourceColor(fill)
-    FillPath(#PB_Path_Preserve)
     VectorSourceColor(stroke)
-    StrokePath(thickness, style)
+    StrokePath(thickness * 2, style)
   EndProcedure
 
   Procedure ArrowDownIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
-    Define segments.s = "M 30 60 L 50 80 L 70 60 L 60 60 L 60 20 L 40 20 L 40 60"
+    Define segments.s = "M 20 60 L 50 90 L 80 60 M 50 10 L 50 90"
     AddPathSegments(segments)
-    ClosePath()
-    VectorSourceColor(fill)
-    FillPath(#PB_Path_Preserve)
     VectorSourceColor(stroke)
-    StrokePath(thickness, style)
+    StrokePath(thickness * 2, style)
   EndProcedure
 EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 93
+; CursorPosition = 766
+; FirstLine = 719
 ; Folding = --------
 ; EnableXP

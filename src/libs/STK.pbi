@@ -414,11 +414,11 @@ DeclareModule STK
   Global *DAC.RTAudio
   Global initialized.b
   CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-    Global RAWWAVEPATH.s = "E:/Projects/RnD/STK/rawwaves"
+    Global RAWWAVEPATH.s = "../../rawwaves"
   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-    Global RAWWAVEPATH.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves"
+    Global RAWWAVEPATH.s = "../../rawwaves"
   CompilerElse
-    Global RAWWAVEPATH.s = "/Users/benmalartre/Documents/RnD/STK/rawwaves"
+    Global RAWWAVEPATH.s = "../../rawwaves"
   CompilerEndIf
   
   Declare Initialize()
@@ -437,7 +437,6 @@ Module STK
     While NextDirectoryEntry(dir)
       AddElement(RAWWAVEFILES())
       RAWWAVEFILES() = DirectoryEntryName(dir)
-
     Wend
     FinishDirectory(dir)
   EndProcedure
@@ -531,8 +530,8 @@ Module STK
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 399
-; FirstLine = 387
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 439
+; FirstLine = 430
 ; Folding = ----
 ; EnableXP
