@@ -1,4 +1,4 @@
-﻿XIncludeFile "../controls/Icon.pbi"
+﻿XIncludeFile "../core/Icons.pbi"
 
 UsePNGImageEncoder()
 
@@ -7,6 +7,7 @@ DataSection
   Data.a 2,1,0,3,6,5,4,7,10,9,8,11,14,13,12,15
 EndDataSection
 
+CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
 Procedure FlipBuffer(image.i, *memory, resolution.i)
     StartDrawing(ImageOutput(image))
     Define *input = DrawingBuffer()
@@ -46,9 +47,16 @@ Procedure FlipBuffer(image.i, *memory, resolution.i)
     !   jg loop_over_rows                 ; loop next row
     StopDrawing()
   EndProcedure
+CompilerElse
+  Procedure FlipBuffer(image.i, *memory, resolution.i)
+    StartDrawing(ImageOutput(image))
+    Define *input = DrawingBuffer()
+  EndProcedure
+CompilerEndIf
 
-ProcedureDLL BuildIconInMemory(*memory, resolution, icon.i, fill.i=ControlIcon::#FILL_COLOR_DEFAULT, 
-                               stroke.i=ControlIcon::#STROKE_COLOR_DEFAULT, thickness=ControlIcon::#STROKE_WIDTH)
+
+ProcedureDLL BuildIconInMemory(*memory, resolution, icon.i, fill.i=Icon::#FILL_COLOR_DEFAULT, 
+                               stroke.i=Icon::#STROKE_COLOR_DEFAULT, thickness=Icon::#STROKE_WIDTH)
   Define image.i = CreateImage(#PB_Any, resolution, resolution, 32)
   
   StartDrawing(ImageOutput(image))
@@ -58,70 +66,70 @@ ProcedureDLL BuildIconInMemory(*memory, resolution, icon.i, fill.i=ControlIcon::
 
   StartVectorDrawing(ImageVectorOutput(image))
   Select icon
-    Case ControlIcon::#ICON_VISIBLE
-      ControlIcon::VisibleIcon(fill, stroke, thickness)  
-    Case ControlIcon::#ICON_INVISIBLE
-      ControlIcon::InvisibleIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_PLAYFORWARD
-      ControlIcon::PlayForwardIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_PLAYBACKWARD
-      ControlIcon::PlayBackwardIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_STOP
-      ControlIcon::StopIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_PREVIOUSFRAME
-      ControlIcon::PreviousFrameIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_NEXTFRAME
-      ControlIcon::NextFrameIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_FIRSTFRAME
-      ControlIcon::FirstFrameIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_LASTFRAME
-      ControlIcon::LastFrameIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_LOOP
-      ControlIcon::LoopIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_TRANSLATE
-      ControlIcon::TranslateIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_ROTATE
-      ControlIcon::RotateIcon(fill, stroke, thickness) 
-    Case ControlIcon::#ICON_SCALE
-      ControlIcon::ScaleIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_BRUSH
-       ControlIcon::BrushIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_PEN
-       ControlIcon::PenIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_SELECT
-       ControlIcon::SelectIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_SPLITH
-       ControlIcon::SplitHIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_SPLITV
-       ControlIcon::SplitVIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_LOCKED
-       ControlIcon::LockedIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_UNLOCKED
-       ControlIcon::LockedIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_OP
-       ControlIcon::OpIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_TRASH
-       ControlIcon::TrashIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_STAGE
-       ControlIcon::StageIcon(fill, stroke, thickness)
-     Case ControlIcon::#ICON_LAYER
-       ControlIcon::LayerIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_FOLDER
-       ControlIcon::FolderIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_FILE
-       ControlIcon::FileIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_SAVE
-       ControlIcon::SaveIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_OPEN
-       ControlIcon::OpenIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_HOME
-       ControlIcon::HomeIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_BACK
-       ControlIcon::BackIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_WARNING
-       ControlIcon::WarningIcon(fill, stroke, thickness) 
-     Case ControlIcon::#ICON_ERROR
-       ControlIcon::ErrorIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_VISIBLE
+      Icon::VisibleIcon(fill, stroke, thickness)  
+    Case Icon::#ICON_INVISIBLE
+      Icon::InvisibleIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_PLAYFORWARD
+      Icon::PlayForwardIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_PLAYBACKWARD
+      Icon::PlayBackwardIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_STOP
+      Icon::StopIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_PREVIOUSFRAME
+      Icon::PreviousFrameIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_NEXTFRAME
+      Icon::NextFrameIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_FIRSTFRAME
+      Icon::FirstFrameIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_LASTFRAME
+      Icon::LastFrameIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_LOOP
+      Icon::LoopIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_TRANSLATE
+      Icon::TranslateIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_ROTATE
+      Icon::RotateIcon(fill, stroke, thickness) 
+    Case Icon::#ICON_SCALE
+      Icon::ScaleIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_BRUSH
+       Icon::BrushIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_PEN
+       Icon::PenIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_SELECT
+       Icon::SelectIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_SPLITH
+       Icon::SplitHIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_SPLITV
+       Icon::SplitVIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_LOCKED
+       Icon::LockedIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_UNLOCKED
+       Icon::LockedIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_OP
+       Icon::OpIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_TRASH
+       Icon::TrashIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_STAGE
+       Icon::StageIcon(fill, stroke, thickness)
+     Case Icon::#ICON_LAYER
+       Icon::LayerIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_FOLDER
+       Icon::FolderIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_FILE
+       Icon::FileIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_SAVE
+       Icon::SaveIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_OPEN
+       Icon::OpenIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_HOME
+       Icon::HomeIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_BACK
+       Icon::BackIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_WARNING
+       Icon::WarningIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_ERROR
+       Icon::ErrorIcon(fill, stroke, thickness) 
   EndSelect
   StopVectorDrawing()
   
@@ -129,10 +137,8 @@ ProcedureDLL BuildIconInMemory(*memory, resolution, icon.i, fill.i=ControlIcon::
   
   FreeImage(image)
 EndProcedure
-
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 70
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 55
+; FirstLine = 29
 ; Folding = -
 ; EnableXP

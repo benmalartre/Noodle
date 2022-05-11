@@ -570,7 +570,7 @@ DeclareModule OpenCL
       ImportC "-l OpenCL"
   
     CompilerCase #PB_OS_MacOS
-      ImportC "/System/Library/Frameworks/OpenCL.framework/OpenCL"
+      ImportC "-framework OpenCL"
   
   CompilerEndSelect
    
@@ -908,8 +908,8 @@ Module OpenCL
     ProcedureReturn OutputMessage
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 573
-; FirstLine = 554
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 572
+; FirstLine = 568
 ; Folding = -
 ; EnableXP

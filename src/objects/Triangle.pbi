@@ -599,24 +599,24 @@ Module Triangle
             If ( d3 < 0.0 )
               index=1
               s = -d3/d0
-              CLAMP( s, 0.0, 1.0 )
+              s = CLAMP( s, 0.0, 1.0 )
               t = 0.0
             Else
               index=2
               s = 0.0
               t = -d4/d2
-              CLAMP( t, 0.0, 1.0 )
+              t = CLAMP( t, 0.0, 1.0 )
             EndIf
           Else
             index=3
             s = 0.0
             t = -d4/d2
-            CLAMP( t, 0.0, 1.0 )
+            t = CLAMP( t, 0.0, 1.0 )
           EndIf 
         ElseIf ( t < 0.0 )
           index=4
           s = -d3/d0
-          CLAMP( s, 0.0, 1.0 )
+          s = CLAMP( s, 0.0, 1.0 )
           t = 0.0
         Else
           index=5
@@ -634,11 +634,11 @@ Module Triangle
             numer.f = tmp1 - tmp0
             denom.f = d0-2*d1+d2
             s = numer/denom
-            CLAMP( s, 0.0, 1.0 )
+            s = CLAMP( s, 0.0, 1.0 )
             t = 1-s
           Else
             t = -d4/d2
-            CLAMP(t, 0.0, 1.0 )
+            t = CLAMP(t, 0.0, 1.0 )
             s = 0.0
           EndIf
         ElseIf ( t < 0.0 )
@@ -646,7 +646,7 @@ Module Triangle
             numer.f = (d2+d4)-(d1+d3)
             denom.f = d0-2*d1+d2
             s = numer/denom
-            CLAMP( s, 0.0, 1.0)
+            s = CLAMP( s, 0.0, 1.0)
             t = 1-s
           Else
             s = 1
@@ -656,7 +656,7 @@ Module Triangle
           numer.f = (d2+d4)-(d1+d3)
           denom.f = d0-2*d1+d2
           s = numer/denom
-          CLAMP( s, 0.0, 1.0 )
+          s = CLAMP( s, 0.0, 1.0 )
           t = 1.0 - s
         EndIf
       EndIf
@@ -2040,8 +2040,8 @@ CompilerEndIf
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 2008
-; FirstLine = 1990
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 658
+; FirstLine = 681
 ; Folding = -----
 ; EnableXP

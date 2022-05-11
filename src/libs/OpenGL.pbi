@@ -1437,7 +1437,9 @@ DeclareModule OpenGL
     CompilerCase #PB_OS_MacOS
       ; ---[ x64 ]--------------------------------------------------------------
       CompilerIf #PB_Compiler_Processor = #PB_Processor_x64
-        ImportC "/System/Library/Frameworks/OpenGL.framework/OpenGL"
+        ImportC "-framework OpenGL"
+      CompilerElseIf #PB_Compiler_Processor = #PB_Processor_Arm64
+        ImportC "-framework OpenGL"
       ; ---[ x32 ]--------------------------------------------------------------
       CompilerElse
         CompilerError "*> x32 on Mac OS/X is not supported at this time."
@@ -1611,9 +1613,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1437
-; FirstLine = 1393
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1441
+; FirstLine = 1437
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode
