@@ -180,12 +180,8 @@ DeclareModule Math
   ;  Clamp Macro
   ; ----------------------------------------------------------------------------
   Macro CLAMP(_x,_min,_max)
-    (Bool((_x)<=(_min)) * (_min) + Bool((_x)>=(_max)) * (_max)) + Bool((_x)>(_min)And(_x)<(_max)) * (_x)
-;     If (_x<_min)
-;       _x = _min 
-;     ElseIf (_x>_max)
-;       _x=_max 
-;     EndIf
+    (_min) * Bool((_x) <= (_min)) + (_max) * Bool((_x)>=(_max)) + (_x) * Bool((_x) > (_min) And (_x) < (_max))
+;     (Bool((_x)<=(_min)) * (_min) + Int((_x)>=(_max)) * (_max)) + Int((_x)>(_min)And(_x)<(_max)) * (_x)
   EndMacro
 
   ; ----------------------------------------------------------------------------
@@ -4152,10 +4148,10 @@ Module Matrix4
     
     ; compute inverse
     For j=0 To 3
-      If Abs(fSys(j,j)<#F32_EPS)
+      If Abs(fSys(j,j))<#F32_EPS
         cnt =j+1
         For i = j+1 To 3
-          If Abs(fSys(i,j)<#F32_EPS) : cnt+1 : EndIf
+          If Abs(fSys(i,j))<#F32_EPS : cnt+1 : EndIf
         Next i 
         If cnt = 4 
           ProcedureReturn #False
@@ -4417,9 +4413,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 596
-; FirstLine = 556
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 182
+; FirstLine = 176
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

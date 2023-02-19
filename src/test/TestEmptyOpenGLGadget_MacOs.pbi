@@ -1,7 +1,7 @@
 ﻿#GL_NO_ERROR = 0
 #GL_INVALID_FRAMEBUFFER_OPERATION = $0506
 
-ImportC "/System/Library/Frameworks/OpenGL.framework/OpenGL"
+ImportC "-framework OpenGL"
   glClear(v.i)
   glClearColor(r.f,g.f,b.f,a.f)
   glGetError()
@@ -51,9 +51,8 @@ Repeat
   SetGadgetAttribute(gadget,#PB_OpenGL_FlipBuffers,#True)
   Delay(100)
 Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 31
-; FirstLine = 11
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

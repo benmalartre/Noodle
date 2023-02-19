@@ -6,7 +6,7 @@ UsePNGImageEncoder()
 CompilerIf #PB_Compiler_OS = #PB_OS_Windows
   Global iconFolder.s = "C:/Users/graph/Documents/bmal/src/Amnesie/icons/"
 CompilerElseIf #PB_Compiler_OS  = #PB_OS_MacOS
-  Global iconFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/icons/"
+  Global iconFolder.s = "/Users/malartrebenjamin/Documents/RnD/Jivaro/icons/"
 CompilerEndIf
 
 
@@ -196,7 +196,7 @@ Next
 
 CompilerSelect #PB_Compiler_OS
   CompilerCase #PB_OS_MacOS
-    Define dstFolder.s = "/Users/benmalartre/Documents/RnD/amnesie/build/src/icons/"
+    Define dstFolder.s = "/Users/malartrebenjamin/Documents/RnD/Jivaro/build/src/icons/"
     CopyFolder(iconFolder, dstFolder)
   CompilerCase #PB_OS_Windows
     Define dstFolder.s = "C:/Users/graph/Documents/bmal/src/Jivaro/build/src/Release/icons/"
@@ -211,7 +211,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 138
+; CursorPosition = 211
+; FirstLine = 149
 ; Folding = -
 ; EnableXP

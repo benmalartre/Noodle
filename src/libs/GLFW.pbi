@@ -445,10 +445,10 @@ DeclareModule GLFW
     ;___________________________________________________________________________
     ;  MacOSX
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Import "/System/Library/Frameworks/Quartz.framework/Quartz" : EndImport
-    Import "/System/Library/Frameworks/IOKit.framework/IOKit" : EndImport
-    Import "/System/Library/Frameworks/Foundation.framework/Foundation" : EndImport
-    Import "/System/Library/Frameworks/AppKit.framework/AppKit" : EndImport
+    Import "-framework Quartz" : EndImport
+    Import "-framework IOKit" : EndImport
+    Import "-framework Foundation" : EndImport
+    Import "-framework AppKit" : EndImport
     Import "../../libs/x64/macosx/libglfw3.a"
   
   CompilerEndIf
@@ -787,9 +787,9 @@ Module GLFW
   EndProcedure
   ;}
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 28
-; FirstLine = 26
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 450
+; FirstLine = 443
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
