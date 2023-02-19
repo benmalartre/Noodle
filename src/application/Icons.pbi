@@ -80,6 +80,8 @@ DrawIcon(Icon::@ArrowLeftIcon())
 DrawIcon(Icon::@ArrowRightIcon())
 DrawIcon(Icon::@ArrowUpIcon())
 DrawIcon(Icon::@ArrowDownIcon())
+DrawIcon(Icon::@AddIcon())
+DrawIcon(Icon::@SubIcon())
 StopVectorDrawing()
 
 Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=Icon::#FILL_COLOR_DEFAULT, 
@@ -174,6 +176,10 @@ Procedure SaveIconAsImage(icon.i, suffix.s, fill.i=Icon::#FILL_COLOR_DEFAULT,
        Icon::ArrowUpIcon(fill, stroke, thickness) 
      Case Icon::#ICON_ARROWDOWN
        Icon::ArrowDownIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_ADD
+       Icon::AddIcon(fill, stroke, thickness) 
+     Case Icon::#ICON_SUB
+       Icon::SubIcon(fill, stroke, thickness) 
   EndSelect
   
   StopVectorDrawing()
@@ -205,7 +211,7 @@ Repeat
   
 Until event = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 36
+; CursorPosition = 154
+; FirstLine = 138
 ; Folding = -
 ; EnableXP

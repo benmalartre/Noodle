@@ -1611,9 +1611,9 @@ EndDeclareModule
 
 Module OpenGL
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1437
-; FirstLine = 1393
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 365
+; FirstLine = 362
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode
