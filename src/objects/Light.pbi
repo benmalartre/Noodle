@@ -979,8 +979,8 @@ Module Light
     ; ---[ Init Members ]-------------------------------------------------------
     Vector3::Set(*Me\color,1,1,1)
     
-    *Me\linear = 0.5
-    *Me\quadratic = 0.75
+    *Me\linear = 0.1
+    *Me\quadratic = 0.1
     *Me\type = Object3D::#Light
     *Me\name     = name
     *Me\lighttype = type
@@ -1071,8 +1071,8 @@ Module Light
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Light )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1036
-; FirstLine = 397
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 981
+; FirstLine = 343
 ; Folding = d+e--
 ; EnableXP

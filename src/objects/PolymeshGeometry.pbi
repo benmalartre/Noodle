@@ -1347,14 +1347,6 @@ Module PolymeshGeometry
       
     Next
     
-    
-    MessageRequester("HALF EDGES", "NUM HALF EDGES : "+Str(CArray::GetCount(*mesh\a_halfedges))+Chr(10)+
-                                   "NUM OPEN EDGES : "+Str(MapSize(*openedges()))+Chr(10)+
-                                   "NUM PROBLEMATICS : "+Str(problematic)+Chr(10)+
-                                   "INDEX : "+Str(index)+" vs MAXINDEX : "+Str(maxIndex)+Chr(10)+
-                                   "AFTER : "+Str(after))
-                                                           
-    
     FreeMap(*openedges())
     
   EndProcedure
@@ -2405,7 +2397,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 2364
-; FirstLine = 2347
+; CursorPosition = 1250
+; FirstLine = 1220
 ; Folding = ----P5----0-
 ; EnableXP

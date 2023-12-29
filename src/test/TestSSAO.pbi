@@ -148,8 +148,8 @@ Global *ssao.Framebuffer::Framebuffer_t
 Global *blur.Framebuffer::Framebuffer_t
 Global *deferred.Framebuffer::Framebuffer_t
 
-Global *kernel.Carray::CArrayV3F32
-Global *noise.CArray::CArrayV3F32
+Global *kernel.Carray::CArrayV4F32
+Global *noise.CArray::CArrayV4F32
 Global noise_tex.i
 Global occ_radius.f = 1.0
 Global occ_blur.b = #False
@@ -194,6 +194,47 @@ Procedure GetFPS()
   EndIf  
 EndProcedure
 
+Procedure SetupSSAOKernel(nbSamples)
+  Protected i
+  *kernel = CArray::New(CArray::#ARRAY_V4F32)
+  CArray::SetCount(*kernel,nbSamples)
+  
+  For i=0 To nbSamples-1
+    *p = CArray::GetPtr(*kernel,i)
+    Vector3::Set(*p,1-(Random(100)*0.02),1-(Random(100)*0.02),Random(100)*0.01 )
+    Vector3::NormalizeInPlace(*p)
+;     Vector3::ScaleInPlace(*p,Random(100)*0.01)
+    scl = i/nbSamples
+    LINEAR_INTERPOLATE(scl,0.1,1,scl*scl)
+    Vector3::ScaleInPlace(*p,scl)
+    CArray::SetValue(*kernel,i,*p)
+  Next  
+EndProcedure
+
+Procedure SetupSSAONoise()
+  Protected i
+  *noise = CArray::New(CArray::#ARRAY_V4F32)
+  CArray::SetCount(*noise,noise_size)
+  Define *n.v3f32 
+  For i=0 To noise_size-1
+    *n = CArray::GetValue(*noise,i)
+    Vector3::Set(*n,Random(100)*0.02-1,Random(100)*0.02-1,0)
+    Vector3::NormalizeInPlace(*n)
+  Next i
+  
+  
+  glGenTextures(1,@noise_tex)
+  glBindTexture(#GL_TEXTURE_2D,noise_tex)
+  glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,4,4,0,#GL_RGB,#GL_FLOAT,CArray::GetPtr(*noise,0))
+  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MAG_FILTER,#GL_NEAREST)
+  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MIN_FILTER,#GL_NEAREST)
+  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_S,#GL_REPEAT)
+  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_T,#GL_REPEAT)
+EndProcedure
+
+  
+
+
 Procedure Present(state)
   Select state
     Case 0
@@ -215,7 +256,20 @@ Procedure Present(state)
       glDrawBuffer(#GL_BACK)
       glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
       glReadBuffer(#GL_COLOR_ATTACHMENT0)
-      glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+      glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
+      
+    Case 2
+      glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
+      glReadBuffer(#GL_COLOR_ATTACHMENT0)
+      glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
+      
+    Case 3
+      glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *deferred\frame_id);
+      glReadBuffer(#GL_COLOR_ATTACHMENT0)
+      glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
+  
   EndSelect
   
 EndProcedure
@@ -354,14 +408,10 @@ Procedure Draw(*app.Application::Application_t)
   glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
   GLCheckError("set ssao matrices")
-;         For i=0 To nbsamples-1
-;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
-;         Next
-  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-    glUniform4fv(u_ssao_kernel_samples,nbsamples,CArray::GetPtr(*kernel,0))
-  CompilerElse
-    glUniform3fv(u_ssao_kernel_samples,nbsamples,CArray::GetPtr(*kernel,0))
-  CompilerEndIf
+
+  
+  glUniform4fv(u_ssao_kernel_samples,nbsamples,CArray::GetPtr(*kernel,0))
+
   GLCheckError("set ssao kernel")
 
   glUniform1i(u_ssao_kernel_size,nbsamples)
@@ -371,62 +421,53 @@ Procedure Draw(*app.Application::Application_t)
   ScreenQuad::Draw(*quad)
   GLCheckError("ssao first pass")
 
-;   
-;   If occ_blur
-;     ;3. Blur SSAO texture To remove noise
-;     shader = *s_ssao_blur\pgm
-;     glUseProgram(shader)
-;     GLCheckError("use blur pgm")
-;     glViewport(0,0,*blur\width,*blur\height)
-;     GLCheckError("ssao set blur viewport")
-;     Framebuffer::BindInput(*ssao)
-;     GLCheckError("ssao bind blur input")
-;     Framebuffer::BindOutput(*blur)
-;     GLCheckError("ssao bind blur output")
-;     glClear(#GL_COLOR_BUFFER_BIT);
-;     ScreenQuad::Draw(*quad)
-;     
-; ;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-; ;     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
-; ;     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-; ;     glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-;     Framebuffer::Unbind(*blur)
-;   EndIf
-;   
-;   ;4. Lighting
-;   Framebuffer::BindInput(*gbuffer)
-;   If occ_blur
-;     Framebuffer::BindInput(*blur,3)
-;   Else
-;     Framebuffer::BindInput(*ssao,3)
-;   EndIf
-;   
-;   Framebuffer::BindOutput(*deferred)
-;   glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
-;   shader = *s_deferred\pgm
-;   glUseProgram(shader)
-;   glViewport(0,0,*deferred\width,*deferred\height)
-;   glUniform1i(glGetUniformLocation(shader,"position_map"),0)
-;   glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
-;   glUniform1i(glGetUniformLocation(shader,"color_map"),2)
-;   glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
-;   glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
-;   Define i = 0
-;   ForEach *lights()
-;     Light::PassToShader(*lights(),shader,i)
-;     i+1
-;   Next
-;   
-;   glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
-;   
-;   ScreenQuad::Draw(*quad)
-;   
-;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *deferred\frame_id);
-;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
   
-  Present(0)
+  occ_blur = #True
+  If occ_blur
+    ;3. Blur SSAO texture To remove noise
+    shader = *s_ssao_blur\pgm
+    glUseProgram(shader)
+    GLCheckError("use blur pgm")
+    glViewport(0,0,*blur\width,*blur\height)
+    GLCheckError("ssao set blur viewport")
+    Framebuffer::BindInput(*ssao)
+    GLCheckError("ssao bind blur input")
+    Framebuffer::BindOutput(*blur)
+    GLCheckError("ssao bind blur output")
+    glClear(#GL_COLOR_BUFFER_BIT);
+    ScreenQuad::Draw(*quad)
+    Framebuffer::Unbind(*blur)
+  EndIf
+  
+  ;4. Lighting
+  Framebuffer::BindInput(*gbuffer)
+  If occ_blur
+    Framebuffer::BindInput(*blur,3)
+  Else
+    Framebuffer::BindInput(*ssao,3)
+  EndIf
+  
+  Framebuffer::BindOutput(*deferred)
+  glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
+  shader = *s_deferred\pgm
+  glUseProgram(shader)
+  glViewport(0,0,*deferred\width,*deferred\height)
+  glUniform1i(glGetUniformLocation(shader,"position_map"),0)
+  glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
+  glUniform1i(glGetUniformLocation(shader,"color_map"),2)
+  glUniform1i(glGetUniformLocation(shader,"ssao_map"),3)
+  glUniform1i(glGetUniformLocation(shader,"nb_lights"),nb_lights)
+  Define i = 0
+  ForEach *lights()
+    Light::PassToShader(*lights(),shader,i)
+    i+1
+  Next
+  
+  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*app\camera\view)
+  
+  ScreenQuad::Draw(*quad)
+
+  Present(3)
   CompilerIf Not #USE_GLFW
     GLContext::FlipBuffer(*app\context)
     
@@ -476,8 +517,8 @@ If Time::Init()
   For i=0 To nb_lights
     AddElement(*lights())
     *lights() = Light::New("Light")
-    Vector3::Set(*lights()\pos,Random(20)-10,1,Random(20)-10)
-    Vector3::Set(*lights()\color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
+    Vector3::Set(*lights()\pos,Random(20)-10,Random(5) + 2,Random(20)-10)
+    Vector3::Set(*lights()\color,Random(255)/255, Random(255)/255, Random(255)/255)
   Next
   
   ; FTGL Drawer
@@ -526,9 +567,11 @@ If Time::Init()
     For y=0 To 7
       For z=0 To 7
         AddElement(*bunnies())
-        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
+        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
-        ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
+        PolymeshGeometry::ComputeHalfEdges(*bunnies()\geom)
+        PolymeshGeometry::ComputeIslands(*bunnies()\geom)
+        PolymeshGeometry::RandomColorByIsland(*bunnies()\geom)
         Vector3::Set(pos,x-5,y+0.5,z-5)
         Matrix4::SetTranslation(*bunnies()\matrix,pos)
         Polymesh::Setup(*bunnies(),*s_gbuffer)
@@ -546,67 +589,30 @@ If Time::Init()
   ; Geometry Buffer
   ;-----------------------------------------------------
   *gbuffer = Framebuffer::New("GBuffer",WIDTH,HEIGHT)
-  GLCheckError("create geometry buffer")
   Framebuffer::AttachTexture(*gbuffer,"position",#GL_RGBA16F,#GL_LINEAR,#GL_REPEAT)
-  GLCheckError("attach position texture")
   Framebuffer::AttachTexture(*gbuffer,"normal",#GL_RGBA16F,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
-  GLCheckError("attach normal texture")
   Framebuffer::AttachTexture(*gbuffer,"color",#GL_RGBA,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
-  GLCheckError("attach color texture")
   Framebuffer::AttachRender(*gbuffer,"depth",#GL_DEPTH_COMPONENT)
-  GLCheckError("attach depth render")
   
   ; SSAO Buffer
   ;-----------------------------------------------------
    *ssao = Framebuffer::New("SSAO",WIDTH,HEIGHT)
   Framebuffer::AttachTexture(*ssao,"ao",#GL_RED,#GL_NEAREST,#GL_CLAMP_TO_EDGE)
-  GLCheckError("init ssao buffer")
   
   ; Blur SSAO Buffer
   ;-----------------------------------------------------
   *blur = Framebuffer::New("Blur",WIDTH,HEIGHT)
   Framebuffer::AttachTexture(*blur,"blur",#GL_RED,#GL_NEAREST,#GL_REPEAT)
-  GLCheckError("init blur buffer")
   
   ; Deferred Buffer
   ;-----------------------------------------------------
   *deferred = Framebuffer::New("Deferred",WIDTH,HEIGHT)
   Framebuffer::AttachTexture(*deferred,"deferred",#GL_RGBA32F,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
-  GLCheckError("init deferred buffer")
   
   
-  *kernel = CArray::New(CArray::#ARRAY_V3F32)
-  CArray::SetCount(*kernel,nbsamples)
+  SetupSSAOKernel(nbsamples)
+  SetupSSAONoise()
   
-  For i=0 To nbsamples-1
-    *p = CArray::GetPtr(*kernel,i)
-    Vector3::Set(*p,1-(Random(100)*0.02),1-(Random(100)*0.02),Random(100)*0.01 )
-    Vector3::NormalizeInPlace(*p)
-;     Vector3::ScaleInPlace(*p,Random(100)*0.01)
-    scl = i/nbsamples
-    LINEAR_INTERPOLATE(scl,0.1,1,scl*scl)
-    Vector3::ScaleInPlace(*p,scl)
-    CArray::SetValue(*kernel,i,*p)
-  Next
-  
-  
-  *noise = CArray::New(CArray::#ARRAY_V3F32)
-  CArray::SetCount(*noise,noise_size)
-  Define *n.v3f32 
-  For i=0 To noise_size-1
-    *n = CArray::GetValue(*noise,i)
-    Vector3::Set(*n,Random(100)*0.02-1,Random(100)*0.02-1,0)
-    Vector3::NormalizeInPlace(*n)
-  Next i
-  
-  
-  glGenTextures(1,@noise_tex)
-  glBindTexture(#GL_TEXTURE_2D,noise_tex)
-  glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,4,4,0,#GL_RGB,#GL_FLOAT,CArray::GetPtr(*noise,0))
-  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MAG_FILTER,#GL_NEAREST)
-  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MIN_FILTER,#GL_NEAREST)
-  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_S,#GL_REPEAT)
-  glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_T,#GL_REPEAT)
   
   
   Matrix4::SetIdentity(offset)
@@ -620,8 +626,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 583
-; FirstLine = 573
+; CursorPosition = 159
+; FirstLine = 120
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe
