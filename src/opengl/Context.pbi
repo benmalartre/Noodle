@@ -15,7 +15,7 @@ Module GLContext
     ForEach *ctx\shaders()
       Program::Delete(*ctx\shaders())
     Next
-    ClearStructure(*ctx,GLContext_t)
+    ClearStructure(*ctx, GLContext_t)
     FreeMemory(*ctx)
   EndProcedure
   
@@ -255,9 +255,9 @@ Module GLContext
   ;---------------------------------------------
   ;  Add Layer
   ;---------------------------------------------
-  Procedure AddLayer(*Me.GLContext_t, *layer)
-    AddElement(*Me\layers())
-    *Me\layers() = *layer
+  Procedure AddFramebuffer(*Me.GLContext_t, *framebuffer.Framebuffer::Framebuffer_t)
+    AddElement(*Me\framebuffers())
+    *Me\framebuffers() = *framebuffer
   EndProcedure
   
   ;---------------------------------------------
@@ -284,11 +284,8 @@ Module GLContext
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage(0,*Me\ID, "update")
     CompilerEndIf
-    ForEach *Me\layers()
-      Protected *layer.GLLayer::GLLayer_t = *me\layers()
-      If Not *layer\fixed
-        GLLayer::Resize(*layer, width, height)
-      EndIf
+    ForEach *me\framebuffers()
+      Framebuffer::Resize(*me\framebuffers(), width, height)
     Next  
   EndProcedure
   
@@ -313,8 +310,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 291
-; FirstLine = 253
+; CursorPosition = 259
+; FirstLine = 254
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

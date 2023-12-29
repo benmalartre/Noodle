@@ -645,8 +645,8 @@ Module Geometry
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 604
-; FirstLine = 581
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 70
+; FirstLine = 67
 ; Folding = -----
 ; EnableXP

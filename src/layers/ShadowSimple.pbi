@@ -44,31 +44,7 @@ Module LayerShadowSimple
     UseModule OpenGL
     UseModule OpenGLExt
     UseModule Math
-  ;------------------------------------------------------------------
-  ; HELPERS
-  ;-----------------------------------------------------------------
-  Procedure GetImage(*layer.LayerShadowSimple_t)
-    Protected x,y
-    Protected l.l
-    Protected *mem = AllocateMemory(*layer\datas\width * *layer\datas\height * SizeOf(l))
-    
-    OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH,#GL_UNSIGNED_INT,*mem)
-    
-    StartDrawing(ImageOutput(*layer\datas\image))
-    Protected row_size = *layer\datas\width
-    Protected color.l
-    For y=0 To *layer\datas\height-1
-      For x=0 To *layer\datas\width-1
-        color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
-        Plot(x,y,color)
-      Next x
-    Next y
-    
-    StopDrawing()
-    FreeMemory(*mem)
-    SaveImage(*layer\datas\image,"D:\Projects\RnD\PureBasic\Noodle\textures\shadowmapsimple.png")
-  EndProcedure
-  
+ 
   ;------------------------------------
   ; Setup
   ;------------------------------------
@@ -104,6 +80,34 @@ Module LayerShadowSimple
   Procedure Pick(*layer.LayerShadowSimple_t)
     
   EndProcedure
+  
+  ;------------------------------------------------------------------
+  ; HELPERS
+  ;-----------------------------------------------------------------
+  Procedure GetImage(*layer.LayerShadowSimple_t)
+    Protected x,y
+    Protected l.l
+    Protected *mem = AllocateMemory(*layer\framebuffer\width * *layer\framebuffer\height * SizeOf(l))
+    
+    OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH,#GL_UNSIGNED_INT,*mem)
+    
+    Define image.i = CreateImage(#PB_Any, *layer\framebuffer\width, *layer\framebuffer\height)
+    StartDrawing(ImageOutput(image))
+    Protected row_size = *layer\framebuffer\width
+    Protected color.l
+    For y=0 To *layer\framebuffer\height-1
+      For x=0 To *layer\framebuffer\width-1
+        color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
+        Plot(x,y,color)
+      Next x
+    Next y
+    
+    StopDrawing()
+    FreeMemory(*mem)
+    SaveImage(image,"D:\Projects\RnD\PureBasic\Noodle\textures\shadowmapsimple.png")
+    FreeImage(image)
+  EndProcedure
+  
   
   ;---------------------------------------------------------
   ; Draw Children Recursively
@@ -141,7 +145,7 @@ Module LayerShadowSimple
     
   
     Protected *camera.Camera::Camera_t = *layer\pov
-    Framebuffer::BindOutput(*layer\datas\buffer)
+    Framebuffer::BindOutput(*layer\framebuffer)
     Layer::Clear(*layer)
     
     Protected shader.GLuint = *ctx\shaders("shadowsimple")\pgm
@@ -191,9 +195,9 @@ Module LayerShadowSimple
     glDisable(#GL_DEPTH_TEST)
     glDisable(#GL_CULL_FACE)
     
-    Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
      GLCheckError("BlitTo")
-    Framebuffer::Unbind(*layer\datas\buffer)
+    Framebuffer::Unbind(*layer\framebuffer)
     
     GLCheckError("Unbind")
     
@@ -217,20 +221,16 @@ Module LayerShadowSimple
 
     Object::INI( LayerShadowSimple )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *camera
   
-    *Me\datas\buffer = Framebuffer::New("ShadowSimple",width,height)
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender(*Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    *Me\framebuffer = Framebuffer::New("ShadowSimple",width,height)
+    Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachRender(*Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
     *Me\mask = #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT
     *Me\shadowmap = *shadowmap
     *Me\light = #Null
     *Me\once = #False
-
-    *Me\datas\image = CreateImage(#PB_Any,width,height)
     
     Setup(*Me)
     
@@ -243,6 +243,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 12
+; CursorPosition = 233
+; FirstLine = 193
 ; Folding = --
 ; EnableXP

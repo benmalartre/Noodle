@@ -2,6 +2,7 @@ XIncludeFile "../core/Application.pbi"
 
 Global *app.Application::Application_t 
 Global *viewport.ViewportUI::ViewportUI_t
+Global *scene.Scene::Scene_t
 Global *layer.LayerStroke::LayerStroke_t
 
 
@@ -37,30 +38,35 @@ Procedure Update()
     EndSelect
   EndIf  
   
+  GLContext::SetContext(*viewport\context)
   LayerStroke::Update(*layer)
   LayerStroke::Draw(*layer, *viewport\context)
-  ViewportUI::Blit(*viewport, *layer\datas\buffer)
-  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+  GLContext::FlipBuffer(*viewport\context)
 
   
 EndProcedure
 
-Scene::*current_scene = Scene::New()
-Define *scene.Scene::Scene_t = Scene::*current_scene
-Define *sphere.Polymesh::Polymesh_t = Polymesh::New("mesh", Shape::#SHAPE_BUNNY)
-Define *geom.Geometry::PolymeshGeometry_t = *sphere\geom
-Scene::AddChild(*scene, *sphere)
+*app = Application::New("TestStrokes",#width,#height)
+OpenGLExt::GLCheckError("create application")
 
-*app.Application::Application_t = Application::New("TEST STROKES", 800, 600)
-*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\window\main, "Viewport", *app\camera, *app\handle)
+If Not #USE_GLFW
+  *viewport = ViewportUI::New(*app\window\main,"Viewport", *app\camera, *app\handle)     
+  OpenGLExt::GLCheckError("create viewport")
+  Application::SetContext(*app, *viewport\context)
+  OpenGLExt::GLCheckError("set application context")
+ ;*app\context\writer\background = #True
+  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+  OpenGLExt::GLCheckError("resize viewport")
+EndIf
 
-Application::SetContext(*app, *viewport\context)
-
-Scene::Setup(Scene::*current_scene,*viewport\context)
-
+; *scene= Scene::New()
+; Define *sphere.Polymesh::Polymesh_t = Polymesh::New("mesh", Shape::#SHAPE_SPHERE)
+; Scene::AddChild(*scene, *sphere)
 
 *layer.LayerStroke::LayerStroke_t = LayerStroke::New(*viewport\sizX,*viewport\sizY,*viewport\context, *app\camera)
-LayerStroke::Setup(*layer, *app\context)
+OpenGLExt::GLCheckError("create strokes layer")
+
 
 ; Define i, j
 ; For j=0 To 6
@@ -74,11 +80,11 @@ LayerStroke::Setup(*layer, *app\context)
 
 
 Application::AddLayer(*app, *layer)
-Scene::Setup(Scene::*current_scene, *app\context)
+; Scene::Setup(*scene, *app\context)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 71
-; FirstLine = 31
+; CursorPosition = 53
+; FirstLine = 27
 ; Folding = -
 ; EnableXP

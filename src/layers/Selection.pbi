@@ -120,8 +120,8 @@ Procedure Pick(*layer.LayerSelection_t)
   Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
   
   ; ---[ Bind Framebuffer and Clean ]-------------------
-  Framebuffer::BindOutput(*layer\datas\buffer)
-  glViewport(0,0,*layer\datas\width,*layer\datas\height)
+  Framebuffer::BindOutput(*layer\framebuffer)
+  glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
 
   glClearColor(0,0,0,0)
   glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
@@ -139,9 +139,9 @@ Procedure Pick(*layer.LayerSelection_t)
   DrawChildren(*layer,Scene::*current_scene\root,*ctx)
 
   
-  Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+  Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
 
-  Framebuffer::Unbind(*layer\datas\buffer)
+  Framebuffer::Unbind(*layer\framebuffer)
   
   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
   
@@ -216,12 +216,10 @@ Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object
   Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
   Object::INI( LayerSelection )
   Color::Set(*Me\background_color,0.5,1.0,0.5,1)
-  *Me\datas\width = width
-  *Me\datas\height = height
   *Me\context = *ctx
-  *Me\datas\buffer = Framebuffer::New("Selection",width,height)
-  Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA8,#GL_LINEAR)
-  Framebuffer::AttachRender(*Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
+  *Me\framebuffer = Framebuffer::New("Selection",width,height)
+  Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA8,#GL_LINEAR)
+  Framebuffer::AttachRender(*Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
   
     
   *Me\shader = *ctx\shaders("selection")
@@ -244,8 +242,8 @@ EndModule
 ; FirstLine = 142
 ; Folding = --
 ; EnableXP
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 158
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 221
+; FirstLine = 199
 ; Folding = --
 ; EnableXP

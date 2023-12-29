@@ -90,12 +90,12 @@ Module LayerToon
    
     
     
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\datas\buffer
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
 
     Framebuffer::BindInput(*layer\gbuffer)
-    Framebuffer::BindOutput(*layer\datas\buffer)
-    glViewport(0,0,*layer\datas\buffer\width,*layer\datas\buffer\height)
+    Framebuffer::BindOutput(*layer\framebuffer)
+    glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
     glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
 
     Protected *shader.Program::Program_t = *ctx\shaders("toon")
@@ -120,8 +120,8 @@ Module LayerToon
     
     ScreenQuad::Draw(*ctx)
     
-    Framebuffer::Unbind(*layer\datas\buffer)
-    Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::Unbind(*layer\framebuffer)
+    Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
   
     glDisable(#GL_BLEND)
   EndProcedure
@@ -150,13 +150,11 @@ Module LayerToon
 
     *Me\gbuffer = *gbuffer
     Color::Set(*Me\background_color,0.33,0.33,0.33,1.0)
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *pov
-    *Me\datas\buffer = Framebuffer::New("Default",width,height)
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    *Me\framebuffer = Framebuffer::New("Default",width,height)
+    Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
     
     *Me\quad = ScreenQuad::New();
     ScreenQuad::Setup(*Me\quad,*ctx\shaders("toon"))
@@ -169,8 +167,8 @@ Module LayerToon
   Class::DEF( LayerToon )
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 158
-; FirstLine = 93
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 151
+; FirstLine = 124
 ; Folding = --
 ; EnableXP

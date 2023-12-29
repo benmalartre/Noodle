@@ -51,7 +51,7 @@ DeclareModule GLContext
     focus.b
     shader.GLuint
     
-    List *layers()
+    List *framebuffers.Framebuffer::Framebuffer_t()
     Map *shaders.Program::Program_t()
   EndStructure
   
@@ -63,7 +63,7 @@ DeclareModule GLContext
   Declare FlipBuffer(*Me.GLContext_t)
   Declare GetSupportedLineWidth(*Me.GLContext_t)
   Declare Resize(*Me.GLContext_t, width.i, height.i)
-  Declare AddLayer(*Me.GLContext_t, *layer)
+  Declare AddFramebuffer(*Me.GLContext_t, *framebuffer)
   Declare GetOpenGLVersion(*Me.GLContext_t)
   Declare.f BackingScaleFactor()  
   Global *MAIN_GL_CTXT.GLContext_t
@@ -128,7 +128,7 @@ DeclareModule GLLayer
 
 EndDeclareModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 67
+; CursorPosition = 53
 ; FirstLine = 35
 ; Folding = -
 ; EnableXP

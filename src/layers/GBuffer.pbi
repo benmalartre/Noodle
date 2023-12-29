@@ -97,13 +97,13 @@ Module LayerGBuffer
   ;---------------------------------------------------------
   Procedure Draw(*layer.LayerGBuffer_t,*ctx.GLContext::GLContext_t)
     
-    Protected *gbuffer.Framebuffer::Framebuffer_t = *layer\datas\buffer
+    Protected *gbuffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Protected offset.m4f32
     Matrix4::SetIdentity(offset)
     
     ; 1. Geometry Pass: render scene's geometry/color data into gbuffer
     Framebuffer::BindOutput(*gbuffer)
-    glViewport(0,0,*layer\datas\width,*layer\datas\height)
+    glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
     glClearColor(0.0,0.0,0.0,0.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     
@@ -189,7 +189,7 @@ Module LayerGBuffer
     glReadBuffer(#GL_COLOR_ATTACHMENT2)
     glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,WIDTH-bw, HEIGHT-3*bh, WIDTH, HEIGHT-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
     
-    Framebuffer::Unbind(*layer\datas\buffer)
+    Framebuffer::Unbind(*layer\framebuffer)
 ;   
 ;     Framebuffer::BindOutput(*layer\buffer)
 ;   
@@ -326,22 +326,19 @@ Module LayerGBuffer
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
     Protected *Me.LayerGBuffer_t = AllocateMemory(SizeOf(LayerGBuffer_t))
     Object::INI( LayerGBuffer )
-    
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *camera
     *Me\display = #True
     Color::Set(*Me\background_color,0.5,0.5,0.5,1.0)
     
     ; Create Framebuffer Object
-    *Me\datas\buffer = Framebuffer::New("GBuffer",width,height)
+    *Me\framebuffer = Framebuffer::New("GBuffer",width,height)
     
     ; Add Render Buffers
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Position",#GL_RGBA16F,#GL_LINEAR)              ; POSITION
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Normal",#GL_RGBA16F,#GL_LINEAR)              ; NORMAL
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)                 ; COLOR
-    Framebuffer::AttachRender(*Me\datas\buffer,"Render",#GL_DEPTH_COMPONENT)
+    Framebuffer::AttachTexture(*Me\framebuffer,"Position",#GL_RGBA16F,#GL_LINEAR)              ; POSITION
+    Framebuffer::AttachTexture(*Me\framebuffer,"Normal",#GL_RGBA16F,#GL_LINEAR)              ; NORMAL
+    Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA,#GL_LINEAR)                 ; COLOR
+    Framebuffer::AttachRender(*Me\framebuffer,"Render",#GL_DEPTH_COMPONENT)
     
     ;OFramebuffer_Check(*Me)
     ProcedureReturn *Me
@@ -349,8 +346,8 @@ Module LayerGBuffer
   
   Class::DEF( LayerGBuffer )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 343
-; FirstLine = 278
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 340
+; FirstLine = 303
 ; Folding = --
 ; EnableXP

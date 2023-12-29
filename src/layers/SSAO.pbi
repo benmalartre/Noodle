@@ -168,11 +168,11 @@ Module LayerSSAO
   Procedure Draw(*layer.LayerSSAO_t,*ctx.GLContext::GLContext_t)
     glDisable(#GL_DEPTH_TEST)
     Framebuffer::BindInput(*layer\gbuffer)
-    Framebuffer::BindOutput(*layer\datas\buffer)
+    Framebuffer::BindOutput(*layer\framebuffer)
     glClear(#GL_COLOR_BUFFER_BIT);
     shader = *ctx\shaders("ssao")\pgm
     glUseProgram(shader)
-    glViewport(0,0,*layer\datas\buffer\width,*layer\datas\buffer\height)
+    glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
     glUniform1i(*layer\u_position_map,0)
     glUniform1i(*layer\u_normal_map,1)
     glActiveTexture(#GL_TEXTURE2)
@@ -192,15 +192,15 @@ Module LayerSSAO
     CompilerEndIf
     
     glUniform1i(*layer\u_kernel_size,*layer\nbsamples)
-    glUniform2f(*layer\u_noise_scale,*layer\datas\buffer\width/*layer\noise_size,*layer\datas\buffer\height/*layer\noise_size)
+    glUniform2f(*layer\u_noise_scale,*layer\framebuffer\width/*layer\noise_size,*layer\framebuffer\height/*layer\noise_size)
     
 
     ScreenQuad::Draw(*layer\quad)
        
     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\datas\buffer\frame_id);
+    glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\framebuffer\frame_id);
     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-    glBlitFramebuffer(0, 0, *layer\datas\buffer\width,*layer\datas\buffer\height,0, 0, *ctx\width, *ctx\height,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
+    glBlitFramebuffer(0, 0, *layer\framebuffer\width,*layer\framebuffer\height,0, 0, *ctx\width, *ctx\height,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
 
     
   EndProcedure
@@ -223,9 +223,6 @@ Module LayerSSAO
  
     *Me\nbsamples = 32
     *Me\noise_size = 4
-
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\gbuffer = *gbuffer
 
@@ -233,8 +230,8 @@ Module LayerSSAO
     *Me\occ_radius = 1.0
     *Me\occ_blur = #True
     *Me\mask = #GL_COLOR_BUFFER_BIT
-    *Me\datas\buffer = Framebuffer::New("SSAO",width,height)
-    Framebuffer::AttachTexture(*Me\datas\buffer,"AO",#GL_RED,#GL_NEAREST,#GL_CLAMP)
+    *Me\framebuffer = Framebuffer::New("SSAO",width,height)
+    Framebuffer::AttachTexture(*Me\framebuffer,"AO",#GL_RED,#GL_NEAREST,#GL_CLAMP)
    
     Layer::AddScreenSpaceQuad(*Me,*ctx)
 
@@ -246,7 +243,7 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 112
-; FirstLine = 87
+; CursorPosition = 224
+; FirstLine = 199
 ; Folding = --
 ; EnableXP

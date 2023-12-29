@@ -91,11 +91,11 @@ Module LayerDefault
     glFrontFace(#GL_CW)
     glEnable(#GL_DEPTH_TEST)
     
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\datas\buffer
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Framebuffer::BindOutput(*buffer)
     
     ;   Clear(*layer)
-    glViewport(0,0, *layer\datas\width, *layer\datas\height)
+    glViewport(0,0, *layer\framebuffer\width, *layer\framebuffer\height)
     glClearColor(0.666,0.666,0.666,1.0)
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     
@@ -105,7 +105,7 @@ Module LayerDefault
     Protected *view.m4f32,proj.m4f32,view.m4f32
     *view = Layer::GetViewMatrix(*layer)
     Protected *camera.Camera::Camera_t = *layer\pov
-    Protected aspect.f = *layer\datas\width / *layer\datas\height
+    Protected aspect.f = *layer\framebuffer\width / *layer\framebuffer\height
     Matrix4::GetProjectionMatrix(proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
     
     ;Draw Shaded Polymeshes 
@@ -217,14 +217,14 @@ Module LayerDefault
     Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
-  Protected basewidth = *layer\datas\width
-  If(*ctx\width < *layer\datas\width) 
+  Protected basewidth = *layer\framebuffer\width
+  If(*ctx\width < *layer\framebuffer\width) 
     
-  ElseIf *ctx\height < *layer\datas\height
+  ElseIf *ctx\height < *layer\framebuffer\height
     
   EndIf
   
-  Framebuffer::Unbind(*layer\datas\buffer)
+  Framebuffer::Unbind(*layer\framebuffer)
   
   glDisable(#GL_DEPTH_TEST)
   glDisable(#GL_BLEND)
@@ -250,16 +250,14 @@ EndProcedure
     Object::INI(LayerDefault)
     
     *Me\name = "LayerDefault"
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\pov = *pov
-    *Me\datas\buffer = Framebuffer::New("Default",width,height)
+    *Me\framebuffer = Framebuffer::New("Default",width,height)
     Color::Set(*Me\background_color,0.33,0.33,0.33,1.0)
     
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
-    Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
-    GLContext::AddLayer(*ctx, *Me\datas)
+    Framebuffer::AttachTexture(*Me\framebuffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
+    Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
+    GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
     ProcedureReturn *Me
   EndProcedure
   
@@ -267,6 +265,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 259
+; FirstLine = 221
 ; Folding = --
 ; EnableXP

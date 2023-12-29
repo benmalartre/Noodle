@@ -65,6 +65,7 @@ Module LayerStroke
   ; Update
   ;---------------------------------------------------
   Procedure Update(*layer.LayerStroke_t)
+    glBindFramebuffer(#GL_FRAMEBUFFER, *layer\framebuffer\frame_id)
     Protected *stroke.Geometry::Stroke_t
     Protected *pnt.Math::v3f32
     Protected f.GLfloat
@@ -84,39 +85,41 @@ Module LayerStroke
         offset + size_s
       Next
       GLCheckError("Push Buffer Data to GPU")
-      
-      ; Attribute Packed position xy, radius , color
-
     EndIf
-      glEnableVertexAttribArray(0)
-      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-      GLCheckError("Enable Vertex Attr Pointer Datas")
+    glBindFramebuffer(#GL_FRAMEBUFFER, 0)
   EndProcedure
   
   ;---------------------------------------------------
   ; Setup
   ;---------------------------------------------------
   Procedure Setup(*layer.LayerStroke_t,*ctx.GLContext::GLContext_t)
+    GLCheckError("setup strokes layer")
     ; Create or ReUse Vertex Array Object
     If Not *layer\vao
       glGenVertexArrays(1,@*layer\vao)
     EndIf
     glBindVertexArray(*layer\vao)
+    GLCheckError("strokes vao")
     
     ; Create or ReUse Vertex Buffer Object
     If Not *layer\vbo
       glGenBuffers(1,@*layer\vbo)
     EndIf
     glBindBuffer(#GL_ARRAY_BUFFER,*layer\vbo)
+    GLCheckError("strokes vbo")
     
     ; load shader
     Protected shader.GLuint = *ctx\shaders("stroke2D")\pgm
     glUseProgram(shader)
     GLCheckError("Use Program Stroke 2D From Context")
     
+    ; Attribute Packed position xy, radius , color
+    glEnableVertexAttribArray(0)
+    GLCheckError("enable vertex attrib array 0")
+    glVertexAttribPointer(0, 4, #GL_FLOAT, #GL_FALSE, 0, 0)
+    GLCheckError("set vertex attrib ptr")
+    
     Update(*layer)
-
-    glBindVertexArray(#GL_NONE)  
     
   EndProcedure
   
@@ -137,8 +140,8 @@ Module LayerStroke
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.LayerStroke_t,*ctx.GLContext::GLContext_t)
-    Framebuffer::BindOutput(*layer\datas\buffer)
-    glViewport(0,0,*layer\datas\width,*layer\datas\height)
+    Framebuffer::BindOutput(*layer\framebuffer)
+    glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
 
     glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a);
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
@@ -148,8 +151,7 @@ Module LayerStroke
     If *layer\nbp
       Protected i
       Protected shader.GLuint = *ctx\shaders("stroke2D")\pgm
-      glBindVertexArray(*layer\vao)
-      GLCheckError("Bind Vertex Array")
+;       GLCheckError("Bind Vertex Array")
       glUseProgram(shader)
       GLCheckError("Use Program")
     
@@ -159,23 +161,25 @@ Module LayerStroke
       glEnable(#GL_BLEND)
       
   
-      Protected offset = 0
-      Protected f.f
+      Protected start.GLint = 0
+      Protected count.GLsizei = 0
+      Debug "num strokes : "+Str(CArray::GetCount(*layer\strokes))
   
       For i=0 To CArray::GetCount(*layer\strokes)-1
         *stroke = CArray::GetValuePtr(*layer\strokes, i)
-        With *stroke
-          glDrawArrays(#GL_LINE_STRIP_ADJACENCY, offset,\datas\itemCount)
-;           glDrawArrays(#GL_POINTS, offset,\datas\itemCount)
-          GLCheckError("Draw Array")
-          offset+\datas\itemCount
-        EndWith
+        
+        count = CArray::GetCount(*stroke\datas)
+        Debug "start : "+Str(start)
+        Debug "count : "+Str(count)
+        If count
+          glDrawArrays(#GL_LINE_STRIP_ADJACENCY, start, count)
+          GLCheckError("Draw Array")  
+        EndIf
+        start + count
       Next
-      glBindVertexArray(#GL_NONE)
     EndIf
     
-    Framebuffer::Unbind(*layer\datas\buffer)
-    Framebuffer::BlitTo(*layer\datas\buffer, 0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::Unbind(*layer\framebuffer)
    
 ;      glDisable(#GL_POINT_SMOOTH)
      glDisable(#GL_BLEND)
@@ -186,8 +190,8 @@ Module LayerStroke
   ; Add Point
   ;---------------------------------------------------
   Procedure AddPoint(*layer.LayerStroke_t,x.i,y.i)
-    Protected w = *layer\datas\width
-    Protected h = *layer\datas\height
+    Protected w = *layer\framebuffer\width
+    Protected h = *layer\framebuffer\height
   
     If *layer\current
       Protected pos.v3f32
@@ -250,18 +254,19 @@ Module LayerStroke
     Object::INI( LayerStroke )
     Color::Set(*Me\background_color,0.5,0.5,0.5,0.0)
     *Me\name = "LayerStroke2D"
-    *Me\datas\width = width
-    *Me\datas\height = height
     *Me\context = *ctx
     *Me\shader = *ctx\shaders("stroke2D")
-    *Me\datas\buffer = Framebuffer::New("Strokes",width,height)
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
-    Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
+    *Me\framebuffer = Framebuffer::New("Strokes",width,height)
+    GLCheckError("constructor strokes")
+    Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
+    GLCheckError("attach texture strokes")
+    Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
+    GLCheckError("attach re der strokes")
     
-
     *Me\pov = *pov
     *Me\strokes = CArray::New(CArray::#ARRAY_PTR)
     Setup(*Me,*ctx)
+    GLCheckError("setup strokes")
     ProcedureReturn *Me
   
   EndProcedure
@@ -272,7 +277,7 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 91
-; FirstLine = 45
+; CursorPosition = 268
+; FirstLine = 226
 ; Folding = ---
 ; EnableXP

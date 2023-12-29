@@ -19,7 +19,8 @@ DeclareModule Layer
   ;---------------------------------------------------
   Structure Layer_t Extends Object::Object_t
     name.s
-    datas.GLLayer::GLLayer_t
+    ;     datas.GLLayer::GLLayer_t
+    *framebuffer.Framebuffer::Framebuffer_t
     *pov.Object3D::Object3D_t
     *viewport.Viewport_t
     *quad.ScreenQuad::ScreenQuad_t
@@ -95,7 +96,7 @@ DeclareModule Layer
   Declare RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
   
   Declare GetImage(*layer.Layer::Layer_t, path.s)
-  Declare GetDatas(*layer.Layer::Layer_t)
+  Declare GetFramebuffer(*layer.Layer::Layer_t)
    ; ============================================================================
   ;  MACROS ( Layer )
   ; ============================================================================
@@ -113,7 +114,7 @@ DeclareModule Layer
 EndDeclareModule
 
 ; ============================================================================
-;  GLLayer Module Implementation
+;  Layer Module Implementation
 ; ============================================================================
 Module Layer
   UseModule OpenGL
@@ -167,7 +168,7 @@ Module Layer
   ; Clear
   ;---------------------------------------------------
   Procedure Clear(*layer.Layer_t)
-    glViewport(0,0,*layer\datas\width,*layer\datas\height)
+    glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
     glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
     glClear(*layer\mask)
   EndProcedure
@@ -177,7 +178,8 @@ Module Layer
   ; Resize
   ;---------------------------------------------------
   Procedure Resize(*layer.Layer_t,width,height.i)
-    GLLayer::Resize(*layer\datas, width, height)
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
+    Framebuffer::Resize(*buffer,width,height)
   EndProcedure
   
   ;---------------------------------------------------
@@ -212,7 +214,7 @@ Module Layer
   Procedure WriteImage(*layer.Layer_t,path.s,format)
     
     Define.GLint wtex,htex,comp,rs,gs,bs,a_s;
-    Protected subsample = *layer\datas\buffer\tbos(0)\textureID
+    Protected subsample = *layer\framebuffer\tbos(0)\textureID
     
   glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_WIDTH, @wtex );
   glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_HEIGHT, @htex );
@@ -236,15 +238,16 @@ Module Layer
   
     Protected x,y
     Protected l.l
-    Protected *mem = AllocateMemory(*layer\datas\width * *layer\datas\height *4 * SizeOf(l))
+    Protected *mem = AllocateMemory(*layer\framebuffer\width * *layer\framebuffer\height *4 * SizeOf(l))
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,format,#GL_UNSIGNED_INT,*mem)
     
-    StartDrawing(ImageOutput(*layer\datas\image))
-    Protected row_size = *layer\datas\width
+    Define image = CreateImage(#PB_Any, *layer\framebuffer\width, *layer\framebuffer\height)
+    StartDrawing(ImageOutput(image))
+    Protected row_size = *layer\framebuffer\width
     Protected color.l
-    For y=0 To *layer\datas\height-1
-      For x=0 To *layer\datas\width-1
+    For y=0 To *layer\framebuffer\height-1
+      For x=0 To *layer\framebuffer\width-1
         color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
         Plot(x,y,color)
       Next x
@@ -252,7 +255,8 @@ Module Layer
     
     StopDrawing()
     FreeMemory(*mem)
-    SaveImage(*layer\datas\image,path)
+    SaveImage(image,path)
+    FreeImage(image)
   EndProcedure
   
   ;---------------------------------------------------
@@ -260,18 +264,20 @@ Module Layer
   ;---------------------------------------------------
   Procedure WriteFramebuffer(*layer.Layer_t,path.s,format.i)
     Protected x,y
-    x = *layer\datas\width
-    y = *layer\datas\height
+    x = *layer\framebuffer\width
+    y = *layer\framebuffer\height
     Protected c.a
     Protected *mem = AllocateMemory(x*y* 3 *SizeOf(c))
     
     
     glReadPixels(0,0,x,y, #GL_BGR,#GL_UNSIGNED_BYTE,*mem);// split x and y sizes into bytes
-    StartDrawing(ImageOutput(*layer\datas\image))
-    Protected row_size = *layer\datas\width
+    
+    Define image = CreateImage(#PB_Any, *layer\framebuffer\width, *layer\framebuffer\height)
+    StartDrawing(ImageOutput(image))
+    Protected row_size = *layer\framebuffer\width
     Protected color.l
-    For y=0 To *layer\datas\height-1
-      For x=0 To *layer\datas\width-1
+    For y=0 To *layer\framebuffer\height-1
+      For x=0 To *layer\framebuffer\width-1
         color = PeekA(*mem + (y*row_size+x)*SizeOf(c))
         Plot(x,y,color)
       Next x
@@ -281,7 +287,8 @@ Module Layer
     
     StopDrawing()
     FreeMemory(*mem)
-    SaveImage(*layer\datas\image,path)
+    SaveImage(image,path)
+    FreeImage(image)
 
   EndProcedure
   
@@ -482,7 +489,7 @@ Module Layer
   ; Draw
   ;---------------------------------------------------
   Procedure Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
-    Protected *buffer.Framebuffer::Framebuffer_t = *layer\datas\buffer
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Framebuffer::BindOutput(*buffer)
     ;   Clear(*layer)
     glClearColor(0.66,0.66,0.66,1.0)
@@ -496,7 +503,7 @@ Module Layer
     ;-----------------------------------------------
     Protected *view.m4f32,proj.m4f32,view.m4f32
     Protected *camera.Camera::Camera_t = *layer\pov
-    Protected aspect.f = *layer\datas\width / *layer\datas\height
+    Protected aspect.f = *layer\framebuffer\width / *layer\framebuffer\height
     *view = Layer::GetViewMatrix(*layer)
     Matrix4::GetProjectionMatrix(proj, *camera\fov, aspect, *camera\nearplane, *camera\farplane)
     
@@ -650,8 +657,8 @@ Module Layer
 ; ; ;     Next i
 ; ;     
 ;     
-    Framebuffer::Unbind(*layer\datas\buffer)
-    Framebuffer::BlitTo(*layer\datas\buffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
+    Framebuffer::Unbind(*layer\framebuffer)
+    Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
 ; ; ;     *layer\buffer\Unbind()
 ; ;     *layer\buffer\BlitTo(0,#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT,#GL_LINEAR)
   EndProcedure
@@ -662,15 +669,16 @@ Module Layer
   Procedure GetImage(*layer.Layer::Layer_t, path.s)
     Protected x,y
     Protected l.l
-    Protected *mem = AllocateMemory(*layer\datas\width * *layer\datas\height * SizeOf(l))
+    Protected *mem = AllocateMemory(*layer\framebuffer\width * *layer\framebuffer\height * SizeOf(l))
     
     OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,#GL_DEPTH_COMPONENT,#GL_UNSIGNED_INT,*mem)
     
-    StartDrawing(ImageOutput(*layer\datas\image))
-    Protected row_size = *layer\datas\width
+    Define image = CreateImage(#PB_Any, *layer\framebuffer\width, *layer\framebuffer\height)
+    StartDrawing(ImageOutput(image))
+    Protected row_size = *layer\framebuffer\width
     Protected color.l
-    For y=0 To *layer\datas\height-1
-      For x=0 To *layer\datas\width-1
+    For y=0 To *layer\framebuffer\height-1
+      For x=0 To *layer\framebuffer\width-1
         color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
         Plot(x,y,color)
       Next x
@@ -678,14 +686,14 @@ Module Layer
     
     StopDrawing()
     FreeMemory(*mem)
-    SaveImage(*layer\datas\image,path)
+    SaveImage(image,path)
   EndProcedure
   
   ;------------------------------------------------------------------
   ; Get Datas
   ;------------------------------------------------------------------
-  Procedure GetDatas(*layer.Layer::Layer_t)
-    ProcedureReturn *layer\datas
+  Procedure GetFramebuffer(*layer.Layer::Layer_t)
+    ProcedureReturn *layer\framebuffer
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -720,6 +728,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 26
+; CursorPosition = 98
+; FirstLine = 95
 ; Folding = ------
 ; EnableXP

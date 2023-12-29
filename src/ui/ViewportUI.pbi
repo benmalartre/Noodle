@@ -22,7 +22,6 @@ DeclareModule ViewportUI
     *context.GLContext::GLContext_t
     *handle.Handle::Handle_t
 
-    *layer.LayerBitmap::LayerBitmap_t
     mx.f
     my.f
     oldX.f
@@ -99,9 +98,6 @@ Module ViewportUI
     ; setup delegate gl context
     *Me\camera = *camera
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
-        
-    *Me\layer = LayerBitmap::New(*Me\sizX,  *Me\sizY, *Me\context, *Me\camera)
-    LayerBitmap::Setup(*Me\layer)
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
@@ -676,7 +672,6 @@ Module ViewportUI
     ; draw texture on screen space quad
     glViewport(0,0,*Me\context\width,*Me\context\height)
   Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT, #GL_LINEAR)
-    *Me\layer\bitmap = *framebuffer\tbos(0)\textureID
 
   EndProcedure
  
@@ -684,7 +679,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 679
-; FirstLine = 640
+; CursorPosition = 99
+; FirstLine = 98
 ; Folding = ----
 ; EnableXP
