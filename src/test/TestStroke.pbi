@@ -2,18 +2,12 @@ XIncludeFile "../core/Application.pbi"
 
 Global *app.Application::Application_t 
 Global *viewport.ViewportUI::ViewportUI_t
-Global *stroke.LayerStroke::LayerStroke_t
+Global *layer.LayerStroke::LayerStroke_t
 
 
 Time::Init()
 Log::Init()
 
-Enumeration
-  #Main_Window = 0
-  #Timeline_Window
-  #View3D_Window
-  #Explorer_Window
-EndEnumeration
 #width = 800
 #height = 400
 
@@ -22,20 +16,14 @@ Procedure Update()
   Define e,x,y,mx,my
   Define *current.View::View_t
   
-  LayerStroke::Update(*stroke)
-  LayerStroke::Draw(*stroke, *viewport\context)
-  
- GLContext::FlipBuffer(*app\context)
-  ;*stroke\Draw(*viewport\context,0)
-
   If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
     Select EventType()
       Case #PB_EventType_LeftButtonDown
-        LayerStroke::StartStroke(*stroke)
+        LayerStroke::StartStroke(*layer)
         down = #True
       Case #PB_EventType_LeftButtonUp
         If down
-          LayerStroke::EndStroke(*stroke)
+          LayerStroke::EndStroke(*layer)
           down = #False
         EndIf
       Case #PB_EventType_MouseMove
@@ -43,11 +31,18 @@ Procedure Update()
           Define mx,my
           mx = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseX)
           my = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseY)
-          LayerStroke::AddPoint(*stroke,mx,my)
+          LayerStroke::AddPoint(*layer,mx,my)
         EndIf
         
     EndSelect
   EndIf  
+  
+  LayerStroke::Update(*layer)
+  LayerStroke::Draw(*layer, *viewport\context)
+  ViewportUI::Blit(*viewport, *layer\datas\buffer)
+  GLContext::FlipBuffer(*app\context)
+
+  
 EndProcedure
 
 Scene::*current_scene = Scene::New()
@@ -57,39 +52,33 @@ Define *geom.Geometry::PolymeshGeometry_t = *sphere\geom
 Scene::AddChild(*scene, *sphere)
 
 *app.Application::Application_t = Application::New("TEST STROKES", 800, 600)
-;Define viewport.CViewport = newCViewport(*manager\main);*manager\main\gadgetID,*manager\window)
-; Define *view.View::View_t = View::Split(*app\manager\main,#False)
+*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\window\main, "Viewport", *app\camera, *app\handle)
 
-; Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*splitted\left, "Viewport")
-*viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*app\window\main, "Viewport", *app\camera, *app\handle);*manager\main\gadgetID,*manager\window)
-*app\context = *viewport\context
+Application::SetContext(*app, *viewport\context)
 
-; Define *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*view\right)
-; ExplorerUI::Setup(*explorer)
-
-; OScene_Setup(*raa_current_scene,0,#True)
 Scene::Setup(Scene::*current_scene,*viewport\context)
 
 
-*stroke.LayerStroke::LayerStroke_t = LayerStroke::New(*viewport\sizX,*viewport\sizY,*viewport\context, *app\camera)
-LayerStroke::Setup(*stroke, *app\context)
+*layer.LayerStroke::LayerStroke_t = LayerStroke::New(*viewport\sizX,*viewport\sizY,*viewport\context, *app\camera)
+LayerStroke::Setup(*layer, *app\context)
 
-Define i, j
-For j=0 To 6
-  LayerStroke::StartStroke(*stroke)
-  For i=0 To *viewport\sizX/100
-    LayerStroke::AddPoint(*stroke,i*100, j*10 +Sin(i*0.1)*8 + *viewport\sizY * 0.5 + Random(5)-2.5)
-  Next
-  LayerStroke::EndStroke(*stroke)
-Next
+; Define i, j
+; For j=0 To 6
+;   LayerStroke::StartStroke(*layer)
+;   For i=0 To *viewport\sizX/100
+;     LayerStroke::AddPoint(*layer,i*100, j*10 +Sin(i*0.1)*8 + *viewport\sizY * 0.5 + Random(5)-2.5)
+;   Next
+;   LayerStroke::EndStroke(*layer)
+; Next
 
 
 
-Application::AddLayer(*app, *stroke)
+Application::AddLayer(*app, *layer)
 Scene::Setup(Scene::*current_scene, *app\context)
 
 Application::Loop(*app,@Update())
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 71
+; FirstLine = 31
 ; Folding = -
 ; EnableXP

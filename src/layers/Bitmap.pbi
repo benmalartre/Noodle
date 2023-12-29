@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Bitmap Layer Module
 ; ============================================================================
-XIncludeFile "../objects/Layer.pbi"
+XIncludeFile "Layer.pbi"
 DeclareModule LayerBitmap
   UseModule Math
   ;---------------------------------------------------
@@ -136,7 +136,6 @@ Module LayerBitmap
     Framebuffer::AttachTexture(*Me\datas\buffer,"Color", #GL_RGBA,#GL_LINEAR, #True)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
-    *Me\shader = *ctx\shaders("bitmap")\pgm
     
     Layer::AddScreenSpaceQuad(*Me,*ctx)
     
@@ -147,7 +146,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 135
+; CursorPosition = 138
 ; FirstLine = 102
 ; Folding = --
 ; EnableXP

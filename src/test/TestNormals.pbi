@@ -18,8 +18,6 @@ Global *layer.Layer::Layer_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 
-
-
 Procedure UpdateNormals()
   Define i
   Define m.m4f32
@@ -91,7 +89,7 @@ height = 600
 
 Globals::Init()
 FTGL::Init()
-;--------------------------------------------
+
 If Time::Init()
   Log::Init()
   Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
@@ -127,8 +125,8 @@ If Time::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 100
-; FirstLine = 79
+; CursorPosition = 92
+; FirstLine = 80
 ; Folding = -
 ; EnableXP
 ; Executable = D:/Volumes/STORE N GO/Polymesh.app

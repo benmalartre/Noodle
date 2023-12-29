@@ -6,11 +6,13 @@ XIncludeFile "../objects/Stroke.pbi"
 
 DeclareModule LayerStroke
   
-    UseModule Math
+   UseModule Math
   ;---------------------------------------------------
   ; Structure
   ;---------------------------------------------------s
   Structure LayerStroke_t Extends Layer::Layer_t
+    vao.i
+    vbo.i
     linewidth.f
     *strokes.CArray::CArrayPtr
     *current.Geometry::Stroke_t
@@ -82,11 +84,13 @@ Module LayerStroke
         offset + size_s
       Next
       GLCheckError("Push Buffer Data to GPU")
+      
+      ; Attribute Packed position xy, radius , color
+
     EndIf
-    ; Attribute Packed position xy, radius , color
-    glEnableVertexAttribArray(0)
-    glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-    GLCheckError("Enable Vertex Attr Pointer Datas")
+      glEnableVertexAttribArray(0)
+      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      GLCheckError("Enable Vertex Attr Pointer Datas")
   EndProcedure
   
   ;---------------------------------------------------
@@ -151,7 +155,7 @@ Module LayerStroke
     
       glPointSize(2)
       glLineWidth(12)
-      glEnable(#GL_POINT_SMOOTH)
+;       glEnable(#GL_POINT_SMOOTH)
       glEnable(#GL_BLEND)
       
   
@@ -173,7 +177,7 @@ Module LayerStroke
     Framebuffer::Unbind(*layer\datas\buffer)
     Framebuffer::BlitTo(*layer\datas\buffer, 0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
    
-     glDisable(#GL_POINT_SMOOTH)
+;      glDisable(#GL_POINT_SMOOTH)
      glDisable(#GL_BLEND)
   EndProcedure
   
@@ -268,7 +272,7 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 258
-; FirstLine = 224
+; CursorPosition = 91
+; FirstLine = 45
 ; Folding = ---
 ; EnableXP

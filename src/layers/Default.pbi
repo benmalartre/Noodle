@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Default Layer Module
 ; ============================================================================
-XIncludeFile "../objects/Layer.pbi"
+XIncludeFile "Layer.pbi"
 DeclareModule LayerDefault
   UseModule Math
   ;---------------------------------------------------
@@ -14,7 +14,6 @@ DeclareModule LayerDefault
     b_camera.b
     b_light.b
     mode.i
-  ;   image.GLuint
   EndStructure
   
   ;---------------------------------------------------
@@ -260,7 +259,6 @@ EndProcedure
     
     Framebuffer::AttachTexture(*Me\datas\buffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
     Framebuffer::AttachRender( *Me\datas\buffer,"Depth",#GL_DEPTH_COMPONENT)
-    *Me\datas\image = CreateImage(#PB_Any,width,height)
     GLContext::AddLayer(*ctx, *Me\datas)
     ProcedureReturn *Me
   EndProcedure
@@ -269,7 +267,6 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 233
-; FirstLine = 195
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

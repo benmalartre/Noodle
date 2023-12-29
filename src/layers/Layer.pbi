@@ -17,13 +17,14 @@ DeclareModule Layer
   ;---------------------------------------------------
   ; Structure
   ;---------------------------------------------------
-  Structure Layer_t Extends Object3D::Object3D_t
+  Structure Layer_t Extends Object::Object_t
+    name.s
     datas.GLLayer::GLLayer_t
     *pov.Object3D::Object3D_t
     *viewport.Viewport_t
     *quad.ScreenQuad::ScreenQuad_t
-
     *context.GLContext::GLContext_t
+    *shader.Program::Program_t
     color.Math::c4f32
     background_color.Math::c4f32
     active.b
@@ -118,7 +119,6 @@ Module Layer
   UseModule OpenGL
   UseModule OpenGLExt
   Procedure Init(*layer.Layer_t)
-    *layer\shader = #Null
   EndProcedure
   
   ;---------------------------------------------------
@@ -161,7 +161,6 @@ Module Layer
   ; Set Shader
   ;---------------------------------------------------
   Procedure SetShader(*layer.Layer_t,*shader.Program::Program_t)
-    *layer\shader = *shader
   EndProcedure
   
   ;---------------------------------------------------
@@ -720,8 +719,7 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 201
-; FirstLine = 177
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 26
 ; Folding = ------
 ; EnableXP

@@ -10,6 +10,7 @@ DeclareModule LayerShadowSimple
   Structure LayerShadowSimple_t Extends Layer::Layer_t
     *shadowmap.Framebuffer::Framebuffer_t
     *light.Light::Light_t
+    texture.i
     once.b
   EndStructure
   
@@ -241,8 +242,7 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 166
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 12
 ; Folding = --
 ; EnableXP

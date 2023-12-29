@@ -289,8 +289,7 @@ Module GLContext
       If Not *layer\fixed
         GLLayer::Resize(*layer, width, height)
       EndIf
-    Next
-      
+    Next  
   EndProcedure
   
   ;---------------------------------------------
@@ -314,8 +313,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 280
-; FirstLine = 269
+; CursorPosition = 291
+; FirstLine = 253
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
