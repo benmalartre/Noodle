@@ -1,8 +1,7 @@
 ; ============================================================================
 ;  OpenGl Layer For 3D Picking Using GLSL Shaders
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
-XIncludeFile "../opengl/Context.pbi"
+XIncludeFile "Layer.pbi"
 XIncludeFile "../objects/Selection.pbi"
 
 DeclareModule LayerSelection
@@ -243,7 +242,6 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 221
-; FirstLine = 199
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

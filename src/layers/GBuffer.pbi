@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  OpenGL GeometryBuffer Layer Declaration
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 DeclareModule LayerGBuffer
   UseModule OpenGL
   ;---------------------------------------------------
@@ -347,7 +347,6 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 340
-; FirstLine = 303
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

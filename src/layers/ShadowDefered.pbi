@@ -1,9 +1,9 @@
 ; ============================================================================
 ;  OpenGL Defered Rendering Layer Module Declaration
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 XIncludeFile "ShadowMap.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
+
 DeclareModule LayerShadowDefered
   UseModule OpenGL
   UseModule Math
@@ -187,7 +187,6 @@ Module LayerShadowDefered
   Class::DEF(LayerShadowDefered)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 173
-; FirstLine = 143
+; CursorPosition = 2
 ; Folding = --
 ; EnableXP

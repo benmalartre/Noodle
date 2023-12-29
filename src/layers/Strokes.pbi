@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Strokes Layer Module
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 XIncludeFile "../objects/Stroke.pbi"
 
 DeclareModule LayerStroke
@@ -277,7 +277,6 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 268
-; FirstLine = 226
+; CursorPosition = 3
 ; Folding = ---
 ; EnableXP

@@ -1,9 +1,9 @@
 ; ============================================================================
 ;  OpenGL Defered Rendering Layer Module Declaration
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 XIncludeFile "ShadowMap.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
+
 DeclareModule LayerSSAO
   UseModule OpenGL
   UseModule Math
@@ -243,7 +243,6 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 224
-; FirstLine = 199
+; CursorPosition = 6
 ; Folding = --
 ; EnableXP

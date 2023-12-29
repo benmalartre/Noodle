@@ -1,5 +1,3 @@
-
-XIncludeFile "../opengl/Layer.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 XIncludeFile "../objects/Camera.pbi"
 XIncludeFile "../objects/Light.pbi"
@@ -728,7 +726,5 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 98
-; FirstLine = 95
 ; Folding = ------
 ; EnableXP

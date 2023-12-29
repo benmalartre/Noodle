@@ -56,7 +56,7 @@ XIncludeFile "../objects/Octree.pbi"
 ; ============================================================================
 ;   LAYER MODULES
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "../layers/Layer.pbi"
 XIncludeFile "../layers/Default.pbi"
 XIncludeFile "../layers/Bitmap.pbi"
 XIncludeFile "../layers/Selection.pbi"
@@ -788,8 +788,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 772
-; FirstLine = 744
+; CursorPosition = 58
+; FirstLine = 54
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

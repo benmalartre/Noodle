@@ -1,7 +1,7 @@
 ; ============================================================================
 ; ShadowSimple Layer Module Declaration
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 DeclareModule LayerShadowSimple
   UseModule OpenGL
   ;---------------------------------------------------
@@ -243,7 +243,6 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 233
-; FirstLine = 193
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP

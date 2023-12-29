@@ -1,6 +1,5 @@
 ﻿XIncludeFile "UI.pbi"
 XIncludeFile "../core/Log.pbi"
-XIncludeFile "../opengl/Layer.pbi"
 XIncludeFile "../controls/Property.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 XIncludeFile "../graph/Types.pbi"
@@ -513,9 +512,8 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 398
-; FirstLine = 383
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 2
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

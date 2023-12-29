@@ -1,7 +1,7 @@
 ; ============================================================================
 ;  Toon Layer Module
 ; ============================================================================
-XIncludeFile "../opengl/Layer.pbi"
+XIncludeFile "Layer.pbi"
 DeclareModule LayerToon
   UseModule Math
   ;---------------------------------------------------
@@ -168,7 +168,6 @@ Module LayerToon
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 151
-; FirstLine = 124
+; CursorPosition = 3
 ; Folding = --
 ; EnableXP
