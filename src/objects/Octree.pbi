@@ -114,7 +114,7 @@ Module Octree
   Procedure New(*bmin.v3f32, *bmax.v3f32, depth=0, elemType=#ELEMENT_3D)
     Protected *octree.Octree_t = AllocateMemory(SizeOf(Octree_t))
     InitializeStructure(*octree, Octree_t)
-    *octree\elements = CArray::newCArrayLong()
+    *octree\elements = CArray::New(CArray::#ARRAY_LONG)
     *octree\depth = depth
     *octree\state = #STATE_DEFAULT
     *octree\elemType = elemType
@@ -165,7 +165,7 @@ Module Octree
   Procedure NewCell(*octree.Octree_t, *bmin.v3f32, *bmax.v3f32, depth=0)
     Protected *cell.Cell_t = AllocateMemory(SizeOf(Cell_t))
     InitializeStructure(*cell, Cell_t)
-    *cell\elements = CArray::newCArrayLong()
+    *cell\elements = CArray::New(CArray::#ARRAY_LONG)
     *cell\depth = depth
     *cell\state = #STATE_DEFAULT
     Vector3::SetFromOther(*cell\bmin, *bmin)
@@ -1107,7 +1107,7 @@ Module Octree
   ; DRAW MORTON LEAVES
   ;---------------------------------------------------------------------
   Procedure DrawLeaves(*octree.Octree_t, *drawer.Drawer::Drawer_t)
-    Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+    Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
     CArray::SetCount(*positions, MapSize(*octree\cells()))
     Protected p.v3f32
     Protected index.i = 0
@@ -1155,7 +1155,7 @@ Module Octree
       EndSelect
       
       
-;       Protected *positions.CArray::CarrayV3F32 = CArray::newCArrayV3F32()
+;       Protected *positions.CArray::CarrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 ;       Protected *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
 ;       Protected numTriangles.i = CArray::GetCount(*cell\elements)
 ;       CArray::SetCount(*positions, numTriangles * 3)
@@ -1215,8 +1215,8 @@ Module Octree
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1122
-; FirstLine = 1118
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1157
+; FirstLine = 1113
 ; Folding = ---------
 ; EnableXP

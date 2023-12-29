@@ -2,10 +2,6 @@
 
 
 XIncludeFile "../core/Application.pbi"
-XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile"../objects/Polymesh.pbi"
-XIncludeFile "../ui/ViewportUI.pbi"
 
 
 UseModule Math
@@ -26,10 +22,6 @@ Global oldX.f
 Global oldY.f
 Global width.i
 Global height.i
-
-Global fbo.i
-Global rbo.i 
-Global texture.i
 
 Global *torus.Polymesh::Polymesh_t
 Global *teapot.Polymesh::Polymesh_t
@@ -117,16 +109,16 @@ Procedure Draw(*app.Application::Application_t)
  
 
   Application::Draw(*app, *layer, *app\camera)
-  
+  ViewportUI::Blit(*viewport, *app\layer\datas\buffer)
 
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
-;   Define ss.f = 0.85/width
-;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
+  FTGL::BeginDraw(*app\context\writer)
+  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
+  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*app\context\writer)
   
-    GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*app\context)
     
 
  EndProcedure
@@ -136,9 +128,8 @@ Procedure Draw(*app.Application::Application_t)
  height = 800
  ; Main
  Globals::Init()
-;  Bullet::Init( )
  FTGL::Init()
-;--------------------------------------------
+ 
  If Time::Init()
    Define startT.d = Time::Get ()
    Log::Init()
@@ -157,13 +148,10 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   
-  GLCheckError("init scene")
   
   GLContext::SetContext(*app\context)
-  GLCheckError("set context")
   
   *layer = LayerDefault::New(width,height,*app\context,*app\camera)
-  GLCheckError("create layer")
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -182,7 +170,7 @@ Procedure Draw(*app.Application::Application_t)
   Define *samples.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
-  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_TEAPOT)
+  *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
   Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
@@ -250,37 +238,11 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   ViewportUI::SetHandleTarget(*viewport, *merged)
-  
-  glGenFramebuffers(1, @fbo)
-  glBindFramebuffer(#GL_FRAMEBUFFER, fbo)
-  
-  glGenTextures(1, @texture)
-  glBindTexture(#GL_TEXTURE_2D, texture)
-    
-  glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA, 800, 800, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
-  
-  glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_NEAREST)
-  glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
-  glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_EDGE)
-  glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_EDGE)
- 
-  glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_COLOR_ATTACHMENT0, #GL_TEXTURE_2D, texture, 0)
-  
-     
-  glGenRenderbuffers(1, @rbo)
-  glBindRenderbuffer(#GL_RENDERBUFFER, rbo)  
-  glRenderbufferStorage(#GL_RENDERBUFFER, #GL_DEPTH_COMPONENT, 800, 800)
-  
-  glFramebufferRenderbuffer(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_RENDERBUFFER, rbo)
-  
-  If glCheckFramebufferStatus(#GL_FRAMEBUFFER) <> #GL_FRAMEBUFFER_COMPLETE
-    Debug "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" 
-  EndIf
  
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 117
-; FirstLine = 101
+; CursorPosition = 172
+; FirstLine = 141
 ; Folding = -
 ; EnableXP

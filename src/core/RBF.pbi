@@ -70,9 +70,9 @@ DeclareModule RBF
   
   Declare SetKernelType(*rbf.RBF_t, type.i)
   Declare ComputeEpsilon(*rbf.RBF_t, *m.Matrix::Matrix_t)
-  Declare Init(*rbf.RBF_t, *xd.Matrix::Matrix_t, *f.Matrix::Matrix_t)
-  Declare Interpolate(*rbf.RBF_t, *xd.Matrix::Matrix_t, *xi.Matrix::Matrix_t, *result.Matrix::Matrix_t)
-  Declare GetWeights(*rbf.RBF_t, *xd.Matrix::Matrix_t, *xi.Matrix::Matrix_t, *result.Matrix::Matrix_t)
+  Declare Init(*rbf.RBF_t, *keys.Matrix::Matrix_t, *values.Matrix::Matrix_t)
+  Declare Interpolate(*rbf.RBF_t, *querys.Matrix::Matrix_t, *result.Matrix::Matrix_t)
+  Declare GetWeights(*rbf.RBF_t, *querys.Matrix::Matrix_t, *result.Matrix::Matrix_t)
 EndDeclareModule
 
 
@@ -212,10 +212,10 @@ Module RBF
   EndProcedure
   
   ; interpolate
-  Procedure Interpolate(*rbf.RBF_t, *keys.Matrix::Matrix_t, *query.Matrix::Matrix_t, *result.Matrix::Matrix_t)
+  Procedure Interpolate(*rbf.RBF_t, *query.Matrix::Matrix_t, *result.Matrix::Matrix_t)
     Matrix::Resize(*result, *query\rows, *rbf\V\columns)
-    Define nd = *keys\rows
-    Define m = *keys\columns
+    Define nd = *rbf\K\rows
+    Define m = *rbf\K\columns
     Define ni = *query\rows
     Define column, i, j, k
     Define r.f
@@ -230,7 +230,7 @@ Module RBF
         For j=0 To nd-1
           r = 0.0
           For k=0 To m-1
-            r + Pow(Matrix::Get(*query, i, k) - Matrix::Get(*keys, j, k), 2)
+            r + Pow(Matrix::Get(*query, i, k) - Matrix::Get(*rbf\K, j, k), 2)
           Next
           r = Sqr(r)
           v(j) = *rbf\kernel(r, *rbf\epsilon)
@@ -247,10 +247,10 @@ Module RBF
  
   
   ; get weights
-  Procedure GetWeights(*rbf.RBF_t, *keys.Matrix::Matrix_t, *query.Matrix::Matrix_t, *result.Matrix::Matrix_t)
-    Matrix::Resize(*result, *keys\rows, *rbf\V\columns)
-    Define nd = *keys\rows
-    Define m = *keys\columns
+  Procedure GetWeights(*rbf.RBF_t, *query.Matrix::Matrix_t, *result.Matrix::Matrix_t)
+    Matrix::Resize(*result, *rbf\K\rows, *rbf\V\columns)
+    Define nd = *rbf\K\rows
+    Define m = *rbf\K\columns
     Define ni = *query\rows
     Define column, i, j, k
 
@@ -264,7 +264,7 @@ Module RBF
         For j=0 To nd-1
           weights(j) = 0.0
           For k = 0 To m-1
-            weights(j) + Pow(Matrix::Get(*query, i, k) - Matrix::Get(*keys, j, k), 2)
+            weights(j) + Pow(Matrix::Get(*query, i, k) - Matrix::Get(*rbf\K, j, k), 2)
           Next
           
           If Abs(weights(j)) < 0.00000001
@@ -284,7 +284,8 @@ Module RBF
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 1
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 256
+; FirstLine = 223
 ; Folding = ----
 ; EnableXP

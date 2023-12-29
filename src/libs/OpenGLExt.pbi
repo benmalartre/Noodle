@@ -621,8 +621,14 @@ DeclareModule OpenGLExt
   Global glFramebufferTextureLayer.PFNGLFRAMEBUFFERTEXTURELAYERPROC
   
   Declare GLLoadExtensions()
-  Declare GLCheckError(message.s)
+  Declare _GLCheckError(message.s)
   Declare GLDebugHardware()
+  
+   Macro GLCheckError(MSG)
+    CompilerIf #USE_OPENGL_DEBUG
+      _GLCheckError(MSG)
+    CompilerEndIf
+  EndMacro
   
 EndDeclareModule
 
@@ -1451,7 +1457,7 @@ Module OpenGLExt
    ; Debug "OpenGL Shader: "    +#TAB$+#TAB$+   GLGETSTRINGOUTPUT(glGetString( #GL_SHADING_LANGUAGE_VERSION) )
   EndProcedure
   
-  Procedure GLCheckError(message.s)
+  Procedure _GLCheckError(message.s)
     Protected err = OpenGL::glGetError()
     While err <> #GL_NO_ERROR
       Protected error.s
@@ -1477,14 +1483,15 @@ Module OpenGLExt
       err = OpenGL::glGetError()
     Wend  
   EndProcedure
+  
 EndModule
 
 ; ============================================================================
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 357
-; FirstLine = 354
+; CursorPosition = 630
+; FirstLine = 613
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

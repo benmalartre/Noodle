@@ -171,8 +171,8 @@ Global m.m4f32
 Global q.q4f32
 Global s.v3f32
 
-Global vwidth.i
-Global vheight.i
+Global viewportWidth.i
+Global viewportHeight.i
 Global mx.i
 Global my.i
   FTGL::Init()
@@ -194,6 +194,33 @@ Procedure GetFPS()
   EndIf  
 EndProcedure
 
+Procedure Present(state)
+  Select state
+    Case 0
+      Define bw = viewportWidth/5
+      Define bh = viewportHeight/5
+      glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+      glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
+      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *gbuffer\frame_id)
+      glReadBuffer(#GL_COLOR_ATTACHMENT0)
+      glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,0, 0, viewportWidth,viewportHeight,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
+      glDisable(#GL_DEPTH_TEST)
+      glReadBuffer(#GL_COLOR_ATTACHMENT1)
+      glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,viewportWidth-bw, viewportHeight-2*bh, viewportWidth, viewportHeight-bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
+      glReadBuffer(#GL_COLOR_ATTACHMENT2)
+      glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,viewportWidth-bw, viewportHeight-3*bh, viewportWidth, viewportHeight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST)
+      
+    Case 1
+      glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+      glDrawBuffer(#GL_BACK)
+      glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
+      glReadBuffer(#GL_COLOR_ATTACHMENT0)
+      glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  EndSelect
+  
+EndProcedure
+
+
 Procedure Draw(*app.Application::Application_t)
   GetFPS()
   CompilerIf #USE_GLFW
@@ -202,7 +229,7 @@ Procedure Draw(*app.Application::Application_t)
     occ_blur = #True
 
     
-    glfwGetWindowSize(*app\window,@vwidth,@vheight)
+    glfwGetWindowSize(*app\window,@viewportWidth,@viewportHeight)
     glfwGetCursorPos(*app\window,@mx,@my)
   CompilerElse
     occ_blur = 2
@@ -210,17 +237,17 @@ Procedure Draw(*app.Application::Application_t)
     GLContext::SetContext(*app\context)
     mx = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseX)
     my = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseY)
-    vwidth = GadgetWidth(*viewport\gadgetID)
-    vheight = GadgetHeight(*viewport\gadgetID)
+    viewportWidth = GadgetWidth(*viewport\gadgetID) * GLContext::BackingScaleFactor()
+    viewportHeight = GadgetHeight(*viewport\gadgetID)* GLContext::BackingScaleFactor()
   CompilerEndIf
     
-; ;       glViewport(0,0,vwidth,vheight)
+; ;       glViewport(0,0,viewportWidth,viewportHeight)
 ; ;       glEnable(#GL_BLEND)
 ; ;       glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
 ; ;       glDisable(#GL_DEPTH_TEST)
 ; ;       FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-; ;       Define ss.f = 0.85/vwidth
-; ;       Define ratio.f = vwidth / vheight
+; ;       Define ss.f = 0.85/viewportWidth
+; ;       Define ratio.f = viewportWidth / viewportHeight
 ; ;       FTGL::Draw(*ftgl_drawer,"SSAO wip",-0.9,0.9,ss,ss*ratio)
 ; ;       FTGL::Draw(*ftgl_drawer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
 ; ;       FTGL::Draw(*ftgl_drawer,"FPS  : "+Str(fps),-0.9,0.8,ss,ss*ratio)
@@ -254,8 +281,8 @@ Procedure Draw(*app.Application::Application_t)
 ;       
 ;       glDisable(#GL_DEPTH_TEST)
 ;       FTGL::SetColor(*ftgl_drawer,1,1,1,1)
-;       Define ss.f = 0.85/vwidth
-;       Define ratio.f = vwidth / vheight
+;       Define ss.f = 0.85/viewportWidth
+;       Define ratio.f = viewportWidth / viewportHeight
 ;       FTGL::Draw(*ftgl_drawer,"SSAO wip",-0.9,0.9,ss,ss*ratio)
 ;       FTGL::Draw(*ftgl_drawer,"User  : "+UserName(),-0.9,0.85,ss,ss*ratio)
 ;       FTGL::Draw(*ftgl_drawer,"FPS  : "+Str(fps),-0.9,0.8,ss,ss*ratio)
@@ -302,73 +329,67 @@ Procedure Draw(*app.Application::Application_t)
   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*ground\matrix)
   Polymesh::Draw(*ground, *app\context)
   
-  
-  Define bw = vwidth/5
-  Define bh = vheight/5
-  
-  Framebuffer::BlitTo(*gbuffer,#Null,#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT,#GL_NEAREST)
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *gbuffer\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,0, 0, vwidth,vheight,#GL_COLOR_BUFFER_BIT ,#GL_NEAREST);
-  glDisable(#GL_DEPTH_TEST)
-  glReadBuffer(#GL_COLOR_ATTACHMENT1)
-  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-2*bh, vwidth, vheight-bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-  glReadBuffer(#GL_COLOR_ATTACHMENT2)
-  glBlitFramebuffer(0, 0, *gbuffer\width,*gbuffer\height,vwidth-bw, vheight-3*bh, vwidth, vheight-2*bh,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+  GLCheckError("ssao geometry pass")
   
   ;2. Create SSAO texture
   glDisable(#GL_DEPTH_TEST)
   Framebuffer::BindInput(*gbuffer)
   Framebuffer::BindOutput(*ssao)
-  glClear(#GL_COLOR_BUFFER_BIT);
+  GLCheckError("ssao bind buffers")
+  glClear(#GL_COLOR_BUFFER_BIT)
   shader = *s_ssao\pgm
   glUseProgram(shader)
+  GLCheckError("use ssao shader")
   glViewport(0,0,*ssao\width,*ssao\height)
+  GLCheckError("set ssao viewport")
   glUniform1i(u_ssao_position_map,0)
   glUniform1i(u_ssao_normal_map,1)
   glActiveTexture(#GL_TEXTURE2)
   glBindTexture(#GL_TEXTURE_2D,noise_tex)
+  GLCheckError("bind ssao texture")
   glUniform1i(u_ssao_noise_map,2)
   glUniform1f(u_ssao_occ_radius,occ_radius)
   glUniform1i(u_ssao_occ_power,3)
+  GLCheckError("set ssao integers")
   glUniformMatrix4fv(u_ssao_view,1,#GL_FALSE,*app\camera\view)
   glUniformMatrix4fv(u_ssao_projection,1,#GL_FALSE,*app\camera\projection)
+  GLCheckError("set ssao matrices")
 ;         For i=0 To nbsamples-1
 ;           glUniform3fv(glGetUniformLocation(shader,"kernel_samples[" + Str(i) + "]"), 1, CArray::GetPtr(*kernel,i));
 ;         Next
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-    glUniform4fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+    glUniform4fv(u_ssao_kernel_samples,nbsamples,CArray::GetPtr(*kernel,0))
   CompilerElse
-    glUniform3fv(u_ssao_kernel_samples,nbsamples,Carray::GetPtr(*kernel,0))
+    glUniform3fv(u_ssao_kernel_samples,nbsamples,CArray::GetPtr(*kernel,0))
   CompilerEndIf
-  
+  GLCheckError("set ssao kernel")
+
   glUniform1i(u_ssao_kernel_size,nbsamples)
   glUniform2f(u_ssao_noise_scale,*ssao\width/4,*ssao\height/4)
-  ;       
+  GLCheckError("set ssao uniforms")
+  
   ScreenQuad::Draw(*quad)
-  ;       
-  glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  glBindFramebuffer(#GL_READ_FRAMEBUFFER, *ssao\frame_id);
-  glReadBuffer(#GL_COLOR_ATTACHMENT0)
-  glBlitFramebuffer(0, 0, *ssao\width,*ssao\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
-;   
+  GLCheckError("ssao first pass")
+
 ;   
 ;   If occ_blur
 ;     ;3. Blur SSAO texture To remove noise
 ;     shader = *s_ssao_blur\pgm
 ;     glUseProgram(shader)
+;     GLCheckError("use blur pgm")
 ;     glViewport(0,0,*blur\width,*blur\height)
+;     GLCheckError("ssao set blur viewport")
 ;     Framebuffer::BindInput(*ssao)
+;     GLCheckError("ssao bind blur input")
 ;     Framebuffer::BindOutput(*blur)
+;     GLCheckError("ssao bind blur output")
 ;     glClear(#GL_COLOR_BUFFER_BIT);
 ;     ScreenQuad::Draw(*quad)
 ;     
-;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
-;     glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;     glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
+; ;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+; ;     glBindFramebuffer(#GL_READ_FRAMEBUFFER, *blur\frame_id);
+; ;     glReadBuffer(#GL_COLOR_ATTACHMENT0)
+; ;     glBlitFramebuffer(0, 0, *blur\width,*blur\height,0, 0, WIDTH, HEIGHT,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);
 ;     Framebuffer::Unbind(*blur)
 ;   EndIf
 ;   
@@ -379,7 +400,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Else
 ;     Framebuffer::BindInput(*ssao,3)
 ;   EndIf
-  
+;   
 ;   Framebuffer::BindOutput(*deferred)
 ;   glClear(#GL_COLOR_BUFFER_BIT | #GL_DEPTH_BUFFER_BIT);
 ;   shader = *s_deferred\pgm
@@ -403,10 +424,11 @@ Procedure Draw(*app.Application::Application_t)
 ;   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
 ;   glBindFramebuffer(#GL_READ_FRAMEBUFFER, *deferred\frame_id);
 ;   glReadBuffer(#GL_COLOR_ATTACHMENT0)
-;   glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
+;   glBlitFramebuffer(0, 0, *deferred\width,*deferred\height,0, 0, viewportWidth, viewportHeight,#GL_COLOR_BUFFER_BIT,#GL_NEAREST);  
   
+  Present(0)
   CompilerIf Not #USE_GLFW
-    SetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_FlipBuffers,#True)
+    GLContext::FlipBuffer(*app\context)
     
   CompilerEndIf
  
@@ -425,8 +447,6 @@ If Time::Init()
 ;      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
 ;      *controls = AddControls(*prop)
      Application::SetContext(*app, *viewport\context)
-    *viewport\camera = *app\camera
-    *app\window\active = *app\window\main
    CompilerEndIf
    
 ;   CompilerIf #USE_GLFW
@@ -526,28 +546,36 @@ If Time::Init()
   ; Geometry Buffer
   ;-----------------------------------------------------
   *gbuffer = Framebuffer::New("GBuffer",WIDTH,HEIGHT)
+  GLCheckError("create geometry buffer")
   Framebuffer::AttachTexture(*gbuffer,"position",#GL_RGBA16F,#GL_LINEAR,#GL_REPEAT)
-  Framebuffer::AttachTexture(*gbuffer,"normal",#GL_RGBA16F,#GL_LINEAR,#GL_CLAMP)
-  Framebuffer::AttachTexture(*gbuffer,"color",#GL_RGBA,#GL_LINEAR,#GL_CLAMP)
+  GLCheckError("attach position texture")
+  Framebuffer::AttachTexture(*gbuffer,"normal",#GL_RGBA16F,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
+  GLCheckError("attach normal texture")
+  Framebuffer::AttachTexture(*gbuffer,"color",#GL_RGBA,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
+  GLCheckError("attach color texture")
   Framebuffer::AttachRender(*gbuffer,"depth",#GL_DEPTH_COMPONENT)
+  GLCheckError("attach depth render")
   
   ; SSAO Buffer
   ;-----------------------------------------------------
    *ssao = Framebuffer::New("SSAO",WIDTH,HEIGHT)
-  Framebuffer::AttachTexture(*ssao,"ao",#GL_RED,#GL_NEAREST,#GL_CLAMP)
+  Framebuffer::AttachTexture(*ssao,"ao",#GL_RED,#GL_NEAREST,#GL_CLAMP_TO_EDGE)
+  GLCheckError("init ssao buffer")
   
   ; Blur SSAO Buffer
   ;-----------------------------------------------------
   *blur = Framebuffer::New("Blur",WIDTH,HEIGHT)
   Framebuffer::AttachTexture(*blur,"blur",#GL_RED,#GL_NEAREST,#GL_REPEAT)
+  GLCheckError("init blur buffer")
   
   ; Deferred Buffer
   ;-----------------------------------------------------
   *deferred = Framebuffer::New("Deferred",WIDTH,HEIGHT)
-  Framebuffer::AttachTexture(*deferred,"deferred",#GL_RGBA32F,#GL_LINEAR,#GL_CLAMP)
+  Framebuffer::AttachTexture(*deferred,"deferred",#GL_RGBA32F,#GL_LINEAR,#GL_CLAMP_TO_EDGE)
+  GLCheckError("init deferred buffer")
   
   
-  *kernel = CArray::newCArrayV3F32()
+  *kernel = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*kernel,nbsamples)
   
   For i=0 To nbsamples-1
@@ -562,7 +590,7 @@ If Time::Init()
   Next
   
   
-  *noise = CArray::newCArrayV3F32()
+  *noise = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*noise,noise_size)
   Define *n.v3f32 
   For i=0 To noise_size-1
@@ -591,9 +619,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 423
-; FirstLine = 419
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 583
+; FirstLine = 573
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

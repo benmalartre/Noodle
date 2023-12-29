@@ -102,7 +102,7 @@ DeclareModule FTGL
     ;___________________________________________________________________________
     ;  Linux
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ImportC "../../libs/x64/linux/ftgl.a" : EndImport
+    ImportC "../../libs/x64/linux/freetype.a" : EndImport
     ImportC "../../libs/x64/linux/ftgl.a"
       
   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS  
@@ -292,9 +292,7 @@ Module FTGL
       
        FreeMemory(*mem)
     EndIf
-    
-    
-    
+
     Define size_t = (Len(text)+1)*6*SizeOf(FTGL_Point)
     Define *mem = AllocateMemory(size_t)
     For a=1 To Len(text)
@@ -334,13 +332,10 @@ Module FTGL
   ; Setup Texture
   ;-------------------------------------------------------------------------------------
   Procedure SetupTexture(*Me.FTGL_Drawer)
-    GLCheckError("Setup Texture Begin")
     CompilerIf #USE_LEGACY_OPENGL
       glEnable(#GL_TEXTURE_2D)
     CompilerEndIf
-    
-    GLCheckError("Enable Texture")
-    
+        
     glActiveTexture(#GL_TEXTURE0)
     Protected w = *Me\atlas\width
     Protected h = *Me\atlas\height
@@ -442,11 +437,6 @@ Module FTGL
   ; Constructor
   ;-------------------------------------------------------------------------------------
   Procedure New()
-    Debug "\N\N\"
-    Debug ""
-    Debug ""
-    Debug "FTGL Drawer Contructor!"
-    Debug ""
     Protected *Me.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
     InitializeStructure(*Me, FTGL_Drawer)
     If *ftgl_atlas
@@ -466,8 +456,6 @@ Module FTGL
     Protected frag.s = GetFragmentShader()
     
     *Me\shader = Program::New("FTGL",vert, "",frag)
-    Debug "FTGL shader : "+Str(*Me\shader)
-    Debug "FTGL pgm : "+Str(*Me\shader\pgm)
     glUseProgram(*Me\shader\pgm)
     SetupTexture(*Me)
     Protected attr_coord.GLuint = glGetAttribLocation(*Me\shader\pgm,"coord")
@@ -478,7 +466,7 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 121
-; FirstLine = 118
+; CursorPosition = 104
+; FirstLine = 91
 ; Folding = ----
 ; EnableXP

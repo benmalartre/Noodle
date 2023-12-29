@@ -679,7 +679,7 @@ Module Triangle
   CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
    Procedure.b Touch(*box.Geometry::Box_t, *a.v3f32, *b.v3f32, *c.v3f32)
     Define *origin.v3f32 = *box\origin
-    Define *extend.v3f32 = *box\extend
+r    Define *extend.v3f32 = *box\extend
  
     ! mov rax, [p.p_origin]                   ; move center address to rax
     ! movups xmm11, [rax]                     ; move center packed data to xmm11
@@ -2040,8 +2040,8 @@ CompilerEndIf
     ProcedureReturn *Me\boundary
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 658
-; FirstLine = 681
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 696
+; FirstLine = 666
 ; Folding = -----
 ; EnableXP

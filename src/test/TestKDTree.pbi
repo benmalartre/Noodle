@@ -175,7 +175,7 @@ Procedure DrawKDQuery(*tree.KDTree::KDTree_t)
   Matrix4::SetScale(m, s)
   Matrix4::SetTranslation(m, p)
   *query_display = Drawer::AddSphere(*drawer, m)
-  Drawer::SetColor(*query_display, Color::_GREEN())
+  Drawer::SetColor(*query_display, Color::GREEN)
 EndProcedure
 
 
@@ -192,7 +192,7 @@ Procedure DrawKDSearch(*tree.KDTree::KDTree_t)
   Matrix4::SetScale(m, s)
   Matrix4::SetTranslation(m, p)
   *search_display = Drawer::AddBox(*drawer, m)
-  Drawer::SetColor(*search_display, Color::_RED())
+  Drawer::SetColor(*search_display, Color::RED)
   Drawer::SetWireframe(*search_display, #True)
 EndProcedure
 
@@ -234,7 +234,7 @@ Procedure BruteClosest(*tree.KDTree::KDTree_t)
     Matrix4::SetScale(m, s)
     Matrix4::SetTranslation(m, p)
     Define X = Drawer::AddSphere(*drawer, m)
-    Drawer::SetColor(X, Color::_BLUE())
+    Drawer::SetColor(X, Color::BLUE)
     Drawer::SetWireframe(X, #True)
   EndIf
   
@@ -351,7 +351,7 @@ Procedure KDTreeUpdate()
   FTGL::EndDraw(*app\context\writer)
   
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+;   ViewportUI::Blit(*viewport, *layer\)
 EndProcedure
 
 ; --------------------------------------------
@@ -363,9 +363,8 @@ If Time::Init()
 
   *app = Application::New("KDTree",800, 800, #PB_Window_ScreenCentered|#PB_Window_SystemMenu|#PB_Window_SizeGadget)
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera, *app\handle)
-
-    View::SetContent(*app\manager\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+    *app\context = *viewport\context
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
@@ -418,9 +417,9 @@ If Time::Init()
   KDTree::Delete(*kdtree)
   
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 407
-; FirstLine = 357
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 366
+; FirstLine = 361
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

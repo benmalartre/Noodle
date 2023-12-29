@@ -51,10 +51,10 @@ Module Polygon
     
     ; ----[ Initialize ]--------------------------------------------------------
     *Me\id = index
-    *Me\samples = CArray::newCArrayPtr()
-    *Me\neighbors = CArray::newCArrayPtr()
-    *Me\vertices = CArray::newCArrayPtr()
-    *Me\edges = CArray::newCArrayPtr()
+    *Me\samples = CArray::New(CArray::#ARRAY_PTR)
+    *Me\neighbors = CArray::New(CArray::#ARRAY_PTR)
+    *Me\vertices = CArray::New(CArray::#ARRAY_PTR)
+    *Me\edges = CArray::New(CArray::#ARRAY_PTR)
     
     CArray::SetCount(*Me\vertices, CArray::GetCount(*indices))
     Protected i
@@ -162,9 +162,9 @@ Module Polygon
  
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 39
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 56
+; FirstLine = 49
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

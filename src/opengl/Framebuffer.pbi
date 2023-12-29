@@ -220,7 +220,7 @@ Module Framebuffer
     If ms
       Debug "MULTISAMPLED !!!"
       glBindTexture(#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID)
-      glTexImage2DMultisample( #GL_TEXTURE_2D_MULTISAMPLE, 4, iformat, *Me\width, *Me\height, #False );
+      glTexImage2DMultisample( #GL_TEXTURE_2D_MULTISAMPLE, 4, iformat, *Me\width, *Me\height, #False)
     Else 
       glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)
       glTexImage2D(#GL_TEXTURE_2D,0,iformat,*Me\width,*Me\height,0,*tbo\format,*tbo\type,#Null)
@@ -617,8 +617,8 @@ Procedure Delete(*buffer.FrameBuffer_t)
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 220
-; FirstLine = 186
+; CursorPosition = 222
+; FirstLine = 218
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

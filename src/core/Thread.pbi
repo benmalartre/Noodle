@@ -190,7 +190,7 @@ EndModule
 ; Repeat
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 4
-; FirstLine = 3
+; CursorPosition = 60
+; FirstLine = 50
 ; Folding = --
 ; EnableXP

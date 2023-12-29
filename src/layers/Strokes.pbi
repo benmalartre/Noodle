@@ -256,7 +256,7 @@ Module LayerStroke
     
 
     *Me\pov = *pov
-    *Me\strokes = CArray::newCArrayPtr()
+    *Me\strokes = CArray::New(CArray::#ARRAY_PTR)
     Setup(*Me,*ctx)
     ProcedureReturn *Me
   
@@ -267,8 +267,8 @@ Module LayerStroke
   ; ----------------------------------------------------------------------------
   Class::DEF( LayerStroke )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 254
-; FirstLine = 189
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 258
+; FirstLine = 224
 ; Folding = ---
 ; EnableXP

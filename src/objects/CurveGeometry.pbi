@@ -582,13 +582,7 @@ Module CurveGeometry
   ;---------------------------------------------------------
   Procedure RandomNCurves(*Me.CurveGeometry_t, N.i, numCVs.i)
     *Me\nbpoints = N * numCVs
-   
-    CArray::SetCount(*Me\a_positions, *Me\nbpoints)
-    CArray::SetCount(*Me\a_colors, *Me\nbpoints)
-    CArray::SetCount(*Me\a_normals, *Me\nbpoints)
-    CArray::SetCount(*Me\a_widths, *Me\nbpoints)
-    CArray::SetCount(*Me\a_numVertices, N)
-    CArray::SetCount(*Me\a_numSamples, N)
+    
     Define i, j, base = 0
     Define p.v3f32
     Define color.v3f32
@@ -598,6 +592,14 @@ Module CurveGeometry
     Define dec.f = 1.0 / (numCVs-1) * 0.1
     Define t1.v3f32, t2.v3f32
     Define upv.v3f32
+   
+    CArray::SetCount(*Me\a_positions, *Me\nbpoints)
+    CArray::SetCount(*Me\a_colors, *Me\nbpoints)
+    CArray::SetCount(*Me\a_normals, *Me\nbpoints)
+    CArray::SetCount(*Me\a_widths, *Me\nbpoints)
+    CArray::SetCount(*Me\a_numVertices, N)
+    CArray::SetCount(*Me\a_numSamples, N)
+    
     Vector3::Set(upv, 1,0,0)
     Vector3::Set(color, 1,0,0)
     Vector3::Set(norm, 0,0,1)
@@ -660,15 +662,15 @@ Module CurveGeometry
     Protected *Me.CurveGeometry_t = AllocateMemory(SizeOf(CurveGeometry_t))
     Object::INI(CurveGeometry)
     *Me\parent = *parent
-    *Me\a_positions = CArray::newCArrayV3F32()
-    *Me\a_colors = CArray::newCArrayV3F32()
-    *Me\a_velocities = CArray::newCArrayV3F32()
-    *Me\a_numVertices = CArray::newCArrayLong()
-    *Me\a_numSamples = CArray::newCArrayLong()
+    *Me\a_positions = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\a_colors = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\a_velocities = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\a_numVertices = CArray::New(CArray::#ARRAY_LONG)
+    *Me\a_numSamples = CArray::New(CArray::#ARRAY_LONG)
     
-    *Me\a_widths = CArray::newCArrayFloat()
-    *Me\a_uvs = CArray::newCArrayV2F32()
-    *Me\a_normals = CArray::newCArrayV3F32()
+    *Me\a_widths = CArray::New(CArray::#ARRAY_FLOAT)
+    *Me\a_uvs = CArray::New(CArray::#ARRAY_V2F32)
+    *Me\a_normals = CArray::New(CArray::#ARRAY_V3F32)
     
     RandomNCurves(*Me, 256, 6)
     ;RandomOneCurve(*Me, 8)
@@ -679,7 +681,8 @@ Module CurveGeometry
    Class::DEF( CurveGeometry )
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 45
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 644
+; FirstLine = 636
 ; Folding = ------
 ; EnableXP

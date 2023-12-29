@@ -104,25 +104,21 @@ Module Curve
     Vector3::Set(c, 0,1,0)
     Protected n.v3f32
     Vector3::Set(n, 1,0,0)
+    
     Protected width.f = 0.222
     ; Push Buffer To GPU
-    Protected *samples.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-    Protected *widths.CArray::CArrayFloat = CArray::newCArrayFloat()
+    Protected *samples.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Protected *widths.CArray::CArrayFloat = CArray::New(CArray::#ARRAY_FLOAT)
     CArray::SetCount(*samples, *geom\nbsamples)
     CArray::SetCount(*widths, *geom\nbsamples)
     glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_DYNAMIC_DRAW)
-    Debug "Interpolate fuck"
     CurveGeometry::CatmullInterpolatePositions(*geom, *samples)
-    Debug "Interpolate Positions"
     glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,CArray::GetPtr(*samples, 0))
     CurveGeometry::CatmullInterpolateColors(*geom, *samples)
-     Debug "Interpolate Colors"
     glBufferSubData(#GL_ARRAY_BUFFER,size_p,size_p,CArray::GetPtr(*samples, 0))
     CurveGeometry::CatmullInterpolateTangents(*geom, *samples)
-     Debug "Interpolate Tangents"
     glBufferSubData(#GL_ARRAY_BUFFER,2*size_p,size_p,CArray::GetPtr(*samples, 0))
     CurveGeometry::CatmullInterpolateWidths(*geom, *widths)
-     Debug "Interpolate Widths"
     glBufferSubData(#GL_ARRAY_BUFFER,3*size_p,size_w,CArray::GetPtr(*widths, 0))
     
     CArray::Delete(*samples)
@@ -296,19 +292,62 @@ Module Curve
     Object3D::OBJECT3DATTR()
     ; Singleton Attributes
     
-    Protected *geom = Attribute::New(*Me,"Geometry",Attribute::#ATTR_TYPE_GEOMETRY,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,*curve,#True,#True,#True)
+    Protected *geom = Attribute::New(*Me,"Geometry",
+                                     Attribute::#ATTR_TYPE_GEOMETRY,
+                                     Attribute::#ATTR_STRUCT_SINGLE,
+                                     Attribute::#ATTR_CTXT_SINGLETON,
+                                     *curve,
+                                     #True,
+                                     #True,
+                                     #True)
     Object3D::AddAttribute(*Me,*geom)
     
     ; Singleton Arrays
-    Protected *nv = Attribute::New(*Me,"NumVertices",Attribute::#ATTR_TYPE_LONG,Attribute::#ATTR_STRUCT_ARRAY,Attribute::#ATTR_CTXT_SINGLETON,*curve\a_numVertices,#True,#True,#False)
+    Protected *nv = Attribute::New(*Me,"NumVertices",
+                                   Attribute::#ATTR_TYPE_LONG,
+                                   Attribute::#ATTR_STRUCT_ARRAY,
+                                   Attribute::#ATTR_CTXT_SINGLETON,
+                                   *curve\a_numVertices,
+                                   #True,
+                                   #True,
+                                   #False)
     Object3D::AddAttribute(*Me,*nv)
     
     ; Per Point Attributes
-    Protected *pointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_positions,#False,#False,#False,#True,#True)
+    Protected *pointposition = Attribute::New(*Me,"PointPosition",
+                                              Attribute::#ATTR_TYPE_VECTOR3,
+                                              Attribute::#ATTR_STRUCT_SINGLE,
+                                              Attribute::#ATTR_CTXT_COMPONENT0D,
+                                              *curve\a_positions,
+                                              #False,
+                                              #False,
+                                              #False,
+                                              #True,
+                                              #True)
     Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_normals,#False,#False,#False,#True,#True)
+    
+    Protected *pointnormal = Attribute::New(*Me,"PointNormal",
+                                            Attribute::#ATTR_TYPE_VECTOR3,
+                                            Attribute::#ATTR_STRUCT_SINGLE,
+                                            Attribute::#ATTR_CTXT_COMPONENT0D,
+                                            *curve\a_normals,
+                                            #False,
+                                            #False,
+                                            #False,
+                                            #True,
+                                            #True)
     Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*curve\a_velocities,#False,#False,#False,#True,#True)
+    
+    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",
+                                              Attribute::#ATTR_TYPE_VECTOR3,
+                                              Attribute::#ATTR_STRUCT_SINGLE,
+                                              Attribute::#ATTR_CTXT_COMPONENT0D,
+                                              *curve\a_velocities,
+                                              #False,
+                                              #False,
+                                              #False,
+                                              #True,
+                                              #True)
     Object3D::AddAttribute(*Me,*pointvelocity)
     
     ProcedureReturn *Me
@@ -321,8 +360,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 310
-; FirstLine = 262
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 110
+; FirstLine = 105
 ; Folding = ---
 ; EnableXP

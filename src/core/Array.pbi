@@ -359,23 +359,8 @@ DeclareModule CArray
   Declare Remove(*array,ID)
   Declare Echo(*array.CArrayT, label.s="")
   
-  Declare newCArrayBool()
-  Declare newCArrayChar()
-  Declare newCArrayInt()
-  Declare newCArrayLong()
-  Declare newCArrayFloat()
-  Declare newCArrayV2F32()
-  Declare newCArrayV3F32()
-  Declare newCArrayV4F32()
-  Declare newCArrayC4U8()
-  Declare newCArrayC4F32()
-  Declare newCArrayQ4F32()
-  Declare newCArrayM3F32()
-  Declare newCArrayTRF32()
-  Declare newCArrayM4F32()
-  Declare newCArrayPtr()
-  Declare newCArrayStr()
-  Declare newCArrayLocation(*geom, *t)
+  Declare New(type.i)
+
 EndDeclareModule
 
 ; ========================================================================================
@@ -1025,173 +1010,96 @@ Module CArray
   EndProcedure
   
   ;----------------------------------------------------------------
-  ; CArrayBool
+  ; CArray Constructor
   ;----------------------------------------------------------------
-  Procedure newCArrayBool()
-    Protected *array.CArrayBool = AllocateMemory(SizeOf(CArrayBool))
-    *array\type = #ARRAY_BOOL
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_BOOL
-    ProcedureReturn *array
+  Procedure New(type.i)
+    If type = #ARRAY_STR
+      Protected *arrayStr.CArrayStr = AllocateMemory(SizeOf(CArrayStr))
+      InitializeStructure(*arrayStr,CArrayStr)
+      *arrayStr\type = #ARRAY_STR
+      *arrayStr\itemSize = #SIZE_PTR
+      ProcedureReturn *arrayStr
+      
+    ElseIf type = #ARRAY_LOCATION
+      Protected *arrayLoc.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
+      *arrayLoc\type = #ARRAY_LOCATION
+      *arrayLoc\itemSize = #SIZE_LOCATION
+      ProcedureReturn *arrayLoc
+      
+    Else 
+      Define *array.CArrayT = AllocateMemory(SizeOf(CArrayT))
+      InitializeStructure(*array, CArrayT)
+      Select type
+        Case #ARRAY_BOOL
+          *array\type = #ARRAY_BOOL
+          *array\itemSize = #SIZE_BOOL
+          
+        Case #ARRAY_CHAR
+          *array\type = #ARRAY_CHAR
+          *array\itemSize = #SIZE_CHAR
+          
+        Case #ARRAY_INT
+          *array\type = #ARRAY_INT
+          *array\itemSize = #SIZE_INT
+          
+        Case #ARRAY_LONG
+          *array\type = #ARRAY_LONG
+          *array\itemSize = #SIZE_LONG
+          
+        Case #ARRAY_FLOAT
+          *array\type = #ARRAY_FLOAT
+          *array\itemSize = #SIZE_FLOAT
+          
+        Case #ARRAY_V2F32
+          *array\type = #ARRAY_V2F32
+          *array\itemSize = #SIZE_V2F32
+          *array\data = #Null
+          
+        Case #ARRAY_V3F32
+          *array\type = #ARRAY_V3F32
+          *array\itemSize = #SIZE_V3F32
+          *array\data = #Null
+          
+        Case #ARRAY_V4F32
+          *array\type = #ARRAY_V4F32
+          *array\itemSize = #SIZE_V4F32
+          *array\data = #Null
+          
+        Case #ARRAY_C4U8
+          *array\type = #ARRAY_C4U8
+          *array\itemSize = #SIZE_C4U8
+          
+        Case #ARRAY_C4F32
+          *array\type = #ARRAY_C4F32
+          *array\itemSize = #SIZE_C4F32
+          
+        Case #ARRAY_Q4F32
+          *array\type = #ARRAY_Q4F32
+          *array\itemSize = #SIZE_Q4F32
+          
+        Case #ARRAY_M3F32
+          *array\type = #ARRAY_M3F32
+          *array\itemSize = #SIZE_M3F32
+          
+        Case #ARRAY_M4F32
+          *array\type = #ARRAY_M4F32
+          *array\itemSize = #SIZE_M4F32
+          
+        Case #ARRAY_TRF32
+          *array\type = #ARRAY_TRF32
+          *array\itemSize = #SIZE_TRF32
+          
+        Case #ARRAY_PTR
+          *array\type = #ARRAY_PTR
+          *array\itemSize = #SIZE_PTR
+    
+      EndSelect
+      ProcedureReturn *array
+    EndIf
+    
+    
   EndProcedure
   
-  ;----------------------------------------------------------------
-  ; CArrayChar
-  ;----------------------------------------------------------------
-  Procedure newCArrayChar()
-    Protected *array.CArrayChar = AllocateMemory(SizeOf(CArrayChar))
-    *array\type = #ARRAY_CHAR
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_CHAR
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayInt
-  ;----------------------------------------------------------------
-  Procedure newCArrayInt()
-    Protected *array.CArrayInt = AllocateMemory(SizeOf(CArrayInt))
-    *array\type = #ARRAY_INT
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_INT
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayLong
-  ;----------------------------------------------------------------
-  Procedure newCArrayLong()
-    Protected *array.CArrayLong = AllocateMemory(SizeOf(CArrayLong))
-    *array\type = #ARRAY_LONG
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_LONG
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayFloat
-  ;----------------------------------------------------------------
-  Procedure newCArrayFloat()
-    Protected *array.CArrayFloat = AllocateMemory(SizeOf(CArrayFloat))
-    *array\type = #ARRAY_FLOAT
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_FLOAT
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayV2F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayV2F32()
-    Protected *array.CArrayV2F32 = AllocateMemory(SizeOf(CArrayV2F32))
-    *array\type = #ARRAY_V2F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_V2F32
-    *array\data = #Null
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayV3F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayV3F32()
-    Protected *array.CArrayV3F32 = AllocateMemory(SizeOf(CArrayV3F32))
-    *array\type = #ARRAY_V3F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_V3F32
-    *array\data = #Null
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayV4F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayV4F32()
-    Protected *array.CArrayV4F32 = AllocateMemory(SizeOf(CArrayV4F32))
-    *array\type = #ARRAY_V4F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_V4F32
-    *array\data = #Null
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayC4U8
-  ;----------------------------------------------------------------
-  Procedure newCArrayC4U8()
-    Protected *array.CArrayC4U8 = AllocateMemory(SizeOf(CArrayC4U8))
-    *array\type = #ARRAY_C4U8
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_C4U8
-    ProcedureReturn *array
-  EndProcedure
-  
-  
-  ;----------------------------------------------------------------
-  ; CArrayC4F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayC4F32()
-    Protected *array.CArrayC4F32 = AllocateMemory(SizeOf(CArrayC4F32))
-    *array\type = #ARRAY_C4F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_C4F32
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayQ4F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayQ4F32()
-    Protected *array.CArrayQ4F32 = AllocateMemory(SizeOf(CArrayQ4F32))
-    *array\type = #ARRAY_Q4F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_Q4F32
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayM3F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayM3F32()
-    Protected *array.CArrayM3F32 = AllocateMemory(SizeOf(CArrayM3F32))
-    *array\type = #ARRAY_M3F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_M3F32
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayM4F32
-  ;----------------------------------------------------------------
-  Procedure newCArrayM4F32()
-    Protected *array.CArrayM4F32 = AllocateMemory(SizeOf(CArrayM4F32))
-    *array\type = #ARRAY_M4F32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_M4F32
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayTRF32
-  ;----------------------------------------------------------------
-  Procedure newCArrayTRF32()
-    Protected *array.CArrayTRF32 = AllocateMemory(SizeOf(CArrayTRF32))
-    *array\type = #ARRAY_TRF32
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_TRF32
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayPtr
-  ;----------------------------------------------------------------
-  Procedure newCArrayPtr()
-    Protected *array.CArrayPtr = AllocateMemory(SizeOf(CArrayPtr))
-    *array\type = #ARRAY_PTR
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_PTR
-    ProcedureReturn *array
-  EndProcedure
   
   ;----------------------------------------------------------------
   ; CArrayStr
@@ -1234,7 +1142,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 25
-; Folding = ------------
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1025
+; FirstLine = 993
+; Folding = ----------
 ; EnableXP

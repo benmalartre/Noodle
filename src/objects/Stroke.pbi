@@ -40,7 +40,7 @@ Module Stroke
   Procedure New()
     Protected *stroke.Geometry::Stroke_t = AllocateMemory(SizeOf(Geometry::Stroke_t))
     InitializeStructure(*stroke, Geometry::Stroke_t)
-    *stroke\datas = CArray::newCArrayV4F32()
+    *stroke\datas = CArray::New(CArray::#ARRAY_V4F32)
     ProcedureReturn *stroke
   EndProcedure
   
@@ -102,7 +102,7 @@ Module Stroke
   ; Add Points
   ;---------------------------------------------------------
   Procedure AddPoints(*Stroke.Geometry::Stroke_t,*pnts.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32, *radius.CArray::CArrayFloat)
-    Define *tmp.CArray::CArrayV4F32 = CArray::newCArrayV4F32()
+    Define *tmp.CArray::CArrayV4F32 = CArray::New(CArray::#ARRAY_V4F32)
     CArray::SetCount(*tmp, *pnts\itemCount)
     Define i
     Define *v.v4f32
@@ -156,8 +156,8 @@ Module Stroke
   ;---------------------------------------------------------
   Procedure Resample(*Stroke.Geometry::Stroke_t, size.f)
     Define initNb = CArray::GetCount(*stroke\datas)
-    Define *accumulated.CArray::CArrayFloat = CArray::newCArrayFloat()
-    Define *newdatas.CArray::CArrayV4f32 = CARray::newCArrayV4F32()
+    Define *accumulated.CArray::CArrayFloat = CArray::New(CArray::#ARRAY_FLOAT)
+    Define *newdatas.CArray::CArrayV4f32 = CArray::New(CArray::#ARRAY_V4F32)
     
     Define initLen.f = AccumulatedLength(*stroke, *accumulated)
     Define finalNb = Max(initLen / size, 2)
@@ -305,9 +305,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 85
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 159
+; FirstLine = 154
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

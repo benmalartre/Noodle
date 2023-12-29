@@ -1,6 +1,11 @@
 ﻿XIncludeFile "../core/Application.pbi"
 
 UseModule Math
+UseModule OpenGL
+CompilerIf #USE_GLFW
+  UseModule GLFW
+CompilerEndIf
+UseModule OpenGLExt
 
 ;---------------------------------------------------
 ; TEST STRUCTURE
@@ -190,26 +195,38 @@ Procedure AddRay()
   *ray = TestRay_New(*bunny,sp,ep,color)
 EndProcedure
 
+; Draw
+;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  GLContext::SetContext(*viewport\context)
   CompilerIf #USE_GLFW
     TestRay_Update(*ray, *app)
     Scene::Update(Scene::*current_scene)
     Application::Draw(*app, *layer)
   CompilerElse
     
-    GLContext::SetContext(*app\context)
+    
     TestRay_Update(*ray, *viewport)
     Scene::Update(Scene::*current_scene)
    
     
     Application::Draw(*app, *layer, *app\camera)
     ViewportUI::Blit(*viewport, *layer\datas\buffer) 
-    ;ViewportUI::Blit(*viewport, *layer\buffer)
     
   CompilerEndIf
-  
+  GLContext::FlipBuffer(*viewport\context)
 
- EndProcedure
+EndProcedure
+
+; Resize
+;--------------------------------------------
+Procedure Resize(window,gadget)
+  Define width = WindowWidth(window,#PB_Window_InnerCoordinate)
+  Define height = WindowHeight(window,#PB_Window_InnerCoordinate)
+  ResizeGadget(gadget,0,0,width,height)
+  glViewport(0,0,width,height)
+EndProcedure
+
 
  Define useJoystick.b = #False
  Define width = 1024
@@ -225,8 +242,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("Test Ray Cast",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-    View::SetContent(*app\window\main,*viewport)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)  
+     *app\context = *viewport\context
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -245,9 +262,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 227
-; FirstLine = 186
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 214
+; FirstLine = 191
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

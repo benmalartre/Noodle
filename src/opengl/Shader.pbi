@@ -280,7 +280,6 @@ Module Program
     Define uname.s = UCase(name)
     Define code.s
     Define hasGeometryShader.b = #False
-    Defineerr.b
     *pgm\name = name
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_vertex.glsl")
     *pgm\vert = Shader::Create(@code,OpenGL::#GL_VERTEX_SHADER,name+"_vertex")
@@ -295,30 +294,30 @@ Module Program
     code = Shader::LoadFile(Shader::GLSL_PATH+name+"_fragment.glsl")    
     *pgm\frag = Shader::Create(@code,OpenGL::#GL_FRAGMENT_SHADER,name+"_fragment")
     
-    err = GLCheckError("Create "+uname+" Shaders : ")
+    GLCheckError("Create "+uname+" Shaders : ")
     *pgm\pgm = glCreateProgram()
-    err = GLCheckError("Create "+uname+" Program : ")
+    GLCheckError("Create "+uname+" Program : ")
   
     glAttachShader(*pgm\pgm,*pgm\vert)
-    err = GLCheckError("Attach "+uname+" Vertex Shader ")
+    GLCheckError("Attach "+uname+" Vertex Shader ")
     
     If hasGeometryShader
       glAttachShader(*pgm\pgm,*pgm\geom)
-      err = GLCheckError("Attach "+uname+" Geometry Shader ")
+      GLCheckError("Attach "+uname+" Geometry Shader ")
     EndIf
     
     glAttachShader(*pgm\pgm,*pgm\frag) 
-    err = GLCheckError("Attach "+uname+" Fragment Shader ")
+    GLCheckError("Attach "+uname+" Fragment Shader ")
     
     Debug *pgm\pgm
     
     glBindAttribLocation(*pgm\pgm,0,"position")
     
     glLinkProgram(*pgm\pgm)
-    err = GLCheckError("Link Program")
+    GLCheckError("Link Program")
 
     glUseProgram(*pgm\pgm)
-    err = GLCheckError("Use Program")
+    GLCheckError("Use Program")
     
     If err
       Define *mem = AllocateMemory(1024)
@@ -334,7 +333,7 @@ Module Program
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 21
-; FirstLine = 19
+; CursorPosition = 319
+; FirstLine = 289
 ; Folding = ---
 ; EnableXP

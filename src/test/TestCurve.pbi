@@ -79,7 +79,6 @@ Procedure Draw(*app.Application::Application_t)
  height = 600
  ; Main
  Globals::Init()
-;  Bullet::Init( )
  FTGL::Init()
 ;--------------------------------------------
  If Time::Init()
@@ -87,8 +86,8 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestCurve",width,height)
 
    If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-   *app\context\writer\background = #True
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
+     *app\context = *viewport\context
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -97,7 +96,6 @@ Procedure Draw(*app.Application::Application_t)
   Scene::*current_scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   Application::AddLayer(*app, *layer)
-;   ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -119,13 +117,13 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 60
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 81
+; FirstLine = 74
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

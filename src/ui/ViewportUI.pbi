@@ -674,18 +674,17 @@ Module ViewportUI
 ;     glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
     ; draw texture on screen space quad
-    GLContext::SetContext(*Me\context)
+    glViewport(0,0,*Me\context\width,*Me\context\height)
+  Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT, #GL_LINEAR)
     *Me\layer\bitmap = *framebuffer\tbos(0)\textureID
-    LayerBitmap::Draw(*Me\layer, *Me\context)
 
-    GLContext::FlipBuffer(*Me\context)
   EndProcedure
  
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 116
-; FirstLine = 76
+; CursorPosition = 679
+; FirstLine = 640
 ; Folding = ----
 ; EnableXP

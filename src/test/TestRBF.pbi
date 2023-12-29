@@ -77,7 +77,7 @@ EndProcedure
 Procedure Update()
   *query\matrix(0) = P\x
   *query\matrix(1) = P\y
-  RBF::Interpolate(*rbf, *keys, *query, *result) 
+  RBF::Interpolate(*rbf, *query, *result) 
   Color::Set(P\color, *result\matrix(0), *result\matrix(1), *result\matrix(2), 1.0)
 EndProcedure
 
@@ -125,7 +125,7 @@ Procedure TestRBF()
   
    Debug "CREATE"
   ; init the linear system
-  *rbf.RBF::RBF_t = RBF::New()
+    *rbf.RBF::RBF_t = RBF::New()
   RBF::Init(*rbf, *keys, *values)
   Debug "INIT"
   
@@ -133,7 +133,7 @@ Procedure TestRBF()
   *result.Matrix::Matrix_t = Matrix::New(1,3)
 
   ; get the interpolated value
-  RBF::Interpolate(*rbf, *keys, *query, *result) 
+  RBF::Interpolate(*rbf, *query, *result) 
   Matrix::Echo(*result, "RESULT")
 Debug" UPDATE"
   Define e
@@ -168,8 +168,8 @@ EndProcedure
 
 
 TestRBF()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 100
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 135
+; FirstLine = 107
 ; Folding = --
 ; EnableXP

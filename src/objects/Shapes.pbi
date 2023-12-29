@@ -26293,11 +26293,11 @@ Module Shape
     *Me\nbp = 0
     *Me\nbt = 0
     *Me\indexed = #True
-    *Me\positions = CArray::newCArrayV3F32()
-    *Me\normals = CArray::newCArrayV3F32()
-    *Me\uvws = CArray::newCArrayV3F32()
-    *Me\colors = CArray::newCArrayV3F32()
-    *Me\indices = CArray::newCArrayLong()
+    *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\normals = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\uvws = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\colors = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\indices = CArray::New(CArray::#ARRAY_LONG)
 
     Set(*Me,shape)
 
@@ -26320,8 +26320,8 @@ Module Shape
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 26001
-; FirstLine = 25908
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 26299
+; FirstLine = 26277
 ; Folding = ----
 ; EnableXP

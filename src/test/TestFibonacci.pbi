@@ -8,6 +8,9 @@ Global *fibonacci.Fibonacci::Fibonacci_t = Fibonacci::New(N)
 Global window = OpenWindow(#PB_Any, 0,0,800,800,"Fibonacci")
 Global canvas = CanvasGadget(#PB_Any,0,0,800,800)
 
+Global OFFSETX = 0
+Global OFFSETY = 0
+
 
 Procedure DrawGrid(*fibonacci.Fibonacci::Fibonacci_t, canvas.i, scl.f=0.1)
 
@@ -116,14 +119,29 @@ Procedure DrawSphere(*fibonacci.Fibonacci::Fibonacci_t, canvas, scl.f)
   Next
 EndProcedure
 
-Define scl.f = 0.5
+Procedure CanvasEvent(canvas)
+  OFFSETX + 10
+  OFFSETY + 10
+EndProcedure
+
+
+Define scl.f = 0.05
 Define width = GadgetWidth(canvas)
 Define height = GadgetHeight(canvas)
+Define event
 Repeat
+  event = WaitWindowEvent(10)
+  If event = #PB_Event_Gadget 
+    If EventGadget() = canvas 
+      CanvasEvent(canvas)
+    EndIf
+    
+  EndIf
   
-  Fibonacci::Sphere(*fibonacci)
-;   Fibonacci::Grid(*fibonacci)
+;   Fibonacci::Sphere(*fibonacci)
+  Fibonacci::Grid(*fibonacci)
   StartVectorDrawing(CanvasVectorOutput(canvas))  
+  TranslateCoordinates(OFFSETX,OFFSETY)
 ; ;   AddPathBox(0,0, width, height)
 ; ;   VectorSourceColor(RGBA(0,0,0,255))
 ; ;   FillPath()
@@ -132,18 +150,20 @@ Repeat
 ; ;   TranslateCoordinates(width * 0.5, height*0.5)
 ; ;   ScaleCoordinates(scl, scl)
 ; ; ;   
-; ;   DrawGrid(*fibonacci,canvas)
-; ;   DrawSpiral(*fibonacci, canvas)
+  
+  DrawGrid(*fibonacci,canvas)
+  DrawSpiral(*fibonacci, canvas)
 ; ;   *fibonacci\N + 1
 ; ;   Fibonacci::Disc(*fibonacci)
-    DrawSphere(*fibonacci, canvas, scl)
+;     DrawSphere(*fibonacci, canvas, scl)
 ; ;   DrawDisc(*fibonacci, canvas, 1024)
 ;   ;*fibonacci\N+1
   StopVectorDrawing()
     
 
-Until WaitWindowEvent(10) = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+Until event = #PB_Event_CloseWindow
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
 ; CursorPosition = 123
+; FirstLine = 101
 ; Folding = -
 ; EnableXP

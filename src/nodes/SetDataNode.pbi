@@ -82,31 +82,31 @@ Module SetDataNode
               Protected *datas.CArray::CArrayT
               Select \datatype
                 Case Attribute::#ATTR_TYPE_BOOL
-                  *datas = CArray::newCArrayBool()
+                  *datas = CArray::New(CArray::#ARRAY_BOOL)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_LONG
-                  *datas = CArray::newCArrayLong()
+                  *datas = CArray::New(CArray::#ARRAY_LONG)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_INTEGER
-                  *datas = CArray::newCArrayInt()
+                  *datas = CArray::New(CArray::#ARRAY_INT)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_FLOAT
-                  *datas = CArray::newCArrayFloat()
+                  *datas = CArray::New(CArray::#ARRAY_FLOAT)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR2
-                  *datas = CArray::newCArrayV2F32()
+                  *datas = CArray::New(CArray::#ARRAY_V2F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR3
-                  *datas = CArray::newCArrayV3F32()
+                  *datas = CArray::New(CArray::#ARRAY_V3F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_QUATERNION
-                  *datas = CArray::newCArrayQ4F32()
+                  *datas = CArray::New(CArray::#ARRAY_Q4F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX3
-                  *datas = CArray::newCArrayM3F32()
+                  *datas = CArray::New(CArray::#ARRAY_M3F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX4
-                  *datas = CArray::newCArrayM4F32()
+                  *datas = CArray::New(CArray::#ARRAY_M4F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
               EndSelect
               
@@ -347,9 +347,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 312
-; FirstLine = 288
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 84
+; FirstLine = 80
 ; Folding = --
 ; EnableThread
 ; EnableXP

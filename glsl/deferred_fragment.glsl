@@ -64,8 +64,8 @@ void main()
     {
         // Diffuse
 		vec3 lightPos = (view * vec4(lights[i].position,1.0)).xyz;
-        //vec3 lightDir = normalize(lights[i].position - fragPos);
-		vec3 lightDir = normalize(lightPos - fragPos);
+        //vec3 lightDir = normalize(lights[i].position - position);
+		vec3 lightDir = normalize(lightPos - position);
 		lightDir = (rot * vec4(lightDir,1.0)).xyz;
         vec3 diffuse = max(dot(normal, lightDir), 0.0) * diffuse * lights[i].color;
         // Specular
@@ -73,8 +73,8 @@ void main()
         float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
         vec3 specular = lights[i].color * spec * specular;
         // Attenuation
-        //float distance = length(lights[i].position - fragPos);
-		float distance = length(lightPos - fragPos);
+        //float distance = length(lights[i].position - position);
+		float distance = length(lightPos - position);
         float attenuation = 1.0 / (1.0 + lights[i].linear * distance + lights[i].quadratic * distance * distance);
         diffuse *= attenuation;
         //specular *= attenuation;

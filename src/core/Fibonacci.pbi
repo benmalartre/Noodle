@@ -129,8 +129,8 @@ Module Fibonacci
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 53
+; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

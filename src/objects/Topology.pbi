@@ -55,8 +55,8 @@ Module Topology
   Procedure.i New(*other.Topology_t = #Null)
     Protected *Me.Topology_t = AllocateMemory(SizeOf(Topology_t))
     InitializeStructure(*Me,Topology_t)
-    *Me\vertices = CArray::newCArrayV3F32()
-    *Me\faces = CArray::newCArrayLong()
+    *Me\vertices = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\faces = CArray::New(CArray::#ARRAY_LONG)
     If *other
       CArray::Copy(*Me\vertices,*other\vertices)
       CArray::Copy(*Me\faces,*other\faces)
@@ -423,7 +423,7 @@ Module Topology
 
     Protected p.v3f32
     Protected is,ip
-    Protected *oP.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+    Protected *oP.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
     CArray::Copy(*oP,*section)
     Protected so.i = CArray::GetCount(*section)
     Protected *extrusion.Topology_t = Topology::New()
@@ -922,8 +922,8 @@ Module Topology
  
   
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 712
-; FirstLine = 707
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 425
+; FirstLine = 421
 ; Folding = -----
 ; EnableXP

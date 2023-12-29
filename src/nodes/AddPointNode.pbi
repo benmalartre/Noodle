@@ -87,7 +87,7 @@ Module AddPointNode
         Define *emitG.Geometry::Geometry_t = *loc_data\geometry
         Define *object3D.Object3D::Object3D_t = Geometry::GetParentObject3D(*emitG)
         Define *emitT.Transform::Transform_t = *loc_data\transform
-        Protected *pos_data.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+        Protected *pos_data.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
         Define numLocations= CArray::GetCount(*loc_data)
         If numLocations
           CArray::SetCount(*pos_data, numLocations)
@@ -145,8 +145,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 57
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 89
+; FirstLine = 85
 ; Folding = --
 ; EnableXP

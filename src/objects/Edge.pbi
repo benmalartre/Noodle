@@ -38,16 +38,17 @@ Module Edge
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Edge_t = AllocateMemory(SizeOf(Edge_t))
     InitializeStructure(*Me,Edge_t)
-    *Me\neighbors = CArray::newCArrayPtr()
-    *Me\vertices = CArray::newCArrayPtr()
-    *Me\polygons = CArray::newCArrayPtr()
+    *Me\neighbors = CArray::New(CArray::#ARRAY_PTR)
+    *Me\vertices = CArray::New(CArray::#ARRAY_PTR)
+    *Me\polygons = CArray::New(CArray::#ARRAY_PTR)
     *Me\id = index
     
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 44
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 40
+; FirstLine = 3
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

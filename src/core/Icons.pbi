@@ -6,8 +6,8 @@ XIncludeFile "../core/Vector.pbi"
 ;  CONTROL ICON MODULE DECLARATION
 ; ==============================================================================
 DeclareModule Icon
-  #STROKE_WIDTH           = 7
-  #STROKE_STYLE           = #PB_Path_RoundCorner | #PB_Path_RoundEnd
+  #STROKE_WIDTH           = 4
+  #STROKE_STYLE           = #PB_Path_SquareEnd
   #BACKGROUND_COLOR       = -10172161 ; RGBA(255,200,100,255)
   #STROKE_COLOR_DEFAULT   = -986896   ; RGBA(240,240,240,255)
   #STROKE_COLOR_SELECTED  = -12566464 ; RGBA(64, 64, 64, 255)
@@ -67,6 +67,8 @@ DeclareModule Icon
     #ICON_ARROWRIGHT
     #ICON_ARROWUP
     #ICON_ARROWDOWN
+    #ICON_ADD
+    #ICON_SUB
     #ICON_LAST
   EndEnumeration
   
@@ -111,6 +113,8 @@ DeclareModule Icon
   IconName(#ICON_ARROWRIGHT) = "arrowright"
   IconName(#ICON_ARROWUP) = "arrowup"
   IconName(#ICON_ARROWDOWN) = "arrowdown"
+  IconName(#ICON_ADD) = "add"
+  IconName(#ICON_SUB) = "sub"
   
   Prototype DrawIconImpl(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT,
                          thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
@@ -160,7 +164,8 @@ DeclareModule Icon
   Declare ArrowRightIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare ArrowUpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
   Declare ArrowDownIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
- 
+  Declare AddIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+  Declare SubIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
 EndDeclareModule
 
 
@@ -753,35 +758,50 @@ Module Icon
     Define segments.s = "M 40 20 L 10 50 L 40 80 M 10 50 L 90 50"
     AddPathSegments(segments)
     VectorSourceColor(stroke)
-    StrokePath(thickness * 2, style)
+    StrokePath(thickness, style)
   EndProcedure
 
   Procedure ArrowRightIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
     Define segments.s = "M 60 20 L 90 50 L 60 80 M 10 50 L 90 50"
     AddPathSegments(segments)
     VectorSourceColor(stroke)
-    StrokePath(thickness * 2, style)
+    StrokePath(thickness, style)
   EndProcedure
   
   Procedure ArrowUpIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
     Define segments.s = "M 20 40 L 50 10 L 80 40 M 50 10 L 50 90"
     AddPathSegments(segments)
     VectorSourceColor(stroke)
-    StrokePath(thickness * 2, style)
+    StrokePath(thickness, style)
   EndProcedure
 
   Procedure ArrowDownIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
     Define segments.s = "M 20 60 L 50 90 L 80 60 M 50 10 L 50 90"
     AddPathSegments(segments)
     VectorSourceColor(stroke)
-    StrokePath(thickness * 2, style)
+    StrokePath(thickness, style)
+  EndProcedure
+  
+  Procedure AddIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+    AddPathBox(20,20,60,60)
+    Define segments.s = "M 30 46 L 30 54 L 46 54 L 46 70 L 54 70 L 54 54 L 70 54 L 70 46 L 54 46 L 54 30 L 46 30 L 46 46"
+    AddPathSegments(segments)
+    VectorSourceColor(fill)
+    FillPath()
+  EndProcedure
+  
+  Procedure SubIcon(fill.i=#FILL_COLOR_DEFAULT, stroke.i=#STROKE_COLOR_DEFAULT, thickness.i=#STROKE_WIDTH, style.i=#STROKE_STYLE)
+    AddPathBox(20,20,60,60)
+    Define segments.s = "M 30 46 L 30 54 L 70 54 L 70 46"
+    AddPathSegments(segments)
+    VectorSourceColor(fill)
+    FillPath()
   EndProcedure
 EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 766
-; FirstLine = 719
-; Folding = --------
+; CursorPosition = 8
+; Folding = ---------
 ; EnableXP

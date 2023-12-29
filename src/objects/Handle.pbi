@@ -1411,7 +1411,7 @@ Module Handle
     *Me\posY = -1
     *Me\visible = #False
     *Me\tool = Globals::#TOOL_Select
-    *Me\targets = CArray::newCArrayPtr()
+    *Me\targets = CArray::New(CArray::#ARRAY_PTR)
     *Me\radius = 5
         
     Protected m.m4f32
@@ -1441,8 +1441,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 920
-; FirstLine = 894
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1413
+; FirstLine = 1398
 ; Folding = -------
 ; EnableXP

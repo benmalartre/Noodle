@@ -1616,8 +1616,8 @@ EndDeclareModule
 Module OpenGL
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1597
-; FirstLine = 1560
+; CursorPosition = 1616
+; FirstLine = 1572
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

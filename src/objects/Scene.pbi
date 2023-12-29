@@ -797,11 +797,11 @@ Module Scene
     Protected Me.IScene = *Me
     
     ; Create Containers
-    *Me\models = CArray::newCArrayPtr()
-    *Me\objects = CArray::newCArrayPtr()
-    *Me\cameras = CArray::newCArrayPtr()
-    *Me\lights = CArray::newCArrayPtr()
-    *Me\helpers = CArray::newCArrayPtr()
+    *Me\models = CArray::New(CArray::#ARRAY_PTR)
+    *Me\objects = CArray::New(CArray::#ARRAY_PTR)
+    *Me\cameras = CArray::New(CArray::#ARRAY_PTR)
+    *Me\lights = CArray::New(CArray::#ARRAY_PTR)
+    *Me\helpers = CArray::New(CArray::#ARRAY_PTR)
 
     ; Create Root
     *Me\selection = Selection::New()
@@ -837,7 +837,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 409
-; FirstLine = 379
+; CursorPosition = 803
+; FirstLine = 793
 ; Folding = -------
 ; EnableXP
