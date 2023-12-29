@@ -108,6 +108,7 @@ DeclareModule Drawer
   Declare AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
   Declare AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CARray::CArrayV3F32)
   Declare AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+  Declare AddColoredLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare AddBox(*Me.Drawer_t, *m.Math::m4f32)
@@ -751,7 +752,7 @@ Module Drawer
   EndProcedure
   
   ; ---[ Add Lines Item ]-------------------------------------------------------
-  Procedure AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CARray::CArrayV3F32)
+  Procedure AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32)
     Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
@@ -785,6 +786,31 @@ Module Drawer
       CArray::Copy(*line\colors, *colors)
     EndIf
     *line\dirty  = #DIRTY_TOPOLOGY
+    AddElement(*Me\items())
+    *Me\items() = *line
+    *Me\dirty = #True
+    ProcedureReturn *line
+  EndProcedure
+  
+  ; ---[ Add Colored Lines Item ]-----------------------------------------------
+  Procedure AddColoredLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
+    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    *line\type = #ITEM_LINE
+    Define nbp = CArray::GetCount(*start)
+    If nbp And nbp = CArray::GetCount(*end)
+      *line\positions = CArray::New(CArray::#ARRAY_V3F32)
+      *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+      CArray::SetCount(*line\positions, nbp*2)
+      CArray::SetCount(*line\colors, nbp*2)
+      Define i
+      For i=0 To nbp-1
+        CArray::SetValue(*line\positions, i*2, CArray::GetValue(*start,i))
+        CArray::SetValue(*line\positions, i*2+1, CArray::GetValue(*end,i))
+        CArray::SetValue(*line\colors, i*2, CArray::GetValue(*colors,i))
+        CArray::SetValue(*line\colors, i*2+1, CArray::GetValue(*colors,i))
+      Next
+    EndIf
+    *line\dirty = #DIRTY_TOPOLOGY
     AddElement(*Me\items())
     *Me\items() = *line
     *Me\dirty = #True
@@ -964,7 +990,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 942
-; FirstLine = 911
+; CursorPosition = 110
+; FirstLine = 97
 ; Folding = ---------
 ; EnableXP

@@ -38,7 +38,7 @@ Procedure Draw(*app.Application::Application_t)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
    
   Application::Draw(*app, *layer, *app\camera)
-  
+  ViewportUI::Blit(*viewport, *layer\datas\buffer)
 
   FTGL::BeginDraw(*app\context\writer)
   FTGL::SetColor(*app\context\writer,1,1,1,1)
@@ -56,10 +56,9 @@ Procedure Draw(*app.Application::Application_t)
 If Time::Init()
   Log::Init()
   *app = Application::New("TestCubeMap",800,600)
-   If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"Test Cube Map", *app\camera, *app\handle)     
-     Application::SetContext(*app, *viewport\context)
-     *app\context\writer\background = #True
+  If Not #USE_GLFW
+    *viewport = ViewportUI::New(*app\window\main,"Test Cube Map", *app\camera, *app\handle)     
+    Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
@@ -88,9 +87,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 46
-; FirstLine = 28
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 58
+; FirstLine = 25
 ; Folding = -
 ; EnableXP
 ; Executable = reflected.exe

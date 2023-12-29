@@ -621,12 +621,13 @@ DeclareModule OpenGLExt
   Global glFramebufferTextureLayer.PFNGLFRAMEBUFFERTEXTURELAYERPROC
   
   Declare GLLoadExtensions()
-  Declare _GLCheckError(message.s)
   Declare GLDebugHardware()
+  
+  Declare _GLCheckError(message.s)
   
    Macro GLCheckError(MSG)
     CompilerIf #USE_OPENGL_DEBUG
-      _GLCheckError(MSG)
+      OpenGLExt::_GLCheckError(MSG)
     CompilerEndIf
   EndMacro
   
@@ -1490,7 +1491,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 630
+; CursorPosition = 625
 ; FirstLine = 613
 ; Folding = -------
 ; EnableXP
