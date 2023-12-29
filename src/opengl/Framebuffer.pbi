@@ -49,8 +49,8 @@ DeclareModule Framebuffer
   Declare Delete(*buffer.FrameBuffer_t)
   Declare CheckStatus(*buffer.FrameBuffer_t)
   Declare Resize(*buffer.FrameBuffer_t,width.i,height.i)
-  Declare AttachRender(*Me.Framebuffer_t,name.s,iformat.GLenum)
-  Declare AttachTexture(*Me.Framebuffer_t,name.s,iformat.GLenum,filter.GLenum,wrap.GLenum=#GL_REPEAT)
+  Declare AttachRender(*Me.Framebuffer_t, name.s, iformat.GLenum)
+  Declare AttachTexture(*Me.Framebuffer_t,name.s, iformat.GLenum, filter.GLenum, wrap.GLenum=#GL_REPEAT, ms.b=#False)
   Declare AttachShadowMap(*Me.Framebuffer_t)
   Declare AttachCascadedShadowMap(*Me.Framebuffer_t, num_cascades.i)
   Declare Unbind(*Me.Framebuffer_t)
@@ -155,7 +155,7 @@ Module Framebuffer
   ;------------------------------------------------------------------
   ; Attach Texture to FBO
   ;------------------------------------------------------------------
-  Procedure AttachTexture(*Me.Framebuffer_t,name.s,iformat.GLenum,filter.GLenum,wrap.GLenum=#GL_REPEAT)
+  Procedure AttachTexture(*Me.Framebuffer_t, name.s, iformat.GLenum, filter.GLenum, wrap.GLenum=#GL_REPEAT, ms.b=#False)
   
     If *Me\width = 0 Or *Me\height = 0
       MessageRequester( "[Framebuffer::AttachTexture]","One of the Frame buffer Dimension is Zero, Aborted!!!")
@@ -217,24 +217,36 @@ Module Framebuffer
     
     glGenTextures(1,@*tbo\textureID)
     glBindFramebuffer(#GL_FRAMEBUFFER,*Me\frame_id)
-    glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)
-    ;glBindTexture(#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID)
-    glTexImage2D(#GL_TEXTURE_2D,0,iformat,*Me\width,*Me\height,0,*tbo\format,*tbo\type,#Null)
-    ;glTexImage2DMultisample( #GL_TEXTURE_2D_MULTISAMPLE, 4, iformat, *Me\width, *Me\height, #False );
+    If ms
+      Debug "MULTISAMPLED !!!"
+      glBindTexture(#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID)
+      glTexImage2DMultisample( #GL_TEXTURE_2D_MULTISAMPLE, 4, iformat, *Me\width, *Me\height, #False );
+    Else 
+      glBindTexture(#GL_TEXTURE_2D,*tbo\textureID)
+      glTexImage2D(#GL_TEXTURE_2D,0,iformat,*Me\width,*Me\height,0,*tbo\format,*tbo\type,#Null)
+    EndIf
+
     glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MAG_FILTER,*tbo\filter)
     glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_MIN_FILTER,*tbo\filter)
 
     If *tbo\format = #GL_DEPTH_STENCIL
-      glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_DEPTH_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
-      glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_STENCIL_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
+      If ms
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_DEPTH_ATTACHMENT,#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID,0)
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_STENCIL_ATTACHMENT,#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID,0)
+      Else
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_DEPTH_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,#GL_STENCIL_ATTACHMENT,#GL_TEXTURE_2D,*tbo\textureID,0)
+      EndIf
     Else
-      glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D,*tbo\textureID,0)
-      ;glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID,0)
-
+      If ms
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D_MULTISAMPLE,*tbo\textureID,0)
+      Else
+        glFramebufferTexture2D(#GL_FRAMEBUFFER,*tbo\attachment,#GL_TEXTURE_2D,*tbo\textureID,0)
+      EndIf
     EndIf
     
-    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, *tbo\wrap);
-    glTexParameterf( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, *tbo\wrap)
+    glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, *tbo\wrap);
+    glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, *tbo\wrap)
        
     ReDim *Me\attachments(id+1)
     *Me\attachments(id) = *tbo\attachment
@@ -417,8 +429,9 @@ Module Framebuffer
   ; Bind Output
   ;------------------------------------------------------------------
   Procedure BindOutput(*Me.Framebuffer_t)
-   
-   glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, *Me\frame_id)
+    GLCheckError("Before Bind Output Framebuffer "+ *Me\name)
+
+    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER, *Me\frame_id)
    GLCheckError("Can't Bind Output Framebuffer "+ *Me\name)
      
     Protected nbt = ArraySize(*Me\tbos())
@@ -471,29 +484,31 @@ Module Framebuffer
     
   EndProcedure
   
-  
   ;------------------------------------------------------------------
   ; Blit
   ;------------------------------------------------------------------
-  Procedure BlitTo(*Me.Framebuffer_t,*dest.Framebuffer_t,mask.GLbitfield,filter.GLenum)
+  Procedure BlitTo(*Me.Framebuffer_t,*dest.Framebuffer_t, mask.GLbitfield, filter.GLenum)
   
     If (mask & #GL_DEPTH_BUFFER_BIT) Or (mask & #GL_STENCIL_BUFFER_BIT)
       filter = #GL_NEAREST
     EndIf
     
     glBindFramebuffer(#GL_READ_FRAMEBUFFER,*Me\frame_id)
+    glReadBuffer(*Me\attachments(0))
     If *dest
       glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,*dest\frame_id)
     Else
       glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
+      glDrawBuffer(#GL_FRONT)
     EndIf
     If *dest
       glViewport(0,0,*dest\width,*dest\height)
       glBlitFramebuffer(0,0,*Me\width,*Me\height,0,0,*dest\width,*dest\height,mask,filter)
     Else
       Protected *mem = AllocateMemory(16)
-      glGetIntegerv(#GL_VIEWPORT, *mem);
-      glClearColor(0.25,0.25,0.25,1.0)
+      glGetIntegerv(#GL_VIEWPORT, *mem)
+      
+      glClearColor(Random(255)/255,Random(255)/255,Random(255)/255,1.0)
       glClear(#GL_COLOR_BUFFER_BIT)
       
       Protected bufferX = PeekL(*mem)
@@ -506,14 +521,13 @@ Module Framebuffer
       nx = (bufferWidth-*Me\width)*0.5
       nh = *Me\height
       ny = (bufferHeight-*Me\height)*0.5
-
+      
       glBlitFramebuffer(0,0,*Me\width,*Me\height,0,0,bufferWidth,bufferHeight,mask,filter)
       FreeMemory(*mem)
     EndIf
   
-    glBindFramebuffer(#GL_READ_FRAMEBUFFER,0)
-    glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-  
+    glBindFramebuffer(#GL_FRAMEBUFFER,0)
+ 
   EndProcedure
   
   
@@ -602,9 +616,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 536
-; FirstLine = 533
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 220
+; FirstLine = 186
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

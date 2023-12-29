@@ -3,7 +3,7 @@
 ; -----------------------------------------------------------------------------------
 
 XIncludeFile "../core/Application.pbi"
-XIncludeFile "../libs/FTGL.pbi"
+; XIncludeFile "../libs/FTGL.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
 XIncludeFile"../objects/Polymesh.pbi"
 XIncludeFile "../objects/Polygonizer.pbi"
@@ -85,22 +85,21 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(Scene::*current_scene)
   LayerDefault::Draw(*layer, *app\context)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-  DrawPolygonizer(*polygonizer, ss, ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+;   DrawPolygonizer(*polygonizer, ss, ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
   GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
 EndProcedure
 
 
 ; Main
 Globals::Init()
-FTGL::Init()
+; FTGL::Init()
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
@@ -149,8 +148,8 @@ FTGL::Init()
   Scene::Setup(Scene::*current_scene, *app\context)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 88
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 86
+; FirstLine = 71
 ; Folding = -
 ; EnableXP

@@ -103,7 +103,7 @@ Module ViewportUI
     *Me\layer = LayerBitmap::New(*Me\sizX,  *Me\sizY, *Me\context, *Me\camera)
     LayerBitmap::Setup(*Me\layer)
     
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS  
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
       CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
         
@@ -114,7 +114,6 @@ Module ViewportUI
     CompilerEndIf
     
     View::SetContent(*parent,*Me)
-    
     ProcedureReturn *Me
   EndProcedure
   
@@ -236,13 +235,9 @@ Module ViewportUI
               deltax = *Me\mx-*Me\oldX
               deltay = *Me\my-*Me\oldY 
               modifiers = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_Modifiers)
-              Debug "MOUSE FUCKIN MOVE ... DOWN ? " + Str(*Me\down)
-              Debug *Me\gadgetID
-              Debug modifiers
+
               If modifiers & #PB_OpenGL_Alt
-                Debug "MOUSE FUCKIN ALT KEY !!"
                 If *Me\lmb_p
-                  Debug "ORBIT FUCKIN CAMERA"
                   Camera::Orbit(*Me\camera,deltax,deltay,width,height)
                   If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
                 ElseIf *Me\mmb_p
@@ -684,13 +679,13 @@ Module ViewportUI
     LayerBitmap::Draw(*Me\layer, *Me\context)
 
     GLContext::FlipBuffer(*Me\context)
-   EndProcedure
-
+  EndProcedure
+ 
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 94
-; FirstLine = 75
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 116
+; FirstLine = 76
 ; Folding = ----
 ; EnableXP

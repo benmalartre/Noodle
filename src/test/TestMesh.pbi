@@ -27,6 +27,10 @@ Global oldY.f
 Global width.i
 Global height.i
 
+Global fbo.i
+Global rbo.i 
+Global texture.i
+
 Global *torus.Polymesh::Polymesh_t
 Global *teapot.Polymesh::Polymesh_t
 Global *ground.Polymesh::Polymesh_t
@@ -41,8 +45,8 @@ Global *gbuffer.LayerGBuffer::LayerGBuffer_t
 Global *defered.LayerDefered::LayerDefered_t
 Global *defshadows.LayerShadowDefered::LayerShadowDefered_t
 Global *ssao.LayerSSAO::LayerSSAO_t
+Global *quad.ScreenQuad::ScreenQuad_t
 
-Global shader.l
 Global *s_wireframe.Program::Program_t
 Global *s_polymesh.Program::Program_t
 Global *app.Application::Application_t
@@ -83,15 +87,16 @@ EndProcedure
 ; Resize
 ;--------------------------------------------
 Procedure Resize(window,gadget)
-;   width = WindowWidth(window,#PB_Window_InnerCoordinate)
-;   height = WindowHeight(window,#PB_Window_InnerCoordinate)
-;   ResizeGadget(gadget,0,0,width,height)
-;   glViewport(0,0,width,height)
+  width = WindowWidth(window,#PB_Window_InnerCoordinate)
+  height = WindowHeight(window,#PB_Window_InnerCoordinate)
+  ResizeGadget(gadget,0,0,width,height)
+  glViewport(0,0,width,height)
 EndProcedure
 
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  GLCheckError("App draw..")
   GLContext::SetContext(*app\context)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
@@ -104,28 +109,31 @@ Procedure Draw(*app.Application::Application_t)
   
   Scene::Update(Scene::*current_scene)
   
+  glViewport(0, 0, width, height)
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
-   
+ 
+
   Application::Draw(*app, *layer, *app\camera)
   
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+    GLContext::FlipBuffer(*app\context)
+    
 
  EndProcedure
  
  Define useJoystick.b = #False
- width = 1024
- height = 720
+ width = 800
+ height = 800
  ; Main
  Globals::Init()
 ;  Bullet::Init( )
@@ -138,15 +146,24 @@ Procedure Draw(*app.Application::Application_t)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
      Application::SetContext(*app, *viewport\context)
-     *app\context\writer\background = #True
+     ;*app\context\writer\background = #True
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  
+  *quad = ScreenQuad::New()
+  ScreenQuad::Setup(*quad,*app\context\shaders("bitmap"))
+
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   Scene::*current_scene = Scene::New()
   
+  GLCheckError("init scene")
+  
   GLContext::SetContext(*app\context)
+  GLCheckError("set context")
+  
   *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  GLCheckError("create layer")
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -154,7 +171,6 @@ Procedure Draw(*app.Application::Application_t)
   *s_wireframe = *app\context\shaders("simple")
   *s_polymesh = *app\context\shaders("polymesh")
   
-  shader = *s_polymesh\pgm
 
   *ground.Polymesh::Polymesh_t = RandomGround();Polymesh::New("Ground",Shape::#SHAPE_GRID)
   Object3D::SetShader(*ground,*s_polymesh)
@@ -234,11 +250,37 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(Scene::*current_scene,*root)
   Scene::Setup(Scene::*current_scene,*app\context)
   ViewportUI::SetHandleTarget(*viewport, *merged)
-  MessageRequester("ELAPSED", StrD(Time::Get()-startT))
+  
+  glGenFramebuffers(1, @fbo)
+  glBindFramebuffer(#GL_FRAMEBUFFER, fbo)
+  
+  glGenTextures(1, @texture)
+  glBindTexture(#GL_TEXTURE_2D, texture)
+    
+  glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA, 800, 800, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
+  
+  glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MIN_FILTER, #GL_NEAREST)
+  glTexParameteri(#GL_TEXTURE_2D, #GL_TEXTURE_MAG_FILTER, #GL_NEAREST)
+  glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_S, #GL_CLAMP_TO_EDGE)
+  glTexParameteri( #GL_TEXTURE_2D, #GL_TEXTURE_WRAP_T, #GL_CLAMP_TO_EDGE)
+ 
+  glFramebufferTexture2D(#GL_FRAMEBUFFER, #GL_COLOR_ATTACHMENT0, #GL_TEXTURE_2D, texture, 0)
+  
+     
+  glGenRenderbuffers(1, @rbo)
+  glBindRenderbuffer(#GL_RENDERBUFFER, rbo)  
+  glRenderbufferStorage(#GL_RENDERBUFFER, #GL_DEPTH_COMPONENT, 800, 800)
+  
+  glFramebufferRenderbuffer(#GL_FRAMEBUFFER, #GL_DEPTH_ATTACHMENT, #GL_RENDERBUFFER, rbo)
+  
+  If glCheckFramebufferStatus(#GL_FRAMEBUFFER) <> #GL_FRAMEBUFFER_COMPLETE
+    Debug "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" 
+  EndIf
+ 
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 172
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 117
+; FirstLine = 101
 ; Folding = -
 ; EnableXP

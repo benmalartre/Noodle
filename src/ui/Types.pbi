@@ -120,7 +120,6 @@ DeclareModule Window
   Declare Draw(*Me.Window_t)
   Declare Pick(*Me.Window_t, mx.i, my.i)
   Declare TearOff(*Me.Window_t, x.i, y.i, width.i, height.i)
-  
   DataSection 
     WindowVT: 
     Data.i @Delete()
@@ -129,8 +128,8 @@ DeclareModule Window
   
   Global CLASS.Class::Class_t
 EndDeclareModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 115
-; FirstLine = 65
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 122
+; FirstLine = 79
 ; Folding = -
 ; EnableXP

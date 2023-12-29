@@ -103,15 +103,14 @@ DeclareModule FTGL
     ;  Linux
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     ImportC "../../libs/x64/linux/ftgl.a" : EndImport
-    ImportC "-lfreetype" : EndImport
     ImportC "../../libs/x64/linux/ftgl.a"
       
   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS  
     ;___________________________________________________________________________
     ;  MacOSX
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    ImportC "../../libs/x64/macosx/freetype.a" : EndImport
-    ImportC "../../libs/x64/macosx/ftgl.a"
+    ImportC "../../libs/x64/macosx/libfreetype.a" : EndImport
+    ImportC "../../libs/x64/macosx/libftgl.a"
   
    CompilerEndIf
     
@@ -163,23 +162,23 @@ Module FTGL
   Procedure.s GetVertexShader()
     Define vertex.s
   
-  If #USE_LEGACY_OPENGL
-    vertex = "#version 120"+#CRLF$+
-             "attribute vec4 coord;"+#CRLF$+
-             "varying vec2 texcoord;"+#CRLF$+
-             "void main(void){"+#CRLF$+
-             "texcoord = coord.zw;"+#CRLF$+
-             "gl_Position = vec4(coord.xy,0.0,1.0);"+#CRLF$+
-             "}";
-  Else
-    vertex = "#version 330"+#CRLF$+
-             "in vec4 coord;"+#CRLF$+
-             "out vec2 texcoord;"+#CRLF$+
-             "void main(void){"+#CRLF$+
-             "texcoord = coord.zw;"+#CRLF$+
-             "gl_Position = vec4(coord.xy,0.0,1.0);"+#CRLF$+
-             "}";
-  EndIf
+    If #USE_LEGACY_OPENGL
+      vertex = "#version 120"+#CRLF$+
+               "attribute vec4 coord;"+#CRLF$+
+               "varying vec2 texcoord;"+#CRLF$+
+               "void main(void){"+#CRLF$+
+               "texcoord = coord.zw;"+#CRLF$+
+               "gl_Position = vec4(coord.xy,0.0,1.0);"+#CRLF$+
+               "}";
+    Else
+      vertex = "#version 330"+#CRLF$+
+               "in vec4 coord;"+#CRLF$+
+               "out vec2 texcoord;"+#CRLF$+
+               "void main(void){"+#CRLF$+
+               "texcoord = coord.zw;"+#CRLF$+
+               "gl_Position = vec4(coord.xy,0.0,1.0);"+#CRLF$+
+               "}";
+    EndIf
     CompilerIf #PB_Compiler_Unicode
       vertex = Shader::DeCodeUnicodeShader(vertex)
     CompilerEndIf
@@ -189,28 +188,28 @@ Module FTGL
   
   Procedure.s  GetFragmentShader()
     Define fragment.s 
-  If #USE_LEGACY_OPENGL
-    fragment = "#version 120"+#CRLF$+                  
-               "varying vec2 texcoord;"+
-               "uniform sampler2D tex;"+
-               "uniform vec4 color;"+
-               "uniform vec4 background;"+
-               "void main(){"+
-               "vec4 coords = texture2D(tex,texcoord);"+
-                "gl_FragColor = vec4(1,1,1,coords.a)*color + vec4(1,1,1,1 - coords.a) * background;"+
+    If #USE_LEGACY_OPENGL
+      fragment = "#version 120"+#CRLF$+                  
+                 "varying vec2 texcoord;"+
+                 "uniform sampler2D tex;"+
+                 "uniform vec4 color;"+
+                 "uniform vec4 background;"+
+                 "void main(){"+
+                 "vec4 coords = texture2D(tex,texcoord);"+
+                  "gl_FragColor = vec4(1,1,1,coords.a)*color + vec4(1,1,1,1 - coords.a) * background;"+
+                  "}"
+    Else
+      fragment = "#version 330"+#CRLF$+                 
+                 "in vec2 texcoord;"+
+                 "out vec4 outColor;"+
+                 "uniform sampler2D tex;"+
+                 "uniform vec4 color;"+
+                 "uniform vec4 bgcolor;"+
+                 "void main(){"+
+                 "outColor = vec4(1,1,1,texture(tex,texcoord).a)*color + vec4(1,1,1,1-texture(tex,texcoord).a)*bgcolor;"+
                 "}"
-  Else
-    fragment = "#version 330"+#CRLF$+                 
-               "in vec2 texcoord;"+
-               "out vec4 outColor;"+
-               "uniform sampler2D tex;"+
-               "uniform vec4 color;"+
-               "uniform vec4 bgcolor;"+
-               "void main(){"+
-               "outColor = vec4(1,1,1,texture(tex,texcoord).a)*color + vec4(1,1,1,1-texture(tex,texcoord).a)*bgcolor;"+
-              "}"
-   EndIf
-  CompilerIf #PB_Compiler_Unicode
+     EndIf
+    CompilerIf #PB_Compiler_Unicode
       fragment = Shader::DeCodeUnicodeShader(fragment)
     CompilerEndIf
     ProcedureReturn fragment
@@ -443,6 +442,11 @@ Module FTGL
   ; Constructor
   ;-------------------------------------------------------------------------------------
   Procedure New()
+    Debug "\N\N\"
+    Debug ""
+    Debug ""
+    Debug "FTGL Drawer Contructor!"
+    Debug ""
     Protected *Me.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
     InitializeStructure(*Me, FTGL_Drawer)
     If *ftgl_atlas
@@ -462,6 +466,8 @@ Module FTGL
     Protected frag.s = GetFragmentShader()
     
     *Me\shader = Program::New("FTGL",vert, "",frag)
+    Debug "FTGL shader : "+Str(*Me\shader)
+    Debug "FTGL pgm : "+Str(*Me\shader\pgm)
     glUseProgram(*Me\shader\pgm)
     SetupTexture(*Me)
     Protected attr_coord.GLuint = glGetAttribLocation(*Me\shader\pgm,"coord")
@@ -471,8 +477,8 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 445
-; FirstLine = 410
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 121
+; FirstLine = 118
 ; Folding = ----
 ; EnableXP

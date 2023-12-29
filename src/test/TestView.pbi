@@ -7,7 +7,7 @@ UseModule OpenGLExt
 Globals::Init()
 Time::Init()
 Log::Init()
-FTGL::Init()
+; FTGL::Init()
  
 CompilerIf #USE_ALEMBIC
   Alembic::Init()
@@ -52,7 +52,7 @@ EndStructure
 ; EndProcedure
 
 Procedure AddKnobs (*ui.PropertyUI::PropertyUI_t, name.s)
-  OpenGadgetList(*ui\container)
+  OpenGadgetList(*ui\gadgetID)
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,0,*ui\sizX, 128)
   ControlProperty::AppendStart(*prop)
   ControlProperty::RowStart(*prop)
@@ -70,7 +70,7 @@ EndProcedure
 
 
 Procedure AddProperty(*ui.PropertyUI::PropertyUI_t, name.s)
-  OpenGadgetList(*ui\container)
+  OpenGadgetList(*ui\gadgetID)
   
   Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, name, name,0,128,*ui\sizX, *ui\sizY-128)
 
@@ -122,7 +122,7 @@ Global *splitted.View::View_t = View::Split(*app\window\main, 0,75)
 Define model.Math::m4f32
 If Not #USE_GLFW
    *viewport = ViewportUI::New(*splitted\left,"ViewportUI", *app\camera, *app\handle)     
-   *app\context\writer\background = #True
+;    *app\context\writer\background = #True
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
 Camera::LookAt(*app\camera)
@@ -144,9 +144,9 @@ AddKnobs(*ui, "FUCK")
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
 ; CursorPosition = 124
-; FirstLine = 85
+; FirstLine = 112
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

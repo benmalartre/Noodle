@@ -355,7 +355,7 @@ DeclareModule OpenGLExt
     Prototype PFNGLFRAMEBUFFERRENDERBUFFERPROC ( target.l, attachment.l, renderbuffertarget.l, renderbuffer.i )
     Prototype PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC ( target.l, attachment.l, pname.l, *params )
     Prototype PFNGLGENERATEMIPMAPPROC ( target.l )
-    Prototype PFNGLBLITFRAMEBUFFERPROC ( srcX0.i, srcY0.i, srcX1.i, srcY1.i, dstX0.i, dstY0.i, dstX1.i, dstY1.i, mask.i, filter.l )
+    Prototype PFNGLBLITFRAMEBUFFERPROC ( srcX0.i, srcY0.i, srcX1.i, srcY1.i, dstX0.i, dstY0.i, dstX1.i, dstY1.i, mask.l, filter.l )
     Prototype PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC ( target.l, samples.i, internalformat.l, width.i, height.i )
     Prototype PFNGLFRAMEBUFFERTEXTURELAYERPROC ( target.l, attachment.l, texture.i, level.i, layer.i )
   CompilerEndIf
@@ -798,7 +798,7 @@ Module OpenGLExt
           setGLEXT( glVertexAttrib4usv,         "glVertexAttrib4usv" )
           setGLEXT( glVertexAttribPointer,      "glVertexAttribPointer" )
           
-          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And OpenGL::#USE_LEGACY_OPENGL
+          CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And OpenGL::#LEGACY_OPENGL
             setGLEXT( glBindVertexArray,          "glBindVertexArrayAPPLE")
             setGLEXT( glDeleteVertexArrays,       "glDeleteVertexArraysAPPLE")
             setGLEXT( glGenVertexArrays,          "glGenVertexArraysAPPLE")
@@ -1453,44 +1453,38 @@ Module OpenGLExt
   
   Procedure GLCheckError(message.s)
     Protected err = OpenGL::glGetError()
-    If err
-      While err <> #GL_NO_ERROR
-        Protected error.s
-        Select err
-          Case #GL_INVALID_OPERATION
-            error = " ---> INVALID OPERATION"
-          Case #GL_INVALID_ENUM
-            error = " ---> INVALID ENUM"
-          Case #GL_INVALID_VALUE
-            error = " ---> INVALID VALUE"
-          Case #GL_OUT_OF_MEMORY
-            error = " ---> OUT OF MEMORY"
-          Case #GL_INVALID_FRAMEBUFFER_OPERATION
-            error = " ---> INVALID FRAMEBUFFER OPERATION"
-          Case #GL_STACK_UNDERFLOW
-            error = " ---> STACK UNDERFLOW"
-          Case #GL_STACK_OVERFLOW
-            error = " ---> STACK OVERFLOW"
-          Default 
-            error = "###"+Str(err)+"###"
-        EndSelect  
-        Debug "[OpenGL Error] "+message+error
-        err = OpenGL::glGetError()
-      Wend  
-      ProcedureReturn #True
-    Else
-      ProcedureReturn #False
-    EndIf
-    
+    While err <> #GL_NO_ERROR
+      Protected error.s
+      Select err
+        Case #GL_INVALID_OPERATION
+          error = " ---> INVALID OPERATION"
+        Case #GL_INVALID_ENUM
+          error = " ---> INVALID ENUM"
+        Case #GL_INVALID_VALUE
+          error = " ---> INVALID VALUE"
+        Case #GL_OUT_OF_MEMORY
+          error = " ---> OUT OF MEMORY"
+        Case #GL_INVALID_FRAMEBUFFER_OPERATION
+          error = " ---> INVALID FRAMEBUFFER OPERATION"
+        Case #GL_STACK_UNDERFLOW
+          error = " ---> STACK UNDERFLOW"
+        Case #GL_STACK_OVERFLOW
+          error = " ---> STACK OVERFLOW"
+        Default 
+          error = "###"+Str(err)+"###"
+      EndSelect  
+      Debug "[OpenGL Error] "+message+error
+      err = OpenGL::glGetError()
+    Wend  
   EndProcedure
 EndModule
 
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 69
-; FirstLine = 45
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 357
+; FirstLine = 354
 ; Folding = -------
 ; EnableXP
 ; EnableUnicode

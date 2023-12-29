@@ -1,6 +1,5 @@
 ﻿XIncludeFile "Framebuffer.pbi"
 XIncludeFile "ScreenQuad.pbi"
-XIncludeFile "../libs/FTGL.pbi"
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../objects/Object3D.pbi"
 
@@ -44,7 +43,7 @@ DeclareModule GLContext
 
   Structure GLContext_t
     *window.GLFWwindow      ;main window holding shared gl context
-    *writer.FTGL::FTGL_Drawer
+    *writer                 ; FTGL::FTGL_Drawer
     width.d
     height.d
     useGLFW.b
@@ -65,7 +64,8 @@ DeclareModule GLContext
   Declare GetSupportedLineWidth(*Me.GLContext_t)
   Declare Resize(*Me.GLContext_t, width.i, height.i)
   Declare AddLayer(*Me.GLContext_t, *layer)
-  
+  Declare GetOpenGLVersion(*Me.GLContext_t)
+  Declare.f BackingScaleFactor()  
   Global *MAIN_GL_CTXT.GLContext_t
   Global MAIN_GL_CTXT_WIDTH = 1024
   Global MAIN_GL_CTXT_HEIGHT = 1024
@@ -127,9 +127,9 @@ DeclareModule GLLayer
   Global CLASS.Class::Class_t
 
 EndDeclareModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 24
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 67
+; FirstLine = 35
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

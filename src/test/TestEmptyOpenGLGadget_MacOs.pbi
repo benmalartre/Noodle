@@ -7,7 +7,6 @@ ImportC "-framework OpenGL"
   glGetError()
 EndImport
 
-
 Procedure GLCheckError(message.s)
   Protected err = glGetError()
     If err
@@ -52,7 +51,7 @@ Repeat
   Delay(100)
 Until WaitWindowEvent() = #PB_Event_CloseWindow
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 8
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

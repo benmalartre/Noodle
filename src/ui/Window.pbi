@@ -6,7 +6,6 @@ XIncludeFile "../core/Commands.pbi"
 ; Window module Implementation
 ;==========================================================================
 Module Window
-  
   Procedure Resize(*Me.Window_t)    
     If Not *Me : ProcedureReturn : EndIf
     Protected w = WindowWidth(*Me\ID,#PB_Window_InnerCoordinate)
@@ -313,8 +312,7 @@ Module Window
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 170
-; FirstLine = 168
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 7
 ; Folding = ---
 ; EnableXP

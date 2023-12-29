@@ -133,12 +133,11 @@ Module LayerBitmap
     *Me\bitmap = #Null
     *Me\datas\buffer = Framebuffer::New("Bitmap",width,height)
     *Me\datas\image = CreateImage(#PB_Any,width,height)
-    Framebuffer::AttachTexture(*Me\datas\buffer,"Color",#GL_RGBA,#GL_LINEAR)
+    Framebuffer::AttachTexture(*Me\datas\buffer,"Color", #GL_RGBA,#GL_LINEAR, #True)
     
     *Me\mask = #GL_COLOR_BUFFER_BIT
     *Me\shader = *ctx\shaders("bitmap")\pgm
     
-    Debug "NUM SHJADERS : "+Str(MapSize(*ctx\shaders()))
     Layer::AddScreenSpaceQuad(*Me,*ctx)
     
     ProcedureReturn *Me
@@ -147,7 +146,8 @@ Module LayerBitmap
   
   Class::DEF(LayerBitmap)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 3
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 135
+; FirstLine = 102
 ; Folding = --
 ; EnableXP

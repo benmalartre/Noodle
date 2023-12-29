@@ -95,14 +95,16 @@ Module ScreenUI
       Define pfo.NSOpenGLPixelFormat = CocoaMessage( 0, 0, "NSOpenGLPixelFormat alloc" )
       ; Set Pixel Format Attributes
       Define pfa.NSOpenGLPixelFormatAttribute
+
       With pfa
-        \v[0] = #NSOpenGLPFAColorSize          : \v[1] = 24
-        \v[2] = #NSOpenGLPFAAlphaSize          : \v[3] =  8
-        \v[4] = #NSOpenGLPFAOpenGLProfile      : \v[5] = #NSOpenGLProfileVersion3_2Core ; will give 4.1 version (or more recent) if available
+        \v[0] = #NSOpenGLPFAColorSize          
+        \v[1] = 24
+        \v[2] = #NSOpenGLPFAAlphaSize          
+        \v[3] =  8
+        \v[4] = #NSOpenGLPFAOpenGLProfile      
+        \v[5] = #NSOpenGLProfileVersion3_2Core
         \v[6] = #NSOpenGLPFADoubleBuffer
-        \v[7] = #NSOpenGLPFAAccelerated ; I also want OpenCL available
-        \v[8] = #NSOpenGLPFANoRecovery
-        \v[9] = #Null
+        \v[7] = #Null
       EndWith
 
       ; Choose Pixel Format
@@ -724,7 +726,8 @@ Module ScreenUI
   
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 625
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 106
+; FirstLine = 73
 ; Folding = -----
 ; EnableXP

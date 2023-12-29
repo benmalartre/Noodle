@@ -63,7 +63,6 @@ Module GLLayer
   ; Resize
   ;---------------------------------------------------
   Procedure Resize(*layer.GLLayer_t,width,height.i)
-    Debug "RESIZE FRAME BUFFER : "+*layer\name
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\buffer
     Framebuffer::Resize(*buffer,width,height)
     *layer\width = width
@@ -258,8 +257,8 @@ Module GLLayer
   Class::DEF( GLLayer )
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
 ; CursorPosition = 65
-; FirstLine = 9
+; FirstLine = 61
 ; Folding = ---
 ; EnableXP

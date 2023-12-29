@@ -19,15 +19,16 @@ DeclareModule Shader
   EndStructure
   
   ;Global GLSL_PATH.s = "D:\Projects\PureBasic\Modules\glsl\"
+
   If FileSize("../../glsl120")=-2
-    If OpenGL::#USE_LEGACY_OPENGL
+    If OpenGL::#LEGACY_OPENGL
       Global GLSL_PATH.s = "../../glsl120/"
     Else
       Global GLSL_PATH.s = "../../glsl/"
     EndIf
   
   Else
-    If OpenGL::#USE_LEGACY_OPENGL
+    If OpenGL::#LEGACY_OPENGL
       Global GLSL_PATH.s = "../../../glsl120/"
     Else
       Global GLSL_PATH.s = "../../../glsl/"
@@ -332,8 +333,8 @@ Module Program
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 7
-; FirstLine = 301
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 21
+; FirstLine = 19
 ; Folding = ---
 ; EnableXP

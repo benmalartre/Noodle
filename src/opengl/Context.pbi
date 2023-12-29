@@ -89,13 +89,11 @@ Module GLContext
             \v[2] = #NSOpenGLPFAAlphaSize          
             \v[3] =  8
             \v[4] = #NSOpenGLPFAOpenGLProfile      
-            \v[5] = #NSOpenGLProfileVersion3_2Core  ; will give 4.1 version (or more recent) if available
+            \v[5] = #NSOpenGLProfileVersion3_2Core
             \v[6] = #NSOpenGLPFADoubleBuffer
-            \v[7] = #NSOpenGLPFAAccelerated         ; we also want OpenCL available
-            \v[8] = #NSOpenGLPFANoRecovery
-            \v[9] = #Null
+            \v[7] = #Null
           EndWith
-      
+
           ; Choose Pixel Format
           CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
           ; Allocate OpenGL Context
@@ -114,6 +112,7 @@ Module GLContext
           CocoaMessage( 0, ctx, "flushBuffer" )
 
           *Me\ID = ctx
+          
         CompilerElse
           *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
           SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
@@ -191,11 +190,12 @@ Module GLContext
         
         Debug "Status: Using GLFW Version "+GLFW::glfwGetVersionString()
         Debug "Status: Using OpenGL Version: "+Str(iOpenGLMajor)+","+Str(iOpenGLMinor)+", Revision : "+Str(iOpenGLRevision)
-      Else
-        ; TO BE IMPLEMENTED
       EndIf
     CompilerEndIf
     
+    Debug "OpenGL Vendor: "    +#TAB$+#TAB$+   OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_VENDOR ) )
+    Debug "OpenGL Renderer: "  +#TAB$+         OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_RENDERER ))
+    Debug "OpenGL Version: "   +#TAB$+         OpenGL::GLGETSTRINGOUTPUT(OpenGL::glGetString( #GL_VERSION ) )
   EndProcedure
   
   ;---------------------------------------------
@@ -225,7 +225,10 @@ Module GLContext
     
     ; Build Font Writer
     *Me\writer = FTGL::New()
-
+    
+    Debug "SETUP OPENGL CONTEXT"
+    Debug "writer : "+Str(*Me\writer)
+    Debug ""
   EndProcedure
   
   ;---------------------------------------------
@@ -242,7 +245,7 @@ Module GLContext
   ;  Set Current Context
   ;---------------------------------------------
   Procedure SetContext(*Me.GLContext_t)
-    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage( 0, *Me\ID, "makeCurrentContext" )
     CompilerElse
       SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
@@ -258,11 +261,24 @@ Module GLContext
   EndProcedure
   
   ;---------------------------------------------
+  ;  Backing scale factor
+  ;---------------------------------------------
+  Procedure.f BackingScaleFactor()
+    CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
+      CocoaMessage(@bsf.CGFloat, CocoaMessage(0, 0, "NSScreen mainScreen"), "backingScaleFactor")
+      ProcedureReturn bsf
+    CompilerElse
+      ProcedureReturn 1.0
+    CompilerEndIf
+  EndProcedure
+  
+  ;---------------------------------------------
   ;  Resize Context
   ;---------------------------------------------
   Procedure Resize(*Me.GLContext_t, width.i, height.i)
-    *Me\width = width
-    *Me\height = height
+    Define backingScale.f = BackingScaleFactor()
+    *Me\width = width * backingScale
+    *Me\height = height * backingScale
     glBindFramebuffer(#GL_FRAMEBUFFER, 0)
     glViewport(0,0, *Me\width, *Me\height)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
@@ -289,7 +305,6 @@ Module GLContext
   EndProcedure
   
   
-  
 EndModule
 
 
@@ -298,9 +313,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 169
-; FirstLine = 126
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 280
+; FirstLine = 269
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

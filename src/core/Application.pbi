@@ -292,7 +292,7 @@ CompilerEndIf
     *Me\camera = Camera::New("Camera",Camera::#Camera_Perspective)
     *Me\handle = Handle::New()
     *Me\handle\camera = *Me\camera
-    *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
+;     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
 ;     Handle::Setup(*Me\handle, *Me\context)
     
     ProcedureReturn *Me
@@ -770,6 +770,7 @@ CompilerEndIf
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *camera\projection)
     Next
     
+    glEnable(#GL_MULTISAMPLE)
     Protected ilayer.Layer::ILayer = *layer
     ilayer\Draw(*context)
     If *Me\tool
@@ -786,9 +787,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 636
-; FirstLine = 635
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 772
+; FirstLine = 744
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

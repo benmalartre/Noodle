@@ -148,8 +148,9 @@ FTGL::Init()
    *app = Application::New("Test Half Edge",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-     *app\context\writer\background = #True
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)    
+     *app\context = *viewport\context
+;      *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
     *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
@@ -208,9 +209,8 @@ FTGL::Init()
   Application::Loop(*app, @Update())
 
 EndIf
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 158
-; FirstLine = 154
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 151
+; FirstLine = 143
 ; Folding = -
 ; EnableXP

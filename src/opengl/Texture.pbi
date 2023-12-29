@@ -124,7 +124,7 @@ Module Texture
   Procedure Load(imageID,flipY.b=#True)
     If imageID <> #Null
       
-      CompilerIf OpenGL::#USE_LEGACY_OPENGL
+      CompilerIf OpenGL::#LEGACY_OPENGL
         glEnable(#GL_TEXTURE_2D)
       CompilerEndIf
       
@@ -219,8 +219,9 @@ Module Texture
   
   
 EndModule
-; IDE Options = PureBasic 5.61 (Linux - x64)
-; CursorPosition = 2
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 126
+; FirstLine = 122
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

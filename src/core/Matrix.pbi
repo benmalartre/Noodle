@@ -786,9 +786,9 @@ EndModule
 ; ; TestRow()
 ; ; TestColumn()
 ; TestInverse()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 660
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 395
+; FirstLine = 381
 ; Folding = --------
 ; EnableXP
 ; Constant = #USE_SSE=1

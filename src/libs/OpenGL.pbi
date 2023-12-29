@@ -12,8 +12,10 @@ DeclareModule OpenGL
   ;-----------------------------------------
   ; Constants
   ;-----------------------------------------
-  CompilerIf Not Defined(USE_LEGACY_OPENGL,#PB_Constant)
-    #USE_LEGACY_OPENGL = #False
+  CompilerIf Defined(USE_LEGACY_OPENGL,#PB_Constant)
+    #LEGACY_OPENGL = #USE_LEGACY_OPENGL
+  CompilerElse
+    #LEGACY_OPENGL = #False
   CompilerEndIf
   
   Global GL_EXTENSIONS_LOADED = #False
@@ -1591,13 +1593,13 @@ DeclareModule OpenGL
       #NSOpenGLProfileVersion4_1Core = $4100 ;    /* choose an OpenGL 4.1 Core Implementation      */
     EndEnumeration    
     
-    ; ...[ array9_t ]......................................................
-    Structure array10_t
-      v.l[10]
+    ; ...[ array10_t ]......................................................
+    Structure array9_t
+      v.l[16]
     EndStructure
     ; ...[ NSOpenGLPixelFormatAttribute ]...................................
     Macro NSOpenGLPixelFormatAttribute
-      array10_t
+      array9_t
     EndMacro
     ; ...[ NSOpenGLPixelFormat ]............................................
     Macro NSOpenGLPixelFormat
@@ -1614,8 +1616,8 @@ EndDeclareModule
 Module OpenGL
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1441
-; FirstLine = 1437
+; CursorPosition = 1597
+; FirstLine = 1560
 ; Folding = ------------------
 ; EnableXP
 ; EnableUnicode

@@ -419,7 +419,6 @@ Module Polymesh
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*p.Polymesh_t,*pgm.Program::Program_t)
-    
     If Not *p : ProcedureReturn : EndIf
     
     If *pgm : *p\shader = *pgm : EndIf
@@ -563,8 +562,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 478
-; FirstLine = 473
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 465
+; FirstLine = 458
 ; Folding = ---
 ; EnableXP

@@ -392,17 +392,22 @@ Module Scene
         Select *obj\children()\type
           Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
+            GLCheckError("setup mesh")
           Case Object3D::#PointCloud
-            MessageRequester("CLOUD SHADER", Str(*ctx\shaders("cloud")))
             child\Setup(*ctx\shaders("cloud"))
+            GLCheckError("setup cloud")
           Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
+            GLCheckError("setup instances")
           Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
+            GLCheckError("setup wireframe")
           Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
+            GLCheckError("setup curve")
           Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
+            GLCheckError("setup drawer")
         EndSelect
       EndIf
       SetupChildren(*Me,child,*ctx)
@@ -424,16 +429,22 @@ Module Scene
         Select *root\children()\type
           Case Object3D::#Polymesh
             child\Setup(*ctx\shaders("polymesh"))
+            GLCheckError("setup mesh")
           Case Object3D::#PointCloud
             child\Setup(*ctx\shaders("cloud"))
+            GLCheckError("setup cloud")
           Case Object3D::#InstanceCloud
             child\Setup(*ctx\shaders("instances"))
+            GLCheckError("setup instances")
           Case Object3D::#Locator
             child\Setup(*ctx\shaders("wireframe"))
+            GLCheckError("setup wireframe")
           Case Object3D::#Curve
             child\Setup(*ctx\shaders("curve"))
+            GLCheckError("setup curve")
           Case Object3D::#Drawer
             child\Setup(*ctx\shaders("drawer"))
+            GLCheckError("setup darwer")
       EndSelect
       EndIf
       
@@ -825,8 +836,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 547
-; FirstLine = 525
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 409
+; FirstLine = 379
 ; Folding = -------
 ; EnableXP
