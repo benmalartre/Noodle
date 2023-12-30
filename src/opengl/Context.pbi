@@ -1,5 +1,6 @@
 ﻿XIncludeFile "Types.pbi"
 XIncludeFile "Framebuffer.pbi"
+XIncludeFile "../libs/FTGL.pbi"
 
 ; ============================================================================
 ;  GLContext Module Implementation
@@ -23,7 +24,6 @@ Module GLContext
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(width.i, height.i, *context=#Null)
-            Debug "GLCONTEXT CONSTRUCTOR CALLED!!!" +Str(width)+","+Str(height)
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
     
@@ -313,8 +313,7 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 215
-; FirstLine = 212
+; CursorPosition = 2
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

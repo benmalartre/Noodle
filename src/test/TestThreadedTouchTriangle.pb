@@ -37,7 +37,7 @@ Procedure.s Payload(numThreads.i, *geom.Geometry::PolymeshGeometry_t, *box.Geome
   Define i
   For i=0 To *geom\nbtriangles - 1 : PokeL(*elements + i * 4, i) : Next
   
-  Dim threadDatas.threadData_t(numThreads)
+  Dim threadDatas.ThreadData_t(numThreads)
   Dim threads.i(numThreads)
   Define numTris = *geom\nbtriangles
   Define numTriPerThread = Round(numTris / numThreads, #PB_Round_Down)
@@ -127,9 +127,7 @@ MessageRequester("Intersect "+Str(*geom\nbtriangles) + " Triangles",
 
 
 
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 66
-; FirstLine = 50
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 39
 ; Folding = -
 ; EnableXP

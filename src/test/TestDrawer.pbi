@@ -27,6 +27,7 @@ Global oldY.f
 Global width.i
 Global height.i
 
+Global *scene.Scene::Scene_t
 Global *layer.LayerDefault::LayerDefault_t
 Global *drawer.Drawer::Drawer_t
 
@@ -40,8 +41,8 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-Global *texts.CArray::CArrayStr = CArray::newCArrayStr()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *texts.CArray::CArrayStr = CArray::New(CArray::#ARRAY_STR)
 
 ; Resize
 ;--------------------------------------------
@@ -154,11 +155,12 @@ Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
 ;   Drawer::Flush(*drawer)
 
-  Scene::*current_scene\dirty= #True
+  *scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*scene)
 ;   GLContext::SetContext(*viewport\context)
-  LayerDefault::Draw(*layer, *viewport\context)
+  LayerDefault::Draw(*layer, *scene, *viewport\context)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
@@ -189,13 +191,12 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI",*app\camera, *app\handle)
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
    
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *scene = Scene::New()
   *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -214,7 +215,7 @@ Procedure Draw(*app.Application::Application_t)
   
 ;   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root, *drawer)
-  Scene::AddModel(Scene::*current_scene,*root)
+  Scene::AddModel(*scene,*root)
   
   RandomSpheres(Random(64,16), Random(10)-5)
   RandomPoints(Random(256, 64))
@@ -222,17 +223,17 @@ Procedure Draw(*app.Application::Application_t)
   RandomStrips(32)
 ;   RandomTexts(32,"HELLO")
   
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::Setup(*scene,*app\context)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 145
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 162
+; FirstLine = 144
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

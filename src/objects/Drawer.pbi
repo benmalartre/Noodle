@@ -436,21 +436,28 @@ Module Drawer
   ; ---[ Draw Sphere Item ]--------------------------------------------------
   Procedure DrawSphere(*Me.Matrix_t, *pgm)
     glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+    GLCheckError("polygon mode")
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
-    
+    GLCheckError("set offset matrix")
     glLineWidth(Math::Max(Int(*Me\size),1))
+    GLCheckError("line width")
     Protected *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
     Protected offset.i = 8
     If *Me\wireframe
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      GLCheckError("draw wireframe")
     Else
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT,*indices)
+      GLCheckError("set polygon mode")
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
+      GLCheckError("draw filled elements")
     EndIf
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    GLCheckError("reset offset matrix")
     glLineWidth(1)
+    GLCheckError("line width")
   EndProcedure
   
   ; ---[ Draw Matrix Item ]--------------------------------------------------
@@ -990,7 +997,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 110
-; FirstLine = 97
+; CursorPosition = 455
+; FirstLine = 478
 ; Folding = ---------
 ; EnableXP

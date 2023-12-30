@@ -116,13 +116,13 @@ Globals::Init()
   Scene::AddModel(*app\scene,*root)
   Scene::Setup(*app\scene,*app\context)
  
-;   Application::Loop(*app, @Draw(),0.1)
+  Application::Loop(*app, @Draw(),0.1)
 
 
   Verlet::Delete(*verlet)
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 116
+; CursorPosition = 118
 ; FirstLine = 78
 ; Folding = -
 ; EnableXP
