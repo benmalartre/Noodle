@@ -47,8 +47,6 @@ EndDeclareModule
 Module LayerSelection
   UseModule OpenGL
   UseModule OpenGLExt
-  
-  
 
 ;---------------------------------------------------------
 ; Pick Children Recursively
@@ -162,21 +160,20 @@ EndProcedure
 ;---------------------------------------------------
 Procedure Draw(*layer.LayerSelection_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   
-  If MapSize(*layer\selection\items())
-    Define *selected.Selection::SelectionItem_t 
-    ForEach *layer\selection\items()
-      *selected = *layer\selection\items()
-      If *selected\type = Selection::#ITEM_OBJECT
-        
-      EndIf
-      
-    Next
+    Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
+    Framebuffer::BindOutput(*buffer)
     
-  EndIf
-  
-  ; ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
-; ;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
-;     Protected *obj.Object3D::Object3D_t = Scene::*current_scene\m_uuids()
+    Layer::Clear(*layer)
+    
+    glDisable(#GL_CULL_FACE)
+    glFrontFace(#GL_CW)
+    glEnable(#GL_DEPTH_TEST)
+    
+  Debug "selection shader :" +Str(*ctx\shaders("selection"))
+  Layer::DrawByType(*layer,*scene\objects, Object3D::#Polymesh, *ctx\shaders("selection"))
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
+;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
+;     Protected *obj.Object3D::Object3D_t = *scene\m_uuids()
 ;     Protected obj.Object3D::IObject3D = *obj
 ;     glDisable(#GL_DEPTH_TEST)
 ;     glEnable(#GL_CULL_FACE)
@@ -191,12 +188,19 @@ Procedure Draw(*layer.LayerSelection_t, *scene.Scene::Scene_t, *ctx.GLContext::G
 ;       If *layer\overchild : *layer\overchild\selected = #False : EndIf
 ;       *layer\overchild = *obj
 ;     EndIf
-;   Else
+;   
 ;     If *layer\overchild
 ;       *layer\overchild\selected = #False
 ;       *layer\overchild = #Null
 ;     EndIf
+;   
   
+    Framebuffer::Unbind(*layer\framebuffer)
+  
+    glDisable(#GL_DEPTH_TEST)
+    glDisable(#GL_BLEND)
+    
+    glUseProgram(0)
   
 
 EndProcedure
@@ -214,8 +218,9 @@ EndProcedure
 Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
   Object::INI( LayerSelection )
-  Color::Set(*Me\background_color,0.5,1.0,0.5,1)
+  Color::Set(*Me\color,0.5,1.0,0.5,1)
   *Me\context = *ctx
+  *Me\mask = #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT
   *Me\framebuffer = Framebuffer::New("Selection",width,height)
   Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA8,#GL_LINEAR)
   Framebuffer::AttachRender(*Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
@@ -235,14 +240,8 @@ EndProcedure
  Class::DEF( LayerSelection )
 
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 142
-; Folding = --
-; EnableXP
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 152
-; FirstLine = 114
+; CursorPosition = 222
+; FirstLine = 196
 ; Folding = --
 ; EnableXP

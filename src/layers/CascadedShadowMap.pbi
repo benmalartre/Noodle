@@ -353,7 +353,7 @@ Module LayerCascadedShadowMap
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t, *camera.Camera::Camera_t, *light.Light::Light_t)
     Protected *Me.LayerCascadedShadowMap_t = AllocateMemory(SizeOf(LayerCascadedShadowMap_t))
     Object::INI( LayerCascadedShadowMap )
-    Color::Set(*Me\background_color,0,0,0,1)
+    Color::Set(*Me\color,0,0,0,1)
 
     *Me\context = *ctx
     *Me\pov = *camera
@@ -376,7 +376,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 48
-; FirstLine = 17
+; CursorPosition = 355
+; FirstLine = 332
 ; Folding = ---
 ; EnableXP

@@ -253,7 +253,7 @@ EndProcedure
     *Me\context = *ctx
     *Me\pov = *pov
     *Me\framebuffer = Framebuffer::New("Default",width,height)
-    Color::Set(*Me\background_color,0.33,0.33,0.33,1.0)
+    Color::Set(*Me\color,0.33,0.33,0.33,1.0)
     
     Framebuffer::AttachTexture(*Me\framebuffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
     Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
@@ -265,7 +265,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 28
-; FirstLine = 24
+; CursorPosition = 113
+; FirstLine = 101
 ; Folding = --
 ; EnableXP

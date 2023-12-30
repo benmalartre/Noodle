@@ -25697,8 +25697,6 @@ Module Shape
     Protected *c.c4f32
     For i=0 To *Me\nbp-1
       *c = CArray::GetValue(*Me\colors,i)
-      Debug *c
-      Debug *color
       *c\r = *color\r + (Random(100)*0.02-1)*variance
       *c\g = *color\g + (Random(100)*0.02-1)*variance
       *c\b = *color\b + (Random(100)*0.02-1)*variance
@@ -26433,7 +26431,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 26337
-; FirstLine = 26353
+; CursorPosition = 25698
+; FirstLine = 25696
 ; Folding = ----
 ; EnableXP

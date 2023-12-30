@@ -217,7 +217,7 @@ Module LayerShadowSimple
     InitializeStructure(*Me,LayerShadowSimple_t)
 
     Object::INI( LayerShadowSimple )
-    Color::Set(*Me\background_color,0.5,0.5,0.5,1)
+    Color::Set(*Me\color,0.5,0.5,0.5,1)
     *Me\context = *ctx
     *Me\pov = *camera
   
@@ -240,6 +240,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 21
+; CursorPosition = 219
+; FirstLine = 196
 ; Folding = --
 ; EnableXP

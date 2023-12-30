@@ -37,7 +37,7 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 
 ; Resize
 ;--------------------------------------------
@@ -72,22 +72,24 @@ EndProcedure
 ; Update
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
-  Scene::*current_scene\dirty= #True
+  GLContext::SetContext(*viewport\context)
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
   *select\mouseX = *viewport\mx
   *select\mouseY = *app\context\height -*viewport\my
   
   
   If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
     If EventType() = #PB_EventType_LeftClick
-      LayerSelection::Pick(*select)
+      LayerSelection::Pick(*select, *app\scene)
     EndIf
   EndIf
   
-  LayerDefault::Draw(*layer, *app\context)
-  LayerSelection::Draw(*select, *app\context)
+  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  LayerSelection::Draw(*select, *app\scene, *app\context)
+  
+  ViewportUI::Blit(*viewport, *select\framebuffer)
   
   
 ;   LayerDefault::Draw(*layer, *app\context)
@@ -100,7 +102,7 @@ Procedure Update(*app.Application::Application_t)
   FTGL::Draw(*app\context\writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
   FTGL::EndDraw(*app\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
 
@@ -127,14 +129,14 @@ Procedure Update(*app.Application::Application_t)
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   *select = LayerSelection::New(800,600,*app\context,*app\camera)
-  *select\selection = Scene::*current_scene\selection
+  *select\selection = *app\scene\selection
   
   
   Global *root.Model::Model_t = Model::New("Model")
-  RandomBunnies(2048, -2, *root)
+  RandomBunnies(128, -2, *root)
   
   
     
@@ -148,18 +150,18 @@ Procedure Update(*app.Application::Application_t)
  
   Define i
   
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
-  Scene::Update(Scene::*current_scene)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene,*app\context)
+  Scene::Update(*app\scene)
   Application::Loop(*app, @Update())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 94
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 91
+; FirstLine = 67
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

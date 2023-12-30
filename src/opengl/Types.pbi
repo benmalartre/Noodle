@@ -71,8 +71,8 @@ DeclareModule GLContext
   Global MAIN_GL_CTXT_HEIGHT = 1024
 EndDeclareModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 18
-; FirstLine = 14
+; CursorPosition = 70
+; FirstLine = 27
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

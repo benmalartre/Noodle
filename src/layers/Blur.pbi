@@ -104,7 +104,7 @@ Module LayerBlur
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*input.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
     Protected *Me.LayerBlur_t = AllocateMemory(SizeOf(LayerBlur_t))
     Object::INI( LayerBlur )
-    Color::Set(*Me\background_color,0.5,0.5,0.5,1)
+    Color::Set(*Me\color,0.5,0.5,0.5,1)
     *Me\name = "LayerBlur"
     *Me\input = *input
     *Me\context = *ctx
@@ -123,7 +123,8 @@ Module LayerBlur
   Class::DEF(LayerBlur)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 95
+; FirstLine = 79
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

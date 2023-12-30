@@ -181,7 +181,7 @@ Module LayerShadowMap
     Protected *Me.LayerShadowMap_t = AllocateMemory(SizeOf(LayerShadowMap_t))
     InitializeStructure(*Me,LayerShadowMap_t)
     Object::INI( LayerShadowMap )
-    Color::Set(*Me\background_color,1,1,1,0)
+    Color::Set(*Me\color,1,1,1,0)
     *Me\context = *ctx
     *Me\pov = *light
     *Me\framebuffer = Framebuffer::New("ShadowMap",width, height)
@@ -197,7 +197,7 @@ Module LayerShadowMap
   Class::DEF(LayerShadowMap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 146
-; FirstLine = 102
+; CursorPosition = 183
+; FirstLine = 153
 ; Folding = --
 ; EnableXP

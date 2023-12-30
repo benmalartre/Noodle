@@ -530,9 +530,9 @@ Module Polymesh
       glBindVertexArray(0)
 ;     EndIf
   
-;     If *Me\selected
+;     If *p\selected
 ;       
-;       glBindVertexArray(*Me\eao)
+;       glBindVertexArray(*p\eao)
 ;       glDrawElements(#GL_LINES, *geom\nbedges, #GL_UNSIGNED_INT,#Null)
 ;       glBindVertexArray(0)
 ; ;       glEnable(#GL_BLEND)
@@ -563,7 +563,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 465
-; FirstLine = 458
+; CursorPosition = 547
+; FirstLine = 506
 ; Folding = ---
 ; EnableXP

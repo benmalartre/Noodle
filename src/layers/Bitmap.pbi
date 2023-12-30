@@ -123,7 +123,7 @@ Module LayerBitmap
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
     Protected *Me.LayerBitmap_t = AllocateMemory(SizeOf(LayerBitmap_t))
 ;     Object::INI( LayerBitmap )
-    Color::Set(*Me\background_color,0.5,0.5,0.5,1)
+    Color::Set(*Me\color,0.5,0.5,0.5,1)
     *Me\name = "LayerBitmap"
     *Me\context = *ctx
     *Me\pov = *camera
@@ -142,7 +142,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 131
+; CursorPosition = 125
 ; FirstLine = 98
 ; Folding = --
 ; EnableXP

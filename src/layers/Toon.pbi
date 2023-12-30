@@ -149,7 +149,7 @@ Module LayerToon
     *Me\name = "LayerToon"
 
     *Me\gbuffer = *gbuffer
-    Color::Set(*Me\background_color,0.33,0.33,0.33,1.0)
+    Color::Set(*Me\color,0.33,0.33,0.33,1.0)
     *Me\context = *ctx
     *Me\pov = *pov
     *Me\framebuffer = Framebuffer::New("Default",width,height)
@@ -168,6 +168,7 @@ Module LayerToon
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 24
+; CursorPosition = 151
+; FirstLine = 124
 ; Folding = --
 ; EnableXP

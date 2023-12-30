@@ -329,7 +329,7 @@ Module LayerGBuffer
     *Me\context = *ctx
     *Me\pov = *camera
     *Me\display = #True
-    Color::Set(*Me\background_color,0.5,0.5,0.5,1.0)
+    Color::Set(*Me\color,0.5,0.5,0.5,1.0)
     
     ; Create Framebuffer Object
     *Me\framebuffer = Framebuffer::New("GBuffer",width,height)
@@ -347,7 +347,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 274
-; FirstLine = 230
+; CursorPosition = 331
+; FirstLine = 303
 ; Folding = --
 ; EnableXP

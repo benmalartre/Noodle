@@ -219,7 +219,7 @@ Module LayerSSAO
     Protected *Me.LayerSSAO_t = AllocateMemory(SizeOf(LayerSSAO_t))
     InitializeStructure(*Me,LayerSSAO_t)
     Object::INI( LayerSSAO )
-    Color::Set(*Me\background_color,0.5,0.5,0.5,1)
+    Color::Set(*Me\color,0.5,0.5,0.5,1)
  
     *Me\nbsamples = 32
     *Me\noise_size = 4
@@ -243,6 +243,7 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 6
+; CursorPosition = 221
+; FirstLine = 199
 ; Folding = --
 ; EnableXP

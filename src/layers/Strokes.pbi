@@ -143,7 +143,7 @@ Module LayerStroke
     Framebuffer::BindOutput(*layer\framebuffer)
     glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
 
-    glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a);
+    glClearColor(*layer\color\r,*layer\color\g,*layer\color\b,*layer\color\a);
     glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT)
     glDisable(#GL_DEPTH_TEST)
    
@@ -151,38 +151,25 @@ Module LayerStroke
     If *layer\nbp
       Protected i
       Protected shader.GLuint = *ctx\shaders("stroke2D")\pgm
-;       GLCheckError("Bind Vertex Array")
-      glUseProgram(shader)
-      GLCheckError("Use Program")
-    
-      glPointSize(2)
-      glLineWidth(12)
-;       glEnable(#GL_POINT_SMOOTH)
+      glUseProgram(shader)    
       glEnable(#GL_BLEND)
       
-  
       Protected start.GLint = 0
       Protected count.GLsizei = 0
-      Debug "num strokes : "+Str(CArray::GetCount(*layer\strokes))
   
       For i=0 To CArray::GetCount(*layer\strokes)-1
         *stroke = CArray::GetValuePtr(*layer\strokes, i)
         
         count = CArray::GetCount(*stroke\datas)
-        Debug "start : "+Str(start)
-        Debug "count : "+Str(count)
         If count
           glDrawArrays(#GL_LINE_STRIP_ADJACENCY, start, count)
-          GLCheckError("Draw Array")  
         EndIf
         start + count
       Next
     EndIf
     
     Framebuffer::Unbind(*layer\framebuffer)
-   
-;      glDisable(#GL_POINT_SMOOTH)
-     glDisable(#GL_BLEND)
+    glDisable(#GL_BLEND)
   EndProcedure
   
   
@@ -252,7 +239,7 @@ Module LayerStroke
     Protected *Me.LayerStroke_t = AllocateMemory(SizeOf(LayerStroke_t))
     InitializeStructure(*Me,LayerStroke_t)
     Object::INI( LayerStroke )
-    Color::Set(*Me\background_color,0.5,0.5,0.5,0.0)
+    Color::Set(*Me\color,0.5,0.5,0.5,0.0)
     *Me\name = "LayerStroke2D"
     *Me\context = *ctx
     *Me\shader = *ctx\shaders("stroke2D")
@@ -277,6 +264,7 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 241
+; FirstLine = 220
 ; Folding = ---
 ; EnableXP

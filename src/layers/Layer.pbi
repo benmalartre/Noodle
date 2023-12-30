@@ -17,21 +17,14 @@ DeclareModule Layer
   ;---------------------------------------------------
   Structure Layer_t Extends Object::Object_t
     name.s
-    ;     datas.GLLayer::GLLayer_t
     *framebuffer.Framebuffer::Framebuffer_t
     *pov.Object3D::Object3D_t
-    *viewport.Viewport_t
     *quad.ScreenQuad::ScreenQuad_t
     *context.GLContext::GLContext_t
     *shader.Program::Program_t
     color.Math::c4f32
-    background_color.Math::c4f32
-    active.b
     fixed.b
     mask.l
-    
-    *items.CArray::CArrayPtr
-    *dependencies.CArray::CArrayPtr
   EndStructure
   
   ;---------------------------------------------------
@@ -65,8 +58,7 @@ DeclareModule Layer
   EndStructure
   
   Declare SetPOV(*layer.Layer_t,*pov.Object3D::Object3D_t)
-  Declare SetColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-  Declare SetBackgroundColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
+  Declare SetClearColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
   Declare IsFixed(*layer.Layer_t)
   Declare GetTree(*layer.Layer_t)
   Declare SetShader(*layer.Layer_t,*shader.Program::Program_t)
@@ -83,15 +75,13 @@ DeclareModule Layer
   Declare WriteImage(*layer.Layer_t,path.s,format)
   Declare WriteFramebuffer(*layer.Layer_t,path.s,format.i)
   
+  Declare DrawByType(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr, type.i, *shader.Program::Program_t=#Null)
   Declare DrawDrawers(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader.i)
   Declare DrawPolymeshes(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader.i, wireframe.b)
   Declare DrawInstanceClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawNulls(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
   Declare DrawCurves(*layer.Layer::Layer_t, *objects.CArray::CArrayPtr, shader)
-  
-  Declare AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
-  Declare RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
   
   Declare GetImage(*layer.Layer::Layer_t, path.s)
   Declare GetFramebuffer(*layer.Layer::Layer_t)
@@ -127,19 +117,11 @@ Module Layer
     *layer\pov = *pov
   EndProcedure
   
-  
   ;---------------------------------------------------
-  ; Set Color
+  ; Set Clear Color
   ;---------------------------------------------------
-  Procedure SetColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
+  Procedure SetClearColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
     Color::Set(*layer\color,r,g,b,a)  
-  EndProcedure
-  
-  ;---------------------------------------------------
-  ; Set BackgroundColor
-  ;---------------------------------------------------
-  Procedure SetBackgroundColor(*layer.Layer_t,r.f,g.f,b.f,a.f)
-    Color::Set(*layer\background_color,r,g,b,a)  
   EndProcedure
   
   ;---------------------------------------------------
@@ -167,7 +149,7 @@ Module Layer
   ;---------------------------------------------------
   Procedure Clear(*layer.Layer_t)
     glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
-    glClearColor(*layer\background_color\r,*layer\background_color\g,*layer\background_color\b,*layer\background_color\a)
+    glClearColor(*layer\color\r,*layer\color\g,*layer\color\b,*layer\color\a)
     glClear(*layer\mask)
   EndProcedure
   
@@ -283,7 +265,6 @@ Module Layer
     
     StopDrawing()
     
-    StopDrawing()
     FreeMemory(*mem)
     SaveImage(image,path)
     FreeImage(image)
@@ -371,6 +352,61 @@ Module Layer
   EndProcedure
   
   ;---------------------------------------------------
+  ; Draw By Type
+  ;---------------------------------------------------
+  Procedure DrawByType(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr, type.i, *shader.Program::Program_t=#Null)
+    
+    If Not *shader
+      Select type
+        Case Object3D::#Locator
+          *shader = *layer\context\shaders("simple")
+        Case Object3D::#Polymesh
+          *shader = *layer\context\shaders("polymesh")
+        Case Object3D::#Drawer
+          *shader = *layer\context\shaders("drawer")
+        Case Object3D::#Curve
+          *shader = *layer\context\shaders("curve")
+        Case Object3D::#PointCloud
+          *shader = *layer\context\shaders("cloud")
+        Case Object3D::#InstanceCloud
+          *shader = *layer\context\shaders("instances")
+        Default
+          *shader = *layer\context\shaders("simple")
+      EndSelect 
+    EndIf
+  
+      
+    Protected shader.GLuint =  *shader\pgm
+    Debug shader
+    glUseProgram(shader)
+      
+    glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,GetViewMatrix(*layer))
+    glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,GetProjectionMatrix(*layer))
+    
+    
+;     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
+;     
+;     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
+;     glUniform1i(glGetUniformLocation(shader,"tex"),0)
+    
+    Protected i
+    Protected *obj.Object3D::Object3D_t
+    Protected obj.Object3D::IObject3D
+    Define color.c4f32
+    
+    For i=0 To CArray::GetCount(*objects)-1
+      *obj = CArray::GetValuePtr(*objects,i)
+      If *obj\type = type      
+        Color::UnpackColor(color, *obj\uniqueID)
+        glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
+        glUniform3fv(glGetUniformLocation(shader,"uniqueID"), 1, color)
+        obj = *obj
+        obj\Draw()
+      EndIf
+    Next
+  EndProcedure
+  
+  ;---------------------------------------------------
   ; Draw Drawers
   ;---------------------------------------------------
   Procedure DrawDrawers(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr, shader.i)
@@ -430,7 +466,6 @@ Module Layer
   ; Draw Point Clouds
   ;---------------------------------------------------
   Procedure DrawPointClouds(*layer.Layer::Layer_t,*objects.CArray::CArrayPtr,shader)
-    GLCheckError("DRAW POINT CLOUD BEGIN")
     Protected i
     Protected obj.Object3D::IObject3D
     Protected *obj.Object3D::Object3D_t
@@ -439,13 +474,10 @@ Module Layer
       *obj = CArray::GetValuePtr(*objects,i)
       If *obj\type = Object3D::#PointCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
-        GLCheckError("SET MODEL MATRIX")
         obj = *obj
         obj\Draw()
-        GLCheckError("DRAW POINT CLOUD")
       EndIf
     Next
-    GLCheckError("DRAW POINT CLOUD END")
   EndProcedure
   
   ;---------------------------------------------------
@@ -694,28 +726,7 @@ Module Layer
     ProcedureReturn *layer\framebuffer
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; Layer Dependencies (ie shadow map)
-  ;------------------------------------------------------------------
-  Procedure AddDependency(*layer.Layer_t, *dependency.Layer_t, index=-1)
-    Define i
-    For i=0 To CArray::GetCount(*layer\dependencies)-1
-      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
-        ProcedureReturn
-      EndIf
-    Next
-    CArray::AppendPtr(*layer\dependencies, *dependency)
-  EndProcedure
   
-  Procedure RemoveDependency(*layer.Layer_t, *dependency.Layer_t)
-    Define i
-    For i = 0 To CArray::GetCount(*layer\dependencies)-1
-      If CArray::GetValuePtr(*layer\dependencies, i) = *dependency
-        CArray::Remove(*layer\dependencies, i)
-        ProcedureReturn
-      EndIf
-    Next
-  EndProcedure
   
   Procedure Delete()
     
@@ -726,7 +737,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 44
-; FirstLine = 34
-; Folding = ------
+; CursorPosition = 401
+; FirstLine = 397
+; Folding = -----
 ; EnableXP

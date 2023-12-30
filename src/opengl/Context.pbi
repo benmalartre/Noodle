@@ -226,10 +226,6 @@ Module GLContext
     
     ; Build Font Writer
     *Me\writer = FTGL::New()
-    
-    Debug "SETUP OPENGL CONTEXT"
-    Debug "writer : "+Str(*Me\writer)
-    Debug ""
   EndProcedure
   
   ;---------------------------------------------
@@ -239,9 +235,6 @@ Module GLContext
     CopyMap(*shared\shaders(), *Me\shaders())
     ; Build Font Writer
     *Me\writer = FTGL::New()
-    Debug "COPY OPENGL CONTEXT"
-    Debug "writer : "+Str(*Me\writer)
-    Debug ""
   EndProcedure
   
   ;---------------------------------------------
@@ -313,7 +306,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 2
+; CursorPosition = 191
+; FirstLine = 188
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

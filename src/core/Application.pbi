@@ -788,8 +788,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 774
-; FirstLine = 744
+; CursorPosition = 571
+; FirstLine = 568
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
