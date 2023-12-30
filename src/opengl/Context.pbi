@@ -1,5 +1,5 @@
 ﻿XIncludeFile "Types.pbi"
-XIncludeFile "Layer.pbi"
+XIncludeFile "Framebuffer.pbi"
 
 ; ============================================================================
 ;  GLContext Module Implementation
@@ -310,8 +310,7 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 259
-; FirstLine = 254
+; CursorPosition = 1
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

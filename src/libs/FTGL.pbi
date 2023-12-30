@@ -284,8 +284,8 @@ Module FTGL
       SetPoint(*mem, 1 ,x+w   ,y    ,0, 0)
       SetPoint(*mem, 2 ,x     ,y+h   ,0, 0)
       SetPoint(*mem, 3 ,x     ,y+h   ,0, 0)
-      SetPoint(*mem, 4 ,x+w    ,y    ,0, 0)
-      SetPoint(*mem, 5 ,x+w    ,y+h   ,0, 0)
+      SetPoint(*mem, 4 ,x+w   ,y    ,0, 0)
+      SetPoint(*mem, 5 ,x+w   ,y+h   ,0, 0)
         
       glBufferData(#GL_ARRAY_BUFFER,size_t,*mem,#GL_DYNAMIC_DRAW)
       glDrawArrays(#GL_TRIANGLES,0, 6)
@@ -466,7 +466,7 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 104
-; FirstLine = 91
+; CursorPosition = 287
+; FirstLine = 260
 ; Folding = ----
 ; EnableXP
