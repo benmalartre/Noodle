@@ -25695,6 +25695,8 @@ Module Shape
     Protected *c.c4f32
     For i=0 To *Me\nbp-1
       *c = CArray::GetValue(*Me\colors,i)
+      Debug *c
+      Debug *color
       *c\r = *color\r + (Random(100)*0.02-1)*variance
       *c\g = *color\g + (Random(100)*0.02-1)*variance
       *c\b = *color\b + (Random(100)*0.02-1)*variance
@@ -25939,10 +25941,10 @@ Module Shape
   ;  Set
   ; ----------------------------------------------------------------------------
    Procedure Set(*Me.Shape_t,shape.i)
-     Protected f.f
-     Protected l.l
-     Protected color.v3f32
-     Vector3::Set(color,Random(255)/255,Random(255)/255,Random(255)/255)
+   Protected f.f
+   Protected l.l
+   Protected color.v3f32
+   Vector3::Set(color,Random(255)/255,Random(255)/255,Random(255)/255)
     Select shape
       Case  #SHAPE_NONE 
       Case  #SHAPE_AXIS
@@ -26321,7 +26323,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 26299
-; FirstLine = 26277
+; CursorPosition = 25698
+; FirstLine = 25688
 ; Folding = ----
 ; EnableXP

@@ -852,7 +852,7 @@ Module NodePort
 ;   ;       
 ;     EndSelect
 ;     
-    Scene::*current_scene\dirty = #True
+;     *scene\dirty = #True
   EndProcedure
   
   Procedure SetupConnectionCallback(*Me.NodePort_t, *callback.ONCONNECTPORT)
@@ -875,7 +875,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 260
-; FirstLine = 241
+; CursorPosition = 854
+; FirstLine = 812
 ; Folding = -----
 ; EnableXP

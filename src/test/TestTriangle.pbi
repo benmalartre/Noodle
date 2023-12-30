@@ -10,7 +10,7 @@ Global numRequests.i = 0
 
 Procedure PolygonSoup(numTris.i)
 
-  Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   CARray::SetCount(*positions, numTris * 3)
 	Define offset = 0
 	Define i, j
@@ -102,9 +102,8 @@ Until e = #PB_Event_CloseWindow
 	
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 34
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 12
+; FirstLine = 8
 ; Folding = -
 ; EnableXP

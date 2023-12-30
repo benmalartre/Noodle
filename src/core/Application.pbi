@@ -157,6 +157,7 @@ CompilerEndIf
     *window.Window::Window_t
     *context.GLContext::GLContext_t
     *camera.Camera::Camera_t
+    *scene.Scene::Scene_t
     
     *layer.Layer::Layer_t
     *select.LayerSelection::LayerSelection_t
@@ -657,11 +658,11 @@ CompilerEndIf
         
         Select event
           Case Globals::#EVENT_NEW_SCENE
-            Scene::Setup(Scene::*current_scene, *Me\context)
+            Scene::Setup(*Me\scene, *Me\context)
             Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
-            Scene::Update(Scene::*current_scene)
+            Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
           Case Globals::#EVENT_REPAINT_WINDOW
@@ -685,11 +686,11 @@ CompilerEndIf
             
           Case Globals::#EVENT_SELECTION_CHANGED
             Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
-            Scene::Update(Scene::*current_scene)
+            Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
-            Scene::Setup(Scene::*current_scene, *Me\context)
+            Scene::Setup(*Me\scene, *Me\context)
             Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
            
             If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
@@ -771,7 +772,7 @@ CompilerEndIf
     
     glEnable(#GL_MULTISAMPLE)
     Protected ilayer.Layer::ILayer = *layer
-    ilayer\Draw(*context)
+    ilayer\Draw(*Me\scene, *context)
     If *Me\tool
       Protected *wireframe.Program::Program_t = *context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
@@ -787,8 +788,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 291
-; FirstLine = 254
+; CursorPosition = 774
+; FirstLine = 744
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

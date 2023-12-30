@@ -46,7 +46,7 @@ DeclareModule LayerCascadedShadowMap
   Declare Update(*layer.LayerCascadedShadowMap_t)
   Declare Clean(*layer.LayerCascadedShadowMap_t)
   Declare Pick(*layer.LayerCascadedShadowMap_t)
-  Declare Draw(*layer.LayerCascadedShadowMap_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerCascadedShadowMap_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare SaveImageToDisk(*layer.LayerCascadedShadowMap_t)
   
   DataSection 
@@ -275,10 +275,10 @@ Module LayerCascadedShadowMap
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerCascadedShadowMap_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerCascadedShadowMap_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     
     GLCheckError("[CSM] Draw Called")
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
     GLCheckError("[CSM] Light Updated")
@@ -318,7 +318,7 @@ Module LayerCascadedShadowMap
       Matrix4::Echo(projection, "Ortho "+Str(i))
       glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@projection)
       GLCheckError("[CSM] Set Projection Matrix")
-      Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
+      Layer::DrawPolymeshes(*layer,*scene\objects,shader, #False)
       GLCheckError("[CSM] Draw Polymeshes")
     Next
     
@@ -376,6 +376,7 @@ Module LayerCascadedShadowMap
   Class::DEF(LayerCascadedShadowMap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 48
+; FirstLine = 17
 ; Folding = ---
 ; EnableXP

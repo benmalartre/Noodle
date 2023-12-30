@@ -148,12 +148,13 @@ Module ViewportUI
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
+    Protected *scene.Scene::Scene_t
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
         
       Case Globals::#EVENT_SELECTION_CHANGED
-        If Scene::*current_scene\selection\items()
-          Handle::SetTarget(*Me\handle, Scene::*current_scene\selection\items()\obj)
+        If *scene\selection\items()
+          Handle::SetTarget(*Me\handle, *scene\selection\items()\obj)
         EndIf
     
       Case #PB_Event_SizeWindow
@@ -679,7 +680,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 99
-; FirstLine = 98
+; CursorPosition = 156
+; FirstLine = 152
 ; Folding = ----
 ; EnableXP

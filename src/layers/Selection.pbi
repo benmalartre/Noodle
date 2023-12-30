@@ -34,8 +34,8 @@ DeclareModule LayerSelection
   Declare Update(*layer.LayerSelection_t,*view.m4f32,*proj.m4f32)
   Declare Setup(*layer.LayerSelection_t)
   Declare Clean(*layer.LayerSelection_t)
-  Declare Pick(*layer.LayerSelection_t)
-  Declare Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
+  Declare Pick(*layer.LayerSelection_t, *scene.Scene::Scene_t)
+  Declare Draw(*layer.LayerSelection_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   DataSection
     LayerSelectionVT: 
     Layer::DAT ()
@@ -111,7 +111,7 @@ EndProcedure
 ;---------------------------------------------------
 ; Pick
 ;---------------------------------------------------
-Procedure Pick(*layer.LayerSelection_t)
+Procedure Pick(*layer.LayerSelection_t, *scene.Scene::Scene_t)
   Protected layer.Layer::ILayer = *layer
 
     ; ---[ Find Up View Point ]--------------------------
@@ -135,7 +135,7 @@ Procedure Pick(*layer.LayerSelection_t)
   glDisable(#GL_CULL_FACE)
   
   ; Recursive Draw
-  DrawChildren(*layer,Scene::*current_scene\root,*ctx)
+  DrawChildren(*layer,*scene\root,*ctx)
 
   
   Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
@@ -149,8 +149,8 @@ Procedure Pick(*layer.LayerSelection_t)
   glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
   Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
   Define *selected.Object3D::Object3D_t
-  If FindMapElement(Scene::*current_scene\m_uuids(), Str(pickID))
-    *selected = Scene::*current_scene\m_uuids()
+  If FindMapElement(*scene\m_uuids(), Str(pickID))
+    *selected = *scene\m_uuids()
     Selection::AddObject(*layer\selection, *selected)
     *selected\selected = #True
   EndIf
@@ -160,7 +160,7 @@ EndProcedure
 ;---------------------------------------------------
 ; Draw
 ;---------------------------------------------------
-Procedure Draw(*layer.LayerSelection_t,*ctx.GLContext::GLContext_t)
+Procedure Draw(*layer.LayerSelection_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   
   If MapSize(*layer\selection\items())
     Define *selected.Selection::SelectionItem_t 
@@ -242,6 +242,7 @@ EndModule
 ; Folding = --
 ; EnableXP
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 152
+; FirstLine = 114
 ; Folding = --
 ; EnableXP

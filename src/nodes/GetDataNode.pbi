@@ -115,9 +115,8 @@ Module GetDataNode
 ;           *output\attribute = *node\attribute
           *output\attribute\dirty = #True
         EndIf
-        
       Else
-        Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(Scene::*current_scene,base)
+        Protected *o.Object3D::Object3D_t = Scene::GetObjectByName(*scene,base)
         If *o
           *node\attribute = *o\geom\m_attributes(StringField(refname, 2,"."))
           If *node\attribute
@@ -242,9 +241,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 183
-; FirstLine = 179
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 118
+; FirstLine = 92
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -26,7 +26,7 @@ DeclareModule LayerDefault
   Declare Setup(*layer.LayerDefault_t)
   Declare Update(*layer.LayerDefault_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerDefault_t)
-  Declare Draw(*layer.LayerDefault_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -85,7 +85,7 @@ Module LayerDefault
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerDefault_t, *ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
@@ -117,12 +117,12 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     
     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
+    Layer::DrawPolymeshes(*layer,*scene\objects,shader, #True)
         
     ;Draw Drawer Objects
     ;-----------------------------------------------
@@ -131,7 +131,7 @@ Module LayerDefault
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
-    Layer::DrawDrawers(*layer, Scene::*current_scene\helpers, shader)
+    Layer::DrawDrawers(*layer, *scene\helpers, shader)
     GLCheckError("DRAW DRAWER")
     
     ;Draw Curve Objects
@@ -141,7 +141,7 @@ Module LayerDefault
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
-    Layer::DrawCurves(*layer, Scene::*current_scene\helpers, shader)
+    Layer::DrawCurves(*layer, *scene\helpers, shader)
     GLCheckError("DRAW CURVES")
 
     
@@ -158,7 +158,7 @@ Module LayerDefault
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
 ;     glUniformMatrix4fv(glGetUniformLocation(shader,"offset"),1,#GL_FALSE,@m)
-;     Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #True)
+;     Layer::DrawPolymeshes(*layer,*scene\objects,shader, #True)
 
     ; Draw Point Clouds 
     ;----------------------------------------------
@@ -173,7 +173,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,@proj)
     
-    Layer::DrawPointClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+    Layer::DrawPointClouds(*layer,*scene\objects,*pgm\pgm)
     
     GLCheckError("DRAW POINTS")
     ; Draw Instance Clouds 
@@ -197,10 +197,10 @@ Module LayerDefault
   ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   ;   glUniform3f(glGetUniformLocation(*pgm\pgm,"lightPosition"),5,25,5)
     
-    Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+    Layer::DrawInstanceClouds(*layer,*scene\objects,*pgm\pgm)
     ;   PointCloud::Draw(*cloud)
     ;   Model::Update(*model)
-    ;Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects, *pgm\pgm)
+    ;Layer::DrawInstanceClouds(*layer,*scene\objects, *pgm\pgm)
   ;   Model::Draw(*model)
     glCheckError("Draw Instance Cloud")
     
@@ -214,7 +214,7 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,proj)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,model)
-    Layer::DrawNulls(*layer,Scene::*current_scene\helpers,*pgm\pgm)
+    Layer::DrawNulls(*layer,*scene\helpers,*pgm\pgm)
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
   Protected basewidth = *layer\framebuffer\width
@@ -265,7 +265,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 259
-; FirstLine = 221
+; CursorPosition = 28
+; FirstLine = 24
 ; Folding = --
 ; EnableXP

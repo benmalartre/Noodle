@@ -181,7 +181,7 @@ Module CompoundNodePort
 ;   ;       
 ;     EndSelect
 ;     
-    Scene::*current_scene\dirty = #True
+;     *scene\dirty = #True
   EndProcedure
   
   
@@ -196,9 +196,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 55
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 183
+; FirstLine = 153
 ; Folding = --
 ; EnableXP

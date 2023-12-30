@@ -18,11 +18,12 @@ DeclareModule LayerShadowSimple
   EndInterface
   
   
-  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
+  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*shadowmap.Framebuffer::Framebuffer_t,
+              *camera.Camera::Camera_t, *light.Light::Light_t)
   Declare Delete(*layer.LayerShadowSimple_t)
   Declare DrawChildren(*layer.LayerShadowSimple_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t,shader)
-  Declare Draw(*layer.LayerShadowSimple_t,*ctx.GLContext::GLContext_t)
-  Declare Setup(*layer.LayerShadowSimple_t)
+  Declare Draw(*layer.LayerShadowSimple_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
+  Declare Setup(*layer.LayerShadowSimple_t, *light.Light::Light_t)
   Declare Update(*layer.LayerShadowSimple_t)  
   Declare Clean(*layer.LayerShadowSimple_t)
   Declare Pick(*layer.LayerShadowSimple_t)
@@ -48,15 +49,10 @@ Module LayerShadowSimple
   ;------------------------------------
   ; Setup
   ;------------------------------------
-  Procedure Setup(*layer.LayerShadowSimple_t)
-    Protected *main.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-    Protected main.Light::ILight = *main
+  Procedure Setup(*layer.LayerShadowSimple_t, *light.Light::Light_t)
+    Light::Update(*light)
     
-
-    Light::Update(*main)
-
-    
-    *layer\light = *main
+    *layer\light = *light
     
   EndProcedure
   
@@ -139,7 +135,7 @@ Module LayerShadowSimple
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerShadowSimple_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerShadowSimple_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     Protected *main.Light::Light_t = *layer\light
     Protected main.Light::ILight = *main
     
@@ -182,7 +178,7 @@ Module LayerShadowSimple
     glUniform1f(glGetUniformLocation(shader,"y_pixel_offset"),1/*layer\shadowmap\height)
     
     ;---[ Draw ]---------------------------------------
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
+    Layer::DrawPolymeshes(*layer,*scene\objects,shader,#False)
     
     GLCheckError("ShadowSimple Bind Polymesh Draw")
 
@@ -215,7 +211,8 @@ Module LayerShadowSimple
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
-  Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
+  Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*shadowmap.Framebuffer::Framebuffer_t,
+                *camera.Camera::Camera_t, *light.Light::Light_t)
     Protected *Me.LayerShadowSimple_t = AllocateMemory(SizeOf(LayerShadowSimple_t))
     InitializeStructure(*Me,LayerShadowSimple_t)
 
@@ -232,7 +229,7 @@ Module LayerShadowSimple
     *Me\light = #Null
     *Me\once = #False
     
-    Setup(*Me)
+    Setup(*Me, *light)
     
     ProcedureReturn *Me
   EndProcedure
@@ -243,6 +240,6 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 21
 ; Folding = --
 ; EnableXP

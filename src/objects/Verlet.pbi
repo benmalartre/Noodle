@@ -62,7 +62,10 @@ Module Verlet
   	*spring\type = type
   	
   	Define delta.Math::v3f32
-  	Vector3::Sub(delta, CArray::GetValue(*Me\X, b), CArray::GetValue(*Me\X, a))
+  	Define.Math::v3f32 *a, *b
+  	*a = CArray::GetPtr(*Me\X, a)
+  	*b = CArray::GetPtr(*Me\X, b)
+  	Vector3::Sub(delta, *b, *a)
   	*spring\rest_length = Vector3::Length(delta)
   	CArray::AppendPtr(*Me\springs, *spring)
   	ProcedureReturn *spring
@@ -106,8 +109,8 @@ Module Verlet
     Define i, j, k, a, b
  
     Define numVertices = *geom\nbpoints
-    Define *neighbors.CArray::CArrayLong = CArray::newCArrayLong()
-    Define *secondary.CArray::CArrayLong = CArray::newCArrayLong()
+    Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *secondary.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
 
     ; clear old rig
     CArray::DeleteReferences(*Me\springs, Verlet::Spring_t, 0)
@@ -190,8 +193,8 @@ Module Verlet
   ; Draw
   ; ------------------------------------------------------------------------
   Procedure Draw(*Me.Verlet_t, *drawer.Drawer::Drawer_t)
-    Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-    Define *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
+    Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
     Define numSprings = CArray::GetCount(*Me\springs)
     If numSprings > 0
       Define color.Math::c4f32
@@ -295,7 +298,7 @@ Module Verlet
   	Next
   	
   	Define *spring.Spring_t
-  	Define.Math::v3f32 v1, v2, *p1, *p1_last, *p2, *p2_last
+  	Define.Math::v3f32 v1, v2, *p1, *p1_last, *p2, *p2_last, *f1, *f2
   	Define.Math::v3f32 deltaP, deltaV, springF
   	Define dist.f, leftTerm.f, rightTerm.f
   	For i=0 To *Me\springs\itemCount - 1
@@ -314,11 +317,13 @@ Module Verlet
   	  rightTerm = *spring\Kd * (Vector3::Dot(deltaV, deltaP)/dist)
   	  Vector3::Normalize(springF, deltaP)
   	  Vector3::ScaleInPlace(springF, leftTerm + rightTerm)
+  	  *f1 = CArray::GetValue(*Me\F, *spring\p1)
+  	  *f2 = CArray::GetValue(*Me\F, *spring\p2)
   	  ;If *spring\p1 <> 0 And *spring\p1 <> numX
-  	    Vector3::AddInPlace(CArray::GetValue(*Me\F, *spring\p1), springF)
+  	    Vector3::AddInPlace(*f1, springF)
   	  ;EndIf
   	  ;If *spring\p2 <> 0 And *spring\p2 <> numX
-  	    Vector3::SubInPlace(CArray::GetValue(*Me\F, *spring\p2), springF)
+  	    Vector3::SubInPlace(*f2, springF)
   	  ;EndIf
   	Next
   
@@ -333,10 +338,10 @@ Module Verlet
   	Vector3::Set(*Me\gravity, 0,-0.00981,0)
     *Me\mass = mass
     *Me\geom = *geom
-    *Me\X = CArray::newCArrayV3F32()
-    *Me\X_last = CArray::newCArrayV3F32()
-    *Me\F = CArray::newCArrayV3F32()
-    *Me\springs = CArray::newCArrayPtr()
+    *Me\X = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\X_last = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\F = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\springs = CArray::New(CArray::#ARRAY_PTR)
     
     Define zeroForce.Math::v3f32
     Vector3::Set(zeroForce, 0, 0,0)
@@ -445,8 +450,8 @@ Module Verlet
   
 EndModule
 
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 4
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 343
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

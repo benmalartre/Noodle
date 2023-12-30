@@ -133,7 +133,7 @@ DeclareModule CArray
   ; GetValue
   ;----------------------------------------------------------------
   Macro GetValue(_array,_index)
-      (_array\data+ ((_index) * _array\itemSize))
+      _array\data+((_index)* _array\itemSize)
   EndMacro
   
   ;----------------------------------------------------------------
@@ -1143,7 +1143,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1025
-; FirstLine = 993
+; CursorPosition = 135
+; FirstLine = 130
 ; Folding = ----------
 ; EnableXP

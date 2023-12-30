@@ -89,9 +89,8 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   Protected *ctxt.GLContext::GLContext_t = *viewport\context
-  GLCheckError("App draw..")
   GLContext::SetContext(*ctxt)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
   
@@ -100,7 +99,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
 ;   
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
   
   glViewport(0, 0, width, height)
   
@@ -146,7 +145,7 @@ Procedure Draw(*app.Application::Application_t)
 
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   
   
   GLContext::SetContext(*app\context)
@@ -237,14 +236,14 @@ Procedure Draw(*app.Application::Application_t)
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root,*bunny)
   
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene,*app\context)
   ViewportUI::SetHandleTarget(*viewport, *merged)
  
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 189
-; FirstLine = 177
+; CursorPosition = 230
+; FirstLine = 199
 ; Folding = -
 ; EnableXP

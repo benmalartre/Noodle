@@ -42,9 +42,9 @@ Module SelectObjectCmd
     
     *info\object\selected = 1- *info\selected
     If *info\object\selected
-      Scene::AddToSelection(Scene::*current_scene,*info\object)
+      Scene::AddToSelection(*scene,*info\object)
     Else
-      ;Scene::RemoveFromSelection(Scene::*current_scene,*info\object)
+;       Scene::RemoveFromSelection(*scene,*info\object)
     EndIf
     
   EndProcedure
@@ -97,7 +97,7 @@ Module NewSceneCmd
     EndIf
 
     Commands::Clear(Commands::*manager)
-    Scene::*current_scene = Scene::New()
+    Define *scene = Scene::New()
   
   EndProcedure
   
@@ -106,7 +106,7 @@ Module NewSceneCmd
   EndProcedure
   
   Procedure Do()
-    Protected *info = hlpGetInfo(Scene::*current_scene,#True)
+    Protected *info = hlpGetInfo(*scene,#True)
     Commands::Add(Commands::*manager,@hlpDo(),@hlpUndo(),@hlpClear(),*info)
     Commands::Do(Commands::*manager)
   EndProcedure
@@ -141,7 +141,7 @@ Module SaveSceneCmd
     If *scn<>#Null
       Protected path.s = SaveFileRequester("Save Scene","D:\Projects\RnD\PureBasic\Noodle\scenes\Save_001.scene","scene",0)
       ;Scene::Save(*scn,path)
-      *saver.Saver::Saver_t = Saver::New(Scene::*current_scene,path)
+      *saver.Saver::Saver_t = Saver::New(*scene,path)
       Saver::Save(*saver)
       MessageRequester("SaveSceneCmd","Saved")
       Saver::Delete(*saver)
@@ -153,7 +153,7 @@ Module SaveSceneCmd
   EndProcedure
   
   Procedure Do()
-    Protected *info = hlpGetInfo(Scene::*current_scene)
+    Protected *info = hlpGetInfo(*scene)
     Commands::Add(Commands::*manager,@hlpDo(),@hlpUndo(),@hlpClear(),*info)
     Commands::Do(Commands::*manager)
   EndProcedure
@@ -199,7 +199,7 @@ Module LoadSceneCmd
   EndProcedure
   
   Procedure Do()
-    Protected *info = hlpGetInfo(Scene::*current_scene)
+    Protected *info = hlpGetInfo(*scene)
     Commands::Add(Commands::*manager,@hlpDo(),@hlpUndo(),@hlpClear(),*info)
     Commands::Do(Commands::*manager)
   EndProcedure
@@ -254,18 +254,18 @@ Module CreatePolymeshCmd
   
   Procedure hlpDo(*info.CreatePolymeshCmd_t)
     Protected *parent.Object3D::Object3D_t
-    
+    Define *scene.Scene::Scene_t
     If *parent=#Null
-      If CArray::GetCount(Scene::*current_scene\selection)
-        *selected.Object3D::Object3D_t = Selection::Get(Scene::*current_scene\selection)
+      If CArray::GetCount(*scene\selection)
+        *selected.Object3D::Object3D_t = Selection::Get(*scene\selection)
         If *selected
           MessageRequester("CreatePolymeshCmd","Parent Selected "+*selected\class\name)
           *parent = *selected
         Else
-          *parent = Scene::*current_scene\root
+          *parent = *scene\root
         EndIf
       Else
-        *parent = Scene::*current_scene\root
+        *parent = *scene\root
       EndIf
       
       
@@ -293,7 +293,7 @@ Module CreatePolymeshCmd
         ProcedureReturn
     EndSelect
     
-    Scene::AddObject(Scene::*current_scene,*mesh)
+    Scene::AddObject(*scene,*mesh)
     Object3D::AddChild(*parent,*mesh)
     PostEvent(Globals::#EVENT_GRAPH_CHANGED)
     *mesh\selected = #True
@@ -302,7 +302,7 @@ Module CreatePolymeshCmd
   
   Procedure hlpUndo(*info.CreatePolymeshCmd_t)
     If *info\mesh
-      Scene::RemoveObject(Scene::*current_scene,*info\mesh)
+      Scene::RemoveObject(*scene,*info\mesh)
       Object3D::RemoveChild(*info\parent,*info\mesh)
       Polymesh::Delete(*info\mesh)
     EndIf
@@ -318,8 +318,9 @@ Module CreatePolymeshCmd
     Commands::Do(Commands::*manager)
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 5
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 304
+; FirstLine = 268
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

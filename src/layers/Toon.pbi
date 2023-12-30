@@ -22,7 +22,7 @@ DeclareModule LayerToon
   Declare Setup(*layer.LayerToon_t)
   Declare Update(*layer.LayerToon_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerToon_t)
-  Declare Draw(*layer.LayerToon_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerToon_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -82,7 +82,7 @@ Module LayerToon
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerToon_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerToon_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
 
   
     glDisable(#GL_CULL_FACE)
@@ -91,7 +91,7 @@ Module LayerToon
     
     
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
 
     Framebuffer::BindInput(*layer\gbuffer)
     Framebuffer::BindOutput(*layer\framebuffer)
@@ -168,6 +168,6 @@ Module LayerToon
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 24
 ; Folding = --
 ; EnableXP

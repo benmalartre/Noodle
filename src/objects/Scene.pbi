@@ -91,7 +91,6 @@ DeclareModule Scene
     Data.i @Draw()
   EndDataSection 
   
-  Global *current_scene.Scene::Scene_t
   Global CLASS.Class::Class_t
 EndDeclareModule
 
@@ -776,9 +775,7 @@ Module Scene
     ; Deallocate Memory
     ClearStructure(*Me,Scene_t)
     FreeMemory( *Me )
-    
-    Scene::*current_scene = #Null
-   
+       
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -788,7 +785,6 @@ Module Scene
     
     ; Allocate Object Memory
     Protected *Me.Scene_t = AllocateMemory( SizeOf(Scene_t) )
-    Scene::*current_scene = *Me
     *Me\filename = name
     Object::INI(Scene)
     InitializeStructure(*Me,Scene_t)
@@ -837,7 +833,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 803
-; FirstLine = 793
+; CursorPosition = 787
+; FirstLine = 774
 ; Folding = -------
 ; EnableXP

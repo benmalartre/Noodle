@@ -171,7 +171,7 @@ Module MenuUI
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
     Protected *args.Arguments::Arguments_t = Arguments::New(1)
     *args\args(0)\type = Arguments::#PTR
-    *args\args(0)\p = Scene::*current_scene
+    *args\args(0)\p = *scene
 
     ControlMenu::AddItem(*submenu,"Save Scene",SaveSceneCmd::@Do(),*args)
     ControlMenu::AddItem(*submenu,"Load Scene",LoadSceneCmd::@Do(),*args)
@@ -212,8 +212,8 @@ Module MenuUI
   
    Class::DEF(MenuUI)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 203
-; FirstLine = 147
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 173
+; FirstLine = 169
 ; Folding = ---
 ; EnableXP

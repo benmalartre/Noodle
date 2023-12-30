@@ -55,7 +55,7 @@ Module ExplorerUI
   Callback::DECLARECALLBACK(OnDeleteScene, Arguments::#PTR)
   
   Procedure OnNewScene(*Me.ExplorerUI_t)
-    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Fill(*Me\explorer, *scene)
     ControlExplorer::Draw(*Me\explorer)
     Draw(*Me)
   EndProcedure
@@ -63,16 +63,15 @@ Module ExplorerUI
   
   Procedure OnHierarchyChange(*Me.ExplorerUI_t)
     ControlExplorer::Clear(*Me\explorer)
-    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Fill(*Me\explorer, *scene)
     ControlExplorer::Draw(*Me\explorer)
     Draw(*Me)
   EndProcedure
   Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
   
   Procedure OnSelectionChange(*Me.ExplorerUI_t)
-    Debug "ON SELECTION CHANGE!!!!"
     ControlExplorer::Clear(*Me\explorer)
-    ControlExplorer::Fill(*Me\explorer, Scene::*current_scene)
+    ControlExplorer::Fill(*Me\explorer, *scene)
     ControlExplorer::Draw(*Me\explorer)
     Draw(*Me)
   EndProcedure
@@ -152,7 +151,7 @@ Module ExplorerUI
     Define ev_datas.Control::EventTypeDatas_t
     Select event
       Case Globals::#EVENT_NEW_SCENE
-        ControlExplorer::Fill(*Me\explorer,Scene::*current_scene) 
+        ControlExplorer::Fill(*Me\explorer,*scene) 
       Case #PB_EventType_Resize
         If *Me\parent
           Resize(*Me)
@@ -223,8 +222,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 164
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 153
+; FirstLine = 143
 ; Folding = ---
 ; EnableXP

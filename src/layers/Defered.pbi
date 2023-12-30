@@ -31,7 +31,7 @@ DeclareModule LayerDefered
   Declare Update(*layer.LayerDefered_t)
   Declare Clean(*layer.LayerDefered_t)
   Declare Pick(*layer.LayerDefered_t)
-  Declare Draw(*layer.LayerDefered_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   
   DataSection 
     LayerDeferedVT:  
@@ -81,8 +81,8 @@ Module LayerDefered
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerDefered_t,*ctx.GLContext::GLContext_t)
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Procedure Draw(*layer.LayerDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
     
@@ -158,7 +158,7 @@ Module LayerDefered
 ;     glDepthMask(#GL_TRUE)
 ;     glUseProgram(0)
     
-    Define nb_lights = CArray::GetCount(Scene::*current_scene\lights)
+    Define nb_lights = CArray::GetCount(*scene\lights)
     glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
       shader = *ctx\shaders("defered")\pgm
       glUseProgram(shader)
@@ -184,8 +184,8 @@ Module LayerDefered
       glUniform1f(glGetUniformLocation(shader,"sun.intensity"), @sunIntensity)
       
       Protected i
-      For i=0 To CArray::GetCount(Scene::*current_scene\lights)-1
-        *light = CArray::GetValuePtr( Scene::*current_scene\lights,i)
+      For i=0 To CArray::GetCount(*scene\lights)-1
+        *light = CArray::GetValuePtr( *scene\lights,i)
         Light::PassToShader(*light,shader,i)
       Next
       
@@ -244,6 +244,6 @@ Module LayerDefered
   Class::DEF(LayerDefered)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 6
+; CursorPosition = 33
 ; Folding = --
 ; EnableXP

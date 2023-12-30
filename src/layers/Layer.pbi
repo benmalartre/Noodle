@@ -42,7 +42,7 @@ DeclareModule Layer
     Setup(*ctx.GLContext::GLContext_t)
     Update()
     Clean(*ctx.GLContext::GLContext_t)
-    Draw(*ctx.GLContext::GLContext_t)
+    Draw(*scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   EndInterface
   
   Enumeration
@@ -75,7 +75,7 @@ DeclareModule Layer
   Declare Resize(*layer.Layer_t,width,height.i)
   Declare AddScreenSpaceQuad(*layer.Layer_t,*ctx.GLContext::GLContext_t)
   Declare DrawChildren(*Me.Layer_t,*obj.Object3D::Object3D_t)
-  Declare Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.Layer_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare Delete()
   
   Declare GetViewMatrix(*layer.Layer_t)
@@ -486,7 +486,7 @@ Module Layer
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.Layer_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.Layer_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     Protected *buffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Framebuffer::BindOutput(*buffer)
     ;   Clear(*layer)
@@ -512,11 +512,11 @@ Module Layer
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
     glUniform1i(glGetUniformLocation(shader,"tex"),0)
     
-    DrawPolymeshes(*layer,Scene::*current_scene\objects,shader, #False)
+    DrawPolymeshes(*layer,*scene\objects,shader, #False)
       
     ; Draw Instance Clouds 
     ;-----------------------------------------------
@@ -542,7 +542,7 @@ Module Layer
     
     ;   PointCloud::Draw(*cloud)
     ;   Model::Update(*model)
-    DrawInstanceClouds(*layer,Scene::*current_scene\objects,*pgm\pgm)
+    DrawInstanceClouds(*layer, *scene\objects,*pgm\pgm)
   ;   Model::Draw(*model)
     glCheckError("Draw Instance Cloud")
 ;   glDepthMask(#GL_FALSE);
@@ -726,5 +726,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 44
+; FirstLine = 34
 ; Folding = ------
 ; EnableXP

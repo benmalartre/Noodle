@@ -22,13 +22,14 @@ DeclareModule LayerShadowDefered
   Interface ILayerShadowDefered Extends Layer::ILayer
   EndInterface
   
-  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
+  Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,
+              *shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
   Declare Delete(*layer.LayerShadowDefered_t)
   Declare Setup(*layer.LayerShadowDefered_t)
   Declare Update(*layer.LayerShadowDefered_t)
   Declare Clean(*layer.LayerShadowDefered_t)
   Declare Pick(*layer.LayerShadowDefered_t)
-  Declare Draw(*layer.LayerShadowDefered_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerShadowDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   
   DataSection 
     LayerShadowDeferedVT:  
@@ -81,11 +82,11 @@ Module LayerShadowDefered
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerShadowDefered_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerShadowDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     
     
     Debug "SHADOW DEFERED DRAW CALLED................................."
-    Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
     
@@ -187,6 +188,6 @@ Module LayerShadowDefered
   Class::DEF(LayerShadowDefered)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 2
+; CursorPosition = 31
 ; Folding = --
 ; EnableXP

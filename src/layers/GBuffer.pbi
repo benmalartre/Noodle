@@ -19,7 +19,7 @@ DeclareModule LayerGBuffer
   EndInterface
   
   Declare DrawChildren(*layer.LayerGBuffer_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
-  Declare Draw(*layer.LayerGBuffer_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerGBuffer_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
   Declare Setup(*layer.LayerGBuffer_t)
   Declare Update(*layer.LayerGBuffer_t)  
@@ -95,7 +95,7 @@ Module LayerGBuffer
   ;---------------------------------------------------------
   ; Draw Layer
   ;---------------------------------------------------------
-  Procedure Draw(*layer.LayerGBuffer_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerGBuffer_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     
     Protected *gbuffer.Framebuffer::Framebuffer_t = *layer\framebuffer
     Protected offset.m4f32
@@ -114,7 +114,7 @@ Module LayerGBuffer
     glUseProgram(shader)
     GLCheckError("CHECK SHADER")
     
-    Protected *light.Light::Light_t = Scene::GetMainLight(Scene::*current_scene)
+    Protected *light.Light::Light_t = Scene::GetMainLight(*scene)
     
      Protected bias.m4f32
      Protected invmodelview.m4f32
@@ -142,7 +142,7 @@ Module LayerGBuffer
     glEnable(#GL_DEPTH_TEST)
     Define p.v3f32
     
-    Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
+    Layer::DrawPolymeshes(*layer,*scene\objects,shader,#False)
     
     
     ; Draw Instance Clouds
@@ -164,7 +164,7 @@ Module LayerGBuffer
     glEnable(#GL_DEPTH_TEST)
     Define p.v3f32
     
-    Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,shader)
+    Layer::DrawInstanceClouds(*layer,*scene\objects,shader)
     
     glDisable(#GL_DEPTH_TEST)
     
@@ -232,14 +232,14 @@ Module LayerGBuffer
 ;     
 ;     Protected i
 ;     Protected id.v3f32
-;     Protected nbo = CArray::GetCount(Scene::*current_scene\objects)
+;     Protected nbo = CArray::GetCount(*scene\objects)
 ;     Protected *obj.Object3D::Object3D_t
 ;     Protected obj.Object3D::IObject3D
 ;     Protected *mesh.Polymesh::Polymesh_t
 ;     Protected *t.Transform::Transform_t
 ;     
 ;     For i=0 To nbo-1
-;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
+;       *obj = CArray::GetValuePtr(*scene\objects,i)
 ;       If *obj\type = Object3D::#Polymesh
 ;         *mesh = *obj
 ;         If *mesh\texture
@@ -272,7 +272,7 @@ Module LayerGBuffer
 ;     Protected uModelMatrix = glGetUniformLocation(shader,"model")
 ;     Protected *cloud.InstanceCloud::InstanceCloud_t
 ;     For i=0 To nbo-1
-;       *obj = CArray::GetValuePtr(Scene::*current_scene\objects,i)
+;       *obj = CArray::GetValuePtr(*scene\objects,i)
 ;       If *obj\type = Object3D::#InstanceCloud
 ;         *cloud = *obj
 ;         If *cloud\texture
@@ -347,6 +347,7 @@ Module LayerGBuffer
   Class::DEF( LayerGBuffer )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 274
+; FirstLine = 230
 ; Folding = --
 ; EnableXP

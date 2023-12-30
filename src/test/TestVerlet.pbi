@@ -20,7 +20,8 @@ Global proj.m4f32
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Protected *ctxt.GLContext::GLContext_t = *viewport\context
+  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
   
@@ -32,25 +33,26 @@ Procedure Draw(*app.Application::Application_t)
     Verlet::StepPhysics(*verlet, 1/60)
   Next
   
+  GLContext::SetContext(*ctxt)
+  
   Drawer::Flush(*drawer)
   Verlet::Draw(*verlet, *drawer)
   Verlet::Deform(*verlet)
   
-  GLContext::SetContext(*app\context)
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
 
   Application::Draw(*app, *layer, *app\camera)
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*ctxt\writer)
+  FTGL::SetColor(*ctxt\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*ctxt\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*ctxt\writer)
 
   
-  GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\datas\buffer)
+  GLContext::FlipBuffer(*ctxt)
 
  EndProcedure
  
@@ -66,7 +68,6 @@ Globals::Init()
 
    If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
     GLContext::Setup(*app\context)
@@ -76,7 +77,7 @@ Globals::Init()
   GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -112,17 +113,16 @@ Globals::Init()
 ;   Object3D::AddChild(*root,*mesh)
   Object3D::AddChild(*root,*drawer)
   
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene,*app\context)
  
-  Application::Loop(*app, @Draw(),0.1)
+;   Application::Loop(*app, @Draw(),0.1)
 
 
   Verlet::Delete(*verlet)
 EndIf
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 16
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 116
+; FirstLine = 78
 ; Folding = -
 ; EnableXP

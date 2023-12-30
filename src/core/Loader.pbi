@@ -486,9 +486,9 @@ Module Loader
   ; Load
   ;------------------------------------------------------------------
   Procedure Load(*Me.Loader_t)
-    If Scene::*current_scene : Scene::Delete(Scene::*current_scene) : EndIf
+;     If Scene::*current_scene : Scene::Delete(Scene::*current_scene) : EndIf
 
-    Scene::*current_scene = Scene::New("Clone")
+    Define *scene.Scene::Scene_t = Scene::New("Clone")
     Protected root.i = ChildXMLNode(RootXMLNode(*Me\xml))
     Protected name.s = GetXMLNodeName(root)
     Protected o
@@ -496,11 +496,11 @@ Module Loader
     Protected cnt = 0
     For o=1 To XMLChildCount(root)
       n = ChildXMLNode(root,o)
-      Load3DObject(*Me,n,Scene::*current_scene,Scene::*current_scene\root)
+      Load3DObject(*Me,n,*scene,*scene\root)
       cnt + 1
     Next
     PostEvent(Globals::#EVENT_NEW_SCENE)
-    ProcedureReturn Scene::*current_scene
+    ProcedureReturn *scene
   EndProcedure
   ;------------------------------------------------------------------
   ; Destuctor
@@ -529,9 +529,9 @@ Module Loader
   
   Class::DEF(Loader)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 48
-; FirstLine = 37
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 502
+; FirstLine = 486
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

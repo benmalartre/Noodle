@@ -29,7 +29,7 @@ DeclareModule LayerShadowMap
   Declare Setup(*layer.LayerShadowMap_t)
   Declare Update(*layer.LayerShadowMap_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerShadowMap_t)
-  Declare Draw(*layer.LayerShadowMap_t,*ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerShadowMap_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -76,7 +76,7 @@ Module LayerShadowMap
   ;------------------------------------
   ; Draw
   ;------------------------------------
-  Procedure Draw(*layer.LayerShadowMap_t,*ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerShadowMap_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
 
  Debug "-------------------------------- LAYER SHADOW MAP DRAW CALLED -----------------------------------"
   Framebuffer::BindOutput(*layer\framebuffer)
@@ -119,7 +119,7 @@ Module LayerShadowMap
   EndIf
   
   
-  Layer::DrawPolymeshes(*layer,Scene::*current_scene\objects,shader,#False)
+  Layer::DrawPolymeshes(*layer,*scene\objects,shader,#False)
     
     ; Instanced PointCloud
   	;--------------------------------------------------------
@@ -144,7 +144,7 @@ Module LayerShadowMap
     glBindAttribLocation(shader,8,"size")
     
     
-    Layer::DrawInstanceClouds(*layer,Scene::*current_scene\objects,shader)
+    Layer::DrawInstanceClouds(*layer,*scene\objects,shader)
     
     If *layer\cullfrontface
       glDisable(#GL_CULL_FACE)
@@ -197,6 +197,7 @@ Module LayerShadowMap
   Class::DEF(LayerShadowMap)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 3
+; CursorPosition = 146
+; FirstLine = 102
 ; Folding = --
 ; EnableXP
