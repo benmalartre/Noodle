@@ -13,10 +13,10 @@ Globals::Init()
 Time::Init()
 Log::Init()
 FTGL::Init()
-Controls::Init()
+; Controls::Init()
 Commands::Init()
 UIColor::Init()
-Alembic::Init()
+; Alembic::Init()
 
 
 Procedure AddPointsTree(*tree.Tree::Tree_t)
@@ -53,7 +53,7 @@ Procedure AddPointsTree(*tree.Tree::Tree_t)
 ;   *r\posy = 200
 EndProcedure
 
-Scene::*current_scene = Scene::New()
+Global *scene = Scene::New()
 Define *grd.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
 Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#SHAPE_CUBE,0)
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
@@ -102,9 +102,8 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,1
 
 Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
 Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\context)
+Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport", *app\camera, *app\handle)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-GLContext::SetContext(*app\context)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
@@ -116,35 +115,31 @@ Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
 GraphUI::SetContent(*graph,*tree)
 
 ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
-Global *layer.Layer::ILayer = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
 
-
-
-
-Scene::Setup(Scene::*current_scene,*app\context)
+Scene::Setup(*scene,*app\context)
 
 Procedure Update(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   
-  *layer\Draw( *app\context)
+  LayerDefault::Draw(*layer, *viewport\context)
   
-  Define width = *app\context\width
-  Define height = *app\context\height
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Point CLoud",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   Define width = *app\context\width
+;   Define height = *app\context\height
   
-
-  GLContext::FlipBuffer(*app\context)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(*app\context\writer,"Point CLoud",-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(*scene)),-0.9,0.7,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
-  Define *l.Layer::Layer_t = *layer
-  ViewportUI::Blit(*viewport, *l\buffer)
+  
+  GLContext::FlipBuffer(*viewport\context)
   
   
 EndProcedure
@@ -153,9 +148,9 @@ EndProcedure
 Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 107
-; FirstLine = 94
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 104
+; FirstLine = 88
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

@@ -88,8 +88,9 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+  Protected *ctxt.GLContext::GLContext_t = *viewport\context
   GLCheckError("App draw..")
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*ctxt)
   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
@@ -103,22 +104,22 @@ Procedure Draw(*app.Application::Application_t)
   
   glViewport(0, 0, width, height)
   
-  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+  Protected *s.Program::Program_t = *ctxt\shaders("polymesh")
   glUseProgram(*s\pgm)
   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
  
 
   Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *app\layer\datas\buffer)
+  ViewportUI::Blit(*viewport, *app\layer\framebuffer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*ctxt\writer)
+  FTGL::SetColor(*ctxt\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*ctxt\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*ctxt\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*ctxt)
     
 
  EndProcedure
@@ -136,7 +137,6 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
-     Application::SetContext(*app, *viewport\context)
      ;*app\context\writer\background = #True
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
@@ -167,7 +167,9 @@ Procedure Draw(*app.Application::Application_t)
   
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
-  Define *samples.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
+  Define *samples.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
+  *samples\geometry = *ground\geom
+  *samples\transform = *ground\globalT
   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
@@ -177,15 +179,15 @@ Procedure Draw(*app.Application::Application_t)
   *merged\wireframe = #False
   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
   
-  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
   Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
   Define *gtopo.Geometry::Topology_t = *ggeom\topo
   Define i
       
   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
   
-  Define *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
-  Define *matrices.CArray::CarrayM4F32 = CArray::newCArrayM4F32()
+  Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+  Define *matrices.CArray::CarrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
   Define m.m4f32
   Define pos.v3f32
     
@@ -242,7 +244,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 172
-; FirstLine = 141
+; CursorPosition = 189
+; FirstLine = 177
 ; Folding = -
 ; EnableXP

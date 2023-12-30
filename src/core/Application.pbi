@@ -282,7 +282,6 @@ CompilerEndIf
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, GLContext::MAIN_GL_CTXT_HEIGHT)
-      *Me\context\writer = FTGL::New()
       AddShortcuts(*Me)
     
       *Me\idle = #True
@@ -788,8 +787,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 58
-; FirstLine = 54
+; CursorPosition = 291
+; FirstLine = 254
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

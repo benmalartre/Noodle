@@ -32,6 +32,7 @@ Global *cloud.PointCloud::PointCloud_t
 Global NewList *bunnies.Polymesh::Polymesh_t()
 
 Global *buffer.Framebuffer::Framebuffer_t
+Global *scene.Scene::Scene_t
 Global shader.l
 Global *s_wireframe.Program::Program_t
 Global *s_polymesh.Program::Program_t
@@ -46,21 +47,13 @@ Global T.f
 Global *ftgl_drawer.FTGL::FTGL_Drawer
 Global *layer.Layer::Layer_t
 
-; Resize
-;--------------------------------------------
-Procedure Resize(window,gadget)
-;   width = WindowWidth(window,#PB_Window_InnerCoordinate)
-;   height = WindowHeight(window,#PB_Window_InnerCoordinate)
-;   ResizeGadget(gadget,0,0,width,height)
-;   glViewport(0,0,width,height)
-EndProcedure
 
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  GLContext::SetContext(*app\context)
-;   Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  GLContext::SetContext(*viewport\context)
+;   Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
   
 ;   Protected *t.Transform::Transform_t = *light\localT
   
@@ -69,7 +62,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
 ;   
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*scene)
   
   
   Protected *s.Program::Program_t = *app\context\shaders("polymesh")
@@ -77,7 +70,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
    
   Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
 ;   GLContext::SetContext(*app\context)
 ;   Framebuffer::BindOutput(*buffer)
 ;   glClearColor(0.25,0.25,0.25,1.0)
@@ -114,7 +107,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   FTGL::EndDraw(*ftgl_drawer)
   
 ;   Framebuffer::Unbind(*buffer)
-;  GLContext::FlipBuffer(*app\context)
+ GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
 
@@ -130,14 +123,13 @@ Procedure Draw(*app.Application::Application_t)
   
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-    View::SetContent(*app\window\main,*viewport)
+;     Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  Scene::*current_scene = Scene::New()
+  *scene = Scene::New()
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  GLContext::SetContext(*app\context)
   
   *layer = LayerDefault::New(width,height,*app\context,*app\camera)
   Application::AddLayer(*app, *layer)
@@ -154,8 +146,8 @@ Procedure Draw(*app.Application::Application_t)
   
   *cloud.PointCloud::PointCloud_t = PointCloud::New("cloud",1000)
   
-  Scene::AddChild(Scene::*current_scene,*cloud)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddChild(*scene,*cloud)
+  Scene::Setup(*scene,*app\context)
   
 ;   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
 ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
@@ -205,9 +197,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 128
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 55
+; FirstLine = 52
 ; Folding = -
 ; EnableXP
 ; Executable = Test

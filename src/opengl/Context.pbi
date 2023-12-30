@@ -23,6 +23,7 @@ Module GLContext
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(width.i, height.i, *context=#Null)
+            Debug "GLCONTEXT CONSTRUCTOR CALLED!!!" +Str(width)+","+Str(height)
     Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
     InitializeStructure(*Me,GLContext_t)
     
@@ -238,7 +239,9 @@ Module GLContext
     CopyMap(*shared\shaders(), *Me\shaders())
     ; Build Font Writer
     *Me\writer = FTGL::New()
-
+    Debug "COPY OPENGL CONTEXT"
+    Debug "writer : "+Str(*Me\writer)
+    Debug ""
   EndProcedure
   
   ;---------------------------------------------
@@ -310,7 +313,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1
+; CursorPosition = 215
+; FirstLine = 212
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

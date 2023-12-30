@@ -53,7 +53,7 @@ OpenGLExt::GLCheckError("create application")
 If Not #USE_GLFW
   *viewport = ViewportUI::New(*app\window\main,"Viewport", *app\camera, *app\handle)     
   OpenGLExt::GLCheckError("create viewport")
-  Application::SetContext(*app, *viewport\context)
+;   Application::SetContext(*app, *viewport\context)
   OpenGLExt::GLCheckError("set application context")
  ;*app\context\writer\background = #True
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -84,7 +84,7 @@ Application::AddLayer(*app, *layer)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 53
-; FirstLine = 27
+; CursorPosition = 56
+; FirstLine = 29
 ; Folding = -
 ; EnableXP
