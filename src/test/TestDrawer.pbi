@@ -1,12 +1,4 @@
-﻿
-
-
-XIncludeFile "../core/Application.pbi"
-XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile"../objects/Polymesh.pbi"
-XIncludeFile "../ui/ViewportUI.pbi"
-
+﻿XIncludeFile "../core/Application.pbi"
 
 UseModule Math
 UseModule Time
@@ -218,18 +210,18 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(*scene,*root)
   
   RandomSpheres(Random(64,16), Random(10)-5)
-  RandomPoints(Random(256, 64))
-  RandomCubes(Random(64,16), Random(10)-5)
-  RandomStrips(32)
+;   RandomPoints(Random(256, 64))
+;   RandomCubes(Random(64,16), Random(10)-5)
+;   RandomStrips(32)
 ;   RandomTexts(32,"HELLO")
-  
+;   
   Scene::Setup(*scene,*app\context)
    
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 162
-; FirstLine = 144
+; CursorPosition = 216
+; FirstLine = 176
 ; Folding = --
 ; EnableThread
 ; EnableXP

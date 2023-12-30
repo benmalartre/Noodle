@@ -202,6 +202,16 @@ Module Drawer
     *Me\u_offset = glGetUniformLocation(*pgm\pgm, "offset")
   EndProcedure
   
+  Procedure _SetupElementArrayBuffer(*item.Item_t, shape.i)
+    ; Create or ReUse Vertex Buffer Object
+    If Not *item\eab : glGenBuffers(1,@*item\eab) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
+    If *item\wireframe
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER, Shape::GetNumEdgeIndices(shape) * 4, Shape::GetEdges(shape), #GL_STATIC_DRAW)
+    Else
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER, Shape::GetNumFaceIndices(shape) * 4, Shape::GetFaces(shape), #GL_STATIC_DRAW)
+    EndIf
+  EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Setup OpenGL Object
@@ -255,14 +265,11 @@ Module Drawer
         Case #ITEM_LINE
         Case #ITEM_STRIP
         Case #ITEM_BOX
-           ; Create or ReUse Vertex Buffer Object
-          If Not *item\eab : glGenBuffers(1,@*item\eab) : EndIf
-          glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
-          If *item\wireframe
-            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 24 * 4, Shape::GetEdges(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
-          Else
-            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 48 * 4, Shape::GetFaces(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
-          EndIf
+          _SetupElementArrayBuffer(*item, Shape::#SHAPE_CUBE)
+          
+        Case #ITEM_SPHERE
+          _SetupElementArrayBuffer(*item, Shape::#SHAPE_SPHERE)
+          
       EndSelect
       *item\dirty = #DIRTY_CLEAN
     Next
@@ -445,13 +452,13 @@ Module Drawer
     Protected offset.i = 8
     If *Me\wireframe
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("draw wireframe")
     Else
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("set polygon mode")
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
       GLCheckError("draw filled elements")
     EndIf
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
@@ -880,7 +887,8 @@ Module Drawer
     Matrix4::SetFromOther(*box\m, *m)
     CArray::SetCount(*box\positions, 8)
     CArray::SetCount(*box\colors, 8)
-    CopyMemory(Shape::?shape_cube_positions, CArray::GetPtr(*box\positions, 0), 8 * CArray::GetItemSize(*box\positions))
+    CopyMemory(Shape::?shape_cube_positions, CArray::GetPtr(*box\positions, 0), 
+               Shape::#CUBE_NUM_VERTICES * CArray::GetItemSize(*box\positions))
     *box\dirty  = #DIRTY_TOPOLOGY
     ; Transform vertex positions
     Protected i
@@ -906,7 +914,8 @@ Module Drawer
     Matrix4::SetFromOther(*sphere\m, *m)
     CArray::SetCount(*sphere\positions, Shape::#SPHERE_NUM_VERTICES)
     CArray::SetCount(*sphere\colors, Shape::#SPHERE_NUM_VERTICES)
-    CopyMemory(Shape::?shape_sphere_positions, CArray::GetPtr(*sphere\positions, 0), Shape::#SPHERE_NUM_VERTICES * CArray::GetItemSize(*sphere\positions))
+    CopyMemory(Shape::?shape_sphere_positions, CArray::GetPtr(*sphere\positions, 0), 
+               Shape::#SPHERE_NUM_VERTICES * CArray::GetItemSize(*sphere\positions))
     
 ;     ; Transform vertex positions
 ;     Protected i
@@ -997,7 +1006,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 455
-; FirstLine = 478
+; CursorPosition = 211
+; FirstLine = 200
 ; Folding = ---------
 ; EnableXP

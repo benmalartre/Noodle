@@ -25669,6 +25669,8 @@ CompilerEndIf
   Declare GetVertices(shape.i)
   Declare GetFaces(shape.i)
   Declare GetEdges(shape.i)
+  Declare GetNumEdgeIndices(shape.i)
+  Declare GetNumFaceIndices(shape.i)
 EndDeclareModule
 
 Module Shape
@@ -26286,6 +26288,114 @@ Module Shape
     EndSelect
   EndProcedure
   
+  Procedure GetNumFaceIndices(shape.i)
+    Select shape
+      Case  #SHAPE_NONE 
+      Case  #SHAPE_AXIS
+        ProcedureReturn #AXIS_NUM_TRIANGLES * 3
+
+      Case  #SHAPE_SPHERE
+        ProcedureReturn #SPHERE_NUM_TRIANGLES * 3
+
+      Case  #SHAPE_GRID
+        ProcedureReturn #GRID_NUM_TRIANGLES * 3
+
+      Case  #SHAPE_CUBE
+        ProcedureReturn #CUBE_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_DISC
+        ProcedureReturn #DISC_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_CYLINDER
+        ProcedureReturn #CYLINDER_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_NULL
+       ProcedureReturn #NULL_NUM_TRIANGLES * 3
+
+        
+;       Case  #SHAPE_ARROW
+;          *Me\nbp = #ARROW_NUM_VERTICES
+;         *Me\nbt = #ARROW_NUM_TRIANGLES
+;         CArray::SetCount(*Me\positions,*Me\nbp)
+;         CArray::SetCount(*Me\normals,*Me\nbp)
+;         CArray::SetCount(*Me\colors,*Me\nbp)
+;         CArray::SetCount(*Me\indices,*Me\nbt*3)
+;         
+;         CopyMemory(?shape_axis_positions,*Me\positions,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\normals,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\colors,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_grid_indices,*Me\indices,#ARROW_NUM_TRIANGLES*3*#PB_Long )
+        
+      Case  #SHAPE_TORUS
+        ProcedureReturn #TORUS_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_BUNNY
+        ProcedureReturn #BUNNY_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_TEAPOT
+        ProcedureReturn #TEAPOT_NUM_TRIANGLES * 3
+
+      Case  #SHAPE_TOMATO
+        ProcedureReturn #TOMATOSHIP_NUM_TRIANGLES * 3
+        
+      Case  #SHAPE_CUSTOM
+    EndSelect
+  EndProcedure
+  
+   Procedure GetNumEdgeIndices(shape.i)
+    Select shape
+      Case  #SHAPE_NONE 
+      Case  #SHAPE_AXIS
+        ProcedureReturn #AXIS_NUM_EDGES * 2
+
+      Case  #SHAPE_SPHERE
+        ProcedureReturn #SPHERE_NUM_EDGES * 2
+
+      Case  #SHAPE_GRID
+        ProcedureReturn #GRID_NUM_EDGES * 2
+
+      Case  #SHAPE_CUBE
+        ProcedureReturn #CUBE_NUM_EDGES * 2
+        
+      Case  #SHAPE_DISC
+        ProcedureReturn #DISC_NUM_EDGES * 2
+        
+      Case  #SHAPE_CYLINDER
+        ProcedureReturn #CYLINDER_NUM_EDGES * 2
+        
+      Case  #SHAPE_NULL
+       ProcedureReturn #NULL_NUM_EDGES * 2
+
+        
+;       Case  #SHAPE_ARROW
+;          *Me\nbp = #ARROW_NUM_VERTICES
+;         *Me\nbt = #ARROW_NUM_TRIANGLES
+;         CArray::SetCount(*Me\positions,*Me\nbp)
+;         CArray::SetCount(*Me\normals,*Me\nbp)
+;         CArray::SetCount(*Me\colors,*Me\nbp)
+;         CArray::SetCount(*Me\indices,*Me\nbt*3)
+;         
+;         CopyMemory(?shape_axis_positions,*Me\positions,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\normals,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_axis_positions,*Me\colors,#ARROW_NUM_VERTICES*3*#PB_Float)
+;         CopyMemory(?shape_grid_indices,*Me\indices,#ARROW_NUM_TRIANGLES*3*#PB_Long )
+        
+      Case  #SHAPE_TORUS
+        ProcedureReturn #TORUS_NUM_INDICES * 2
+        
+      Case  #SHAPE_BUNNY
+        ProcedureReturn #BUNNY_NUM_INDICES * 2
+        
+      Case  #SHAPE_TEAPOT
+        ProcedureReturn #TEAPOT_NUM_EDGES * 2
+
+      Case  #SHAPE_TOMATO
+        ProcedureReturn #TOMATOSHIP_NUM_EDGES * 2
+        
+      Case  #SHAPE_CUSTOM
+    EndSelect
+  EndProcedure
+  
   ; ----------------------------------------------------------------------------
   ;  New
   ; ----------------------------------------------------------------------------
@@ -26323,7 +26433,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 25698
-; FirstLine = 25688
+; CursorPosition = 26337
+; FirstLine = 26353
 ; Folding = ----
 ; EnableXP
