@@ -388,26 +388,7 @@ Module Scene
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        Select *obj\children()\type
-          Case Object3D::#Polymesh
-            child\Setup(*ctx\shaders("polymesh"))
-            GLCheckError("setup mesh")
-          Case Object3D::#PointCloud
-            child\Setup(*ctx\shaders("cloud"))
-            GLCheckError("setup cloud")
-          Case Object3D::#InstanceCloud
-            child\Setup(*ctx\shaders("instances"))
-            GLCheckError("setup instances")
-          Case Object3D::#Locator
-            child\Setup(*ctx\shaders("wireframe"))
-            GLCheckError("setup wireframe")
-          Case Object3D::#Curve
-            child\Setup(*ctx\shaders("curve"))
-            GLCheckError("setup curve")
-          Case Object3D::#Drawer
-            child\Setup(*ctx\shaders("drawer"))
-            GLCheckError("setup drawer")
-        EndSelect
+        child\Setup()
       EndIf
       SetupChildren(*Me,child,*ctx)
     Next
@@ -421,34 +402,20 @@ Module Scene
     Protected *root.Root::Root_t = *Me\root
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
-  
-    ForEach *root\children()
-      child = *root\children()
-      If Not *root\children()\initialized
-        Select *root\children()\type
-          Case Object3D::#Polymesh
-            child\Setup(*ctx\shaders("polymesh"))
-            GLCheckError("setup mesh")
-          Case Object3D::#PointCloud
-            child\Setup(*ctx\shaders("cloud"))
-            GLCheckError("setup cloud")
-          Case Object3D::#InstanceCloud
-            child\Setup(*ctx\shaders("instances"))
-            GLCheckError("setup instances")
-          Case Object3D::#Locator
-            child\Setup(*ctx\shaders("wireframe"))
-            GLCheckError("setup wireframe")
-          Case Object3D::#Curve
-            child\Setup(*ctx\shaders("curve"))
-            GLCheckError("setup curve")
-          Case Object3D::#Drawer
-            child\Setup(*ctx\shaders("drawer"))
-            GLCheckError("setup darwer")
-      EndSelect
-      EndIf
+    GLContext::SetContext(*ctx)
+    If *ctx\share
+      ForEach *root\children()
+        child = *root\children()
+        If Not *root\children()\initialized
+          child\Setup()
+        EndIf
       
-      SetupChildren(*Me,child,*ctx)
-    Next
+        SetupChildren(*Me,child,*ctx)
+      Next
+    Else
+        
+    EndIf
+   
     
     ; Setup Handle
     ;OHandle::Setup(*Me\handle,*ctx)
@@ -524,7 +491,7 @@ Module Scene
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        child\Setup(#Null)
+        child\Setup()
       EndIf
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
       child\Update()
@@ -832,8 +799,8 @@ Module Scene
   ;---------------------------------------------------------------------------
   Class::DEF( Scene )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 787
-; FirstLine = 774
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 493
+; FirstLine = 489
 ; Folding = -------
 ; EnableXP

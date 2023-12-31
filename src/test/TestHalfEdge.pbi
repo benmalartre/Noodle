@@ -13,7 +13,7 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *drawer.Drawer::Drawer_t
 Global *root.Model::Model_t
-Global *selected.CArray::CArrayLong = CArray::newCArrayLong()
+Global *selected.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
 Global rootIndex.i
 Global numTopos = 7
 
@@ -25,8 +25,8 @@ Procedure PolygonSoup(numTopos=9)
 ;   Define *topo = Topology::New()
 ;   Topology::Bunny(*topo)
   
-  Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
-  Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
+  Protected *matrices.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
+  Protected *positions.CArray::CArrayV3F32 = CARray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
@@ -44,7 +44,7 @@ Procedure PolygonSoup(numTopos=9)
     *p = CArray::GetValue(*positions, i)
     Matrix4::SetTranslation(*m,   *p)
   Next
-  Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Protected *topos.CArray::CArrayPtr = CArray::New(CArray::#Array_PTR)
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
   PolymeshGeometry::Set2(*geom, *topo)
@@ -68,7 +68,7 @@ Procedure DrawSelected(*geom.Geometry::PolymeshGeometry_t)
   Define *O = Drawer::AddPoint(*drawer, CArray::GetValue(*geom\a_positions, rootIndex))
   Drawer::SetSize(*O, 8)
   Drawer::SetColor(*O, Color::RED)
-  Define *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*positions, CArray::GetCount(*selected))
   Define i
   For i = 0 To *selected\itemCount - 1
@@ -105,10 +105,12 @@ Procedure Update(*app.Application::Application_t)
   
  If Not #USE_GLFW
   GLContext::SetContext(*viewport\context)
-  Scene::*current_scene\dirty = #True
-  Scene::Update(Scene::*current_scene)
+  *app\scene\dirty = #True
+  Scene::Update(*app\scene)
   
-  LayerDefault::Draw(*layer, *viewport\context)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+  
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/*viewport\sizX
@@ -119,10 +121,11 @@ Procedure Update(*app.Application::Application_t)
   GLContext::FlipBuffer(*viewport\context)
 Else
   GLContext::SetContext(*app\context)
-  Scene::*current_scene\dirty = #True
-  Scene::Update(Scene::*current_scene)
+  *app\scene\dirty = #True
+  Scene::Update(*app\scene)
   
-  LayerDefault::Draw(*layer, *app\context)
+  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  
 ;   FTGL::BeginDraw(*app\context\writer)
 ;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
 ;   Define ss.f = 0.85/*viewport\sizX
@@ -130,7 +133,7 @@ Else
 ;   FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
 ;   FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 EndIf
 
 
@@ -149,22 +152,21 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)    
-     *app\context = *viewport\context
-;      *app\context\writer\background = #True
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
     *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
+    
   Else
     GLContext::Setup(*app\context)
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
     *layer = LayerDefault::New(width,height,*app\context,*app\camera)
   EndIf
+  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   
-  Application::AddLayer(*app, *layer)
+  
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -200,8 +202,8 @@ FTGL::Init()
   
   Object3D::AddChild(*root, *mesh)
   Object3D::AddChild(*root, *drawer)
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene,*app\context)
   
   ;   CArray::AppendL(*selected, 7)
   rootIndex = 7
@@ -209,8 +211,8 @@ FTGL::Init()
   Application::Loop(*app, @Update())
 
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 151
-; FirstLine = 143
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 72
 ; Folding = -
 ; EnableXP

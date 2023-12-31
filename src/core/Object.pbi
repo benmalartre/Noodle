@@ -63,8 +63,7 @@ DeclareModule Object
     If MapSize(*Me\signals()) > 0
       ForEach *Me\signals() : Signal::Delete(*Me\signals()) : Next
     EndIf
-    ClearStructure(*Me, _cls#_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndMacro
   
   
@@ -284,7 +283,7 @@ EndModule
 ;   EndProcedure
 ; EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 108
+; CursorPosition = 65
+; FirstLine = 56
 ; Folding = ---
 ; EnableXP

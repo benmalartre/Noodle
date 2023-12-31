@@ -85,8 +85,8 @@ Module Curve
     Object3D::ResetStaticKinematicState(*Me)
     
     ;Attach Shader
-    *Me\shader = *pgm
-    glUseProgram(*Me\shader\pgm)
+;     *Me\shader = *pgm
+;     glUseProgram(*Me\shader\pgm)
     
     ;Create Or ReUse Vertex Array Object
     If Not *Me\vao
@@ -149,10 +149,11 @@ Module Curve
     glVertexAttribPointer(3,1,#GL_FLOAT,#GL_FALSE,0,3*size_p)
     
     ; Bind Attributes Locations
-    glBindAttribLocation(*Me\shader\pgm,0,"position")
-    glBindAttribLocation(*Me\shader\pgm,1,"color")
-    glBindAttribLocation(*Me\shader\pgm,2,"tangent")
-    glBindAttribLocation(*Me\shader\pgm,3,"width")
+    Define pgm = GLContext::*SHARED_CTXT\shaders("curve")
+    glBindAttribLocation(pgm,0,"position")
+    glBindAttribLocation(pgm,1,"color")
+    glBindAttribLocation(pgm,2,"tangent")
+    glBindAttribLocation(pgm,3,"width")
     
     glBindVertexArray(0)
     
@@ -360,8 +361,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 110
-; FirstLine = 105
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 129
 ; Folding = ---
 ; EnableXP

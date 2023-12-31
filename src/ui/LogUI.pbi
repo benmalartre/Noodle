@@ -51,7 +51,7 @@ Module LogUI
     *Me\posY = y
     *Me\sizX = w
     *Me\sizY = h
-    *Me\frame = FrameGadget(#PB_Any,x,y,w,h,"Log")
+    *Me\frame = ContainerGadget(#PB_Any,x,y,w,h)
     
     
     *Me\area = EditorGadget(#PB_Any,5,20,w-10,h-25,s)
@@ -180,9 +180,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 121
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 53
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

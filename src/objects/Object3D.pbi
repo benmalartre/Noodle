@@ -45,7 +45,6 @@ DeclareModule Object3D
     vbo.i
     eab.i
     type.i
-    *shader.Program::Program_t
     *geom.Geometry::Geometry_t
     name.s
     fullname.s
@@ -117,7 +116,7 @@ DeclareModule Object3D
   Interface IObject3D
    ; GetName.s()
     Delete()
-    Setup(*shader.Program::Program_t)
+    Setup()
     Update()
     Clean()
     Draw()
@@ -131,10 +130,6 @@ DeclareModule Object3D
   Declare ResetStaticKinematicState(*obj.Object3D_t)
   Declare AddChild(*obj.Object3D_t,*child.Object3D_t)
   Declare.b RemoveChild(*obj.Object3D_t,*child.Object3D_t)
-;   Declare SetWireframeColor(*obj.Object3D_t,r.d,g.d,b.d)
-;   Declare SetMaterial(*obj.Object3D_t,shader.i)
-;   Declare GetMaterial(*obj.Object3D_t)
-;   Declare GetUniqueID(*obj.Object3D_t)
   Declare GetLocalTransform(*Me.Object3D_t)
   Declare SetLocalTransform(*Me.Object3D_t,*t.Transform::Transform_t)
   Declare GetGlobalTransform(*Me.Object3D_t)
@@ -149,7 +144,6 @@ DeclareModule Object3D
   Declare.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
   Declare SetAttributeDirty(*obj.Object3D_t, attrname.s)
   Declare SetAttributeClean(*obj.Object3D_t, attrname.s)
-  Declare SetShader(*obj.Object3D_t,*shader.Program::Program_t)
   ;   Declare SetVisibility(visible.b)
   Declare EncodeID(*color.v3f32,id.i)
   Declare DecodeID(r.GLubyte,g.GLubyte,b.GLubyte)
@@ -259,13 +253,6 @@ Module Object3D
       
     AddElement(*parent\children())
     *parent\children() = *child
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ; Set Shader 
-  ; ----------------------------------------------------------------------------
-  Procedure SetShader(*obj.Object3D_t,*shader.Program::Program_t)
-    *obj\shader = *shader
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -560,7 +547,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 492
-; FirstLine = 482
-; Folding = -------
+; CursorPosition = 131
+; FirstLine = 120
+; Folding = ------
 ; EnableXP

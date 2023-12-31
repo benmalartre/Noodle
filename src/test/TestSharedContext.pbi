@@ -1,121 +1,128 @@
 ﻿; ======================================================================================================
 ; Test Shared Context
 ; ======================================================================================================
-XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../opengl/Context.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile "../core/Math.pbi"
-XIncludeFile "../objects/Camera.pbi"
-XIncludeFile "../layers/Bitmap.pbi"
-XIncludeFile "../layers/Default.pbi"
-XIncludeFile "../ui/ViewportUI.pbi"
-XIncludeFile "../ui/LogUI.pbi"
-XIncludeFile "../ui/Window.pbi"
+XIncludeFile "../core/Application.pbi"
 
 UseModule OpenGL
 UseModule OpenGLExt
+UseModule Math
 
-#DEFAULT_WIDTH    = 1024
-#DEFAULT_HEIGHT   = 720
-#CHANNEL_COUNT    = 4
-#DATA_SIZE        = #DEFAULT_WIDTH * #DEFAULT_HEIGHT * #CHANNEL_COUNT
-Global *datas     = AllocateMemory(#DATA_SIZE)
-Global pbo1, pbo2, tex, index, nextIndex, pboMode
-Global Dim pbos.i(2)
+Global *app.Application::Application_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global *layer.Layer::Layer_t
+Global *scene.Scene::Scene_t
+Global *polymesh.Polymesh::Polymesh_t
+
+Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
+  Define position.Math::v3f32
+  Define color.Math::c4f32
+  Protected *item.Polymesh::Polymesh_t
+  Protected p.v3f32
+  Protected q.q4f32
+  Define i,j
+  Protected *t.Transform::Transform_t
+  For i=0 To numItems-1
+    Vector3::Set(p,Mod(i,12), y+i/12, (Random(10)-5)/10)
+    Quaternion::Randomize2(q)
+    *item = Polymesh::New("Bunny"+Str(i), Shape::#SHAPE_TEAPOT)
+    *t = *item\localT
+    Transform::SetTranslation(*t, p)
+    Transform::SetRotationFromQuaternion(*t, q)
+    Object3D::SetLocalTransform(*item, *t)
+    Object3D::AddChild(*root, *item)
+  Next
+EndProcedure
+
+; Update
+;--------------------------------------------
+Procedure Update(*app.Application::Application_t)
+  GLContext::SetContext(*viewport\context)
+  Scene::Update(*app\scene)
+  *app\scene\dirty= #True
+  
+  
+  GLContext::SetContext(*viewport\context)
+ 
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
+  
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+ 
+  Define writer = *viewport\context\writer
+;   LayerDefault::Draw(*layer, *app\context)
+  FTGL::BeginDraw(writer)
+  FTGL::SetColor(writer,1,1,1,1)
+  Define ss.f = 0.85/width
+  Define ratio.f = width / height
+  FTGL::Draw(writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(writer)
+  
+  GLContext::FlipBuffer(*viewport\context)
+
+ EndProcedure
+
+
+
+Global width    = 1024
+Global height   = 720
 
 Structure Monitor_t
   *window.Window::Window_t
   *camera.Camera::Camera_t
   *viewport.ViewportUI::ViewportUI_t
+  *layer.LayerDefault::LayerDefault_t
 EndStructure
 
 Time::Init()
 Log::Init()
 
 #NUM_WINDOWS = 3
-Global Dim children.Monitor_t(#NUM_WINDOWS)
-Global *window.Window::Window_t = Window::New("Share GL Context",0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-Global *context.GLContext::GLContext_t = GLContext::New(#DEFAULT_WIDTH, #DEFAULT_HEIGHT, #Null)
-Global *layer.LayerDefault::LayerDefault_t
-Global *framebuffer.Framebuffer::Framebuffer_t
-Global *handle.Handle::Handle_t = Handle::New()
+Global Dim children.Monitor_t(#NUM_WINDOWS+1)
 
-Global *bunny.Polymesh::Polymesh_t
-Global *log.LogUI::LogUI_t = LogUI::New(*window\main)
-; Global 
+
+ Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
+ *app = Application::New("Test Share GL COntext",width,height, options) 
+ Debug "construct app"
+ *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+ Debug "construct viewport"
+ 
+Define model.Math::m4f32
+Camera::LookAt(*app\camera)
+Matrix4::SetIdentity(model)
+*app\scene = Scene::New()
+*layer = LayerDefault::New(800,600,*viewport\context,*viewport\camera)
+GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+
+; Global *log.LogUI::LogUI_t = LogUI::New(*app\window\main)
+ 
 For i=0 To #NUM_WINDOWS-1
   
-  children(i)\window = Window::TearOff(*window, 0, 0, #DEFAULT_WIDTH * 0.5,#DEFAULT_HEIGHT * 0.5)
+  children(i)\window = Window::TearOff(*app\window, i*100, i*100, width * 0.5,height * 0.5)
   children(i)\camera = Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
-  children(i)\viewport = ViewportUI::New(children(i)\window\main, "VIEWPORT"+Str(i), children(i)\camera, *handle)
+;   children(i)\viewport = ViewportUI::New(children(i)\window\main, "VIEWPORT"+Str(i), children(i)\camera, *app\handle)
+;   children(i)\layer = LayerDefault::New(children(i)\window\main\sizX, children(i)\window\main\sizY, 
+;                                         children(i)\viewport\context, children(i)\camera )
   Vector3::RandomizeInPlace(children(i)\camera\pos, 12)
   Camera::LookAt(children(i)\camera)
   Window::OnEvent(children(i)\window, #PB_Event_SizeWindow)
   
 Next
 
-GLContext::SetContext(*context)
 
-*layer = LayerDefault::New(#DEFAULT_WIDTH,#DEFAULT_HEIGHT, *context, children(0)\camera)
+Global *root.Model::Model_t = Model::New("Model")
+RandomBunnies(128, -2, *root)
+GLContext::SetContext(GLContext::*SHARED_CTXT)
+Scene::AddModel(*app\scene,*root)
 
-; create framebuffer
-*framebuffer = *layer\datas\buffer
+Scene::Setup(*app\scene,GLContext::*SHARED_CTXT)
+Scene::Update(*app\scene)
 
-*bunny = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
-Scene::*current_scene = Scene::New("CurrentScene")
-Scene::AddChild(Scene::*current_scene, *bunny)
-Scene::Setup(Scene::*current_scene, *context)
-
-Define event
-Define *active.Monitor_t
-Repeat
-
-  event = WaitWindowEvent()
-  If EventType() = #PB_EventType_LeftButtonDown
-    down = #True
-  ElseIf EventType() = #PB_EventType_LeftButtonUp
-    down = #False
-  EndIf
-  
-  If Not down
-    If EventWindow() = *window\ID
-      *active = #Null
-      Window::OnEvent(*active, event)
-    Else
-      For i=0 To #NUM_WINDOWS - 1
-        If EventWindow() = children(i)\window\ID
-          *active = children(i)
-          Window::OnEvent(*active\window, event)
-          GLContext::SetContext(*context)
-          *layer\pov = *active\camera
-          LayerDefault::Draw(*layer, *active\viewport\context)
-          ViewportUI::Blit(*active\viewport, *framebuffer)
-           
-        EndIf
-      Next
-    EndIf
-    
-  Else
-    If *active 
-      Window::OnEvent(*active\window, event) 
-      GLContext::SetContext(*context)
-      *layer\pov = *active\camera
-      LayerDefault::Draw(*layer, *active\viewport\context)
-      ViewportUI::Blit(*active\viewport, *framebuffer)
-    EndIf
-    
-  EndIf
- 
-
-  
-  
-Until event = #PB_Event_CloseWindow
+Application::Loop(*app, @Update())
 
 
 
-; Define gadget = OpenGLGadget(#PB_Any, 0,0,#DEFAULT_WIDTH,#DEFAULT_HEIGHT)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 54
+
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 96
+; FirstLine = 69
+; Folding = -
 ; EnableXP

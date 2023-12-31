@@ -13,7 +13,7 @@ XIncludeFile "Types.pbi"
   ; Constructor
   ;----------------------------------------------------------
   Procedure New(x.i,y.i,width.i,height.i,*top.View_t,axis.b = #False,name.s="View",lorr.b=#True,scroll.b=#True)
-    Protected *Me.View_t = AllocateMemory(SizeOf(View_t))
+    Protected *Me.View_t = AllocateStructure(View_t)
     Object::INI(View)
     *Me\posX = x
     *Me\posY = y
@@ -43,7 +43,6 @@ XIncludeFile "Types.pbi"
       *Me\parent = *top
       *Me\window = *top\window
     EndIf
-   
     ProcedureReturn *Me
   EndProcedure
   
@@ -51,7 +50,7 @@ XIncludeFile "Types.pbi"
   ; Delete View
   ;----------------------------------------------------------
   Procedure Delete(*Me.View_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ;----------------------------------------------------------
@@ -287,7 +286,6 @@ XIncludeFile "Types.pbi"
   ;----------------------------------------------------------------------------------
   Procedure.i TouchBorder(*Me.View_t,x.i,y.i,w.i)
     If Not  *Me : ProcedureReturn : EndIf
-
     ;Left border
     If Abs(x - *Me\posX)<w                     : ProcedureReturn #VIEW_LEFT : EndIf
     ;Right border
@@ -536,8 +534,8 @@ XIncludeFile "Types.pbi"
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( View )
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 452
-; FirstLine = 439
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 288
+; FirstLine = 255
 ; Folding = ----
 ; EnableXP

@@ -421,8 +421,6 @@ Module Polymesh
   Procedure Setup(*p.Polymesh_t,*pgm.Program::Program_t)
     If Not *p : ProcedureReturn : EndIf
     
-    If *pgm : *p\shader = *pgm : EndIf
-    
     ; Get Underlying Geometry
     Protected *geom.Geometry::PolymeshGeometry_t = *p\geom
     
@@ -434,34 +432,22 @@ Module Polymesh
       glGenVertexArrays(1,@*p\vao)
     EndIf
     glBindVertexArray(*p\vao)
+    GLCheckError("gen vao")
     
     ; Create or ReUse Vertex Buffer Object
     If Not *p\vbo
       glGenBuffers(1,@*p\vbo)
     EndIf
     glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
-    
+    GLCheckError("gen vbo")
     ; Fill Buffer
     BuildGLData(*p)
+    GLCheckError("build gl data")
 
     ; Create Edge Elements Buffer
     BuildGLEdgeData(*p)
+    GLCheckError("build edge data")
     
-    ; Link Shader
-    If *p\shader
-      glLinkProgram(*p\shader\pgm);
-      Protected linked.i
-      If Not glGetProgramiv(*p\shader\pgm, #GL_LINK_STATUS, @linked);
-        Protected maxLength.i
-        glGetProgramiv(*p\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
-        maxLength = maxLength + 1                                  ;
-        Protected uchar.c
-        Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
-        glGetProgramInfoLog(*p\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-      EndIf
-    EndIf
-    
-    ; Unbind
     glBindVertexArray(0)
     
     *p\initialized = #True
@@ -495,7 +481,7 @@ Module Polymesh
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
-      p\Setup(*p\shader)
+      p\Setup()
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
         PolymeshGeometry::ComputeNormals(*p\geom,1.0)
@@ -562,8 +548,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 547
-; FirstLine = 506
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 483
+; FirstLine = 470
 ; Folding = ---
 ; EnableXP

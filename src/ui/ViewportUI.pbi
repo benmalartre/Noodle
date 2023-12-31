@@ -78,7 +78,7 @@ Module ViewportUI
   ; New
   ;------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
-    Protected *Me.ViewportUI_t = AllocateMemory(SizeOf(ViewportUI_t))
+    Protected *Me.ViewportUI_t = AllocateStructure(ViewportUI_t)
     
     Object::INI(ViewportUI)
     
@@ -97,14 +97,13 @@ Module ViewportUI
         
     ; setup delegate gl context
     *Me\camera = *camera
-    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*MAIN_GL_CTXT)
+    Debug "create viewport shared GL context :  " + Str(GLContext::*SHARED_CTXT)
+    *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*SHARED_CTXT)
+    *Me\gadgetID = *Me\context\ID 
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
-      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
       CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
-        
     CompilerElse
-      *Me\gadgetID = *Me\context\ID
       ResizeGadget(*Me\gadgetID, 0, 0,w, h)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
     CompilerEndIf
@@ -125,7 +124,6 @@ Module ViewportUI
   ; Delete
   ;------------------------------------------------------------------
   Procedure Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
-    Debug "Viewport Resize..."
     *Me\sizX = x
     *Me\sizY = y
     *Me\posX = width
@@ -172,9 +170,6 @@ Module ViewportUI
       Case #PB_Event_SizeWindow
         Resize(*Me, *top\posX, *top\posY, *top\sizX, *top\sizY)
 
-        
-        
-        
       Case #PB_Event_Gadget
         Protected deltax.d, deltay.d
         Protected modifiers.i
@@ -684,7 +679,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 120
+; CursorPosition = 80
+; FirstLine = 75
 ; Folding = ----
 ; EnableXP

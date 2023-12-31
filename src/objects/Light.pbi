@@ -53,7 +53,7 @@ DeclareModule Light
   EndInterface
   
   Declare New( name.s,type.i=#Light_Infinite)
-  Declare Setup(*Me.Light_t,*pgm.Program::Program_t)
+  Declare Setup(*Me.Light_t)
   Declare Update(*Me.Light_t)
   Declare Clean(*Me.Light_t)
   Declare Draw(*Me.Light_t)
@@ -615,7 +615,7 @@ Module Light
   ; Setup 
   ;-----------------------------------------------------
   ;{
-  Procedure Setup(*Me.Light_t,*pgm.Program::Program_t)
+  Procedure Setup(*Me.Light_t)
     
     ;---[ Check Datas ]--------------------------------
     If Not *Me Or Not *ctx:ProcedureReturn:EndIf
@@ -623,11 +623,7 @@ Module Light
     ; Setup Static Kinematic STate
     Object3D::ResetStaticKinematicState(*Me)
     
-    ;Attach Shader
-    If *pgm : *Me\shader = *pgm : EndIf
-    
-    Protected shader.i
-    If *Me\shader : shader = *Me\shader\pgm : EndIf
+    Protected shader.i = GLContext::*SHARED_CTXT\shaders("simple")
       
     *Me\u_model = glGetUniformLocation(shader,"model")
     *Me\u_offset = glGetUniformLocation(shader,"offset")
@@ -1071,8 +1067,8 @@ Module Light
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Light )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 981
-; FirstLine = 343
-; Folding = d+e--
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 625
+; FirstLine = 96
+; Folding = 0+e--
 ; EnableXP

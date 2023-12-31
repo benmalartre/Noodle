@@ -66,7 +66,7 @@ DeclareModule View
   Declare EventSplitter(*view.View_t,border.i)
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   Declare GetWindowID(*view)
-  
+
   ; ============================================================================
   ;  VTABLE ( Object + Control + ControlButton )
   ; ============================================================================
@@ -110,8 +110,11 @@ DeclareModule Window
     OnEvent()
   EndInterface
   
+  ; opened windows are stored in a ma by their pb id
   Global *MAIN_WINDOW.Window_t
   Global NewMap *ALL_WINDOWS.Window_t()
+  
+  Declare GetWindowById(id.i)
   
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
   Declare Delete(*Me.Window_t)
@@ -128,8 +131,8 @@ DeclareModule Window
   
   Global CLASS.Class::Class_t
 EndDeclareModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 122
-; FirstLine = 79
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 78
 ; Folding = -
 ; EnableXP

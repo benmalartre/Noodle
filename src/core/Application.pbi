@@ -282,7 +282,7 @@ CompilerEndIf
 
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
-      *Me\context = GLContext::New(GLContext::MAIN_GL_CTXT_WIDTH, GLContext::MAIN_GL_CTXT_HEIGHT)
+      *Me\context = #Null;GLContext::New(GLContext::MAIN_CTXT_WIDTH, GLContext::MAIN_CTXT_HEIGHT)
       AddShortcuts(*Me)
     
       *Me\idle = #True
@@ -307,7 +307,10 @@ CompilerEndIf
       glfwDestroyWindow(*Me\window)
 
     CompilerElse
-      Window::Delete(*Me\window)
+      ForEach Window::*ALL_WINDOWS()
+        Window::Delete(Window::*ALL_WINDOWS())
+      Next
+      ClearMap(Window::*ALL_WINDOWS())
     CompilerEndIf
     
     ClearStructure(*Me,Application_t)
@@ -621,7 +624,6 @@ CompilerEndIf
     EndIf  
     ProcedureReturn *Me\fps
   EndProcedure
-  
 
   ;-----------------------------------------------------------------------------
   ; Main Loop
@@ -639,15 +641,27 @@ CompilerEndIf
        
       Wend
     CompilerElse
-      Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
+      Define *window.Window::Window_t
+      ;Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
+      ForEach Window::*ALL_WINDOWS()
+        Window::OnEvent(Window::*ALL_WINDOWS(), #PB_Event_SizeWindow)
+      Next
+      
+      
       If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
+        Debug "num windows : "+Str(MapSize(Window::*ALL_WINDOWS()))
         If waitTime >= 0
           event = WaitWindowEvent(waitTime)
         Else
           event = WaitWindowEvent()
         EndIf
-                
+        
+        
+        ; get event window
+        *window = Window::GetWindowById(EventWindow())
+        Debug "Event window : "+Str(*window\ID)
+        
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
           CompilerCase #PB_OS_Windows
@@ -659,14 +673,14 @@ CompilerEndIf
         Select event
           Case Globals::#EVENT_NEW_SCENE
             Scene::Setup(*Me\scene, *Me\context)
-            Window::OnEvent(*Me\window,Globals::#EVENT_NEW_SCENE)
+            Window::OnEvent(*window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
             Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
           Case Globals::#EVENT_REPAINT_WINDOW
-            Window::OnEvent(*Me\window, Globals::#EVENT_REPAINT_WINDOW)
+            Window::OnEvent(*window, Globals::#EVENT_REPAINT_WINDOW)
             
           Case Globals::#EVENT_TOOL_CHANGED
             Select EventData()
@@ -685,18 +699,18 @@ CompilerEndIf
             EndSelect
             
           Case Globals::#EVENT_SELECTION_CHANGED
-            Window::OnEvent(*Me\window,Globals::#EVENT_SELECTION_CHANGED)
+            Window::OnEvent(*window,Globals::#EVENT_SELECTION_CHANGED)
             Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
             Scene::Setup(*Me\scene, *Me\context)
-            Window::OnEvent(*Me\window,Globals::#EVENT_HIERARCHY_CHANGED)
+            Window::OnEvent(*window,Globals::#EVENT_HIERARCHY_CHANGED)
            
             If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
             
           Case Globals::#EVENT_TREE_CREATED
-            Protected *graph = *Me\window\uis("Graph")
+            Protected *graph = *window\uis("Graph")
             Protected *tree = EventData()
             If *graph
               GraphUI::SetContent(*graph,*tree)
@@ -725,16 +739,16 @@ CompilerEndIf
                 MessageRequester("DELETE", "FUCKIN SOMETHING")
               Default 
                 *Me\tool = Globals::#TOOL_MAX
-                If event : Window::OnEvent(*Me\window,event) : EndIf
+                If event : Window::OnEvent(*window,event) : EndIf
             EndSelect
             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_SizeWindow
-            Window::OnEvent(*Me\window,event)
+            Window::OnEvent(*window,event)
             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_Gadget
-            Window::OnEvent(*Me\window,event)
+            Window::OnEvent(*window,event)
             If *callback : *callback(*Me, event) : EndIf
           Default
             If waitTime >= 0 And *callback
@@ -787,9 +801,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 571
-; FirstLine = 568
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 652
+; FirstLine = 648
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

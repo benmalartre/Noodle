@@ -506,8 +506,8 @@ Module Handle
   ;-----------------------------------------------------------------------------
   Procedure SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
 
-    *Me\shader = *ctx\shaders("wireframe")
-    glUseProgram(*Me\shader\pgm)
+    Define pgm = *ctx\shaders("wireframe")\pgm
+    glUseProgram(pgm)
     If Not *Me\vao : glGenVertexArrays(1,@*Me\vao) : EndIf
     glBindVertexArray(*Me\vao)
     
@@ -546,14 +546,14 @@ Module Handle
     CompilerEndIf
     
     ; Bind Attributes Locations
-    glBindAttribLocation(*Me\shader\pgm,0,"position")
+    glBindAttribLocation(pgm,0,"position")
 
     ; Uniform Attributes
-    *Me\u_view.GLint = glGetUniformLocation(*Me\shader\pgm,"view")
-    *Me\u_proj.GLint = glGetUniformLocation(*Me\shader\pgm,"projection")
-    *Me\u_color.GLint = glGetUniformLocation(*Me\shader\pgm,"color")
-    *Me\u_model.GLint = glGetUniformLocation(*Me\shader\pgm,"model")
-    *Me\u_offset.GLint = glGetUniformLocation(*Me\shader\pgm,"offset")
+    *Me\u_view.GLint = glGetUniformLocation(pgm,"view")
+    *Me\u_proj.GLint = glGetUniformLocation(pgm,"projection")
+    *Me\u_color.GLint = glGetUniformLocation(pgm,"color")
+    *Me\u_model.GLint = glGetUniformLocation(pgm,"model")
+    *Me\u_offset.GLint = glGetUniformLocation(pgm,"offset")
         
     glBindVertexArray(0)
     glUseProgram(0)
@@ -1441,8 +1441,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1413
-; FirstLine = 1398
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 555
+; FirstLine = 510
 ; Folding = -------
 ; EnableXP

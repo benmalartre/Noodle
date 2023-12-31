@@ -84,16 +84,9 @@ DeclareModule Drawer
   EndStructure
   
   Structure Drawer_t Extends Object3D::Object3D_t
-    ; uniforms
-    u_model.GLint
-    u_proj.GLint
-    u_view.GLint
-    u_offset.GLint
-;     u_color.GLint
-;     u_colored.GLint
     overlay.b
     List *items.Item_t()
-
+    *pgm.Program::Program_t
   EndStructure
   
   Interface IDrawer Extends Object3D::IObject3D
@@ -128,7 +121,7 @@ DeclareModule Drawer
   Declare SetSize(*Me.Item_t, size.f)
   Declare SetWireframe(*Me.Item_t, wireframe.b)
   Declare Flush(*Me.Drawer_t)
-  Declare Setup(*Me.Drawer_t,*shader.Program::Program_t)
+  Declare Setup(*Me.Drawer_t)
   Declare Update(*Me.Drawer_t)
   Declare Clean(*Me.Drawer_t)
   Declare Draw(*Me.Drawer_t)
@@ -188,20 +181,6 @@ Module Drawer
     Next
   EndProcedure
   
-  ;----------------------------------------------------------------------------
-  ; Set Shader
-  ;---------------------------------------------------------------------------- 
-  Procedure SetShader(*Me.Drawer_t,*pgm.Program::Program_t)
-    If Not *Me : ProcedureReturn : EndIf
-    
-    *Me\shader = *pgm
-    
-    *Me\u_model = glGetUniformLocation(*pgm\pgm,"model")
-    *Me\u_proj = glGetUniformLocation(*pgm\pgm,"projection")
-    *Me\u_view = glGetUniformLocation(*pgm\pgm,"view")
-    *Me\u_offset = glGetUniformLocation(*pgm\pgm, "offset")
-  EndProcedure
-  
   Procedure _SetupElementArrayBuffer(*item.Item_t, shape.i)
     ; Create or ReUse Vertex Buffer Object
     If Not *item\eab : glGenBuffers(1,@*item\eab) : EndIf
@@ -216,7 +195,7 @@ Module Drawer
   ;----------------------------------------------------------------------------
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
-  Procedure Setup(*Me.Drawer_t,*shader.Program::Program_t)
+  Procedure Setup(*Me.Drawer_t)
     
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
@@ -226,8 +205,6 @@ Module Drawer
     Object3D::ResetStaticKinematicState(*Me)
     Protected shader.i
     Protected plength.i, clength.i, tlength.i
-    ; ---[ Assign Shader ]---------------------------
-    If *shader : SetShader(*Me, *shader) : EndIf
     
     Protected *item.Item_t
     ForEach *Me\items()
@@ -508,9 +485,15 @@ Module Drawer
     Else
       glEnable(#GL_DEPTH_TEST)
     EndIf
+    
+        
+    Define u_model = glGetUniformLocation(*Me\pgm\pgm,"model")
+    Define u_proj = glGetUniformLocation(*Me\pgm\pgm,"projection")
+    Define u_view = glGetUniformLocation(*Me\pgm\pgm,"view")
+    Define u_offset = glGetUniformLocation(*Me\pgm\pgm, "offset")
    
-    glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
-    glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(u_model,1,#GL_FALSE,*t\m)
+    glUniformMatrix4fv(u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
         
     ForEach *Me\items()
       With *Me\items()
@@ -529,13 +512,13 @@ Module Drawer
             DrawStrip(*Me\items())
             GLCheckError("DRAW ITEM STRIP")
           Case #ITEM_BOX
-            DrawBox(*Me\items(), *Me\shader\pgm)
+            DrawBox(*Me\items(), *Me\pgm\pgm)
             GLCheckError("DRAW ITEM BOX")
           Case #ITEM_SPHERE
-            DrawSphere(*Me\items(), *Me\shader\pgm)
+            DrawSphere(*Me\items(), *Me\pgm\pgm)
             GLCheckError("DRAW ITEM SPHERE")
           Case #ITEM_MATRIX
-            DrawMatrix(*Me\items(), *Me\shader\pgm)
+            DrawMatrix(*Me\items(), *Me\pgm\pgm)
             GLCheckError("DRAW ITEM MATRIX")
           Case #ITEM_TRIANGLE
             DrawTriangle(*Me\items())
@@ -1005,8 +988,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 211
-; FirstLine = 200
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 520
+; FirstLine = 471
 ; Folding = ---------
 ; EnableXP

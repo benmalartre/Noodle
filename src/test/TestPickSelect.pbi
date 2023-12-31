@@ -106,39 +106,39 @@ Procedure Update(*app.Application::Application_t)
  Globals::Init()
  FTGL::Init()
 ;--------------------------------------------
- If Time::Init()
-   Log::Init()
-   Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
-   *app = Application::New("Test Drawer",width,height, options)
+Time::Init()
+ Log::Init()
+ Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
+ *app = Application::New("Test Drawer",width,height, options)
 
-   If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-    View::SetContent(*app\window\main,*viewport)
-    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-  EndIf
- 
-
-  Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(model)
-  *app\scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  *select = LayerSelection::New(800,600,*app\context,*app\camera)
-  *select\selection = *app\scene\selection
-  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
-  GLContext::AddFramebuffer(*viewport\context, *select\framebuffer)
-  
-  
-  Global *root.Model::Model_t = Model::New("Model")
-  RandomBunnies(128, -2, *root)
-  
-  Scene::AddModel(*app\scene,*root)
-  Scene::Setup(*app\scene,*app\context)
-  Scene::Update(*app\scene)
-  Application::Loop(*app, @Update())
+ If Not #USE_GLFW
+   *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+  View::SetContent(*app\window\main,*viewport)
+  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
+
+
+Camera::LookAt(*app\camera)
+Matrix4::SetIdentity(model)
+*app\scene = Scene::New()
+*layer = LayerDefault::New(800,600,*app\context,*app\camera)
+*select = LayerSelection::New(800,600,*app\context,*app\camera)
+*select\selection = *app\scene\selection
+GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+GLContext::AddFramebuffer(*viewport\context, *select\framebuffer)
+
+
+Global *root.Model::Model_t = Model::New("Model")
+RandomBunnies(128, -2, *root)
+
+Scene::AddModel(*app\scene,*root)
+Scene::Setup(*app\scene,*app\context)
+Scene::Update(*app\scene)
+Application::Loop(*app, @Update())
+
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 40
+; CursorPosition = 76
+; FirstLine = 61
 ; Folding = -
 ; EnableThread
 ; EnableXP

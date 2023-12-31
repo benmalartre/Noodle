@@ -22,7 +22,7 @@ DeclareModule PointCloud
   
   Declare New(name.s,numPoints.i)
   Declare Delete(*Me.PointCloud_t)
-  Declare Setup(*Me.PointCloud_t,*shader.Program::Program_t)
+  Declare Setup(*Me.PointCloud_t)
   ;Declare SetProgram(*Me.PointCloud_t,*shader.Program::Program_t)
   Declare Update(*Me.PointCloud_t)
   Declare Clean(*Me.PointCloud_t)
@@ -192,21 +192,20 @@ Module PointCloud
     glEnableVertexAttribArray(6)
     glVertexAttribPointer(6,1,#GL_FLOAT,#GL_FALSE,0,5*size_p+size_c)
     
-    glBindAttribLocation(*p\shader\pgm, 0, "position")
-    glBindAttribLocation(*p\shader\pgm, 1, "velocity")
-    glBindAttribLocation(*p\shader\pgm, 2, "normal")
-    glBindAttribLocation(*p\shader\pgm, 3, "tangent")
-    glBindAttribLocation(*p\shader\pgm, 4, "scale");
-    glBindAttribLocation(*p\shader\pgm, 5, "color")  ;
-    glBindAttribLocation(*p\shader\pgm, 6, "size")   ;
+    Define pgm = GLContext::*SHARED_CTXT\shaders("cloud")\pgm
+    glBindAttribLocation(pgm, 0, "position")
+    glBindAttribLocation(pgm, 1, "velocity")
+    glBindAttribLocation(pgm, 2, "normal")
+    glBindAttribLocation(pgm, 3, "tangent")
+    glBindAttribLocation(pgm, 4, "scale");
+    glBindAttribLocation(pgm, 5, "color")  ;
+    glBindAttribLocation(pgm, 6, "size")   ;
 
   EndProcedure
     
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*p.PointCloud_t,*pgm.Program::Program_t)
-
-    *p\shader = *pgm
+  Procedure Setup(*p.PointCloud_t)
 
     ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
@@ -232,23 +231,23 @@ Module PointCloud
     ; Fill Buffer
     BuildGLData(*p)
     
-     glLinkProgram(*p\shader\pgm);
-    ; Check For Errors
-    Protected linked.i
-    If Not glGetProgramiv(*p\shader\pgm, #GL_LINK_STATUS, @linked);
-      ;Make sure linked==TRUE
-      ;If linked==FALSE, the log contains information on what went wrong
-      Protected maxLength.i
-      glGetProgramiv(*p\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
-      maxLength = maxLength + 1                                  ;
-      Protected uchar.c
-      Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
-      glGetProgramInfoLog(*p\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-      ;MessageRequester("Error Setup Shader Program for PointCloud",PeekS(*pLinkInfoLog))
-    EndIf
-
-    ; Unbind
-    glBindVertexArray(0)
+;      glLinkProgram(*p\shader\pgm);
+;     ; Check For Errors
+;     Protected linked.i
+;     If Not glGetProgramiv(*p\shader\pgm, #GL_LINK_STATUS, @linked);
+;       ;Make sure linked==TRUE
+;       ;If linked==FALSE, the log contains information on what went wrong
+;       Protected maxLength.i
+;       glGetProgramiv(*p\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
+;       maxLength = maxLength + 1                                  ;
+;       Protected uchar.c
+;       Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
+;       glGetProgramInfoLog(*p\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
+;       ;MessageRequester("Error Setup Shader Program for PointCloud",PeekS(*pLinkInfoLog))
+;     EndIf
+; 
+;     ; Unbind
+;     glBindVertexArray(0)
    
     
     *p\initialized = #True
@@ -281,7 +280,7 @@ Module PointCloud
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
-      p\Setup(*p\shader)
+      p\Setup()
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
@@ -389,8 +388,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 366
-; FirstLine = 330
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 283
+; FirstLine = 278
 ; Folding = ---
 ; EnableXP

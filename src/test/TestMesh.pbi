@@ -129,8 +129,7 @@ Procedure Draw(*app.Application::Application_t)
    *app = Application::New("TestMesh",width,height)
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Mesh", *app\camera, *app\handle)     
-     ;*app\context\writer\background = #True
-    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
+   
   EndIf
   
   *quad = ScreenQuad::New()
@@ -232,7 +231,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 91
+; CursorPosition = 130
+; FirstLine = 110
 ; Folding = -
 ; EnableXP

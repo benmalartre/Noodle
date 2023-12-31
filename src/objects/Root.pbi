@@ -20,7 +20,7 @@ DeclareModule Root
   
   Declare New(name.s="Root")
   Declare Delete(*Me.Root_t)
-  Declare Setup(*Me.Root_t,*pgm.Program::Program_t)
+  Declare Setup(*Me.Root_t)
   Declare Update(*Me.Root_t)
   Declare Draw(*Me.Root_t)
   Declare DrawChildren(*obj.Object3D::Object3D_t,mode.GLenum=#GL_POINTS)
@@ -89,8 +89,7 @@ Module Root
   
   EndProcedure
 
-  Procedure Setup( *Me.Root_t ,*pgm.Program::Program_t)
-    *Me\shader = *pgm
+  Procedure Setup( *Me.Root_t )
     Matrix4::Echo(*Me\globalT\m,"Root Matrix Global")
     Matrix4::Echo(*Me\matrix,"Root Matrix")
   EndProcedure
@@ -138,9 +137,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 81
-; FirstLine = 69
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 22
 ; Folding = --
 ; EnableThread
 ; EnableXP

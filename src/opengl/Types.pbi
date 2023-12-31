@@ -49,6 +49,7 @@ DeclareModule GLContext
     useGLFW.b
     ID.i
     focus.b
+    share.b
     shader.GLuint
     
     List *framebuffers.Framebuffer::Framebuffer_t()
@@ -66,13 +67,13 @@ DeclareModule GLContext
   Declare AddFramebuffer(*Me.GLContext_t, *framebuffer)
   Declare GetOpenGLVersion(*Me.GLContext_t)
   Declare.f BackingScaleFactor()  
-  Global *MAIN_GL_CTXT.GLContext_t
-  Global MAIN_GL_CTXT_WIDTH = 1024
-  Global MAIN_GL_CTXT_HEIGHT = 1024
+  Global *SHARED_CTXT.GLContext_t
+  Global MAIN_CTXT_WIDTH = 1024
+  Global MAIN_CTXT_HEIGHT = 1024
 EndDeclareModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 70
-; FirstLine = 27
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 47
+; FirstLine = 19
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

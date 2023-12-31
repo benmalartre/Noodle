@@ -90,9 +90,7 @@ Module Locator
   ;---------------------------------------------------------------------------- 
   Procedure SetShader(*Me.Locator_t,*pgm.Program::Program_t)
     If Not *Me : ProcedureReturn : EndIf
-    
-    *Me\shader = *pgm
-    
+        
     *Me\u_model = glGetUniformLocation(*pgm\pgm,"model")
     *Me\u_offset = glGetUniformLocation(*pgm\pgm,"offset")
     *Me\u_color = glGetUniformLocation(*pgm\pgm,"color")
@@ -121,13 +119,10 @@ Module Locator
     ; ---[ Reset Kinematic State ]-------------------
     
     Object3D::ResetStaticKinematicState(*Me)
-    Protected shader.i
     ; ---[ Assign Shader ]---------------------------
     If *shader 
-      *Me\shader = *shader
-      shader = *Me\shader\pgm
-      *Me\u_model = glGetUniformLocation(*Me,"model")
-      *Me\u_offset = glGetUniformLocation(shader,"offset")
+      *Me\u_model = glGetUniformLocation(*shader\pgm,"model")
+      *Me\u_offset = glGetUniformLocation(*shader\pgm,"offset")
     EndIf
     
     
@@ -258,7 +253,7 @@ Module Locator
     Protected *t.Transform::Transform_t = *n\globalT
     glBindVertexArray(*n\vao)
    
-    glUniformMatrix4fv(glGetUniformLocation(*n\shader\pgm,"model"),1,#GL_FALSE,*t\m)
+;     glUniformMatrix4fv(glGetUniformLocation(*n\shader\pgm,"model"),1,#GL_FALSE,*t\m)
 
     
     ; Set Wireframe Color
@@ -366,8 +361,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 141
-; FirstLine = 134
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 255
+; FirstLine = 251
 ; Folding = ---
 ; EnableXP

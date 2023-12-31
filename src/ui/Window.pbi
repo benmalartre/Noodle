@@ -6,6 +6,19 @@ XIncludeFile "../core/Commands.pbi"
 ; Window module Implementation
 ;==========================================================================
 Module Window
+  ;------------------------------------------------------------------
+  ; Get window by pb id
+  ;------------------------------------------------------------------
+  Procedure GetWindowById(id)
+    ; remove window from global map
+    ForEach *ALL_WINDOWS()
+      If Val(MapKey(*ALL_WINDOWS())) = id
+        ProcedureReturn *ALL_WINDOWS()
+      EndIf
+    Next
+    ProcedureReturn #Null
+  EndProcedure
+  
   Procedure Resize(*Me.Window_t)    
     If Not *Me : ProcedureReturn : EndIf
     Protected w = WindowWidth(*Me\ID,#PB_Window_InnerCoordinate)
@@ -92,6 +105,8 @@ Module Window
     
     Protected *old.View::View_t = *Me\active
     Protected *over.View::View_t = Pick(*Me, mx, my)
+    
+    Debug "over : "+Str(*over)
   
     Select event
       Case #PB_Event_Gadget
@@ -107,9 +122,9 @@ Module Window
             If touch
               View::EventSplitter(*over,touch)
               Protected *affected.View::View_t = View::EventSplitter(*over,touch)
-              If *affected
-                View::TouchBorderEvent(*affected)
-              EndIf
+;               If *affected
+;                 View::TouchBorderEvent(*affected)
+;               EndIf
             Else
               View::ClearBorderEvent(*over)
             EndIf
@@ -260,7 +275,9 @@ Module Window
       picked = Point(mx, my)
 
       If FindMapElement(*Me\uis(), Str(picked))
+        Debug "found ui iem :"+*Me\uis()
         StopDrawing()
+        
         ProcedureReturn *Me\uis()\parent
       EndIf
     EndIf
@@ -279,19 +296,18 @@ Module Window
     ; remove window from global map
     ForEach *ALL_WINDOWS()
       If MapKey(*ALL_WINDOWS()) = Str(*Me\ID)
-        DeleteMapElement(*ALL_WINDOWS())
+        FreeStructure(*ALL_WINDOWS())
         Break
       EndIf
     Next
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ----------------------------------------------------------------------------------
   ; Constructor
   ; ----------------------------------------------------------------------------------
   Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
-    Protected *Me.Window_t = AllocateMemory(SizeOf(Window_t))
-    InitializeStructure(*Me,Window_t)
+    Protected *Me.Window_t = AllocateStructure(Window_t)
     Object::INI(Window)
     *Me\name = name
     *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
@@ -300,8 +316,6 @@ Module Window
     *Me\main\window = *Me
     *Me\active = *Me\main
     *Me\imageID = CreateImage(#PB_Any, width, height, 32)
-
-    *view_manager = *Me
     
     ; add window to global map
     AddMapElement(*ALL_WINDOWS(), Str(*Me\ID))
@@ -312,7 +326,8 @@ Module Window
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 7
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 277
+; FirstLine = 265
 ; Folding = ---
 ; EnableXP

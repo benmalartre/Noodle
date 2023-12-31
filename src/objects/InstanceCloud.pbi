@@ -26,7 +26,7 @@ DeclareModule InstanceCloud
   
   Declare New(name.s,shape.i=Shape::#SHAPE_CUBE,nbp.i = 1)
   Declare Delete(*Me.InstanceCloud_t)
-  Declare Setup(*Me.InstanceCloud_t,*shader.Program::Program_t)
+  Declare Setup(*Me.InstanceCloud_t)
   Declare Update(*Me.InstanceCloud_t)
   Declare Clean(*Me.InstanceCloud_t)
   Declare Draw(*Me.InstanceCloud_t)
@@ -229,7 +229,7 @@ Module InstanceCloud
       glVertexAttribPointer(9,1,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*4 + st4)
       glEnableVertexAttribArray(9)
       
-      Protected pgm = *Me\shader\pgm
+      Protected pgm = GLContext::*SHARED_CTXT\shaders("instances")\pgm
       ; Bind Attributes Locations
       glBindAttribLocation(pgm,0,"s_pos")
       glBindAttribLocation(pgm,1,"s_norm")
@@ -257,7 +257,7 @@ Module InstanceCloud
    
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*Me.InstanceCloud_t,*pgm.Program::Program_t)
+  Procedure Setup(*Me.InstanceCloud_t)
     
     Debug "INSTANCE CLOUD SETUP..."
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
@@ -268,26 +268,26 @@ Module InstanceCloud
     ;If Not *p\initialized : ProcedureReturn #Null : EndIf
     
     ;Attach Shader
-    *Me\shader = *pgm
-    Protected pgm = *pgm\pgm
+
+    Protected pgm = GLContext::*SHARED_CTXT\shaders("instances")\pgm
     glUseProgram(pgm)
     
     BuildGLData(*Me)
     
-    glLinkProgram(*Me\shader\pgm);
-    ; Check For Errors
-    Protected linked.i
-    If Not glGetProgramiv(*Me\shader\pgm, #GL_LINK_STATUS, @linked);
-      ;Make sure linked==TRUE
-      ;If linked==FALSE, the log contains information on what went wrong
-      Protected maxLength.i
-      glGetProgramiv(*Me\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
-      maxLength = maxLength + 1                                  ;
-      Protected uchar.c
-      Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
-      glGetProgramInfoLog(*Me\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-      ;MessageRequester("Error Setup Shader Program for InstanceCloud",PeekS(*pLinkInfoLog))
-    EndIf
+;     glLinkProgram(*Me\shader\pgm);
+;     ; Check For Errors
+;     Protected linked.i
+;     If Not glGetProgramiv(*Me\shader\pgm, #GL_LINK_STATUS, @linked);
+;       ;Make sure linked==TRUE
+;       ;If linked==FALSE, the log contains information on what went wrong
+;       Protected maxLength.i
+;       glGetProgramiv(*Me\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
+;       maxLength = maxLength + 1                                  ;
+;       Protected uchar.c
+;       Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
+;       glGetProgramInfoLog(*Me\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
+;       ;MessageRequester("Error Setup Shader Program for InstanceCloud",PeekS(*pLinkInfoLog))
+;     EndIf
   
     glBindBuffer(#GL_ARRAY_BUFFER,0)
     glBindVertexArray(0)
@@ -307,7 +307,7 @@ Module InstanceCloud
     
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
       Protected Me.Object3D::IObject3D = *Me
-      Me\Setup(*Me\shader)
+      Me\Setup()
       Debug "INSTANCE CLOUD SETUP..."
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
@@ -368,9 +368,9 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 68
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 309
+; FirstLine = 305
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

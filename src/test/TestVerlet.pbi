@@ -74,7 +74,6 @@ Globals::Init()
     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
   EndIf
   
-  GLContext::SetContext(*app\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
@@ -90,7 +89,7 @@ Globals::Init()
   
   If Not #USE_GLFW
     ViewportUI::SetHandleTarget(*viewport, *mesh)
-    Application::AddLayer(*app, *layer)
+    GLContext::AddFramebuffer(*layer\context, *layer\framebuffer)
   EndIf
   
   Define *T.Transform::Transform_t = Object3D::GetGlobalTransform(*mesh)
@@ -121,8 +120,8 @@ Globals::Init()
 
   Verlet::Delete(*verlet)
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 118
-; FirstLine = 78
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 91
+; FirstLine = 58
 ; Folding = -
 ; EnableXP

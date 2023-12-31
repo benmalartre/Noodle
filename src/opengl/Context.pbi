@@ -32,6 +32,7 @@ Module GLContext
     *Me\height = height
     *Me\ID = 0
     *Me\writer = #Null
+    *Me\share = #False
     
     CompilerIf (#USE_GLFW = #True)
       If *context
@@ -60,7 +61,7 @@ Module GLContext
         EndIf
       
         *Me\window = GLFW::glfwCreateWindow(*mode\Width,*mode\Height,"GLFW",*monitor,#Null)
-  
+        *Me\share = #True
         
         If Not *Me\window
           Delete(*Me)
@@ -101,8 +102,7 @@ Module GLContext
           Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
           ; Create OpenGL Context
           If *context
-            Define *shared_ctxt.GLContext_t = *context
-            CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", *shared_ctxt\ID )
+            CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", *contetx\ID )
           Else
             CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
           EndIf
@@ -121,7 +121,7 @@ Module GLContext
         
         ; load extensions and setup shaders
         If Not *context
-          *MAIN_GL_CTXT = *Me
+          *SHARED_CTXT = *Me
           Setup(*Me)
         Else
           Copy(*Me, *context)
@@ -131,41 +131,35 @@ Module GLContext
       ;   WINDOWS
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
-        If Not *context
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
-        Else
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
-        EndIf
+        *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
+        Debug "context opengl gadget id : "+Str(*Me\ID)
         SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
-        
+        Debug "shared context : "+Str(*SHARED_CTXT)
         ; load extensions and setup shaders
         If Not *context
-          *MAIN_GL_CTXT = *Me
+          *Me\share = #True
+          *SHARED_CTXT = *Me
           Setup(*Me)
         Else
           ; share context
-          SetGadgetAttribute(*MAIN_GL_CTXT\ID, #PB_OpenGL_SetContext, #True)
+          SetGadgetAttribute(*SHARED_CTXT\ID, #PB_OpenGL_SetContext, #True)
           Define hglrc1 = wglGetCurrentContext_()
           SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
           Define hglrc2 = wglGetCurrentContext_()
           wglShareLists_(hglrc1, hglrc2)
-          Copy(*Me, *MAIN_GL_CTXT)
+          Copy(*Me, *SHARED_CTXT)
         EndIf
       
       ; =======================================================================
       ;   LINUX
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
-        If Not *context
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,0,0)
-        Else
-          *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
-        EndIf
+        *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
         SetGadgetAttribute(*Me\ID,#PB_OpenGL_SetContext,#True)
         
         ; load extensions and setup shaders
         If Not *context
-          *MAIN_GL_CTXT = *Me
+          *SHARED_CTXT = *Me
           Setup(*Me)
         Else
           ; copy context
@@ -244,6 +238,7 @@ Module GLContext
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage( 0, *Me\ID, "makeCurrentContext" )
     CompilerElse
+      Debug *Me\ID
       SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
     CompilerEndIf
   EndProcedure
@@ -308,8 +303,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 274
-; FirstLine = 237
+; CursorPosition = 123
+; FirstLine = 84
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
