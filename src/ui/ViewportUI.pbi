@@ -125,7 +125,19 @@ Module ViewportUI
   ; Delete
   ;------------------------------------------------------------------
   Procedure Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
-    
+    Debug "Viewport Resize..."
+    *Me\sizX = x
+    *Me\sizY = y
+    *Me\posX = width
+    *Me\posY = height
+    ResizeGadget(*Me\gadgetID,x,y,width,height)
+        
+    If *Me\context  
+      GLContext::Resize(*Me\context, width, height)
+    EndIf
+    If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
+    Control::Invalidate(*Me)
+        
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -158,18 +170,10 @@ Module ViewportUI
         EndIf
     
       Case #PB_Event_SizeWindow
-        *Me\sizX = *top\sizX
-        *Me\sizY = *top\sizY
-        *Me\posX = *top\posX
-        *Me\posY = *top\posY
+        Resize(*Me, *top\posX, *top\posY, *top\sizX, *top\sizY)
+
         
-        ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
         
-        If *Me\context  
-          GLContext::Resize(*Me\context, *Me\sizX, *Me\sizY)
-        EndIf
-        If *Me\tool : Handle::Resize(*Me\handle,*Me\camera) : EndIf
-        Control::Invalidate(*Me)
         
       Case #PB_Event_Gadget
         Protected deltax.d, deltay.d
@@ -679,8 +683,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 156
-; FirstLine = 152
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 135
+; FirstLine = 120
 ; Folding = ----
 ; EnableXP

@@ -77,7 +77,6 @@ Module Selection
   
   Procedure RemoveObject(*Me.Selection_t, *item.SelectionItem_t)
     If *Me\items(*item\key)
-      Define *item.SelectionItem_t = *Me\items(*item\key)
       If *item\type <> #ITEM_OBJECT
         Define *subItem.SelectionComponentItem_t = *item
         CArray::Delete(*subItem\components)
@@ -156,8 +155,8 @@ EndDeclareModule
 Module ComponentSelection
 EndModule
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 94
-; FirstLine = 90
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 79
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP

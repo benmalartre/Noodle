@@ -272,6 +272,7 @@ Module GLContext
   ;  Resize Context
   ;---------------------------------------------
   Procedure Resize(*Me.GLContext_t, width.i, height.i)
+    Debug "RESIZE GL CONTEXT............................"
     Define backingScale.f = BackingScaleFactor()
     *Me\width = width * backingScale
     *Me\height = height * backingScale
@@ -281,6 +282,7 @@ Module GLContext
       CocoaMessage(0,*Me\ID, "update")
     CompilerEndIf
     ForEach *me\framebuffers()
+      Debug "resize framebuffer..."
       Framebuffer::Resize(*me\framebuffers(), width, height)
     Next  
   EndProcedure
@@ -305,9 +307,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 191
-; FirstLine = 188
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 274
+; FirstLine = 237
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

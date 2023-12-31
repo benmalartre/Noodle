@@ -397,7 +397,11 @@ Module Layer
     For i=0 To CArray::GetCount(*objects)-1
       *obj = CArray::GetValuePtr(*objects,i)
       If *obj\type = type      
-        Color::UnpackColor(color, *obj\uniqueID)
+        If *obj\selected
+          Color::Set(color, 0, 0, 0, 1)
+        Else
+          Object3D::EncodeID(color,*obj\uniqueID)
+        EndIf
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         glUniform3fv(glGetUniformLocation(shader,"uniqueID"), 1, color)
         obj = *obj
@@ -736,8 +740,8 @@ Module Layer
   Class::DEF( Layer )
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 401
-; FirstLine = 397
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 403
+; FirstLine = 352
 ; Folding = -----
 ; EnableXP

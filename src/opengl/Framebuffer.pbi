@@ -616,9 +616,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 222
-; FirstLine = 218
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 404
+; FirstLine = 400
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

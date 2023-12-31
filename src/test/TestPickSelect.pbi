@@ -39,14 +39,6 @@ Global proj.m4f32
 Global T.f
 Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 
-; Resize
-;--------------------------------------------
-Procedure Resize(window,gadget)
-  width = WindowWidth(window,#PB_Window_InnerCoordinate)
-  height = WindowHeight(window,#PB_Window_InnerCoordinate)
-  ResizeGadget(gadget,0,0,width,height)
-  glViewport(0,0,width,height)
-EndProcedure
 
 Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
   Define position.Math::v3f32
@@ -77,30 +69,30 @@ Procedure Update(*app.Application::Application_t)
   
   Scene::Update(*app\scene)
   *select\mouseX = *viewport\mx
-  *select\mouseY = *app\context\height -*viewport\my
+  *select\mouseY = *viewport\my
+
+  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  LayerSelection::Draw(*select, *app\scene, *app\context)
   
-  
-  If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
+   If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
     If EventType() = #PB_EventType_LeftClick
       LayerSelection::Pick(*select, *app\scene)
     EndIf
   EndIf
   
-  LayerDefault::Draw(*layer, *app\scene, *app\context)
-  LayerSelection::Draw(*select, *app\scene, *app\context)
-  
   ViewportUI::Blit(*viewport, *select\framebuffer)
   
   
+  Define writer = *viewport\context\writer
 ;   LayerDefault::Draw(*layer, *app\context)
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(writer)
+  FTGL::SetColor(writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
   Define numSelected = MapSize(*select\selection\items())
-  FTGL::Draw(*app\context\writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
+  FTGL::EndDraw(writer)
   
   GLContext::FlipBuffer(*viewport\context)
 
@@ -125,43 +117,32 @@ Procedure Update(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
-  
-  
+
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
   *layer = LayerDefault::New(800,600,*app\context,*app\camera)
   *select = LayerSelection::New(800,600,*app\context,*app\camera)
   *select\selection = *app\scene\selection
+  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+  GLContext::AddFramebuffer(*viewport\context, *select\framebuffer)
   
   
   Global *root.Model::Model_t = Model::New("Model")
   RandomBunnies(128, -2, *root)
-  
-  
-    
-  *s_wireframe = *app\context\shaders("simple")
-  *s_polymesh = *app\context\shaders("polymesh")
-  
-  shader = *s_polymesh\pgm
-; 
-;   Define *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
-;   Object3D::SetShader(*ground,*s_polymesh)
- 
-  Define i
   
   Scene::AddModel(*app\scene,*root)
   Scene::Setup(*app\scene,*app\context)
   Scene::Update(*app\scene)
   Application::Loop(*app, @Update())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 91
-; FirstLine = 67
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 40
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

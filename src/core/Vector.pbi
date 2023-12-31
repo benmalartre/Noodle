@@ -1058,7 +1058,6 @@ Module Vector
   Procedure RemoveAtom(*item.Item_t, *atom.Atom_t)
     ForEach *item\childrens()
       If *item\childrens() = *atom 
-        Define *atom.Atom_t = *item\childrens()
         DeleteAtom(*atom)
         DeleteElement(*item\childrens())
         Break
@@ -2248,8 +2247,8 @@ Module Vector
 
 EndModule
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1072
-; FirstLine = 1068
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 1059
+; FirstLine = 1050
 ; Folding = -------------------
 ; EnableXP

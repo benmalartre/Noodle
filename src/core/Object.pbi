@@ -125,7 +125,6 @@ Module Object
   
   Procedure DeleteSignal(*obj.Object_t, *signal.Signal::Signal_t)
     If FindMapElement(*obj\signals(), *signal\name)
-      Define *signal.Signal::Signal_t = *obj\signals()
       Signal::Delete(*signal)
       DeleteMapElement(*obj\signals())
     EndIf
@@ -284,8 +283,8 @@ EndModule
 ;     Slot::Disconnect(*slot,*Me )
 ;   EndProcedure
 ; EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 30
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 127
+; FirstLine = 108
 ; Folding = ---
 ; EnableXP

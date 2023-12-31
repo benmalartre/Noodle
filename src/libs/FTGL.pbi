@@ -40,9 +40,9 @@ DeclareModule FTGL
   
   Structure FTGL_FontAtlas Align #PB_Structure_AlignC
     metadata.FTGL_GlyphInfos[256]
-    width.i
-    height.i
-    size_px.i
+    width.l
+    height.l
+    size_px.l
     *buffer
     
   EndStructure
@@ -96,6 +96,7 @@ DeclareModule FTGL
     ;___________________________________________________________________________
     ;  Windows
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ImportC "..\..\libs\x64\windows\freetype.lib" : EndImport
     ImportC "..\..\libs\x64\windows\ftgl.lib"
       
   CompilerElseIf #PB_Compiler_OS = #PB_OS_Linux
@@ -339,6 +340,10 @@ Module FTGL
     glActiveTexture(#GL_TEXTURE0)
     Protected w = *Me\atlas\width
     Protected h = *Me\atlas\height
+    Debug "width : "+Str(w)
+    Debug "height : "+Str(h)
+    
+    Debug "atlas : "+Str(*Me\atlas)
     
     Define img = CreateImage(#PB_Any,w,h,32)
   
@@ -465,8 +470,8 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 287
-; FirstLine = 260
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 44
+; FirstLine = 30
 ; Folding = ----
 ; EnableXP

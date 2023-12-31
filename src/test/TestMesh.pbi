@@ -88,45 +88,38 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  Protected *ctxt.GLContext::GLContext_t = *viewport\context
-  GLContext::SetContext(*ctxt)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
+
   
-  Protected *t.Transform::Transform_t = *light\localT
-  
-;   Vector3::Set(*light\pos, Random(10)-5, Random(12)+6, Random(10)-5)
-;   Transform::SetTranslationFromXYZValues(*t, *light\pos\x, *light\pos\y, *light\pos\z)
-;   Object3D::SetLocalTransform(*light, *t)
-;   
+  GLContext::SetContext(*viewport\context)
+  *app\scene\dirty= #True
   
   Scene::Update(*app\scene)
   
-  glViewport(0, 0, width, height)
-  
-  Protected *s.Program::Program_t = *ctxt\shaders("polymesh")
-  glUseProgram(*s\pgm)
-  glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
  
-
-  Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *app\layer\framebuffer)
-
-  FTGL::BeginDraw(*ctxt\writer)
-  FTGL::SetColor(*ctxt\writer,1,1,1,1)
+  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+  
+  
+  Define writer = *viewport\context\writer
+  FTGL::BeginDraw(writer)
+  FTGL::SetColor(writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*ctxt\writer,"Nb Vertices : "+Str(*bunny\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*ctxt\writer)
+  FTGL::Draw(writer,"Testing Polymesh",-0.9,0.9,ss,ss*ratio)
+
+  FTGL::EndDraw(writer)
   
-  GLContext::FlipBuffer(*ctxt)
-    
+  GLContext::FlipBuffer(*viewport\context)
+
+;     
 
  EndProcedure
  
  Define useJoystick.b = #False
  width = 800
  height = 800
- ; Main
+ 
  Globals::Init()
  FTGL::Init()
  
@@ -147,22 +140,18 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
   
-  
-  GLContext::SetContext(*app\context)
-  
+    
   *layer = LayerDefault::New(width,height,*app\context,*app\camera)
   Application::AddLayer(*app, *layer)
+  
+  Define pos.v3f32,scl.v3f32
 
   Global *root.Model::Model_t = Model::New("Model")
 
-  *s_wireframe = *app\context\shaders("simple")
-  *s_polymesh = *app\context\shaders("polymesh")
+
+  *ground.Polymesh::Polymesh_t = RandomGround()
   
 
-  *ground.Polymesh::Polymesh_t = RandomGround();Polymesh::New("Ground",Shape::#SHAPE_GRID)
-  Object3D::SetShader(*ground,*s_polymesh)
-  
-  Define pos.v3f32,scl.v3f32
   
   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
   
@@ -242,8 +231,8 @@ Procedure Draw(*app.Application::Application_t)
  
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 230
-; FirstLine = 199
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 124
+; FirstLine = 91
 ; Folding = -
 ; EnableXP

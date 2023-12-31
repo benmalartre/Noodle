@@ -11,13 +11,9 @@ DeclareModule LayerSelection
   ; Structure
   ;---------------------------------------------------
   Structure LayerSelection_t Extends Layer::Layer_t
-    uProjectionMatrix.i
-    uViewMatrix.i
-    uModelMatrix.i
-    uUniqueID.i
     mouseX.i
     mouseY.i
-    Array read_datas.GLubyte(4)
+    pixel.GLubyte[4]
     *overchild.Object3D::Object3D_t
     *selection.Selection::Selection_t
   EndStructure
@@ -30,7 +26,6 @@ DeclareModule LayerSelection
   
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   Declare Delete(*layer.LayerSelection_t)
-  Declare DrawChildren(*layer.LayerSelection_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
   Declare Update(*layer.LayerSelection_t,*view.m4f32,*proj.m4f32)
   Declare Setup(*layer.LayerSelection_t)
   Declare Clean(*layer.LayerSelection_t)
@@ -48,39 +43,6 @@ Module LayerSelection
   UseModule OpenGL
   UseModule OpenGLExt
 
-;---------------------------------------------------------
-; Pick Children Recursively
-;---------------------------------------------------------
-  Procedure DrawChildren(*layer.LayerSelection_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
-  Protected id.v3f32
-  Protected nbo = ListSize(*obj\children())
-  Protected *child.Object3D::Object3D_t
-  Protected child.Object3D::IObject3D
-  Protected *t.Transform::Transform_t
-  Protected i
-  
-  
-  ForEach *obj\children()
-    *child = *obj\children()
-    Object3D::EncodeID(id,*child\uniqueID)
-    If *child\type = Object3D::#Polymesh
-      *t = *child\globalT
-      glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
-      glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
-      child = *child
-      child\Draw()
-    ElseIf *child\type = Object3D::#PointCloud
-      *t = *child\globalT
-      glUniform3f(*layer\uUniqueID,id\x,id\y,id\z)
-      glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
-      child = *child
-      child\Draw()
-    EndIf 
-    
-    DrawChildren(*layer,*child,*ctx)
-  Next
-  
-EndProcedure
 
 ;---------------------------------------------------
 ; Update
@@ -95,7 +57,6 @@ EndProcedure
 ;---------------------------------------------------
 Procedure Setup(*layer.LayerSelection_t)
 
-  
 EndProcedure
 
 ;---------------------------------------------------
@@ -110,49 +71,21 @@ EndProcedure
 ; Pick
 ;---------------------------------------------------
 Procedure Pick(*layer.LayerSelection_t, *scene.Scene::Scene_t)
-  Protected layer.Layer::ILayer = *layer
-
-    ; ---[ Find Up View Point ]--------------------------
-  Protected *view.m4f32 = Layer::GetViewMatrix(*layer)
-  Protected *proj.m4f32 = Layer::GetProjectionMatrix(*layer)
-  
-  ; ---[ Bind Framebuffer and Clean ]-------------------
-  Framebuffer::BindOutput(*layer\framebuffer)
-  glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
-
-  glClearColor(0,0,0,0)
-  glClear(#GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT) 
-  
-  glUseProgram(*layer\shader\pgm)
-
-  glUniformMatrix4fv(*layer\uViewMatrix,1,#GL_FALSE,*view)
-  glUniformMatrix4fv(*layer\uProjectionMatrix,1,#GL_FALSE,*proj)
-  glUniform3f(*layer\uUniqueID,0,0,0)
-  
-  glEnable(#GL_DEPTH_TEST)
-  glDisable(#GL_CULL_FACE)
-  
-  ; Recursive Draw
-  DrawChildren(*layer,*scene\root,*ctx)
-
-  
-  Framebuffer::BlitTo(*layer\framebuffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
-
-  Framebuffer::Unbind(*layer\framebuffer)
-  
+  Framebuffer::BindInput(*layer\framebuffer)
   glPixelStorei(#GL_UNPACK_ALIGNMENT, 1)
-  
-  
+
    ; Read the pixel at the mouse position
-  glReadPixels(*layer\mouseX, *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE, @*layer\read_datas(0))
-  Define pickID.i = Object3D::DecodeID(*layer\read_datas(0), *layer\read_datas(1), *layer\read_datas(2))
+  glReadPixels(*layer\mouseX, *layer\framebuffer\height - *layer\mouseY, 1, 1, #GL_RGBA, #GL_UNSIGNED_BYTE,@*layer\pixel)
+
+  Define pickID.i = Object3D::DecodeID(*layer\pixel[0], *layer\pixel[1], *layer\pixel[2])
   Define *selected.Object3D::Object3D_t
   If FindMapElement(*scene\m_uuids(), Str(pickID))
     *selected = *scene\m_uuids()
     Selection::AddObject(*layer\selection, *selected)
     *selected\selected = #True
   EndIf
-  
+Framebuffer::Unbind(*layer\framebuffer)
+   
 EndProcedure
 
 ;---------------------------------------------------
@@ -169,39 +102,13 @@ Procedure Draw(*layer.LayerSelection_t, *scene.Scene::Scene_t, *ctx.GLContext::G
     glFrontFace(#GL_CW)
     glEnable(#GL_DEPTH_TEST)
     
-  Debug "selection shader :" +Str(*ctx\shaders("selection"))
-  Layer::DrawByType(*layer,*scene\objects, Object3D::#Polymesh, *ctx\shaders("selection"))
-;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "wireframe"), 1)
-;     glUniform1i(glGetUniformLocation(*layer\shader\pgm, "selected"), 1)
-;     Protected *obj.Object3D::Object3D_t = *scene\m_uuids()
-;     Protected obj.Object3D::IObject3D = *obj
-;     glDisable(#GL_DEPTH_TEST)
-;     glEnable(#GL_CULL_FACE)
-;     glDisable(#GL_BLEND)
-; 
-;     Define *t.Transform::Transform_t = *obj\globalT
-;     glUniform3f(*layer\uUniqueID,1,1,1)
-;     glUniformMatrix4fv(*layer\uModelMatrix,1,#GL_FALSE,*t\m)
-;     *obj\selected = #True
-;     obj\Draw()
-;     If *obj <> *layer\overchild
-;       If *layer\overchild : *layer\overchild\selected = #False : EndIf
-;       *layer\overchild = *obj
-;     EndIf
-;   
-;     If *layer\overchild
-;       *layer\overchild\selected = #False
-;       *layer\overchild = #Null
-;     EndIf
-;   
-  
+    Layer::DrawByType(*layer,*scene\objects, Object3D::#Polymesh, *ctx\shaders("selection"))
+
     Framebuffer::Unbind(*layer\framebuffer)
   
     glDisable(#GL_DEPTH_TEST)
-    glDisable(#GL_BLEND)
     
     glUseProgram(0)
-  
 
 EndProcedure
 
@@ -221,27 +128,21 @@ Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object
   Color::Set(*Me\color,0.5,1.0,0.5,1)
   *Me\context = *ctx
   *Me\mask = #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT
+  *Me\shader = *ctx\shaders("selection")  
+  *Me\pov = *pov
   *Me\framebuffer = Framebuffer::New("Selection",width,height)
-  Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA8,#GL_LINEAR)
+  Framebuffer::AttachTexture(*Me\framebuffer,"Color",#GL_RGBA,#GL_LINEAR)
   Framebuffer::AttachRender(*Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
   
     
-  *Me\shader = *ctx\shaders("selection")
-  Protected shader.i = *Me\shader\pgm
-  *Me\uViewMatrix = glGetUniformLocation(shader,"view")
-  *Me\uProjectionMatrix = glGetUniformLocation(shader,"projection")
-  *Me\uModelMatrix = glGetUniformLocation(shader,"model")
-  *Me\uUniqueID = glGetUniformLocation(shader,"uniqueID")
   
-  *Me\pov = *pov
   ProcedureReturn *Me
 EndProcedure
 
  Class::DEF( LayerSelection )
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 222
-; FirstLine = 196
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 39
 ; Folding = --
 ; EnableXP
