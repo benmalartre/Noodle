@@ -1,7 +1,6 @@
 ﻿XIncludeFile "Framebuffer.pbi"
 XIncludeFile "ScreenQuad.pbi"
 XIncludeFile "../core/Math.pbi"
-XIncludeFile "../objects/Object3D.pbi"
 
 ; ============================================================================
 ;  GLContext Module Declaration
@@ -73,8 +72,7 @@ DeclareModule GLContext
   Global MAIN_CTXT_HEIGHT = 1024
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 20
+; CursorPosition = 3
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

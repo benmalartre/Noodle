@@ -508,8 +508,6 @@ Module Handle
 
     Define pgm = *ctx\shaders("wireframe")\pgm
     glUseProgram(pgm)
-    If Not *Me\vao : glGenVertexArrays(1,@*Me\vao) : EndIf
-    glBindVertexArray(*Me\vao)
     
     Protected *shape.Shape::Shape_t = #Null
     Select tool
@@ -526,28 +524,32 @@ Module Handle
       Default
         *shape = *Me\transform_handle
     EndSelect
+    Object3D::BindVAOForContext(*Me\vaos(), *ctx)
     
     ; vertex buffer object
-    If Not *Me\vbo : glGenBuffers(1,@*Me\vbo) : EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-    glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    Object3D::BindVBO(@*Me\vbo)
     
-    ; element array buffer
-    If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
-    
-    ; Attibute Position
-    glEnableVertexAttribArray(0)
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-    CompilerElse
-      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-    CompilerEndIf
-    
-    ; Bind Attributes Locations
-    glBindAttribLocation(pgm,0,"position")
-
+    If *ctx\share
+      glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+      glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+      
+      ; element array buffer
+      If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
+      glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
+      
+      ; Attibute Position
+      glEnableVertexAttribArray(0)
+      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerElse
+        glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+      CompilerEndIf
+      
+      ; Bind Attributes Locations
+      glBindAttribLocation(pgm,0,"position")
+    EndIf
+   
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(pgm,"view")
     *Me\u_proj.GLint = glGetUniformLocation(pgm,"projection")
@@ -599,7 +601,7 @@ Module Handle
   ;------------------------------------------------------------
   Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
     If Not *Me\target : ProcedureReturn : EndIf
-    glBindVertexArray(*me\vao)
+    Object3D::BindVAOForContext(*Me\vaos(), *ctx)
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
@@ -1442,7 +1444,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 555
-; FirstLine = 510
+; CursorPosition = 603
+; FirstLine = 590
 ; Folding = -------
 ; EnableXP

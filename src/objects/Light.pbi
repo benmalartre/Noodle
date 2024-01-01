@@ -53,10 +53,10 @@ DeclareModule Light
   EndInterface
   
   Declare New( name.s,type.i=#Light_Infinite)
-  Declare Setup(*Me.Light_t)
-  Declare Update(*Me.Light_t)
-  Declare Clean(*Me.Light_t)
-  Declare Draw(*Me.Light_t)
+  Declare Setup(*Me.Light_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*Me.Light_t, *ctxt.GLContext::GLContext_t)
+  Declare Clean(*Me.Light_t, *ctxt.GLContext::GLContext_t)
+  Declare Draw(*Me.Light_t, *ctxt.GLContext::GLContext_t)
   Declare Delete(*Me.Light_t)
   Declare PassToShader(*Me.Light_t,shader.i,ID.i)
   Declare UpdateProjection(*light.Light_t)
@@ -615,7 +615,7 @@ Module Light
   ; Setup 
   ;-----------------------------------------------------
   ;{
-  Procedure Setup(*Me.Light_t)
+  Procedure Setup(*Me.Light_t, *ctxt.GLContext::GLContext_t)
     
     ;---[ Check Datas ]--------------------------------
     If Not *Me Or Not *ctx:ProcedureReturn:EndIf
@@ -631,22 +631,14 @@ Module Light
     *Me\u_selected = glGetUniformLocation(shader,"selected")
     
     ; Create\ReUse Vertex Array Object
-    If Not *Me\vao
-      glGenVertexArrays(1,@*Me\vao)
-    EndIf
-    glBindVertexArray(*Me\vao)
+    Object3D::BindVAOForContext(*Me\vaos(), *ctxt)
     
     ; Create or ReUse Vertex Buffer Object
-    If Not *Me\vbo
-      glGenBuffers(1,@*Me\vbo)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+    Object3D::BindVBO(@*Me\vbo)
     
     ; Create or ReUse Edge Elements Buffer
-    If Not *Me\eab
-      glGenBuffers(1,@*Me\eab)
-    EndIf 
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
+    Object3D::BindEAB(@*Me\eab)
+
     
     ; Pass data to GPU
     Protected f.GLfloat
@@ -692,11 +684,10 @@ Module Light
   ;----------------------------------------------------------------------------
   ; Clean
   ;----------------------------------------------------------------------------
-  Procedure Clean(*Me.Light_t)
-    If *Me\vao : glDeleteVertexArrays(1,@*Me\vao) : EndIf
-    If *Me\vbo : glDeleteBuffers(1,@*Me\vbo) : EndIf
-    If *Me\eab: glDeleteBuffers(1,@*Me\eab) : EndIf
-    
+  Procedure Clean(*Me.Light_t, *ctxt.GLContext::GLContext_t)
+    Object3D::DeleteVAOs(*Me\vaos())
+    Object3D::DeleteVBO(@*Me\vbo)
+    Object3D::DeleteEAB(@*Me\eab)
 ;     Protected i 
 ;     For i=0 To ArraySize(*Me\vaos())-1
 ;       If *Me\vaos(i) : glDeleteVertexArrays(1,@*Me\vaos(i)) : EndIf
@@ -712,8 +703,7 @@ Module Light
   ;----------------------------------------------------------------------------
   ; Update
   ;----------------------------------------------------------------------------
-  
-  Procedure Update(*Me.Light_t)
+  Procedure Update(*Me.Light_t, *ctxt.GLContext::GLContext_t)
     UpdateProjection(*Me)
     LookAt(*Me)
   EndProcedure
@@ -721,51 +711,52 @@ Module Light
   ;----------------------------------------------------------------------------
   ; Draw
   ;----------------------------------------------------------------------------
-  Procedure Draw(*Me.Light_t)
+  Procedure Draw(*Me.Light_t, *ctxt.GLContext::GLContext_t)
   
      ; ---[ Sanity Check ]--------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected *t.Transform::Transform_t = *Me\globalT
-    glBindVertexArray(*Me\vao)
+    If Object3D::BindVAOForContext(*Me\vaos(), *ctxt)
+      ; Set Wireframe Color
+  ;     If *Me\selected
+  ;       glUniform3f(*Me\u_color,1,1,1)
+  ;     Else
+        glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
+  ;     EndIf
+      
+      glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
+      
+      Protected offset.m4f32
+      Matrix4::SetIdentity(offset)
+      glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
+      
+      Define l.GLuint
+      Define.m4f32 inv_proj
+      Matrix4::Inverse(@inv_proj,*Me\projection)
     
-    ; Set Wireframe Color
-;     If *Me\selected
-;       glUniform3f(*Me\u_color,1,1,1)
-;     Else
-      glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
-;     EndIf
+          
+      ; Draw Shape Plus Frustrum
+      Select *Me\lighttype
+        Case #Light_Infinite
+          glDrawElements(#GL_LINES,(#SUN_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
+          glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
+          glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#SUN_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
+          
+        Case #Light_Point
+          glDrawElements(#GL_LINES,(#POINT_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
+          glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
+          glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#POINT_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
     
-    glUniformMatrix4fv(*Me\u_model,1,#GL_FALSE,*t\m)
+        Case #Light_Spot
+          glDrawElements(#GL_LINES,(#SPOT_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
+          glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
+          glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#SPOT_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
+      EndSelect
+      
+      glBindVertexArray(0)
+    EndIf
     
-    Protected offset.m4f32
-    Matrix4::SetIdentity(offset)
-    glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@offset)
-    
-    Define l.GLuint
-    Define.m4f32 inv_proj
-    Matrix4::Inverse(@inv_proj,*Me\projection)
-  
-        
-    ; Draw Shape Plus Frustrum
-    Select *Me\lighttype
-      Case #Light_Infinite
-        glDrawElements(#GL_LINES,(#SUN_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
-        glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
-        glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#SUN_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
-        
-      Case #Light_Point
-        glDrawElements(#GL_LINES,(#POINT_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
-        glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
-        glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#POINT_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
-  
-      Case #Light_Spot
-        glDrawElements(#GL_LINES,(#SPOT_LIGHT_NUM_EDGES-12)*2,#GL_UNSIGNED_INT,0)
-        glUniformMatrix4fv(*Me\u_offset,1,#GL_FALSE,@inv_proj)
-        glDrawElements(#GL_LINES,24,#GL_UNSIGNED_INT,(#SPOT_LIGHT_NUM_EDGES-12)*2*SizeOf(l))
-    EndSelect
-    
-    glBindVertexArray(0)
    EndProcedure 
    
   ;----------------------------------------------------------------------------
@@ -1068,7 +1059,7 @@ Module Light
   Class::DEF( Light )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 625
-; FirstLine = 96
-; Folding = 0+e--
+; CursorPosition = 719
+; FirstLine = 192
+; Folding = 0-e--
 ; EnableXP

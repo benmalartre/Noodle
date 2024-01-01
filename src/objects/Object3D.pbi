@@ -5,6 +5,7 @@ XIncludeFile "../core/Object.pbi"
 XIncludeFile "../core/Perlin.pbi"
 XIncludeFile "../opengl/Shader.pbi"
 XIncludeFile "../opengl/Texture.pbi"
+XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "../objects/PolymeshGeometry.pbi"
 XIncludeFile "../objects/Stack.pbi"
@@ -13,6 +14,7 @@ XIncludeFile "../objects/Stack.pbi"
 DeclareModule Object3D
   UseModule Math
   UseModule OpenGL
+  UseModule OpenGLExt
   Enumeration
     #None
     #Camera
@@ -41,7 +43,7 @@ DeclareModule Object3D
     uniqueID.i
     visited.b
     
-    vao.i
+    Map vaos.i()
     vbo.i
     eab.i
     type.i
@@ -118,8 +120,8 @@ DeclareModule Object3D
     Delete()
     Setup(*ctxt)
     Update(*ctxt)
-    Clean()
-    Draw()
+    Clean(*ctxt)
+    Draw(*ctxt)
   EndInterface
   
   Declare.b IsA(*obj.Object3D_t,type.i)
@@ -144,11 +146,20 @@ DeclareModule Object3D
   Declare.b CheckAttributeExist(*obj.Object3D_t,attrname.s)
   Declare SetAttributeDirty(*obj.Object3D_t, attrname.s)
   Declare SetAttributeClean(*obj.Object3D_t, attrname.s)
-  ;   Declare SetVisibility(visible.b)
   Declare EncodeID(*color.v3f32,id.i)
   Declare DecodeID(r.GLubyte,g.GLubyte,b.GLubyte)
   Declare FindChildren(*obj.Object3D_t,name.s,type.i,*io_array.CArray::CArrayPtr,recurse.b)
-    
+  
+  Declare AddContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+  Declare RemoveContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+  Declare BindVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t, create.b=#False)
+  Declare DeleteVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+  Declare DeleteVAOs(Map vaos())
+  Declare BindVBO(*vboAddr)
+  Declare DeleteVBO(*vboAddr)
+  Declare BindEAB(*eabAddr)
+  Declare DeleteEAB(*eabAddr)
+  
 EndDeclareModule
 
 
@@ -228,7 +239,6 @@ Module Object3D
         Break;
       EndIf
     Next
-  
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -544,10 +554,86 @@ Module Object3D
     Next
     
   EndProcedure
+  
+  ;--------------------------------------------------
+  ; common opengl stuff
+  ;--------------------------------------------------
+  Procedure AddContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+    
+  EndProcedure
+  
+  Procedure RemoveContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+    
+  EndProcedure
+  
+  Procedure DeleteVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t)
+    ForEach vaos()
+      If Val(MapKey(vaos())) = *ctxt
+        If vaos() : glDeleteVertexArrays(1,vaos()) : EndIf
+        DeleteMapElement(vaos(), Str(*ctxt))
+        ProcedureReturn #True
+      EndIf
+    Next
+    ProcedureReturn #False
+  EndProcedure
+  
+  Procedure DeleteVAOs(Map vaos())
+    ForEach vaos()
+      If vaos() : glDeleteVertexArrays(1,vaos()) : EndIf
+    Next
+    ClearMap(vaos())
+  EndProcedure
+
+  Procedure BindVaoForContext(Map vaos(), *ctxt.GLContext::GLContext_t, create.b=#False)
+    Define key.s = Str(*ctxt)
+    If Not FindMapElement(vaos(), key)
+      If create 
+        AddMapElement(vaos(), key)
+        glGenVertexArrays(1,@vaos())
+        glBindVertexArray(vaos())
+        ProcedureReturn #True
+      EndIf
+      ProcedureReturn #False
+    EndIf
+    glBindVertexArray(vaos())
+    ProcedureReturn #True
+  EndProcedure
+  
+  Procedure BindVBO(*vboAddr)
+    Define vbo = PeekL(*vboAddr)
+    If Not vbo
+      glGenBuffers(1,*vboAddr)
+      vbo = PeekL(*vboAddr)
+    EndIf
+    glBindBuffer(#GL_ARRAY_BUFFER,vbo)
+  EndProcedure
+  
+  Procedure DeleteVBO(*vboAddr)
+    Define vbo = PeekL(*vboAddr)
+     If vbo : glDeleteBuffers(1,vbo) : EndIf
+     PokeL(*vboAddr, 0)
+  EndProcedure
+  
+  
+  Procedure BindEAB(*eabAddr)
+    Define eab = PeekL(*eabAddr)
+    If Not eab
+      glGenBuffers(1,*eabAddr)
+      eab = PeekL(*eabAddr)
+    EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,eab)
+  EndProcedure
+  
+  Procedure DeleteEAB(*eabAddr)
+    Define eab = PeekL(*eabAddr)
+    If eab : glDeleteBuffers(1,eab) : EndIf
+    PokeL(*eabAddr, 0)
+  EndProcedure
+  
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 90
-; Folding = ------
+; CursorPosition = 606
+; FirstLine = 571
+; Folding = --------
 ; EnableXP

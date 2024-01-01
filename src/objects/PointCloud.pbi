@@ -24,8 +24,8 @@ DeclareModule PointCloud
   Declare Delete(*Me.PointCloud_t)
   Declare Setup(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
   Declare Update(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.PointCloud_t)
-  Declare Draw(*Me.PointCloud_t)
+  Declare Clean(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Declare Draw(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
   Declare SetFromShape(*Me.PointCloud_t,shape.i)
   Declare SetDirtyState(*Me.PointCloud_t, state.i)
   Declare SetClean(*Me.PointCloud_t)
@@ -49,8 +49,7 @@ Module PointCloud
   ; Constructor
   ;----------------------------------------------------
   Procedure New(name.s,numPoints.i)
-    Protected *Me.PointCloud_t = AllocateMemory(SizeOf(PointCloud_t))
-    InitializeStructure(*Me,PointCloud_t)
+    Protected *Me.PointCloud_t = AllocateStructure(PointCloud_t)
     *Me\name = name
     *Me\type = Object3D::#PointCloud
     Object::INI(PointCloud)
@@ -70,24 +69,24 @@ Module PointCloud
     Object3D::AddAttribute(*Me,*geom)
     Protected *nbpoints = Attribute::New(*Me,"NbPoints",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*cloud\nbpoints,#True,#True,#True, #True, #False)
     Object3D::AddAttribute(*Me,*nbpoints)
-    Protected *pointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointposition)
-    Protected *pointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointvelocity)
-    Protected *pointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointnormal)
-    Protected *pointtangent = Attribute::New(*Me,"PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointtangent)
-    Protected *pointcolor = Attribute::New(*Me,"PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointcolor)
-    Protected *pointsize = Attribute::New(*Me,"PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointsize)
-    Protected *pointscale = Attribute::New(*Me,"PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointscale)
-    Protected *pointindices = Attribute::New(*Me,"PointID",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointindices)
-    Protected *pointuvws = Attribute::New(*Me,"PointUVW",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#True,#False,#False,#True,#True)
-    Object3D::AddAttribute(*Me,*pointuvws)
+    Protected *Meointposition = Attribute::New(*Me,"PointPosition",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_positions,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointposition)
+    Protected *Meointvelocity = Attribute::New(*Me,"PointVelocity",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_velocities,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointvelocity)
+    Protected *Meointnormal = Attribute::New(*Me,"PointNormal",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_normals,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointnormal)
+    Protected *Meointtangent = Attribute::New(*Me,"PointTangent",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_tangents,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointtangent)
+    Protected *Meointcolor = Attribute::New(*Me,"PointColor",Attribute::#ATTR_TYPE_COLOR,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_color,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointcolor)
+    Protected *Meointsize = Attribute::New(*Me,"PointSize",Attribute::#ATTR_TYPE_FLOAT,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_size,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointsize)
+    Protected *Meointscale = Attribute::New(*Me,"PointScale",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_scale,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointscale)
+    Protected *Meointindices = Attribute::New(*Me,"PointID",Attribute::#ATTR_TYPE_INTEGER,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_indices,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointindices)
+    Protected *Meointuvws = Attribute::New(*Me,"PointUVW",Attribute::#ATTR_TYPE_VECTOR3,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_COMPONENT0D,*cloud\a_uvws,#True,#False,#False,#True,#True)
+    Object3D::AddAttribute(*Me,*Meointuvws)
   
     ProcedureReturn *Me
   EndProcedure
@@ -95,19 +94,17 @@ Module PointCloud
   ; Destructor
   ;----------------------------------------------------
   Procedure Delete(*Me.PointCloud_t)
-    glDeleteVertexArrays(1,*Me\vao)
-    glDeleteBuffers(1,*Me\vbo)
-    ClearStructure(*Me,PointCloud_t)
-    FreeMemory(*Me)
+    Object3D::DeleteVAOs(*Me\vaos())
+    Object3D::DeleteVBO(@*Me\vbo)
+    FreeStructure(*Me)
   EndProcedure
-  
   
   ;-----------------------------------------------------
   ; Buil GL Data 
   ;-----------------------------------------------------
-  Procedure BuildGLData(*p.PointCloud_t)
+  Procedure BuildGLData(*Me.PointCloud_t)
     ;---[ Get Underlying Geometry ]--------------------
-    Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
+    Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected nbv = *geom\nbpoints
     If nbv <3 : ProcedureReturn : EndIf
     
@@ -204,66 +201,49 @@ Module PointCloud
     
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*p.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Procedure Setup(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
 
     ;---[ Get Underlying Geometry ]--------------------
-    Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
+    Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     
     Protected nbv = *geom\nbpoints
    
     ; Setup Static Kinematic STate
-    ;ResetStaticKinematicState(*p)
+    ;ResetStaticKinematicState(*Me)
     
     ; Create or ReUse Vertex Array Object
-    If Not *p\vao
-      glGenVertexArrays(1,@*p\vao)
+    If Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+    
+      ; Create or ReUse Vertex Buffer Object
+      Object3D::BindVBO(@*Me\vbo)
+      
+      If *ctxt\share
+        ; Fill Buffer
+        BuildGLData(*Me)
+      EndIf
+      
+      *Me\initialized = #True
+      *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
     EndIf
-    glBindVertexArray(*p\vao)
-    
-    ; Create or ReUse Vertex Buffer Object
-    If Not *p\vbo
-      glGenBuffers(1,@*p\vbo)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
-    
-
-    ; Fill Buffer
-    BuildGLData(*p)
-    
-;      glLinkProgram(*p\shader\pgm);
-;     ; Check For Errors
-;     Protected linked.i
-;     If Not glGetProgramiv(*p\shader\pgm, #GL_LINK_STATUS, @linked);
-;       ;Make sure linked==TRUE
-;       ;If linked==FALSE, the log contains information on what went wrong
-;       Protected maxLength.i
-;       glGetProgramiv(*p\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
-;       maxLength = maxLength + 1                                  ;
-;       Protected uchar.c
-;       Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
-;       glGetProgramInfoLog(*p\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-;       ;MessageRequester("Error Setup Shader Program for PointCloud",PeekS(*pLinkInfoLog))
-;     EndIf
-; 
-;     ; Unbind
-;     glBindVertexArray(0)
-   
-    
-    *p\initialized = #True
-    *p\dirty = Object3D::#DIRTY_STATE_CLEAN
+  
   EndProcedure
   
   ;-----------------------------------------------------
   ; Clean
   ;-----------------------------------------------------
   ;{
-  Procedure Clean(*p.PointCloud_t)
+  Procedure Clean(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
 
-      If *p\vao : glDeleteVertexArrays(1,@*p\vao) : EndIf
+     If *ctxt\share
+      glDeleteBuffers(1, *Me\vbo)
+    EndIf
+    Define key.s = Str(*ctxt)
+    If FindMapElement(*Me\vaos(), key)
+      glDeleteVertexArrays(1,*Me\vaos())
+      DeleteMapElement(*Me\vaos(), key)
+    EndIf
 
-      If *p\vbo: glDeleteBuffers(1,@*p\vbo) : EndIf
-
-;       If *p\eab: glDeleteBuffers(1,@*p\eab) : EndIf
+;       If *Me\eab: glDeleteBuffers(1,@*Me\eab) : EndIf
 
   EndProcedure
   ;}
@@ -272,23 +252,25 @@ Module PointCloud
   ; Update
   ;-----------------------------------------------------
   ;{
-  Procedure Update(*p.PointCloud_t, *ctxt.GLContext::GLContext_t)
-    If *p\stack
-      Stack::Update(*p\stack)
+  Procedure Update(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+    If *Me\stack
+      Stack::Update(*Me\stack)
     EndIf
     
-    If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
-      Protected p.Object3D::IObject3D = *p
+    If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
+      Protected p.Object3D::IObject3D = *Me
       p\Setup(*ctxt)
     Else 
-      If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
-;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
-        glBindVertexArray(*p\vao)
-        glBindBuffer(#GL_ARRAY_BUFFER,*p\vbo)
-        BuildGLData(*p)
-        glBindBuffer(#GL_ARRAY_BUFFER,0)
+       If *ctxt\share And *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
+;       PolymeshGeometry::ComputeNormals(*Me\geom,1.0)
+        Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+        glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+;         UpdateGLData(*Me)
+;         glBindVertexArray(*Me\eao)
+;         glBindBuffer(#GL_ARRAY_BUFFER,*Me\ebo)
+;         UpdateGLEdgeData(*Me)
         glBindVertexArray(0)
-        *p\dirty = Object3D::#DIRTY_STATE_CLEAN
+        SetClean(*Me)
       EndIf
     EndIf
    glCheckError("Update PointCloud")
@@ -299,22 +281,19 @@ Module PointCloud
   ; Draw
   ;-----------------------------------------------------
   ;{
-  Procedure Draw(*p.PointCloud_t)
-    ;Skip invisible Object
-    If Not *p\visible  Or Not *p\initialized: ProcedureReturn : EndIf
+  Procedure Draw(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+    
+    If Not *Me\visible  Or Not *Me\initialized: ProcedureReturn : EndIf
+    If Object3d::BindVaoFOrContext(*Me\vaos(), *ctxt)
+      Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
 
-    Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
-
-    glPointSize(6);*p\pointsize)
-
-    glEnable( #GL_PROGRAM_POINT_SIZE )
+      glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
+      glDisable( #GL_PROGRAM_POINT_SIZE )
+      GLCheckError("[Polymesh] Draw mesh Called")
+      glBindVertexArray(0)
+        ;     EndIf
+    EndIf
   
-    ;glEnable(#GL_POINT_SMOOTH)
-    glBindVertexArray(*p\vao)
-;     glUniformMatrix4fv(glGetUniformLocation(*p\shader\pgm,"model"),1,#GL_FALSE,*p\matrix)
-    glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
-    glDisable( #GL_PROGRAM_POINT_SIZE )
-    glBindVertexArray(0)
   EndProcedure
   ;}
   
@@ -388,6 +367,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 24
+; CursorPosition = 286
+; FirstLine = 282
 ; Folding = ---
 ; EnableXP

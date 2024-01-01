@@ -280,7 +280,7 @@ Module LayerCascadedShadowMap
     GLCheckError("[CSM] Draw Called")
     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
-    Light::Update(*light)
+    Light::Update(*light, *ctx)
     GLCheckError("[CSM] Light Updated")
     ; Update Cascades Orthographic Projection
     UpdateCascadesEnd(*layer)
@@ -375,8 +375,8 @@ Module LayerCascadedShadowMap
   
   Class::DEF(LayerCascadedShadowMap)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 355
-; FirstLine = 332
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 282
+; FirstLine = 278
 ; Folding = ---
 ; EnableXP

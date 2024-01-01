@@ -130,13 +130,12 @@ Module GLContext
       ; =======================================================================
       CompilerElseIf #PB_Compiler_OS = #PB_OS_Windows
         *Me\ID = OpenGLGadget(#PB_Any,0,0,width,height, #PB_OpenGL_Keyboard)
-        Debug "context opengl gadget id : "+Str(*Me\ID)
         SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
-        Debug "shared context : "+Str(*SHARED_CTXT)
-        ; load extensions and setup shaders
+       
         If Not *context
           *Me\share = #True
           *SHARED_CTXT = *Me
+          ; load extensions and setup shaders
           Setup(*Me)
         Else
           ; share context
@@ -301,7 +300,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 26
+; CursorPosition = 150
+; FirstLine = 129
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

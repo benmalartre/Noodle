@@ -81,7 +81,7 @@ Module LayerGBuffer
         glUniform3f(glGetUniformLocation(shader,"uniqueID"),id\x,id\y,id\z)
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*t\m)
         child = *child
-        child\Draw()
+        child\Draw(*ctxt)
       EndIf
       
      ; OLayerSelection_DrawChildren(*layer,*child,contextID,shader)
@@ -346,8 +346,8 @@ Module LayerGBuffer
   
   Class::DEF( LayerGBuffer )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 331
-; FirstLine = 303
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 83
+; FirstLine = 55
 ; Folding = --
 ; EnableXP

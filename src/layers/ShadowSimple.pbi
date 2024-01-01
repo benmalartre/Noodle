@@ -50,7 +50,7 @@ Module LayerShadowSimple
   ; Setup
   ;------------------------------------
   Procedure Setup(*layer.LayerShadowSimple_t, *light.Light::Light_t)
-    Light::Update(*light)
+    Light::Update(*light, *layer\context)
     
     *layer\light = *light
     
@@ -126,7 +126,7 @@ Module LayerShadowSimple
         ;glUniform3f(uUniqueID,id\x,id\y,id\z)
         glUniformMatrix4fv(uModelMatrix,1,#GL_FALSE,*child\matrix)
         child = *child
-        child\Draw()
+        child\Draw(*ctx)
       EndIf 
       DrawChildren(*layer,*child,*ctx,shader)
     Next
@@ -239,8 +239,8 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 219
-; FirstLine = 196
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 128
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

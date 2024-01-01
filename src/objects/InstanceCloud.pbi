@@ -28,8 +28,8 @@ DeclareModule InstanceCloud
   Declare Delete(*Me.InstanceCloud_t)
   Declare Setup(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
   Declare Update(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.InstanceCloud_t)
-  Declare Draw(*Me.InstanceCloud_t)
+  Declare Clean(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
+  Declare Draw(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
 
   DataSection 
     InstanceCloudVT: 
@@ -53,8 +53,7 @@ Module InstanceCloud
   ; Constructor
   ;----------------------------------------------------
   Procedure New(name.s,shape.i=Shape::#SHAPE_CUBE,nbp.i = 1)
-    Protected *Me.InstanceCloud_t = AllocateMemory(SizeOf(InstanceCloud_t))
-    InitializeStructure(*Me,InstanceCloud_t)
+    Protected *Me.InstanceCloud_t = AllocateStructure(InstanceCloud_t)
     Object::INI(InstanceCloud)
     *Me\name = name
     *Me\geom = PointCloudGeometry::New(*Me,nbp)
@@ -99,15 +98,11 @@ Module InstanceCloud
   ; Destructor
   ;----------------------------------------------------
   Procedure Delete(*Me.InstanceCloud_t)
-    If *Me\vao : glDeleteVertexArrays(1,*Me\vao) : EndIf
-    If *Me\vbo : glDeleteBuffers(1,*Me\vbo) : EndIf
-    If *Me\eab : glDeleteBuffers(1,*Me\eab) : EndIf
-    ClearStructure(*Me,InstanceCloud_t)
-    FreeMemory(*Me)
-  EndProcedure
-  
-  ; Coatlicue Deesse Azteque de la mort
-  
+    Object3D::DeleteVAOs(*Me\vaos())
+    Object3D::DeleteVBO(@*Me\vbo)
+    Object3D::DeleteEAB(@*Me\eab)
+    FreeStructure(*Me)
+  EndProcedure  
   
   ; Get Shape Flat Array Data Size
   ;----------------------------------------------------
@@ -143,19 +138,7 @@ Module InstanceCloud
       Define st1.i = *geom\nbpoints * SizeOf(f)
       Define st3.i = *geom\nbpoints * SizeOf(v3f32)
       Define st4.i = *geom\nbpoints * SizeOf(v4f32)
-  
-      ; Vertex Array Object
-      If Not *Me\vao
-        glGenVertexArrays(1,@*Me\vao)
-      EndIf
-      glBindVertexArray(*Me\vao)
-      
-      ; Create Vertex Buffer Object
-      If Not *Me\vbo
-        glGenBuffers(1,@*Me\vbo)
-      EndIf
-      glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-        
+    
       ; Push Buffer to GPU
       glBufferData(#GL_ARRAY_BUFFER,sts*4+st3*4+st4+st1,#Null,#GL_DYNAMIC_DRAW)
       GetShapeArrayDatas(*Me,sts)
@@ -258,13 +241,7 @@ Module InstanceCloud
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
-    
-    Debug "INSTANCE CLOUD SETUP..."
-    Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
-    Protected *shape.Shape::Shape_t = *Me\shape
-    ; Update Geometry
-    PointCloudGeometry::Update(*Me)
- 
+
     ;If Not *p\initialized : ProcedureReturn #Null : EndIf
     
     ;Attach Shader
@@ -272,28 +249,21 @@ Module InstanceCloud
     Protected pgm = GLContext::*SHARED_CTXT\shaders("instances")\pgm
     glUseProgram(pgm)
     
-    BuildGLData(*Me)
+    ; Vertex Array Object
+    Object3D::BindVAOForContext(*Me\vaos(), *ctxt)
+      
+    ; Vertex Buffer Object
+    Object3D::BindVBO(@*Me\vbo)
     
-;     glLinkProgram(*Me\shader\pgm);
-;     ; Check For Errors
-;     Protected linked.i
-;     If Not glGetProgramiv(*Me\shader\pgm, #GL_LINK_STATUS, @linked);
-;       ;Make sure linked==TRUE
-;       ;If linked==FALSE, the log contains information on what went wrong
-;       Protected maxLength.i
-;       glGetProgramiv(*Me\shader\pgm, #GL_INFO_LOG_LENGTH, @maxLength);
-;       maxLength = maxLength + 1                                  ;
-;       Protected uchar.c
-;       Protected *pLinkInfoLog = AllocateMemory( maxLength * SizeOf(uchar));
-;       glGetProgramInfoLog(*Me\shader\pgm, maxLength, @maxLength, *pLinkInfoLog);
-;       ;MessageRequester("Error Setup Shader Program for InstanceCloud",PeekS(*pLinkInfoLog))
-;     EndIf
-  
+    If *ctxt\share 
+      ; Update Geometry
+      PointCloudGeometry::Update(*Me)
+      BuildGLData(*Me)
+      *Me\initialized = #True
+    EndIf
+    
     glBindBuffer(#GL_ARRAY_BUFFER,0)
     glBindVertexArray(0)
-    
-  
-    *Me\initialized = #True
   EndProcedure
   
   ; Update
@@ -306,13 +276,12 @@ Module InstanceCloud
     EndIf
     
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
-      Protected Me.Object3D::IObject3D = *Me
-      Me\Setup(*ctx)
+      Setup(*Me, *ctx)
       Debug "INSTANCE CLOUD SETUP..."
     Else 
-      If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
+      If *ctxt\share And *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
-        glBindVertexArray(*Me\vao)
+        Object3D::BindVAOForContext(*Me\vaos(), *ctxt)
         ;glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
         BuildGLData(*Me)
         ;glBindBuffer(#GL_ARRAY_BUFFER,0)
@@ -328,16 +297,16 @@ Module InstanceCloud
  
   ; Update
   ;----------------------------------------------------
-  Procedure Clean(*Me.InstanceCloud_t)
+  Procedure Clean(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
 
   EndProcedure
   
   
   ; Draw
   ;----------------------------------------------------
-  Procedure Draw(*Me.InstanceCloud_t)
+  Procedure Draw(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
     If *Me\initialized And *Me\visible
-    glBindVertexArray(*Me\vao)
+    Object3D::BindVAOForContext(*Me\vaos(), *ctxt)
     Protected id.v3f32
     glPointSize(12)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
@@ -369,7 +338,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 29
+; CursorPosition = 308
+; FirstLine = 283
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

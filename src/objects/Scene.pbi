@@ -3,9 +3,7 @@
 ; ============================================================================
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Array.pbi"
-XIncludeFile "../libs/OpenGL.pbi"
-XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "../opengl/Shader.pbi"
+XIncludeFile "../opengl/Context.pbi"
 XIncludeFile "Shapes.pbi"
 XIncludeFile "Object3D.pbi"
 XIncludeFile "Root.pbi"
@@ -56,14 +54,13 @@ DeclareModule Scene
 
   EndStructure
   
-  Interface IScene Extends Object3D::IObject3D
-  EndInterface
+;   Interface IScene Extends Object::IObject
+;   EndInterface
   
   Declare New( name.s = "ActiveScene")
   Declare Delete(*Me.Scene_t)
-  Declare Setup(*Me.Scene_t,*ctx.GLContext::GLContext_t)
-  Declare Update(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
-  Declare Draw(*Me.Scene_t,*shader.Program::Program_t,filter.i=-1)
+  Declare Setup(*Me.Scene_t, *ctx.GLContext::GLContext_t)
+  Declare Update(*Me.Scene_t, *ctx.GLContext::GLContext_t)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   Declare AddObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -88,7 +85,6 @@ DeclareModule Scene
     Data.i @Delete()
     Data.i @Setup()
     Data.i @Update()
-    Data.i @Draw()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -403,7 +399,6 @@ Module Scene
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
     *ctx\scene = *Me
-    *ctx\scene = *Me
     GLContext::SetContext(*ctx)
     ForEach *root\children()
       child = *root\children()
@@ -419,7 +414,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Children in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure CleanChildren(*obj.Object3D::Object3D_t)
+  Procedure CleanChildren(*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
     Protected i,j
     Protected child.Object3D::IObject3D
   
@@ -427,30 +422,30 @@ Module Scene
       child = *obj\children()
       Protected *ochild.Object3D::Object3D_t = *child
       
-      child\Clean()
-      CleanChildren(*child)
+      child\Clean(*ctxt)
+      CleanChildren(*child, *ctxt)
     Next
     
     Protected object.Object3D::IObject3D = *obj
-    object\Clean()
+    object\Clean(*ctxt)
     
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Clean Object in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure CleanObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
+  Procedure CleanObject(*Me.Scene_t,*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
   
     Protected i
     Protected child.Object3D::IObject3D
     
     ForEach *obj\children()
       child = *obj\children()
-      CleanChildren(child)
+      CleanChildren(child, *ctxt)
     Next
     
     Protected object.Object3D::IObject3D = *obj
-    object\Clean()
+    object\Clean(*ctxt)
   
   
   EndProcedure
@@ -458,7 +453,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Clean(*Me.Scene_t)
+  Procedure Clean(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
   
     Protected i,j
     Protected child.Object3D::IObject3D
@@ -468,8 +463,8 @@ Module Scene
       *model = CArray::GetValue(*Me\models,i)
       ForEach *model\children()
         child = *model\children()
-        child\Clean()
-        CleanChildren(child)
+        child\Clean(*ctxt)
+        CleanChildren(child, *ctxt)
       Next
       
     Next i
@@ -682,41 +677,6 @@ Module Scene
   EndProcedure
   
   ;---------------------------------------------------------------------------
-  ; Draw
-  ;---------------------------------------------------------------------------
-  Procedure Draw(*Me.Scene_t,*shader.Program::Program_t,filter.i=-1)
-   
-    Protected i
-    Protected obj.Object3D::IObject3D
-    Protected *obj.Object3D::Object3D_t
-    For i=0 To CArray::GetCount(*Me\objects)-1
-      *obj = CArray::GetValuePtr(*Me\objects,i)
-      If filter
-        If *obj\type & filter
-          obj = *obj
-          glUniformMatrix4fv(glGetUniformLocation(*shader\pgm,"model"),1,#GL_FALSE,*obj\matrix)
-          obj\Draw()
-        EndIf
-      Else
-        obj\Draw()
-      EndIf
-    Next
-    
-    For i=0 To CArray::GetCount(*Me\helpers)-1
-      *obj = CArray::GetValuePtr(*Me\helpers,i)
-      If filter
-        If *obj\type & filter
-          obj = *obj
-          glUniformMatrix4fv(glGetUniformLocation(*shader\pgm,"model"),1,#GL_FALSE,*obj\matrix)
-          obj\Draw()
-        EndIf
-      Else
-        obj\Draw()
-      EndIf
-    Next
-  EndProcedure
-  
-  ;---------------------------------------------------------------------------
   ;  Destructor
   ;---------------------------------------------------------------------------
   Procedure Delete( *Me.Scene_t )
@@ -731,13 +691,10 @@ Module Scene
     CArray::Delete(*Me\helpers)
     CArray::Delete(*Me\lights)
     CArray::Delete(*Me\cameras)
-    
-    
- 
+
     ; Deallocate Memory
-    ClearStructure(*Me,Scene_t)
-    FreeMemory( *Me )
-       
+    FreeStructure(*Me)
+
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -746,13 +703,9 @@ Module Scene
   Procedure.i New( name.s = "ActiveScene")
     
     ; Allocate Object Memory
-    Protected *Me.Scene_t = AllocateMemory( SizeOf(Scene_t) )
+    Protected *Me.Scene_t = AllocateStructure( Scene_t )
     *Me\filename = name
     Object::INI(Scene)
-    InitializeStructure(*Me,Scene_t)
-
-    
-    Protected Me.IScene = *Me
     
     ; Create Containers
     *Me\models = CArray::New(CArray::#ARRAY_PTR)
@@ -795,7 +748,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 395
-; FirstLine = 375
+; CursorPosition = 401
+; FirstLine = 391
 ; Folding = -------
 ; EnableXP

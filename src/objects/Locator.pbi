@@ -43,11 +43,10 @@ DeclareModule Locator
   
   Declare New( name.s = "Locator")
   Declare Delete(*Me.Locator_t)
-  Declare Setup(*Me.Locator_t,*shader.Program::Program_t)
-  Declare Update(*Me.Locator_t)
-  Declare Clean(*Me.Locator_t)
-  Declare Draw(*Me.Locator_t)
-  Declare SetShader(*Me.Locator_t,*pgm.Program::Program_t)
+  Declare Setup(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Declare Clean(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Declare Draw(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
   
   DataSection 
     LocatorVT: 
@@ -112,7 +111,7 @@ Module Locator
   ;----------------------------------------------------------------------------
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
-  Procedure Setup(*Me.Locator_t,*shader.Program::Program_t)
+  Procedure Setup(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -120,10 +119,10 @@ Module Locator
     
     Object3D::ResetStaticKinematicState(*Me)
     ; ---[ Assign Shader ]---------------------------
-    If *shader 
-      *Me\u_model = glGetUniformLocation(*shader\pgm,"model")
-      *Me\u_offset = glGetUniformLocation(*shader\pgm,"offset")
-    EndIf
+;     If *shader 
+;       *Me\u_model = glGetUniformLocation(*shader\pgm,"model")
+;       *Me\u_offset = glGetUniformLocation(*shader\pgm,"offset")
+;     EndIf
     
     
     ; ---[ Uniforms ]--------------------------------
@@ -187,11 +186,13 @@ Module Locator
         
     EndSelect
     
+    Define key.s = Str(*ctxt)
     ;Create Or ReUse Vertex Array Object
-    If Not *Me\vao
-      glGenVertexArrays(1,@*Me\vao)
+    If Not FindMapElement(*Me\vaos(), key)
+      AddMapElement(*Me\vaos(), key)
+      glGenVertexArrays(1,@*Me\vaos())
     EndIf
-    glBindVertexArray(*Me\vao)
+    glBindVertexArray(*Me\vaos())
     
     ; Create or ReUse Vertex Buffer Object
     If Not *Me\vbo
@@ -220,10 +221,16 @@ Module Locator
   ;----------------------------------------------------------------------------
   ; Clean OpenGL Context
   ;---------------------------------------------------------------------------- 
-  Procedure Clean(*Me.Locator_t)
-    If *Me\vao : glDeleteVertexArrays(1,@*Me\vao) : EndIf
-    If *Me\vbo : glDeleteBuffers(1,@*Me\vbo) : EndIf
-    If *Me\eab : glDeleteBuffers(1,@*Me\eab) : EndIf
+  Procedure Clean(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+    ForEach *Me\vaos()
+      If Val(MapKey(*Me\vaos())) = *ctxt : glDeleteVertexArrays(1,@*Me\vaos()) : EndIf
+    Next
+    
+    If *ctxt\share
+      If *Me\vbo : glDeleteBuffers(1,@*Me\vbo) : EndIf
+      If *Me\eab : glDeleteBuffers(1,@*Me\eab) : EndIf
+    EndIf
+    
 ;     Protected i 
 ;     For i=0 To ArraySize(*Me\vaos())-1
 ;       If *Me\vaos(i) : glDeleteVertexArrays(1,@*Me\vaos(i)) : EndIf
@@ -239,76 +246,80 @@ Module Locator
   ;----------------------------------------------------------------------------
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
-  Procedure Update(*Me.Locator_t)
+  Procedure Update(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
   
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Draw
   ;---------------------------------------------------------------------------- 
-  Procedure Draw(*n.Locator_t)
+  Procedure Draw(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
     ; ---[ Sanity Check ]--------------------------
-    If Not *n : ProcedureReturn : EndIf
+    If Not *Me : ProcedureReturn : EndIf
   
-    Protected *t.Transform::Transform_t = *n\globalT
-    glBindVertexArray(*n\vao)
+    Protected *t.Transform::Transform_t = *Me\globalT
+    If FindMapElement(*Me\vaos(), Str(*ctxt))
+      glBindVertexArray(*Me\vaos())
    
-;     glUniformMatrix4fv(glGetUniformLocation(*n\shader\pgm,"model"),1,#GL_FALSE,*t\m)
+;     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
 
+      ; Set Wireframe Color
+      If *Me\selected
+        glUniform3f(*Me\u_color,1,1,1)
+      Else
+        glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
+      EndIf
     
-    ; Set Wireframe Color
-    If *n\selected
-      glUniform3f(*n\u_color,1,1,1)
-    Else
-      glUniform3f(*n\u_color,*n\wireframe_r,*n\wireframe_g,*n\wireframe_b)
+      Select *Me\icon
+        Case #Icon_Default
+          glDrawArrays(#GL_LINES,0,*Me\nbp)
+        Case #Icon_Disc
+          glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
+        Case #Icon_Sphere
+          Protected i
+          For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
+      EndSelect
+    
+      glBindVertexArray(0)
     EndIf
   
-    Select *n\icon
-      Case #Icon_Default
-        glDrawArrays(#GL_LINES,0,*n\nbp)
-      Case #Icon_Disc
-        glDrawArrays(#GL_LINE_LOOP,0,*n\nbp)
-      Case #Icon_Sphere
-        Protected i
-        For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*n\nbp/3) : Next i
-    EndSelect
-  
-    glBindVertexArray(0)
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Pick
   ;---------------------------------------------------------------------------- 
-  Procedure Pick(*n.Locator_t)
+  Procedure Pick(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
     ; ---[ Sanity Check ]--------------------------
-    If Not *n : ProcedureReturn : EndIf
+    If Not *Me : ProcedureReturn : EndIf
     
-    Protected *t.Transform::Transform_t = *n\globalT
-    glBindVertexArray(*n\vao)
+    Protected *t.Transform::Transform_t = *Me\globalT
+    If Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
   
-    Select *n\icon
-      Case #Icon_Default
-        glDrawArrays(#GL_LINES,0,*n\nbp)
-      Case #Icon_Disc
-        glDrawArrays(#GL_LINE_LOOP,0,*n\nbp)
-      Case #Icon_Sphere
-        Protected i
-        For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*n\nbp/3) : Next i
-    EndSelect
+      Select *Me\icon
+        Case #Icon_Default
+          glDrawArrays(#GL_LINES,0,*Me\nbp)
+        Case #Icon_Disc
+          glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
+        Case #Icon_Sphere
+          Protected i
+          For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
+      EndSelect
+      
+      glBindVertexArray(0)
+    EndIf
     
-    glBindVertexArray(0)
     
-  ;   glUniformMatrix4fv(glGetUniformLocation(*n\shader,"model"),1,#GL_FALSE,*t\m\m)
-  ;   glUniformMatrix4fv(glGetUniformLocation(*n\shader,"view"),1,#GL_FALSE,*view)
-  ;   glUniformMatrix4fv(glGetUniformLocation(*n\shader,"projection"),1,#GL_FALSE,*proj)
+  ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"model"),1,#GL_FALSE,*t\m\m)
+  ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"view"),1,#GL_FALSE,*view)
+  ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"projection"),1,#GL_FALSE,*proj)
   ;   
   ;   Protected offset.m4f32_b
   ;   Matrix4_SetIdentity(@offset)
-  ;   glUniformMatrix4fv(glGetUniformLocation(*n\shader,"offset"),1,#GL_FALSE,@offset)
+  ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"offset"),1,#GL_FALSE,@offset)
   ;   
   ;   Protected id.v3f32
-  ;   GLEncodeID(@id,*n\uniqueID)
-  ;   glUniform4f(glGetUniformLocation(*n\shader,"color"),id\x,id\y,id\z,1)
+  ;   GLEncodeID(@id,*Me\uniqueID)
+  ;   glUniform4f(glGetUniformLocation(*Me\shader,"color"),id\x,id\y,id\z,1)
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -362,7 +373,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 251
+; CursorPosition = 295
+; FirstLine = 291
 ; Folding = ---
 ; EnableXP

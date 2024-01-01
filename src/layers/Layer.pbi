@@ -405,7 +405,7 @@ Module Layer
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         glUniform3fv(glGetUniformLocation(shader,"uniqueID"), 1, color)
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
     Next
   EndProcedure
@@ -442,7 +442,7 @@ Module Layer
         *mesh\wireframe = wireframe
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
       
     Next
@@ -461,7 +461,7 @@ Module Layer
       If *obj\type = Object3D::#InstanceCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
     Next
   EndProcedure
@@ -479,7 +479,7 @@ Module Layer
       If *obj\type = Object3D::#PointCloud
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
     Next
   EndProcedure
@@ -497,7 +497,7 @@ Module Layer
         glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*obj\matrix)
         glUniform4f(glGetUniformLocation(shader,"color"),*obj\wireframe_r, *obj\wireframe_g, *obj\wireframe_b, 1.0)
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
     Next
   EndProcedure
@@ -513,7 +513,7 @@ Module Layer
       *obj = CArray::GetValuePtr(*objects,i)
       If *obj\type = Object3D::#Curve
         obj = *obj
-        obj\Draw()
+        obj\Draw(*layer\context)
       EndIf
     Next
   EndProcedure
@@ -741,7 +741,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 403
-; FirstLine = 352
+; CursorPosition = 515
+; FirstLine = 506
 ; Folding = -----
 ; EnableXP

@@ -84,7 +84,7 @@ Module LayerDefered
   Procedure Draw(*layer.LayerDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
-    Light::Update(*light)
+    Light::Update(*light, *ctx)
     
   ;    
     
@@ -243,8 +243,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 225
-; FirstLine = 200
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 82
 ; Folding = --
 ; EnableXP

@@ -105,9 +105,7 @@ Module Window
     
     Protected *old.View::View_t = *Me\active
     Protected *over.View::View_t = Pick(*Me, mx, my)
-    
-    Debug "over : "+Str(*over)
-  
+      
     Select event
       Case #PB_Event_Gadget
         If *over
@@ -122,9 +120,9 @@ Module Window
             If touch
               View::EventSplitter(*over,touch)
               Protected *affected.View::View_t = View::EventSplitter(*over,touch)
-;               If *affected
-;                 View::TouchBorderEvent(*affected)
-;               EndIf
+              If *affected
+                View::TouchBorderEvent(*affected)
+              EndIf
             Else
               View::ClearBorderEvent(*over)
             EndIf
@@ -275,28 +273,21 @@ Module Window
       picked = Point(mx, my)
 
       If FindMapElement(*Me\uis(), Str(picked))
-        Debug "found ui iem :"+*Me\uis()
         StopDrawing()
-        
         ProcedureReturn *Me\uis()\parent
       EndIf
     EndIf
     StopDrawing()
     ProcedureReturn #Null
   EndProcedure
-  
-  ; ----------------------------------------------------------------------------------
-  ; Constructor
-  ; ----------------------------------------------------------------------------------
 
-  ;------------------------------------------------------------------
-  ; Destuctor
-  ;------------------------------------------------------------------
+  ; ----------------------------------------------------------------------------------
+  ; Destructor
+  ; ----------------------------------------------------------------------------------
   Procedure Delete(*Me.Window_t)
     ; remove window from global map
     ForEach *ALL_WINDOWS()
       If *ALL_WINDOWS()\ID = *Me\ID
-        FreeStructure(*ALL_WINDOWS())
         DeleteElement(*ALL_WINDOWS())
         Break
       EndIf
@@ -330,7 +321,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 324
-; FirstLine = 276
+; CursorPosition = 284
+; FirstLine = 262
 ; Folding = ---
 ; EnableXP
