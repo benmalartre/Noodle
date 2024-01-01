@@ -21,7 +21,7 @@ DeclareModule ViewportUI
     *camera.Camera::Camera_t
     *context.GLContext::GLContext_t
     *handle.Handle::Handle_t
-
+    *layer.Layer::Layer_t
     mx.f
     my.f
     oldX.f
@@ -97,14 +97,12 @@ Module ViewportUI
         
     ; setup delegate gl context
     *Me\camera = *camera
-    Debug "create viewport shared GL context :  " + Str(GLContext::*SHARED_CTXT)
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*SHARED_CTXT)
     *Me\gadgetID = *Me\context\ID 
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
     CompilerElse
-      ResizeGadget(*Me\gadgetID, 0, 0,w, h)
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
     CompilerEndIf
     
@@ -156,6 +154,7 @@ Module ViewportUI
   ; Event
   ;------------------------------------------------------------------
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
+    Debug "viewport "+*Me\name+" on event..."
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
     Protected *scene.Scene::Scene_t
@@ -369,8 +368,8 @@ Module ViewportUI
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
     Next
     
-;     Protected ilayer.Layer::ILayer = *Me\layer
-;     ilayer\Draw(*Me\context)
+    Protected ilayer.Layer::ILayer = *Me\layer
+    ilayer\Draw(GLContext::*SHARED_CTXT\scene, *Me\context)
     If *Me\tool
       Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
@@ -679,7 +678,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 75
+; CursorPosition = 371
+; FirstLine = 355
 ; Folding = ----
 ; EnableXP

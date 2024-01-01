@@ -51,6 +51,7 @@ DeclareModule GLContext
     focus.b
     share.b
     shader.GLuint
+    *scene
     
     List *framebuffers.Framebuffer::Framebuffer_t()
     Map *shaders.Program::Program_t()
@@ -72,8 +73,8 @@ DeclareModule GLContext
   Global MAIN_CTXT_HEIGHT = 1024
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 47
-; FirstLine = 19
+; CursorPosition = 53
+; FirstLine = 20
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

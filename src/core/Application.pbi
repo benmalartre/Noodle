@@ -155,7 +155,6 @@ CompilerEndIf
     name.s
     glfw.b
     *window.Window::Window_t
-    *context.GLContext::GLContext_t
     *camera.Camera::Camera_t
     *scene.Scene::Scene_t
     
@@ -212,7 +211,6 @@ CompilerEndIf
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   Declare AddShortcuts(*Me.Application_t)
   Declare RemoveShortcuts(*Me.Application_t)
-  Declare SetContext(*Me.Application_t, *ctxt.GLContext::GLContext_t)
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
@@ -229,6 +227,8 @@ CompilerEndIf
   Declare.f GetFPS(*Me.Application_t)
   Prototype PFNCALLBACKFN(*Me, event.i)
   
+  Declare GetRunningApp()
+  
   Global *running.Application::Application_t
 
 EndDeclareModule
@@ -241,7 +241,14 @@ Module Application
 CompilerIf #USE_GLFW
   UseModule GLFW
 CompilerEndIf
-  UseModule OpenGLExt
+UseModule OpenGLExt
+
+  ; Get currently running application
+  ;
+  Procedure GetRunningApp()
+    ProcedureReturn *running
+  EndProcedure
+
   
   ;-----------------------------------------------------------------------------
   ; Size Window Callback
@@ -254,8 +261,7 @@ CompilerEndIf
   ; Constructor
   ;-----------------------------------------------------------------------------
   Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-    Protected *Me.Application_t = AllocateMemory(SizeOf(Application_t))
-    InitializeStructure(*Me,Application_t)
+    Protected *Me.Application_t = AllocateStructure(Application_t)
     *Me\name = name
     *running = *Me
     Protected w.i, h.i
@@ -282,7 +288,6 @@ CompilerEndIf
 
       *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
       *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
-      *Me\context = #Null;GLContext::New(GLContext::MAIN_CTXT_WIDTH, GLContext::MAIN_CTXT_HEIGHT)
       AddShortcuts(*Me)
     
       *Me\idle = #True
@@ -310,11 +315,10 @@ CompilerEndIf
       ForEach Window::*ALL_WINDOWS()
         Window::Delete(Window::*ALL_WINDOWS())
       Next
-      ClearMap(Window::*ALL_WINDOWS())
+      ClearList(Window::*ALL_WINDOWS())
     CompilerEndIf
     
-    ClearStructure(*Me,Application_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   Procedure AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
@@ -371,14 +375,7 @@ CompilerEndIf
     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Tab)
 ;     RemoveKeyboardShortcut(*Me\window\ID, #PB_Shortcut_Back)
   EndProcedure
-  
-  Procedure SetContext(*Me.Application_t, *ctxt.GLContext::GLContext_t)
-    *Me\context = *ctxt
-    Handle::Setup(*Me\handle, *Me\context)
-  EndProcedure
-  
-  
-  
+
 CompilerIf #USE_GLFW
   ;-----------------------------------------------------------------------------
   ; Key Changed Callback (GLFW)
@@ -650,17 +647,14 @@ CompilerEndIf
       
       If *callback : *callback(*Me, #PB_Event_SizeWindow) : EndIf
       Repeat
-        Debug "num windows : "+Str(MapSize(Window::*ALL_WINDOWS()))
         If waitTime >= 0
           event = WaitWindowEvent(waitTime)
         Else
           event = WaitWindowEvent()
         EndIf
-        
-        
+       
         ; get event window
         *window = Window::GetWindowById(EventWindow())
-        Debug "Event window : "+Str(*window\ID)
         
         ; filter Windows events
         CompilerSelect #PB_Compiler_OS 
@@ -672,11 +666,11 @@ CompilerEndIf
         
         Select event
           Case Globals::#EVENT_NEW_SCENE
-            Scene::Setup(*Me\scene, *Me\context)
+            Scene::Setup(*Me\scene, GLContext::*SHARED_CTXT)
             Window::OnEvent(*window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
-            Scene::Update(*Me\scene)
+            Scene::Update(*Me\scene, GLContext::*SHARED_CTXT)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
           Case Globals::#EVENT_REPAINT_WINDOW
@@ -700,11 +694,11 @@ CompilerEndIf
             
           Case Globals::#EVENT_SELECTION_CHANGED
             Window::OnEvent(*window,Globals::#EVENT_SELECTION_CHANGED)
-            Scene::Update(*Me\scene)
+            Scene::Update(*Me\scene, GLContext::*SHARED_CTXT)
             If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
-            Scene::Setup(*Me\scene, *Me\context)
+            Scene::Setup(*Me\scene, GLContext::*SHARED_CTXT)
             Window::OnEvent(*window,Globals::#EVENT_HIERARCHY_CHANGED)
            
             If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
@@ -754,8 +748,7 @@ CompilerEndIf
             If waitTime >= 0 And *callback
               *callback(*Me, #PB_Event_Timer)
             EndIf
-            
-
+    
         EndSelect
       Until event = #PB_Event_CloseWindow
     CompilerEndIf
@@ -766,10 +759,7 @@ CompilerEndIf
   ;------------------------------------------------------------------
   Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GLContext_t=#Null)
     Handle::Resize(*Me\handle,*camera)
-    If *context = #Null
-      *context = *Me\context
-    EndIf
-    
+
     Dim shaderNames.s(3)
     shaderNames(0) = "wireframe"
     shaderNames(1) = "polymesh"
@@ -802,8 +792,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 652
-; FirstLine = 648
+; CursorPosition = 318
+; FirstLine = 301
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

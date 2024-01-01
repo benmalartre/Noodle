@@ -112,7 +112,7 @@ DeclareModule Window
   
   ; opened windows are stored in a ma by their pb id
   Global *MAIN_WINDOW.Window_t
-  Global NewMap *ALL_WINDOWS.Window_t()
+  Global NewList *ALL_WINDOWS.Window_t()
   
   Declare GetWindowById(id.i)
   
@@ -132,7 +132,7 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 78
+; CursorPosition = 114
+; FirstLine = 79
 ; Folding = -
 ; EnableXP

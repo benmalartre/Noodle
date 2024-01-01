@@ -34,8 +34,8 @@ DeclareModule Polymesh
   
   Declare New(name.s,shape.i)
   Declare Delete(*Me.Polymesh_t)
-  Declare Setup(*Me.Polymesh_t,*shader.Program::Program_t)
-  Declare Update(*Me.Polymesh_t)
+  Declare Setup(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
   Declare Clean(*Me.Polymesh_t)
   Declare Draw(*Me.Polymesh_t, *ctx.GLContext::GLContext_t)
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
@@ -418,7 +418,7 @@ Module Polymesh
    
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*p.Polymesh_t,*pgm.Program::Program_t)
+  Procedure Setup(*p.Polymesh_t, *ctxt.GLContext::GLContext_t)
     If Not *p : ProcedureReturn : EndIf
     
     ; Get Underlying Geometry
@@ -472,7 +472,7 @@ Module Polymesh
   ;-----------------------------------------------------
   ; Update
   ;-----------------------------------------------------
-  Procedure Update(*p.Polymesh_t)
+  Procedure Update(*p.Polymesh_t, *ctxt.GLContext::GLContext_t)
     
     If *p\stack And Stack::HasNodes(*p\stack)
       PolymeshGeometry::Reset(*p\geom)
@@ -481,7 +481,7 @@ Module Polymesh
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
-      p\Setup()
+      p\Setup(*ctxt)
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
         PolymeshGeometry::ComputeNormals(*p\geom,1.0)
@@ -550,6 +550,6 @@ EndModule
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 483
-; FirstLine = 470
+; FirstLine = 464
 ; Folding = ---
 ; EnableXP

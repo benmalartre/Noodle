@@ -62,7 +62,7 @@ DeclareModule Scene
   Declare New( name.s = "ActiveScene")
   Declare Delete(*Me.Scene_t)
   Declare Setup(*Me.Scene_t,*ctx.GLContext::GLContext_t)
-  Declare Update(*Me.Scene_t)
+  Declare Update(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
   Declare Draw(*Me.Scene_t,*shader.Program::Program_t,filter.i=-1)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -388,7 +388,7 @@ Module Scene
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        child\Setup()
+        child\Setup(*ctxt)
       EndIf
       SetupChildren(*Me,child,*ctx)
     Next
@@ -402,21 +402,16 @@ Module Scene
     Protected *root.Root::Root_t = *Me\root
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
+    *ctx\scene = *Me
+    *ctx\scene = *Me
     GLContext::SetContext(*ctx)
-    If *ctx\share
-      ForEach *root\children()
-        child = *root\children()
-        If Not *root\children()\initialized
-          child\Setup()
-        EndIf
-      
-        SetupChildren(*Me,child,*ctx)
-      Next
-    Else
-        
-    EndIf
-   
-    
+    ForEach *root\children()
+      child = *root\children()
+      child\Setup(*ctx)
+
+      SetupChildren(*Me,child,*ctx)
+    Next
+
     ; Setup Handle
     ;OHandle::Setup(*Me\handle,*ctx)
   EndProcedure
@@ -484,19 +479,19 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Update Children in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure UpdateChildren(*obj.Object3D::Object3D_t)
+  Procedure UpdateChildren(*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
 
     Protected i
     Protected child.Object3D::IObject3D = *obj
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        child\Setup()
+        child\Setup(*ctxt)
       EndIf
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
-      child\Update()
+      child\Update(*ctxt)
 
-      UpdateChildren(*obj\children())
+      UpdateChildren(*obj\children(), *ctxt)
     Next
     
   EndProcedure
@@ -504,7 +499,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Update(*Me.Scene_t)
+  Procedure Update(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
     If Not *Me : ProcedureReturn : EndIf
     ;If *Me\dirty
       Protected i
@@ -517,8 +512,8 @@ Module Scene
         child = *root\children()
         
         Object3D::UpdateTransform(child,*root\globalT)
-        child\Update()
-        UpdateChildren( child)
+        child\Update(*ctxt)
+        UpdateChildren( child, *ctxt)
       Next
       
       *Me\dirty = #False
@@ -800,7 +795,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 493
-; FirstLine = 489
+; CursorPosition = 395
+; FirstLine = 375
 ; Folding = -------
 ; EnableXP

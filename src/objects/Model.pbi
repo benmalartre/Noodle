@@ -11,8 +11,8 @@ DeclareModule Model
   
   Declare New(name.s)
   Declare Delete(*model.Model_t)
-  Declare Setup(*model.Model_t)
-  Declare Update(*model.Model_t)
+  Declare Setup(*model.Model_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*model.Model_t, *ctxt.GLContext::GLContext_t)
   Declare Clean(*model.Model_t)
   Declare Draw(*model.Model_t)
   
@@ -59,7 +59,7 @@ Module Model
     FreeMemory(*Me)
   EndProcedure
   
-  Procedure Setup(*model.Model_t)
+  Procedure Setup(*model.Model_t, *ctxt.GLContext::GLContext_t)
     If Not *model : ProcedureReturn : EndIf
       
     Protected i
@@ -71,12 +71,12 @@ Module Model
       *child = *model\children()
       child = *child
       *geom = *child\geom
-      child\Setup()
+      child\Setup(*ctxt)
     Next
     
   EndProcedure
   
-  Procedure Update(*model.Model_t)
+  Procedure Update(*model.Model_t, *ctxt.GLContext::GLContext_t)
     Protected i
     Protected *child.Object3D::Object3D_t
     Protected child.Object3D::IObject3D
@@ -85,7 +85,7 @@ Module Model
       *child = *model\children()
       child = *child
       *geom = *child\geom
-      child\Update()
+      child\Update(*ctxt)
     Next
     
   EndProcedure
@@ -111,7 +111,7 @@ Module Model
   Class::DEF( Model )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 102
+; CursorPosition = 87
 ; FirstLine = 58
 ; Folding = --
 ; EnableXP

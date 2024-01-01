@@ -26,8 +26,8 @@ DeclareModule InstanceCloud
   
   Declare New(name.s,shape.i=Shape::#SHAPE_CUBE,nbp.i = 1)
   Declare Delete(*Me.InstanceCloud_t)
-  Declare Setup(*Me.InstanceCloud_t)
-  Declare Update(*Me.InstanceCloud_t)
+  Declare Setup(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
   Declare Clean(*Me.InstanceCloud_t)
   Declare Draw(*Me.InstanceCloud_t)
 
@@ -257,7 +257,7 @@ Module InstanceCloud
    
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*Me.InstanceCloud_t)
+  Procedure Setup(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
     
     Debug "INSTANCE CLOUD SETUP..."
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
@@ -298,7 +298,7 @@ Module InstanceCloud
   
   ; Update
   ;----------------------------------------------------
-  Procedure Update(*Me.InstanceCloud_t)
+  Procedure Update(*Me.InstanceCloud_t, *ctxt.GLContext::GLContext_t)
     Debug "INSTANCE CLOUD UPDATE..."
     If *Me\stack
       PointCloudGeometry::Reset(*Me\geom)
@@ -307,7 +307,7 @@ Module InstanceCloud
     
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
       Protected Me.Object3D::IObject3D = *Me
-      Me\Setup()
+      Me\Setup(*ctx)
       Debug "INSTANCE CLOUD SETUP..."
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
@@ -369,8 +369,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 309
-; FirstLine = 305
+; CursorPosition = 29
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

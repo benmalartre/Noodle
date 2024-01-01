@@ -116,8 +116,8 @@ DeclareModule Object3D
   Interface IObject3D
    ; GetName.s()
     Delete()
-    Setup()
-    Update()
+    Setup(*ctxt)
+    Update(*ctxt)
     Clean()
     Draw()
   EndInterface
@@ -547,7 +547,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 120
+; CursorPosition = 119
+; FirstLine = 90
 ; Folding = ------
 ; EnableXP

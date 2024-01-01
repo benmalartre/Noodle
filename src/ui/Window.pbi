@@ -12,7 +12,7 @@ Module Window
   Procedure GetWindowById(id)
     ; remove window from global map
     ForEach *ALL_WINDOWS()
-      If Val(MapKey(*ALL_WINDOWS())) = id
+      If *ALL_WINDOWS()\ID = id
         ProcedureReturn *ALL_WINDOWS()
       EndIf
     Next
@@ -295,8 +295,9 @@ Module Window
   Procedure Delete(*Me.Window_t)
     ; remove window from global map
     ForEach *ALL_WINDOWS()
-      If MapKey(*ALL_WINDOWS()) = Str(*Me\ID)
+      If *ALL_WINDOWS()\ID = *Me\ID
         FreeStructure(*ALL_WINDOWS())
+        DeleteElement(*ALL_WINDOWS())
         Break
       EndIf
     Next
@@ -317,8 +318,10 @@ Module Window
     *Me\active = *Me\main
     *Me\imageID = CreateImage(#PB_Any, width, height, 32)
     
+    If Not parentID : *MAIN_WINDOW = *Me : EndIf
+      
     ; add window to global map
-    AddMapElement(*ALL_WINDOWS(), Str(*Me\ID))
+    AddElement(*ALL_WINDOWS())
     *ALL_WINDOWS() = *Me
     
     ProcedureReturn *Me
@@ -327,7 +330,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 277
-; FirstLine = 265
+; CursorPosition = 324
+; FirstLine = 276
 ; Folding = ---
 ; EnableXP

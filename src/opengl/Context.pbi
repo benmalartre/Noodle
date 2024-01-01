@@ -16,16 +16,14 @@ Module GLContext
     ForEach *ctx\shaders()
       Program::Delete(*ctx\shaders())
     Next
-    ClearStructure(*ctx, GLContext_t)
-    FreeMemory(*ctx)
+    FreeStructure(*ctx)
   EndProcedure
   
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(width.i, height.i, *context=#Null)
-    Protected *Me.GLContext_t = AllocateMemory(SizeOf(GLContext_t))
-    InitializeStructure(*Me,GLContext_t)
+    Protected *Me.GLContext_t = AllocateStructure(GLContext_t)
     
     *Me\useGLFW = #USE_GLFW
     *Me\width = width
@@ -228,7 +226,7 @@ Module GLContext
   Procedure Copy(*Me.GLContext_t, *shared.GLContext_t)
     CopyMap(*shared\shaders(), *Me\shaders())
     ; Build Font Writer
-    *Me\writer = FTGL::New()
+    *Me\writer = *shared\writer
   EndProcedure
   
   ;---------------------------------------------
@@ -303,8 +301,7 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 84
+; CursorPosition = 26
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -22,9 +22,8 @@ DeclareModule PointCloud
   
   Declare New(name.s,numPoints.i)
   Declare Delete(*Me.PointCloud_t)
-  Declare Setup(*Me.PointCloud_t)
-  ;Declare SetProgram(*Me.PointCloud_t,*shader.Program::Program_t)
-  Declare Update(*Me.PointCloud_t)
+  Declare Setup(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Declare Update(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
   Declare Clean(*Me.PointCloud_t)
   Declare Draw(*Me.PointCloud_t)
   Declare SetFromShape(*Me.PointCloud_t,shape.i)
@@ -205,7 +204,7 @@ Module PointCloud
     
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*p.PointCloud_t)
+  Procedure Setup(*p.PointCloud_t, *ctxt.GLContext::GLContext_t)
 
     ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PointCloudGeometry_t = *p\geom
@@ -273,14 +272,14 @@ Module PointCloud
   ; Update
   ;-----------------------------------------------------
   ;{
-  Procedure Update(*p.PointCloud_t)
+  Procedure Update(*p.PointCloud_t, *ctxt.GLContext::GLContext_t)
     If *p\stack
       Stack::Update(*p\stack)
     EndIf
     
     If *p\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *p\initialized
       Protected p.Object3D::IObject3D = *p
-      p\Setup()
+      p\Setup(*ctxt)
     Else 
       If *p\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
@@ -389,7 +388,6 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 283
-; FirstLine = 278
+; CursorPosition = 24
 ; Folding = ---
 ; EnableXP

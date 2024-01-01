@@ -13,6 +13,16 @@ Global *layer.Layer::Layer_t
 Global *scene.Scene::Scene_t
 Global *polymesh.Polymesh::Polymesh_t
 
+Structure Monitor_t
+  *window.Window::Window_t
+  *camera.Camera::Camera_t
+  *viewport.ViewportUI::ViewportUI_t
+  *layer.LayerDefault::LayerDefault_t
+EndStructure
+
+#NUM_MONITORS = 3
+Global Dim children.Monitor_t(#NUM_MONITORS+1)
+
 Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
   Define position.Math::v3f32
   Define color.Math::c4f32
@@ -37,7 +47,7 @@ EndProcedure
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
-  Scene::Update(*app\scene)
+  Scene::Update(*app\scene, *viewport\context)
   *app\scene\dirty= #True
   
   
@@ -65,18 +75,11 @@ Procedure Update(*app.Application::Application_t)
 Global width    = 1024
 Global height   = 720
 
-Structure Monitor_t
-  *window.Window::Window_t
-  *camera.Camera::Camera_t
-  *viewport.ViewportUI::ViewportUI_t
-  *layer.LayerDefault::LayerDefault_t
-EndStructure
+
 
 Time::Init()
 Log::Init()
 
-#NUM_WINDOWS = 3
-Global Dim children.Monitor_t(#NUM_WINDOWS+1)
 
 
  Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
@@ -94,13 +97,13 @@ GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
 ; Global *log.LogUI::LogUI_t = LogUI::New(*app\window\main)
  
-For i=0 To #NUM_WINDOWS-1
+For i=0 To #NUM_MONITORS-1
   
   children(i)\window = Window::TearOff(*app\window, i*100, i*100, width * 0.5,height * 0.5)
   children(i)\camera = Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
-;   children(i)\viewport = ViewportUI::New(children(i)\window\main, "VIEWPORT"+Str(i), children(i)\camera, *app\handle)
-;   children(i)\layer = LayerDefault::New(children(i)\window\main\sizX, children(i)\window\main\sizY, 
-;                                         children(i)\viewport\context, children(i)\camera )
+  children(i)\viewport = ViewportUI::New(children(i)\window\main, "VIEWPORT"+Str(i), children(i)\camera, *app\handle)
+  children(i)\layer = LayerDefault::New(children(i)\window\main\sizX, children(i)\window\main\sizY, 
+                                        children(i)\viewport\context, children(i)\camera )
   Vector3::RandomizeInPlace(children(i)\camera\pos, 12)
   Camera::LookAt(children(i)\camera)
   Window::OnEvent(children(i)\window, #PB_Event_SizeWindow)
@@ -113,8 +116,8 @@ RandomBunnies(128, -2, *root)
 GLContext::SetContext(GLContext::*SHARED_CTXT)
 Scene::AddModel(*app\scene,*root)
 
-Scene::Setup(*app\scene,GLContext::*SHARED_CTXT)
-Scene::Update(*app\scene)
+Scene::Setup(*app\scene, GLContext::*SHARED_CTXT)
+Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
 
 Application::Loop(*app, @Update())
 
@@ -122,7 +125,7 @@ Application::Loop(*app, @Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 69
+; CursorPosition = 99
+; FirstLine = 48
 ; Folding = -
 ; EnableXP
