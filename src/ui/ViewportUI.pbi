@@ -116,6 +116,7 @@ Module ViewportUI
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     Object::TERM(ViewportUI)
+    FreeStructure(*Me)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -670,7 +671,7 @@ Module ViewportUI
     
     ; draw texture on screen space quad
     glViewport(0,0,*Me\context\width,*Me\context\height)
-  Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT, #GL_LINEAR)
+    Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT, #GL_LINEAR)
 
   EndProcedure
  
@@ -678,7 +679,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 380
-; FirstLine = 376
+; CursorPosition = 118
+; FirstLine = 75
 ; Folding = ----
 ; EnableXP

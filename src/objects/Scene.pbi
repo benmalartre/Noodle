@@ -59,8 +59,8 @@ DeclareModule Scene
   
   Declare New( name.s = "ActiveScene")
   Declare Delete(*Me.Scene_t)
-  Declare Setup(*Me.Scene_t, *ctx.GLContext::GLContext_t)
-  Declare Update(*Me.Scene_t, *ctx.GLContext::GLContext_t)
+  Declare Setup(*Me.Scene_t)
+  Declare Update(*Me.Scene_t)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   Declare AddObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -378,33 +378,33 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Setup Children
   ;---------------------------------------------------------------------------
-  Procedure SetupChildren(*Me.Scene_t,*obj.Object3D::Object3D_t,*ctx.GLContext::GLContext_t)
+  Procedure SetupChildren(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Protected j
     Protected child.Object3D::IObject3D
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        child\Setup(*ctxt)
+        child\Setup(GLContext::*SHARED_CTXT)
       EndIf
-      SetupChildren(*Me,child,*ctx)
+      SetupChildren(*Me,child)
     Next
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; SetupObject
   ;---------------------------------------------------------------------------
-  Procedure Setup(*Me.Scene_t,*ctx.GLContext::GLContext_t)
+  Procedure Setup(*Me.Scene_t)
     Protected i,j
     Protected *root.Root::Root_t = *Me\root
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
-    *ctx\scene = *Me
-    GLContext::SetContext(*ctx)
+    GLContext::*SHARED_CTXT\scene = *Me
+    GLContext::SetContext(GLContext::*SHARED_CTXT)
     ForEach *root\children()
       child = *root\children()
-      child\Setup(*ctx)
+      child\Setup(GLContext::*SHARED_CTXT)
 
-      SetupChildren(*Me,child,*ctx)
+      SetupChildren(*Me,child)
     Next
 
     ; Setup Handle
@@ -414,7 +414,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Children in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure CleanChildren(*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
+  Procedure CleanChildren(*obj.Object3D::Object3D_t)
     Protected i,j
     Protected child.Object3D::IObject3D
   
@@ -422,30 +422,30 @@ Module Scene
       child = *obj\children()
       Protected *ochild.Object3D::Object3D_t = *child
       
-      child\Clean(*ctxt)
-      CleanChildren(*child, *ctxt)
+      child\Clean(GLContext::*SHARED_CTXT)
+      CleanChildren(*child)
     Next
     
     Protected object.Object3D::IObject3D = *obj
-    object\Clean(*ctxt)
+    object\Clean(GLContext::*SHARED_CTXT)
     
   EndProcedure
   
   ;---------------------------------------------------------------------------
   ; Clean Object in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure CleanObject(*Me.Scene_t,*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
+  Procedure CleanObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   
     Protected i
     Protected child.Object3D::IObject3D
     
     ForEach *obj\children()
       child = *obj\children()
-      CleanChildren(child, *ctxt)
+      CleanChildren(child)
     Next
     
     Protected object.Object3D::IObject3D = *obj
-    object\Clean(*ctxt)
+    object\Clean(GLContext::*SHARED_CTXT)
   
   
   EndProcedure
@@ -453,7 +453,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Clean(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
+  Procedure Clean(*Me.Scene_t)
   
     Protected i,j
     Protected child.Object3D::IObject3D
@@ -463,8 +463,8 @@ Module Scene
       *model = CArray::GetValue(*Me\models,i)
       ForEach *model\children()
         child = *model\children()
-        child\Clean(*ctxt)
-        CleanChildren(child, *ctxt)
+        child\Clean(GLContext::*SHARED_CTXT)
+        CleanChildren(child)
       Next
       
     Next i
@@ -474,19 +474,19 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Update Children in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure UpdateChildren(*obj.Object3D::Object3D_t, *ctxt.GLContext::GLContext_t)
+  Procedure UpdateChildren(*obj.Object3D::Object3D_t)
 
     Protected i
     Protected child.Object3D::IObject3D = *obj
     ForEach *obj\children()
       child = *obj\children()
       If Not *obj\children()\initialized
-        child\Setup(*ctxt)
+        child\Setup(GLContext::*SHARED_CTXT)
       EndIf
       Object3D::UpdateTransform(*obj\children(),*obj\globalT)
-      child\Update(*ctxt)
+      child\Update(GLContext::*SHARED_CTXT)
 
-      UpdateChildren(*obj\children(), *ctxt)
+      UpdateChildren(*obj\children())
     Next
     
   EndProcedure
@@ -494,7 +494,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Clean Scene in OpenGL Context
   ;---------------------------------------------------------------------------
-  Procedure Update(*Me.Scene_t, *ctxt.GLContext::GLContext_t)
+  Procedure Update(*Me.Scene_t)
     If Not *Me : ProcedureReturn : EndIf
     ;If *Me\dirty
       Protected i
@@ -507,8 +507,8 @@ Module Scene
         child = *root\children()
         
         Object3D::UpdateTransform(child,*root\globalT)
-        child\Update(*ctxt)
-        UpdateChildren( child, *ctxt)
+        child\Update(GLContext::*SHARED_CTXT)
+        UpdateChildren( child)
       Next
       
       *Me\dirty = #False
@@ -748,7 +748,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 401
-; FirstLine = 391
+; CursorPosition = 62
+; FirstLine = 39
 ; Folding = -------
 ; EnableXP

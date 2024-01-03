@@ -193,8 +193,8 @@ Procedure Draw(*app.Application::Application_t)
 
   Global *root.Model::Model_t = Model::New("Model")
     
-  *s_wireframe = *app\context\shaders("simple")
-  *s_polymesh = *app\context\shaders("polymesh")
+  *s_wireframe = GLContext::*SHARED_CTXT\shaders("simple")
+  *s_polymesh = GLContext::*SHARED_CTXT\shaders("polymesh")
   
   shader = *s_polymesh\pgm
 ; 
@@ -210,22 +210,22 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(*scene,*root)
   
   RandomSpheres(Random(64,16), Random(10)-5)
-;   RandomPoints(Random(256, 64))
-;   RandomCubes(Random(64,16), Random(10)-5)
-;   RandomStrips(32)
-;   RandomTexts(32,"HELLO")
+  RandomPoints(Random(256, 64))
+  RandomCubes(Random(64,16), Random(10)-5)
+  RandomStrips(32)
+  RandomTexts(32,"HELLO")
 ;   
-  Scene::Setup(*scene,*app\context)
+  Scene::Setup(*scene)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 216
-; FirstLine = 176
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 215
+; FirstLine = 163
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

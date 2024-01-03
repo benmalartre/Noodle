@@ -486,11 +486,11 @@ Module Drawer
       glEnable(#GL_DEPTH_TEST)
     EndIf
     
-        
-    Define u_model = glGetUniformLocation(*Me\pgm\pgm,"model")
-    Define u_proj = glGetUniformLocation(*Me\pgm\pgm,"projection")
-    Define u_view = glGetUniformLocation(*Me\pgm\pgm,"view")
-    Define u_offset = glGetUniformLocation(*Me\pgm\pgm, "offset")
+    Define *pgm.Program::Program_t = GLContext::*SHARED_CTXT\shaders("drawer")
+    Define u_model = glGetUniformLocation(*pgm\pgm,"model")
+    Define u_proj = glGetUniformLocation(*pgm\pgm,"projection")
+    Define u_view = glGetUniformLocation(*pgm\pgm,"view")
+    Define u_offset = glGetUniformLocation(*pgm\pgm, "offset")
    
     glUniformMatrix4fv(u_model,1,#GL_FALSE,*t\m)
     glUniformMatrix4fv(u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
@@ -512,13 +512,13 @@ Module Drawer
             DrawStrip(*Me\items())
             GLCheckError("DRAW ITEM STRIP")
           Case #ITEM_BOX
-            DrawBox(*Me\items(), *Me\pgm\pgm)
+            DrawBox(*Me\items(), *pgm\pgm)
             GLCheckError("DRAW ITEM BOX")
           Case #ITEM_SPHERE
-            DrawSphere(*Me\items(), *Me\pgm\pgm)
+            DrawSphere(*Me\items(), *pgm\pgm)
             GLCheckError("DRAW ITEM SPHERE")
           Case #ITEM_MATRIX
-            DrawMatrix(*Me\items(), *Me\pgm\pgm)
+            DrawMatrix(*Me\items(), *pgm\pgm)
             GLCheckError("DRAW ITEM MATRIX")
           Case #ITEM_TRIANGLE
             DrawTriangle(*Me\items())
@@ -990,6 +990,6 @@ EndModule
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 520
-; FirstLine = 471
+; FirstLine = 483
 ; Folding = ---------
 ; EnableXP

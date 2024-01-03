@@ -26,7 +26,7 @@ DeclareModule LayerDefault
   Declare Setup(*layer.LayerDefault_t)
   Declare Update(*layer.LayerDefault_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerDefault_t)
-  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
+  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -85,7 +85,7 @@ Module LayerDefault
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
+  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t)
     
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
@@ -110,7 +110,7 @@ Module LayerDefault
     
     ;Draw Shaded Polymeshes 
     ;-----------------------------------------------
-    Protected *shader.Program::Program_t = *ctx\shaders("polymesh")
+    Protected *shader.Program::Program_t = GLContext::*SHARED_CTXT\shaders("polymesh")
     Protected shader.GLuint =  *shader\pgm
     glUseProgram(shader)
       
@@ -126,7 +126,7 @@ Module LayerDefault
         
     ;Draw Drawer Objects
     ;-----------------------------------------------
-    *shader.Program::Program_t = *ctx\shaders("drawer")
+    *shader.Program::Program_t = GLContext::*SHARED_CTXT\shaders("drawer")
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
@@ -136,7 +136,7 @@ Module LayerDefault
     
     ;Draw Curve Objects
     ;-----------------------------------------------
-    *shader.Program::Program_t = *ctx\shaders("curve")
+    *shader.Program::Program_t = GLContext::*SHARED_CTXT\shaders("curve")
     shader.GLuint =  *shader\pgm
     glUseProgram(shader)
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
@@ -147,7 +147,7 @@ Module LayerDefault
     
 ;     ;Draw Wireframe Polymeshes 
 ;     ;-----------------------------------------------
-;     *shader = *ctx\shaders("wireframe")
+;     *shader = GLContext::*SHARED_CTXT\shaders("wireframe")
 ;     shader =  *shader\pgm
 ;     glUseProgram(shader)
 ; ;       
@@ -162,7 +162,7 @@ Module LayerDefault
 
     ; Draw Point Clouds 
     ;----------------------------------------------
-    Protected *pgm.Program::Program_t = *ctx\shaders("cloud")
+    Protected *pgm.Program::Program_t = GLContext::*SHARED_CTXT\shaders("cloud")
     glUseProgram(*pgm\pgm)
     Define.m4f32 model,view,proj
     Matrix4::SetIdentity(model)
@@ -178,7 +178,7 @@ Module LayerDefault
     GLCheckError("DRAW POINTS")
     ; Draw Instance Clouds 
     ;-----------------------------------------------
-    *pgm.Program::Program_t = *ctx\shaders("instances")
+    *pgm.Program::Program_t = GLContext::*SHARED_CTXT\shaders("instances")
     glUseProgram(*pgm\pgm)
     
     Matrix4::SetIdentity(model)
@@ -206,7 +206,7 @@ Module LayerDefault
     
     ; Draw Nulls
     ;----------------------------------------------
-    *pgm = *ctx\shaders("wireframe")
+    *pgm = GLContext::*SHARED_CTXT\shaders("wireframe")
     glUseProgram(*pgm\pgm)
     Matrix4::SetIdentity(model)
  
@@ -217,12 +217,7 @@ Module LayerDefault
     Layer::DrawNulls(*layer,*scene\helpers,*pgm\pgm)
   ;   Layer::CenterFrambuffer(*layer)
   ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
-  Protected basewidth = *layer\framebuffer\width
-  If(*ctx\width < *layer\framebuffer\width) 
-    
-  ElseIf *ctx\height < *layer\framebuffer\height
-    
-  EndIf
+
   
   Framebuffer::Unbind(*layer\framebuffer)
   
@@ -265,7 +260,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 212
+; CursorPosition = 219
+; FirstLine = 179
 ; Folding = --
 ; EnableXP

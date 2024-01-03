@@ -206,7 +206,7 @@ CompilerEndIf
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
   Declare Loop(*Me.Application_t,*callback=#Null, waitTime.f=-1)
-  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GlContext_t=#Null)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   Declare AddShortcuts(*Me.Application_t)
@@ -214,7 +214,7 @@ CompilerEndIf
   
 CompilerIf (#USE_GLFW = #True)
   Declare RegisterCallbacks(*Me.Application_t)
-  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GlContext_t=#Null)
+  Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
   Declare OnKeyChanged(*window.GLFWwindow,key.i,scancode.i,action.i,modifiers.i)
   Declare OnMouseMove(*window.GLFWwindow,x.d,y.d)
   Declare OnMouseButton(*window.GLFWwindow,button.i,action.i,modifier.i)
@@ -666,11 +666,11 @@ CompilerEndIf
         
         Select event
           Case Globals::#EVENT_NEW_SCENE
-            Scene::Setup(*Me\scene, GLContext::*SHARED_CTXT)
+            Scene::Setup(*Me\scene)
             Window::OnEvent(*window,Globals::#EVENT_NEW_SCENE)
             
           Case Globals::#EVENT_PARAMETER_CHANGED
-            Scene::Update(*Me\scene, GLContext::*SHARED_CTXT)
+            Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_PARAMETER_CHANGED) : EndIf
             
           Case Globals::#EVENT_REPAINT_WINDOW
@@ -694,11 +694,11 @@ CompilerEndIf
             
           Case Globals::#EVENT_SELECTION_CHANGED
             Window::OnEvent(*window,Globals::#EVENT_SELECTION_CHANGED)
-            Scene::Update(*Me\scene, GLContext::*SHARED_CTXT)
+            Scene::Update(*Me\scene)
             If *callback : *callback(*Me, Globals::#EVENT_SELECTION_CHANGED) : EndIf
            
           Case Globals::#EVENT_HIERARCHY_CHANGED
-            Scene::Setup(*Me\scene, GLContext::*SHARED_CTXT)
+            Scene::Setup(*Me\scene)
             Window::OnEvent(*window,Globals::#EVENT_HIERARCHY_CHANGED)
            
             If *callback : *callback(*Me, Globals::#EVENT_HIERARCHY_CHANGED) : EndIf
@@ -757,7 +757,7 @@ CompilerEndIf
   ;------------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------------
-  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t, *context.GLContext::GLContext_t=#Null)
+  Procedure Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
     Handle::Resize(*Me\handle,*camera)
 
     Dim shaderNames.s(3)
@@ -767,7 +767,7 @@ CompilerEndIf
     Define i
     Define *pgm.Program::Program_t
     For i=0 To 2
-      *pgm = *context\shaders(shaderNames(i))
+      *pgm = GLContext::*SHARED_CTXT\shaders(shaderNames(i))
       glUseProgram(*pgm\pgm)
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
       glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *camera\view)
@@ -778,7 +778,7 @@ CompilerEndIf
     Protected ilayer.Layer::ILayer = *layer
     ilayer\Draw(*Me\scene, *context)
     If *Me\tool
-      Protected *wireframe.Program::Program_t = *context\shaders("wireframe")
+      Protected *wireframe.Program::Program_t = GLContext::*SHARED_CTXT\shaders("wireframe")
       glUseProgram(*wireframe\pgm)
 
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
@@ -787,13 +787,14 @@ CompilerEndIf
       
       Handle::Draw( *Me\handle) 
     EndIf
+    Framebuffer::BlitTo(*layer\framebuffer, 0, *layer\mask, #GL_NEAREST)
     
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 787
-; FirstLine = 735
+; CursorPosition = 789
+; FirstLine = 736
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

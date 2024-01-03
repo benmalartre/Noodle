@@ -7,9 +7,11 @@ uniform vec4 color;
 
 void main( void )
 {
-	//ivec2 textureSize2d = textureSize(tex,0);
-    outColor = texture(tex,st);
+	outColor = texture(tex, st);
+
 /*
+	//ivec2 textureSize2d = textureSize(tex,0);
+    
    vec4 t = texture2D( tex, st * 0.5 );
    vec3 c;
    if(color.a>0.5){

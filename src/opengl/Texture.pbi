@@ -52,7 +52,7 @@ Module Texture
   EndProcedure
   
   Procedure NewFromSource(path.s)
-    Protected *Me.Texture_t = AllocateMemory(SizeOf(Texture_t))
+    Protected *Me.Texture_t = AllocateStructure(Texture_t)
     *Me\src = path
     *Me\img = LoadImage(#PB_Any,path)
     If IsImage(*Me\img)
@@ -72,7 +72,7 @@ Module Texture
   ;----------------------------------------------------
   Procedure Delete(*Me.Texture_t)
     If IsImage(*Me\img) : FreeImage(*Me\img) : EndIf
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; GL Setup
@@ -219,9 +219,9 @@ Module Texture
   
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 126
-; FirstLine = 122
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 49
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

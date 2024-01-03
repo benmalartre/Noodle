@@ -222,7 +222,6 @@ Procedure SetupSSAONoise()
     Vector3::NormalizeInPlace(*n)
   Next i
   
-  
   glGenTextures(1,@noise_tex)
   glBindTexture(#GL_TEXTURE_2D,noise_tex)
   glTexImage2D(#GL_TEXTURE_2D,0,#GL_RGBA16F,4,4,0,#GL_RGB,#GL_FLOAT,CArray::GetPtr(*noise,0))
@@ -231,9 +230,6 @@ Procedure SetupSSAONoise()
   glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_S,#GL_REPEAT)
   glTexParameteri(#GL_TEXTURE_2D,#GL_TEXTURE_WRAP_T,#GL_REPEAT)
 EndProcedure
-
-  
-
 
 Procedure Present(state)
   Select state
@@ -625,9 +621,9 @@ EndIf
 
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 159
-; FirstLine = 120
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 223
+; FirstLine = 200
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

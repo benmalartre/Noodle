@@ -56,24 +56,24 @@ EndProcedure
 ; Update
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
-;   Debug "update..."
-;   GLContext::SetContext(GLContext::*SHARED_CTXT)
-;   Debug *app\scene
-;   Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
-;   Debug "update scene..."
-;   *app\scene\dirty= #True
+  Debug "update..."
+  GLContext::SetContext(GLContext::*SHARED_CTXT)
+  Debug *app\scene
+  Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
+  Debug "update scene..."
+  *app\scene\dirty= #True
   
   
   Define *active.Monitor_t = GetMonitorById(EventWindow())
 
   If *active
     Debug "ACTIVE : "+PeekS(@*active\name[0], 256)
-    GLContext::SetContext(*active\viewport\context)
+;     GLContext::SetContext(*active\viewport\context)
    
-    LayerDefault::Draw(*active\layer, *app\scene, *active\viewport\context)
-    
+    LayerDefault::Draw(*active\layer, *app\scene, GLContext::*SHARED_CTXT)
+    GLContext::SetContext(*active\viewport\context)
     ViewportUI::Blit(*active\viewport, *active\layer\framebuffer)
-    
+
     GLContext::FlipBuffer(*active\viewport\context)
   EndIf
   
@@ -97,7 +97,7 @@ Define model.Math::m4f32
 Camera::LookAt(*app\camera)
 Matrix4::SetIdentity(model)
 *app\scene = Scene::New()
-*layer = LayerDefault::New(800,600,*viewport\context,*viewport\camera)
+*layer = LayerDefault::New(width,height,*viewport\context,*viewport\camera)
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
 AddElement(children())
@@ -113,13 +113,13 @@ For i=1 To #NUM_MONITORS
   AddElement(children())
   PokeS(@children()\name[0], "Child"+Str(i))
   children()\window = Window::TearOff(*app\window, i*100, i*100, width * 0.5,height * 0.5)
-  children()\camera = *app\camera;Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
+  children()\camera = Camera::New("Camera"+Str(i),Camera::#Camera_Perspective)
   children()\viewport = ViewportUI::New(children()\window\main, "VIEWPORT"+Str(i), children()\camera, *app\handle)
   
 
-  GLContext::SetContext(children()\viewport\context)
+  GLContext::SetContext(GLContext::*SHARED_CTXT)
   children()\layer = LayerDefault::New(children()\window\main\sizX, children()\window\main\sizY, 
-                                        children()\viewport\context, children()\camera )
+                                        GLContext::*SHARED_CTXT, children()\camera )
 ;   Vector3::RandomizeInPlace(children()\camera\pos, 12)
 ;   Camera::LookAt(children()\camera)
   Window::OnEvent(children()\window, #PB_Event_SizeWindow)
@@ -144,7 +144,7 @@ Application::Loop(*app, @Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 136
-; FirstLine = 87
+; CursorPosition = 80
+; FirstLine = 51
 ; Folding = -
 ; EnableXP

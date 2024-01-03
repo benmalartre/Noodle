@@ -163,7 +163,6 @@ Module Framebuffer
     EndIf
     
     Protected id.i = ArraySize(*Me\tbos())
-    Debug "[Framebuffer::AttachTexture] Current Texture ID : "+Str(id)
     
     If id = *Me\max_color_attachment
       MessageRequester( "[Framebuffer::AttachTexture]"," GL_MAX_COLOR_ATTACHMENT exceeded, Aborted!!!")
@@ -617,8 +616,8 @@ Procedure Delete(*buffer.FrameBuffer_t)
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 404
-; FirstLine = 400
+; CursorPosition = 53
+; FirstLine = 15
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

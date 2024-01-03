@@ -235,7 +235,6 @@ Module GLContext
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage( 0, *Me\ID, "makeCurrentContext" )
     CompilerElse
-      Debug *Me\ID
       SetGadgetAttribute(*Me\ID, #PB_OpenGL_SetContext, #True)
     CompilerEndIf
   EndProcedure
@@ -264,7 +263,6 @@ Module GLContext
   ;  Resize Context
   ;---------------------------------------------
   Procedure Resize(*Me.GLContext_t, width.i, height.i)
-    Debug "RESIZE GL CONTEXT............................"
     Define backingScale.f = BackingScaleFactor()
     *Me\width = width * backingScale
     *Me\height = height * backingScale
@@ -274,7 +272,6 @@ Module GLContext
       CocoaMessage(0,*Me\ID, "update")
     CompilerEndIf
     ForEach *me\framebuffers()
-      Debug "resize framebuffer..."
       Framebuffer::Resize(*me\framebuffers(), width, height)
     Next  
   EndProcedure
@@ -300,8 +297,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 150
-; FirstLine = 129
+; CursorPosition = 274
+; FirstLine = 235
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

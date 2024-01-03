@@ -339,12 +339,7 @@ Module FTGL
         
     glActiveTexture(#GL_TEXTURE0)
     Protected w = *Me\atlas\width
-    Protected h = *Me\atlas\height
-    Debug "width : "+Str(w)
-    Debug "height : "+Str(h)
-    
-    Debug "atlas : "+Str(*Me\atlas)
-    
+    Protected h = *Me\atlas\height    
     Define img = CreateImage(#PB_Any,w,h,32)
   
     Define x,y
@@ -389,12 +384,14 @@ Module FTGL
     glBindTexture(#GL_TEXTURE_2D,*Me\tex)
     glUniform1i(glGetUniformLocation(*Me\shader\pgm,"tex"),0)
     glDisable(#GL_CULL_FACE)
+    glDisable(#GL_DEPTH_TEST)
   EndProcedure
   
   ;-------------------------------------------------------------------------------------
   ; End Draw
   ;-------------------------------------------------------------------------------------
   Procedure EndDraw(*Me.FTGL_Drawer)
+    glEnable(#GL_DEPTH_TEST)
     glDisable(#GL_BLEND)
     glEnable(#GL_DEPTH_TEST)  
     glUseProgram(0)
@@ -471,7 +468,7 @@ Module FTGL
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 44
-; FirstLine = 30
+; CursorPosition = 393
+; FirstLine = 352
 ; Folding = ----
 ; EnableXP

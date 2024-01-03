@@ -25,6 +25,7 @@ DeclareModule Layer
     color.Math::c4f32
     fixed.b
     mask.l
+    ;filter.l
   EndStructure
   
   ;---------------------------------------------------
@@ -194,15 +195,16 @@ Module Layer
   Procedure WriteImage(*layer.Layer_t,path.s,format)
     
     Define.GLint wtex,htex,comp,rs,gs,bs,a_s;
-    Protected subsample = *layer\framebuffer\tbos(0)\textureID
+    Protected texture = *layer\framebuffer\tbos(0)\textureID
+    glBindTexture(#GL_TEXTURE_2D, texture)
     
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_WIDTH, @wtex );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_HEIGHT, @htex );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_INTERNAL_FORMAT, @comp );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_RED_SIZE, @rs );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_GREEN_SIZE, @gs );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_BLUE_SIZE, @bs );
-  glGetTexLevelParameteriv( #GL_TEXTURE_2D, subsample,#GL_TEXTURE_ALPHA_SIZE, @a_s );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_WIDTH, @wtex );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_HEIGHT, @htex );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_INTERNAL_FORMAT, @comp );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_RED_SIZE, @rs );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_GREEN_SIZE, @gs );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_BLUE_SIZE, @bs );
+  glGetTexLevelParameteriv( #GL_TEXTURE_2D, 0,#GL_TEXTURE_ALPHA_SIZE, @a_s );
   
   Protected msg.s
   msg = "Texture Width : "+Str(wtex)+Chr(10)
@@ -213,21 +215,22 @@ Module Layer
   msg + "Texture Blue Size "+Str(bs)+Chr(10)
   msg + "Texture Alpha Size "+Str(a_s)+Chr(10)
   
+  Debug msg
 ;   MessageRequester("Texture",msg)
   
   
     Protected x,y
     Protected l.l
-    Protected *mem = AllocateMemory(*layer\framebuffer\width * *layer\framebuffer\height *4 * SizeOf(l))
+    Protected *mem = AllocateMemory(wtex * htex *4 * SizeOf(l))
     glBindBuffer(#GL_PIXEL_PACK_BUFFER, 0)
     OpenGL::glGetTexImage(#GL_TEXTURE_2D,0,format,#GL_UNSIGNED_INT,*mem)
     
-    Define image = CreateImage(#PB_Any, *layer\framebuffer\width, *layer\framebuffer\height)
+    Define image = CreateImage(#PB_Any, wtex, htex)
     StartDrawing(ImageOutput(image))
-    Protected row_size = *layer\framebuffer\width
+    Protected row_size = wtex
     Protected color.l
-    For y=0 To *layer\framebuffer\height-1
-      For x=0 To *layer\framebuffer\width-1
+    For y=0 To htex-1
+      For x=0 To wtex-1
         color = PeekA(*mem + (y*row_size+x)*SizeOf(l))
         Plot(x,y,color)
       Next x
@@ -741,7 +744,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 515
-; FirstLine = 506
+; CursorPosition = 232
+; FirstLine = 190
 ; Folding = -----
 ; EnableXP

@@ -3,11 +3,8 @@ EnableExplicit
 
 Globals::Init()
 Time::Init()
-Controls::Init()
 Log::Init()
 FTGL::Init()
-Alembic::Init()
-Perlin::Init()
 Commands::Init()
 UIColor::Init()
 
@@ -19,15 +16,15 @@ Global HEIGHT = 1024
 UseModule Math
 
 Define *A.Polymesh::Polymesh_t = Polymesh::New("A",Shape::#SHAPE_CUBE)
-Scene::*current_scene = Scene::New("ActiveScene")
+*app\scene = Scene::New("ActiveScene")
 
 ; Define *B.PointCloud::PointCloud_t = PointCloud::New("B",100)
  
 CompilerIf Not #USE_GLFW
-  Global *main.View::View_t = *app\manager\main
+  Global *main.View::View_t = *app\window\main
   Global *view.View::View_t = View::Split(*main,0,50)
   Global *view2.View::view_t = View::Split(*view\left,#PB_Splitter_Vertical,60)
-  Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*view2\left,"ViewportUI")
+  Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*view2\left,"ViewportUI", *app\camera, *app\handle)
   
   Global *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view2\right,"Property",#Null)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -37,8 +34,8 @@ CompilerIf Not #USE_GLFW
 CompilerEndIf
 
 
-Global *model.Model::Model_t = Alembic::LoadABCArchive("../../abc/Skeleton.abc")
-Global *meshes.CArray::CArrayPtr = CArray::newCArrayPtr()
+Global *model.Model::Model_t = Model::New("BOB"); Alembic::LoadABCArchive("../../abc/Skeleton.abc")
+Global *meshes.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
 Object3D::FindChildren(*model,"",Object3D::#Polymesh,*meshes,#True)
 
 Define i
@@ -74,7 +71,7 @@ NewList *bunnies.Polymesh::Polymesh_t()
         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
 ;         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
         *t = *bunnies()\localT
-        Scene::AddChild(Scene::*current_scene,*bunnies())
+        Scene::AddChild(*app\scene,*bunnies())
 ;         Transform::SetTranslationFromXYZValues(*t,x-5,y+0.5,z-5)
 ;         Object3D::SetLocalTransform(*bunnies(),*t)
 ;         Object3D::UpdateTransform(*bunnies(),Scene::*current_scene\root\globalT)
@@ -104,12 +101,12 @@ NewList *bunnies.Polymesh::Polymesh_t()
 ; Scene::AddChild(Scene::*current_scene,*A)
 ; Scene::AddChild(Scene::*current_scene,*B)
 
-Scene::Setup(Scene::*current_scene,*app\context)
+Scene::Setup(*app\scene)
 
-Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
-Global *default.Layer::Layer_t = LayerDefault::New(800,600,*app\context,*light)
+Global *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
+Global *default.Layer::Layer_t = LayerDefault::New(800,600,*viewport\context,*light)
 LayerDefault::Setup(*default)
-ViewportUI::AddLayer(*viewport, *default)
+GLContext::AddFramebuffer(*viewport\context, *default\framebuffer)
 
 ; Global *gbuffer.Layer::Layer_t = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
 ; LayerGBuffer::Setup(*gbuffer)
@@ -158,8 +155,8 @@ default_layer\Update()
 Define datas.Control::EventTypeDatas_t
 datas\x = 0
 datas\y = 0
-datas\width = *property\width
-datas\height = *property\height
+datas\width = *property\sizX
+datas\height = *property\sizY
 
 Define *c.ControlNumber::ControlNumber_t = ControlNumber::New(*A, "Param", 5, ControlNumber::#NUMBER_INTEGER, -50, 50, -10, 10, 0, 0, 80, 18 )
 
@@ -168,15 +165,15 @@ Define *c.ControlNumber::ControlNumber_t = ControlNumber::New(*A, "Param", 5, Co
 ; Global *saver.Saver::Saver_t = Saver::New(Scene::*current_scene,"D:\Projects\RnD\PureBasic\Noodle\scenes\Save_001.scene")
 ; Saver::Save(*saver)
 
-Define *args.Arguments::Arguments_t = Arguments::New()
-Arguments::AddPtr(*args,"Parent",*A)
-Arguments::AddLong(*args,"Shape",Shape::#SHAPE_CUBE)
-CreatePolymeshCmd::Do(*args)
+; Define *args.Arguments::Arguments_t = Arguments::New()
+; Arguments::ADD(*args,"Parent",*A)
+; Arguments::AddLong(*args,"Shape",Shape::#SHAPE_CUBE)
+; CreatePolymeshCmd::Do(*args)
 
 
 Procedure Update(*app.Application::Application_t)
-  Scene::Update(Scene::*current_scene)
-  default_layer\Draw  (*app\context)
+  Scene::Update(*app\scene)
+  default_layer\Draw  (*app\scene, *viewport\context)
 ;   gbuffer\Draw(*app\context  )
 ;   shadowmap\Draw(*app\context)
   
@@ -186,21 +183,21 @@ Procedure Update(*app.Application::Application_t)
 ;   *bitmap\bitmap = Framebuffer::GetTex(*defered\buffer,0)
 ;   bitmap\Draw(*app\context)
 ;   ssao\Draw(*app\context)
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
-  Define ss.f = 0.85/*app\width
-  Define ratio.f = *app\width / *app\height
-  FTGL::Draw(*app\context\writer,"Shadow Mapping Demo",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+;   FTGL::BeginDraw(*app\context\writer)
+;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   Define ss.f = 0.85/*app\width
+;   Define ratio.f = *app\width / *app\height
+;   FTGL::Draw(*app\context\writer,"Shadow Mapping Demo",-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+;   FTGL::EndDraw(*app\context\writer)
   
 ;   ViewportUI::FlipBuffer(*viewport)
 EndProcedure
 
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 30
-; FirstLine = 26
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 175
+; FirstLine = 125
 ; Folding = -
 ; EnableXP

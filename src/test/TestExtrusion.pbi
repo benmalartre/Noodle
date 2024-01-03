@@ -11,21 +11,19 @@ Global model.Math::m4f32
 Procedure Draw(*app.Application::Application_t)
   
   
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(GLContext::*SHARED_CTXT)
 ;   Scne::Update(Scene::*current_scene)
   
-  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
-  
-  Application::Draw(*app, *layer, *app\camera)
-
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+  FTGL::BeginDraw(GLContext::*SHARED_CTXT\writer)
+  FTGL::SetColor(GLContext::*SHARED_CTXT\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(GLContext::*SHARED_CTXT\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(GLContext::*SHARED_CTXT\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(GLContext::*SHARED_CTXT)
 
 EndProcedure
 
@@ -49,15 +47,12 @@ If Time::Init()
 
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-   *app\context = *viewport\context
-     *app\context\writer\background = #True
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
 
@@ -65,10 +60,10 @@ If Time::Init()
   Global *root.Model::Model_t = Model::New("Model")
   
  
-  Define *section.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
+  Define *section.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   MathUtils::BuildCircleSection(*section, 12)
       
-  Define *points.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
+  Define *points.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
   
   Define *m.Math::m4f32
   Define p.Math::v3f32
@@ -95,12 +90,12 @@ If Time::Init()
   Next
 
   
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 38
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 16
+; FirstLine = 6
 ; Folding = -
 ; EnableXP

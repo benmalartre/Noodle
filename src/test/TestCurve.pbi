@@ -56,21 +56,25 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
 
-  GLContext::SetContext(*app\context)
-  Scene::Update(Scene::*current_scene)
-  Application::Draw(*app, *app\layers(), *app\camera)
-
- 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  GLContext::SetContext(GLContext::*SHARED_CTXT)
+  Scene::Update(*app\scene)
+  
+  LayerDefault::Draw(*app\layers(), *app\scene)
+  
+  FTGL::BeginDraw(GLContext::*SHARED_CTXT\writer)
+  FTGL::SetColor(GLContext::*SHARED_CTXT\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Test Curves ",-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(GLContext::*SHARED_CTXT\writer,"Test Curves ",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(GLContext::*SHARED_CTXT\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+ 
+ 
+  
+  GLContext::FlipBuffer(GLContext::*SHARED_CTXT)
 
  EndProcedure
  
@@ -87,20 +91,18 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-     *app\context = *viewport\context
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600, GLContext::*SHARED_CTXT,*app\camera)
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
   
-  *s_wireframe = *app\context\shaders("simple")
+  *s_wireframe = GLContext::*SHARED_CTXT\shaders("simple")
   
   shader = *s_wireframe\pgm
   
@@ -112,18 +114,18 @@ Procedure Draw(*app.Application::Application_t)
 ;   
 ;   Object3D::AddChild(*root,*ground)
 ;   Object3D::AddChild(*root,*bunny)
-   Scene::AddModel(Scene::*current_scene,*root)
-   Scene::Setup(Scene::*current_scene,*app\context)
+   Scene::AddModel(*app\scene,*root)
+   Scene::Setup(*app\scene)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 81
-; FirstLine = 74
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 69
+; FirstLine = 51
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode
