@@ -24,7 +24,7 @@ DeclareModule Polymesh
     u.i
     v.i
     wireframe.b
-    Map eaos.i()
+    eao.i
     ebo.i
     eea.i
   EndStructure
@@ -34,10 +34,10 @@ DeclareModule Polymesh
   
   Declare New(name.s,shape.i)
   Declare Delete(*Me.Polymesh_t)
-  Declare Setup(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
-  Declare Update(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
-  Declare Draw(*Me.Polymesh_t, *ctx.GLContext::GLContext_t)
+  Declare Setup(*Me.Polymesh_t)
+  Declare Update(*Me.Polymesh_t)
+  Declare Clean(*Me.Polymesh_t)
+  Declare Draw(*Me.Polymesh_t)
   Declare SetFromShape(*Me.Polymesh_t,shape.i)
   Declare SetDirtyState(*Me.Polymesh_t, state.i)
   Declare UpdateAttributes(*Me.Polymesh_t)
@@ -367,7 +367,7 @@ Module Polymesh
     Protected *geom.Geometry::PolymeshGeometry_t = *Me\geom
     
     ; Create or ReUse Vertex Array Object
-    Object3D::BindVAOForContext(*Me\eaos(), *ctxt, #True)
+    Object3D::BindVAO(@*Me\eab)
  
     ; Create or ReUse Vertex Buffer Object
     Object3D::BindVBO(@*Me\ebo)
@@ -408,7 +408,7 @@ Module Polymesh
    
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
+  Procedure Setup(*Me.Polymesh_t)
     If Not *Me : ProcedureReturn : EndIf
     
     ; Get Underlying Geometry
@@ -417,35 +417,31 @@ Module Polymesh
     Protected nbs = CArray::GetCount(*geom\a_triangleindices)
     If nbs <3 : ProcedureReturn : EndIf
     
-    If Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt, #True)
-      Object3D::BindVbo(@*Me\vbo)
-      
-      If *ctxt\share
-        ; Fill Buffer
-        BuildGLData(*Me)
-        GLCheckError("build gl data")
+    Object3D::BindVao(@*Me\vao)
+    Object3D::BindVbo(@*Me\vbo)
     
-        ; Create Edge Elements Buffer
-        BuildGLEdgeData(*Me)
-        GLCheckError("build edge data")
-        *Me\initialized = #True
-        SetClean(*Me)
-      EndIf
-      
-      glBindVertexArray(0)
- 
-    EndIf
+    ; Fill Buffer
+    BuildGLData(*Me)
+    GLCheckError("build gl data")
+
+    ; Create Edge Elements Buffer
+    BuildGLEdgeData(*Me)
+    GLCheckError("build edge data")
+    *Me\initialized = #True
+    SetClean(*Me)
+
+    glBindVertexArray(0)
     
   EndProcedure
   
   ;-----------------------------------------------------
   ; Clean
   ;-----------------------------------------------------
-  Procedure Clean(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
-    Object3D::DeleteVAOs(*Me\vaos())
+  Procedure Clean(*Me.Polymesh_t)
+    Object3D::DeleteVAO(@*Me\vao)
     Object3D::DeleteVBO(@*Me\vbo)
     Object3D::DeleteEAB(@*Me\eab)
-    Object3D::DeleteVAOs(*Me\eaos())
+    Object3D::DeleteVAO(@*Me\eao)
     Object3D::DeleteVBO(@*Me\ebo)
     Object3D::DeleteEAB(@*Me\eea)
   EndProcedure
@@ -453,21 +449,20 @@ Module Polymesh
   ;-----------------------------------------------------
   ; Update
   ;-----------------------------------------------------
-  Procedure Update(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
-    If Not *ctxt\share : ProcedureReturn : EndIf
+  Procedure Update(*Me.Polymesh_t)
     If *Me\stack And Stack::HasNodes(*Me\stack)
       PolymeshGeometry::Reset(*Me\geom)
       Stack::Update(*Me\stack)
     EndIf
     
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
-      Setup(*Me, *ctxt)
+      Setup(*Me)
     ElseIf *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
       PolymeshGeometry::ComputeNormals(*Me\geom,1.0)
-      Object3D::BindVaoForContext(*Me\vaos(), *ctxt)
+      Object3D::BindVao(@*Me\vao)
       Object3D::BindVBO(@*Me\vbo)
       UpdateGLData(*Me)
-      Object3D::BindVaoForContext(*Me\eaos(), *ctxt)
+      Object3D::BindVao(@*Me\eao)
       Object3D::BindVBO(@*Me\ebo)
       UpdateGLEdgeData(*Me)
       glBindBuffer(#GL_ARRAY_BUFFER,0)
@@ -480,21 +475,19 @@ Module Polymesh
   ;-----------------------------------------------------
   ; Draw
   ;-----------------------------------------------------
-  Procedure Draw(*Me.Polymesh_t, *ctxt.GLContext::GLContext_t)
+  Procedure Draw(*Me.Polymesh_t)
     Protected *geom.Geometry::PolymeshGeometry_t = *Me\geom
     ;Skip invisible Object
     If Not *Me\visible  Or Not *Me\initialized: ProcedureReturn : EndIf
-      If Object3d::BindVaoFOrContext(*Me\vaos(), *ctxt)
-  ;     glUseProgram(*ctx\shaders("normal")\pgm)
-        glDisable (#GL_POLYGON_OFFSET_FILL)
-        glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
-        glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
-        GLCheckError("[Polymesh] Draw mesh Called")
-        glBindVertexArray(0)
-        ;     EndIf
-      EndIf
-      
-  
+      Object3d::BindVao(@*Me\vao)
+;     glUseProgram(*ctx\shaders("normal")\pgm)
+      glDisable (#GL_POLYGON_OFFSET_FILL)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+      glDrawArrays(#GL_TRIANGLES,0,CArray::GetCount(*geom\a_triangleindices)) 
+      GLCheckError("[Polymesh] Draw mesh Called")
+      glBindVertexArray(0)
+      ;     EndIf
+
 ;     If *Me\selected
 ;       
 ;       glBindVertexArray(*Me\eao)
@@ -528,7 +521,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 474
-; FirstLine = 426
+; CursorPosition = 458
+; FirstLine = 448
 ; Folding = ---
 ; EnableXP

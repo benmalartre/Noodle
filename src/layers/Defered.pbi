@@ -84,7 +84,7 @@ Module LayerDefered
   Procedure Draw(*layer.LayerDefered_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
-    Light::Update(*light, *ctx)
+    Light::Update(*light)
     
   ;    
     

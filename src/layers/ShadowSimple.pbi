@@ -50,7 +50,7 @@ Module LayerShadowSimple
   ; Setup
   ;------------------------------------
   Procedure Setup(*layer.LayerShadowSimple_t, *light.Light::Light_t)
-    Light::Update(*light, *layer\context)
+    Light::Update(*light)
     
     *layer\light = *light
     
@@ -240,7 +240,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 100
+; CursorPosition = 52
+; FirstLine = 39
 ; Folding = --
 ; EnableXP

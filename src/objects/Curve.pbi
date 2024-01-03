@@ -27,10 +27,10 @@ DeclareModule Curve
   
   Declare New(name.s)
   Declare Delete(*Me.Curve_t)
-  Declare Setup(*Me.Curve_t,*ctxt.GLContext::GLContext_t)
-  Declare Update(*p.Curve_t,*ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.Curve_t,*ctxt.GLContext::GLContext_t)
-  Declare Draw(*Me.Curve_t,*ctxt.GLContext::GLContext_t)
+  Declare Setup(*Me.Curve_t)
+  Declare Update(*p.Curve_t)
+  Declare Clean(*Me.Curve_t)
+  Declare Draw(*Me.Curve_t)
   Declare OnMessage(id.i, *up)
   DataSection 
     CurveVT: 
@@ -67,7 +67,7 @@ Module Curve
   ;-----------------------------------------------------
   ; Setup (need an valid OpenGL context)
   ;-----------------------------------------------------
-  Procedure Setup(*Me.Curve_t, *ctxt.GLContext::GLContext_t)
+  Procedure Setup(*Me.Curve_t)
     ;---[ Check Datas ]--------------------------------
     If *Me = #Null : ProcedureReturn : EndIf
     
@@ -89,38 +89,34 @@ Module Curve
 ;     glUseProgram(*Me\shader\pgm)
     
     ;Create Or ReUse Vertex Array Object
-    Object3D::BindVaoFOrContext(*Me\vaos(), context, #True)
+    Object3D::BindVao(@*Me\vao)
     
     ; Create or ReUse Vertex Buffer Object
     Object3D::BindVBO(@*Me\vbo)
     
-    If *ctxt\share
+    Protected c.v3f32
+    Vector3::Set(c, 0,1,0)
+    Protected n.v3f32
+    Vector3::Set(n, 1,0,0)
     
-      Protected c.v3f32
-      Vector3::Set(c, 0,1,0)
-      Protected n.v3f32
-      Vector3::Set(n, 1,0,0)
-      
-      Protected width.f = 0.222
-      ; Push Buffer To GPU
-      Protected *samples.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-      Protected *widths.CArray::CArrayFloat = CArray::New(CArray::#ARRAY_FLOAT)
-      CArray::SetCount(*samples, *geom\nbsamples)
-      CArray::SetCount(*widths, *geom\nbsamples)
-      glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_DYNAMIC_DRAW)
-      CurveGeometry::CatmullInterpolatePositions(*geom, *samples)
-      glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,CArray::GetPtr(*samples, 0))
-      CurveGeometry::CatmullInterpolateColors(*geom, *samples)
-      glBufferSubData(#GL_ARRAY_BUFFER,size_p,size_p,CArray::GetPtr(*samples, 0))
-      CurveGeometry::CatmullInterpolateTangents(*geom, *samples)
-      glBufferSubData(#GL_ARRAY_BUFFER,2*size_p,size_p,CArray::GetPtr(*samples, 0))
-      CurveGeometry::CatmullInterpolateWidths(*geom, *widths)
-      glBufferSubData(#GL_ARRAY_BUFFER,3*size_p,size_w,CArray::GetPtr(*widths, 0))
-      
-      CArray::Delete(*samples)
-      CArray::Delete(*widths)
-    EndIf
+    Protected width.f = 0.222
+    ; Push Buffer To GPU
+    Protected *samples.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Protected *widths.CArray::CArrayFloat = CArray::New(CArray::#ARRAY_FLOAT)
+    CArray::SetCount(*samples, *geom\nbsamples)
+    CArray::SetCount(*widths, *geom\nbsamples)
+    glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_DYNAMIC_DRAW)
+    CurveGeometry::CatmullInterpolatePositions(*geom, *samples)
+    glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,CArray::GetPtr(*samples, 0))
+    CurveGeometry::CatmullInterpolateColors(*geom, *samples)
+    glBufferSubData(#GL_ARRAY_BUFFER,size_p,size_p,CArray::GetPtr(*samples, 0))
+    CurveGeometry::CatmullInterpolateTangents(*geom, *samples)
+    glBufferSubData(#GL_ARRAY_BUFFER,2*size_p,size_p,CArray::GetPtr(*samples, 0))
+    CurveGeometry::CatmullInterpolateWidths(*geom, *widths)
+    glBufferSubData(#GL_ARRAY_BUFFER,3*size_p,size_w,CArray::GetPtr(*widths, 0))
     
+    CArray::Delete(*samples)
+    CArray::Delete(*widths)
     
     *Me\initialized = #True 
     
@@ -160,16 +156,9 @@ Module Curve
   ;-----------------------------------------------------
   ; Clean (need an valid OpenGL context)
   ;-----------------------------------------------------
-  Procedure Clean(*p.Curve_t,*ctxt.GLContext::GLContext_t)
-    If *ctxt\share
-      glDeleteBuffers(1, *p\vbo)
-    EndIf
-    Define key.s = Str(*ctxt)
-    If FindMapElement(*p\vaos(), key)
-      glDeleteVertexArrays(1,*p\vaos())
-      DeleteMapElement(*p\vaos(), key)
-    EndIf
-    
+  Procedure Clean(*p.Curve_t)
+    Object3D::DeleteVAO(@*p\vao)
+    Object3D::DeleteVBO(@*p\vbo)    
   EndProcedure
   
   
@@ -183,8 +172,8 @@ Module Curve
   ;-----------------------------------------------------
   ; Update
   ;-----------------------------------------------------
-  Procedure Update(*Me.Curve_t,*ctxt.GLContext::GLContext_t)
-    If *ctxt\share And *Me\dirty
+  Procedure Update(*Me.Curve_t)
+    If *Me\dirty
       CurveGeometry::Update(*Me\geom)
       Protected *geom.Geometry::CurveGeometry_t = *Me\geom
       ; Get Curve Geometry Datas
@@ -193,7 +182,7 @@ Module Curve
       Protected size_w.i = *geom\nbsamples * CArray::GetItemSize(*geom\a_widths)
       Protected size_t.i = 3*size_p + size_w
       
-      Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+      Object3D::BindVao(@*Me\vao)
       
       ;Push Buffer To GPU
       glBufferSubData(#GL_ARRAY_BUFFER,0,size_p,CArray::GetPtr(*geom\a_positions, 0))
@@ -207,24 +196,22 @@ Module Curve
   ;-----------------------------------------------------
   ; Draw
   ;-----------------------------------------------------
-  Procedure Draw(*Me.Curve_t,*ctxt.GLContext::GLContext_t)
+  Procedure Draw(*Me.Curve_t)
 ;     Update(*Me)
     If *Me\initialized
       Protected *t.Transform::Transform_t = *Me\globalT
       Protected *geom.Geometry::CurveGeometry_t = *Me\geom
-      If Object3D::BindVaoForContext(*Me\vaos(), *ctxt)
-        Protected i
-        Protected offsetVertex.i, offsetSample.i
-        For i = 0 To CArray::GetCount(*geom\a_numSamples) - 1
-          glDrawArrays(#GL_LINE_STRIP,offsetSample,CArray::GetValueL(*geom\a_numSamples, i))  
-          offsetSample + CArray::GetValueL(*geom\a_numSamples, i)
-        Next
-        
-        GLCheckError("[Curve] Draw Array POINTS")
-    
-        glBindVertexArray(0)
-      EndIf
+      Object3D::BindVao(@*Me\vao)
+      Protected i
+      Protected offsetVertex.i, offsetSample.i
+      For i = 0 To CArray::GetCount(*geom\a_numSamples) - 1
+        glDrawArrays(#GL_LINE_STRIP,offsetSample,CArray::GetValueL(*geom\a_numSamples, i))  
+        offsetSample + CArray::GetValueL(*geom\a_numSamples, i)
+      Next
       
+      GLCheckError("[Curve] Draw Array POINTS")
+  
+      glBindVertexArray(0)
     EndIf
   
   EndProcedure
@@ -370,7 +357,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 182
+; CursorPosition = 213
+; FirstLine = 194
 ; Folding = ---
 ; EnableXP

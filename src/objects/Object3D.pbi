@@ -43,7 +43,7 @@ DeclareModule Object3D
     uniqueID.i
     visited.b
     
-    Map vaos.i()
+    vao.i
     vbo.i
     eab.i
     type.i
@@ -150,11 +150,8 @@ DeclareModule Object3D
   Declare DecodeID(r.GLubyte,g.GLubyte,b.GLubyte)
   Declare FindChildren(*obj.Object3D_t,name.s,type.i,*io_array.CArray::CArrayPtr,recurse.b)
   
-  Declare AddContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-  Declare RemoveContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-  Declare BindVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t, create.b=#False)
-  Declare DeleteVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-  Declare DeleteVAOs(Map vaos())
+  Declare BindVAO(*vaoAddr)
+  Declare DeleteVAO(*vaoAddr)
   Declare BindVBO(*vboAddr)
   Declare DeleteVBO(*vboAddr)
   Declare BindEAB(*eabAddr)
@@ -558,70 +555,33 @@ Module Object3D
   ;--------------------------------------------------
   ; common opengl stuff
   ;--------------------------------------------------
-  Procedure AddContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-    
-  EndProcedure
-  
-  Procedure RemoveContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-    
-  EndProcedure
-  
-  Procedure DeleteVAOForContext(Map vaos(), *ctxt.GLContext::GLContext_t)
-    ForEach vaos()
-      If Val(MapKey(vaos())) = *ctxt
-        If vaos() : glDeleteVertexArrays(1,vaos()) : EndIf
-        DeleteMapElement(vaos(), Str(*ctxt))
-        ProcedureReturn #True
-      EndIf
-    Next
-    ProcedureReturn #False
-  EndProcedure
-  
-  Procedure DeleteVAOs(Map vaos())
-    ForEach vaos()
-      If vaos() : glDeleteVertexArrays(1,vaos()) : EndIf
-    Next
-    ClearMap(vaos())
+  Procedure DeleteVAO(*vaoAddr)
+    Define vao = PeekL(*vaoAddr)
+    If vao : glDeleteVertexArrays(1,vao) : EndIf
   EndProcedure
 
-  Procedure BindVaoForContext(Map vaos(), *ctxt.GLContext::GLContext_t, create.b=#False)
-    Define key.s = Str(*ctxt)
-    If Not FindMapElement(vaos(), key)
-      If create 
-        AddMapElement(vaos(), key)
-        glGenVertexArrays(1,@vaos())
-        glBindVertexArray(vaos())
-        ProcedureReturn #True
-      EndIf
-      ProcedureReturn #False
-    EndIf
-    glBindVertexArray(vaos())
-    ProcedureReturn #True
+  Procedure BindVao(*vaoAddr)
+    Define vao = PeekL(*vaoAddr)
+    If Not vao : glGenVertexArrays(1,*vaoAddr) : EndIf
+    glBindVertexArray(PeekL(*vaoAddr))
   EndProcedure
   
   Procedure BindVBO(*vboAddr)
     Define vbo = PeekL(*vboAddr)
-    If Not vbo
-      glGenBuffers(1,*vboAddr)
-      vbo = PeekL(*vboAddr)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,vbo)
+    If Not vbo : glGenBuffers(1,*vboAddr) : EndIf
+    glBindBuffer(#GL_ARRAY_BUFFER,PeekL(*vboAddr))
   EndProcedure
   
   Procedure DeleteVBO(*vboAddr)
     Define vbo = PeekL(*vboAddr)
-     If vbo : glDeleteBuffers(1,vbo) : EndIf
-     PokeL(*vboAddr, 0)
+    If vbo : glDeleteBuffers(1,vbo) : EndIf
+    PokeL(*vboAddr, 0)
   EndProcedure
-  
   
   Procedure BindEAB(*eabAddr)
     Define eab = PeekL(*eabAddr)
-    If Not eab
-      glGenBuffers(1,*eabAddr)
-      eab = PeekL(*eabAddr)
-    EndIf
-    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,eab)
+    If Not eab : glGenBuffers(1,*eabAddr) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,PeekL(*eabAddr))
   EndProcedure
   
   Procedure DeleteEAB(*eabAddr)
@@ -633,7 +593,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 606
-; FirstLine = 571
-; Folding = --------
+; CursorPosition = 565
+; FirstLine = 536
+; Folding = -------
 ; EnableXP

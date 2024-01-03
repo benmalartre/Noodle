@@ -132,10 +132,10 @@ RandomBunnies(128, -2, *root)
 
 Scene::AddModel(*app\scene,*root)
 
-ForEach children()
-  Scene::Setup(*app\scene, children()\viewport\context)
-  Scene::Update(*app\scene, children()\viewport\context)
-Next
+
+Scene::Setup(*app\scene, GLContext::*SHARED_CTXT)
+Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
+
 
 
 Application::Loop(*app, @Update())
@@ -144,7 +144,7 @@ Application::Loop(*app, @Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 54
+; CursorPosition = 136
+; FirstLine = 87
 ; Folding = -
 ; EnableXP

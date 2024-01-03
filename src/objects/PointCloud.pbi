@@ -22,10 +22,10 @@ DeclareModule PointCloud
   
   Declare New(name.s,numPoints.i)
   Declare Delete(*Me.PointCloud_t)
-  Declare Setup(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
-  Declare Update(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
-  Declare Draw(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Declare Setup(*Me.PointCloud_t)
+  Declare Update(*Me.PointCloud_t)
+  Declare Clean(*Me.PointCloud_t)
+  Declare Draw(*Me.PointCloud_t)
   Declare SetFromShape(*Me.PointCloud_t,shape.i)
   Declare SetDirtyState(*Me.PointCloud_t, state.i)
   Declare SetClean(*Me.PointCloud_t)
@@ -94,7 +94,7 @@ Module PointCloud
   ; Destructor
   ;----------------------------------------------------
   Procedure Delete(*Me.PointCloud_t)
-    Object3D::DeleteVAOs(*Me\vaos())
+    Object3D::DeleteVAO(@*Me\vao)
     Object3D::DeleteVBO(@*Me\vbo)
     FreeStructure(*Me)
   EndProcedure
@@ -201,7 +201,7 @@ Module PointCloud
     
   ; Setup
   ;----------------------------------------------------
-  Procedure Setup(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Procedure Setup(*Me.PointCloud_t)
 
     ;---[ Get Underlying Geometry ]--------------------
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
@@ -212,19 +212,16 @@ Module PointCloud
     ;ResetStaticKinematicState(*Me)
     
     ; Create or ReUse Vertex Array Object
-    If Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+    Object3D::BindVAO(@*Me\vao)
     
-      ; Create or ReUse Vertex Buffer Object
-      Object3D::BindVBO(@*Me\vbo)
-      
-      If *ctxt\share
-        ; Fill Buffer
-        BuildGLData(*Me)
-      EndIf
-      
-      *Me\initialized = #True
-      *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
-    EndIf
+    ; Create or ReUse Vertex Buffer Object
+    Object3D::BindVBO(@*Me\vbo)
+  
+    ; Fill Buffer
+    BuildGLData(*Me)
+
+    *Me\initialized = #True
+    *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
   
   EndProcedure
   
@@ -232,19 +229,10 @@ Module PointCloud
   ; Clean
   ;-----------------------------------------------------
   ;{
-  Procedure Clean(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
-
-     If *ctxt\share
-      glDeleteBuffers(1, *Me\vbo)
-    EndIf
-    Define key.s = Str(*ctxt)
-    If FindMapElement(*Me\vaos(), key)
-      glDeleteVertexArrays(1,*Me\vaos())
-      DeleteMapElement(*Me\vaos(), key)
-    EndIf
-
-;       If *Me\eab: glDeleteBuffers(1,@*Me\eab) : EndIf
-
+  Procedure Clean(*Me.PointCloud_t)
+    Object3D::DeleteVAO(@*Me\vao)
+    Object3D::DeleteVBO(@*Me\vbo)
+    ; Object3D::DeleteEAB(@*Me\eab)
   EndProcedure
   ;}
   
@@ -252,7 +240,7 @@ Module PointCloud
   ; Update
   ;-----------------------------------------------------
   ;{
-  Procedure Update(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Procedure Update(*Me.PointCloud_t)
     If *Me\stack
       Stack::Update(*Me\stack)
     EndIf
@@ -261,9 +249,9 @@ Module PointCloud
       Protected p.Object3D::IObject3D = *Me
       p\Setup(*ctxt)
     Else 
-       If *ctxt\share And *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
+       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;       PolymeshGeometry::ComputeNormals(*Me\geom,1.0)
-        Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+        Object3D::BindVao(@*Me\vao)
         glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
 ;         UpdateGLData(*Me)
 ;         glBindVertexArray(*Me\eao)
@@ -281,19 +269,17 @@ Module PointCloud
   ; Draw
   ;-----------------------------------------------------
   ;{
-  Procedure Draw(*Me.PointCloud_t, *ctxt.GLContext::GLContext_t)
+  Procedure Draw(*Me.PointCloud_t)
     
     If Not *Me\visible  Or Not *Me\initialized: ProcedureReturn : EndIf
-    If Object3d::BindVaoFOrContext(*Me\vaos(), *ctxt)
-      Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
+    Object3d::BindVao(@*Me\vao)
+    Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
 
-      glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
-      glDisable( #GL_PROGRAM_POINT_SIZE )
-      GLCheckError("[Polymesh] Draw mesh Called")
-      glBindVertexArray(0)
-        ;     EndIf
-    EndIf
-  
+    glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
+    glDisable( #GL_PROGRAM_POINT_SIZE )
+    GLCheckError("[Polymesh] Draw mesh Called")
+    glBindVertexArray(0)
+
   EndProcedure
   ;}
   
@@ -367,7 +353,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 282
+; CursorPosition = 281
+; FirstLine = 298
 ; Folding = ---
 ; EnableXP

@@ -785,15 +785,15 @@ CompilerEndIf
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *camera\projection)
       
-      Handle::Draw( *Me\handle,*context) 
+      Handle::Draw( *Me\handle) 
     EndIf
     
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 318
-; FirstLine = 301
+; CursorPosition = 787
+; FirstLine = 735
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

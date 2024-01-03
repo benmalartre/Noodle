@@ -43,10 +43,10 @@ DeclareModule Locator
   
   Declare New( name.s = "Locator")
   Declare Delete(*Me.Locator_t)
-  Declare Setup(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
-  Declare Update(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
-  Declare Clean(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
-  Declare Draw(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Declare Setup(*Me.Locator_t)
+  Declare Update(*Me.Locator_t)
+  Declare Clean(*Me.Locator_t)
+  Declare Draw(*Me.Locator_t)
   
   DataSection 
     LocatorVT: 
@@ -111,7 +111,7 @@ Module Locator
   ;----------------------------------------------------------------------------
   ; Setup OpenGL Object
   ;---------------------------------------------------------------------------- 
-  Procedure Setup(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Procedure Setup(*Me.Locator_t)
     ; ---[ Sanity Check ]----------------------------
     If Not *Me : ProcedureReturn : EndIf
     
@@ -186,19 +186,9 @@ Module Locator
         
     EndSelect
     
-    Define key.s = Str(*ctxt)
-    ;Create Or ReUse Vertex Array Object
-    If Not FindMapElement(*Me\vaos(), key)
-      AddMapElement(*Me\vaos(), key)
-      glGenVertexArrays(1,@*Me\vaos())
-    EndIf
-    glBindVertexArray(*Me\vaos())
+    Object3D::BindVAO(@*Me\vao)
     
-    ; Create or ReUse Vertex Buffer Object
-    If Not *Me\vbo
-      glGenBuffers(1,@*Me\vbo)
-    EndIf
-    glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
+    Object3D::BindVBO(@*Me\vbo)
     
     ; Fill Buffer Data
     Protected s.GLfloat
@@ -221,93 +211,73 @@ Module Locator
   ;----------------------------------------------------------------------------
   ; Clean OpenGL Context
   ;---------------------------------------------------------------------------- 
-  Procedure Clean(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
-    ForEach *Me\vaos()
-      If Val(MapKey(*Me\vaos())) = *ctxt : glDeleteVertexArrays(1,@*Me\vaos()) : EndIf
-    Next
-    
-    If *ctxt\share
-      If *Me\vbo : glDeleteBuffers(1,@*Me\vbo) : EndIf
-      If *Me\eab : glDeleteBuffers(1,@*Me\eab) : EndIf
-    EndIf
-    
-;     Protected i 
-;     For i=0 To ArraySize(*Me\vaos())-1
-;       If *Me\vaos(i) : glDeleteVertexArrays(1,@*Me\vaos(i)) : EndIf
-;     Next
-;     For i=0 To ArraySize(*Me\vbos())-1
-;       If *Me\vbos(i) : glDeleteBuffers(1,@*Me\vbos(i)) : EndIf
-;     Next
-;     For i=0 To ArraySize(*Me\eabs())-1
-;       If *Me\eabs(i) : glDeleteBuffers(1,@*Me\eabs(i)) : EndIf
-;     Next
+  Procedure Clean(*Me.Locator_t)
+    Object3D::DeleteVAO(@*Me\vao)
+    Object3D::DeleteVBO(@*Me\vbo)
+    Object3D::DeleteEAB(@*Me\eab)
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Update OpenGL Object
   ;---------------------------------------------------------------------------- 
-  Procedure Update(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Procedure Update(*Me.Locator_t)
   
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Draw
   ;---------------------------------------------------------------------------- 
-  Procedure Draw(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Procedure Draw(*Me.Locator_t)
     ; ---[ Sanity Check ]--------------------------
     If Not *Me : ProcedureReturn : EndIf
   
     Protected *t.Transform::Transform_t = *Me\globalT
-    If FindMapElement(*Me\vaos(), Str(*ctxt))
-      glBindVertexArray(*Me\vaos())
+    Object3D::BindVAO(@*Me\vao)
    
 ;     glUniformMatrix4fv(glGetUniformLocation(*Me\shader\pgm,"model"),1,#GL_FALSE,*t\m)
 
-      ; Set Wireframe Color
-      If *Me\selected
-        glUniform3f(*Me\u_color,1,1,1)
-      Else
-        glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
-      EndIf
-    
-      Select *Me\icon
-        Case #Icon_Default
-          glDrawArrays(#GL_LINES,0,*Me\nbp)
-        Case #Icon_Disc
-          glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
-        Case #Icon_Sphere
-          Protected i
-          For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
-      EndSelect
-    
-      glBindVertexArray(0)
+    ; Set Wireframe Color
+    If *Me\selected
+      glUniform3f(*Me\u_color,1,1,1)
+    Else
+      glUniform3f(*Me\u_color,*Me\wireframe_r,*Me\wireframe_g,*Me\wireframe_b)
     EndIf
+  
+    Select *Me\icon
+      Case #Icon_Default
+        glDrawArrays(#GL_LINES,0,*Me\nbp)
+      Case #Icon_Disc
+        glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
+      Case #Icon_Sphere
+        Protected i
+        For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
+    EndSelect
+  
+    glBindVertexArray(0)
   
   EndProcedure
   
   ;----------------------------------------------------------------------------
   ; Pick
   ;---------------------------------------------------------------------------- 
-  Procedure Pick(*Me.Locator_t, *ctxt.GLContext::GLContext_t)
+  Procedure Pick(*Me.Locator_t)
     ; ---[ Sanity Check ]--------------------------
     If Not *Me : ProcedureReturn : EndIf
     
     Protected *t.Transform::Transform_t = *Me\globalT
-    If Object3D::BindVaoFOrContext(*Me\vaos(), *ctxt)
+    Object3D::BindVao(@*Me\vao)
   
-      Select *Me\icon
-        Case #Icon_Default
-          glDrawArrays(#GL_LINES,0,*Me\nbp)
-        Case #Icon_Disc
-          glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
-        Case #Icon_Sphere
-          Protected i
-          For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
-      EndSelect
-      
-      glBindVertexArray(0)
-    EndIf
+    Select *Me\icon
+      Case #Icon_Default
+        glDrawArrays(#GL_LINES,0,*Me\nbp)
+      Case #Icon_Disc
+        glDrawArrays(#GL_LINE_LOOP,0,*Me\nbp)
+      Case #Icon_Sphere
+        Protected i
+        For i= 0 To 2:glDrawArrays(#GL_LINE_LOOP,i*22,*Me\nbp/3) : Next i
+    EndSelect
     
+    glBindVertexArray(0)    
     
   ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"model"),1,#GL_FALSE,*t\m\m)
   ;   glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"view"),1,#GL_FALSE,*view)
@@ -373,7 +343,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 295
-; FirstLine = 291
+; CursorPosition = 279
+; FirstLine = 261
 ; Folding = ---
 ; EnableXP

@@ -280,7 +280,7 @@ Module LayerCascadedShadowMap
     GLCheckError("[CSM] Draw Called")
     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
     If Not *light : ProcedureReturn : EndIf
-    Light::Update(*light, *ctx)
+    Light::Update(*light)
     GLCheckError("[CSM] Light Updated")
     ; Update Cascades Orthographic Projection
     UpdateCascadesEnd(*layer)

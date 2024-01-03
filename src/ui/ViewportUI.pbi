@@ -378,7 +378,7 @@ Module ViewportUI
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
       glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
       
-      Handle::Draw( *Me\handle,*Me\context) 
+      Handle::Draw( *Me\handle) 
     EndIf
     
   EndProcedure
@@ -678,7 +678,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 371
-; FirstLine = 355
+; CursorPosition = 380
+; FirstLine = 376
 ; Folding = ----
 ; EnableXP

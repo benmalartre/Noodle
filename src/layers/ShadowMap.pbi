@@ -94,7 +94,7 @@ Module LayerShadowMap
   Debug *light\fov
   Debug *light\aspect
 	Light::UpdateProjection(*light)
-	Light::Update(*light, *ctx)
+	Light::Update(*light)
 	
    ; Find Up View Point
   ;-----------------------------------------------
@@ -198,6 +198,6 @@ Module LayerShadowMap
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 96
-; FirstLine = 68
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

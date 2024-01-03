@@ -73,7 +73,6 @@ DeclareModule Handle
     *target.Object3D::Object3D_t
     *targets.CArray::CArrayPtr
     *camera.Camera::Camera_t
-    *ctx.GLContext::GLContext_t
     
   EndStructure
   
@@ -163,10 +162,10 @@ DeclareModule Handle
   Declare PickRotate(*Me.Handle_t)
   Declare PickTranslate(*Me.Handle_t)
   Declare Resize(*Me.Handle_t,*camera.Camera::Camera_t)
-  Declare SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
-  Declare Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
+  Declare SetupHandle(*Me.Handle_t,tool.i)
+  Declare Setup(*Me.Handle_t)
   Declare DrawAxis(*Me.Handle_t,r.f,g.f,b.f)
-  Declare Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
+  Declare Draw( *Me.Handle_t) 
   Declare Translate(*Me.Handle_t,mx.i,my.i,width.i,height.i)
   Declare Scale(*Me.Handle_t,deltax.i,deltay.i)
   Declare Rotate(*Me.Handle_t,deltax.i,deltay.i,width.i,height.i)
@@ -504,9 +503,9 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Setup Handle
   ;-----------------------------------------------------------------------------
-  Procedure SetupHandle(*Me.Handle_t,tool.i,*ctx.GLContext::GLContext_t)
+  Procedure SetupHandle(*Me.Handle_t,tool.i)
 
-    Define pgm = *ctx\shaders("wireframe")\pgm
+    Define pgm = GLContext::*SHARED_CTXT\shaders("wireframe")\pgm
     glUseProgram(pgm)
     
     Protected *shape.Shape::Shape_t = #Null
@@ -524,31 +523,28 @@ Module Handle
       Default
         *shape = *Me\transform_handle
     EndSelect
-    Object3D::BindVAOForContext(*Me\vaos(), *ctx)
+    Object3D::BindVAO(@*Me\vao)
     
     ; vertex buffer object
     Object3D::BindVBO(@*Me\vbo)
     
-    If *ctx\share
-      glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-      glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
+    
+    ; element array buffer
+    Object3D::BindEAB(@*Me\eab)
+    glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
+    
+    ; Attibute Position
+    glEnableVertexAttribArray(0)
+    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+      glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerElse
+      glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
+    CompilerEndIf
       
-      ; element array buffer
-      If Not *Me\eab : glGenBuffers(1, @*Me\eab) : EndIf
-      glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER,*Me\eab)
-      glBufferData(#GL_ELEMENT_ARRAY_BUFFER,CArray::GetSize(*shape\indices), CArray::GetPtr(*shape\indices,0),#GL_STATIC_DRAW)
-      
-      ; Attibute Position
-      glEnableVertexAttribArray(0)
-      CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-        glVertexAttribPointer(0,4,#GL_FLOAT,#GL_FALSE,0,0)
-      CompilerElse
-        glVertexAttribPointer(0,3,#GL_FLOAT,#GL_FALSE,0,0)
-      CompilerEndIf
-      
-      ; Bind Attributes Locations
-      glBindAttribLocation(pgm,0,"position")
-    EndIf
+    ; Bind Attributes Locations
+    glBindAttribLocation(pgm,0,"position")
+
    
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(pgm,"view")
@@ -564,11 +560,9 @@ Module Handle
   ;-----------------------------------------------------------------------------
   ; Setup
   ;-----------------------------------------------------------------------------
-  Procedure Setup(*Me.Handle_t,*ctx.GLContext::GLContext_t)
-    *Me\ctx = *ctx
-    glUseProgram(*ctx\shaders("wireframe")\pgm)
-    ;Setup GL
-    SetupHandle(*Me,Globals::#TOOL_TRANSLATE,*ctx)
+  Procedure Setup(*Me.Handle_t)
+    glUseProgram(GLContext::*SHARED_CTXT\shaders("wireframe")\pgm)
+    SetupHandle(*Me,Globals::#TOOL_TRANSLATE)
     
   EndProcedure
   
@@ -599,9 +593,9 @@ Module Handle
   ;------------------------------------------------------------
   ; Draw
   ;------------------------------------------------------------
-  Procedure Draw( *Me.Handle_t,*ctx.GLContext::GLContext_t) 
+  Procedure Draw( *Me.Handle_t) 
     If Not *Me\target : ProcedureReturn : EndIf
-    Object3D::BindVAOForContext(*Me\vaos(), *ctx)
+    Object3D::BindVAO(@*Me\vao)
     
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
@@ -1172,13 +1166,13 @@ Module Handle
           EndSelect
         EndIf
       Case Globals::#TOOL_TRANSLATE
-        SetupHandle(*Me, Globals::#TOOL_TRANSLATE, *Me\ctx)
+        SetupHandle(*Me, Globals::#TOOL_TRANSLATE)
       Case Globals::#TOOL_ROTATE
-        SetupHandle(*Me, Globals::#TOOL_ROTATE, *Me\ctx)
+        SetupHandle(*Me, Globals::#TOOL_ROTATE)
       Case Globals::#TOOL_SCALE
-        SetupHandle(*Me, Globals::#TOOL_SCALE, *Me\ctx)
+        SetupHandle(*Me, Globals::#TOOL_SCALE)
       Case Globals::#TOOL_TRANSFORM
-        SetupHandle(*Me, Globals::#TOOL_TRANSFORM, *Me\ctx)
+        SetupHandle(*Me, Globals::#TOOL_TRANSFORM)
     EndSelect
     
   EndProcedure
@@ -1444,7 +1438,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 603
-; FirstLine = 590
+; CursorPosition = 1174
+; FirstLine = 1164
 ; Folding = -------
 ; EnableXP
