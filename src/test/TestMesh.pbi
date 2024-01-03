@@ -96,7 +96,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Update(*app\scene)
   
  
-  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
@@ -133,14 +133,14 @@ Procedure Draw(*app.Application::Application_t)
   EndIf
   
   *quad = ScreenQuad::New()
-  ScreenQuad::Setup(*quad,*app\context\shaders("bitmap"))
+  ScreenQuad::Setup(*quad,*viewport\context\shaders("bitmap"))
 
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
   
     
-  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
   
   Define pos.v3f32,scl.v3f32
@@ -160,7 +160,6 @@ Procedure Draw(*app.Application::Application_t)
   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
   
   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
-  Object3D::SetShader(*bunny,*s_polymesh)
   
   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
   *merged\wireframe = #False
@@ -225,13 +224,13 @@ Procedure Draw(*app.Application::Application_t)
   Object3D::AddChild(*root,*bunny)
   
   Scene::AddModel(*app\scene,*root)
-  Scene::Setup(*app\scene,*app\context)
+  Scene::Setup(*app\scene)
   ViewportUI::SetHandleTarget(*viewport, *merged)
  
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 110
+; CursorPosition = 226
+; FirstLine = 177
 ; Folding = -
 ; EnableXP

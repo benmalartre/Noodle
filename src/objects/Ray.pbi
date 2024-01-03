@@ -297,7 +297,10 @@ Module Ray
     If Not Ray::PlaneIntersection(*ray, plane, @intersectDist, *frontFacing)
       ProcedureReturn #False
     EndIf
+    Debug "intersect dist : "+StrF(intersectDist)
     If intersectDist > maxDist : ProcedureReturn #False : EndIf
+    
+    Debug "pass early test"
     
     ; Find the largest component of the plane normal. The other two
     ; dimensions are the axes of the aligned plane we will use To
@@ -372,9 +375,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 362
-; FirstLine = 313
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 80
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

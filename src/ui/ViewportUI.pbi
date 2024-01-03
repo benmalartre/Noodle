@@ -679,7 +679,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 75
+; CursorPosition = 492
+; FirstLine = 486
 ; Folding = ----
 ; EnableXP

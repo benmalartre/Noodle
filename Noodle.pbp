@@ -7,9 +7,17 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2024-01-03 18:05" user="graph" host="frapcanim2244"/>
+    <lastopen date="2024-01-03 18:11" user="graph" host="frapcanim2244"/>
   </section>
   <section name="files">
+    <file name="src\test\TestSharedContext.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="1" panelstate="+++"/>
+      <fingerprint md5="11a19066c8d170eab499985ce9f59af6"/>
+    </file>
+    <file name="src\layers\Default.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="2" panelstate="+++"/>
+      <fingerprint md5="618099a6e9b92a251c1be92ab3d79ba3"/>
+    </file>
     <file name="src\test\TestPickSelect.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="a5eb0f404c1be4204834b7ee560bce82"/>
@@ -73,10 +81,6 @@
     <file name="src\test\TestHalfEdge.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="776304fd9a631dc6eae74cc5731e9098"/>
-    </file>
-    <file name="src\test\TestSharedContext.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="2" panelstate="+++"/>
-      <fingerprint md5="11a19066c8d170eab499985ce9f59af6"/>
     </file>
     <file name="src\ui\LogUI.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
@@ -537,10 +541,6 @@
     <file name="src\layers\CascadedShadowMap.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="ba82e3b1f16429ebf79d64e9676a563c"/>
-    </file>
-    <file name="src\layers\Default.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="3" panelstate="+++"/>
-      <fingerprint md5="618099a6e9b92a251c1be92ab3d79ba3"/>
     </file>
     <file name="src\layers\Defered.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
@@ -1561,10 +1561,6 @@
     <file name="src\test\TestCurve.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="dd733d6fc543ae104055cc14d7e97634"/>
-    </file>
-    <file name="src\test\TestEmptyOpenGLGadget_MacOs.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
-      <fingerprint md5=""/>
     </file>
     <file name="src\test\TestEval.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>

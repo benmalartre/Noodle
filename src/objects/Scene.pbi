@@ -458,7 +458,7 @@ Module Scene
     Protected i,j
     Protected child.Object3D::IObject3D
     Protected *model.Model::Model_t
-    
+    GLContext::SetContext(GLContext::*SHARED_CTXT)
     For i = 0 To CArray::GetCount(*Me\models)-1
       *model = CArray::GetValue(*Me\models,i)
       ForEach *model\children()
@@ -497,6 +497,7 @@ Module Scene
   Procedure Update(*Me.Scene_t)
     If Not *Me : ProcedureReturn : EndIf
     ;If *Me\dirty
+    GLContext::SetContext(GLContext::*SHARED_CTXT)
       Protected i
       Protected *root.Object3D::Object3D_t = *Me\root
       Protected child.Object3D::IObject3D
@@ -748,7 +749,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 39
+; CursorPosition = 460
+; FirstLine = 390
 ; Folding = -------
 ; EnableXP

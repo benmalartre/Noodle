@@ -26,7 +26,7 @@ DeclareModule LayerDefault
   Declare Setup(*layer.LayerDefault_t)
   Declare Update(*layer.LayerDefault_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerDefault_t)
-  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t)
+  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, width.i=0, height.i=0)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -85,7 +85,7 @@ Module LayerDefault
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t)
+  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, width.i=0, height.i=0)
     
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
@@ -105,7 +105,13 @@ Module LayerDefault
     Protected *view.m4f32,proj.m4f32,view.m4f32
     *view = Layer::GetViewMatrix(*layer)
     Protected *camera.Camera::Camera_t = *layer\pov
-    Protected aspect.f = *layer\framebuffer\width / *layer\framebuffer\height
+    Protected aspect.f
+    If width = 0 Or height = 0
+      aspect = *layer\framebuffer\width / *layer\framebuffer\height
+    Else
+      aspect = width / height
+    EndIf
+    
     Matrix4::GetProjectionMatrix(proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
     
     ;Draw Shaded Polymeshes 
@@ -252,7 +258,7 @@ EndProcedure
     
     Framebuffer::AttachTexture(*Me\framebuffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
     Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
-    GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
+    ;GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
     ProcedureReturn *Me
   EndProcedure
   
@@ -260,7 +266,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 179
+; CursorPosition = 113
+; FirstLine = 78
 ; Folding = --
 ; EnableXP

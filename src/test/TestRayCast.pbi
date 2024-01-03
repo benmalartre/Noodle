@@ -49,7 +49,7 @@ Procedure TestRay_New(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f3
   *tr\mesh\wireframe_r = 0
   *tr\mesh\wireframe_g = 1
   *tr\mesh\wireframe_b = 0
-  Scene::AddChild(Scene::*current_scene, *tr\drawer)
+  Scene::AddChild(*app\scene, *tr\drawer)
 
   ProcedureReturn *tr
 EndProcedure
@@ -79,8 +79,8 @@ EndProcedure
 ;---------------------------------------------------
 Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Drawer::Flush(*tr\drawer)
-  
-  Scene::*current_scene\dirty = #True
+  Debug "test ray update..."
+  *app\scene\dirty = #True
   ViewportUI::GetRay(*viewport, *tr\ray)
   Vector3::SetFromOther(*tr\start_pos, *viewport\camera\pos)
 
@@ -91,7 +91,7 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Protected *geom.Geometry::PolymeshGeometry_t = *tr\mesh\geom
   Protected *t.Transform::Transform_t = *tr\mesh\globalT
   
-  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 
   CArray::SetCount(*positions, 2)
   CArray::SetValue(*positions,0, *tr\start_pos)
@@ -121,12 +121,15 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
   Color::Set(color, 1,0,0,1)
 
   Protected *pnt.Drawer::Item_t
-  Protected *tri.CArray::CarrayV3F32 = CArray::newCArrayV3F32()
+  Protected *tri.CArray::CarrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*tri, 3)
   Protected frontFacing.b
   
   Protected *red_col.c4f32 = Color::RED
   Define msg.s
+  
+  Debug "Ray dist : "+Str(*tr\dist)
+
   For i=0 To *geom\nbtriangles-1
     *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
     *b = Carray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
@@ -137,7 +140,9 @@ Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
     Vector3::MulByMatrix4(c,*c,*t\m)
     
     intersect.b = Ray::TriangleIntersection(*tr\ray,a,b,c,@*tr\dist,*tr\uvw, @frontFacing)
+    If intersect : Debug i :EndIf
     If intersect And *tr\dist<dist
+      Debug "HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIt"
       CArray::SetValue(*tri, 0, a)
       CArray::SetValue(*tri, 1, b)
       CArray::SetValue(*tri, 2, c)
@@ -176,7 +181,7 @@ Procedure AddBunny()
   Transform::SetRotationFromQuaternion(*tb,q2)
   Transform::SetTranslationFromXYZValues(*tb,0.55,1,0)
   
-  Scene::AddChild(Scene::*current_scene, *bunny)
+  Scene::AddChild(*app\scene, *bunny)
   
   Object3D::SetLocalTransform(*bunny, *tb)
   Object3D::UpdateTransform(*bunny)
@@ -201,17 +206,17 @@ Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
   CompilerIf #USE_GLFW
     TestRay_Update(*ray, *app)
-    Scene::Update(Scene::*current_scene)
+    Scene::Update(*app\scene)
     Application::Draw(*app, *layer)
   CompilerElse
     
     
     TestRay_Update(*ray, *viewport)
-    Scene::Update(Scene::*current_scene)
+    Scene::Update(*app\scene)
    
     
     Application::Draw(*app, *layer, *app\camera)
-    ViewportUI::Blit(*viewport, *layer\datas\buffer) 
+    ViewportUI::Blit(*viewport, *layer\framebuffer) 
     
   CompilerEndIf
   GLContext::FlipBuffer(*viewport\context)
@@ -243,28 +248,27 @@ EndProcedure
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)  
-     *app\context = *viewport\context
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
 
-  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
-  
-  Scene::*current_scene = Scene::New()
+  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+  *app\scene = Scene::New()
   
   AddBunny()
   AddRay()
   
   
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::Setup(*app\scene)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 214
-; FirstLine = 191
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 130
+; FirstLine = 106
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

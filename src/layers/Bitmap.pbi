@@ -81,7 +81,6 @@ Module LayerBitmap
   ;------------------------------------
   Procedure Draw(*layer.LayerBitmap_t, *ctx.GLContext::GLContext_t)
     Define shader.i = *ctx\shaders("bitmap")\pgm
-    Debug "shader : "+Str(shader)
     glUseProgram(shader)
     
     Framebuffer::BindOutput(*layer\framebuffer)
@@ -144,7 +143,7 @@ Module LayerBitmap
     EndIf
 
     Layer::AddScreenSpaceQuad(*Me,*ctx)
-    
+    GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
     ProcedureReturn *Me
   EndProcedure
   
@@ -152,7 +151,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 95
+; CursorPosition = 83
+; FirstLine = 77
 ; Folding = --
 ; EnableXP

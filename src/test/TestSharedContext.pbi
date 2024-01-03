@@ -67,7 +67,7 @@ Procedure Update(*app.Application::Application_t)
   If *active
 
     *layer\pov = *active\camera
-    LayerDefault::Draw(*layer, *app\scene)
+    LayerDefault::Draw(*layer, *app\scene, *active\layer\framebuffer\width, *active\layer\framebuffer\height)
     
     GLContext::SetContext(*active\viewport\context)
     LayerBitmap::Draw(*active\layer, *active\viewport\context)
@@ -88,15 +88,13 @@ Global height   = 720
 Time::Init()
 Log::Init()
 
- Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
- *app = Application::New("Test Share GL COntext",width,height, options) 
+Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
+*app = Application::New("Test Share GL COntext",width,height, options) 
 
- 
- 
- *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
- 
- *layer = LayerDefault::New(1024,1024,*viewport\context,*app\camera)
- 
+
+*viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+*layer = LayerDefault::New(1024,1024,*viewport\context,*app\camera)
+
 Define model.Math::m4f32
 Camera::LookAt(*app\camera)
 Matrix4::SetIdentity(model)
@@ -108,8 +106,9 @@ PokeS(@children()\name[0], "Main")
 children()\window = *app\window
 children()\camera = *app\camera
 children()\viewport = *viewport
+
 children()\layer = LayerBitmap::New(*app\window\main\sizX, *app\window\main\sizY, 
-                                        *viewport\context, *layer\framebuffer\tbos(0)\textureID )
+                                      children()\viewport\context, *layer\framebuffer\tbos(0)\textureID )
 
 ; Global *log.LogUI::LogUI_t = LogUI::New(*app\window\main)
  
@@ -147,7 +146,7 @@ Application::Loop(*app, @Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 49
+; CursorPosition = 74
+; FirstLine = 50
 ; Folding = -
 ; EnableXP
