@@ -8,6 +8,7 @@ UseModule OpenGLExt
 UseModule Math
 
 Global *app.Application::Application_t
+Global *context.GLContext::GLContext_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *layer.Layer::Layer_t
 Global *scene.Scene::Scene_t
@@ -56,22 +57,20 @@ EndProcedure
 ; Update
 ;--------------------------------------------
 Procedure Update(*app.Application::Application_t)
-  Debug "update..."
   GLContext::SetContext(GLContext::*SHARED_CTXT)
-  Debug *app\scene
-  Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
-  Debug "update scene..."
+  Scene::Update(*app\scene)
   *app\scene\dirty= #True
   
   
   Define *active.Monitor_t = GetMonitorById(EventWindow())
 
   If *active
-    Debug "ACTIVE : "+PeekS(@*active\name[0], 256)
-;     GLContext::SetContext(*active\viewport\context)
-   
-    LayerDefault::Draw(*active\layer, *app\scene, GLContext::*SHARED_CTXT)
+
+    *layer\pov = *active\camera
+    LayerDefault::Draw(*layer, *app\scene)
+    
     GLContext::SetContext(*active\viewport\context)
+    LayerBitmap::Draw(*active\layer, *active\viewport\context)
     ViewportUI::Blit(*active\viewport, *active\layer\framebuffer)
 
     GLContext::FlipBuffer(*active\viewport\context)
@@ -91,21 +90,26 @@ Log::Init()
 
  Define options.i = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget
  *app = Application::New("Test Share GL COntext",width,height, options) 
+
+ 
+ 
  *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
+ 
+ *layer = LayerDefault::New(1024,1024,*viewport\context,*app\camera)
  
 Define model.Math::m4f32
 Camera::LookAt(*app\camera)
 Matrix4::SetIdentity(model)
 *app\scene = Scene::New()
-*layer = LayerDefault::New(width,height,*viewport\context,*viewport\camera)
-GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+
 
 AddElement(children())
 PokeS(@children()\name[0], "Main")
 children()\window = *app\window
 children()\camera = *app\camera
 children()\viewport = *viewport
-children()\layer = *layer
+children()\layer = LayerBitmap::New(*app\window\main\sizX, *app\window\main\sizY, 
+                                        *viewport\context, *layer\framebuffer\tbos(0)\textureID )
 
 ; Global *log.LogUI::LogUI_t = LogUI::New(*app\window\main)
  
@@ -117,9 +121,8 @@ For i=1 To #NUM_MONITORS
   children()\viewport = ViewportUI::New(children()\window\main, "VIEWPORT"+Str(i), children()\camera, *app\handle)
   
 
-  GLContext::SetContext(GLContext::*SHARED_CTXT)
-  children()\layer = LayerDefault::New(children()\window\main\sizX, children()\window\main\sizY, 
-                                        GLContext::*SHARED_CTXT, children()\camera )
+  children()\layer = LayerBitmap::New(children()\window\main\sizX, children()\window\main\sizY, 
+                                        children()\viewport\context, *layer\framebuffer\tbos(0)\textureID )
 ;   Vector3::RandomizeInPlace(children()\camera\pos, 12)
 ;   Camera::LookAt(children()\camera)
   Window::OnEvent(children()\window, #PB_Event_SizeWindow)
@@ -133,8 +136,8 @@ RandomBunnies(128, -2, *root)
 Scene::AddModel(*app\scene,*root)
 
 
-Scene::Setup(*app\scene, GLContext::*SHARED_CTXT)
-Scene::Update(*app\scene, GLContext::*SHARED_CTXT)
+Scene::Setup(*app\scene)
+Scene::Update(*app\scene)
 
 
 
@@ -144,7 +147,7 @@ Application::Loop(*app, @Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 51
+; CursorPosition = 72
+; FirstLine = 49
 ; Folding = -
 ; EnableXP

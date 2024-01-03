@@ -141,8 +141,6 @@ Module LayerBitmap
     Framebuffer::AttachTexture(*Me\framebuffer,"Color", #GL_RGBA,#GL_LINEAR, #True)
     If texture
       *Me\tex = texture
-    Else
-      SetBitmapFromSource(*Me, "../../textures/io.jpg")
     EndIf
 
     Layer::AddScreenSpaceQuad(*Me,*ctx)
@@ -154,7 +152,7 @@ Module LayerBitmap
   Class::DEF(LayerBitmap)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 97
+; CursorPosition = 142
+; FirstLine = 95
 ; Folding = --
 ; EnableXP
