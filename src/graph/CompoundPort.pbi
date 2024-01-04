@@ -10,7 +10,7 @@ Module CompoundNodePort
   ; Constructors
   ;------------------------------------------------------------
   Procedure New(*parent.Node::Node_t,name.s,io.b)
-    Protected *Me.CompoundNodePort_t = AllocateMemory(SizeOf(CompoundNodePort_t))
+    Protected *Me.CompoundNodePort_t = AllocateStructure(CompoundNodePort_t)
     Object::INI(CompoundNodePort)
     *Me\port = #Null
     *Me\node = *parent
@@ -28,7 +28,7 @@ Module CompoundNodePort
   EndProcedure
   
   Procedure NewFromPort(*port.NodePort::NodePort_t)
-    Protected *Me.CompoundNodePort_t = AllocateMemory(SizeOf(CompoundNodePort_t))
+    Protected *Me.CompoundNodePort_t = AllocateStructure(CompoundNodePort_t)
     Object::INI(CompoundNodePort)
     *Me\port = *port
     *Me\node = *port\node
@@ -50,8 +50,7 @@ Module CompoundNodePort
   ; Destructor
   ;------------------------------------------------------------
   Procedure Delete(*Me.CompoundNodePort_t)
-    ClearStructure(*Me,CompoundNodePort_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   Procedure Init(*Me.CompoundNodePort_t)
@@ -197,7 +196,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 183
-; FirstLine = 153
+; CursorPosition = 30
+; FirstLine = 26
 ; Folding = --
 ; EnableXP

@@ -28,14 +28,14 @@ EndDeclareModule
 
 Module SelectObjectCmd
   Procedure hlpGetInfo(*object.Object3D::Object3D_t)
-    Protected *info.SelectObjectCmd_t = AllocateMemory(SizeOf(SelectObjectCmd_t))
+    Protected *info.SelectObjectCmd_t = AllocateStructure(SelectObjectCmd_t)
     *info\object = *object
     *info\selected = *object\selected
     ProcedureReturn *info
   EndProcedure
   
   Procedure hlpClear(*info.SelectObjectCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.SelectObjectCmd_t)
@@ -78,14 +78,14 @@ EndDeclareModule
 
 Module NewSceneCmd
   Procedure hlpGetInfo(*scene.Scene::Scene_t,save.b=#True)
-    Protected *info.NewSceneCmd_t = AllocateMemory(SizeOf(NewSceneCmd_t))
+    Protected *info.NewSceneCmd_t = AllocateStructure(NewSceneCmd_t)
     *info\scene = *scene
     *info\save = save
     ProcedureReturn *info
   EndProcedure
   
   Procedure hlpClear(*info.NewSceneCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.NewSceneCmd_t)
@@ -126,13 +126,13 @@ EndDeclareModule
 
 Module SaveSceneCmd
   Procedure hlpGetInfo(*scene.Scene::Scene_t)
-    Protected *info.SaveSceneCmd_t = AllocateMemory(SizeOf(SaveSceneCmd_t))
+    Protected *info.SaveSceneCmd_t = AllocateStructure(SaveSceneCmd_t)
     *info\scene = *scene
     ProcedureReturn *info
   EndProcedure
   
   Procedure hlpClear(*info.SaveSceneCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.SaveSceneCmd_t)
@@ -173,13 +173,13 @@ EndDeclareModule
 
 Module LoadSceneCmd
   Procedure hlpGetInfo(*scene.Scene::Scene_t)
-    Protected *info.LoadSceneCmd_t = AllocateMemory(SizeOf(LoadSceneCmd_t))
+    Protected *info.LoadSceneCmd_t = AllocateStructure(LoadSceneCmd_t)
     *info\scene = *scene
     ProcedureReturn *info
   EndProcedure
   
   Procedure hlpClear(*info.LoadSceneCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.LoadSceneCmd_t)
@@ -241,7 +241,7 @@ EndDeclareModule
 
 Module CreatePolymeshCmd
   Procedure hlpGetInfo(type.i)
-    Protected *info.CreatePolymeshCmd_t = AllocateMemory(SizeOf(CreatePolymeshCmd_t))
+    Protected *info.CreatePolymeshCmd_t = AllocateStructure(CreatePolymeshCmd_t)
 
     *info\type = type
     
@@ -249,7 +249,7 @@ Module CreatePolymeshCmd
   EndProcedure
   
   Procedure hlpClear(*info.CreatePolymeshCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.CreatePolymeshCmd_t)
@@ -319,8 +319,8 @@ Module CreatePolymeshCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 304
-; FirstLine = 268
+; CursorPosition = 251
+; FirstLine = 275
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

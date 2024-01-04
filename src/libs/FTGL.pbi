@@ -110,6 +110,7 @@ DeclareModule FTGL
     ;___________________________________________________________________________
     ;  MacOSX
     ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ImportC "-lbz2" : EndImport
     ImportC "../../libs/x64/macosx/libfreetype.a" : EndImport
     ImportC "../../libs/x64/macosx/libftgl.a"
   
@@ -431,7 +432,7 @@ Module FTGL
       FT_DeleteFontAtlas(*Me\atlas)
     EndIf
     
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -439,8 +440,7 @@ Module FTGL
   ; Constructor
   ;-------------------------------------------------------------------------------------
   Procedure New()
-    Protected *Me.FTGL_Drawer = AllocateMemory(SizeOf(FTGL_Drawer))
-    InitializeStructure(*Me, FTGL_Drawer)
+    Protected *Me.FTGL_Drawer = AllocateStructure(FTGL_Drawer)
     If *ftgl_atlas
       *Me\atlas = *ftgl_atlas
     Else
@@ -467,8 +467,8 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 393
-; FirstLine = 352
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 434
+; FirstLine = 424
 ; Folding = ----
 ; EnableXP

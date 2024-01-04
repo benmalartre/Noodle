@@ -161,8 +161,7 @@ Module Commands
   ; Destructor
   ;-----------------------------------------------------------------------------
   Procedure Delete(*Me.CommandManager_t)
-    ClearStructure(*Me,CommandManager_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
 
   
@@ -170,9 +169,7 @@ Module Commands
   ; Constructor
   ;-----------------------------------------------------------------------------
   Procedure New()
-    Protected *Me.CommandManager_t = AllocateMemory(SizeOf(CommandManager_t))
-    InitializeStructure(*Me,CommandManager_t)
-
+    Protected *Me.CommandManager_t = AllocateStructure(CommandManager_t)
     ProcedureReturn *Me
   EndProcedure
 
@@ -181,8 +178,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 6
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 164
+; FirstLine = 135
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

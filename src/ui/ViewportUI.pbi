@@ -98,11 +98,13 @@ Module ViewportUI
     ; setup delegate gl context
     *Me\camera = *camera
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*SHARED_CTXT)
-    *Me\gadgetID = *Me\context\ID 
+    
     
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
+      *Me\gadgetID = CanvasGadget(#PB_Any,0,0,w,h)
       CocoaMessage( 0, *Me\context\ID, "setView:", GadgetID(*Me\gadgetID) )
     CompilerElse
+      *Me\gadgetID = *Me\context\ID 
       SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_SetContext,#True)
     CompilerEndIf
     
@@ -116,7 +118,7 @@ Module ViewportUI
   Procedure Delete(*Me.ViewportUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     Object::TERM(ViewportUI)
-    FreeStructure(*Me)
+;     FreeStructure(*Me)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -171,10 +173,13 @@ Module ViewportUI
         Resize(*Me, *top\posX, *top\posY, *top\sizX, *top\sizY)
 
       Case #PB_Event_Gadget
+        Debug "we have opengl event gadget"
         Protected deltax.d, deltay.d
         Protected modifiers.i
         *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
         *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
+        Debug *Me\mx
+        Debug *Me\my
         width = GadgetWidth(*Me\gadgetID)
         height = GadgetHeight(*Me\gadgetID)
 
@@ -489,9 +494,11 @@ Module ViewportUI
   ;  Get Ray
   ; ------------------------------------------------------------------
   Procedure GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
+    If *Me\mx = 0 And *Me\my = 0 : ProcedureReturn : EndIf
     Protected direction.v3f32
-    ViewToRay(*Me,*Me\mx,*Me\my,@direction)
-    Ray::Set(*ray, *Me\camera\pos, @direction)
+    Debug "viewport mouse : "+Str(*Me\mx)+", "+Str(*me\my)
+    ViewToRay(*Me,*Me\mx,*Me\my,direction)
+    Ray::Set(*ray, *Me\camera\pos, direction)
   EndProcedure
   
   
@@ -678,8 +685,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 492
-; FirstLine = 486
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 120
+; FirstLine = 76
 ; Folding = ----
 ; EnableXP

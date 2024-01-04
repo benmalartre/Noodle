@@ -189,7 +189,7 @@ Module ControlExplorer
   ;  New Item
   ; ----------------------------------------------------------------------------
   Procedure NewItem(*object.Object::Object_t,*parent.ControlExplorerItem_t,id,depth.i,havenext.b)
-    Protected *Me.ControlExplorerItem_t = AllocateMemory(SizeOf(ControlExplorerItem_t))
+    Protected *Me.ControlExplorerItem_t = AllocateStructure(ControlExplorerItem_t)
     Object::INI(ControlExplorerItem)
 
     *Me\object = *object
@@ -251,8 +251,7 @@ Module ControlExplorer
   ;       Next
   ;     EndIf
       
-      ClearStructure(*item,ControlExplorerItem_t)
-      FreeMemory(*item)
+      FreeStructure(*item)
     EndIf
     
   EndProcedure
@@ -1053,7 +1052,7 @@ Module ControlExplorer
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(*parent.UI::UI_t,x.i,y.i,w.i,h.i)
-    Protected *Me.ControlExplorer_t = AllocateMemory(SizeOf(ControlExplorer_t))
+    Protected *Me.ControlExplorer_t = AllocateStructure(ControlExplorer_t)
     Object::INI( ControlExplorer )
     
     *Me\parent = *parent
@@ -1152,8 +1151,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 799
-; FirstLine = 757
-; Folding = 4-4---
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1054
+; FirstLine = 1034
+; Folding = --4---
 ; EnableXP

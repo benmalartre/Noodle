@@ -107,8 +107,7 @@ CompilerEndIf
   ; Constructor
   ;-----------------------------------------------------------------------------
   Procedure New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-    Protected *app.Screen_t = AllocateMemory(SizeOf(Screen_t))
-    InitializeStructure(*app,Screen_t)
+    Protected *app.Screen_t = AllocateStructure(Screen_t)
     *app\name = name
     *running = *app
     Protected w.i, h.i
@@ -157,17 +156,15 @@ CompilerEndIf
   ;-----------------------------------------------------------------------------
   ; Delete
   ;-----------------------------------------------------------------------------
-  Procedure Delete(*app.Screen_t)
+  Procedure Delete(*Me.Screen_t)
     Protected i
     CompilerIf #USE_GLFW
-      glfwDestroyWindow(*app\window)
+      glfwDestroyWindow(*Me\window)
 
     CompilerElse
-      ViewManager::Delete(*app\manager)
+      ViewManager::Delete(*Me\manager)
     CompilerEndIf
     
-    ClearStructure(*app,Screen_t)
-    FreeMemory(*app)
   EndProcedure
   
 CompilerIf #USE_GLFW
@@ -532,9 +529,9 @@ EndProcedure
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 193
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 164
+; FirstLine = 128
 ; Folding = ----
 ; EnableXP
 ; SubSystem = OpenGL

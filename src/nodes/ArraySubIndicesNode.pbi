@@ -108,7 +108,7 @@ Module ArraySubIndicesNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="ArraySubIndicesNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.ArraySubIndicesNode_t = AllocateMemory(SizeOf(ArraySubIndicesNode_t))
+    Protected *Me.ArraySubIndicesNode_t = AllocateStructure(ArraySubIndicesNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(ArraySubIndicesNode,*tree,type,x,y,w,h,c)
@@ -125,9 +125,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 68
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 110
+; FirstLine = 82
 ; Folding = --
 ; EnableXP

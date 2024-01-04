@@ -107,7 +107,7 @@ Module AudioReaderNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AudioReader",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AudioReaderNode_t = AllocateMemory(SizeOf(AudioReaderNode_t))
+    Protected *Me.AudioReaderNode_t = AllocateStructure(AudioReaderNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AudioReaderNode,*tree,type,x,y,w,h,c)
@@ -124,7 +124,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 109
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

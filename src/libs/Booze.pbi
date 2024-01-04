@@ -845,20 +845,17 @@ Module AlembicIObject
   Procedure CreateSample(*o.AlembicIObject_t)
     Select *o\iObj\GetType()
       Case Alembic::#ABC_OBJECT_XFORM
-        *o\sample = AllocateMemory(SizeOf(Alembic::ABC_XForm_Sample))
-        InitializeStructure(*o\sample,Alembic::ABC_XForm_Sample)
+        *o\sample = AllocateStructure(Alembic::ABC_XForm_Sample)
         *o\initialized = #False
       Case Alembic::#ABC_OBJECT_POLYMESH
-        *o\sample = AllocateMemory(SizeOf(Alembic::ABC_Polymesh_Topo_Sample))
-        InitializeStructure(*o\sample,Alembic::ABC_Polymesh_Topo_Sample)
-        *o\infos = AllocateMemory(SizeOf(Alembic::ABC_Polymesh_Topo_Sample_Infos))
+        *o\sample = AllocateStructure(Alembic::ABC_Polymesh_Topo_Sample)
+        *o\infos = AllocateStructure(Alembic::ABC_Polymesh_Topo_Sample_Infos)
         Protected polymesh.Alembic::IPolymesh = *o\iObj
         polymesh\GetTopoSampleDescription(0,*o\infos)
         *o\initialized = #False
       Case Alembic::#ABC_OBJECT_POINTS
-        *o\sample = AllocateMemory(SizeOf(Alembic::ABC_PointCloud_Sample))
-        InitializeStructure(*o\sample,Alembic::ABC_PointCloud_Sample)
-        *o\infos = AllocateMemory(SizeOf(Alembic::ABC_PointCloud_Sample_Infos))
+        *o\sample = AllocateStructure(Alembic::ABC_PointCloud_Sample)
+        *o\infos = AllocateStructure(Alembic::ABC_PointCloud_Sample_Infos)
         Protected points.Alembic::IPoints = *o\iObj
         points\GetSampleDescription(0,*o\infos)
         *o\initialized = #False
@@ -1269,12 +1266,10 @@ Module AlembicIObject
   ;---------------------------------------------------------
   Procedure GetProperties(*Me.AlembicIObject_t)
     Protected i
-    Protected *sample.Alembic::ABC_Property_Sample =  AllocateMemory(SizeOf(Alembic::ABC_Property_Sample))
-    InitializeStructure(*sample, Alembic::ABC_Property_Sample)
+    Protected *sample.Alembic::ABC_Property_Sample =  AllocateStructure(Alembic::ABC_Property_Sample)
     Protected *attr.Attribute::Attribute_t 
     Protected x
-    Protected *infos.Alembic::ABC_Property_Sample_Infos = AllocateMemory(SizeOf(Alembic::ABC_Property_Sample_Infos))
-    InitializeStructure(*infos,Alembic::ABC_Property_Sample_Infos)
+    Protected *infos.Alembic::ABC_Property_Sample_Infos = AllocateStructure(Alembic::ABC_Property_Sample_Infos)
     For i=0 To *Me\iObj\GetNumProperties()-1
       Define  prop.Alembic::IProperty = *Me\iObj\GetProperty(i)
       Define name.s =  PeekS(prop\GetName(), -1, #PB_UTF8)
@@ -1294,9 +1289,8 @@ Module AlembicIObject
       EndIf
    Next
      
-   ClearStructure(*infos,Alembic::ABC_Property_Sample_Infos)
-   FreeMemory(*infos)
-   FreeMemory(*sample)
+   FreeStructure(*infos)
+   FreeStructure(*sample)
  EndProcedure
  
  Procedure UpdateProperty(*Me.AlembicIObject_t,frame.f,name.s)
@@ -1548,8 +1542,7 @@ Module AlembicIObject
       Protected *obj.Object3D::Object3D_t = *o\obj
       ;*obj\abc_obj = #Null
     EndIf
-    ClearStructure(*o,AlembicIObject_t)
-    FreeMemory(*o)
+    FreeStructure(*o)
   EndProcedure
   
   
@@ -1558,8 +1551,7 @@ Module AlembicIObject
   ;---------------------------------------------
   Procedure.i New(object.Alembic::IObject)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.AlembicIObject_t = AllocateMemory(SizeOf(AlembicIObject_t))
-    InitializeStructure(*Me, AlembicIObject_t)
+    Protected *Me.AlembicIObject_t = AllocateStructure(AlembicIObject_t)
     *Me\obj = #Null
     *Me\iObj = object
     *Me\sample = #Null
@@ -1567,9 +1559,8 @@ Module AlembicIObject
   EndProcedure
 EndModule
 
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 65
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1291
+; FirstLine = 1265
 ; Folding = --------
 ; EnableXP

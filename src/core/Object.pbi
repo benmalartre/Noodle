@@ -51,7 +51,7 @@ DeclareModule Object
   ;   INI
   ; ------------------------------------------------------------------
   Macro INI( _cls )
-    InitializeStructure(*Me, _cls#_t)
+;     InitializeStructure(*Me, _cls#_t)
     *Me\VT = ?_cls#VT
     *Me\class  = @CLASS
   EndMacro
@@ -282,8 +282,8 @@ EndModule
 ;     Slot::Disconnect(*slot,*Me )
 ;   EndProcedure
 ; EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 56
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 45
+; FirstLine = 25
 ; Folding = ---
 ; EnableXP

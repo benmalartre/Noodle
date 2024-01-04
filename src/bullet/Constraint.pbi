@@ -62,7 +62,7 @@ Module BulletConstraint
   ; Hinge Constraint
   ;-------------------------------------------------------------
   Procedure NewHinge(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32,*axis1.v3f32,*axis2.v3f32,usereferenceframe.b=#False)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -78,7 +78,7 @@ Module BulletConstraint
   ; Point2Point Constraint
   ;-------------------------------------------------------------
    Procedure NewPoint2Point(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -93,7 +93,7 @@ Module BulletConstraint
   ; Gear Constraint
   ;-------------------------------------------------------------
   Procedure NewGear(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -108,7 +108,7 @@ Module BulletConstraint
   ; Slider Constraint
   ;-------------------------------------------------------------
   Procedure NewSlider(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -123,7 +123,7 @@ Module BulletConstraint
   ; Generic6Dof Constraint
   ;-------------------------------------------------------------
   Procedure NewGeneric6Dof(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -138,7 +138,7 @@ Module BulletConstraint
   ; ConeTwist Constraint
   ;-------------------------------------------------------------
   Procedure NewConeTwist(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*frameA.trf32,*frameB.trf32)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     
     *Me\objA  = *objA
     *Me\objB = *objB
@@ -153,7 +153,7 @@ Module BulletConstraint
   ; Constructor
   ;-------------------------------------------------------------
   Procedure New(*objA.Object3D::Object3D_t,*objB.Object3D::Object3D_t,*pivot1.v3f32,*pivot2.v3f32,type.i,*axis1.v3f32=#Null,*axis2.v3f32=#Null)
-    Protected *Me.BTConstraint_t = AllocateMemory(SizeOf(BTConstraint_t))
+    Protected *Me.BTConstraint_t = AllocateStructure(BTConstraint_t)
     Protected axisA.v3f32, axisB.v3f32
     Protected q.q4f32
     Quaternion::SetIdentity(q)
@@ -202,8 +202,8 @@ Module BulletConstraint
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 124
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 199
+; FirstLine = 159
 ; Folding = ---
 ; EnableXP

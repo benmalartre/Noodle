@@ -305,7 +305,7 @@ Module ControlHead
   Procedure.i New( *parent.Control::Control_t, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlHead_t = AllocateMemory( SizeOf(ControlHead_t) ) 
+    Protected *Me.ControlHead_t = AllocateStructure(ControlHead_t)
     
     Object::INI(ControlHead)
     
@@ -369,8 +369,8 @@ Module ControlHead
   
   Class::DEF(ControlHead)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 147
-; FirstLine = 144
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 307
+; FirstLine = 284
 ; Folding = ---
 ; EnableXP

@@ -5,11 +5,11 @@
 ;====================================================================================
 Module Nodes
   Procedure DeleteNodeDescription(*desc.NodeDescription_t)
-    FreeMemory(*desc)
+    FreeStructure(*desc)
   EndProcedure
   
   Procedure NewNodeDescription(name.s,category.s,constructor.i)
-    Protected *desc.NodeDescription_t = AllocateMemory(SizeOf(NodeDescription_t))
+    Protected *desc.NodeDescription_t = AllocateStructure(NodeDescription_t)
     *desc\name = name
     *desc\label = Mid(name, 1, Len(name)-4) 
     
@@ -22,13 +22,12 @@ Module Nodes
   
   Procedure DeleteNodeCategory(*category.NodeCategory_t)
     ClearMap(*category\nodes())
-    FreeMemory(*category)
+    FreeStructure(*category)
   EndProcedure
   
   Procedure NewNodeCategory(label.s,*desc.NodeDescription_t)
     
-    Protected *category.NodeCategory_t = AllocateMemory(SizeOf(NodeCategory_t))
-    InitializeStructure(*category,NodeCategory_t)
+    Protected *category.NodeCategory_t = AllocateStructure(NodeCategory_t)
     *category\label = label
     *category\nodes(*desc\name) = *desc
     ;*category\expended = #True
@@ -153,9 +152,9 @@ CompilerEndIf
   
 ;   
   IncludePath "../"
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 89
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 29
+; FirstLine = 25
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -217,7 +217,7 @@ Module AudioArythmeticNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AudioArythmetic",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]------------------------------------------------------------------
-    Protected *Me.AudioArythmeticNode_t = AllocateMemory(SizeOf(AudioArythmeticNode_t))
+    Protected *Me.AudioArythmeticNode_t = AllocateStructure(AudioArythmeticNode_t)
     
     ; ---[ Init Node]------------------------------------------------------------------------------
     Node::INI(AudioArythmeticNode,*tree,type,x,y,w,h,c)
@@ -234,8 +234,8 @@ EndModule
 ; =================================================================================================
 ;  EOF
 ; =================================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 159
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 219
+; FirstLine = 191
 ; Folding = --
 ; EnableXP

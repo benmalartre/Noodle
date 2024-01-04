@@ -69,11 +69,8 @@ Module Branch
   ; ----------------------------------------------------------------------------
   Procedure Delete( *Me.Branch_t )
     
-    ClearStructure(*Me,Branch_t)
+    FreeStructure(*Me)
  
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
-  
   EndProcedure
   
   ; ============================================================================
@@ -81,10 +78,8 @@ Module Branch
   ; ============================================================================
   Procedure.i New()
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.Branch_t = AllocateMemory( SizeOf(Branch_t) )
-    
-    ; ---[ Initialize Structures ]---------------------------------------------
-    InitializeStructure(*Me,Branch_t)
+    Protected *Me.Branch_t = AllocateStructure(Branch_t)
+   
  
     
     ProcedureReturn( *Me)
@@ -95,8 +90,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 26
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 72
+; FirstLine = 47
 ; Folding = --
 ; EnableXP

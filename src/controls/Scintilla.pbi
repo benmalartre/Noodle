@@ -279,8 +279,7 @@ Module ControlScintilla
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlScintilla_t )
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(ControlScintilla)
   EndProcedure
 
 
@@ -290,7 +289,7 @@ Module ControlScintilla
   Procedure.i New( *obj.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlScintilla_t = AllocateMemory( SizeOf(ControlScintilla_t) ) 
+    Protected *Me.ControlScintilla_t = AllocateStructure(ControlScintilla_t)
     
     Object::INI(ControlScintilla)
     *Me\object = *obj
@@ -320,8 +319,8 @@ Module ControlScintilla
   
   Class::DEF(ControlScintilla)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 12
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 281
+; FirstLine = 276
 ; Folding = --
 ; EnableXP

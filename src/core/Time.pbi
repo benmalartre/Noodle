@@ -153,8 +153,7 @@ Module Time
   ;   TIMER
   ; -----------------------------------------------------------------------------
   Procedure CreateTimer(*obj, callback.PFNTIMERCALLBACK, delay=250)
-    Define *Me.Timeable_t = AllocateMemory(SizeOf(Timeable_t))
-    InitializeStructure(*Me, Timeable_t)
+    Define *Me.Timeable_t = AllocateStructure(Timeable_t)
     *Me\obj = *obj
     *Me\delay = delay
     *Me\callback = callback
@@ -164,8 +163,7 @@ Module Time
   
   Procedure DeleteTimer(*Me.Timeable_t)
     If *Me\timer : StopTimer(*Me) : EndIf
-    ClearStructure(*Me, Timeable_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   Procedure OnTimer(*Me.Timeable_t)
@@ -189,9 +187,9 @@ Module Time
     *Me\timer = #Null
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 172
-; FirstLine = 158
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 166
+; FirstLine = 144
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

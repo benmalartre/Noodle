@@ -113,7 +113,7 @@ Module SelectInArrayNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="SelectInArrayNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.SelectInArrayNode_t = AllocateMemory(SizeOf(SelectInArrayNode_t))
+    Protected *Me.SelectInArrayNode_t = AllocateStructure(SelectInArrayNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(SelectInArrayNode,*tree,type,x,y,w,h,c)
@@ -130,10 +130,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 56
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 115
+; FirstLine = 87
 ; Folding = --
 ; EnableThread
 ; EnableXP

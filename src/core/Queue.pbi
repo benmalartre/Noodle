@@ -61,8 +61,7 @@ Module Queue
   ;   Start Queue Thread
   ; ----------------------------------------------------------
   Procedure StartThread()
-    Define *queue.Queue_t = AllocateMemory(SizeOf(Queue_t))
-    InitializeStructure(*queue, Queue_t)
+    Define *queue.Queue_t = AllocateStructure(Queue_t)
     *queue\mutex = CreateMutex()
     *queue\terminate = CreateSemaphore(0)
     *queue\available = CreateSemaphore(#MAX_THREADS)
@@ -82,7 +81,7 @@ Module Queue
 
     FreeMutex(*queue\mutex)
     ClearStructure(*queue, Queue_t)
-    FreeMemory(*queue)
+    FreeStructure(*queue)
   EndProcedure
   
   ; ----------------------------------------------------------
@@ -112,10 +111,9 @@ Module Queue
 EndModule
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 4
-; FirstLine = 15
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 78
+; FirstLine = 68
 ; Folding = --
 ; EnableThread
 ; EnableXP

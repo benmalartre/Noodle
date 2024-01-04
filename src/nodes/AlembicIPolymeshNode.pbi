@@ -150,7 +150,7 @@ Module AlembicIPolymeshNode
   EndProcedure
   
   Procedure Delete(*node.AlembicIPolymeshNode_t)
-    FreeMemory(*node)
+    Node::DEL(AlembicIPolymeshNode)
   EndProcedure
 
   
@@ -161,7 +161,7 @@ Module AlembicIPolymeshNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AlembicIPolymesh",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AlembicIPolymeshNode_t = AllocateMemory(SizeOf(AlembicIPolymeshNode_t))
+    Protected *Me.AlembicIPolymeshNode_t = AllocateStructure(AlembicIPolymeshNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AlembicIPolymeshNode,*tree,type,x,y,w,h,c)
@@ -195,8 +195,8 @@ Module AlembicIPolymeshNode
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 149
-; FirstLine = 133
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 152
+; FirstLine = 143
 ; Folding = --
 ; EnableXP

@@ -93,7 +93,7 @@ Module Vector3ToFloatNode
   EndProcedure
   
   Procedure Delete(*node.Vector3ToFloatNode_t)
-    FreeMemory(*node)
+    Node::DEL(Vector3ToFloatNode)
   EndProcedure
   
   
@@ -107,7 +107,7 @@ Module Vector3ToFloatNode
   Procedure.i New(*tree.Tree::tree_t,type.s="Vector3ToFloatNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.Vector3ToFloatNode_t = AllocateMemory(SizeOf(Vector3ToFloatNode_t))
+    Protected *Me.Vector3ToFloatNode_t = AllocateStructure(Vector3ToFloatNode_t)
     ; ---[ Init Node]----------------------------------------------
     Node::INI(Vector3ToFloatNode,*tree,type,x,y,w,h,c)
     
@@ -124,9 +124,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 63
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 95
+; FirstLine = 81
 ; Folding = --
 ; EnableXP

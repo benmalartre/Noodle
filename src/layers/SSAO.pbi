@@ -208,16 +208,15 @@ Module LayerSSAO
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerSSAO_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerSSAO_t)
+    Object::TERM(LayerSSAO)
   EndProcedure
   
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerSSAO_t = AllocateMemory(SizeOf(LayerSSAO_t))
-    InitializeStructure(*Me,LayerSSAO_t)
+    Protected *Me.LayerSSAO_t = AllocateStructure(LayerSSAO_t)
     Object::INI( LayerSSAO )
     Color::Set(*Me\color,0.5,0.5,0.5,1)
  
@@ -243,7 +242,7 @@ Module LayerSSAO
   Class::DEF(LayerSSAO)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 221
-; FirstLine = 199
+; CursorPosition = 211
+; FirstLine = 198
 ; Folding = --
 ; EnableXP

@@ -135,7 +135,7 @@ EndProcedure
 ; DESTRUCTOR
 ; ============================================================================
 Procedure Delete(*node.SceneNode_t)
-  FreeMemory(*node)
+  Node::DEL(SceneNode)
 EndProcedure
 
 
@@ -146,7 +146,7 @@ EndProcedure
 Procedure.i New(*tree.Tree::Tree_t,type.s="Scene",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
   
   ; ---[ Allocate Node Memory ]---------------------------------------------
-  Protected *Me.SceneNode_t = AllocateMemory(SizeOf(SceneNode_t))
+  Protected *Me.SceneNode_t = AllocateStructure(SceneNode_t)
   
   ; ---[ Init Node]----------------------------------------------
   Node::INI(SceneNode,*tree,type,x,y,w,h,c)
@@ -160,8 +160,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 102
-; FirstLine = 72
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 137
+; FirstLine = 117
 ; Folding = ---
 ; EnableXP

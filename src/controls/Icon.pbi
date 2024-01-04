@@ -343,9 +343,7 @@ Module ControlIcon
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlIcon_t )
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,ControlIcon_t)
-    FreeMemory( *Me )
+    Object::TERM(ControlIcon)
     
   EndProcedure
 
@@ -356,7 +354,7 @@ Module ControlIcon
   Procedure.i New( *parent.Control::Control_t ,name.s,icon.IconType = #ICON_VISIBLE, options.i = #False, value.i=#False , x.i = 0, y.i = 0, width.i = 32, height.i = 32 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlIcon_t = AllocateMemory( SizeOf(ControlIcon_t) )
+    Protected *Me.ControlIcon_t = AllocateStructure(ControlIcon_t)
     
 ;     *Me\VT = ?ControlIconVT
 ;     *Me\classname = "CONTROLICON"
@@ -403,7 +401,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 345
+; FirstLine = 333
 ; Folding = --
 ; EnableXP

@@ -116,7 +116,7 @@ Module AddPointNode
   EndProcedure
   
   Procedure Delete(*node.AddPointNode_t)
-    FreeMemory(*node)
+    Node::DEL(AddPointNode)
   EndProcedure
   
   
@@ -128,7 +128,7 @@ Module AddPointNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AddPoint",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AddPointNode_t = AllocateMemory(SizeOf(AddPointNode_t))
+    Protected *Me.AddPointNode_t = AllocateStructure(AddPointNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AddPointNode,*tree,type,x,y,w,h,c)
@@ -146,7 +146,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 89
-; FirstLine = 85
+; CursorPosition = 118
+; FirstLine = 102
 ; Folding = --
 ; EnableXP

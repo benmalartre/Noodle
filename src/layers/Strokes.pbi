@@ -225,19 +225,17 @@ Module LayerStroke
   ;---------------------------------------------------
   ; DESTRUCTOR
   ;---------------------------------------------------
-  Procedure Delete(*layer.LayerStroke_t)
-    glDeleteBuffers(1,*layer\vbo)
-    glDeleteVertexArrays(1,*layer\vao)
-    ClearStructure(*layer,LayerStroke_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerStroke_t)
+    glDeleteBuffers(1,*Me\vbo)
+    glDeleteVertexArrays(1,*Me\vao)
+    FreeStructure(LayerStroke)
   EndProcedure
   
   ;---------------------------------------------------
   ; CONSTRUCTOR
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
-    Protected *Me.LayerStroke_t = AllocateMemory(SizeOf(LayerStroke_t))
-    InitializeStructure(*Me,LayerStroke_t)
+    Protected *Me.LayerStroke_t = AllocateStructure(LayerStroke_t)
     Object::INI( LayerStroke )
     Color::Set(*Me\color,0.5,0.5,0.5,0.0)
     *Me\name = "LayerStroke2D"
@@ -264,7 +262,7 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 241
-; FirstLine = 220
+; CursorPosition = 229
+; FirstLine = 218
 ; Folding = ---
 ; EnableXP

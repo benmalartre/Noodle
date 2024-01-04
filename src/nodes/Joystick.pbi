@@ -179,7 +179,7 @@ Module JoystickNode
   EndProcedure
   
   Procedure Delete(*node.JoystickNode_t)
-    FreeMemory(*node)
+    Node::DEL(JoystickNode)
   EndProcedure
 
   
@@ -191,7 +191,7 @@ Module JoystickNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Add",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.JoystickNode_t = AllocateMemory(SizeOf(JoystickNode_t))
+    Protected *Me.JoystickNode_t = AllocateStructure(JoystickNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::Node_INI(JoystickNode,*tree,type,x,y,w,h,c)
@@ -208,10 +208,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 50
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 181
+; FirstLine = 165
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -32,16 +32,14 @@ EndDeclareModule
 Module Log
   Procedure Init()
     If *LOGMACHINE = #Null
-      *LOGMACHINE = AllocateMemory(SizeOf(LogMachine_t))
-      InitializeStructure(*LOGMACHINE,LogMachine_t)
+      *LOGMACHINE = AllocateStructure(LogMachine_t)
     EndIf
     INITIALIZED = #True
   EndProcedure
   
   Procedure Term()
     If *LOGMACHINE
-      ClearStructure(*LOGMACHINE,LogMachine_t)
-      FreeMemory(*LOGMACHINE)
+      FreeStructure(*LOGMACHINE)
     EndIf
     INITIALIZED = #False
   EndProcedure
@@ -60,10 +58,9 @@ Module Log
   
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 4
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 42
+; FirstLine = 15
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

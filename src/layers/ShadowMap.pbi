@@ -168,9 +168,9 @@ Module LayerShadowMap
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerShadowMap_t)
-    Framebuffer::Delete(*layer\framebuffer)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerShadowMap_t)
+    Framebuffer::Delete(*Me\framebuffer)
+    Object::TERM(LayerShadowMap)
   EndProcedure
   
   ;---------------------------------------------------
@@ -178,8 +178,7 @@ Module LayerShadowMap
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*light.Light::Light_t)
   
-    Protected *Me.LayerShadowMap_t = AllocateMemory(SizeOf(LayerShadowMap_t))
-    InitializeStructure(*Me,LayerShadowMap_t)
+    Protected *Me.LayerShadowMap_t = AllocateStructure(LayerShadowMap_t)
     Object::INI( LayerShadowMap )
     Color::Set(*Me\color,1,1,1,0)
     *Me\context = *ctx
@@ -196,8 +195,8 @@ Module LayerShadowMap
   
   Class::DEF(LayerShadowMap)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 65
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 171
+; FirstLine = 152
 ; Folding = --
 ; EnableXP

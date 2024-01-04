@@ -131,14 +131,14 @@ Module GraphUI
   ; Constructor
   ;---------------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s="GraphUI")
-    Protected *Me.GraphUI_t = AllocateMemory(SizeOf(GraphUI_t))
+    Protected *Me.GraphUI_t = AllocateStructure(GraphUI_t)
+    Object::INI(GraphUI)
     Protected x = *parent\posX
     Protected y = *parent\posY
     Protected w = *parent\sizX
     Protected h = *parent\sizY
     
-    InitializeStructure(*Me,GraphUI_t)
-    Object::INI(GraphUI)
+
     *Me\name = name
     *Me\parent = *parent
 
@@ -1567,7 +1567,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 155
-; FirstLine = 151
+; CursorPosition = 134
+; FirstLine = 129
 ; Folding = --------
 ; EnableXP

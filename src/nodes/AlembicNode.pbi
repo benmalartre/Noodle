@@ -49,7 +49,7 @@ EndDeclareModule
 
 Module AlembicNode
   Procedure New(*obj.Object3D::Object3D_t,*abc)
-    Protected *node.AlembicNode_t = AllocateMemory(SizeOf(AlembicNode_t))
+    Protected *node.AlembicNode_t = AllocateStructure(AlembicNode_t)
     InitializeStructure(*node,AlembicNode_t)
     *node\obj = *obj
     *node\abc = *abc
@@ -72,8 +72,8 @@ Module AlembicNode
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 11
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 51
+; FirstLine = 29
 ; Folding = --
 ; EnableXP

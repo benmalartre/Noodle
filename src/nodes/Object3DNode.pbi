@@ -69,7 +69,7 @@ Module Object3DNode
   ;  DESTRUCTOR
   ; ============================================================================
   Procedure Delete(*node.Object3DNode_t)
-    FreeMemory(*node)
+    Node::DEL(Object3DNode)
   EndProcedure
   
   
@@ -80,7 +80,7 @@ Module Object3DNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Object3D",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
    
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.Object3DNode_t = AllocateMemory(SizeOf(Object3DNode_t))
+    Protected *Me.Object3DNode_t = AllocateStructure(Object3DNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(Object3DNode,*tree,type,x,y,w,h,c)
@@ -96,8 +96,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 54
-; FirstLine = 50
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 71
+; FirstLine = 53
 ; Folding = --
 ; EnableXP

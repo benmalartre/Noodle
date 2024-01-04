@@ -80,7 +80,7 @@ Module StringNode
   EndProcedure
   
   Procedure Delete(*node.StringNode_t)
-    FreeMemory(*node)
+    Node::DEL(StringNode)
   EndProcedure
   
   
@@ -92,7 +92,7 @@ Module StringNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="String",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.StringNode_t = AllocateMemory(SizeOf(StringNode_t))
+    Protected *Me.StringNode_t = AllocateStructure(StringNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(StringNode,*tree,type,x,y,w,h,c)
@@ -109,9 +109,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 52
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 82
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

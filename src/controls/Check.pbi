@@ -295,7 +295,7 @@ Module ControlCheck
   Procedure.i New( *parent.Control::Control_t ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 40, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlCheck_t = AllocateMemory( SizeOf(ControlCheck_t) )
+    Protected *Me.ControlCheck_t = AllocateStructure(ControlCheck_t)
 
     Object::INI(ControlCheck)
     
@@ -332,8 +332,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 60
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 297
+; FirstLine = 289
 ; Folding = --
 ; EnableXP

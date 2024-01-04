@@ -38,14 +38,15 @@ Module LightGeometry
   ;---------------------------------------------
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.LightGeometry_t = AllocateMemory(SizeOf(LightGeometry_t))
+    Protected *Me.LightGeometry_t = AllocateStructure(LightGeometry_t)
     Object::INI(LightGeometry)
     ProcedureReturn *Me
   EndProcedure
 
   Class::DEF( LightGeometry )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 40
+; FirstLine = 2
 ; Folding = -
 ; EnableXP

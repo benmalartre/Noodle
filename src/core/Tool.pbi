@@ -75,7 +75,7 @@ Module Tool
   ; Constructor
   ;-------------------------------------------------------------------
   Procedure New(type.i, gadgetID.i)
-    Protected *Me.Tool_t = AllocateMemory(SizeOf(Tool_t))
+    Protected *Me.Tool_t = AllocateStructure(Tool_t)
     Object::INI(Tool)
     *Me\gadgetID = gadgetID
     *Me\type = type
@@ -375,9 +375,9 @@ EndModule
 
 
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 236
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 77
+; FirstLine = 73
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

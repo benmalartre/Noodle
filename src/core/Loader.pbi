@@ -506,7 +506,7 @@ Module Loader
   ; Destuctor
   ;------------------------------------------------------------------
   Procedure Delete(*e.Loader_t)
-    FreeMemory(*e)
+    FreeStructure(*e)
   EndProcedure
   
   
@@ -515,7 +515,7 @@ Module Loader
   ;---------------------------------------------
   ;{
   Procedure.i New(path.s="")
-    Protected *Me.Loader_t = AllocateMemory(SizeOf(Loader_t))
+    Protected *Me.Loader_t = AllocateStructure(Loader_t)
     *Me\path = path
     *Me\numLoaded3DObject = 0
     Protected file.s = OpenFileRequester("Noodle Load Scene",path,extensions(1),-1)
@@ -530,7 +530,7 @@ Module Loader
   Class::DEF(Loader)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 502
+; CursorPosition = 508
 ; FirstLine = 486
 ; Folding = -----
 ; EnableXP

@@ -43,7 +43,7 @@ Module LogUI
     Protected h = *parent\sizY
     
     
-    Protected *Me.LogUI_t = AllocateMemory(SizeOf(LogUI_t))
+    Protected *Me.LogUI_t = AllocateStructure(LogUI_t)
     
     Object::INI(LogUI)
     *Me\name = name
@@ -67,7 +67,7 @@ Module LogUI
   ; Destructor
   ;-------------------------------
   Procedure Delete(*Me.LogUI_t)
-    FreeMemory(*Me)
+    Object::TERM(LogUI)
   EndProcedure
   
   ; Resize
@@ -180,9 +180,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 49
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 69
+; FirstLine = 41
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

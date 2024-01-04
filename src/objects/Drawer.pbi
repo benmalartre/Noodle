@@ -554,51 +554,51 @@ Module Drawer
   ; ---[ Delete Point Item ]---------------------------------------------------
   Procedure DeletePoint(*Me.Point_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Line Item ]----------------------------------------------------
   Procedure DeleteLine(*Me.Line_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Strip Item ]---------------------------------------------------
   Procedure DeleteStrip(*Me.Strip_t)
     DeleteItem(*Me)
     CArray::Delete(*Me\indices)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Loop Item ]----------------------------------------------------
   Procedure DeleteLoop(*Me.Loop_t)
     DeleteItem(*Me)
     CArray::Delete(*Me\indices)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Box Item ]-----------------------------------------------------
   Procedure DeleteBox(*Me.Box_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Sphere Item ]--------------------------------------------------
   Procedure DeleteSphere(*Me.Sphere_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Matrix Item ]--------------------------------------------------
   Procedure DeleteMatrix(*Me.Matrix_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Triangle Item ]--------------------------------------------------
   Procedure DeleteTriangle(*Me.Triangle_t)
     DeleteItem(*Me)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; ---[ Delete Drawer Item ]--------------------------------------------------
@@ -635,7 +635,7 @@ Module Drawer
   ;----------------------------------------------------------------------------
   Procedure.i New( name.s = "Drawer")
     ; Allocate Object Memory
-    Protected *Me.Drawer_t = AllocateMemory( SizeOf(Drawer_t) )
+    Protected *Me.Drawer_t = AllocateStructure(Drawer_t)
     ; Initialize Structure
     Object::INI(Drawer)
     
@@ -660,7 +660,7 @@ Module Drawer
 
   ; ---[ Add Point Item ]------------------------------------------------------
   Procedure AddPoint(*Me.Drawer_t, *position.Math::v3f32)
-    Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
+    Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
     *point\positions = CArray::New(CArray::#ARRAY_V3F32)
     *point\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -678,7 +678,7 @@ Module Drawer
   
   ; ---[ Add Points Item ]------------------------------------------------------
   Procedure AddPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-    Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
+    Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
       *point\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -696,7 +696,7 @@ Module Drawer
   
   ; ---[ Add Colored Points Item ]------------------------------------------------------
   Procedure AddColoredPoints(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-    Protected *point.Point_t = AllocateMemory(SizeOf(Point_t))
+    Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
       *point\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -714,7 +714,7 @@ Module Drawer
   
   ; ---[ Add Line Item ]-------------------------------------------------------
   Procedure AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
-    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     *line\positions = CArray::New(CArray::#ARRAY_V3F32)
     *line\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -732,7 +732,7 @@ Module Drawer
   
   ; ---[ Add Lines Item ]-------------------------------------------------------
   Procedure AddLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
       *line\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -750,7 +750,7 @@ Module Drawer
   
   ; ---[ Add Lines Item ]-------------------------------------------------------
   Procedure AddLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32)
-    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
     If nbp And nbp = CArray::GetCount(*end)
@@ -774,7 +774,7 @@ Module Drawer
   
   ; ---[ Add Colored Lines Item ]-----------------------------------------------
   Procedure AddColoredLines(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
       *line\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -791,7 +791,7 @@ Module Drawer
   
   ; ---[ Add Colored Lines Item ]-----------------------------------------------
   Procedure AddColoredLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-    Protected *line.Line_t = AllocateMemory(SizeOf(Line_t))
+    Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
     If nbp And nbp = CArray::GetCount(*end)
@@ -816,7 +816,7 @@ Module Drawer
   
   ; ---[ Add Strip Item ]------------------------------------------------------
   Procedure AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-    Protected *strip.Strip_t = AllocateMemory(SizeOf(Strip_t))
+    Protected *strip.Strip_t = AllocateStructure(Strip_t)
     *strip\type = #ITEM_STRIP
     If CArray::GetCount(*positions)
       *strip\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -839,7 +839,7 @@ Module Drawer
   
   ; ---[ Add Loop Item ]-------------------------------------------------------
   Procedure AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
-    Protected *loop.Loop_t = AllocateMemory(SizeOf(Loop_t))
+    Protected *loop.Loop_t = AllocateStructure(Loop_t)
     *loop\type = #ITEM_LOOP
     If CArray::GetCount(*positions)
       *loop\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -862,7 +862,7 @@ Module Drawer
   
   ; ---[ Add Box Item ]--------------------------------------------------------
   Procedure AddBox(*Me.Drawer_t, *m.Math::m4f32)
-    Protected *box.Box_t = AllocateMemory(SizeOf(Box_t))
+    Protected *box.Box_t = AllocateStructure(Box_t)
     *box\type = #ITEM_BOX
     *box\positions = CArray::New(CArray::#ARRAY_V3F32)
     *box\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -889,7 +889,7 @@ Module Drawer
   
   ; ---[ Add Sphere Item ]-----------------------------------------------------
   Procedure AddSphere(*Me.Drawer_t, *m.Math::m4f32)
-    Protected *sphere.Sphere_t = AllocateMemory(SizeOf(Sphere_t))
+    Protected *sphere.Sphere_t = AllocateStructure(Sphere_t)
     *sphere\type = #ITEM_SPHERE
     *sphere\positions = CArray::New(CArray::#ARRAY_V3F32)
     *sphere\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -915,7 +915,7 @@ Module Drawer
   
   ; ---[ Add Matrix Item ]-----------------------------------------------------
   Procedure AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
-    Protected *matrix.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
+    Protected *matrix.Matrix_t = AllocateStructure(Matrix_t)
     *matrix\type = #ITEM_MATRIX
     *matrix\positions = CArray::New(CArray::#ARRAY_V3F32)
     *matrix\dirty  = #DIRTY_TOPOLOGY
@@ -931,7 +931,7 @@ Module Drawer
   
   ; ---[ Add Triangle Item ]------------------------------------------------------
   Procedure AddTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
-    Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
+    Protected *triangle.Triangle_t = AllocateStructure(Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::New(CArray::#ARRAY_V3F32)
     *triangle\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -947,7 +947,7 @@ Module Drawer
   
   ; ---[ Add Colored Triangle Item ]------------------------------------------------------
   Procedure AddColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
-    Protected *triangle.Triangle_t = AllocateMemory(SizeOf(Triangle_t))
+    Protected *triangle.Triangle_t = AllocateStructure(Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
     *triangle\positions = CArray::New(CArray::#ARRAY_V3F32)
     *triangle\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -962,7 +962,7 @@ Module Drawer
   
   ; ---[ Add Text Item ]------------------------------------------------------
   Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s, size.f)
-    Protected *text.Text_t = AllocateMemory(SizeOf(Text_t))
+    Protected *text.Text_t = AllocateStructure(Text_t)
     *text\type = #ITEM_TEXT
     *text\positions = CArray::New(CArray::#ARRAY_V3F32)
     *text\colors = CArray::New(CArray::#ARRAY_C4F32)
@@ -988,8 +988,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 520
-; FirstLine = 483
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 637
+; FirstLine = 634
 ; Folding = ---------
 ; EnableXP

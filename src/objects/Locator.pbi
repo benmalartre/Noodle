@@ -308,7 +308,7 @@ Module Locator
   ;{
   Procedure.i New( name.s = "Locator")
     ; ---[ Allocate Object Memory ]--------------------------------------------
-    Protected *Me.Locator_t = AllocateMemory( SizeOf(Locator_t) )
+    Protected *Me.Locator_t = AllocateStructure(Locator_t)
 
     Object::INI(Locator)
     
@@ -342,8 +342,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 261
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 310
+; FirstLine = 269
 ; Folding = ---
 ; EnableXP

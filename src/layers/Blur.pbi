@@ -93,8 +93,8 @@ Module LayerBlur
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerBlur_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerBlur_t)
+    Object::TERM(LayerBlur)
   EndProcedure
   
   
@@ -102,7 +102,7 @@ Module LayerBlur
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*input.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerBlur_t = AllocateMemory(SizeOf(LayerBlur_t))
+    Protected *Me.LayerBlur_t = AllocateStructure(LayerBlur_t)
     Object::INI( LayerBlur )
     Color::Set(*Me\color,0.5,0.5,0.5,1)
     *Me\name = "LayerBlur"

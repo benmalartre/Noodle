@@ -22,24 +22,21 @@ Module Sample
   ; Destuctor
   ;--------------------------------------------------------------------------------------
   Procedure Delete(*Me.Sample_t)    
-    ClearStructure(*Me,Sample_t)
-    
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ;  Constructor
   ;--------------------------------------------------------------------------------------
   Procedure.i New(index.i)
     ; ---[ Allocate Memory ]-------------------------------------------------------------
-    Protected *Me.Sample_t = AllocateMemory(SizeOf(Sample_t))
-    InitializeStructure(*Me,Sample_t)
+    Protected *Me.Sample_t = AllocateStructure(Sample_t)
     *Me\id = index
     ProcedureReturn *Me
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 38
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 32
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

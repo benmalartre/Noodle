@@ -203,8 +203,8 @@ Module LayerShadowSimple
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerShadowSimple_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerShadowSimple_t)
+    Object::TERM(LayerShadowSimple)  
   EndProcedure
   
  
@@ -213,8 +213,7 @@ Module LayerShadowSimple
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*shadowmap.Framebuffer::Framebuffer_t,
                 *camera.Camera::Camera_t, *light.Light::Light_t)
-    Protected *Me.LayerShadowSimple_t = AllocateMemory(SizeOf(LayerShadowSimple_t))
-    InitializeStructure(*Me,LayerShadowSimple_t)
+    Protected *Me.LayerShadowSimple_t = AllocateStructure(LayerShadowSimple_t)
 
     Object::INI( LayerShadowSimple )
     Color::Set(*Me\color,0.5,0.5,0.5,1)
@@ -239,8 +238,8 @@ Module LayerShadowSimple
 EndModule
 
 ;}
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 39
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 205
+; FirstLine = 195
 ; Folding = --
 ; EnableXP

@@ -720,7 +720,7 @@ EndProcedure
   EndProcedure
   
   Procedure Delete( *Me.ControlEdit_t )
-    FreeMemory( *Me )
+    Object::TERM(ControlEdit)
     
   EndProcedure
 
@@ -733,7 +733,7 @@ EndProcedure
   ; ============================================================================
   Procedure.i New(*parent.Control::Control_t ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
-    Protected *Me.ControlEdit_t = AllocateMemory( SizeOf(ControlEdit_t) )
+    Protected *Me.ControlEdit_t = AllocateStructure(ControlEdit_t)
   
     Object::INI(ControlEdit)
     
@@ -781,8 +781,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 250
-; FirstLine = 235
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 722
+; FirstLine = 717
 ; Folding = ---
 ; EnableXP

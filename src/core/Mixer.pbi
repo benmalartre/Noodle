@@ -84,16 +84,14 @@ EndDeclareModule
 ;=========================================================================================
 Module Clip
   Procedure New(name.s,*source.Source::Source_t)
-    Protected *Me.Clip_t = AllocateMemory(SizeOf(Clip_t))
-    InitializeStructure(*Me,Clip_t)
+    Protected *Me.Clip_t = AllocateStructure(Clip_t)
     *Me\name = name
     *Me\data = *source
     ProcedureReturn *Me
   EndProcedure
   
   Procedure Delete(*Me.Clip_t)
-    ClearStructure(*Me,Clip_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
@@ -103,8 +101,7 @@ EndModule
 ;=========================================================================================
 Module Track
   Procedure New(name.s,type.i)
-    Protected *Me.Track_t = AllocateMemory(SizeOf(Track_t))
-    InitializeStructure(*Me,Track_t)
+    Protected *Me.Track_t = AllocateStructure(Track_t)
     *Me\name = name
     *Me\type = type
     ProcedureReturn *Me
@@ -115,8 +112,7 @@ Module Track
       Clip::Delete(*Me\clips())
     Next
     
-    ClearStructure(*Me,Track_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
@@ -126,8 +122,7 @@ EndModule
 ;=========================================================================================
 Module Mixer
   Procedure New(name.s)
-    Protected *Me.Mixer_t = AllocateMemory(SizeOf(Mixer_t))
-    InitializeStructure(*Me,Mixer_t)
+    Protected *Me.Mixer_t = AllocateStructure(Mixer_t)
     AddElement(*Me\tracks())
     *Me\tracks() = Track::New("Video 1",#TYPE_MOVIE)
     *Me\tracks() = Track::New("Video 2",#TYPE_MOVIE)
@@ -139,8 +134,7 @@ Module Mixer
       Track::Delete(*Me\tracks())
     Next
     
-    ClearStructure(*Me,Mixer_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
@@ -164,10 +158,9 @@ EndModule
   Repeat
   Until WaitWindowEvent() = #PB_Event_CloseWindow
   
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 71
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 137
+; FirstLine = 115
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

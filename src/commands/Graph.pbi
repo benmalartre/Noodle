@@ -22,13 +22,13 @@ EndDeclareModule
 Module CreateTreeCmd
 
   Procedure hlpGetInfo(*object.Object3D::Object3D_t)
-    Protected *info.CreateTreeCmd_t = AllocateMemory(SizeOf(CreateTreeCmd_t))
+    Protected *info.CreateTreeCmd_t = AllocateStructure(CreateTreeCmd_t)
     *info\object = *object
     ProcedureReturn *info
   EndProcedure
   
   Procedure hlpClear(*info.CreateTreeCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.CreateTreeCmd_t)
@@ -92,7 +92,7 @@ EndDeclareModule
 Module AddNodeCmd
 
   Procedure hlpGetInfo(*graph.Tree::Tree_t,type.s,x.i,y.i,w.i,h.i,c.i)
-    Protected *info.AddNodeCmd_t = AllocateMemory(SizeOf(AddNodeCmd_t))
+    Protected *info.AddNodeCmd_t = AllocateStructure(AddNodeCmd_t)
     *info\graph = *graph
     *info\type = type
     *info\x = x
@@ -104,7 +104,7 @@ Module AddNodeCmd
   EndProcedure
   
   Procedure hlpClear(*info.AddNodeCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.AddNodeCmd_t)
@@ -147,7 +147,7 @@ EndDeclareModule
 
 Module ConnectNodesCmd
   Procedure hlpGetInfo(*Me.Tree::Tree_t,*parent.Node::Node_t,*start.NodePort::NodePort_t,*end.NodePort::NodePort_t)
-    Protected *info.ConnectNodesCmd_t = AllocateMemory(SizeOf(ConnectNodesCmd_t))
+    Protected *info.ConnectNodesCmd_t = AllocateStructure(ConnectNodesCmd_t)
     *info\tree = *Me
     *info\node = *parent
     *info\start = *start
@@ -156,7 +156,7 @@ Module ConnectNodesCmd
   EndProcedure
   
   Procedure hlpClear(*info.ConnectNodesCmd_t)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.ConnectNodesCmd_t)
@@ -193,7 +193,7 @@ EndDeclareModule
 Module ImplodeNodesCmd
 
   Procedure hlpGetInfo(*tree.Tree::Tree_t,*nodes.CArray::CArrayPtr,*parent.Node::Node_t)
-    Protected *info.ImplodeNodesCmd_t = AllocateMemory(SizeOf(ImplodeNodesCmd_t))
+    Protected *info.ImplodeNodesCmd_t = AllocateStructure(ImplodeNodesCmd_t)
     *info\tree = *tree
     *info\nodes = CArray::New(CArray::#ARRAY_PTR)
     Protected i
@@ -211,7 +211,7 @@ Module ImplodeNodesCmd
   
   Procedure hlpClear(*info.ImplodeNodesCmd_t)
    CArray::Delete(*info\nodes)
-    FreeMemory(*info)  
+    FreeStructure(*info)  
   EndProcedure
   
   Procedure hlpDo(*info.ImplodeNodesCmd_t)
@@ -235,7 +235,7 @@ Module ImplodeNodesCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 197
+; CursorPosition = 213
 ; FirstLine = 191
 ; Folding = -----
 ; EnableXP

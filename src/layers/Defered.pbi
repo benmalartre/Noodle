@@ -213,15 +213,15 @@ Module LayerDefered
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerDefered_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerDefered_t)
+    Object::TERM(LayerDefered)
   EndProcedure
   
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerDefered_t = AllocateMemory(SizeOf(LayerDefered_t))
+    Protected *Me.LayerDefered_t = AllocateStructure(LayerDefered_t)
     Object::INI( LayerDefered )
     Color::Set(*Me\color,0.5,0.5,0.5,1)
 
@@ -243,8 +243,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 86
-; FirstLine = 82
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 216
+; FirstLine = 200
 ; Folding = --
 ; EnableXP

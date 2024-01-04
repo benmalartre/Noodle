@@ -45,8 +45,7 @@ Module TimelineUI
   ;  Constructor
   ;---------------------------------------------
   Procedure.i New(*parent.View::View_t,name.s="TimelineUI")
-    Protected *Me.TimelineUI_t = AllocateMemory(SizeOf(TimelineUI_t))
-    InitializeStructure(*Me, TimelineUI_t)
+    Protected *Me.TimelineUI_t = AllocateStructure(TimelineUI_t)
     Object::INI(TimelineUI)
     
     *Me\posX = *parent\posX
@@ -136,9 +135,8 @@ EndModule
 
 
 
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 32
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 48
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

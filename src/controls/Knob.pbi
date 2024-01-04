@@ -470,7 +470,7 @@ EndProcedure
 Procedure.i New( *parent.Control::Control_t, name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
-  Protected *Me.ControlKnob_t = AllocateMemory( SizeOf(ControlKnob_t) )
+  Protected *Me.ControlKnob_t = AllocateStructure(ControlKnob_t)
   
   Object::INI(ControlKnob)
   
@@ -505,8 +505,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 366
-; FirstLine = 336
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 472
+; FirstLine = 462
 ; Folding = ---
 ; EnableXP

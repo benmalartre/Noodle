@@ -306,7 +306,7 @@ Module ControlPopup
   ; ============================================================================
   Procedure.i New( *parent.Control::Control_t, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlPopup_t = AllocateMemory( SizeOf(ControlPopup_t) )
+    Protected *Me.ControlPopup_t = AllocateStructure(ControlPopup_t)
     
     ; ---[ Init CObject Base Class ]--------------------------------------------
     Object::INI( ControlPopup )
@@ -335,10 +335,9 @@ Module ControlPopup
   ; ============================================================================
   Class::DEF( ControlPopup )
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 142
-; FirstLine = 138
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 308
+; FirstLine = 292
 ; Folding = ---
 ; EnableThread
 ; EnableXP

@@ -31,7 +31,7 @@ Module Node
     FreeList(*Me\outputs())
     FreeList(*Me\inputs())
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    FreeStructure( *Me )
   
   EndProcedure
   
@@ -697,9 +697,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 61
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 33
 ; Folding = -------
 ; EnableThread
 ; EnableXP

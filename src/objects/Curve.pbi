@@ -259,16 +259,14 @@ Module Curve
     Stack::Delete(*Me\stack)
     CurveGeometry::Delete(*Me\geom)
     
-    ClearStructure(*Me,Curve_t)
-    FreeMemory(*Me)
+    Object::TERM(Curve)
   EndProcedure
   
   ;-----------------------------------------------------
   ; Constructor
   ;----------------------------------------------------
   Procedure New(name.s)
-    Protected *Me.Curve_t = AllocateMemory(SizeOf(Curve_t))
-    InitializeStructure(*Me,Curve_t)
+    Protected *Me.Curve_t = AllocateStructure(Curve_t)
     Object::INI(Curve)
     
     *Me\name = name
@@ -356,8 +354,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 194
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 261
+; FirstLine = 248
 ; Folding = ---
 ; EnableXP

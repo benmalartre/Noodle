@@ -50,9 +50,10 @@ Module PointCloud
   ;----------------------------------------------------
   Procedure New(name.s,numPoints.i)
     Protected *Me.PointCloud_t = AllocateStructure(PointCloud_t)
+    Object::INI(PointCloud)
     *Me\name = name
     *Me\type = Object3D::#PointCloud
-    Object::INI(PointCloud)
+    
     *Me\geom = PointCloudGeometry::New(*Me,numPoints)
     *Me\visible = #True
     *Me\stack = Stack::New()
@@ -96,7 +97,7 @@ Module PointCloud
   Procedure Delete(*Me.PointCloud_t)
     Object3D::DeleteVAO(@*Me\vao)
     Object3D::DeleteVBO(@*Me\vbo)
-    FreeStructure(*Me)
+    Object::TERM(PointCloud)
   EndProcedure
   
   ;-----------------------------------------------------
@@ -352,8 +353,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 298
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 52
+; FirstLine = 48
 ; Folding = ---
 ; EnableXP

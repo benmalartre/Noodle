@@ -45,9 +45,8 @@ Module ControlStepper
   controlstepper_img_down = CatchImage(#PB_Any,?VIControlStepper_down_img_btn)
   
   Procedure New(*object.Object::Object_t,name.s,x.i,y.i,width.i,height.i,steps.d=0.1)
-    Protected *Me.ControlStepper_t = AllocateMemory(SizeOf(ControlStepper_t))
-    *Me\VT = ?ControlStepperVT
-    *Me\classname = "ControlStepper"
+    Protected *Me.ControlStepper_t = AllocateStructure(ControlStepper_t)
+    Object::INI(ControlStepper)
     *Me\object = *object
     *Me\name = name
     *Me\posX = x
@@ -68,8 +67,7 @@ Module ControlStepper
     If IsGadget(*Me\txt) : FreeGadget(*Me\txt) : EndIf
     If IsGadget(*Me\up) : FreeGadget(*Me\up) : EndIf
     If IsGadget(*Me\down) : FreeGadget(*Me\down) : EndIf
-    FreeMemory(*Me)
-    
+    Object::TERM(ControlStepper)
   EndProcedure
   
   Procedure Event(*Me.ControlStepper_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
@@ -102,8 +100,8 @@ Module ControlStepper
   
 EndModule
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 26
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 69
+; FirstLine = 43
 ; Folding = -
 ; EnableXP

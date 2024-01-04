@@ -38,14 +38,12 @@ EndDeclareModule
 
 Module Selection
   Procedure New()
-    Protected *Me.Selection_t = AllocateMemory(SizeOf(Selection_t))
-    InitializeStructure(*Me, Selection_t)
+    Protected *Me.Selection_t = AllocateStructure(Selection_t)
     ProcedureReturn *Me
   EndProcedure
   
   Procedure Delete(*Me.Selection_t)
-    ClearStructure(*Me, Selection_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
    Procedure Clear(*Me.Selection_t)
@@ -60,7 +58,7 @@ Module Selection
     
     Debug "ADD OBJECT : "+Str(*obj);\name
     If Not FindMapElement(*Me\items(), Str(*obj))
-      Protected *item.SelectionItem_t = AllocateMemory(SizeOf(SelectionItem_t))
+      Protected *item.SelectionItem_t = AllocateStructure(SelectionItem_t)
       *item\obj = *obj
       *item\type = #ITEM_OBJECT
       Define key.s = Str(*obj)
@@ -82,13 +80,13 @@ Module Selection
         CArray::Delete(*subItem\components)
       EndIf
      DeleteMapElement(*Me\items(), *item\key)
-     FreeMemory(*item)
+     FreeStructure(*item)
    EndIf
   EndProcedure
  
   
   Procedure AddComponent(*Me.Selection_t, *obj.Object3D::Object3D_t, type.i)
-    Protected *item.SelectionComponentItem_t = AllocateMemory(SizeOf(SelectionComponentItem_t))
+    Protected *item.SelectionComponentItem_t = AllocateStructure(SelectionComponentItem_t)
     *item\obj = *obj
     *item\type = type
     *item\components = CArray::New(CArray::#ARRAY_LONG)
@@ -154,9 +152,8 @@ EndDeclareModule
 
 Module ComponentSelection
 EndModule
-
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 75
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 83
+; FirstLine = 67
 ; Folding = ---
 ; EnableXP

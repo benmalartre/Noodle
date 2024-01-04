@@ -96,7 +96,7 @@ Module FileExistsNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="FileExistsNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.FileExistsNode_t = AllocateMemory(SizeOf(FileExistsNode_t))
+    Protected *Me.FileExistsNode_t = AllocateStructure(FileExistsNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(FileExistsNode,*tree,type,x,y,w,h,c)
@@ -114,9 +114,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 25
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 98
+; FirstLine = 71
 ; Folding = --
 ; EnableThread
 ; EnableXP

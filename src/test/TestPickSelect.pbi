@@ -1,10 +1,5 @@
 ﻿
 XIncludeFile "../core/Application.pbi"
-XIncludeFile "../libs/FTGL.pbi"
-XIncludeFile "../opengl/Framebuffer.pbi"
-XIncludeFile"../objects/Polymesh.pbi"
-XIncludeFile "../ui/ViewportUI.pbi"
-
 
 UseModule Math
 UseModule Time
@@ -71,8 +66,8 @@ Procedure Update(*app.Application::Application_t)
   *select\mouseX = *viewport\mx
   *select\mouseY = *viewport\my
 
-  LayerDefault::Draw(*layer, *app\scene, *app\context)
-  LayerSelection::Draw(*select, *app\scene, *app\context)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
+  LayerSelection::Draw(*select, *app\scene, *viewport\context)
   
    If Event() = #PB_Event_Gadget And EventGadget() = *viewport\gadgetID
     If EventType() = #PB_EventType_LeftClick
@@ -83,16 +78,16 @@ Procedure Update(*app.Application::Application_t)
   ViewportUI::Blit(*viewport, *select\framebuffer)
   
   
-  Define writer = *viewport\context\writer
-;   LayerDefault::Draw(*layer, *app\context)
-  FTGL::BeginDraw(writer)
-  FTGL::SetColor(writer,1,1,1,1)
-  Define ss.f = 0.85/width
-  Define ratio.f = width / height
-  FTGL::Draw(writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
-  Define numSelected = MapSize(*select\selection\items())
-  FTGL::Draw(writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
-  FTGL::EndDraw(writer)
+;   Define writer = *viewport\context\writer
+; ;   LayerDefault::Draw(*layer, *app\context)
+;   FTGL::BeginDraw(writer)
+;   FTGL::SetColor(writer,1,1,1,1)
+;   Define ss.f = 0.85/width
+;   Define ratio.f = width / height
+;   FTGL::Draw(writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+;   Define numSelected = MapSize(*select\selection\items())
+;   FTGL::Draw(writer,"Num Objects Selected : "+Str(numSelected),-0.9,0.8,ss,ss*ratio)
+;   FTGL::EndDraw(writer)
   
   GLContext::FlipBuffer(*viewport\context)
 
@@ -113,7 +108,6 @@ Time::Init()
 
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-  View::SetContent(*app\window\main,*viewport)
   ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
 
@@ -121,8 +115,8 @@ EndIf
 Camera::LookAt(*app\camera)
 Matrix4::SetIdentity(model)
 *app\scene = Scene::New()
-*layer = LayerDefault::New(800,600,*app\context,*app\camera)
-*select = LayerSelection::New(800,600,*app\context,*app\camera)
+*layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
+*select = LayerSelection::New(800,600,*viewport\context,*app\camera)
 *select\selection = *app\scene\selection
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 GLContext::AddFramebuffer(*viewport\context, *select\framebuffer)
@@ -132,17 +126,17 @@ Global *root.Model::Model_t = Model::New("Model")
 RandomBunnies(128, -2, *root)
 
 Scene::AddModel(*app\scene,*root)
-Scene::Setup(*app\scene,*app\context)
+Scene::Setup(*app\scene)
 Scene::Update(*app\scene)
 Application::Loop(*app, @Update())
-
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 61
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 110
+; FirstLine = 86
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:\Volumes\STORE N GO\Polymesh.app
+; Executable = D:/Volumes/STORE N GO/Polymesh.app
 ; Debugger = Standalone
+; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

@@ -149,7 +149,7 @@ Module MenuUI
   ;---------------------------------------------
   ;{
   Procedure.i New(*parent.View::View_t,name.s="MenuUI")
-    Protected *Me.MenuUI_t = AllocateMemory(SizeOf(MenuUI_t))
+    Protected *Me.MenuUI_t = AllocateStructure(MenuUI_t)
     ;Initialize Structures
     Object::INI( MenuUI )
     *Me\parent = *parent
@@ -213,7 +213,7 @@ Module MenuUI
    Class::DEF(MenuUI)
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 173
-; FirstLine = 169
+; CursorPosition = 151
+; FirstLine = 147
 ; Folding = ---
 ; EnableXP

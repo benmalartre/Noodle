@@ -186,7 +186,7 @@ Module DivideByScalarNode
   EndProcedure
   
   Procedure Delete(*node.DivideByScalarNode_t)
-    FreeMemory(*node)
+    Node::DEL(DivideByScalarNode)
   EndProcedure
   
   
@@ -199,7 +199,7 @@ Module DivideByScalarNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="DivideByScalarNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.DivideByScalarNode_t = AllocateMemory(SizeOf(DivideByScalarNode_t))
+    Protected *Me.DivideByScalarNode_t = AllocateStructure(DivideByScalarNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(DivideByScalarNode,*tree,type,x,y,w,h,c)
@@ -216,9 +216,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 25
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 188
+; FirstLine = 173
 ; Folding = --
 ; EnableXP

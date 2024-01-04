@@ -931,8 +931,7 @@ Module Light
     Object3D::DeleteAllAttributes(*Me)
     
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,Light_t)
-    FreeMemory( *Me )
+    Object::TERM(Light)
   
   EndProcedure
 
@@ -943,13 +942,8 @@ Module Light
   Procedure New( name.s,type.i=#Light_Infinite)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.Light_t = AllocateMemory( SizeOf(Light_t) )
+    Protected *Me.Light_t = AllocateStructure(Light_t)
     
-    ; ---[ Initialize underlying matrices ]-------------------------------------
-    InitializeStructure(*Me,Light_t)
-    
-;     *Me\VT = ?LightVT
-;     *Me\classname = "LIGHT"
     Object::INI(Light)
     
     ; ---[ Init Members ]-------------------------------------------------------
@@ -1047,8 +1041,8 @@ Module Light
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Light )
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 747
-; FirstLine = 388
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 933
+; FirstLine = 397
 ; Folding = 0-e--
 ; EnableXP

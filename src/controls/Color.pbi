@@ -418,7 +418,7 @@ Module ControlColor
   Procedure.i New( *parent.Control::Control_t, name.s, label.s, *color.Math::c4f32, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 46 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlColor_t = AllocateMemory( SizeOf(ControlColor_t) )
+    Protected *Me.ControlColor_t = AllocateStructure(ControlColor_t)
     
     Object::INI(ControlColor)
 
@@ -453,9 +453,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 210
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 420
+; FirstLine = 410
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

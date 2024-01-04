@@ -101,7 +101,7 @@ Module InstanceCloud
     Object3D::DeleteVAO(@*Me\vao)
     Object3D::DeleteVBO(@*Me\vbo)
     Object3D::DeleteEAB(@*Me\eab)
-    FreeStructure(*Me)
+    Object::TERM(InstanceCloud)
   EndProcedure  
   
   ; Get Shape Flat Array Data Size
@@ -335,9 +335,9 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 306
-; FirstLine = 281
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 103
+; FirstLine = 75
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

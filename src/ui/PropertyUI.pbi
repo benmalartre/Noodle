@@ -67,8 +67,7 @@ Module PropertyUI
   ;  Constructor
   ; ----------------------------------------------------------------------------
   Procedure New(*parent.View::View_t, name.s,*obj. Object3D::Object3D_t)
-    Protected *Me.PropertyUI_t = AllocateMemory(SizeOf(PropertyUI_t))
-    InitializeStructure(*Me,PropertyUI_t)
+    Protected *Me.PropertyUI_t = AllocateStructure(PropertyUI_t)
     Object::INI(PropertyUI)
     *Me\name = name
     *Me\posX = *parent\posX
@@ -88,10 +87,8 @@ Module PropertyUI
   ;  Destructor
   ; ----------------------------------------------------------------------------
   Procedure Delete(*Me.PropertyUI_t)
-    ControlProperty::Delete(*Me\prop)
-    
-    ClearStructure(*Me,PropertyUI_t)
-    FreeMemory(*Me)
+    ControlProperty::Delete(*Me\prop) 
+    Object::TERM(PropertyUI)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -513,7 +510,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 2
+; CursorPosition = 89
+; FirstLine = 65
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

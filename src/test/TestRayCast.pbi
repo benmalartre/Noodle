@@ -33,7 +33,7 @@ Global *layer.Layer::Layer_t
 ;---------------------------------------------------
 Procedure TestRay_New(*mesh.Polymesh::Polymesh_t,*start.v3f32,*end.v3f32,*c.c4f32)
   
-  Protected *tr.TestRay_t = AllocateMemory(SizeOf(TestRay_t))
+  Protected *tr.TestRay_t = AllocateStructure(TestRay_t)
   
   *tr\drawer = Drawer::New("Raycast Drawer")
   *tr\drawer\overlay = #True
@@ -77,11 +77,15 @@ EndProcedure
 ;---------------------------------------------------
 ; UPDATE
 ;---------------------------------------------------
-Procedure TestRay_Update(*tr.TestRay_t, *viewport.ViewportUI::ViewportUI_t)
+Procedure TestRay_Update(*tr.TestRay_t)
   Drawer::Flush(*tr\drawer)
   Debug "test ray update..."
   *app\scene\dirty = #True
+  Vector3::Echo(*tr\ray\origin, "before ray origin")
+  Vector3::Echo(*tr\ray\direction, "before ray direction")
   ViewportUI::GetRay(*viewport, *tr\ray)
+  Vector3::Echo(*tr\ray\origin, "after ray origin")
+  Vector3::Echo(*tr\ray\direction, "after ray direction")
   Vector3::SetFromOther(*tr\start_pos, *viewport\camera\pos)
 
   Protected i
@@ -198,6 +202,7 @@ Procedure AddRay()
   
   Color::Set(color,1,0,0,1)
   *ray = TestRay_New(*bunny,sp,ep,color)
+  
 EndProcedure
 
 ; Draw
@@ -205,13 +210,11 @@ EndProcedure
 Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
   CompilerIf #USE_GLFW
-    TestRay_Update(*ray, *app)
+    TestRay_Update(*ray)
     Scene::Update(*app\scene)
     Application::Draw(*app, *layer)
   CompilerElse
-    
-    
-    TestRay_Update(*ray, *viewport)
+    TestRay_Update(*ray)
     Scene::Update(*app\scene)
    
     
@@ -266,9 +269,9 @@ EndProcedure
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 106
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 80
+; FirstLine = 53
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

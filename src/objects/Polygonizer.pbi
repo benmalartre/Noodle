@@ -340,8 +340,7 @@ EndDeclareModule
 Module Polygonizer
   
   Procedure CreateGrid(*box.Geometry::Box_t, cellSize.f)
-    Protected *grid.Grid_t = AllocateMemory(SizeOf(Grid_t))
-    InitializeStructure(*grid, Grid_t)
+    Protected *grid.Grid_t = AllocateStructure(Grid_t)
     Protected size.Math::v3f32
     Vector3::Scale(size, *box\extend, 2.0)
     
@@ -706,9 +705,8 @@ EndModule
 ; 
 ;    Return(ntri);
 ; }
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 560
-; FirstLine = 529
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 539
+; FirstLine = 535
 ; Folding = --
 ; EnableXP

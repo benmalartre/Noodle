@@ -23,7 +23,7 @@ EndDeclareModule
 
 Module Fibonacci
   Procedure New(N.i)
-    Protected *Me.Fibonacci_t = AllocateMemory(SizeOf(Fibonacci_t))
+    Protected *Me.Fibonacci_t = AllocateStructure(Fibonacci_t)
     *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
     *Me\sizes = CArray::New(CArray::#ARRAY_INT)
     *Me\N = N
@@ -33,7 +33,7 @@ Module Fibonacci
   Procedure Delete(*Me.Fibonacci_t)
     CArray::Delete(*Me\positions)
     CArray::Delete(*Me\sizes)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; Table (fibonacci sequence)
@@ -130,7 +130,7 @@ Module Fibonacci
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 27
-; FirstLine = 22
+; CursorPosition = 35
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

@@ -14,7 +14,7 @@ Module NodePort
   ; Constructor
   ;------------------------------------------------------------
   Procedure New(*parent,name.s,io.b=#False,datatype.i=Attribute::#ATTR_TYPE_UNDEFINED,datacontext.i=Attribute::#ATTR_CTXT_ANY,datastructure.i=Attribute::#ATTR_STRUCT_ANY)
-    Protected *Me.NodePort_t = AllocateMemory(SizeOf(NodePort_t))
+    Protected *Me.NodePort_t = AllocateStructure(NodePort_t)
     Object::INI(NodePort)
     *Me\node = *parent
     *Me\name = name
@@ -241,7 +241,8 @@ Module NodePort
         *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *sVal, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_REFERENCE
-        Protected *ref.Globals::Reference_t = AllocateMemory(SizeOf(Globals::Reference_t))
+        ; /!\ there is a leak here
+        Protected *ref.Globals::Reference_t = AllocateStructure(Globals::Reference_t)
         *port\attribute = Attribute::New(*port\node,*port\name, *port\currenttype, *port\currentstructure, *port\currentcontext, *ref, #False, *port\readonly, *port\constant, *port\writable,#True)
         
       Case Attribute::#ATTR_TYPE_TOPOLOGY
@@ -875,7 +876,7 @@ EndModule
 ;  End Of File
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 854
-; FirstLine = 812
+; CursorPosition = 243
+; FirstLine = 239
 ; Folding = -----
 ; EnableXP

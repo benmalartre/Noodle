@@ -669,7 +669,7 @@ Module Implicit
   ;  New
   ; ----------------------------------------------------------------------------
   Procedure New(shape.i)
-    Protected *Me.Implicit_t = AllocateMemory(SizeOf(Implicit_t))
+    Protected *Me.Implicit_t = AllocateStructure(Implicit_t)
     *Me\nbp = 0
     *Me\positions = CArray::newCArrayV3F32()
 
@@ -681,15 +681,16 @@ Module Implicit
   ; ----------------------------------------------------------------------------
   ;  Delete
   ; ----------------------------------------------------------------------------
-  Procedure Delete(*Me.Shape_t)
+  Procedure Delete(*Me.Implicit_t)
     CArray::Delete(*Me\positions)
+    FreeStructure(*Me)
   EndProcedure
 
 EndModule
 
 ;}
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 570
-; FirstLine = 566
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 685
+; FirstLine = 645
 ; Folding = --
 ; EnableXP

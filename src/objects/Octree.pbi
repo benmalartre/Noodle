@@ -112,8 +112,7 @@ Module Octree
   ; CONSTRUCTOR
   ;---------------------------------------------------------------------
   Procedure New(*bmin.v3f32, *bmax.v3f32, depth=0, elemType=#ELEMENT_3D)
-    Protected *octree.Octree_t = AllocateMemory(SizeOf(Octree_t))
-    InitializeStructure(*octree, Octree_t)
+    Protected *octree.Octree_t = AllocateStructure(Octree_t)
     *octree\elements = CArray::New(CArray::#ARRAY_LONG)
     *octree\depth = depth
     *octree\state = #STATE_DEFAULT
@@ -144,8 +143,7 @@ Module Octree
       If *octree\children[i] : DeleteCell(*octree\children[i]) : EndIf
     Next
     If *octree\elements: CArray::Delete(*octree\elements) : EndIf
-    ClearStructure(*octree, Octree_t)
-    FreeMemory(*octree)
+    FreeStructure(*octree)
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -163,8 +161,7 @@ Module Octree
   ; CONSTRUCTOR
   ;---------------------------------------------------------------------
   Procedure NewCell(*octree.Octree_t, *bmin.v3f32, *bmax.v3f32, depth=0)
-    Protected *cell.Cell_t = AllocateMemory(SizeOf(Cell_t))
-    InitializeStructure(*cell, Cell_t)
+    Protected *cell.Cell_t = AllocateStructure(Cell_t)
     *cell\elements = CArray::New(CArray::#ARRAY_LONG)
     *cell\depth = depth
     *cell\state = #STATE_DEFAULT
@@ -186,8 +183,7 @@ Module Octree
       If *cell\children[i] : DeleteCell(*cell\children[i]) : EndIf
     Next
     If *cell\elements: CArray::Delete(*cell\elements) : EndIf
-    ClearStructure(*cell, Cell_t)
-    FreeMemory(*cell)
+    FreeStructure(*cell)
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -1216,7 +1212,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1157
-; FirstLine = 1113
+; CursorPosition = 813
+; FirstLine = 810
 ; Folding = ---------
 ; EnableXP

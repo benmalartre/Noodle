@@ -14,7 +14,7 @@ Module Connexion
   ; Constructor
   ;---------------------------------------------------
   Procedure.i New(*p.NodePort::NodePort_t)
-    Protected *c.Connexion_t = AllocateMemory(SizeOf(Connexion_t))
+    Protected *c.Connexion_t = AllocateStructure(Connexion_t)
     Init(*c,*p\color)
     *c\start = *p
     Set(*c,*p\posx,*p\posy,*p\posx+4,*p\posy)
@@ -27,7 +27,7 @@ Module Connexion
   ; Destructor
   ;---------------------------------------------------
   Procedure Delete(*c.Connexion_t)
-    FreeMemory(*c)  
+    FreeStructure(*c)  
   EndProcedure
   
   ;---------------------------------------------------
@@ -591,8 +591,8 @@ Module Connexion
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 395
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 29
+; FirstLine = 1
 ; Folding = ----
 ; EnableXP

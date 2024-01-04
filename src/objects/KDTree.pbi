@@ -104,8 +104,7 @@ Module KDTree
   ; New Node
   ;--------------------------------------------------------------------
   Procedure NewNode(*parent.KDNode_t,ID.i,level.i)
-    Protected *node.KDNode_t = AllocateMemory(SizeOf(KDNode_t))
-    InitializeStructure(*node,KDNode_t)
+    Protected *node.KDNode_t = AllocateStructure(KDNode_t)
     *node\parent = *parent
     *node\ID = ID
     *node\level = level
@@ -120,15 +119,13 @@ Module KDTree
   Procedure DeleteNode(*node.KDNode_t)
     If *node\left:DeleteNode(*node\left):EndIf
     If *node\right:DeleteNode(*node\right):EndIf
-    ClearStructure(*node,KDNode_t)
-    FreeMemory(*node)
+    FreeStructure(*node)
   EndProcedure
   
   ; Constructor
   ;--------------------------------------------------------------------
   Procedure New()
-    Protected *tree.KDTree_t = AllocateMemory(SizeOf(KDTree_t))
-    InitializeStructure(*tree,KDTree_t)
+    Protected *tree.KDTree_t = AllocateStructure(KDTree_t)
     *tree\points = CArray::newCArrayV3F32()
     *tree\root = #Null
     *tree\m_id = 0
@@ -140,8 +137,7 @@ Module KDTree
   Procedure Delete(*tree.KDTree_t)
     CArray::Delete(*tree\points)
     DeleteNode(*tree\root)
-    ClearStructure(*tree,KDTree_t)
-    FreeMemory(*tree)
+    FreeStructure(*tree)
   EndProcedure
   
   ; Sort Points
@@ -580,8 +576,8 @@ Module KDTree
   EndProcedure
 EndModule
   
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 63
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 129
+; FirstLine = 125
 ; Folding = ----
 ; EnableXP

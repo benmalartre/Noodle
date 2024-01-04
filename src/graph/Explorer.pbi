@@ -79,8 +79,7 @@ Module NodeExplorer
 ;  CONSTRUCTOR
 ; ============================================================================
 Procedure New(x.i,y.i,width.i,height.i)
-  Protected *Me.NodeExplorer_t = AllocateMemory(SizeOf(NodeExplorer_t))
-  InitializeStructure(*Me,NodeExplorer_t)
+  Protected *Me.NodeExplorer_t = AllocateStructure(NodeExplorer_t)
   
   Debug "Create Graph Node Explorer : "+Str(x)+","+Str(y)
   *Me\gadgetID = CanvasGadget(#PB_Any,x,y,width,height,#PB_Canvas_Keyboard|#PB_Canvas_DrawFocus)
@@ -105,21 +104,21 @@ EndProcedure
 ;  Destructor
 ; ============================================================================
 Procedure Delete(*explorer.NodeExplorer_t)
- FreeMemory(*explorer)
+ FreeStructure(*explorer)
 EndProcedure
 
   ; ----------------------------------------------------------------------------
   ;  New Node
   ; ----------------------------------------------------------------------------
   Procedure NewNode(type.i,*obj)
-    Protected *n.NodeExplorerNode_t = AllocateMemory(SizeOf(NodeExplorerNode_t))
+    Protected *n.NodeExplorerNode_t = AllocateStructure(NodeExplorerNode_t)
     *n\type = type
     *n\object = *obj
     ProcedureReturn *n
   EndProcedure
   
   Procedure DeleteNode(*n.NodeExplorerNode_t)
-    FreeMemory(*n)
+    FreeStructure(*n)
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -453,9 +452,9 @@ EndProcedure
     
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 81
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 120
+; FirstLine = 110
 ; Folding = ---
 ; EnableThread
 ; EnableXP

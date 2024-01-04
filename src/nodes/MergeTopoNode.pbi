@@ -91,7 +91,7 @@ Module MergeTopoNode
   Procedure.i New(*tree.Tree::tree_t,type.s="MergeTopoNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.MergeTopoNode_t = AllocateMemory(SizeOf(MergeTopoNode_t))
+    Protected *Me.MergeTopoNode_t = AllocateStructure(MergeTopoNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(MergeTopoNode,*tree,type,x,y,w,h,c)
@@ -109,8 +109,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 51
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 93
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

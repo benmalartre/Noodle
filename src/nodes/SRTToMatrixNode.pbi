@@ -121,7 +121,7 @@ Module SRTToMatrixNode
   EndProcedure
   
   Procedure Delete(*node.SRTToMatrixNode_t)
-    FreeMemory(*node)
+    Node::DEL(SRTToMatrixNode)
   EndProcedure
   
  
@@ -134,7 +134,7 @@ Module SRTToMatrixNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="SRTToMatrixNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]-----------------------------------------------
-    Protected *Me.SRTToMatrixNode_t = AllocateMemory(SizeOf(SRTToMatrixNode_t))
+    Protected *Me.SRTToMatrixNode_t = AllocateStructure(SRTToMatrixNode_t)
     
     ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(SRTToMatrixNode,*tree,type,x,y,w,h,c)
@@ -151,9 +151,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 51
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 123
+; FirstLine = 108
 ; Folding = --
 ; EnableXP

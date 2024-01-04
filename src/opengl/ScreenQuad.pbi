@@ -54,7 +54,7 @@ Module ScreenQuad
   ; Constructor
   ;----------------------------------------------------------------------------
   Procedure New()
-    Protected *Me.ScreenQuad_t = AllocateMemory(SizeOf(ScreenQuad_t))
+    Protected *Me.ScreenQuad_t = AllocateStructure(ScreenQuad_t)
 
     ProcedureReturn *Me
     
@@ -66,7 +66,7 @@ Module ScreenQuad
   Procedure Delete(*Me.ScreenQuad_t)
     glDeleteVertexArrays(1,@*Me\vao)
     glDeleteBuffers(1,@*Me\vbo)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -142,9 +142,8 @@ Module ScreenQuad
 EndModule
 
 
-
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 87
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 68
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

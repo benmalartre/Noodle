@@ -56,7 +56,7 @@ Module Stack
   ; New Level
   ;------------------------------------------------------------------------------------------
   Procedure NewLevel(*stack.Stack_t,name.s,color.i)
-    Protected   *Me.StackLevel_t = AllocateMemory(SizeOf(StackLevel_t))
+    Protected   *Me.StackLevel_t = AllocateStructure(StackLevel_t)
     Object::INI(StackLevel)
     *Me\name = name
     *Me\color = color
@@ -118,7 +118,7 @@ Module Stack
   ; Constructor
   ;------------------------------------------------------------------------------------------
   Procedure New()
-    Protected *Me.Stack_t = AllocateMemory(SizeOf(Stack_t))
+    Protected *Me.Stack_t = AllocateStructure(Stack_t)
     Object::INI(Stack)
     NewLevel(*Me,"Modeling",RGB(255,200,200))
     NewLevel(*Me,"Shape",RGB(200,255,200))
@@ -178,9 +178,8 @@ Module Stack
 
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 91
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 120
+; FirstLine = 116
 ; Folding = ---
 ; EnableXP

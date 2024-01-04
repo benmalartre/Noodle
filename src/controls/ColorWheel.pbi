@@ -789,7 +789,7 @@ Module ControlColorWheel
   
   ; ---[ Delete ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlColorWheel_t )
-    FreeMemory( *Me )
+    Object::TERM(ControlColorWheel)
   EndProcedure
 
   ; ============================================================================
@@ -798,7 +798,7 @@ Module ControlColorWheel
   Procedure.i New( *parent.Control::Control_t, x.i=0,y.i=0,width.i=200,height.i=200 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlColorWheel_t = AllocateMemory( SizeOf(ControlColorWheel_t) )
+    Protected *Me.ControlColorWheel_t = AllocateStructure(ControlColorWheel_t)
     
     ; ---[ Init CObject Base Class ]--------------------------------------------
     Object::INI( ControlColorWheel )
@@ -832,9 +832,8 @@ Module ControlColorWheel
   
 EndModule
 
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 70
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 791
+; FirstLine = 789
 ; Folding = ----
 ; EnableXP

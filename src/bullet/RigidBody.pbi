@@ -348,7 +348,7 @@ Module BulletRigidBody
     Next c
     
     Protected *body.Bullet::btRigidBody = BTAddRigidBodyFromShape(CArray::GetValue(*objs,0),*pshape,mass)
-    Protected *out.BTRigidBody_t = AllocateMemory(SizeOf(BTRigidBody_t))
+    Protected *out.BTRigidBody_t = AllocateStructure(BTRigidBody_t)
     *out\body = *body
     *out\shape = *pshape
     ProcedureReturn *out
@@ -469,8 +469,8 @@ Module BulletRigidBody
   
   
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 201
-; FirstLine = 191
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 350
+; FirstLine = 346
 ; Folding = ---
 ; EnableXP

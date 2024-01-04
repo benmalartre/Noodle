@@ -89,8 +89,7 @@ Module FFMPEG
   ;   Run FFMPEG
   ; -------------------------------------------------------------
   Procedure newFFMPEGQueue()
-    Protected *queue.FFMPEG_Queue = AllocateMemory(SizeOf(FFMPEG_Queue))
-    InitializeStructure(*queue,FFMPEG_Queue)
+    Protected *queue.FFMPEG_Queue = AllocateStructure(FFMPEG_Queue)
     *queue\semaphore = CreateSemaphore()
     *queue\mutex = CreateMutex()
     ProcedureReturn *queue
@@ -234,9 +233,9 @@ EndModule
 
 ; 
 ;   ;ffmpeg -i path/To/input.mov -vcodec videocodec -acodec audiocodec path/To/output.flv 1> block.txt 2>&1
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 9
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 116
+; FirstLine = 112
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

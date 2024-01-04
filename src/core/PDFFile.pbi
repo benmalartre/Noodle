@@ -45,8 +45,7 @@ Module PDFFile
   ;   CONSTRUCTOR
   ; -------------------------------------------------------------------
   Procedure New(in_file.s, out_file.s, width.i=720, height.i=1024)
-    Protected *pdf.PDFFile_t = AllocateMemory(SizeOf(PDFFile_t))
-    InitializeStructure(*pdf, PDFFile_t)
+    Protected *pdf.PDFFile_t = AllocateStructure(PDFFile_t)
     If in_file And FileSize(in_file) > 0
       *pdf\in_file = in_file
       *pdf\out_file = out_file
@@ -75,8 +74,7 @@ Module PDFFile
   Procedure Delete(*pdf.PDFFIle_t)
     PDFium::ClosePage(*pdf\page)
     PDFium::CloseDocument(*pdf\document)
-    ClearStructure(*pdf, PDFFile_t)
-    FreeMemory(*pdf)
+    FreeStructure(*pdf)
   EndProcedure
   
   ; -------------------------------------------------------------------
@@ -226,8 +224,8 @@ Module PDFFile
   
 
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 25
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 77
+; FirstLine = 43
 ; Folding = --
 ; EnableXP

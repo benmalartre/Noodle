@@ -286,7 +286,7 @@ EndProcedure
 Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
-  Protected *Me.ControlButton_t = AllocateMemory( SizeOf(ControlButton_t) )
+  Protected *Me.ControlButton_t = AllocateStructure(ControlButton_t)
   
   Object::INI(ControlButton)
     
@@ -327,8 +327,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 81
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 288
+; FirstLine = 284
 ; Folding = --
 ; EnableXP

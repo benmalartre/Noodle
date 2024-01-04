@@ -115,7 +115,7 @@ Module ControlEnum
   ;   CONSTRUCTOR
   ; ------------------------------------------------------------------ 
   Procedure New(gadgetID.i, x.i,y.i,width.i,height.i,name.s)
-    Protected *Me.ControlEnum_t = AllocateMemory(SizeOf(ControlEnum_t))
+    Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
     Object::INI(ControlEnum)
     *Me\type = Control::#ENUM
     *Me\gadgetID = gadgetID
@@ -231,9 +231,8 @@ EndModule
 
 
 
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 191
-; FirstLine = 168
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 117
+; FirstLine = 113
 ; Folding = --
 ; EnableXP

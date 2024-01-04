@@ -81,7 +81,7 @@ Module PDB
   
   
   Procedure AddDistanceConstraint(*Me.PDB_t,a.i, b.i, k.f) 
-    Define *c.DistanceConstraint_t = AllocateMemory(SizeOf(DistanceConstraint_t))
+    Define *c.DistanceConstraint_t = AllocateStructure(DistanceConstraint_t)
   	*c\p1=a
   	*c\p2=b
   	*c\k =k
@@ -102,7 +102,7 @@ Module PDB
   
 CompilerIf #USE_TRIANGLE_BENDING_CONSTRAINT
   Procedure AddBendingConstraint(*Me.PDB_t, pa.i, pb.i, pc.i, k.f)
-  	Define *c.BendingConstraint_t = AllocateMemory(SizeOf(BendingConstraint_t))
+  	Define *c.BendingConstraint_t = AllocateStructure(BendingConstraint_t)
   	*c\p1=pa
   	*c\p2=pb
   	*c\p3=pc
@@ -127,7 +127,7 @@ CompilerIf #USE_TRIANGLE_BENDING_CONSTRAINT
   
 CompilerElse
   Procedure AddBendingConstraint(*Me.PDB_t, pa.i, pb.i, pc.i, pd.i, k.i)
-  	Define *c.BendingConstraint_t = AllocateMemory(SizeOf(BendingConstraint_t))
+  	Define *c.BendingConstraint_t = AllocateStructure(BendingConstraint_t)
   	*c\p1=pa
   	*c\p2=pb
   	*c\p3=pc
@@ -578,9 +578,8 @@ CompilerEndIf
   
 
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 289
-; FirstLine = 272
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 129
+; FirstLine = 96
 ; Folding = ----
 ; EnableXP

@@ -71,7 +71,7 @@ Module IntegerToFloatNode
   EndProcedure
   
   Procedure Delete(*node.IntegerToFloatNode_t)
-    FreeMemory(*node)
+    Node::DEL(IntegerToFloatNode)
   EndProcedure
   
   
@@ -82,7 +82,7 @@ Module IntegerToFloatNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="IntegerToFloatNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.IntegerToFloatNode_t = AllocateMemory(SizeOf(IntegerToFloatNode_t))
+    Protected *Me.IntegerToFloatNode_t = AllocateStructure(IntegerToFloatNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(IntegerToFloatNode,*tree,type,x,y,w,h,c)
@@ -101,9 +101,9 @@ Module IntegerToFloatNode
   ; ============================================================================
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 43
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 73
+; FirstLine = 58
 ; Folding = --
 ; EnableThread
 ; EnableXP

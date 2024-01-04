@@ -73,7 +73,7 @@ Module ScreenUI
   ; New
   ;------------------------------------------------------------------
   Procedure New(*parent.View::View_t,name.s, *camera.Camera::Camera_t)
-    Protected *Me.ScreenUI_t = AllocateMemory(SizeOf(ScreenUI_t))
+    Protected *Me.ScreenUI_t = AllocateStructure(ScreenUI_t)
     
     Object::INI(ScreenUI)
     
@@ -727,7 +727,7 @@ Module ScreenUI
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 106
-; FirstLine = 73
+; CursorPosition = 75
+; FirstLine = 71
 ; Folding = -----
 ; EnableXP

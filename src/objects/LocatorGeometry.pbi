@@ -38,14 +38,14 @@ Module LocatorGeometry
   ;---------------------------------------------
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.LocatorGeometry_t = AllocateMemory(SizeOf(LocatorGeometry_t))
+    Protected *Me.LocatorGeometry_t = AllocateStructure(LocatorGeometry_t)
     Object::INI(LocatorGeometry)
     ProcedureReturn *Me
   EndProcedure
 
   Class::DEF( LocatorGeometry )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 19
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 40
 ; Folding = -
 ; EnableXP

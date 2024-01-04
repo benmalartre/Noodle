@@ -179,15 +179,14 @@ Module LayerShadowDeferedCSM
   ; Destructor
   ;------------------------------------
   Procedure Delete(*layer.LayerShadowDeferedCSM_t)
-    FreeMemory(*layer)
+    Object::TERM(LayerShadowDeferedCSM)
   EndProcedure
   
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerShadowDeferedCSM_t = AllocateMemory(SizeOf(LayerShadowDeferedCSM_t))
-    InitializeStructure(*Me,LayerShadowDeferedCSM_t)
+    Protected *Me.LayerShadowDeferedCSM_t = AllocateStructure(LayerShadowDeferedCSM_t)
     Object::INI( LayerShadowDeferedCSM )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
     *Me\width = width
@@ -212,8 +211,8 @@ Module LayerShadowDeferedCSM
   
   Class::DEF(LayerShadowDeferedCSM)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 148
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 181
+; FirstLine = 168
 ; Folding = --
 ; EnableXP

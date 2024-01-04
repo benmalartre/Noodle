@@ -115,23 +115,21 @@ Module UndoManager
   ; Destructor
   ;-----------------------------------------------------
   Procedure Delete(*um.UndoManager_t)
-    ClearStructure(*um,UndoManager_t)
-    FreeMemory(*um)
+    FreeStructure(*um)
   EndProcedure
   
   ;-----------------------------------------------------
   ; Constructor
   ;-----------------------------------------------------
   Procedure New()
-    Protected *Me.UndoManager_t = AllocateMemory(SizeOf(UndoManager_t))
-    InitializeStructure(*Me,UndoManager_t)
+    Protected *Me.UndoManager_t = AllocateStructure(UndoManager_t)
     ProcedureReturn *Me
   EndProcedure
   
   
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 27
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 118
+; FirstLine = 85
 ; Folding = --
 ; EnableXP

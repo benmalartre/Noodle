@@ -156,15 +156,15 @@ Module LayerShadowDefered
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerShadowDefered_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerShadowDefered_t)
+    Object::TERM(LayerShadowDefered)
   EndProcedure
   
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*shadowmap.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerShadowDefered_t = AllocateMemory(SizeOf(LayerShadowDefered_t))
+    Protected *Me.LayerShadowDefered_t = AllocateStructure(LayerShadowDefered_t)
     Object::INI( LayerShadowDefered )
     Color::Set(*Me\color,0.5,0.5,0.5,1)
     *Me\context = *ctx
@@ -187,8 +187,8 @@ Module LayerShadowDefered
   
   Class::DEF(LayerShadowDefered)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 90
-; FirstLine = 86
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 158
+; FirstLine = 144
 ; Folding = --
 ; EnableXP

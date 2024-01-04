@@ -86,7 +86,7 @@ Module CanvasUI
   ;   CONSTRUCTOR
   ; --------------------------------------------------------------------
   Procedure New(*view.View::View_t,name.s="CanvasUI")
-    *Me.CanvasUI_t = AllocateMemory(SizeOf(CanvasUI_t))
+    *Me.CanvasUI_t = AllocateStructure(CanvasUI_t)
     Object::INI(CanvasUI)
     *Me\posX = *view\posX
     *Me\posY = *view\posY
@@ -524,9 +524,8 @@ Module CanvasUI
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 404
-; FirstLine = 397
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 88
+; FirstLine = 84
 ; Folding = ----
 ; EnableXP

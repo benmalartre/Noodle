@@ -79,7 +79,7 @@ Module ExtrusionNode
   EndProcedure
   
   Procedure Delete(*node.ExtrusionNode_t)
-    FreeMemory(*node)
+    Node::DEL(ExtrusionNode)
   EndProcedure
   
   
@@ -90,7 +90,7 @@ Module ExtrusionNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="ExtrusionNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.ExtrusionNode_t = AllocateMemory(SizeOf(ExtrusionNode_t))
+    Protected *Me.ExtrusionNode_t = AllocateStructure(ExtrusionNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(ExtrusionNode,*tree,type,x,y,w,h,c)
@@ -108,9 +108,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 10
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 81
+; FirstLine = 65
 ; Folding = --
 ; EnableXP

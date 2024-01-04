@@ -10,7 +10,7 @@ Module CompoundNode
   ;-------------------------------------------------------------------------------
   Procedure  New(*nodes.CArray::CArrayPtr,*parent.Node::Node_t,x.i,y.i,w.i,h.i,c.i)
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.CompoundNode_t = AllocateMemory(SizeOf(CompoundNode_t))
+    Protected *Me.CompoundNode_t = AllocateStructure(CompoundNode_t)
     Object::INI(CompoundNode)
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\parent = *parent
@@ -53,8 +53,7 @@ Module CompoundNode
   ; Destructor
   ;-------------------------------------------------------------------------------
   Procedure Delete(*Me.CompoundNode_t)
-    ClearStructure(*Me,CompoundNode_t)
-    FreeMemory(*Me)
+    Object::TERM(CompoundNode)
   EndProcedure
   
   
@@ -265,9 +264,9 @@ Module CompoundNode
   Class::DEF(CompoundNode)
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 13
-; FirstLine = 10
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 55
+; FirstLine = 30
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

@@ -38,8 +38,7 @@ Module Joystick
   ; Constructor
   ;--------------------------------------------------------------------
   Procedure New(ID)
-    Protected *Me.Joystick_t = AllocateMemory(SizeOf(Joystick_t))
-    InitializeStructure(*Me,Joystick_t)
+    Protected *Me.Joystick_t = AllocateStructure(Joystick_t)
       *Me\ID = ID
       If GLFW::glfwJoystickPresent(ID)
         ; Get Axis
@@ -72,8 +71,7 @@ Module Joystick
   ; Destructor
   ;--------------------------------------------------------------------
   Procedure Delete(*Me.Joystick_t)
-    ClearStructure(*Me,Joystick_t)
-    FreeMemory(*Me)  
+    FreeStructure(*Me)
   EndProcedure
   
   ;--------------------------------------------------------------------
@@ -136,9 +134,9 @@ Module Joystick
   
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 49
-; FirstLine = 47
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 74
+; FirstLine = 36
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

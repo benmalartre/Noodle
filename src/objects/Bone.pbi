@@ -69,8 +69,7 @@ Module Bone
   ; Constructor
   ;----------------------------------------------------
   Procedure New(name.s,shape.i)
-    Protected *Me.Bone_t = AllocateMemory(SizeOf(Bone_t))
-    InitializeStructure(*Me,Bone_t)
+    Protected *Me.Bone_t = AllocateStructure(Bone_t)
     Object::INI(Bone)
     
     *Me\name = name
@@ -145,8 +144,8 @@ Module Bone
     Stack::Delete(*Me\stack)
     PolymeshGeometry::Delete(*Me\geom)
     
-    ClearStructure(*Me,Bone_t)
-    FreeMemory(*Me)
+    Object::TERM(Bone)
+
   EndProcedure
   
   ;-----------------------------------------------------
@@ -567,8 +566,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 77
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 147
+; FirstLine = 112
 ; Folding = ----
 ; EnableXP

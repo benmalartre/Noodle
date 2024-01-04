@@ -113,15 +113,14 @@ Module LayerSSAOBlur
   ; Destructor
   ;------------------------------------
   Procedure Delete(*layer.LayerSSAOBlur_t)
-    FreeMemory(*layer)
+    Object::TERM(LayerSSAOBlur)
   EndProcedure
   
   ;---------------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*ssao.Framebuffer::Framebuffer_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerSSAOBlur_t = AllocateMemory(SizeOf(LayerSSAOBlur_t))
-    InitializeStructure(*Me,LayerSSAOBlur_t)
+    Protected *Me.LayerSSAOBlur_t = AllocateStructure(LayerSSAOBlur_t)
     Object::INI( LayerSSAOBlur )
     Color::Set(*Me\background_color,0.5,0.5,0.5,1)
  
@@ -146,9 +145,9 @@ Module LayerSSAOBlur
   
   Class::DEF(LayerSSAOBlur)
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 82
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 115
+; FirstLine = 102
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

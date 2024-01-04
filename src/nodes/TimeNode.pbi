@@ -72,7 +72,7 @@ Module TimeNode
   EndProcedure
   
   Procedure Delete(*node.TimeNode_t)
-    FreeMemory(*node)
+    Node::DEL(TimeNode)
   EndProcedure
   
   
@@ -84,7 +84,7 @@ Module TimeNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="TimeNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.TimeNode_t = AllocateMemory(SizeOf(TimeNode_t))
+    Protected *Me.TimeNode_t = AllocateStructure(TimeNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(TimeNode,*tree,type,x,y,w,h,c)
@@ -101,9 +101,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 44
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 74
+; FirstLine = 58
 ; Folding = --
 ; EnableXP

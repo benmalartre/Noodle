@@ -1038,7 +1038,7 @@ Module ControlTimeline
     FreeGadget(*Me\gadgetID)
     
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(ControlTimeline)
     
   EndProcedure
   
@@ -1053,7 +1053,7 @@ Module ControlTimeline
   Procedure.i New(*parent.UI::UI_t, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlTimeline_t = AllocateMemory( SizeOf(ControlTimeline_t) )
+    Protected *Me.ControlTimeline_t = AllocateStructure(ControlTimeline_t) 
     
     Object::INI(ControlTimeline)
     
@@ -1075,8 +1075,6 @@ Module ControlTimeline
     *Me\controls = 0
     *Me\timer = Time::CreateTimer(*Me, @OnTimer(), 1000 / Time::FRAMERATE)
     
-    ; ---[ Init Structure ]-----------------------------------------------------
-    InitializeStructure( *Me, ControlTimeline_t ) ; Arrays
     
     ; ---[ Number Controls ]------------------------------------------------------
     *Me\c_startframe = ControlNumber::New(*Me,"StartFrame",Time::startframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,0,6,45,30)
@@ -1146,8 +1144,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 1094
-; FirstLine = 1086
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1040
+; FirstLine = 1021
 ; Folding = -------
 ; EnableXP

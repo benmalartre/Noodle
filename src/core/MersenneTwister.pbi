@@ -190,7 +190,7 @@ Module CRandMT
   Procedure Delete( *Me.Instance_t )
     
     ; ---[ Release Instance ]-------------------------------------------------
-    FreeMemory(*Me)
+    FreeStructure(*Me)
     
   EndProcedure
   ; ~~~[ Seeds ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -417,7 +417,7 @@ Module CRandMT
   Procedure.i New( seed.l )
     
     ; ---[ Allocate Instance Memory ]-----------------------------------------
-    Protected *p.Instance_t = AllocateMemory(SizeOf(Instance_t))
+    Protected *p.Instance_t = AllocateStructure(Instance_t)
     
     ; ---[ Init Instance ]----------------------------------------------------
     ProcedureReturn Nes( *p, seed )
@@ -441,7 +441,7 @@ Module CRandMT
   Procedure.i New2( *seed.Long, seedlen.l )
     
     ; ---[ Allocate Instance Memory ]-----------------------------------------
-    Protected *p.Instance_t = AllocateMemory(SizeOf(Instance_t))
+    Protected *p.Instance_t = AllocateStructure(Instance_t)
     
     ; ---[ Init Instance ]----------------------------------------------------
     ProcedureReturn Nes2( *p, *seed, seedlen )
@@ -465,7 +465,7 @@ Module CRandMT
   Procedure.i NewAuto()
     
     ; ---[ Allocate Instance Memory ]-----------------------------------------
-    Protected *p.Instance_t = AllocateMemory(SizeOf(Instance_t))
+    Protected *p.Instance_t = AllocateStructure(Instance_t)
     
     ; ---[ Init Instance ]----------------------------------------------------
     ProcedureReturn NesAuto( *p )
@@ -589,8 +589,8 @@ CompilerEndIf
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 13
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 208
+; FirstLine = 189
 ; Folding = ---------
 ; EnableXP

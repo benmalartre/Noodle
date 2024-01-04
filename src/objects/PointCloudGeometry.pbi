@@ -408,7 +408,7 @@ Module PointCloudGeometry
   ; Constructor
   ;-----------------------------------------------------------
   Procedure New(*parent,nbp.i)
-    Protected *Me.PointCloudGeometry_t = AllocateMemory(SizeOf(PointCloudGeometry_t))
+    Protected *Me.PointCloudGeometry_t = AllocateStructure(PointCloudGeometry_t)
     Object::INI(PointCloudGeometry)
     *Me\nbpoints = nbp
     *Me\parent = *parent
@@ -441,7 +441,7 @@ Module PointCloudGeometry
   Class::DEF( PointCloudGeometry )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 421
-; FirstLine = 397
+; CursorPosition = 410
+; FirstLine = 387
 ; Folding = ---
 ; EnableXP

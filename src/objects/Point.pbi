@@ -38,9 +38,7 @@ Module Point
     CArray::Delete(*Me\neighbors)
     CArray::Delete(*Me\triangles)
     
-    ClearStructure(*Me,Point_t)
-    
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -49,8 +47,7 @@ Module Point
   ;{
   Procedure.i New(index.i)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Point_t = AllocateMemory(SizeOf(Point_t))
-    InitializeStructure(*Me,Point_t)
+    Protected *Me.Point_t = AllocateStructure(Point_t)
     
     *Me\id = index
     *Me\visited = #False
@@ -193,9 +190,8 @@ Module Point
  
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 15
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 40
+; FirstLine = 19
 ; Folding = ---
 ; EnableXP

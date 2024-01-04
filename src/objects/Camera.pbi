@@ -84,8 +84,7 @@ Module Camera
   ; Constructor
   ;------------------------------------------------------------------
   Procedure New(name.s,type.i)
-    Protected *Me.Camera_t = AllocateMemory(SizeOf(Camera_t))
-      InitializeStructure(*Me,Camera_t)
+    Protected *Me.Camera_t = AllocateStructure(Camera_t)
       Object::INI(Camera)
           
       *Me\cameratype = type
@@ -154,8 +153,7 @@ Module Camera
   ; Destructor
   ;------------------------------------------------------------------
   Procedure Delete(*Me.Camera_t)
-    ClearStructure(*Me,Camera_t)
-    FreeMemory(*Me)
+    Object::TERM(Camera)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -494,9 +492,9 @@ Module Camera
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 489
-; FirstLine = 435
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 155
+; FirstLine = 151
 ; Folding = -----
 ; EnableXP
 ; EnablePurifier

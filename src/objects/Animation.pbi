@@ -39,8 +39,7 @@ Module Animation
   ; Constructor
   ;--------------------------------------------
   Procedure New(*skeleton.Skeleton::Skeleton_t)
-    Protected *Me.Animation_t = AllocateMemory(SizeOf(Animation_t))
-    InitializeStructure(*Me,Animation_t)
+    Protected *Me.Animation_t = AllocateStructure(Animation_t)
     *Me\skeleton = *skeleton
     Protected *Ts.CArray::CArrayTRF32 = CArray::newCArrayTRF32()
     CArray::SetCount(*Ts,*Me\skeleton\nbbones)
@@ -58,8 +57,7 @@ Module Animation
       Pose::Delete(*Me\poses())
     Next
     
-    ClearStructure(*Me,Animation_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ;--------------------------------------------
@@ -419,8 +417,8 @@ Module Animation
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 79
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 41
+; FirstLine = 38
 ; Folding = --
 ; EnableXP

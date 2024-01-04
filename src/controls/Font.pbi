@@ -25,7 +25,7 @@ Module Font
   Procedure Init()
     RegisterFontFile("../../fonts/Arial/arial.ttf")
     Define font.i = LoadFont(#PB_Any, "OpenSans-Regular", 12)
-    *CURRENT_FONT = AllocateMemory(SizeOf(Font_t))
+    *CURRENT_FONT = AllocateStructure(Font_t)
     *CURRENT_FONT\name = "OpenSans-Regular"
     *CURRENT_FONT\font = font
     *CURRENT_FONT\size = 12
@@ -39,7 +39,7 @@ Module Font
     Define i
     For i=0 To numFonts-1
       If IsFont(*FONTS(i)\font) : FreeFont(*FONTS(i)\font) : EndIf
-      FreeMemory(*Fonts(i))
+      FreeStructure(*Fonts(i))
     Next
   EndProcedure
   
@@ -52,9 +52,9 @@ Debug Font::*CURRENT_FONT\name +" : "+Str(Font::*CURRENT_FONT\font)
 Font::Term()
 
 Debug "ALL IS FINE..."
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 26
-; FirstLine = 12
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 41
+; FirstLine = 9
 ; Folding = -
 ; EnableXP
 ; EnablePurifier

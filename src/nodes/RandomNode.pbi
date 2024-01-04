@@ -217,7 +217,7 @@ Module RandomNode
   EndProcedure
   
   Procedure Delete(*node.RandomNode_t)
-    FreeMemory(*node)
+    Node::DEL(RandomNode)
   EndProcedure
   
   
@@ -229,7 +229,7 @@ Module RandomNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="RandomNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.RandomNode_t = AllocateMemory(SizeOf(RandomNode_t))
+    Protected *Me.RandomNode_t = AllocateStructure(RandomNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(RandomNode,*tree,type,x,y,w,h,c)
@@ -246,9 +246,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 101
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 219
+; FirstLine = 203
 ; Folding = --
 ; EnableXP

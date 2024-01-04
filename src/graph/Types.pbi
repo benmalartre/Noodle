@@ -365,9 +365,6 @@ DeclareModule Node
     *Me\leaf = #True
     *Me\name = Globals::GUILLEMETS#cls#Globals::GUILLEMETS
     *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
-    
-    ; ---[ Initialize Structure ]-----------------------------------------------
-    InitializeStructure(*Me,cls#_t)
   
     ; ---[ Init Node ]----------------------------------------------------------
     Init(*Me)
@@ -405,9 +402,7 @@ DeclareModule Node
     Next
 
     ; ---[ Initialize Structure ]-----------------------------------------------
-    ClearStructure(*node,cls#_t)
-    FreeMemory(*node)
-  
+    FreeStructure(*node)  
   EndMacro
   
   Prototype PGETDATAPROVIDERATTRIBUTE(*node.Node::Node_t)
@@ -617,8 +612,8 @@ EndDeclareModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 114
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 366
+; FirstLine = 341
 ; Folding = ---
 ; EnableXP

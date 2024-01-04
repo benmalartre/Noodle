@@ -164,8 +164,7 @@ Module DummyNode
   EndProcedure
   
   Procedure Delete(*node.DummyNode_t)
-
-    FreeMemory(*node)
+    Node::DEL(DummyNode)    
   EndProcedure
   
   
@@ -179,7 +178,7 @@ Module DummyNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="DummyNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.DummyNode_t = AllocateMemory(SizeOf(DummyNode_t))
+    Protected *Me.DummyNode_t = AllocateStructure(DummyNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(DummyNode,*tree,type,x,y,w,h,c)
@@ -197,9 +196,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 45
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 167
+; FirstLine = 153
 ; Folding = --
 ; EnableXP

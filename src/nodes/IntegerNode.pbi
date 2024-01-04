@@ -88,7 +88,7 @@ Module IntegerNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Integer",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.IntegerNode_t = AllocateMemory(SizeOf(IntegerNode_t))
+    Protected *Me.IntegerNode_t = AllocateStructure(IntegerNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(IntegerNode,*tree,type,x,y,w,h,c)
@@ -105,9 +105,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 68
-; FirstLine = 50
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 90
+; FirstLine = 62
 ; Folding = --
 ; EnableThread
 ; EnableXP

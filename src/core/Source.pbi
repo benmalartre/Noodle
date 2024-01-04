@@ -48,7 +48,7 @@ EndDeclareModule
 ;=========================================================================================
 Module Movie
   Procedure New(path.s)
-    Protected *movie.Movie_t = AllocateMemory(SizeOf(Movie_t))
+    Protected *movie.Movie_t = AllocateStructure(Movie_t)
     *movie\movie = LoadMovie(#PB_Any,path)
     *movie\path = path
     *movie\type = Source::#TYPE_MOVIE
@@ -58,7 +58,7 @@ Module Movie
       *movie\length = MovieLength(*movie\movie)
       ProcedureReturn *movie
     Else
-      FreeMemory(*movie)
+      FreeStructure(*movie)
     EndIf
   EndProcedure
 EndModule
@@ -83,7 +83,7 @@ EndDeclareModule
 ;=========================================================================================
 Module Sound
   Procedure New(path.s)
-    Protected *sound.Sound_t = AllocateMemory(SizeOf(Sound_t))
+    Protected *sound.Sound_t = AllocateStructure(Sound_t)
     *sound\sound = LoadSound(#PB_Any,path)
     *sound\path = path
     *sound\type = Source::#TYPE_SOUND
@@ -92,19 +92,19 @@ Module Sound
       *sound\basefrequency = GetSoundFrequency(*sound\sound)
       ProcedureReturn *sound
     Else
-      FreeMemory(*sound)
+      FreeStructure(*sound)
     EndIf
   EndProcedure
   
   Procedure Delete(*Me.Sound_t)
     If IsSound(*Me\sound) : FreeSound(*Me\sound) : EndIf
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 22
-; FirstLine = 5
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 100
+; FirstLine = 59
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

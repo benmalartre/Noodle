@@ -183,7 +183,7 @@ Module AudioEffectNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AudioEffect",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]------------------------------------------------------------------
-    Protected *Me.AudioEffectNode_t = AllocateMemory(SizeOf(AudioEffectNode_t))
+    Protected *Me.AudioEffectNode_t = AllocateStructure(AudioEffectNode_t)
     
     ; ---[ Init Node]------------------------------------------------------------------------------
     Node::INI(AudioEffectNode,*tree,type,x,y,w,h,c)
@@ -200,8 +200,8 @@ EndModule
 ; =================================================================================================
 ;  EOF
 ; =================================================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 125
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 185
+; FirstLine = 157
 ; Folding = --
 ; EnableXP

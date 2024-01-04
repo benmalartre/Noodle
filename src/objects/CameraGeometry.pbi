@@ -38,14 +38,15 @@ Module CameraGeometry
   ;---------------------------------------------
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.CameraGeometry_t = AllocateMemory(SizeOf(CameraGeometry_t))
+    Protected *Me.CameraGeometry_t = AllocateStructure(CameraGeometry_t)
     Object::INI(CameraGeometry)
     ProcedureReturn *Me
   EndProcedure
 
   Class::DEF( CameraGeometry )
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 45
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 41
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

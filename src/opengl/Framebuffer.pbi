@@ -590,7 +590,7 @@ Procedure Delete(*buffer.FrameBuffer_t)
      
      ClearStructure(*buffer,Framebuffer_t)
      
-    FreeMemory(*buffer)
+    FreeStructure(*buffer)
   EndProcedure
 
 
@@ -600,8 +600,7 @@ Procedure Delete(*buffer.FrameBuffer_t)
   ; Constructor
   ;-----------------------------------------
   Procedure.i New(name.s,width.i,height.i)
-    Protected *buffer.FrameBuffer_t = AllocateMemory(SizeOf(FrameBuffer_t))
-    InitializeStructure(*buffer,FrameBuffer_t)
+    Protected *buffer.FrameBuffer_t = AllocateStructure(FrameBuffer_t)
     *buffer\frame_id = 0
     *buffer\depth_id = 0
     *buffer\stencil_id = 0
@@ -615,9 +614,9 @@ Procedure Delete(*buffer.FrameBuffer_t)
 
   
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 53
-; FirstLine = 15
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 592
+; FirstLine = 571
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -72,9 +72,8 @@ Module Sequencer
   ; CONSTRUCTOR
   ;--------------------------------------------------------------------------------------
   Procedure New(tempo.i, rythm.i, blocks.i=4)
-    Define *Me.Sequencer_t = AllocateMemory(SizeOf(Sequencer_t))
+    Define *Me.Sequencer_t = AllocateStructure(Sequencer_t)
     Define rate.i =  1000 / #NUM_SAMPLES_PER_BEAT
-    InitializeStructure(*Me, Sequencer_t)
     *Me\timer = Time::CreateTimer(*Me, @OnTimer(), rate)
     *Me\tempo = tempo
     *Me\rythm = rythm
@@ -92,8 +91,7 @@ Module Sequencer
       DeleteTrack(*Me, i)
     Next
     
-    ClearStructure(*Me, Sequencer_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
     
   EndProcedure
   
@@ -146,8 +144,7 @@ Module Sequencer
   ;--------------------------------------------------------------------------------------
   Procedure AddTrack(*Me.Sequencer_t)
     Define size = ArraySize(*Me\tracks())
-    Define *track.Track_t = AllocateMemory(SizeOf(Track_t))
-    InitializeStructure(*track, Track_t)
+    Define *track.Track_t = AllocateStructure(Track_t)
     SetupTrack(*track, *Me\blocks, *Me\tempo, *Me\rythm)
     *track\mutex = CreateMutex()
     *track\volume = 1.0
@@ -170,6 +167,7 @@ Module Sequencer
         Swap *Me\tracks(i-1), *Me\tracks(i)
       Next
       ReDim *Me\tracks(size - 1)
+      FreeStructure(*track)
     EndIf 
   EndProcedure
   
@@ -277,8 +275,8 @@ Module Sequencer
     DeleteElement(*track\notes())
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 126
-; FirstLine = 109
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 169
+; FirstLine = 143
 ; Folding = ---
 ; EnableXP

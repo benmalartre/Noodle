@@ -342,8 +342,8 @@ Module LayerCascadedShadowMap
   ;------------------------------------
   ; Destructor
   ;------------------------------------
-  Procedure Delete(*layer.LayerCascadedShadowMap_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerCascadedShadowMap_t)
+    Object::TERM(LayerCascadedShadowMap)
   EndProcedure
   
   
@@ -351,7 +351,7 @@ Module LayerCascadedShadowMap
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t, *camera.Camera::Camera_t, *light.Light::Light_t)
-    Protected *Me.LayerCascadedShadowMap_t = AllocateMemory(SizeOf(LayerCascadedShadowMap_t))
+    Protected *Me.LayerCascadedShadowMap_t = AllocateStructure(LayerCascadedShadowMap_t)
     Object::INI( LayerCascadedShadowMap )
     Color::Set(*Me\color,0,0,0,1)
 
@@ -375,8 +375,8 @@ Module LayerCascadedShadowMap
   
   Class::DEF(LayerCascadedShadowMap)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 282
-; FirstLine = 278
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 344
+; FirstLine = 332
 ; Folding = ---
 ; EnableXP

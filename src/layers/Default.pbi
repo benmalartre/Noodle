@@ -239,15 +239,15 @@ EndProcedure
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*layer.LayerDefault_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerDefault_t)
+    Object::TERM(LayerDefault)
   EndProcedure
   
   ;---------------------------------------------------
   ; COnstructor
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
-    Protected *Me.LayerDefault_t = AllocateMemory(SizeOf(LayerDefault_t))
+    Protected *Me.LayerDefault_t = AllocateStructure(LayerDefault_t)
     Object::INI(LayerDefault)
     
     *Me\name = "LayerDefault"
@@ -265,8 +265,8 @@ EndProcedure
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 78
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 241
+; FirstLine = 222
 ; Folding = --
 ; EnableXP

@@ -115,15 +115,15 @@ EndProcedure
 ;------------------------------------------------------------------
 ; Destuctor
 ;------------------------------------------------------------------
-Procedure Delete(*layer.LayerSelection_t)
-  FreeMemory(*layer)
+Procedure Delete(*Me.LayerSelection_t)
+  Object::TERM(LayerSelection)
 EndProcedure
 
 ;---------------------------------------------------
 ; Create
 ;---------------------------------------------------
 Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
-  Protected *Me.LayerSelection_t = AllocateMemory(SizeOf(LayerSelection_t))
+  Protected *Me.LayerSelection_t = AllocateStructure(LayerSelection_t)
   Object::INI( LayerSelection )
   Color::Set(*Me\color,0.5,1.0,0.5,1)
   *Me\context = *ctx
@@ -142,7 +142,8 @@ EndProcedure
  Class::DEF( LayerSelection )
 
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 39
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 117
+; FirstLine = 99
 ; Folding = --
 ; EnableXP

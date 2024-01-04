@@ -23,8 +23,7 @@ EndDeclareModule
 Module AnimCurve  
   ; create curve
   Procedure New()
-    Protected *crv.Curve_t = AllocateMemory(SizeOf(Curve_t))
-    InitializeStructure(*crv, Curve_t)
+    Protected *crv.Curve_t = AllocateStructure(Curve_t)
     *crv\crv = AnimX::newCurve()
     *crv\color[0] = Random(255)
     *crv\color[1] = Random(255)
@@ -35,8 +34,7 @@ Module AnimCurve
   ; destroy curve
   Procedure Delete(*crv.Curve_t)
     *crv\crv\destructor()
-    ClearStructure(*crv, Curve_t)
-    FreeMemory(*crv)
+    FreeStructure(*crv)
   EndProcedure
   
   ; test proc
@@ -100,9 +98,8 @@ Module AnimCurve
     
   EndProcedure
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 40
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 37
+; FirstLine = 21
 ; Folding = --
 ; EnableXP

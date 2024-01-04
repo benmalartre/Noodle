@@ -605,7 +605,7 @@ Module Attribute
   ; ============================================================================
   Procedure New(*parent,name.s,datatype.i,datastructure.i,datacontext.i,*ptr,atomic.b,read_only.b,constant.b,writable.b=#True, isarray.b=#False)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Attribute_t = AllocateMemory(SizeOf(Attribute_t))
+    Protected *Me.Attribute_t = AllocateStructure(Attribute_t)
     Object::INI(Attribute)
     
     ; ---[ Init Members ]-------------------------------------------------------
@@ -627,8 +627,8 @@ Module Attribute
   
   Class::DEF( Attribute )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 90
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 607
+; FirstLine = 584
 ; Folding = ---
 ; EnableXP

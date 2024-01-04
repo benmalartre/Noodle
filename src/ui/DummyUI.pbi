@@ -46,7 +46,7 @@ Module DummyUI
     Protected w = *parent\sizX
     Protected h = *parent\sizY
     
-    Protected *Me.DummyUI_t = AllocateMemory(SizeOf(DummyUI_t))
+    Protected *Me.DummyUI_t = AllocateStructure(DummyUI_t)
     Object::INI(DummyUI)
     *Me\name = name
     *Me\sizX = w
@@ -148,8 +148,8 @@ Module DummyUI
 
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 89
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 48
+; FirstLine = 44
 ; Folding = --
 ; EnableXP

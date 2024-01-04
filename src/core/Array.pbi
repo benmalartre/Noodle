@@ -1014,21 +1014,19 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure New(type.i)
     If type = #ARRAY_STR
-      Protected *arrayStr.CArrayStr = AllocateMemory(SizeOf(CArrayStr))
-      InitializeStructure(*arrayStr,CArrayStr)
+      Protected *arrayStr.CArrayStr = AllocateStructure(CArrayStr)
       *arrayStr\type = #ARRAY_STR
       *arrayStr\itemSize = #SIZE_PTR
       ProcedureReturn *arrayStr
       
     ElseIf type = #ARRAY_LOCATION
-      Protected *arrayLoc.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
+      Protected *arrayLoc.CArrayLocation = AllocateStructure(CArrayLocation)
       *arrayLoc\type = #ARRAY_LOCATION
       *arrayLoc\itemSize = #SIZE_LOCATION
       ProcedureReturn *arrayLoc
       
     Else 
-      Define *array.CArrayT = AllocateMemory(SizeOf(CArrayT))
-      InitializeStructure(*array, CArrayT)
+      Define *array.CArrayT = AllocateStructure(CArrayT)
       Select type
         Case #ARRAY_BOOL
           *array\type = #ARRAY_BOOL
@@ -1099,33 +1097,7 @@ Module CArray
     
     
   EndProcedure
-  
-  
-  ;----------------------------------------------------------------
-  ; CArrayStr
-  ;----------------------------------------------------------------
-  Procedure newCArrayStr()
-    Protected *array.CArrayStr = AllocateMemory(SizeOf(CArrayStr))
-    InitializeStructure(*array,CArrayStr)
-    *array\type = #ARRAY_STR
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_PTR
-    ProcedureReturn *array
-  EndProcedure
-  
-  ;----------------------------------------------------------------
-  ; CArrayLocation
-  ;----------------------------------------------------------------
-  Procedure newCArrayLocation(*geom, *t)
-    Protected *array.CArrayLocation = AllocateMemory(SizeOf(CArrayLocation))
-    *array\type = #ARRAY_LOCATION
-    *array\itemCount = 0
-    *array\itemSize = #SIZE_LOCATION
-    *array\geometry = *geom
-    *array\transform = *t
-    ProcedureReturn *array
-  EndProcedure
-  
+ 
   ;----------------------------------------------------------------
   ; Destructor
   ;----------------------------------------------------------------
@@ -1133,17 +1105,14 @@ Module CArray
     If *array\data 
       Memory::FreeAlignedMemory(*array\data, *array\itemSize * *array\itemCount)
     EndIf
-    If *Array\type = #ARRAY_STR
-      ClearStructure(*array,CArrayStr)
-    EndIf
-    FreeMemory(*array)
+    FreeStructure(*array)
   EndProcedure
   
 EndModule
 
   
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 135
-; FirstLine = 130
+; CursorPosition = 1099
+; FirstLine = 1068
 ; Folding = ----------
 ; EnableXP

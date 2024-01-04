@@ -133,8 +133,7 @@ Module Tree
     ForEach *Me\root\inputs()
       If *Me\root\inputs()\connected
         *current = *Me\root\inputs()\source\node
-        *branch = AllocateMemory(SizeOf(Branch_t))
-        InitializeStructure(*branch, Branch_t)
+        *branch = AllocateStructure(Branch_t)
         
         AddElement(*Me\all_branches())
         *Me\all_branches() = *branch
@@ -558,7 +557,7 @@ Module Tree
   ; ---[ Heap & Stack]----------------------------------------------------------
   Procedure.i New(*obj.Object3D::Object3D_t,name.s="Tree",context.i=Graph::#Graph_Context_Operator)
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.Tree_t = AllocateMemory( SizeOf(Tree_t) )
+    Protected *Me.Tree_t = AllocateStructure(Tree_t)
     
     ; ---[ Initialize Structures ]---------------------------------------------
     Object::INI(Tree)
@@ -599,9 +598,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 432
-; FirstLine = 428
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 559
+; FirstLine = 529
 ; Folding = -----
 ; EnableThread
 ; EnableXP

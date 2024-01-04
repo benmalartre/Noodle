@@ -35,9 +35,7 @@ Module Polygon
     CArray::Delete(*Me\vertices)
     CArray::Delete(*Me\edges)
     
-    ClearStructure(*Me,Polygon_t)
-    
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -46,8 +44,7 @@ Module Polygon
   ;{
   Procedure New(*mesh.Geometry::PolymeshGeometry_t, *indices.CArray::CArrayLong, index.i)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Polygon_t = AllocateMemory(SizeOf(Polygon_t))
-    InitializeStructure(*Me,Polygon_t)
+    Protected *Me.Polygon_t = AllocateStructure(Polygon_t)
     
     ; ----[ Initialize ]--------------------------------------------------------
     *Me\id = index
@@ -163,8 +160,8 @@ Module Polygon
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 56
-; FirstLine = 49
+; CursorPosition = 37
+; FirstLine = 25
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

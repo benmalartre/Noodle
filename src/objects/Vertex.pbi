@@ -38,9 +38,7 @@ Module Vertex
     CArray::Delete(*Me\neighbors)
     CArray::Delete(*Me\triangles)
     
-    ClearStructure(*Me,Vertex_t)
-    
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -49,8 +47,7 @@ Module Vertex
   ;{
   Procedure.i New(index.i)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Vertex_t = AllocateMemory(SizeOf(Vertex_t))
-    InitializeStructure(*Me,Vertex_t)
+    Protected *Me.Vertex_t = AllocateStructure(Vertex_t)
     
     *Me\id = index
     *Me\visited = #False
@@ -194,7 +191,7 @@ Module Vertex
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 61
-; FirstLine = 43
+; CursorPosition = 40
+; FirstLine = 28
 ; Folding = ---
 ; EnableXP

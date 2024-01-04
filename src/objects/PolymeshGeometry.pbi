@@ -2332,7 +2332,7 @@ Module PolymeshGeometry
   ;{
   Procedure.i New(*parent,shape.i=Shape::#Shape_Cube)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.PolymeshGeometry_t = AllocateMemory(SizeOf(PolymeshGeometry_t))
+    Protected *Me.PolymeshGeometry_t = AllocateStructure(PolymeshGeometry_t)
     Object::INI(PolymeshGeometry)
     *Me\parent = *parent
 
@@ -2397,7 +2397,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1250
-; FirstLine = 1220
+; CursorPosition = 2334
+; FirstLine = 2318
 ; Folding = ----P5----0-
 ; EnableXP

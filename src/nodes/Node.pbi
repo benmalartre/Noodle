@@ -18,15 +18,13 @@ EndDeclareModule
 
 Module Node
   Procedure New()
-    Protected *node.Node_t = AllocateMemory(SizeOf(Node_t))
-    InitializeStructure(*node,Node_t)
+    Protected *node.Node_t = AllocateStructure(Node_t)
     
     ProcedureReturn *node
   EndProcedure
   
   Procedure Delete(*node.Node_t)
-    ClearStructure(*node,Node_t)
-    FreeMemory(*node)
+    FreeStructure(*node)
   EndProcedure
   
   Procedure Update(*node.Node_t)
@@ -34,8 +32,7 @@ Module Node
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.42 LTS (MacOS X - x64)
-; CursorPosition = 15
-; FirstLine = 1
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 27
 ; Folding = -
 ; EnableXP

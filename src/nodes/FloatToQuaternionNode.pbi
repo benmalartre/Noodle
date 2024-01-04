@@ -107,7 +107,7 @@ Module FloatToQuaternionNode
   EndProcedure
   
   Procedure Delete(*node.FloatToQuaternionNode_t)
-    FreeMemory(*node)
+    Node::DEL(FloatToQuaternionNode)
   EndProcedure
   
   
@@ -118,7 +118,7 @@ Module FloatToQuaternionNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Quaternion",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.FloatToQuaternionNode_t = AllocateMemory(SizeOf(FloatToQuaternionNode_t))
+    Protected *Me.FloatToQuaternionNode_t = AllocateStructure(FloatToQuaternionNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(FloatToQuaternionNode,*tree,type,x,y,w,h,c)
@@ -136,9 +136,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 64
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 109
+; FirstLine = 93
 ; Folding = --
 ; EnableXP

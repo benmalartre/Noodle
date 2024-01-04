@@ -60,8 +60,7 @@ Module Bone
   ; Constructor
   ;--------------------------------------------------------------
   Procedure New(name.s,ID.i,*pos.v3f32,*ori.q4f32,*scl.v3f32,*parent.Bone::Bone_t = #Null)
-    Protected *bone.Bone_t = AllocateMemory(SizeOf(Bone_t))
-    InitializeStructure(*bone,Bone_t)
+    Protected *bone.Bone_t = AllocateStructure(Bone_t)
     *bone\name = name
     *bone\ID = ID
     *bone\parent = parent
@@ -94,8 +93,7 @@ Module Bone
         EndIf
       Next
     EndIf
-    ClearStructure(*bone,Bone_t)
-    FreeMemory(*bone)
+    FreeStructure(*bone)
     
   EndProcedure
   
@@ -130,8 +128,7 @@ EndModule
 ;================================================================
 Module Skeleton
   Procedure New()
-    Protected *Me.Skeleton_t = AllocateMemory(SizeOf(Skeleton_t))
-    InitializeStructure(*Me,Skeleton_t)
+    Protected *Me.Skeleton_t = AllocateStructure(Skeleton_t)
     *me\cloud = InstanceCloud::New("Skeleton",Shape::#SHAPE_CUBE,0)
     
     ProcedureReturn *Me
@@ -139,8 +136,7 @@ Module Skeleton
   
   Procedure Delete(*Me.Skeleton_t)
     If *Me\cloud:InstanceCloud::Delete(*Me\cloud):EndIf
-    ClearStructure(*Me,Skeleton_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -232,8 +228,8 @@ Module Skeleton
   
   
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 180
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 139
+; FirstLine = 185
 ; Folding = ---
 ; EnableXP

@@ -44,7 +44,7 @@ Module Sheet
   ;   CONSTRUCTOR
   ; -----------------------------------------------------------------
   Procedure New(width.i,height.i,zindex=0, name.s="Sheet")
-    Protected *Me.Sheet_t = AllocateMemory(SizeOf(Sheet_t))
+    Protected *Me.Sheet_t = AllocateStructure(Sheet_t)
     Object::INI(Sheet)
     *Me\width = width
     *Me\height = height
@@ -152,10 +152,9 @@ Module Sheet
   
  
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 37
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 46
+; FirstLine = 42
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

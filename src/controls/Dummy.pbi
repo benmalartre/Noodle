@@ -228,8 +228,7 @@ Module ControlDummy
   ; ============================================================================
   ; ---[ Stack ]----------------------------------------------------------------
   Procedure.i Delete(*Me.ControlDummy_t)
-    
-  FreeMemory(*Me)
+    Object::TERM(ControlDummy)
   EndProcedure
   
   
@@ -240,7 +239,7 @@ Module ControlDummy
   Procedure.i New(*object.Object::Object_t,windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlDummy_t = AllocateMemory( SizeOf(ControlDummy_t) )
+    Protected *Me.ControlDummy_t = AllocateStructure(ControlDummy_t)
     
     Object::INI(ControlDummy)
     
@@ -259,8 +258,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 60
-; FirstLine = 56
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 230
+; FirstLine = 215
 ; Folding = --
 ; EnableXP

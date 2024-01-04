@@ -22,7 +22,7 @@ Module GLContext
   ;---------------------------------------------
   ;  Constructor
   ;---------------------------------------------
-  Procedure.i New(width.i, height.i, *context=#Null)
+  Procedure.i New(width.i, height.i, *context.GLContext_t=#Null)
     Protected *Me.GLContext_t = AllocateStructure(GLContext_t)
     
     *Me\useGLFW = #USE_GLFW
@@ -98,9 +98,11 @@ Module GLContext
           CocoaMessage( 0, pfo, "initWithAttributes:", @pfa )
           ; Allocate OpenGL Context
           Define ctx.NSOpenGLContext = CocoaMessage( 0, 0, "NSOpenGLContext alloc" )
+          
+          Debug "Create macos GL context" +Str(*context)
           ; Create OpenGL Context
           If *context
-            CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", *contetx\ID )
+            CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", *context\ID )
           Else
             CocoaMessage( 0, ctx, "initWithFormat:", pfo, "shareContext:", #Null )
           EndIf
@@ -296,9 +298,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 274
-; FirstLine = 235
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 114
+; FirstLine = 77
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

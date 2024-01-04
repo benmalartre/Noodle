@@ -34,10 +34,7 @@ Module Model
   UseModule OpenGLExt
   
   Procedure New(name.s)
-    Protected *Me.Model_t = AllocateMemory(SizeOf(Model_t))
-    ; ---[ Initialize Structure ]------------------------------------------------
-    InitializeStructure(*Me,Model_t)
-
+    Protected *Me.Model_t = AllocateStructure(Model_t)
     Object::INI(Model)
     
     ; ---[ Init Members ]-------------------------------------------------------
@@ -55,8 +52,7 @@ Module Model
   EndProcedure
   
   Procedure Delete(*Me.Model_t)
-    ClearStructure(*Me, Model_t)
-    FreeMemory(*Me)
+    Object::TERM(Model)
   EndProcedure
   
   Procedure Setup(*model.Model_t, *ctxt.GLContext::GLContext_t)
@@ -110,8 +106,8 @@ Module Model
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( Model )
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 58
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 54
+; FirstLine = 12
 ; Folding = --
 ; EnableXP

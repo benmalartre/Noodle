@@ -329,7 +329,7 @@ Module SetDataNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="SetData",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Define *Me.SetDataNode_t = AllocateMemory(SizeOf(SetDataNode_t))
+    Define *Me.SetDataNode_t = AllocateStructure(SetDataNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(SetDataNode,*tree,type,x,y,w,h,c)
@@ -348,8 +348,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 84
-; FirstLine = 80
+; CursorPosition = 331
+; FirstLine = 304
 ; Folding = --
 ; EnableThread
 ; EnableXP

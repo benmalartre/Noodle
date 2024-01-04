@@ -1868,7 +1868,7 @@ EndProcedure
   ; ============================================================================
   Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
     ; Allocate Object Memory
-    Protected *Me.ControlProperty_t = AllocateMemory( SizeOf(ControlProperty_t) )
+    Protected *Me.ControlProperty_t = AllocateStructure(ControlProperty_t)
     
     Object::INI(ControlProperty)
     
@@ -1914,8 +1914,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 1485
-; FirstLine = 1461
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1870
+; FirstLine = 1866
 ; Folding = ----------
 ; EnableXP

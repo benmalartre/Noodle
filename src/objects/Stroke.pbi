@@ -38,8 +38,7 @@ Module Stroke
   ; Constructor
   ;---------------------------------------------------------
   Procedure New()
-    Protected *stroke.Geometry::Stroke_t = AllocateMemory(SizeOf(Geometry::Stroke_t))
-    InitializeStructure(*stroke, Geometry::Stroke_t)
+    Protected *stroke.Geometry::Stroke_t = AllocateStructure(Geometry::Stroke_t)
     *stroke\datas = CArray::New(CArray::#ARRAY_V4F32)
     ProcedureReturn *stroke
   EndProcedure
@@ -49,8 +48,7 @@ Module Stroke
   ;---------------------------------------------------------
   Procedure Delete(*stroke.Geometry::Stroke_t)
     CArray::Delete(*stroke\datas)
-    ClearStructure(*stroke, Geometry::Stroke_t)
-    FreeMemory(*stroke)
+    FreeStructure(*stroke)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -306,8 +304,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 159
-; FirstLine = 154
+; CursorPosition = 51
+; FirstLine = 36
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

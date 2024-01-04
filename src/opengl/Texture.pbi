@@ -42,7 +42,7 @@ Module Texture
   ; Constructors
   ;----------------------------------------------------
   Procedure New(width.i,height.i,depth.i=24)
-    Protected *Me.Texture_t = AllocateMemory(SizeOf(Texture_t))
+    Protected *Me.Texture_t = AllocateStructure(Texture_t)
     *Me\src = ""
     *Me\width = width
     *Me\height = height
@@ -219,9 +219,9 @@ Module Texture
   
   
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 49
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 192
+; FirstLine = 176
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

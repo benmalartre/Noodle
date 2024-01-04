@@ -320,7 +320,7 @@ Module ControlLabel
   Procedure.i New( *parent.Control::Control_t  ,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 21 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlLabel_t = AllocateMemory( SizeOf(ControlLabel_t) )
+    Protected *Me.ControlLabel_t = AllocateStructure(ControlLabel_t)
     
     Object::INI(ControlLabel)
     
@@ -356,8 +356,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 36
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 322
+; FirstLine = 300
 ; Folding = --
 ; EnableXP

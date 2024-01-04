@@ -25,8 +25,7 @@ Module Pose
   ;--------------------------------------------
   Procedure New(*Ts.CArray::CArrayTRF32)
     Protected i
-    Protected *Me.Pose_t = AllocateMemory(SizeOf(Pose_t))
-    InitializeStructure(*Me,Pose_t)
+    Protected *Me.Pose_t = AllocateStructure(Pose_t)
  
     Protected *t.trf32
     For i=0 To CArray::GetCount(*Ts)-1
@@ -46,13 +45,12 @@ Module Pose
   ; Destructor
   ;--------------------------------------------
   Procedure Delete(*pose.Pose_t)
-    ClearStructure(*pose,Pose_t)
-    FreeMemory(*pose)
+    FreeStructure(*pose)
   EndProcedure
 EndModule
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 34
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 47
+; FirstLine = 5
 ; Folding = -
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

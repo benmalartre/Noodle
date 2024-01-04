@@ -118,7 +118,7 @@ Module PerlinNode
   ; ============================================================================
   Procedure Delete(*node.PerlinNode_t)
     PerlinNoise::Delete(*node\noise)
-    FreeMemory(*node)
+    Node::DEL(PerlinNode)
   EndProcedure
   
   
@@ -127,7 +127,7 @@ Module PerlinNode
   ; ============================================================================
   Procedure.i New(*tree.Tree::Tree_t,type.s="PerlinNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
-    Protected *Me.PerlinNode_t = AllocateMemory(SizeOf(PerlinNode_t))
+    Protected *Me.PerlinNode_t = AllocateStructure(PerlinNode_t)
     Node::INI(PerlinNode,*tree,type,x,y,w,h,c)
     *Me\noise = PerlinNoise::New()
     PerlinNoise::Init(*Me\noise)
@@ -142,8 +142,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 82
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 120
+; FirstLine = 99
 ; Folding = --
 ; EnableXP

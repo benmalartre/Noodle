@@ -39,13 +39,6 @@ EndDeclareModule
 
 Module ControlSlider
   
-  ; DESTRUCTOR
-  ;--------------------------------------------------------------------------
-  Procedure Delete(*Me.ControlSlider_t)
-    ClearStructure(*Me,ControlSlider_t)
-    FreeMemory(*Me)
-  EndProcedure
-  
   Procedure.f GetPercentageFromValue(*Me.ControlSlider_t)
     Define perc.f = (*Me\value - *Me\min_value) / (*Me\max_value - *Me\min_value)
     ProcedureReturn perc
@@ -145,7 +138,7 @@ Module ControlSlider
   Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlSlider_t = AllocateMemory( SizeOf(ControlSlider_t) )
+    Protected *Me.ControlSlider_t = AllocateStructure(ControlSlider_t)
     
     Object::INI(ControlSlider)
     
@@ -172,9 +165,6 @@ Module ControlSlider
       *Me\value      =  value
     EndIf
     
-    ; ---[ Init Array ]---------------------------------------------------------
-    InitializeStructure( *Me, ControlSlider_t )
-    
     ; ---[ Signals ]------------------------------------------------------------
     *Me\on_change = Object::NewSignal(*Me, "OnChange")
     
@@ -182,15 +172,20 @@ Module ControlSlider
     ProcedureReturn( *Me )
     
   EndProcedure
+  
+  ; DESTRUCTOR
+  ;--------------------------------------------------------------------------
+  Procedure Delete(*Me.ControlSlider_t)
+    Object::TERM(ControlSlider)
+  EndProcedure
 
   
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlSlider )
 EndModule
-
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 130
-; FirstLine = 118
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 179
+; FirstLine = 135
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

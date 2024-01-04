@@ -117,7 +117,7 @@ Module TrigonometryNode
   EndProcedure
   
   Procedure Delete(*node.TrigonometryNode_t)
-    FreeMemory(*node)
+    Node::DEL(TrigonometryNode)
   EndProcedure
   
   
@@ -129,7 +129,7 @@ Module TrigonometryNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="TrigonometryNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.TrigonometryNode_t = AllocateMemory(SizeOf(TrigonometryNode_t))
+    Protected *Me.TrigonometryNode_t = AllocateStructure(TrigonometryNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(TrigonometryNode,*tree,type,x,y,w,h,c)
@@ -146,9 +146,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 75
-; FirstLine = 58
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 119
+; FirstLine = 103
 ; Folding = --
 ; EnableXP

@@ -795,7 +795,52 @@ EndProcedure
     *Me\row = #False
     
   EndProcedure
-  ; ---[ Free ]-----------------------------------------------------------------
+
+  ; ============================================================================
+  ;  CONSTRUCTORS
+  ; ============================================================================
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+    
+    ; ---[ Allocate Object Memory ]---------------------------------------------
+    Protected *Me.ControlGroup_t = AllocateStructure(ControlGroup_t)
+  
+    
+    Object::INI(ControlGroup)
+    
+    ; ---[ Minimum Width ]------------------------------------------------------
+    If width < 50 : width = 50 : EndIf
+    
+    ; ---[ Init Members ]-------------------------------------------------------
+    *Me\type       = Control::#GROUP
+    *Me\name       = name
+    *Me\parent     = *parent
+    If Not *Me\parent Or Not IsGadget(*Me\parent\gadgetID)
+      *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
+    Else
+      *Me\gadgetID = *Me\parent\gadgetID
+    EndIf
+    
+    *Me\imageID    = CreateImage( #PB_Any, width, height )
+    *Me\posX       = x
+    *Me\posY       = y
+    *Me\sizX       = width
+    *Me\sizY       = height
+    *Me\label      = label
+    *Me\visible    = #True
+    *Me\enable     = #True
+    *Me\options    = options
+    *Me\down       = #False
+    *Me\append     = #False
+    *Me\chilcount  = 0
+    *Me\overchild  = #Null
+    *Me\focuschild = #Null
+    
+    ; ---[ Return Initialized Object ]------------------------------------------
+    ProcedureReturn( *Me )
+    
+  EndProcedure
+  
+    ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlGroup_t )
     ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
@@ -845,54 +890,7 @@ EndProcedure
     FreeImage( *Me\imageID )
     
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
-    
-  EndProcedure
-
-  ; ============================================================================
-  ;  CONSTRUCTORS
-  ; ============================================================================
-  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
-    
-    ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlGroup_t = AllocateMemory( SizeOf(ControlGroup_t) )
-  
-    
-    Object::INI(ControlGroup)
-    
-    ; ---[ Minimum Width ]------------------------------------------------------
-    If width < 50 : width = 50 : EndIf
-    
-    ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = Control::#GROUP
-    *Me\name       = name
-    *Me\parent     = *parent
-    If Not *Me\parent Or Not IsGadget(*Me\parent\gadgetID)
-      *Me\gadgetID   = CanvasGadget( #PB_Any, x, y, width, height, #PB_Canvas_Keyboard )
-    Else
-      *Me\gadgetID = *Me\parent\gadgetID
-    EndIf
-    
-    *Me\imageID    = CreateImage( #PB_Any, width, height )
-    *Me\posX       = x
-    *Me\posY       = y
-    *Me\sizX       = width
-    *Me\sizY       = height
-    *Me\label      = label
-    *Me\visible    = #True
-    *Me\enable     = #True
-    *Me\options    = options
-    *Me\down       = #False
-    *Me\append     = #False
-    *Me\chilcount  = 0
-    *Me\overchild  = #Null
-    *Me\focuschild = #Null
-    
-    ; ---[ Init Structure ]-----------------------------------------------------
-    InitializeStructure( *Me, ControlGroup_t )
-    
-    ; ---[ Return Initialized Object ]------------------------------------------
-    ProcedureReturn( *Me )
+    Object::TERM( ControlGroup )
     
   EndProcedure
   
@@ -904,8 +902,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 508
-; FirstLine = 470
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 892
+; FirstLine = 855
 ; Folding = ----
 ; EnableXP

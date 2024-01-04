@@ -77,7 +77,7 @@ Module ExecuteNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Execute",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.ExecuteNode_t = AllocateMemory(SizeOf(ExecuteNode_t))
+    Protected *Me.ExecuteNode_t = AllocateStructure(ExecuteNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(ExecuteNode,*tree,type,x,y,w,h,c)
@@ -96,11 +96,10 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.31 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 23
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 79
+; FirstLine = 53
 ; Folding = --
-; EnableUnicode
 ; EnableThread
 ; EnableXP
+; EnableUnicode

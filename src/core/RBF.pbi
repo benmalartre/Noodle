@@ -82,8 +82,7 @@ EndDeclareModule
 Module RBF
   ; constructor
   Procedure New()
-    Protected *rbf.RBF_t = AllocateMemory(SizeOf(RBF_t))
-    InitializeStructure(*rbf, RBF_t)
+    Protected *rbf.RBF_t = AllocateStructure(RBF_t)
     *rbf\epsilon = -1
     *rbf\type = #KERNEL_MULTIQUADRIC
     *rbf\kernel = @MultiQuadricKernel()
@@ -95,8 +94,7 @@ Module RBF
   Procedure Delete(*rbf.RBF_t)
     If *rbf
       If *rbf\A : Matrix::Delete(*rbf\A) : EndIf
-      ClearStructure(*rbf, RBF_t)
-      FreeMemory(*rbf)
+      FreeStructure(*rbf)
     EndIf
   EndProcedure
   
@@ -283,9 +281,8 @@ Module RBF
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 223
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 97
+; FirstLine = 80
 ; Folding = ----
 ; EnableXP

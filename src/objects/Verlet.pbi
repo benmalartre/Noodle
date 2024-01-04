@@ -53,7 +53,7 @@ Module Verlet
   ;   Add Spring
   ; ------------------------------------------------------------------------
   Procedure AddSpring(*Me.Verlet_t, a.i, b.i, ks.f, kd.f, type.i)
-    Define *spring.Spring_t = AllocateMemory(SizeOf(Spring_t))
+    Define *spring.Spring_t = AllocateStructure(Spring_t)
   	
   	*spring\p1=a
   	*spring\p2=b
@@ -333,7 +333,7 @@ Module Verlet
   ;   CONSTRUCTOR
   ; ------------------------------------------------------------------------
   Procedure New(*geom.Geometry::Geometry_t, mass.f)
-    Define *Me.Verlet_t = AllocateMemory(SizeOf(Verlet_t))
+    Define *Me.Verlet_t = AllocateStructure(Verlet_t)
 
   	Vector3::Set(*Me\gravity, 0,-0.00981,0)
     *Me\mass = mass
@@ -361,7 +361,7 @@ Module Verlet
     CArray::Delete(*Me\F)
     CArray::DeleteReferences(*Me\springs, Verlet::Spring_t, 0)
     CArray::Delete(*Me\springs)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
 
   
@@ -449,9 +449,8 @@ Module Verlet
   EndProcedure
   
 EndModule
-
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 343
-; FirstLine = 336
+; CursorPosition = 363
+; FirstLine = 360
 ; Folding = ---
 ; EnableXP

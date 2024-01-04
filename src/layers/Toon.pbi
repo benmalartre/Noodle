@@ -132,8 +132,8 @@ Module LayerToon
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*layer.LayerToon_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerToon_t)
+    Object::TERM(LayerToon)
   EndProcedure
   
  
@@ -142,8 +142,7 @@ Module LayerToon
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*gbuffer.Framebuffer::Framebuffer_t,*pov.Object3D::Object3D_t)
-    Protected *Me.LayerToon_t = AllocateMemory(SizeOf(LayerToon_t))
-    InitializeStructure(*Me,LayerToon_t)
+    Protected *Me.LayerToon_t = AllocateStructure(LayerToon_t)
     Object::INI(LayerToon)
     
     *Me\name = "LayerToon"
@@ -168,7 +167,7 @@ Module LayerToon
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 151
-; FirstLine = 124
+; CursorPosition = 134
+; FirstLine = 123
 ; Folding = --
 ; EnableXP

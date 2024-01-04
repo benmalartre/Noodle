@@ -132,7 +132,7 @@ Module AudioGeneratorNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AudioGenerator",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AudioGeneratorNode_t = AllocateMemory(SizeOf(AudioGeneratorNode_t))
+    Protected *Me.AudioGeneratorNode_t = AllocateStructure(AudioGeneratorNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AudioGeneratorNode,*tree,type,x,y,w,h,c)
@@ -149,8 +149,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 64
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 134
+; FirstLine = 106
 ; Folding = --
 ; EnableXP

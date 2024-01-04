@@ -93,7 +93,7 @@ Module BooleanNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Boolean",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.BooleanNode_t = AllocateMemory(SizeOf(BooleanNode_t))
+    Protected *Me.BooleanNode_t = AllocateStructure(BooleanNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(BooleanNode,*tree,type,x,y,w,h,c)
@@ -110,10 +110,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 65
-; FirstLine = 53
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 95
+; FirstLine = 67
 ; Folding = --
 ; EnableThread
 ; EnableXP

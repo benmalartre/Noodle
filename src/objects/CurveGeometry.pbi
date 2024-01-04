@@ -659,7 +659,7 @@ Module CurveGeometry
   ;---------------------------------------------
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.CurveGeometry_t = AllocateMemory(SizeOf(CurveGeometry_t))
+    Protected *Me.CurveGeometry_t = AllocateStructure(CurveGeometry_t)
     Object::INI(CurveGeometry)
     *Me\parent = *parent
     *Me\a_positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -682,7 +682,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 644
-; FirstLine = 636
+; CursorPosition = 642
+; FirstLine = 619
 ; Folding = ------
 ; EnableXP

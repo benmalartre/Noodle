@@ -94,7 +94,7 @@ Module FloatNode
   Procedure New(*tree.Tree::Tree_t,type.s="Float",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.FloatNode_t = AllocateMemory(SizeOf(FloatNode_t))
+    Protected *Me.FloatNode_t = AllocateStructure(FloatNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(FloatNode,*tree,type,x,y,w,h,c)
@@ -112,9 +112,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 54
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 96
+; FirstLine = 69
 ; Folding = --
 ; EnableThread
 ; EnableXP

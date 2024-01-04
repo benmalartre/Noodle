@@ -171,8 +171,7 @@ Module MultiplyNode
   EndProcedure
   
   Procedure Delete(*node.MultiplyNode_t)
-
-    FreeMemory(*node)
+    Node::DEL(MultiplyNode)
   EndProcedure
   
   
@@ -186,7 +185,7 @@ Module MultiplyNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="MultiplyNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.MultiplyNode_t = AllocateMemory(SizeOf(MultiplyNode_t))
+    Protected *Me.MultiplyNode_t = AllocateStructure(MultiplyNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(MultiplyNode,*tree,type,x,y,w,h,c)
@@ -203,8 +202,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 73
-; FirstLine = 64
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 173
+; FirstLine = 159
 ; Folding = --
 ; EnableXP

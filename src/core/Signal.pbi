@@ -33,7 +33,7 @@ DeclareModule Signal
   Macro CONNECTCALLBACK(_signal,_callback,_arg1=,_arg2=,_arg3=,_arg4=,_arg5=,_arg6=,_arg7=,_arg8=)
     Define *_slot#_callback.Callback::Callback_t = Signal::AddSlot(_signal, _callback)
     *_slot#_callback\callback = @_callback#CALLBACK()
-    Define *_datas#_callback._callback#DATAS_t = AllocateMemory(SizeOf(_callback#DATAS_t ))
+    Define *_datas#_callback._callback#DATAS_t = AllocateStructure(_callback#DATAS_t )
     
     CompilerIf Globals::TOSTRING(_arg8) <> Globals::#EMPTYSTRING
       Arguments::PASS(*_datas#_callback\__arg__0, _arg1)
@@ -98,7 +98,7 @@ EndDeclareModule
 ; ======================================================================
 Module Signal
   Procedure New(name.s)
-    Protected *signal.Signal_t = AllocateMemory(SizeOf(Signal_t))
+    Protected *signal.Signal_t = AllocateStructure(Signal_t)
     InitializeStructure(*signal, Signal_t)
     *signal\name = name
     ProcedureReturn *signal
@@ -110,8 +110,7 @@ Module Signal
       Callback::Delete(*callback)
     Next
     
-    ClearStructure(*signal, Signal_t)
-    FreeMemory(*signal)
+    FreeStructure(*signal)
   EndProcedure
   
   Procedure Trigger(*signal.Signal_t, type.i=#SIGNAL_TYPE_PING)
@@ -144,8 +143,8 @@ Module Signal
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 139
-; FirstLine = 80
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 122
+; FirstLine = 100
 ; Folding = --
 ; EnableXP

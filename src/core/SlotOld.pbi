@@ -136,8 +136,7 @@ Module Slot
     FreeMutex( *Me\mux )
     
     ; ---[ Clear Structure ]----------------------------------------------------
-    ClearStructure(*Me,Slot_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
     
   EndProcedure
   
@@ -149,8 +148,7 @@ Module Slot
   Procedure.i New( *sender )
     
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Slot_t = AllocateMemory(SizeOf(Slot_t))
-    InitializeStructure( *Me, Slot_t )
+    Protected *Me.Slot_t = AllocateStructure(Slot_t)
     
     ; ---[ Init Members ]-------------------------------------------------------
     Signal::Init( @*Me\sig, *sender )
@@ -162,8 +160,8 @@ Module Slot
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 91
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 139
+; FirstLine = 117
 ; Folding = --
 ; EnableXP

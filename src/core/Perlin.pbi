@@ -154,8 +154,7 @@ Module PerlinNoise
   ; CONSTRUCTOR
   ; ------------------------------------------------------------------------------------------
   Procedure New(seed.i=0)
-    Protected *Me.PerlinNoise_t = AllocateMemory(SizeOf(PerlinNoise_t))
-    InitializeStructure(*Me, PerlinNoise_t)
+    Protected *Me.PerlinNoise_t = AllocateStructure(PerlinNoise_t)
     *Me\seed = seed
     Init(*Me)
     ProcedureReturn *Me
@@ -165,12 +164,12 @@ Module PerlinNoise
   ; DESTRUCTOR
   ; ------------------------------------------------------------------------------------------
   Procedure Delete(*Me.PerlinNoise_t)
-    ClearStructure(*Me, PerlinNoise_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 144
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 167
+; FirstLine = 125
 ; Folding = --
 ; EnableXP

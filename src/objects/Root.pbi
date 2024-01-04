@@ -49,8 +49,7 @@ Module Root
   Procedure.i New(name.s="Root")
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.Root_t = AllocateMemory( SizeOf(Root_t) )
-    InitializeStructure(*Me,Root_t)
+    Protected *Me.Root_t = AllocateStructure(Root_t)
     
     Object::INI(Root)
     
@@ -137,8 +136,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 22
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 52
+; FirstLine = 58
 ; Folding = --
 ; EnableThread
 ; EnableXP

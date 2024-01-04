@@ -168,7 +168,7 @@ Module AudioDACNode
   Procedure.i New(*tree.Tree::Tree_t, type.s="AudioDAC", x.i=0, y.i=0, w.i=100, h.i=50, c.i=0)
     
     ; ---[ Allocate Node Memory ]-----------------------------------------------
-    Protected *Me.AudioDACNode_t = AllocateMemory(SizeOf(AudioDACNode_t))
+    Protected *Me.AudioDACNode_t = AllocateStructure(AudioDACNode_t)
     
     ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(AudioDACNode, *tree, type, x, y, w, h, c)
@@ -183,8 +183,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 28
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 170
+; FirstLine = 140
 ; Folding = ---
 ; EnableXP

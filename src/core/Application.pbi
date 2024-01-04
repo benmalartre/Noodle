@@ -323,8 +323,7 @@ UseModule OpenGLExt
   
   Procedure AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
 
-    Define *window.Window::Window_t = AllocateMemory(SizeOf(Window::Window_t))
-    InitializeStructure(*window, Window::Window_t)
+    Define *window.Window::Window_t = AllocateStructure(Window::Window_t)
     
 ;     *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
 ;     *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
@@ -792,9 +791,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 789
-; FirstLine = 736
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 326
+; FirstLine = 321
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

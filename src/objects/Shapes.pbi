@@ -26398,8 +26398,7 @@ Module Shape
   ;  New
   ; ----------------------------------------------------------------------------
   Procedure New(shape.i)
-    Protected *Me.Shape_t = AllocateMemory(SizeOf(Shape_t))
-    InitializeStructure(*Me, Shape_t)
+    Protected *Me.Shape_t = AllocateStructure(Shape_t)
     *Me\nbp = 0
     *Me\nbt = 0
     *Me\indexed = #True
@@ -26423,15 +26422,14 @@ Module Shape
     CArray::Delete(*Me\uvws)
     CArray::Delete(*Me\colors)
     CArray::Delete(*Me\indices)  
-    ClearStructure(*Me, Shape_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
 
 EndModule
 
 ;}
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 25698
-; FirstLine = 25696
+; CursorPosition = 26425
+; FirstLine = 26385
 ; Folding = ----
 ; EnableXP

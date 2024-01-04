@@ -83,8 +83,7 @@ EndDeclareModule
 ;========================================================================================
 Module Thread
   Procedure NewPool()
-    Protected *pool.ThreadPool_t = AllocateMemory(SizeOf(ThreadPool_t))
-    InitializeStructure(*pool, ThreadPool_t)
+    Protected *pool.ThreadPool_t = AllocateStructure(ThreadPool_t)
     *pool\running_semaphore = CreateSemaphore(#NUM_THREADS)
     *pool\start_semaphore = CreateSemaphore(0)
     *pool\mutex = CreateMutex()
@@ -100,8 +99,7 @@ Module Thread
     FreeSemaphore(*pool\running_semaphore)
     FreeSemaphore(*pool\start_semaphore)
     FreeMutex(*pool\mutex)
-    ClearStructure(*pool, ThreadPool_t)
-    FreeMemory(*pool)
+    FreeStructure(*pool)
   EndProcedure
   
   Procedure Worker(*pool.ThreadPool_t)
@@ -116,7 +114,7 @@ Module Thread
       UnlockMutex(*pool\mutex)
       *t\datas\job_state = #THREAD_JOB_WORKING
       *t\callback(*t\datas)                    ; threaded task
-      FreeMemory(*t)
+      FreeStructure(*t)
       SignalSemaphore(*pool\running_semaphore)
     ForEver
   EndProcedure
@@ -127,7 +125,7 @@ Module Thread
       LastElement(*pool\pending())
     EndIf
     
-    Define *thread.Thread_t = AllocateMemory(SizeOf(Thread_t))
+    Define *thread.Thread_t = AllocateStructure(Thread_t)
     *thread\datas = *datas
     *thread\callback = callback
     
@@ -189,8 +187,8 @@ EndModule
 ; window = OpenWindow(#PB_Any, 0,0,800,600,"TEST")
 ; Repeat
 ; Until WaitWindowEvent() = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 60
-; FirstLine = 50
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 116
+; FirstLine = 103
 ; Folding = --
 ; EnableXP

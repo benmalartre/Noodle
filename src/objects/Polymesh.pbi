@@ -134,7 +134,7 @@ Module Polymesh
     Stack::Delete(*Me\stack)
     PolymeshGeometry::Delete(*Me\geom)
     
-    FreeStructure(*Me)
+    Object::TERM(Polymesh)
   EndProcedure
   
   ;-----------------------------------------------------
@@ -520,8 +520,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 458
-; FirstLine = 448
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 70
+; FirstLine = 53
 ; Folding = ---
 ; EnableXP

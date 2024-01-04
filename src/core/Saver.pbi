@@ -542,7 +542,7 @@ UseModule Math
   ;  CONSTRUCTOR
   ; ==================================================================
   Procedure.i New(*obj.Object::Object_t,path.s)
-    Protected *Me.Saver_t = AllocateMemory(SizeOf(Saver_t))
+    Protected *Me.Saver_t = AllocateStructure(Saver_t)
     Object::INI(Saver)
     *Me\obj = *obj
     *Me\numSaved3DObject = 0
@@ -566,9 +566,9 @@ UseModule Math
   
   Class::DEF(Saver)
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 358
-; FirstLine = 354
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 544
+; FirstLine = 523
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -120,7 +120,7 @@ Module CubeMap
   ;----------------------------------------------------------------------------
   Procedure New(filename.s)
     If FileSize(filename)>0
-      Protected *Me.CubeMap_t = AllocateMemory(SizeOf(CubeMap_t))
+      Protected *Me.CubeMap_t = AllocateStructure(CubeMap_t)
       *Me\filename = filename
       *Me\orientation = #CUBEMAP_VERTICAL_TOP
       *Me\img = LoadImage(#PB_Any,*Me\filename)
@@ -158,7 +158,7 @@ Module CubeMap
   Procedure Delete(*Me.CubeMap_t)
     glDeleteVertexArrays(1,@*Me\vao)
     glDeleteBuffers(1,@*Me\vbo)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ;----------------------------------------------------------------------------
@@ -261,8 +261,8 @@ Module CubeMap
 
   
 EndModule
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 215
-; FirstLine = 195
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 160
+; FirstLine = 118
 ; Folding = --
 ; EnableXP

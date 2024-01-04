@@ -199,7 +199,7 @@ Module SubtractNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Subtract",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.SubtractNode_t = AllocateMemory(SizeOf(SubtractNode_t))
+    Protected *Me.SubtractNode_t = AllocateStructure(SubtractNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(SubtractNode,*tree,type,x,y,w,h,c)
@@ -217,9 +217,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 52
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 201
+; FirstLine = 174
 ; Folding = --
 ; EnableThread
 ; EnableXP

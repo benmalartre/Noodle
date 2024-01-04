@@ -72,8 +72,7 @@ EndDeclareModule
     ; Constructor
     ; ------------------------------------------------------------------------------------
     Procedure New(row.i, column.i)   
-      Protected *m.Matrix_t = AllocateMemory(SizeOf(Matrix_t))
-      InitializeStructure(*m, Matrix_t)
+      Protected *m.Matrix_t = AllocateStructure(Matrix_t)
       *m\rows = row
       *m\columns = column
       ReDim *m\matrix(row * column)
@@ -84,10 +83,7 @@ EndDeclareModule
     ; Destructor
     ; ------------------------------------------------------------------------------------
     Procedure Delete(*m.Matrix_t)
-      If *m
-        ClearStructure(*m, Matrix_t)
-        FreeMemory(*m)
-      EndIf
+      If *m : FreeStructure(*m) : EndIf
     EndProcedure
     
     ; ------------------------------------------------------------------------------------
@@ -787,7 +783,7 @@ EndDeclareModule
 ; ; TestColumn()
 ; TestInverse()
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 767
-; FirstLine = 743
+; CursorPosition = 85
+; FirstLine = 70
 ; Folding = --------
 ; EnableXP

@@ -216,7 +216,7 @@ Module BuildArrayNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="BuildArray",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.BuildArrayNode_t = AllocateMemory(SizeOf(BuildArrayNode_t))
+    Protected *Me.BuildArrayNode_t = AllocateStructure(BuildArrayNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(BuildArrayNode,*tree,type,x,y,w,h,c)
@@ -236,8 +236,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 186
-; FirstLine = 161
+; CursorPosition = 218
+; FirstLine = 192
 ; Folding = --
 ; EnableThread
 ; EnableXP

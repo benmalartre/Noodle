@@ -188,7 +188,7 @@ Module LinearInterpolateNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="LinearInterpolate",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.LinearInterpolateNode_t = AllocateMemory(SizeOf(LinearInterpolateNode_t))
+    Protected *Me.LinearInterpolateNode_t = AllocateStructure(LinearInterpolateNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(LinearInterpolateNode,*tree,type,x,y,w,h,c)
@@ -207,10 +207,9 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 97
-; FirstLine = 85
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 190
+; FirstLine = 164
 ; Folding = --
 ; EnableThread
 ; EnableXP

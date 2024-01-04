@@ -1151,7 +1151,7 @@ EndProcedure
 Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   
   ; ---[ Allocate Object Memory ]---------------------------------------------
-  Protected *Me.ControlNumber_t = AllocateMemory( SizeOf(ControlNumber_t) )
+  Protected *Me.ControlNumber_t = AllocateStructure(ControlNumber_t)
   
   Object::INI(ControlNumber)
 
@@ -1192,9 +1192,7 @@ Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0
   *Me\timer_on     = #False
   *Me\lookup_dirty = #True
   *Me\lookup_count = 0
-  
-  ; ---[ Init Array ]---------------------------------------------------------
-  InitializeStructure( *Me, ControlNumber_t )
+ 
   
   ; ---[ Signals ]------------------------------------------------------------
   *Me\on_change = Object::NewSignal(*Me, "OnChange")
@@ -1215,8 +1213,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 445
-; FirstLine = 424
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1194
+; FirstLine = 1123
 ; Folding = ----
 ; EnableXP

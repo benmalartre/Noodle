@@ -26,8 +26,7 @@ Module NodeSearch
   ; CONSTRUCTOR
   ; -----------------------------------------------------------------
   Procedure New(window.i,x.i,y.i)
-    Protected *Me.NodeSearch_t = AllocateMemory(SizeOf(NodeSearch_t))
-    InitializeStructure(*Me,NodeSearch_t)
+    Protected *Me.NodeSearch_t = AllocateStructure(NodeSearch_t)
     *Me\window = OpenWindow(#PB_Any,x,y,800,100,"Node Search",#PB_Window_BorderLess,WindowID(window))
     SetWindowColor(*Me\window,RGB(Red(UIColor::COLOR_MAIN_BG), Green(UIColor::COLOR_MAIN_BG), Blue(UIColor::COLOR_MAIN_BG)))
     *Me\input = StringGadget(#PB_Any,0,0,WindowWidth(*Me\window),30,"")
@@ -49,8 +48,7 @@ Module NodeSearch
     FreeGadget(*Me\tree)
     FreeGadget(*Me\input)
     CloseWindow(*Me\window)
-    ClearStructure(*Me,NodeSearch_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; UPDATE LIST
@@ -173,9 +171,9 @@ Module NodeSearch
   
   
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 35
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 51
+; FirstLine = 24
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

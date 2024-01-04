@@ -116,7 +116,7 @@ Module TreeNode
   ;  DESTRUCTOR
   ; ============================================================================
   Procedure Delete(*node.TreeNode_t)
-    FreeMemory(*node)
+    Node::DEL(TreeNode)
   EndProcedure
  
   
@@ -128,7 +128,7 @@ Module TreeNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Tree",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.TreeNode_t = AllocateMemory(SizeOf(TreeNode_t))
+    Protected *Me.TreeNode_t = AllocateStructure(TreeNode_t)
     ; ---[ Init Node]----------------------------------------------
     Node::INI(TreeNode,*tree,type,x,y,w,h,c)
     
@@ -145,10 +145,9 @@ Module TreeNode
   ; ============================================================================
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 63
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 118
+; FirstLine = 102
 ; Folding = ---
 ; EnableThread
 ; EnableXP

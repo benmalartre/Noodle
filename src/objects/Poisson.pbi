@@ -42,8 +42,7 @@ EndDeclareModule
 Module Poisson
   UseModule Math
   Procedure New()
-    Protected *Me.Poisson_t = AllocateMemory(SizeOf(Poisson_t))
-    InitializeStructure(*Me, Poisson_t)
+    Protected *Me.Poisson_t = AllocateStructure(Poisson_t)
     
     *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
     *Me\samples = CArray::New(CArray::#ARRAY_INT)
@@ -57,8 +56,7 @@ Module Poisson
     CArray::Delete(*Me\positions)
     CArray::Delete(*Me\distances)
     CArray::Delete(*Me\hits)
-    ClearStructure(*Me, Poisson_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ; create random point
@@ -247,7 +245,7 @@ Module Poisson
 
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 148
-; FirstLine = 144
+; CursorPosition = 59
+; FirstLine = 40
 ; Folding = ---
 ; EnableXP

@@ -207,8 +207,7 @@ EndProcedure
   
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlText_t )
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(ControlText)
   EndProcedure
 
   ; ============================================================================
@@ -217,7 +216,7 @@ EndProcedure
   Procedure.i New(*parent.Control::Control_t ,name.s, text.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlText_t = AllocateMemory( SizeOf(ControlText_t) )
+    Protected *Me.ControlText_t = AllocateStructure(ControlText_t)
     
     Object::INI(ControlText)
     
@@ -258,8 +257,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 70
-; FirstLine = 66
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 209
+; FirstLine = 206
 ; Folding = --
 ; EnableXP

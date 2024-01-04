@@ -25,8 +25,7 @@ Module Grid3D
   ; Constructor (Grid3D)
   ;-----------------------------------------------------------------------
   Procedure New(elemType.i=#GEOMETRY_3D)
-    Protected *Me.Grid3D_t = AllocateMemory(SizeOf(Grid3D_t))
-    InitializeStructure(*Me, Grid3D_t))
+    Protected *Me.Grid3D_t = AllocateStructure(Grid3D_t)
     *Me\elemType = elemType
     ProcedureReturn *Me
   EndProcedure
@@ -35,16 +34,14 @@ Module Grid3D
   ; Destructor (Grid3D)
   ;-----------------------------------------------------------------------
   Procedure Delete(*Me.Grid3D_t)
-    ClearStructure(*Me, Grid3D_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   ;-----------------------------------------------------------------------
   ; Constructor (Cell)
   ;-----------------------------------------------------------------------
   Procedure NewCell(*Me.Grid3D_t, index.i)
-    Protected *cell.Cell_t = AllocateMemory(SizeOf(Cell_t))
-    InitializeStructure(*cell, Cell_t))
+    Protected *cell.Cell_t = AllocateStructure(Cell_t)
     *Me\cells(index) = *cell
   EndProcedure
   
@@ -53,8 +50,7 @@ Module Grid3D
   ;-----------------------------------------------------------------------
   Procedure DeleteCell(*Me.Grid3D_t, index)
     If *Me\cells(index)
-      ClearStructure(*Me\cells(index), Cell_t)
-      FreeMemory(*Me\cells(index)
+      FreeStructure(*Me\cells(index))
       *Me\cells(index) = #Null
     EndIf
   EndProcedure
@@ -218,9 +214,8 @@ Module Grid3D
 ; }
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 94
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 52
+; FirstLine = 32
 ; Folding = ---
 ; EnableXP

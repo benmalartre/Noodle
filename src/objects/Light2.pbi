@@ -942,8 +942,8 @@ Module Light
   Procedure Delete( *Me.Light_t )
 
     ; ---[ Deallocate Memory ]--------------------------------------------------
-    ClearStructure(*Me,Light_t)
-    FreeMemory( *Me )
+    Object::TERM(Light)
+    
   
   EndProcedure
 
@@ -954,10 +954,8 @@ Module Light
   Procedure New( name.s,type.i=#Light_Infinite)
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.Light_t = AllocateMemory( SizeOf(Light_t) )
-    
-    ; ---[ Initialize underlying matrices ]-------------------------------------
-    InitializeStructure(*Me,Light_t)
+    Protected *Me.Light_t = AllocateStructure(Light_t)
+    Object::INI(Light)
     
     *Me\VT = ?LightVT
     *Me\classname = "LIGHT"
@@ -1056,9 +1054,8 @@ Module Light
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 1035
-; FirstLine = 998
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 944
+; FirstLine = 939
 ; Folding = -----
 ; EnableXP

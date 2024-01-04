@@ -44,8 +44,7 @@ Module Topology
   Procedure Delete(*Me.Topology_t)
     CArray::Delete(*Me\vertices)
     CArray::Delete(*Me\faces)
-    ClearStructure(*Me,Topology_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -53,8 +52,7 @@ Module Topology
   ;   CONSTRUCTOR
   ; ----------------------------------------------------------------------------
   Procedure.i New(*other.Topology_t = #Null)
-    Protected *Me.Topology_t = AllocateMemory(SizeOf(Topology_t))
-    InitializeStructure(*Me,Topology_t)
+    Protected *Me.Topology_t = AllocateStructure(Topology_t)
     *Me\vertices = CArray::New(CArray::#ARRAY_V3F32)
     *Me\faces = CArray::New(CArray::#ARRAY_LONG)
     If *other
@@ -923,7 +921,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 425
-; FirstLine = 421
+; CursorPosition = 47
+; FirstLine = 32
 ; Folding = -----
 ; EnableXP

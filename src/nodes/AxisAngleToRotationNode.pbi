@@ -100,7 +100,7 @@ Module AxisANgleToRotationNode
   EndProcedure
   
   Procedure Delete(*node.AxisANgleToRotationNode_t)
-    FreeMemory(*node)
+    Node::DEL(AxisANgleToRotationNode)
   EndProcedure
   
   
@@ -111,7 +111,7 @@ Module AxisANgleToRotationNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AxisAngleToRotation",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AxisANgleToRotationNode_t = AllocateMemory(SizeOf(AxisANgleToRotationNode_t))
+    Protected *Me.AxisANgleToRotationNode_t = AllocateStructure(AxisANgleToRotationNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AxisANgleToRotationNode,*tree,type,x,y,w,h,c)
@@ -127,9 +127,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 63
-; FirstLine = 59
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 102
+; FirstLine = 84
 ; Folding = --
 ; EnableXP

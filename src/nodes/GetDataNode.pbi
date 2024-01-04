@@ -223,7 +223,7 @@ Module GetDataNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="GetData",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]-----------------------------------------------
-    Protected *Me.GetDataNode_t = AllocateMemory(SizeOf(GetDataNode_t))
+    Protected *Me.GetDataNode_t = AllocateStructure(GetDataNode_t)
     
     ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(GetDataNode,*tree,type,x,y,w,h,c)
@@ -242,8 +242,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 118
-; FirstLine = 92
+; CursorPosition = 225
+; FirstLine = 198
 ; Folding = --
 ; EnableThread
 ; EnableXP

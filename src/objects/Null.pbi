@@ -320,11 +320,7 @@ Module Null
   ;----------------------------------------------------------------------------
   Procedure Delete( *Me.Null_t )
 
-;     *Me\bbox\InstanceDestroy()
-    
-    ; ---[ Deallocate Memory ]-------------------------------------------------
-    ClearStructure(*Me,Null_t)
-    FreeMemory( *Me )
+    Object::TERM(Null)
   
   EndProcedure
 
@@ -336,12 +332,9 @@ Module Null
   Procedure.i New( name.s = "Null")
     
     ; ---[ Allocate Object Memory ]--------------------------------------------
-    Protected *Me.Null_t = AllocateMemory( SizeOf(Null_t) )
-;     *Me\VT = ?NullVT
-;     *Me\classname = "NULL"
+    Protected *Me.Null_t = AllocateStructure(Null_t) 
     Object::INI(Null)
-    ; ---[ Initialize Structure ]----------------------------------------------
-    InitializeStructure(*Me,Null_t)
+
     
     ; ---[ Init Members ]------------------------------------------------------
     *Me\type     = Object3D::#Locator
@@ -372,8 +365,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 346
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 322
 ; FirstLine = 314
 ; Folding = ---
 ; EnableXP

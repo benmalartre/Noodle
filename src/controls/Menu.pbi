@@ -108,6 +108,10 @@ DeclareModule ControlMenu
     Data.i @Pick()
   EndDataSection
   
+  DataSection
+    ControlSubMenuVT:
+  EndDataSection
+  
   Global CLASS.Class::Class_t
   
   
@@ -124,9 +128,8 @@ Module ControlMenu
   ;  CONSTRUCTOR
   ; ============================================================================
   Procedure New(*parent.Control::Control_t,x.i,y.i,width.i,height.i)
-    Protected *Me.ControlMenu_t = AllocateMemory(SizeOf(ControlMenu_t))
-    InitializeStructure(*Me,ControlMenu_t)
-;     Object::INI(ControlMenu)
+    Protected *Me.ControlMenu_t = AllocateStructure(ControlMenu_t)
+    Object::INI(ControlMenu)
     Protected *view.View::View_t = *parent\parent
     Protected *window.Window::Window_t = *view\window
     *Me\gadgetID = *parent\gadgetID
@@ -159,9 +162,8 @@ Module ControlMenu
   ;  CONSTRUCTOR
   ; ==========================================================================
   Procedure NewSubMenu(*parent.ControlMenu_t,x.i,y.i,name.s)
-    Protected *Me.ControlSubMenu_t = AllocateMemory(SizeOf(ControlSubMenu_t))
-    InitializeStructure(*Me,ControlSubMenu_t)
-;     Object::INI(ControlSubMenu)
+    Protected *Me.ControlSubMenu_t = AllocateStructure(ControlSubMenu_t)
+    Object::INI(ControlSubMenu)
   
     *Me\selected = -1
     *Me\last = -1
@@ -199,10 +201,9 @@ Module ControlMenu
   ;  DESTRUCTOR
   ; ==========================================================================
   Procedure DeleteSubMenu(*Me.ControlSubMenu_t)
-    ;OSlot_Release(*menu\sig_onchanged)
-    Object::TERM(ControlSubMenu)
-    FreeMemory(*Me)
     FreeImage(*Me\imageID)
+    Object::TERM(ControlSubMenu)
+    
   EndProcedure
   
   Procedure Callback1()
@@ -225,8 +226,7 @@ Module ControlMenu
   ; ----------------------------------------------------------------------------
   
   Procedure AddItem(*menu.ControlSubMenu_t,name.s,callback.i,*args.Arguments::Arguments_t)
-    Protected *item.ControlMenuItem_t = AllocateMemory(SizeOf(ControlMenuItem_t))
-    InitializeStructure(*item,ControlMenuItem_t)
+    Protected *item.ControlMenuItem_t = AllocateStructure(ControlMenuItem_t)
     *item\name = name
     *item\callback = callback
     *item\args = Arguments::New(ArraySize(*args\args()))
@@ -247,7 +247,7 @@ Module ControlMenu
   ;  Add Separator
   ; ----------------------------------------------------------------------------
   Procedure AddSeparator(*menu.ControlSubMenu_t)
-    Protected *item.ControlMenuItem_t = AllocateMemory(SizeOf(ControlMenuItem_t))
+    Protected *item.ControlMenuItem_t = AllocateStructure(ControlMenuItem_t)
     *item\name = "Separator"
     *item\callback = 0
     *item\type = #MenuItemType_Separator
@@ -455,7 +455,7 @@ Module ControlMenu
   ;  Add Sub Menu
   ; ----------------------------------------------------------------------------
   Procedure AddSubMenu(*menu.ControlSubMenu_t,name.s)
-    Protected *item.ControlSubMenu_t = AllocateMemory(SizeOf(ControlSubMenu_t))
+    Protected *item.ControlSubMenu_t = AllocateStructure(ControlSubMenu_t)
     *item\name = name
     *item\type = #MenuItemType_Menu
     *item\parent = *menu
@@ -675,9 +675,9 @@ Module ControlMenu
 EndModule
 
   
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 121
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 111
+; FirstLine = 74
 ; Folding = -w---
 ; EnableThread
 ; EnableXP

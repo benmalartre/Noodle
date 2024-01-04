@@ -99,7 +99,7 @@ Module MatrixToSRTNode
   EndProcedure
   
   Procedure Delete(*node.MatrixToSRTNode_t)
-    FreeMemory(*node)
+    Node::DEL(MatrixToSRTNode)
   EndProcedure
   
  
@@ -112,7 +112,7 @@ Module MatrixToSRTNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="MatrixToSRTNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]-----------------------------------------------
-    Protected *Me.MatrixToSRTNode_t = AllocateMemory(SizeOf(MatrixToSRTNode_t))
+    Protected *Me.MatrixToSRTNode_t = AllocateStructure(MatrixToSRTNode_t)
     
     ; ---[ Init Node]-----------------------------------------------------------
     Node::INI(MatrixToSRTNode,*tree,type,x,y,w,h,c)
@@ -129,9 +129,8 @@ EndModule
 ; ==============================================================================
 ;  EOF
 ; ==============================================================================
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 56
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 101
+; FirstLine = 86
 ; Folding = --
 ; EnableXP

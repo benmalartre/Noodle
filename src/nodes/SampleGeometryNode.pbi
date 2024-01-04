@@ -94,7 +94,7 @@ Module SampleGeometryNode
   
   Procedure Delete(*node.SampleGeometryNode_t)
 
-    FreeMemory(*node)
+    Node::DEL(SampleGeometryNode)
   EndProcedure
   
   ; ============================================================================
@@ -105,7 +105,7 @@ Module SampleGeometryNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="SampleGeometryNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.SampleGeometryNode_t = AllocateMemory(SizeOf(SampleGeometryNode_t))
+    Protected *Me.SampleGeometryNode_t = AllocateStructure(SampleGeometryNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(SampleGeometryNode,*tree,type,x,y,w,h,c)
@@ -122,7 +122,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (MacOS X - x64)
-; CursorPosition = 6
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 96
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

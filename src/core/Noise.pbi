@@ -150,8 +150,7 @@ Module Noise
   ; CONSTRUCTOR
   ; ------------------------------------------------------------------------------------------
   Procedure New(seed.i=0, mode.i=#WHITE_NOISE)
-    Protected *Me.Noise_t = AllocateMemory(SizeOf(Noise_t))
-    InitializeStructure(*Me, Noise_t)
+    Protected *Me.Noise_t = AllocateStructure(Noise_t)
     *Me\seed = seed
     *Me\mode = mode
     Init(*Me)
@@ -162,14 +161,12 @@ Module Noise
   ; DESTRUCTOR
   ; ------------------------------------------------------------------------------------------
   Procedure Delete(*Me.Noise_t)
-    ClearStructure(*Me, Noise_t)
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
 EndModule
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 102
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 164
+; FirstLine = 122
 ; Folding = --
 ; EnableXP

@@ -1385,8 +1385,7 @@ Module Handle
   Procedure Delete(*Me.Handle_t)
     CArray::SetCount(*Me\targets,0)
     CArray::Delete(*Me\targets)
-    ClearStructure(*m,Handle_t)
-    FreeMemory(*m)
+    Object::TERM(Handle)
   EndProcedure
   
   ;---------------------------------------------
@@ -1394,9 +1393,8 @@ Module Handle
   ;---------------------------------------------
 
   Procedure.i New()
-    Protected *Me.Handle_t = AllocateMemory(SizeOf(Handle_t))
+    Protected *Me.Handle_t = AllocateStructure(Handle_t)
     Object::INI( Handle )
-    InitializeStructure(*Me,Handle_t)
     
     Matrix4::SetIdentity(*Me\matrix)
     Object3D::ResetGlobalKinematicState(*Me)
@@ -1437,8 +1435,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1174
-; FirstLine = 1164
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 1387
+; FirstLine = 1379
 ; Folding = -------
 ; EnableXP

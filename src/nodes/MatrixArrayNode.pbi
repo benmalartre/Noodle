@@ -87,7 +87,7 @@ Module MatrixArrayNode
   EndProcedure
   
   Procedure Delete(*node.MatrixArrayNode_t)
-    FreeMemory(*node)
+    Node::DEL(MatrixArrayNode)
   EndProcedure
   
  
@@ -100,7 +100,7 @@ Module MatrixArrayNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="MatrixArrayNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.MatrixArrayNode_t = AllocateMemory(SizeOf(MatrixArrayNode_t))
+    Protected *Me.MatrixArrayNode_t = AllocateStructure(MatrixArrayNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(MatrixArrayNode,*tree,type,x,y,w,h,c)
@@ -119,9 +119,8 @@ EndModule
 ; ============================================================================
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 33
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 89
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

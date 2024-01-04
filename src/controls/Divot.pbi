@@ -230,8 +230,7 @@ Module ControlDivot
   ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlDivot_t )
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
-    FreeMemory( *Me )
+    Object::TERM(ControlDivot)
     
   EndProcedure
 
@@ -242,7 +241,7 @@ Module ControlDivot
   Procedure.i New( *parent.Control::Control_t ,name.s, value.i = #ANIM_NONE, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     ; ---[ Allocate Object Memory ]---------------------------------------------
-    Protected *Me.ControlDivot_t = AllocateMemory( SizeOf(ControlDivot_t) ) 
+    Protected *Me.ControlDivot_t = AllocateStructure(ControlDivot_t)
     
     Object::INI(ControlDivot)
     
@@ -274,8 +273,8 @@ Module ControlDivot
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlDivot )
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 81
-; FirstLine = 63
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 232
+; FirstLine = 220
 ; Folding = --
 ; EnableXP

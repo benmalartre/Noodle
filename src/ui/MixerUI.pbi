@@ -34,7 +34,8 @@ Module MixerUI
   ; Constructor
   ;-------------------------------
   Procedure New(name.s,x.i,y.i,w.i,h.i)
-    Protected *ui.MixerUI_t = AllocateMemory(SizeOf(MixerUI_t))
+    Protected *ui.MixerUI_t = AllocateStructure(MixerUI_t)
+    Object::INI(MixerUI)
     *ui\name = name
     *ui\x = x
     *ui\y = y
@@ -49,7 +50,6 @@ Module MixerUI
 
     ;SetGadgetColor(*ui\area,#PB_Gadget_BackColor,RGB(222,222,222))
     CloseGadgetList()
-    *ui\VT = ?MixerUIVT
     ProcedureReturn *ui
   EndProcedure
   
@@ -59,7 +59,7 @@ Module MixerUI
     If IsGadget(*Me\container): FreeGadget(*Me\container): EndIf
     If IsGadget(*Me\frame): FreeGadget(*Me\frame): EndIf
     If IsGadget(*Me\canvas): FreeGadget(*Me\canvas): EndIf
-    FreeMemory(*Me)
+    Object::TERM(MixerUI)
   EndProcedure
   
   ; Init
@@ -111,9 +111,9 @@ Module MixerUI
   
   
 EndModule
-
-; IDE Options = PureBasic 5.42 LTS (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 61
+; FirstLine = 32
 ; Folding = --
-; EnableUnicode
 ; EnableXP
+; EnableUnicode

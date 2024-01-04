@@ -94,7 +94,7 @@ Module ScalarToQuaternionNode
   EndProcedure
   
   Procedure Delete(*node.ScalarToQuaternionNode_t)
-    FreeMemory(*node)
+    Node::DEL(ScalarToScalarToQuaternionNode)
   EndProcedure
   
   
@@ -105,7 +105,7 @@ Module ScalarToQuaternionNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="Quaternion",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.ScalarToQuaternionNode_t = AllocateMemory(SizeOf(ScalarToQuaternionNode_t))
+    Protected *Me.ScalarToQuaternionNode_t = AllocateStructure(ScalarToQuaternionNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(ScalarToQuaternionNode,*tree,type,x,y,w,h,c)
@@ -122,9 +122,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 
-
-; IDE Options = PureBasic 5.60 (MacOS X - x64)
-; CursorPosition = 57
-; FirstLine = 29
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 96
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

@@ -619,7 +619,7 @@ Module Vector
   ;   CONSTRUCTORS
   ; -----------------------------------------------------------------------------
   Procedure NewCompound(*parent.Item_t=#Null)
-    Define *Me.Compound_t = AllocateMemory(SizeOf(Compound_t))
+    Define *Me.Compound_t = AllocateStructure(Compound_t)
     Object::INI(Compound)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_COMPOUND
@@ -628,7 +628,7 @@ Module Vector
   EndProcedure
   
   Procedure NewPoint(*parent.Item_t=#Null)
-    Define *Me.Point_t = AllocateMemory(SizeOf(Point_t))
+    Define *Me.Point_t = AllocateStructure(Point_t)
     Object::INI(Point)
     *Me\type = #ATOM_POINT
     Parent(*Me, *parent)
@@ -636,7 +636,7 @@ Module Vector
   EndProcedure
   
   Procedure NewLine(*parent.Item_t=#Null)
-    Define *Me.Line_t  = AllocateMemory(SizeOf(Line_t))
+    Define *Me.Line_t  = AllocateStructure(Line_t)
     Object::INI(Line)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_LINE
@@ -645,7 +645,7 @@ Module Vector
   EndProcedure
   
   Procedure NewBezier(*parent.Item_t=#Null)
-    Define *Me.Bezier_t  = AllocateMemory(SizeOf(Bezier_t))
+    Define *Me.Bezier_t  = AllocateStructure(Bezier_t)
     Object::INI(Bezier)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_BEZIER
@@ -654,7 +654,7 @@ Module Vector
   EndProcedure
   
   Procedure NewBox(*parent.Item_t=#Null)
-    Define *Me.Box_t = AllocateMemory(SizeOf(Box_t))
+    Define *Me.Box_t = AllocateStructure(Box_t)
     Object::INI(Box)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_BOX
@@ -663,7 +663,7 @@ Module Vector
   EndProcedure
   
   Procedure NewCircle(*parent.Item_t=#Null)
-    Define *Me.Circle_t  = AllocateMemory(SizeOf(Circle_t))
+    Define *Me.Circle_t  = AllocateStructure(Circle_t)
     Object::INI(Circle)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_CIRCLE
@@ -672,7 +672,7 @@ Module Vector
   EndProcedure
   
   Procedure NewEllipse(*parent.Item_t=#Null)
-    Define *Me.Ellipse_t  = AllocateMemory(SizeOf(Ellipse_t))
+    Define *Me.Ellipse_t  = AllocateStructure(Ellipse_t)
     Object::INI(Ellipse)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_ELLIPSE
@@ -681,7 +681,7 @@ Module Vector
   EndProcedure
   
   Procedure NewText(font.i, *parent.Item_t=#Null)
-    Define *Me.Text_t  = AllocateMemory(SizeOf(Text_t))
+    Define *Me.Text_t  = AllocateStructure(Text_t)
     Object::INI(Text)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_TEXT
@@ -693,7 +693,7 @@ Module Vector
   EndProcedure
   
   Procedure NewImage(img.i, x.f=0, y.f=0, *parent.Item_t=#Null)
-    Define *Me.Image_t  = AllocateMemory(SizeOf(Image_t))
+    Define *Me.Image_t  = AllocateStructure(Image_t)
     Object::INI(Image)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_IMAGE
@@ -709,9 +709,7 @@ Module Vector
   EndProcedure
   
   Procedure New()
-    Define *Me.Item_t = AllocateMemory(SizeOf(Item_t))
-    
-    InitializeStructure(*Me, Item_t)
+    Define *Me.Item_t = AllocateStructure(Item_t)
     Object::INI(Item)
     *Me\name = "ITEM"
     *Me\type = #ATOM_CUSTOM
@@ -849,8 +847,7 @@ Module Vector
         DeleteItem(*item\childrens())
       Next
       
-      ClearStructure(*item, Item_t)
-      FreeMemory(*item)
+      FreeStructure(*item)
     EndIf
   EndProcedure
   
@@ -859,7 +856,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddCustom(*item.Item_t)
     AddElement(*item\childrens())
-    Define *Me.Item_t = AllocateMemory(SizeOf(Item_t))
+    Define *Me.Item_t = AllocateStructure(Item_t)
     Object::INI(Item)
     *Me\type = #ATOM_CUSTOM
     *Me\parent = *item
@@ -873,7 +870,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddPoint(*item.Item_t)
     AddElement(*item\childrens())
-    Define *Me.Point_t = AllocateMemory(SizeOf(Point_t))
+    Define *Me.Point_t = AllocateStructure(Point_t)
     Object::INI(Point)
     *Me\type = #ATOM_POINT
     *Me\parent = *item
@@ -887,7 +884,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure Addline(*item.Item_t)
     AddElement(*item\childrens() )
-    Define *Me.Line_t  = AllocateMemory(SizeOf(Line_t))
+    Define *Me.Line_t  = AllocateStructure(Line_t)
     Object::INI(Line)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_LINE
@@ -902,7 +899,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddBezier(*item.Item_t)
     AddElement(*item\childrens()) 
-    Define *Me.Bezier_t  = AllocateMemory(SizeOf(Bezier_t))
+    Define *Me.Bezier_t  = AllocateStructure(Bezier_t)
     Object::INI(Bezier)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_BEZIER
@@ -917,7 +914,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddBox(*item.Item_t)
     AddElement(*item\childrens() )
-    Define *Me.Box_t = AllocateMemory(SizeOf(Box_t))
+    Define *Me.Box_t = AllocateStructure(Box_t)
     Object::INI(Box)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_BOX
@@ -932,7 +929,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddCircle(*item.Item_t)
     AddElement(*item\childrens() )
-    Define *Me.Circle_t  = AllocateMemory(SizeOf(Circle_t))
+    Define *Me.Circle_t  = AllocateStructure(Circle_t)
     Object::INI(Circle)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_CIRCLE
@@ -947,7 +944,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddEllipse(*item.Item_t)
     AddElement(*item\childrens() )
-    Define *Me.Ellipse_t  = AllocateMemory(SizeOf(Ellipse_t))
+    Define *Me.Ellipse_t  = AllocateStructure(Ellipse_t)
     Object::INI(Ellipse)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_ELLIPSE
@@ -962,7 +959,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddText(*item.Item_t, font.i)
     AddElement(*item\childrens() )
-    Define *Me.Text_t  = AllocateMemory(SizeOf(Text_t))
+    Define *Me.Text_t  = AllocateStructure(Text_t)
     Object::INI(Text)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_TEXT
@@ -985,7 +982,7 @@ Module Vector
   ; -----------------------------------------------------------------------------
   Procedure AddImage(*item.Item_t, img.i, x.f=0, y.f=0)
     AddElement(*item\childrens() )
-    Define *Me.Image_t  = AllocateMemory(SizeOf(Image_t))
+    Define *Me.Image_t  = AllocateStructure(Image_t)
     Object::INI(Image)
     Transform2D::Initialize(*Me\T)
     *Me\type = #ATOM_IMAGE
@@ -2246,9 +2243,8 @@ Module Vector
   EndProcedure
 
 EndModule
-
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1059
-; FirstLine = 1050
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 621
+; FirstLine = 618
 ; Folding = -------------------
 ; EnableXP

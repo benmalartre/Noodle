@@ -111,7 +111,7 @@ Module Txtsch
         If DirectoryEntryType(Id) = #PB_DirectoryEntry_File
           If CheckPattern(DirectoryEntryName(Id), pattern)
             AddElement(*search\files())
-            *search\files() = AllocateMemory(SizeOf(File_t))
+            *search\files() = AllocateStructure(File_t)
             InitializeStructure(*search\files(), File_t)
             *search\files()\name = DirectoryEntryName(Id)
             *search\files()\folder = path
@@ -204,7 +204,7 @@ Module Txtsch
   
   Procedure SearchOneFileThread(*datas.SearchOneFile_t)
     SearchOneFile(*datas\file, *datas\token, *datas\mode)
-    FreeMemory(*datas)
+    FreeStructure(*datas)
   EndProcedure
   
   Procedure ThreadSearch(*search.Search_t, token.s, mode.i=0)
@@ -221,7 +221,7 @@ Module Txtsch
       
       For i = currentThread To #MAX_THREADS - 1
         If Not IsThread(threads(i))
-          Define *datas.SearchOneFile_t = AllocateMemory(SizeOf(SearchOneFile_t))
+          Define *datas.SearchOneFile_t = AllocateStructure(SearchOneFile_t)
           *datas\file = *queue()
           *datas\mode = mode
           *datas\token = token
@@ -307,9 +307,8 @@ MessageRequester("SEARCH", "SINGLE THREAD : "+StrD((E1-T1)*0.001)+" : "+Str(numH
                            "MULTI THREAD  : "+StrD((E2-T2)*0.001)+" : "+Str(numHitsThreaded))
 
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 247
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 206
+; FirstLine = 203
 ; Folding = ---
 ; EnableXP

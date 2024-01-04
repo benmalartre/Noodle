@@ -77,7 +77,7 @@ Module AudioNode
   Procedure.i New(*tree.Tree::Tree_t,type.s="AudioNode",x.i=0,y.i=0,w.i=100,h.i=50,c.i=0)
     
     ; ---[ Allocate Node Memory ]---------------------------------------------
-    Protected *Me.AudioNode_t = AllocateMemory(SizeOf(AudioNode_t))
+    Protected *Me.AudioNode_t = AllocateStructure(AudioNode_t)
     
     ; ---[ Init Node]----------------------------------------------
     Node::INI(AudioNode,*tree,type,x,y,w,h,c)
@@ -94,8 +94,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 1
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 79
+; FirstLine = 51
 ; Folding = --
 ; EnableXP

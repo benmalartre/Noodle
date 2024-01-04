@@ -251,8 +251,7 @@ Module Arguments
   ; CONSTRUCTOR
   ; ------------------------------------------------------------------------------
   Procedure New(numArguments.i=0)
-    Protected *args.Arguments_t = AllocateMemory(SizeOf(Arguments_t))
-    InitializeStructure(*args, Arguments_t)
+    Protected *args.Arguments_t = AllocateStructure(Arguments_t)
     ReDim *args\args(numArguments)
     ProcedureReturn *args
   EndProcedure
@@ -261,8 +260,7 @@ Module Arguments
   ; DESTRUCTOR
   ; ------------------------------------------------------------------------------
   Procedure Delete(*args.Arguments_t)
-    ClearStructure(*args, Arguments_t)
-    FreeMemory(*args)
+    FreeStructure(*args)
   EndProcedure
   
   Procedure Copy(*dst.Arguments_t, *src.Arguments_t)
@@ -356,9 +354,8 @@ Module Arguments
   
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 335
-; FirstLine = 202
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 263
+; FirstLine = 249
 ; Folding = ---
 ; EnableXP

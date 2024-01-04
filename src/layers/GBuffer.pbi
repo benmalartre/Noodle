@@ -316,15 +316,15 @@ Module LayerGBuffer
   ;------------------------------------------------------------------
   ; Destuctor
   ;------------------------------------------------------------------
-  Procedure Delete(*layer.LayerGBuffer_t)
-    FreeMemory(*layer)
+  Procedure Delete(*Me.LayerGBuffer_t)
+    Object::TERM(LayerGBuffer)
   EndProcedure
   
   ;----------------------------------------------
   ; Create
   ;---------------------------------------------------
   Procedure New(width.i,height.i,*ctx.GLContext::GLContext_t,*camera.Camera::Camera_t)
-    Protected *Me.LayerGBuffer_t = AllocateMemory(SizeOf(LayerGBuffer_t))
+    Protected *Me.LayerGBuffer_t = AllocateStructure(LayerGBuffer_t)
     Object::INI( LayerGBuffer )
     *Me\context = *ctx
     *Me\pov = *camera
@@ -346,8 +346,8 @@ Module LayerGBuffer
   
   Class::DEF( LayerGBuffer )
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 55
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 319
+; FirstLine = 303
 ; Folding = --
 ; EnableXP

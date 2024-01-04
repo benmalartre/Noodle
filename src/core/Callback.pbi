@@ -159,7 +159,7 @@ EndDeclareModule
 ; ================================================================================
 Module Callback
   Procedure New(callback.PFNARGUMENTSCALLBACK)
-    Protected *callback.Callback_t = AllocateMemory(SizeOf(Callback_t))
+    Protected *callback.Callback_t = AllocateStructure(Callback_t)
     *callback\callback = callback
 
     ProcedureReturn *callback
@@ -167,16 +167,15 @@ Module Callback
   
   Procedure Delete(*callback.Callback_t)
     If *callback\datas
-      FreeMemory(*callback\datas)
+      FreeStructure(*callback\datas)
     EndIf
-    FreeMemory(*callback)
+    FreeStructure(*callback)
   EndProcedure
   
 EndModule
 
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 105
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 168
+; FirstLine = 131
 ; Folding = --
 ; EnableXP

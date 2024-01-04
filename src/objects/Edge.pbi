@@ -25,9 +25,7 @@ Module Edge
     CArray::Delete(*Me\neighbors)
     CArray::Delete(*Me\polygons)
     CArray::Delete(*Me\vertices)
-    ClearStructure(*Me,Edge_t)
-    
-    FreeMemory(*Me)
+    FreeStructure(*Me)
   EndProcedure
   
   
@@ -36,8 +34,7 @@ Module Edge
   ;{
   Procedure.i New(*mesh.Geometry::PolymeshGeometry_t, index.i, p1id.i, p2id)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.Edge_t = AllocateMemory(SizeOf(Edge_t))
-    InitializeStructure(*Me,Edge_t)
+    Protected *Me.Edge_t = AllocateStructure(Edge_t)
     *Me\neighbors = CArray::New(CArray::#ARRAY_PTR)
     *Me\vertices = CArray::New(CArray::#ARRAY_PTR)
     *Me\polygons = CArray::New(CArray::#ARRAY_PTR)
@@ -47,8 +44,7 @@ Module Edge
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 40
-; FirstLine = 3
+; CursorPosition = 28
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

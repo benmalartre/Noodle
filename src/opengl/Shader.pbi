@@ -74,7 +74,7 @@ Module Shader
   ; Constructor
   ;-------------------------------------------
   Procedure New(type.i,str.s)
-    Protected *shader.Shader_t = AllocateMemory(SizeOf(Shader_t))
+    Protected *shader.Shader_t = AllocateStructure(Shader_t)
     *shader\s = str
     *shader\path = ""
     ProcedureReturn *shader
@@ -85,7 +85,7 @@ Module Shader
   ; Destructor
   ;-------------------------------------------
   Procedure Delete(*shader.Shader_t)
-    FreeMemory(*shader)
+    FreeStructure(*shader)
   EndProcedure
   
   ;-----------------------------------------------------------------------------
@@ -186,7 +186,7 @@ Module Program
   ;-------------------------------------------
   Procedure New(name.s,s_vert.s="",s_geom.s="",s_frag.s="")
     
-    Protected *pgm.Program_t = AllocateMemory(SizeOf(Program_t))
+    Protected *pgm.Program_t = AllocateStructure(Program_t)
     *pgm\name = name
     *pgm\vert = Shader::New(OpenGL::#GL_VERTEX_SHADER,s_vert)
     *pgm\geom = Shader::New(OpenGL::#GL_GEOMETRY_SHADER, s_geom)
@@ -196,7 +196,7 @@ Module Program
   EndProcedure
   
   Procedure NewFromName(name.s)
-    Protected *pgm.Program_t = AllocateMemory(SizeOf(Program_t))
+    Protected *pgm.Program_t = AllocateStructure(Program_t)
     Build(*pgm,name)
     ProcedureReturn *pgm
   EndProcedure
@@ -205,7 +205,7 @@ Module Program
   ; Destructor
   ;-------------------------------------------
   Procedure Delete(*pgm.Program_t)
-    FreeMemory(*pgm)
+    FreeStructure(*pgm)
   EndProcedure
   
   ;--------------------------------------
@@ -333,7 +333,7 @@ Module Program
   
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 319
-; FirstLine = 289
+; CursorPosition = 198
+; FirstLine = 194
 ; Folding = ---
 ; EnableXP

@@ -76,7 +76,7 @@ Module Picker
   ;   CONSTRUCTOR
   ; --------------------------------------------------------------------------------------------------
   Procedure New()
-    Protected *picker.Picker_t = AllocateMemory(SizeOf(Picker_t))
+    Protected *picker.Picker_t = AllocateStructure(Picker_t)
     CompilerSelect #PB_Compiler_OS
       CompilerCase #PB_OS_Windows
         *picker\hDC = GetDC_(0)
@@ -101,7 +101,7 @@ Module Picker
       CompilerCase #PB_OS_Linux
         
     CompilerEndSelect
-    FreeMemory(*picker)
+    FreeStructure(*picker)
   EndProcedure
   
   ; --------------------------------------------------------------------------------------------------
@@ -205,9 +205,8 @@ Procedure TestPicker()
   
   Picker::Delete(*picker)
 EndProcedure
-
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 93
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 103
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

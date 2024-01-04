@@ -38,7 +38,7 @@ Module ModelGeometry
   ;---------------------------------------------
   Procedure.i New(*parent)
     ; ---[ Allocate Memory ]----------------------------------------------------
-    Protected *Me.ModelGeometry_t = AllocateMemory(SizeOf(ModelGeometry_t))
+    Protected *Me.ModelGeometry_t = AllocateStructure(ModelGeometry_t)
     Object::INI(ModelGeometry)
     ProcedureReturn *Me
   EndProcedure
@@ -46,8 +46,8 @@ Module ModelGeometry
   Class::DEF( ModelGeometry )
 EndModule
 
-
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 48
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 40
+; FirstLine = 3
 ; Folding = -
 ; EnableXP

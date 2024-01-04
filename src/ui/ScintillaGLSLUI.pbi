@@ -104,7 +104,7 @@ Module ScintillaGLSLUI
   ;   NEW
   ; ----------------------------------------------------------------------------------------
   Procedure New(x.i, y.i, width.i, height.i)
-    Define *Me.ScintillaGLSLUI_t = AllocateMemory(SizeOf(ScintillaGLSLUI_t))
+    Define *Me.ScintillaGLSLUI_t = AllocateStructure(ScintillaGLSLUI_t)
     Object::INI(ScintillaGLSLUI)
     
     *Me\gadgetID = ScintillaGadget(#PB_Any, x, y, width, height, SCINTILLACALLBACK)
@@ -433,8 +433,8 @@ EndProcedure
 ; =======================================================================================================
 ;   EOF
 ; =======================================================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 374
+; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
+; CursorPosition = 201
+; FirstLine = 163
 ; Folding = ---
 ; EnableXP

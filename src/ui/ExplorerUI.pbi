@@ -198,7 +198,7 @@ Module ExplorerUI
   ;   CONSTRUCTOR
   ; ======================================================================================
   Procedure New(*view.View::View_t,name.s="Explorer")
-    Protected *Me.ExplorerUI_t = AllocateMemory(SizeOf(ExplorerUI_t))
+    Protected *Me.ExplorerUI_t = AllocateStructure(ExplorerUI_t)
     Object::INI(ExplorerUI)
     
     *Me\name = name
@@ -223,7 +223,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 153
-; FirstLine = 143
+; CursorPosition = 200
+; FirstLine = 179
 ; Folding = ---
 ; EnableXP
