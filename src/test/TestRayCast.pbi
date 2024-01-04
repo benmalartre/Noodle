@@ -79,13 +79,8 @@ EndProcedure
 ;---------------------------------------------------
 Procedure TestRay_Update(*tr.TestRay_t)
   Drawer::Flush(*tr\drawer)
-  Debug "test ray update..."
   *app\scene\dirty = #True
-  Vector3::Echo(*tr\ray\origin, "before ray origin")
-  Vector3::Echo(*tr\ray\direction, "before ray direction")
   ViewportUI::GetRay(*viewport, *tr\ray)
-  Vector3::Echo(*tr\ray\origin, "after ray origin")
-  Vector3::Echo(*tr\ray\direction, "after ray direction")
   Vector3::SetFromOther(*tr\start_pos, *viewport\camera\pos)
 
   Protected i
@@ -132,8 +127,6 @@ Procedure TestRay_Update(*tr.TestRay_t)
   Protected *red_col.c4f32 = Color::RED
   Define msg.s
   
-  Debug "Ray dist : "+Str(*tr\dist)
-
   For i=0 To *geom\nbtriangles-1
     *a = CArray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+2))
     *b = Carray::GetValue(*geom\a_positions, CArray::GetValueL(*geom\a_triangleindices, i*3+1))
@@ -144,9 +137,7 @@ Procedure TestRay_Update(*tr.TestRay_t)
     Vector3::MulByMatrix4(c,*c,*t\m)
     
     intersect.b = Ray::TriangleIntersection(*tr\ray,a,b,c,@*tr\dist,*tr\uvw, @frontFacing)
-    If intersect : Debug i :EndIf
     If intersect And *tr\dist<dist
-      Debug "HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIt"
       CArray::SetValue(*tri, 0, a)
       CArray::SetValue(*tri, 1, b)
       CArray::SetValue(*tri, 2, c)
@@ -168,9 +159,7 @@ Procedure TestRay_Update(*tr.TestRay_t)
     EndIf
     
     Next
-    
-    Debug msg
-  
+      
   CArray::Delete(*tri)
   CArray::Delete(*positions)
   
@@ -270,8 +259,8 @@ EndProcedure
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 80
-; FirstLine = 53
+; CursorPosition = 161
+; FirstLine = 139
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

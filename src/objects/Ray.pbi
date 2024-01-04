@@ -297,11 +297,8 @@ Module Ray
     If Not Ray::PlaneIntersection(*ray, plane, @intersectDist, *frontFacing)
       ProcedureReturn #False
     EndIf
-    Debug "intersect dist : "+StrF(intersectDist)
     If intersectDist > maxDist : ProcedureReturn #False : EndIf
-    
-    Debug "pass early test"
-    
+        
     ; Find the largest component of the plane normal. The other two
     ; dimensions are the axes of the aligned plane we will use To
     ; project the triangle.
@@ -376,8 +373,8 @@ EndModule
 ; EOF
 ;--------------------------------------------------------------------------------------------
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 105
-; FirstLine = 83
+; CursorPosition = 300
+; FirstLine = 293
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

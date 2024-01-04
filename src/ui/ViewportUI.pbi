@@ -125,10 +125,10 @@ Module ViewportUI
   ; Delete
   ;------------------------------------------------------------------
   Procedure Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
-    *Me\sizX = x
-    *Me\sizY = y
-    *Me\posX = width
-    *Me\posY = height
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = width
+    *Me\sizY = height
     ResizeGadget(*Me\gadgetID,x,y,width,height)
         
     If *Me\context  
@@ -157,7 +157,6 @@ Module ViewportUI
   ; Event
   ;------------------------------------------------------------------
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
-    Debug "viewport "+*Me\name+" on event..."
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
     Protected *scene.Scene::Scene_t
@@ -173,13 +172,10 @@ Module ViewportUI
         Resize(*Me, *top\posX, *top\posY, *top\sizX, *top\sizY)
 
       Case #PB_Event_Gadget
-        Debug "we have opengl event gadget"
         Protected deltax.d, deltay.d
         Protected modifiers.i
         *Me\mx = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseX)
         *Me\my = GetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_MouseY)
-        Debug *Me\mx
-        Debug *Me\my
         width = GadgetWidth(*Me\gadgetID)
         height = GadgetHeight(*Me\gadgetID)
 
@@ -496,8 +492,7 @@ Module ViewportUI
   Procedure GetRay(*Me.ViewportUI_t, *ray.Geometry::Ray_t)
     If *Me\mx = 0 And *Me\my = 0 : ProcedureReturn : EndIf
     Protected direction.v3f32
-    Debug "viewport mouse : "+Str(*Me\mx)+", "+Str(*me\my)
-    ViewToRay(*Me,*Me\mx,*Me\my,direction)
+    ViewToRay(*Me, *Me\mx, *Me\my, direction)
     Ray::Set(*ray, *Me\camera\pos, direction)
   EndProcedure
   
@@ -686,7 +681,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 120
-; FirstLine = 76
+; CursorPosition = 547
+; FirstLine = 544
 ; Folding = ----
 ; EnableXP
