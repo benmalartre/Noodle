@@ -607,17 +607,17 @@ Module PolymeshGeometry
     CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
     CArray::FillL(*mesh\a_vertexpolygoncount, 0)
     
-    Define faceId, j, k, vid, offset
+    Define faceId, numFaceVertices, n, vid, offset
     For faceId=0 To CArray::GetCount(*mesh\a_facecount) - 1
-      j = CArray::GetValueL(*mesh\a_facecount, faceId)
-      For k = 0 To j - 1
-        vid = CArray::GetValueL(*mesh\a_faceindices, offset + k)
+      numFaceVertices = CArray::GetValueL(*mesh\a_facecount, faceId)
+      For n = 0 To numFaceVertices - 1
+        vid = CArray::GetValueL(*mesh\a_faceindices, offset + n)
         numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
         ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
         vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = faceId
         totalVertexPolygonIndices + 1
       Next
-      offset + j
+      offset + numFaceVertices
         
     Next
     
@@ -1217,7 +1217,7 @@ Module PolymeshGeometry
         DeleteMapElement(*openedges(), MapKey(*openedges()))
         ProcedureReturn *next
       EndIf
-    Wend  
+    Wend    
     ProcedureReturn #Null
   EndProcedure
   
@@ -1242,16 +1242,21 @@ Module PolymeshGeometry
   ; Get HalfEdge by providing vertex indices
   ;---------------------------------------------------------
   Procedure GetHalfEdge(*mesh.Geometry::PolymeshGeometry_t, p0.i, p1.i)
-    Protected *he.HalfEdge_t
-    For i = 0 To CArray::GetCount(*mesh\a_halfedges)-1
-      *he = Carray::GetValuePtr(*mesh\a_halfedges, i)
-      If *he\vertex = p0 And *he\next_he\vertex = p1
-        ProcedureReturn *he
-      EndIf
-    Next
+    Protected *he.HalfEdge_t = CARray::GetValuePtr(*mesh\a_halfedges, CArray::GetValueL(*mesh\a_vertexhalfedge, p0))
+    Protected *cu.HalfEdge_t = *he
+    Repeat
+      If *cu\next_he\vertex = p1 : ProcedureReturn *cu : EndIf
+      *cu = *cu\opposite_he\next_he
+    Until *cu = *he Or Not *cu\opposite_he
+    
+    *cu.HalfEdge_t = *he
+    Repeat
+      If *cu\prev_he\vertex = p1 : ProcedureReturn *cu : EndIf
+      *cu = *cu\opposite_he\prev_he
+    Until *cu = *he Or Not *cu\opposite_he 
+    
     ProcedureReturn #Null
   EndProcedure
-  
   
   ;---------------------------------------------------------
   ; Get Cotangent weight
@@ -1261,8 +1266,8 @@ Module PolymeshGeometry
     Define *p1.v3f32, *p2.v3f32, *p3.v3f32
     
     *p1 = CArray::GetValue(*mesh\a_positions, *edge\next_he\vertex)
-    *p2 = CArray::GetValue(*mesh\a_positions, *edge\prev_he\vertex)
-    *p3 = CArray::GetValue(*mesh\a_positions, *edge\vertex)
+    *p2 = CArray::GetValue(*mesh\a_positions, *edge\next_he\next_he\vertex)
+    *p3 = CArray::GetValue(*mesh\a_positions, *edge\next_he\next_he\next_he\vertex)
         
     Vector3::Sub(u, *p1, *p2)
     Vector3::Sub(v, *p2, *p3)
@@ -1627,14 +1632,16 @@ Module PolymeshGeometry
   ; Get Polygon Vertices
   ;---------------------------------------------------------
   Procedure GetPolygonVertices(*Me.PolymeshGeometry_t, polygon.i, *indices.CArray::CArrayLong)
+
     Define i,j, accum = 0
-    For i=0 To polygon-1
-      accum + CArray::GetValueL(*Me\a_vertexpolygoncount, i)
+    For i=0 To polygon-2
+      accum + CArray::GetValueL(*Me\a_facecount, i)
     Next
-    j = CArray::GetValueL(*Me\a_vertexpolygoncount, polygon)
-    CArray::SetCount(*indices, j)
-    For i=0 To j-1
-      CArray::SetValueL(*indices, j, CArray::GetValueL(*Me\a_vertexpolygonindices, accum + i))
+    
+    Define nbVertices = CArray::GetValueL(*Me\a_facecount, polygon)
+    CArray::SetCount(*indices, nbVertices)
+    For i=0 To nbVertices-1
+      CArray::SetValueL(*indices, i, CArray::GetValueL(*Me\a_faceindices, accum + i))
     Next
   EndProcedure
   
@@ -1650,7 +1657,8 @@ Module PolymeshGeometry
       offset = CArray::GetValueL(*Me\a_vertexpolygoncount, i)
     Next
     Define nbVertices = CArray::GetValueL(*Me\a_vertexpolygoncount, vertex)
-    CARray::SetCount(*indices, nbVertices)
+
+    CArray::SetCount(*indices, nbVertices)
     For i = 0 To nbVertices - 1
       CARray::SetValueL(*indices, i, CArray::GetValueL(*Me\a_vertexpolygonindices, offset + i))
     Next
@@ -2470,7 +2478,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1261
-; FirstLine = 1236
+; CursorPosition = 1294
+; FirstLine = 1259
 ; Folding = -----g-----+-
 ; EnableXP

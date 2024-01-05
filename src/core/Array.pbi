@@ -1111,8 +1111,8 @@ Module CArray
 EndModule
 
   
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1099
-; FirstLine = 1068
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 781
+; FirstLine = 754
 ; Folding = ----------
 ; EnableXP
