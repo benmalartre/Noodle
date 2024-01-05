@@ -1283,20 +1283,10 @@ DeclareModule Vector3
   ; VECTOR3 ECHO
   ;------------------------------------------------------------------
   Macro Echo(_v,_name)
-    CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-      Debug _name +":("+
-            StrF(_v\x, Math::#ECHO_PRECISION)+","+
-            StrF(_v\y, Math::#ECHO_PRECISION)+","+
-            StrF(_v\z, Math::#ECHO_PRECISION)+","+
-            StrF(_v\_w, Math::#ECHO_PRECISION)+")"
-            
-    CompilerElse
       Debug _name +":("+
             StrF(_v\x, Math::#ECHO_PRECISION)+","+
             StrF(_v\y, Math::#ECHO_PRECISION)+","+
             StrF(_v\z, Math::#ECHO_PRECISION)+")"
-    CompilerEndIf
-    
   EndMacro
   
   ;------------------------------------------------------------------
@@ -4413,9 +4403,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 182
-; FirstLine = 176
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 1293
+; FirstLine = 1281
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

@@ -79,8 +79,8 @@ EndProcedure
 
 Define N = 10000000
 
-Define *origins.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-Define *normals.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Define *origins.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Define *normals.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 CArray::SetCount(*origins, N)
 CArray::SetCount(*normals, N)
 Define *origin.Math::v3f32
@@ -117,8 +117,8 @@ Next
 Define elapsedT2.d = Time::Get() - startT2
 
 MessageRequester("PlaneBoxTest", "BASIC : "+StrD(elapsedT1) + ", SSE : " + StrD(elapsedT2))
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 79
-; FirstLine = 74
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 55
 ; Folding = -
 ; EnableXP

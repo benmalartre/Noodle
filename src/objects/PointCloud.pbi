@@ -275,7 +275,8 @@ Module PointCloud
     If Not *Me\visible  Or Not *Me\initialized: ProcedureReturn : EndIf
     Object3d::BindVao(@*Me\vao)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
-
+    glEnable(#GL_PROGRAM_POINT_SIZE)
+    glPointSize(1.0)
     glDrawArrays(#GL_POINTS,0,*geom\nbpoints) 
     glDisable( #GL_PROGRAM_POINT_SIZE )
     GLCheckError("[Polymesh] Draw mesh Called")
@@ -353,8 +354,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 52
-; FirstLine = 48
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 278
+; FirstLine = 266
 ; Folding = ---
 ; EnableXP

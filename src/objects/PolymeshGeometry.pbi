@@ -24,17 +24,19 @@ DeclareModule PolymeshGeometry
   Declare ComputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
   Declare ComputeTangents(*mesh.PolymeshGeometry_t)
   Declare InvertNormals(*mesh.PolymeshGeometry_t)
-  Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
+  Declare ComputeFacesFromTopology(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
+  Declare ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
   Declare ComputeTriangles(*mesh.PolymeshGeometry_t)
   Declare ComputeHalfEdges(*mesh.PolymeshGeometry_t)
   Declare ComputeTopology(*mesh.PolymeshGeometry_t)
+  Declare ComputePolygonAreas(*mesh.PolymeshGeometry_t)
   Declare Clear(*mesh.PolymeshGeometry_t)
-  Declare SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
+  Declare SetColor(*mesh.PolymeshGeometry_t,*color.c4f32)
+  Declare SetColors(*mesh.PolymeshGeometry_t,*colors.CArray::CArrayC4F32)
   Declare Set2(*mesh.PolymeshGeometry_t,*topo.Topology_t)
   Declare Set(*mesh.PolymeshGeometry_t,*vertices.CArray::CArrayV3F32,*faces.CArray::CArrayInt)
   Declare SetFromOther(*geom.PolymeshGeometry_t,*other.PolymeshGeometry_t)
   Declare Reset(*geom.PolymeshGeometry_t)
-  Declare SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
   Declare EnvelopeColors(*mesh.PolymeshGeometry_t,*weights.CArray::CArrayC4F32,*indices.CArray::CArrayC4U8,nbdeformers.i)
   Declare UpdateColors(*mesh.PolymeshGeometry_t)
   Declare RandomColorByPolygon(*mesh.PolymeshGeometry_t,*color.c4f32 = #Null,randomize.f = 0.5)
@@ -64,6 +66,8 @@ DeclareModule PolymeshGeometry
   Declare GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
   Declare GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
   Declare ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
+  Declare GetHalfEdge(*mesh.Geometry::PolymeshGeometry_t, p0.i, p1.i)
+  Declare.f ComputeCotangentWeight(*mesh.PolymeshGeometry_t, p0.i, p1.i)
   
   DataSection 
     PolymeshGeometryVT: 
@@ -571,16 +575,9 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Compute Vertex Polygons
+  ;  Extract Faces from Topology
   ; ----------------------------------------------------------------------------
-  Procedure ComputeVertexPolygons(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
-    Protected Dim vertexPolygonIndices.VertexPolygonIndices_t(*mesh\nbpoints)
-    Define totalVertexPolygonIndices = 0
-    Define numVertexPolygonIndices
-    
-    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
-    CArray::FillL(*mesh\a_vertexpolygoncount, 0)
-    
+  Procedure ComputeFacesFromTopology(*mesh.PolymeshGeometry_t, *topo.Geometry::Topology_t)
     For i=0 To CArray::GetCount(*topo\faces)-1
       vid = CArray::GetValueL(*topo\faces,i)
       If  vid = -2
@@ -588,10 +585,6 @@ Module PolymeshGeometry
         nbf+1
         counter = 0
       Else
-        numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
-        ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
-        vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = nbf
-        totalVertexPolygonIndices + 1
         CArray::SetValueL(*mesh\a_faceindices,nbi,vid)
         nbi+1
         counter+1
@@ -600,6 +593,34 @@ Module PolymeshGeometry
     Next i
     
     *mesh\nbpolygons = CArray::GetCount(*mesh\a_facecount)
+    
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Compute Vertex Polygons
+  ; ----------------------------------------------------------------------------
+  Procedure ComputeVertexPolygons(*mesh.PolymeshGeometry_t)
+    Protected Dim vertexPolygonIndices.VertexPolygonIndices_t(*mesh\nbpoints)
+    Define totalVertexPolygonIndices = 0
+    Define numVertexPolygonIndices
+    
+    CArray::SetCount(*mesh\a_vertexpolygoncount, *mesh\nbpoints)
+    CArray::FillL(*mesh\a_vertexpolygoncount, 0)
+    
+    Define faceId, j, k, vid, offset
+    For faceId=0 To CArray::GetCount(*mesh\a_facecount) - 1
+      j = CArray::GetValueL(*mesh\a_facecount, faceId)
+      For k = 0 To j - 1
+        vid = CArray::GetValueL(*mesh\a_faceindices, offset + k)
+        numVertexPolygonIndices = ArraySize(vertexPolygonIndices(vid)\polygons())
+        ReDim vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices+1)
+        vertexPolygonIndices(vid)\polygons(numVertexPolygonIndices) = faceId
+        totalVertexPolygonIndices + 1
+      Next
+      offset + j
+        
+    Next
+    
     CArray::SetCount(*mesh\a_vertexpolygonindices, totalVertexPolygonIndices)
     
     base = 0
@@ -753,7 +774,8 @@ Module PolymeshGeometry
     nbi=0
     *mesh\nbedges = 0
     
-    ComputeVertexPolygons(*mesh, *topo)
+    ComputeFacesFromTopology(*mesh, *topo)
+    ComputeVertexPolygons(*mesh)
     
     
     ; Compute Bounding Box
@@ -773,7 +795,7 @@ Module PolymeshGeometry
     
     ;Color
     Color::Set(color,0.33,0.33,0.33,1.0)
-    SetColors(*mesh,color)
+    SetColor(*mesh,color)
     
   EndProcedure
   
@@ -853,28 +875,25 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   ; Set Point Color
   ;---------------------------------------------------------
-  Procedure SetColors(*mesh.PolymeshGeometry_t,*color.c4f32= #Null)
-    Protected nbs = *mesh\nbsamples
+  Procedure SetColor(*mesh.PolymeshGeometry_t,*color.c4f32)
+    Define i
+    For i=0 To *mesh\nbsamples-1
+      CArray::SetValueF(*mesh\a_colors, i, *color)
+    Next
+  EndProcedure
+  
+  ;---------------------------------------------------------
+  ; Set Point Colors
+  ;---------------------------------------------------------
+  Procedure SetColors(*mesh.PolymeshGeometry_t,*colors.CArray::CArrayC4F32)
+    Define i, x
     
-    ; ---[ Set Point Normal ]---------------------------
-    Protected i
-    Protected c.c4f32
-    Define.f r,g,b
-   
-    If *color
-      r = *color\r
-      g = *color\g
-      b = *color\b
-    Else
-      r = Random(100)*0.01
-      g = 0.5
-      b = 0.1
-    EndIf
-    
-    Color::Set(c,r,g,b,1)
-    For i=0 To nbs-1
-      CArray::SetValue(*mesh\a_colors,i,c)
-    Next 
+    For i=0 To *mesh\nbsamples-1
+      ; Get Associated vertex Index
+      x = CArray::GetValueL(*mesh\a_triangleindices, i)
+      
+      CArray::SetValue(*mesh\a_colors, i, CArray::GetValue(*colors, x))
+    Next
      
   EndProcedure
   
@@ -1016,9 +1035,9 @@ Module PolymeshGeometry
   
     Topology::Extrusion(*geom\topo,*points,*section,#False)
     Set2(*geom,*geom\topo)
-    Define color.c4f32
-    Color::Randomize(color)
-    SetColors(*geom, colo)
+;     Define color.c4f32
+;     Color::Randomize(color)
+;     SetColors(*geom, colo)
     GetUVWSFromExtrusion(*geom,*points,*section)
   
   EndProcedure
@@ -1183,7 +1202,8 @@ Module PolymeshGeometry
     Next x
 
   EndProcedure
-  
+ 
+ 
   ;---------------------------------------------------------
   ; Get Next Open Edge
   ;---------------------------------------------------------
@@ -1218,6 +1238,51 @@ Module PolymeshGeometry
     ProcedureReturn #Null
   EndProcedure
   
+  ;---------------------------------------------------------
+  ; Get HalfEdge by providing vertex indices
+  ;---------------------------------------------------------
+  Procedure GetHalfEdge(*mesh.Geometry::PolymeshGeometry_t, p0.i, p1.i)
+    Protected *he.HalfEdge_t
+    For i = 0 To CArray::GetCount(*mesh\a_halfedges)-1
+      *he = Carray::GetValuePtr(*mesh\a_halfedges, i)
+      If *he\vertex = p0 And *he\next_he\vertex = p1
+        ProcedureReturn *he
+      EndIf
+    Next
+    ProcedureReturn #Null
+  EndProcedure
+  
+  
+  ;---------------------------------------------------------
+  ; Get Cotangent weight
+  ;---------------------------------------------------------
+  Procedure.f _GetOppositeAngle(*mesh.PolymeshGeometry_t, *edge.HalfEdge_t)
+    Define u.v3f32, v.v3f32, w.v3f32
+    Define *p1.v3f32, *p2.v3f32, *p3.v3f32
+    
+    *p1 = CArray::GetValue(*mesh\a_positions, *edge\next_he\vertex)
+    *p2 = CArray::GetValue(*mesh\a_positions, *edge\prev_he\vertex)
+    *p3 = CArray::GetValue(*mesh\a_positions, *edge\vertex)
+        
+    Vector3::Sub(u, *p1, *p2)
+    Vector3::Sub(v, *p2, *p3)
+    Vector3::NormalizeInPlace(u)
+    Vector3::NormalizeInPlace(v)
+    ProcedureReturn ACos(Vector3::Dot(u, v))
+  EndProcedure
+  
+
+  
+  Procedure.f ComputeCotangentWeight(*mesh.PolymeshGeometry_t, p0.i, p1.i)
+    Define *he.HalfEdge_t = GetHalfEdge(*mesh, p0, p1)
+    If Not *he Or Not *he\opposite_he
+      ProcedureReturn 0.0
+    EndIf
+    
+    ProcedureReturn _GetOppositeAngle(*mesh, *he)
+  EndProcedure
+  
+    
   ;---------------------------------------------------------
   ; Compute Half Edges
   ;---------------------------------------------------------
@@ -1291,32 +1356,32 @@ Module PolymeshGeometry
     Define *first.Geometry::HalfEdge_t
     Define *last.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-    Define *atidx.Geometry::HalfEdge_t
+    Define *next.Geometry::HalfEdge_t
     If MapSize(*openedges())
       ResetMap(*openedges())
       NextMapElement(*openedges())
       *first = *openedges()
-      *atidx = CArray::GetValuePtr(*mesh\a_halfedges, index)
-      *atidx\face = -1
-      *atidx\vertex = *first\next_he\vertex
-      *atidx\opposite_he = *first
-      *first\opposite_he =  *atidx
-      *last = *atidx
+      *current = CArray::GetValuePtr(*mesh\a_halfedges, index)
+      *current\face = -1
+      *current\vertex = *first\next_he\vertex
+      *current\opposite_he = *first
+      *first\opposite_he =  *current
+      *last = *current
       index + 1
-      *current = GetNextOpenEdge(*openedges(), *first\vertex)
-      While *current And *current <> *first
-        *atidx = CArray::GetValuePtr(*mesh\a_halfedges, index)
-        *atidx\face = -1
-        *atidx\vertex = *current\next_he\vertex
-        *atidx\opposite_he = *current
-        *atidx\prev_he = *last
-        *last\next_he = *atidx
-        *current\opposite_he =  *atidx
-        *last =  *atidx
-        *current = GetNextOpenEdge(*openedges(), *current\vertex)
+      *next = GetNextOpenEdge(*openedges(), *first\vertex)
+      While *next And *next <> *first
+        *current = CArray::GetValuePtr(*mesh\a_halfedges, index)
+        *current\face = -1
+        *current\vertex = *next\next_he\vertex
+        *current\opposite_he = *next
+        *current\prev_he = *last
+        *last\next_he = *current
+        *next\opposite_he =  *current
+        *last =  *current
+        *next = GetNextOpenEdge(*openedges(), *next\vertex)
         index + 1
       Wend  
-      If *current
+      If *next
         *first\opposite_he\prev_he = *last
         *last\next_he = *first\opposite_he
       EndIf
@@ -1406,7 +1471,10 @@ Module PolymeshGeometry
   Procedure GetVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, index.i, *neighbors.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-   
+    
+    If CArray::GetCount(*mesh\a_vertexhalfedge) <> *mesh\nbpoints
+      ComputeHalfEdges(*mesh)
+    EndIf
 
     CArray::SetCount(*neighbors, 0)
 
@@ -1574,14 +1642,19 @@ Module PolymeshGeometry
   ; Get Vertex Polygons
   ;---------------------------------------------------------
   Procedure GetVertexPolygons(*Me.PolymeshGeometry_t, vertex.i, *indices.CArray::CArrayLong)
-    Define i,j, k, accum = 0
-    For i=0 To *Me\nbpolygons-1
-      k = CArray::GetValueL(*Me\a_vertexpolygoncount, i)
-      For j=0 To k-1
-        If CArray::GetValueL(*Me\a_vertexpolygonindices, accum + j ) = vertex : CArray::AppendL(*indices, i) : EndIf
-      Next
-      accum + k
+    If CArray::GetCount(*Me\a_vertexpolygoncount) <> *Me\nbpoints
+      ComputeVertexPolygons(*Me)
+    EndIf
+    Define offset = 0
+    For i = 0 To vertex - 1
+      offset = CArray::GetValueL(*Me\a_vertexpolygoncount, i)
     Next
+    Define nbVertices = CArray::GetValueL(*Me\a_vertexpolygoncount, vertex)
+    CARray::SetCount(*indices, nbVertices)
+    For i = 0 To nbVertices - 1
+      CARray::SetValueL(*indices, i, CArray::GetValueL(*Me\a_vertexpolygonindices, offset + i))
+    Next
+    
   EndProcedure
   
   
@@ -1893,7 +1966,7 @@ Module PolymeshGeometry
     
     Protected color.c4f32
     Color::Set(color,1,0,0,1);
-    SetColors(*geom,@color)
+    SetColor(*geom,@color)
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
     ComputeTopology(*geom)
@@ -2014,7 +2087,7 @@ Module PolymeshGeometry
     
     Protected color.c4f32
     Color::Set(color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
-   SetColors(*geom,@color)
+    SetColor(*geom,@color)
     ComputeTriangles(*geom)
     ComputeNormals(*geom,1)
   
@@ -2092,7 +2165,7 @@ Module PolymeshGeometry
    
     ;Color
     Color::Set(color,1,Random(255)/255,Random(255)/255,Random(255)/255);
-    SetColors(*geom,@color)
+    SetColor(*geom,@color)
     
     ;UVWs
     GetUVWSFromPosition(*geom,#True)
@@ -2396,8 +2469,8 @@ Module PolymeshGeometry
   Class::DEF( PolymeshGeometry )
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 2334
-; FirstLine = 2318
-; Folding = ----P5----0-
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 1261
+; FirstLine = 1236
+; Folding = -----g-----+-
 ; EnableXP
