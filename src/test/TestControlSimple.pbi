@@ -52,15 +52,15 @@ Procedure AddButtonControl(*ui.PropertyUI::PropertyUI_t, name.s)
   ControlProperty::AddStringControl(*prop, "String", "Fuck Dat Shit", #Null)
   
   Define *group.ControlGroup::ControlGroup_t = ControlProperty::AddGroup(*prop, "GROUP")
-  ControlGroup::AppendStart(*group)
-  ControlGroup::RowStart(*group)
+  ControlProperty::RowStart(*prop)
   For i=0 To 5
-    Define *ctrl.ControlNumber::ControlNumber_t = ControlNumber::New(*group, "Number"+Str(i), i)
-    ControlGroup::Append(*group, *ctrl)
+    ControlProperty::AddFloatControl(*prop, "Number"+Str(i), "Number"+Str(i), i)
   Next
   
-  ControlGroup::RowEnd(*group)
-  ControlGroup::AppendStop(*group)
+  ControlProperty::RowEnd(*prop)
+  ControlProperty::EndGroup(*prop)
+  
+  ControlProperty::AppendStop(*prop)
   
   
   
@@ -127,8 +127,8 @@ AddButtonControl(*ui, "Button")
 ;   UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 64
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 22
 ; Folding = -
 ; EnableXP

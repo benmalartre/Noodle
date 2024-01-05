@@ -83,7 +83,7 @@ DeclareModule ControlProperty
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
   Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
-  Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=82)
+  Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=100)
   Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
@@ -549,7 +549,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Knob Control
   ;-----------------------------------------------------------------------------
-  Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=82)
+  Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=100)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -1439,9 +1439,14 @@ EndProcedure
     ev_data\height = #PB_Ignore
     
     Define son.Control::IControl
+    Define y = 0
     For i=0 To num_controls - 1
       current_index = start_index + i
       son = *Me\children(current_index)
+      If *Me\children(current_index)\sizY > y
+        y = *Me\children(current_index)\sizY
+      EndIf
+      
       
       If *Me\children(current_index)\fixedX
         ev_data\width = widths(i)
@@ -1454,6 +1459,7 @@ EndProcedure
       son\OnEvent(#PB_EventType_Resize, ev_data)
       x + ev_data\width + Control::PADDING
     Next
+    ProcedureReturn y + Control::MARGING
   EndProcedure
 
   ; ============================================================================
@@ -1483,7 +1489,6 @@ EndProcedure
       ;  Resize
       ; ------------------------------------------------------------------------
       Case #PB_EventType_Resize
-        Debug "CONTROL PROPERTY RESIZE!!!!"
         If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
         If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
         If *ev_data\width <> #PB_Ignore : *Me\sizX = *ev_data\width : EndIf
@@ -1496,26 +1501,23 @@ EndProcedure
         ev_data\y = 0
         ev_data\width = *ev_data\width
         ev_data\height = *ev_data\height
-        Debug "NUM CHILDREN : " +Str(*Me\chilcount)
         ; Resize Controls
         For c=0 To *Me\chilcount - 1
           If *Me\rowflags(c) 
             nbc_row = GetNumControlInRow(*Me, c)
-            ResizeControlsInRow(*Me, c, nbc_row)
-                        Debug "RESIZE CONTROL PROPERTY CHILD ROW"
-
+            ev_data\y + ResizeControlsInRow(*Me, c, nbc_row)
+            
             c + nbc_row - 1
           Else
             son = *Me\children(c)
             *son = son
             If *son\type = Control::#ICON Or *son\type = Control::#TEXT: Continue : EndIf
             ev_data\width = *ev_data\width
-            ev_data\x     = *son\posX
-            ev_data\y     = *son\posY
+            ev_data\height = #PB_Ignore
             son\OnEvent(#PB_EventType_Resize, ev_data)
-            Debug "RESIZE CONTROL PROPERTY CHILD"
-
+            ev_data\y + *son\sizY
           EndIf
+          
         Next
         DrawPickImage(*Me)
         Draw( *Me )
@@ -1914,8 +1916,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1870
-; FirstLine = 1866
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 366
+; FirstLine = 356
 ; Folding = ----------
 ; EnableXP

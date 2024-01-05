@@ -14,28 +14,28 @@ EnableExplicit
 
 
 Procedure DrawGradient()
-  Define *start.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  Define *end.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  CArray::SetCount(*start, *solver\mesh\nbpolygons)
-  CArray::SetCount(*end, *solver\mesh\nbpolygons)
-  
-  Define *vertices.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
-  Define c.v3f32
-  Define i, j
-  For i = 0 To *solver\mesh\nbpolygons - 1
-    PolymeshGeometry::GetPolygonVertices(*solver\mesh, i, *vertices)
-    Vector3::Set(c, 0, 0, 0)
-    For j = 0 To CArray::GetCount(*vertices) - 1
-      Vector3::AddInPlace(c, CArray::GetValue(*solver\mesh\a_positions, CArray::GetValueL(*vertices, j)))
-    Next
-    Vector3::ScaleInPlace(c, 1 / CArray::GetCount(*vertices))
-    CArray::SetValue(*start, i, c)
-    Vector3::ScaleAddInPlace(c, *solver\faces(i)\gradu, 0.1)
-    CArray::SetValue(*end, i, c)
-    
-  Next
-  
-  Drawer::AddLines2(*solver\drawer, *start, *end)  
+;   Define *start.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+;   Define *end.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+;   CArray::SetCount(*start, *solver\mesh\nbpolygons)
+;   CArray::SetCount(*end, *solver\mesh\nbpolygons)
+;   
+;   Define *vertices.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+;   Define c.v3f32
+;   Define i, j
+;   For i = 0 To *solver\mesh\nbpolygons - 1
+;     PolymeshGeometry::GetPolygonVertices(*solver\mesh, i, *vertices)
+;     Vector3::Set(c, 0, 0, 0)
+;     For j = 0 To CArray::GetCount(*vertices) - 1
+;       Vector3::AddInPlace(c, CArray::GetValue(*solver\mesh\a_positions, CArray::GetValueL(*vertices, j)))
+;     Next
+;     Vector3::ScaleInPlace(c, 1 / CArray::GetCount(*vertices))
+;     CArray::SetValue(*start, i, c)
+;     Vector3::ScaleAddInPlace(c, *solver\faces(i)\gradu, 0.1)
+;     CArray::SetValue(*end, i, c)
+;     
+;   Next
+;   
+;   Drawer::AddLines2(*solver\drawer, *start, *end)  
 EndProcedure
 
 
@@ -94,18 +94,29 @@ Procedure Draw(*app.Application::Application_t)
  
  Define width = 800
  Define height = 600
+ UIColor::Init()
 ; Main
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
    *app = Application::New("Test",width,height)
-  
+   
+   View::Split(*app\window\main, 0, 90)
   
   If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-    View::SetContent(*app\window\main,*viewport)
+    *viewport = ViewportUI::New(*app\window\main\left,"ViewportUI", *app\camera, *app\handle)     
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
+  
+  Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property", #Null)
+  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "HeatDiffusion ", "Controls")
+  
+  ControlProperty::AppendStart(*prop)
+  ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+  ControlProperty::AddFloatControl(*prop, "Diffusion", "Diffusion", 0.05, #Null)
+  
+  ControlProperty::AppendStop(*prop)
+  PropertyUI::AddProperty(*ui, *prop)
   
   *app\scene = Scene::New()
   Camera::LookAt(*app\camera)
@@ -130,7 +141,7 @@ Procedure Draw(*app.Application::Application_t)
 
 
   *solver = AllocateStructure(HeatDiffusion::Solver_t)
-  *solver\drawer = Drawer::New("heat diffusuion drawer")
+;   *solver\drawer = Drawer::New("heat diffusuion drawer")
   HeatDiffusion::Init(*solver, *bunny)
   HeatDiffusion::Laplacian(*solver)
   
@@ -145,13 +156,13 @@ Procedure Draw(*app.Application::Application_t)
   
   PolymeshGeometry::SetColors(*bunny\geom, *colors)
   
-  Scene::AddChild(*app\scene, *solver\drawer)
+;   Scene::AddChild(*app\scene, *solver\drawer)
   Scene::Setup(*app\scene)
 
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 39
+; CursorPosition = 116
+; FirstLine = 89
 ; Folding = -
 ; EnableXP
