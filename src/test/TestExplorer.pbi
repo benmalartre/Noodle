@@ -42,11 +42,12 @@ Global *scene.Scene::Scene_t
 ExplorerUI::Connect(*explorer, *scene)
 AddChildren(*scene)
 
-Scene::SelectObject(*scene, CArray::GetPtr(*scene\objects, 0))
+; Scene::SelectObject(*scene, CArray::GetPtr(*scene\objects, 0))
 
 
 Application::Loop(*app)
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 10
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 47
+; FirstLine = 1
 ; Folding = -
 ; EnableXP

@@ -34,7 +34,7 @@ Procedure PolygonSoup()
   Topology::Sphere(*topo, 2,64 ,32)
   Protected numTopos.i = 12
   
-  Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
+  Protected *matrices.CArray::CArrayM4F32 = CArray::New(CARray::#ARRAY_M4F32)
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
@@ -50,7 +50,7 @@ Procedure PolygonSoup()
     Matrix4::SetTranslation(*m,   p)
   Next
   
-  Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Protected *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
   
@@ -137,7 +137,7 @@ Procedure TestHit()
   Drawer::SetColor(S, Color::PURPLE)
   Drawer::SetWireframe(S, #True)
   
-  Define radius.f = Octree::GetClosestPointBruteForce(*octree, *qp, loc)
+  Define radius.f = Octree::GetClosestPoint(*octree, *qp, loc)
   If radius >= 0
     P = Drawer::AddPoint(*drawer, loc\p)
     Drawer::SetSize(P, 10)
@@ -159,14 +159,14 @@ Procedure TestHit()
 EndProcedure
  
 Procedure Draw(*app.Application::Application_t)
-;   GLContext::SetContext(*viewport\context)
-;   Scene::*current_scene\dirty= #True
-;   
-;   ;Drawer::Flush(*drawer)
-;   TestHit()
-; 
-;   Scene::Update(Scene::*current_scene)
-;   Define numCells.l
+  GLContext::SetContext(*viewport\context)
+  *app\scene\dirty= #True
+  
+  Drawer::Flush(*drawer)
+  TestHit()
+
+  Scene::Update(*app\scene)
+  Define numCells.l
 ;   
 ;   LayerDefault::Draw(*layer, *viewport\context)
 ; ;   FTGL::BeginDraw(*viewport\context\writer)
@@ -182,14 +182,13 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   
 ;   GLContext::FlipBuffer(*viewport\context)
   
-  GLContext::SetContext(*viewport\context)
-;   Drawer::Flush(*drawer)
 
-  Scene::*current_scene\dirty= #True
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
 ;   GLContext::SetContext(*viewport\context)
-  LayerDefault::Draw(*layer, *viewport\context)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
@@ -221,19 +220,22 @@ EndIf
 
 Define T.d = Time::Get()
 *mesh.Polymesh::Polymesh_t = PolygonSoup();Polymesh::New("S", Shape::#SHAPE_SPHERE);
-Object3D::SetShader(*mesh, *app\context\shaders("polymesh"))
 *drawer = Drawer::New()
 Define polygonSoupT.d = Time::Get() - T
 *query = Locator::New("QUERY")
 
 *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+Geometry::ComputeBoundingBox(*geom)
+Vector3::Echo(*geom\bbox\extend, "BBOX : ")
 
 Define.v3f32 bmin, bmax
 Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
 Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
 
+Vector3::Echo(bmin, "octree bmin")
+Vector3::Echo(bmax, "octree bmax")
+*octree = Octree::New(bmin, bmax, 0)
 
-*octree = Octree::New(bmin.v3f32, bmax.v3f32, 0)
 T = Time::Get()
 Octree::Build(*octree, *geom, 6)
 Define buildOctreeT.d = Time::get() - T
@@ -250,8 +252,9 @@ buildMessage + "Build Octree : "+StrD(buildOctreeT)+Chr(10)
 buildMessage + "Draw Octree : "+StrD(drawOctreeT)+Chr(10)
 buildMessage + "Num Leaves : "+Str(numCells)+Chr(10)
 buildMessage + "Num Triangles : "+Str(*geom\nbtriangles)+Chr(10)
+Debug buildMessage
 
-Scene::*current_scene = Scene::New()
+*app\scene = Scene::New()
 GLContext::SetContext(*viewport\context)
 *layer = LayerDefault::New(*viewport\sizX,*viewport\sizY,*viewport\context,*app\camera)
 Global *root.Model::Model_t = Model::New("Model")
@@ -259,19 +262,19 @@ Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 Object3D::AddChild(*root, *query)
 
-Scene::AddModel(Scene::*current_scene, *root)
+Scene::AddModel(*app\scene, *root)
 
 Define t.d = Time::Get()
-Scene::Setup(Scene::*current_scene, *app\context)
-Scene::SelectObject(Scene::*current_scene, *query)
+Scene::Setup(*app\scene)
+Scene::SelectObject(*app\scene, *query)
 ViewportUI::SetHandleTarget(*viewport, *query)
 
 Application::Loop(*app, @Draw())
 
 Octree::Delete(*octree)
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 254
-; FirstLine = 204
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 228
+; FirstLine = 199
 ; Folding = -
 ; EnableThread
 ; EnableXP

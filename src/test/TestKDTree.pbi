@@ -119,7 +119,7 @@ Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t)
     DrawKDNode(*tree,*node\left)
     DrawKDNode(*tree,*node\right)
   Else
-    If *node\hit
+;     If *node\hit
       Protected m.m4f32
       Matrix4::SetIdentity(m)
       Protected min.v3f32,max.v3f32, c.v3f32,s.v3f32
@@ -140,7 +140,7 @@ Procedure DrawKDNode(*tree.KDTree::KDTree_t,*node.KDTree::KDNode_t)
       EndIf
       
       Drawer::SetColor(*box, color)
-    EndIf
+;     EndIf
   EndIf
 EndProcedure
 
@@ -419,8 +419,8 @@ If Time::Init()
   
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 351
-; FirstLine = 307
+; CursorPosition = 380
+; FirstLine = 373
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe

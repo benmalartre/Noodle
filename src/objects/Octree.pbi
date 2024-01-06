@@ -287,9 +287,7 @@ Module Octree
 
     If Not *cell\isLeaf
       Define closestDistance.f = Math::#F32_MAX
-      ;       *cell = RecurseGetClosestCell(*cell, *pnt, @closestDistance)
       RecurseSetHit(*cell)
-      ;       *cell = RecurseGetCell(*cell, morton, depth)
       If *cell\parent
         ProcedureReturn *cell\parent
       Else
@@ -730,8 +728,8 @@ Module Octree
   ; Get Closest Point
   ;---------------------------------------------------------------------
   Procedure.f GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
-    Protected *closestCell.Cell_t  = GetClosestCellMorton(*octree, *pnt)
-    
+    Protected *closestCell.Cell_t  = GetClosestCell(*octree, *pnt);GetClosestCellMorton(*octree, *pnt)
+    Debug "closest cell : "+Str(*closestCell)
     If Not *closestCell : ProcedureReturn -1.0 : EndIf
     *closestCell\state = Octree::#STATE_HIT
     
@@ -873,8 +871,9 @@ Module Octree
     Vector3::Set(bmax, xx\v[_i+1], yy\v[_j+1], zz\v[_k+1])
     *child = Octree::NewCell(*octree, bmin, bmax, *cell\depth + 1)
     *child\parent = *cell
-    GetCenter(*child, box\origin)
-    GetHalfSize(*child, box\extend)
+    Vector3::Add(box\origin, bmin, bmax)
+    Vector3::ScaleInPlace(box\origin, 0.5)
+    Vector3::Sub(box\extend, bmax, bmin)
     
     numHits = 0
     For t=0 To numElements - 1
@@ -907,7 +906,7 @@ Module Octree
     Next
 
     FreeMemory(*hits)
-    
+        
     If Not *child\elements\itemCount
       *cell\children[m] = #Null
       DeleteCell(*child)
@@ -930,11 +929,13 @@ Module Octree
     *cell\isLeaf = #False
     Protected i, j, k, m, t
     Define.Point_t xx, yy, zz
+    Define.v3f32 *xx = xx
+    Define.v3f32 *yy = yy
+    Define.v3f32 *zz = zz
+    
     Define xt
     Define numHits = 0
-    Define *xx.v3f32 = @xx
-    Define *yy.v3f32 = @yy
-    Define *zz.v3f32 = @zz
+
     Define *child.Cell_t
     Vector3::Set(*xx, *cell\bmin\x, 0.5*(*cell\bmin\x+*cell\bmax\x), *cell\bmax\x)
     Vector3::Set(*yy, *cell\bmin\y, 0.5*(*cell\bmin\y+*cell\bmax\y), *cell\bmax\y)
@@ -1211,8 +1212,8 @@ Module Octree
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 813
-; FirstLine = 810
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 875
+; FirstLine = 773
 ; Folding = ---------
 ; EnableXP

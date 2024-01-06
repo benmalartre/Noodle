@@ -6,15 +6,15 @@ XIncludeFile "Geometry.pbi"
 DeclareModule Location
   UseModule Geometry
   UseModule Math
-  Declare GetPosition(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
-  Declare GetNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
-  Declare GetSmoothedNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
-  Declare GetColor(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
-  Declare GetAttribute(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t,attribute.s, *t.Transform::Transform_t)
-  Declare Update(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Declare GetPosition(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
+  Declare GetNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
+  Declare GetSmoothedNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
+  Declare GetColor(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
+  Declare GetAttribute(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t,attribute.s, *m.m4f32)
+  Declare Update(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
   Declare SetTriangleID(*Me.Location_t,ID.i=-1)
   Declare SetUVW(*Me.Location_t,u.f=0.0,v.f=0.0,w.f=0.0)
-  Declare Init(*Me.Location_t, *geom.Geometry::Geometry_t,*t.Transform::Transform_t,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
+  Declare Init(*Me.Location_t, *geom.Geometry::Geometry_t, *m.m4f32,tid.i=-1,u.f=0.0,v.f=0.0,w.f=0.0)
   Declare ClosestPoint( *Me.Location_t, *A.v3f32, *B.v3f32, *C.v3f32, *P.v3f32, *distance, maxDistance.f=Math::#F32_MAX)
   Declare BarycentricInterpolate(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *datas.CArray::CArrayT, *output)
   Declare GetValue(*Me.Geometry::Location_t, *geom.Geometry::Geometry_t, *Array.CArray::CArrayT, *result)
@@ -238,7 +238,7 @@ Module Location
   ;---------------------------------------------------------
   ; Get Position
   ;---------------------------------------------------------
-  Procedure GetPosition(*Me.Geometry::Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure GetPosition(*Me.Geometry::Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
     Define.v3f32 *a,*b,*c
     Define.v3f32 x
   
@@ -312,7 +312,7 @@ Module Location
 
     CompilerEndIf
     
-    Vector3::MulByMatrix4InPlace(*Me\p,*t\m)
+    Vector3::MulByMatrix4InPlace(*Me\p,*m)
     
 
   EndProcedure
@@ -320,7 +320,7 @@ Module Location
   ;---------------------------------------------------------
   ; Get Normal
   ;---------------------------------------------------------
-  Procedure GetNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure GetNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
   
     Define.v3f32 *a,*b,*c,ab,ac
     Define a = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3+2)
@@ -346,7 +346,7 @@ Module Location
   ;---------------------------------------------------------
   ; Get Smoothed Normal
   ;---------------------------------------------------------
-  Procedure GetSmoothedNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure GetSmoothedNormal(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
     Define.v3f32 *a,*b,*c
     Define.v3f32 x
   
@@ -372,7 +372,7 @@ Module Location
   ;---------------------------------------------------------
   ; Get Color
   ;---------------------------------------------------------
-  Procedure GetColor(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure GetColor(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
     Define.c4f32 *a,*b,*c
     Define.c4f32 x
   
@@ -404,14 +404,14 @@ Module Location
   ;---------------------------------------------------------
   ; Get Interpolated Attribute
   ;---------------------------------------------------------
-  Procedure GetAttribute(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t,attribute.s, *t.Transform::Transform_t)
+  Procedure GetAttribute(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t,attribute.s, *m.m4f32)
   
   EndProcedure
   
   ;---------------------------------------------------------
   ; Update
   ;---------------------------------------------------------
-  Procedure Update(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *t.Transform::Transform_t)
+  Procedure Update(*Me.Location_t, *geom.Geometry::PolymeshGeometry_t, *m.m4f32)
     Define.v3f32 *a,*b,*c
     Define.v3f32 x
     Define.v3f32 ab,ac
@@ -428,7 +428,7 @@ Module Location
     Vector3::Scale(x,*c,*Me\uvw\z)
     Vector3::AddInPlace(*Me\p,x)
     
-    Vector3::MulByMatrix4InPlace(*Me\p, *t\m)
+    Vector3::MulByMatrix4InPlace(*Me\p, *m)
     
     ; Normal
     Vector3::Sub(ab,*b,*a)
@@ -437,7 +437,7 @@ Module Location
 
     Vector3::NormalizeInPlace(*Me\n)
     
-    Vector3::MulByMatrix4InPlace(*Me\n, *t\m)
+    Vector3::MulByMatrix4InPlace(*Me\n, *m)
     
   EndProcedure
   
@@ -594,8 +594,8 @@ Module Location
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 556
-; FirstLine = 521
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 439
+; FirstLine = 426
 ; Folding = ---
 ; EnableXP

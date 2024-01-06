@@ -69,7 +69,7 @@ DeclareModule Shape
   	Data.l 0, 1, 2
   	Data.l 3, 2, 1
   
-  	shape_point_edges:
+  	shape_plate_edges:
   	Data.l 0,1
   	Data.l 1,2
   	Data.l 2,3
@@ -26484,7 +26484,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 12896
-; FirstLine = 12880
+; CursorPosition = 71
+; FirstLine = 55
 ; Folding = ----
 ; EnableXP

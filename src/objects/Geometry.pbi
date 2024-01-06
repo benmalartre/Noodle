@@ -603,7 +603,12 @@ Module Geometry
       For i=0 To *geom\nbpoints-1
         *v = CArray::GetValue(*geom\a_positions,i)
     
-        If worldSpace : Vector3::MulByMatrix4(v,*v,*m) : EndIf 
+        If worldSpace
+          Vector3::MulByMatrix4(v,*v,*m)
+        Else
+          Vector3::SetFromOther(v, *v)
+        EndIf 
+        
         If v\x < bmin\x : bmin\x = v\x : EndIf
         If v\y < bmin\y : bmin\y = v\y : EndIf
         If v\z < bmin\z : bmin\z = v\z : EndIf
@@ -646,7 +651,7 @@ Module Geometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 638
-; FirstLine = 593
+; CursorPosition = 610
+; FirstLine = 584
 ; Folding = -----
 ; EnableXP

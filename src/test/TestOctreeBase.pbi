@@ -29,10 +29,10 @@ Procedure PolygonSoup(numTopos=9)
   Protected *topo.Geometry::Topology_t = Topology::New()
   
   ;   PolymeshGeometry::TeapotTopology(*topo)
-  PolymeshGeometry::SphereTopology(*topo, 1,64 ,32)
+  Topology::Sphere(*topo, 1,64 ,32)
   
-  Protected *matrices.CArray::CArrayM4F32 = CArray::newCArrayM4F32()
-  Protected *positions.CArray::CArrayV3F32 = CARray::newCArrayV3F32()
+  Protected *matrices.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
+  Protected *positions.CArray::CArrayV3F32 = CARray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
@@ -51,7 +51,7 @@ Procedure PolygonSoup(numTopos=9)
     Matrix4::SetTranslation(*m,   *p)
   Next
   
-  Protected *topos.CArray::CArrayPtr = CArray::newCArrayPtr()
+  Protected *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
   
@@ -94,10 +94,14 @@ Procedure UpdateQuery()
     Define morton = Morton::Encode3D(cartesian)
     Octree::ResetHits(*octree)
 ;     Define *c1 = Octree::GetClosestCell(*octree, query)
-    Define *c2.Octree::Cell_t = Octree::GetCell(*octree, morton, query)
-    If *c2
-      Define *L = Drawer::AddLine(*drawer, query, *c2\bmin)
-      Drawer::SetColor(*L, Color::_WHITE())
+;     Define *c2.Octree::Cell_t = Octree::GetCell(*octree, morton, query)
+    Define loc.Geometry::Location_t
+    If Octree::GetClosestPoint(*octree, query, loc, 100)
+      Debug "geom : "+Str(*octree\geom)
+      Debug "tid : "+Str(loc\tid)
+      Location::GetPosition(loc, *octree\geom, Matrix4::IDENTITY())
+      Define *L = Drawer::AddLine(*drawer, query, loc\p)
+      Drawer::SetColor(*L, Color::WHITE)
     EndIf
     
 ;     If *c1 = *c2
@@ -109,7 +113,7 @@ Procedure UpdateQuery()
   Define *Q = Drawer::AddPoint(*drawer, query)
 
     Drawer::SetSize(*Q, 8)
-    Drawer::SetColor(*Q, Color::_YELLOW())
+    Drawer::SetColor(*Q, Color::YELLOW)
   EndProcedure
   
   
@@ -151,25 +155,27 @@ Procedure UpdateQuery()
 Procedure Update(*app.Application::Application_t)
 
   
-  ViewportUI::SetContext(*viewport)
+  GLContext::SetContext(*viewport\context)
   
   Drawer::Flush(*drawer)
-  Octree::Draw(*octree, *drawer, *mesh\geom)
   UpdateQuery()
-  Scene::*current_scene\dirty = #True
-  Scene::Update(Scene::*current_scene)
+  Octree::Draw(*octree, *drawer, *mesh\geom)
   
-  ViewportUI::Draw(*viewport, *app\context)
-
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  *app\scene\dirty = #True
+  Scene::Update(*app\scene)
+  
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+  
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Num Matches : "+Str(matches),-0.9,0.8,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"Num Matches : "+Str(matches),-0.9,0.8,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
 
@@ -182,16 +188,14 @@ FTGL::Init()
    *app = Application::New("Test Octree Base",width,height)
 
    If Not #USE_GLFW
-     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI", *app\camera)
-     
-    View::SetContent(*app\manager\main,*viewport)
+     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
-  ViewportUI::AddLayer(*viewport, *layer)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
+  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -204,7 +208,6 @@ FTGL::Init()
 ;   PolymeshGeometry::Set2(*geom, *geom\topo)
   Object3D::Freeze(*mesh)
   *drawer = Drawer::New("DRAWER")
-  Object3D::SetShader(*drawer, *app\context\shaders("drawer"))
   
   Define bmin.v3f32, bmax.v3f32
   Vector3::Sub(bmin, *mesh\geom\bbox\origin, *mesh\geom\bbox\extend)
@@ -221,10 +224,10 @@ FTGL::Init()
   BenchClosestCell(*octree, 1024)
  
   
-;   Object3D::AddChild(*root, *mesh)
+  Object3D::AddChild(*root, *mesh)
   Object3D::AddChild(*root, *drawer)
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene)
   
   
   Application::Loop(*app, @Update())
@@ -232,8 +235,8 @@ FTGL::Init()
 EndIf
 
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 173
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 96
+; FirstLine = 68
 ; Folding = -
 ; EnableXP
