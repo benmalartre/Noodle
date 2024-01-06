@@ -13,12 +13,6 @@ DeclareModule Octree
   #MAX_ELEMENTS = 64
   #LONG_BITS    = 21
   #MAX_L        = ((1<<(#LONG_BITS))-1)
-  
-  Enumeration
-    #STATE_DEFAULT
-    #STATE_NEARBY
-    #STATE_HIT
-  EndEnumeration
 
   Enumeration 
     #ELEMENT_1D
@@ -41,7 +35,6 @@ DeclareModule Octree
   	*elements.CArray::CArrayLong
   	color.c4f32
   	morton.i
-  	state.i
   	elemType.i
   EndStructure
   
@@ -83,7 +76,6 @@ DeclareModule Octree
   Declare LookUpCell(*octree.Octree_t, morton.i)
   
   Declare Split(*octree.Octree_t,*cell.Cell_t, *geom.Geometry::PolymeshGeometry_t, maxDepth.i)
-  Declare ResetHits(*cell.Cell_t)
   Declare Barycentric(*p.v3f32, *a.v3f32, *b.v3f32, *c.v3f32, *uvw.v3f32)
   Declare GetClosestCell(*octree.Cell_t, *point.v3f32)
   Declare RecurseGetClosestCell(*cell.Cell_t, *point.v3f32, *closestDistance)
@@ -115,7 +107,6 @@ Module Octree
     Protected *octree.Octree_t = AllocateStructure(Octree_t)
     *octree\elements = CArray::New(CArray::#ARRAY_LONG)
     *octree\depth = depth
-    *octree\state = #STATE_DEFAULT
     *octree\elemType = elemType
     
     Define minv.f = *bmin\x
@@ -164,7 +155,6 @@ Module Octree
     Protected *cell.Cell_t = AllocateStructure(Cell_t)
     *cell\elements = CArray::New(CArray::#ARRAY_LONG)
     *cell\depth = depth
-    *cell\state = #STATE_DEFAULT
     Vector3::SetFromOther(*cell\bmin, *bmin)
     Vector3::SetFromOther(*cell\bmax, *bmax)
     Color::Randomize(*cell\color)
@@ -226,17 +216,6 @@ Module Octree
     EndIf
   EndProcedure
   
-  Procedure RecurseSetHit(*cell.Cell_t)
-    *cell\state = Octree::#STATE_HIT
-    If Not *cell\isLeaf
-      Define i
-      For i = 0 To 7
-        If *cell\children[i] : RecurseSetHit(*cell\children[i]) : EndIf
-      Next
-    EndIf
-    
-  EndProcedure
-  
   Procedure RecurseGetCell(*cell.Cell_t, morton.i, depth.i)
     If Not *cell\isLeaf
       Define i
@@ -287,7 +266,6 @@ Module Octree
 
     If Not *cell\isLeaf
       Define closestDistance.f = Math::#F32_MAX
-      RecurseSetHit(*cell)
       If *cell\parent
         ProcedureReturn *cell\parent
       Else
@@ -295,7 +273,6 @@ Module Octree
       EndIf
       
     EndIf
-    *cell\state = Octree::#STATE_HIT
     ProcedureReturn *cell
     
   EndProcedure
@@ -321,27 +298,6 @@ Module Octree
         If *child : VisitAll(*octree, *child) : EndIf
       EndIf
     Next
-  EndProcedure
-  
-  
-  ;---------------------------------------------------------------------
-  ; RESET HITS
-  ;---------------------------------------------------------------------
-  Procedure ResetHits(*cell.Cell_t)
-    *cell\state = Octree::#STATE_DEFAULT
-    
-    If Not *cell\isLeaf
-      Protected i
-      For i=0 To 7
-        If *cell\children[i]
-          If *cell\children[i]\isLeaf
-            *cell\children[i]\state = Octree::#STATE_DEFAULT
-          Else
-            ResetHits(*cell\children[i])
-          EndIf
-        EndIf
-      Next
-    EndIf
   EndProcedure
   
   ;---------------------------------------------------------------------
@@ -613,7 +569,6 @@ Module Octree
           If *currentCell : *closestCell = *currentCell : EndIf
         EndIf
       Next j
-      If *closestCell : *closestCell\state = Octree::#STATE_NEARBY: EndIf
       ProcedureReturn *closestCell
     EndIf
   EndProcedure
@@ -683,7 +638,6 @@ Module Octree
     Define i, j
     Define.v3f32 *a, *b, *c
     Define.v3f32 closest, uvw, delta
-    *cell\state = #STATE_HIT
     Define distance.f
     For i=0 To *cell\elements\itemCount - 1
       j = CArray::GetValueL(*cell\elements, i)
@@ -728,10 +682,8 @@ Module Octree
   ; Get Closest Point
   ;---------------------------------------------------------------------
   Procedure.f GetClosestPoint(*octree.Octree_t, *pnt.v3f32, *loc.Geometry::Location_t)
-    Protected *closestCell.Cell_t  = GetClosestCell(*octree, *pnt);GetClosestCellMorton(*octree, *pnt)
-    Debug "closest cell : "+Str(*closestCell)
+    Protected *closestCell.Cell_t  = GetClosestCellMorton(*octree, *pnt)
     If Not *closestCell : ProcedureReturn -1.0 : EndIf
-    *closestCell\state = Octree::#STATE_HIT
     
     Define closestDistance.f = #F32_MAX
     Define distance.f
@@ -1140,17 +1092,7 @@ Module Octree
       Matrix4::SetTranslation(m, p)
       *box = Drawer::AddBox(*drawer, m)
       
-      Select *cell\state
-        Case Octree::#STATE_DEFAULT
-           Drawer::SetColor(*box,Color::WHITE)
-        Case Octree::#STATE_HIT
-           Drawer::SetColor(*box,Color::Red)
-        Case Octree::#STATE_NEARBY
-          Drawer::SetColor(*box,Color::YELLOW)
-        Default
-          Drawer::SetColor(*box,Color::WHITE)
-      EndSelect
-      
+      Drawer::SetColor(*box,Color::WHITE) 
       
 ;       Protected *positions.CArray::CarrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 ;       Protected *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
@@ -1213,7 +1155,7 @@ Module Octree
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 875
-; FirstLine = 773
-; Folding = ---------
+; CursorPosition = 650
+; FirstLine = 632
+; Folding = --------
 ; EnableXP

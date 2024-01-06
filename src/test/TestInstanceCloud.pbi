@@ -72,7 +72,7 @@ Procedure CreateGround()
   
   *ground\dirty = Object3D::#DIRTY_STATE_DEFORM
   
-  Scene::AddChild(Scene::*current_scene,*ground)
+  Scene::AddChild(*app\scene,*ground)
   
   ProcedureReturn *ground
 EndProcedure
@@ -80,7 +80,7 @@ EndProcedure
 Procedure InstanceGrid(*cloud.InstanceCloud::InstanceCloud_t, nx.i, nz.i)
   Protected *geom.Geometry::PointCloudGeometry_t = *cloud\geom
   *geom\nbpoints = nx * nz
-  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*positions, *geom\nbpoints)
   Protected x,z
   Protected *p.v3f32
@@ -99,20 +99,22 @@ EndProcedure
 ; Draw  
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
-  ;Scene::Update(Scene::*current_scene)
-  ;LayerDefault::Draw(*Default,*app\context)
+  GLContext::SetContext(*viewport\context)
+  ;Scene::Update(*app\scene)
+  ;LayerDefault::Draw(*Default,*viewport\context)
   Application::Draw(*app, *default, *app\camera)
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer, 1,1,1,1)
+  
+  viewportUI::Blit(*viewport, *default\framebuffer)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer, 1,1,1,1)
 
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
-  viewportUI::Blit(*viewport, *default\datas\buffer)
+  GLContext::FlipBuffer(*viewport\context)
+  
 
  EndProcedure
  
@@ -128,9 +130,9 @@ Procedure Draw(*app.Application::Application_t)
      Alembic::Init()
    CompilerEndIf
    
-   Scene::*current_scene = Scene::New()
    ExamineDesktops()
    *app = Application::New("Test Instances",width,height)
+      *app\scene = Scene::New()
    If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
      
@@ -138,7 +140,7 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   Define glVersion.s = PeekS(glGetString(#GL_VERSION),-1,#PB_Ascii)
   MessageRequester("OpenGL Version",glVersion)
   
@@ -149,10 +151,10 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   
   
-  *default = LayerDefault::New(width,height,*app\context,*app\camera)
-  *gbuffer = LayerGBuffer::New(width,height,*app\context,*app\camera)
-  *ssao = LayerSSAO::New(width,height,*app\context,Layer::GetDatas(*gbuffer),*app\camera)
-  *blur = LayerBlur::New(width,height,*app\context,Layer::GetDatas(*ssao),*app\camera)
+  *default = LayerDefault::New(width,height,*viewport\context,*app\camera)
+  *gbuffer = LayerGBuffer::New(width,height,*viewport\context,*app\camera)
+  *ssao = LayerSSAO::New(width,height,*viewport\context,*gbuffer\framebuffer,*app\camera)
+  *blur = LayerBlur::New(width,height,*viewport\context,*ssao\framebuffer,*app\camera)
   
   If Not #USE_GLFW
     Application::AddLayer(*app, *default)
@@ -186,7 +188,7 @@ Procedure Draw(*app.Application::Application_t)
 ;     *abc = Model::New("Empty")
 ;   CompilerEndIf
 ;   
-;   Scene::AddModel(Scene::*current_scene,*abc)
+;   Scene::AddModel(*app\scene,*abc)
   
 
   
@@ -217,7 +219,7 @@ Procedure Draw(*app.Application::Application_t)
 ;         ;Shape::RandomizeColors(*bunnies()\shape,@color,0.0)
 ;         
 ;         
-;   Scene::AddChild(Scene::*current_scene,*mesh)
+;   Scene::AddChild(*app\scene,*mesh)
   
   
   Define ps.v3f32, pe.v3f32
@@ -226,7 +228,9 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define *locs.CArray::CArrayLocation = CArray::newCArrayLocation(*ground\geom, *ground\globalT)
+  Define *locs.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
+  *locs\geometry = *ground\geom
+  *locs\transform = *ground\globalT
   Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
   Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
   
@@ -247,7 +251,7 @@ Procedure Draw(*app.Application::Application_t)
   Next
     
   PointCloudGeometry::RandomizeColor(*cloud\geom)
-  InstanceCloud::Setup(*cloud,*app\context\shaders("instances"))
+  InstanceCloud::Setup(*cloud)
   
 ;   
 ; ;   *texture = Texture::NewFromSource("D:\Projects\RnD\PureBasic\Noodle\textures\moonmap.jpg")
@@ -255,17 +259,17 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   glActiveTexture(#GL_TEXTURE0)
 ; ;   glBindTexture(#GL_TEXTURE_2D,*texture\tex)
 ;   
-  Scene::AddChild(Scene::*current_scene,*cloud)
-  Scene::AddChild(Scene::*current_scene,*mesh)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddChild(*app\scene,*cloud)
+  Scene::AddChild(*app\scene,*mesh)
+  Scene::Setup(*app\scene)
   
   Application::Loop(*app,@Draw())
   
 
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 163
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 106
+; FirstLine = 94
 ; Folding = --
 ; EnableXP
 ; Executable = Test
