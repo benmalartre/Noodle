@@ -141,6 +141,11 @@ DeclareModule Callback
         Arguments::DECL(_arg1, 0)
       EndStructure
       
+    CompilerElse
+      #_funcname#NUM_ARGS = 0
+      Structure _funcname#DATAS_t
+      EndStructure
+      
     CompilerEndIf
      
     Callback::BEGINCALLBACK(_funcname)
@@ -174,8 +179,7 @@ Module Callback
   
 EndModule
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 168
-; FirstLine = 131
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 25
 ; Folding = --
 ; EnableXP

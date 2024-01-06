@@ -107,7 +107,7 @@ Module MathUtils
         Vector3::Cross(side,*up,delta)
         Vector3::Cross(up,delta,side)
         Vector3::NormalizeInPlace(up)
-        Quaternion::LookAt(t\t\rot,delta,up, #False)
+        Quaternion::LookAt(t\t\rot,delta,up)
         Vector3::SetFromOther(*up,up)
       EndIf
       
@@ -365,7 +365,8 @@ Module MathUtils
 
 
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 20
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 109
+; FirstLine = 105
 ; Folding = ----
 ; EnableXP

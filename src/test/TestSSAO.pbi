@@ -284,7 +284,7 @@ Procedure Draw(*app.Application::Application_t)
   CompilerElse
     occ_blur = 2
     occ_radius = 0.5
-    GLContext::SetContext(*app\context)
+    GLContext::SetContext(*viewport\context)
     mx = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseX)
     my = GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_MouseY)
     viewportWidth = GadgetWidth(*viewport\gadgetID) * GLContext::BackingScaleFactor()
@@ -373,11 +373,11 @@ Procedure Draw(*app.Application::Application_t)
   ;         Vector3::Set(p,*bunnies()\model\v[12],Sin(Time::Get()+i)+2,*bunnies()\model\v[14])
   ;         Matrix4::SetTranslation(*bunnies()\model,@p)
     glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*bunnies()\matrix)
-    Polymesh::Draw(*bunnies(), *app\context)
+    Polymesh::Draw(*bunnies())
     
   Next
   glUniformMatrix4fv(glGetUniformLocation(shader,"model"),1,#GL_FALSE,*ground\matrix)
-  Polymesh::Draw(*ground, *app\context)
+  Polymesh::Draw(*ground)
   
   GLCheckError("ssao geometry pass")
   
@@ -465,7 +465,7 @@ Procedure Draw(*app.Application::Application_t)
 
   Present(3)
   CompilerIf Not #USE_GLFW
-    GLContext::FlipBuffer(*app\context)
+    GLContext::FlipBuffer(*viewport\context)
     
   CompilerEndIf
  
@@ -483,7 +483,6 @@ If Time::Init()
      SetupSSAOCOntrols(controls)
 ;      *prop.PropertyUI::PropertyUI_t = PropertyUI::New(*view\right,"PropertyUI",#Null)
 ;      *controls = AddControls(*prop)
-     Application::SetContext(*app, *viewport\context)
    CompilerEndIf
    
 ;   CompilerIf #USE_GLFW
@@ -570,14 +569,14 @@ If Time::Init()
         PolymeshGeometry::RandomColorByIsland(*bunnies()\geom)
         Vector3::Set(pos,x-5,y+0.5,z-5)
         Matrix4::SetTranslation(*bunnies()\matrix,pos)
-        Polymesh::Setup(*bunnies(),*s_gbuffer)
+        Polymesh::Setup(*bunnies())
       Next
     Next
   Next
   
   *ground = Polymesh::New("Ground",Shape::#SHAPE_GRID)
   ;Shape::RandomizeColors(*ground\shape,@color,0.0)
-  Polymesh::Setup(*ground,*s_gbuffer)
+  Polymesh::Setup(*ground)
   
   *quad = ScreenQuad::New()
   ScreenQuad::Setup(*quad,*s_gbuffer)
@@ -622,8 +621,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 200
+; CursorPosition = 562
+; FirstLine = 539
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

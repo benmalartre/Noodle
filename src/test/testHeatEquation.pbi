@@ -10,8 +10,6 @@ CompilerEndIf
 
 UseModule OpenGLExt
 
-EnableExplicit
-
 
 Procedure DrawGradient()
 ;   Define *start.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
@@ -52,7 +50,24 @@ Global *layer.Layer::Layer_t
 Global *solver.HeatDiffusion::Solver_t
 Global *colors.CArray::CArrayC4F32
 Global *bunny.Polymesh::Polymesh_t
-Global N
+Global *index.ControlNumber::ControlNumber_t
+Global *steps.ControlNumber::ControlNumber_t
+Global *diffusion.COntrolNumber::ControlNumber_t
+
+Procedure OnParameterChange()
+  Define N = *steps\value_n
+  Define d.f = *diffusion\value_n
+  HeatDiffusion::Reset(*solver, *index\value_n)
+  HeatDiffusion::HeatFlow(*solver, N, d)
+  HeatDiffusion::GradU(*solver)
+  HeatDiffusion::Divergence(*solver)
+  HeatDiffusion::Distance(*solver, N)
+  HeatDiffusion::GetColors(*solver, *colors)
+
+  PolymeshGeometry::SetColors(*bunny\geom, *colors)
+  Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
+EndProcedure
+Callback::DECLARECALLBACK(OnParameterChange)
 
 
 ; Draw
@@ -61,25 +76,9 @@ Procedure Draw(*app.Application::Application_t)
   
   GLContext::SetContext(*viewport\context)
   
-  If N > 45
-    HeatDiffusion::Reset(*solver, 64)
-    N = 1
-  EndIf
   
-    
-  HeatDiffusion::HeatFlow(*solver, N, 0.25)
-  HeatDiffusion::GradU(*solver)
-  HeatDiffusion::Divergence(*solver)
-  HeatDiffusion::Distance(*solver, N)
-  HeatDiffusion::GetColors(*solver, *colors)
-  
-  
-  PolymeshGeometry::SetColors(*bunny\geom, *colors)
-  Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
   
   Scene::Update(*app\scene)
-  
-  N + 1
   
   
   Protected *s.Program::Program_t = *viewport\context\shaders("polymesh")
@@ -94,75 +93,74 @@ Procedure Draw(*app.Application::Application_t)
  
  Define width = 800
  Define height = 600
- UIColor::Init()
-; Main
-;--------------------------------------------
- If Time::Init()
-   Log::Init()
-   *app = Application::New("Test",width,height)
-   
-   View::Split(*app\window\main, 0, 90)
-  
-  If Not #USE_GLFW
-    *viewport = ViewportUI::New(*app\window\main\left,"ViewportUI", *app\camera, *app\handle)     
-    ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
-  EndIf
-  
-  Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property", #Null)
-  Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "HeatDiffusion ", "Controls")
-  
-  ControlProperty::AppendStart(*prop)
-  ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
-  ControlProperty::AddFloatControl(*prop, "Diffusion", "Diffusion", 0.05, #Null)
-  
-  ControlProperty::AppendStop(*prop)
-  PropertyUI::AddProperty(*ui, *prop)
-  
-  *app\scene = Scene::New()
-  Camera::LookAt(*app\camera)
-  Matrix4::SetIdentity(model)
-  GLContext::SetContext(*viewport\context)
-  
-  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
-  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+Globals::Init()
+Time::Init()
+Log::Init()
+FTGL::Init()
+Commands::Init()
+UIColor::Init()
+
+
+ *app = Application::New("Test",width,height)
  
-  ; FTGL Drawer
-  ;-----------------------------------------------------
-  FTGL::Init()
-  *ftgl_drawer = FTGL::New()
-  
-  *colors = CArray::New(CArray::#ARRAY_C4F32)
-  
-  *bunny = Polymesh::New("bunny", Shape::#SHAPE_BUNNY)
+ View::Split(*app\window\main, #PB_Splitter_Vertical, 75)
 
-
-  Scene::AddChild(*app\scene,*bunny)
-
-
-  *solver = AllocateStructure(HeatDiffusion::Solver_t)
-;   *solver\drawer = Drawer::New("heat diffusuion drawer")
-  HeatDiffusion::Init(*solver, *bunny)
-  HeatDiffusion::Laplacian(*solver)
-  
-  HeatDiffusion::Reset(*solver, Random(*bunny\geom\nbpoints))
-  HeatDiffusion::HeatFlow(*solver, 16, 0.05)
-  HeatDiffusion::GradU(*solver)
-  
-  HeatDiffusion::Divergence(*solver)
-  HeatDiffusion::Distance(*solver, 1)
-  HeatDiffusion::GetColors(*solver, *colors)
-  
-  
-  PolymeshGeometry::SetColors(*bunny\geom, *colors)
-  
-;   Scene::AddChild(*app\scene, *solver\drawer)
-  Scene::Setup(*app\scene)
-
-  Application::Loop(*app, @Draw())
+If Not #USE_GLFW
+  *viewport = ViewportUI::New(*app\window\main\left,"ViewportUI", *app\camera, *app\handle)     
+  ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
+
+*app\scene = Scene::New()
+Camera::LookAt(*app\camera)
+Matrix4::SetIdentity(model)
+GLContext::SetContext(*viewport\context)
+
+*layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
+Application::AddLayer(*app, *layer)
+GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+
+; FTGL Drawer
+;-----------------------------------------------------
+FTGL::Init()
+*ftgl_drawer = FTGL::New()
+
+*colors = CArray::New(CArray::#ARRAY_C4F32)
+
+*bunny = Polymesh::New("bunny", Shape::#SHAPE_BUNNY)
+
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property", #Null)
+Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "HeatDiffusion ", "Controls")
+
+
+ControlProperty::AppendStart(*prop)
+*index = ControlProperty::AddIntegerControl(*prop, "Index", "Index", 0, #Null)
+Signal::CONNECTCALLBACK(*index\on_change, OnParameterChange)
+*steps = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+Signal::CONNECTCALLBACK(*steps\on_change, OnParameterChange)
+*diffusion = ControlProperty::AddFloatControl(*prop, "Diffusion", "Diffusion", 0.05, #Null)
+Signal::CONNECTCALLBACK(*diffusion\on_change, OnParameterChange)
+
+ControlProperty::AppendStop(*prop)
+PropertyUI::AddProperty(*ui, *prop)
+
+
+Scene::AddChild(*app\scene,*bunny)
+
+
+*solver = AllocateStructure(HeatDiffusion::Solver_t)
+;   *solver\drawer = Drawer::New("heat diffusuion drawer")
+HeatDiffusion::Init(*solver, *bunny)
+HeatDiffusion::Laplacian(*solver)
+
+
+
+;   Scene::AddChild(*app\scene, *solver\drawer)
+Scene::Setup(*app\scene)
+
+Application::Loop(*app, @Draw())
+
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 116
-; FirstLine = 89
+; CursorPosition = 59
+; FirstLine = 25
 ; Folding = -
 ; EnableXP

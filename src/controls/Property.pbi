@@ -285,14 +285,12 @@ Module ControlProperty
   ; Select Gadget Under Mouse 
   ; ----------------------------------------------------------------------------
   Procedure Pick(*Me.ControlProperty_t)
-    Debug "PICK CONTROL PROPERTY : " +Str(*Me)
     If Not *Me : ProcedureReturn 0 : EndIf
     Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
     Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
     
     Protected iw = ImageWidth(*Me\imageID)
     Protected ih = ImageHeight(*Me\imageID)
-    Debug Str(xm)+","+ Str(ym)+","+Str(iw)+","+Str(ih)
     If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
     
     StartDrawing( ImageOutput(*Me\imageID) )
@@ -580,7 +578,6 @@ Module ControlProperty
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.IControlProperty = *Me
-    Debug "### ADD BOOL CONTROL : "+Str(value)
     *Me\dx =0
     Protected width = GadgetWidth(*Me\gadgetID)-10
     Protected *ctl.Control::Control_t
@@ -1917,7 +1914,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 366
-; FirstLine = 356
+; CursorPosition = 293
+; FirstLine = 500
 ; Folding = ----------
 ; EnableXP

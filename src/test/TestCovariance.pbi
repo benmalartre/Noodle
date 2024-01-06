@@ -34,13 +34,13 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 
 ; -----------------------------------------------------------------------------------------
 ; Random Point Cloud
 ; -----------------------------------------------------------------------------------------
 Procedure RandomPointCloud(numPoints.i, *m.m4f32)
-  Protected *position.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+  Protected *position.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   CArray::SetCount(*position, numPoints)
  
   Protected i
@@ -67,59 +67,31 @@ EndProcedure
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  GLContext::SetContext(*app\context)
-  Scene::*current_scene\dirty= #True
+  GLContext::SetContext(*viewport\context)
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  Scene::Update(*app\scene)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-  glEnable(#GL_BLEND)
-  glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
-  glDisable(#GL_DEPTH_TEST)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  
+  Define writer = *viewport\context\writer
+  FTGL::BeginDraw(writer)
+  FTGL::SetColor(writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(writer,"Testing Covariance",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(writer)
+  
 
-  glDisable(#GL_BLEND)
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
 EndProcedure
 
-Procedure GetDetMax(det1.f, det2.f, det3.f):
-  Protected det_max.f = det1
-  Protected output.i = 0
-  If det2 > det_max
-    det_max = det2 
-    output = 1
-  EndIf
-  If det3 > det_max
-    det_max = det3
-    output = 2
-  EndIf
-  ProcedureReturn output
-EndProcedure
-
-Procedure GetDetMax2(det1.f, det2.f, det3.f):
-  If det1 < det2
-    If det2 < det3
-      ProcedureReturn 1
-    ElseIf det3 < det1
-      ProcedureReturn 0  
-    Else
-      ProcedureReturn 2
-    EndIf
-  Else
-    If det2 < det3
-      If det1 < det3
-        ProcedureReturn 0
-      Else
-        ProcedureReturn 2
-      EndIf
-    EndIf
-  EndIf
-  ProcedureReturn 1
-EndProcedure
+Structure _AxisSort_t
+  axis.i
+  det.f
+EndStructure
 
 Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointCloud_t)
   Protected *geom.Geometry::PointCloudGeometry_t = *cloud\geom
@@ -142,7 +114,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Protected centroid.v3f32
     Vector3::Scale(centroid, sum, inp)
     
-    Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+    Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
     CArray::SetCount(*positions, 1)
     CArray::SetValue(*positions, 0, centroid)
     Protected *point.Drawer::Point_t = Drawer::AddPoint(*drawer, *positions)
@@ -175,10 +147,16 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Protected det_z.f = xx * yy - xy * xy
 
     Protected det_max.f = det_x
-    Protected det_max_one = GetDetMax(det_x, det_y, det_z)
-    Protected det_max_two = GetDetMax2(det_x, det_y, det_z)
+    Dim axis._AxisSort_t(3)
+    axis(0)\axis = 0
+    axis(0)\det = det_x
+    axis(1)\axis = 1
+    axis(1)\det = det_y
+    axis(2)\axis = 2
+    axis(2)\det = det_z
+    SortStructuredArray(axis(),#PB_Sort_Descending, OffsetOf(_AxisSort_t\det), #PB_Float)
         
-    Select det_max_one
+    Select axis(0)\axis
       Case 0
         Vector3::Set(nrm, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
       Case 1
@@ -187,7 +165,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
         Vector3::Set(nrm, xy * yz - xz * yy, xy * xz - yz * xx, det_z)
     EndSelect
     
-    Select det_max_two
+    Select axis(1)\axis
       Case 0
         Vector3::Set(upv, det_x, xz * yz - xy * zz, xy * yz - xz * yy)
       Case 1
@@ -199,23 +177,27 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
       
     Vector3::NormalizeInPlace(nrm)
     Vector3::NormalizeInPlace(upv)
+    
+    Define side.v3f32
+    Vector3::Cross(side, nrm, upv)
+    Vector3::NormalizeInPlace(side)
+    Vector3::Cross(upv, side, nrm)
+    Vector3::NormalizeInPlace(upv)
       
     Protected m.m4f32
     Protected scl.v3f32
     Protected rot.q4f32
     Protected t.Transform::Transform_t
-    Quaternion::LookAt(rot, nrm, upv,#True)
-    Matrix4::SetFromQuaternion(m, rot)
-;     Matrix4::DirectionMatrix(@m, @nrm, @upv)
-    Matrix4::SetTranslation(m, centroid)
-;     Vector3::Set(scl, 12,12,12)
-;     Transform::SetScale(@t, @scl)
-;     Quaternion::LookAt(@rot, @nrm, @upv)
-;     Transform::SetRotationFromQuaternion(@t,@rot)
-;     Transform::SetTranslation(@t,@centroid)
-;     Transform::UpdateMatrixFromSRT(@t)
+    Vector3::Set(scl, 3,3,3)
+    Transform::SetScale(t, scl)
+    Quaternion::LookAt(rot, nrm, upv)
+    Transform::SetRotationFromQuaternion(t,rot)
+    Transform::SetTranslation(t,centroid)
+    Transform::UpdateMatrixFromSRT(t)
+    
+    Matrix4::Echo(t\m, "matrix")
 
-    Protected *matrix.Drawer::Matrix_t = Drawer::AddMatrix(*drawer, m)
+    Protected *matrix.Drawer::Matrix_t = Drawer::AddMatrix(*drawer, t\m)
     *matrix\size = 1
 
   EndIf
@@ -235,25 +217,17 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)   
-     *app\context\writer\background = #True
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
-    
-  *s_wireframe = *app\context\shaders("simple")
-  *s_polymesh = *app\context\shaders("polymesh")
-  
-  shader = *s_polymesh\pgm
-
+   
   Define *ground.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_GRID)
-  Object3D::SetShader(*ground,*s_polymesh)
   
   Define ctr.v3f32, nrm.v3f32
   Vector3::Set(ctr, 0,4,0)
@@ -263,7 +237,9 @@ FTGL::Init()
   Define q.q4f32
   Define upv.v3f32
   Vector3::Set(upv, 0,0,1)
-  Quaternion::LookAt(q, nrm, upv,#False)
+  Quaternion::SetIdentity(q)
+  Quaternion::LookAt(q, nrm, upv)
+  Quaternion::Echo(q,"Q")
   Transform::SetTranslation(t, ctr)
   Transform::SetRotationFromQuaternion(t, q)
   Transform::SetScaleFromXYZValues(t, 2,0.8,1.8)
@@ -272,6 +248,8 @@ FTGL::Init()
   
   Define *cloud.PointCloud::PointCloud_t = RandomPointCloud(256, t\m)
   
+  PointCloudGeometry::SetSize(*cloud\geom, 5)
+  
   Define i
   
   *drawer = Drawer::New("Drawer")
@@ -279,16 +257,16 @@ FTGL::Init()
   Object3D::AddChild(*root,*ground)
   Object3D::AddChild(*root, *drawer)
   Object3D::AddChild(*root, *cloud)
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene)
   
   Define nrm.v3f32
   BestFittingPlane(*drawer, *cloud)
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 237
-; FirstLine = 228
-; Folding = --
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 238
+; FirstLine = 209
+; Folding = -
 ; EnableXP

@@ -120,11 +120,11 @@ Procedure Update(*app.Application::Application_t)
   
   GLContext::FlipBuffer(*viewport\context)
 Else
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   *app\scene\dirty = #True
   Scene::Update(*app\scene)
   
-  LayerDefault::Draw(*layer, *app\scene, *app\context)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   
 ;   FTGL::BeginDraw(*app\context\writer)
 ;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
@@ -156,9 +156,9 @@ FTGL::Init()
     *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
     
   Else
-    GLContext::Setup(*app\context)
-    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
-    *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+;     GLContext::Setup(*app\window\ID)
+;     Define *shader.Program::Program_t = *app\context\shaders("polymesh")
+    *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   EndIf
   GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
   
@@ -203,7 +203,7 @@ FTGL::Init()
   Object3D::AddChild(*root, *mesh)
   Object3D::AddChild(*root, *drawer)
   Scene::AddModel(*app\scene,*root)
-  Scene::Setup(*app\scene,*app\context)
+  Scene::Setup(*app\scene)
   
   ;   CArray::AppendL(*selected, 7)
   rootIndex = 7
@@ -212,7 +212,7 @@ FTGL::Init()
 
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 112
-; FirstLine = 72
+; CursorPosition = 205
+; FirstLine = 156
 ; Folding = -
 ; EnableXP

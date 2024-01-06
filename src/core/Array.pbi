@@ -1027,6 +1027,7 @@ Module CArray
       
     Else 
       Define *array.CArrayT = AllocateStructure(CArrayT)
+      *array\data = #Null
       Select type
         Case #ARRAY_BOOL
           *array\type = #ARRAY_BOOL
@@ -1112,7 +1113,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 781
-; FirstLine = 754
+; CursorPosition = 1029
+; FirstLine = 1010
 ; Folding = ----------
 ; EnableXP

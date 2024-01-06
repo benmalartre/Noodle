@@ -1477,10 +1477,6 @@ Module PolymeshGeometry
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
     
-    If CArray::GetCount(*mesh\a_vertexhalfedge) <> *mesh\nbpoints
-      ComputeHalfEdges(*mesh)
-    EndIf
-
     CArray::SetCount(*neighbors, 0)
 
     *first = CArray::GetValuePtr(*mesh\a_halfedges, CArray::getValueL(*mesh\a_vertexhalfedge, index))
@@ -1594,6 +1590,7 @@ Module PolymeshGeometry
     NewList seeds.i()
     NewList nexts.i()
     Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Debug "create neighbor array"
     
     Define i, j, n
     Define islandIndex = 0
@@ -2478,7 +2475,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1294
-; FirstLine = 1259
+; CursorPosition = 1476
+; FirstLine = 1455
 ; Folding = -----g-----+-
 ; EnableXP

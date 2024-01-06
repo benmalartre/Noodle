@@ -664,7 +664,7 @@ Module Handle
       Protected inv_view.m4f32
   
       Vector3::Set(scl,l,l,l)
-      Quaternion::LookAt(quat,dir,*up,#False)
+      Quaternion::LookAt(quat,dir,*up)
       Transform::SetTranslationFromXYZValues(*Me\localT,*pos\x,*pos\y,*pos\z)
       Transform::SetRotationFromQuaternion(*Me\localT,quat)
       Transform::SetScaleFromXYZValues(*Me\localT,scl\x,scl\y,scl\z)
@@ -1435,8 +1435,8 @@ Module Handle
   
   Class::DEF(Handle)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1387
-; FirstLine = 1379
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 666
+; FirstLine = 662
 ; Folding = -------
 ; EnableXP

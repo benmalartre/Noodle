@@ -843,7 +843,7 @@ DeclareModule Vector3
     Macro Normalize(_v,_o)
       Define _mag.f = Sqr(_o\x * _o\x + _o\y * _o\y + _o\z * _o\z)
       ;Avoid error dividing by zero
-      If _mag = 0 : _mag =1.0 :EndIf
+      If _mag = 0 : _mag =1.0 : EndIf
       
       Define _div.f = 1.0/_mag
       _v\x = _o\x * _div
@@ -1054,8 +1054,7 @@ DeclareModule Vector3
       Bool(_v\x > _o\x And _v\y > _o\y And _v\z > _o\z)
     EndMacro
   CompilerEndIf
-  
-    
+   
   ;------------------------------------------------------------------
   ; CROSS
   ;------------------------------------------------------------------
@@ -1185,13 +1184,6 @@ DeclareModule Vector3
     Declare MulByMatrix4InPlace(*v.v3f32, *m.m4f32)
   CompilerElse
     Macro MulByMatrix4(_v,_o,_m)
-    ;   x = *o\x * *m\v[0] + *o\y * *m\v[1] + *o\z * *m\v[2] + *m\v[3]
-    ;   y = *o\x * *m\v[4] + *o\y * *m\v[5] + *o\z * *m\v[6] + *m\v[7]
-    ;   z = *o\x * *m\v[8] + *o\y * *m\v[9] + *o\z * *m\v[10] + *m\v[11]
-    ;   w = *o\x * *m\v[12] + *o\y * *m\v[13] + *o\z * *m\v[15] + *m\v[15]
-    ;   *v\x = x/w
-    ;   *v\y = y/w
-    ;   *v\z = z/w
       Define _x.f,_y.f,_z.f,_w.f
       _x = _o\x * _m\v[0] + _o\y * _m\v[4] + _o\z * _m\v[8] + _m\v[12]
       _y = _o\x * _m\v[1] + _o\y * _m\v[5] + _o\z * _m\v[9] + _m\v[13]
@@ -1213,13 +1205,6 @@ DeclareModule Vector3
       _v\x = _x/_w
       _v\y = _y/_w
       _v\z = _z/_w
-    ;   x = *v\x * *m\v[0] + *v\y * *m\v[1] + *v\z * *m\v[2] + *m\v[3]
-    ;   y = *v\x * *m\v[4] + *v\y * *m\v[5] + *v\z * *m\v[6] + *m\v[7]
-    ;   z = *v\x * *m\v[8] + *v\y * *m\v[9] + *v\z * *m\v[10] + *m\v[11]
-    ;   w = *v\x * *m\v[12] + *v\y * *m\v[13] + *v\z * *m\v[15] + *m\v[15]
-    ;   *v\x = x/w
-    ;   *v\y = y/w
-    ;   *v\z = z/w
     EndMacro
   CompilerEndIf
   
@@ -1760,10 +1745,10 @@ DeclareModule Quaternion
   ;------------------------------------------------------------------
   ; QUATERNION LOOKAT
   ;------------------------------------------------------------------
-  Macro LookAt(_q,_dir,_up,_transpose)
+  Macro LookAt(_q,_dir,_up)
     Define _m.m3f32
     Matrix3::SetFromTwoVectors(_m,_dir,_up)
-    Matrix3::GetQuaternion(_m,_q,_transpose)   
+    Matrix3::GetQuaternion(_m,_q)   
   EndMacro
   
   ;------------------------------------------------------------------
@@ -2303,16 +2288,16 @@ DeclareModule Matrix3
   Macro SetFromTwoVectors(_m,_dir,_up)
     Define _N.v3f32
     Vector3::Normalize(_N, _dir)
-    Define _U.v3f32
-    Vector3::Cross(_U, _up, _N)
-    Vector3::NormalizeInPlace(_U)
     Define _V.v3f32
-    Vector3::Cross(_V, _N, _U)
+    Vector3::Cross(_V, _N, _up)
     Vector3::NormalizeInPlace(_V)
+    Define _U.v3f32
+    Vector3::Cross(_U, _V, _N)
+    Vector3::NormalizeInPlace(_U)
     
-    _m\v[0] = _U\x : _m\v[1] = _U\y : _m\v[2] = _U\z
-    _m\v[3] = _V\x : _m\v[4] = _V\y : _m\v[5] = _V\z
-    _m\v[6] = _N\x : _m\v[7] = _N\y : _m\v[8] = _N\z
+    _m\v[0] = _V\x : _m\v[1] = _V\y : _m\v[2] = _V\z
+    _m\v[3] = _N\x : _m\v[4] = _N\y : _m\v[5] = _N\z
+    _m\v[6] = _U\x : _m\v[7] = _U\y : _m\v[8] = _U\z
   EndMacro
   
   ;------------------------------------------------------------------
@@ -2384,71 +2369,45 @@ DeclareModule Matrix3
   ;------------------------------------------------------------------
   ; MATRIX3 GET QUATERNION
   ;------------------------------------------------------------------
-  Macro GetQuaternion(_m,_q,_transpose)
+  Macro GetQuaternion(_m,_q)
     Define _t.f
     Define _s.f
     
-    If _transpose
-      _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
-      If _t >0.00000001
-        _s = Sqr(_t)*2
-        _q\x = (_m\v[7]-_m\v[5])/_s
-        _q\y = (_m\v[2]-_m\v[6])/_s
-        _q\z = (_m\v[3]-_m\v[1])/_s
-        _q\w = 0.25 * _s 
-      Else
-        
-        If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
-          _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
-          _q\x = 0.25 * _s
-          _q\y = (_m\v[3] + _m\v[1])/_s
-          _q\z = (_m\v[2] + _m\v[6])/_s
-          _q\w = (_m\v[7] - _m\v[5])/_s
-        ElseIf _m\v[4]>_m\v[8]
-          _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
-          _q\x = (_m\v[3] + _m\v[1])/_s
-          _q\y = 0.25 * _s
-          _q\z = (_m\v[7] + _m\v[5])/_s
-          _q\w = (_m\v[2] - _m\v[6])/_s
-        Else
-          _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
-          _q\x = (_m\v[2] + _m\v[6])/_s
-          _q\y = (_m\v[7] + _m\v[5])/_s
-          _q\z = 0.25 * _s
-          _q\w = (_m\v[3] - _m\v[1])/_s
-        EndIf
-      EndIf
+    Matrix3::Echo(_m)
+    _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
+    Debug "T : "+StrF(_t)
+    If _t > 0
+      Debug "get quat big T"
+      _s = Sqr(_t)*2
+      _q\x = (_m\v[5]-_m\v[7])/_s
+      _q\y = (_m\v[6]-_m\v[2])/_s
+      _q\z = (_m\v[1]-_m\v[3])/_s
+      _q\w = 0.25 * _s 
     Else
-  
-      _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
-      If _t >0.00000001
-        _s = Sqr(_t)*2
-        _q\x = (_m\v[5]-_m\v[7])/_s
-        _q\y = (_m\v[6]-_m\v[2])/_s
-        _q\z = (_m\v[1]-_m\v[3])/_s
-        _q\w = 0.25 * _s 
+      If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
+        Debug "get quat small T 1"
+        _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
+        _q\x = 0.25 * _s
+        _q\y = (_m\v[1] + _m\v[3])/_s
+        _q\z = (_m\v[6] + _m\v[2])/_s
+        _q\w = (_m\v[5] - _m\v[7])/_s
+      ElseIf _m\v[4]>_m\v[8]
+        Debug "get quat small T 2"
+        _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
+        _q\x = (_m\v[1] + _m\v[3])/_s
+        _q\y = 0.25 * _s
+        _q\z = (_m\v[5] + _m\v[7])/_s
+        _q\w = (_m\v[6] - _m\v[2])/_s
       Else
-        If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
-          _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
-          _q\x = 0.25 * _s
-          _q\y = (_m\v[1] + _m\v[3])/_s
-          _q\z = (_m\v[6] + _m\v[2])/_s
-          _q\w = (_m\v[5] - _m\v[7])/_s
-        ElseIf _m\v[4]>_m\v[8]
-          _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
-          _q\x = (_m\v[1] + _m\v[3])/_s
-          _q\y = 0.25 * _s
-          _q\z = (_m\v[5] + _m\v[7])/_s
-          _q\w = (_m\v[6] - _m\v[2])/_s
-        Else
-          _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
-          _q\x = (_m\v[6] + _m\v[2])/_s
-          _q\y = (_m\v[5] + _m\v[7])/_s
-          _q\z = 0.25 * _s
-          _q\w = (_m\v[1] - _m\v[3])/_s
-        EndIf
+        Debug "get quat small T 3"
+        _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
+        _q\x = (_m\v[6] + _m\v[2])/_s
+        _q\y = (_m\v[5] + _m\v[7])/_s
+        _q\z = 0.25 * _s
+        _q\w = (_m\v[1] - _m\v[3])/_s
       EndIf
-    EndIf  
+    EndIf
+
   EndMacro
   
   Declare.b Inverse(*m.m3f32, *o.m3f32)
@@ -4404,8 +4363,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1293
-; FirstLine = 1281
+; CursorPosition = 2299
+; FirstLine = 2276
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode
