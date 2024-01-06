@@ -68,35 +68,36 @@ EndProcedure
 Procedure Draw(*app.Application::Application_t)
    
 ; ;    
-  Protected *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
   Light::Update(*light)
-  GLContext::SetContext(*app\context)
-  Scene::Update(Scene::*current_scene)
+  GLContext::SetContext(*viewport\context)
+  Scene::Update(*app\scene)
   Application::Draw(*app, *layer, *app\camera)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   
   Select *app\tool
     Case Globals::#TOOL_TRANSLATE
-      FTGL::Draw(*app\context\writer,"Active Tool : Translate",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*viewport\context\writer,"Active Tool : Translate",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_ROTATE
-      FTGL::Draw(*app\context\writer,"Active Tool : Rotate",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*viewport\context\writer,"Active Tool : Rotate",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_SCALE
-      FTGL::Draw(*app\context\writer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*viewport\context\writer,"Active Tool : Scale",-0.9,0.8,ss,ss*ratio)
     Case Globals::#TOOL_CAMERA
-      FTGL::Draw(*app\context\writer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*viewport\context\writer,"Active Tool : Camera",-0.9,0.8,ss,ss*ratio)
     Default
-      FTGL::Draw(*app\context\writer,"Active Tool : NONE",-0.9,0.8,ss,ss*ratio)
+      FTGL::Draw(*viewport\context\writer,"Active Tool : NONE",-0.9,0.8,ss,ss*ratio)
   EndSelect
   
 
-  FTGL::EndDraw(*app\context\writer)
-  GLContext::FlipBuffer(*app\context)
+  FTGL::EndDraw(*viewport\context\writer)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
  
@@ -115,46 +116,41 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-     Application::SetContext(*app, *viewport\context)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
-;   *shadows = LayerShadowMap::New(800,800,*app\context,CArray::GetValuePtr(Scene::*current_scene\lights, 0))
-;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
-;   *defered = LayerDefered::New(800,600,*app\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
-;   *defshadows = LayerShadowDefered::New(800,600,*app\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
+  GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
+;   *shadows = LayerShadowMap::New(800,800,*viewport\context,CArray::GetValuePtr(*app\scene\lights, 0))
+;   *gbuffer = LayerGBuffer::New(800,600,*viewport\context,*app\camera)
+;   *defered = LayerDefered::New(800,600,*viewport\context,*gbuffer\buffer,*shadows\buffer,*app\camera)
+;   *defshadows = LayerShadowDefered::New(800,600,*viewport\context,*gbuffer\buffer, *shadows\buffer,*app\camera)
   Global *root.Model::Model_t = Model::New("Model")
   
   ; FTGL Drawer
   ;-----------------------------------------------------
-    
-  *s_wireframe = *app\context\shaders("wireframe")
-  *s_polymesh = *app\context\shaders("polymesh")
-  *s_simple = *app\context\shaders("simple")
+
   
-  shader = *s_polymesh\pgm
   
   Global *model.Model::Model_t = Model::New("Model")
   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TEAPOT)
-  Object3D::SetShader(*torus,*s_polymesh)
   Object3D::AddChild(*model,*torus)
-  Scene::AddModel(Scene::*current_scene,*model)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*model)
+  Scene::Setup(*app\scene)
   
-  Scene::SelectObject(Scene::*current_scene, *torus)
+  Scene::SelectObject(*app\scene, *torus)
   ViewportUI::SetHandleTarget(*viewport, *torus)
   Application::AddShortcuts(*app)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 117
-; FirstLine = 93
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 76
+; FirstLine = 59
 ; Folding = -
 ; EnableThread
 ; EnableXP

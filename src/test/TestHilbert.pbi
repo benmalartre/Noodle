@@ -36,7 +36,7 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 
 DeclareModule Hilbert
   UseModule Math
@@ -434,8 +434,8 @@ EndModule
 ; //---------------------------------------------------------------------------
 Procedure MapWorldPositionToScreenSpace(*view.m4f32, *proj.m4f32, width.i, height.i, *w.v3f32, *s.v2f32)
   Protected w2s.v3f32
-  Vector3::MulByMatrix4 (@w2s, *w, *view)
-  Vector3::MulByMatrix4InPlace(@w2s, *proj)
+  Vector3::MulByMatrix4 (w2s, *w, *view)
+  Vector3::MulByMatrix4InPlace(w2s, *proj)
   *s\x = width * (w2s\x + 1.0)/2.0
   *s\y = height * (1.0 - ((w2s\y + 1.0) / 2.0))
 EndProcedure
@@ -453,7 +453,7 @@ Procedure DrawPolygonizer(*polygonizer.Polygonizer::Grid_t, ss.f, ratio.f)
   For i=0 To numPoints -1
     Vector3::Set(world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
     MapWorldPositionToScreenSpace(*view, *proj, *viewport\sizX, *viewport\sizY, world, screen)
-    FTGL::Draw(*app\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
+    FTGL::Draw(*viewport\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
   Next
   
 EndProcedure
@@ -464,29 +464,30 @@ EndProcedure
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
 
-  Scene::*current_scene\dirty= #True
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  Scene::Update(*app\scene)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Testing Hilbert Curve",-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Testing Hilbert Curve",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   glDisable(#GL_BLEND)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
 EndProcedure
 
 Procedure DrawCells(*grid.Hilbert::Grid_t)
   Protected p1.Morton::Point3D_t, p2.Morton::Point3D_t
-  Protected *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
-  Protected *colors.CArray::CArrayC4F32 = CArray::newCArrayC4F32()
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Protected *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
   CArray::SetCount(*positions, MapSize(*grid\cells())*2)
   CArray::SetCount(*colors, MapSize(*grid\cells())*2)
   Protected index = 0
@@ -524,7 +525,7 @@ Procedure DrawCell(*cell.Hilbert::Cell_t)
     If *cell\isleaf
       Define m.Math::m4f32
       Define s.Math::v3f32
-      Vector3::Scale(@s, *cell\extand, 1.9)
+      Vector3::Scale(s, *cell\extand, 1.9)
       Matrix4::SetIdentity(m)
       Define c.Math::c4f32
       Matrix4::SetScale(m, s)
@@ -562,28 +563,19 @@ FTGL::Init()
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"Test Hilbert", *app\camera, *app\handle)     
-     *app\context\writer\background = #True
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
  
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
-    
-  *s_wireframe = *app\context\shaders("wireframe")
-  *s_polymesh = *app\context\shaders("polymesh")
-  
-  shader = *s_polymesh\pgm
   
   *drawer.Drawer::Drawer_t = Drawer::New("Hilbert")
   
   Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_BUNNY)
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  Object3D::SetShader(*mesh,*s_polymesh)
-  Object3D::SetShader(*drawer,*s_wireframe)
   Object3D::AddChild(*root, *mesh)
   Object3D::AddChild(*root, *drawer)
   
@@ -601,12 +593,12 @@ FTGL::Init()
   Define *grid.Hilbert::Grid_t = Hilbert::New(box,4)
   DrawCells(*grid)
   
-  Scene::AddModel(Scene::*current_scene, *root)
-  Scene::Setup(Scene::*current_scene, *app\context)
+  Scene::AddModel(*app\scene, *root)
+  Scene::Setup(*app\scene)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 564
-; FirstLine = 546
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 472
+; FirstLine = 440
 ; Folding = ---
 ; EnableXP

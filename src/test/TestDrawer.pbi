@@ -124,16 +124,12 @@ Procedure RandomTexts(numItems.i, text.s)
   Define color.Math::c4f32
   Protected *item.Drawer::Item_t
   CArray::SetCount(*positions, 12)
-  CArray::SetCount(*texts, 12)
   Define i,j
   For i=0 To numItems-1
-    For j=0 To CArray::GetCount(*positions)-1
-      Vector3::Set(position, i, j, (Random(10)-5)/10)
-      CArray::SetValue(*positions, j, position)
-      CArray::SetValueStr(*texts, j, text)
-    Next
+
+    Vector3::Set(position, i, j, (Random(10)-5)/10)
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::AddPoints(*drawer, *positions)
+    *item = Drawer::AddText(*drawer, position, "zobiniktou")
     Drawer::SetColor(*item,  @color)
     Drawer::SetSize(*item, 6)
   Next
@@ -220,8 +216,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 215
-; FirstLine = 163
+; CursorPosition = 128
+; FirstLine = 116
 ; Folding = --
 ; EnableThread
 ; EnableXP

@@ -73,7 +73,7 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 Global np.Math::v3f32
 Global lorenz.Lorenz_t
 
@@ -125,17 +125,18 @@ Procedure Draw(*app.Application::Application_t)
   UpdateLorenz(lorenz)
   DrawLorenz(lorenz)
 ;   RandomPoints(Random(256, 64))
-  Scene::*current_scene\dirty= #True
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  Scene::Update(*app\scene)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Lorenz Attractor : "+Str(lorenz\np),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Lorenz Attractor : "+Str(lorenz\np),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   glDisable(#GL_BLEND)
   
   GLContext::FlipBuffer(*viewport\context)
@@ -159,33 +160,31 @@ Procedure Draw(*app.Application::Application_t)
 
    If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-    *viewport\camera = *app\camera
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
  
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
   *drawer = Drawer::New("Drawer")
   
   Object3D::AddChild(*root, *drawer)
-  Scene::AddModel(Scene::*current_scene,*root)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::AddModel(*app\scene,*root)
+  Scene::Setup(*app\scene)
    
   Application::Loop(*app, @Draw(), 1/60)
 EndIf
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 179
-; FirstLine = 147
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 131
+; FirstLine = 111
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; EnableUnicode

@@ -126,7 +126,7 @@ Module KDTree
   ;--------------------------------------------------------------------
   Procedure New()
     Protected *tree.KDTree_t = AllocateStructure(KDTree_t)
-    *tree\points = CArray::newCArrayV3F32()
+    *tree\points = CArray::New(CArray::#ARRAY_V3F32)
     *tree\root = #Null
     *tree\m_id = 0
     ProcedureReturn *tree
@@ -576,8 +576,8 @@ Module KDTree
   EndProcedure
 EndModule
   
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 129
-; FirstLine = 125
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 128
+; FirstLine = 124
 ; Folding = ----
 ; EnableXP

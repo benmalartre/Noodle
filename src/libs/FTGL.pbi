@@ -449,7 +449,7 @@ Module FTGL
     
     *Me\color\r = 1
     *Me\color\a = 1
-    *Me\background = #True
+    *Me\background = #False
     glGenVertexArrays(1,@*Me\vao)
     glBindVertexArray(*Me\vao)
     glGenBuffers(1,@*Me\vbo)
@@ -467,8 +467,8 @@ Module FTGL
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 434
-; FirstLine = 424
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 451
+; FirstLine = 422
 ; Folding = ----
 ; EnableXP

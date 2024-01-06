@@ -13,6 +13,7 @@ DeclareModule Shape
     #SHAPE_NONE = 0
     #SHAPE_POINT
     #SHAPE_AXIS
+    #SHAPE_PLATE
     #SHAPE_SPHERE
     #SHAPE_GRID
     #SHAPE_CUBE
@@ -49,7 +50,31 @@ DeclareModule Shape
   ;  OpenGL Shapes
   ; ============================================================================
   ;{
-CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
+  ;-----------------------------------------------------------------------------
+  ; Plate
+  ;-----------------------------------------------------------------------------
+  #PLATE_NUM_TRIANGLES = 2
+  #PLATE_NUM_VERTICES  = 4
+  #PLATE_NUM_INDICES   = 6
+  #PLATE_NUM_EDGES     = 4
+  DataSection
+  	shape_plate_positions:
+  	Data.f -1.0,0.0,1.0,0.0
+  	Data.f 1.0,0.0,1.0,0.0
+  	Data.f 1.0,0.0,-1.0,0.0
+  	Data.f -1.0,0.0,-1.0,0.0
+  
+  	shape_plate_indices:
+  	Data.l 0, 1, 2
+  	Data.l 3, 2, 1
+  
+  	shape_point_edges:
+  	Data.l 0,1
+  	Data.l 1,2
+  	Data.l 2,3
+  	Data.l 3,0
+  EndDataSection
   ;-----------------------------------------------------------------------------
   ; Point
   ;-----------------------------------------------------------------------------
@@ -12853,6 +12878,31 @@ CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
   	Data.l 95,88
   EndDataSection  
 CompilerElse
+   ;-----------------------------------------------------------------------------
+  ; Plate
+  ;-----------------------------------------------------------------------------
+  #PLATE_NUM_TRIANGLES = 2
+  #PLATE_NUM_VERTICES  = 4
+  #PLATE_NUM_INDICES   = 6
+  #PLATE_NUM_EDGES     = 4
+  DataSection
+  	shape_plate_positions:
+  	Data.f -1.0,0.0,1.0
+  	Data.f 1.0,0.0,1.0
+  	Data.f 1.0,0.0,-1.0
+  	Data.f -1.0,0.0,-1.0
+  
+  	shape_plate_indices:
+  	Data.l 0, 1, 2
+  	Data.l 0, 2, 3
+  
+  	shape_plate_edges:
+  	Data.l 0,1
+  	Data.l 1,2
+  	Data.l 2,3
+  	Data.l 3,0
+  EndDataSection
+  
   ;-----------------------------------------------------------------------------
   ; Point
   ;-----------------------------------------------------------------------------
@@ -26180,6 +26230,9 @@ Module Shape
   Procedure GetFaces(shape.i)
     Select shape
       Case  #SHAPE_NONE 
+      Case  #SHAPE_PLATE
+        ProcedureReturn ?shape_plate_indices
+        
       Case  #SHAPE_AXIS
         ProcedureReturn ?shape_axis_indices
 
@@ -26237,6 +26290,8 @@ Module Shape
   Procedure GetEdges(shape.i)
     Select shape
       Case  #SHAPE_NONE 
+      Case  #SHAPE_PLATE
+        ProcedureReturn ?shape_plate_edges
       Case  #SHAPE_AXIS
         ProcedureReturn ?shape_axis_edges
   
@@ -26428,8 +26483,8 @@ Module Shape
 EndModule
 
 ;}
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 26425
-; FirstLine = 26385
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 12896
+; FirstLine = 12880
 ; Folding = ----
 ; EnableXP

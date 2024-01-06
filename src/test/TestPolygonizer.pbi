@@ -35,7 +35,7 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::newCArrayV3F32()
+Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
 Global *polygonizer.Polygonizer::Grid_t
 Global *mesh.Polymesh::Polymesh_t 
 Global *geom.Geometry::PolymeshGeometry_t
@@ -61,7 +61,7 @@ Procedure DrawPolygonizer(*polygonizer.Polygonizer::Grid_t, ss.f, ratio.f)
 ;   For i=0 To numPoints -1
 ;     Vector3::Set(@world, *polygonizer\points(i)\p[0], *polygonizer\points(i)\p[1], *polygonizer\points(i)\p[2])
 ;     MapWorldPositionToScreenSpace(*view, *proj, *viewport\width, *viewport\height, @world, @screen)
-;     FTGL::Draw(*app\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
+;     FTGL::Draw(*viewport\context\writer,"z",(screen\x * 2)/width - 1,1 - (screen\y * 2) /height,ss,ss*ratio)
 ;   Next
   
 EndProcedure
@@ -71,29 +71,28 @@ EndProcedure
 ; Draw
 ; -----------------------------------------------------------------------------------------
 Procedure Draw(*app.Application::Application_t)
+
+  GLContext::SetContext(*viewport\context)
   Debug *app
-  Debug *app\context
-  Debug *app\context\ID
-  GLContext::SetContext(*app\context)
-  Debug *app
-  Debug *app\context
-  Debug *app\context\ID
-  Scene::*current_scene\dirty= #True
+  Debug *viewport\context
+  Debug *viewport\context\ID
+  *app\scene\dirty= #True
   Define isolevel.f = Random(100)*0.0
 
 ;   Polygonizer::Polygonize(*polygonizer, *geom, isolevel)
-  Scene::Update(Scene::*current_scene)
-  LayerDefault::Draw(*layer, *app\context)
+  Scene::Update(*app\scene)
+  LayerDefault::Draw(*layer, *app\scene)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   FTGL::BeginDraw(*viewport\context\writer)
+;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
 ;   Define ss.f = 0.85/width
 ;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*viewport\context\writer,"Testing GL Drawer",-0.9,0.9,ss,ss*ratio)
 ;   DrawPolygonizer(*polygonizer, ss, ratio)
-;   FTGL::EndDraw(*app\context\writer)
+;   FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 EndProcedure
 
 
@@ -115,21 +114,20 @@ Globals::Init()
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
- GLContext::SetContext(*app\context)
-  Scene::*current_scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+ GLContext::SetContext(*viewport\context)
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
     
-  *s_wireframe = *app\context\shaders("simple")
-  *s_polymesh = *app\context\shaders("polymesh")
+  *s_wireframe = *viewport\context\shaders("simple")
+  *s_polymesh = *viewport\context\shaders("polymesh")
   
   shader = *s_polymesh\pgm
 
   *mesh= Polymesh::New("BUNNY",Shape::#SHAPE_SPHERE)
   *geom = *mesh\geom
-  Object3D::SetShader(*mesh,*s_polymesh)
   Object3D::AddChild(*root, *mesh)
   
   Define box.Geometry::Box_t
@@ -144,12 +142,12 @@ Globals::Init()
   
   Object3D::Freeze(*mesh)
     
-  Scene::AddModel(Scene::*current_scene, *root)
-  Scene::Setup(Scene::*current_scene, *app\context)
+  Scene::AddModel(*app\scene, *root)
+  Scene::Setup(*app\scene)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 86
-; FirstLine = 71
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 84
+; FirstLine = 64
 ; Folding = -
 ; EnableXP

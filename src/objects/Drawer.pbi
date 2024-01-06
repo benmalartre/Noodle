@@ -104,6 +104,7 @@ DeclareModule Drawer
   Declare AddColoredLines2(*Me.Drawer_t, *start.CArray::CArrayV3F32, *end.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
   Declare AddStrip(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
   Declare AddLoop(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *indices.CArray::CArrayLong=#Null)
+  Declare AddText(*Me.Drawer_t, *positions.CArray::CArrayV3F32, text.s)
   Declare AddBox(*Me.Drawer_t, *m.Math::m4f32)
   Declare AddSphere(*Me.Drawer_t, *m.Math::m4f32)
   Declare AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
@@ -425,17 +426,19 @@ Module Drawer
     GLCheckError("set offset matrix")
     glLineWidth(Math::Max(Int(*Me\size),1))
     GLCheckError("line width")
-    Protected *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
+    Protected *indices
     Protected offset.i = 8
     If *Me\wireframe
+      *indices = Shape::GetEdges(Shape::#SHAPE_SPHERE)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("draw wireframe")
     Else
+      *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("set polygon mode")
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
       GLCheckError("draw filled elements")
     EndIf
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
@@ -474,6 +477,32 @@ Module Drawer
     EndIf
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
   EndProcedure
+  
+  ; ---[ Draw Text Item ]--------------------------------------------------
+  Procedure DrawText_(*Me.Text_t)
+    glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
+    Define offset.Math::m4f32
+    Define *p.Math::v3f32 = CARray::GetValue(*Me\positions, 0)
+    Matrix4::SetTranslation(offset, *p)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,offset)
+    Protected *indices = Shape::GetFaces(Shape::#SHAPE_PLATE)
+    If *Me\wireframe
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
+      glDrawElements(#GL_TRIANGLES,Shape::#PLATE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      GLCheckError("draw wireframe")
+    Else
+      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      GLCheckError("set polygon mode")
+      glDrawElements(#GL_TRIANGLES,Shape::#PLATE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
+      GLCheckError("draw filled elements")
+    EndIf
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    GLCheckError("reset offset matrix")
+    
+    Debug "DARW TEXT "+*Me\text
+  EndProcedure
+  
   
   ; ---[ Draw Item ]-----------------------------------------------------------
   Procedure Draw(*Me.Drawer_t)
@@ -522,6 +551,11 @@ Module Drawer
             GLCheckError("DRAW ITEM MATRIX")
           Case #ITEM_TRIANGLE
             DrawTriangle(*Me\items())
+            GLCheckError("DRAW ITEM TRIANGLE")
+          Case #ITEM_TEXT
+            DrawText_(*Me\items())
+            Define *text.Text_t = *Me\items()
+            Debug *text\text
             GLCheckError("DRAW ITEM TRIANGLE")
           Case #ITEM_COMPOUND
             Debug "[DRAWER] Compound Shape NOT Implemented"
@@ -601,6 +635,12 @@ Module Drawer
     FreeStructure(*Me)
   EndProcedure
   
+  ; ---[ Delete Text Item ]--------------------------------------------------
+  Procedure DeleteText(*Me.Text_t)
+    DeleteItem(*Me)
+    FreeStructure(*Me)
+  EndProcedure
+  
   ; ---[ Delete Drawer Item ]--------------------------------------------------
   Procedure Delete( *Me.Drawer_t )
     ForEach *Me\items()
@@ -621,6 +661,8 @@ Module Drawer
           DeleteMatrix(*Me\items())
         Case #ITEM_TRIANGLE
           DeleteTriangle(*Me\items())
+        Case #ITEM_TEXT
+          DeleteText(*Me\items())
         Case #ITEM_COMPOUND
           Debug "[DRAWER] Compound Shape NOT Implemented"
           ;           DeleteCompound(*Me\items())
@@ -921,7 +963,8 @@ Module Drawer
     *matrix\dirty  = #DIRTY_TOPOLOGY
     Matrix4::SetFromOther(*matrix\m, *m)
     CArray::SetCount(*matrix\positions, Shape::#AXIS_NUM_VERTICES)
-    CopyMemory(Shape::?shape_axis_positions, CArray::GetPtr(*matrix\positions, 0), Shape::#AXIS_NUM_VERTICES * CArray::GetItemSize(*matrix\positions))
+    CopyMemory(Shape::?shape_axis_positions, CArray::GetPtr(*matrix\positions, 0), 
+               Shape::#AXIS_NUM_VERTICES * CArray::GetItemSize(*matrix\positions))
     
     AddElement(*Me\items())
     *Me\items() = *matrix
@@ -961,7 +1004,7 @@ Module Drawer
   EndProcedure
   
   ; ---[ Add Text Item ]------------------------------------------------------
-  Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s, size.f)
+  Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s)
     Protected *text.Text_t = AllocateStructure(Text_t)
     *text\type = #ITEM_TEXT
     *text\positions = CArray::New(CArray::#ARRAY_V3F32)
@@ -970,9 +1013,19 @@ Module Drawer
     *text\size = size
     *text\dirty  = #DIRTY_TOPOLOGY
     SetColor(*text, Color::BLACK)
-    CArray::SetCount(*text\positions, 1)
-    CArray::SetCount(*text\colors, 1)
-    If *position : CArray::SetValue(*text\positions, 0, *position) : EndIf
+    CArray::SetCount(*text\positions, Shape::#PLATE_NUM_VERTICES)
+    CArray::SetCount(*text\colors, Shape::#PLATE_NUM_VERTICES)
+    CopyMemory(Shape::?shape_plate_positions, CArray::GetPtr(*text\positions, 0), 
+               Shape::#PLATE_NUM_VERTICES * CArray::GetItemSize(*text\positions))
+    
+    ; Transform vertex positions
+    Protected i
+    Protected *p.Math::v3f32
+    For i=0 To CARray::GetCount(*text\positions) - 1
+      *p = CArray::GetValue(*text\positions, i)
+      Vector3::AddInPlace(*p,*position)
+    Next
+
     AddElement(*Me\items())
     *Me\items() = *text
     *Me\dirty = #True
@@ -988,8 +1041,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 637
-; FirstLine = 634
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 431
+; FirstLine = 427
 ; Folding = ---------
 ; EnableXP
