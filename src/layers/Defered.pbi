@@ -160,7 +160,7 @@ Module LayerDefered
     
     Define nb_lights = CArray::GetCount(*scene\lights)
     glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
-      shader = *ctx\shaders("defered")\pgm
+    shader = *ctx\shaders("deferred")\pgm
       glUseProgram(shader)
       Framebuffer::BindInput(*layer\gbuffer)
       Framebuffer::BindInput(*layer\shadowmap,ArraySize(*layer\gbuffer\tbos()))
@@ -182,7 +182,7 @@ Module LayerDefered
       glUniform3fv(glGetUniformLocation(shader,"sun.direction"), 1, @sunDirection)
       glUniform3fv(glGetUniformLocation(shader,"sun.color"), 1, @sunColor)
       glUniform1f(glGetUniformLocation(shader,"sun.intensity"), @sunIntensity)
-      
+
       Protected i
       For i=0 To CArray::GetCount(*scene\lights)-1
         *light = CArray::GetValuePtr( *scene\lights,i)
@@ -190,8 +190,7 @@ Module LayerDefered
       Next
       
       glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-    ;       glUniform3fv(glGetUniformLocation(shader, "viewPos"),1, *camera\pos)
-      *layer\quad\pgm = *ctx\shaders("defered")
+;           glUniform3fv(glGetUniformLocation(shader, "viewPos"),1, *camera\pos)
       ScreenQuad::Draw(*layer\quad)
           
       Protected vwidth = *ctx\width
@@ -204,7 +203,7 @@ Module LayerDefered
       glBindFramebuffer(#GL_READ_FRAMEBUFFER, *layer\framebuffer\frame_id);
       glReadBuffer(#GL_COLOR_ATTACHMENT0)
       glBlitFramebuffer(0, 0, *layer\framebuffer\width,*layer\framebuffer\height,0, 0, vwidth, vheight,#GL_COLOR_BUFFER_BIT,#GL_LINEAR);
-     
+;      
       glEnable(#GL_DEPTH_TEST)
 
     
@@ -243,8 +242,8 @@ Module LayerDefered
   
   Class::DEF(LayerDefered)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 216
-; FirstLine = 200
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 193
+; FirstLine = 155
 ; Folding = --
 ; EnableXP

@@ -204,8 +204,8 @@ DeclareModule Globals
   ;---------------------------------------------------------
   ; FONTS
   ;---------------------------------------------------------
-  Global font_label = LoadFont(#PB_Any,"Consolas",8)
-  Global font_title = LoadFont(#PB_Any,"Consolas",12)
+  Global font_label = LoadFont(#PB_Any,"Consolas",16)
+  Global font_title = LoadFont(#PB_Any,"Consolas",32)
   
   Enumeration 
     #FONT_DEFAULT = 1
@@ -214,14 +214,14 @@ DeclareModule Globals
   
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_MacOS
-      #FONT_SIZE_TEXT = 18
-      #FONT_SIZE_LABEL = 22
-      #FONT_SIZE_MENU = 26
+      #FONT_SIZE_TEXT = 24
+      #FONT_SIZE_LABEL = 26
+      #FONT_SIZE_MENU = 28
       #FONT_SIZE_TITLE = 30
     CompilerDefault
-      #FONT_SIZE_TEXT = 9
-      #FONT_SIZE_LABEL = 11
-      #FONT_SIZE_MENU = 13
+      #FONT_SIZE_TEXT = 12
+      #FONT_SIZE_LABEL = 13
+      #FONT_SIZE_MENU = 14
       #FONT_SIZE_TITLE = 15
   CompilerEndSelect
   
@@ -334,9 +334,9 @@ Module Globals
 EndModule
 
   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 42
-; FirstLine = 13
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 216
+; FirstLine = 175
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -878,7 +878,7 @@ Module PolymeshGeometry
   Procedure SetColor(*mesh.PolymeshGeometry_t,*color.c4f32)
     Define i
     For i=0 To *mesh\nbsamples-1
-      CArray::SetValueF(*mesh\a_colors, i, *color)
+      CArray::SetValue(*mesh\a_colors, i, *color)
     Next
   EndProcedure
   
@@ -2475,7 +2475,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1476
-; FirstLine = 1455
+; CursorPosition = 880
+; FirstLine = 877
 ; Folding = -----g-----+-
 ; EnableXP

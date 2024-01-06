@@ -13,6 +13,9 @@ UseModule OpenGLExt
 
 Global WIDTH = 1200
 Global HEIGHT = 600
+Global *app.Application::Application_t
+Global *viewport.ViewportUI::ViewportUI_t
+Global *property.PropertyUI::PropertyUI_t
 
 
 Globals::Init()
@@ -100,7 +103,10 @@ Procedure AddAudioTree(*tree.Tree::Tree_t)
   *r\posy = 200
 EndProcedure
 
-Scene::*current_scene = Scene::New()
+*app = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
+UIColor::SetTheme(UIColor::#DARK_THEME)
+
+*app\scene = Scene::New()
 Define *teapot.Object3D::Object3D_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
 Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_SPHERE)
 ; Define *teapot.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_TEAPOT)
@@ -123,11 +129,10 @@ Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator
 ; AddPushTree(*tree)
 ;   AddAudioTree(*tree)
 
-Scene::AddChild(Scene::*current_scene,*obj)
-Scene::AddChild(Scene::*current_scene,*teapot)
+Scene::AddChild(*app\scene,*obj)
+Scene::AddChild(*app\scene,*teapot)
+; 
 
-Define *app.Application::Application_t = Application::New("Graph Test",1200,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
-UIColor::SetTheme(UIColor::#DARK_THEME)
 Define *window.Window::Window_t = *app\window
 Global *main.View::View_t = *window\main
 Global *view.View::View_t = View::Split(*main,0,50)
@@ -138,60 +143,61 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 
 
 Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
-Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-ExplorerUI::Connect(*explorer, Scene::*current_scene)
+; Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
+; ExplorerUI::Connect(*explorer, *app\scene)
 
-Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
-Application::SetContext(*app, *viewport\context)
+*viewport = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
-Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
+*property = PropertyUI::New(*middle\right,"Property",#Null)
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 GraphUI::SetContent(*graph,*tree)
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 
 
-GLContext::SetContext(*app\context)
-;ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
-Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+GLContext::SetContext(*viewport\context)
+;ControlExplorer::Fill(*explorer\explorer,*app\scene)
+Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*viewport\context,*app\camera)
 Application::AddLayer(*app, *layer)
+GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
-Scene::Setup(Scene::*current_scene,*app\context)
+Scene::Setup(*app\scene)
 Window::OnEvent(*app\window, Globals::#EVENT_NEW_SCENE)
-Window::OnEvent(*app\window, #PB_Event_SizeWindow)
+; Window::OnEvent(*app\window, #PB_Event_SizeWindow)
 
-Scene::SelectObject(Scene::*current_scene, *teapot)
-;ViewportUI::SetHandleTarget(*viewport, *teapot)
+; Scene::SelectObject(*app\scene, *teapot)
+; ViewportUI::SetHandleTarget(*viewport, *teapot)
 
 Procedure Update(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   If Event() = #PB_Event_Menu And EventMenu() > #PB_Event_FirstCustomValue
-    Scene::Update(Scene::*current_scene)
+    Scene::Update(*app\scene)
   EndIf
   
   Application::Draw(*app, *layer, *viewport\camera)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Graph Tree",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(Scene::*current_scene)),-0.9,0.7,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Graph Tree",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(*app\scene)),-0.9,0.7,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
 
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 EndProcedure
 
 
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 148
-; FirstLine = 126
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 125
+; FirstLine = 113
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

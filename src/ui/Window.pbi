@@ -16,7 +16,7 @@ Module Window
         ProcedureReturn *ALL_WINDOWS()
       EndIf
     Next
-    ProcedureReturn #Null
+    ProcedureReturn *MAIN_WINDOW
   EndProcedure
   
   Procedure Resize(*Me.Window_t)    
@@ -94,7 +94,7 @@ Module Window
   ;----------------------------------------------------------------------------------
   ; Event
   ;----------------------------------------------------------------------------------
-  Procedure OnEvent(*Me.Window_t,event.i)
+  Procedure OnEvent(*Me.Window_t, event.i)
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
     Protected *view.View::View_t = #Null
@@ -188,6 +188,7 @@ Module Window
         
       Case #PB_Event_SizeWindow
         Resize(*Me)
+        
       Case #PB_Event_MaximizeWindow
         Resize(*Me)
       Case #PB_Event_MoveWindow
@@ -321,7 +322,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 284
-; FirstLine = 262
+; CursorPosition = 21
+; FirstLine = 17
 ; Folding = ---
 ; EnableXP

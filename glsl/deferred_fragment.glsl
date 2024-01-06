@@ -46,19 +46,23 @@ void main()
 	
     float ao = texture(ssao_map, texCoords).r;
 	
+	outColor = texture(ssao_map, texCoords);
+	
 	vec3 viewPos = view[3].xyz;
 	
     // Then calculate lighting as usual
 	vec3 ambient = vec3(0.5 * ao);
     vec3 lighting  = ambient;
 	mat4 rot = extractRotationMatrix(view);
-	normal = (rot * vec4(normal,0.0)).xyz;
+	//normal = (rot * vec4(normal,0.0)).xyz;
 	
     vec3 viewDir  = normalize(-position); // Viewpos is (0.0.0)
-    vec3 sunDir = vec3(0, 1, 0);// sun.direction;
+    vec3 sunDir = sun.direction;
     sunDir = (rot * vec4(sunDir,1.0)).xyz;
 	
-    lighting += max(dot(normal,sunDir),0.0);// * sun.color;
+	lighting = vec3(dot(normal,sunDir));// * sun.color;
+    //lighting += max(dot(normal,sunDir),0.0);// * sun.color;
+	
 	/*
     for(int i = 0; i < nb_lights; ++i)
     {
@@ -79,7 +83,7 @@ void main()
         //specular *= attenuation;
         lighting += diffuse;// + specular;
     }    */
-    outColor = vec4(lighting, 1.0);
+    outColor = vec4(lighting*diffuse, 1.0);
 
 }
 

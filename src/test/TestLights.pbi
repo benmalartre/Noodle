@@ -57,40 +57,40 @@ Global numTriangles = 0
 ; Draw
 ;--------------------------------------------
 Procedure Update()
-  ViewportUI::SetContext(*viewport)
-  Scene::Update(Scene::*current_scene)  
-  LayerDefault::Draw(*default,*app\context)
-  LayerGBuffer::Draw(*gbuffer,*app\context)
-  LayerShadowMap::Draw(*shadowmap,*app\context)
-;   LayerDefered::Draw(*defered, *app\context)
-  LayerShadowDefered::Draw(*shadowdefered,*app\context)
+  GLContext::SetContext(*viewport\context)
+  Scene::Update(*app\scene)  
+  LayerDefault::Draw(*default, *app\scene, *viewport\context)
+  LayerGBuffer::Draw(*gbuffer, *app\scene, *viewport\context)
+  LayerShadowMap::Draw(*shadowmap, *app\scene, *viewport\context)
+  LayerDefered::Draw(*defered, *app\scene,  *viewport\context)
+  LayerShadowDefered::Draw(*shadowdefered, *app\scene, *viewport\context)
   
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/*app\width
   Define ratio.f = *app\width / *app\height
-  FTGL::Draw(*app\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-  FTGL::Draw(*app\context\writer,"NUM LIGHTS : "+Str(numTriangles),-0.9,0.7,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Test Alembic",-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"NUM LIGHTS : "+Str(numTriangles),-0.9,0.7,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  ViewportUI::FlipBuffer(*viewport)
+  GLContext::FlipBuffer(*viewport\context)
  EndProcedure
  
 
  Globals::Init()
  Log::Init()
  FTGL::Init()
- Scene::*current_scene = Scene::New()
+
 ; Main
 ;--------------------------------------------
  If Time::Init()
    
    *app = Application::New("Test Lights",WIDTH,HEIGHT)
+    *app\scene = Scene::New()
                            
    CompilerIf Not #USE_GLFW
-   *viewport = ViewportUI::New(*app\manager\main,"Viewport 3D")
-    *viewport\camera = *app\camera
+   *viewport = ViewportUI::New(*app\window\main,"Viewport 3D", *app\camera, *app\handle)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   CompilerEndIf
   
@@ -113,18 +113,6 @@ Procedure Update()
   Vector3::Set(*lights()\pos,4,6,2)
   Vector3::Set(*lights()\color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   Object3D::AddChild(*model,*lights())
-  
-  
-  ; Shaders
-  ;-----------------------------------------------------
-  *s_wireframe = *app\context\shaders("wireframe")
-  *s_polymesh = *app\context\shaders("polymesh")
-  *s_gbuffer = *app\context\shaders("gbuffer")
-  *s_defered = *app\context\shaders("defered")
-   *s_shadowdefered = *app\context\shaders("shadowdefered")
-  
-  shader = *s_gbuffer\pgm
-  glUseProgram(shader)
 
   ; Meshes
   ;-----------------------------------------------------
@@ -145,7 +133,7 @@ Procedure Update()
         *mesh = *bunnies()\geom
         numTriangles + *mesh\nbtriangles
         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
-        PolymeshGeometry::SetColors(*bunnies()\geom,color)
+        PolymeshGeometry::SetColor(*bunnies()\geom,color)
         Transform::SetTranslationFromXYZValues(*t,x*2-10,y*2+1.5,z*2-10)
         Transform::SetRotationFromQuaternion(*t,rot)
         Object3D::SetLocalTransform(*bunnies(),*t)
@@ -164,43 +152,43 @@ Procedure Update()
   ;Polymesh::Setup(*ground,*s_polymesh)
   Object3D::AddChild(*model,*ground)
   
-  Scene::AddModel(Scene::*current_scene,*model)
+  Scene::AddModel(*app\scene,*model)
   
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::Setup(*app\scene)
   
   ; Defualt Layer
   ;-----------------------------------------------------
-  *default = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+  *default = LayerDefault::New(WIDTH,HEIGHT,*viewport\context,*app\camera)
   LayerDefault::Setup(*default)
   
   ; Geometry Buffer Layer
   ;-----------------------------------------------------
-  *gbuffer = LayerGBuffer::New(WIDTH,HEIGHT,*app\context,*app\camera)
+  *gbuffer = LayerGBuffer::New(WIDTH,HEIGHT,*viewport\context,*app\camera)
   LayerGBuffer::Setup(*gbuffer)
   
   ; ShadowMap Layer
   ;------------------------------------------------------
   FirstElement(*lights())
-  *shadowmap = LayerShadowMap::New(1024,1024,*app\context,*lights())
+  *shadowmap = LayerShadowMap::New(1024,1024,*viewport\context,*lights())
   LayerShadowMap::Setup(*shadowmap)
   
   ; Deferred Layer
   ;-----------------------------------------------------
-  *defered = LayerDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
+  *defered = LayerDefered::New(WIDTH,HEIGHT,*viewport\context,*gbuffer\framebuffer,*shadowmap\framebuffer,*app\camera)
   LayerDefered::Setup(*defered)
   
   ;Shadow  Deferred Layer
   ;-----------------------------------------------------
-  *shadowdefered = LayerShadowDefered::New(WIDTH,HEIGHT,*app\context,*gbuffer\buffer,*shadowmap\buffer,*app\camera)
+  *shadowdefered = LayerShadowDefered::New(WIDTH,HEIGHT,*viewport\context,*gbuffer\framebuffer,*shadowmap\framebuffer,*app\camera)
   LayerShadowDefered::Setup(*shadowdefered)
  
   
   Application::Loop(*app,@Update())
   
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 88
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 114
+; FirstLine = 113
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

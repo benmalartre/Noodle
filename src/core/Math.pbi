@@ -2373,11 +2373,8 @@ DeclareModule Matrix3
     Define _t.f
     Define _s.f
     
-    Matrix3::Echo(_m)
     _t = 1+_m\v[0]+_m\v[4]+_m\v[8]
-    Debug "T : "+StrF(_t)
     If _t > 0
-      Debug "get quat big T"
       _s = Sqr(_t)*2
       _q\x = (_m\v[5]-_m\v[7])/_s
       _q\y = (_m\v[6]-_m\v[2])/_s
@@ -2385,21 +2382,18 @@ DeclareModule Matrix3
       _q\w = 0.25 * _s 
     Else
       If _m\v[0]>_m\v[4] And _m\v[0]>_m\v[8]
-        Debug "get quat small T 1"
         _s = Sqr(1+ _m\v[0] - _m\v[4] - _m\v[8])*2
         _q\x = 0.25 * _s
         _q\y = (_m\v[1] + _m\v[3])/_s
         _q\z = (_m\v[6] + _m\v[2])/_s
         _q\w = (_m\v[5] - _m\v[7])/_s
       ElseIf _m\v[4]>_m\v[8]
-        Debug "get quat small T 2"
         _s = Sqr(1+ _m\v[4] - _m\v[0] - _m\v[8])*2
         _q\x = (_m\v[1] + _m\v[3])/_s
         _q\y = 0.25 * _s
         _q\z = (_m\v[5] + _m\v[7])/_s
         _q\w = (_m\v[6] - _m\v[2])/_s
       Else
-        Debug "get quat small T 3"
         _s = Sqr(1+ _m\v[8] - _m\v[0] - _m\v[4])*2
         _q\x = (_m\v[6] + _m\v[2])/_s
         _q\y = (_m\v[5] + _m\v[7])/_s
@@ -4363,8 +4357,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2299
-; FirstLine = 2276
+; CursorPosition = 2396
+; FirstLine = 2372
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

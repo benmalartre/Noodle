@@ -1,4 +1,5 @@
-﻿XIncludeFile "../core/Application.pbi"
+﻿
+XIncludeFile "../core/Application.pbi"
 
 
 Procedure.b IntersectBoxPB(*Me.Geometry::Box_t,*other.Geometry::Box_t)
@@ -11,38 +12,44 @@ Procedure.b IntersectBoxPB(*Me.Geometry::Box_t,*other.Geometry::Box_t)
   ProcedureReturn #True
 EndProcedure
 
+
 Procedure.b IntersectBoxSSE(*Me.Geometry::Box_t,*other.Geometry::Box_t)
-  ! mov rsi, [p.p_Me]
-  ! movups xmm0, [rsi]              ; load box origin in xmm0
-  ! movaps xmm1, xmm0               ; make a copy in xmm1
-  ! movups xmm2, [rsi+16]           ; load box extend in xmm4
-  
-  ! mov rsi, [p.p_other]
-  ! movups xmm3, [rsi]              ; load other origin in xmm2
-  ! movaps xmm4, xmm3               ; make a copy in xmm3
-  ! movups xmm5, [rsi+16]           ; load other extend in xmm5
-  
-  ! subps xmm0, xmm2                ; box origin - box extend (box min)
-  ! addps xmm1, xmm2                ; box origin + box extend (box max)
-  
-  ! subps xmm3, xmm5                ; other origin - other extend (other min)
-  ! addps xmm4, xmm5                ; other origin + other extend (other max)
-  
-  ! cmpps xmm1, xmm3, 1             ; compare box max < other min
-  ! movmskps r9, xmm1               ; if any of these test if true
-  ! cmp r9, 0                       ; there is no intersection
-  ! jne no_box_box_intersection
+  CompilerIf #PB_Compiler_Backend = #PB_Backend_Asm
+    ! mov rsi, [p.p_Me]
+    ! movups xmm0, [rsi]              ; load box origin in xmm0
+    ! movaps xmm1, xmm0               ; make a copy in xmm1
+    ! movups xmm2, [rsi+16]           ; load box extend in xmm4
     
-  ! cmpps xmm4, xmm0, 1             ; compare  other max < box min
-  ! movmskps r9, xmm4               ; if any of these test if true
-  ! cmp r9, 0                       ; there is no intersection
-  ! jne no_box_box_intersection
+    ! mov rsi, [p.p_other]
+    ! movups xmm3, [rsi]              ; load other origin in xmm2
+    ! movaps xmm4, xmm3               ; make a copy in xmm3
+    ! movups xmm5, [rsi+16]           ; load other extend in xmm5
+    
+    ! subps xmm0, xmm2                ; box origin - box extend (box min)
+    ! addps xmm1, xmm2                ; box origin + box extend (box max)
+    
+    ! subps xmm3, xmm5                ; other origin - other extend (other min)
+    ! addps xmm4, xmm5                ; other origin + other extend (other max)
+    
+    ! cmpps xmm1, xmm3, 1             ; compare box max < other min
+    ! movmskps r9, xmm1               ; if any of these test if true
+    ! cmp r9, 0                       ; there is no intersection
+    ! jne no_box_box_intersection
+      
+    ! cmpps xmm4, xmm0, 1             ; compare  other max < box min
+    ! movmskps r9, xmm4               ; if any of these test if true
+    ! cmp r9, 0                       ; there is no intersection
+    ! jne no_box_box_intersection
+    
+    ! box_box_intersection:
+    ProcedureReturn #True
+    
+    ! no_box_box_intersection:
+    ProcedureReturn #False
+  CompilerElse
+    ProcedureReturn #False
+  CompilerEndIf
   
-  ! box_box_intersection:
-  ProcedureReturn #True
-  
-  ! no_box_box_intersection:
-  ProcedureReturn #False
 EndProcedure
 
 
@@ -57,7 +64,7 @@ EndProcedure
 
 Time::Init()
 
-Define numTests = 12000000
+Define numTests = 1000000
 Define i
 Define box.Geometry::Box_t
 Dim boxes.Geometry::Box_t(numTests)
@@ -90,8 +97,8 @@ Define numHits2 = NumHits(mem2, numTests)
 
 
 MessageRequester("BOX", StrD(E1)+" vs "+StrD(E2)+" : "+CompareMemory(mem1, mem2, numTests )+"("+Str(numHits1)+","+Str(numHits2)+")")
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 34
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 16
+; FirstLine = 12
 ; Folding = -
 ; EnableXP

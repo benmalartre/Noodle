@@ -1,11 +1,14 @@
 ﻿XIncludeFile "../core/Globals.pbi"
 XIncludeFile "../core/Control.pbi"
 XIncludeFile "../core/Arguments.pbi"
+XIncludeFile "../controls/ColorWheel.pbi"
 
 ; ==============================================================================
 ;  CONTROL COLOR MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlColor
+  #CHANNEL_HEIGHT = 8
+  #WHEEL_HEIGHT = 128
   Enumeration
     #ITEM_NONE
     #ITEM_RED
@@ -24,10 +27,14 @@ DeclareModule ControlColor
     red.i
     green.i
     blue.i
+    alpha.i
     color.Math::c4f32
     over.b
     down.b
     item.i
+    showWheel.b
+    *wheel.ControlColorWheel::ControlColorWheel_t
+    
   EndStructure
   
   Interface IControlColor Extends Control::IControl
@@ -85,7 +92,7 @@ Module ControlColor
     tx = Math::Max( tx, 3 + xoff )
     
     Protected cw, ch
-    ch = (*Me\sizY - 10) / 3
+    ch = #CHANNEL_HEIGHT
     cw = *Me\sizX - (3*ch+10)
     
     VectorSourceLinearGradient(5+xoff, 5+yoff, 5+xoff+cw, 5+yoff+ch)
@@ -149,6 +156,8 @@ Module ControlColor
     Vector::RoundBoxPath( *Me\sizX - 3*ch + 10, 5+yoff, 3*ch, 3*ch, 2)
     VectorSourceColor(RGBA(*Me\red, *Me\green, *Me\blue,255))
     FillPath()
+    
+;     ControlColorWheel::OnEvent(*Me\wheel, #PB_Event_Repaint)
    
     
   EndProcedure
@@ -220,6 +229,14 @@ Module ControlColor
         If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
         If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
         If #PB_Ignore <> *ev_data\height : *Me\sizY = *ev_data\height : EndIf
+        
+        If *Me\showWheel
+          *Me\sizY = 3 * #CHANNEL_HEIGHT + #WHEEL_HEIGHT
+          ControlColorWheel::OnEvent(*Me\wheel, #PB_Event_SizeWindow)
+        Else
+          *Me\sizY = 3 * #CHANNEL_HEIGHT
+        EndIf
+        
         ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
@@ -281,6 +298,8 @@ Module ControlColor
             Case #ITEM_NONE
               Debug "PICK ITEM NODE"
             Case #ITEM_COLOR
+              *Me\showWheel = 1 - *Me\showWheel
+
               *Me\red = Random(255)
               *Me\green = Random(255)
               *Me\blue = Random(255)
@@ -403,7 +422,7 @@ Module ControlColor
     Color::Set(*ctrl\color, *ctrl\red / 255, *ctrl\green/255, *ctrl\blue / 255, 1.0)
     Control::Invalidate(*ctrl)
   EndProcedure
-
+  
   ; ============================================================================
   ;  DESTRUCTOR
   ; ============================================================================
@@ -430,7 +449,7 @@ Module ControlColor
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
-    *Me\sizY       = height
+    *Me\sizY       = 4 * #CHANNEL_HEIGHT + #WHEEL_HEIGHT
     *Me\visible    = #True
     *Me\enable     = #True
     *Me\options    = options
@@ -438,6 +457,10 @@ Module ControlColor
     *Me\red        = *color\r * 255
     *Me\green      = *color\g * 255
     *Me\blue       = *color\b * 255
+    *Me\alpha      = *color\a * 255
+    *Me\showWheel  = #True
+;     *Me\wheel      = ControlColorWheel::New(*Me, *Me\posX, *Me\posY + 4 * #CHANNEL_HEIGHT, #WHEEL_HEIGHT)
+    
     
     If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
     
@@ -453,9 +476,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 420
-; FirstLine = 410
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 156
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

@@ -36,8 +36,6 @@ Procedure DrawGradient()
 ;   Drawer::AddLines2(*solver\drawer, *start, *end)  
 EndProcedure
 
-
-
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global offset.m4f32
@@ -160,7 +158,7 @@ Scene::Setup(*app\scene)
 Application::Loop(*app, @Draw())
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 59
+; CursorPosition = 37
 ; FirstLine = 25
 ; Folding = -
 ; EnableXP

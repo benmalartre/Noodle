@@ -59,7 +59,7 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   Framebuffer::BindOutput(*buffer)
   glClearColor(0.25,0.25,0.25,1.0)
   glViewport(0, 0, *buffer\width,*buffer\height)
@@ -80,7 +80,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   Polymesh::Draw(*ground)
 ;   Polymesh::Draw(*null)
 ;   Polymesh::Draw(*cube)
-  Polymesh::Draw(*bunny, *app\context)
+  Polymesh::Draw(*bunny)
   
   glDisable(#GL_DEPTH_TEST)
   
@@ -103,7 +103,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   FTGL::Draw(*ftgl_drawer,"Yeahhhhhh",-0.9,0.9,ss,ss*ratio)
 ; 
 ;   glDisable(#GL_BLEND)
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
  
@@ -135,10 +135,8 @@ Procedure Draw(*app.Application::Application_t)
   ;-----------------------------------------------------
   FTGL::Init()
   
-  *s_wireframe = Program::NewFromName("simple")
-  *s_polymesh = Program::NewFromName("polymesh")
+  shader = *viewport\context\shaders("shadowmapCSM")\pgm
   
-  shader = *s_polymesh\pgm
 
 ;   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
 ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
@@ -151,15 +149,15 @@ Procedure Draw(*app.Application::Application_t)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*null,*s_polymesh)
 ;   Polymesh::Setup(*cube,*s_polymesh)
-  Polymesh::Setup(*bunny,*s_polymesh)
+  Polymesh::Setup(*bunny)
 
 
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 121
-; FirstLine = 98
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 137
+; FirstLine = 100
 ; Folding = -
 ; EnableXP
 ; Executable = polymesh.exe

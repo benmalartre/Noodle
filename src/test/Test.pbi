@@ -21,7 +21,7 @@ Global *cloud.PointCloud::PointCloud_t
 Global *torus.Polymesh::Polymesh_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
-Global backingScaleFactor.f = Window::BackingScaleFactor()
+Global backingScaleFactor.f = GLContext::BackingScaleFactor()
 
 Procedure Draw(*app.Application::Application_t)
 ;   GLContext::SetContext(*app\context)
@@ -50,7 +50,7 @@ Procedure Draw(*app.Application::Application_t)
   glUniformMatrix4fv(glGetUniformLocation(*s_simple\pgm,"projection"),1,#GL_FALSE,*app\camera\projection)
   glUniform3f(glGetUniformLocation(*s_simple\pgm,"color"),Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   glCheckError("Set Uniforms")
-  Polymesh::Draw(*torus, *app\context)
+  Polymesh::Draw(*torus)
   glCheckError("Draw Mesh")
 ;   glDepthMask(#GL_FALSE)
 ;   glCheckError("DEPTH MASK")
@@ -59,7 +59,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   glCheckError("DRAW")
 ;   Framebuffer::BlitTo(*buffer, #Null, #GL_COLOR_BUFFER_BIT, #GL_NEAREST)
 ;   glCheckError("BLIT") 
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
   glCheckError("FLIP")
  
 
@@ -74,12 +74,10 @@ If Time::Init()
 
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
-    *app\context = *viewport\context
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  GLContext::GetOpenGLVersion(*app\context)
+  GLContext::GetOpenGLVersion(*viewport\context)
   
   Matrix4::SetIdentity(model)
 
@@ -145,14 +143,14 @@ If Time::Init()
 ;   msg + CArray::GetAsString(*positions, "POSITIONS : ")+Chr(10)
 ;   MessageRequester("CUBE", msg)
 ;   *cloud = PointCloud::New("Cloud",Shape::#SHAPE_TORUS)
-  Polymesh::Setup(*torus,*s_simple)
+  Polymesh::Setup(*torus)
 ;   PointCloud::Setup(*cloud,*s_simple)
   
   Application::Loop(*app,@Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 138
-; FirstLine = 97
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 145
+; FirstLine = 93
 ; Folding = -
 ; EnableThread
 ; EnableXP

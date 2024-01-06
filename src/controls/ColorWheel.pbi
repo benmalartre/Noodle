@@ -666,7 +666,7 @@ Module ControlColorWheel
   Procedure.i OnEvent( *Me.ControlColorWheel_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
-    
+
     ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
   
@@ -832,8 +832,8 @@ Module ControlColorWheel
   
 EndModule
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 791
-; FirstLine = 789
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 690
+; FirstLine = 655
 ; Folding = ----
 ; EnableXP

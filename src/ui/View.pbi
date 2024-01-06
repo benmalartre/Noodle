@@ -127,7 +127,6 @@ XIncludeFile "Types.pbi"
         *Me\perc = (mx-*Me\posX) * 100 /*Me\sizX
         
       EndIf
-     
   ;   Else
   ;     ; when a view is fixed , it's size is in pixels...
   ;     If *Me\axis
@@ -535,7 +534,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 288
-; FirstLine = 255
+; CursorPosition = 269
+; FirstLine = 236
 ; Folding = ----
 ; EnableXP

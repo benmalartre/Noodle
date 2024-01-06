@@ -12,7 +12,6 @@ XIncludeFile "Head.pbi"
 XIncludeFile "Knob.pbi"
 XIncludeFile "Slider.pbi"
 XIncludeFile "Color.pbi"
-XIncludeFile "ColorWheel.pbi"
 
 ;========================================================================================
 ; Property Module Declaration
@@ -29,24 +28,13 @@ DeclareModule ControlProperty
   ; ----------------------------------------------------------------------------
   ;  Structure
   ; ----------------------------------------------------------------------------
-  Structure ControlProperty_t Extends Control::Control_t
+  Structure ControlProperty_t Extends ControlGroup::ControlGroup_t
     pickID    .i
-    imageID   .i
-    label     .s
-    append    .i
-    row       .i
-    down      .i
     valid     .b
     *object.Object::Object_t
     *head.ControlHead::ControlHead_t
-    overchild .Control::IControl
-    focuschild.Control::IControl
-    Array *children .Control::Control_t(10)
-    Array rowflags .i(10)
     List *groups.ControlGroup::ControlGroup_t()
-    chilcount .i
-    current   .i
-    closed    .b
+
     decoration.i
     lock.Control::IControl
     refresh.Control::IControl
@@ -78,7 +66,6 @@ DeclareModule ControlProperty
   Declare AddQuaternionControl(*Me.ControlProperty_t,name.s,label.s,*value.q4f32,*attr.Attribute::Attribute_t)
   Declare AddMatrix4Control(*Me.ControlProperty_t,name.s,label.s,*value.m4f32,*attr.Attribute::Attribute_t)
   Declare AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
-  Declare AddColorWheelControl( *Me.ControlProperty_t,name.s)
   Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
@@ -624,14 +611,14 @@ Module ControlProperty
     If ListSize(*Me\groups()) And *Me\groups()
      ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,120,21 ))
+      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl = ControlNumber::New(*Me,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       ControlGroup::Append( *Me\groups(), *ctl  )
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,120,21 ))
+      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl = ControlNumber::New(*Me,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       Append(*Me, *ctl)
       RowEnd(*Me)
@@ -700,14 +687,14 @@ Module ControlProperty
     If ListSize(*Me\groups()) And *Me\groups()
       ControlGroup::RowStart( *Me\groups())
       ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,120,21 ))
+      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl =  ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
       ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,120,21 ))
+      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl = ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       Append(*Me, *ctl)
       RowEnd(*Me)
@@ -1105,13 +1092,12 @@ EndProcedure
     Protected *btn.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 )
 
     ; ---[ Add Parameter ]--------------------------------------------
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
-    *ctl = ControlEdit::New(*Me,"File", "File",#False,*Me\dx,*Me\dy+2,(width-110),32) 
+    *ctl = ControlEdit::New(*Me,"File", "File",#False,*Me\dx,*Me\dy+2,(width-60),24) 
     ControlGroup::Append( *group,*ctl)
     *btn = ControlButton::New(*Me, "Pick", "...",#False,0,0)
     ControlGroup::Append( *group,*btn)
@@ -1205,41 +1191,7 @@ EndProcedure
     *Me\dy + *group\sizY 
     ProcedureReturn(*color)
   EndProcedure
-  
-  ; ---[ Add ColorWheel Control  ]-------------------------------------
-  Procedure AddColorWheelControl(*Me.ControlProperty_t,name.s)
-  
-    ; ---[ Sanity Check ]----------------------------------------------
-    If Not *Me : ProcedureReturn : EndIf
-    
-    Protected Me.ControlProperty::IControlProperty = *Me
-    Protected Ctl.Control::IControl
-    Protected width = GadgetWidth(*Me\gadgetID)-10
-    
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
-    Define *wheel.ControlColorWheel::ControlColorWheel_t = ControlColorWheel::New(*Me,*Me\dx,*Me\dy+2,(width-110),256)
-    
-    ; ---[ Add Parameter ]--------------------------------------------
-    ControlGroup::AppendStart(*group)
-    ControlGroup::RowStart(*group)
-    
-    ControlGroup::Append(*group, *wheel)
 
-    ControlGroup::RowEnd(*group)
-    ControlGroup::AppendStop(*group)
-    
-    ; Add Group to PPG
-    ;---------------------------------
-;      AddElement(*Me\groups())
-;     *Me\groups() = *group
-    Append(*Me,*group)
-    
-    ; Offset for Next Control
-    ;---------------------------------
-    *Me\dy + *group\sizY 
-    ProcedureReturn(*color)
-  EndProcedure
 
   
   ; ---[ Add Group Control  ]------------------------------------------
@@ -1391,73 +1343,13 @@ EndProcedure
       *son\OnEvent(ev_type,#Null)
     Next i
     
-  ;   ForEach *Me\groups()
-  ;   
-  ;     If filter = *Me\groups()\GetGadgetID() : *Me\groups()\Event( ev_type ) : EndIf
-  ;   Next
+;     ForEach *Me\groups()
+;     
+;       If filter = *Me\groups()\GetGadgetID() : *Me\groups()\Event( ev_type ) : EndIf
+;     Next
   EndProcedure
 
-  ; ----------------------------------------------------------------------------
-  ;  Get Num Control In Row
-  ; ----------------------------------------------------------------------------
-  Procedure GetNumControlInRow(*Me.ControlProperty_t, base.i)
-    Protected index = base
-    Protected search.b = #True
-    While search
-      If Not *Me\rowflags(index) : search = #False : EndIf
-      index+1
-    Wend
-    ProcedureReturn index - base
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Resize Controls In Row
-  ; ----------------------------------------------------------------------------
-  Procedure ResizeControlsInRow(*Me.ControlProperty_t, start_index.i, num_controls.i)
-    Dim widths.i(num_controls)
-    Define fixed_width = Control::MARGING * 2
-    Define current_width, current_index, num_fixed
-    Define e
-    For i=0 To num_controls - 1
-      current_index = start_index + i
-      If *Me\children(current_index)\fixedX
-        current_width = *Me\children(current_index)\sizX 
-        fixed_width + current_width + Control::PADDING
-        widths(i) = current_width
-        num_fixed + 1
-      EndIf
-    Next
-    Define remaining_width = *Me\sizX - (fixed_width + Control::MARGING)
-    Define x = Control::MARGING
-    Define ev_data.Control::EventTypeDatas_t
-    ev_data\x = 0
-    ev_data\y = #PB_Ignore
-    ev_data\width = #PB_Ignore
-    ev_data\height = #PB_Ignore
-    
-    Define son.Control::IControl
-    Define y = 0
-    For i=0 To num_controls - 1
-      current_index = start_index + i
-      son = *Me\children(current_index)
-      If *Me\children(current_index)\sizY > y
-        y = *Me\children(current_index)\sizY
-      EndIf
-      
-      
-      If *Me\children(current_index)\fixedX
-        ev_data\width = widths(i)
-      Else
-        ev_data\width = remaining_width / (num_controls - num_fixed)
-      EndIf
 
-      ev_data\x     = *Me\posX + x
-      ev_data\y     = #PB_Ignore
-      son\OnEvent(#PB_EventType_Resize, ev_data)
-      x + ev_data\width + Control::PADDING
-    Next
-    ProcedureReturn y + Control::MARGING
-  EndProcedure
 
   ; ============================================================================
   ;  OVERRIDE ( Control::IControl )
@@ -1501,8 +1393,8 @@ EndProcedure
         ; Resize Controls
         For c=0 To *Me\chilcount - 1
           If *Me\rowflags(c) 
-            nbc_row = GetNumControlInRow(*Me, c)
-            ev_data\y + ResizeControlsInRow(*Me, c, nbc_row)
+            nbc_row = ControlGroup::GetNumControlInRow(*Me, c)
+            ev_data\y + ControlGroup::ResizeControlsInRow(*Me, c, nbc_row)
             
             c + nbc_row - 1
           Else
@@ -1914,7 +1806,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 293
-; FirstLine = 500
-; Folding = ----------
+; CursorPosition = 1093
+; FirstLine = 1081
+; Folding = ---------
 ; EnableXP

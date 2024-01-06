@@ -62,10 +62,10 @@ Procedure Draw(*app.Application::Application_t)
 ;   Object3D::SetLocalTransform(*light, *t)
 ;   
   
-  Scene::Update(*scene)
+  Scene::Update( *app\scene)
   
   
-  Protected *s.Program::Program_t = *app\context\shaders("polymesh")
+  Protected *s.Program::Program_t = *viewport\context\shaders("polymesh")
   glUseProgram(*s\pgm)
 ;   glUniform3f(glGetUniformLocation(*s\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
    
@@ -127,11 +127,11 @@ Procedure Draw(*app.Application::Application_t)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
-  *scene = Scene::New()
+  *app\scene = Scene::New()
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   
-  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Application::AddLayer(*app, *layer)
  
   ; FTGL Drawer
@@ -146,8 +146,8 @@ Procedure Draw(*app.Application::Application_t)
   
   *cloud.PointCloud::PointCloud_t = PointCloud::New("cloud",1000)
   
-  Scene::AddChild(*scene,*cloud)
-  Scene::Setup(*scene,*app\context)
+  Scene::AddChild( *app\scene,*cloud)
+  Scene::Setup( *app\scene)
   
 ;   *torus.Polymesh::Polymesh_t = Polymesh::New("Torus",Shape::#SHAPE_TORUS)
 ;   *teapot.Polymesh::Polymesh_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
@@ -187,7 +187,7 @@ Procedure Draw(*app.Application::Application_t)
 ;   PointCloudGeometry::PointsOnLine(*cloud\geom,p_start,p_end)
   PointCloudGeometry::PointsOnSphere(*cloud\geom,5)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
-  PointCloud::Setup(*cloud,*s_pointcloud)
+  PointCloud::Setup(*cloud)
   Object3D::Freeze(*cloud)
   
   Define i
@@ -197,9 +197,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 55
-; FirstLine = 52
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 64
+; FirstLine = 49
 ; Folding = -
 ; EnableXP
 ; Executable = Test

@@ -42,6 +42,9 @@ DeclareModule ControlGroup
   Declare AppendStop( *Me.ControlGroup_t )
   Declare RowStart( *Me.ControlGroup_t )
   Declare RowEnd( *Me.ControlGroup_t )
+  Declare GetNumControlInRow(*Me.ControlGroup_t, base.i)
+  Declare ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i)
+
   DataSection 
     ControlGroupVT: 
     Data.i @OnEvent()
@@ -149,6 +152,7 @@ Module ControlGroup
           maxV = 0
         EndIf
       Next
+      *Me\sizY = curV
     EndIf
     
     
@@ -233,6 +237,71 @@ Module ControlGroup
     
   EndProcedure
   ;}
+  
+   ; ----------------------------------------------------------------------------
+  ;  Get Num Control In Row
+  ; ----------------------------------------------------------------------------
+  Procedure GetNumControlInRow(*Me.ControlGroup_t, base.i)
+    Protected index = base
+    Protected search.b = #True
+    While search
+      If Not *Me\rowflags(index) : search = #False : EndIf
+      index+1
+    Wend
+    ProcedureReturn index - base
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------
+  ;  Resize Controls In Row
+  ; ----------------------------------------------------------------------------
+  Procedure ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i)
+
+    Dim widths.i(num_controls)
+    Define fixed_width = Control::MARGING * 2
+    Define current_width, current_index, num_fixed
+    Define *child.Control::Control_t
+    Define e
+    For i=0 To num_controls - 1
+      current_index = start_index + i
+      *child = *Me\children(current_index)
+      If *child\fixedX
+        current_width = *child\sizX 
+        fixed_width + current_width + Control::PADDING
+        widths(i) = current_width
+        num_fixed + 1
+      EndIf
+    Next
+    Define remaining_width = *Me\sizX - (fixed_width + Control::MARGING)
+    Define x = Control::MARGING
+    Define ev_data.Control::EventTypeDatas_t
+    ev_data\x = 0
+    ev_data\y = #PB_Ignore
+    ev_data\width = #PB_Ignore
+    ev_data\height = #PB_Ignore
+    
+    Define *son.Control::Control_t
+    Define y = 0
+    For i=0 To num_controls - 1
+      current_index = start_index + i
+      *son = *Me\children(current_index)
+      If *son\sizY > y
+        y = *son\sizY
+      EndIf
+      
+      
+      If *son\fixedX
+        ev_data\width = widths(i)
+      Else
+        ev_data\width = remaining_width / (num_controls - num_fixed)
+      EndIf
+
+      ev_data\x     = *Me\posX + x
+      ev_data\y     = #PB_Ignore
+      *Me\children(current_index)\OnEvent(#PB_EventType_Resize, ev_data)
+      x + ev_data\width + Control::PADDING
+    Next
+    ProcedureReturn y + Control::MARGING
+  EndProcedure
 
 ; ----------------------------------------------------------------------------
 ;  Draw
@@ -902,8 +971,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 892
-; FirstLine = 855
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 256
+; FirstLine = 229
 ; Folding = ----
 ; EnableXP

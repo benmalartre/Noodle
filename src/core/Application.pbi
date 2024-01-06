@@ -737,7 +737,7 @@ CompilerEndIf
             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_SizeWindow
-            Window::OnEvent(*window,event)
+            Window::OnEvent(*window, event)
             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_Gadget
@@ -791,9 +791,9 @@ CompilerEndIf
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 326
-; FirstLine = 321
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 739
+; FirstLine = 706
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

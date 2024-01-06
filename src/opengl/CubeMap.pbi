@@ -3,17 +3,10 @@
 ; ============================================================================
 XIncludeFile "../libs/OpenGL.pbi"
 XIncludeFile "../libs/OpenGLExt.pbi"
-XIncludeFile "Shader.pbi"
-XIncludeFile "../objects/Camera.pbi"
-
-
-UseTIFFImageDecoder()
-UseTGAImageDecoder()
-UseJPEGImageDecoder()
-UseJPEG2000ImageDecoder()
+XIncludeFile "../core/Math.pbi"
 
 DeclareModule CubeMap
-
+  UseModule Math
   Enumeration
     #CUBEMAP_HORIZONTAL_LEFT
     #CUBEMAP_HORIZONTAL_RIGHT
@@ -95,15 +88,14 @@ DeclareModule CubeMap
     right.i
     front.i
     back.i
-    
-    
+
     tex_cube.i
   EndStructure
   
   Declare New(filename.s)
   Declare Delete(*Me.CubeMap_t)
   Declare Setup(*Me.CubeMap_t)
-  Declare Draw(*Me.CubeMap_t,*camera.Camera::Camera_t)
+  Declare Draw(*Me.CubeMap_t, *view.m4f32, *proj.m4f32)
 
 EndDeclareModule
 
@@ -242,27 +234,20 @@ Module CubeMap
   ;----------------------------------------------------------------------------
   ; Draw
   ;----------------------------------------------------------------------------
-  Procedure Draw(*Me.CubeMap_t,*camera.Camera::Camera_t)
+  Procedure Draw(*Me.CubeMap_t,*view.m4f32, *proj.m4f32)
     glDepthMask (#GL_FALSE);
     glUseProgram (*Me\shader);
     glActiveTexture (#GL_TEXTURE0);
     glBindTexture (#GL_TEXTURE_CUBE_MAP, *Me\tex_cube);
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"P"),1,#GL_FALSE,*camera\projection)
-    Protected view.Math::m4f32
-    Protected pos.Math::v3f32
-    Matrix4::SetFromOther(view,*camera\view)
-    Matrix4::SetTranslation(view,@pos)
-    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"V"),1,#GL_FALSE,@view)
+    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"P"),1,#GL_FALSE,*proj)
+    glUniformMatrix4fv(glGetUniformLocation(*Me\shader,"V"),1,#GL_FALSE,*view)
     glBindVertexArray(*Me\vao);
     glDrawArrays(#GL_TRIANGLES, 0, 36);
     glDepthMask (#GL_TRUE);
   EndProcedure
  
-
-  
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 160
-; FirstLine = 118
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 8
 ; Folding = --
 ; EnableXP

@@ -53,15 +53,7 @@ Procedure AddPointsTree(*tree.Tree::Tree_t)
 ;   *r\posy = 200
 EndProcedure
 
-Global *scene = Scene::New()
-Define *grd.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
-Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#SHAPE_CUBE,0)
-Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
-PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
-Define ps.v3f32, pe.v3f32
-  Vector3::Set(ps,-10,0,0)
-  Vector3::Set(pe,10,0,0)
-  PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
+
   ;PointCloudGeometry::PointsOnLine(*cloud\geom,@ps,@pe)
 ;   PointCloudGeometry::RandomizeColor(*obj\geom)
 ; InstanceCloud::Setup(*obj,*s_pointcloud)
@@ -80,17 +72,12 @@ Define ps.v3f32, pe.v3f32
 
 Log::Message("Hello User : Beginning session "+FormatDate("%hh:%ii:%ss", Date()))
 
-Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 
-AddPointsTree(*tree.Tree::Tree_t)
-
-Scene::AddChild(Scene::*current_scene,*obj)
-Scene::AddChild(Scene::*current_scene,*grd)
 
 ExamineDesktops()
 Define width = DesktopWidth(0)
 Define height = DesktopHeight(0)
-Define *app.Application::Application_t = Application::New("Point Cloud Tree",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
+Global *app.Application::Application_t = Application::New("Point Cloud Tree",width,height,#PB_Window_SizeGadget|#PB_Window_SystemMenu|#PB_Window_Maximize)
 
 Global *main.View::View_t = *app\window\main
 Global *view.View::View_t = View::Split(*main,0,50)
@@ -107,36 +94,53 @@ ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
 Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
 
- Global *graph.UI::IUI = GraphUI::New(*bottom\left,"GraphUI")
+Global *graph.UI::IUI = GraphUI::New(*bottom\left,"GraphUI")
+
+
+*app\scene = Scene::New()
+Define *grd.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_GRID)
+Define *obj.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Cloud",Shape::#SHAPE_CUBE,0)
+Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
+Define ps.v3f32, pe.v3f32
+  Vector3::Set(ps,-10,0,0)
+  Vector3::Set(pe,10,0,0)
+  PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
+  
+  Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
+AddPointsTree(*tree.Tree::Tree_t)
+
+Scene::AddChild(*app\scene,*obj)
+Scene::AddChild(*app\scene,*grd)
 
 ; ; Global *log.UI::IUI = LogUI::New(*bottom\right,"LogUI")
 Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"TimelineUI ")
 
 GraphUI::SetContent(*graph,*tree)
 
-ControlExplorer::Fill(*explorer\explorer,Scene::*current_scene)
-Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*app\context,*app\camera)
+ControlExplorer::Fill(*explorer\explorer,*app\scene)
+Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*viewport\context,*app\camera)
 
-Scene::Setup(*scene,*app\context)
+Scene::Setup(*app\scene)
 
 Procedure Update(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
   
-  LayerDefault::Draw(*layer, *viewport\context)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
-;   Define width = *app\context\width
-;   Define height = *app\context\height
+;   Define width = *viewport\context\width
+;   Define height = *viewport\context\height
   
-;   FTGL::BeginDraw(*app\context\writer)
-;   FTGL::SetColor(*app\context\writer,1,1,1,1)
+;   FTGL::BeginDraw(*viewport\context\writer)
+;   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
 ;   Define ss.f = 0.85/width
 ;   Define ratio.f = width / height
-;   FTGL::Draw(*app\context\writer,"Point CLoud",-0.9,0.9,ss,ss*ratio)
-;   FTGL::Draw(*app\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
-;   FTGL::Draw(*app\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(*scene)),-0.9,0.7,ss,ss*ratio)
-;   FTGL::EndDraw(*app\context\writer)
+;   FTGL::Draw(*viewport\context\writer,"Point CLoud",-0.9,0.9,ss,ss*ratio)
+;   FTGL::Draw(*viewport\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+;   FTGL::Draw(*viewport\context\writer,"Nb Objects : "+Str(Scene::GetNbObjects(*scene)),-0.9,0.7,ss,ss*ratio)
+;   FTGL::EndDraw(*viewport\context\writer)
   
   
   GLContext::FlipBuffer(*viewport\context)
@@ -148,9 +152,9 @@ EndProcedure
 Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 104
-; FirstLine = 88
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 120
+; FirstLine = 80
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe
