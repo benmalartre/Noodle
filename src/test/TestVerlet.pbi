@@ -40,10 +40,11 @@ Procedure Draw(*app.Application::Application_t)
   Verlet::Deform(*verlet)
   
   Scene::Update(*app\scene)
-  ViewportUI::Blit(*viewport, *layer\framebuffer)
-  
 
   Application::Draw(*app, *layer, *app\camera)
+  
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
+    ViewportUI::Blit(*viewport, *layer\framebuffer)
   FTGL::BeginDraw(*ctxt\writer)
   FTGL::SetColor(*ctxt\writer,1,1,1,1)
   Define ss.f = 0.85/width
@@ -70,14 +71,14 @@ Globals::Init()
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   Else
-    GLContext::Setup(*app\context)
-    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
+    GLContext::Setup(*viewport\context)
+    Define *shader.Program::Program_t = *viewport\context\shaders("polymesh")
   EndIf
   
   Camera::LookAt(*app\camera)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
-  *layer = LayerDefault::New(800,600,*app\context,*app\camera)
+  *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -113,7 +114,7 @@ Globals::Init()
   Object3D::AddChild(*root,*drawer)
   
   Scene::AddModel(*app\scene,*root)
-  Scene::Setup(*app\scene,*app\context)
+  Scene::Setup(*app\scene)
  
   Application::Loop(*app, @Draw(),0.1)
 
@@ -121,7 +122,7 @@ Globals::Init()
   Verlet::Delete(*verlet)
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 58
+; CursorPosition = 46
+; FirstLine = 46
 ; Folding = -
 ; EnableXP

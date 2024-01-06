@@ -377,15 +377,12 @@ Module Layer
           *shader = *layer\context\shaders("simple")
       EndSelect 
     EndIf
-  
-      
+    
     Protected shader.GLuint =  *shader\pgm
-    Debug shader
     glUseProgram(shader)
-      
+    
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,GetViewMatrix(*layer))
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,GetProjectionMatrix(*layer))
-    
     
 ;     Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
 ;     
@@ -744,7 +741,7 @@ Module Layer
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 190
+; CursorPosition = 351
+; FirstLine = 340
 ; Folding = -----
 ; EnableXP

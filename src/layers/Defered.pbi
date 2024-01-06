@@ -86,78 +86,6 @@ Module LayerDefered
     If Not *light : ProcedureReturn : EndIf
     Light::Update(*light)
     
-  ;    
-    
-;     Protected *camera.Camera::Camera_t = *layer\pov
-;     
-;     Layer::Clear(*layer)
-;     
-;     Protected shader.GLuint = *ctx\shaders("defered")\pgm
-;     glUseProgram(shader)
-;     glDisable(#GL_CULL_FACE)
-;     glDisable(#GL_DEPTH_TEST)
-;     glDisable(#GL_BLEND)
-;     glDepthMask(#GL_FALSE)
-;   
-;     Framebuffer::BindInput(*layer\gbuffer)
-;     Protected bias.m4f32
-;     Matrix4::SetIdentity(@bias)
-;     Matrix4::Set(@bias,
-;                 0.5,0,0,0,
-;                 0,0.5,0,0,
-;                 0,0,0.5,0,
-;                 0.5,0.5,0.5,1.0)
-;   
-;     
-;     glBindFramebuffer(#GL_READ_FRAMEBUFFER,*layer\buffer\frame_id)
-;     
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"bias"),1,#GL_FALSE,@bias)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*camera\view)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*camera\projection)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"light_view"),1,#GL_FALSE,*light\view)
-;     glUniformMatrix4fv(glGetUniformLocation(shader,"light_proj"),1,#GL_FALSE,*light\projection)
-;     glUniform3f(glGetUniformLocation(shader,"camera_position"),*camera\pos\x,*camera\pos\y,*camera\pos\z)
-;     glUniform2f(glGetUniformLocation(shader,"viewport_size"),*layer\width,*layer\height)
-;     Framebuffer::BindOutput(*layer\buffer)
-;     Framebuffer::BindInput(*layer\gbuffer)
-;     Framebuffer::BindInput(*layer\sbuffer,5)
-;   ;   *shadowmap\buffer\BindInput(5)
-;     glBindFramebuffer(#GL_READ_FRAMEBUFFER,*layer\gbuffer\frame_id)
-;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,*layer\buffer\frame_id)
-;     
-;     glUniform1i(glGetUniformLocation(shader,"position_map"),0)
-;     glUniform1i(glGetUniformLocation(shader,"normal_map"),1)
-;     glUniform1i(glGetUniformLocation(shader,"color_map"),2)
-;     glUniform1i(glGetUniformLocation(shader,"uvws_map"),3)
-;     glUniform1i(glGetUniformLocation(shader,"depth_map"),4)
-;     glUniform1i(glGetUniformLocation(shader,"shadow_map"),5)
-;     
-;     Protected focus.v3f32
-;     Vector3::Set(focus,0,0,1)
-;     
-;     glUniform3f(glGetUniformLocation(shader,"focus"),focus\x,focus\y,focus\z)
-;   
-;     ;---[ Draw ]---------------------------------------
-;     glBindVertexArray(*layer\vao)
-;     glDrawArrays(#GL_TRIANGLES,0,6)
-;   
-;   ;   shader = *ctx\s_blurx
-;   ;   glUseProgram(shader)
-;   ;   glUniform2f(glGetUniformLocation(shader,"scale"),1,0.0)
-;   ;   glDrawArrays(#GL_TRIANGLES,0,6)
-;     
-;   ;   shader = *ctx\s_blury
-;   ;   glUseProgram(shader)
-;   ;   glUniform2f(glGetUniformLocation(shader,"scale"),0.0,0.51)
-;   ;   glDrawArrays_(#GL_TRIANGLES,0,6)
-;     Framebuffer::Unbind(*layer\buffer)
-;     Framebuffer::BlitTo(*layer\buffer,0,#GL_COLOR_BUFFER_BIT,#GL_LINEAR)
-;   
-;     glBindFramebuffer(#GL_DRAW_FRAMEBUFFER,0)
-;     glBindFramebuffer(#GL_READ_FRAMEBUFFER,0)
-;     glDepthMask(#GL_TRUE)
-;     glUseProgram(0)
-    
     Define nb_lights = CArray::GetCount(*scene\lights)
     glViewport(0,0,*layer\framebuffer\width,*layer\framebuffer\height)
     shader = *ctx\shaders("deferred")\pgm
@@ -189,9 +117,37 @@ Module LayerDefered
         Light::PassToShader(*light,shader,i)
       Next
       
+      Protected bias.m4f32
+      Matrix4::Set(bias,
+                   0.5,0.0,0.0,0.0,
+                   0.0,0.5,0.0,0.0,
+                   0.0,0.0,0.5,0.0,
+                   0.5,0.5,0.5,1.0)
+      
+      Protected view_rotation_matrix.m4f32
+      Protected *camera.Camera::Camera_t = *layer\pov
+      Protected *view.Math::m4f32 = *camera\view
+      Matrix4::Set(view_rotation_matrix,
+                   *view\v[0],*view\v[1],*view\v[2],*view\v[3],
+                   *view\v[4],*view\v[5],*view\v[6],*view\v[7],
+                   *view\v[8],*view\v[9],*view\v[10],*view\v[11],
+                   0,0,0,1)
+     
+      glUniformMatrix4fv(glGetUniformLocation(shader,"bias"),1,#GL_FALSE,@bias)
       glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,Layer::GetViewMatrix(*layer))
-;           glUniform3fv(glGetUniformLocation(shader, "viewPos"),1, *camera\pos)
+      glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,Layer::GetProjectionMatrix(*layer))
+      glUniformMatrix4fv(glGetUniformLocation(shader,"light_view"),1,#GL_FALSE,*light\view)
+      glUniformMatrix4fv(glGetUniformLocation(shader,"light_proj"),1,#GL_FALSE,*light\projection)
+      glUniformMatrix4fv(glGetUniformLocation(shader,"view_rotation_matrix"),1,#GL_FALSE,view_rotation_matrix)
+      glUniform3f(glGetUniformLocation(shader,"light_position"),*light\pos\x,*light\pos\y,*light\pos\z)
+      glUniform3f(glGetUniformLocation(shader,"camera_position"),0,0,0)
+      
+      glUniform1f(glGetUniformLocation(shader,"x_pixel_offset"),1/*layer\shadowmap\width)
+      glUniform1f(glGetUniformLocation(shader,"y_pixel_offset"),1/*layer\shadowmap\height)
+      
+      
       ScreenQuad::Draw(*layer\quad)
+      
           
       Protected vwidth = *ctx\width
       Protected vheight = *ctx\height
@@ -243,7 +199,7 @@ Module LayerDefered
   Class::DEF(LayerDefered)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 193
-; FirstLine = 155
+; CursorPosition = 109
+; FirstLine = 109
 ; Folding = --
 ; EnableXP

@@ -558,11 +558,12 @@ If Time::Init()
   Define pos.v3f32, rot.q4f32
   Define color.v3f32
   Define x,y,z
-  For x = 0 To 7
-    For y=0 To 7
-      For z=0 To 7
+  Define n = 12
+  For x = 0 To n
+    For y=0 To n
+      For z=0 To n
         AddElement(*bunnies())
-        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_SPHERE)
         Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
         PolymeshGeometry::ComputeHalfEdges(*bunnies()\geom)
         PolymeshGeometry::ComputeIslands(*bunnies()\geom)
@@ -621,8 +622,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 562
-; FirstLine = 539
+; CursorPosition = 565
+; FirstLine = 549
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

@@ -23,21 +23,23 @@ Global *viewport.ViewportUI::ViewportUI_t
 
 
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
-  Scene::*current_scene\dirty= #True
+  GLContext::SetContext(*viewport\context)
+  *app\scene\dirty= #True
   
-  Scene::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
   Application::Draw(*app, *layer, *app\camera)
+  
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/*viewport\sizX
   Define ratio.f = *viewport\sizX / *viewport\sizY
-  FTGL::Draw(*app\context\writer,"Testing Poisson Sampling",-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Testing Poisson Sampling",-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
   
-  GLContext::FlipBuffer(*app\context)
-  ViewportUI::Blit(*viewport, *layer\buffer)
+  GLContext::FlipBuffer(*viewport\context)
+  
 EndProcedure
 
 Time::Init()
@@ -47,12 +49,10 @@ Log::Init()
 
  If Not #USE_GLFW
    *viewport = ViewportUI::New(*app\window\main,"Poisson", *app\camera, *app\handle)     
-   *app\context\writer\background = #True
-    View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 EndIf
 
-GLContext::SetContext(*app\context)
+GLContext::SetContext(*viewport\context)
 Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Bunny", Shape::#SHAPE_BUNNY)
 *drawer = Drawer::New()
 
@@ -72,13 +72,13 @@ Vector3::Set(origin, 1,3,2)
 Vector3::Set(extend, 12,12,12)
 Box::Set(@box, @origin, @extend)
 
-Scene::*current_scene = Scene::New()
-*layer = LayerDefault::New(800,800,*app\context,*app\camera)
+*app\scene = Scene::New()
+*layer = LayerDefault::New(800,800,*viewport\context,*app\camera)
 Global *root.Model::Model_t = Model::New("Model")
 ; Object3D::AddChild(*root, *mesh)
 Object3D::AddChild(*root, *drawer)
 
-Scene::AddModel(Scene::*current_scene, *root)
+Scene::AddModel(*app\scene, *root)
 
 Define t.d = Time::Get()
 Poisson::CreateGrid(*poisson, *mesh\geom\bbox,0.1)
@@ -87,7 +87,7 @@ Poisson::SignedDistances(*poisson, *mesh\geom)
 
 MessageRequester("TOOK", StrD(Time::Get() - t))
 Poisson::Setup(*poisson, *drawer)
-Scene::Setup(Scene::*current_scene, *app\context)
+Scene::Setup(*app\scene)
 
 
 ; Define str.s
@@ -111,7 +111,7 @@ Application::Loop(*app, @Draw())
 ; 
 ;   If Not #USE_GLFW
 ;     *viewport = ViewportUI::New(*app\manager\main,"ViewportUI")
-;     *app\context = *viewport\context
+;     *viewport\context = *viewport\context
 ;     View::SetContent(*app\manager\main,*viewport)
 ;     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 ;   EndIf
@@ -137,9 +137,9 @@ Application::Loop(*app, @Draw())
 ;   
 ;   Application::Loop(*app,@Draw())
 ; EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 78
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 31
+; FirstLine = 24
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -110,48 +110,21 @@ Procedure Update()
 ;   Next
   AddElement(*lights())
   *lights() = Light::New("Light",Light::#Light_Infinite)
-  Vector3::Set(*lights()\pos,4,6,2)
+  Vector3::Set(*lights()\pos,4,8,2)
   Vector3::Set(*lights()\color,Random(100)*0.01,Random(100)*0.01,Random(100)*0.01)
   Object3D::AddChild(*model,*lights())
-
-  ; Meshes
-  ;-----------------------------------------------------
-  Define pos.v3f32, rot.q4f32
-
-  Define *t.Transform::Transform_t
-  Define color.c4f32
-  Quaternion::SetFromEulerAngles(rot,40,0,0)
-  Define *mesh.Geometry::PolymeshGeometry_t
-  Define x,y,z
-  For x = 0 To 7
-    For y = 0 To 2
-      For z = 0 To 7
-        Color::Set(color,Random(255)/255,Random(255)/255,Random(255)/255,1.0)
-        AddElement(*bunnies())
-        *bunnies() = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
-        *t = *bunnies()\localT
-        *mesh = *bunnies()\geom
-        numTriangles + *mesh\nbtriangles
-        Vector3::Set(color,Random(100)*0.005+0.5,Random(100)*0.005+0.5,Random(100)*0.005+0.5)
-        PolymeshGeometry::SetColor(*bunnies()\geom,color)
-        Transform::SetTranslationFromXYZValues(*t,x*2-10,y*2+1.5,z*2-10)
-        Transform::SetRotationFromQuaternion(*t,rot)
-        Object3D::SetLocalTransform(*bunnies(),*t)
-;         Matrix4::SetFromQuaternion(*bunnies()\matrix,@rot)
-;         Matrix4::SetTranslation(*bunnies()\matrix,@pos)
-        
-        
-        ;Polymesh::Setup(*bunnies(),*s_gbuffer)
-        Object3D::AddChild(*model,*bunnies())
-      Next
-    Next
-  Next
+  
+  Define *bunnies.Model::Model_t = Scene::CreateMeshGrid(12,2,12, Shape::#SHAPE_BUNNY)
+ 
   
   *ground = Polymesh::New("Ground",Shape::#SHAPE_GRID)
+  Transform::SetScaleFromXYZValues(*ground\localT, 3, 3, 3)
+  Object3D::SetLocalTransform(*ground, *ground\localT)
 ;   Shape::RandomizeColors(*ground\shape,@color,0.1)
   ;Polymesh::Setup(*ground,*s_polymesh)
   Object3D::AddChild(*model,*ground)
   
+  Scene::AddModel(*app\scene, *bunnies)
   Scene::AddModel(*app\scene,*model)
   
   Scene::Setup(*app\scene)
@@ -169,7 +142,7 @@ Procedure Update()
   ; ShadowMap Layer
   ;------------------------------------------------------
   FirstElement(*lights())
-  *shadowmap = LayerShadowMap::New(1024,1024,*viewport\context,*lights())
+  *shadowmap = LayerShadowMap::New(511,512,*viewport\context,*lights())
   LayerShadowMap::Setup(*shadowmap)
   
   ; Deferred Layer
@@ -187,8 +160,8 @@ Procedure Update()
   
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 113
+; CursorPosition = 126
+; FirstLine = 105
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

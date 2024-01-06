@@ -78,10 +78,8 @@ Module LayerShadowMap
   ;------------------------------------
   Procedure Draw(*layer.LayerShadowMap_t, *scene.Scene::Scene_t, *ctx.GLContext::GLContext_t)
 
- Debug "-------------------------------- LAYER SHADOW MAP DRAW CALLED -----------------------------------"
   Framebuffer::BindOutput(*layer\framebuffer)
-  
-;   OLayer_Draw(*layer,*ctx)
+
   ;clear depth-buffer
   glClearColor(0.0,1.0,0.0,0.0)
   glClearDepth(1)
@@ -91,35 +89,15 @@ Module LayerShadowMap
   glColorMask(#GL_FALSE, #GL_FALSE, #GL_FALSE, #GL_FALSE);
   
   Protected *light.Light::Light_t = *layer\pov
-  Debug *light\fov
-  Debug *light\aspect
+  *light\widthplane = 12
+  *light\heightplane = 12
+  *light\depthplane = 12
 	Light::UpdateProjection(*light)
 	Light::Update(*light)
-	
-   ; Find Up View Point
-  ;-----------------------------------------------
-  Protected *view.m4f32,*proj.m4f32
-  *view = Layer::GetViewMatrix(*layer)
-  *proj = Layer::GetProjectionMatrix(*layer)
-	
-	; Polymeshes
-	;--------------------------------------------------------
-  Protected shader.GLuint = *ctx\shaders("shadowmap")\pgm
-  glBindAttribLocation(shader, 0, "position")
-	glUseProgram(shader)
 
-  glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
-  glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,*proj)
-  
   glEnable(#GL_DEPTH_TEST)
-  If *layer\cullfrontface
-    glEnable(#GL_CULL_FACE)
-    glCullFace(#GL_FRONT)
-    glFrontFace(#GL_CW)
-  EndIf
   
-  
-  Layer::DrawPolymeshes(*layer,*scene\objects,shader,#False)
+  Layer::DrawByType(*layer, *scene\objects, Object3D::#Polymesh, *ctx\shaders("shadowmap"))
     
     ; Instanced PointCloud
   	;--------------------------------------------------------
@@ -132,7 +110,6 @@ Module LayerShadowMap
     glUniform1f(glGetUniformLocation(shader,"nearplane"),*light\nearplane)
     glUniform1f(glGetUniformLocation(shader,"farplane"),*light\farplane)
    
-    
     glBindAttribLocation(shader,0,"s_pos")
     glBindAttribLocation(shader,1,"s_norm")
     glBindAttribLocation(shader,2,"s_uvws")
@@ -161,8 +138,6 @@ Module LayerShadowMap
     Framebuffer::Unbind(*layer\framebuffer)
     glUseProgram(0)
     
-    Debug "-------------------------------- LAYER SHADOW MAP DRAW ENDED -----------------------------------"
-
   EndProcedure
   
   ;------------------------------------
@@ -195,8 +170,8 @@ Module LayerShadowMap
   
   Class::DEF(LayerShadowMap)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 171
-; FirstLine = 152
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 66
 ; Folding = --
 ; EnableXP

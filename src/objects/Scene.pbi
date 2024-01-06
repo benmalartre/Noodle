@@ -80,6 +80,9 @@ DeclareModule Scene
   Declare GetUniqueID(*Me.Scene_t, *o.Object3D::Object3D_t)
   Declare.s GetInfos(*Me.Scene_t)
   
+  Declare CreateRandomGround(size.f, height.f)
+  Declare CreateMeshGrid(nx.i, ny.i, nz.i, shape.i)
+  
   DataSection 
     SceneVT: 
     Data.i @Delete()
@@ -678,6 +681,149 @@ Module Scene
   EndProcedure
   
   ;---------------------------------------------------------------------------
+  ; Create a random ground polymesh
+  ;---------------------------------------------------------------------------
+  Procedure CreateRandomGround(size.f, height.f)
+    Protected *ground.Polymesh::Polymesh_t = Polymesh::New("Ground", Shape::#SHAPE_NONE)
+    Protected *geom.Geometry::PolymeshGeometry_t = *ground\geom
+  
+    PolymeshGeometry::GridTopology(*geom, size,32,32)
+    
+      Protected *topo.Geometry::Topology_t = *geom\topo
+    Define i
+    Define *p.v3f32
+    For i=0 To CArray::GetCount(*topo\vertices)-1
+      *p = CArray::GetValue(*topo\vertices, i)
+      *p\y + Random(height*100) /100
+    Next
+    PolymeshGeometry::Set2(*geom, *topo)
+    Object3D::Freeze(*ground)
+    ProcedureReturn *ground
+  EndProcedure
+  
+  ;---------------------------------------------------------------------------
+  ; Create a grid of mesh
+  ;---------------------------------------------------------------------------
+  Procedure CreateMeshGrid(nx.i, ny.i, nz.i, shape.i)
+    Define pos.v3f32, rot.q4f32
+
+    Define *t.Transform::Transform_t
+    Define color.c4f32
+    Define rot.q4f32
+    
+    Define *mesh.Polymesh::Polymesh_t
+    Define *geom.Geometry::PolymeshGeometry_t
+    Define *model.Model::Model_t = Model::New("Grid")
+    Define x,y,z
+    Define o.f
+    For x = 0 To nx
+      For y = 0 To ny
+        For z = 0 To nz
+          *mesh = Polymesh::New("Bunny",shape)
+          *t = *mesh\localT
+          *geom = *mesh\geom
+          numTriangles + *geom\nbtriangles
+          Vector3::Set(color,Random_0_1(),Random_0_1(),Random_0_1())
+          PolymeshGeometry::SetColor(*geom,color)
+          Transform::SetTranslationFromXYZValues(*t,x-nx*0.5,y+2,z-nz*0.5)
+          Quaternion::SetFromEulerAngles(rot,Random(360),Random(360),Random(360))
+          Transform::SetRotationFromQuaternion(*t,rot)
+          Define s.f = RANDOM_0_1() * 0.2
+          Transform::SetScaleFromXYZValues(*t, s, s, s)
+          Object3D::SetLocalTransform(*mesh,*t)
+
+          Object3D::AddChild(*model,*mesh)
+        Next
+      Next
+    Next
+    ProcedureReturn *model
+  EndProcedure
+  
+  ;---------------------------------------------------------------------------
+  ; Scatter a mesh on another
+  ;---------------------------------------------------------------------------
+  Procedure CreateScatteredMesh()
+;     Define pos.v3f32,scl.v3f32
+; 
+; 
+;   *ground.Polymesh::Polymesh_t = Scene::RandomGround()
+;   
+; 
+;   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
+;   
+;   Define *samples.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
+;   *samples\geometry = *ground\geom
+;   *samples\transform = *ground\globalT
+;   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
+;   
+;   *bunny.Polymesh::Polymesh_t = Polymesh::New("Bunny",Shape::#SHAPE_BUNNY)
+;   
+;   Define *merged.Polymesh::Polymesh_t = Polymesh::New("Merged",Shape::#SHAPE_NONE)
+;   *merged\wireframe = #False
+;   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
+;   
+;   Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+;   Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
+;   Define *gtopo.Geometry::Topology_t = *ggeom\topo
+;   Define i
+;       
+;   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
+;   
+;   Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+;   Define *matrices.CArray::CarrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
+;   Define m.m4f32
+;   Define pos.v3f32
+;     
+;   Define *loc.Geometry::Location_t
+;   Define *pos.v3f32, *nrm.v3f32
+;   Define scl.v3f32
+;   Define size.f = 7
+;   Define pos.v3f32, center.v3f32
+;   Vector3::Set(center, 0,5,0)
+; ;   CArray::SetCount(*matrices, CArray::GetCount(*samples))
+;   For i=0 To CArray::GetCount(*samples)-1
+;     *loc = CArray::GetValue(*samples,i)
+;     Location::GetPosition(*loc,*ggeom,*ground\globalT)
+;     Location::GetNormal(*loc,*ggeom,*ground\globalT)
+;     Matrix4::SetIdentity(m)
+;     size = Random(50)+5
+;     Vector3::ScaleInPlace(*loc\n, size/2)
+;     Vector3::AddInPlace(*loc\p, *loc\n)
+;     Vector3::Randomize(pos, center, 12)
+;     Matrix4::SetIdentity(m)
+;     Matrix4::SetTranslation(m, *loc\p)
+;     
+;     Vector3::Set(scl, size, size, size)
+;     Matrix4::SetScale(m, scl)
+;    
+;     CArray::Append(*matrices,m)
+; ;     CArray::SetValue(*matrices, i, m)
+;  Next
+;   
+;  Define *topo.Geometry::Topology_t = Topology::New(*bgeom\topo)
+;  
+;  
+;  Topology::TransformArray(*topo,*matrices,*topos)
+;   Topology::MergeArray(*topo,*topos)
+;  
+;   Define sT.d = Time::Get()
+;   PolymeshGeometry::Set2(*mgeom,*topo)
+;   Topology::Delete(*topo)
+;   
+; ;   PolymeshGeometry::ComputeHalfEdges(*mgeom)
+; ;   PolymeshGeometry::ComputeIslands(*mgeom)
+; ;   PolymeshGeometry::RandomColorByIsland(*mgeom)
+;   Object3D::Freeze(*merged)
+;   
+;   Object3D::AddChild(*model,*merged)
+;   
+;   Object3D::AddChild(*model,*ground)
+;   Object3D::AddChild(*model,*bunny)  
+  EndProcedure
+  
+  
+  
+  ;---------------------------------------------------------------------------
   ;  Destructor
   ;---------------------------------------------------------------------------
   Procedure Delete( *Me.Scene_t )
@@ -749,7 +895,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 460
-; FirstLine = 390
-; Folding = -------
+; CursorPosition = 730
+; FirstLine = 714
+; Folding = --------
 ; EnableXP

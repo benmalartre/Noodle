@@ -25997,6 +25997,21 @@ Module Shape
    Vector3::Set(color,Random(255)/255,Random(255)/255,Random(255)/255)
     Select shape
       Case  #SHAPE_NONE 
+      Case #SHAPE_POINT
+        *Me\nbp = #POINT_NUM_VERTICES
+        *Me\nbt = #POINT_NUM_TRIANGLES
+        
+        CArray::SetCount(*Me\positions,*Me\nbp)
+        CArray::SetCount(*Me\normals,*Me\nbp)
+        CArray::SetCount(*Me\colors,*Me\nbp)
+        CArray::SetCount(*Me\indices,*Me\nbt*3)
+        
+        CopyMemory(?shape_point_positions, *Me\positions\data, *Me\nbp*CArray::GetItemSize(*Me\positions))
+        CopyMemory(?shape_point_indices, *Me\indices\data, *Me\nbt*3*CArray::GetItemSize(*Me\indices))
+        RecomputeNormals(*Me,1.0)
+        RandomizeColors(*Me,color)
+        SetUVWs(*Me)
+        
       Case  #SHAPE_AXIS
         *Me\nbp = #AXIS_NUM_VERTICES
         *Me\nbt = #AXIS_NUM_TRIANGLES
@@ -26176,6 +26191,9 @@ Module Shape
   Procedure GetVertices(shape.i)
     Select shape
       Case  #SHAPE_NONE 
+        Case  #SHAPE_POINT
+          ProcedureReturn ?shape_point_positions
+          
       Case  #SHAPE_AXIS
         ProcedureReturn ?shape_axis_positions
         
@@ -26230,6 +26248,10 @@ Module Shape
   Procedure GetFaces(shape.i)
     Select shape
       Case  #SHAPE_NONE 
+        
+      Case  #SHAPE_POINT
+        ProcedureReturn ?shape_point_indices
+          
       Case  #SHAPE_PLATE
         ProcedureReturn ?shape_plate_indices
         
@@ -26290,6 +26312,9 @@ Module Shape
   Procedure GetEdges(shape.i)
     Select shape
       Case  #SHAPE_NONE 
+      Case  #SHAPE_POINT
+        ProcedureReturn ?shape_point_edges
+          
       Case  #SHAPE_PLATE
         ProcedureReturn ?shape_plate_edges
       Case  #SHAPE_AXIS
@@ -26484,7 +26509,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 55
+; CursorPosition = 26012
+; FirstLine = 25997
 ; Folding = ----
 ; EnableXP

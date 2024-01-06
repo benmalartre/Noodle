@@ -1590,7 +1590,6 @@ Module PolymeshGeometry
     NewList seeds.i()
     NewList nexts.i()
     Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
-    Debug "create neighbor array"
     
     Define i, j, n
     Define islandIndex = 0
@@ -2463,6 +2462,7 @@ Module PolymeshGeometry
           Topology::Bunny(*Me\base)
         Case Shape::#SHAPE_TEAPOT
           Topology::Teapot(*Me\base)
+        
       EndSelect
       
       Set2(*Me,*Me\base)
@@ -2475,7 +2475,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 880
-; FirstLine = 877
+; CursorPosition = 878
+; FirstLine = 873
 ; Folding = -----g-----+-
 ; EnableXP
