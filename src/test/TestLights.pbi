@@ -63,7 +63,7 @@ Procedure Update()
   LayerGBuffer::Draw(*gbuffer, *app\scene, *viewport\context)
   LayerShadowMap::Draw(*shadowmap, *app\scene, *viewport\context)
   LayerDefered::Draw(*defered, *app\scene,  *viewport\context)
-  LayerShadowDefered::Draw(*shadowdefered, *app\scene, *viewport\context)
+;   LayerShadowDefered::Draw(*shadowdefered, *app\scene, *viewport\context)
   
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
@@ -160,8 +160,8 @@ Procedure Update()
   
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 126
-; FirstLine = 105
+; CursorPosition = 65
+; FirstLine = 48
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

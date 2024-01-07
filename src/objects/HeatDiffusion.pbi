@@ -272,7 +272,7 @@ Module HeatDiffusion
     Define *v._Vertex_t
     For i = 0 To ArraySize(*solver\vertices())-1
       *v = *solver\vertices(i)
-      Color::Set(c, RESCALE(*v\phi, 0, *solver\maxphi, 1, 0), 0, 0, 1)
+      Color::Set(c, RESCALE(*v\phi, 0, *solver\maxphi, 1, 0), RESCALE(*v\phi, 0, *solver\maxphi, 0, 1), 0, 1)
       CArray::SetValue(*colors, i, c)
     Next
     
@@ -282,6 +282,7 @@ Module HeatDiffusion
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 29
+; CursorPosition = 274
+; FirstLine = 236
 ; Folding = --
 ; EnableXP

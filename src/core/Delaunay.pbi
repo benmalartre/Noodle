@@ -1,249 +1,451 @@
-﻿DeclareModule Delaunay
+﻿; ------------------------------------------------------------------------------------
+; DELAUNAY TRIANGULATION (2D) MODULE
+;
+; https://github.com/delfrrr/delaunator-cpp
+;
+; ------------------------------------------------------------------------------------
+
+XIncludeFile "../core/Math.pbi"
+
+DeclareModule Delaunay
+  
+  UseModule Math
   #EPSILON = 0.0000000001
-  Structure Point_t
-    x.f
-    y.f
-    z.f
+  #INVALID_INDEX = #U32_MAX
+  
+  Structure Circle_t
+    c.v2f32
+    r.f
   EndStructure
   
-  Structure Edge_t
-    p1.i
-    p2.i
+  Structure Index_t
+    index.i
+    d.f
   EndStructure
   
-  Structure Triangle_t
-    p1.i
-    p2.i
-    p3.i
+  Structure Delaunay_t
+    Array ids.Index_t(0)
+    Array points.v2f32(0)
+    Array triangles.i(0)
+    Array halfedges.i(0)
+    Array hullPrev.i(0)
+    Array hullNext.i(0)
+    Array hullTri.i(0)
+    Array hashes.i(0)
+    Array edgeStack.i(0)
+    
+    center.v2f32
+    hashSize.i
+    hullSize.i
+    hullStart.i
   EndStructure
   
-  Declare XYZCompare(*p1.Point_t, *p2.Point_t)
-  Declare Triangulate(numPoints.i, Array points.Point_t(1), Array triangles.Triangle_t, *numTriangles)
-  Declare CircumCircle(xp.f, yp.f, x1.f, y1.f, x2.f, y2.f, x3.f, y3.f, *xc, *yc, *r)
+  Declare Init(*delaunay.Delaunay_t, *points.CArray::CArrayV3F32, *view.m4f32)
+  Declare AddTriangle(*delaunay.Delaunay_t, i0, i1, i2, a, b, c)
+  Declare.b IsInCircle(*delaunay.Delaunay_t,*a.v2f32, *b.v2f32, *c.v2f32, *p.v2f32)
 EndDeclareModule
 
 
 Module Delaunay
   
-;   ////////////////////////////////////////////////////////////////////////
-;   // CircumCircle() :
-;   //   Return true If a Point (xp,yp) is inside the circumcircle made up
-;   //   of the points (x1,y1), (x2,y2), (x3,y3)
-;   //   The circumcircle centre is returned in (xc,yc) And the radius r
-;   //   Note : A point on the edge is inside the circumcircle
-;   ////////////////////////////////////////////////////////////////////////
-  Procedure CircumCircle(xp.f, yp.f, x1.f, y1.f, x2.f, y2.f, x3.f, y3.f, *xc, *yc, *r)
-    Define.f m1, m2, mx1, mx2, my1, my2
-    Define.f dx, dy, rsqr, drsqr
-  
-    ; Check For coincident points 
-    If Abs(y1 - y2) < #EPSILON And Abs(y2 - y3) < #EPSILON
-      ProcedureReturn #False
-    EndIf
-    
-    If Abs(y2-y1) < #EPSILON
-      m2 = - (x3 - x2) / (y3 - y2)
-      mx2 = (x2 + x3) / 2.0
-      my2 = (y2 + y3) / 2.0
-      xc = (x2 + x1) / 2.0
-      yc = m2 * (xc - mx2) + my2
-    ElseIf Abs(y3 - y2) < #EPSILON)
-      m1 = - (x2 - x1) / (y2 - y1)
-      mx1 = (x1 + x2) / 2.0
-      my1 = (y1 + y2) / 2.0
-      xc = (x3 + x2) / 2.0
-      yc = m1 * (xc - mx1) + my1
+  Procedure.b _CheckPointsEqual(*p1.v2f32, *p2.v2f32)
+    ProcedureReturn Bool(Abs(*p1\x - *p2\x) <= #F32_EPS And Abs(*p1\y - *p2\y) <= #F32_EPS)
+  EndProcedure
+
+  Procedure.f _PseudoAngle(*p.v2f32)
+    Define p.f = *p\x / (Abs(*p\x) + Abs(*p\y))
+    If *p\y > 0.0
+      ProcedureReturn (3.0 - p ) / 4.0
     Else
-      m1 = - (x2 - x1) / (y2 - y1)
-      m2 = - (x3 - x2) / (y3 - y2)
-      mx1 = (x1 + x2) / 2.0
-      mx2 = (x2 + x3) / 2.0
-      my1 = (y1 + y2) / 2.0
-      my2 = (y2 + y3) / 2.0
-      xc = (m1 * mx1 - m2 * mx2 + my2 - my1) / (m1 - m2); 
-      yc = m1 * (xc - mx1) + my1
+      ProcedureReturn (1.0 + p) / 4.0
     EndIf
-    dx = x2 - xc
-    dy = y2 - yc
-    rsqr = dx * dx + dy * dy
-    r = Qqr(rsqr) 
-    dx = xp - xc
-    dy = yp - yc
-    drsqr = dx * dx + dy * dy
-    ProcedureReturn Bool(drsqr <= rsqr)
   EndProcedure
   
-;   ///////////////////////////////////////////////////////////////////////////////
-;   // Triangulate() :
-;   //   Triangulation subroutine
-;   //   Takes As input NV vertices in Array pxyz
-;   //   Returned is a List of ntri triangular faces in the Array v
-;   //   These triangles are arranged in a consistent clockwise order.
-;   //   The triangle Array 'v' should be malloced To 3 * nv
-;   //   The vertex Array pxyz must be big enough To hold 3 more points
-;   //   The vertex Array must be sorted in increasing x values say
-;   //
-;   //   qsort(p,nv,SizeOf(XYZ),XYZCompare);
-;   ///////////////////////////////////////////////////////////////////////////////
-
-  Procedure Triangulate(numPoints.i, Array points.Point_t(1), Array triangles.Triangle_t(1), *numTriangles)
-    Define *complete = #Null
-    Define *edges.Edge_t = #Null
-    Define *p_edgeTemp = #Null
-    Define numEdges = 0
-    Define triMax.i
-    Define edgeMax = 200
-    Define status.i
-    Define inside.i
-    Define i, j, k
-    Define.f xp, yp, x1, y1, x2, y2, x3, y3, xc, yc, r
-    Define.f xmin, xmax, ymin, ymax, xmid, ymid
-    Define.f dx, dy, dmax
+  Procedure _HashKey(*delaunay.Delaunay_t, *p.v2f32)
+    Define d.v2f32
+    Vector2::Sub(d, *p, *delaunay\center)
+    ProcedureReturn Int(Round(_PseudoAngle(d) * *delaunay\hashSize, #PB_Round_Down)) % *delaunay\hashSize
+  EndProcedure
+  
+  Procedure _SetupTriangle(*delaunay.Delaunay_t, id.i, p0.i, p1.i, p2.i)
+    *delaunay\triangles(id * 3 + 0) = p0
+    *delaunay\triangles(id * 3 + 1) = p1
+    *delaunay\triangles(id * 3 + 2) = p2
+  EndProcedure
+  
+  Procedure _SetupLink(*delaunay.Delaunay_t, a.i, b.i) 
+    Define s = ArraySize(*delaunay\halfedges())
+    If a = s
+      ReDim *delaunay\halfedges(s + 1)
+      *delaunay\halfedges(s) = b
+    ElseIf a < s
+        *delaunay\halfedges(a) = b
+    EndIf
+    If b <> #INVALID_INDEX
+      Define s2 = ArraySize(*delaunay\halfedges())
+      If b = s2
+        ReDim *delaunay\halfedges(s2 + 1)
+        *delaunay\halfedges(s2) = a
+      ElseIf b < s2
+        *delaunay\halfedges(b) = a
+      EndIf
+    EndIf
+  EndProcedure
+  
+  Procedure _Sum()
     
-    ; Allocate memory For the completeness List, flag For each triangle 
-    triMax = 4 * numPoints
-    complete = AllocateMemory(trimax * #PB_Integer)
-    ; Allocate memory For the edge List
-    edges = AllocateMemory(edgeMax * SizeOf(Edge_t))
+  EndProcedure
+  
+  Procedure _CircumCircle(*c.Circle_t, *p0.v2f32, *p1.v2f32, *p2.v2f32)
+    Protected e0.v2f32, e1.v2f32
+    Vector2::Sub(e0, *p1, *p0)
+    Vector2::Sub(e1, *p2, *p0)
+    Define e0l.f = e0\x*e0\x + e0\y*e0\y
+    Define e1l.f = e1\x*e1\x + e1\y*e1\y
+    Define d.f = e0\x*e1\y - e0\y*e1\x
+    
+    Define x.f = (e1\y * e0l - e0\y * e1l) * 0.5 / d
+    Define y.f = (e0\x * e1l - e1\x * e0l) * 0.5 / d
+    
+    Vector2::Set(*c\c, x + *p0\x, y + *p0\y)
+    
+    If ((e0l > 0.0 Or e0l < 0.0) And (e1l > 0.0 Or e1l < 0.0) And (d > 0.0 Or d < 0.0))
+      *c\r = x*x + y*y
+    Else
+      *c\r = #F32_MAX
+    EndIf
+  EndProcedure
+  
+  Procedure.b _Orient(*p.v2f32, *q.v2f32, *r.v2f32)
+    ProcedureReturn Bool(((*q\y - *p\y) * (*r\x - *q\x) - (*q\x - *p\x) * (*r\y - *q\y)) < 0.0)
+  EndProcedure
+  
+  Procedure _Legalize(*delaunay.Delaunay_t, a.i)
+    Define i = 0
+    Define ar = 0;
+    ReDim *delaunay\edgeStack(0)
+    
+    ; recursion eliminated With a fixed-size stack
+    While #True
+        Define b = *delaunay\halfedges(a)
 
-    ; Find the maximum And minimum vertex bounds.
-    ; This is To allow calculation of the bounding triangle
-    xmin = points(0)\x
-    ymin = points(0)\y
-    xmax = xmin
-    ymax = ymin
-    For i=0 To numPoints - 1
-      If points(i)\x < xmin) : xmin = points(i)\x :EndIf  
-      If points(i)\x > xmax) : xmax = points(i)\x :EndIf  
-      If points(i)\y < ymin) : ymin = points(i)\y :EndIf  
-      If points(i)\y > ymax) : ymax = points(i)\y :EndIf  
+        ; If the pair of triangles doesn't satisfy the Delaunay condition
+        ; (p1 is inside the circumcircle of [p0, pl, pr]), flip them,
+        ; then do the same check/flip recursively For the new pair of triangles
+        ;
+        ;           pl                    pl
+        ;          /||\                  /  \
+        ;       al/ || \bl            al/    \a
+        ;        /  ||  \              /      \
+        ;       /  a||b  \    flip    /___ar___\
+        ;     p0\   ||   /p1   =>   p0\---bl---/p1
+        ;        \  ||  /              \      /
+        ;       ar\ || /br             b\    /br
+        ;          \||/                  \  /
+        ;           pr                    pr
+        ;/
+        Define a0 = 3 * (a / 3)
+        ar = a0 + (a + 2) % 3
+
+        If b = #INVALID_INDEX
+          If i > 0
+            i-1
+            a = *delaunay\edgeStack(i)
+            Continue
+          Else 
+            ;i = INVALID_INDEX
+            Break
+          EndIf
+        EndIf
+
+
+        Define b0 = 3 * (b / 3)
+        Define al = a0 + (a + 1) % 3
+        Define bl = b0 + (b + 2) % 3
+
+        Define p0 = *delaunay\triangles(ar)
+        Define pr = *delaunay\triangles(a)
+        Define pl = *delaunay\triangles(al)
+        Define p1 = *delaunay\triangles(bl)
+
+
+        If IsInCircle(*delaunay, 
+                      *delaunay\points(p0), 
+                      *delaunay\points(pr),
+                      *delaunay\points(pl), 
+                      *delaunay\points(p1))
+          
+          *delaunay\triangles(a) = p1
+          *delaunay\triangles(b) = p0
+
+          Define hbl = *delaunay\halfedges(bl)
+
+          ; edge swapped on the other side of the hull (rare); fix the halfedge reference
+          If hbl = #INVALID_INDEX
+            Define e = *delaunay\hullStart
+            Repeat
+              If *delaunay\hullTri(e) = bl : *delaunay\hullTri(e) = a : Break : EndIf
+              e = *delaunay\hullNext(e)
+            Until e = *delaunay\hullStart
+          EndIf
+          _SetupLink(*delaunay, a, hbl)
+          _SetupLink(*delaunay, b, *delaunay\halfedges(ar))
+          _SetupLink(*delaunay, ar, bl)
+          Define br = b0 + (b + 1) % 3
+          Define esSize = ArraySize(*delaunay\edgeStack())
+          If i < esSize
+            *delaunay\edgeStack(i) = br;
+          Else
+            ReDim *delaunay\edgeStack(esSize + 1)
+            *delaunay\edgeStack(esSize) = br
+          EndIf
+          i+1
+      Else
+        If i > 0
+          i-1
+          a = *delaunay\edgeStack(i)
+        Else
+          Break
+        EndIf
+      EndIf
+    Wend
+    ProcedureReturn ar
+  EndProcedure
+  
+  Procedure Init(*delaunay.Delaunay_t, *points.CArray::CArrayV3F32, *view.m4f32)
+    Protected invMatrix.m4f32
+    Protected *p.v3f32, p.v3f32
+    Protected n = CArray::GetCount(*points)
+    ReDim *delaunay\points(n)
+    ReDim *delaunay\ids(n)
+    Matrix4::Inverse(invMatrix, *view)
+    
+    Define maxX.f = #F32_MIN
+    Define maxY.f = #F32_MIN
+    Define minX.f = #F32_MAX
+    Define minY.f = #F32_MAX
+    Define i, j, k, q, t
+
+    
+    For i = 0 To n - 1
+      *p = CArray::GetValue(*points, i)
+      Vector3::MulByMatrix4(p, *p, invMatrix)
+      Vector2::Set(*delaunay\points(i), p\x, p\y)
+      If p\x < minX : minX = p\x :EndIf
+      If p\y < minY : minY = p\y :EndIf
+      If p\x > maxX : maxX = p\x :EndIf
+      If p\y > maxY : maxY = p\y :EndIf
+      
+      *delaunay\ids(i)\index = i
     Next
     
-    dx = xmax - xmin
-    dy = ymax - ymin
-    If dx > dy : dmax = dx : Else: dmax = dy : EndIf
+    Vector2::Set(*delaunay\center, (minX + maxX) * 0.5, (minY + maxY) * 0.5)
+    Define minDist.f = #F32_MAX
+    
+    Define i0 = #INVALID_INDEX
+    Define i1 = #INVALID_INDEX
+    Define i2 = #INVALID_INDEX
+      
+    ; pick a seed point close To the centroid
+    Define dist.f
+    For i = 0 To n - 1
+      dist = Vector2::DistanceSquared(*delaunay\points(i), *delaunay\center)
+      If dist < minDist
+        i0 = i
+        minDist = dist
+      EndIf
+    Next
+    
+    ; find the point closest To the seed
+    minDist = #F32_MAX
+    
+    For i = 0 To n - 1
+      If i = i0 : Continue : EndIf
+      dist= Vector2::DistanceSquared(*delaunay\points(i), *delaunay\points(i0));
+      If dist < minDist And dist > 0.0
+        i1 = i
+        minDist = dist
+      EndIf
+    Next
+    
+    Define minRadius.f = #F32_MAX
+    Define circle.Circle_t
 
-    ;  Set up the supertriangle
-    ;  his is a triangle which encompasses all the sample points.
-    ;  The supertriangle coordinates are added To the End of the
-    ;  vertex List. The supertriangle is the first triangle in
-    ;  the triangle List.
-  pxyz[nv+0].x = xmid - 20 * dmax;
-  pxyz[nv+0].y = ymid - dmax;
-  pxyz[nv+1].x = xmid;
-  pxyz[nv+1].y = ymid + 20 * dmax;
-  pxyz[nv+2].x = xmid + 20 * dmax;
-  pxyz[nv+2].y = ymid - dmax;
-  v[0].p1 = nv;
-  v[0].p2 = nv+1;
-  v[0].p3 = nv+2;
-  complete[0] = false;
-  ntri = 1           ;
+    ; find the third point which forms the smallest circumcircle With the first two
+    For i = 0 To n - 1
+      If i = i0 Or i = i1 : Continue : EndIf
+      _CircumCircle(circle, *delaunay\points(i0), *delaunay\points(i1), *delaunay\points(i))
+      If circle\r < minRadius
+        i2 = i
+        minRadius = circle\r
+      EndIf
+    Next
   
-    ; Include each point one at a time into the existing mesh
-  For(i = 0; i < nv; i++){
-    xp = pxyz[i].x;
-    yp = pxyz[i].y;
-    nedge = 0;
-/*
-     Set up the edge buffer.
-     If the Point (xp,yp) lies inside the circumcircle then the
-     three edges of that triangle are added To the edge buffer
-     And that triangle is removed.
-*/
-  For(j = 0; j < ntri; j++){
-    If(complete[j])
-      Continue;
-    x1 = pxyz[v[j].p1].x;
-    y1 = pxyz[v[j].p1].y;
-    x2 = pxyz[v[j].p2].x;
-    y2 = pxyz[v[j].p2].y;
-    x3 = pxyz[v[j].p3].x;
-    y3 = pxyz[v[j].p3].y;
-    inside = CircumCircle(xp, yp, x1, y1, x2, y2, x3, y3, xc, yc, r);
-    If (xc + r < xp)
-// Suggested
-// If (xc + r + EPSILON < xp)
-      complete[j] = true;
-    If(inside){
-/* Check that we haven't exceeded the edge list size */
-      If(nedge + 3 >= emax){
-        emax += 100;
-        p_EdgeTemp = new IEDGE[emax];
-        For (int i = 0; i < nedge; i++) { // Fix by John Bowman
-          p_EdgeTemp[i] = edges[i];   
-        }
-        delete []edges;
-        edges = p_EdgeTemp;
-      }
-      edges[nedge+0].p1 = v[j].p1;
-      edges[nedge+0].p2 = v[j].p2;
-      edges[nedge+1].p1 = v[j].p2;
-      edges[nedge+1].p2 = v[j].p3;
-      edges[nedge+2].p1 = v[j].p3;
-      edges[nedge+2].p2 = v[j].p1;
-      nedge += 3;
-      v[j] = v[ntri-1];
-      complete[j] = complete[ntri-1];
-      ntri--;
-      j--;
-    }
-  }
-/*
-  Tag multiple edges
-  Note: If all triangles are specified anticlockwise then all
-  interior edges are opposite pointing in direction.
-*/
-  For(j = 0; j < nedge - 1; j++){
-    For(k = j + 1; k < nedge; k++){
-      If((edges[j].p1 == edges[k].p2) && (edges[j].p2 == edges[k].p1)){
-        edges[j].p1 = -1;
-        edges[j].p2 = -1;
-        edges[k].p1 = -1;
-        edges[k].p2 = -1;
-      }
-       /* Shouldn't need the following, see note above */
-      If((edges[j].p1 == edges[k].p1) && (edges[j].p2 == edges[k].p2)){
-        edges[j].p1 = -1;
-        edges[j].p2 = -1;
-        edges[k].p1 = -1;
-        edges[k].p2 = -1;
-      }
-    }
-  }
-/*
-     Form new triangles For the current point
-     Skipping over any tagged edges.
-     All edges are arranged in clockwise order.
-*/
-  For(j = 0; j < nedge; j++) {
-    If(edges[j].p1 < 0 || edges[j].p2 < 0)
-      Continue;
-    v[ntri].p1 = edges[j].p1;
-    v[ntri].p2 = edges[j].p2;
-    v[ntri].p3 = i;
-    complete[ntri] = false;
-    ntri++;
-  }
-}
-/*
-      Remove triangles With supertriangle vertices
-      These are triangles which have a vertex number greater than nv
-*/
-  For(i = 0; i < ntri; i++) {
-    If(v[i].p1 >= nv || v[i].p2 >= nv || v[i].p3 >= nv) {
-      v[i] = v[ntri-1];
-      ntri--;
-      i--;
-    }
-  }
-  delete[] edges;
-  delete[] complete;
-  Return 0;
-} 
+    If _Orient(*delaunay\points(i0), *delaunay\points(i1), *delaunay\points(i2)) 
+      Swap i1, i2
+    EndIf
+    
+    _CircumCircle(circle, *delaunay\points(i0), *delaunay\points(i1), *delaunay\points(i2))
+    Vector2::SetFromOther(*delaunay\center, circle\c)
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 111
-; Folding = -
+    ; sort the points by distance from the seed triangle circumcenter
+    For i = 0 To n - 1
+      *delaunay\ids(i)\d = Vector2::DistanceSquared(*delaunay\center, *delaunay\points(i))
+    Next
+    SortStructuredArray(*delaunay\ids(), #PB_Sort_Ascending, OffsetOf(Index_t\d), #PB_Float)
+    
+    ; initialize a hash table For storing edges of the advancing convex hull
+    *delaunay\hashSize = Round(Sqr(n), #PB_Round_Up)
+    ReDim *delaunay\hashes(*delaunay\hashSize)
+    FillMemory(@*delaunay\hashes(0), *delaunay\hashSize * SizeOf(i), #INVALID_INDEX, #PB_Integer)
+    
+    ; initialize arrays For tracking the edges of the advancing convex hull
+    ReDim *delaunay\hullPrev(n)
+    ReDim *delaunay\hullNext(n)
+    ReDim *delaunay\hullTri(n)
+
+    *delaunay\hullStart = i0
+
+    *delaunay\hullSize = 3
+
+    *delaunay\hullNext(i0) = i1
+    *delaunay\hullPrev(i2) = i1
+    *delaunay\hullNext(i1) = i2
+    *delaunay\hullPrev(i0) = i2
+    *delaunay\hullNext(i2) = i0
+    *delaunay\hullPrev(i1) = i0
+
+    *delaunay\hullTri(i0) = 0
+    *delaunay\hullTri(i1) = 1
+    *delaunay\hullTri(i2) = 2
+
+    *delaunay\hashes(_HashKey(*delaunay, *delaunay\points(i0))) = i0
+    *delaunay\hashes(_HashKey(*delaunay, *delaunay\points(i1))) = i1
+    *delaunay\hashes(_HashKey(*delaunay, *delaunay\points(i2))) = i2
+    
+    Define maxTriangles = 1
+    If n > 3 : maxTriangles = 2 * n - 5 : EndIf
+    
+    AddTriangle(*delaunay, i0, i1, i2, #INVALID_INDEX, #INVALID_INDEX, #INVALID_INDEX)
+    
+    Vector2::Set(p, #F32_MAX, #F32_MAX)
+    
+    For k = 0 To n -1
+      i = *delaunay\ids(k)\index
+      *p = *delaunay\points(i)
+      
+      ; skip near-duplicate points
+      If k > 0 And _CheckPointsEqual(*p, p) : Continue : EndIf
+      
+      Vector2::SetFromOther(p, *p)
+      
+      ; skip seed triangle points
+      If _CheckPointsEqual(p, *delaunay\points(i0)) Or 
+         _CheckPointsEqual(p, *delaunay\points(i1)) Or
+         _CheckPointsEqual(p, *delaunay\points(i2)) : Continue : EndIf
+      
+      ; find a visible edge on the convex hull using edge hash
+      Define start = 0
+      
+      Define key = _HashKey(*delaunay, p)
+      For j = 0 To *delaunay\hashSize - 1
+        start = *delaunay\hashes((key + j)%*delaunay\hashSize)
+        If start <> #INVALID_INDEX And start <> *delaunay\hullNext(start) 
+          Break
+        EndIf
+      Next
+      start = *delaunay\hullPrev(start)
+      e = start
+     
+      Repeat
+        q = *delaunay\hullNext(e)
+        If Not _Orient(p, *delaunay\points(e), *delaunay\points(q))
+          e = q
+          If e = start : e = INVALID_INDEX : Break : EndIf
+        Else : Break : EndIf
+      Until #True  
+      
+       If e = #INVALID_INDEX : Continue : EndIf ; likely a near-duplicate point; skip it
+
+       ; add the first triangle from the point
+       t = AddTriangle(*delaunay, e, i, *delaunay\hullNext(e), #INVALID_INDEX, #INVALID_INDEX, *delaunay\hullTri(e))
+       *delaunay\hullTri(i) = _Legalize(*delaunay, t + 2)
+       *delaunay\hullTri(e) = t
+       *delaunay\hullSize + 1
+
+
+       ; walk forward through the hull, adding more triangles And flipping recursively
+       Define nxt.i = *delaunay\hullNext(e)
+       Repeat
+         q = *delaunay\hullNext(nxt)
+         If _Orient(p, *delaunay\points(nxt), *delaunay\points(q)) 
+           t = AddTriangle(*delaunay, nxt, i, q, *delaunay\hullTri(i), #INVALID_INDEX, *delaunay\hullTri(nxt))
+           *delaunay\hullTri(i) = _Legalize(*delaunay, t + 2)
+           *delaunay\hullNext(nxt) = nxt
+           *delaunay\hullSize - 1
+           nxt = q
+         Else : Break : EndIf
+       Until #True
+       
+       ; walk backward from the other side, adding more triangles And flipping
+      If e = start
+        Repeat
+          q = *delaunay\hullPrev(e)
+          If _Orient(p, *delaunay\points(q), *delaunay\points(e))
+            t = AddTriangle(*delaunay, q, i, e, #INVALID_INDEX, *delaunay\hullTri(e), *delaunay\hullTri(q));
+            _Legalize(*delaunay, t + 2)
+            *delaunay\hullTri(q) = t
+            *delaunay\hullNext(e) = e; // mark as removed
+            *delaunay\hullSize - 1
+            e = q
+          Else : Break : EndIf
+        Until #True
+      EndIf
+            
+      ; update the hull indices
+      *delaunay\hullPrev(i) = e
+      *delaunay\hullStart = e
+      *delaunay\hullPrev(nxt) = i
+      *delaunay\hullNext(e) = i
+      *delaunay\hullNext(i) = nxt
+      
+      *delaunay\hashes(_HashKey(*delaunay, p)) = i
+      *delaunay\hashes(_HashKey(*delaunay, *delaunay\points(e))) = e   
+    Next
+ 
+  EndProcedure
+  
+  Procedure AddTriangle(*delaunay.Delaunay_t, i0, i1, i2, a, b, c)
+    Define t = ArraySize(*delaunay\triangles())
+    ReDim *delaunay\triangles(t + 3)
+    _SetupTriangle(*delaunay, t / 3, i0, i1, i2)
+    _SetupLink(*delaunay, t + 0, a)
+    _SetupLink(*delaunay, t + 1, b)
+    _SetupLink(*delaunay, t + 2, c)
+    ProcedureReturn t
+  EndProcedure
+  
+  Procedure.b IsInCircle(*delaunay.Delaunay_t, *a.v2f32, *b.v2f32, *c.v2f32, *p.v2f32)
+    Define a.v2f32, b.v2f32, c.v2f32
+    Vector3::Sub(a, *a, *p)
+    Vector3::Sub(b, *b, *p)
+    Vector3::Sub(c, *c, *p)
+    
+    Define ap.f = Vector2::LengthSquared(a)
+    Define bp.f = Vector2::LengthSquared(b)
+    Define cp.f = Vector2::LengthSquared(c)
+
+    ProcedureReturn Bool((a\x * (b\y * cp - bp * c\y) - a\y * (b\x * cp - bp * c\x) + ap * (b\x * c\y - b\y * c\x)) < 0.0)
+  EndProcedure
+  
+  
+EndModule
+
+
+
+  
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 361
+; FirstLine = 321
+; Folding = ---
 ; EnableXP

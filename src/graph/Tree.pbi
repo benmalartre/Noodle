@@ -75,8 +75,7 @@ Module Tree
   ;-----------------------------------------------------------------------------
   Procedure ClearAllBranches(*Me.Tree_t) 
     ForEach *Me\all_branches()
-      ClearStructure(*Me\all_branches(), Branch_t)
-      FreeMemory(*Me\all_branches())
+      FreeStructure(*Me\all_branches())
     Next
     
     ClearList(*Me\all_branches())
@@ -385,7 +384,7 @@ Module Tree
         *Me\current\connexions()\end\connected = #False
         *Me\current\connexions()\end\attribute = #Null
         Graph::ExtractListElement(*Me\current\connexions(),*connexion)
-        FreeMemory(*connexion)
+        FreeStructure(*connexion)
 ;         *Me\dirty = #True
       EndIf
       
@@ -598,9 +597,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 559
-; FirstLine = 529
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 386
+; FirstLine = 374
 ; Folding = -----
 ; EnableThread
 ; EnableXP

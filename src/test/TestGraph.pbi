@@ -143,8 +143,7 @@ Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,6
 
 
 Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
-; Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
-; ExplorerUI::Connect(*explorer, *app\scene)
+
 
 *viewport = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
@@ -163,6 +162,12 @@ Application::AddLayer(*app, *layer)
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
 Scene::Setup(*app\scene)
+
+Debug "create explore"
+Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explorer")
+ExplorerUI::Connect(*explorer, *app\scene)
+Debug "created and connected"
+
 Window::OnEvent(*app\window, Globals::#EVENT_NEW_SCENE)
 ; Window::OnEvent(*app\window, #PB_Event_SizeWindow)
 
@@ -196,8 +201,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 113
+; CursorPosition = 170
+; FirstLine = 155
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

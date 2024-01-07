@@ -523,6 +523,8 @@ Module Drawer
    
     glUniformMatrix4fv(u_model,1,#GL_FALSE,*t\m)
     glUniformMatrix4fv(u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
+    
+    glEnable(#GL_PROGRAM_POINT_SIZE)
         
     ForEach *Me\items()
       With *Me\items()
@@ -1042,7 +1044,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 431
-; FirstLine = 427
+; CursorPosition = 526
+; FirstLine = 504
 ; Folding = ---------
 ; EnableXP

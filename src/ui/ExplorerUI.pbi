@@ -151,7 +151,8 @@ Module ExplorerUI
     Define ev_datas.Control::EventTypeDatas_t
     Select event
       Case Globals::#EVENT_NEW_SCENE
-        ControlExplorer::Fill(*Me\explorer,*scene) 
+        ControlExplorer::Fill(*Me\explorer, GLContext::*SHARED_CTXT\scene) 
+        
       Case #PB_EventType_Resize
         If *Me\parent
           Resize(*Me)
@@ -211,9 +212,7 @@ Module ExplorerUI
     *Me\scrollable = #True
     *Me\gadgetID = CanvasGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,#PB_Canvas_Keyboard)
     *Me\explorer = ControlExplorer::New(*Me,0,0,*view\sizX,*view\sizY)
-    
     View::SetContent(*view,*Me)
-    
     ProcedureReturn *Me
   EndProcedure
   
@@ -222,8 +221,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 200
-; FirstLine = 179
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 149
 ; Folding = ---
 ; EnableXP

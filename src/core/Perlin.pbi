@@ -168,8 +168,8 @@ Module PerlinNoise
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 167
-; FirstLine = 125
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 168
+; FirstLine = 113
 ; Folding = --
 ; EnableXP

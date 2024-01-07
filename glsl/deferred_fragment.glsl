@@ -40,6 +40,14 @@ uniform Light lights[MAX_NR_LIGHTS];
 uniform int nb_lights;
 uniform Sun sun;
 
+const float bias = -0.005;
+vec2 poissonDisk[4] = vec2[](
+  vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
+);
+
 vec3 getShadowCoords(vec3 dir)
 {
 	mat4 inv_view = inverse(view);
@@ -55,7 +63,7 @@ float lookup( vec3 coords,vec2 offset)
 	vec2 textureCoordinates = coords.xy * vec2(0.5,0.5) + vec2(0.5,0.5);
 
 	offset *= vec2(x_pixel_offset,y_pixel_offset);
-    const float bias = -0.005;
+    
     float depth_value = texture( shadow_map, textureCoordinates + offset ).r ;
 	if(depth_value>=1.0)return 1.0;
 	if(coords.z * 0.5 + 0.5 < depth_value-bias)
@@ -101,7 +109,9 @@ void main()
 	vec3 shadow_coords = getShadowCoords(eye_dir);
 	float s = 0.0;
 	
-	s =  lookup(shadow_coords,vec2(0.0,0.0));
+	for (int i=0;i<4;i++){
+		s += lookup(shadow_coords, poissonDisk[i]*2.0 ) * 0.25;
+	}
 	
 	/*
     for(int i = 0; i < nb_lights; ++i)

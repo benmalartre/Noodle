@@ -125,6 +125,8 @@ FTGL::Init()
 *colors = CArray::New(CArray::#ARRAY_C4F32)
 
 *bunny = Polymesh::New("bunny", Shape::#SHAPE_BUNNY)
+PolymeshGeometry::ComputeHalfEdges(*bunny\geom)
+PolymeshGeometry::ComputeVertexPolygons(*bunny\geom)
 
 Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property", #Null)
 Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "HeatDiffusion ", "Controls")
@@ -158,7 +160,7 @@ Scene::Setup(*app\scene)
 Application::Loop(*app, @Draw())
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 25
+; CursorPosition = 128
+; FirstLine = 106
 ; Folding = -
 ; EnableXP
