@@ -106,6 +106,7 @@ Procedure Draw(*app.Application::Application_t)
   
   *model = Model::New("Model")
   
+  Define *grid = Polymesh::New("Grid", Shape::#SHAPE_GRID)
   *mesh = Polymesh::New("Mesh", Shape::#SHAPE_BUNNY)
   *drawer = Drawer::New("Drawer")
   
@@ -119,14 +120,16 @@ Procedure Draw(*app.Application::Application_t)
   Define *points.CArray::CArrayV3F32 = CARray::New(CARray::#ARRAY_V3F32)
   Define *p.v3f32
   Define i
-  CArray::SetCount(*points, 12)
-  For i = 0 To 11
+  Define N = 10240
+  CArray::SetCount(*points, N)
+  For i = 0 To N-1
     *p = CArray::GetValue(*points, i)
-    *p\x = Random_0_1()
-    *p\z = Random_0_1()
+    *p\x = Random_0_1() - 0.5
+    *p\z = Random_0_1() - 0.5
   Next
   
   Delaunay::Init(*delaunay, *mesh\geom\a_positions, m)
+;   Delaunay::Init(*delaunay, *points, Matrix4::IDENTITY())
   
   Define *points.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   Define n = ArraySize(*delaunay\points()), i
@@ -142,23 +145,26 @@ Procedure Draw(*app.Application::Application_t)
   Define color.c4f32
   Color::Set(color, 1,0,0.5,1)
   Drawer::SetColor(*item, color)
-  Drawer::SetSize(*item, 4.0)
+  Drawer::SetSize(*item, 10.0)
   
-  Define *triangle.CArray::CARrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  Define *colors.CArray::CARrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+  Define *triangle.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
   CArray::SetCount(*triangle, 3 * ArraySize(*delaunay\triangles()))
   CArray::SetCount(*colors, 3 * ArraySize(*delaunay\triangles()))
   For i = 0 To ArraySize(*delaunay\triangles())/3 - 1
     *p = CArray::GetValue(*triangle, i * 3)
     *p\x = *delaunay\points(*delaunay\triangles(i*3))\x
+    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3))\y
     
     *p = CArray::GetValue(*triangle, i * 3 + 1)
     *p\x = *delaunay\points(*delaunay\triangles(i*3+1))\x
+    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3+1))\y
     
     *p = CArray::GetValue(*triangle, i * 3 + 2)
     *p\x = *delaunay\points(*delaunay\triangles(i*3+2))\x
+    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3+2))\y
     
     Color::Set(color, Random_0_1(), Random_0_1(), Random_0_1(), 1)
@@ -172,6 +178,7 @@ Procedure Draw(*app.Application::Application_t)
   *item = Drawer::AddColoredTriangle(*drawer, *triangle, *colors)
   
   Object3D::AddChild(*model, *drawer)
+  Object3D::AddChild(*model, *grid)
 ;   Object3D::AddChild(*model, *mesh)
   
   Scene::AddModel(*app\scene,*model)
@@ -225,7 +232,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 73
+; CursorPosition = 131
+; FirstLine = 104
 ; Folding = -
 ; EnableXP

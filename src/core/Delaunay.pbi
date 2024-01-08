@@ -36,18 +36,16 @@ DeclareModule Delaunay
     
     center.v2f32
     hashSize.i
-    hullSize.i
     hullStart.i
   EndStructure
   
   Declare Init(*delaunay.Delaunay_t, *points.CArray::CArrayV3F32, *view.m4f32)
   Declare AddTriangle(*delaunay.Delaunay_t, i0, i1, i2, a, b, c)
   Declare.b IsInCircle(*delaunay.Delaunay_t,*a.v2f32, *b.v2f32, *c.v2f32, *p.v2f32)
+
 EndDeclareModule
 
-
 Module Delaunay
-  
   Procedure.b _CheckPointsEqual(*p1.v2f32, *p2.v2f32)
     ProcedureReturn Bool(Abs(*p1\x - *p2\x) <= #F32_EPS And Abs(*p1\y - *p2\y) <= #F32_EPS)
   EndProcedure
@@ -62,9 +60,9 @@ Module Delaunay
   EndProcedure
   
   Procedure _HashKey(*delaunay.Delaunay_t, *p.v2f32)
-    Define d.v2f32
-    Vector2::Sub(d, *p, *delaunay\center)
-    ProcedureReturn Int(Round(_PseudoAngle(d) * *delaunay\hashSize, #PB_Round_Down)) % *delaunay\hashSize
+    Define p.v2f32
+    Vector2::Sub(p, *p, *delaunay\center)
+    ProcedureReturn Int(_PseudoAngle(p) * *delaunay\hashSize) % *delaunay\hashSize
   EndProcedure
   
   Procedure _SetupTriangle(*delaunay.Delaunay_t, id.i, p0.i, p1.i, p2.i)
@@ -143,7 +141,7 @@ Module Delaunay
         ;       ar\ || /br             b\    /br
         ;          \||/                  \  /
         ;           pr                    pr
-        ;/
+        ;
         Define a0 = 3 * (a / 3)
         ar = a0 + (a + 2) % 3
 
@@ -191,10 +189,10 @@ Module Delaunay
           _SetupLink(*delaunay, a, hbl)
           _SetupLink(*delaunay, b, *delaunay\halfedges(ar))
           _SetupLink(*delaunay, ar, bl)
-          Define br = b0 + (b + 1) % 3
+          Define br = b0 + ((b + 1) % 3)
           Define esSize = ArraySize(*delaunay\edgeStack())
           If i < esSize
-            *delaunay\edgeStack(i) = br;
+            *delaunay\edgeStack(i) = br
           Else
             ReDim *delaunay\edgeStack(esSize + 1)
             *delaunay\edgeStack(esSize) = br
@@ -213,11 +211,15 @@ Module Delaunay
   EndProcedure
   
   Procedure Init(*delaunay.Delaunay_t, *points.CArray::CArrayV3F32, *view.m4f32)
-    Protected invMatrix.m4f32
     Protected *p.v3f32, p.v3f32
     Protected n = CArray::GetCount(*points)
     ReDim *delaunay\points(n)
     ReDim *delaunay\ids(n)
+    ReDim *delaunay\hullPrev(n)
+    ReDim *delaunay\hullNext(n)
+    ReDim *delaunay\hullTri(n)
+    
+    Protected invMatrix.m4f32
     Matrix4::Inverse(invMatrix, *view)
     
     Define maxX.f = #F32_MIN
@@ -226,20 +228,36 @@ Module Delaunay
     Define minY.f = #F32_MAX
     Define i, j, k, q, t
 
-    
     For i = 0 To n - 1
       *p = CArray::GetValue(*points, i)
       Vector3::MulByMatrix4(p, *p, invMatrix)
-      Vector2::Set(*delaunay\points(i), p\x, p\y)
+      Vector2::Set(*delaunay\points(i), p\x, p\z)
       If p\x < minX : minX = p\x :EndIf
-      If p\y < minY : minY = p\y :EndIf
+      If p\z < minY : minY = p\z :EndIf
       If p\x > maxX : maxX = p\x :EndIf
-      If p\y > maxY : maxY = p\y :EndIf
+      If p\z > maxY : maxY = p\z :EndIf
       
       *delaunay\ids(i)\index = i
     Next
     
-    Vector2::Set(*delaunay\center, (minX + maxX) * 0.5, (minY + maxY) * 0.5)
+    ; normalize  
+    Define *p2.v2f32
+    Define sX.f = 1.0 / (maxX - minX)
+    Define sY.f = 1.0 / (maxY - minY)
+    Define w.f = 1.0 / n
+    Define center.v2f32
+    For i = 0 To n - 1
+      *p2 = *delaunay\points(i) 
+      *p2\x - minX
+      *p2\y - minY 
+      *p2\x * sX
+      *p2\y * sY
+      Vector2::ScaleAddInPlace(center, *p2, w)
+      Vector2::Echo(*p2)
+    Next
+    
+    Vector2::SetFromOther(*delaunay\center, center)
+    
     Define minDist.f = #F32_MAX
     
     Define i0 = #INVALID_INDEX
@@ -287,26 +305,20 @@ Module Delaunay
     
     _CircumCircle(circle, *delaunay\points(i0), *delaunay\points(i1), *delaunay\points(i2))
     Vector2::SetFromOther(*delaunay\center, circle\c)
-
-    ; sort the points by distance from the seed triangle circumcenter
-    For i = 0 To n - 1
+    
+    ; sort the points by distance from the seed triangle circumcenter    
+    For i = 0 To ArraySize(*delaunay\ids())
       *delaunay\ids(i)\d = Vector2::DistanceSquared(*delaunay\center, *delaunay\points(i))
     Next
+    
     SortStructuredArray(*delaunay\ids(), #PB_Sort_Ascending, OffsetOf(Index_t\d), #PB_Float)
     
     ; initialize a hash table For storing edges of the advancing convex hull
-    *delaunay\hashSize = Round(Sqr(n), #PB_Round_Up)
+    *delaunay\hashSize = n/2;Int(Round(Sqr(n), #PB_Round_Up))
     ReDim *delaunay\hashes(*delaunay\hashSize)
     FillMemory(@*delaunay\hashes(0), *delaunay\hashSize * SizeOf(i), #INVALID_INDEX, #PB_Integer)
     
-    ; initialize arrays For tracking the edges of the advancing convex hull
-    ReDim *delaunay\hullPrev(n)
-    ReDim *delaunay\hullNext(n)
-    ReDim *delaunay\hullTri(n)
-
     *delaunay\hullStart = i0
-
-    *delaunay\hullSize = 3
 
     *delaunay\hullNext(i0) = i1
     *delaunay\hullPrev(i2) = i1
@@ -331,6 +343,7 @@ Module Delaunay
     Vector2::Set(p, #F32_MAX, #F32_MAX)
     
     For k = 0 To n -1
+      
       i = *delaunay\ids(k)\index
       *p = *delaunay\points(i)
       
@@ -365,14 +378,12 @@ Module Delaunay
         Else : Break : EndIf
       Until #True  
       
-       If e = #INVALID_INDEX : Continue : EndIf ; likely a near-duplicate point; skip it
+      If e = #INVALID_INDEX : Continue : EndIf ; likely a near-duplicate point; skip it
 
        ; add the first triangle from the point
        t = AddTriangle(*delaunay, e, i, *delaunay\hullNext(e), #INVALID_INDEX, #INVALID_INDEX, *delaunay\hullTri(e))
        *delaunay\hullTri(i) = _Legalize(*delaunay, t + 2)
        *delaunay\hullTri(e) = t
-       *delaunay\hullSize + 1
-
 
        ; walk forward through the hull, adding more triangles And flipping recursively
        Define nxt.i = *delaunay\hullNext(e)
@@ -382,7 +393,6 @@ Module Delaunay
            t = AddTriangle(*delaunay, nxt, i, q, *delaunay\hullTri(i), #INVALID_INDEX, *delaunay\hullTri(nxt))
            *delaunay\hullTri(i) = _Legalize(*delaunay, t + 2)
            *delaunay\hullNext(nxt) = nxt
-           *delaunay\hullSize - 1
            nxt = q
          Else : Break : EndIf
        Until #True
@@ -396,7 +406,6 @@ Module Delaunay
             _Legalize(*delaunay, t + 2)
             *delaunay\hullTri(q) = t
             *delaunay\hullNext(e) = e; // mark as removed
-            *delaunay\hullSize - 1
             e = q
           Else : Break : EndIf
         Until #True
@@ -404,13 +413,13 @@ Module Delaunay
             
       ; update the hull indices
       *delaunay\hullPrev(i) = e
-      *delaunay\hullStart = e
       *delaunay\hullPrev(nxt) = i
       *delaunay\hullNext(e) = i
       *delaunay\hullNext(i) = nxt
       
       *delaunay\hashes(_HashKey(*delaunay, p)) = i
       *delaunay\hashes(_HashKey(*delaunay, *delaunay\points(e))) = e   
+
     Next
  
   EndProcedure
@@ -445,7 +454,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 361
-; FirstLine = 321
+; CursorPosition = 316
+; FirstLine = 313
 ; Folding = ---
 ; EnableXP
