@@ -133,6 +133,9 @@ Module Window
       Case #PB_Event_Timer
         View::OnEvent(*Me\main,#PB_Event_Timer)
         
+      Case Globals::#EVENT_TOOL_CHANGED
+        View::OnEvent(*Me\main, Globals::#EVENT_TOOL_CHANGED)
+        
       Case Globals::#EVENT_NEW_SCENE
         View::OnEvent(*Me\main, Globals::#EVENT_NEW_SCENE)
         
@@ -140,8 +143,10 @@ Module Window
         
       Case Globals::#EVENT_COMMAND_CALLED
         View::OnEvent(*Me\main,Globals::#EVENT_COMMAND_CALLED)
+        
       Case Globals::#EVENT_PARAMETER_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_PARAMETER_CHANGED)
+        
       Case Globals::#EVENT_SELECTION_CHANGED
         View::OnEvent(*Me\main,Globals::#EVENT_SELECTION_CHANGED)
         
@@ -322,7 +327,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 21
-; FirstLine = 17
+; CursorPosition = 246
+; FirstLine = 242
 ; Folding = ---
 ; EnableXP

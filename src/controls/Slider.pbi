@@ -66,7 +66,7 @@ Module ControlSlider
     
     MovePathCursor(*Me\posX + perc * *Me\sizX, *Me\posY)
     AddPathLine(0, *Me\sizY, #PB_Path_Relative)
-    VectorSourceColor(UIColor::WHITE)
+    VectorSourceColor(UIColor::COLOR_CARET)
     StrokePath(4)
     
   EndProcedure
@@ -183,9 +183,9 @@ Module ControlSlider
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlSlider )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 179
-; FirstLine = 135
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 68
+; FirstLine = 55
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

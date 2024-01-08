@@ -98,6 +98,7 @@ Module Sheet
   ;   DRAW
   ; --------------------------------------------------------
   Procedure Draw(*Me.Sheet_t)
+    TranslateCoordinates(*Me\px, *Me\py)
     ForEach *Me\items()
       Vector::DrawItem(*Me\items())
     Next
@@ -121,7 +122,6 @@ Module Sheet
     EndIf
     *Me\over = #Null
     ProcedureReturn #False
-    
   EndProcedure
   
 
@@ -145,16 +145,16 @@ Module Sheet
   Procedure Shift(*Me.Sheet_t,shiftx.i,shifty.i)
     If *Me\active
       Vector::Translate(*Me\active, shiftx, shifty)
+    Else
+      *Me\px + shiftX
+      *Me\py + shifty
     EndIf
-    
-;     TranslateCoordinates(*Me, shiftx, shifty)
   EndProcedure
   
  
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 46
-; FirstLine = 42
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 150
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

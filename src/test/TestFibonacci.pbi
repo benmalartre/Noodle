@@ -1,15 +1,9 @@
-﻿XIncludeFile "../core/Fibonacci.pbi"
-XIncludeFile "../core/UIColor.pbi"
+﻿XIncludeFile "../core/Demo.pbi"
+XIncludeFile "../core/Fibonacci.pbi"
 Global N = 32
 Global T.f = 0
 Global *fibonacci.Fibonacci::Fibonacci_t = Fibonacci::New(N)
-
-
-Global window = OpenWindow(#PB_Any, 0,0,800,800,"Fibonacci")
-Global canvas = CanvasGadget(#PB_Any,0,0,800,800)
-
-Global OFFSETX = 0
-Global OFFSETY = 0
+Global *demo.DemoApplication::DemoApplication_t
 
 
 Procedure DrawGrid(*fibonacci.Fibonacci::Fibonacci_t, canvas.i, scl.f=0.1)
@@ -119,51 +113,18 @@ Procedure DrawSphere(*fibonacci.Fibonacci::Fibonacci_t, canvas, scl.f)
   Next
 EndProcedure
 
-Procedure CanvasEvent(canvas)
-  OFFSETX + 10
-  OFFSETY + 10
-EndProcedure
 
+Define width = 800
+Define height = 800
 
-Define scl.f = 0.05
-Define width = GadgetWidth(canvas)
-Define height = GadgetHeight(canvas)
-Define event
-Repeat
-  event = WaitWindowEvent(10)
-  If event = #PB_Event_Gadget 
-    If EventGadget() = canvas 
-      CanvasEvent(canvas)
-    EndIf
-    
-  EndIf
-  
-;   Fibonacci::Sphere(*fibonacci)
-  Fibonacci::Grid(*fibonacci)
-  StartVectorDrawing(CanvasVectorOutput(canvas))  
-  TranslateCoordinates(OFFSETX,OFFSETY)
-; ;   AddPathBox(0,0, width, height)
-; ;   VectorSourceColor(RGBA(0,0,0,255))
-; ;   FillPath()
-; ;   
-; ;   VectorSourceColor(RGBA(0,0,0,255))
-; ;   TranslateCoordinates(width * 0.5, height*0.5)
-; ;   ScaleCoordinates(scl, scl)
-; ; ;   
-  
-  DrawGrid(*fibonacci,canvas)
-  DrawSpiral(*fibonacci, canvas)
-; ;   *fibonacci\N + 1
-; ;   Fibonacci::Disc(*fibonacci)
-;     DrawSphere(*fibonacci, canvas, scl)
-; ;   DrawDisc(*fibonacci, canvas, 1024)
-;   ;*fibonacci\N+1
-  StopVectorDrawing()
-    
+ *demo = DemoApplication::New("Test Fibonacci",width,height)
+ Define model = Scene::CreateMeshGrid(8,8,8, Shape::#SHAPE_BUNNY)
+ Scene::AddModel(*demo\scene, model)
+ Scene::Setup(*demo\scene)
 
-Until event = #PB_Event_CloseWindow
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 123
-; FirstLine = 101
+ Application::Loop(*demo, DemoApplication::@Draw())
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 68
 ; Folding = -
 ; EnableXP

@@ -51,9 +51,9 @@ EndProcedure
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   OpenGLExt::GLCheckError("Set GL Context")
-  Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
+  Protected *light.Light::Light_t = CArray::GetValuePtr(*app\scene\lights,0)
   
   Protected *t.Transform::Transform_t = *light\localT
   
@@ -62,23 +62,23 @@ Procedure Draw(*app.Application::Application_t)
   Object3D::SetLocalTransform(*light, *t)
   
   UpdateNormals()
-  *scene\dirty= #True
-  Scene::Update(*scene)
+  *app\scene\dirty= #True
+  Scene::Update(*app\scene)
   
   
   glUseProgram(*pgm\pgm)
   glUniform3f(glGetUniformLocation(*pgm\pgm, "lightPosition"), *t\t\pos\x, *t\t\pos\y, *t\t\pos\z)
   Application::Draw(*app, *layer, *app\camera)
-  ViewportUI::Blit(*viewport, *layer\datas\buffer)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
 
-  FTGL::BeginDraw(*app\context\writer)
-  FTGL::SetColor(*app\context\writer,1,1,1,1)
+  FTGL::BeginDraw(*viewport\context\writer)
+  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*app\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
-  FTGL::EndDraw(*app\context\writer)
+  FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::EndDraw(*viewport\context\writer)
 ;   
-  GLContext::FlipBuffer(*app\context)
+  GLContext::FlipBuffer(*viewport\context)
 
  EndProcedure
 
@@ -97,15 +97,14 @@ If Time::Init()
 
   If Not #USE_GLFW
      *viewport = ViewportUI::New(*app\window\main, "ViewportUI", *app\camera, *app\handle)     
-     Application::SetContext(*app, *viewport\context)
      ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf
   
   Camera::LookAt(*app\camera)
   
-  *pgm = *app\context\shaders("polymesh")
-  *scene = Scene::New()
-  *layer = LayerDefault::New(width,height,*app\context,*app\camera)
+  *pgm = *viewport\context\shaders("polymesh")
+  *app\scene = Scene::New()
+  *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
 ;   ViewportUI::AddLayer(*viewport, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
@@ -118,18 +117,17 @@ If Time::Init()
 
   Object3D::AddChild(*root, *mesh)
   Object3D::AddChild(*root, *drawer)
-  Scene::AddModel(*scene,*root)
+  Scene::AddModel(*app\scene,*root)
   
-  Scene::Setup(*scene,*app\context)
+  Scene::Setup(*app\scene)
 
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 92
-; FirstLine = 80
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 13
 ; Folding = -
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

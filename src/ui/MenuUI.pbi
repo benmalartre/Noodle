@@ -99,7 +99,6 @@ Module MenuUI
       *Me\sizX = *top\sizX
       *Me\sizY = *top\sizY
       ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-      Debug "MenuUI Resize : ("+Str(*Me\posX)+","+Str(*Me\posY)+","+Str(*Me\sizX)+","+Str(*Me\sizY)+")"
       ControlMenu::OnEvent(*me\menu,#PB_EventType_Resize)
       
     ElseIf event = #PB_Event_Gadget
@@ -212,8 +211,8 @@ Module MenuUI
   
    Class::DEF(MenuUI)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 151
-; FirstLine = 147
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 101
+; FirstLine = 87
 ; Folding = ---
 ; EnableXP

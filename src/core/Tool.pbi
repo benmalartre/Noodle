@@ -172,7 +172,7 @@ Module Tool
   EndProcedure
   
   Procedure AddCircle(*Me.Tool_t, x.f, y.f)
-    Define *circle.Vector::Circle_t = Vector::NewItem(Vector::#ATOM_CIRCLE, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, UIColor::BLACK, #True, UIColor::RANDOMIZED)
+    Define *circle.Vector::Circle_t = Vector::NewItem(Vector::#ATOM_CIRCLE, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, RGBA(255,0,120,255), #True, UIColor::RANDOMIZED)
     *circle\T\translate\x = x + 1
     *circle\T\translate\y = y + 1
     *circle\radius = 1
@@ -200,6 +200,8 @@ Module Tool
     Define *atom.Vector::Atom_t = #Null
     If *active : *atom = *active\active : EndIf
     
+    Define color = RGBA(120,60,32,255)
+    
     Select EventType()
       Case #PB_EventType_LeftButtonDown
         *Me\down = #True
@@ -224,7 +226,7 @@ Module Tool
             AddCircle(*Me, x, y)
             
           Case Tool::#TOOL_BOX
-            Define *box.Vector::Box_t = Vector::NewItem(Vector::#ATOM_BOX, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, UIColor::BLACK, #True, UIColor::RANDOMIZED)
+            Define *box.Vector::Box_t = Vector::NewItem(Vector::#ATOM_BOX, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, color, #True, UIColor::RANDOMIZED)
             *box\halfsize\x = 1
             *box\halfsize\y = 1
             *box\T\translate\x = x + 1
@@ -232,7 +234,7 @@ Module Tool
             
             *box\fill_color = UIColor::RANDOMIZED
             *box\stroked = #True
-            *box\stroke_color = UIColor::BLACK
+            *box\stroke_color = color
             *box\stroke_width = 2
             *box\filled = #True
             *Me\type = #TOOL_EDIT
@@ -242,10 +244,10 @@ Module Tool
             
           Case Tool::#TOOL_LINE
    
-            Define *line.Vector::Line_t = Vector::NewItem(Vector::#ATOM_LINE, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, UIColor::BLACK, #True, UIColor::RANDOMIZED)
+            Define *line.Vector::Line_t = Vector::NewItem(Vector::#ATOM_LINE, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, color, #True, UIColor::RANDOMIZED)
             *line\fill_color = UIColor::RANDOMIZED
             *line\stroked = #True
-            *line\stroke_color = UIColor::BLACK
+            *line\stroke_color = color
             *line\stroke_width = 2
             *line\filled = #True
             *Me\item = *line
@@ -256,10 +258,10 @@ Module Tool
             
           Case Tool::#TOOL_BEZIER
    
-            Define *bezier.Vector::Bezier_t = Vector::NewItem(Vector::#ATOM_BEZIER, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, UIColor::BLACK, #True, UIColor::RANDOMIZED)
+            Define *bezier.Vector::Bezier_t = Vector::NewItem(Vector::#ATOM_BEZIER, Vector::#STROKE_DEFAULT, #PB_Path_Default, 2, color, #True, UIColor::RANDOMIZED)
             *bezier\fill_color = UIColor::RANDOMIZED
             *bezier\stroked = #True
-            *bezier\stroke_color = UIColor::BLACK
+            *bezier\stroke_color = color
             *bezier\stroke_width = 2
             *bezier\filled = #True
             *Me\item = *bezier
@@ -375,9 +377,9 @@ EndModule
 
 
   
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 77
-; FirstLine = 73
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 236
+; FirstLine = 291
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

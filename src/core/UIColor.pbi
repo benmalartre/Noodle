@@ -143,30 +143,6 @@ DeclareModule UIColor
     RGBA(Random(255), Random(255), Random(255), Random(255))
   EndMacro
   
-  Global BLACK          = RGBA(0,0,0,255)
-  Global RED            = RGBA(255,0,0,255)
-  Global BLUE           = RGBA(0,0,255,255)
-  Global GREEN          = RGBA(0,255,0,255)
-  Global WHITE          = RGBA(255,255,255,255)
-  Global YELLOW         = RGBA(255,255,0,255)
-  Global CYAN           = RGBA(0,255,255,255)
-  Global MAGENTA        = RGBA(255,0,255,255)
-  
-  Global BACK           = RGBA(122,122,122,255)
-  Global GRID           = RGBA(0,0,0,100)
-  Global CONTOUR        = RGBA(200,200,200,200)
-  Global LABEL          = RGBA(32,32,32,255)
-  Global SELECTED       = RGBA(180,180,180,255)
-  Global ACTIVE         = RGBA(255,128,0,255)
-  Global OVER           = RGBA(64,32,12,128)
-  Global EDIT           = RGBA(64,180,255,255)
-  Global HANDLE         = RGBA(255,180,64,255)
-  Global HANDLE_H       = RGBA(255,64,0,255)
-  Global DARK           = RGBA(30,30,30,255)
-  Global DARK_H         = RGBA(40,40,40,255)
-  Global LIGHT          = RGBA(220,220,220,255)
-  Global LIGHT_H        = RGBA(240,240,240,255)
-  
   Declare Init()
   Declare SetTheme(theme.i)
   Declare Hovered(color.i)
@@ -265,8 +241,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 87
-; FirstLine = 53
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 143
+; FirstLine = 118
 ; Folding = ---
 ; EnableXP

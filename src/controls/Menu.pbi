@@ -532,11 +532,9 @@ Module ControlMenu
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw(*menu.ControlMenu_t)
-    Debug "Menu Control DRAW : ("+Str(*menu\sizX)+","+Str(*menu\sizY)+")"
     If *menu\dirty
       StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
       VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
-      
       
       AddPathBox(0,0,*menu\sizX,*menu\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG)
@@ -617,6 +615,10 @@ Module ControlMenu
   Procedure OnEvent(*Me.ControlMenu_t,eventID.i)
     If eventID = #PB_Event_SizeWindow Or eventID = #PB_EventType_Resize
       *Me\dirty = #True
+      *Me\posX = *Me\parent\posX
+      *Me\posY = *Me\parent\posY
+      *Me\sizX = *Me\parent\sizX
+      *Me\sizY = *Me\parent\sizY
       Draw(*Me)
     Else
       Pick(*Me)
@@ -676,8 +678,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 301
-; FirstLine = 293
+; CursorPosition = 616
+; FirstLine = 598
 ; Folding = -w---
 ; EnableThread
 ; EnableXP

@@ -1,5 +1,4 @@
 ﻿XIncludeFile "Object.pbi"
-XIncludeFile "../objects/Geometry.pbi"
 XIncludeFile "UIColor.pbi"
 
 ;===============================================================================
@@ -522,10 +521,10 @@ DeclareModule Vector
   Declare NewLine(*parent.Item_t=#Null)
   Declare NewBezier(*parent.Item_t=#Null)
   Declare NewBox(*parent.Item_t=#Null)
-  Declare NewCircle(*parent.Item_t=#Null)
+  Declare NewCircle(*parent.Item_t=#Null, radius.f=1.0)
   Declare NewEllipse(*parent.Item_t=#Null)
-  Declare NewText(font.i, *parent.Item_t=#Null)
-  Declare NewImage(img.i, x.f=0, y.f=0, *parent.Item_t=#Null)
+  Declare NewText(font.i, text.s, *parent.Item_t=#Null)
+  Declare NewImage(img.i, *parent.Item_t=#Null)
   
   Declare NewItem(type.i=#ATOM_LINE, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_width.f=2, color.i=0, filled.b=#False, fill_color.i=0, *parent.Item_t=#Null)
   Declare DeleteItem(*item.Item_t)
@@ -539,15 +538,6 @@ DeclareModule Vector
   Declare RoundBoxPath(x.f, y.f, width.f, height.f, radius.f=6)
   Declare MoveCursorPathOnCircle(cx.f, cy.f, radius.f, angle.f)
   
-  Declare AddCustom(*item.Item_t)
-  Declare AddPoint(*item.Item_t)
-  Declare AddLine(*item.Item_t)
-  Declare AddBezier(*item.Item_t)
-  Declare AddBox(*item.Item_t)
-  Declare AddCircle(*item.Item_t)
-  Declare AddEllipse(*item.Item_t)
-  Declare AddText(*item.Item_t, font.i)
-  Declare AddImage(*item.Item_t, img.i, x.f=0, y.f=0)
   Declare SetFont(*text.Text_t, font.i, font_size.f)
   
   Declare ComputeBoundingBox(*item.Item_t, init.b=#True)
@@ -607,6 +597,19 @@ DeclareModule Vector
     ((_atom\state & ( 1 <<_bit) ) >> _bit)
   EndMacro
   
+  Macro INI(_cls, _type)
+    Object::INI(_cls)
+    *Me\type = _type
+    *Me\stroke_color = RGBA(0,0,0,255)
+    *Me\stroked = #True
+    *Me\stroke_width = 1
+    *Me\stroke_style = #STROKE_DEFAULT
+    *Me\filled = #True
+    *Me\fill_color = RGBA(120, 180, 220, 255)
+    Transform2D::Initialize(*Me\T)
+  EndMacro
+  
+  
 EndDeclareModule
 
 
@@ -619,10 +622,8 @@ Module Vector
   ;   CONSTRUCTORS
   ; -----------------------------------------------------------------------------
   Procedure NewCompound(*parent.Item_t=#Null)
-    Define *Me.Compound_t = AllocateStructure(Compound_t)
-    Object::INI(Compound)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_COMPOUND
+    Define *Me.Item_t = AllocateStructure(Compound_t)
+    Vector::INI(Compound, #ATOM_COMPOUND)
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
@@ -630,81 +631,71 @@ Module Vector
   Procedure NewPoint(*parent.Item_t=#Null)
     Define *Me.Point_t = AllocateStructure(Point_t)
     Object::INI(Point)
-    *Me\type = #ATOM_POINT
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
   Procedure NewLine(*parent.Item_t=#Null)
     Define *Me.Line_t  = AllocateStructure(Line_t)
-    Object::INI(Line)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_LINE
+    Vector::INI(Line, #ATOM_LINE)
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
   Procedure NewBezier(*parent.Item_t=#Null)
     Define *Me.Bezier_t  = AllocateStructure(Bezier_t)
-    Object::INI(Bezier)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_BEZIER
+    Vector::INI(Bezier, #ATOM_BEZIER)
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
   Procedure NewBox(*parent.Item_t=#Null)
     Define *Me.Box_t = AllocateStructure(Box_t)
-    Object::INI(Box)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_BOX
+    Vector::INI(Box, #ATOM_BOX)
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
-  Procedure NewCircle(*parent.Item_t=#Null)
+  Procedure NewCircle(*parent.Item_t=#Null, radius.f=1.0)
     Define *Me.Circle_t  = AllocateStructure(Circle_t)
-    Object::INI(Circle)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_CIRCLE
+    Vector::INI(Circle, #ATOM_CIRCLE)
+    *Me\radius = radius
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
   Procedure NewEllipse(*parent.Item_t=#Null)
     Define *Me.Ellipse_t  = AllocateStructure(Ellipse_t)
-    Object::INI(Ellipse)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_ELLIPSE
+    Vector::INI(Ellipse, #ATOM_ELLIPSE)
     Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
-  Procedure NewText(font.i, *parent.Item_t=#Null)
+  Procedure NewText(font.i, text.s, *parent.Item_t=#Null)
     Define *Me.Text_t  = AllocateStructure(Text_t)
-    Object::INI(Text)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_TEXT
-    Parent(*Me, *parent)
-    *Me\font = font
+    Vector::INI(Text, #ATOM_TEXT)
+    If Not IsFont(font)
+      *Me\font = Globals::#FONT_DEFAULT
+     Else
+       *Me\font = font
+     EndIf
+     
     *Me\font_size = 6
-    *Me\text = "hello"
+    *Me\text = text
+    Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
-  Procedure NewImage(img.i, x.f=0, y.f=0, *parent.Item_t=#Null)
+  Procedure NewImage(img.i, *parent.Item_t=#Null)
     Define *Me.Image_t  = AllocateStructure(Image_t)
-    Object::INI(Image)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_IMAGE
-    Parent(*Me, *parent)
-    *Me\T\translate\x = x
-    *Me\T\translate\y = y
+    Vector::INI(Image, #ATOM_IMAGE)
+
     If IsImage(img)
       *Me\img = img
       *Me\width = ImageWidth(img)
       *Me\height = ImageHeight(img)
     EndIf
+    Parent(*Me, *parent)
     ProcedureReturn *Me
   EndProcedure
   
@@ -748,11 +739,11 @@ Module Vector
         *item\name = "ELLIPSE"
         
       Case #ATOM_TEXT
-        *item = NewText(0, *parent)
+        *item = NewText(0, "text", *parent)
         *item\name = "TEXT"
         
       Case #ATOM_IMAGE
-        *item = NewImage(0, 0, 0, *parent)
+        *item = NewImage(0, *parent)
         *item\name = "IMAGE"
         
       Case #ATOM_COMPOUND
@@ -851,160 +842,9 @@ Module Vector
     EndIf
   EndProcedure
   
-  ; -----------------------------------------------------------------------------
-  ;   ADD CUSTOM
-  ; -----------------------------------------------------------------------------
-  Procedure AddCustom(*item.Item_t)
-    AddElement(*item\childrens())
-    Define *Me.Item_t = AllocateStructure(Item_t)
-    Object::INI(Item)
-    *Me\type = #ATOM_CUSTOM
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD POINT
-  ; -----------------------------------------------------------------------------
-  Procedure AddPoint(*item.Item_t)
-    AddElement(*item\childrens())
-    Define *Me.Point_t = AllocateStructure(Point_t)
-    Object::INI(Point)
-    *Me\type = #ATOM_POINT
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD LINE
-  ; -----------------------------------------------------------------------------
-  Procedure Addline(*item.Item_t)
-    AddElement(*item\childrens() )
-    Define *Me.Line_t  = AllocateStructure(Line_t)
-    Object::INI(Line)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_LINE
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD BEZIER
-  ; -----------------------------------------------------------------------------
-  Procedure AddBezier(*item.Item_t)
-    AddElement(*item\childrens()) 
-    Define *Me.Bezier_t  = AllocateStructure(Bezier_t)
-    Object::INI(Bezier)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_BEZIER
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD BOX
-  ; -----------------------------------------------------------------------------
-  Procedure AddBox(*item.Item_t)
-    AddElement(*item\childrens() )
-    Define *Me.Box_t = AllocateStructure(Box_t)
-    Object::INI(Box)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_BOX
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD CIRCLE
-  ; -----------------------------------------------------------------------------
-  Procedure AddCircle(*item.Item_t)
-    AddElement(*item\childrens() )
-    Define *Me.Circle_t  = AllocateStructure(Circle_t)
-    Object::INI(Circle)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_CIRCLE
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD ELLIPSE
-  ; -----------------------------------------------------------------------------
-  Procedure AddEllipse(*item.Item_t)
-    AddElement(*item\childrens() )
-    Define *Me.Ellipse_t  = AllocateStructure(Ellipse_t)
-    Object::INI(Ellipse)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_ELLIPSE
-    *Me\parent = *item
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD TEXT
-  ; -----------------------------------------------------------------------------
-  Procedure AddText(*item.Item_t, font.i)
-    AddElement(*item\childrens() )
-    Define *Me.Text_t  = AllocateStructure(Text_t)
-    Object::INI(Text)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_TEXT
-    *Me\parent = *item
-    *Me\font = font
-    *Me\font_size = 6
-    *Me\text = "hello"
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
   Procedure SetFont(*text.Text_t, font.i, font_size.f)
     *text\font = font
     *text\font_size = font_size
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   ADD IMAGE
-  ; -----------------------------------------------------------------------------
-  Procedure AddImage(*item.Item_t, img.i, x.f=0, y.f=0)
-    AddElement(*item\childrens() )
-    Define *Me.Image_t  = AllocateStructure(Image_t)
-    Object::INI(Image)
-    Transform2D::Initialize(*Me\T)
-    *Me\type = #ATOM_IMAGE
-    *Me\parent = *item
-    *Me\T\translate\x = x
-    *Me\T\translate\y = y
-    If IsImage(img)
-      *Me\img = img
-      *Me\width = ImageWidth(img)
-      *Me\height = ImageHeight(img)
-    EndIf
-    *item\childrens() = *Me
-    *item\active = *Me
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; -----------------------------------------------------------------------------
-  ;   SET SIZE
-  ; -----------------------------------------------------------------------------
-  Procedure SetSize(*Me.Image_t, width.i, height.i)
-    *Me\width = width
-    *Me\height = height
   EndProcedure
   
   ; -----------------------------------------------------------------------------
@@ -1151,13 +991,12 @@ Module Vector
   ;   COMPUTE BOUNDING BOX
   ; -----------------------------------------------------------------------------
   Procedure ComputeBoundingBox(*item.Item_t, init.b=#True)
-    If init
-      SaveVectorState()
-      ResetPath()
-    Else
+    SaveVectorState()
+    ResetPath()
+    If Not init
       Transform(*item)
     EndIf
-    
+
 
     Select *item\type
       Case #ATOM_BOX
@@ -1166,7 +1005,7 @@ Module Vector
         
       Case #ATOM_CIRCLE
         Define *circle.Circle_t = *item
-        AddPathCircle(0, 0, *circle\radius)
+        AddPathCircle(0, 0, *circle\radius  +   *item\stroke_width)
         
       Case #ATOM_LINE
         Define *line.Line_t = *item
@@ -1212,7 +1051,7 @@ Module Vector
       RestoreVectorState()
     Next
 
-    If Not init
+    If init
       Define x.f = PathBoundsX()
       Define y.f = PathBoundsY()
       Define w.f = PathBoundsWidth()
@@ -1224,15 +1063,14 @@ Module Vector
         h + 2 * stroke_width
       EndIf
       
-;       Vector::AccumulatedTransform(
-
-      
       Vector3::Set(*item\bbox\origin, x + w*0.5, y+h*0.5, 0)
       Vector3::Set(*item\bbox\extend, w*0.5, h*0.5, 0)
       VectorSourceColor(RGBA(255,222,111,255))
-      RestoreVectorState()
-      ResetPath()
     EndIf
+    
+
+    RestoreVectorState()
+    ResetPath()
 
   EndProcedure
   
@@ -1242,21 +1080,9 @@ Module Vector
   Procedure DrawBoundingBox(*item.Item_t, color.i, stroked.b=#True, stroke_width=4)
     ComputeBoundingBox(*item, #True)
     
-    SaveVectorState()
     AddPathBox(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, *item\bbox\extend\x*2, *item\bbox\extend\y*2)
     VectorSourceColor(color)
     DashPath(1,3)
-    
-    Define x.f = ConvertCoordinateX(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, #PB_Coordinate_User, #PB_Coordinate_Device)
-    Define y.f = ConvertCoordinateY(*item\bbox\origin\x-*item\bbox\extend\x, *item\bbox\origin\y-*item\bbox\extend\y, #PB_Coordinate_User, #PB_Coordinate_Device)
-    Define w.f = ConvertCoordinateX(*item\bbox\extend\x*2, *item\bbox\extend\y*2, #PB_Coordinate_User, #PB_Coordinate_Device)
-    Define h.f = ConvertCoordinateY(*item\bbox\extend\x*2, *item\bbox\extend\y*2, #PB_Coordinate_User, #PB_Coordinate_Device)
-    
-    ResetCoordinates()
-    AddPathBox(x, y, w, h)
-    VectorSourceColor(color)
-    DashPath(1,3)
-    RestoreVectorState()
 
   EndProcedure
   
@@ -1272,17 +1098,17 @@ Module Vector
   ; -----------------------------------------------------------------------------
   ;   DRAW POINTS
   ; -----------------------------------------------------------------------------
-  Procedure DrawPoints(*line.Line_t, width.f)
+  Procedure DrawPoints(*line.Line_t, width.f, stroke_color.i)
     If ListSize(*line\points())
       ResetList(*line\points())
       
       While NextElement(*line\points())
         AddPathCircle(*line\points()\x, *line\points()\y, width *0.5)
         If *line\points() = *line\active
-          VectorSourceColor(UIColor::HANDLE_H)
+          VectorSourceColor(stroke_color)
           FillPath()
         Else
-          VectorSourceColor(UIColor::HANDLE)
+          VectorSourceColor(stroke_color)
           FillPath()
         EndIf
       Wend  
@@ -1363,10 +1189,9 @@ Module Vector
       If ListSize(*line\points())
         
         DrawLineInternal(*line)
-        VectorSourceColor(UIColor::BLACK)
         StrokePath( 1)
         
-        DrawPoints(*line, stroke_width)
+        DrawPoints(*line, stroke_width, stroke_color)
       EndIf
     EndIf
   EndProcedure
@@ -1458,7 +1283,7 @@ Module Vector
   ;   DRAW CIRCLE
   ; -----------------------------------------------------------------------------
   Procedure DrawCircle(*circle.Circle_t, filled.b, stroked.b, fill_color.i, stroke_width.f=1, stroke_type.i=#STROKE_DEFAULT, stroke_style.i=#PB_Path_Default, stroke_color=-16777216, expand.i=0)
-    AddPathCircle(0, 0, *circle\radius + expand)
+    AddPathCircle(0, 0, *circle\radius)
     DrawAtom(filled, stroked, fill_color, stroke_width, stroke_type, stroke_style, stroke_color, expand)
   EndProcedure
   
@@ -1490,7 +1315,7 @@ Module Vector
   
       If *item\filled
         If state & #STATE_OVER
-          VectorSourceColor(UIColor::WHITE)
+          VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
           StrokePath(*item\stroke_width, *item\stroke_style | #PB_Path_Preserve)
           VectorSourceColor(UIColor::Hovered(*item\fill_color))
           FillPath()
@@ -1503,7 +1328,7 @@ Module Vector
         
       Else
         If state & #STATE_OVER
-          VectorSourceColor(UIColor::WHITE)
+          VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
           StrokePath(*item\stroke_width, *item\stroke_style)
         Else
           VectorSourceColor(*item\stroke_color)
@@ -1527,7 +1352,6 @@ Module Vector
   Procedure DrawItem(*item.Item_t)
     SaveVectorState()
     Transform(*item)
-   
     Select *item\type
         
       Case #ATOM_CUSTOM
@@ -1554,72 +1378,70 @@ Module Vector
       Case #ATOM_LINE
       
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
-          DrawBoundingBox(*item, UIColor::ACTIVE)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
           DrawLine(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-          DrawBoundingBox(*item, UIColor::OVER)
-          DrawLine(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, UIColor::EDIT)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
+          DrawLine(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, UIColor::COLOR_ACTIVE_BG)
         Else
           DrawLine(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
         EndIf
 
         If Vector::GETSTATE(*item, #STATE_EDIT)
-          DrawPoints(*item, *item\stroke_width)
+          DrawPoints(*item, *item\stroke_width, *item\stroke_color)
         EndIf
         
       Case #ATOM_BEZIER
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
-          DrawBoundingBox(*item, UIColor::ACTIVE)
-          DrawBezier(*item, *item\stroke_width+Globals::#SELECTION_BORDER, UIColor::SELECTED, *item\stroke_type, *item\stroke_style)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
+          DrawBezier(*item, *item\stroke_width+Globals::#SELECTION_BORDER, UIColor::COLOR_SELECTED_FG, *item\stroke_type, *item\stroke_style)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-          DrawBoundingBox(*item, UIColor::OVER)
-          DrawBezier(*item, *item\stroke_width+Globals::#SELECTION_BORDER, UIColor::SELECTED, *item\stroke_type, *item\stroke_style)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
+          DrawBezier(*item, *item\stroke_width+Globals::#SELECTION_BORDER, UIColor::COLOR_SELECTED_BG, *item\stroke_type, *item\stroke_style)
         EndIf
         DrawBezier(*item, *item\stroke_width, *item\stroke_color, *item\stroke_type, *item\stroke_style)
 
         If Vector::GETSTATE(*item, #STATE_EDIT)
-          DrawPoints(*item, *item\stroke_width)
+          DrawPoints(*item, *item\stroke_width, *item\stroke_color)
         EndIf
         
       Case #ATOM_BOX
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
-          DrawBoundingBox(*item, UIColor::ACTIVE)
-          DrawBox(*item, *item\filled, #False, UIColor::SELECTED, 2, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED,Globals::#SELECTION_BORDER)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
+          DrawBox(*item, *item\filled, #False, UIColor::COLOR_SELECTED_BG, 2, #STROKE_DEFAULT, #PB_Path_Default, UIColor::COLOR_SELECTED_FG,Globals::#SELECTION_BORDER)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-          DrawBoundingBox(*item, UIColor::OVER)
-          DrawBox(*item, *item\filled, #False, UIColor::SELECTED, 2, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED,Globals::#SELECTION_BORDER)
-        Else
-          DrawBox(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
+          DrawBox(*item, *item\filled, #False, UIColor::COLOR_FRAME_OVERED, 2, #STROKE_DEFAULT, #PB_Path_Default, UIColor::COLOR_SELECTED_FG,Globals::#SELECTION_BORDER)
         EndIf
+        DrawBox(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
 
       Case #ATOM_CIRCLE
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
-          DrawBoundingBox(*item, UIColor::ACTIVE)
-          DrawCircle(*item, *item\filled, #False, UIColor::SELECTED, 1, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED,Globals::#SELECTION_BORDER)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
+          DrawCircle(*item, *item\filled, #False, UIColor::COLOR_SELECTED_BG, 1, #STROKE_DEFAULT, #PB_Path_Default, UIColor::COLOR_SELECTED_FG,Globals::#SELECTION_BORDER)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-          DrawBoundingBox(*item, UIColor::OVER)
-          DrawCircle(*item, *item\filled, *item\stroked, UIColor::SELECTED, 1, *item\stroke_width, *item\stroke_type, UIColor::SELECTED,Globals::#SELECTION_BORDER)
-        Else
-          DrawCircle(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
+          DrawCircle(*item, *item\filled, *item\stroked,  UIColor::COLOR_FRAME_OVERED, *item\stroke_width*2, *item\stroke_type, *item\stroke_style, UIColor::COLOR_SECONDARY_BG)
         EndIf
+        DrawCircle(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
         
       Case #ATOM_TEXT
         If Vector::GETSTATE(*item, #STATE_ACTIVE)
-          DrawBoundingBox(*item, UIColor::ACTIVE)
-          DrawTextAtom(*item, #True, #True, UIColor::SELECTED, Globals::#SELECTION_BORDER, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
+          DrawTextAtom(*item, #True, #True, UIColor::COLOR_SELECTED_BG, Globals::#SELECTION_BORDER, #STROKE_DEFAULT, #PB_Path_Default, UIColor::COLOR_SELECTED_FG)
         ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-          DrawBoundingBox(*item, UIColor::OVER)
-          DrawTextAtom(*item, #True, #True, UIColor::SELECTED, Globals::#SELECTION_BORDER, #STROKE_DEFAULT, #PB_Path_Default, UIColor::SELECTED)
+          DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
+          DrawTextAtom(*item, #True, #True, UIColor::COLOR_SELECTED_BG, Globals::#SELECTION_BORDER, #STROKE_DEFAULT, #PB_Path_Default, UIColor::COLOR_SELECTED_FG)
         Else
           DrawTextAtom(*item, *item\filled, *item\stroked, *item\fill_color, *item\stroke_width, *item\stroke_type, *item\stroke_style, *item\stroke_color)
         EndIf
         
        Case #ATOM_IMAGE
          If Vector::GETSTATE(*item, #STATE_ACTIVE)
-            DrawBoundingBox(*item, UIColor::ACTIVE)
+            DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
             DrawImageAtom(*item)
           ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-            DrawBoundingBox(*item, UIColor::OVER)
+            DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
             DrawImageAtom(*item)
           Else 
             DrawImageAtom(*item)
@@ -1630,9 +1452,9 @@ Module Vector
           VectorSourceColor(RGBA(255,0,0,255))
           FillPath()
           If Vector::GETSTATE(*item, #STATE_ACTIVE)
-            DrawBoundingBox(*item, UIColor::ACTIVE)
+            DrawBoundingBox(*item, UIColor::COLOR_FRAME_ACTIVE)
           ElseIf Vector::GETSTATE(*item, #STATE_OVER)
-            DrawBoundingBox(*item, UIColor::OVER)
+            DrawBoundingBox(*item, UIColor::COLOR_FRAME_OVERED)
           EndIf
     
     EndSelect
@@ -2243,8 +2065,8 @@ Module Vector
   EndProcedure
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 621
-; FirstLine = 618
-; Folding = -------------------
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 1406
+; FirstLine = 1377
+; Folding = -----------------
 ; EnableXP

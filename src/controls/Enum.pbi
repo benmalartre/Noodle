@@ -56,14 +56,14 @@ Module ControlEnum
   Procedure Draw(*Me.ControlEnum_t)
     ; background
     AddPathBox(*Me\posX+#ENUM_BORDER, *Me\posY+#ENUM_BORDER, *Me\sizX-2*#ENUM_BORDER, *Me\sizY-#ENUM_BORDER)
-    VectorSourceColor(UIColor::BACK)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ; label 
     VectorFont(FontID(font_label),12)
     Define offsety.i = *Me\sizY - VectorTextHeight(*Me\label)
     MovePathCursor( *Me\posX + #ENUM_BORDER, *Me\posY + offsety + #ENUM_BORDER)
-    VectorSourceColor(UIColor::LABEL)
+    VectorSourceColor(UIColor::COLOR_LABEL)
     DrawVectorText(*Me\label)
     
     Define lwidth.i = VectorTextWidth(*Me\label) 
@@ -75,7 +75,7 @@ Module ControlEnum
     
     ; value
     AddPathBox(*Me\posX + hwidth + #ENUM_BORDER, *Me\posY + #ENUM_BORDER, hwidth - 2 * #ENUM_BORDER, *Me\sizY)
-    VectorSourceColor(UIColor::CONTOUR)
+    VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
 
     MovePathCursor(*Me\posX + *Me\sizX - 16, *Me\posY + 2 * #ENUM_BORDER)
@@ -85,7 +85,7 @@ Module ControlEnum
     FillPath()
     
     If *Me\items(*Me\current)
-      VectorSourceColor(UIColor::DARK)
+      VectorSourceColor(UIColor::COLOR_LABEL_MARKED)
       MovePathCursor( *Me\posX + hwidth +#ENUM_BORDER, *Me\posY + offsety + #ENUM_BORDER)
       DrawVectorText(*Me\items(*Me\current)\key)
       FillPath()
@@ -148,10 +148,10 @@ Module ControlEnum
     For i=0 To ArraySize(*Me\items())-1
       AddPathBox(0, i * #ENUM_ITEM_HEIGHT, *Me\popup_width, #ENUM_ITEM_HEIGHT)
       If IsInsidePath(mx, my)
-        VectorSourceColor(UIColor::LIGHT_H)
+        VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         current = i
       Else
-        VectorSourceColor(UIColor::LIGHT)
+        VectorSourceColor(UIColor::COLOR_MAIN_BG)
       EndIf
       
       FillPath()
@@ -159,7 +159,7 @@ Module ControlEnum
       MovePathCursor(#ENUM_BORDER, i * #ENUM_ITEM_HEIGHT + #ENUM_BORDER)
       AddPathText(*Me\items(i)\key)
       
-      VectorSourceColor(UIColor::DARK)
+      VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
       FillPath()
     Next
     StopVectorDrawing()
@@ -231,8 +231,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 117
-; FirstLine = 113
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 161
+; FirstLine = 134
 ; Folding = --
 ; EnableXP

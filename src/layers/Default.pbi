@@ -123,11 +123,12 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(shader,"view"),1,#GL_FALSE,*view)
     glUniformMatrix4fv(glGetUniformLocation(shader,"projection"),1,#GL_FALSE,@proj)
     
-    Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
-    
-    glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
-    glUniform1i(glGetUniformLocation(shader,"tex"),0)
-    
+    If CArray::GetCount(*scene\lights)
+      Protected *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
+      
+      glUniform3f(glGetUniformLocation(shader,"lightPosition"),*light\pos\x,*light\pos\y,*light\pos\z)
+      glUniform1i(glGetUniformLocation(shader,"tex"),0)
+    EndIf
     Layer::DrawPolymeshes(*layer,*scene\objects,shader, #True)
         
     ;Draw Drawer Objects
@@ -228,9 +229,7 @@ Module LayerDefault
   Framebuffer::Unbind(*layer\framebuffer)
   
   glDisable(#GL_DEPTH_TEST)
-
-
-   glEnable(#GL_CULL_FACE)
+  glDisable(#GL_BLEND)
 
   
   glUseProgram(0)
@@ -269,7 +268,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 118
-; FirstLine = 92
+; CursorPosition = 130
+; FirstLine = 95
 ; Folding = --
 ; EnableXP

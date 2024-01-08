@@ -158,7 +158,6 @@ Global *timeline.UI::IUI = TimelineUI::New(*bottom\right,"Timeline")
 GLContext::SetContext(*viewport\context)
 ;ControlExplorer::Fill(*explorer\explorer,*app\scene)
 Global *layer.Layer::Layer_t = LayerDefault::New(WIDTH,HEIGHT,*viewport\context,*app\camera)
-Application::AddLayer(*app, *layer)
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
 Scene::Setup(*app\scene)
@@ -201,8 +200,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 170
-; FirstLine = 155
+; CursorPosition = 160
+; FirstLine = 144
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

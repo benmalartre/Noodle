@@ -368,10 +368,7 @@ Module ControlTimeline
       Case #PB_Event_SizeWindow
         ;CHECK_PTR1_BOO(*ev_data);
         ; ...[ Update & Check Dirty ]...........................................
-        Protected w = GadgetWidth(*Me\gadgetID)
-        Protected h = GadgetHeight(*Me\gadgetID)
-        ;If #True = hlpResize( *Me,*ev_data\width,*ev_data\height)
-        If #True = hlpResize( *Me,*Me\posX,*Me\posY,w,h)
+        If #True = hlpResize( *Me,*ev_data\x, *ev_data\y, *ev_data\width,*ev_data\height)
           ; ...[ Redraw Timeline ]...............................................
           hlpDraw( *Me )
         EndIf
@@ -380,10 +377,8 @@ Module ControlTimeline
         
         Case #PB_EventType_Resize
           ;CHECK_PTR1_BOO(*ev_data);
-          ; ...[ Update & Check Dirty ]...........................................
           w = GadgetWidth(*Me\gadgetID)
           h = GadgetHeight(*Me\gadgetID)
-          ;If #True = hlpResize( *Me,*ev_data\width,*ev_data\height)
           If #True = hlpResize( *Me,*Me\posX,*Me\posY,w,h)
             ; ...[ Redraw Timeline ]...............................................
             hlpDraw( *Me )
@@ -1144,8 +1139,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1040
-; FirstLine = 1021
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 356
+; FirstLine = 335
 ; Folding = -------
 ; EnableXP

@@ -1,6 +1,5 @@
 XIncludeFile "../core/Vector.pbi"
 XIncludeFile "../core/Callback.pbi"
-XIncludeFile "../core/Tool.pbi"
 XIncludeFile "../core/Sheet.pbi"
 XIncludeFile "../ui/UI.pbi"
 
@@ -14,20 +13,12 @@ DeclareModule CanvasUI
   ; ----------------------------------------------------------------
   ;   Structure
   ; ----------------------------------------------------------------
-  Structure CanvasUI_t Extends UI::UI_t
-    resx.i        ; Nb Pixels X
-    resy.i        ; Nb Pixels Y
-    
+  Structure CanvasUI_t Extends UI::UI_t    
     List *sheets.sheet::Sheet_t()
     *sheet.sheet::Sheet_t
-    *tool.Tool::Tool_t
-    modifier.i
     primary.l
     secondary.l
     color.l
-    erase.b
-    line.b
-    
     pixelratio.f
     *on_content_change.Signal::Signal_t
     *on_selection_change.Signal::Signal_t
@@ -43,20 +34,12 @@ DeclareModule CanvasUI
   Declare Delete(*Me.CanvasUI_t)
   Declare Resize(*Me.CanvasUI_t, x.i, y.i, width.i, height.i)
   Declare Draw(*Me.CanvasUI_t)
-  Declare OnEvent(*Me.CanvasUI_t)
+  Declare OnEvent(*Me.CanvasUI_t, event.i)
   
-  Declare ClearDatas(*Me.CanvasUI_t)
-  Declare SetPixelRatio(*Me.CanvasUI_t,ratio.f)
+
   Declare UpdateZoom(*Me.CanvasUI_t,delta.i, mx.f=0, my.f=0)
   Declare DrawGrid(*Me.CanvasUI_t)
-  
   Declare ResetSheets(*Me.CanvasUI_t)
-  Declare Open(*Me.CanvasUI_t,filename.s)
-  Declare ChangeResolution(*Me.CanvasUI_t,resx.i,resy.i)
-  Declare Save(*Me.CanvasUI_t,filename.s)
-  Declare SaveMinitel(*Me.CanvasUI_t,filename.s,head.s)
-  Declare UpdateData(*Me.CanvasUI_t,mx.i,my.i,w.i,h.i,c.i)
-
   Declare SetActiveTool(*Me.CanvasUI_t, tool.i)
   Declare NewSheet(*Me.CanvasUI_t)
   Declare AddSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
@@ -92,20 +75,14 @@ Module CanvasUI
     *Me\posY = *view\posY
     *Me\sizX = *view\sizX
     *Me\sizY = *view\sizY
-    *Me\resx = *view\sizX
-    *Me\resy = *view\sizY
-    *Me\pixelratio = *view\sizY / *view\sizX
+    *Me\pixelratio = *view\sizX / *view\sizY
     *Me\secondary = RGBA(120,12,66,255)
     *Me\gadgetID = CanvasGadget(#PB_Any,*view\posX,*view\posY,*view\sizX, *view\sizY,#PB_Canvas_Keyboard)
     *Me\zoom = 100
-    *Me\imageID = CreateImage(#PB_Any,*view\sizX,*view\sizY,32)
-    *Me\tool = Tool::New(Tool::#TOOL_SELECT, *Me\gadgetID)
     *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
     *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
-    CloseGadgetList()
     UpdateZoom(*Me,0)
     ResetSheets(*Me)
-    ClearDatas(*Me)
     View::SetContent(*view, *Me)
     ProcedureReturn *Me
   EndProcedure
@@ -123,7 +100,6 @@ Module CanvasUI
   ;   SET ACTIVE TOOL
   ; ---------------------------------------------------------
   Procedure SetActiveTool(*Me.CanvasUI_t, tool.i)
-    Tool::Change(*Me\tool, tool)
   EndProcedure
   
   ; ---------------------------------------------------------
@@ -172,7 +148,7 @@ Module CanvasUI
     If index >-1 And index < ListSize(*Me\sheets())
       SelectElement(*Me\sheets(), index)
       *Me\sheet = *Me\sheets()
-      ;Tool::SetSheet(*Me\tool, *Me\sheet)
+;       Tool::SetSheet(*Me\tool, *Me\sheet)
     EndIf
   EndProcedure
   
@@ -195,13 +171,14 @@ Module CanvasUI
   ;   UPDATE ZOOM
   ; ---------------------------------------------------------
   Procedure UpdateZoom(*Me.CanvasUI_t,delta.i, mx.f=0, my.f=0)
-
-    Protected tmp = GadgetWidth(*Me\gadgetID)
-    Globals::MINIMIZE(tmp,GadgetHeight(*Me\gadgetID))
-;     Define offsetx.f = mx + *Me\offsetx
-;     Define offsety.f = my + *Me\offsety
-;     *Me\offsetx - offsetx
-;     *Me\offsety - offsety
+    
+    Protected width = GadgetWidth(*Me\gadgetID)
+    Protected height = GadgetHeight(*Me\gadgetID)
+    
+    Protected x = (width/mx * 2) - 1
+    Protected y = (height/my * 2) - 1
+;     *Me\offsetx - x
+;     *Me\offsety - y
     *Me\zoom + delta
     Globals::CLAMPIZE(*Me\zoom,5,5000)
     
@@ -211,35 +188,39 @@ Module CanvasUI
   ;   DRAW GRID
   ; ---------------------------------------------------------
   Procedure DrawGrid(*Me.CanvasUI_t)
+    ResetPath()
+  
+    Protected mx.f = *Me\sizX
+    Protected my.f = *Me\sizY * *Me\pixelratio
+    Protected x,y
+    
+    For x=0 To *Me\sizX - 1 Step 24
+      MovePathCursor(x*mx* *Me\zoom, 0)
+      AddPathLine(x*mx* *Me\zoom, *Me\sizY* *Me\zoom)
+    Next
+    
+    For y=0 To *Me\sizY - 1 Step 24
+      MovePathCursor(0,y*my * *Me\zoom)
+      AddPathLine(*Me\sizX* *Me\zoom, y*my * *Me\zoom)
+    Next
+    VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
+    StrokePath(0.2)
 
-;     Protected c = RGBA(0,0,0,20)
-;   
-;     Protected mx.f = *Me\cwidth/*Me\resx
-;     Protected my.f = *Me\cheight/*Me\resy * *Me\pixelratio
-;     Protected x,y
-;     
-;     For x=0 To *Me\resx
-;       Line(*Me\coffsetx+x*mx,*Me\coffsety,1,*Me\cheight * *Me\pixelratio,c)
-;     Next x
-;     For y=0 To *Me\resy
-;       Line(*Me\coffsetx,*Me\coffsety+y*my,*Me\cwidth,1,c )
-;     Next y
   EndProcedure
 
   ; ---------------------------------------------------------
   ;   DRAW 
   ; ---------------------------------------------------------
   Procedure Draw(*Me.CanvasUI_t)
-    Debug "DRAW CANVAS UI..."
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
     ResetCoordinates(#PB_Coordinate_User)
     AddPathBox(0,0,GadgetWidth(*Me\gadgetID), GadgetHeight(*Me\gadgetID))
-    VectorSourceColor(UIColor::BACK)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     ScaleCoordinates(*Me\zoom * 0.01, *Me\zoom * 0.01)
     TranslateCoordinates(*Me\offsetx, *Me\offsety)
-
+    DrawGrid(*Me)
     ForEach(*Me\sheets())
       Sheet::Draw(*Me\sheets())
     Next
@@ -258,143 +239,11 @@ Module CanvasUI
     EndIf
     
     ;CreateDefault Sheet
-    *Me\sheet = Sheet::New(*Me\resx,*Me\resy,0)
+    *Me\sheet = Sheet::New(*Me\sizX,*Me\sizY,0)
     AddElement(*Me\sheets())
     *Me\sheets() = *Me\sheet
-  
   EndProcedure
 
-
-  ; --------------------------------------------------------------------
-  ;   OPEN
-  ; --------------------------------------------------------------------
-  Procedure Open(*Me.CanvasUI_t,filename.s)
-    
-    If FileSize(filename) < 0
-      ProcedureReturn
-    EndIf
-    
-    If *Me\imageID <> 0 : FreeImage(*Me\imageID) :EndIf
-    *Me\imageID  = LoadImage(#PB_Any,filename)
-    *Me\resx = ImageWidth(*Me\imageID)
-    *Me\resy = ImageHeight(*Me\imageID)
-    UpdateZoom(*Me,0, 0, 0)
-    
-  EndProcedure
-
-  ; --------------------------------------------------------------------
-  ;   CHANGE OUTPUT RESOLUTION
-  ; --------------------------------------------------------------------
-  Procedure ChangeResolution(*Me.CanvasUI_t,resx.i,resy.i)
-    *Me\resx = resx
-    *Me\resy = resy
-    ClearDatas(*Me)
-    UpdateZoom(*Me,0, 0, 0) 
-  EndProcedure
-
-  ; --------------------------------------------------------------------
-  ;   SAVE
-  ; --------------------------------------------------------------------
-  Procedure Save(*Me.CanvasUI_t,filename.s)
-    Protected raw,aa
-    Protected x,y,d
-   
-    ; Get AntiAliazed File
-    raw = CopyImage(*Me\imageID,#PB_Any)
-    
-    ; Get AntiAliazed File
-    aa = CopyImage(*Me\imageID,#PB_Any)
-    ResizeImage(aa,*Me\resx*4,*Me\resy*4)
-    ResizeImage(aa,*Me\resx,*Me\resy,#PB_Image_Smooth)
-  
-    ; Save Raw File
-    Protected fName.s = ReplaceString(filename,".png","_raw.png")
-    SaveImage(raw, fName,  #PB_ImagePlugin_PNG)
-    FreeImage(raw)
-    
-    ; Save Antialiazed File
-    SaveImage(aa, filename,  #PB_ImagePlugin_PNG)
-    FreeImage(aa)
-  
-    
-  EndProcedure
- 
-  ; --------------------------------------------------------------------
-  ;   SAVE MINITEL
-  ; --------------------------------------------------------------------
-  Procedure SaveMinitel(*Me.CanvasUI_t,filename.s,head.s)
-    Protected file.i = OpenFile(#PB_Any,filename)
-    WriteStringN(file, "#ifndef "+head+"_H")
-    WriteStringN(file, "#define "+head+"_H")
-    WriteStringN(file, "#include "+Chr(34)+"Sprite.h"+Chr(34))
-    WriteStringN(file, "#define "+head+"_WIDTH 40")
-    WriteStringN(file, "define "+head+"_HEIGHT 24")
-    WriteStringN(file, head+"_NB 1")
-    
-     Protected raw,aa
-    Protected x,y,d
-    
-    WriteStringN (file, "byte "+head+"_BITS_1[] = {")
-    
-    StartDrawing(ImageOutput(raw))
-    DrawingMode(#PB_2DDrawing_AllChannels)
-    Protected l.l
-    Protected counter 
-    For x=0 To *Me\resx-1
-      For y=0 To *Me\resy-1
-        d = Point(x,y)
-        ;Plot(mx+x,my+y,d)
-        If counter = 20
-          WriteStringN(file,Str(d))
-        Else
-          WriteString(file,Str(d))
-        EndIf
-        
-      Next y
-    Next x
-    StopDrawing()
-  
-  EndProcedure
-
-  ; ---------------------------------------------------------
-  ;   UPDATE DATAS
-  ; ---------------------------------------------------------
-  Procedure UpdateData(*Me.CanvasUI_t,mx.i,my.i,w.i,h.i,c.i)
-    If mx<0 Or mx> w Or my<0 Or my>h
-      ProcedureReturn
-    EndIf
-    
-    Protected l.l
-    
-    px.f = mx/w* *Me\resx
-    py.f = my/h* *Me\resy
-    x = Round(px,#PB_Round_Down)
-    y = Round(py,#PB_Round_Down)
-    StartDrawing(ImageOutput(*Me\imageID))
-    DrawingMode(#PB_2DDrawing_AllChannels)
-    If x>=0 And x<OutputWidth() And y>=0 And y<OutputHeight()
-      Plot(x,y,c)
-    EndIf
-    
-    StopDrawing()
-    Draw(*Me)
-  EndProcedure
-
-  ; --------------------------------------------------------------------
-  ;   CLEAR DATAS
-  ; --------------------------------------------------------------------
-  Procedure ClearDatas(*Me.CanvasUI_t)
-    If IsImage(*Me\imageID) : FreeImage(*Me\imageID) : EndIf
-    *Me\imageID = CreateImage(#PB_Any,*Me\resx,*Me\resy,32)
-    ResetSheets(*Me)
-    
-    StartDrawing(ImageOutput(*Me\imageID))
-    DrawingMode(#PB_2DDrawing_AllChannels)
-    Box(0,0,ImageWidth(*Me\imageID),ImageHeight(*Me\imageID),RGBA(0,0,0,0))
-    StopDrawing()
-    Draw(*Me)
-  EndProcedure
-  
   ; --------------------------------------------------------------------
   ;   RESIZE
   ; --------------------------------------------------------------------
@@ -411,121 +260,154 @@ Module CanvasUI
   ; --------------------------------------------------------------------
   ;   ON EVENT
   ; --------------------------------------------------------------------
-  Procedure OnEvent(*Me.CanvasUI_t)
+  Procedure OnEvent(*Me.CanvasUI_t, event.i)
     Protected mx,my,x.f,y.f,w,h,m,key
-    
-    mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
-    my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
-    
-    Define invzoom.f = 1 / (*Me\zoom *0.01)
-    x = mx * invzoom
-    y = my * invzoom
-    
-    w = GadgetWidth(*Me\gadgetID)
-    h = GadgetHeight(*Me\gadgetID)
-    Select EventType()
-      
-      Case #PB_EventType_MouseMove
-        If Not *Me\tool\down
-          StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-          ResetCoordinates(#PB_Coordinate_User)
-          ScaleCoordinates(*Me\zoom*0.01, *Me\zoom * 0.01)
-          TranslateCoordinates(*Me\offsetx, *Me\offsety)
-          Sheet::Pick(*Me\sheets(), mx, my)
-          StopVectorDrawing()
-        Else
-          modifiers = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
-          If modifiers & #PB_Canvas_Alt
-            SetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Hand)
-            *Me\offsetx - (*Me\last_x - x) 
-            *Me\offsety - (*Me\last_y - y) 
-          Else
+    Select event
+      Case #PB_Event_Menu
+        Select EventMenu()
+          Case Globals::#SHORTCUT_TRANSLATE
+            Debug "Canvas Translate Tool"
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+;             *Me\tool = Globals::#TOOL_TRANSLATE                
+          Case Globals::#SHORTCUT_ROTATE
+            Debug "Canvas Rotate Tool"
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+;             *Me\tool = Globals::#TOOL_ROTATE
+          Case Globals::#SHORTCUT_SCALE
+            Debug "Canvas Scale Tool"
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+;             *Me\tool = Globals::#TOOL_SCALE
+          Case Globals::#SHORTCUT_TRANSFORM
+            Debug "Canvas Transform Tool"
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+;             *Me\tool = Globals::#TOOL_TRANSFORM
+          Case Globals::#SHORTCUT_CAMERA
+            Debug "Canvas Camera Tool"
+;             Handle::SetActiveTool(*Me\handle, Globals::#TOOL_CAMERA)
+;             *Me\tool = Globals::#TOOL_CAMERA
             
-            Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
-          EndIf
-          
-        EndIf
-            
-      Case #PB_EventType_KeyDown
-        key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
-        modifiers = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
-         
-        Select key
-          Case #PB_Shortcut_Up
-            Sheet::Shift(*Me\sheet,0,-1)
-            Draw(*Me)
-            
-          Case #PB_Shortcut_Down
-            Sheet::Shift(*Me\sheet,0,1)
-            Draw(*Me)
-            
-          Case #PB_Shortcut_Left
-            Sheet::Shift(*Me\sheet,-1,0)
-            Draw(*Me)
-            
-          Case #PB_Shortcut_Right
-            Sheet::Shift(*Me\sheet,1,0)
-            Draw(*Me)
-           
-            
-          Case #PB_Shortcut_Delete
-            If *Me\sheet\active
-              Sheet::RemoveItem(*Me\sheet, *Me\sheet\active)
-            EndIf
-            
+          Case Globals::#SHORTCUT_DELETE
+            MessageRequester("DELETE", "FUCKIN SOMETHING")
+          Default 
+            ;             *Me\tool = Globals::#TOOL_MAX   
+            Debug "Canvas Default Menu Callback"
         EndSelect
         
-      Case #PB_EventType_DragStart
+      Case Globals::#EVENT_TOOL_CHANGED
+        Debug "TOOL CHANGED !!!"
         
-      Case #PB_EventType_MouseWheel
-        Protected delta =  GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)*24
-        UpdateZoom(*Me,delta, mx, my)
         
-      Case #PB_EventType_LeftDoubleClick
-        Tool::Change(*Me\tool, Tool::#TOOL_EDIT)
-        If *Me\sheet\over
-          Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
-        EndIf
-  
-      Case #PB_EventType_LeftButtonDown
+      Case #PB_Event_Gadget
+        mx = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
+        my = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
         
-        If *Me\sheet\over
-          Define needUpdate.b = #True
-          If *Me\sheet\active And *Me\sheet\active = *Me\sheet\over
-            needUpdate = #False
-          EndIf
+        Define invzoom.f = 1 / (*Me\zoom *0.01)
+        x = mx * invzoom
+        y = my * invzoom
+        
+        w = GadgetWidth(*Me\gadgetID)
+        h = GadgetHeight(*Me\gadgetID)
+        Select EventType()
           
-          *Me\sheet\active = *Me\sheet\over
-          Selection::Clear(*Me\tool\selection)
-          ;Selection::AddAtom(*Me\tool\selection, *Me\sheet\over)
-          If needUpdate :  Signal::Trigger(*Me\on_selection_change, Signal::#SIGNAL_TYPE_PING) : EndIf
-        EndIf
-        Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
-        Draw(*Me)  
-        
-      Case #PB_EventType_LeftButtonUp
-        SetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default)
-        Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety)
+          Case #PB_EventType_MouseMove
+            If Not *Me\down
+              StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+              ResetCoordinates(#PB_Coordinate_User)
+              ScaleCoordinates(*Me\zoom*0.01, *Me\zoom * 0.01)
+              TranslateCoordinates(*Me\offsetx, *Me\offsety)
+              If *Me\sheet : Sheet::Pick(*Me\sheet, mx, my) : EndIf
+              StopVectorDrawing()
+            Else
+              modifiers = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
+              If modifiers & #PB_Canvas_Alt
+                SetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Hand)
+                *Me\offsetx - (*Me\last_x - x) 
+                *Me\offsety - (*Me\last_y - y) 
+              Else
+                
+    ;             Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
+              EndIf
+              
+            EndIf
+                
+          Case #PB_EventType_KeyDown
+            key = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
+            modifiers = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
+             
+            Select key
+              Case #PB_Shortcut_Up
+                Sheet::Shift(*Me\sheet,0,-1)
+                
+              Case #PB_Shortcut_Down
+                Sheet::Shift(*Me\sheet,0,10)
+                
+              Case #PB_Shortcut_Left
+                Sheet::Shift(*Me\sheet,-1,0)
+                
+              Case #PB_Shortcut_Right
+                Sheet::Shift(*Me\sheet,1,0)
+                Draw(*Me)
+               
+                
+              Case #PB_Shortcut_Delete
+                If *Me\sheet\active
+                  Sheet::RemoveItem(*Me\sheet, *Me\sheet\active)
+                EndIf
+                
+            EndSelect
+            
+          Case #PB_EventType_DragStart
+            
+          Case #PB_EventType_MouseWheel
+            Protected delta =  GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)*5
+            UpdateZoom(*Me,delta, mx, my)
+            
+          Case #PB_EventType_LeftDoubleClick
+    ;         Tool::Change(*Me\tool, Tool::#TOOL_EDIT)
+            If *Me\sheet\over
+    ;           Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
+            EndIf
+      
+          Case #PB_EventType_LeftButtonDown
+            *Me\down = #True
+            If *Me\sheet\over
+              Debug *Me\sheet\over
+              Define needUpdate.b = #True
+              If *Me\sheet\active And *Me\sheet\active = *Me\sheet\over
+                needUpdate = #False
+              EndIf
+              
+              *Me\sheet\active = *Me\sheet\over
+              Vector::SETSTATE(*Me\sheet\active, Vector::#STATE_ACTIVE)
+    ;           Selection::Clear(*Me\tool\selection)
+    ;           Selection::AddAtom(*Me\tool\selection, *Me\sheet\over)
+              If needUpdate :  Signal::Trigger(*Me\on_selection_change, Signal::#SIGNAL_TYPE_PING) : EndIf
+            EndIf
+    ;         Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
+            
+          Case #PB_EventType_LeftButtonUp
+            SetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default)
+            ;         Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety)
+            *Me\down = #False
+             
+          Case #PB_EventType_RightButtonDown
+            *Me\color = RGBA(0,0,0,0)
+            
+          Case #PB_EventType_RightButtonUp
+            *Me\color = *Me\primary
+            
+            
+        EndSelect  
         Draw(*Me)
-         
-      Case #PB_EventType_RightButtonDown
-        *Me\erase = #True
-        *Me\color = RGBA(0,0,0,0)
-        UpdateData(*Me,mx,my,w,h,*Me\color)
-        
-      Case #PB_EventType_RightButtonUp
-        *Me\erase = #False
-        *Me\color = *Me\primary
-        
-        
-    EndSelect  
-    *Me\last_x = x
-    *Me\last_y = y
+        *Me\last_x = x
+        *Me\last_y = y
+      EndSelect
+      
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 88
-; FirstLine = 84
-; Folding = ----
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 310
+; FirstLine = 302
+; Folding = ---
 ; EnableXP

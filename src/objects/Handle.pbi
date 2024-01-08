@@ -504,7 +504,10 @@ Module Handle
   ; Setup Handle
   ;-----------------------------------------------------------------------------
   Procedure SetupHandle(*Me.Handle_t,tool.i)
-
+    If Not *Me Or Not GLContext::*SHARED_CTXT
+      ProcedureReturn
+    EndIf
+    
     Define pgm = GLContext::*SHARED_CTXT\shaders("wireframe")\pgm
     glUseProgram(pgm)
     
@@ -1150,6 +1153,8 @@ Module Handle
   ; Set Active Tool
   ;-----------------------------------------------------------------------------
   Procedure SetActiveTool(*Me.Handle_t,tool.i)
+    If Not *Me : ProcedureReturn : EndIf
+    
     *Me\tool = tool
     Select *Me\tool
       Case Globals::#TOOL_DIRECTED
@@ -1436,7 +1441,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 666
-; FirstLine = 662
+; CursorPosition = 509
+; FirstLine = 463
 ; Folding = -------
 ; EnableXP

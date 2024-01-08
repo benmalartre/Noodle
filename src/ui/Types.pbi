@@ -132,7 +132,7 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 114
-; FirstLine = 79
+; CursorPosition = 98
+; FirstLine = 68
 ; Folding = -
 ; EnableXP

@@ -672,8 +672,8 @@ Module ViewportUI
 ;     glTexImage2D(#GL_TEXTURE_2D, 0, #GL_RGBA8, GLContext::*MAIN_GL_CTXT\width, GLContext::*MAIN_GL_CTXT\height, 0, #GL_RGBA, #GL_UNSIGNED_BYTE, #Null)
     
     ; draw texture on screen space quad
-    glViewport(0,0,*Me\context\width,*Me\context\height)
-    Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT, #GL_LINEAR)
+    glViewport(0, 0, *Me\context\width,*Me\context\height)
+    Framebuffer::BlitTo(*framebuffer, 0, #GL_COLOR_BUFFER_BIT|#GL_DEPTH_BUFFER_BIT, #GL_LINEAR)
 
   EndProcedure
  
@@ -681,7 +681,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 666
+; CursorPosition = 674
 ; FirstLine = 625
 ; Folding = ----
 ; EnableXP

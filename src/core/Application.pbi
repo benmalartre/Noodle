@@ -623,9 +623,9 @@ CompilerEndIf
       Wend
     CompilerElse
       Define *window.Window::Window_t
-      ;Window::OnEvent(*Me\window, #PB_Event_SizeWindow)
       ForEach Window::*ALL_WINDOWS()
         Window::OnEvent(Window::*ALL_WINDOWS(), #PB_Event_SizeWindow)
+        
       Next
       
       
@@ -661,20 +661,24 @@ CompilerEndIf
             Window::OnEvent(*window, Globals::#EVENT_REPAINT_WINDOW)
             
           Case Globals::#EVENT_TOOL_CHANGED
-            Select EventData()
-              Case Globals::#TOOL_SCALE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
-                *Me\tool = Globals::#TOOL_SCALE
-              Case Globals::#TOOL_ROTATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
-                *Me\tool = Globals::#TOOL_ROTATE
-              Case Globals::#TOOL_TRANSLATE
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
-                *Me\tool = Globals::#TOOL_TRANSLATE
-              Case Globals::#TOOL_TRANSFORM
-                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
-                *Me\tool = Globals::#TOOL_TRANSFORM
-            EndSelect
+            If *Me\handle
+              Select EventData()
+                Case Globals::#TOOL_SCALE
+                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+                  *Me\tool = Globals::#TOOL_SCALE
+                Case Globals::#TOOL_ROTATE
+                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+                  *Me\tool = Globals::#TOOL_ROTATE
+                Case Globals::#TOOL_TRANSLATE
+                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+                  *Me\tool = Globals::#TOOL_TRANSLATE
+                Case Globals::#TOOL_TRANSFORM
+                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+                  *Me\tool = Globals::#TOOL_TRANSFORM
+              EndSelect
+            EndIf
+            Window::OnEvent(*Me\window,Globals::#EVENT_TOOL_CHANGED)
+            
             
           Case Globals::#EVENT_SELECTION_CHANGED
             Window::OnEvent(*window,Globals::#EVENT_SELECTION_CHANGED)
@@ -716,9 +720,9 @@ CompilerEndIf
               Case Globals::#SHORTCUT_DELETE
                 MessageRequester("DELETE", "FUCKIN SOMETHING")
               Default 
-                *Me\tool = Globals::#TOOL_MAX
-                If event : Window::OnEvent(*window,event) : EndIf
+                *Me\tool = Globals::#TOOL_MAX   
             EndSelect
+            If event : Window::OnEvent(*window,event) : EndIf
             If *callback : *callback(*Me, event) : EndIf
             
           Case #PB_Event_SizeWindow
@@ -777,8 +781,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 146
+; CursorPosition = 722
+; FirstLine = 684
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

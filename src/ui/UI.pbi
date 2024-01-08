@@ -77,7 +77,7 @@ Module UI
   Procedure Draw(*ui.UI_t)
     StartVectorDrawing(CanvasVectorOutput(*ui\gadgetID))
     AddPathBox(0,0,GadgetWidth(*ui\gadgetID), GadgetHeight(*ui\gadgetID))
-    VectorSourceColor(UICOLOR::BACK)
+    VectorSourceColor(UICOLOR::COLOR_MAIN_BG)
     FillPath()
     StopVectorDrawing()
   EndProcedure
@@ -174,8 +174,8 @@ EndProcedure
 ;   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 6
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 79
+; FirstLine = 63
 ; Folding = --
 ; EnableXP

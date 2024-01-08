@@ -85,7 +85,7 @@ Module Stroke
   ;---------------------------------------------------------
   Procedure AddPoint(*stroke.Geometry::Stroke_t,*pos.v3f32, *col.c4f32, radius.f)
     Protected datas.v4f32
-    Vector4::Set(datas, *pos\x, *pos\y, radius, Random(MATH::#COLOR_MAX));Color::PackColor(*col))
+    Vector4::Set(datas, *pos\x, *pos\y, radius, Color::PackColor(*col))
     CArray::Append(*stroke\datas, datas)
   EndProcedure
   
@@ -159,13 +159,15 @@ Module Stroke
     
     Define initLen.f = AccumulatedLength(*stroke, *accumulated)
     Define finalNb = Max(initLen / size, 2)
-    CArray::SetCount(*newdatas, finalNb)
+    CArray::SetCount(*newdatas, finalNb + 2)
     Define segLen.f = initLen / finalNb
     Define curLen.f
     Define sAccumLen.f, eAccumLen.f
     Define i, j
     Define *p.v4f32, *s.v4f32, *e.v4f32
-    For i =0 To finalNb-1
+    CArray::SetValue(*newdatas, 0, CArray::GetValue(*stroke\datas, 0))
+    
+    For i =1 To finalNb-1
       curLen = i*segLen
       While curLen > CArray::GetValueF(*accumulated, j)
         j+1
@@ -182,6 +184,8 @@ Module Stroke
       *p\z = *s\z + (curLen - sAccumLen) * (*e\z - *s\z) / (eAccumLen - sAccumLen)
       *p\w = *s\w + (curLen - sAccumLen) * (*e\w - *s\w) / (eAccumLen - sAccumLen)
     Next
+    
+    CArray::SetValue(*newdatas, finalNb, CArray::GetValue(*stroke\datas, initNb-1))
 
     SetPackedPoints(*stroke, *newdatas)
     CArray::Delete(*accumulated)
@@ -303,9 +307,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 51
-; FirstLine = 36
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 87
+; FirstLine = 81
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

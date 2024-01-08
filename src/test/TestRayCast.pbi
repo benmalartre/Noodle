@@ -246,7 +246,6 @@ EndProcedure
   Matrix4::SetIdentity(model)
 
   *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
   GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
   *app\scene = Scene::New()
   
@@ -258,9 +257,9 @@ EndProcedure
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 161
-; FirstLine = 139
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 248
+; FirstLine = 202
 ; Folding = --
 ; EnableXP
 ; EnableUnicode
