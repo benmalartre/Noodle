@@ -1,12 +1,14 @@
 ﻿XIncludeFile "Application.pbi"
 
-; --------------------------------
-; menu/toolbar
-; --------------------------------
-; explorer | viewport  |  property
-; --------------------------------
-; timeline
-; --------------------------------
+;   ====================================
+;  |   menu/toolbar                   * |
+;  |------------------------------------|
+;  | explorer | viewport    |  property |
+;  |          |             |           |
+;  |          |             |           |
+;  |------------------------------------|
+;  |    timeline                        |
+;   ====================================
 
 DeclareModule DemoApplication
   Enumeration
@@ -27,7 +29,7 @@ DeclareModule DemoApplication
     *layer.LayerDefault::LayerDefault_t
   EndStructure
   
-  Declare New (name.s, width.i=800, height.i=800, options=#WITH_ALL)
+  Declare New (name.s, width.i=1200, height.i=800, options=#WITH_ALL)
   Declare Draw(*Me.DemoApplication_t)
   Declare GetView(*Me.DemoApplication_t)
   
@@ -36,14 +38,17 @@ EndDeclareModule
 Module DemoApplication
   UseModule OpenGL
   UseModule OpenGLExt
-  Procedure New(name.s, width=800, height=800, options=#WITH_ALL)
-    
+  Procedure New(name.s, width=1200, height=800, options=#WITH_ALL)
+
     Globals::Init()
-    UIColor::Init()
-;  Bullet::Init( )
-    FTGL::Init()
     Time::Init()
     Log::Init()
+    FTGL::Init()
+    Commands::Init()
+    UIColor::Init()
+    CompilerIf #USE_ALEMBIC
+      Alembic::Init()
+    CompilerEndIf
    
     Protected *Me.DemoApplication_t = AllocateStructure(DemoApplication_t)
     *Me\name = name
@@ -64,12 +69,6 @@ Module DemoApplication
     
     Define.View::View_t *view, *top, *middle, *bottom, *left, *right
     
-; Global *view.View::View_t = View::Split(*main,0,50)
-; Global *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
-; Global *middle.View::View_t = View::Split(*top\right,#PB_Splitter_Vertical,60)
-; Global *center.View::View_t = View::Split(*middle\left,#PB_Splitter_Vertical,30)
-; Global *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,60)
-    
     *view = *Me\window\main
     If options & #WITH_MENU
       View::Split(*view,#PB_Splitter_FirstFixed,25)
@@ -83,22 +82,6 @@ Module DemoApplication
       *view = *view\left
       Protected *timeline.TimelineUI::TimelineUI_t = TimelineUI::New(*bottom,"Timeline")
     EndIf
-    
-    
-    
-;     If options & #WITH_MENU
-;     Protected *top.View::View_t = View::Split(*view\left,#PB_Splitter_FirstFixed,25)
-;     
-;     Protected *middle.View::View_t = View::Split(*top\right,#PB_Splitter_Vertical,60)
-;     Protected *center.View::View_t = View::Split(*middle\left,#PB_Splitter_Vertical,30)
-;     If options & #WITH_TIMELINE
-;     Protected *bottom.View::View_t = View::Split(*view\right,#PB_Splitter_SecondFixed,120)
-;     
-;     *Me\view = *bottom\left
-    
-    Define viewportPerc = 60
-    If Not options & #WITH_EXPLORER : viewportPerc + 20 : EndIf
-    If Not options & #WITH_PROPERTY : viewportPerc + 20 : EndIf
     
     If options & #WITH_EXPLORER
       View::Split(*view,#PB_Splitter_Vertical,20)
@@ -124,22 +107,21 @@ Module DemoApplication
   EndProcedure
   
   Procedure Draw(*Me.DemoApplication_t)
+    GLContext::SetContext(*Me\viewport\context)
     Scene::Update(*Me\scene)
-    If *Me\viewport
-      GLContext::SetContext(*Me\viewport\context)
-      
-      LayerDefault::Draw(*Me\layer, *Me\scene, *Me\viewport\context)
-      ViewportUI::Blit(*Me\viewport, *Me\layer\framebuffer)
+    LayerDefault::Draw(*Me\layer, *Me\scene, *Me\viewport\context)
     
-      FTGL::BeginDraw(*Me\viewport\context\writer)
-      FTGL::SetColor(*Me\viewport\context\writer,1,1,1,1)
-      Define ss.f = 0.85/width
-      Define ratio.f = width / height
-      FTGL::Draw(*Me\viewport\context\writer,"DEMO "+*Me\name,-0.9,0.9,ss,ss*ratio)
-      FTGL::EndDraw(*Me\viewport\context\writer)
-   
-      GLContext::FlipBuffer(*Me\viewport\context)
-    EndIf
+    ViewportUI::Blit(*Me\viewport, *Me\layer\framebuffer)
+
+    FTGL::BeginDraw(*Me\viewport\context\writer)
+    FTGL::SetColor(*Me\viewport\context\writer, 1,1,1,1)
+  
+    Define ss.f = 0.85/width
+    Define ratio.f = width / height
+    FTGL::Draw(*Me\viewport\context\writer,"Demo : "+*Me\name,-0.9,0.9,ss,ss*ratio)
+    FTGL::EndDraw(*Me\viewport\context\writer)
+    
+    GLContext::FlipBuffer(*Me\viewport\context)
   EndProcedure
   
   Procedure GetView(*Me.DemoApplication_t)
@@ -148,7 +130,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 62
-; Folding = -
+; CursorPosition = 41
+; FirstLine = 21
+; Folding = --
 ; EnableXP

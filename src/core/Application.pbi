@@ -781,8 +781,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 722
-; FirstLine = 684
+; CursorPosition = 777
+; FirstLine = 725
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

@@ -267,15 +267,13 @@ Module InstanceCloud
   ; Update
   ;----------------------------------------------------
   Procedure Update(*Me.InstanceCloud_t)
-    Debug "INSTANCE CLOUD UPDATE..."
-    If *Me\stack
-      PointCloudGeometry::Reset(*Me\geom)
-      Stack::Update(*Me\stack)
-    EndIf
+;     If *Me\stack
+;       PointCloudGeometry::Reset(*Me\geom)
+;       Stack::Update(*Me\stack)
+;     EndIf
     
     If *Me\dirty & Object3D::#DIRTY_STATE_TOPOLOGY Or Not *Me\initialized
       Setup(*Me)
-      Debug "INSTANCE CLOUD SETUP..."
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
@@ -284,7 +282,6 @@ Module InstanceCloud
         BuildGLData(*Me)
         ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
-        Debug "INSTANCE CLOUD UPDATE..."
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
       EndIf
     EndIf
@@ -335,9 +332,9 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 103
-; FirstLine = 75
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 272
+; FirstLine = 239
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode
