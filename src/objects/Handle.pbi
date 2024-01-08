@@ -182,7 +182,7 @@ DeclareModule Handle
   Declare GetTarget(*Me.Handle_t)
   Declare OnEvent(*Me.Handle_t, event.i,  *ev_data.Control::EventTypeDatas_t = #Null)
   Declare Delete(*Me.Handle_t)
-  Declare.i New()
+  Declare.i New(*camera.Camera::Camera_t)
 
   Global CLASS.Class::Class_t
 
@@ -496,7 +496,7 @@ Module Handle
     Protected *handle_pos.v3f32 = *Me\localT\t\pos  
     Vector3::Sub(delta,*camera\pos,*handle_pos)
     *Me\distance = Vector3::Length(delta)
-    *Me\scl = *Me\distance*Radian(*camera\fov*2)
+    *Me\scl = *Me\distance*Radian(*camera\fov*2)    
   EndProcedure
   
   
@@ -530,7 +530,6 @@ Module Handle
     
     ; vertex buffer object
     Object3D::BindVBO(@*Me\vbo)
-    
     glBufferData(#GL_ARRAY_BUFFER,CArray::GetSize(*shape\positions),CArray::GetPtr(*shape\positions,0),#GL_STATIC_DRAW)
     
     ; element array buffer
@@ -548,7 +547,6 @@ Module Handle
     ; Bind Attributes Locations
     glBindAttribLocation(pgm,0,"position")
 
-   
     ; Uniform Attributes
     *Me\u_view.GLint = glGetUniformLocation(pgm,"view")
     *Me\u_proj.GLint = glGetUniformLocation(pgm,"projection")
@@ -600,6 +598,7 @@ Module Handle
     If Not *Me\target : ProcedureReturn : EndIf
     Object3D::BindVAO(@*Me\vao)
     
+
     glEnable(#GL_BLEND)
     glBlendFunc(#GL_SRC_ALPHA,#GL_ONE_MINUS_SRC_ALPHA)
   
@@ -609,10 +608,12 @@ Module Handle
     
     Protected pos.v3f32
     Protected d.f = *Me\distance/20
-    
     Transform::SetScaleFromXYZValues(*Me\globalT,d,d,d)
     Transform::UpdateMatrixFromSRT(*Me\globalT)
-
+    
+        Debug "DRAW HANDLE"
+        Matrix4::Echo(*Me\globalT\m, "global")
+        
     Protected offset.m4f32
     Protected quat.q4f32
     
@@ -781,7 +782,6 @@ Module Handle
 ;     EndIf
     
     glBindVertexArray(0)
-   
   EndProcedure
  
   
@@ -1397,7 +1397,7 @@ Module Handle
   ;  Constructor
   ;---------------------------------------------
 
-  Procedure.i New()
+  Procedure.i New(*camera.Camera::Camera_t)
     Protected *Me.Handle_t = AllocateStructure(Handle_t)
     Object::INI( Handle )
     
@@ -1412,6 +1412,7 @@ Module Handle
     *Me\tool = Globals::#TOOL_Select
     *Me\targets = CArray::New(CArray::#ARRAY_PTR)
     *Me\radius = 5
+    *Me\camera = *camera
         
     Protected m.m4f32
     Protected pos.v3f32
@@ -1441,7 +1442,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 509
-; FirstLine = 463
+; CursorPosition = 603
+; FirstLine = 593
 ; Folding = -------
 ; EnableXP

@@ -62,8 +62,7 @@ Module DemoApplication
     
     *Me\scene = Scene::New()
     *Me\camera = Camera::New("Camera",Camera::#Camera_Perspective)
-    *Me\handle = Handle::New()
-    *Me\handle\camera = *Me\camera
+    *Me\handle = Handle::New(*Me\camera)
 ;     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
 ;     Handle::Setup(*Me\handle, *Me\context)
     
@@ -130,7 +129,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 41
-; FirstLine = 21
+; CursorPosition = 64
+; FirstLine = 17
 ; Folding = --
 ; EnableXP

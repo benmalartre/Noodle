@@ -289,11 +289,8 @@ UseModule OpenGLExt
     CompilerEndIf  
     
     *Me\camera = Camera::New("Camera",Camera::#Camera_Perspective)
-    *Me\handle = Handle::New()
-    *Me\handle\camera = *Me\camera
-;     *Me\select = LayerSelection::New(width, height, *Me\context, *Me\camera)
-;     Handle::Setup(*Me\handle, *Me\context)
-    
+    *Me\handle = Handle::New(*Me\camera)
+
     ProcedureReturn *Me
   EndProcedure
   
@@ -315,12 +312,12 @@ UseModule OpenGLExt
     FreeStructure(*Me)
   EndProcedure
   
+  ;-----------------------------------------------------------------------------
+  ; Add Child Window
+  ;-----------------------------------------------------------------------------
   Procedure AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
 
     Define *window.Window::Window_t = AllocateStructure(Window::Window_t)
-    
-;     *Me\ID = OpenWindow(#PB_Any, x, y, width, height, *Me\name, options, parentID)  
-;     *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
     *window\ID= OpenWindow(#PB_Any, x, y, width, height, "TOOL", #PB_Window_Tool, WindowID(*Me\window\ID))
     *window\main = View::New(0,0,WindowWidth(*window\ID),WindowHeight(*window\ID),#Null,#False,"MainView",#True)
     *window\main\sizX = width
@@ -661,22 +658,21 @@ CompilerEndIf
             Window::OnEvent(*window, Globals::#EVENT_REPAINT_WINDOW)
             
           Case Globals::#EVENT_TOOL_CHANGED
-            If *Me\handle
-              Select EventData()
-                Case Globals::#TOOL_SCALE
-                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
-                  *Me\tool = Globals::#TOOL_SCALE
-                Case Globals::#TOOL_ROTATE
-                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
-                  *Me\tool = Globals::#TOOL_ROTATE
-                Case Globals::#TOOL_TRANSLATE
-                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
-                  *Me\tool = Globals::#TOOL_TRANSLATE
-                Case Globals::#TOOL_TRANSFORM
-                  Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
-                  *Me\tool = Globals::#TOOL_TRANSFORM
-              EndSelect
-            EndIf
+            Select EventData()
+              Case Globals::#TOOL_SCALE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_SCALE)
+                *Me\tool = Globals::#TOOL_SCALE
+              Case Globals::#TOOL_ROTATE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_ROTATE)
+                *Me\tool = Globals::#TOOL_ROTATE
+              Case Globals::#TOOL_TRANSLATE
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSLATE)
+                *Me\tool = Globals::#TOOL_TRANSLATE
+              Case Globals::#TOOL_TRANSFORM
+                Handle::SetActiveTool(*Me\handle, Globals::#TOOL_TRANSFORM)
+                *Me\tool = Globals::#TOOL_TRANSFORM
+            EndSelect
+
             Window::OnEvent(*Me\window,Globals::#EVENT_TOOL_CHANGED)
             
             
@@ -781,8 +777,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 777
-; FirstLine = 725
+; CursorPosition = 673
+; FirstLine = 654
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

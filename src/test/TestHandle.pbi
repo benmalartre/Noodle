@@ -72,15 +72,27 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(*light\pos, 5-Random(10),10,5-Random(10))
   Light::Update(*light)
   GLContext::SetContext(*viewport\context)
+  
   Scene::Update(*app\scene)
-  Application::Draw(*app, *layer, *app\camera)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
+  
+  If *app\tool
+    Protected *wireframe.Program::Program_t = GLContext::*SHARED_CTXT\shaders("wireframe")
+    glUseProgram(*wireframe\pgm)
+
+    glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *app\camera\view)
+    glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *app\camera\projection)
+    Handle::Resize(*app\handle, *app\camera)
+    Handle::Draw( *app\handle) 
+  EndIf
 
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*viewport\context\writer,"Nb Vertices : "+Str(*torus\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"Test Handle",-0.9,0.9,ss,ss*ratio)
   
   Select *app\tool
     Case Globals::#TOOL_TRANSLATE
@@ -95,6 +107,9 @@ Procedure Draw(*app.Application::Application_t)
       FTGL::Draw(*viewport\context\writer,"Active Tool : NONE",-0.9,0.8,ss,ss*ratio)
   EndSelect
   
+  Define ns.i = MapSize(*app\scene\selection\items())
+  FTGL::Draw(*viewport\context\writer,"Num selected objects : "+Str(ns),-0.9,0.7,ss,ss*ratio)
+
 
   FTGL::EndDraw(*viewport\context\writer)
   GLContext::FlipBuffer(*viewport\context)
@@ -105,7 +120,6 @@ Procedure Draw(*app.Application::Application_t)
  Define useJoystick.b = #False
  width = 800
  height = 600
- ; Main
  Globals::Init()
 ;  Bullet::Init( )
  FTGL::Init()
@@ -124,7 +138,6 @@ Procedure Draw(*app.Application::Application_t)
   *app\scene = Scene::New()
   
   *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
   GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 ;   *shadows = LayerShadowMap::New(800,800,*viewport\context,CArray::GetValuePtr(*app\scene\lights, 0))
 ;   *gbuffer = LayerGBuffer::New(800,600,*viewport\context,*app\camera)
@@ -149,8 +162,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 76
-; FirstLine = 59
+; CursorPosition = 88
+; FirstLine = 60
 ; Folding = -
 ; EnableThread
 ; EnableXP
