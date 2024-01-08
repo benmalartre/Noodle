@@ -48,32 +48,32 @@ Module ExplorerUI
   ;   CALLBACKS
   ; ====================================================================================
   Procedure OnDeleteScene(*Me.ExplorerUI_t)
-    ControlExplorer::Clear(*Me\explorer)
-    ControlExplorer::Draw(*Me\explorer)
-    Draw(*Me)
+;     ControlExplorer::Clear(*Me\explorer)
+;     ControlExplorer::Draw(*Me\explorer)
+;     Draw(*Me)
   EndProcedure
   Callback::DECLARECALLBACK(OnDeleteScene, Arguments::#PTR)
   
   Procedure OnNewScene(*Me.ExplorerUI_t)
-    ControlExplorer::Fill(*Me\explorer, *scene)
-    ControlExplorer::Draw(*Me\explorer)
-    Draw(*Me)
+;     ControlExplorer::Fill(*Me\explorer, *scene)
+;     ControlExplorer::Draw(*Me\explorer)
+;     Draw(*Me)
   EndProcedure
   Callback::DECLARECALLBACK(OnNewScene, Arguments::#PTR)
   
   Procedure OnHierarchyChange(*Me.ExplorerUI_t)
-    ControlExplorer::Clear(*Me\explorer)
-    ControlExplorer::Fill(*Me\explorer, *scene)
-    ControlExplorer::Draw(*Me\explorer)
-    Draw(*Me)
+;     ControlExplorer::Clear(*Me\explorer)
+;     ControlExplorer::Fill(*Me\explorer, *scene)
+;     ControlExplorer::Draw(*Me\explorer)
+;     Draw(*Me)
   EndProcedure
   Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
   
   Procedure OnSelectionChange(*Me.ExplorerUI_t)
-    ControlExplorer::Clear(*Me\explorer)
-    ControlExplorer::Fill(*Me\explorer, *scene)
-    ControlExplorer::Draw(*Me\explorer)
-    Draw(*Me)
+;     ControlExplorer::Clear(*Me\explorer)
+;     ControlExplorer::Fill(*Me\explorer, *scene)
+;     ControlExplorer::Draw(*Me\explorer)
+;     Draw(*Me)
   EndProcedure
   Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
   
@@ -222,7 +222,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 153
-; FirstLine = 149
+; CursorPosition = 52
+; FirstLine = 42
 ; Folding = ---
 ; EnableXP

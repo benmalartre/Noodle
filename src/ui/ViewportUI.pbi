@@ -160,13 +160,13 @@ Module ViewportUI
     
     Protected width.i, height.i, i
     Protected *top.View::View_t = *Me\parent
-    Protected *scene.Scene::Scene_t
+    Protected *scene.Scene::Scene_t = *Me\context\scene
     Protected ev_datas.Control::EventTypeDatas_t
     Protected window = EventWindow()
     Select event
         
       Case Globals::#EVENT_SELECTION_CHANGED
-        If *scene\selection\items()
+        If MapSize(*scene\selection\items())
           Handle::SetTarget(*Me\handle, *scene\selection\items()\obj)
         EndIf
     
@@ -663,7 +663,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 172
+; CursorPosition = 162
+; FirstLine = 143
 ; Folding = ----
 ; EnableXP

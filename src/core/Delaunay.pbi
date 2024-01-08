@@ -436,9 +436,9 @@ Module Delaunay
   
   Procedure.b IsInCircle(*delaunay.Delaunay_t, *a.v2f32, *b.v2f32, *c.v2f32, *p.v2f32)
     Define a.v2f32, b.v2f32, c.v2f32
-    Vector3::Sub(a, *a, *p)
-    Vector3::Sub(b, *b, *p)
-    Vector3::Sub(c, *c, *p)
+    Vector2::Sub(a, *a, *p)
+    Vector2::Sub(b, *b, *p)
+    Vector2::Sub(c, *c, *p)
     
     Define ap.f = Vector2::LengthSquared(a)
     Define bp.f = Vector2::LengthSquared(b)
@@ -454,7 +454,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 316
-; FirstLine = 313
+; CursorPosition = 440
+; FirstLine = 398
 ; Folding = ---
 ; EnableXP

@@ -299,7 +299,7 @@ Module ControlMenu
     VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath()
     
-    VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
+;     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
     Protected a
     For a=0 To ArraySize(*menu\items())-1
       If *menu\items(a)\type = #MenuItemType_Separator
@@ -534,7 +534,7 @@ Module ControlMenu
   Procedure Draw(*menu.ControlMenu_t)
     If *menu\dirty
       StartVectorDrawing(CanvasVectorOutput(*menu\gadgetID))
-      VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_MENU)
+      VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_MENU)
       
       AddPathBox(0,0,*menu\sizX,*menu\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG)
@@ -678,8 +678,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 616
-; FirstLine = 598
+; CursorPosition = 536
+; FirstLine = 501
 ; Folding = -w---
 ; EnableThread
 ; EnableXP

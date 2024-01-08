@@ -23,6 +23,11 @@ Global *geom.Geometry::PointCloudGeometry_t = *instancer\geom
 Global *prototype.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
 PolymeshGeometry::ToShape(*prototype\geom,*instancer\shape)
 
+Define *teapot.Object3D::Object3D_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
+Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_SPHERE)
+
+
+
 Define i
 Define scl.v3f32
 Vector3::Set(scl, 2,2,2)
@@ -44,12 +49,20 @@ Define height = 800
 *demo = DemoApplication::New("Test Fibonacci",width,height)
 *model = Model::New("Model")
 Object3D::AddChild(*model, *instancer)
+Scene::AddChild(*demo\scene,*obj)
+Scene::AddChild(*demo\scene,*teapot)
 
 Scene::AddModel(*demo\scene, *model)
+Scene::Setup(*demo\scene)
+If *demo\explorer
+  Debug "CONNECT EXPLORER FCK!!"
+  ExplorerUI::Connect(*demo\explorer, *demo\scene)
+  ExplorerUI::OnEvent(*demo\explorer, Globals::#EVENT_NEW_SCENE, #Null)
+EndIf
 
- Scene::Setup(*demo\scene)
 
  Application::Loop(*demo, DemoApplication::@Draw())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 40
+; CursorPosition = 59
+; FirstLine = 7
 ; EnableXP

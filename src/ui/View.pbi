@@ -74,36 +74,36 @@ XIncludeFile "Types.pbi"
       If *Me\fixed
         If *Me\axis
           If *Me\fixed_side = #PB_Splitter_FirstFixed
-            ResizeGadget(*Me\splitter,*Me\posX+ *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\fixed_size-hs,*Me\sizY)
             Resize(*Me\right,*Me\posX+*Me\fixed_size+hs,*Me\posY,*Me\sizX-*Me\fixed_size-hs,*Me\sizY)
+            ResizeGadget(*Me\splitter,*Me\posX+ *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
           Else
-            ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX - *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX-*Me\fixed_size-hs,*Me\sizY)
             Resize(*Me\right,*Me\posX+*Me\sizX-*Me\fixed_size+hs,*Me\posY,*Me\fixed_size-hs,*Me\sizY)
+            ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX - *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
           EndIf
           
         Else
           If *Me\fixed_side = #PB_Splitter_FirstFixed
-            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\fixed_size-hs,*Me\sizX,2*hs)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\fixed_size-hs)
             Resize(*Me\right,*Me\posX,*Me\posY+*Me\fixed_size+hs,*Me\sizX,*Me\sizY-*Me\fixed_size-hs)
+            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\fixed_size-hs,*Me\sizX,2*hs)
           Else
-            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY-*Me\fixed_size-hs,*Me\sizX,2*hs)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY - *Me\fixed_size-hs)
             Resize(*Me\right,*Me\posX,*Me\posY+*Me\sizY -*Me\fixed_size+hs,*Me\sizX,*Me\fixed_size-hs)
+            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY-*Me\fixed_size-hs,*Me\sizX,2*hs)
           EndIf
           
         EndIf
       Else
         If *Me\axis
-          ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX* *Me\perc/100-hs,*Me\posY,2*hs,*Me\sizY)
           Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX* *Me\perc/100-hs,*Me\sizY)
           Resize(*Me\right,*Me\posX+*Me\sizX* *Me\perc/100+hs,*Me\posY,*Me\sizX-*Me\sizX* *Me\perc/100-hs,*Me\sizY)
+          ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX* *Me\perc/100-hs,*Me\posY,2*hs,*Me\sizY)
         Else
-          ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY * *Me\perc/100-hs,*Me\sizX,2*hs)
           Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY* *Me\perc/100-hs)
           Resize(*Me\right,*Me\posX,*Me\posY+*Me\sizY* *Me\perc/100+hs,*Me\sizX,*Me\sizY-*Me\sizY* *Me\perc/100-hs)
+          ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY * *Me\perc/100-hs,*Me\sizX,2*hs)
         EndIf
       EndIf
     EndIf
@@ -534,7 +534,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 236
+; CursorPosition = 105
+; FirstLine = 60
 ; Folding = ----
 ; EnableXP

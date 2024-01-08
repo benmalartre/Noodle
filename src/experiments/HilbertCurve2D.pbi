@@ -70,9 +70,10 @@ Procedure Draw(*crv.HilbertCurve_t)
     *crv\dist * 0.5
     MovePathCursor(*crv\dist * 0.5, *crv\dist * 0.5)
     HilbertA(*crv, level)
-    i - 1
+
     VectorSourceColor(RGBA((i * 255 / level), 255 - (i * 255 / level), 0, 255))
     StrokePath(i, #PB_Path_RoundCorner)
+        i - 1
   Wend  
   
  
@@ -94,8 +95,8 @@ Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
   
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 74
-; FirstLine = 48
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 75
+; FirstLine = 24
 ; Folding = -
 ; EnableXP

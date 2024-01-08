@@ -87,6 +87,7 @@ Module DemoApplication
       *left = *view\left
       *view = *view\right
       *Me\explorer = ExplorerUI::New(*left,"Explorer")
+      ExplorerUI::Connect(*Me\explorer, *Me\scene)
     EndIf
     
      If options & #WITH_PROPERTY
@@ -96,7 +97,7 @@ Module DemoApplication
       *Me\property = PropertyUI::New(*right,"Property",#Null)
     EndIf
     
-    *Me\viewport= ViewportUI::New(*view,"Viewport", *Me\camera, *Me\handle)
+    *Me\viewport = ViewportUI::New(*view,"Viewport", *Me\camera, *Me\handle)
     *Me\layer = LayerDefault::New(*Me\viewport\sizX, *Me\viewport\sizY, *Me\viewport\context, *Me\camera)
     GLContext::AddFramebuffer(*Me\viewport\context, *Me\layer\framebuffer)
 
@@ -107,7 +108,10 @@ Module DemoApplication
   
   Procedure Draw(*Me.DemoApplication_t)
     GLContext::SetContext(*Me\viewport\context)
-    Scene::Update(*Me\scene)
+    If Event() = #PB_Event_Menu And EventMenu() > #PB_Event_FirstCustomValue
+      Scene::Update(*Me\scene)
+    EndIf
+
     LayerDefault::Draw(*Me\layer, *Me\scene, *Me\viewport\context)
     
     ViewportUI::Blit(*Me\viewport, *Me\layer\framebuffer)
@@ -129,7 +133,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 17
+; CursorPosition = 111
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

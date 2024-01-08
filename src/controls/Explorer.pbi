@@ -705,9 +705,7 @@ Module ControlExplorer
           
           *Me\dirty = #True
         EndIf
-        
       Else
-
         Select key
           
           Case #PB_Canvas_Shift
@@ -731,7 +729,6 @@ Module ControlExplorer
             *item\selected = #True
             AddElement(*Me\selected())
             *Me\selected() = *item
-            Debug "Selected Item : "+Str(*item)
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
               Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
@@ -1152,7 +1149,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1083
-; FirstLine = 1041
+; CursorPosition = 730
+; FirstLine = 674
 ; Folding = --4---
 ; EnableXP

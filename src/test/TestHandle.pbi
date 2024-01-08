@@ -162,7 +162,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 88
+; CursorPosition = 83
 ; FirstLine = 60
 ; Folding = -
 ; EnableThread
