@@ -145,29 +145,28 @@ Procedure Draw(*app.Application::Application_t)
   Define color.c4f32
   Color::Set(color, 1,0,0.5,1)
   Drawer::SetColor(*item, color)
-  Drawer::SetSize(*item, 10.0)
+  Drawer::SetSize(*item, 2.0)
   
   Define *triangle.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
   Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
   CArray::SetCount(*triangle, 3 * ArraySize(*delaunay\triangles()))
   CArray::SetCount(*colors, 3 * ArraySize(*delaunay\triangles()))
-  For i = 0 To ArraySize(*delaunay\triangles())/3 - 1
+  Define numTriangles = ArraySize(*delaunay\triangles())/3
+  Define s.f = 1.0 / numTriangles
+  For i = 0 To numTriangles - 1
     *p = CArray::GetValue(*triangle, i * 3)
     *p\x = *delaunay\points(*delaunay\triangles(i*3))\x
-    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3))\y
     
     *p = CArray::GetValue(*triangle, i * 3 + 1)
     *p\x = *delaunay\points(*delaunay\triangles(i*3+1))\x
-    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3+1))\y
     
     *p = CArray::GetValue(*triangle, i * 3 + 2)
     *p\x = *delaunay\points(*delaunay\triangles(i*3+2))\x
-    *p\y = 0.1
     *p\z = *delaunay\points(*delaunay\triangles(i*3+2))\y
     
-    Color::Set(color, Random_0_1(), Random_0_1(), Random_0_1(), 1)
+    Color::Set(color, i * s, 1 - i * s, 0.75, 1)
     CArray::SetValue(*colors, i * 3 + 0, color)
     CArray::SetValue(*colors, i * 3 + 1, color)
     CArray::SetValue(*colors, i * 3 + 2, color)
@@ -176,9 +175,9 @@ Procedure Draw(*app.Application::Application_t)
   
   
   *item = Drawer::AddColoredTriangle(*drawer, *triangle, *colors)
-  
+  Drawer::SetWireframe(*item, #False)
   Object3D::AddChild(*model, *drawer)
-  Object3D::AddChild(*model, *grid)
+;   Object3D::AddChild(*model, *grid)
 ;   Object3D::AddChild(*model, *mesh)
   
   Scene::AddModel(*app\scene,*model)
@@ -186,6 +185,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::Setup(*app\scene)
   
   *default = LayerDefault::New(width,height,*viewport\context,*app\camera)
+  GLContext::AddFramebuffer(*viewport\context, *default\framebuffer)
   
   
 ; ReDim *delaunay\points(3)
@@ -232,7 +232,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 104
+; CursorPosition = 168
+; FirstLine = 132
 ; Folding = -
 ; EnableXP

@@ -132,7 +132,6 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   
   *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
  
   ; FTGL Drawer
   ;-----------------------------------------------------
@@ -198,8 +197,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 49
+; CursorPosition = 134
+; FirstLine = 130
 ; Folding = -
 ; EnableXP
 ; Executable = Test

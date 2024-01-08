@@ -450,6 +450,7 @@ Module Polymesh
   ; Update
   ;-----------------------------------------------------
   Procedure Update(*Me.Polymesh_t)
+    ProcedureReturn
     If *Me\stack And Stack::HasNodes(*Me\stack)
       PolymeshGeometry::Reset(*Me\geom)
       Stack::Update(*Me\stack)
@@ -476,6 +477,7 @@ Module Polymesh
   ; Draw
   ;-----------------------------------------------------
   Procedure Draw(*Me.Polymesh_t)
+    ProcedureReturn
     Protected *geom.Geometry::PolymeshGeometry_t = *Me\geom
     ;Skip invisible Object
     If Not *Me\visible  Or Not *Me\initialized: ProcedureReturn : EndIf
@@ -520,8 +522,8 @@ EndModule
   
     
     
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 70
-; FirstLine = 53
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 430
+; FirstLine = 391
 ; Folding = ---
 ; EnableXP

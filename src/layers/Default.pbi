@@ -26,7 +26,7 @@ DeclareModule LayerDefault
   Declare Setup(*layer.LayerDefault_t)
   Declare Update(*layer.LayerDefault_t,*view.m4f32,*proj.m4f32)
   Declare Clean(*layer.LayerDefault_t)
-  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, width.i=0, height.i=0)
+  Declare Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctxt.GLContext::GLContext_t)
   Declare New(width.i,height.i,*ctx.GLContext::GLContext_t,*pov.Object3D::Object3D_t)
   
   DataSection
@@ -85,7 +85,7 @@ Module LayerDefault
   ;---------------------------------------------------
   ; Draw
   ;---------------------------------------------------
-  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, width.i=0, height.i=0)
+  Procedure Draw(*layer.LayerDefault_t, *scene.Scene::Scene_t, *ctxt.GLContext::GLContext_t)
     
     glDisable(#GL_CULL_FACE)
     glFrontFace(#GL_CW)
@@ -106,10 +106,10 @@ Module LayerDefault
     *view = Layer::GetViewMatrix(*layer)
     Protected *camera.Camera::Camera_t = *layer\pov
     Protected aspect.f
-    If width = 0 Or height = 0
+    If Not *ctxt
       aspect = *layer\framebuffer\width / *layer\framebuffer\height
     Else
-      aspect = width / height
+      aspect = *ctxt\width / *ctxt\height
     EndIf
     
     Matrix4::GetProjectionMatrix(proj,*camera\fov,aspect,*camera\nearplane,*camera\farplane)
@@ -228,7 +228,10 @@ Module LayerDefault
   Framebuffer::Unbind(*layer\framebuffer)
   
   glDisable(#GL_DEPTH_TEST)
-  glDisable(#GL_BLEND)
+
+
+   glEnable(#GL_CULL_FACE)
+
   
   glUseProgram(0)
 EndProcedure
@@ -267,6 +270,6 @@ EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 118
-; FirstLine = 83
+; FirstLine = 92
 ; Folding = --
 ; EnableXP

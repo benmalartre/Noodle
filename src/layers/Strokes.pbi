@@ -121,6 +121,8 @@ Module LayerStroke
     
     Update(*layer)
     
+    glBindVertexArray(0)
+    
   EndProcedure
   
   ;---------------------------------------------------
@@ -153,6 +155,7 @@ Module LayerStroke
       Protected shader.GLuint = *ctx\shaders("stroke2D")\pgm
       glUseProgram(shader)    
       glEnable(#GL_BLEND)
+      glBindVertexArray(*layer\vao)
       
       Protected start.GLint = 0
       Protected count.GLsizei = 0
@@ -166,10 +169,10 @@ Module LayerStroke
         EndIf
         start + count
       Next
+      glBindVertexArray(0)
     EndIf
     
     Framebuffer::Unbind(*layer\framebuffer)
-    glDisable(#GL_BLEND)
   EndProcedure
   
   
@@ -261,8 +264,8 @@ Module LayerStroke
   ; ----------------------------------------------------------------------------
   Class::DEF( LayerStroke )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 229
-; FirstLine = 218
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 155
+; FirstLine = 141
 ; Folding = ---
 ; EnableXP

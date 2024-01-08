@@ -680,8 +680,8 @@ Module ViewportUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ViewportUI )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 547
-; FirstLine = 544
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 666
+; FirstLine = 625
 ; Folding = ----
 ; EnableXP

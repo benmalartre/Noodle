@@ -157,11 +157,6 @@ CompilerEndIf
     *window.Window::Window_t
     *camera.Camera::Camera_t
     *scene.Scene::Scene_t
-    
-    *layer.Layer::Layer_t
-    *select.LayerSelection::LayerSelection_t
-    List *layers.Layer::Layer_t()
-    
     *handle.Handle::Handle_t
     width.i
     height.i
@@ -207,7 +202,6 @@ CompilerEndIf
   Declare Delete(*Me.Application_t)
   Declare Loop(*Me.Application_t,*callback=#Null, waitTime.f=-1)
   Declare Draw(*Me.Application_t, *layer.Layer::Layer_t, *camera.Camera::Camera_t)
-  Declare AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
   Declare AddWindow(*Me.Application_t, x.i, y.i, width.i, height.i)
   Declare AddShortcuts(*Me.Application_t)
   Declare RemoveShortcuts(*Me.Application_t)
@@ -595,15 +589,6 @@ CompilerIf #USE_GLFW
   
 CompilerEndIf
 
-  ;------------------------------------------------------------------
-  ; Add Layer
-  ;------------------------------------------------------------------
-  Procedure AddLayer(*Me.Application_t, *layer.Layer::Layer_t)
-    AddElement(*Me\layers())
-    *Me\layers() = *layer
-    *Me\layer = *layer
-  EndProcedure
-
   ;-----------------------------------------------------------------------------
   ; Get FPS
   ;-----------------------------------------------------------------------------
@@ -792,8 +777,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 739
-; FirstLine = 706
+; CursorPosition = 159
+; FirstLine = 146
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

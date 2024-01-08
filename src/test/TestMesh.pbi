@@ -141,7 +141,6 @@ Procedure Draw(*app.Application::Application_t)
   
     
   *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
   GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
   
   Define pos.v3f32,scl.v3f32
@@ -231,7 +230,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 144
-; FirstLine = 110
+; CursorPosition = 143
+; FirstLine = 127
 ; Folding = -
 ; EnableXP
