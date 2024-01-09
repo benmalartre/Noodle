@@ -109,7 +109,7 @@ DeclareModule ControlExplorer
     List *selected.ControlExplorerItem_t()
     
     *scene.Scene::Scene_t
-    *on_selection.Signal::Signal_t
+    *on_selection.Callback::Callback_t
   EndStructure
   
   Declare New(*obj.Object::Object_t,x.i,y.i,w.i,h.i)
@@ -717,7 +717,7 @@ Module ControlExplorer
             Selection(*Me,*item)
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
-              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
+              Callback::Trigger(*Me\on_selection, Callback::#SIGNAL_TYPE_PING)
             Else
               ; do nothing
             EndIf
@@ -731,7 +731,7 @@ Module ControlExplorer
             *Me\selected() = *item
             If *item\type = #TYPE_3DOBJECT
               Scene::SelectObject(*Me\scene,*item\object)
-              Signal::Trigger(*Me\on_selection, Signal::#SIGNAL_TYPE_PING)
+              Callback::Trigger(*Me\on_selection, Callback::#SIGNAL_TYPE_PING)
             EndIf
             
         EndSelect
@@ -896,7 +896,7 @@ Module ControlExplorer
   Procedure OnSelectionChange(*scene.Scene::Scene_t)
     PostEvent(Globals::#EVENT_SELECTION_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnSelectionChange, Args::#PTR)
   
   ; ----------------------------------------
   ;  Fill Explorer from Scene Description
@@ -943,7 +943,7 @@ Module ControlExplorer
     RecurseExpanded(*Me\root,#False)
     *Me\dirty = #True
     
-    Signal::CONNECTCALLBACK(*Me\on_selection, OnSelectionChange, *scene)
+    Callback::CONNECT_CALLBACK(*Me\on_selection, OnSelectionChange, *scene)
     
   EndProcedure
  
@@ -1010,13 +1010,13 @@ Module ControlExplorer
   
   
   Procedure OnMessage( id.i, *up)
-;     Protected *sig.Signal::Signal_t = *up
+;     Protected *sig.Callback::Callback_t = *up
 ;     Protected *explorer.ControlExplorer_t = *sig\rcv_inst
-;     Debug "Explorer Signal Recieved..."
+;     Debug "Explorer Callback Recieved..."
 ;     Debug "Slot : "+Str(*sig\rcv_slot)
 ;     Debug "Sender Class : "+Str(*sig\snd_class)
   ;   *explorer\SendEvent(#PB_Event_Repaint)
-  ;     Protected *sig.CSignal_t = *up
+  ;     Protected *sig.CCallback_t = *up
   ;   Protected *c.CControlNumber_t = *sig\snd_inst
   ;   Protected *Me.ExplorerUI_t = *c\parent
   ;   Protected v.i = *c\value_n
@@ -1027,15 +1027,15 @@ Module ControlExplorer
   
   
   ;------------------------------------------------------------------
-  ; Signal / Slots Messages
+  ; Callback / Slots Messages
   ;------------------------------------------------------------------
-  Procedure ConnectSignalsSlots(*Me.ControlExplorer_t)
+  Procedure ConnectCallbacksSlots(*Me.ControlExplorer_t)
   ;   Protected Me.Explorer = *Me
   ;   
-  ;   Me\SignalConnect(*Me\scene\SignalOnChanged(),0)
-  ;   Me\SignalConnect(*Me\context\SignalOnChanged(),1)
-  ;   Me\SignalConnect(*Me\search\SignalOnChanged(),2)
-  ;   Me\SignalConnect(*Me\show\SignalOnChanged(),3)
+  ;   Me\CallbackConnect(*Me\scene\CallbackOnChanged(),0)
+  ;   Me\CallbackConnect(*Me\context\CallbackOnChanged(),1)
+  ;   Me\CallbackConnect(*Me\search\CallbackOnChanged(),2)
+  ;   Me\CallbackConnect(*Me\show\CallbackOnChanged(),3)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -1080,20 +1080,20 @@ Module ControlExplorer
     ; ---[ Splitter ]-------------------------
     *Me\dirty = #True
     
-    ; ---[ Signals ]-------------------------
-    *Me\on_selection = Object::NewSignal(*Me, "OnSelectionChange")
+    ; ---[ Callbacks ]-------------------------
+    *Me\on_selection = Object::NewCallback(*Me, "OnSelectionChange")
     
     
 ;     If Scene::*current_scene
 ;       Fill(*Me,Scene::*current_scene)
 ; 
-;       ConnectSignalsSlots(*Me)
+;       ConnectCallbacksSlots(*Me)
 ;       RecurseExpanded(*Me\root,#False);
 ;     EndIf
     
     Resize(*Me)
     Draw(*Me)
-    ;ConnectSignalSlot(*Me,@scn\SignalOnChanged(),0)
+    ;ConnectCallbackSlot(*Me,@scn\CallbackOnChanged(),0)
   
     ProcedureReturn *Me
   EndProcedure
@@ -1149,7 +1149,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 730
-; FirstLine = 674
+; CursorPosition = 935
+; FirstLine = 913
 ; Folding = --4---
 ; EnableXP

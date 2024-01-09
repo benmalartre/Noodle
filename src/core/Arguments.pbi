@@ -1,7 +1,7 @@
 ﻿; ================================================================================
-; ARGUMENTS MODULE DECLARATION
+; ARGS MODULE DECLARATION
 ; ================================================================================
-DeclareModule Arguments
+DeclareModule Args
   UseModule Math
   
   Enumeration
@@ -46,7 +46,7 @@ DeclareModule Arguments
   ; ------------------------------------------------------------------------------
   ; ARGUMENT STRUCTURE
   ; ------------------------------------------------------------------------------
-  Structure Argument_t
+  Structure Arg_t
     StructureUnion
       a.a
       b.b
@@ -71,16 +71,16 @@ DeclareModule Arguments
   ; ------------------------------------------------------------------------------
   ; ARGUMENTS STRUCTURE
   ; ------------------------------------------------------------------------------
-  Structure Arguments_t
-    Array args.Argument_t(0)
+  Structure Args_t
+    Array args.Arg_t(0)
   EndStructure
   
   ; ------------------------------------------------------------------------------
   ; DECLARE
   ; ------------------------------------------------------------------------------
-  Declare Copy(*dst.Arguments_t, *src.Arguments_t)
-  Declare New(numArguments.i=0)
-  Declare Delete(*args.Arguments_t)
+  Declare Copy(*dst.Args_t, *src.Args_t)
+  Declare New(numArgs.i=0)
+  Declare Delete(*args.Args_t)
   
   ; ------------------------------------------------------------------------------
   ; MACROS
@@ -90,7 +90,7 @@ DeclareModule Arguments
   EndMacro
 
   Macro CREATEVALUE(_name, _type)
-    Define Arguments::VALUENAME(_name, _type)._type
+    Define Args::VALUENAME(_name, _type)._type
   EndMacro
 
   Macro CREATEVALUEPTR(_name)
@@ -103,52 +103,52 @@ DeclareModule Arguments
     Define __type.s = StringField(__s, 2, ".")
     
     If __type = "a"
-      Arguments::CREATEVALUE(__name, a)
+      Args::CREATEVALUE(__name, a)
       _type = #ARGS_BYTE
     ElseIf __type = "b"
-      Arguments::CREATEVALUE(__name, b)
+      Args::CREATEVALUE(__name, b)
       _type = #ARGS_BYTE
     ElseIf __type = "c"
-      Arguments::CREATEVALUE(__name, c)
+      Args::CREATEVALUE(__name, c)
       _type =  #ARGS_CHAR
     ElseIf __type = "d"
-      Arguments::CREATEVALUE(__name, d)
+      Args::CREATEVALUE(__name, d)
       _type =  #ARGS_DOUBLE
     ElseIf __type = "f"
-      Arguments::CREATEVALUE(__name, f)
+      Args::CREATEVALUE(__name, f)
       _type =  #ARGS_FLOAT
     ElseIf __type = "i"
-      Arguments::CREATEVALUE(__name, i)
+      Args::CREATEVALUE(__name, i)
       _type =  #ARGS_INT
     ElseIf __type = "l"
-      Arguments::CREATEVALUE(__name, l)
+      Args::CREATEVALUE(__name, l)
       _type =  #ARGS_LONG
     ElseIf __type = "v2f32"
-      Arguments::CREATEVALUE(__name, v2f32)
+      Args::CREATEVALUE(__name, v2f32)
       _type =  #ARGS_V2F32
     ElseIf __type = "v3f32"
-      Arguments::CREATEVALUE(__name, v3f32)
+      Args::CREATEVALUE(__name, v3f32)
       _type =  #ARGS_V3F32
     ElseIf __type = "v4f32"
-      Arguments::CREATEVALUE(__name, v4f32)
+      Args::CREATEVALUE(__name, v4f32)
       _type =  #ARGS_V4F32
     ElseIf __type = "c4f32"
-      Arguments::CREATEVALUE(__name, c4f32)
+      Args::CREATEVALUE(__name, c4f32)
       _type = #ARGS_C4F32
     ElseIf __type = "q4f32"
-      Arguments::CREATEVALUE(__name, q4f32)
+      Args::CREATEVALUE(__name, q4f32)
       _type = #ARGS_Q4f32
     ElseIf __type = "m3f32"
-      Arguments::CREATEVALUE(__name, m3f32)
+      Args::CREATEVALUE(__name, m3f32)
       _type = #ARGS_M3F32
     ElseIf __type = "m4f32"
-      Arguments::CREATEVALUE(__name, m4f32)
+      Args::CREATEVALUE(__name, m4f32)
       _type = #ARGS_QUATERNION
     ElseIf __type = "m3f32"
-      Arguments::CREATEVALUE(__name, s)
+      Args::CREATEVALUE(__name, s)
       _type = #PB_String
     Else
-      Arguments::CREATEVALUEPTR(__name)
+      Args::CREATEVALUEPTR(__name)
       _type = #PB_Integer
     EndIf
    
@@ -182,59 +182,59 @@ DeclareModule Arguments
   EndMacro
   
   ; SET EXISTING ATTRIBUTE
-  Declare SET_INTERNAL(*args.Arguments::Arguments_t, type.l, size.i, index.i, *value)
+  Declare SET_INTERNAL(*args.Args::Args_t, type.l, size.i, index.i, *value)
 
   Macro SET(_args, _index, _value)
     CompilerIf TypeOf(value) = #PB_Structure
-       Arguments::SET_INTERNAL(_args, #PB_Structure, #PB_Integer, _index, _value)
+       Args::SET_INTERNAL(_args, #PB_Structure, #PB_Integer, _index, _value)
     CompilerElse
-      Arguments::ADD_INTERNAL(_args, TypeOf(_value), SizeOf(_value), _index, @value)
+      Args::ADD_INTERNAL(_args, TypeOf(_value), SizeOf(_value), _index, @value)
     CompilerEndIf
   EndMacro
 
-  Declare ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
+  Declare ADD_INTERNAL(*args.Args::Args_t, Type.l, size.i, *value)
   
   ; ADD NEW ATTRIBUTE
   Macro ADD(_args, value)
     CompilerIf TypeOf(value) = #PB_Structure
-       Arguments::ADD_INTERNAL(_args, #PB_Structure, #PB_Integer, value)
+       Args::ADD_INTERNAL(_args, #PB_Structure, #PB_Integer, value)
     CompilerElse
-      Arguments::ADD_INTERNAL(_args, TypeOf(value), SizeOf(value), @value)
+      Args::ADD_INTERNAL(_args, TypeOf(value), SizeOf(value), @value)
     CompilerEndIf
   EndMacro
   
   ; DECLARE ATTRIBUTE
   Macro DECL(_type, _index)
     CompilerSelect _type
-      CompilerCase Arguments::#BYTE
+      CompilerCase Args::#BYTE
         __arg__#_index.a
-      CompilerCase Arguments::#BOOL
+      CompilerCase Args::#BOOL
         __arg__#_index.b
-      CompilerCase Arguments::#CHAR
+      CompilerCase Args::#CHAR
         __arg__#_index.c
-      CompilerCase Arguments::#DOUBLE
+      CompilerCase Args::#DOUBLE
         __arg__#_index.d
-      CompilerCase Arguments::#FLOAT
+      CompilerCase Args::#FLOAT
         __arg__#_index.f
-      CompilerCase Arguments::#INT
+      CompilerCase Args::#INT
         __arg__#_index.i
-      CompilerCase Arguments::#LONG
+      CompilerCase Args::#LONG
         __arg__#_index.l
-      CompilerCase Arguments::#V2F32
+      CompilerCase Args::#V2F32
         __arg__#_index.Math::v2f32
-      CompilerCase Arguments::#V3F32
+      CompilerCase Args::#V3F32
         __arg__#_index.Math::v3f32
-      CompilerCase Arguments::#V4F32
+      CompilerCase Args::#V4F32
         __arg__#_index.Math::v4f32
-      CompilerCase Arguments::#C4F32
+      CompilerCase Args::#C4F32
         __arg__#_index.Math::c4f32
-      CompilerCase Arguments::#Q4F32
+      CompilerCase Args::#Q4F32
         __arg__#_index.Math::q4f32
-      CompilerCase Arguments::#M3F32
+      CompilerCase Args::#M3F32
         __arg__#_index.Math::cm3f32
-      CompilerCase Arguments::#M4F32
+      CompilerCase Args::#M4F32
         __arg__#_index.Math::m4f32
-      CompilerCase Arguments::#STRING
+      CompilerCase Args::#STRING
         __arg__#_index.s
       CompilerDefault
         *__arg__#_index
@@ -246,24 +246,24 @@ EndDeclareModule
 ; ================================================================================
 ; ARGUMENTS MODULE IMPLEMENTATION
 ; ================================================================================
-Module Arguments
+Module Args
   ; ------------------------------------------------------------------------------
   ; CONSTRUCTOR
   ; ------------------------------------------------------------------------------
-  Procedure New(numArguments.i=0)
-    Protected *args.Arguments_t = AllocateStructure(Arguments_t)
-    ReDim *args\args(numArguments)
+  Procedure New(numArgs.i=0)
+    Protected *args.Args_t = AllocateStructure(Args_t)
+    ReDim *args\args(numArgs)
     ProcedureReturn *args
   EndProcedure
   
   ; ------------------------------------------------------------------------------
   ; DESTRUCTOR
   ; ------------------------------------------------------------------------------
-  Procedure Delete(*args.Arguments_t)
+  Procedure Delete(*args.Args_t)
     FreeStructure(*args)
   EndProcedure
   
-  Procedure Copy(*dst.Arguments_t, *src.Arguments_t)
+  Procedure Copy(*dst.Args_t, *src.Args_t)
     Define nb = ArraySize(*src\args())
     ReDim *dst\args(nb)
     Define i
@@ -323,7 +323,7 @@ Module Arguments
     Next
   EndProcedure
   
-  Procedure ADD_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, *value)
+  Procedure ADD_INTERNAL(*args.Args::Args_t, Type.l, size.i, *value)
     Protected index = ArraySize(*args\args())
     ReDim *args\args(index + 1)
     
@@ -332,12 +332,12 @@ Module Arguments
       If (Type = #PB_String)
         \str = PeekS(*value)
       Else
-        CopyMemory(*value, @*args\args(index)+ OffsetOf(Arguments::Argument_t\a), size)
+        CopyMemory(*value, @*args\args(index)+ OffsetOf(Args::Arg_t\a), size)
       EndIf
     EndWith
   EndProcedure
   
-   Procedure SET_INTERNAL(*args.Arguments::Arguments_t, Type.l, size.i, index.i, *value)
+   Procedure SET_INTERNAL(*args.Args::Args_t, Type.l, size.i, index.i, *value)
     Protected numArgs = ArraySize(*args\args())
     If index >= 0 Or index < numArgs
       With *args\args(index)
@@ -345,7 +345,7 @@ Module Arguments
         If (Type = #PB_String)
           \str = PeekS(*value)
         Else
-          CopyMemory(*value, @*args\args(index)+ OffsetOf(Arguments::Argument_t\a), size)
+          CopyMemory(*value, @*args\args(index)+ OffsetOf(Args::Arg_t\a), size)
         EndIf
       EndWith
     EndIf
@@ -354,8 +354,8 @@ Module Arguments
   
 EndModule
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 263
-; FirstLine = 249
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 347
+; FirstLine = 286
 ; Folding = ---
 ; EnableXP

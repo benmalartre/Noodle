@@ -52,14 +52,14 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARECALLBACK(OnDeleteScene, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteScene, Args::#PTR)
   
   Procedure OnNewScene(*Me.ExplorerUI_t)
 ;     ControlExplorer::Fill(*Me\explorer, *scene)
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARECALLBACK(OnNewScene, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnNewScene, Args::#PTR)
   
   Procedure OnHierarchyChange(*Me.ExplorerUI_t)
 ;     ControlExplorer::Clear(*Me\explorer)
@@ -67,7 +67,7 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARECALLBACK(OnHierarchyChange, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnHierarchyChange, Args::#PTR)
   
   Procedure OnSelectionChange(*Me.ExplorerUI_t)
 ;     ControlExplorer::Clear(*Me\explorer)
@@ -75,7 +75,7 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARECALLBACK(OnSelectionChange, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnSelectionChange, Args::#PTR)
   
   ; --------------------------------------------------------
   ;  Setup
@@ -88,8 +88,8 @@ Module ExplorerUI
   ;  Connect
   ; --------------------------------------------------------
   Procedure Connect(*Me.ExplorerUI_t, *scn.Scene::Scene_t)
-    Signal::CONNECTCALLBACK(*scn\on_delete, OnDeleteScene, *Me)
-    Signal::CONNECTCALLBACK(*scn\on_selection, OnSelectionChange, *Me)
+    Callback::CONNECT_CALLBACK(*scn\on_delete, OnDeleteScene, *Me)
+    Callback::CONNECT_CALLBACK(*scn\on_selection, OnSelectionChange, *Me)
   EndProcedure
   
   ;---------------------------------------------------------
@@ -222,7 +222,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 42
+; CursorPosition = 91
+; FirstLine = 86
 ; Folding = ---
 ; EnableXP

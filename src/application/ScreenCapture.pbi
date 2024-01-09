@@ -25,8 +25,8 @@ EndStructure
 Global *app.Application::Application_t
 Global control.ScreenCaptureControl_t
 
-Declare ConnectRecordSignal(*ctrl.ScreenCaptureControl_t)
-Declare ConnectStopSignal(*ctrl.ScreenCaptureControl_t)
+Declare ConnectRecordCallback(*ctrl.ScreenCaptureControl_t)
+Declare ConnectStopCallback(*ctrl.ScreenCaptureControl_t)
 
 Procedure.s GetSettingsFile()
   Define home.s = GetHomeDirectory() + Globals::SLASH + "ScreenCapture"
@@ -55,25 +55,25 @@ EndProcedure
 Procedure OnStop(*ctrl.ScreenCaptureControl_t)
   ControlIcon::PlayIcon(*ctrl\button)
   Control::Invalidate(*ctrl\button)
-  Signal::RemoveSlot(*ctrl\button\on_click, 0)
-  ConnectRecordSignal(*ctrl)
+  Callback::RemoveSlot(*ctrl\button\on_click, 0)
+  ConnectRecordCallback(*ctrl)
 EndProcedure
-Callback::DECLARECALLBACK(OnStop, Arguments::#PTR)
+Callback::DECLARECALLBACK(OnStop, Args::#PTR)
 
 Procedure OnRecord(*ctrl.ScreenCaptureControl_t)
   ControlIcon::RecordIcon(*ctrl\button)
   Control::Invalidate(*ctrl\button)
-  Signal::RemoveSlot(*ctrl\button\on_click, 0)
-  ConnectStopSignal(*ctrl)
+  Callback::RemoveSlot(*ctrl\button\on_click, 0)
+  ConnectStopCallback(*ctrl)
 EndProcedure
-Callback::DECLARECALLBACK(OnRecord, Arguments::#PTR)
+Callback::DECLARECALLBACK(OnRecord, Args::#PTR)
 
-Procedure ConnectRecordSignal(*ctrl.ScreenCaptureControl_t)
-  Signal::CONNECTCALLBACK(*ctrl\button\on_click, OnRecord, *ctrl)
+Procedure ConnectRecordCallback(*ctrl.ScreenCaptureControl_t)
+  Callback::CONNECTCALLBACK(*ctrl\button\on_click, OnRecord, *ctrl)
 EndProcedure
 
-Procedure ConnectStopSignal(*ctrl.ScreenCaptureControl_t)
-  Signal::CONNECTCALLBACK(*ctrl\button\on_click, OnStop, *ctrl)
+Procedure ConnectStopCallback(*ctrl.ScreenCaptureControl_t)
+  Callback::CONNECTCALLBACK(*ctrl\button\on_click, OnStop, *ctrl)
 EndProcedure
 
 Procedure OnBrowse(*ctrl.ScreenCaptureControl_t)
@@ -87,7 +87,7 @@ Procedure OnBrowse(*ctrl.ScreenCaptureControl_t)
     Control::Invalidate(*ctrl\folder)
   EndIf
 EndProcedure
-Callback::DECLARECALLBACK(OnBrowse, Arguments::#PTR)
+Callback::DECLARECALLBACK(OnBrowse, Args::#PTR)
 
 Procedure AddControls(*Me.ScreenCaptureControl_t)  
   Define initialFolder.s = GetInitialFolder()
@@ -109,7 +109,7 @@ Procedure AddControls(*Me.ScreenCaptureControl_t)
   ControlGroup::Append(*Me\folder_group, *Me\folder)
   
   *Me\browser = ControlButton::New(*Me\property, "Browse", "...", #False, #False, 320, 20, 40 , 30)
-  Signal::CONNECTCALLBACK(*Me\browser\on_click, OnBrowse, *Me)
+  Callback::CONNECTCALLBACK(*Me\browser\on_click, OnBrowse, *Me)
   ControlGroup::Append(*Me\folder_group, *Me\browser)
   Control::SetFixed(*Me\browser, 100, -1)
   
@@ -133,7 +133,7 @@ Procedure AddControls(*Me.ScreenCaptureControl_t)
   ControlProperty::Append(*Me\property, *Me\filename_group)
      
   *Me\button = ControlIcon::New( *Me\property ,"Record", ControlIcon::#Icon_Play, #False, #False , 360, 13, 60, 60 )
-  Signal::CONNECTCALLBACK(*Me\button\on_click, OnRecord, *Me)
+  Callback::CONNECTCALLBACK(*Me\button\on_click, OnRecord, *Me)
   ControlProperty::Append(*Me\property, *Me\button)
   
   ControlProperty::RowEnd(*Me\property)
@@ -161,8 +161,8 @@ Application::Loop(*app,#Null, 0.1)
 
 
 
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 84
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 74
 ; Folding = --
 ; EnableXP

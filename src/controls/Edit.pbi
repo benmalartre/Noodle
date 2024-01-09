@@ -514,7 +514,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         Case #PB_Shortcut_Return
           *Me\focused = #False : Control::DeFocused(*Me)
           *Me\posG = 1 : *Me\posW = 1
-          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
+          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
           Control::Invalidate(*Me)
           ProcedureReturn( #True )
 
@@ -765,7 +765,7 @@ EndProcedure
     
     InitializeStructure( *Me, ControlEdit_t )
     
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
     ProcedureReturn( *Me )
     
   EndProcedure
@@ -781,8 +781,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 722
-; FirstLine = 717
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 767
+; FirstLine = 721
 ; Folding = ---
 ; EnableXP

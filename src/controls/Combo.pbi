@@ -20,7 +20,7 @@ DeclareModule ControlCombo
     over.i
     down.i
     Array items.s(0)
-    *on_press.Signal::Signal_t
+    *on_press.Callback::Callback_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ Module ControlCombo
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
-            Signal::Trigger(*Me\on_press, Signal::#SIGNAL_TYPE_PING)
+            Callback::Trigger(*Me\on_press, Callback::#SIGNAL_TYPE_PING)
             ;PostEvent(Globals::#EVENT_COMBO_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
           EndIf
         EndIf
@@ -309,7 +309,7 @@ Module ControlCombo
     *Me\enable      = #True
     *Me\options     = options
     
-    *Me\on_press    = Object::NewSignal(*Me, "OnPress")
+    *Me\on_press    = Object::NewCallback(*Me, "OnPress")
 
     If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
     
@@ -326,8 +326,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 278
-; FirstLine = 272
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 311
+; FirstLine = 250
 ; Folding = ---
 ; EnableXP

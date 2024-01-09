@@ -26,7 +26,7 @@ DeclareModule ControlMenu
   ; ==========================================================================
   ;  Prototypes
   ; ==========================================================================
-  Prototype.i MenuItemCallback(*args.Arguments::Arguments_t)
+  Prototype.i MenuItemCallback(*args.Args::Args_t)
 
 
   ; ============================================================================
@@ -35,7 +35,7 @@ DeclareModule ControlMenu
   Structure ControlMenuItem_t
     type.i
     callback.MenuItemCallback
-    *args.Arguments::Arguments_t
+    *args.Args::Args_t
     name.s
     gadgetID.i
     item.i
@@ -77,7 +77,7 @@ DeclareModule ControlMenu
   Declare Init(*menu.ControlMenu_t,name.s)
   Declare NewSubMenu(*menu.ControlMenu_t,x.i,y.i,name.s)
   Declare DeleteSubMenu(*menu.ControlSubMenu_t)
-  Declare AddItem(*menu.ControlSubMenu_t,name.s,callback.i,*args.Arguments::Arguments_t)
+  Declare AddItem(*menu.ControlSubMenu_t,name.s,callback.i,*args.Args::Args_t)
   Declare AddSeparator(*menu.ControlSubMenu_t)
   Declare AddSubMenu(*menu.ControlSubMenu_t,name.s)
   Declare GetSubMenuWidth(*menu.ControlSubMenu_t)
@@ -225,13 +225,13 @@ Module ControlMenu
   ;  Add Item
   ; ----------------------------------------------------------------------------
   
-  Procedure AddItem(*menu.ControlSubMenu_t,name.s,callback.i,*args.Arguments::Arguments_t)
+  Procedure AddItem(*menu.ControlSubMenu_t,name.s,callback.i,*args.Args::Args_t)
     Protected *item.ControlMenuItem_t = AllocateStructure(ControlMenuItem_t)
     *item\name = name
     *item\callback = callback
-    *item\args = Arguments::New(ArraySize(*args\args()))
+    *item\args = Args::New(ArraySize(*args\args()))
     If Not *args = #Null
-      Arguments::Copy(*item\args,*args)
+      Args::Copy(*item\args,*args)
     EndIf
     
     *item\type = #MenuItemType_Command
@@ -678,8 +678,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 536
-; FirstLine = 501
+; CursorPosition = 2
 ; Folding = -w---
 ; EnableThread
 ; EnableXP

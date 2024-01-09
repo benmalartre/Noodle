@@ -1,13 +1,11 @@
 ﻿XIncludeFile "../core/Application.pbi"
 
-
 UseModule Math
 UseModule OpenGL
 UseModule OpenGLExt
 
 Procedure Update()
 EndProcedure
-
 
 Globals::Init()
 Time::Init()
@@ -16,15 +14,22 @@ FTGL::Init()
 Commands::Init()
 UIColor::Init()
 
-Procedure KissThatButton(*Me.Object::Object_t)
-  Debug "KISS THAT BUTTON BI-ATCH!"
+Procedure KissThatNumber(*ctl.ControlNumber::ControlNumber_t)
+  Debug *ctl\class\name +" : "+ ControlNumber::GetValue(*ctl)
 EndProcedure
-Callback::DECLARECALLBACK(KissThatButton, Arguments::#PTR)
+Callback::DECLARE_CALLBACK(KissThatNumber, Args::#PTR)
+
+Procedure KissThatButton(*btn.ControlButton::ControlButton_t)
+  Debug *btn\class\name
+  Debug *btn\value
+  Debug Str(*btn\state)
+EndProcedure
+Callback::DECLARE_CALLBACK(KissThatButton, Args::#PTR)
 
 
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 ; Controls::SetTheme(Globals::#GUI_THEME_DARK)
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property", #Null)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main, "Property")
 
 Define name.s = "Prop"
 Define i
@@ -33,12 +38,14 @@ Define i
   
   ControlProperty::AppendStart(*prop)
   ControlProperty::AddGroup(*prop, "Group")
-  ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+  Define *steps.ControlNumber::ControlNumber_t = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+  Callback::CONNECT_CALLBACK(*steps\on_change, KissThatNumber, *steps)
   ControlProperty::AddFloatControl(*prop, "Diffusion", "Diffusion", 0.05, #Null)
   ControlProperty::EndGroup(*prop)
   Define color.c4f32
   ControlProperty::AddColorControl(*prop, "Color", "Color", color, #Null)
-  ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64)
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64, #True)
+  Callback::CONNECT_CALLBACK(*btn\on_click, KissThatButton, *btn)
   ControlProperty::AddFileControl(*prop, "FILE", "Zob.scn", #Null)
   ControlProperty::AddBoolControl(*prop, "Bool", "Bool", #False, #Null)
 ;   Define slide.f
@@ -58,7 +65,7 @@ Define i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 42
+; CursorPosition = 23
 ; FirstLine = 2
 ; Folding = -
 ; EnableXP

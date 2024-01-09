@@ -171,7 +171,7 @@ Module ControlDivot
           If *Me\over
             If *Me\value : *Me\value = #ANIM_NONE : Else : *Me\value = #ANIM_KEYFRAME : EndIf
             Control::Invalidate(*Me)
-            Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+            Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
           EndIf
         EndIf
         
@@ -273,8 +273,8 @@ Module ControlDivot
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlDivot )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 232
-; FirstLine = 220
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 173
+; FirstLine = 169
 ; Folding = --
 ; EnableXP

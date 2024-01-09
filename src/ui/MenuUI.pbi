@@ -135,12 +135,12 @@ Module MenuUI
   EndProcedure
   
 ;   Procedure OnCreatePolymesh(shape.i)
-;     Define args.Arguments::Arguments_t
-;     args\args[0]\type = Arguments::#INT
+;     Define args.Args::Args_t
+;     args\args[0]\type = Args::#INT
 ;     args\args[0]\i = shape
 ;     CreatePolymeshCmd::Do(args)
 ;   EndProcedure
-;   Callback::DECLARECALLBACK(OnCreatePolymesh, Arguments::#INT
+;   Callback::DECLARECALLBACK(OnCreatePolymesh, Args::#INT
   
 
   ;---------------------------------------------
@@ -168,8 +168,8 @@ Module MenuUI
     *Me\menu = ControlMenu::New(*Me,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
-    Protected *args.Arguments::Arguments_t = Arguments::New(1)
-    *args\args(0)\type = Arguments::#PTR
+    Protected *args.Args::Args_t = Args::New(1)
+    *args\args(0)\type = Args::#PTR
     *args\args(0)\p = *scene
 
     ControlMenu::AddItem(*submenu,"Save Scene",SaveSceneCmd::@Do(),*args)
@@ -178,7 +178,7 @@ Module MenuUI
     ControlMenu::AddItem(*submenu,"New Scene",NewSceneCmd::@Do(),*args)
     
     *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Edit")
-    *args\args(0)\type = Arguments::#INT
+    *args\args(0)\type = Args::#INT
     *args\args(0)\i = Shape::#SHAPE_CUBE
     ControlMenu::AddItem(*submenu,"Create Polymesh Cube",CreatePolymeshCmd::@Do(),*args)
  
@@ -212,7 +212,7 @@ Module MenuUI
    Class::DEF(MenuUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 87
+; CursorPosition = 180
+; FirstLine = 137
 ; Folding = ---
 ; EnableXP

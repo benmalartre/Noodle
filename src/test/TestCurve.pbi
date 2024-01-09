@@ -61,7 +61,7 @@ Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(GLContext::*SHARED_CTXT)
   Scene::Update(*app\scene)
   
-  LayerDefault::Draw(*app\layers(), *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   
   FTGL::BeginDraw(GLContext::*SHARED_CTXT\writer)
   FTGL::SetColor(GLContext::*SHARED_CTXT\writer,1,1,1,1)
@@ -97,7 +97,6 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
   *layer = LayerDefault::New(800,600, GLContext::*SHARED_CTXT,*app\camera)
-  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -120,8 +119,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 51
+; CursorPosition = 99
+; FirstLine = 63
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -236,7 +236,7 @@ DeclareModule CreatePolymeshCmd
 ;   Declare GetInfo(*parent.Object3D::Object3D_t,type.i)
 ;   Declare Clear(*info.CreatePolymeshCmd_t)
 ;   Declare Do(*info.CreatePolymeshCmd_t)
-  Declare Do(*args.Arguments::Arguments_t)
+  Declare Do(*args.Args::Args_t)
 EndDeclareModule
 
 Module CreatePolymeshCmd
@@ -309,7 +309,7 @@ Module CreatePolymeshCmd
     
   EndProcedure
   
-  Procedure Do(*args.Arguments::Arguments_t)
+  Procedure Do(*args.Args::Args_t)
 
     Protected type.i = *args\args(0)\l
     
@@ -318,9 +318,9 @@ Module CreatePolymeshCmd
     Commands::Do(Commands::*manager)
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 251
-; FirstLine = 275
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 311
+; FirstLine = 250
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

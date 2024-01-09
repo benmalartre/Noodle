@@ -24,7 +24,7 @@ DeclareModule ControlIcon
     down.i
     scale.f
     draw.DrawIconImpl
-    *on_click.Signal::Signal_t
+    *on_click.Callback::Callback_t
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -302,7 +302,7 @@ Module ControlIcon
           EndIf
           Control::Invalidate(*Me)
           If *Me\over
-            Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
+            Callback::Trigger(*Me\on_click,Callback::#SIGNAL_TYPE_PING)
           EndIf
         EndIf
         
@@ -384,8 +384,8 @@ Module ControlIcon
     
     If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
     
-    ; ---[ Signals ]------------------------------------------------------------
-    *Me\on_click = Object::NewSignal(*Me, "OnClick")
+    ; ---[ Callbacks ]------------------------------------------------------------
+    *Me\on_click = Object::NewCallback(*Me, "OnClick")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -401,8 +401,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 345
-; FirstLine = 333
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 387
+; FirstLine = 326
 ; Folding = --
 ; EnableXP

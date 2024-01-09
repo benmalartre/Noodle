@@ -298,7 +298,7 @@ Module GraphUI
     CArray::SetCount(*Me\a_selected, 0)
     ClearList(*Me\a_visible())
   EndProcedure
-  Callback::DECLARECALLBACK(OnDeleteTree, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteTree, Args::#PTR)
   
   
   ;---------------------------------------------------------------------------
@@ -310,7 +310,7 @@ Module GraphUI
       *Me\tree = *tree
       *Me\tree\current = *tree\root
       *Me\redraw = #True
-      Signal::CONNECTCALLBACK(*Me\tree\on_delete, OnDeleteTree, *Me)
+      Callback::CONNECT_CALLBACK(*Me\tree\on_delete, OnDeleteTree, *Me)
     Else
       *Me\tree = #Null
        *Me\redraw = #True
@@ -382,7 +382,7 @@ Module GraphUI
   ;---------------------------------------------------------------------------
   ; Add Input Port
   ;---------------------------------------------------------------------------
-  Procedure AddInputPort(*args.Arguments::Arguments_t)
+  Procedure AddInputPort(*args.Args::Args_t)
 
 ;     Protected *graph.GraphUI_t = *args\args()\ptr
 ;     Protected *node.Node::Node_t = CArray::GetValuePtr(*args,1)
@@ -429,37 +429,37 @@ Module GraphUI
 ;     Protected *node.Node::Node_t = *Me\focus
 ;     If *node
 ;       Protected *menu.ControlMenu::ControlSubMenu_t = ControlMenu::NewSubMenu(#Null,mx,my,"File")
-;       Protected *args.Arguments::Arguments_t = Arguments::New()
+;       Protected *args.Args::Args_t = Args::New()
 ;       
-;       Arguments::ADD(*args,*Me\tree)
-;       Arguments::ADD(*args,*Me\a_selected)
-;       Arguments::ADD(*args,*Me\tree\current)
+;       Args::ADD(*args,*Me\tree)
+;       Args::ADD(*args,*Me\a_selected)
+;       Args::ADD(*args,*Me\tree\current)
 ;       
 ;       ControlMenu::AddItem(*menu,"Create Compound",ImplodeNodesCmd::@Do(),*args)
 ;       ControlMenu::AddSeparator(*menu)
 ;       
 ;       
-;       Arguments::PASS(*args\args(1),*node)
-;       Arguments::PASS(*args\args(2),"Bool",2)
-;       Arguments::PASS(*args\args(3),Attribute::#ATTR_TYPE_BOOL)
+;       Args::PASS(*args\args(1),*node)
+;       Args::PASS(*args\args(2),"Bool",2)
+;       Args::PASS(*args\args(3),Attribute::#ATTR_TYPE_BOOL)
 ;       ControlMenu::AddItem(*menu,"Add Bool",@Dummy(),*args)
 ;       
-;       Arguments::PASS(*args\args(1),*node,1)
-;       Arguments::PASS(*args,"Float",2)
-;       Arguments::PASS(*args,Attribute::#ATTR_TYPE_FLOAT,3)
+;       Args::PASS(*args\args(1),*node,1)
+;       Args::PASS(*args,"Float",2)
+;       Args::PASS(*args,Attribute::#ATTR_TYPE_FLOAT,3)
 ;       ControlMenu::AddItem(*menu,"Add Float",@Dummy(),*args)
 ;       
-;       Arguments::PASS(*args\args(1),*node)
-;       Arguments::PASS(*args\args(2),"Vector2")
-;       Arguments::PASS(*args\args(3),Attribute::#ATTR_TYPE_VECTOR2)
+;       Args::PASS(*args\args(1),*node)
+;       Args::PASS(*args\args(2),"Vector2")
+;       Args::PASS(*args\args(3),Attribute::#ATTR_TYPE_VECTOR2)
 ;       ControlMenu::AddItem(*menu,"Add Vector2",@Dummy(),*args)
 ;       
-;       Arguments::PASS(*args,"Node",*node,1)
-;       Arguments::PASS(*args,"TypeName","Vector3",2)
-;       Arguments::PASS(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
+;       Args::PASS(*args,"Node",*node,1)
+;       Args::PASS(*args,"TypeName","Vector3",2)
+;       Args::PASS(*args,"Type",Attribute::#ATTR_TYPE_VECTOR3,3)
 ;       ControlMenu::AddItem(*menu,"Add Vector3",@Dummy(),*args)
 ;       
-;       Arguments::Delete(*args)
+;       Args::Delete(*args)
 ;       
 ; ;       args\m[1]\type = #MU_TYPE_PTR
 ; ;       args\m[1]\value\vPTR = *node
@@ -1566,8 +1566,8 @@ Module GraphUI
  
   Class::DEF(GraphUI)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 134
-; FirstLine = 129
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 312
+; FirstLine = 308
 ; Folding = --------
 ; EnableXP

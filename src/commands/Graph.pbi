@@ -186,7 +186,7 @@ DeclareModule ImplodeNodesCmd
     *compound.CompoundNode::CompoundNode_t
   EndStructure
   
-  Declare Do(*args.Arguments::Arguments_t)
+  Declare Do(*args.Args::Args_t)
   
 EndDeclareModule
 
@@ -223,7 +223,7 @@ Module ImplodeNodesCmd
     Tree::ExplodeNode(*info\tree,*info\compound)
   EndProcedure
   
-  Procedure Do(*args.Arguments::Arguments_t)
+  Procedure Do(*args.Args::Args_t)
     Protected *tree.Tree::Tree_t = *args\args(0)\p
     Protected *nodes.CArray::CArrayPtr = *args\args(1)\p
     Protected *parent.Node::Node_t = *args\args(2)\p
@@ -234,9 +234,9 @@ Module ImplodeNodesCmd
    
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 213
-; FirstLine = 191
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 225
+; FirstLine = 174
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

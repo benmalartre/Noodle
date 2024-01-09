@@ -100,9 +100,8 @@ EndProcedure
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   GLContext::SetContext(*viewport\context)
-  ;Scene::Update(*app\scene)
-  ;LayerDefault::Draw(*Default,*viewport\context)
-  Application::Draw(*app, *default, *app\camera)
+  Scene::Update(*app\scene)
+  LayerDefault::Draw(*default, *app\scene, *viewport\context)
   
   viewportUI::Blit(*viewport, *default\framebuffer)
   FTGL::BeginDraw(*viewport\context\writer)
@@ -110,7 +109,8 @@ Procedure Draw(*app.Application::Application_t)
 
   Define ss.f = 0.85/width
   Define ratio.f = width / height
-  FTGL::Draw(*viewport\context\writer,"Ground Nb Vertices : "+Str(*ground\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"protototype num vertices : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer,"instances num  : "+Str(*mesh\geom\nbpoints),-0.9,0.9,ss,ss*ratio)
   FTGL::EndDraw(*viewport\context\writer)
   
   GLContext::FlipBuffer(*viewport\context)
@@ -156,10 +156,6 @@ Procedure Draw(*app.Application::Application_t)
   *ssao = LayerSSAO::New(width,height,*viewport\context,*gbuffer\framebuffer,*app\camera)
   *blur = LayerBlur::New(width,height,*viewport\context,*ssao\framebuffer,*app\camera)
   
-  If Not #USE_GLFW
-    Application::AddLayer(*app, *default)
-  EndIf
-  
 ;   
 ;   Debug "Size "+Str(*app\width)+","+Str(*app\height)
 ;   *buffer = Framebuffer::New("Color",*app\width,*app\height)
@@ -201,6 +197,10 @@ Procedure Draw(*app.Application::Application_t)
 ;   Next
 ;   
   *mesh.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
+  Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
+  PolymeshGeometry::ComputeUVWSFromPosition(*geom,#False)
+  
+  
   PolymeshGeometry::ToShape(*mesh\geom,*cloud\shape)
   PointCloudGeometry::PointsOnGrid(*cloud\geom,100,100)
 ;   Define startP.v3f32, endP.v3f32
@@ -231,23 +231,23 @@ Procedure Draw(*app.Application::Application_t)
   Define *locs.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
   *locs\geometry = *ground\geom
   *locs\transform = *ground\globalT
-  Define *cgeom.Geometry::PointCloudGeometry_t = *cloud\geom
-  Sampler::SamplePolymesh(*ground\geom,*locs,*cgeom\nbpoints,7)
+  Define *points.Geometry::PointCloudGeometry_t = *cloud\geom
+  Sampler::SamplePolymesh(*ground\geom,*locs,*points\nbpoints,7)
   
   Define p.v3f32
   Define i
   Define s.v3f32
   Vector3::Set(s,13,13,13)
   Define *l.Geometry::Location_t
-  For i=0 To *cgeom\nbpoints-1
+  For i=0 To *points\nbpoints-1
     *l = CArray::GetValue(*locs,i)
     Location::GetPosition(*l, *ground\geom, *ground\globalT)
-    CArray::SetValue(*cgeom\a_positions,i,*l\p)
+    CArray::SetValue(*points\a_positions,i,*l\p)
     Location::GetNormal(*l, *ground\geom, *ground\globalT)
-    CArray::SetValue(*cgeom\a_normals,i,*l\n)
+    CArray::SetValue(*points\a_normals,i,*l\n)
     Vector3::Set(s,5,5,5)
-    CArray::SetValue(*cgeom\a_scale,i,s)
-    CArray::SetValueF(*cgeom\a_size,i,Random(1.5)+0.5)
+    CArray::SetValue(*points\a_scale,i,s)
+    CArray::SetValueF(*points\a_size,i,Random(1.5)+0.5)
   Next
     
   PointCloudGeometry::RandomizeColor(*cloud\geom)
@@ -268,8 +268,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 94
+; CursorPosition = 200
+; FirstLine = 196
 ; Folding = --
 ; EnableXP
 ; Executable = Test

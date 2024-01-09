@@ -8,7 +8,6 @@ XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/Object.pbi"
 XIncludeFile "../core/Arguments.pbi"
 XIncludeFile "../core/Callback.pbi"
-XIncludeFile "../core/Signal.pbi"
 XIncludeFile "../core/Perlin.pbi"
 XIncludeFile "../core/Commands.pbi"
 XIncludeFile "../core/UIColor.pbi"
@@ -734,9 +733,9 @@ CompilerEndIf
 ;   EndProcedure
 ; 
 ; EndModule
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 137
-; FirstLine = 133
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 10
+; FirstLine = 6
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_SSE=1

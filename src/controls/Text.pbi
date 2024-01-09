@@ -241,8 +241,8 @@ EndProcedure
     ; ---[ Init Array ]---------------------------------------------------------
     InitializeStructure( *Me, ControlText_t )
     
-    ; ---[ Signals ]------------------------------------------------------------
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    ; ---[ Callbacks ]------------------------------------------------------------
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -257,8 +257,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 209
-; FirstLine = 206
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 244
+; FirstLine = 197
 ; Folding = --
 ; EnableXP

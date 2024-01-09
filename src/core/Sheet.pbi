@@ -18,8 +18,8 @@ DeclareModule Sheet
     width.i
     height.i
     name.s
-    *on_selection_change.Signal::Signal_t
-    *on_content_change.Signal::Signal_t
+    *on_selection_change.Callback::Callback_t
+    *on_content_change.Callback::Callback_t
   EndStructure
   
   Declare New(width.i,height.i,zindex=0, name.s="Sheet")
@@ -49,8 +49,8 @@ Module Sheet
     *Me\width = width
     *Me\height = height
     *Me\name = name
-    *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
-    *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
+    *Me\on_selection_change = Object::NewCallback(*Me, "OnSelectionChange")
+    *Me\on_content_change = Object::NewCallback(*Me, "OnContentChange")
     ProcedureReturn *Me
   EndProcedure
   
@@ -67,7 +67,7 @@ Module Sheet
   Procedure OnContentChange(*Me.Sheet_t)
     Sheet::Draw(*Me)
   EndProcedure
-  Callback::DECLARECALLBACK(OnContentChange, #PB_Structure)
+  Callback::DECLARE_CALLBACK(OnContentChange, #PB_Structure)
   
   ; -----------------------------------------------------------------
   ;   ADD ITEM
@@ -154,7 +154,8 @@ Module Sheet
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 150
+; CursorPosition = 80
+; FirstLine = 65
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

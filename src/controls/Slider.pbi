@@ -122,7 +122,7 @@ Module ControlSlider
           Define my.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY) - *Me\posY
           Define perc.f = GetPercentageFromMouse(*Me, mx, my)
           PercentageToValue(*Me, perc)
-          Signal::Trigger(*Me\on_change, SIgnal::#SIGNAL_TYPE_PING)
+          Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
           Control::Invalidate(*Me)
         EndIf
 
@@ -165,8 +165,8 @@ Module ControlSlider
       *Me\value      =  value
     EndIf
     
-    ; ---[ Signals ]------------------------------------------------------------
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    ; ---[ Callbacks ]------------------------------------------------------------
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -184,8 +184,8 @@ Module ControlSlider
   Class::DEF( ControlSlider )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 68
-; FirstLine = 55
+; CursorPosition = 124
+; FirstLine = 120
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

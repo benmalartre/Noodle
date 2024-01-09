@@ -20,8 +20,8 @@ DeclareModule CanvasUI
     secondary.l
     color.l
     pixelratio.f
-    *on_content_change.Signal::Signal_t
-    *on_selection_change.Signal::Signal_t
+    *on_content_change.Callback::Callback_t
+    *on_selection_change.Callback::Callback_t
   EndStructure
   
   ; ----------------------------------------------------------------
@@ -79,8 +79,8 @@ Module CanvasUI
     *Me\secondary = RGBA(120,12,66,255)
     *Me\gadgetID = CanvasGadget(#PB_Any,*view\posX,*view\posY,*view\sizX, *view\sizY,#PB_Canvas_Keyboard)
     *Me\zoom = 100
-    *Me\on_content_change = Object::NewSignal(*Me, "OnContentChange")
-    *Me\on_selection_change = Object::NewSignal(*Me, "OnSelectionChange")
+    *Me\on_content_change = Object::NewCallback(*Me, "OnContentChange")
+    *Me\on_selection_change = Object::NewCallback(*Me, "OnSelectionChange")
     UpdateZoom(*Me,0)
     ResetSheets(*Me)
     View::SetContent(*view, *Me)
@@ -381,7 +381,7 @@ Module CanvasUI
               Vector::SETSTATE(*Me\sheet\active, Vector::#STATE_ACTIVE)
     ;           Selection::Clear(*Me\tool\selection)
     ;           Selection::AddAtom(*Me\tool\selection, *Me\sheet\over)
-              If needUpdate :  Signal::Trigger(*Me\on_selection_change, Signal::#SIGNAL_TYPE_PING) : EndIf
+              If needUpdate :  Callback::Trigger(*Me\on_selection_change, Callback::#SIGNAL_TYPE_PING) : EndIf
             EndIf
     ;         Tool::OnEvent(*Me\tool, x - *Me\offsetx , y - *Me\offsety )
             
@@ -407,7 +407,7 @@ Module CanvasUI
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 310
-; FirstLine = 302
+; CursorPosition = 383
+; FirstLine = 322
 ; Folding = ---
 ; EnableXP

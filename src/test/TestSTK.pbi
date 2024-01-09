@@ -30,14 +30,14 @@ Procedure OnFrequencyChange(*control.ControlSlider::ControlSlider_t, *track.Sequ
   ;STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
   *track\offset = Notes::Closest(*control\value)
 EndProcedure
-Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#PTR)
+Callback::DECLARECALLBACK(OnFrequencyChange, Args::#PTR, Args::#PTR)
 
 ; Slider Frequency Callback
 ;-----------------------------------------------------
 Procedure OnLFOChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Generator)
   STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
 EndProcedure
-Callback::DECLARECALLBACK(OnLFOChange, Arguments::#PTR, Arguments::#PTR)
+Callback::DECLARECALLBACK(OnLFOChange, Args::#PTR, Args::#PTR)
 
 ; Slider Octave Callback
 ;-----------------------------------------------------
@@ -45,7 +45,7 @@ Procedure OnOctaveChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Gen
   Debug "SLIDE CHANGE : "+*control\name+" ---> "+Str(*control\value)+" : "+Str(*wave)
   baseOctave = *control\value
 EndProcedure
-Callback::DECLARECALLBACK(OnOctaveChange, Arguments::#PTR, Arguments::#INT)
+Callback::DECLARECALLBACK(OnOctaveChange, Args::#PTR, Args::#INT)
 
 ; Update Note On Tick
 ;-----------------------------------------------------
@@ -285,8 +285,8 @@ Sequencer::Stop(*sequencer)
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 103
-; FirstLine = 80
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 36
+; FirstLine = 32
 ; Folding = -
 ; EnableXP

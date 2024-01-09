@@ -241,7 +241,7 @@ Module Curve
   ; On Message
   ;----------------------------------------------------
   Procedure OnMessage(id.i,*up)
-    Protected *sig.Signal::Signal_t = *up
+    Protected *cb.Callback::Callback_t = *up
 ;     Protected *snd.Object::Object_t = *sig\snd_inst
 ;     Protected *rcv.Object::Object_t = *sig\rcv_inst
 ;     
@@ -354,8 +354,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 261
-; FirstLine = 248
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 243
+; FirstLine = 239
 ; Folding = ---
 ; EnableXP

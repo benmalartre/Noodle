@@ -91,10 +91,9 @@ Module DemoApplication
     EndIf
     
      If options & #WITH_PROPERTY
-      View::Split(*view,#PB_Splitter_Vertical,75)
-      *right = *view\right
+       View::Split(*view,#PB_Splitter_Vertical,75)
+       *Me\property = PropertyUI::New(*view\right,"Property")
       *view = *view\left
-      *Me\property = PropertyUI::New(*right,"Property",#Null)
     EndIf
     
     *Me\viewport = ViewportUI::New(*view,"Viewport", *Me\camera, *Me\handle)
@@ -133,7 +132,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 74
+; CursorPosition = 94
+; FirstLine = 76
 ; Folding = --
 ; EnableXP

@@ -217,7 +217,7 @@ Module ControlCheck
         If *Me\visible And *Me\enable
           *Me\down = #False
           Control::Invalidate(*Me)
-          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)          
+          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)          
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -317,7 +317,7 @@ Module ControlCheck
     *Me\down     = #False
     
     ; ---[ Signals ]------------------------------------------------------------
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -332,8 +332,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 297
-; FirstLine = 289
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 319
+; FirstLine = 272
 ; Folding = --
 ; EnableXP

@@ -16,7 +16,7 @@ DeclareModule ControlButton
     over.i
     down.i
 
-    *on_click.Signal::Signal_t
+    *on_click.Callback::Callback_t
     
   EndStructure
   
@@ -217,7 +217,7 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         If *Me\options & #PB_Button_Toggle
           *Me\value*-1
         EndIf
-        Signal::Trigger(*Me\on_click,Signal::#SIGNAL_TYPE_PING)
+        Callback::Trigger(*Me\on_click,Callback::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
       EndIf
       
@@ -275,7 +275,7 @@ EndProcedure
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlButton_t )
-  ; ---[ Terminate Object (deallocate signals) ]------------------------------
+  ; ---[ Terminate Object (deallocate Callbacks) ]------------------------------
   Object::TERM(ControlButton)
 EndProcedure
 
@@ -311,9 +311,9 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
   
-  ; ---[ Signals ]------------------------------------------------------------
-  *Me\on_change = Object::NewSignal(*Me, "OnChange")
-  *Me\on_click = Object::NewSignal(*Me, "OnClick")
+  ; ---[ Callbacks ]------------------------------------------------------------
+  *Me\on_change = Object::NewCallback(*Me, "OnChange")
+  *Me\on_click = Object::NewCallback(*Me, "OnClick")
   
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
@@ -328,7 +328,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 163
-; FirstLine = 150
+; CursorPosition = 235
+; FirstLine = 215
 ; Folding = --
 ; EnableXP

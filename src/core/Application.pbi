@@ -7,7 +7,6 @@ XIncludeFile "Math.pbi"
 XIncludeFile "Time.pbi"
 XIncludeFile "Arguments.pbi"
 XIncludeFile "Callback.pbi"
-XIncludeFile "Signal.pbi"
 XIncludeFile "Perlin.pbi"
 XIncludeFile "Commands.pbi"
 XIncludeFile "UIColor.pbi"
@@ -777,8 +776,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 673
-; FirstLine = 654
+; CursorPosition = 9
+; FirstLine = 5
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

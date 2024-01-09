@@ -767,34 +767,7 @@ Module Vector
       *item\stroked = #True
       *item\filled = filled
       *item\fill_color = UIColor::FILL  
-  
-  
-      Object::ATTR(*item, stroked, Slot::#SLOT_BOOL)
-      Object::ENUM(*item, stroke_type, Vector::stroke_types)
-  ;     Object::RADIO(*item, stroke_style, Vector::stroke_styles)
-      Object::ATTR(*item, stroke_width, Slot::#SLOT_FLOAT)
-      Object::ATTR(*item, stroke_color, Slot::#SLOT_INT)
-      Object::ATTR(*item, filled, Slot::#SLOT_BOOL)
-      Object::ATTR(*item, fill_color, Slot::#SLOT_INT)
-      Object::ATTR(*item, name, Slot::#SLOT_STRING)
-      
-      Select *item\type
-        Case Vector::#ATOM_IMAGE
-          Define *img.Image_t = *item
-          Define *filename = @*img\filename
-          Object::PROXY(*item, "filename", *filename, Slot::#SLOT_STRING)
-          Object::PROXY(*item, "width", *img\width, Slot::#SLOT_STRING)
-          Object::PROXY(*item, "height", *img\height, Slot::#SLOT_STRING)
-          
-        Case Vector::#ATOM_TEXT
-          Define *txt.Text_t = *item
-          Define *content = @*txt\text
-          Object::PROXY(*item, "text", *content, Slot::#SLOT_STRING)
-          Object::PROXY(*item, "font", *txt\font, Slot::#SLOT_INT)
-          Object::PROXY(*item, "font_size", *txt\font_size, Slot::#SLOT_FLOAT)
-          Object::PROXY(*item, "font_size", *txt\font_size, Slot::#SLOT_FLOAT)
-      
-      EndSelect
+ 
       
     EndIf
     
@@ -2022,8 +1995,7 @@ Module Vector
         *line\points()\x = x
         *line\points()\y = y
         *line\points()\id = ListSize(*line\points())-1
-        Object::PROXY(*line, "point"+Str(ListSize(*line\points()))+"_x", *line\points()\x, Slot::#SLOT_FLOAT)
-        Object::PROXY(*line, "point"+Str(ListSize(*line\points()))+"_y", *line\points()\y, Slot::#SLOT_FLOAT)
+
       Case #ATOM_Bezier
         Define *bezier.Bezier_t = *atom
         AddElement(*bezier\points())
@@ -2041,12 +2013,6 @@ Module Vector
           sindex = Str(index)
         EndIf
         
-        Object::PROXY(*bezier, "point"+sindex+"_pos_x", *bezier\points()\position\x, Slot::#SLOT_FLOAT)
-        Object::PROXY(*bezier, "point"+sindex+"_pos_y", *bezier\points()\position\y, Slot::#SLOT_FLOAT)
-        Object::PROXY(*bezier, "point"+sindex+"_in_tan_x", *bezier\points()\in_tangent\x, Slot::#SLOT_FLOAT)
-        Object::PROXY(*bezier, "point"+sindex+"_in_tan_y", *bezier\points()\in_tangent\y, Slot::#SLOT_FLOAT)
-        Object::PROXY(*bezier, "point"+sindex+"_out_tan_x", *bezier\points()\out_tangent\x, Slot::#SLOT_FLOAT)
-        Object::PROXY(*bezier, "point"+sindex+"_out_tan_y", *bezier\points()\out_tangent\y, Slot::#SLOT_FLOAT)
     EndSelect
   EndProcedure
   
@@ -2066,7 +2032,7 @@ Module Vector
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1406
-; FirstLine = 1377
+; CursorPosition = 2014
+; FirstLine = 1971
 ; Folding = -----------------
 ; EnableXP

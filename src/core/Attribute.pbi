@@ -242,7 +242,6 @@ Module Attribute
   Procedure.s GetAsString(*attribute.Attribute_t)
     Protected it.i
     Protected out_string.s
-    Debug "Get Attribute As String "+*attribute\name
     
     Select *attribute\datastructure
       Case #ATTR_STRUCT_SINGLE
@@ -526,7 +525,6 @@ Module Attribute
   ; Copy
   ;-----------------------------------------------------
   Procedure PassThrough(*src.Attribute_t, *dst.Attribute_t)
-    Debug "PASS THROUGH ; "+*src\name+" ---> "+*dst\name
     If Not *src\isarray And Not *dst\isarray
       Select *src\datatype
         Case Attribute::#ATTR_TYPE_BOOL
@@ -564,25 +562,20 @@ Module Attribute
           CompilerEndIf 
       EndSelect
     ElseIf *src\isarray And *dst\isarray
-      Debug "PASSTHROUGH : ARRAY"
       If CArray::GetCount(*src\data) : CArray::Copy(*dst\data,*src\data) : EndIf
     Else
      
       If *dst\isarray
-        Debug "PASSTHROUGH : ATOMIC ---> ARRAY"
-         Debug "############ GEOMETRY ATTRIBUTE : "+Str(*src\data)
         Define *dstArray.CArray::CArrayT = *dst\data
         CArray::SetCount(*dstArray, 1)
         CopyMemory(*src\data,*dstArray\data, *dstArray\itemSize)
       Else
-        Debug "PASSTHROUGH : ARRAY ---> ATOMIC"
         Define *srcArray.CArray::CArrayT = *src\data
         CopyMemory(*srcArray\data,*dst\data, *srcArray\itemSize)
       EndIf
     EndIf
     
     If *src\datatype = Attribute::#ATTR_TYPE_LOCATION
-      Debug "FUCKIN COPY EXTRA INFOS"
       Define *srcX.CArray::CArrayLocation = *src\data
       Define *dstX.CArray::CArrayLocation = *dst\data
       *dstX\geometry = *srcX\geometry
@@ -627,8 +620,8 @@ Module Attribute
   
   Class::DEF( Attribute )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 607
-; FirstLine = 584
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 598
+; FirstLine = 565
 ; Folding = ---
 ; EnableXP

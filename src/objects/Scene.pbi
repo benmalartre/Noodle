@@ -44,13 +44,13 @@ DeclareModule Scene
     Map *m_objects.Object3D::Object3D_t()
     Map *m_uuids.Object3D::Object3D_t()
     
-    *on_new.Signal::Signal_t
-    *on_delete.Signal::Signal_t
-    *on_change.Signal::Signal_t
-    *on_selection.Signal::Signal_t
-    *on_time.Signal::Signal_t
-    *on_edit.Signal::Signal_t
-    *on_create.Signal::Signal_t
+    *on_new.Callback::Callback_t
+    *on_delete.Callback::Callback_t
+    *on_change.Callback::Callback_t
+    *on_selection.Callback::Callback_t
+    *on_time.Callback::Callback_t
+    *on_edit.Callback::Callback_t
+    *on_create.Callback::Callback_t
 
   EndStructure
   
@@ -173,7 +173,7 @@ Module Scene
   Procedure SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Selection::Clear(*Me\selection)
     Selection::AddObject(*Me\selection, *obj)
-    Signal::Trigger(*Me\on_selection)
+    Callback::Trigger(*Me\on_selection)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -181,7 +181,7 @@ Module Scene
   ;---------------------------------------------------------------------------
   Procedure AddToSelection(*Me.Scene_t,*obj.Object3D::Object3D_t)
     Selection::AddObject(*Me\selection, *obj)
-    Signal::Trigger(*Me\on_selection)
+    Callback::Trigger(*Me\on_selection)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -211,7 +211,7 @@ Module Scene
       Case Object3D::#Camera
         CArray::AppendUnique(*Me\cameras,*obj)
     EndSelect
-    Signal::Trigger(*Me\on_create)
+    Callback::Trigger(*Me\on_create)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -237,7 +237,7 @@ Module Scene
       Case Object3D::#Camera
         CArray::Remove(*Me\cameras,*obj)
     EndSelect
-    Signal::Trigger(*Me\on_delete)
+    Callback::Trigger(*Me\on_delete)
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -830,7 +830,7 @@ Module Scene
     Protected *model.Model::Model_t
     Protected i
     
-    Signal::Trigger(*Me\on_delete, Signal::#SIGNAL_TYPE_PING)
+    Callback::Trigger(*Me\on_delete, Callback::#SIGNAL_TYPE_PING)
     Root::Delete(*Me\root)
     Selection::Delete(*Me\selection)
     CArray::Delete(*Me\models)
@@ -878,13 +878,13 @@ Module Scene
     Object3D::AddChild(*Me\root,*light)
     
     ; ---[ Signals ] ---------------------------------------------------------
-    *Me\on_new = Object::NewSignal(*Me, "OnNew")
-    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
-    *Me\on_selection = Object::NewSignal(*Me, "OnSelection")
-    *Me\on_time = Object::NewSignal(*Me, "OnTime")
-    *Me\on_edit = Object::NewSignal(*Me, "OnEdit")
-    *Me\on_create = Object::NewSignal(*Me, "OnCreate")
+    *Me\on_new = Object::NewCallback(*Me, "OnNew")
+    *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
+    *Me\on_selection = Object::NewCallback(*Me, "OnSelection")
+    *Me\on_time = Object::NewCallback(*Me, "OnTime")
+    *Me\on_edit = Object::NewCallback(*Me, "OnEdit")
+    *Me\on_create = Object::NewCallback(*Me, "OnCreate")
     
     ProcedureReturn( *Me )
   EndProcedure
@@ -895,7 +895,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 730
-; FirstLine = 714
+; CursorPosition = 886
+; FirstLine = 834
 ; Folding = --------
 ; EnableXP

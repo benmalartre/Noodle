@@ -1,5 +1,5 @@
 ﻿XIncludeFile "Object.pbi"
-XIncludeFile "Signal.pbi"
+XIncludeFile "Callback.pbi"
 XIncludeFile "UIColor.pbi"
 
 ; ==============================================================================
@@ -83,7 +83,7 @@ DeclareModule Control
     enable     .i
     options    .i
     state      .i
-    *on_change.Signal::Signal_t 
+    *on_change.Callback::Callback_t 
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -332,8 +332,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 261
+; CursorPosition = 85
+; FirstLine = 81
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

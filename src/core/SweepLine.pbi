@@ -285,8 +285,8 @@ Repeat
 Until WaitWindowEvent() = #PB_Event_CloseWindow
 
 
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 239
-; FirstLine = 224
+; FirstLine = 20
 ; Folding = ---
 ; EnableXP

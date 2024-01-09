@@ -125,7 +125,7 @@ Module ControlEnum
     *Me\sizY=height
     *Me\name=name
     *Me\label = name
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
     ProcedureReturn *Me
   EndProcedure
   
@@ -221,7 +221,7 @@ Module ControlEnum
     Select EventType()
       Case #PB_EventType_LeftClick
         Popup(*Me)
-        Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+        Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
         PostEvent(#PB_Event_Repaint, EventWindow(), *Me\gadgetID)
     EndSelect
     
@@ -232,7 +232,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 161
-; FirstLine = 134
+; CursorPosition = 223
+; FirstLine = 162
 ; Folding = --
 ; EnableXP

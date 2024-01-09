@@ -605,7 +605,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf 
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
+          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
           PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
           
           ; ...[ Redraw Me ]..................................................
@@ -664,7 +664,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
         
-        Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
+        Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
         
         ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -812,7 +812,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
           
-          Signal::Trigger(*Me\on_change,Signal::#SIGNAL_TYPE_PING)
+          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
           
           ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -1046,7 +1046,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     ;  CTRL/CMD + Z (SHORTCUT_UNDO)
     ; ------------------------------------------------------------------------
   Case Globals::#SHORTCUT_UNDO
-    Debug "Control Z"
       ; ---[ Restore Value And Strong & Weak Cursor Positions ]---------------
       *Me\value = *Me\undo_ctz_t
       *Me\posG  = *Me\undo_ctz_g
@@ -1195,7 +1194,7 @@ Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0
  
   
   ; ---[ Signals ]------------------------------------------------------------
-  *Me\on_change = Object::NewSignal(*Me, "OnChange")
+  *Me\on_change = Object::NewCallback(*Me, "OnChange")
   
   ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
@@ -1213,8 +1212,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1194
-; FirstLine = 1123
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 1196
+; FirstLine = 1149
 ; Folding = ----
 ; EnableXP

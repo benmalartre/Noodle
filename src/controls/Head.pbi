@@ -24,8 +24,8 @@ DeclareModule ControlHead
     touch_l.i
     touch_r.i
     title.s
-    *on_delete.Slot::Slot_t
-    *on_expand.Slot::Slot_t
+    *on_delete.Callback::Slot_t
+    *on_expand.Callback::Slot_t
   EndStructure
 
   ; ----------------------------------------------------------------------------
@@ -225,9 +225,9 @@ Module ControlHead
         If *Me\visible And *Me\enable And *Me\over
           *Me\down = #False
           If *Me\over And *Me\touch_l 
-            Signal::Trigger(*Me\on_expand,Signal::#SIGNAL_TYPE_PING)
+            Callback::Trigger(*Me\on_expand,Callback::#SIGNAL_TYPE_PING)
           ElseIf *Me\over And *Me\touch_r
-            Signal::Trigger(*Me\on_delete,Signal::#SIGNAL_TYPE_PING)
+            Callback::Trigger(*Me\on_delete,Callback::#SIGNAL_TYPE_PING)
           EndIf
         EndIf
         ; ...[ Processed ]......................................................
@@ -328,9 +328,9 @@ Module ControlHead
     *Me\touch_l  = #False
     *Me\touch_r  = #False
     
-    *Me\on_change = Object::NewSignal(*me, "OnChange")
-    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
-    *Me\on_expand = Object::NewSignal(*Me, "OnExpand")
+    *Me\on_change = Object::NewCallback(*me, "OnChange")
+    *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
+    *Me\on_expand = Object::NewCallback(*Me, "OnExpand")
     
     ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
@@ -369,8 +369,8 @@ Module ControlHead
   
   Class::DEF(ControlHead)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 307
-; FirstLine = 284
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 332
+; FirstLine = 271
 ; Folding = ---
 ; EnableXP

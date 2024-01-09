@@ -534,7 +534,7 @@ Module Tree
 
     ; ---[ Deallocate Underlying Arrays ]---------------------------------------
     Protected *root.Node::Node_t = *Me\root
-    Signal::Trigger(*Me\on_delete,Signal::#SIGNAL_TYPE_PING)
+    Callback::Trigger(*Me\on_delete,Callback::#SIGNAL_TYPE_PING)
     ForEach *Me\root\connexions()
       Connexion::Delete(*Me\root\connexions())
     Next
@@ -582,9 +582,9 @@ Module Tree
     If Not *obj\stack : *obj\stack = Stack::New() : EndIf
     Stack::AddNode(*obj\stack,*Me,0)
     
-    ; --- [ Create Signals ] --------------------------------------------------
-    *Me\on_change = Object::NewSignal(*Me, "OnChange")
-    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    ; --- [ Create Callbacks ] --------------------------------------------------
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
+    *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
     
     ProcedureReturn( *Me)
     
@@ -598,8 +598,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 386
-; FirstLine = 374
+; CursorPosition = 586
+; FirstLine = 532
 ; Folding = -----
 ; EnableThread
 ; EnableXP

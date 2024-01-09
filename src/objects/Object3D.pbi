@@ -76,13 +76,13 @@ DeclareModule Object3D
     
     *stack.Stack::Stack_t
     
-    *on_delete.Signal::Signal_t
+    *on_delete.Callback::Callback_t
     
   EndStructure
   
   
   Macro OBJECT3DATTR()
-    *Me\on_delete = Object::NewSignal(*Me, "OnDelete")
+    *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
     *Me\stack = Stack::New()
     Protected *t.Transform::Transform_t = *Me\globalT
     Protected *global = Attribute::New(*Me,"GlobalTransform",Attribute::#ATTR_TYPE_MATRIX4,Attribute::#ATTR_STRUCT_SINGLE,Attribute::#ATTR_CTXT_SINGLETON,@*t\m,#True,#False,#True)
@@ -161,6 +161,7 @@ EndDeclareModule
 
 
 Module Object3D
+
   ; ----------------------------------------------------------------------------
   ; Is A
   ; ----------------------------------------------------------------------------
@@ -593,6 +594,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 84
+; FirstLine = 72
 ; Folding = -------
 ; EnableXP

@@ -41,7 +41,6 @@ DeclareModule ControlKnob
     max_limit.f
     increment.f
     ascending.b
-    *onchanged_signal.Slot::Slot_t
   EndStructure
   
   Declare New(*parent.Control::Control_t,name.s, value.f = 0, options.i = 0, x.i = 0, y.i = 0, width.i = 64, height.i = 64, color.i=8421504 )
@@ -372,7 +371,7 @@ Procedure.i OnEvent( *Me.ControlKnob_t, ev_code.i, *ev_data.Control::EventTypeDa
             *Me\value = Math::RESCALE(*Me\angle - *Me\angle_offset, -140, 140, *Me\min_limit, *Me\max_limit)
           EndIf
 
-          Signal::Trigger(*Me\on_change, Signal::#SIGNAL_TYPE_PING)
+          Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
         EndIf
         Control::Invalidate(*Me)
       EndIf
@@ -487,7 +486,7 @@ Procedure.i New( *parent.Control::Control_t, name.s, value.f = 0, options.i = 0,
   *Me\enable     = #True
   *Me\options    = options
   *Me\value      = 0
-  *Me\on_change  = Object::NewSignal(*Me, "OnChange")
+  *Me\on_change  = Object::NewCallback(*Me, "OnChange")
 
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
 
@@ -505,8 +504,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 472
-; FirstLine = 462
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 488
+; FirstLine = 427
 ; Folding = ---
 ; EnableXP

@@ -1,6 +1,5 @@
 XIncludeFile "Globals.pbi"
-XIncludeFile "Signal.pbi"
-XIncludeFile "Slot.pbi"
+XIncludeFile "Callback.pbi"
 
 ; ======================================================================
 ;   Class Module Declaration
@@ -36,22 +35,22 @@ DeclareModule Object
   ; ------------------------------------------------------------------
   Structure Object_t
     *VT                                      ; interface virtual table
-    Map *signals.Signal::Signal_t()   
-    Map *slots.Slot::Slot_t()
+    Map *callbacks.Callback::Callback_t()   
+    Map *slots.Callback::Slot_t()
     *class.Class::Class_t
   EndStructure
   
   ; ------------------------------------------------------------------
   ;   DECLARE
   ; ------------------------------------------------------------------
-  Declare NewSignal(*obj.Object_t, name.s)
-  Declare DeleteSignal(*obj.Object_t, *signal.Signal::Signal_t)
+  Declare NewCallback(*obj.Object_t, name.s)
+  Declare DeleteCallback(*obj.Object_t, *callback.Callback::Callback_t)
   
   ; ------------------------------------------------------------------
   ;   INI
   ; ------------------------------------------------------------------
   Macro INI( _cls )
-;     InitializeStructure(*Me, _cls#_t)
+    InitializeStructure(*Me, _cls#_t)
     *Me\VT = ?_cls#VT
     *Me\class  = @CLASS
   EndMacro
@@ -60,8 +59,8 @@ DeclareModule Object
   ;   TERM
   ; ------------------------------------------------------------------
   Macro TERM( _cls )
-    If MapSize(*Me\signals()) > 0
-      ForEach *Me\signals() : Signal::Delete(*Me\signals()) : Next
+    If MapSize(*Me\callbacks()) > 0
+      ForEach *Me\callbacks() : Callback::Delete(*Me\callbacks()) : Next
     EndIf
     FreeStructure(*Me)
   EndMacro
@@ -113,19 +112,19 @@ EndDeclareModule
 ; ======================================================================
 Module Object
   
-  Procedure NewSignal(*obj.Object_t, name.s)
-    If Not FindMapElement(*obj\signals(), name)
-      Protected *signal.Signal::Signal_t = Signal::New(name)
-      AddMapElement(*obj\signals(), name)
-      *obj\signals() = *signal
+  Procedure NewCallback(*obj.Object_t, name.s)
+    If Not FindMapElement(*obj\callbacks(), name)
+      Protected *callback.Callback::Callback_t = Callback::New(name)
+      *obj\callbacks(name) = *callback
+      ProcedureReturn *callback
     EndIf
-    ProcedureReturn *obj\signals()
+    ProcedureReturn *obj\callbacks()
   EndProcedure
   
-  Procedure DeleteSignal(*obj.Object_t, *signal.Signal::Signal_t)
-    If FindMapElement(*obj\signals(), *signal\name)
-      Signal::Delete(*signal)
-      DeleteMapElement(*obj\signals())
+  Procedure DeleteCallback(*obj.Object_t, *callback.Callback::Callback_t)
+    If FindMapElement(*obj\callbacks(), *callback\name)
+      Callback::Delete(*callback)
+      DeleteMapElement(*obj\callbacks())
     EndIf
     
   EndProcedure
@@ -282,8 +281,8 @@ EndModule
 ;     Slot::Disconnect(*slot,*Me )
 ;   EndProcedure
 ; EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 45
-; FirstLine = 25
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 104
 ; Folding = ---
 ; EnableXP

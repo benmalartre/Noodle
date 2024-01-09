@@ -18,8 +18,9 @@ void main(){
 	*/
 	vec3 nn = normalize((inNorm+1)/2);
 	vec3 uv = normalize((inUVWs+1)/2);
-	//outColor = vec4(inUVWs,1.0);// * vec4(nn,1);
-	outColor = vec4(inColor,1.0);//vec4(texture(tex,uv.xz).xyz,1.0) * vec4(inColor,1.0);
+  outColor = vec4(inUVWs, 1.0);
+	//outColor = vec4(inUVWs,1.0) * vec4(nn,1);
+	//outColor = vec4(inColor,1.0);//vec4(texture(tex,uv.xz).xyz,1.0) * vec4(inColor,1.0);
 	//outColor = vec4(inColor,1.0);
 	//outColor = vec4(texture(tex,inUVWs.xz).xyz,1.0);//vec4(inUVWs,1.0);//*d;//vec4(inColor,1.0)* vec4((inNorm+1)/2,1);
 	//outColor = vec4(inColor,1.0);

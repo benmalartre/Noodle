@@ -34,7 +34,7 @@ Global controls.SSAOControls_t
 
 
 Procedure SetupSSAOCOntrols(*Me.SSAOControls_t)
-  *Me\ui = PropertyUI::New(*app\window\main\right, "UI", #Null)
+  *Me\ui = PropertyUI::New(*app\window\main\right, "UI")
   PropertyUI::AppendStart(*Me\ui)
   
   ControlProperty::Clear(*Me\ui\prop)
@@ -463,7 +463,7 @@ Procedure Draw(*app.Application::Application_t)
   
   ScreenQuad::Draw(*quad)
 
-  Present(3)
+  Present(2)
   CompilerIf Not #USE_GLFW
     GLContext::FlipBuffer(*viewport\context)
     
@@ -622,8 +622,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 565
-; FirstLine = 549
+; CursorPosition = 454
+; FirstLine = 434
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

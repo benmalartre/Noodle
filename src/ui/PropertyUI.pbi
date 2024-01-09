@@ -22,7 +22,7 @@ DeclareModule PropertyUI
     anchorY.i
   EndStructure
   
-  Declare New(*parent.View::View_t,name.s,*obj.Object::Object_t)
+  Declare New(*parent.View::View_t,name.s)
   Declare Delete(*Me.PropertyUI_t)
   Declare Resize(*Me.PropertyUI_t)
   Declare Draw(*Me.PropertyUI_t)
@@ -66,7 +66,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   ;  Constructor
   ; ----------------------------------------------------------------------------
-  Procedure New(*parent.View::View_t, name.s,*obj. Object3D::Object3D_t)
+  Procedure New(*parent.View::View_t, name.s)
     Protected *Me.PropertyUI_t = AllocateStructure(PropertyUI_t)
     Object::INI(PropertyUI)
     *Me\name = name
@@ -179,21 +179,21 @@ Module PropertyUI
   Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     PropertyUI::DeleteProperty(*Me, *prop)
   EndProcedure
-  Callback::DECLARECALLBACK(OnDeleteProperty, Arguments::#PTR, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteProperty, Args::#PTR, Args::#PTR)
   
   Procedure OnExpandProperty( *Me.PropertyUI_t, expand.b, index.i)
     ;PropertyUI::DeletePropertyByIndex(*Me, index)
   EndProcedure
-  Callback::DECLARECALLBACK(OnExpandProperty, Arguments::#PTR, Arguments::#BOOL, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnExpandProperty, Args::#PTR, Args::#BOOL, Args::#INT)
   
   Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
     If *Me\prop = *object
       If *Me\prop\head
-        Signal::Trigger(*Me\prop\head\on_delete, Signal::#SIGNAL_TYPE_PING)
+        Callback::Trigger(*Me\prop\head\on_delete, Callback::#SIGNAL_TYPE_PING)
       EndIf
     EndIf
   EndProcedure
-  Callback::DECLARECALLBACK(OnDeleteObject, Arguments::#PTR, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteObject, Args::#PTR, Args::#PTR)
   
   ; ----------------------------------------------------------------------------
   ;  Clear
@@ -258,7 +258,7 @@ Module PropertyUI
     Next
     
     ControlProperty::AppendStop(*Me\prop)
-    Signal::CONNECTCALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
+    Callback::CONNECT_CALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -372,7 +372,7 @@ Module PropertyUI
     Clear(*Me)
     *Me\prop = *prop
     If *prop\head
-      Signal::CONNECTCALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
+      Callback::CONNECT_CALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
     EndIf
     Resize(*Me)
     
@@ -509,9 +509,9 @@ Module PropertyUI
   ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( PropertyUI )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 89
-; FirstLine = 65
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 374
+; FirstLine = 370
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -17,10 +17,9 @@ DeclareModule PolymeshGeometry
   UseModule Math
   Declare New(*parent,shape.i=Shape::#SHAPE_CUBE)
   Declare Delete(*geom.PolymeshGeometry_t)
-  ;Declare Init(*geom.PolymeshGeometry_t)
-  Declare GetUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
-  Declare GetUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
-  Declare GetUVWSPerPolygons(*geom.PolymeshGeometry_t)
+  Declare ComputeUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
+  Declare ComputeUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
+  Declare ComputeUVWSPerPolygons(*geom.PolymeshGeometry_t)
   Declare ComputeNormals(*mesh.PolymeshGeometry_t,smooth.f=0.5)
   Declare ComputeTangents(*mesh.PolymeshGeometry_t)
   Declare InvertNormals(*mesh.PolymeshGeometry_t)
@@ -85,75 +84,61 @@ Module PolymeshGeometry
   UseModule Math
   
   ; ----------------------------------------------------------------------------
-  ;  Get UVWs from Position
+  ;  Compute UVWs from points position
   ; ----------------------------------------------------------------------------
-  Procedure GetUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
+  Procedure ComputeUVWSFromPosition(*geom.PolymeshGeometry_t,normalize.b=#False)
     
-    Protected cnt=0
-    Define.f h,w
-    Protected a,b,c,i
+    Debug "Compute UVW for "+ Str(*geom)
     
-    Define.v3f32 bmin,bmax
+    Define nt = CArray::GetCount(*geom\a_triangleindices)/3
+    Define ns = CArray::GetCount(*geom\a_faceindices)
+    
+    CArray::Echo(*geom\a_triangleindices, "triangles")
+    Debug "Num triangles : "+Str(nt)
+      
+    Vector3::Echo(*geom\bbox\origin, "oigin")
+    Vector3::Echo(*geom\bbox\extend, "extend")
+    
+    Define i, p
+    Define.v3f32 *p, n
+    
     If normalize
-    
+      Define.v3f32 bmin,bmax
       Vector3::Sub(bmin, *geom\bbox\origin, *geom\bbox\extend)
       Vector3::Add(bmax, *geom\bbox\origin, *geom\bbox\extend)
       ; Normalized UVs
-      Define.v3f32 va,vb,vc,offset,scl,delta
-      
-      Vector3::Sub(delta,bmax,bmin)
-      
-      Define.v3f32 *va,*vb,*vc
-      
-       For i=0 To CArray::GetCount(*geom\a_triangleindices)/3-1
-        a = CArray::GetValueL(*geom\a_triangleindices,i*3)
-        b = CArray::GetValueL(*geom\a_triangleindices,i*3+1)
-        c = CArray::GetValueL(*geom\a_triangleindices,i*3+2)
-    
+      Define.v3f32 offset,scl 
+     
+      For i=0 To ns-1
+        p = CArray::GetValueL(*geom\a_faceindices, i)
+        Debug p
+        *p = CArray::GetValue(*geom\a_positions, p)
+        Vector3::Echo(*p, "pos")
+        n\x = RESCALE(*p\x,bmin\x,bmax\x,0,1)
+        n\y = RESCALE(*p\y,bmin\y,bmax\y,0,1)
+        n\z = RESCALE(*p\z,bmin\z,bmax\z,0,1)
         
-        *va = CArray::GetValue(*geom\a_positions,a)
-        *vb = CArray::GetValue(*geom\a_positions,b)
-        *vc = CArray::GetValue(*geom\a_positions,c)
-        
-        va\x = RESCALE(*va\x,bmin\x,bmax\x,0,1)
-        va\y = RESCALE(*va\y,bmin\y,bmax\y,0,1)
-        va\z = RESCALE(*va\z,bmin\z,bmax\z,0,1)
-         
-        vb\x = RESCALE(*vb\x,bmin\x,bmax\x,0,1)
-        vb\y = RESCALE(*vb\y,bmin\y,bmax\y,0,1)
-        vb\z = RESCALE(*vb\z,bmin\z,bmax\z,0,1)
-        
-        vc\x = RESCALE(*vc\x,bmin\x,bmax\x,0,1)
-        vc\y = RESCALE(*vc\y,bmin\y,bmax\y,0,1)
-        vc\z = RESCALE(*vc\z,bmin\z,bmax\z,0,1)
-         
-        CArray::SetValuePtr(*geom\a_uvws,cnt,va)
-        CArray::SetValuePtr(*geom\a_uvws,cnt+1,vb)
-        CArray::SetValuePtr(*geom\a_uvws,cnt+2,vc) 
-        cnt+3
-      Next i
+        CArray::SetValue(*geom\a_uvws, i, n)
+      Next
       
     Else
     
       ;UVs
-       For i=0 To CArray::GetCount(*geom\a_triangleindices)/3-1
-        a = CArray::GetValueL(*geom\a_triangleindices,i*3)
-        b = CArray::GetValueL(*geom\a_triangleindices,i*3+1)
-        c = CArray::GetValueL(*geom\a_triangleindices,i*3+2)
-    
-        CArray::SetValue(*geom\a_uvws,cnt,CArray::GetValue(*geom\a_positions,a))
-        CArray::SetValue(*geom\a_uvws,cnt+1,CArray::GetValue(*geom\a_positions,b))
-        CArray::SetValue(*geom\a_uvws,cnt+2,CArray::GetValue(*geom\a_positions,c)) 
-        cnt+3
-      Next i
+      For i=0 To ns-1
+        p = CArray::GetValueL(*geom\a_faceindices, i)
+        *p = CArray::GetValue(*geom\a_positions, p)
+        CArray::SetValue(*geom\a_uvws, i, *p)
+      Next
     EndIf
+    
+    CArray::Echo(*geom\a_uvws, "uvws")
     
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Get UVWs from Extrusion
+  ;  Compute UVWs from extrusion
   ; ----------------------------------------------------------------------------
-  Procedure GetUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
+  Procedure ComputeUVWSFromExtrusion(*geom.PolymeshGeometry_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32)
     Protected nbu.i = CArray::GetCount(*points)-1
     Protected nbv.i = CArray::GetCount(*section)-1
     
@@ -190,9 +175,9 @@ Module PolymeshGeometry
   EndProcedure
   
   ; ----------------------------------------------------------------------------
-  ;  Get UVWs per Polygons
+  ;  Compute UVWs per Polygons
   ; ----------------------------------------------------------------------------
-  Procedure GetUVWSPerPolygons(*geom.PolymeshGeometry_t)
+  Procedure ComputeUVWSPerPolygons(*geom.PolymeshGeometry_t)
     Protected nbf = CArray::GetCount(*geom\a_facecount)
     Protected p
     Protected nbp
@@ -1038,7 +1023,7 @@ Module PolymeshGeometry
 ;     Define color.c4f32
 ;     Color::Randomize(color)
 ;     SetColors(*geom, colo)
-    GetUVWSFromExtrusion(*geom,*points,*section)
+    ComputeUVWSFromExtrusion(*geom,*points,*section)
   
   EndProcedure
   
@@ -2098,7 +2083,7 @@ Module PolymeshGeometry
     ComputeTopology(*geom)
     
     ;UVs
-    GetUVWSFromPosition(*geom)
+    ComputeUVWSFromPosition(*geom)
   
   
   EndProcedure
@@ -2172,7 +2157,7 @@ Module PolymeshGeometry
     SetColor(*geom,@color)
     
     ;UVWs
-    GetUVWSFromPosition(*geom,#True)
+    ComputeUVWSFromPosition(*geom,#True)
    
   EndProcedure
   
@@ -2357,6 +2342,8 @@ Module PolymeshGeometry
     CArray::Copy(*shape\uvws,*Me\a_uvws)
     CArray::Copy(*shape\indices,*Me\a_triangleindices)
     
+    CArray::Echo(*Me\a_uvws, "uvws")
+    
     Protected c.c4f32
     Protected *c.c4f32
     CArray::SetCount(*shape\colors,*shape\nbp)
@@ -2475,7 +2462,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 878
-; FirstLine = 873
+; CursorPosition = 127
+; FirstLine = 111
 ; Folding = -----g-----+-
 ; EnableXP

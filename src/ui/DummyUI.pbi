@@ -34,8 +34,8 @@ EndDeclareModule
 ; -----------------------------------------
 Module DummyUI
   
-  Procedure DummyCallback(*args.Arguments::Arguments_t)
-    MessageRequester( "DUMMY CALLBACK","Nb Arguments : "+Str(ArraySize(*args\args())))
+  Procedure DummyCallback(*args.Args::Args_t)
+    MessageRequester( "DUMMY CALLBACK","Nb Args : "+Str(ArraySize(*args\args())))
   EndProcedure
   
   ; New
@@ -55,9 +55,9 @@ Module DummyUI
     *Me\active = #False
     View::SetContent(*parent,*Me)
     
-;     Protected *args.Arguments::Arguments_t = Arguments::New()
-;     Arguments::AddBool(*args,"Boolean",#True)
-;     MessageRequester( "DUMMY CALLBACK","Nb Arguments : "+Str(*args\nb))
+;     Protected *args.Args::Args_t = Args::New()
+;     Args::AddBool(*args,"Boolean",#True)
+;     MessageRequester( "DUMMY CALLBACK","Nb Args : "+Str(*args\nb))
 ;     Protected *manager.ViewManager::ViewManager_t = *parent\manager
 ;     *Me\menu = ControlMenu::New(*manager\window,*Me\container,0,0,800,20)
 ;     Protected *files.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Files")
@@ -148,8 +148,8 @@ Module DummyUI
 
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 48
-; FirstLine = 44
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 59
+; FirstLine = 32
 ; Folding = --
 ; EnableXP

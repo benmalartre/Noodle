@@ -68,7 +68,7 @@ DeclareModule ControlProperty
   Declare AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddStringControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
-  Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18)
+  Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18, toggable.b=#False)
   Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=100)
   Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
@@ -113,7 +113,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnCheckChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnCheckChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)    
     Define *array.CArray::CArrayLong = *attr\data
@@ -122,7 +122,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnLongChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnLongChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
     Define *array.CArray::CArrayInt = *attr\data
@@ -131,7 +131,7 @@ Module ControlProperty
 
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnIntegerChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnIntegerChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
     Define *array.CArray::CArrayFloat = *attr\data
@@ -140,7 +140,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnFloatChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnFloatChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
     Protected *obj.Object::Object_t = *attr\parent
@@ -163,7 +163,7 @@ Module ControlProperty
     EndSelect
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnReferenceChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnReferenceChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnFileChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
 ;     Select *obj\class\name
@@ -189,7 +189,7 @@ Module ControlProperty
 ;     EndSelect
 ;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnFileChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnFileChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   Procedure OnStringChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
 ;     Select *obj\class\name
@@ -215,7 +215,7 @@ Module ControlProperty
 ;     EndSelect
 ;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARECALLBACK(OnStringChange, Arguments::#PTR, Arguments::#PTR, Arguments::#INT, Arguments::#INT)
+  Callback::DECLARE_CALLBACK(OnStringChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
   
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
@@ -351,7 +351,7 @@ Module ControlProperty
     AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
-    
+        
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
@@ -481,7 +481,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   ; Add Button Control
   ;-----------------------------------------------------------------------------
-  Procedure AddButtonControl( *Me.ControlProperty_t, name.s,label.s, color.i,width=18, height=18)
+  Procedure AddButtonControl( *Me.ControlProperty_t, name.s,label.s, color.i,width=18, height=18, toggable.b=#False)
     ; Sanity Check
     If Not *Me : ProcedureReturn : EndIf
     
@@ -492,11 +492,19 @@ Module ControlProperty
 
     ; Add Parameter
     If  ListSize(*Me\groups()) And *Me\groups()
-      *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      If toggable
+        *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      Else
+        *btn = ControlButton::New(*Me,name,name,#False, #PB_Button_Toggle,*Me\dx,*Me\dy+2,width,height, color )
+      EndIf
       ControlGroup::Append(*Me\groups(),*btn)
       If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
-      *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      If toggable
+        *btn = ControlButton::New(*Me,name,name,#False, #PB_Button_Toggle,*Me\dx,*Me\dy+2,width,height, color )
+      Else
+        *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
+      EndIf
       Append( *Me, *btn)
       If Not *Me\row : *Me\dy + height : Else : *Me\dx + width : EndIf
     EndIf
@@ -584,9 +592,9 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
     
-     ; Connect Signal
+     ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnCheckChange, *ctl, *attr, 0, 0)
     EndIf
     
     
@@ -624,9 +632,9 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
 
-     ; Connect Signal
+     ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnIntegerChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -659,9 +667,9 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
     
-    ; Connect Signal
+    ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -700,9 +708,9 @@ Module ControlProperty
       RowEnd(*Me)
     EndIf
     
-    ; Connect Signal
+    ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -755,10 +763,10 @@ Module ControlProperty
       Append(*Me,*group)
     EndIf
     
-    ; Connect Signal
+    ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
-      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+      Callback::CONNECT_CALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
     EndIf
     
     ; Offset for Next Control
@@ -817,11 +825,11 @@ Module ControlProperty
       Append(*Me,*group)
     EndIf
 
-    ; Connect Signal
+    ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
-      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
-      Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
+      Callback::CONNECT_CALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+      Callback::CONNECT_CALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
     EndIf
     
     ; Offset for Next Control
@@ -881,12 +889,12 @@ Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*a
     Append(*Me,*group)
   EndIf
   
-  ; Connect Signal
+  ; Connect Callback
   If *obj
-    Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
-    Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
-    Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
-    Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *wCtl, *attr, 0, 12)
+    Callback::CONNECT_CALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+    Callback::CONNECT_CALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+    Callback::CONNECT_CALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
+    Callback::CONNECT_CALLBACK(*zCtl\on_change, OnFloatChange, *wCtl, *attr, 0, 12)
   EndIf
   
   
@@ -958,12 +966,12 @@ EndProcedure
       Append(*Me,*group)
     EndIf
     
-    ; Connect Signal
+    ; Connect Callback
     If *attr
-      Signal::CONNECTCALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
-      Signal::CONNECTCALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
-      Signal::CONNECTCALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
-      Signal::CONNECTCALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *attr, 0, 12)
+      Callback::CONNECT_CALLBACK(*xCtl\on_change, OnFloatChange, *xCtl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*yCtl\on_change, OnFloatChange, *yCtl, *attr, 0, 4)
+      Callback::CONNECT_CALLBACK(*zCtl\on_change, OnFloatChange, *zCtl, *attr, 0, 8)
+      Callback::CONNECT_CALLBACK(*aCtl\on_change, OnFloatChange, *aCtl, *attr, 0, 12)
     EndIf
     
     ; Offset for Next Control
@@ -1065,10 +1073,10 @@ EndProcedure
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
     
-    ; Connect Signal
+    ; Connect Callback
     ;---------------------------------
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Add Group to PPG
@@ -1104,10 +1112,10 @@ EndProcedure
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
     
-    ; Connect Signal
+    ; Connect Callback
     ;---------------------------------
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnFileChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnFileChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Add Group to PPG
@@ -1148,10 +1156,10 @@ EndProcedure
     ;---------------------------------
     Append(*Me,*group)
     
-    ; Connect Signal
+    ; Connect Callback
     ;---------------------------------
     If *attr
-      Signal::CONNECTCALLBACK(*ctl\on_change, OnStringChange, *ctl, *attr, 0, 0)
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnStringChange, *ctl, *attr, 0, 0)
     EndIf
     
     ; Offset for Next Control
@@ -1806,7 +1814,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1093
-; FirstLine = 1081
+; CursorPosition = 483
+; FirstLine = 480
 ; Folding = ---------
 ; EnableXP
