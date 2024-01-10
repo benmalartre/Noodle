@@ -110,7 +110,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnCheckChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnCheckChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)    
     Define *array.CArray::CArrayLong = *attr\data
@@ -119,7 +119,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnLongChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnLongChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
     Define *array.CArray::CArrayInt = *attr\data
@@ -128,7 +128,7 @@ Module ControlProperty
 
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnIntegerChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnIntegerChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnFloatChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
     Define *array.CArray::CArrayFloat = *attr\data
@@ -137,7 +137,7 @@ Module ControlProperty
     
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnFloatChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnFloatChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnReferenceChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
     Protected *obj.Object::Object_t = *attr\parent
@@ -160,7 +160,7 @@ Module ControlProperty
     EndSelect
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnReferenceChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnReferenceChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnFileChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
 ;     Select *obj\class\name
@@ -186,7 +186,7 @@ Module ControlProperty
 ;     EndSelect
 ;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnFileChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnFileChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   Procedure OnStringChange(*ctl.ControlEdit::ControlEdit_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)
 ;     Select *obj\class\name
@@ -212,7 +212,7 @@ Module ControlProperty
 ;     EndSelect
 ;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnStringChange, Args::#PTR, Args::#PTR, Args::#INT, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnStringChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
@@ -1448,13 +1448,6 @@ EndProcedure
         xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
         
-;         If *Me\overchild <> *overchild And  Not *Me\down
-;             Debug "property mouse move overchild case 1 : " +Str(*overchild)
-;             If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
-;             *Me\overchild = *overchild
-;             If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseEnter) : EndIf
-;             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-;         EndIf
         If *overchild
           *Me\overchild = *overchild
           ev_data\x    = xm - *overchild\posX + *Me\posX
@@ -1762,7 +1755,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 388
-; FirstLine = 359
+; CursorPosition = 214
+; FirstLine = 150
 ; Folding = ---------
 ; EnableXP

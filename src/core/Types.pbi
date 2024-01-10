@@ -3,12 +3,12 @@
 ; ========================================================================================
 DeclareModule Types
   Enumeration
+    #TYPE_PTR
     #TYPE_BOOL
     #TYPE_CHAR
     #TYPE_INT
     #TYPE_LONG
     #TYPE_FLOAT
-    #TYPE_PTR
     #TYPE_V2F32
     #TYPE_V3F32
     #TYPE_V4F32
@@ -21,6 +21,25 @@ DeclareModule Types
     #TYPE_LOCATION
     #TYPE_STR
   EndEnumeration
+  
+  Global Dim S_ARGS_TYPE.s(17)
+  S_ARGS_TYPE(0)  = "ptr"
+  S_ARGS_TYPE(1)  = "bool"
+  S_ARGS_TYPE(2)  = "char"
+  S_ARGS_TYPE(3)  = "int"
+  S_ARGS_TYPE(4)  = "long"
+  S_ARGS_TYPE(5)  = "float"
+  S_ARGS_TYPE(6)  = "vector2"
+  S_ARGS_TYPE(7)  = "vector3"
+  S_ARGS_TYPE(8)  = "vector4"
+  S_ARGS_TYPE(9)  = "color32"
+  S_ARGS_TYPE(10) = "color8"
+  S_ARGS_TYPE(11) = "quaternion"
+  S_ARGS_TYPE(12) = "matrix3"
+  S_ARGS_TYPE(13) = "matrix4"
+  S_ARGS_TYPE(14) = "transform"
+  S_ARGS_TYPE(15) = "location"
+  S_ARGS_TYPE(16) = "string"
   
   #SIZE_BOOL        = 1
   #SIZE_CHAR        = 2
@@ -64,6 +83,6 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 41
 ; Folding = -
 ; EnableXP

@@ -516,9 +516,7 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
       ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
       
-      Protected pickID = Pick(*Me)
-
-            
+      Protected pickID = Pick(*Me) 
       If pickID > -1 And pickID <*Me\chilcount
         *overchild = *Me\children(pickID)
       EndIf
@@ -528,25 +526,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
         *Me\overchild = *overchild
         If *Me\overchild
           *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
-        EndIf
-         
-      ElseIf pickID >= 0 And pickID <*Me\chilcount
-        overchild = *overchild
-        If  overchild <> *Me\overchild  And  Not *Me\down
-          If *Me\overchild <> #Null
-            *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
-            SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-          EndIf
-          
-          If Not *Me\down
-            *Me\overchild = *overchild
-            *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
-          EndIf
-        ElseIf *Me\overchild
-          *overchild = *Me\overchild
-          ev_data\x    = xm - *overchild\posX
-          ev_data\y    = ym - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
         EndIf
       ElseIf *Me\overchild
         *overchild = *Me\overchild
@@ -965,7 +944,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 524
-; FirstLine = 519
+; CursorPosition = 518
+; FirstLine = 492
 ; Folding = ----
 ; EnableXP

@@ -17,14 +17,14 @@ UIColor::Init()
 Procedure KissThatNumber(*ctl.ControlNumber::ControlNumber_t)
   Debug *ctl\class\name +" : "+ ControlNumber::GetValue(*ctl)
 EndProcedure
-Callback::DECLARE_CALLBACK(KissThatNumber, Args::#PTR)
+Callback::DECLARE_CALLBACK(KissThatNumber, Types::#TYPE_PTR)
 
 Procedure KissThatButton(*btn.ControlButton::ControlButton_t)
   Debug *btn\class\name
   Debug *btn\value
   Debug Str(*btn\state)
 EndProcedure
-Callback::DECLARE_CALLBACK(KissThatButton, Args::#PTR)
+Callback::DECLARE_CALLBACK(KissThatButton, Types::#TYPE_PTR)
 
 
 Global *app.Application::Application_t = Application::New("Test Controls",400,600,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
@@ -62,6 +62,6 @@ PropertyUI::AddProperty(*ui, *prop)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 59
+; CursorPosition = 26
 ; Folding = -
 ; EnableXP

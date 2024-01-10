@@ -896,7 +896,7 @@ Module ControlExplorer
   Procedure OnSelectionChange(*scene.Scene::Scene_t)
     PostEvent(Globals::#EVENT_SELECTION_CHANGED)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnSelectionChange, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnSelectionChange, Types::#TYPE_PTR)
   
   ; ----------------------------------------
   ;  Fill Explorer from Scene Description
@@ -1149,7 +1149,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1037
-; FirstLine = 1007
+; CursorPosition = 898
+; FirstLine = 883
 ; Folding = --4---
 ; EnableXP

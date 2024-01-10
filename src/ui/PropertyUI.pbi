@@ -190,12 +190,12 @@ Module PropertyUI
   Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     PropertyUI::DeleteProperty(*Me, *prop)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteProperty, Args::#PTR, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteProperty, Types::#TYPE_PTR, Types::#TYPE_PTR)
   
   Procedure OnExpandProperty( *Me.PropertyUI_t, expand.b, index.i)
     ;PropertyUI::DeletePropertyByIndex(*Me, index)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnExpandProperty, Args::#PTR, Args::#BOOL, Args::#INT)
+  Callback::DECLARE_CALLBACK(OnExpandProperty, Types::#TYPE_PTR, Types::#TYPE_BOOL, Types::#TYPE_INT)
   
   Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
 ;     If *Me\prop = *object
@@ -204,7 +204,7 @@ Module PropertyUI
 ;       EndIf
 ;     EndIf
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteObject, Args::#PTR, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteObject, Types::#TYPE_PTR, Types::#TYPE_PTR)
   
   ; ----------------------------------------------------------------------------
   ;  Clear
@@ -521,8 +521,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 157
-; FirstLine = 108
+; CursorPosition = 206
+; FirstLine = 188
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

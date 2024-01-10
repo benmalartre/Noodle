@@ -52,14 +52,14 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteScene, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteScene, Types::#TYPE_PTR)
   
   Procedure OnNewScene(*Me.ExplorerUI_t)
 ;     ControlExplorer::Fill(*Me\explorer, *scene)
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnNewScene, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnNewScene, Types::#TYPE_PTR)
   
   Procedure OnHierarchyChange(*Me.ExplorerUI_t)
 ;     ControlExplorer::Clear(*Me\explorer)
@@ -67,7 +67,7 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnHierarchyChange, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnHierarchyChange, Types::#TYPE_PTR)
   
   Procedure OnSelectionChange(*Me.ExplorerUI_t)
 ;     ControlExplorer::Clear(*Me\explorer)
@@ -75,7 +75,7 @@ Module ExplorerUI
 ;     ControlExplorer::Draw(*Me\explorer)
 ;     Draw(*Me)
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnSelectionChange, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnSelectionChange, Types::#TYPE_PTR)
   
   ; --------------------------------------------------------
   ;  Setup
@@ -222,7 +222,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 86
+; CursorPosition = 77
+; FirstLine = 50
 ; Folding = ---
 ; EnableXP

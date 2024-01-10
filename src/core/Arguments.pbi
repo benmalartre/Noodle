@@ -1,60 +1,21 @@
-﻿; ================================================================================
+﻿XIncludeFile "Types.pbi"
+; ================================================================================
 ; ARGS MODULE DECLARATION
 ; ================================================================================
 DeclareModule Args
   UseModule Math
-  
-  Enumeration
-    #BYTE
-    #BOOL
-    #CHAR
-    #INT
-    #LONG
-    #FLOAT
-    #DOUBLE
-    #V2F32
-    #V3F32
-    #V4F32
-    #C4F32
-    #Q4F32
-    #M3F32
-    #M4F32
-    #PTR
-    #STRING
-    #ARRAY
-  EndEnumeration
-  
-  Global Dim S_ARGS_TYPE.s(17)
-  S_ARGS_TYPE(0)  = "BYTE"
-  S_ARGS_TYPE(1)  = "BOOL"
-  S_ARGS_TYPE(2)  = "CHAR"
-  S_ARGS_TYPE(3)  = "INT"
-  S_ARGS_TYPE(4)  = "LONG"
-  S_ARGS_TYPE(5)  = "FLOAT"
-  S_ARGS_TYPE(6)  = "DOUBLE"
-  S_ARGS_TYPE(7)  = "V2F32"
-  S_ARGS_TYPE(8)  = "V3F32"
-  S_ARGS_TYPE(9)  = "V4F32"
-  S_ARGS_TYPE(10) = "C4F32"
-  S_ARGS_TYPE(11) = "Q4F32"
-  S_ARGS_TYPE(12) = "M3F32"
-  S_ARGS_TYPE(13) = "M4F32"
-  S_ARGS_TYPE(14) = "PTR"
-  S_ARGS_TYPE(15) = "STRING"
-  S_ARGS_TYPE(16) = "ARRAY"
+  UseModule Types
   
   ; ------------------------------------------------------------------------------
   ; ARGUMENT STRUCTURE
   ; ------------------------------------------------------------------------------
   Structure Arg_t
     StructureUnion
-      a.a
       b.b
       c.c
       i.i
       l.l
       f.f
-      d.d
       v2f.v2f32
       v3f.v3f32
       v4f.v4f32
@@ -104,46 +65,43 @@ DeclareModule Args
     
     If __type = "a"
       Args::CREATEVALUE(__name, a)
-      _type = #ARGS_BYTE
+      _type = #TYPE_BYTE
     ElseIf __type = "b"
       Args::CREATEVALUE(__name, b)
-      _type = #ARGS_BYTE
+      _type = #TYPE_BYTE
     ElseIf __type = "c"
       Args::CREATEVALUE(__name, c)
-      _type =  #ARGS_CHAR
-    ElseIf __type = "d"
-      Args::CREATEVALUE(__name, d)
-      _type =  #ARGS_DOUBLE
+      _type =  #TYPE_CHAR
     ElseIf __type = "f"
       Args::CREATEVALUE(__name, f)
-      _type =  #ARGS_FLOAT
+      _type =  #TYPE_FLOAT
     ElseIf __type = "i"
       Args::CREATEVALUE(__name, i)
-      _type =  #ARGS_INT
+      _type =  #TYPE_INT
     ElseIf __type = "l"
       Args::CREATEVALUE(__name, l)
-      _type =  #ARGS_LONG
+      _type =  #TYPE_LONG
     ElseIf __type = "v2f32"
       Args::CREATEVALUE(__name, v2f32)
-      _type =  #ARGS_V2F32
+      _type =  #TYPE_V2F32
     ElseIf __type = "v3f32"
       Args::CREATEVALUE(__name, v3f32)
-      _type =  #ARGS_V3F32
+      _type =  #TYPE_V3F32
     ElseIf __type = "v4f32"
       Args::CREATEVALUE(__name, v4f32)
-      _type =  #ARGS_V4F32
+      _type =  #TYPE_V4F32
     ElseIf __type = "c4f32"
       Args::CREATEVALUE(__name, c4f32)
-      _type = #ARGS_C4F32
+      _type = #TYPE_C4F32
     ElseIf __type = "q4f32"
       Args::CREATEVALUE(__name, q4f32)
-      _type = #ARGS_Q4f32
+      _type = #TYPE_Q4f32
     ElseIf __type = "m3f32"
       Args::CREATEVALUE(__name, m3f32)
-      _type = #ARGS_M3F32
+      _type = #TYPE_M3F32
     ElseIf __type = "m4f32"
       Args::CREATEVALUE(__name, m4f32)
-      _type = #ARGS_QUATERNION
+      _type = #TYPE_QUATERNION
     ElseIf __type = "m3f32"
       Args::CREATEVALUE(__name, s)
       _type = #PB_String
@@ -156,7 +114,7 @@ DeclareModule Args
   
   Macro GET(_v)
     CompilerSelect _type
-      CompilerCase #ARGS_BYTE
+      CompilerCase #TYPE_BYTE
         _A\args(_index)\b
       CompilerCase #PB_Byte
         _A\args(_index)\b
@@ -206,35 +164,31 @@ DeclareModule Args
   ; DECLARE ATTRIBUTE
   Macro DECL(_type, _index)
     CompilerSelect _type
-      CompilerCase Args::#BYTE
-        __arg__#_index.a
-      CompilerCase Args::#BOOL
+      CompilerCase Types::#TYPE_BOOL
         __arg__#_index.b
-      CompilerCase Args::#CHAR
+      CompilerCase Types::#TYPE_CHAR
         __arg__#_index.c
-      CompilerCase Args::#DOUBLE
-        __arg__#_index.d
-      CompilerCase Args::#FLOAT
+      CompilerCase Types::#TYPE_FLOAT
         __arg__#_index.f
-      CompilerCase Args::#INT
+      CompilerCase Types::#TYPE_INT
         __arg__#_index.i
-      CompilerCase Args::#LONG
+      CompilerCase Types::#TYPE_LONG
         __arg__#_index.l
-      CompilerCase Args::#V2F32
+      CompilerCase Types::#TYPE_V2F32
         __arg__#_index.Math::v2f32
-      CompilerCase Args::#V3F32
+      CompilerCase Types::#TYPE_V3F32
         __arg__#_index.Math::v3f32
-      CompilerCase Args::#V4F32
+      CompilerCase Types::#TYPE_V4F32
         __arg__#_index.Math::v4f32
-      CompilerCase Args::#C4F32
+      CompilerCase Types::#TYPE_C4F32
         __arg__#_index.Math::c4f32
-      CompilerCase Args::#Q4F32
+      CompilerCase Types::#TYPE_Q4F32
         __arg__#_index.Math::q4f32
-      CompilerCase Args::#M3F32
+      CompilerCase Types::#TYPE_M3F32
         __arg__#_index.Math::cm3f32
-      CompilerCase Args::#M4F32
+      CompilerCase Types::#TYPE_M4F32
         __arg__#_index.Math::m4f32
-      CompilerCase Args::#STRING
+      CompilerCase Types::#TYPE_STR
         __arg__#_index.s
       CompilerDefault
         *__arg__#_index
@@ -247,6 +201,7 @@ EndDeclareModule
 ; ARGUMENTS MODULE IMPLEMENTATION
 ; ================================================================================
 Module Args
+  UseModule Types
   ; ------------------------------------------------------------------------------
   ; CONSTRUCTOR
   ; ------------------------------------------------------------------------------
@@ -270,55 +225,49 @@ Module Args
     For i=0 To nb-1
       *dst\args(i)\type = *src\args(i)\type
       Select *src\args(i)\type
-        Case #BYTE
-          *dst\args(i)\a = *src\args(i)\a
-        Case #BOOL
+        Case #TYPE_BOOL
           *dst\args(i)\b = *src\args(i)\b
-        Case #CHAR
+        Case #TYPE_CHAR
           *dst\args(i)\c = *src\args(i)\c
-        Case #INT
+        Case #TYPE_INT
           *dst\args(i)\i = *src\args(i)\i
-        Case #LONG
+        Case #TYPE_LONG
           *dst\args(i)\l = *src\args(i)\l
-        Case #FLOAT
+        Case #TYPE_FLOAT
           *dst\args(i)\f = *src\args(i)\f
-        Case #DOUBLE
-          *dst\args(i)\d = *src\args(i)\d
-        Case #V2F32
+        Case #TYPE_V2F32
           *dst\args(i)\v2f\x = *src\args(i)\v2f\x
           *dst\args(i)\v2f\y = *src\args(i)\v2f\y
-        Case #V3F32
+        Case #TYPE_V3F32
           *dst\args(i)\v3f\x = *src\args(i)\v3f\x
           *dst\args(i)\v3f\y = *src\args(i)\v3f\y
           *dst\args(i)\v3f\z = *src\args(i)\v3f\z
-        Case #V4F32
+        Case #TYPE_V4F32
           *dst\args(i)\v4f\x = *src\args(i)\v4f\x
           *dst\args(i)\v4f\y = *src\args(i)\v4f\y
           *dst\args(i)\v4f\z = *src\args(i)\v4f\z
           *dst\args(i)\v4f\w = *src\args(i)\v4f\w
-        Case #C4F32
+        Case #TYPE_C4F32
           *dst\args(i)\v4f\r = *src\args(i)\v4f\r
           *dst\args(i)\v4f\g = *src\args(i)\v4f\g
           *dst\args(i)\v4f\b = *src\args(i)\v4f\b
           *dst\args(i)\v4f\a = *src\args(i)\v4f\a
-        Case #Q4F32
+        Case #TYPE_Q4F32
           *dst\args(i)\v4f\x = *src\args(i)\v4f\x
           *dst\args(i)\v4f\y = *src\args(i)\v4f\y
           *dst\args(i)\v4f\z = *src\args(i)\v4f\z
           *dst\args(i)\v4f\w = *src\args(i)\v4f\w
-        Case #M3F32
+        Case #TYPE_M3F32
           For i=0 To 8
             *dst\args(i)\m3f\v[i] = *src\args(i)\m3f\v[i]
           Next
-        Case #M4F32
+        Case #TYPE_M4F32
           For i=0 To 15
             *dst\args(i)\m3f\v[i] = *src\args(i)\m3f\v[i]
           Next
-        Case #STRING
+        Case #TYPE_STR
           *dst\args(i)\str = *src\args(i)\str
           *dst\args(i)\p = @*dst\args(i)\str
-        Case #ARRAY
-          *dst\args(i)\p = *src\args(i)\p
       EndSelect
     Next
   EndProcedure
@@ -332,7 +281,7 @@ Module Args
       If (Type = #PB_String)
         \str = PeekS(*value)
       Else
-        CopyMemory(*value, @*args\args(index)+ OffsetOf(Args::Arg_t\a), size)
+        CopyMemory(*value, @*args\args(index), size)
       EndIf
     EndWith
   EndProcedure
@@ -345,7 +294,7 @@ Module Args
         If (Type = #PB_String)
           \str = PeekS(*value)
         Else
-          CopyMemory(*value, @*args\args(index)+ OffsetOf(Args::Arg_t\a), size)
+          CopyMemory(*value, @*args\args(index), size)
         EndIf
       EndWith
     EndIf
@@ -355,7 +304,7 @@ Module Args
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 347
-; FirstLine = 286
+; CursorPosition = 169
+; FirstLine = 6
 ; Folding = ---
 ; EnableXP

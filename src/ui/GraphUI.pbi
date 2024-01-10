@@ -298,7 +298,7 @@ Module GraphUI
     CArray::SetCount(*Me\a_selected, 0)
     ClearList(*Me\a_visible())
   EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteTree, Args::#PTR)
+  Callback::DECLARE_CALLBACK(OnDeleteTree, Types::#TYPE_PTR)
   
   
   ;---------------------------------------------------------------------------
@@ -1567,7 +1567,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 155
-; FirstLine = 151
+; CursorPosition = 300
+; FirstLine = 296
 ; Folding = --------
 ; EnableXP
