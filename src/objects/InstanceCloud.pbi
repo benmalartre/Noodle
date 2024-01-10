@@ -241,7 +241,6 @@ Module InstanceCloud
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*Me.InstanceCloud_t)
-Debug "INSTANCE POINT CLOUD SETUP CALL"
     ;If Not *p\initialized : ProcedureReturn #Null : EndIf
     
     ;Attach Shader
@@ -276,11 +275,8 @@ Debug "INSTANCE POINT CLOUD SETUP CALL"
       Setup(*Me)
     Else 
       If *Me\dirty & Object3D::#DIRTY_STATE_DEFORM
-;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
         Object3D::BindVAO(@*Me\vao)
-        ;glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
         BuildGLData(*Me, GLContext::*SHARED_CTXT\shaders("instances")\pgm)
-        ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
       EndIf
@@ -333,8 +329,7 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 231
+; CursorPosition = 31
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

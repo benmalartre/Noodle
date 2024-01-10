@@ -9,9 +9,7 @@ DeclareModule ControlGroup
   ; ----------------------------------------------------------------------------
   ;  Object ( ControlGroup_t )
   ; ----------------------------------------------------------------------------
-
   Structure ControlGroup_t Extends Control::Control_t
-    ; CControl Group
     imageID   .i
     label     .s
     append    .i
@@ -20,7 +18,7 @@ DeclareModule ControlGroup
     overchild .Control::IControl
     focuschild.Control::IControl
     Array children .Control::IControl(10)
-    Array rowflags .i       (10)
+    Array rowflags .i(10)
     chilcount .i
     current   .i
     closed    .b
@@ -53,8 +51,6 @@ DeclareModule ControlGroup
   Global CLASS.Class::Class_t
   
 EndDeclareModule
-
-
 
 ; ============================================================================
 ;  IMPLEMENTATION Control Group Module
@@ -91,28 +87,16 @@ Module ControlGroup
     Protected *Son    .Control::Control_t
     Protected lablen.i = Len(*Me\label)
     
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Size Me ]같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *ev_data
-      
-      ; ---[ Position ]---------------------------------------------------------
-      ; ...[ X ]................................................................
       If ( *ev_data\x <> #PB_Ignore ) And ( *ev_data\x <> *Me\posX )
         dirty = #True
         *Me\posX = *ev_data\x
       EndIf
-      ; ...[ Y ]................................................................
       If ( *ev_data\y <> #PB_Ignore ) And ( *ev_data\y <> *Me\posY )
         dirty = #True
         *Me\posY = *ev_data\y
       EndIf
-      
-      ; ---[ Size ]-------------------------------------------------------------
-      ; ...[ Width ]............................................................
+
       If ( *ev_data\width <> #PB_Ignore ) And ( *ev_data\width <> *Me\sizX )
         dirty = #True
         *Me\sizX = *ev_data\width
@@ -121,23 +105,13 @@ Module ControlGroup
     EndIf
     
     
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Auto Stacking ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    
-    ; ---[ Stack Children ]-----------------------------------------------------
     If *Me\options & #Autostack
-      ; ...[ Adjust Start Y Depending On Label Presence ].......................
       If lablen : curV = 20 : Else : curV = 14 : EndIf
-      ; ...[ Reset Current X Position ].........................................
       curH = 10
-      ; ...[ Reset Row Max Height ].............................................
       maxV = 0
-      ; ...[ Stack Each Child Under Previous One ]..............................
       For i=0 To iBound
         *Son  = *Me\children(i)
         Control::Resize(*Son, curH, curV, #PB_Ignore, #PB_Ignore )
-        ; ...[ Check Row ]......................................................
         If *Me\rowflags(i)
           curH + *Son\sizX + 5
           If maxV < *Son\sizY : maxV = *Son\sizY : EndIf
@@ -150,34 +124,20 @@ Module ControlGroup
       Next
       *Me\sizY = curV
     EndIf
-    
-    
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같�[ Horizontal Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같
-    ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-  
-    ; ---[ Size Group ]---------------------------------------------------------
-    ;If #True
+   
     If *Me\options & #Autosize_H
-      ; ...[ Reset Values ].....................................................
       maxV = 0 : curV = 0
-      ; ...[ Look For Children Max Width ]......................................
       For i=0 To iBound
         Son = *Me\children(i)
         curV = *Son\posX + *Son\sizX
         If curV > maxV : maxV = curV : EndIf
       Next
-      ; ...[ Update Group Width ]...............................................
       If maxV <> *Me\sizX : *Me\sizX = maxV + 10 : dirty = #True : EndIf
-      
-    ; ---[ Size Children ]------------------------------------------------------
     Else
-      ; ...[ Reset Values ].....................................................
       curV = *Me\sizX - 20
       curH = curV
       maxV = 0
-  
-      ; ...[ Loop Over Children ]...............................................
+      
       For i=0 To iBound
         *Son = *Me\children(i)
         If *Me\rowflags(i) And Not inRow
@@ -223,7 +183,6 @@ Module ControlGroup
 ;       If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
 ;     EndIf
     
-    ; ---[ Check Need Redraw ]--------------------------------------------------
     If #True = dirty
       ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
     EndIf
@@ -234,7 +193,7 @@ Module ControlGroup
   EndProcedure
   ;}
   
-   ; ----------------------------------------------------------------------------
+  ; ----------------------------------------------------------------------------
   ;  Get Num Control In Row
   ; ----------------------------------------------------------------------------
   Procedure GetNumControlInRow(*Me.ControlGroup_t, base.i)
@@ -283,8 +242,7 @@ Module ControlGroup
       If *son\sizY > y
         y = *son\sizY
       EndIf
-      
-      
+
       If *son\fixedX
         ev_data\width = widths(i)
       Else
@@ -459,11 +417,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       son = *son
       ev_data\xoff    = *son\posX+*Me\posX
       ev_data\yoff    = *son\posY+*Me\posY
-      Debug ev_data\xoff
-      Debug ev_data\yoff
-      Debug *Me\gadgetID
-      Debug *son
-      Debug son
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG )
@@ -949,7 +902,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 457
-; FirstLine = 406
+; CursorPosition = 222
+; FirstLine = 207
 ; Folding = ----
 ; EnableXP

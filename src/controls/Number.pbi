@@ -277,7 +277,6 @@ Module ControlNumber
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
-    Debug "DRAW CONTROL NUMBER : "+*Me\class\name
     If Not *Me\visible : ProcedureReturn : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
@@ -1212,7 +1211,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 470
-; FirstLine = 439
+; CursorPosition = 423
+; FirstLine = 414
 ; Folding = ----
 ; EnableXP

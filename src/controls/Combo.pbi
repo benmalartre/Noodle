@@ -15,7 +15,6 @@ DeclareModule ControlCombo
   ;  Object ( ControlCombo_t )
   ; ----------------------------------------------------------------------------
   Structure ControlCombo_t Extends Control::Control_t
-    ; CControlCombo
     label.s
     over.i
     down.i
@@ -35,9 +34,7 @@ DeclareModule ControlCombo
   Declare New(*parent.Control::Control_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
   Declare Delete(*Me.ControlCombo_t)
   Declare Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
-  Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  Declare OnPress(*Me.ControlCombo_t)
-  
+  Declare OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
   
   ; ============================================================================
   ;  VTABLE ( CObject + CControl + CControlCombo )
@@ -64,55 +61,40 @@ EndDeclareModule
 ; ==============================================================================
 Module ControlCombo
   
-  ;{
   ; ----------------------------------------------------------------------------
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlCombo_t, xoff.i = 0, yoff.i = 0 )
   
-    ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
     
-    ; ---[ Label Color ]--------------------------------------------------------
     Protected tc.i = UIColor::COLOR_LABEL
     
-    ; ---[ Set Font ]-----------------------------------------------------------
-    VectorFont( FontID(Globals::#FONT_DEFAULT ))
+    VectorFont( FontID(Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_TEXT)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
-    ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
       VectorSourceColor(UIColor::RANDOMIZED)
       FillPath()
-     
-      ; ---[ Disabled Text ]----------------------------------------------------
       tc = UIColor::COLOR_LABEL_DISABLED
-    ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
-      ; ---[ Down ]-------------------------------------------------------------
       If *Me\down
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(UIColor::RANDOMIZED)
         FillPath()
-        ; ---[ Negate Text ]----------------------------------------------------
         tc = UIColor::COLOR_LABEL_NEG
-      ; ---[ Up ]---------------------------------------------------------------
       Else
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(UIColor::RANDOMIZED)
         FillPath()
       EndIf
-    ; ---[ Normal State ]-------------------------------------------------------
     Else
-      ; ---[ Down ]-------------------------------------------------------------
       If *Me\down
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(UIColor::RANDOMIZED)
         FillPath()
-        ; ---[ Negate Text ]----------------------------------------------------
         tc = UIColor::COLOR_LABEL_NEG
-      ; °°°[ Up ]---------------------------------------------------------------
       Else
         AddPathBox(0+xoff, 0+yoff, *Me\sizX, *Me\sizY)
         VectorSourceColor(UIColor::RANDOMIZED)
@@ -120,78 +102,45 @@ Module ControlCombo
       EndIf
     EndIf
       
-    ; ---[ Draw Label ]---------------------------------------------------------
     MovePathCursor(10 + xoff, ty)
     VectorSourceColor(tc)
     DrawVectorText( *Me\label)
     
   EndProcedure
-  ;}
-  
-  
-  Procedure OnPress(*Me.ControlCombo_t)
-    MessageRequester("COMBO", "PRESSED")
-  EndProcedure
-  
   
   ; ============================================================================
   ;  OVERRIDE ( CControl )
   ; ============================================================================
-  ;{
-  ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure OnEvent( *Me.ControlCombo_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
     
-    ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.Control::IControl = *Me
   
-    ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
         
-      ; ------------------------------------------------------------------------
-      ;    Draw
-      ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Draw
-        ; ...[ Draw Control ]...................................................
         Draw( *Me, *ev_data\xoff, *ev_data\yoff )
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
-      ; ------------------------------------------------------------------------
-      ;    Resize
-      ; ------------------------------------------------------------------------
       Case #PB_EventType_Resize
-        ; ...[ Sanity Check ]...................................................
         If Not *ev_data : ProcedureReturn : EndIf
-        ; ...[ Reset Height ]...................................................
         *Me\sizY = 21
-        ; ...[ Update Topology ]................................................
         If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
         If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
         If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
-        
-      ; ------------------------------------------------------------------------
-      ;    MouseEnter
-      ; ------------------------------------------------------------------------
+
       Case #PB_EventType_MouseEnter
         If *Me\visible And *Me\enable
           *Me\over = #True
           Control::Invalidate(*Me)
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;    MouseLeave
-      ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseLeave
         If *Me\visible And *Me\enable
           *Me\over = #False
           Control::Invalidate(*Me)
         EndIf
-        
-      ; ------------------------------------------------------------------------
-      ;    MouseMove
-      ; ------------------------------------------------------------------------
+
       Case #PB_EventType_MouseMove
         If *Me\visible And *Me\enable
           If *Me\down
@@ -203,100 +152,67 @@ Module ControlCombo
           EndIf
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;    LeftButtonDown
-      ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonDown
         If *Me\visible And *Me\enable And *Me\over
           *Me\down = #True
           Control::Invalidate(*Me)
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;    LeftButtonUp
-      ; ------------------------------------------------------------------------
       Case #PB_EventType_LeftButtonUp
         If *Me\visible And *Me\enable
           *Me\down = #False
           Control::Invalidate(*Me)
           If *Me\over
             Callback::Trigger(*Me\on_press, Callback::#SIGNAL_TYPE_PING)
-            ;PostEvent(Globals::#EVENT_COMBO_PRESSED,EventWindow(),*Me\object,#Null,@*Me\name)
           EndIf
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;    Enable
-      ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Enable
         If *Me\visible And Not *Me\enable
           *Me\enable = #True
           Control::Invalidate(*Me)
         EndIf
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
   
-      ; ------------------------------------------------------------------------
-      ;    Disable
-      ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_Disable
         If *Me\visible And *Me\enable
           *Me\enable = #False
           Control::Invalidate(*Me)
         EndIf
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
   
     EndSelect
     
-    ; ---[ Process Default ]----------------------------------------------------
     ProcedureReturn( #False )
-    
   EndProcedure
-  ;}
   
   
   ; ============================================================================
   ;  IMPLEMENTATION ( CControlCombo )
   ; ============================================================================
-  ;{
-  ; ---[ SetLabel ]-------------------------------------------------------------
   Procedure SetLabel( *Me.ControlCombo_t, value.s )
-    
-    ; ---[ Set String Value ]---------------------------------------------------
     *Me\label = value
-    
   EndProcedure
-  ; ---[ GetLabel ]-------------------------------------------------------------
+  
   Procedure.s GetLabel( *Me.ControlCombo_t )
-    
-    ; ---[ Return String Value ]------------------------------------------------
     ProcedureReturn( *Me\label )
-    
   EndProcedure
-  ; ---[ Free ]-----------------------------------------------------------------
+  
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
   Procedure Delete( *Me.ControlCombo_t )
     Object::TERM(ControlCombo)
-    
   EndProcedure
-  ;}
-  
-  
-  
-  
+
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
   Procedure.i New(*parent.Control::Control_t, name.s, label.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 )
     
-    ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlCombo_t = AllocateStructure(ControlCombo_t)
-    
-;     *Me\VT = ControlComboVT
-;     *Me\classname = "CONTROLCOMBO"
     Object::INI(ControlCombo)
     
-    ; ---[ Init Members ]-------------------------------------------------------
     *Me\type        = Control::#COMBO
     *Me\name        = name
     *Me\parent      = *parent
@@ -313,13 +229,10 @@ Module ControlCombo
 
     If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
     
-    ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
     
   EndProcedure
 
-  
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlCombo )
 EndModule
 
@@ -327,7 +240,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 311
-; FirstLine = 250
-; Folding = ---
+; CursorPosition = 72
+; FirstLine = 57
+; Folding = --
 ; EnableXP

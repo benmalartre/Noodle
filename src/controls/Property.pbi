@@ -70,6 +70,7 @@ DeclareModule ControlProperty
   Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=100)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
+  Declare AddComboControl( *Me.ControlProperty_t,name.s,labels.s, options.i,*attr.Attribute::Attribute_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
   Declare EndGroup( *Me.ControlProperty_t)
   Declare Init( *Me.ControlProperty_t)
@@ -213,6 +214,17 @@ Module ControlProperty
 ;     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARE_CALLBACK(OnStringChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
+  
+  Procedure OnComboChange(*ctl.ControlCombo::ControlCombo_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
+;     Define *array.CArray::CArrayInt = *attr\data
+;     PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
+;     *attr\dirty = #True
+    
+    Debug "on combo changed!!!"
+
+    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
+  EndProcedure
+  Callback::DECLARE_CALLBACK(OnComboChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
   ; ----------------------------------------------------------------------------
   ;  hlpNextItem
@@ -1156,7 +1168,44 @@ EndProcedure
     *Me\dy + *group\sizY 
     ProcedureReturn(*color)
   EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Long Control
+  ;-----------------------------------------------------------------------------
+  Procedure AddComboControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
+    If Not*Me : ProcedureReturn : EndIf
+    
+    Protected Me.ControlProperty::IControlProperty = *Me
+    Protected *Ctl.Control::Control_t
+    *Me\dx = 0
+    Protected width = GadgetWidth(*Me\gadgetID)-10
+    
+    If ListSize(*Me\groups()) And *Me\groups()
+     ControlGroup::RowStart( *Me\groups())
+      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
+      *ctl = ControlCombo::New(*Me,name+"Combo",name,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,22)
+      ControlGroup::Append( *Me\groups(), *ctl  )
+      ControlGroup::RowEnd( *Me\groups())
+    Else
+      RowStart(*Me)
+      Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
+      *ctl = ControlCombo::New(*Me,name+"Combo",name,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,22)
+      Append(*Me, *ctl)
+      RowEnd(*Me)
+    EndIf
 
+     ; Connect Callback
+    If *attr
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnComboChange, *ctl, *attr, 0, 0)
+    EndIf
+    
+    ; Offset for Next Control
+    *Me\dy + 22
+    ProcedureReturn(*ctl)
+  EndProcedure
+  
 
   
   ; ---[ Add Group Control  ]------------------------------------------
@@ -1755,7 +1804,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1382
-; FirstLine = 1330
+; CursorPosition = 72
+; FirstLine = 68
 ; Folding = ---------
 ; EnableXP

@@ -132,7 +132,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 76
+; CursorPosition = 88
+; FirstLine = 67
 ; Folding = --
 ; EnableXP

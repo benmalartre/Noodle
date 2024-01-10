@@ -14,19 +14,19 @@ Structure FibonacciDemo_t Extends DemoApplication_t
   *prototype.Polymesh::Polymesh_t
 EndStructure
   
-Procedure UpdateFibonacciDemo(*Me.FibonacciDemo_t)
-  Define N = *Me\N\value_n
+Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
+  Define N = *demo\N\value_n
   Define mode = 1
-  If N <> *Me\fibonacci\N
-    *Me\fibonacci\N = N
+  If N <> *demo\fibonacci\N
+    *demo\fibonacci\N = N
     Select mode
       Case 0
-        Fibonacci::Sphere(*Me\fibonacci)
+        Fibonacci::Sphere(*demo\fibonacci)
       Case 1
-        Fibonacci::Disc(*Me\fibonacci)
+        Fibonacci::Disc(*demo\fibonacci)
     EndSelect
 
-    Define  *geom.Geometry::PointCloudGeometry_t = *Me\instancer\geom
+    Define  *geom.Geometry::PointCloudGeometry_t = *demo\instancer\geom
     PointCloudGeometry::Init(*geom, N)
     Define i
     Define scl.v3f32
@@ -37,57 +37,58 @@ Procedure UpdateFibonacciDemo(*Me.FibonacciDemo_t)
     Vector3::Set(up, 1, 0, 0)
     
     For i=0 To N - 1
-      CArray::SetValue(*geom\a_positions,i,CArray::GetValue(*Me\fibonacci\positions, i))
+      CArray::SetValue(*geom\a_positions,i,CArray::GetValue(*demo\fibonacci\positions, i))
       CArray::SetValue(*geom\a_normals,i,nrm)
       CArray::SetValue(*geom\a_tangents,i,up)
       Vector3::Set(scl,0.05,0.05,0.05)
       CArray::SetValue(*geom\a_scale,i,scl)
       CArray::SetValueF(*geom\a_size,i,1.0)
     Next
-    PointCloud::SetDirtyState(*Me\instancer, Object3D::#DIRTY_STATE_TOPOLOGY)
-    *Me\scene\dirty = #True
-    Scene::Update(*Me\scene)
+    PointCloud::SetDirtyState(*demo\instancer, Object3D::#DIRTY_STATE_TOPOLOGY)
+    *demo\scene\dirty = #True
+    Scene::Update(*demo\scene)
   EndIf
 EndProcedure
 Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
 Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#DEMO_WITH_ALL)
-  Protected *Me.FibonacciDemo_t = AllocateStructure(FibonacciDemo_t)
-  Init(*Me, name, width, height, options)
-  *Me\fibonacci = Fibonacci::New(1)
-  *Me\updateImpl = @UpdateFibonacciDemo()
-  *Me\instancer = InstanceCloud::New("instancer", Shape::#SHAPE_NONE, 1)
-  *Me\prototype = Polymesh::New("prototype",Shape::#SHAPE_BUNNY)
-  PolymeshGeometry::ToShape(*Me\prototype\geom,*Me\instancer\shape)
+  Protected *demo.FibonacciDemo_t = AllocateStructure(FibonacciDemo_t)
+  Init(*demo, name, width, height, options)
+  *demo\fibonacci = Fibonacci::New(1)
+  *demo\updateImpl = @UpdateFibonacciDemo()
+  *demo\instancer = InstanceCloud::New("instancer", Shape::#SHAPE_NONE, 1)
+  *demo\prototype = Polymesh::New("prototype",Shape::#SHAPE_BUNNY)
+  PolymeshGeometry::ToShape(*demo\prototype\geom,*demo\instancer\shape)
   
-  *Me\model = Model::New("Model")
-  Object3D::AddChild(*Me\model, *Me\instancer)
+  *demo\model = Model::New("Model")
+  Object3D::AddChild(*demo\model, *demo\instancer)
 
-  Scene::AddModel(*Me\scene, *Me\model)
-  Scene::Setup(*Me\scene)
-  If *Me\explorer
-    ExplorerUI::Connect(*Me\explorer, *Me\scene)
-    ExplorerUI::OnEvent(*Me\explorer, Globals::#EVENT_NEW_SCENE, #Null)
-  EndIf
+  Scene::AddModel(*demo\scene, *demo\model)
+  Scene::Setup(*demo\scene)
+  
+  Window::OnEvent(*demo\window, Globals::#EVENT_NEW_SCENE)
 
-  If *Me\property
-    Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*Me\property, "Controls ", "Controls",
-                                                                           0,128,*Me\property\sizX, *Me\property\sizY-128)
-    ControlProperty::AppendStart(*prop)
-    
-    ControlProperty::AddGroup(*prop, "Group")
-    *Me\N = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
-    *Me\N\hard_min = 1
-    *Me\N\hard_max = 4096
-    *Me\N\soft_min = 1
-    *Me\N\soft_max = 1024
-    Callback::CONNECT_CALLBACK(*Me\N\on_change, Update, *Me)
-    ControlProperty::EndGroup(*prop)
-   
-    ControlProperty::AppendStop(*prop)
-    PropertyUI::AddProperty(*Me\property, *prop)
-  EndIf
-  ProcedureReturn *Me
+  Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*demo\property, "Controls ", "Controls",
+                                                                         0,128,*demo\property\sizX, *demo\property\sizY-128)
+  ControlProperty::AppendStart(*prop)
+  
+  ControlProperty::AddGroup(*prop, "Group")
+  *demo\N = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+  *demo\N\hard_min = 1
+  *demo\N\hard_max = 4096
+  *demo\N\soft_min = 1
+  *demo\N\soft_max = 1024
+  Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+  
+  *demo\mode = ControlProperty::AddComboControl(*prop, "Mode", "Mode", 0, #Null)
+;   *demo\mode\items
+  Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+  
+  ControlProperty::EndGroup(*prop)
+ 
+  ControlProperty::AppendStop(*prop)
+  PropertyUI::AddProperty(*demo\property, *prop)
+  ProcedureReturn *demo
 EndProcedure
   
 
@@ -97,7 +98,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 42
+; CursorPosition = 83
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
