@@ -80,7 +80,7 @@ EndProcedure
 Procedure InstanceGrid(*cloud.InstanceCloud::InstanceCloud_t, nx.i, nz.i)
   Protected *geom.Geometry::PointCloudGeometry_t = *cloud\geom
   *geom\nbpoints = nx * nz
-  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
   CArray::SetCount(*positions, *geom\nbpoints)
   Protected x,z
   Protected *p.v3f32
@@ -228,7 +228,7 @@ Procedure Draw(*app.Application::Application_t)
   *ground = CreateGround()
 ;   PointCloudGeometry::PointsOnSphere(*cloud\geom, 10)
   
-  Define *locs.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
+  Define *locs.CArray::CArrayLocation = CArray::New(Types::#TYPE_LOCATION)
   *locs\geometry = *ground\geom
   *locs\transform = *ground\globalT
   Define *points.Geometry::PointCloudGeometry_t = *cloud\geom
@@ -268,8 +268,8 @@ Procedure Draw(*app.Application::Application_t)
 
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 200
-; FirstLine = 196
+; CursorPosition = 230
+; FirstLine = 212
 ; Folding = --
 ; EnableXP
 ; Executable = Test

@@ -455,15 +455,20 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ;  DrawChild
     ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_DrawChild
-      *son = *ev_data
+      *son = *ev_data\datas
       son = *son
       ev_data\xoff    = *son\posX+*Me\posX
       ev_data\yoff    = *son\posY+*Me\posY
+      Debug ev_data\xoff
+      Debug ev_data\yoff
+      Debug *Me\gadgetID
+      Debug *son
+      Debug son
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
-      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+      son\OnEvent( Control::#PB_EventType_Draw, ev_data )
       StopVectorDrawing()
         
     ; ------------------------------------------------------------------------
@@ -944,7 +949,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 518
-; FirstLine = 492
+; CursorPosition = 457
+; FirstLine = 406
 ; Folding = ----
 ; EnableXP

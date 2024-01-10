@@ -383,9 +383,9 @@ Module PropertyUI
     *Me\props(*prop\name) = *prop
     Debug *Me\props(*prop\name)
     
-    If *prop\head
-      Callback::CONNECT_CALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
-    EndIf
+;     If *prop\head
+;       Callback::CONNECT_CALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
+;     EndIf
     Resize(*Me)
   EndProcedure
 
@@ -521,8 +521,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 188
+; CursorPosition = 387
+; FirstLine = 376
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

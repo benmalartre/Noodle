@@ -12,13 +12,15 @@
 
 DeclareModule DemoApplication
   Enumeration
-    #WITH_MENU     = 1 << 1
-    #WITH_TIMELINE = 4 << 2
-    #WITH_EXPLORER = 8 << 3
-    #WITH_PROPERTY = 16 << 4
+    #DEMO_WITH_MENU     = 1 << 1
+    #DEMO_WITH_TIMELINE = 4 << 2
+    #DEMO_WITH_EXPLORER = 8 << 3
+    #DEMO_WITH_PROPERTY = 16 << 4
   EndEnumeration
   
-  #WITH_ALL = #WITH_MENU|#WITH_EXPLORER|#WITH_PROPERTY|#WITH_TIMELINE
+  #DEMO_WITH_ALL = #DEMO_WITH_MENU|#DEMO_WITH_EXPLORER|#DEMO_WITH_PROPERTY|#DEMO_WITH_TIMELINE
+  
+  Prototype UpdateFN(*ptr)
   
   Structure DemoApplication_t Extends Application::Application_t
     *explorer.ExplorerUI::ExplorerUI_t
@@ -27,10 +29,12 @@ DeclareModule DemoApplication
     *viewport.ViewportUI::ViewportUI_t
     *view.View::View_t
     *layer.LayerDefault::LayerDefault_t
+    
+    updateImpl.UpdateFN
   EndStructure
   
-  Declare New (name.s, width.i=1200, height.i=800, options=#WITH_ALL)
-  Declare Draw(*Me.DemoApplication_t)
+  Declare Init (*Me.DemoApplication_t, name.s, width.i=1200, height.i=800, options=#DEMO_WITH_ALL)
+  Declare Update(*Me.DemoApplication_t)
   Declare GetView(*Me.DemoApplication_t)
   
 EndDeclareModule
@@ -38,7 +42,7 @@ EndDeclareModule
 Module DemoApplication
   UseModule OpenGL
   UseModule OpenGLExt
-  Procedure New(name.s, width=1200, height=800, options=#WITH_ALL)
+  Procedure Init(*Me.DemoApplication_t, name.s, width=1200, height=800, options=#DEMO_WITH_ALL)
 
     Globals::Init()
     Time::Init()
@@ -50,16 +54,11 @@ Module DemoApplication
       Alembic::Init()
     CompilerEndIf
    
-    Protected *Me.DemoApplication_t = AllocateStructure(DemoApplication_t)
     *Me\name = name
-
     *Me\window = Window::New(name,0,0,width,height,#PB_Window_SystemMenu|#PB_Window_SizeGadget)
-
     *Me\width = WindowWidth(*Me\window\ID,#PB_Window_InnerCoordinate)
     *Me\height = WindowHeight(*Me\window\ID,#PB_Window_InnerCoordinate)
-  
     *Me\idle = #True
-    
     *Me\scene = Scene::New()
     *Me\camera = Camera::New("Camera",Camera::#Camera_Perspective)
     *Me\handle = Handle::New(*Me\camera)
@@ -69,20 +68,20 @@ Module DemoApplication
     Define.View::View_t *view, *top, *middle, *bottom, *left, *right
     
     *view = *Me\window\main
-    If options & #WITH_MENU
+    If options & #DEMO_WITH_MENU
       View::Split(*view,#PB_Splitter_FirstFixed,25)
       *top = *view\left
       *view = *view\right
       Protected *menu.MenuUI::MenuUI_t = MenuUI::New(*top,"Menu")
     EndIf
-    If options & #WITH_TIMELINE
+    If options & #DEMO_WITH_TIMELINE
       View::Split(*view,#PB_Splitter_SecondMinimumSize|#PB_Splitter_SecondFixed,60)
       *bottom = *view\right
       *view = *view\left
       Protected *timeline.TimelineUI::TimelineUI_t = TimelineUI::New(*bottom,"Timeline")
     EndIf
     
-    If options & #WITH_EXPLORER
+    If options & #DEMO_WITH_EXPLORER
       View::Split(*view,#PB_Splitter_Vertical,20)
       *left = *view\left
       *view = *view\right
@@ -90,7 +89,7 @@ Module DemoApplication
       ExplorerUI::Connect(*Me\explorer, *Me\scene)
     EndIf
     
-     If options & #WITH_PROPERTY
+     If options & #DEMO_WITH_PROPERTY
        View::Split(*view,#PB_Splitter_Vertical,75)
        *Me\property = PropertyUI::New(*view\right,"Property")
       *view = *view\left
@@ -105,10 +104,11 @@ Module DemoApplication
     ProcedureReturn *Me
   EndProcedure
   
-  Procedure Draw(*Me.DemoApplication_t)
+  Procedure Update(*Me.DemoApplication_t)
     GLContext::SetContext(*Me\viewport\context)
-    If Event() = #PB_Event_Menu And EventMenu() > #PB_Event_FirstCustomValue
-      Scene::Update(*Me\scene)
+    If *Me\updateImpl
+      Define fn.UpdateFN = *Me\updateImpl
+      fn(*Me)
     EndIf
 
     LayerDefault::Draw(*Me\layer, *Me\scene, *Me\viewport\context)
@@ -132,7 +132,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 94
+; CursorPosition = 108
 ; FirstLine = 76
 ; Folding = --
 ; EnableXP

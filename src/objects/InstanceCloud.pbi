@@ -127,7 +127,7 @@ Module InstanceCloud
   
   ; Build GL Data
   ;----------------------------------------------------
-  Procedure  BuildGLData(*Me.InstanceCloud_t)
+  Procedure  BuildGLData(*Me.InstanceCloud_t, pgm.i)
     Protected *geom.Geometry::PointCloudGeometry_t = *Me\geom
     Protected *shape.Shape::Shape_t = *Me\shape
     Protected sts.i = GetShapeDataSize(*Me)
@@ -175,6 +175,7 @@ Module InstanceCloud
       CompilerElse
         Define v3i = 3
       CompilerEndIf
+     
       
       glEnableVertexAttribArray(0)
       glVertexAttribPointer(0,v3i,#GL_FLOAT,#GL_FALSE,0,0)
@@ -212,7 +213,6 @@ Module InstanceCloud
       glVertexAttribPointer(9,1,#GL_FLOAT,#GL_FALSE,0,sts*4 + st3*4 + st4)
       glEnableVertexAttribArray(9)
       
-      Protected pgm = GLContext::*SHARED_CTXT\shaders("instances")\pgm
       ; Bind Attributes Locations
       glBindAttribLocation(pgm,0,"s_pos")
       glBindAttribLocation(pgm,1,"s_norm")
@@ -241,7 +241,7 @@ Module InstanceCloud
   ; Setup
   ;----------------------------------------------------
   Procedure Setup(*Me.InstanceCloud_t)
-
+Debug "INSTANCE POINT CLOUD SETUP CALL"
     ;If Not *p\initialized : ProcedureReturn #Null : EndIf
     
     ;Attach Shader
@@ -257,7 +257,7 @@ Module InstanceCloud
   
     ; Update Geometry
     PointCloudGeometry::Update(*Me)
-    BuildGLData(*Me)
+    BuildGLData(*Me, pgm)
     *Me\initialized = #True
     
     glBindBuffer(#GL_ARRAY_BUFFER,0)
@@ -279,7 +279,7 @@ Module InstanceCloud
 ;         PointCloudGeometry::RecomputeNormals(*p\geom,1.0)
         Object3D::BindVAO(@*Me\vao)
         ;glBindBuffer(#GL_ARRAY_BUFFER,*Me\vbo)
-        BuildGLData(*Me)
+        BuildGLData(*Me, GLContext::*SHARED_CTXT\shaders("instances")\pgm)
         ;glBindBuffer(#GL_ARRAY_BUFFER,0)
         glBindVertexArray(0)
         *Me\dirty = Object3D::#DIRTY_STATE_CLEAN
@@ -333,8 +333,8 @@ EndModule
     
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 272
-; FirstLine = 239
+; CursorPosition = 281
+; FirstLine = 231
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

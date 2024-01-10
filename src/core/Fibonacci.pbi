@@ -24,8 +24,8 @@ EndDeclareModule
 Module Fibonacci
   Procedure New(N.i)
     Protected *Me.Fibonacci_t = AllocateStructure(Fibonacci_t)
-    *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\sizes = CArray::New(CArray::#ARRAY_INT)
+    *Me\positions = CArray::New(Types::#TYPE_V3F32)
+    *Me\sizes = CArray::New(Types::#TYPE_INT)
     *Me\N = N
     ProcedureReturn *Me
   EndProcedure
@@ -129,8 +129,8 @@ Module Fibonacci
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 35
-; FirstLine = 21
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 39
+; FirstLine = 22
 ; Folding = --
 ; EnableXP

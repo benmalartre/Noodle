@@ -61,6 +61,7 @@ DeclareModule Control
     input .s
     key   .i
     modif .i
+    *datas
   EndStructure
   
   ; ----------------------------------------------------------------------------
@@ -119,7 +120,7 @@ DeclareModule Control
   Global MARGING.i = 6
   Global PADDING.i = 4
   Global CORNER_RADIUS.f = 4
-  Global FRAME_THICKNESS.f = 2
+  Global FRAME_THICKNESS.f = 0.2
   
 EndDeclareModule
 
@@ -273,11 +274,15 @@ Module Control
   EndProcedure
   ; ---[ Invalidate ]-----------------------------------------------------------
   Procedure.i Invalidate( *Me.Control_t )
+
     ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent And Not *Me\parent\class\name = "View"
-      Protected *obj.IControl = *Me\parent
+      Protected *parent.IControl = *Me\parent
+      Define ev_data.Control::EventTypeDatas_t
+      ev_data\datas = *Me
+      Debug "parent "+*Me\parent\class\name
       ; ...[ Ask Parent To Redraw Me ]..........................................
-      *obj\OnEvent( #PB_EventType_DrawChild, *Me )
+      *parent\OnEvent( #PB_EventType_DrawChild, ev_data )
     EndIf
     
   EndProcedure
@@ -286,9 +291,9 @@ Module Control
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
-      Protected *obj.IControl = *Me\parent
+      Protected *parent.IControl = *Me\parent
       ; ...[ Tell Parent I'm Now Focused ]......................................
-      *obj\OnEvent( #PB_EventType_ChildFocused, *Me )
+      *parent\OnEvent( #PB_EventType_ChildFocused, *Me )
     EndIf
     
   EndProcedure
@@ -297,9 +302,9 @@ Module Control
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
-      Protected *obj.IControl = *Me\parent
+      Protected *parent.IControl = *Me\parent
       ; ...[ Tell Parent I'm Not In Focus Anymore ].............................
-      *obj\OnEvent( #PB_EventType_ChildDeFocused, *Me )
+      *parent\OnEvent( #PB_EventType_ChildDeFocused, *Me )
     EndIf
     
   EndProcedure
@@ -308,9 +313,9 @@ Module Control
     
     ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
-      Protected *obj.IControl = *Me\parent
+      Protected *parent.IControl = *Me\parent
       ; ...[ Ask Parent To Set Cursor For Me ]..................................
-      *obj\OnEvent( #PB_EventType_ChildCursor, cursor_id )
+      *parent\OnEvent( #PB_EventType_ChildCursor, cursor_id )
     EndIf
   EndProcedure
   
@@ -332,8 +337,8 @@ Module Control
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 81
+; CursorPosition = 284
+; FirstLine = 271
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

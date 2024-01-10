@@ -80,7 +80,6 @@ DeclareModule Object3D
     
   EndStructure
   
-  
   Macro OBJECT3DATTR()
     *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
     *Me\stack = Stack::New()
@@ -594,7 +593,7 @@ Module Object3D
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 72
+; CursorPosition = 81
+; FirstLine = 54
 ; Folding = -------
 ; EnableXP

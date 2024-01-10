@@ -2,67 +2,102 @@
 XIncludeFile "../core/Fibonacci.pbi"
 
 UseModule Math
+UseModule DemoApplication
 
-Global N = 256
-Global T.f = 0
-Global *fibonacci.Fibonacci::Fibonacci_t = Fibonacci::New(N)
+Structure FibonacciDemo_t Extends DemoApplication_t
+  *model.Model::Model_t
+  *fibonacci.Fibonacci::Fibonacci_t
+  *N.ControlNumber::ControlNumber_t
+  *mode.ControlCombo::ControlCombo_t
+  
+  *instancer.InstanceCloud::InstanceCloud_t
+  *prototype.Polymesh::Polymesh_t
+EndStructure
+  
+Procedure UpdateFibonacciDemo(*Me.FibonacciDemo_t)
+  Define N = *Me\N\value_n
+  Define mode = 1
+  If N <> *Me\fibonacci\N
+    *Me\fibonacci\N = N
+    Select mode
+      Case 0
+        Fibonacci::Sphere(*Me\fibonacci)
+      Case 1
+        Fibonacci::Disc(*Me\fibonacci)
+    EndSelect
 
-Global mode = 1
-Select mode
-  Case 0
-    Fibonacci::Sphere(*fibonacci)
-  Case 1
-    Fibonacci::Disc(*fibonacci)
-EndSelect
+    Define  *geom.Geometry::PointCloudGeometry_t = *Me\instancer\geom
+    PointCloudGeometry::Init(*geom, N)
+    Define i
+    Define scl.v3f32
+    Vector3::Set(scl, 2,2,2)
+    Define nrm.v3f32
+    Vector3::Set(nrm, 0, 1, 0)
+    Define up.v3f32
+    Vector3::Set(up, 1, 0, 0)
+    
+    For i=0 To N - 1
+      CArray::SetValue(*geom\a_positions,i,CArray::GetValue(*Me\fibonacci\positions, i))
+      CArray::SetValue(*geom\a_normals,i,nrm)
+      CArray::SetValue(*geom\a_tangents,i,up)
+      Vector3::Set(scl,0.05,0.05,0.05)
+      CArray::SetValue(*geom\a_scale,i,scl)
+      CArray::SetValueF(*geom\a_size,i,1.0)
+    Next
+    PointCloud::SetDirtyState(*Me\instancer, Object3D::#DIRTY_STATE_TOPOLOGY)
+    *Me\scene\dirty = #True
+    Scene::Update(*Me\scene)
+  EndIf
+EndProcedure
+Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
-Global *demo.DemoApplication::DemoApplication_t
+Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#DEMO_WITH_ALL)
+  Protected *Me.FibonacciDemo_t = AllocateStructure(FibonacciDemo_t)
+  Init(*Me, name, width, height, options)
+  *Me\fibonacci = Fibonacci::New(1)
+  *Me\updateImpl = @UpdateFibonacciDemo()
+  *Me\instancer = InstanceCloud::New("instancer", Shape::#SHAPE_NONE, 1)
+  *Me\prototype = Polymesh::New("prototype",Shape::#SHAPE_BUNNY)
+  PolymeshGeometry::ToShape(*Me\prototype\geom,*Me\instancer\shape)
+  
+  *Me\model = Model::New("Model")
+  Object3D::AddChild(*Me\model, *Me\instancer)
 
-Global *instancer.InstanceCloud::InstanceCloud_t = InstanceCloud::New("Instancer", Shape::#SHAPE_NONE, *fibonacci\N)
-Global *geom.Geometry::PointCloudGeometry_t = *instancer\geom
+  Scene::AddModel(*Me\scene, *Me\model)
+  Scene::Setup(*Me\scene)
+  If *Me\explorer
+    ExplorerUI::Connect(*Me\explorer, *Me\scene)
+    ExplorerUI::OnEvent(*Me\explorer, Globals::#EVENT_NEW_SCENE, #Null)
+  EndIf
 
-Global *prototype.Polymesh::Polymesh_t = Polymesh::New("mesh",Shape::#SHAPE_BUNNY)
-PolymeshGeometry::ToShape(*prototype\geom,*instancer\shape)
-
-Define *teapot.Object3D::Object3D_t = Polymesh::New("Teapot",Shape::#SHAPE_TEAPOT)
-Define *obj.Object3D::Object3D_t = Polymesh::New("Sphere",Shape::#SHAPE_SPHERE)
-
-
-
-Define i
-Define scl.v3f32
-Vector3::Set(scl, 2,2,2)
-Define nrm.v3f32
-Vector3::Set(nrm, 0, 1, 0)
-
-Debug "Num Fibonacci points "+Str(*fibonacci\N)
-For i=0 To *fibonacci\N - 1
-  CArray::SetValue(*geom\a_positions,i,CArray::GetValue(*fibonacci\positions, i))
-  CArray::SetValue(*geom\a_normals,i,nrm)
-  Vector3::Set(scl,0.05,0.05,0.05)
-  CArray::SetValue(*geom\a_scale,i,scl)
-  CArray::SetValueF(*geom\a_size,i,1.0)
-Next
+  If *Me\property
+    Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*Me\property, "Controls ", "Controls",
+                                                                           0,128,*Me\property\sizX, *Me\property\sizY-128)
+    ControlProperty::AppendStart(*prop)
+    
+    ControlProperty::AddGroup(*prop, "Group")
+    *Me\N = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+    *Me\N\hard_min = 1
+    *Me\N\hard_max = 4096
+    *Me\N\soft_min = 1
+    *Me\N\soft_max = 1024
+    Callback::CONNECT_CALLBACK(*Me\N\on_change, Update, *Me)
+    ControlProperty::EndGroup(*prop)
+   
+    ControlProperty::AppendStop(*prop)
+    PropertyUI::AddProperty(*Me\property, *prop)
+  EndIf
+  ProcedureReturn *Me
+EndProcedure
+  
 
 Define width = 1200
 Define height = 800
 
-*demo = DemoApplication::New("Test Fibonacci",width,height)
-*model = Model::New("Model")
-Object3D::AddChild(*model, *instancer)
-Scene::AddChild(*demo\scene,*obj)
-Scene::AddChild(*demo\scene,*teapot)
-
-Scene::AddModel(*demo\scene, *model)
-Scene::Setup(*demo\scene)
-If *demo\explorer
-  Debug "CONNECT EXPLORER FCK!!"
-  ExplorerUI::Connect(*demo\explorer, *demo\scene)
-  ExplorerUI::OnEvent(*demo\explorer, Globals::#EVENT_NEW_SCENE, #Null)
-EndIf
-
-
- Application::Loop(*demo, DemoApplication::@Draw())
+Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
+ Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 7
+; CursorPosition = 49
+; FirstLine = 42
+; Folding = -
 ; EnableXP

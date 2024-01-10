@@ -277,7 +277,8 @@ Module ControlNumber
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
-    If Not *Me\visible : ProcedureReturn( void ) : EndIf
+    Debug "DRAW CONTROL NUMBER : "+*Me\class\name
+    If Not *Me\visible : ProcedureReturn : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
     VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_LABEL)
@@ -438,6 +439,7 @@ Module ControlNumber
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText(  dtext)
+        
         ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
           MovePathCursor(tx + posXL + xoff, ty)
@@ -467,7 +469,6 @@ Module ControlNumber
 ;{
 ; ---[ OnEvent ]--------------------------------------------------------------
 Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-
 
   ; ---[ Dispatch Event ]-----------------------------------------------------
   Select ev_code
@@ -503,7 +504,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     ; ------------------------------------------------------------------------
     ;  LostFocus
     ; ------------------------------------------------------------------------
-  Case #PB_EventType_LostFocus
+    Case #PB_EventType_LostFocus
       If *Me\focused
         ;restore old value
         If *me\options & #NUMBER_INTEGER
@@ -528,19 +529,19 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
-      ; ------------------------------------------------------------------------
-      ;  Focus
-      ; ------------------------------------------------------------------------
-      Case #PB_EventType_Focus
-        ; ---[ Not Focused Anymore }--------------------------------------------
-        *Me\focused = #True
-        ; ---[ Show Text From Start ]-------------------------------------------
-        *Me\posG = 1 : *Me\posW = 1
-        ; ---[ Redraw Me ]------------------------------------------------------
-        Control::Invalidate(*Me)
-      
-        ; ---[ Processed ]------------------------------------------------------
-        ProcedureReturn( #True )
+    ; ------------------------------------------------------------------------
+    ;  Focus
+    ; ------------------------------------------------------------------------
+    Case #PB_EventType_Focus
+      ; ---[ Not Focused Anymore }--------------------------------------------
+      *Me\focused = #True
+      ; ---[ Show Text From Start ]-------------------------------------------
+      *Me\posG = 1 : *Me\posW = 1
+      ; ---[ Redraw Me ]------------------------------------------------------
+      Control::Invalidate(*Me)
+    
+      ; ---[ Processed ]------------------------------------------------------
+      ProcedureReturn( #True )
         
     ; ------------------------------------------------------------------------
     ;  MouseEnter
@@ -581,7 +582,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If *Me\visible And *Me\enable
         ; ...[ Check Down ]...................................................
         If *Me\down
-
           ; ...[ Sanity Check ]...............................................
           If Not *ev_data : ProcedureReturn : EndIf
           ; ...[ Check Mouse Selecting ]......................................
@@ -609,6 +609,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           
           ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
+
         EndIf
         ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
@@ -662,7 +663,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         *Me\down = #False
         ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        
         Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
         
         ; ...[ Processed ]....................................................
@@ -1212,7 +1212,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 607
-; FirstLine = 583
+; CursorPosition = 470
+; FirstLine = 439
 ; Folding = ----
 ; EnableXP

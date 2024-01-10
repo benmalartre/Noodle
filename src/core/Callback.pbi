@@ -271,9 +271,13 @@ Module Callback
   EndProcedure
   
   Procedure Trigger(*callback.Callback_t, type.i=#SIGNAL_TYPE_PING)
+    Protected *slot.Callback::Slot_t
+    Protected *data
     If *callback
       ForEach *callback\slots()
-        *callback\slots()\callback(*callback\slots()\datas)
+        *slot = *callback\slots()
+        *data = *slot\datas
+        *slot\callback(*data)
       Next
     EndIf
   EndProcedure
@@ -295,6 +299,7 @@ Module Callback
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 268
+; CursorPosition = 279
+; FirstLine = 233
 ; Folding = ---
 ; EnableXP

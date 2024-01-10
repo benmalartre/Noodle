@@ -14,15 +14,15 @@ DeclareModule ControlTimeline
   ;  GLOBALS
   ; ============================================================================
   ; ---[ Constants ]------------------------------------------------------------
-  #NUMBERWIDTH    = 45
-  #BUTTONSIZE    = 20
-  #BUTTONSPACING = 24
+  #NUMBER_WIDTH    = 45
+  #BUTTON_SIZE    = 20
+  #BUTTON_SPACING = 24
  
   #TIMER = 128
   Enumeration
-    #PLAYALLFRAMES
-    #PLAYREALTIME
-    #PLAYCUSTOMRATE
+    #PLAY_ALL_FRAMES
+    #PLAY_REAL_TIME
+    #PLAY_CUSTOM_RATE
   EndEnumeration
 
   ; ----------------------------------------------------------------------------
@@ -118,13 +118,11 @@ DeclareModule ControlTimeline
   Global CLASS.Class::Class_t
 EndDeclareModule
 
-Module ControlTimeline
+Module ControlTimeline  
   ; ============================================================================
   ;  IMPLEMENTATION ( Helpers )
   ; ============================================================================
   ;{
-  
-  
   Procedure.i hlpGetStep(r.i)
     Protected f.f = Round((r/10), #PB_Round_Nearest) 
     Protected m.i = Math::Max(Int(f),1)
@@ -256,13 +254,8 @@ Module ControlTimeline
   ;  hlpDraw
   ; ----------------------------------------------------------------------------
   Procedure hlpDraw( *Me.ControlTimeline_t )
-  
-    ;---[ Draw All]----------------------------------------------------------------
     hlpDrawControls( *Me )
     hlpDrawFrames( *Me )
-    
-    ;---[ Draw Picking Tags ]---------------------------------------------------
-    hlpDrawPickImage( *Me)
   EndProcedure
   
   Procedure OnTimer(*Me.Time::Timeable_t)
@@ -307,14 +300,14 @@ Module ControlTimeline
     
     
     Control::Resize(*Me\c_firstframe,w,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_previousframe,w+#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_playbackward,w+2*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_stopplayback,w+3*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_playforward,w+4*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_nextframe,w+5*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_lastframe,w+6*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_playloop,w+7*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
-    Control::Resize(*Me\c_currentframe,w+8*#BUTTONSPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_previousframe,w+#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_playbackward,w+2*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_stopplayback,w+3*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_playforward,w+4*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_nextframe,w+5*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_lastframe,w+6*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_playloop,w+7*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
+    Control::Resize(*Me\c_currentframe,w+8*#BUTTON_SPACING,t,#PB_Ignore,#PB_Ignore)
     
     Control::Resize(*Me\c_playbackrate,w-140,t,#PB_Ignore,#PB_Ignore)
     
@@ -390,7 +383,7 @@ Module ControlTimeline
         ;  DrawChild
         ; ------------------------------------------------------------------------
         Case Control::#PB_EventType_DrawChild
-          *son.Control::Control_t = *ev_data
+          *son.Control::Control_t = *ev_data\datas
           son.Control::IControl    = *son
           ev_data\xoff    = *son\posX
           ev_data\yoff    = *son\posY
@@ -1092,14 +1085,14 @@ Module ControlTimeline
     Protected w = *Me\sizX/2-128
     Protected t = height/5*2+2
     
-    *Me\c_firstframe =    ControlIcon::New(*Me,"FirstFrame"    ,Icon::#ICON_FIRSTFRAME   ,0                 ,#False,w,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_previousframe = ControlIcon::New(*Me,"PreviousFrame" ,Icon::#ICON_FIRSTFRAME   ,0                 ,#False,w+32,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playbackward =  ControlIcon::New(*Me,"PlayBackward"  ,Icon::#ICON_PLAYBACKWARD ,#PB_Button_Toggle ,#False,w+64,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_stopplayback =  ControlIcon::New(*Me,"StopPlayback"  ,Icon::#ICON_STOP         ,0                 ,#False,w+96,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playforward =   ControlIcon::New(*Me,"PlayForward"   ,Icon::#ICON_PLAYFORWARD  ,#PB_Button_Toggle ,#False,w+128,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_nextframe =     ControlIcon::New(*Me,"NextFrame"     ,Icon::#ICON_LASTFRAME    ,0                 ,#False,w+160,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_lastframe =     ControlIcon::New(*Me,"LastFrame"     ,Icon::#ICON_LASTFRAME    ,0                 ,#False,w+192,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
-    *Me\c_playloop =      ControlIcon::New(*Me,"PlayLoop"      ,Icon::#ICON_LOOP         ,#PB_Button_Toggle ,#False,w+224,t,ControlTimeline::#ButtonSize,ControlTimeline::#ButtonSize)
+    *Me\c_firstframe =    ControlIcon::New(*Me,"FirstFrame"    ,Icon::#ICON_FIRSTFRAME   ,0                 ,#False, w,     t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_previousframe = ControlIcon::New(*Me,"PreviousFrame" ,Icon::#ICON_FIRSTFRAME   ,0                 ,#False, w+32,  t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_playbackward =  ControlIcon::New(*Me,"PlayBackward"  ,Icon::#ICON_PLAYBACKWARD ,#PB_Button_Toggle ,#False, w+64,  t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_stopplayback =  ControlIcon::New(*Me,"StopPlayback"  ,Icon::#ICON_STOP         ,0                 ,#False, w+96,  t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_playforward =   ControlIcon::New(*Me,"PlayForward"   ,Icon::#ICON_PLAYFORWARD  ,#PB_Button_Toggle ,#False, w+128, t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_nextframe =     ControlIcon::New(*Me,"NextFrame"     ,Icon::#ICON_LASTFRAME    ,0                 ,#False, w+160, t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_lastframe =     ControlIcon::New(*Me,"LastFrame"     ,Icon::#ICON_LASTFRAME    ,0                 ,#False, w+192, t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
+    *Me\c_playloop =      ControlIcon::New(*Me,"PlayLoop"      ,Icon::#ICON_LOOP         ,#PB_Button_Toggle ,#False, w+224, t, ControlTimeline::#BUTTON_SIZE, ControlTimeline::#BUTTON_SIZE)
     
     Append(*Me,*Me\c_firstframe)
     Append(*Me,*Me\c_previousframe)
@@ -1112,8 +1105,6 @@ Module ControlTimeline
     
     Protected Me.ControlTimeline::IControlTimeline = *Me
     Protected *ctrl.Control::Control_t = *Me\c_currentframe
-    Debug "control : "+Str(*ctrl)
-    Debug "callback : "+Str(*ctrl\on_change)
     Callback::CONNECT_CALLBACK(*ctrl\on_change, OnSetCurrentFrame, *Me)
     *ctrl.Control::Control_t = *Me\c_startframe
     Callback::CONNECT_CALLBACK(*ctrl\on_change, OnSetStartFrame, *Me)
@@ -1142,7 +1133,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 979
-; FirstLine = 913
+; CursorPosition = 385
+; FirstLine = 378
 ; Folding = -------
 ; EnableXP

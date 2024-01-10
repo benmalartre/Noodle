@@ -1380,7 +1380,7 @@ EndProcedure
       ;  DrawChild
       ; ------------------------------------------------------------------------
       Case Control::#PB_EventType_DrawChild
-        *son.Control::Control_t = *ev_data
+        *son.Control::Control_t = *ev_data\datas
         son.Control::IControl    = *son
         ev_data\xoff    = *son\posX
         ev_data\yoff    = *son\posY
@@ -1755,7 +1755,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 150
+; CursorPosition = 1382
+; FirstLine = 1330
 ; Folding = ---------
 ; EnableXP
