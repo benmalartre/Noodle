@@ -605,8 +605,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf 
 
           ; ---[ Send 'OnChanged' Signal ]------------------------------------
-          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
-          PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
+          Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
           
           ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
@@ -1213,7 +1212,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1196
-; FirstLine = 1149
+; CursorPosition = 607
+; FirstLine = 583
 ; Folding = ----
 ; EnableXP

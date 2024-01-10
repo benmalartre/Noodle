@@ -751,7 +751,7 @@ Module Scene
 ; 
 ;   *box = Polymesh::New("Box",Shape::#SHAPE_CUBE)
 ;   
-;   Define *samples.CArray::CArrayLocation = CArray::New(CArray::#ARRAY_LOCATION)
+;   Define *samples.CArray::CArrayLocation = CArray::New(Types::#TYPE_LOCATION)
 ;   *samples\geometry = *ground\geom
 ;   *samples\transform = *ground\globalT
 ;   Sampler::SamplePolymesh(*ground\geom,*samples,256,7)
@@ -762,15 +762,15 @@ Module Scene
 ;   *merged\wireframe = #False
 ;   Define *mgeom.Geometry::PolymeshGeometry_t = *merged\geom
 ;   
-;   Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+;   Define *topos.CArray::CArrayPtr = CArray::New(Types::#TYPE_PTR)
 ;   Define *ggeom.Geometry::PolymeshGeometry_t = *ground\geom
 ;   Define *gtopo.Geometry::Topology_t = *ggeom\topo
 ;   Define i
 ;       
 ;   Define *bgeom.Geometry::PolymeshGeometry_t = *bunny\geom
 ;   
-;   Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
-;   Define *matrices.CArray::CarrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
+;   Define *topos.CArray::CArrayPtr = CArray::New(Types::#TYPE_PTR)
+;   Define *matrices.CArray::CarrayM4F32 = CArray::New(Types::#TYPE_M4F32)
 ;   Define m.m4f32
 ;   Define pos.v3f32
 ;     
@@ -855,11 +855,11 @@ Module Scene
     Object::INI(Scene)
     
     ; Create Containers
-    *Me\models = CArray::New(CArray::#ARRAY_PTR)
-    *Me\objects = CArray::New(CArray::#ARRAY_PTR)
-    *Me\cameras = CArray::New(CArray::#ARRAY_PTR)
-    *Me\lights = CArray::New(CArray::#ARRAY_PTR)
-    *Me\helpers = CArray::New(CArray::#ARRAY_PTR)
+    *Me\models = CArray::New(Types::#TYPE_PTR)
+    *Me\objects = CArray::New(Types::#TYPE_PTR)
+    *Me\cameras = CArray::New(Types::#TYPE_PTR)
+    *Me\lights = CArray::New(Types::#TYPE_PTR)
+    *Me\helpers = CArray::New(Types::#TYPE_PTR)
 
     ; Create Root
     *Me\selection = Selection::New()
@@ -895,7 +895,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 886
-; FirstLine = 834
+; CursorPosition = 861
+; FirstLine = 795
 ; Folding = --------
 ; EnableXP

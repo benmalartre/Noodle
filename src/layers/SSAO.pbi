@@ -89,7 +89,7 @@ Module LayerSSAO
     *layer\u_noise_scale = glGetUniformLocation(*s_ssao\pgm, "noise_scale")
     
     If Not *layer\kernel
-      *layer\kernel = CArray::New(CArray::#ARRAY_V3F32)
+      *layer\kernel = CArray::New(Types::#TYPE_V3F32)
     EndIf
     
     CArray::SetCount(*layer\kernel,*layer\nbsamples)
@@ -110,7 +110,7 @@ Module LayerSSAO
 
     
     If Not *layer\noise
-      *layer\noise = CArray::New(CArray::#ARRAY_V3F32)
+      *layer\noise = CArray::New(Types::#TYPE_V3F32)
     EndIf
     
     Protected ns = *layer\noise_size * *layer\noise_size
@@ -241,8 +241,8 @@ Module LayerSSAO
   
   Class::DEF(LayerSSAO)
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 211
-; FirstLine = 198
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 112
+; FirstLine = 87
 ; Folding = --
 ; EnableXP

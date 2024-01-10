@@ -130,7 +130,7 @@ Module Locator
     Protected pos.v3f32
     Protected theta.f 
     Protected i
-    Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Protected *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
     
     Select *Me\icon
       Case #Icon_Default
@@ -342,8 +342,8 @@ EndModule
 ;==============================================================================
 ; EOF
 ;==============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 310
-; FirstLine = 269
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 132
+; FirstLine = 128
 ; Folding = ---
 ; EnableXP

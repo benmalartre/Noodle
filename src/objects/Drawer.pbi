@@ -706,8 +706,8 @@ Module Drawer
   Procedure AddPoint(*Me.Drawer_t, *position.Math::v3f32)
     Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
-    *point\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *point\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *point\positions = CArray::New(Types::#TYPE_V3F32)
+    *point\colors = CArray::New(Types::#TYPE_C4F32)
     *point\dirty  = #DIRTY_TOPOLOGY
     SetColor(*point, Color::BLACK)
     CArray::SetCount(*point\positions, 1)
@@ -725,8 +725,8 @@ Module Drawer
     Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
-      *point\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *point\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *point\positions = CArray::New(Types::#TYPE_V3F32)
+      *point\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::Copy(*point\positions, *positions)
       CArray::SetCount(*point\colors, CArray::GetCount(*point\positions))
     EndIf
@@ -743,8 +743,8 @@ Module Drawer
     Protected *point.Point_t = AllocateStructure(Point_t)
     *point\type = #ITEM_POINT
     If CArray::GetCount(*positions)
-      *point\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *point\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *point\positions = CArray::New(Types::#TYPE_V3F32)
+      *point\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::Copy(*point\positions, *positions)
       CArray::Copy(*point\colors, *colors)
     EndIf
@@ -760,8 +760,8 @@ Module Drawer
   Procedure AddLine(*Me.Drawer_t, *start.Math::v3f32, *end.Math::v3f32)
     Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
-    *line\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *line\positions = CArray::New(Types::#TYPE_V3F32)
+    *line\colors = CArray::New(Types::#TYPE_C4F32)
     *line\dirty  = #DIRTY_TOPOLOGY
     CArray::SetCount(*line\positions, 2)
     CArray::SetValue(*line\positions, 0, *start)
@@ -779,8 +779,8 @@ Module Drawer
     Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
-      *line\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *line\positions = CArray::New(Types::#TYPE_V3F32)
+      *line\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::Copy(*line\positions, *positions)
       CArray::SetCount(*line\colors, CArray::GetCount(*line\positions))
     EndIf
@@ -798,8 +798,8 @@ Module Drawer
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
     If nbp And nbp = CArray::GetCount(*end)
-      *line\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *line\positions = CArray::New(Types::#TYPE_V3F32)
+      *line\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::SetCount(*line\positions, nbp*2)
       CArray::SetCount(*line\colors, nbp*2)
       Define i
@@ -821,8 +821,8 @@ Module Drawer
     Protected *line.Line_t = AllocateStructure(Line_t)
     *line\type = #ITEM_LINE
     If CArray::GetCount(*positions)
-      *line\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *line\positions = CArray::New(Types::#TYPE_V3F32)
+      *line\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::Copy(*line\positions, *positions)
       CArray::Copy(*line\colors, *colors)
     EndIf
@@ -839,8 +839,8 @@ Module Drawer
     *line\type = #ITEM_LINE
     Define nbp = CArray::GetCount(*start)
     If nbp And nbp = CArray::GetCount(*end)
-      *line\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *line\colors = CArray::New(CArray::#ARRAY_C4F32)
+      *line\positions = CArray::New(Types::#TYPE_V3F32)
+      *line\colors = CArray::New(Types::#TYPE_C4F32)
       CArray::SetCount(*line\positions, nbp*2)
       CArray::SetCount(*line\colors, nbp*2)
       Define i
@@ -863,9 +863,9 @@ Module Drawer
     Protected *strip.Strip_t = AllocateStructure(Strip_t)
     *strip\type = #ITEM_STRIP
     If CArray::GetCount(*positions)
-      *strip\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *strip\colors = CArray::New(CArray::#ARRAY_C4F32)
-      *strip\indices = CArray::New(CArray::#ARRAY_LONG)
+      *strip\positions = CArray::New(Types::#TYPE_V3F32)
+      *strip\colors = CArray::New(Types::#TYPE_C4F32)
+      *strip\indices = CArray::New(Types::#TYPE_LONG)
       CArray::Copy(*strip\positions, *positions)
       CArray::SetCount(*strip\colors, CArray::GetCount(*strip\positions))
       If Not *indices = #Null
@@ -886,9 +886,9 @@ Module Drawer
     Protected *loop.Loop_t = AllocateStructure(Loop_t)
     *loop\type = #ITEM_LOOP
     If CArray::GetCount(*positions)
-      *loop\positions = CArray::New(CArray::#ARRAY_V3F32)
-      *loop\colors = CArray::New(CArray::#ARRAY_C4F32)
-      *loop\indices = CArray::New(CArray::#ARRAY_LONG)
+      *loop\positions = CArray::New(Types::#TYPE_V3F32)
+      *loop\colors = CArray::New(Types::#TYPE_C4F32)
+      *loop\indices = CArray::New(Types::#TYPE_LONG)
       CArray::Copy(*loop\positions, *positions)
       CArray::SetCount(*loop\colors, CArray::GetCount(*loop\positions))
       If Not *indices = #Null
@@ -908,8 +908,8 @@ Module Drawer
   Procedure AddBox(*Me.Drawer_t, *m.Math::m4f32)
     Protected *box.Box_t = AllocateStructure(Box_t)
     *box\type = #ITEM_BOX
-    *box\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *box\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *box\positions = CArray::New(Types::#TYPE_V3F32)
+    *box\colors = CArray::New(Types::#TYPE_C4F32)
     *box\wireframe = #True
     Matrix4::SetFromOther(*box\m, *m)
     CArray::SetCount(*box\positions, 8)
@@ -935,8 +935,8 @@ Module Drawer
   Procedure AddSphere(*Me.Drawer_t, *m.Math::m4f32)
     Protected *sphere.Sphere_t = AllocateStructure(Sphere_t)
     *sphere\type = #ITEM_SPHERE
-    *sphere\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *sphere\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *sphere\positions = CArray::New(Types::#TYPE_V3F32)
+    *sphere\colors = CArray::New(Types::#TYPE_C4F32)
     *sphere\dirty  = #DIRTY_TOPOLOGY
     Matrix4::SetFromOther(*sphere\m, *m)
     CArray::SetCount(*sphere\positions, Shape::#SPHERE_NUM_VERTICES)
@@ -961,7 +961,7 @@ Module Drawer
   Procedure AddMatrix(*Me.Drawer_t, *m.Math::m4f32)
     Protected *matrix.Matrix_t = AllocateStructure(Matrix_t)
     *matrix\type = #ITEM_MATRIX
-    *matrix\positions = CArray::New(CArray::#ARRAY_V3F32)
+    *matrix\positions = CArray::New(Types::#TYPE_V3F32)
     *matrix\dirty  = #DIRTY_TOPOLOGY
     Matrix4::SetFromOther(*matrix\m, *m)
     CArray::SetCount(*matrix\positions, Shape::#AXIS_NUM_VERTICES)
@@ -978,8 +978,8 @@ Module Drawer
   Procedure AddTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32)
     Protected *triangle.Triangle_t = AllocateStructure(Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
-    *triangle\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *triangle\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *triangle\positions = CArray::New(Types::#TYPE_V3F32)
+    *triangle\colors = CArray::New(Types::#TYPE_C4F32)
     *triangle\dirty  = #DIRTY_TOPOLOGY
     CArray::Copy(*triangle\positions, *positions)
     CArray::SetCount(*triangle\colors, CArray::GetCount(*triangle\positions))
@@ -994,8 +994,8 @@ Module Drawer
   Procedure AddColoredTriangle(*Me.Drawer_t, *positions.CArray::CArrayV3F32, *colors.CArray::CArrayC4F32)
     Protected *triangle.Triangle_t = AllocateStructure(Triangle_t)
     *triangle\type = #ITEM_TRIANGLE
-    *triangle\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *triangle\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *triangle\positions = CArray::New(Types::#TYPE_V3F32)
+    *triangle\colors = CArray::New(Types::#TYPE_C4F32)
     *triangle\dirty  = #DIRTY_TOPOLOGY
     CArray::Copy(*triangle\positions, *positions)
     CArray::Copy(*triangle\colors, *colors)
@@ -1009,8 +1009,8 @@ Module Drawer
   Procedure AddText(*Me.Drawer_t, *position.Math::v3f32, text.s)
     Protected *text.Text_t = AllocateStructure(Text_t)
     *text\type = #ITEM_TEXT
-    *text\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *text\colors = CArray::New(CArray::#ARRAY_C4F32)
+    *text\positions = CArray::New(Types::#TYPE_V3F32)
+    *text\colors = CArray::New(Types::#TYPE_C4F32)
     *text\text = text
     *text\size = size
     *text\dirty  = #DIRTY_TOPOLOGY
@@ -1044,7 +1044,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 526
-; FirstLine = 504
+; CursorPosition = 1012
+; FirstLine = 946
 ; Folding = ---------
 ; EnableXP

@@ -904,7 +904,7 @@ Module PolymeshGeometry
   Procedure EnvelopeColors(*mesh.PolymeshGeometry_t,*weights.CArray::CArrayC4F32,*indices.CArray::CArrayC4U8,nbdeformers.i)
     Protected i
     Protected x,z
-    Protected *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+    Protected *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
     Protected *color.c4f32
     Protected *ids.c4u8
     CArray::SetCount(*colors,nbdeformers)
@@ -983,7 +983,7 @@ Module PolymeshGeometry
   Procedure RandomColorByIsland(*mesh.PolymeshGeometry_t)
     Protected f,nbv,v,i
     CArray::SetCount(*mesh\a_colors, *mesh\nbsamples)
-    Protected *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+    Protected *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
     CArray::SetCount(*colors, *mesh\nbislands)
     Define *c.c4f32
     For i=0 To *mesh\nbislands-1
@@ -1064,7 +1064,7 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure Update(*mesh.PolymeshGeometry_t)
   
-    Protected *pos.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Protected *pos.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
     GetPointsPosition(*mesh,*pos)
     
     Protected i
@@ -1500,14 +1500,14 @@ Module PolymeshGeometry
   Procedure GrowVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-    Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *neighbors.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     Dim selected.b(*mesh\nbpoints)
     Define i, j, idx
     For i=0 To CArray::GetCount(*vertices)-1
       selected(CArray::GetValueL(*vertices, i)) = #True
     Next
     
-    Define *extend.CArray::CarrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *extend.CArray::CarrayLong = CArray::New(Types::#TYPE_LONG)
     For i=0 To CArray::GetCount(*vertices)-1
       GetVertexNeighbors(*mesh, CArray::GetValueL(*vertices, i), *neighbors)  
       For j=0 To CArray::GetCount(*neighbors)-1
@@ -1529,14 +1529,14 @@ Module PolymeshGeometry
   Procedure ShrinkVertexNeighbors(*mesh.Geometry::PolymeshGeometry_t, *vertices.CArray::CArrayLong)
     Define *first.Geometry::HalfEdge_t
     Define *current.Geometry::HalfEdge_t
-    Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *neighbors.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     Dim selected.b(*mesh\nbpoints)
     Define i, j, idx, n, x
     For i=0 To CArray::GetCount(*vertices)-1
       selected(CArray::GetValueL(*vertices, i)) = #True
     Next
     
-    Define *remove.CArray::CarrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *remove.CArray::CarrayLong = CArray::New(Types::#TYPE_LONG)
     For i=0 To CArray::GetCount(*vertices)-1
       idx = CArray::GetValueL(*vertices, i)
       GetVertexNeighbors(*mesh, idx, *neighbors)  
@@ -1574,7 +1574,7 @@ Module PolymeshGeometry
     FillMemory(@visited(0), *mesh\nbpoints, 0, #PB_Byte)
     NewList seeds.i()
     NewList nexts.i()
-    Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *neighbors.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     
     Define i, j, n
     Define islandIndex = 0
@@ -1716,8 +1716,8 @@ Module PolymeshGeometry
   Procedure GetPolygonIslands(*mesh.PolymeshGeometry_t)
   
     Protected nbIslands = 0
-    Protected *in.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
-    Protected *out.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+    Protected *in.CArray::CArrayPtr = CArray::New(Types::#TYPE_PTR)
+    Protected *out.CArray::CArrayPtr = CArray::New(Types::#TYPE_PTR)
     Protected *vertex.Vertex_t
     Protected v
     Protected closed.b=#False
@@ -1805,8 +1805,8 @@ Module PolymeshGeometry
   ;---------------------------------------------------------
   Procedure Torus(*geom.PolymeshGeometry_t)
   
-    Define *vertices.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-    Define *indices.CArray::CArrayInt = CArray::New(CArray::#ARRAY_INT)
+    Define *vertices.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+    Define *indices.CArray::CArrayInt = CArray::New(Types::#TYPE_INT)
     
     Define v=0
     Define p.v3f32
@@ -2400,25 +2400,25 @@ Module PolymeshGeometry
     Object::INI(PolymeshGeometry)
     *Me\parent = *parent
 
-    *Me\a_faceindices = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_facecount = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_triangleindices = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_edgeindices = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_positions = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_velocities = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_normals = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_tangents = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_pointnormals = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_polygonnormals = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_uvws = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_colors = CArray::New(CArray::#ARRAY_C4F32)
-    *Me\a_vertexpolygoncount = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_vertexpolygonindices = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_polygonareas = CArray::New(CArray::#ARRAY_FLOAT)
-    *Me\a_triangleareas = CArray::New(CArray::#ARRAY_FLOAT)
-    *Me\a_islands = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_vertexhalfedge = CArray::New(CArray::#ARRAY_LONG)
-    *Me\a_halfedges = CArray::New(CArray::#ARRAY_PTR)
+    *Me\a_faceindices = CArray::New(Types::#TYPE_LONG)
+    *Me\a_facecount = CArray::New(Types::#TYPE_LONG)
+    *Me\a_triangleindices = CArray::New(Types::#TYPE_LONG)
+    *Me\a_edgeindices = CArray::New(Types::#TYPE_LONG)
+    *Me\a_positions = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_velocities = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_normals = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_tangents = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_pointnormals = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_polygonnormals = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_uvws = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_colors = CArray::New(Types::#TYPE_C4F32)
+    *Me\a_vertexpolygoncount = CArray::New(Types::#TYPE_LONG)
+    *Me\a_vertexpolygonindices = CArray::New(Types::#TYPE_LONG)
+    *Me\a_polygonareas = CArray::New(Types::#TYPE_FLOAT)
+    *Me\a_triangleareas = CArray::New(Types::#TYPE_FLOAT)
+    *Me\a_islands = CArray::New(Types::#TYPE_LONG)
+    *Me\a_vertexhalfedge = CArray::New(Types::#TYPE_LONG)
+    *Me\a_halfedges = CArray::New(Types::#TYPE_PTR)
     
     *Me\topo  = Topology::New()
     *Me\base = Topology::New()
@@ -2462,7 +2462,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 127
-; FirstLine = 111
+; CursorPosition = 2420
+; FirstLine = 2340
 ; Folding = -----g-----+-
 ; EnableXP

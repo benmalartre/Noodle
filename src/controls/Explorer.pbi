@@ -1029,13 +1029,13 @@ Module ControlExplorer
   ;------------------------------------------------------------------
   ; Callback / Slots Messages
   ;------------------------------------------------------------------
-  Procedure ConnectCallbacksSlots(*Me.ControlExplorer_t)
+  Procedure ConnectCallbacks(*Me.ControlExplorer_t)
   ;   Protected Me.Explorer = *Me
   ;   
-  ;   Me\CallbackConnect(*Me\scene\CallbackOnChanged(),0)
-  ;   Me\CallbackConnect(*Me\context\CallbackOnChanged(),1)
-  ;   Me\CallbackConnect(*Me\search\CallbackOnChanged(),2)
-  ;   Me\CallbackConnect(*Me\show\CallbackOnChanged(),3)
+;     Me\CallbackConnect(*Me\scene\CallbackOnChanged(),0)
+;     Me\CallbackConnect(*Me\context\CallbackOnChanged(),1)
+;     Me\CallbackConnect(*Me\search\CallbackOnChanged(),2)
+;     Me\CallbackConnect(*Me\show\CallbackOnChanged(),3)
   EndProcedure
   
   ;------------------------------------------------------------------
@@ -1149,7 +1149,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 935
-; FirstLine = 913
+; CursorPosition = 1037
+; FirstLine = 1007
 ; Folding = --4---
 ; EnableXP

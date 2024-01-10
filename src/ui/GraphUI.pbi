@@ -153,7 +153,7 @@ Module GraphUI
     *Me\drag = #False
     *Me\redraw = #True
     *Me\connect = #False
-    *Me\a_selected = CArray::New(CArray::#ARRAY_PTR)
+    *Me\a_selected = CArray::New(Types::#TYPE_PTR)
 
     ; Init
     *Me\dirty = #True
@@ -1567,7 +1567,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 312
-; FirstLine = 308
+; CursorPosition = 155
+; FirstLine = 151
 ; Folding = --------
 ; EnableXP

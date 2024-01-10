@@ -52,11 +52,11 @@ Module Vertex
     *Me\id = index
     *Me\visited = #False
     ; ----[ Initialize ]--------------------------------------------------------
-    *Me\samples = CArray::New(CArray::#ARRAY_PTR)
-    *Me\edges = CArray::New(CArray::#ARRAY_PTR)
-    *Me\polygons = CArray::New(CArray::#ARRAY_PTR)
-    *Me\neighbors = CArray::New(CArray::#ARRAY_PTR)
-    *Me\triangles = CArray::New(CArray::#ARRAY_PTR)
+    *Me\samples = CArray::New(Types::#TYPE_PTR)
+    *Me\edges = CArray::New(Types::#TYPE_PTR)
+    *Me\polygons = CArray::New(Types::#TYPE_PTR)
+    *Me\neighbors = CArray::New(Types::#TYPE_PTR)
+    *Me\triangles = CArray::New(Types::#TYPE_PTR)
   
     
     ProcedureReturn *Me
@@ -190,8 +190,8 @@ Module Vertex
  
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 40
-; FirstLine = 28
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 58
+; FirstLine = 50
 ; Folding = ---
 ; EnableXP

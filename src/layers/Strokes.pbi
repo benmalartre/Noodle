@@ -253,7 +253,7 @@ Module LayerStroke
     GLCheckError("attach re der strokes")
     
     *Me\pov = *pov
-    *Me\strokes = CArray::New(CArray::#ARRAY_PTR)
+    *Me\strokes = CArray::New(Types::#TYPE_PTR)
     *Me\radius = 0.01
     Setup(*Me,*ctx)
     GLCheckError("setup strokes")
@@ -267,7 +267,7 @@ Module LayerStroke
   Class::DEF( LayerStroke )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 219
-; FirstLine = 195
+; CursorPosition = 255
+; FirstLine = 201
 ; Folding = ---
 ; EnableXP

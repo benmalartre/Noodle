@@ -74,6 +74,7 @@ Module SetDataNode
           NodePort::InitFromReference(*input,*node\attribute)
           *node\state = Graph::#Node_StateOK
           *node\errorstr = ""
+          
         ; If Attribute NOT Exist Create It
         Else
           *input = Node::GetPortByName(*node,"Data")
@@ -82,31 +83,31 @@ Module SetDataNode
               Protected *datas.CArray::CArrayT
               Select \datatype
                 Case Attribute::#ATTR_TYPE_BOOL
-                  *datas = CArray::New(CArray::#ARRAY_BOOL)
+                  *datas = CArray::New(Types::#TYPE_BOOL)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_LONG
-                  *datas = CArray::New(CArray::#ARRAY_LONG)
+                  *datas = CArray::New(Types::#TYPE_LONG)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_INTEGER
-                  *datas = CArray::New(CArray::#ARRAY_INT)
+                  *datas = CArray::New(Types::#TYPE_INT)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_FLOAT
-                  *datas = CArray::New(CArray::#ARRAY_FLOAT)
+                  *datas = CArray::New(Types::#TYPE_FLOAT)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR2
-                  *datas = CArray::New(CArray::#ARRAY_V2F32)
+                  *datas = CArray::New(Types::#TYPE_V2F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_VECTOR3
-                  *datas = CArray::New(CArray::#ARRAY_V3F32)
+                  *datas = CArray::New(Types::#TYPE_V3F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_QUATERNION
-                  *datas = CArray::New(CArray::#ARRAY_Q4F32)
+                  *datas = CArray::New(Types::#TYPE_Q4F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX3
-                  *datas = CArray::New(CArray::#ARRAY_M3F32)
+                  *datas = CArray::New(Types::#TYPE_M3F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
                 Case Attribute::#ATTR_TYPE_MATRIX4
-                  *datas = CArray::New(CArray::#ARRAY_M4F32)
+                  *datas = CArray::New(Types::#TYPE_M4F32)
                   CArray::Copy(*datas, *input\source\attribute\data)
               EndSelect
               
@@ -347,9 +348,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 331
-; FirstLine = 304
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 108
+; FirstLine = 65
 ; Folding = --
 ; EnableThread
 ; EnableXP

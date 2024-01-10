@@ -44,10 +44,10 @@ Module Poisson
   Procedure New()
     Protected *Me.Poisson_t = AllocateStructure(Poisson_t)
     
-    *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\samples = CArray::New(CArray::#ARRAY_INT)
-    *Me\distances = CArray::New(CArray::#ARRAY_FLOAT)
-    *Me\hits = CArray::New(CArray::#ARRAY_BOOL)
+    *Me\positions = CArray::New(Types::#TYPE_V3F32)
+    *Me\samples = CArray::New(Types::#TYPE_INT)
+    *Me\distances = CArray::New(Types::#TYPE_FLOAT)
+    *Me\hits = CArray::New(Types::#TYPE_BOOL)
     ProcedureReturn *Me
   EndProcedure
   
@@ -143,8 +143,8 @@ Module Poisson
   EndProcedure
   
   Procedure Setup(*Me.Poisson_t, *drawer.Drawer::Drawer_t)
-    Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-    Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+    Define *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+    Define *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
     CArray::SetCount(*positions,*Me\numSamples)
     CArray::SetCount(*colors,*Me\numSamples)
     Define c.c4f32
@@ -244,8 +244,8 @@ Module Poisson
   
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 59
-; FirstLine = 40
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 146
+; FirstLine = 80
 ; Folding = ---
 ; EnableXP

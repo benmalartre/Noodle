@@ -26482,11 +26482,11 @@ Module Shape
     *Me\nbp = 0
     *Me\nbt = 0
     *Me\indexed = #True
-    *Me\positions = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\normals = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\uvws = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\colors = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\indices = CArray::New(CArray::#ARRAY_LONG)
+    *Me\positions = CArray::New(Types::#TYPE_V3F32)
+    *Me\normals = CArray::New(Types::#TYPE_V3F32)
+    *Me\uvws = CArray::New(Types::#TYPE_V3F32)
+    *Me\colors = CArray::New(Types::#TYPE_V3F32)
+    *Me\indices = CArray::New(Types::#TYPE_LONG)
 
     Set(*Me,shape)
 
@@ -26509,7 +26509,7 @@ EndModule
 
 ;}
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 26012
-; FirstLine = 25997
+; CursorPosition = 26488
+; FirstLine = 26443
 ; Folding = ----
 ; EnableXP

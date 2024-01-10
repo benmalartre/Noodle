@@ -1410,7 +1410,7 @@ Module Handle
     *Me\posY = -1
     *Me\visible = #False
     *Me\tool = Globals::#TOOL_Select
-    *Me\targets = CArray::New(CArray::#ARRAY_PTR)
+    *Me\targets = CArray::New(Types::#TYPE_PTR)
     *Me\radius = 5
     *Me\camera = *camera
         
@@ -1442,7 +1442,7 @@ Module Handle
   Class::DEF(Handle)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 603
-; FirstLine = 593
+; CursorPosition = 1412
+; FirstLine = 1376
 ; Folding = -------
 ; EnableXP

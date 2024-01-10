@@ -40,7 +40,7 @@ DeclareModule UI
     last_x.i
     last_y.i
     
-    active.b
+;     active.b
   EndStructure
   
   Interface IUI Extends Control::IControl
@@ -175,7 +175,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 79
-; FirstLine = 63
+; CursorPosition = 42
+; FirstLine = 13
 ; Folding = --
 ; EnableXP

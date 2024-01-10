@@ -86,7 +86,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_BOOL
         Protected *bIn.CArray::CArrayInt,*bOut.CArray::CArrayInt
         *bOut = *output\attribute\data
-        If Not *bOut : *bOut = CArray::New(CArray::#ARRAY_BOOL) : Else : CArray::SetCount(*bOut,0) : EndIf
+        If Not *bOut : *bOut = CArray::New(Types::#TYPE_BOOL) : Else : CArray::SetCount(*bOut,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -100,7 +100,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_INTEGER
         Protected *lIn.CArray::CArrayInt,*lOut.CArray::CArrayInt
         *lOut = *output\attribute\data
-        If Not *lOut : *lOut = CArray::New(CArray::#ARRAY_INT): Else : CArray::SetCount(*lOut,0) : EndIf
+        If Not *lOut : *lOut = CArray::New(Types::#TYPE_INT): Else : CArray::SetCount(*lOut,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -114,7 +114,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_FLOAT
         Protected *fIn.CArray::CArrayFloat,*fOut.CArray::CArrayFloat
         *fOut = *output\attribute\data
-        If Not *fOut : *fOut = CArray::New(CArray::#ARRAY_FLOAT) : Else : CArray::SetCount(*fOut,0) : EndIf
+        If Not *fOut : *fOut = CArray::New(Types::#TYPE_FLOAT) : Else : CArray::SetCount(*fOut,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -128,7 +128,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_VECTOR2
         Protected *v2f32In.CArray::CArrayV2F32,*v2f32Out.CArray::CArrayV2F32
         *v2f32Out = *output\attribute\data
-        If Not *v2f32Out : *v2f32Out = CArray::New(CArray::#ARRAY_V2F32) : Else : CArray::SetCount(*v2f32Out,0) : EndIf
+        If Not *v2f32Out : *v2f32Out = CArray::New(Types::#TYPE_V2F32) : Else : CArray::SetCount(*v2f32Out,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -142,7 +142,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_VECTOR3
         Protected *v3f32In.CArray::CArrayV3F32,*v3f32Out.CArray::CArrayV3F32
         *v3f32Out = *output\attribute\data
-        If Not *v3f32Out : *v3f32Out = CArray::New(CArray::#ARRAY_V3F32) : Else : CArray::SetCount(*v3f32Out,0) : EndIf
+        If Not *v3f32Out : *v3f32Out = CArray::New(Types::#TYPE_V3F32) : Else : CArray::SetCount(*v3f32Out,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -156,7 +156,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_QUATERNION
         Protected *q4f32In.CArray::CArrayQ4F32,*q4f32Out.CArray::CArrayQ4F32
         *q4f32Out = *output\attribute\data
-        If Not *q4f32Out : *q4f32Out = CArray::New(CArray::#ARRAY_Q4F32) : Else : CArray::SetCount(*q4f32Out,0) : EndIf
+        If Not *q4f32Out : *q4f32Out = CArray::New(Types::#TYPE_Q4F32) : Else : CArray::SetCount(*q4f32Out,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -170,7 +170,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_COLOR
         Protected *c4f32In.CArray::CArrayC4F32,*c4f32Out.CArray::CArrayC4F32
         *c4f32Out = *output\attribute\data
-        If Not *c4f32Out : *c4f32Out = CArray::New(CArray::#ARRAY_C4F32) : Else : CArray::SetCount(*c4f32Out,0) : EndIf
+        If Not *c4f32Out : *c4f32Out = CArray::New(Types::#TYPE_C4F32) : Else : CArray::SetCount(*c4f32Out,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -184,7 +184,7 @@ Module BuildArrayNode
       Case Attribute::#ATTR_TYPE_TOPOLOGY
         Protected *topoIn.CArray::CArrayPtr,*topoOut.CArray::CArrayPtr
         *topoOut = *output\attribute\data
-        If Not *topoOut : *topoOut = CArray::New(CArray::#ARRAY_PTR) : Else : CArray::SetCount(*topoOut,0) : EndIf
+        If Not *topoOut : *topoOut = CArray::New(Types::#TYPE_PTR) : Else : CArray::SetCount(*topoOut,0) : EndIf
         
         ForEach *node \inputs()
           If *node \inputs()\currenttype = Attribute::#ATTR_TYPE_NEW:Break:EndIf
@@ -235,9 +235,9 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 218
-; FirstLine = 192
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 186
+; FirstLine = 120
 ; Folding = --
 ; EnableThread
 ; EnableXP

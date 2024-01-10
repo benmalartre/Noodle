@@ -101,8 +101,8 @@ Module Curve
     
     Protected width.f = 0.222
     ; Push Buffer To GPU
-    Protected *samples.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-    Protected *widths.CArray::CArrayFloat = CArray::New(CArray::#ARRAY_FLOAT)
+    Protected *samples.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+    Protected *widths.CArray::CArrayFloat = CArray::New(Types::#TYPE_FLOAT)
     CArray::SetCount(*samples, *geom\nbsamples)
     CArray::SetCount(*widths, *geom\nbsamples)
     glBufferData(#GL_ARRAY_BUFFER,size_t,#Null,#GL_DYNAMIC_DRAW)
@@ -355,7 +355,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 243
-; FirstLine = 239
+; CursorPosition = 104
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP

@@ -10,7 +10,6 @@ XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Head.pbi"
 XIncludeFile "Knob.pbi"
-XIncludeFile "Slider.pbi"
 XIncludeFile "Color.pbi"
 
 ;========================================================================================
@@ -29,7 +28,6 @@ DeclareModule ControlProperty
   ;  Structure
   ; ----------------------------------------------------------------------------
   Structure ControlProperty_t Extends ControlGroup::ControlGroup_t
-    pickID    .i
     valid     .b
     *object.Object::Object_t
     *head.ControlHead::ControlHead_t
@@ -71,7 +69,6 @@ DeclareModule ControlProperty
   Declare AddButtonControl(*Me.ControlProperty_t, name.s,label.s, color.i, width=18, height=18, toggable.b=#False)
   Declare AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=100)
-  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddGroup( *Me.ControlProperty_t,name.s)
   Declare EndGroup( *Me.ControlProperty_t)
@@ -273,6 +270,7 @@ Module ControlProperty
   ; ----------------------------------------------------------------------------
   Procedure Pick(*Me.ControlProperty_t)
     If Not *Me : ProcedureReturn 0 : EndIf
+    Protected pickID
     Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
     Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
     
@@ -282,16 +280,16 @@ Module ControlProperty
     
     StartDrawing( ImageOutput(*Me\imageID) )
     
-    *Me\pickID = Point(xm,ym)-1
+    pickID = Point(xm,ym)-1
     StopDrawing()
-    If *Me\pickID >-1 And *Me\pickID<*Me\chilcount
-      Protected *overchild.Control::Control_t = *Me\children(*Me\pickID)
+    If pickID >= 0 And pickID < *Me\chilcount
+      Protected *overchild.Control::Control_t = *Me\children(pickID)
       If *overchild\type = Control::#GROUP
         ControlGroup::Pick(*overchild)
       EndIf
     EndIf
   
-    ProcedureReturn *Me\pickID
+    ProcedureReturn pickID
     
   EndProcedure
 
@@ -301,9 +299,10 @@ Module ControlProperty
   Procedure.i DrawPickImage( *Me.ControlProperty_t)
     If Not *Me\sizX Or Not *Me\sizY : *Me\valid = #False : ProcedureReturn : EndIf
     *Me\valid = #True
-    ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+    If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
+      ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+    EndIf
 
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount - 1
   
@@ -311,7 +310,6 @@ Module ControlProperty
     Protected *son  .Control::Control_t
     
     If *Me\chilcount
-      ; ---[ Draw ]---------------------------------------------------------------
       StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
       ResetCoordinates()
       AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
@@ -345,7 +343,6 @@ Module ControlProperty
   ;  Draw
   ; ----------------------------------------------------------------------------
   Procedure.i Draw( *Me.ControlProperty_t)
-    ; ---[ Drawing Start ]------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     ResetCoordinates()
     AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
@@ -357,14 +354,12 @@ Module ControlProperty
     Protected maxW .i = *Me\sizX - 21
     Protected curW .i
     If *Me\chilcount
-      ; ---[ Local Variables ]----------------------------------------------------
       Protected i     .i = 0
       Protected iBound.i = *Me\chilcount - 1
       Protected  son  .Control::IControl
       Protected *son  .Control::Control_t
       Protected ev_data.Control::EventTypeDatas_t
 
-      ; ---[ Redraw Children ]----------------------------------------------------
       For i=0 To iBound
          son = *Me\children(i)
         *son = son
@@ -374,7 +369,6 @@ Module ControlProperty
       Next
     EndIf
     
-    ; ---[ Drawing End ]--------------------------------------------------------
     StopVectorDrawing()
 
   EndProcedure
@@ -641,43 +635,6 @@ Module ControlProperty
     *Me\dy + 22
     ProcedureReturn(*ctl)
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Slider Control 
-  ;-----------------------------------------------------------------------------
-  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
-    ; Sanity Check
-    If Not *Me : ProcedureReturn : EndIf
-    
-    Protected Me.ControlProperty::IControlProperty = *Me
-    Protected *Ctl.Control::Control_t
-    *Me\dx = 0
-    Protected width = GadgetWidth(*Me\gadgetID)-10
-        
-    ; Add Parameter
-    If ListSize(*Me\groups()) And *Me\groups()
-     ControlGroup::RowStart( *Me\groups())
-      *ctl =  ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value,min_value,max_value,*Me\dx,*Me\dy,width-20,32) 
-      ControlGroup::Append(*Me\groups(), *ctl)
-      ControlGroup::RowEnd( *Me\groups())
-    Else
-      RowStart(*Me)
-      *ctl = ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value, min_value, max_value,*Me\dx,*Me\dy,width,32)
-      Append(*Me, *ctl)
-      RowEnd(*Me)
-    EndIf
-    
-    ; Connect Callback
-    If *attr
-      Callback::CONNECT_CALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
-    EndIf
-    
-    ; Offset for Next Control
-    *Me\dy + 36
-    
-    ProcedureReturn(*ctl)
-  EndProcedure
-  
   
   ;-----------------------------------------------------------------------------
   ; Add Float Control 
@@ -1362,7 +1319,6 @@ EndProcedure
   ; ============================================================================
   ;  OVERRIDE ( Control::IControl )
   ; ============================================================================
-  ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
     ; ---[ Local Variables ]----------------------------------------------------
     Protected  ev_data.Control::EventTypeDatas_t
@@ -1372,9 +1328,9 @@ EndProcedure
     Protected *overchild.Control::Control_t
     Protected nbc_row.i
     
-    *Me\pickID = Pick(*Me)
-    If *Me\pickID > -1 And *Me\pickID < *Me\chilcount 
-      *overchild = *Me\children(*Me\pickID)
+    Protected pickID = Pick(*Me)
+    If pickID > -1 And pickID < *Me\chilcount 
+      *overchild = *Me\children(pickID)
     Else
       *overchild = #Null
     EndIf
@@ -1491,25 +1447,19 @@ EndProcedure
         
         xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-
-         If *Me\overchild <> *overchild And  Not *Me\down
-            If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
-            *Me\overchild = *overchild
-            If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseEnter) : EndIf
-            SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-
-        ElseIf *overchild And Not *Me\down
+        
+;         If *Me\overchild <> *overchild And  Not *Me\down
+;             Debug "property mouse move overchild case 1 : " +Str(*overchild)
+;             If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
+;             *Me\overchild = *overchild
+;             If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseEnter) : EndIf
+;             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
+;         EndIf
+        If *overchild
           *Me\overchild = *overchild
           ev_data\x    = xm - *overchild\posX + *Me\posX
           ev_data\y    = ym - *overchild\posY + *Me\posY
           *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
-        Else
-          If *Me\overchild
-            *overchild = *Me\overchild
-            ev_data\x    = xm - *overchild\posX + *Me\posX
-            ev_data\y    = ym - *overchild\posY + *Me\posY
-            *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
-          EndIf
         EndIf
         
       ; ------------------------------------------------------------------------
@@ -1518,7 +1468,7 @@ EndProcedure
     Case #PB_EventType_LeftButtonDown
       *Me\down = #True
       If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
+        *overchild = *Me\overchild
         If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
           *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           Define *focuschild.Control::Control_t = *Me\focuschild
@@ -1755,7 +1705,6 @@ EndProcedure
     Next
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID) : EndIf
     If IsImage(*Me\imageID) : FreeImage(*Me\imageID) : EndIf
-    If IsImage(*Me\pickID) : FreeImage(*Me\pickID) : EndIf
     
     Object::TERM(ControlProperty)
 
@@ -1779,7 +1728,6 @@ EndProcedure
     *Me\name       = name
     *Me\gadgetID   = *parent\gadgetID
     *Me\imageID    = CreateImage(#PB_Any,width,height)
-    *Me\pickID     = CreateImage(#PB_Any,width,height)
     SetGadgetColor(*Me\gadgetID,#PB_Gadget_BackColor,UIColor::COLOR_MAIN_BG )
   
     *Me\posX       = x
@@ -1814,7 +1762,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 483
-; FirstLine = 480
+; CursorPosition = 388
+; FirstLine = 359
 ; Folding = ---------
 ; EnableXP

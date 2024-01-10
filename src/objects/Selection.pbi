@@ -89,7 +89,7 @@ Module Selection
     Protected *item.SelectionComponentItem_t = AllocateStructure(SelectionComponentItem_t)
     *item\obj = *obj
     *item\type = type
-    *item\components = CArray::New(CArray::#ARRAY_LONG)
+    *item\components = CArray::New(Types::#TYPE_LONG)
     
     Define hash.s = Str(*obj)
     Select type
@@ -152,8 +152,8 @@ EndDeclareModule
 
 Module ComponentSelection
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 83
-; FirstLine = 67
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 91
+; FirstLine = 87
 ; Folding = ---
 ; EnableXP

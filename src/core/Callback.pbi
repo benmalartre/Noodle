@@ -40,7 +40,7 @@ DeclareModule Callback
   Declare AddSlot(*callback.Callback_t, fn.Callback::PFNCALLBACK)
   Declare RemoveSlot(*callback.Callback_t, index.i)
   
-    Macro BEGIN_CALLBACK(_funcname)
+  Macro BEGIN_CALLBACK(_funcname)
     Procedure _funcname#CALLBACK(*datas._funcname#DATAS_t)
   EndMacro
   
@@ -173,11 +173,9 @@ DeclareModule Callback
   
   Macro CONNECT_CALLBACK(_callback,_slot,_arg1=,_arg2=,_arg3=,_arg4=,_arg5=,_arg6=,_arg7=,_arg8=)
     Define *_slot#_slot.Callback::Slot_t = Callback::AddSlot(_callback, _slot)
-    Debug "slot : "+Str(*_slot#_slot.Callback::Slot_t)
-    *_slot#_slot\callback = @_slot#CALLBACK()
-    Debug "callback : "+Str(*_slot#_slot\callback)
     Define *_datas#_slot._slot#DATAS_t = AllocateStructure(_slot#DATAS_t )
-    Debug "data : "+Str(*_datas#_slot._slot#DATAS_t)
+    
+    *_slot#_slot\callback = @_slot#CALLBACK()
     
     CompilerIf Globals::TOSTRING(_arg8) <> Globals::#EMPTYSTRING
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
@@ -269,7 +267,6 @@ Module Callback
       Define *slot.Callback::Slot_t = *callback\slots()
       DeleteSlot(*slot)
     Next
-    
     FreeStructure(*callback)
   EndProcedure
   
@@ -298,7 +295,6 @@ Module Callback
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 253
-; FirstLine = 237
+; CursorPosition = 268
 ; Folding = ---
 ; EnableXP

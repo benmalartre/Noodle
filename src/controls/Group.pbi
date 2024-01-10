@@ -26,13 +26,9 @@ DeclareModule ControlGroup
     closed    .b
   EndStructure
   
-  Interface IControlGroup Extends Control::IControl
-    OnClick()
-  EndInterface
-  
   Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
-  Declare Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
+  Declare Draw( *Me.ControlGroup_t)
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
@@ -306,7 +302,7 @@ Module ControlGroup
 ; ----------------------------------------------------------------------------
 ;  Draw
 ; ----------------------------------------------------------------------------
-Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
+Procedure Draw( *Me.ControlGroup_t )
   
   Protected label.s = *Me\label
   Protected lalen.i = Len(label)
@@ -331,6 +327,7 @@ Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
     StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)  
   EndIf
   
+  ; ---[  Draw Label ]-------------------------------------------------------
   AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
   VectorSourceColor(UIColor::COLOR_MAIN_BG )
   FillPath()
@@ -358,6 +355,10 @@ Procedure Draw( *Me.ControlGroup_t, xoff.i=0, yoff.i=0 )
     
     son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
   Next
+  
+  ResetCoordinates()
+  MovePathCursor(*Me\posX, *Me\posY)
+  DrawVectorImage(ImageID(*Me\imageID), 128)
  
 EndProcedure
 
@@ -366,14 +367,15 @@ EndProcedure
 ;  Pick
 ; ----------------------------------------------------------------------------
 Procedure Pick(*Me.ControlGroup_t)
+  Protected pickID
   Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
   Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
   
   xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
   ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-  
+    
   StartDrawing( ImageOutput(*Me\imageID) )
-  Protected pickID = Point(xm,ym) - 1
+  pickID = Point(xm,ym) - 1
   StopDrawing()
   
   ProcedureReturn pickID
@@ -383,28 +385,24 @@ EndProcedure
 ;  DrawPickImage
 ; ----------------------------------------------------------------------------
 Procedure DrawPickImage( *Me.ControlGroup_t )
-  ; ---[ Local Variables ]----------------------------------------------------
   Protected i     .i = 0
-  Protected iBound.i = *Me\chilcount-1;ArraySize(*Me\children()) - 1
-  Protected  son  .Control::IControl
+  Protected iBound.i = *Me\chilcount-1
   Protected *son  .Control::Control_t
   
-  ; ---[ Tag Picking Surface ]------------------------------------------------
+  If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
+    ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+  EndIf
+
   StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
+  ResetCoordinates()
   AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
-  VectorSourceColor(RGBA(0,0,0,255))
+  VectorSourceColor(RGBA(0,0,0,0))
   FillPath()
   For i=0 To iBound
-      
     *son = *Me\children(i)
-    son = *son
-    If *son\type = Control::#GROUP
-      
-    Else
-      AddPathBox( *son\posX, *son\posY, *son\sizX, *son\sizY)
-      VectorSourceColor(RGBA(i+1,0,0,255))
-      FillPath()
-    EndIf
+    AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
+    VectorSourceColor(RGBA(i+1,0,0,255))
+    FillPath()
    Next
    StopVectorDrawing()
 EndProcedure
@@ -415,21 +413,18 @@ EndProcedure
 ;  NextItem
 ; ----------------------------------------------------------------------------
 Procedure NextItem( *Me.ControlGroup_t )
-  ; ---[ Get Current Item ID ]------------------------------------------------
   StartDrawing( ImageOutput(*Me\imageID) )
-    Protected *focuschild.Control::Control_t = *Me\focuschild
-    Protected idx = Point(*focuschild\posX+1,*focuschild\posY+1) - 1
-    StopDrawing()
-    If *Me\focuschild
-      *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-      ; ---[ Local Variables ]----------------------------------------------------
-      Protected iBound.i = *Me\chilcount - 1
-      Protected n.i = (idx+1)%iBound
-      Protected ev_data.Control::EventTypeDatas_t 
-      *Me\focuschild = *Me\children(n)
-      *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
-    EndIf
-    
+  Protected *focuschild.Control::Control_t = *Me\focuschild
+  Protected idx = Point(*focuschild\posX+1,*focuschild\posY+1) - 1
+  StopDrawing()
+  If *Me\focuschild
+    *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+    Protected iBound.i = *Me\chilcount - 1
+    Protected n.i = (idx+1)%iBound
+    Protected ev_data.Control::EventTypeDatas_t 
+    *Me\focuschild = *Me\children(n)
+    *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
+  EndIf
 EndProcedure
 
 ; ============================================================================
@@ -453,10 +448,8 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ; ------------------------------------------------------------------------
     Case #PB_EventType_Resize
       ; ...[ Update & Check Dirty ]...........................................
-     Resize( *Me, *ev_data.Control::EventTypeDatas_t )
-
-    ; ...[ Processed ]......................................................
-    ProcedureReturn( #True )
+      Resize( *Me, *ev_data.Control::EventTypeDatas_t )
+      ProcedureReturn( #True )
       
     ; ------------------------------------------------------------------------
     ;  DrawChild
@@ -467,7 +460,6 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
       ev_data\xoff    = *son\posX+*Me\posX
       ev_data\yoff    = *son\posY+*Me\posY
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-      ResetCoordinates()
       AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG )
       FillPath()
@@ -517,50 +509,51 @@ Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeD
     ;  MouseMove
     ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
-      Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-      Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-      Protected pickID = Pick(*Me)
-      If pickID > -1 And pickID <*Me\chilcount
-        *son = *Me\children(pickID)
-      Else
-        *son = #Null
-      EndIf
+      Protected *overchild.Control::Control_t = #Null
+      xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+      ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
       
       xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
       ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-      If *Me\overchild <> *son And  Not *Me\down
+      
+      Protected pickID = Pick(*Me)
+
+            
+      If pickID > -1 And pickID <*Me\chilcount
+        *overchild = *Me\children(pickID)
+      EndIf
+      
+      If *Me\overchild <> *overchild And  Not *Me\down
         If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
-        *Me\overchild = *son
+        *Me\overchild = *overchild
         If *Me\overchild
           *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
         EndIf
          
       ElseIf pickID >= 0 And pickID <*Me\chilcount
-        Protected ctl.Control::IControl = *Me\children( pickID )
-        If ( ctl <> *Me\overchild ) And  Not *Me\down
+        overchild = *overchild
+        If  overchild <> *Me\overchild  And  Not *Me\down
           If *Me\overchild <> #Null
-            Define overchild.Control::IControl = *Me\overchild
-            overchild\OnEvent(#PB_EventType_MouseLeave)
+            *Me\overchild\OnEvent(#PB_EventType_MouseLeave)
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
           EndIf
-          ctl\OnEvent(#PB_EventType_MouseEnter)
+          
           If Not *Me\down
-            *Me\overchild = ctl
+            *Me\overchild = *overchild
+            *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
           EndIf
         ElseIf *Me\overchild
-          Define *overchild.Control::Control_t = *Me\overchild
+          *overchild = *Me\overchild
           ev_data\x    = xm - *overchild\posX
           ev_data\y    = ym - *overchild\posY
-          Define overchild.Control::IControl = *Me\overchild
-          overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+          *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
         EndIf
       ElseIf *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
+        *overchild = *Me\overchild
         ev_data\x    = xm - *overchild\posX
         ev_data\y    = ym - *overchild\posY
         ev_data\yoff = 50
-        Define overchild.Control::IControl = *Me\overchild
-        overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+       *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
        Else
           SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
       EndIf
@@ -889,7 +882,7 @@ EndProcedure
       *Me\gadgetID = *Me\parent\gadgetID
     EndIf
     
-    *Me\imageID    = CreateImage( #PB_Any, width, height )
+    *Me\imageID    = CreateImage( #PB_Any, width, height, 32, #PB_Image_Transparent)
     *Me\posX       = x
     *Me\posY       = y
     *Me\sizX       = width
@@ -972,7 +965,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 256
-; FirstLine = 229
+; CursorPosition = 524
+; FirstLine = 519
 ; Folding = ----
 ; EnableXP

@@ -35,16 +35,16 @@ Module Edge
   Procedure.i New(*mesh.Geometry::PolymeshGeometry_t, index.i, p1id.i, p2id)
     ; ---[ Allocate Memory ]----------------------------------------------------
     Protected *Me.Edge_t = AllocateStructure(Edge_t)
-    *Me\neighbors = CArray::New(CArray::#ARRAY_PTR)
-    *Me\vertices = CArray::New(CArray::#ARRAY_PTR)
-    *Me\polygons = CArray::New(CArray::#ARRAY_PTR)
+    *Me\neighbors = CArray::New(Types::#TYPE_PTR)
+    *Me\vertices = CArray::New(Types::#TYPE_PTR)
+    *Me\polygons = CArray::New(Types::#TYPE_PTR)
     *Me\id = index
     
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 28
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 39
 ; Folding = -
 ; EnableXP
 ; EnableUnicode

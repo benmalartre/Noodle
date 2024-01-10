@@ -3,6 +3,7 @@
 ; ============================================================================
 XIncludeFile "../core/Array.pbi"
 XIncludeFile "Geometry.pbi"
+
 DeclareModule Location
   UseModule Geometry
   UseModule Math
@@ -27,15 +28,13 @@ DeclareModule Location
   Macro GETVERTEXINDEX(_location, _geom, _index)
     CArray::GetValueL(_geom\a_triangleindices, _location\tid * 3 + (_index))
   EndMacro
-  
-  
+   
 EndDeclareModule
 
 Module Location
   UseModule Math
+  UseModule Types
   
-  
-    
   ;---------------------------------------------------------
   ; Get Value
   ;---------------------------------------------------------
@@ -49,7 +48,7 @@ Module Location
         
         Define a
         Select *array\type
-          Case CArray::#ARRAY_BOOL
+          Case #TYPE_BOOL
             Define b1.b = CArray::GetValueB(*array,GETVERTEXINDEX(*Me, *mesh,0))
             Define b2.b = CArray::GetValueB(*array,GETVERTEXINDEX(*Me, *mesh,1))
             Define b3.b = CArray::GetValueB(*array,GETVERTEXINDEX(*Me, *mesh,2))
@@ -61,7 +60,7 @@ Module Location
               PokeB(*result, b2)
             EndIf
             
-          Case CArray::#ARRAY_INT
+          Case #TYPE_INT
             Define i1.i = CArray::GetValueI(*array,GETVERTEXINDEX(*Me, *mesh,0))
             Define i2.i = CArray::GetValueI(*array,GETVERTEXINDEX(*Me, *mesh,1))
             Define i3.i = CArray::GetValueI(*array,GETVERTEXINDEX(*Me, *mesh,2))
@@ -73,14 +72,14 @@ Module Location
               PokeI(*result, b2)
             EndIf
             
-          Case CArray::#ARRAY_FLOAT
+          Case #TYPE_FLOAT
             Define f1.f = CArray::GetValueF(*array,GETVERTEXINDEX(*Me, *mesh,0))
             Define f2.f = CArray::GetValueF(*array,GETVERTEXINDEX(*Me, *mesh,1))
             Define f3.f = CArray::GetValueF(*array,GETVERTEXINDEX(*Me, *mesh,2))
             
             PokeF(*result, f1 * u + f2 * v + f3 * 1 - (u+v))
             
-          Case CArray::#ARRAY_V2F32
+          Case #TYPE_V2F32
             Define *v2f1.v2f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,0))
             Define *v2f2.v2f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,1))
             Define *v2f3.v2f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,2))
@@ -89,7 +88,7 @@ Module Location
             *v2o\x = *v2f1\x * u + *v2f2\x * v + *v2f3\x * 1 - (u+v)
             *v2o\y = *v2f1\y * u + *v2f2\y * v + *v2f3\y * 1 - (u+v)
             
-          Case CArray::#ARRAY_V3F32
+          Case #TYPE_V3F32
             Define *v3f1.v3f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,0))
             Define *v3f2.v3f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,1))
             Define *v3f3.v3f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,2))
@@ -99,7 +98,7 @@ Module Location
             *v3o\y = *v3f1\y * u + *v3f2\y * v + *v3f3\y * 1 - (u+v)
             *v3o\z = *v3f1\z * u + *v3f2\z * v + *v3f3\z * 1 - (u+v)
             
-          Case CArray::#ARRAY_V4F32
+          Case #TYPE_V4F32
             Define *v4f1.v4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,0))
             Define *v4f2.v4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,1))
             Define *v4f3.v4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,2))
@@ -110,7 +109,7 @@ Module Location
             *v4o\z = *v4f1\z * u + *v4f2\z * v + *v4f3\z * 1 - (u+v)
             *v4o\w = *v4f1\w * u + *v4f2\w * v + *v4f3\w * 1 - (u+v)
             
-          Case CArray::#ARRAY_C4F32
+          Case #TYPE_C4F32
             Define *c4f1.c4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,0))
             Define *c4f2.c4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,1))
             Define *c4f3.c4f32 = CArray::GetValue(*array, GETVERTEXINDEX(*Me, *mesh,2))
@@ -141,14 +140,14 @@ Module Location
     c = CArray::GetValueL(*geom\a_triangleindices,*Me\tid*3)
     
     Select *datas\type
-      Case CArray::#ARRAY_BOOL
+      Case #TYPE_BOOL
         Define.b ba, bb, bc
         ba = Carray::GetValueB(*datas, a)
         bb = CArray::GetValueB(*datas, b)
         bc = CArray::GetValueB(*datas, c)
         PokeB(*output, Bool(ba * *Me\uvw\x + bb * *Me\uvw\y + bc * *Me\uvw\z>0))
         
-      Case CArray::#ARRAY_LONG
+      Case #TYPE_LONG
         Define.l la, lb, lc
         la = Carray::GetValueL(*datas, a)
         lb = CArray::GetValueL(*datas, b)
@@ -156,7 +155,7 @@ Module Location
         
         PokeL(*output, la * *Me\uvw\x + lb * *Me\uvw\y + lc * *Me\uvw\z)
         
-      Case CArray::#ARRAY_INT
+      Case #TYPE_INT
         Define.i ia, ib, ic
         ia = Carray::GetValueI(*datas, a)
         ib = CArray::GetValueI(*datas, b)
@@ -164,7 +163,7 @@ Module Location
         
         PokeI(*output, ia * *Me\uvw\x + ib * *Me\uvw\y + ic * *Me\uvw\z)
         
-      Case CArray::#ARRAY_FLOAT
+      Case #TYPE_FLOAT
         Define.f fa, fb, fc
         fa = Carray::GetValueF(*datas, a)
         fb = CArray::GetValueF(*datas, b)
@@ -172,7 +171,7 @@ Module Location
         
         PokeF(*output, fa * *Me\uvw\x + fb * *Me\uvw\y + fc * *Me\uvw\z)
         
-      Case CArray::#ARRAY_V2F32
+      Case #TYPE_V2F32
         Define.v2f32 *v2a, *v2b, *v2c
         *v2a = Carray::GetValue(*datas, a)
         *v2b = CArray::GetValue(*datas, b)
@@ -184,7 +183,7 @@ Module Location
         Vector2::ScaleAddInPlace(*v2o, *v2b, *Me\uvw\y)
         Vector2::ScaleAddInPlace(*v2o, *v2c, *Me\uvw\z)
         
-      Case CArray::#ARRAY_V3F32
+      Case #TYPE_V3F32
         Define.v3f32 *v3a, *v3b, *v3c
         *v3a = Carray::GetValue(*datas, a)
         *v3b = CArray::GetValue(*datas, b)
@@ -196,7 +195,7 @@ Module Location
         Vector3::ScaleAddInPlace(*v3o, *v3b, *Me\uvw\y)
         Vector3::ScaleAddInPlace(*v3o, *v3c, *Me\uvw\z)
         
-      Case CArray::#ARRAY_V4F32
+      Case #TYPE_V4F32
         Define.v4f32 *v4a, *v4b, *v4c
         *v4a = Carray::GetValue(*datas, a)
         *v4b = CArray::GetValue(*datas, b)
@@ -208,7 +207,7 @@ Module Location
         Vector4::ScaleAddInPlace(*v4o, *v4b, *Me\uvw\y)
         Vector4::ScaleAddInPlace(*v4o, *v4c, *Me\uvw\z)
         
-      Case CArray::#ARRAY_C4F32
+      Case #TYPE_C4F32
         Define.v4f32 *v4a, *v4b, *v4c
         *v4a = Carray::GetValue(*datas, a)
         *v4b = CArray::GetValue(*datas, b)
@@ -220,7 +219,7 @@ Module Location
         Vector4::ScaleAddInPlace(*v4o, *v4b, *Me\uvw\y)
         Vector4::ScaleAddInPlace(*v4o, *v4c, *Me\uvw\z)
         
-      Case CArray::#ARRAY_Q4F32
+      Case #TYPE_Q4F32
         Define.q4f32 *q4a, *q4b, *q4c
         *q4a = Carray::GetValue(*datas, a)
         *q4b = CArray::GetValue(*datas, b)
@@ -595,7 +594,7 @@ Module Location
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 426
+; CursorPosition = 221
+; FirstLine = 155
 ; Folding = ---
 ; EnableXP

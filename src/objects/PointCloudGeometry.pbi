@@ -412,15 +412,15 @@ Module PointCloudGeometry
     Object::INI(PointCloudGeometry)
     *Me\nbpoints = nbp
     *Me\parent = *parent
-    *Me\a_positions = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_velocities = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_normals = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_tangents = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_color = CArray::New(CArray::#ARRAY_C4F32)
-    *Me\a_indices = CArray::New(CArray::#ARRAY_INT)
-    *Me\a_scale = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\a_size = CArray::New(CArray::#ARRAY_FLOAT)
-    *Me\a_uvws = CArray::New(CArray::#ARRAY_V3F32)
+    *Me\a_positions = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_velocities = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_normals = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_tangents = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_color = CArray::New(Types::#TYPE_C4F32)
+    *Me\a_indices = CArray::New(Types::#TYPE_INT)
+    *Me\a_scale = CArray::New(Types::#TYPE_V3F32)
+    *Me\a_size = CArray::New(Types::#TYPE_FLOAT)
+    *Me\a_uvws = CArray::New(Types::#TYPE_V3F32)
     
     CArray::SetCount(*Me\a_positions,nbp)
     CArray::SetCount(*Me\a_velocities,nbp)
@@ -440,8 +440,8 @@ Module PointCloudGeometry
 
   Class::DEF( PointCloudGeometry )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 410
-; FirstLine = 387
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 422
+; FirstLine = 375
 ; Folding = ---
 ; EnableXP

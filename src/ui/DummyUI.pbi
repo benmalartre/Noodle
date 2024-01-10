@@ -52,7 +52,7 @@ Module DummyUI
     *Me\sizX = w
     *Me\sizY = h
     *Me\gadgetID = CanvasGadget(#PB_Any,x,y,w,h)
-    *Me\active = #False
+;     *Me\active = #False
     View::SetContent(*parent,*Me)
     
 ;     Protected *args.Args::Args_t = Args::New()
@@ -89,15 +89,11 @@ Module DummyUI
   Procedure Draw(*Me.DummyUI_t)
     StartVectorDrawing(CanvasOutput(*Me\gadgetID))
     DrawingMode(#PB_2DDrawing_Default)
-    If *Me\active
-      AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
-      VectorSourceColor(RGBA(Random(255),Random(255),Random(255),255))
-      FillPath()
-    Else
-      AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
-      VectorSourceColor(RGBA(100,100,100,255))
-      FillPath()
-    EndIf
+    
+    AddPathBox(0,0,GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
+    VectorSourceColor(RGBA(Random(255),Random(255),Random(255),255))
+    FillPath()
+  
     
     Protected txt.s = Str(*Me\sizX)+"x"+Str(*Me\sizY)
     Protected tx = GadgetWidth(*Me\gadgetID)/2 - TextWidth(txt)/2
@@ -131,10 +127,10 @@ Module DummyUI
         Protected g = EventGadget()
         If g= *Me\gadgetID
           Select EventType()
-            Case #PB_EventType_Focus
-              *Me\active = #True
-            Case #PB_EventType_LostFocus
-              *Me\active = #True
+;             Case #PB_EventType_Focus
+;               *Me = #True
+;             Case #PB_EventType_LostFocus
+;               *Me\active = #True
               
           EndSelect
           
@@ -149,7 +145,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 32
+; CursorPosition = 132
+; FirstLine = 79
 ; Folding = --
 ; EnableXP

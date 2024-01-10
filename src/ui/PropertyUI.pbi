@@ -16,10 +16,8 @@ DeclareModule PropertyUI
   ;  Structure
   ; ----------------------------------------------------------------------------
   Structure PropertyUI_t Extends UI::UI_t
-    *prop.ControlProperty::ControlProperty_t
-    *focus.Control::Control_t
-    anchorX.i
-    anchorY.i
+    Map *props.ControlProperty::ControlProperty_t()
+    *active.ControlProperty::ControlProperty_t
   EndStructure
   
   Declare New(*parent.View::View_t,name.s)
@@ -76,8 +74,8 @@ Module PropertyUI
     *Me\sizY = *parent\sizY
     
     *Me\parent = *parent
+    *Me\active = #Null
     *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
-    *Me\prop = ControlProperty::New(*Me, name, name, 0,0,*Me\sizX,*Me\sizY)
    
     View::SetContent(*parent,*Me)
     ProcedureReturn *Me
@@ -87,7 +85,10 @@ Module PropertyUI
   ;  Destructor
   ; ----------------------------------------------------------------------------
   Procedure Delete(*Me.PropertyUI_t)
-    ControlProperty::Delete(*Me\prop) 
+    ForEach *Me\props()
+      ControlProperty::Delete(*Me\props())
+    Next
+    
     Object::TERM(PropertyUI)
   EndProcedure
   
@@ -124,8 +125,11 @@ Module PropertyUI
     ev_datas\y = 0
     ev_datas\width = *Me\sizX 
     ev_datas\height = *Me\sizY
-
-    ControlProperty::OnEvent(*Me\prop,#PB_EventType_Resize,@ev_datas)
+    
+    ForEach *Me\props()
+      ControlProperty::OnEvent(*Me\props(), #PB_EventType_Resize,@ev_datas)
+    Next
+    
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -144,8 +148,14 @@ Module PropertyUI
   ;  OnEvent
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
-    If Not *Me\prop : ProcedureReturn : EndIf
+    If Not MapSize(*Me\props()) : ProcedureReturn : EndIf
     Protected *top.View::View_t = *Me\parent
+    
+    If Not *Me\active
+      ResetMap(*Me\props())
+      If NextMapElement(*Me\props()) : *Me\active = *Me\props() : EndIf
+    EndIf
+
     Protected ev_datas.Control::EventTypeDatas_t
     ev_datas\x = 0
     ev_datas\y = 0
@@ -162,14 +172,15 @@ Module PropertyUI
           *Me\down = #False
         EndIf
         
-        If *Me\prop And *Me\prop\gadgetID = EventGadget()
-          ControlProperty::OnEvent(*Me\prop,EventType(),@ev_datas)
+        If *Me\active
+          ControlProperty::OnEvent(*Me\active, EventType(), @ev_datas)
         EndIf
 
       Case #PB_Event_Menu
-        If *Me\prop
-          ControlProperty::OnEvent(*Me\prop,EventMenu(),#Null)
+        If *Me\active
+          ControlProperty::OnEvent(*Me\active, EventMenu(), #Null)
         EndIf 
+        
     EndSelect
   EndProcedure
   
@@ -187,11 +198,11 @@ Module PropertyUI
   Callback::DECLARE_CALLBACK(OnExpandProperty, Args::#PTR, Args::#BOOL, Args::#INT)
   
   Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
-    If *Me\prop = *object
-      If *Me\prop\head
-        Callback::Trigger(*Me\prop\head\on_delete, Callback::#SIGNAL_TYPE_PING)
-      EndIf
-    EndIf
+;     If *Me\prop = *object
+;       If *Me\prop\head
+;         Callback::Trigger(*Me\prop\head\on_delete, Callback::#SIGNAL_TYPE_PING)
+;       EndIf
+;     EndIf
   EndProcedure
   Callback::DECLARE_CALLBACK(OnDeleteObject, Args::#PTR, Args::#PTR)
   
@@ -199,11 +210,10 @@ Module PropertyUI
   ;  Clear
   ; ----------------------------------------------------------------------------
   Procedure Clear(*Me.PropertyUI_t)
-    Protected i
-    Protected *prop.ControlProperty::ControlProperty_t = *Me\prop
-    If *prop
-      ControlProperty::Clear(*prop)
-    EndIf
+    ForEach *Me\props()
+      ControlProperty::Delete(*Me\props())
+    Next
+    ClearMap(*Me\props())
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -219,10 +229,10 @@ Module PropertyUI
   Procedure SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
     Clear(*Me)
-    *Me\prop = ControlProperty::New(*Me, *object\name, *object\name, 0, 0)
+    Protected *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*Me, *object\name, *object\name, 0, 0)
 
-    *Me\prop\label = *object\name
-    ControlProperty::AppendStart(*Me\prop)
+    *prop\label = *object\name
+    ControlProperty::AppendStart(*prop)
   
     Protected v.Math::v3f32
     Protected *attr.Attribute::Attribute_t
@@ -232,33 +242,36 @@ Module PropertyUI
       If Not *attr\readonly And *attr\constant
         Select *attr\datatype
           Case Attribute::#ATTR_TYPE_BOOL
-            ControlProperty::AddBoolControl(*Me\prop,*attr\name,*attr\name,#False,*attr)
+            ControlProperty::AddBoolControl(*prop,*attr\name,*attr\name,#False,*attr)
           Case Attribute::#ATTR_TYPE_INTEGER
-            ControlProperty::AddIntegerControl(*Me\prop,*attr\name,*attr\name,0,*attr)
+            ControlProperty::AddIntegerControl(*prop,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_FLOAT
-            ControlProperty::AddFloatControl(*Me\prop,*attr\name,*attr\name,0,*attr)
+            ControlProperty::AddFloatControl(*prop,*attr\name,*attr\name,0,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR2
             Protected v2.v2f32
-            ControlProperty::AddVector2Control(*Me\prop,*attr\name,*attr\name,v2,*attr)
+            ControlProperty::AddVector2Control(*prop,*attr\name,*attr\name,v2,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR3
             Protected v3.v3f32
-            ControlProperty::AddVector3Control(*Me\prop,*attr\name,*attr\name,v3,*attr)
+            ControlProperty::AddVector3Control(*prop,*attr\name,*attr\name,v3,*attr)
           Case Attribute::#ATTR_TYPE_VECTOR4
             Protected c4.c4f32
-            ControlProperty::AddColorControl(*Me\prop,*attr\name,*attr\name,c4,*attr)
+            ControlProperty::AddColorControl(*prop,*attr\name,*attr\name,c4,*attr)
           Case Attribute::#ATTR_TYPE_QUATERNION
             Protected q.q4f32
-            ControlProperty::AddQuaternionControl(*Me\prop,*attr\name,*attr\name,q,*attr)
+            ControlProperty::AddQuaternionControl(*prop,*attr\name,*attr\name,q,*attr)
           Case Attribute::#ATTR_TYPE_MATRIX4
             Protected m.m4f32
             Matrix4::SetIdentity(m)
-            ControlProperty::AddMatrix4Control(*Me\prop,*attr\name,*attr\name,m,*attr) 
+            ControlProperty::AddMatrix4Control(*prop,*attr\name,*attr\name,m,*attr) 
         EndSelect
       EndIf
     Next
     
-    ControlProperty::AppendStop(*Me\prop)
+    ControlProperty::AppendStop(*prop)
     Callback::CONNECT_CALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
+    
+    *Me\props(*object\name) = *prop
+    
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -289,11 +302,8 @@ Module PropertyUI
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
     ;Clear(*Me)
-    Protected *p.ControlProperty::ControlProperty_t =  *Me\prop
-    ControlProperty::Clear(*p)
-    
-    *p\label = *node\name
-    
+    Protected *p.ControlProperty::ControlProperty_t =  ControlProperty::New(*node, *node\name, *node\label, 0, 0, *Me\sizX, 120)
+        
     ControlProperty::AppendStart(*p)
 
     Protected *attr.Attribute::Attribute_t
@@ -359,7 +369,8 @@ Module PropertyUI
     
     ControlProperty::AppendStop(*p)
     Control::Invalidate(*p)
-
+    
+    *Me\props(*node\name) = *p
     ProcedureReturn *p
 
   EndProcedure
@@ -368,14 +379,14 @@ Module PropertyUI
   ;  Add Property
   ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
-    ;check if already in list
-    Clear(*Me)
-    *Me\prop = *prop
+   
+    *Me\props(*prop\name) = *prop
+    Debug *Me\props(*prop\name)
+    
     If *prop\head
       Callback::CONNECT_CALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
     EndIf
     Resize(*Me)
-    
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -510,8 +521,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 374
-; FirstLine = 370
+; CursorPosition = 157
+; FirstLine = 108
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

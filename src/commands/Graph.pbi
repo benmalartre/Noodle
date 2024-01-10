@@ -195,7 +195,7 @@ Module ImplodeNodesCmd
   Procedure hlpGetInfo(*tree.Tree::Tree_t,*nodes.CArray::CArrayPtr,*parent.Node::Node_t)
     Protected *info.ImplodeNodesCmd_t = AllocateStructure(ImplodeNodesCmd_t)
     *info\tree = *tree
-    *info\nodes = CArray::New(CArray::#ARRAY_PTR)
+    *info\nodes = CArray::New(Types::#TYPE_PTR)
     Protected i
     Protected *node.Node::Node_t
     If *nodes
@@ -235,8 +235,8 @@ Module ImplodeNodesCmd
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 225
-; FirstLine = 174
+; CursorPosition = 197
+; FirstLine = 169
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

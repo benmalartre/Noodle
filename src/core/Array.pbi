@@ -1,4 +1,5 @@
-﻿XIncludeFile "Math.pbi"
+﻿XIncludeFile "Types.pbi"
+XIncludeFile "Math.pbi"
 XIncludeFile "Memory.pbi"
 
 ; ========================================================================================
@@ -6,58 +7,8 @@ XIncludeFile "Memory.pbi"
 ; ========================================================================================
 DeclareModule CArray
   UseModule Math
-  Enumeration
-    #ARRAY_BOOL
-    #ARRAY_CHAR
-    #ARRAY_INT
-    #ARRAY_LONG
-    #ARRAY_FLOAT
-    #ARRAY_PTR
-    #ARRAY_V2F32
-    #ARRAY_V3F32
-    #ARRAY_V4F32
-    #ARRAY_C4F32
-    #ARRAY_C4U8
-    #ARRAY_Q4F32
-    #ARRAY_M3F32
-    #ARRAY_M4F32
-    #ARRAY_TRF32
-    #ARRAY_LOCATION
-    #ARRAY_STR
-  EndEnumeration
+  UseModule Types
   
-  #SIZE_BOOL        = 1
-  #SIZE_CHAR        = 2
-  #SIZE_LONG        = 4
-  #SIZE_FLOAT       = 4
-  #SIZE_DOUBLE      = 8
-  
-  CompilerIf #PB_Compiler_Version = #PB_Processor_x86
-    #SIZE_INT       = 4
-    #SIZE_PTR       = 4
-  CompilerElse
-    #SIZE_INT       = 8
-    #SIZE_PTR       = 8
-  CompilerEndIf
-  #SIZE_V2F32       = 8
-  
-  CompilerIf Defined(USE_SSE, #PB_Constant) And #USE_SSE
-    #SIZE_V3F32     = 16
-    #SIZE_TRF32     = 48
-    #SIZE_LOCATION  = 88
-  CompilerElse
-    #SIZE_V3F32     = 12
-    #SIZE_TRF32     = 40
-    #SIZE_LOCATION  = 72
-  CompilerEndIf  
-  
-  #SIZE_V4F32       = 16
-  #SIZE_C4F32       = 16
-  #SIZE_C4U8        = 4
-  #SIZE_Q4F32       = 16
-  #SIZE_M3F32       = 36
-  #SIZE_M4F32       = 64
-    
   Structure CArrayT
     type.i
     itemSize.i
@@ -396,7 +347,7 @@ Module CArray
       EndIf
       CopyMemory(*src\data,*array\data,*src\itemCount * *src\itemSize)
     EndIf
-    If *array\type = #ARRAY_LOCATION
+    If *array\type = #TYPE_LOCATION
       Define *dst.CArray::CarrayLocation = *array
       Define *src2.CArray::CarrayLocation = *src
       *dst\geometry = *src2\geometry
@@ -561,7 +512,7 @@ Module CArray
       CopyMemory(*other\data,*array\data+nba* *array\itemSize,nbo * *array\itemSize)
       *array\itemCount + nbo
       
-      If *array\type = #ARRAY_STR
+      If *array\type = #TYPE_STR
         Protected *saa.CArrayStr = *array
         Protected *sao.CArrayStr = *other
         
@@ -581,12 +532,12 @@ Module CArray
     Protected nbi = *array\itemCount
     Protected i
     Protected *mem
-    If *array\type < #ARRAY_V2F32
+    If *array\type < #TYPE_V2F32
       Select *array\type
-        Case #ARRAY_BOOL
+        Case #TYPE_BOOL
           AppendB(*array,PeekB(*unique))
           
-        Case #ARRAY_CHAR
+        Case #TYPE_CHAR
           For i = 0 To nbi-1
             If PeekC(*unique) = CArray::GetValueC(*array,i)
               ; Item Already in Array
@@ -595,7 +546,7 @@ Module CArray
           Next
           AppendC(*array,PeekC(*unique))
           
-        Case #ARRAY_INT
+        Case #TYPE_INT
            For i = 0 To nbi-1
             If PeekI(*unique) = CArray::GetValueI(*array,i)
               ; Item Already in Array
@@ -604,7 +555,7 @@ Module CArray
           Next
           AppendI(*array,PeekI(*unique))
           
-        Case #ARRAY_LONG
+        Case #TYPE_LONG
            For i = 0 To nbi-1
             If PeekL(*unique) = CArray::GetValueL(*array,i)
               ; Item Already in Array
@@ -613,7 +564,7 @@ Module CArray
           Next
           AppendL(*array,PeekL(*unique))
           
-        Case #ARRAY_FLOAT
+        Case #TYPE_FLOAT
            For i = 0 To nbi-1
             If PeekF(*unique) = CArray::GetValueF(*array,i)
               ; Item Already in Array
@@ -622,7 +573,7 @@ Module CArray
           Next
           AppendF(*array,PeekF(*unique))
           
-        Case #ARRAY_PTR
+        Case #TYPE_PTR
           For i = 0 To nbi-1
             If *unique = CArray::GetValuePtr(*array,i)
               ; Item Already in Array
@@ -652,7 +603,7 @@ Module CArray
   ; AppendUniqueSTr
   ;----------------------------------------------------------------
   Procedure AppendUniqueStr(*array.CArrayT,unique.s)
-    If Not *array\type = #ARRAY_STR : ProcedureReturn : EndIf
+    If Not *array\type = #TYPE_STR : ProcedureReturn : EndIf
     Protected  *array_str.CArray::CArrayStr = *array
     Protected nbi = *array\itemCount
     Protected i
@@ -670,7 +621,7 @@ Module CArray
   ; Fill
   ;----------------------------------------------------------------
   Procedure Fill(*array.CArrayT,*value)
-    If *array\type = #ARRAY_STR : ProcedureReturn : EndIf
+    If *array\type = #TYPE_STR : ProcedureReturn : EndIf
     
     Protected i
     For i = 0 To *array\itemCount-1
@@ -682,7 +633,7 @@ Module CArray
   ; FillA
   ;----------------------------------------------------------------
   Procedure FillB(*array.CArrayT,b.b)
-    If Not *Array\type = #ARRAY_BOOL : ProcedureReturn : EndIf
+    If Not *Array\type = #TYPE_BOOL : ProcedureReturn : EndIf
     
     Protected i
     For i = 0 To *array\itemCount-1
@@ -695,7 +646,7 @@ Module CArray
   ; FillC
   ;----------------------------------------------------------------
   Procedure FillC(*array.CArrayT,c.c)
-    If Not *Array\type = #ARRAY_CHAR : ProcedureReturn : EndIf
+    If Not *Array\type = #TYPE_CHAR : ProcedureReturn : EndIf
     
     Protected i
     For i = 0 To *array\itemCount-1
@@ -707,7 +658,7 @@ Module CArray
   ; FillL
   ;----------------------------------------------------------------
   Procedure FillL(*array.CArrayT,l.l)
-    If Not *Array\type = #ARRAY_LONG : ProcedureReturn : EndIf
+    If Not *Array\type = #TYPE_LONG : ProcedureReturn : EndIf
     
     Protected i
     For i = 0 To *array\itemCount-1
@@ -719,7 +670,7 @@ Module CArray
   ; FillI
   ;----------------------------------------------------------------
   Procedure FillI(*array.CArrayT,i.i)
-    If Not *Array\type = #ARRAY_INT : ProcedureReturn : EndIf
+    If Not *Array\type = #TYPE_INT : ProcedureReturn : EndIf
     
     Protected j
     For j = 0 To *array\itemCount-1
@@ -731,7 +682,7 @@ Module CArray
   ; FillF
   ;----------------------------------------------------------------
   Procedure FillF(*array.CArrayT,f.f)
-    If Not *Array\type = #ARRAY_FLOAT : ProcedureReturn : EndIf
+    If Not *Array\type = #TYPE_FLOAT : ProcedureReturn : EndIf
     
     Protected j
     For j = 0 To *array\itemCount-1
@@ -774,7 +725,7 @@ Module CArray
       EndIf
     EndIf
     
-    If *array\type = #Array_STR
+    If *array\type = #TYPE_STR
       Protected i
       Protected *sa.CArrayStr = *array
       Protected size.i = ListSize(*sa\_str())
@@ -796,9 +747,9 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure Find(*array.CArrayT,*value)
     Protected i
-    If *array\type < #ARRAY_PTR
+    If *array\type < #TYPE_PTR
       Select *array\type
-        Case #ARRAY_BOOL
+        Case #TYPE_BOOL
           For i=0 To GetCount(*array)-1
             If GetValueB(*array,i) = PeekB(*value)
               ProcedureReturn i
@@ -806,7 +757,7 @@ Module CArray
             EndIf
           Next
           
-        Case #ARRAY_CHAR
+        Case #TYPE_CHAR
           For i=0 To GetCount(*array)-1
             If GetValueC(*array,i) = PeekC(*value)
               ProcedureReturn i
@@ -814,7 +765,7 @@ Module CArray
             EndIf
           Next
           
-        Case #ARRAY_LONG
+        Case #TYPE_LONG
           For i=0 To GetCount(*array)-1
             If GetValueL(*array,i) = PeekL(*value)
               ProcedureReturn i
@@ -822,7 +773,7 @@ Module CArray
             EndIf
           Next
           
-        Case #ARRAY_INT
+        Case #TYPE_INT
           For i=0 To GetCount(*array)-1
             If GetValueI(*array,i) = PeekI(*value)
               ProcedureReturn i
@@ -830,7 +781,7 @@ Module CArray
             EndIf
           Next
           
-        Case #ARRAY_FLOAT
+        Case #TYPE_FLOAT
           For i=0 To GetCount(*array)-1
             If GetValueF(*array,i) = PeekF(*value)
               ProcedureReturn i
@@ -856,29 +807,29 @@ Module CArray
   ;----------------------------------------------------------------
   Procedure Remove(*array.CArrayT,ID)
     Protected i
-    If *array\type < #ARRAY_PTR
+    If *array\type < #TYPE_PTR
       Select *array\type
-        Case #ARRAY_BOOL
+        Case #TYPE_BOOL
           For i=ID To GetCount(*array)-2
             SetValueB(*array,i,GetValueB(*array,i+1))
           Next
           
-        Case #ARRAY_CHAR
+        Case #TYPE_CHAR
           For i=ID To GetCount(*array)-2
             SetValueC(*array,i,GetValueC(*array,i+1))
           Next
           
-        Case #ARRAY_LONG
+        Case #TYPE_LONG
           For i=ID To GetCount(*array)-2
             SetValueL(*array,i,GetValueL(*array,i+1))
           Next
           
-        Case #ARRAY_INT
+        Case #TYPE_INT
           For i=ID To GetCount(*array)-2
             SetValueI(*array,i,GetValueI(*array,i+1))
           Next
           
-        Case #ARRAY_FLOAT
+        Case #TYPE_FLOAT
           For i=ID To GetCount(*array)-2
             SetValueF(*array,i,GetValueF(*array,i+1))
           Next
@@ -904,37 +855,37 @@ Module CArray
     EndIf
     Protected i
     Select *array\type
-      Case #ARRAY_BOOL
+      Case #TYPE_BOOL
         datas+"TYPE: BOOL"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         For i=0 To *array\itemCount-1
           datas+Str(GetValueB(*array, i))+","
         Next
-      Case #ARRAY_CHAR
+      Case #TYPE_CHAR
         datas+"TYPE: CHAR"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         For i=0 To *array\itemCount-1
           datas+Str(GetValueC(*array,i))+","
         Next
-      Case #ARRAY_INT
+      Case #TYPE_INT
         datas+"TYPE: INT"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         For i=0 To *array\itemCount-1
           datas+Str(GetValueI(*array,i))+","
         Next
-      Case #ARRAY_LONG
+      Case #TYPE_LONG
         datas+"TYPE: LONG"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         For i=0 To *array\itemCount-1
           datas+Str(GetValueL(*array,i))+","
         Next
-      Case #ARRAY_FLOAT
+      Case #TYPE_FLOAT
         datas+"TYPE: FLOAT"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         For i=0 To *array\itemCount-1
           datas+StrF(GetValueF(*array,i))+","
         Next
-      Case #ARRAY_V2F32
+      Case #TYPE_V2F32
         datas+"TYPE: VECTOR_2"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *v2.Math::v2f32
@@ -942,7 +893,7 @@ Module CArray
           *v = GetValue(*array, i)
           datas+"("+StrF(*v2\x)+","+StrF(*v2\y)+")"+Chr(10)
         Next
-      Case #ARRAY_V3F32
+      Case #TYPE_V3F32
         datas+"TYPE: VECTOR_3"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *v3.Math::v3f32
@@ -950,7 +901,7 @@ Module CArray
           *v3 = GetValue(*array, i)
           datas+"("+StrF(*v3\x)+","+StrF(*v3\y)+","+StrF(*v3\z)+")"+Chr(10)
         Next
-      Case #ARRAY_V4F32
+      Case #TYPE_V4F32
         datas+"TYPE: VECTOR_4"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *v4.Math::v4f32
@@ -958,7 +909,7 @@ Module CArray
           *v4 = GetValue(*array, i)
           datas+"("+StrF(*v4\x)+","+StrF(*v4\y)+","+StrF(*v4\z)+","+StrF(*v4\w)+")"+Chr(10)
         Next
-      Case #ARRAY_C4F32
+      Case #TYPE_C4F32
         datas+"TYPE: COLOR"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *c4.Math::c4f32
@@ -966,7 +917,7 @@ Module CArray
           *c4 = GetValue(*array, i)
           datas+"("+StrF(*c4\r)+","+StrF(*c4\g)+","+StrF(*c4\b)+","+StrF(*c4\a)+")"+Chr(10)
         Next
-      Case #ARRAY_C4U8
+      Case #TYPE_C4U8
         datas+"TYPE: C4U8"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *c4u.Math::c4u8
@@ -974,7 +925,7 @@ Module CArray
           *c4u = GetValue(*array, i)
           datas+"("+Str(*c4u\r)+","+Str(*c4u\g)+","+Str(*c4u\b)+","+Str(*c4u\a)+")"+Chr(10)
         Next
-      Case #ARRAY_M3F32
+      Case #TYPE_M3F32
         datas+"TYPE: MATRIX_3"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
         Protected *m3.Math::m3f32
@@ -984,19 +935,19 @@ Module CArray
                  StrF(*m3\v[3])+","+StrF(*m3\v[4])+","+StrF(*m3\v[4])+
                  StrF(*m3\v[5])+","+StrF(*m3\v[6])+","+StrF(*m3\v[7])+")"+Chr(10)
         Next
-      Case #ARRAY_M4F32
+      Case #TYPE_M4F32
         datas+"TYPE: MATRIX_4"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
-      Case #ARRAY_Q4F32
+      Case #TYPE_Q4F32
         datas+"TYPE: QUATERNION"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
-      Case #ARRAY_TRF32
+      Case #TYPE_TRF32
         datas+"TYPE: TRANSFORM"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
-      Case #ARRAY_STR
+      Case #TYPE_STR
         datas+"TYPE: STRING"+Chr(10)
         datas +"NUM ITEMS : "+Str(*array\itemCount)+Chr(10)
-      Case #ARRAY_PTR
+      Case #TYPE_PTR
     EndSelect
     datas + "---------------------------------------------"
     ProcedureReturn datas
@@ -1013,15 +964,15 @@ Module CArray
   ; CArray Constructor
   ;----------------------------------------------------------------
   Procedure New(type.i)
-    If type = #ARRAY_STR
+    If type = #TYPE_STR
       Protected *arrayStr.CArrayStr = AllocateStructure(CArrayStr)
-      *arrayStr\type = #ARRAY_STR
+      *arrayStr\type = #TYPE_STR
       *arrayStr\itemSize = #SIZE_PTR
       ProcedureReturn *arrayStr
       
-    ElseIf type = #ARRAY_LOCATION
+    ElseIf type = #TYPE_LOCATION
       Protected *arrayLoc.CArrayLocation = AllocateStructure(CArrayLocation)
-      *arrayLoc\type = #ARRAY_LOCATION
+      *arrayLoc\type = #TYPE_LOCATION
       *arrayLoc\itemSize = #SIZE_LOCATION
       ProcedureReturn *arrayLoc
       
@@ -1029,67 +980,67 @@ Module CArray
       Define *array.CArrayT = AllocateStructure(CArrayT)
       *array\data = #Null
       Select type
-        Case #ARRAY_BOOL
-          *array\type = #ARRAY_BOOL
+        Case #TYPE_BOOL
+          *array\type = #TYPE_BOOL
           *array\itemSize = #SIZE_BOOL
           
-        Case #ARRAY_CHAR
-          *array\type = #ARRAY_CHAR
+        Case #TYPE_CHAR
+          *array\type = #TYPE_CHAR
           *array\itemSize = #SIZE_CHAR
           
-        Case #ARRAY_INT
-          *array\type = #ARRAY_INT
+        Case #TYPE_INT
+          *array\type = #TYPE_INT
           *array\itemSize = #SIZE_INT
           
-        Case #ARRAY_LONG
-          *array\type = #ARRAY_LONG
+        Case #TYPE_LONG
+          *array\type = #TYPE_LONG
           *array\itemSize = #SIZE_LONG
           
-        Case #ARRAY_FLOAT
-          *array\type = #ARRAY_FLOAT
+        Case #TYPE_FLOAT
+          *array\type = #TYPE_FLOAT
           *array\itemSize = #SIZE_FLOAT
           
-        Case #ARRAY_V2F32
-          *array\type = #ARRAY_V2F32
+        Case #TYPE_V2F32
+          *array\type = #TYPE_V2F32
           *array\itemSize = #SIZE_V2F32
           *array\data = #Null
           
-        Case #ARRAY_V3F32
-          *array\type = #ARRAY_V3F32
+        Case #TYPE_V3F32
+          *array\type = #TYPE_V3F32
           *array\itemSize = #SIZE_V3F32
           *array\data = #Null
           
-        Case #ARRAY_V4F32
-          *array\type = #ARRAY_V4F32
+        Case #TYPE_V4F32
+          *array\type = #TYPE_V4F32
           *array\itemSize = #SIZE_V4F32
           *array\data = #Null
           
-        Case #ARRAY_C4U8
-          *array\type = #ARRAY_C4U8
+        Case #TYPE_C4U8
+          *array\type = #TYPE_C4U8
           *array\itemSize = #SIZE_C4U8
           
-        Case #ARRAY_C4F32
-          *array\type = #ARRAY_C4F32
+        Case #TYPE_C4F32
+          *array\type = #TYPE_C4F32
           *array\itemSize = #SIZE_C4F32
           
-        Case #ARRAY_Q4F32
-          *array\type = #ARRAY_Q4F32
+        Case #TYPE_Q4F32
+          *array\type = #TYPE_Q4F32
           *array\itemSize = #SIZE_Q4F32
           
-        Case #ARRAY_M3F32
-          *array\type = #ARRAY_M3F32
+        Case #TYPE_M3F32
+          *array\type = #TYPE_M3F32
           *array\itemSize = #SIZE_M3F32
           
-        Case #ARRAY_M4F32
-          *array\type = #ARRAY_M4F32
+        Case #TYPE_M4F32
+          *array\type = #TYPE_M4F32
           *array\itemSize = #SIZE_M4F32
           
-        Case #ARRAY_TRF32
-          *array\type = #ARRAY_TRF32
+        Case #TYPE_TRF32
+          *array\type = #TYPE_TRF32
           *array\itemSize = #SIZE_TRF32
           
-        Case #ARRAY_PTR
-          *array\type = #ARRAY_PTR
+        Case #TYPE_PTR
+          *array\type = #TYPE_PTR
           *array\itemSize = #SIZE_PTR
     
       EndSelect
@@ -1113,7 +1064,7 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1029
-; FirstLine = 1010
-; Folding = ----------
+; CursorPosition = 727
+; FirstLine = 723
+; Folding = ---------
 ; EnableXP

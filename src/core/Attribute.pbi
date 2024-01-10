@@ -180,6 +180,7 @@ Module Attribute
             *a = *attribute\data
             ProcedureReturn CArray::GetCount(*a)
         EndSelect
+        
       Case #ATTR_STRUCT_ARRAY
         Select *attribute\datacontext
           Case #ATTR_CTXT_SINGLETON
@@ -188,6 +189,7 @@ Module Attribute
           Default
             ProcedureReturn 0
         EndSelect
+        
     EndSelect
     
   ;   Select *attribute\datastructure
@@ -621,7 +623,7 @@ Module Attribute
   Class::DEF( Attribute )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 598
-; FirstLine = 565
+; CursorPosition = 191
+; FirstLine = 153
 ; Folding = ---
 ; EnableXP
