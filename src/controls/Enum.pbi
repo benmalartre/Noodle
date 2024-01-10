@@ -23,10 +23,16 @@ DeclareModule ControlEnum
     Array items.Globals::KeyValue_t(0)
   EndStructure
   
+  ; ----------------------------------------------------------------------------
+  ;  Interface
+  ; ----------------------------------------------------------------------------
+  Interface IControlEnum Extends Control::IControl
+  EndInterface
+  
   ; ------------------------------------------------------------------
   ;   DECLARE
   ; ------------------------------------------------------------------ 
-  Declare New(gadgetID.i,x.i, y.i, width.i, height.i, name.s)
+  Declare New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
   Declare Delete(*Me.ControlEnum_t)
   Declare Draw(*Me.ControlEnum_t)
   Declare DrawPickImage(*Me.ControlEnum_t, id.i)
@@ -36,13 +42,13 @@ DeclareModule ControlEnum
   ; ------------------------------------------------------------------
   ;   VTABLE ( Control )
   ; ------------------------------------------------------------------ 
-  DataSection
-    ControlEnumVT:
+  DataSection 
+    ControlEnumVT: 
+    Data.i @OnEvent()
     Data.i @Delete()
     Data.i @Draw()
-    Data.i @DrawPickImage()
+    Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
-    Data.i @OnEvent()
   EndDataSection
   
 EndDeclareModule
@@ -114,17 +120,18 @@ Module ControlEnum
   ; ------------------------------------------------------------------
   ;   CONSTRUCTOR
   ; ------------------------------------------------------------------ 
-  Procedure New(gadgetID.i, x.i,y.i,width.i,height.i,name.s)
+  Procedure New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
     Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
     Object::INI(ControlEnum)
+    *Me\parent = *parent
     *Me\type = Control::#ENUM
-    *Me\gadgetID = gadgetID
+    *Me\gadgetID = *parent\gadgetID
     *Me\posX=x
     *Me\posY=y
     *Me\sizX=width
     *Me\sizY=height
     *Me\name=name
-    *Me\label = name
+    *Me\label = label
     *Me\on_change = Object::NewCallback(*Me, "OnChange")
     ProcedureReturn *Me
   EndProcedure
@@ -172,7 +179,7 @@ Module ControlEnum
     Define parent = EventWindow()
     Define mx = (GadgetX(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posX + *Me\sizX - #ENUM_BORDER) - *Me\popup_width
     Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY + #ENUM_BORDER
-    Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(parent))
+    Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(EventWindow()))
     StickyWindow(window,#True)
     *Me\popup_gadget = CanvasGadget(#PB_Any,0,0,WindowWidth(window, #PB_Window_InnerCoordinate), WindowHeight(window, #PB_Window_InnerCoordinate))
     Define done.b = #False
@@ -185,7 +192,6 @@ Module ControlEnum
       If EventWindow() = window
         mx = WindowMouseX(window)
         my = WindowMouseY(window) 
-;         PickPopup(*Me, mx, my)
         pick = DrawPopup(*Me, mx, my)
         leftbutton = Bool(event = #PB_Event_Gadget And EventType()=#PB_EventType_LeftClick); Or EventType() = #PB_EventType_LostFocus )
     
@@ -193,9 +199,7 @@ Module ControlEnum
           done = #True
           *Me\current = pick
         EndIf
-        
-     
-;         
+; 
 ;         If *menu\dirty
 ;           DrawSubMenu(*menu,#True)
 ;         EndIf
@@ -232,7 +236,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 162
+; CursorPosition = 181
+; FirstLine = 137
 ; Folding = --
 ; EnableXP

@@ -8,9 +8,8 @@ XIncludeFile "Number.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Icon.pbi"
-XIncludeFile "Combo.pbi"
 XIncludeFile "Timeline.pbi"
 XIncludeFile "Explorer.pbi"
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 12
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 10
 ; EnableXP

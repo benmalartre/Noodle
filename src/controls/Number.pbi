@@ -78,7 +78,6 @@ DeclareModule ControlNumber
     Data.i @Draw()
     Data.i Control::@DrawPickImage()
     Data.i Control::@Pick()
-   
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -1211,7 +1210,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 423
-; FirstLine = 414
+; CursorPosition = 73
+; FirstLine = 42
 ; Folding = ----
 ; EnableXP

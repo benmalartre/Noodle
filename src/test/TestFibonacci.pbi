@@ -8,7 +8,7 @@ Structure FibonacciDemo_t Extends DemoApplication_t
   *model.Model::Model_t
   *fibonacci.Fibonacci::Fibonacci_t
   *N.ControlNumber::ControlNumber_t
-  *mode.ControlCombo::ControlCombo_t
+  *mode.ControlEnum::ControlEnum_t
   
   *instancer.InstanceCloud::InstanceCloud_t
   *prototype.Polymesh::Polymesh_t
@@ -80,7 +80,7 @@ Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#DEMO_WITH_
   *demo\N\soft_max = 1024
   Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
   
-  *demo\mode = ControlProperty::AddComboControl(*prop, "Mode", "Mode", 0, #Null)
+  *demo\mode = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
 ;   *demo\mode\items
   Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
   
@@ -98,7 +98,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 43
+; CursorPosition = 82
+; FirstLine = 42
 ; Folding = -
 ; EnableXP

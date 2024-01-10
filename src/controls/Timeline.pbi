@@ -1,13 +1,10 @@
 ; ============================================================================
 ;  GUI Timeline Control
 ; ============================================================================
-;  2013/02/24 | benmalartre
-;  - creation
-; ============================================================================
 XIncludeFile "../core/Time.pbi"
 XIncludeFile "Icon.pbi"
 XIncludeFile "Number.pbi"
-XIncludeFile "Combo.pbi"
+XIncludeFile "Enum.pbi"
 
 DeclareModule ControlTimeline
   ; ============================================================================
@@ -59,7 +56,7 @@ DeclareModule ControlTimeline
     c_currentframe.ControlNumber::IControlNumber
     
     ; Control Combo
-    c_playbackrate.ControlCombo::IControlCombo
+    c_playbackrate.ControlEnum::IControlEnum
     
     ; Control Management
     overchild .Control::IControl
@@ -1133,7 +1130,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 385
-; FirstLine = 378
+; CursorPosition = 2
 ; Folding = -------
 ; EnableXP

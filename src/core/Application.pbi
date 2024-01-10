@@ -90,7 +90,6 @@ XIncludeFile "../controls/Dummy.pbi"
 XIncludeFile "../controls/Button.pbi"
 XIncludeFile "../controls/Check.pbi"
 XIncludeFile "../controls/Color.pbi"
-XIncludeFile "../controls/Combo.pbi"
 XIncludeFile "../controls/Divot.pbi"
 XIncludeFile "../controls/Text.pbi"
 XIncludeFile "../controls/Edit.pbi"
@@ -776,8 +775,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 9
-; FirstLine = 5
+; CursorPosition = 92
+; FirstLine = 88
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL
