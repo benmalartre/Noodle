@@ -1,8 +1,8 @@
-InitScintilla()
 XIncludeFile "../core/Control.pbi"
-; -----------------------------------------
-; UI Module Declaration
-; -----------------------------------------
+
+; ==============================================================================
+;  UI MODULE DECLARATION
+; ==============================================================================
 DeclareModule UI
   Enumeration
     #UI_DUMMY
@@ -52,9 +52,9 @@ DeclareModule UI
   
 EndDeclareModule
 
-; -----------------------------------------
-; UI Module Implementation
-; -----------------------------------------
+; ==============================================================================
+;  UI MODULE IMPLEMENTATION
+; ==============================================================================
 Module UI
   Procedure.s GetName(*ui.UI_t)
     ProcedureReturn *ui\name
@@ -109,7 +109,6 @@ Module UI
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 27
+; CursorPosition = 28
 ; Folding = --
 ; EnableXP

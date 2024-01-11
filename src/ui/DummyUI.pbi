@@ -23,8 +23,6 @@ DeclareModule DummyUI
       Data.i @OnEvent()
       Data.i @Delete()
       Data.i @Draw()
-      Data.i UI::@DrawPickImage()
-      Data.i UI::@Pick()
   EndDataSection 
   
 EndDeclareModule
@@ -145,7 +143,6 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 132
-; FirstLine = 79
+; CursorPosition = 24
 ; Folding = --
 ; EnableXP

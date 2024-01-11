@@ -10,9 +10,6 @@ XIncludeFile "../ui/UI.pbi"
 DeclareModule CanvasUI
   UseModule Globals
   
-  ; ----------------------------------------------------------------
-  ;   Structure
-  ; ----------------------------------------------------------------
   Structure CanvasUI_t Extends UI::UI_t    
     List *sheets.sheet::Sheet_t()
     *sheet.sheet::Sheet_t
@@ -24,9 +21,6 @@ DeclareModule CanvasUI
     *on_selection_change.Callback::Callback_t
   EndStructure
   
-  ; ----------------------------------------------------------------
-  ;   Interface
-  ; ----------------------------------------------------------------
   Interface ICanvasUI Extends UI::IUI
   EndInterface
    
@@ -46,16 +40,11 @@ DeclareModule CanvasUI
   Declare DeleteSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
   Declare SetActiveSheet(*Me.CanvasUI_t, index.i)
   
-  ; -------------------------------------------------------------------
-  ;   VIRTUAL TABLE
-  ; -------------------------------------------------------------------
   DataSection
     CanvasUIVT:
       Data.i @OnEvent()
       Data.i @Delete()
       Data.i @Draw()
-      Data.i UI::@DrawPickImage()
-      Data.i UI::@Pick()
   EndDataSection
   
 EndDeclareModule
@@ -65,9 +54,7 @@ EndDeclareModule
 ; ==================================================================
 Module CanvasUI
   UseModule Globals
-  ; --------------------------------------------------------------------
-  ;   CONSTRUCTOR
-  ; --------------------------------------------------------------------
+
   Procedure New(*view.View::View_t,name.s="CanvasUI")
     *Me.CanvasUI_t = AllocateStructure(CanvasUI_t)
     Object::INI(CanvasUI)
@@ -87,24 +74,15 @@ Module CanvasUI
     ProcedureReturn *Me
   EndProcedure
   
-  ; --------------------------------------------------------------------
-  ;   DESTRUCTOR
-  ; --------------------------------------------------------------------
   Procedure Delete(*Me.CanvasUI_t)
     FreeGadget(*Me\gadgetID)
     FreeImage(*Me\imageID)
     Object::TERM(CanvasUI)
   EndProcedure
-  
-  ; ---------------------------------------------------------
-  ;   SET ACTIVE TOOL
-  ; ---------------------------------------------------------
+
   Procedure SetActiveTool(*Me.CanvasUI_t, tool.i)
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   NEW LAYER
-  ; ---------------------------------------------------------
   Procedure NewSheet(*Me.CanvasUI_t)
     Define *sheet.Sheet::Sheet_t = Sheet::New(GadgetWidth(*Me\gadgetID),GadgetHeight(*Me\gadgetID))
     AddElement(*Me\sheets())
@@ -113,9 +91,6 @@ Module CanvasUI
     ProcedureReturn *Me\sheet
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   ADD LAYER
-  ; ---------------------------------------------------------
   Procedure AddSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
     AddElement(*Me\sheets())
     *Me\sheets() = *sheet
@@ -123,9 +98,6 @@ Module CanvasUI
     ProcedureReturn *Me\sheet
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   DELETE LAYER
-  ; ---------------------------------------------------------
   Procedure DeleteSheet(*Me.CanvasUI_t, *sheet.Sheet::Sheet_t)
     If *Me\sheets() = *sheet
       Sheet::Delete(*sheet)
@@ -141,9 +113,6 @@ Module CanvasUI
     EndIf
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   SET ACTIVE LAYER
-  ; ---------------------------------------------------------
   Procedure SetActiveSheet(*Me.CanvasUI_t, index.i)
     If index >-1 And index < ListSize(*Me\sheets())
       SelectElement(*Me\sheets(), index)
@@ -152,24 +121,15 @@ Module CanvasUI
     EndIf
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   SET CURRENT COLOR
-  ; ---------------------------------------------------------
   Procedure SetCurrentColor(*Me.CanvasUI_t,*color.Math::c4f32)
     *Me\color = RGBA(*color\r,*color\g,*color\b,*color\a)
     *Me\primary = RGBA(*color\r,*color\g,*color\b,*color\a)
   EndProcedure
 
-  ; ---------------------------------------------------------
-  ;   SET PIXEL RATIO
-  ; ---------------------------------------------------------
   Procedure SetPixelRatio(*Me.CanvasUI_t,ratio.f)
     *Me\pixelratio = ratio
   EndProcedure
 
-  ; ---------------------------------------------------------
-  ;   UPDATE ZOOM
-  ; ---------------------------------------------------------
   Procedure UpdateZoom(*Me.CanvasUI_t,delta.i, mx.f=0, my.f=0)
     
     Protected width = GadgetWidth(*Me\gadgetID)
@@ -184,9 +144,6 @@ Module CanvasUI
     
   EndProcedure
 
-  ; ---------------------------------------------------------
-  ;   DRAW GRID
-  ; ---------------------------------------------------------
   Procedure DrawGrid(*Me.CanvasUI_t)
     ResetPath()
   
@@ -208,9 +165,6 @@ Module CanvasUI
 
   EndProcedure
 
-  ; ---------------------------------------------------------
-  ;   DRAW 
-  ; ---------------------------------------------------------
   Procedure Draw(*Me.CanvasUI_t)
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
     ResetCoordinates(#PB_Coordinate_User)
@@ -227,9 +181,6 @@ Module CanvasUI
     StopVectorDrawing()
   EndProcedure
   
-  ; ---------------------------------------------------------
-  ;   RESET LAYERS
-  ; ---------------------------------------------------------
   Procedure ResetSheets(*Me.CanvasUI_t)
     If ListSize(*Me\sheets())
       ForEach *Me\sheets()
@@ -238,15 +189,11 @@ Module CanvasUI
       ClearList(*Me\sheets())
     EndIf
     
-    ;CreateDefault Sheet
     *Me\sheet = Sheet::New(*Me\sizX,*Me\sizY,0)
     AddElement(*Me\sheets())
     *Me\sheets() = *Me\sheet
   EndProcedure
 
-  ; --------------------------------------------------------------------
-  ;   RESIZE
-  ; --------------------------------------------------------------------
   Procedure Resize(*Me.CanvasUI_t, x.i, y.i, width.i, height.i)
     *Me\posX = x
     *Me\posY = y
@@ -256,10 +203,6 @@ Module CanvasUI
     Draw(*Me)
   EndProcedure
   
-
-  ; --------------------------------------------------------------------
-  ;   ON EVENT
-  ; --------------------------------------------------------------------
   Procedure OnEvent(*Me.CanvasUI_t, event.i)
     Protected mx,my,x.f,y.f,w,h,m,key
     Select event
@@ -407,7 +350,7 @@ Module CanvasUI
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 383
-; FirstLine = 322
+; CursorPosition = 204
+; FirstLine = 191
 ; Folding = ---
 ; EnableXP

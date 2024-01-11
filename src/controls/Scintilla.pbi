@@ -31,8 +31,7 @@ DeclareModule ControlScintilla
     Data.i @Delete()
   EndDataSection
  
-  
- Global CLASS.Class::Class_t
+  Global CLASS.Class::Class_t
 EndDeclareModule
 
 
@@ -58,7 +57,6 @@ Module ControlScintilla
     w = TextWidth(*n\name)
     h = TextHeight(*n\name)
     
-    
     If *Me\over
       Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLOR_CARET)
     Else
@@ -81,8 +79,6 @@ Module ControlScintilla
     DrawText(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5,*n\name)
     DrawText(*Me\posX+6,*Me\posY, "-")
     DrawText(*Me\posX+*Me\sizX-#HEAD_HEIGHT+6,*Me\posY, "x")
-
-
   EndProcedure
 
   Procedure.i OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -143,7 +139,6 @@ Module ControlScintilla
               EndIf
             EndIf
             
-;             
 ;             If mx<10 Or mx > *Me\sizX-10
 ;               MessageRequester("HEAD", "TOUCH BORDER")
 ;             EndIf
@@ -152,7 +147,6 @@ Module ControlScintilla
 ;             Circle(mx,my,3,RGBA(255,255,255,255))
 ;             Circle(mx,my,2,RGBA(255,0,0,255))
 ;             StopDrawing()
-            
           EndIf
         EndIf
 
@@ -189,7 +183,6 @@ Module ControlScintilla
     EndSelect
     
     ProcedureReturn( #False )
-    
   EndProcedure
 
   Procedure SetValue( *Me.ControlScintilla_t, value.i )
@@ -240,6 +233,7 @@ Module ControlScintilla
   Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 12
+; CursorPosition = 194
+; FirstLine = 176
 ; Folding = --
 ; EnableXP
