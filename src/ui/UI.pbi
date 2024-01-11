@@ -39,22 +39,12 @@ DeclareModule UI
     scrollLastY.i
     last_x.i
     last_y.i
-    
-;     active.b
   EndStructure
   
   Interface IUI Extends Control::IControl
   EndInterface
   
-  
-  ; ------------------------------------------------------------------
-  ;   DECLARE
-  ; ------------------------------------------------------------------
-  Declare Resize(*ui.UI_t, x.i, y.i, width.i, height.i)
-  Declare Draw(*ui.UI_t)
-  Declare DrawPickImage(*ui.UI_t)
-  Declare Pick(*ui.UI_t, mx.f, my.f)
-  Declare OnEvent(*ui.UI_t)
+  Declare.s GetName(*Me.UI_t)
   Declare GetScrollArea(*Me.UI_t)
   Declare Scroll(*Me.UI_t,mode.b =#False)
   Declare GetView(*Me.UI_t)
@@ -66,56 +56,8 @@ EndDeclareModule
 ; UI Module Implementation
 ; -----------------------------------------
 Module UI
-  ; -------------------------------------------------------------------
-  ;   RESIZE (DUMMY)
-  ; -------------------------------------------------------------------
-  Procedure Resize(*ui.UI_t, x.i, y.i, width.i, height.i)
-    
-  EndProcedure
-  
-  ; -------------------------------------------------------------------
-  ;   DRAW
-  ; -------------------------------------------------------------------
-  Procedure Draw(*ui.UI_t)
-    StartVectorDrawing(CanvasVectorOutput(*ui\gadgetID))
-    AddPathBox(0,0,GadgetWidth(*ui\gadgetID), GadgetHeight(*ui\gadgetID))
-    VectorSourceColor(UICOLOR::COLOR_MAIN_BG)
-    FillPath()
-    StopVectorDrawing()
-  EndProcedure
-  
-  ; -------------------------------------------------------------------
-  ;   DRAW PICK IMAGE
-  ; -------------------------------------------------------------------
-  Procedure DrawPickImage(*ui.UI_t)
-    StartVectorDrawing(ImageVectorOutput(*ui\imageID))
-    AddPathBox(0,0,ImageWidth(*ui\imageID), ImageHeight(*ui\imageID))
-    VectorSourceColor(RGBA(0,0,0,255))
-    FillPath()
-    StopVectorDrawing()
-  EndProcedure
-  
-  ; -------------------------------------------------------------------
-  ;   PICK
-  ; -------------------------------------------------------------------
-  Procedure Pick(*ui.UI_t, mx.f, my.f)
-    Define pick = 0
-    StartDrawing(ImageOutput(*ui\imageID))
-    If mx >-1 And mx < ImageWidth(*ui\imageID) And my> -1 And my < ImageHeight(*ui\imageID)
-      pick = Point(mx, my)
-    EndIf
-    StopDrawing()
-    ProcedureReturn pick-1
-  EndProcedure
-  
-  ; -------------------------------------------------------------------
-  ;   ON EVENT
-  ; -------------------------------------------------------------------
-  Procedure OnEvent(*ui.UI_t)
-  EndProcedure
-  
-  Procedure GetName(*ui.UI_t)
-    MessageRequester(*ui\name,*ui\name)
+  Procedure.s GetName(*ui.UI_t)
+    ProcedureReturn *ui\name
   EndProcedure
   
   Procedure GetScrollArea(*Me.UI_t)
@@ -160,38 +102,14 @@ Module UI
   EndProcedure
   
   Procedure GetWindow(*Me.UI_t)
-    Protected *view.View::View_t = GetView(*Me)
-    ProcedureReturn *view\window
+    Protected *view = GetView(*Me)
+    ;       ProcedureReturn *view\window
+    Debug "UI view :" + *Me\name +" : "+Str(*view)
   EndProcedure
-  
-  
-    
-;   UsePNGImageDecoder()
-;    ; Init
-;   ;-------------------------------
-;   Procedure Init()
-;     img_local_only = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FileLocalOnly_raw.png")
-;     img_server_only = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FileServerOnly_raw.png")
-;     img_local_new = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FileLocalNew_raw.png")
-;     img_server_new = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FileServerNew_raw.png")
-;     img_sync = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FileSync_raw.png")
-;     img_folder_sync = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FolderSync_raw.png")
-;     img_folder_server_only = LoadImage(#PB_Any,GetCurrentDirectory()+"ico/FolderServerOnly_raw.png")
-;   EndProcedure
-;   
-;   ; Term
-;   ;-------------------------------
-;   Procedure Term()
-;     If IsImage(img_local_only):FreeImage(img_local_only):EndIf
-;     If IsImage(img_server_only):FreeImage(img_server_only):EndIf
-;     If IsImage(img_local_new):FreeImage(img_local_new):EndIf
-;     If IsImage(img_server_new):FreeImage(img_server_new):EndIf
-;     If IsImage(img_sync):FreeImage(img_sync):EndIf
-;   EndProcedure
-  
+
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 133
-; Folding = ---
+; CursorPosition = 46
+; FirstLine = 27
+; Folding = --
 ; EnableXP

@@ -29,6 +29,7 @@ DeclareModule ControlGroup
   Declare Delete(*Me.ControlGroup_t)
   Declare Draw( *Me.ControlGroup_t)
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
+  Declare DrawPickImage(*Me.ControlGroup_t)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
   Declare.s GetLabel( *Me.ControlGroup_t )
@@ -45,8 +46,8 @@ DeclareModule ControlGroup
     Data.i @OnEvent()
     Data.i @Delete()
     Data.i @Draw()
-    Data.i Control::@DrawPickImage()
-    Data.i Control::@Pick()
+    Data.i @DrawPickImage()
+    Data.i @Pick()
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -809,6 +810,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 4
+; CursorPosition = 31
 ; Folding = ----
 ; EnableXP

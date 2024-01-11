@@ -92,13 +92,7 @@ Module PolymeshGeometry
     
     Define nt = CArray::GetCount(*geom\a_triangleindices)/3
     Define ns = CArray::GetCount(*geom\a_faceindices)
-    
-    CArray::Echo(*geom\a_triangleindices, "triangles")
-    Debug "Num triangles : "+Str(nt)
-      
-    Vector3::Echo(*geom\bbox\origin, "oigin")
-    Vector3::Echo(*geom\bbox\extend, "extend")
-    
+   
     Define i, p
     Define.v3f32 *p, n
     
@@ -129,10 +123,7 @@ Module PolymeshGeometry
         *p = CArray::GetValue(*geom\a_positions, p)
         CArray::SetValue(*geom\a_uvws, i, *p)
       Next
-    EndIf
-    
-    CArray::Echo(*geom\a_uvws, "uvws")
-    
+    EndIf    
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -2341,9 +2332,7 @@ Module PolymeshGeometry
     CArray::Copy(*shape\normals,*Me\a_normals)
     CArray::Copy(*shape\uvws,*Me\a_uvws)
     CArray::Copy(*shape\indices,*Me\a_triangleindices)
-    
-    CArray::Echo(*Me\a_uvws, "uvws")
-    
+        
     Protected c.c4f32
     Protected *c.c4f32
     CArray::SetCount(*shape\colors,*shape\nbp)
@@ -2462,7 +2451,7 @@ Module PolymeshGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2420
-; FirstLine = 2340
+; CursorPosition = 2334
+; FirstLine = 2318
 ; Folding = -----g-----+-
 ; EnableXP

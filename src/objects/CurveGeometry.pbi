@@ -511,7 +511,6 @@ Module CurveGeometry
     Protected gPos.f, fInc.f
     Protected i, ip1
     Protected u.f
-    CArray::Echo(*Me\a_widths)
     
     For index=0 To CArray::GetCount(*Me\a_numVertices) - 1
       nbVertices = CArray::GetValueL(*Me\a_numVertices, index)
@@ -682,7 +681,7 @@ Module CurveGeometry
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 672
-; FirstLine = 616
+; CursorPosition = 513
+; FirstLine = 509
 ; Folding = ------
 ; EnableXP

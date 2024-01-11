@@ -83,8 +83,8 @@ DeclareModule ControlProperty
     Data.i @OnEvent()
     Data.i @Delete()
     Data.i @Draw()
-    Data.i Control::@DrawPickImage()
-    Data.i Control::@Pick()
+    Data.i ControlGroup::@DrawPickImage()
+    Data.i ControlGroup::@Pick()
   EndDataSection
   
   Global CLASS.Class::Class_t
@@ -259,86 +259,6 @@ Module ControlProperty
     *Me\focuschild = #Null
     *Me\current = #Null
     *Me\overchild = #Null
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Get Image ID
-  ; ----------------------------------------------------------------------------
-  Procedure.i GetImageID( *Me.ControlProperty_t)
-    ProcedureReturn *Me\imageID
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ; Select Gadget Under Mouse 
-  ; ----------------------------------------------------------------------------
-  Procedure Pick(*Me.ControlProperty_t)
-    If Not *Me : ProcedureReturn 0 : EndIf
-    Protected pickID
-    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-    
-    Protected iw = ImageWidth(*Me\imageID)
-    Protected ih = ImageHeight(*Me\imageID)
-    If xm<0 Or ym<0 Or xm>= iw Or ym>= ih : ProcedureReturn : EndIf
-    
-    StartDrawing( ImageOutput(*Me\imageID) )
-    
-    pickID = Point(xm,ym)-1
-    StopDrawing()
-    If pickID >= 0 And pickID < *Me\chilcount
-      Protected *overchild.Control::Control_t = *Me\children(pickID)
-      If *overchild\type = Control::#GROUP
-        ControlGroup::Pick(*overchild)
-      EndIf
-    EndIf
-  
-    ProcedureReturn pickID
-    
-  EndProcedure
-
-  ; ----------------------------------------------------------------------------
-  ;  Draw Pick Image
-  ; ----------------------------------------------------------------------------
-  Procedure.i DrawPickImage( *Me.ControlProperty_t)
-    If Not *Me\sizX Or Not *Me\sizY : *Me\valid = #False : ProcedureReturn : EndIf
-    *Me\valid = #True
-    If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
-      ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
-    EndIf
-
-    Protected i     .i = 0
-    Protected iBound.i = *Me\chilcount - 1
-  
-    Protected  son  .Control::IControl
-    Protected *son  .Control::Control_t
-    
-    If *Me\chilcount
-      StartVectorDrawing( ImageVectorOutput(*Me\imageID) )
-      ResetCoordinates()
-      AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-      VectorSourceColor(RGBA(0,255,255,255))
-      FillPath()
-      
-      For i=0 To iBound
-        *son = *Me\children(i)
-        If *son\type = Control::#GROUP
-          AddPathBox( *Me\posX + *son\posX, *Me\posY + *son\posY, *son\sizX, *son\sizY)
-          VectorSourceColor(RGBA(i+1,0,0,255))
-          FillPath()
-        Else
-          AddPathBox( *Me\posX + *son\posX, *Me\posY + *son\posY, *son\sizX, *son\sizY)
-          VectorSourceColor(RGBA(i+1,0,0,255))
-          FillPath()
-        EndIf
-        
-      Next
-      StopVectorDrawing()
-    EndIf
-   
-  EndProcedure
-  
-  Procedure.i DrawTitle( *Me.ControlProperty_t)
-    
   EndProcedure
   
   ; ----------------------------------------------------------------------------
@@ -1168,7 +1088,7 @@ Module ControlProperty
   ;-----------------------------------------------------------------------------
   Procedure Init( *Me.ControlProperty_t)
     If Not *Me : ProcedureReturn : EndIf
-    DrawPickImage(*Me)
+    ControlGroup::DrawPickImage(*Me)
     Draw(*Me)
     
     ProcedureReturn(#True)
@@ -1210,7 +1130,7 @@ Module ControlProperty
     Protected *overchild.Control::Control_t
     Protected nbc_row.i
     
-    Protected pickID = Pick(*Me)
+    Protected pickID = ControlGroup::Pick(*Me)
     If pickID > -1 And pickID < *Me\chilcount 
       *overchild = *Me\children(pickID)
     Else
@@ -1250,7 +1170,7 @@ Module ControlProperty
           EndIf
         Next
         
-        DrawPickImage(*Me)
+        ControlGroup::DrawPickImage(*Me)
         Draw( *Me )
         ProcedureReturn( #True )
           
@@ -1518,7 +1438,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 216
-; FirstLine = 195
+; CursorPosition = 261
+; FirstLine = 234
 ; Folding = ---------
 ; EnableXP

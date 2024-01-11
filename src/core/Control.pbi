@@ -268,7 +268,7 @@ Module Control
   EndProcedure
   
   Procedure GetUI(*Me.Control_t)
-    If *Me\parent\class\name = Globals::#CLASS_ID_UI
+    If *Me\parent\class\name = "PropertyUI"
       ProcedureReturn *Me\parent
     ElseIf *Me\parent
       ProcedureReturn GetUI(*Me\parent)
@@ -289,7 +289,7 @@ Module Control
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
 ; CursorPosition = 270
-; FirstLine = 34
+; FirstLine = 231
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
