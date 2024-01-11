@@ -50,16 +50,16 @@ Module HeatDiffusion
   Procedure Init(*solver.Solver_t, *mesh.Polymesh::Polymesh_t)
     Define i, j
     Protected *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-    Protected *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Protected *neighbors.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     Protected *v._Vertex_t
     *solver\mesh = *geom
     ReDim *solver\vertices(*solver\mesh\nbpoints)
     For i = 0 To ArraySize(*solver\vertices())-1
       *v = *solver\vertices(i)
-      *v\neighbors = CArray::New(CArray::#ARRAY_LONG)
+      *v\neighbors = CArray::New(Types::#TYPE_LONG)
       PolymeshGeometry::GetVertexNeighbors(*solver\mesh, i, *v\neighbors)
       *v\valence = CArray::GetCount(*v\neighbors)
-      *v\LCij = CArray::New(CArray::#ARRAY_FLOAT)
+      *v\LCij = CArray::New(Types::#TYPE_FLOAT)
       CArray::SetCount(*v\LCij, *v\valence)
     Next
     
@@ -93,7 +93,7 @@ Module HeatDiffusion
     Define i, j, k
     Define sum.f, val.f, cot0.f, cot1.f, cotan.f
     Define *v._Vertex_t, *n._Vertex_t
-    Define *polygons.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *polygons.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     PolymeshGeometry::ComputePolygonAreas(*solver\mesh)
     PolymeshGeometry::ComputeVertexPolygons(*solver\mesh)
     For i = 0 To ArraySize(*solver\vertices())-1
@@ -275,14 +275,13 @@ Module HeatDiffusion
       Color::Set(c, RESCALE(*v\phi, 0, *solver\maxphi, 1, 0), RESCALE(*v\phi, 0, *solver\maxphi, 0, 1), 0, 1)
       CArray::SetValue(*colors, i, c)
     Next
-    
   EndProcedure
   
   
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 274
-; FirstLine = 236
+; CursorPosition = 276
+; FirstLine = 224
 ; Folding = --
 ; EnableXP

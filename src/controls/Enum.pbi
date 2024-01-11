@@ -10,9 +10,6 @@ DeclareModule ControlEnum
   #ENUM_BORDER = 4
   #ENUM_ITEM_HEIGHT = 24
   
-  ; ------------------------------------------------------------------
-  ;   STRUCTURE
-  ; ------------------------------------------------------------------ 
   Structure ControlEnum_t Extends Control::Control_t
     label.s
     current.i
@@ -23,15 +20,9 @@ DeclareModule ControlEnum
     Array items.Globals::KeyValue_t(0)
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;  Interface
-  ; ----------------------------------------------------------------------------
   Interface IControlEnum Extends Control::IControl
   EndInterface
-  
-  ; ------------------------------------------------------------------
-  ;   DECLARE
-  ; ------------------------------------------------------------------ 
+
   Declare New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
   Declare Delete(*Me.ControlEnum_t)
   Declare Draw(*Me.ControlEnum_t)
@@ -39,9 +30,6 @@ DeclareModule ControlEnum
   Declare OnEvent(*Me.ControlEnum_t)
   Declare AddItem(*Me.ControlEnum_t, name.s, value.i)
   
-  ; ------------------------------------------------------------------
-  ;   VTABLE ( Control )
-  ; ------------------------------------------------------------------ 
   DataSection 
     ControlEnumVT: 
     Data.i @OnEvent()
@@ -56,16 +44,11 @@ EndDeclareModule
 Module ControlEnum
   UseModule Globals
   
-  ; ------------------------------------------------------------------
-  ;   DRAW
-  ; ------------------------------------------------------------------ 
   Procedure Draw(*Me.ControlEnum_t)
-    ; background
     AddPathBox(*Me\posX+#ENUM_BORDER, *Me\posY+#ENUM_BORDER, *Me\sizX-2*#ENUM_BORDER, *Me\sizY-#ENUM_BORDER)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
-    ; label 
     VectorFont(FontID(font_label),12)
     Define offsety.i = *Me\sizY - VectorTextHeight(*Me\label)
     MovePathCursor( *Me\posX + #ENUM_BORDER, *Me\posY + offsety + #ENUM_BORDER)
@@ -79,7 +62,6 @@ Module ControlEnum
     AddPathLine(hwidth-lwidth - 2 * #ENUM_BORDER, 0, #PB_Path_Relative)
     StrokePath(1)
     
-    ; value
     AddPathBox(*Me\posX + hwidth + #ENUM_BORDER, *Me\posY + #ENUM_BORDER, hwidth - 2 * #ENUM_BORDER, *Me\sizY)
     VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
@@ -98,18 +80,12 @@ Module ControlEnum
     EndIf
   EndProcedure
   
-  ; ------------------------------------------------------------------
-  ;   DRAW PICK IMAGE
-  ; ------------------------------------------------------------------ 
   Procedure DrawPickImage(*Me.ControlEnum_t, id.i)
     AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     VectorSourceColor(RGBA(id,0,0,255))
     FillPath()
   EndProcedure
   
-  ; ------------------------------------------------------------------
-  ;   ADD ITEM
-  ; ------------------------------------------------------------------ 
   Procedure AddItem(*Me.ControlEnum_t, name.s, value.i)
     Define last = ArraySize(*Me\items())
     ReDim *Me\items(last+1)
@@ -117,9 +93,6 @@ Module ControlEnum
     *Me\items(last)\value = value
   EndProcedure
   
-  ; ------------------------------------------------------------------
-  ;   CONSTRUCTOR
-  ; ------------------------------------------------------------------ 
   Procedure New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
     Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
     Object::INI(ControlEnum)
@@ -136,9 +109,6 @@ Module ControlEnum
     ProcedureReturn *Me
   EndProcedure
   
-  ; ------------------------------------------------------------------
-  ;   DESTRUCTOR
-  ; ------------------------------------------------------------------ 
   Procedure Delete(*Me.ControlEnum_t)
     Object::TERM(ControlEnum)
   EndProcedure
@@ -173,13 +143,12 @@ Module ControlEnum
     ProcedureReturn current
   EndProcedure
   
-  
   Procedure Popup(*Me.ControlEnum_t)
     PopupSize(*Me)
     Define parent = EventWindow()
     Define mx = (GadgetX(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posX + *Me\sizX - #ENUM_BORDER) - *Me\popup_width
     Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY + #ENUM_BORDER
-    Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(EventWindow()))
+    Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(*Me\window))
     StickyWindow(window,#True)
     *Me\popup_gadget = CanvasGadget(#PB_Any,0,0,WindowWidth(window, #PB_Window_InnerCoordinate), WindowHeight(window, #PB_Window_InnerCoordinate))
     Define done.b = #False
@@ -224,9 +193,10 @@ Module ControlEnum
   Procedure OnEvent(*Me.ControlEnum_t)
     Select EventType()
       Case #PB_EventType_LeftClick
+        Debug "Popup Left Click Event"
         Popup(*Me)
         Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
-        PostEvent(#PB_Event_Repaint, EventWindow(), *Me\gadgetID)
+        Control::Invalidate(*Me)
     EndSelect
     
   EndProcedure
@@ -236,7 +206,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 181
-; FirstLine = 137
+; CursorPosition = 54
+; FirstLine = 42
 ; Folding = --
 ; EnableXP

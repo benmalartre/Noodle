@@ -6,7 +6,6 @@ XIncludeFile "UIColor.pbi"
 ;  CONTROL MODULE DECLARATION
 ; ==============================================================================
 DeclareModule Control
-  ; ---[ Event Types ]---------------------
   Enumeration
     #PB_EventType_Draw = 128
     #PB_EventType_DrawChild
@@ -20,16 +19,13 @@ DeclareModule Control
     #PB_EventType_Attribute
   EndEnumeration
   
-  ; ---[ Gadget Types ]--------------------
   Enumeration
     #CHECK
     #ICON
     #BUTTON
     #RADIO
-    #COMBO
     #ENUM
     #LABEL
-    #SLIDER
     #DIVOT
     #EDIT
     #POPUP
@@ -44,7 +40,6 @@ DeclareModule Control
     #HEAD
   EndEnumeration
   
-  ; ---[ Gadget State ]--------------------
   Enumeration
     #DEFAULT
     #OVER
@@ -64,9 +59,6 @@ DeclareModule Control
     *datas
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;   Control Instance
-  ; ----------------------------------------------------------------------------
   Structure Control_t  Extends Object::Object_t
     *parent    .Control_t
     type       .i
@@ -87,9 +79,6 @@ DeclareModule Control
     *on_change.Callback::Callback_t 
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;   Control Interface
-  ; ----------------------------------------------------------------------------
   Interface IControl
     OnEvent( ev_code.i, *ev_data.EventTypeDatas_t = #Null )
     Delete()
@@ -129,125 +118,89 @@ EndDeclareModule
 ; ==============================================================================
 Module Control
   
-  ; ---[ Generic Draw Routine ]--------------------------------------------------
   Procedure Draw(*Me.Control_t)
     AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     VectorSourceColor(UIColor::RANDOMIZED)
     FillPath()
   EndProcedure
   
-  ; ---[ Generic Draw Pick Image ]-----------------------------------------------
   Procedure DrawPickImage(*Me.Control_t, id.i)
     AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     VectorSourceColor(RGBA(id, 0,0,255))
     FillPath()
   EndProcedure
   
-  ; ---[ Generic Pick Image ]----------------------------------------------------
   Procedure Pick(*Me.Control_t, mx, my)
-    If mx > *Me\posX And mx<*Me\posX + *Me\sizX And my > *Me\posY And my <*Me\posY + *Me\sizY
+    If mx > *Me\posX And mx < *Me\posX + *Me\sizX And my > *Me\posY And my <*Me\posY + *Me\sizY
       ProcedureReturn #True
     EndIf
     ProcedureReturn #False
   EndProcedure
   
-  ; ---[ Delete ]---------------------------------------------------------------
   Procedure Delete(*Me.Control_t)
     Object::TERM(Control)
   EndProcedure
 
-  ; ---[ GetGadgetID ]----------------------------------------------------------
   Procedure.i GetGadgetID( *Me.Control_t )
-    
-    ; ---[ Return This Control Main/Container GadgetID ]------------------------
     ProcedureReturn( *Me\gadgetID )
-    
   EndProcedure
-  ; ---[ GetType ]--------------------------------------------------------------
+  
   Procedure.i GetType( *Me.Control_t )
-    
-    ; ---[ Return Control Type ]------------------------------------------------
     ProcedureReturn( *Me\type )
-    
   EndProcedure
-  ; ---[ SetName ]--------------------------------------------------------------
+  
   Procedure SetName( *Me.Control_t, name.s )
-    
-    ; ---[ Set Control Name ]---------------------------------------------------
     *Me\name = name
-    
   EndProcedure
-  ; ---[ GetName ]--------------------------------------------------------------
+  
   Procedure.s GetName( *Me.Control_t )
-    
-    ; ---[ Return Control Name ]------------------------------------------------
     ProcedureReturn( *Me\name )
-    
   EndProcedure
-  ; ---[ Show ]-----------------------------------------------------------------
+  
   Procedure.i Show( *Me.Control_t )
     If Not *Me\visible
       *Me\visible = #False
       HideGadget(*Me\gadgetID,1)
     EndIf
   EndProcedure
-  ; ---[ Hide ]-----------------------------------------------------------------
+  
   Procedure.i Hide( *Me.Control_t )
     If *Me\visible
       *Me\visible = #True
       HideGadget(*Me\gadgetID,0)
     EndIf
   EndProcedure
-  ; ---[ Enable ]---------------------------------------------------------------
+  
   Procedure.i Enable( *Me.Control_t )
     Protected Me.IControl = *Me
-    ; ---[ Send Event ]---------------------------------------------------------
     If Not Me\OnEvent( #PB_EventType_Enable )
-      ; ...[ Enable Gadget ]....................................................
       DisableGadget( *Me\gadgetID, 0 )
-      ; ...[ Update Status ]....................................................
       *Me\enable = #True
     EndIf
-    
-    ; ---[ Return Null ]--------------------------------------------------------
     ProcedureReturn( #Null )
-    
   EndProcedure
   
-  ; ---[ Disable ]--------------------------------------------------------------
   Procedure.i Disable( *Me.Control_t )
     Protected Me.IControl = *Me
-    ; ---[ Send Event ]---------------------------------------------------------
     If Not Me\OnEvent( #PB_EventType_Disable )
-      ; ...[ Disable Gadget ]...................................................
       DisableGadget( *Me\gadgetID, 1 )
-      ; ...[ Update Status ]....................................................
       *Me\enable = #False
     EndIf
     
-    ; ---[ Return Null ]--------------------------------------------------------
     ProcedureReturn( #Null )
   EndProcedure
   
-  ; ---[ Resize ]---------------------------------------------------------------
   Procedure Resize( *Me.Control_t, x.i, y.i, width.i, height.i = 22 )
     If Not *Me : ProcedureReturn : EndIf
     Protected Me.IControl = *Me
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected ev_datas.EventTypeDatas_t
     
-    ; ---[ Set Event Datas ]----------------------------------------------------  
     ev_datas\x      = x
     ev_datas\y      = y
     ev_datas\width  = width
     ev_datas\height = height
     
-    ; ---[ Retrieve Interface ]-------------------------------------------------
-    
-
-    ; ---[ Send Event ]---------------------------------------------------------
     If Not Me\OnEvent( #PB_EventType_Resize, @ev_datas )
-      ; ...[ Update Status ]....................................................
       If #PB_Ignore <> x      : *Me\posX = x      : EndIf
       If #PB_Ignore <> y      : *Me\posY = y      : EndIf
       If #PB_Ignore <> width  : *Me\sizX = width  : EndIf
@@ -256,65 +209,46 @@ Module Control
     
   EndProcedure
 
-  ; ---[ SetAttribute ]---------------------------------------------------------
   Procedure SetAttribute( *Me.Control_t, attribute.i, i_value.i, d_value.d, s_value.s )
-    
-    ; ---[ Retrieve Interface ]-------------------------------------------------
     Protected Me.IControl = *Me
     
-    ; ---[ Send Event ]---------------------------------------------------------
-    If Not Me\OnEvent( #PB_EventType_Attribute )
-      ; TODO : Update attribute
+    If Not Me\OnEvent( #PB_EventType_Attribute ) 
     EndIf
-    
   EndProcedure
-  ; ---[ GetAttribute ]---------------------------------------------------------
+  
   Procedure.i GetAttribute( *Me.Control_t, attribute.i, *value_out )
     
   EndProcedure
-  ; ---[ Invalidate ]-----------------------------------------------------------
+  
   Procedure.i Invalidate( *Me.Control_t )
-
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent And Not *Me\parent\class\name = "View"
       Protected *parent.IControl = *Me\parent
       Define ev_data.Control::EventTypeDatas_t
       ev_data\datas = *Me
-      Debug "parent "+*Me\parent\class\name
-      ; ...[ Ask Parent To Redraw Me ]..........................................
       *parent\OnEvent( #PB_EventType_DrawChild, ev_data )
     EndIf
     
   EndProcedure
-  ; ---[ Focused ]--------------------------------------------------------------
+  
   Procedure.i Focused( *Me.Control_t )
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      ; ...[ Tell Parent I'm Now Focused ]......................................
       *parent\OnEvent( #PB_EventType_ChildFocused, *Me )
     EndIf
-    
   EndProcedure
-  ; ---[ DeFocused ]------------------------------------------------------------
+  
   Procedure.i DeFocused( *Me.Control_t )
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      ; ...[ Tell Parent I'm Not In Focus Anymore ].............................
       *parent\OnEvent( #PB_EventType_ChildDeFocused, *Me )
     EndIf
     
   EndProcedure
-  ; ---[ SetCursor ]------------------------------------------------------------
+  
   Procedure.i SetCursor( *Me.Control_t, cursor_id.i )
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      ; ...[ Ask Parent To Set Cursor For Me ]..................................
       *parent\OnEvent( #PB_EventType_ChildCursor, cursor_id )
     EndIf
   EndProcedure
@@ -328,17 +262,11 @@ Module Control
     If percX <> #PB_Ignore : *Me\percX = percX : EndIf
     If percY <> #PB_Ignore : *Me\percY = percY : EndIf
   EndProcedure
-  
-  ; ---[ SignalOnChange ]-------------------------------------------------------
-;   Procedure.i SignalOnChanged( *Me.Control_t )
-;     ; ---[ Return 'OnChanged' Slot ]-----------------------------------------------
-;     ProcedureReturn( *Me\sig_onchanged )
-;   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 284
-; FirstLine = 271
+; CursorPosition = 26
+; FirstLine = 18
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

@@ -65,7 +65,7 @@ Procedure OnParameterChange()
   PolymeshGeometry::SetColors(*bunny\geom, *colors)
   Polymesh::SetDirtyState(*bunny, Object3D::#DIRTY_STATE_TOPOLOGY)
 EndProcedure
-Callback::DECLARECALLBACK(OnParameterChange)
+Callback::DECLARE_CALLBACK(OnParameterChange)
 
 
 ; Draw
@@ -73,11 +73,7 @@ Callback::DECLARECALLBACK(OnParameterChange)
 Procedure Draw(*app.Application::Application_t)
   
   GLContext::SetContext(*viewport\context)
-  
-  
-  
   Scene::Update(*app\scene)
-  
   
   Protected *s.Program::Program_t = *viewport\context\shaders("polymesh")
   glUseProgram(*s\pgm)
@@ -85,8 +81,6 @@ Procedure Draw(*app.Application::Application_t)
    
   Application::Draw(*app, *layer, *app\camera)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
-
-
  EndProcedure
  
  Define width = 800
@@ -114,7 +108,6 @@ Matrix4::SetIdentity(model)
 GLContext::SetContext(*viewport\context)
 
 *layer = LayerDefault::New(width,height,*viewport\context,*app\camera)
-Application::AddLayer(*app, *layer)
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 
 ; FTGL Drawer
@@ -122,23 +115,23 @@ GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 FTGL::Init()
 *ftgl_drawer = FTGL::New()
 
-*colors = CArray::New(CArray::#ARRAY_C4F32)
+*colors = CArray::New(Types::#TYPE_C4F32)
 
 *bunny = Polymesh::New("bunny", Shape::#SHAPE_BUNNY)
 PolymeshGeometry::ComputeHalfEdges(*bunny\geom)
 PolymeshGeometry::ComputeVertexPolygons(*bunny\geom)
 
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property", #Null)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*app\window\main\right, "Property")
 Global *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*ui, "HeatDiffusion ", "Controls")
 
 
 ControlProperty::AppendStart(*prop)
 *index = ControlProperty::AddIntegerControl(*prop, "Index", "Index", 0, #Null)
-Signal::CONNECTCALLBACK(*index\on_change, OnParameterChange)
+Callback::CONNECT_CALLBACK(*index\on_change, OnParameterChange)
 *steps = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
-Signal::CONNECTCALLBACK(*steps\on_change, OnParameterChange)
+Callback::CONNECT_CALLBACK(*steps\on_change, OnParameterChange)
 *diffusion = ControlProperty::AddFloatControl(*prop, "Diffusion", "Diffusion", 0.05, #Null)
-Signal::CONNECTCALLBACK(*diffusion\on_change, OnParameterChange)
+Callback::CONNECT_CALLBACK(*diffusion\on_change, OnParameterChange)
 
 ControlProperty::AppendStop(*prop)
 PropertyUI::AddProperty(*ui, *prop)
@@ -152,15 +145,12 @@ Scene::AddChild(*app\scene,*bunny)
 HeatDiffusion::Init(*solver, *bunny)
 HeatDiffusion::Laplacian(*solver)
 
-
-
 ;   Scene::AddChild(*app\scene, *solver\drawer)
 Scene::Setup(*app\scene)
 
 Application::Loop(*app, @Draw())
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 106
+; CursorPosition = 22
 ; Folding = -
 ; EnableXP
