@@ -1,14 +1,15 @@
+XIncludeFile "../core/Control.pbi"
+
+; ============================================================================
+;  DECLARATION Control Group
+; ============================================================================
 DeclareModule ControlGroup
 
-  ; ---[ Constants ]------------------------------------------------------------
   #Autosize_H = 1<<20
   #Autosize_V = 1<<21
   #Autostack  = 1<<22
   #NoFrame    = 1<<23
   
-  ; ----------------------------------------------------------------------------
-  ;  Object ( ControlGroup_t )
-  ; ----------------------------------------------------------------------------
   Structure ControlGroup_t Extends Control::Control_t
     imageID   .i
     label     .s
@@ -53,11 +54,9 @@ DeclareModule ControlGroup
 EndDeclareModule
 
 ; ============================================================================
-;  IMPLEMENTATION Control Group Module
+;  IMPLEMENTATION Control Group
 ; ============================================================================
 Module ControlGroup
-
-  ;{
   ; ----------------------------------------------------------------------------
   ;  Resize
   ; ----------------------------------------------------------------------------
@@ -72,10 +71,8 @@ Module ControlGroup
     ; Else
     ;   NOP
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If *Me\chilcount < 1 : ProcedureReturn : EndIf
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected dirty   .i = #False
     Protected i       .i = 0
     Protected j       .i = 0
@@ -187,11 +184,9 @@ Module ControlGroup
       ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
     EndIf
   
-    ; ---[ Return Redraw Flag ]-------------------------------------------------
     ProcedureReturn( dirty )
     
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Get Num Control In Row
@@ -257,542 +252,467 @@ Module ControlGroup
     ProcedureReturn y + Control::MARGING
   EndProcedure
 
-; ----------------------------------------------------------------------------
-;  Draw
-; ----------------------------------------------------------------------------
-Procedure Draw( *Me.ControlGroup_t )
-  
-  Protected label.s = *Me\label
-  Protected lalen.i = Len(label)
-  Protected maxW .i = *Me\sizX - 21
-  Protected curW .i
-  
-  VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_LABEL)
-  
-  curW = VectorTextWidth(label)
-  While Len(label) And ( curW > maxW )
-    label = Left( label, Len(label)-1 )
+  ; ----------------------------------------------------------------------------
+  ;  Draw
+  ; ----------------------------------------------------------------------------
+  Procedure Draw( *Me.ControlGroup_t )
+    
+    Protected label.s = *Me\label
+    Protected lalen.i = Len(label)
+    Protected maxW .i = *Me\sizX - 21
+    Protected curW .i
+    
+    VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_LABEL)
+    
     curW = VectorTextWidth(label)
-  Wend
-  If Len(label) <> lalen
-    lalen = Len(label)
-    label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
-  EndIf
- 
-  If Not *Me\options & #NoFrame
-    Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
-    VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
-    StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)  
-  EndIf
-  
-  ; ---[  Draw Label ]-------------------------------------------------------
-  AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-  VectorSourceColor(UIColor::COLOR_MAIN_BG )
-  FillPath()
-  MovePathCursor(*Me\posX+15,  *Me\posY)
-  VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
-  DrawVectorText( label )
-  
-  ; ---[ Sanity Check ]-------------------------------------------------------
-  If *Me\chilcount < 1 : ProcedureReturn : EndIf
-  
-  ; ---[ Local Variables ]----------------------------------------------------
-  Protected i     .i = 0
-  Protected iBound.i = *Me\chilcount - 1
-  Protected  son  .Control::IControl
-  Protected *son  .Control::Control_t
-  
-  ; ---[ Redraw Children ]----------------------------------------------------
-  Protected ev_data.Control::EventTypeDatas_t  
-  For i=0 To iBound
-     *son = *Me\children(i)
-     son = *son
-     
-    ev_data\xoff = *Me\posX+*son\posX
-    ev_data\yoff = *Me\posY+*son\posY
+    While Len(label) And ( curW > maxW )
+      label = Left( label, Len(label)-1 )
+      curW = VectorTextWidth(label)
+    Wend
+    If Len(label) <> lalen
+      lalen = Len(label)
+      label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
+    EndIf
+   
+    If Not *Me\options & #NoFrame
+      Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
+      VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
+      StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)  
+    EndIf
     
-    son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-  Next
-  
-  ResetCoordinates()
-  MovePathCursor(*Me\posX, *Me\posY)
-  DrawVectorImage(ImageID(*Me\imageID), 128)
- 
-EndProcedure
-
-
-; ----------------------------------------------------------------------------
-;  Pick
-; ----------------------------------------------------------------------------
-Procedure Pick(*Me.ControlGroup_t)
-  Protected pickID
-  Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-  Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-  
-  xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-  ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-    
-  StartDrawing( ImageOutput(*Me\imageID) )
-  pickID = Point(xm,ym) - 1
-  StopDrawing()
-  
-  ProcedureReturn pickID
-EndProcedure
-
-; ----------------------------------------------------------------------------
-;  DrawPickImage
-; ----------------------------------------------------------------------------
-Procedure DrawPickImage( *Me.ControlGroup_t )
-  Protected i     .i = 0
-  Protected iBound.i = *Me\chilcount-1
-  Protected *son  .Control::Control_t
-  
-  If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
-    ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
-  EndIf
-
-  StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
-  ResetCoordinates()
-  AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
-  VectorSourceColor(RGBA(0,0,0,0))
-  FillPath()
-  For i=0 To iBound
-    *son = *Me\children(i)
-    AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
-    VectorSourceColor(RGBA(i+1,0,0,255))
+    AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG )
     FillPath()
-   Next
-   StopVectorDrawing()
-EndProcedure
-;}
-
-
-; ----------------------------------------------------------------------------
-;  NextItem
-; ----------------------------------------------------------------------------
-Procedure NextItem( *Me.ControlGroup_t )
-  StartDrawing( ImageOutput(*Me\imageID) )
-  Protected *focuschild.Control::Control_t = *Me\focuschild
-  Protected idx = Point(*focuschild\posX+1,*focuschild\posY+1) - 1
-  StopDrawing()
-  If *Me\focuschild
-    *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+    MovePathCursor(*Me\posX+15,  *Me\posY)
+    VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
+    DrawVectorText( label )
+    
+    If *Me\chilcount < 1 : ProcedureReturn : EndIf
+    
+    Protected i     .i = 0
     Protected iBound.i = *Me\chilcount - 1
-    Protected n.i = (idx+1)%iBound
-    Protected ev_data.Control::EventTypeDatas_t 
-    *Me\focuschild = *Me\children(n)
-    *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
-  EndIf
-EndProcedure
+    Protected  son  .Control::IControl
+    Protected *son  .Control::Control_t
+    
+    Protected ev_data.Control::EventTypeDatas_t  
+    For i=0 To iBound
+       *son = *Me\children(i)
+       son = *son
+       
+      ev_data\xoff = *Me\posX+*son\posX
+      ev_data\yoff = *Me\posY+*son\posY
+      
+      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+    Next
+    
+    ResetCoordinates()
+    MovePathCursor(*Me\posX, *Me\posY)
+    DrawVectorImage(ImageID(*Me\imageID), 128)
+   
+  EndProcedure
 
-; ============================================================================
-;  OVERRIDE ( CControl )
-; ============================================================================
-; ---[ OnEvent ]--------------------------------------------------------------
-Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  Protected i=0
-  Protected *ctrl.Control::Control_t 
   
-  ; ---[ Local Variables ]----------------------------------------------------
-  Protected  ev_data.Control::EventTypeDatas_t
-  Protected *son.Control::Control_t
-  Protected  son.Control::IControl
+  ; ----------------------------------------------------------------------------
+  ;  Pick
+  ; ----------------------------------------------------------------------------
+  Procedure Pick(*Me.ControlGroup_t)
+    Protected pickID
+    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
+    
+    xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+    ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+      
+    StartDrawing( ImageOutput(*Me\imageID) )
+    pickID = Point(xm,ym) - 1
+    StopDrawing()
+    
+    ProcedureReturn pickID
+  EndProcedure
+
+  ; ----------------------------------------------------------------------------
+  ;  DrawPickImage
+  ; ----------------------------------------------------------------------------
+  Procedure DrawPickImage( *Me.ControlGroup_t )
+    Protected i     .i = 0
+    Protected iBound.i = *Me\chilcount-1
+    Protected *son  .Control::Control_t
+    
+    If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
+      ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+    EndIf
   
-  ; ---[ Dispatch Event ]-----------------------------------------------------
-  Select ev_code
-      
-    ; ------------------------------------------------------------------------
-    ;  Resize
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_Resize
-      ; ...[ Update & Check Dirty ]...........................................
-      Resize( *Me, *ev_data.Control::EventTypeDatas_t )
-      ProcedureReturn( #True )
-      
-    ; ------------------------------------------------------------------------
-    ;  DrawChild
-    ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_DrawChild
-      *son = *ev_data\datas
-      son = *son
-      ev_data\xoff    = *son\posX+*Me\posX
-      ev_data\yoff    = *son\posY+*Me\posY
-      StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-      AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
-      VectorSourceColor(UIColor::COLOR_MAIN_BG )
+    StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
+    ResetCoordinates()
+    AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
+    VectorSourceColor(RGBA(0,0,0,0))
+    FillPath()
+    For i=0 To iBound
+      *son = *Me\children(i)
+      AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
+      VectorSourceColor(RGBA(i+1,0,0,255))
       FillPath()
-      son\OnEvent( Control::#PB_EventType_Draw, ev_data )
-      StopVectorDrawing()
-        
-    ; ------------------------------------------------------------------------
-    ;  Draw
-    ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_Draw
-      Draw( *Me )
+     Next
+     StopVectorDrawing()
+  EndProcedure
 
-    ; ------------------------------------------------------------------------
-    ;  Focus
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_Focus
-      
-    ; ------------------------------------------------------------------------
-    ;  ChildFocused
-    ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_ChildFocused
-      *Me\focuschild = *ev_data
-      
-    ; ------------------------------------------------------------------------
-    ;  ChildDeFocused
-    ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_ChildDeFocused
-      *Me\focuschild = #Null
-      
-    ; ------------------------------------------------------------------------
-    ;  ChildCursor
-    ; ------------------------------------------------------------------------
-    Case Control::#PB_EventType_ChildCursor
-      SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
-      
-    ; ------------------------------------------------------------------------
-    ;  LostFocus
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_LostFocus
-      If *Me\focuschild
-        Define focuschild.Control::IControl = *Me\focuschild
-        focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+  ; ----------------------------------------------------------------------------
+  ;  NextItem
+  ; ----------------------------------------------------------------------------
+  Procedure NextItem( *Me.ControlGroup_t )
+    StartDrawing( ImageOutput(*Me\imageID) )
+    Protected *focuschild.Control::Control_t = *Me\focuschild
+    Protected idx = Point(*focuschild\posX+1,*focuschild\posY+1) - 1
+    StopDrawing()
+    If *Me\focuschild
+      *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+      Protected iBound.i = *Me\chilcount - 1
+      Protected n.i = (idx+1)%iBound
+      Protected ev_data.Control::EventTypeDatas_t 
+      *Me\focuschild = *Me\children(n)
+      *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
+    EndIf
+  EndProcedure
+
+  ; ============================================================================
+  ;  OVERRIDE ( CControl )
+  ; ============================================================================
+  Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+    Protected i=0
+    Protected *ctrl.Control::Control_t 
+    
+    Protected  ev_data.Control::EventTypeDatas_t
+    Protected *son.Control::Control_t
+    Protected  son.Control::IControl
+    
+    Select ev_code
+        
+      ; ------------------------------------------------------------------------
+      ;  Resize
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_Resize
+        Resize( *Me, *ev_data.Control::EventTypeDatas_t )
+        ProcedureReturn( #True )
+        
+      ; ------------------------------------------------------------------------
+      ;  DrawChild
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_DrawChild
+        *son = *ev_data\datas
+        son = *son
+        ev_data\xoff    = *son\posX+*Me\posX
+        ev_data\yoff    = *son\posY+*Me\posY
+        StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+        AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
+        VectorSourceColor(UIColor::COLOR_MAIN_BG )
+        FillPath()
+        son\OnEvent( Control::#PB_EventType_Draw, ev_data )
+        StopVectorDrawing()
+          
+      ; ------------------------------------------------------------------------
+      ;  Draw
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_Draw
+        Draw( *Me )
+  
+      ; ------------------------------------------------------------------------
+      ;  Focus
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_Focus
+        
+      ; ------------------------------------------------------------------------
+      ;  ChildFocused
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_ChildFocused
+        *Me\focuschild = *ev_data
+        
+      ; ------------------------------------------------------------------------
+      ;  ChildDeFocused
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_ChildDeFocused
         *Me\focuschild = #Null
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  MouseMove
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_MouseMove
-      Protected *overchild.Control::Control_t = #Null
-      xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-      ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-      
-      xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-      ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-      
-      Protected pickID = Pick(*Me) 
-      If pickID > -1 And pickID <*Me\chilcount
-        *overchild = *Me\children(pickID)
-      EndIf
-      
-      If *Me\overchild <> *overchild And  Not *Me\down
-        If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
-        *Me\overchild = *overchild
-        If *Me\overchild
-          *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
+        
+      ; ------------------------------------------------------------------------
+      ;  ChildCursor
+      ; ------------------------------------------------------------------------
+      Case Control::#PB_EventType_ChildCursor
+        SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
+        
+      ; ------------------------------------------------------------------------
+      ;  LostFocus
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LostFocus
+        If *Me\focuschild
+          Define focuschild.Control::IControl = *Me\focuschild
+          focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+          *Me\focuschild = #Null
         EndIf
-      ElseIf *Me\overchild
-        *overchild = *Me\overchild
-        ev_data\x    = xm - *overchild\posX
-        ev_data\y    = ym - *overchild\posY
-        ev_data\yoff = 50
-       *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
-       Else
-          SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonDown
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_LeftButtonDown
+        
+      ; ------------------------------------------------------------------------
+      ;  MouseMove
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_MouseMove
+        Protected *overchild.Control::Control_t = #Null
+        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
+        
+        xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+        ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+        
+        Protected pickID = Pick(*Me) 
+        If pickID > -1 And pickID <*Me\chilcount
+          *overchild = *Me\children(pickID)
+        EndIf
+        
+        If *Me\overchild <> *overchild And  Not *Me\down
+          If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
+          *Me\overchild = *overchild
+          If *Me\overchild
+            *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
+          EndIf
+        ElseIf *Me\overchild
+          *overchild = *Me\overchild
+          ev_data\x    = xm - *overchild\posX
+          ev_data\y    = ym - *overchild\posY
+          ev_data\yoff = 50
+         *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
+         Else
+            SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  LeftButtonDown
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonDown
+          *Me\down = #True
+          If *Me\overchild
+            If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
+              *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+            EndIf
+            xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
+            ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
+            xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+            ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+             Define *overchild.Control::Control_t = *Me\overchild
+            ev_data\x = xm - *overchild\posX
+            ev_data\y = ym - *overchild\posY
+            *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
+          ElseIf *Me\focuschild
+            Define focuschild.Control::IControl = *Me\focuschild
+            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+          EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  LeftButtonUp
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftButtonUp
+        If *Me\overchild
+          Define *overchild.Control::Control_t = *Me\overchild
+          
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
+        EndIf
+        *Me\down = #False
+        
+      ; ------------------------------------------------------------------------
+      ;  LeftDoubleClick
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_LeftDoubleClick
+        If *Me\overchild
+          Define *overchild.Control::Control_t = *Me\overchild
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  RightButtonDown
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_RightButtonDown
         *Me\down = #True
         If *Me\overchild
+          Define *overchild.Control::Control_t = *Me\overchild
           If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
-          xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-          ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-          xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-          ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-           Define *overchild.Control::Control_t = *Me\overchild
-          ev_data\x = xm - *overchild\posX
-          ev_data\y = ym - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
         ElseIf *Me\focuschild
-          Define focuschild.Control::IControl = *Me\focuschild
           *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
         EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonUp
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_LeftButtonUp
-      If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
         
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
-      EndIf
-      *Me\down = #False
-      
-    ; ------------------------------------------------------------------------
-    ;  LeftDoubleClick
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_LeftDoubleClick
-      If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  RightButtonDown
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_RightButtonDown
-      *Me\down = #True
-      If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
-        If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+      ; ------------------------------------------------------------------------
+      ;  RightButtonUp
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_RightButtonUp
+        If *Me\overchild
+          Define *overchild.Control::Control_t = *Me\overchild
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
         EndIf
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
-      ElseIf *Me\focuschild
-        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-      EndIf
+        *Me\down = #False
       
-    ; ------------------------------------------------------------------------
-    ;  RightButtonUp
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_RightButtonUp
-      If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
-      EndIf
-      *Me\down = #False
-    
-    ; ------------------------------------------------------------------------
-    ;  RightButtonUp
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_RightButtonUp
-      If *Me\overchild
-        Define *overchild.Control::Control_t = *Me\overchild
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-        *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  Input
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_Input
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Retrieve Character ]...........................................
-        ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
-        ; ...[ Send Character To Focused Child ]..............................
-        *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  KeyDown
-    ; ------------------------------------------------------------------------
-    Case #PB_EventType_KeyDown
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Retrieve Key ].................................................
-        ev_data\key   = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key      )
-        ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
+      ; ------------------------------------------------------------------------
+      ;  RightButtonUp
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_RightButtonUp
+        If *Me\overchild
+          Define *overchild.Control::Control_t = *Me\overchild
+          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
+        EndIf
         
-        ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  SHORTCUT_COPY
-    ; ------------------------------------------------------------------------
-    Case Globals::#SHORTCUT_COPY
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  SHORTCUT_CUT
-    ; ------------------------------------------------------------------------
-    Case Globals::#SHORTCUT_CUT
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  SHORTCUT_PASTE
-    ; ------------------------------------------------------------------------
-    Case Globals::#SHORTCUT_PASTE
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
-      EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  SHORTCUT_UNDO
-    ; ------------------------------------------------------------------------
-    Case Globals::#SHORTCUT_UNDO
-      ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-      If *Me\focuschild
-        ; ...[ Send Key To Focused Child ]....................................
-        *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
-      EndIf
-      
-;       ; ------------------------------------------------------------------------
-;       ;  SHORTCUT_NEXT
-;       ; ------------------------------------------------------------------------
-;       Case Globals::#SHORTCUT_NEXT
-;         ; ---[ Do We Have A Focused Child ? ]-------------------------------------
-;         If *Me\focuschild
-;           ; ---[ Go To Next Item ]------------------------------------------------
-;           NextItem( *Me ) 
-;         EndIf
-;         
-;       ;------------------------------------------------------------------------
-;       ; SHORTCUT_PREVIOUS
-;       ;------------------------------------------------------------------------
-;       Case Globals::#SHORTCUT_PREVIOUS
-;           Debug "Previous Item called"
-;           ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-;           If *Me\focuschild
-;             ; go to previous child
-;             Debug "previous child per favor..."
-;           EndIf
+      ; ------------------------------------------------------------------------
+      ;  Input
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_Input
+        If *Me\focuschild
+          ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
+          *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  KeyDown
+      ; ------------------------------------------------------------------------
+      Case #PB_EventType_KeyDown
+        If *Me\focuschild
+          ev_data\key   = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key      )
+          ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
+          
+          *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  SHORTCUT_COPY
+      ; ------------------------------------------------------------------------
+      Case Globals::#SHORTCUT_COPY
+        If *Me\focuschild
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  SHORTCUT_CUT
+      ; ------------------------------------------------------------------------
+      Case Globals::#SHORTCUT_CUT
+        If *Me\focuschild
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  SHORTCUT_PASTE
+      ; ------------------------------------------------------------------------
+      Case Globals::#SHORTCUT_PASTE
+        If *Me\focuschild
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
+        EndIf
+        
+      ; ------------------------------------------------------------------------
+      ;  SHORTCUT_UNDO
+      ; ------------------------------------------------------------------------
+      Case Globals::#SHORTCUT_UNDO
+        If *Me\focuschild
+          *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
+        EndIf
+        
+  ;       ; ------------------------------------------------------------------------
+  ;       ;  SHORTCUT_NEXT
+  ;       ; ------------------------------------------------------------------------
+  ;       Case Globals::#SHORTCUT_NEXT
+  ;         ; ---[ Do We Have A Focused Child ? ]-------------------------------------
+  ;         If *Me\focuschild
+  ;           ; ---[ Go To Next Item ]------------------------------------------------
+  ;           NextItem( *Me ) 
+  ;         EndIf
+  ;         
+  ;       ;------------------------------------------------------------------------
+  ;       ; SHORTCUT_PREVIOUS
+  ;       ;------------------------------------------------------------------------
+  ;       Case Globals::#SHORTCUT_PREVIOUS
+  ;           Debug "Previous Item called"
+  ;           ; ---[ Do We Have A Focused Child ? ]-----------------------------------
+  ;           If *Me\focuschild
+  ;             ; go to previous child
+  ;             Debug "previous child per favor..."
+  ;           EndIf
+                 
                
-             
-      
-    ;Case #PB_EventType_KeyUp
-    ;Case #PB_EventType_MiddleButtonDown
-    ;Case #PB_EventType_MiddleButtonUp
-    ;Case #PB_EventType_MouseWheel
-    ;Case #PB_EventType_PopupMenu
-      ;Debug ">> PopupMenu"
-    ;Case #PB_EventType_PopupWindow
-      ;Debug ">> PopupWindow"
-      
-  EndSelect
-  
-  ; ---[ Process Default ]----------------------------------------------------
-  ProcedureReturn( #False )
-  
-EndProcedure
+        
+      ;Case #PB_EventType_KeyUp
+      ;Case #PB_EventType_MiddleButtonDown
+      ;Case #PB_EventType_MiddleButtonUp
+      ;Case #PB_EventType_MouseWheel
+      ;Case #PB_EventType_PopupMenu
+        ;Debug ">> PopupMenu"
+      ;Case #PB_EventType_PopupWindow
+        ;Debug ">> PopupWindow"
+        
+    EndSelect
+    
+    ProcedureReturn( #False )
+    
+  EndProcedure
 
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlGroup_t )
   ; ============================================================================
 
-  ; ---[ SetLabel ]-------------------------------------------------------------
   Procedure SetLabel( *Me.ControlGroup_t, value.s )
-    
-    ; ---[ Set String Value ]---------------------------------------------------
     *Me\label = value
-    
-    ; ---[ Redraw Control ]-----------------------------------------------------
-    ;Draw( *Me )
-    
+    Control::Invalidate( *Me )
   EndProcedure
-  ; ---[ GetLabel ]-------------------------------------------------------------
+  
   Procedure.s GetLabel( *Me.ControlGroup_t )
-    
-    ; ---[ Return String Value ]------------------------------------------------
     ProcedureReturn( *Me\label )
-    
   EndProcedure
-  ; ---[ AppendStart ]----------------------------------------------------------
+  
   Procedure AppendStart( *Me.ControlGroup_t )
-    
-    ; ---[ Check Gadget List Status ]-------------------------------------------
     If *Me\append : ProcedureReturn( void ) : EndIf
-    
-    ; ---[ Update Status ]------------------------------------------------------
     *Me\append = #True
-    
   EndProcedure
-  ; ---[ Append ]---------------------------------------------------------------
+  
   Procedure.i Append( *Me.ControlGroup_t, ctl.Control::IControl )
-    
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If Not ctl : ProcedureReturn : EndIf
   
-    ; ---[ Check Gadget List Status ]-------------------------------------------
     If #False = *Me\append
-      ; ...[ FAILED ]...........................................................
       ProcedureReturn( #False)
     EndIf
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected *ctl.Control::Control_t = ctl
     Protected Me.Control::IControl     = *Me
   
-    ; ---[ Check Array Space ]--------------------------------------------------
     If *Me\chilcount > ArraySize( *Me\children() )
       ReDim *Me\children( *Me\chilcount + 10 )
       ReDim *Me\rowflags( *Me\chilcount + 10 )
     EndIf
     
-    ; ---[ Set Me As Control Parent ]-------------------------------------------
     *ctl\parent = Me
-  
-    ; ---[ Append Control ]-----------------------------------------------------
     *Me\children( *Me\chilcount ) = ctl
-  
-    ; ---[ Set Row Flag ]-------------------------------------------------------
     *Me\rowflags( *Me\chilcount ) = *Me\row
-  
-    ; ---[ One More Control ]---------------------------------------------------
     *Me\chilcount + 1
     
-  
-    ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
-  
   EndProcedure
-  ; ---[ AppendStop ]-----------------------------------------------------------
+  
   Procedure AppendStop( *Me.ControlGroup_t )
-    
-    ; ---[ Check Gadget List Status ]-------------------------------------------
     If Not *Me\append : ProcedureReturn( void ) : EndIf
-    
-    ; ---[ Update Status ]------------------------------------------------------
     *Me\append = #False
-    
-    ;   ; ---[ Update Control And Children ]----------------------------------------
     Resize( *Me, #Null )
-  
     DrawPickImage(*Me)
+  EndProcedure
   
-  EndProcedure
-  ; ---[ RowStart ]-------------------------------------------------------------
   Procedure RowStart( *Me.ControlGroup_t )
-    
-    ; ---[ Check Row Status ]---------------------------------------------------
     If *Me\row : ProcedureReturn( void ) : EndIf
-    
-    ; ---[ Update Status ]------------------------------------------------------
     *Me\row = #True
-    
   EndProcedure
-  ; ---[ RowEnd ]---------------------------------------------------------------
+  
   Procedure RowEnd( *Me.ControlGroup_t )
-    
-    ; ---[ Check Row Status ]---------------------------------------------------
     If Not *Me\row : ProcedureReturn( void ) : EndIf
-    
-    ; ---[ Update Current Child ]-----------------------------------------------
     *Me\rowflags( *Me\chilcount - 1 ) = #False
-    
-    ; ---[ Update Status ]------------------------------------------------------
     *Me\row = #False
-    
   EndProcedure
 
   ; ============================================================================
@@ -800,16 +720,12 @@ EndProcedure
   ; ============================================================================
   Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
     
-    ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlGroup_t = AllocateStructure(ControlGroup_t)
   
-    
     Object::INI(ControlGroup)
     
-    ; ---[ Minimum Width ]------------------------------------------------------
     If width < 50 : width = 50 : EndIf
     
-    ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = Control::#GROUP
     *Me\name       = name
     *Me\parent     = *parent
@@ -834,18 +750,14 @@ EndProcedure
     *Me\overchild  = #Null
     *Me\focuschild = #Null
     
-    ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
     
   EndProcedure
   
-    ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlGroup_t )
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount - 1
     
-    ; ---[ Destroy Children Controls ]------------------------------------------
     Define *child.Control::IControl
     For i=0 To iBound
       *child = *Me\children(i)
@@ -881,19 +793,14 @@ EndProcedure
 ; 
 ;     Next
     
-    ; ---[ Release Arrays ]-----------------------------------------------------
     FreeArray( *Me\rowflags() )
     FreeArray( *Me\children() )
-    
-    ; ---[ Free Image ]---------------------------------------------------------
     FreeImage( *Me\imageID )
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
     Object::TERM( ControlGroup )
     
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlGroup )
 EndModule
 
@@ -902,7 +809,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 222
-; FirstLine = 207
+; CursorPosition = 4
 ; Folding = ----
 ; EnableXP

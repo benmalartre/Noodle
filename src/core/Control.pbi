@@ -106,6 +106,10 @@ DeclareModule Control
   Declare SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
   Declare SetPercentage(*Me.Control_t, percX.i, percY.i)
   
+  Declare GetUI(*Me.Control_t)
+  Declare GetView(*Me.Control_t)
+  Declare GetWindow(*Me.Control_t)
+  
   Global MARGING.i = 6
   Global PADDING.i = 4
   Global CORNER_RADIUS.f = 4
@@ -262,11 +266,30 @@ Module Control
     If percX <> #PB_Ignore : *Me\percX = percX : EndIf
     If percY <> #PB_Ignore : *Me\percY = percY : EndIf
   EndProcedure
+  
+  Procedure GetUI(*Me.Control_t)
+    If *Me\parent\class\name = Globals::#CLASS_ID_UI
+      ProcedureReturn *Me\parent
+    ElseIf *Me\parent
+      ProcedureReturn GetUI(*Me\parent)
+    Else
+      ProcedureReturn #Null
+    EndIf
+  EndProcedure
+  
+  Procedure GetView(*Me.Control_t)
+    
+  EndProcedure
+  
+  Procedure GetWindow(*Me.Control_t)
+    
+  EndProcedure
+  
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 18
-; Folding = ----
+; CursorPosition = 270
+; FirstLine = 34
+; Folding = -----
 ; EnableXP
 ; EnableUnicode

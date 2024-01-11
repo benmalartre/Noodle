@@ -93,26 +93,6 @@ Module ControlEnum
     *Me\items(last)\value = value
   EndProcedure
   
-  Procedure New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
-    Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
-    Object::INI(ControlEnum)
-    *Me\parent = *parent
-    *Me\type = Control::#ENUM
-    *Me\gadgetID = *parent\gadgetID
-    *Me\posX=x
-    *Me\posY=y
-    *Me\sizX=width
-    *Me\sizY=height
-    *Me\name=name
-    *Me\label = label
-    *Me\on_change = Object::NewCallback(*Me, "OnChange")
-    ProcedureReturn *Me
-  EndProcedure
-  
-  Procedure Delete(*Me.ControlEnum_t)
-    Object::TERM(ControlEnum)
-  EndProcedure
-  
   Procedure PopupSize(*Me.ControlEnum_t)
     *Me\popup_width = 64
     *Me\popup_height = ArraySize(*Me\items()) * #ENUM_ITEM_HEIGHT
@@ -150,6 +130,8 @@ Module ControlEnum
     Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY + #ENUM_BORDER
     Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(*Me\window))
     StickyWindow(window,#True)
+    
+    Debug "View : "+Control::GetView(*Me\
     *Me\popup_gadget = CanvasGadget(#PB_Any,0,0,WindowWidth(window, #PB_Window_InnerCoordinate), WindowHeight(window, #PB_Window_InnerCoordinate))
     Define done.b = #False
     Define event, eventType
@@ -198,7 +180,26 @@ Module ControlEnum
         Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
     EndSelect
-    
+  EndProcedure
+  
+    Procedure Delete(*Me.ControlEnum_t)
+    Object::TERM(ControlEnum)
+  EndProcedure
+  
+  Procedure New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
+    Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
+    Object::INI(ControlEnum)
+    *Me\parent = *parent
+    *Me\type = Control::#ENUM
+    *Me\gadgetID = *parent\gadgetID
+    *Me\posX=x
+    *Me\posY=y
+    *Me\sizX=width
+    *Me\sizY=height
+    *Me\name=name
+    *Me\label = label
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
+    ProcedureReturn *Me
   EndProcedure
   
 EndModule
@@ -206,7 +207,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 54
-; FirstLine = 42
+; CursorPosition = 133
+; FirstLine = 107
 ; Folding = --
 ; EnableXP
