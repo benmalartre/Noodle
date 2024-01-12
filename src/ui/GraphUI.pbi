@@ -5,7 +5,6 @@ XIncludeFile "../core/Arguments.pbi"
 XIncludeFile "../graph/Types.pbi"
 XIncludeFile "../graph/Tree.pbi"
 XIncludeFile "../graph/Search.pbi"
-XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Popup.pbi"
 XIncludeFile "PropertyUI.pbi"
 XIncludeFile "View.pbi"
@@ -1401,7 +1400,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1334
-; FirstLine = 1301
+; CursorPosition = 7
+; FirstLine = 3
 ; Folding = -------
 ; EnableXP

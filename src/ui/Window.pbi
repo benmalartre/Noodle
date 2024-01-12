@@ -6,11 +6,7 @@ XIncludeFile "../core/Commands.pbi"
 ; Window module Implementation
 ;==========================================================================
 Module Window
-  ;------------------------------------------------------------------
-  ; Get window by pb id
-  ;------------------------------------------------------------------
   Procedure GetWindowById(id)
-    ; remove window from global map
     ForEach *ALL_WINDOWS()
       If *ALL_WINDOWS()\ID = id
         ProcedureReturn *ALL_WINDOWS()
@@ -23,13 +19,19 @@ Module Window
     If Not *Me : ProcedureReturn : EndIf
     Protected w = WindowWidth(*Me\ID,#PB_Window_InnerCoordinate)
     Protected h = WindowHeight(*Me\ID,#PB_Window_InnerCoordinate)
-    View::Resize(*Me\main,0,0,w,h)
+    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+      If GetMenu_(WindowID(*Me\ID))
+        View::Resize(*Me\main,0,0,w,h-MenuHeight())
+      Else
+        View::Resize(*Me\main,0,0,w,h)
+      EndIf
+    CompilerElse
+      View::Resize(*Me\main,0,0,w,h)
+    CompilerEndIf
+    
     DrawPickImage(*Me)
   EndProcedure
-  
-  ;----------------------------------------------------------------------------------
-  ; Recurse View
-  ;----------------------------------------------------------------------------------
+
   Procedure RecurseView(*Me.Window_t,*view.View::View_t)
     If *view\leaf
       If *view\active
@@ -41,9 +43,6 @@ Module Window
     EndIf
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Get Active View
-  ;----------------------------------------------------------------------------------
   Procedure.i GetActiveView(*Me.Window_t,x.i,y.i)
     Protected *view.View::View_t = *Me\main
     View::GetActive(*view,x,y)
@@ -51,9 +50,6 @@ Module Window
     ProcedureReturn RecurseView(*Me, *Me\main)
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Drag
-  ;----------------------------------------------------------------------------------
   Procedure Drag(*Me.Window_t)
     ;Debug "View Manager Drag View Top ID: "+Str(*Me\active\top\id)  
   EndProcedure
@@ -90,10 +86,6 @@ Module Window
 ;     SetMapElement(*Me,*Me\main)
 ;   EndProcedure
 
-  
-  ;----------------------------------------------------------------------------------
-  ; Event
-  ;----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.Window_t, event.i)
     Protected x,y,w,h,i,gadgetID,state
     Protected dirty.b = #False
@@ -114,7 +106,7 @@ Module Window
           If EventType() = #PB_EventType_LostFocus
             gadgetID = EventGadget()
             If FindMapElement(*Me\uis(), Str(gadgetID))
-              View::OnEvent(*Me\uis()\parent, event)
+              View::OnEvent(*Me\uis()\view, event)
             EndIf
           Else
             If touch
@@ -138,9 +130,7 @@ Module Window
         
       Case Globals::#EVENT_NEW_SCENE
         View::OnEvent(*Me\main, Globals::#EVENT_NEW_SCENE)
-        
-      Case Globals::#EVENT_BUTTON_PRESSED
-        
+                
       Case Globals::#EVENT_COMMAND_CALLED
         View::OnEvent(*Me\main,Globals::#EVENT_COMMAND_CALLED)
         
@@ -157,9 +147,11 @@ Module Window
         View::OnEvent(*Me\main,Globals::#EVENT_GRAPH_CHANGED)
         
       Case Globals::#EVENT_REPAINT_WINDOW
-         Resize(*Me)
+        Resize(*Me)
+        
       Case #PB_Event_Repaint
-         Resize(*Me)
+        Resize(*Me)
+        
       Case #PB_Event_Timer
 ;         Select EventTimer()
 ;           Case #RAA_TIMELINE_TIMER
@@ -172,7 +164,9 @@ Module Window
 ;         EndSelect
        
       Case #PB_Event_Menu
+        Debug "WE HAVE EVENT MENU : "+Str(EventMenu())
         Select EventMenu()
+            
 ;           Case Globals::#SHORTCUT_COPY
 ;             Debug "View Manager : SHORTCUT COPY"
 ;             View::OnEvent(*Me\active,#PB_Event_Menu)
@@ -208,9 +202,6 @@ Module Window
     
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Get Unique ID
-  ;----------------------------------------------------------------------------------
   Procedure GetUniqueID(*Me.Window_t, *view.View::View_t)
     Protected uuid.i = Random(65535)
     If FindMapElement(*Me\uis(), Str(uuid))
@@ -222,9 +213,6 @@ Module Window
     EndIf  
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Recurse Draw View
-  ;----------------------------------------------------------------------------------
   Procedure RecurseDrawPickImage(*Me.Window_t,*view.View::View_t)
     If *view\leaf And *view\content
       Define uuid.i = GetUniqueID(*Me, *view)
@@ -239,9 +227,6 @@ Module Window
     EndIf
   EndProcedure
   
-  ; ----------------------------------------------------------------------------------
-  ; Draw Pick Image
-  ; ----------------------------------------------------------------------------------
   Procedure DrawPickImage(*Me.Window_t)
     ClearMap(*Me\uis())
     If Not *Me\main\sizX Or Not *Me\main\sizY 
@@ -254,9 +239,6 @@ Module Window
     StopDrawing()
   EndProcedure
   
-  ; ----------------------------------------------------------------------------------
-  ; Draw Over Pick Image (DEV)
-  ; ----------------------------------------------------------------------------------
   Procedure Draw(*Me.Window_t)
     StartDrawing(WindowOutput(*Me\ID))
     DrawingMode(#PB_2DDrawing_AlphaBlend)
@@ -268,9 +250,6 @@ Module Window
     StopDrawing()
   EndProcedure
   
-  ; ----------------------------------------------------------------------------------
-  ; Pick Active View
-  ; ----------------------------------------------------------------------------------
   Procedure Pick(*Me.Window_t, mx.i, my.i)
     Protected picked.i
     StartDrawing(ImageOutput(*Me\imageID))
@@ -280,18 +259,15 @@ Module Window
 
       If FindMapElement(*Me\uis(), Str(picked))
         StopDrawing()
-        ProcedureReturn *Me\uis()\parent
+        ProcedureReturn *Me\uis()\view
       EndIf
     EndIf
     StopDrawing()
     ProcedureReturn #Null
   EndProcedure
 
-  ; ----------------------------------------------------------------------------------
-  ; Destructor
-  ; ----------------------------------------------------------------------------------
+
   Procedure Delete(*Me.Window_t)
-    ; remove window from global map
     ForEach *ALL_WINDOWS()
       If *ALL_WINDOWS()\ID = *Me\ID
         DeleteElement(*ALL_WINDOWS())
@@ -301,9 +277,6 @@ Module Window
     FreeStructure(*Me)
   EndProcedure
   
-  ; ----------------------------------------------------------------------------------
-  ; Constructor
-  ; ----------------------------------------------------------------------------------
   Procedure New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
     Protected *Me.Window_t = AllocateStructure(Window_t)
     Object::INI(Window)
@@ -327,7 +300,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 242
+; CursorPosition = 166
+; FirstLine = 142
 ; Folding = ---
 ; EnableXP

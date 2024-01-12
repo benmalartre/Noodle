@@ -53,7 +53,7 @@ Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
 Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#Demo_With_All)
   Protected *demo.FibonacciDemo_t = AllocateStructure(FibonacciDemo_t)
-  Init(*demo, name, width, height, #Demo_With_Explorer|#Demo_With_Property|#Demo_With_Timeline)
+  Init(*demo, name, width, height, options)
   *demo\fibonacci = Fibonacci::New(1)
   *demo\updateImpl = @UpdateFibonacciDemo()
   *demo\instancer = InstanceCloud::New("instancer", Shape::#SHAPE_NONE, 1)

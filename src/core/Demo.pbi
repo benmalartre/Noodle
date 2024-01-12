@@ -69,7 +69,7 @@ Module DemoApplication
     
     *view = *Me\window\main
     If options & #Demo_With_Menu
-      View::Split(*view,#PB_Splitter_FirstFixed,25)
+      View::Split(*view,#PB_Splitter_FirstFixed,0)
       *top = *view\left
       *view = *view\right
       Protected *menu.MenuUI::MenuUI_t = MenuUI::New(*top,"Menu")
@@ -132,7 +132,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 52
+; CursorPosition = 71
+; FirstLine = 49
 ; Folding = --
 ; EnableXP

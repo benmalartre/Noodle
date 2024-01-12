@@ -1,61 +1,9 @@
 XIncludeFile "Types.pbi"
 
-
-;============================================================
-; View Module Declared in Types.pbi
-;============================================================
-
 ;============================================================
 ; View module Implementation
 ;============================================================
  Module View
-  ;----------------------------------------------------------
-  ; Constructor
-  ;----------------------------------------------------------
-  Procedure New(x.i,y.i,width.i,height.i,*top.View_t,axis.b = #False,name.s="View",lorr.b=#True,scroll.b=#True)
-    Protected *Me.View_t = AllocateStructure(View_t)
-    Object::INI(View)
-    *Me\posX = x
-    *Me\posY = y
-    *Me\sizX = width
-    *Me\sizY = height
-  
-    *Me\right = #Null
-    *Me\left = #Null
-    *Me\leaf = #True
-    *Me\active = #False
-    *Me\dirty = #True
-    *Me\name = name
-    *Me\lorr = lorr
-    *Me\content = #Null
-    
-    *Me\axis = axis
-    *Me\type = 0
-    
-    ;increment view id counter
-    view_id_counter + 1
-    *Me\id = view_id_counter
-    
-    If *top = #Null
-      *Me\window = 0
-      *Me\parent = #Null
-    Else
-      *Me\parent = *top
-      *Me\window = *top\window
-    EndIf
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ;----------------------------------------------------------
-  ; Delete View
-  ;----------------------------------------------------------
-  Procedure Delete(*Me.View_t)
-    FreeStructure(*Me)
-  EndProcedure
-  
-  ;----------------------------------------------------------
-  ; Resize
-  ;----------------------------------------------------------
   Procedure Resize(*Me.View_t,x.i,y.i,width.i,height.i)
     
     *Me\posX = x
@@ -110,9 +58,6 @@ XIncludeFile "Types.pbi"
     InitSplitter(*Me)
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Get Percentage
-  ;----------------------------------------------------------------------------------
   Procedure GetPercentage(*Me.View_t,mx.i,my.i)
     ;If Not *Me\fixed
       If Not *Me\axis
@@ -146,9 +91,6 @@ XIncludeFile "Types.pbi"
       
     EndProcedure
     
-  ;----------------------------------------------------------------------------------
-  ; Split
-  ;----------------------------------------------------------------------------------
   Procedure SetSplitter(*Me.View_t,l,r,t,b)
     *Me\lsplitter = l
     *Me\rsplitter = r
@@ -240,9 +182,6 @@ XIncludeFile "Types.pbi"
     EndIf
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Touch Border Event
-  ;----------------------------------------------------------------------------------
   Procedure.i TouchBorderEvent(*Me.View_t)
     If Not *Me : ProcedureReturn : EndIf
     Protected btn.i
@@ -272,17 +211,11 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Touch Border Event
-  ;----------------------------------------------------------------------------------
   Procedure ClearBorderEvent(*Me.View_t)
     
   EndProcedure
 
   
-  ;----------------------------------------------------------------------------------
-  ; Touch Border
-  ;----------------------------------------------------------------------------------
   Procedure.i TouchBorder(*Me.View_t,x.i,y.i,w.i)
     If Not  *Me : ProcedureReturn : EndIf
     ;Left border
@@ -297,9 +230,6 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; Init Splitter
-  ;------------------------------------------------------------------
   Procedure InitSplitter(*Me.View_t)
     If *Me And Not *Me\fixed
       Protected *affected.View_t
@@ -334,12 +264,8 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;------------------------------------------------------------------
-  ; Splitter Event
-  ;------------------------------------------------------------------
   Procedure EventSplitter(*Me.View_t,border.i)
     If *Me And Not *Me\fixed
-      ; Get Affected View
       Protected *affected.View_t
       Select border
         Case #VIEW_TOP
@@ -362,10 +288,6 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  
-  ;----------------------------------------------------------------------------------
-  ; Mouse Inside
-  ;----------------------------------------------------------------------------------
   Procedure.b MouseInside(*Me.View_t, x.i,y.i)
   
     If x>*Me\posX And x<*Me\posX+*Me\sizX And y>*Me\posY And y<*Me\posY+*Me\sizY
@@ -376,9 +298,6 @@ XIncludeFile "Types.pbi"
       
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Draw
-  ;----------------------------------------------------------------------------------
   Procedure Draw(*Me.View_t)
 
     
@@ -398,9 +317,6 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;----------------------------------------------------------------------------------
-  ; Get Active View
-  ;----------------------------------------------------------------------------------
   Procedure GetActive(*Me.View_t,x.i,y.i)
     Protected active.b = *Me\active 
     If *Me\leaf
@@ -417,10 +333,7 @@ XIncludeFile "Types.pbi"
     EndIf
 
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------------
-  ; Drag View (if image > canvas)
-  ;-----------------------------------------------------------------------------------
+
   Procedure Drag(*Me.View_t)
   ;   Protected limit_x = GadgetWidth(*Me\canvasID)-ImageWidth(*Me\imageID)
   ;   Protected limit_y = GadgetHeight(*Me\canvasID)-ImageHeight(*Me\imageID)
@@ -443,9 +356,6 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;-----------------------------------------------------------------------------------
-  ; View Event
-  ;-----------------------------------------------------------------------------------
   Procedure OnEvent(*Me.View_t,event.i)
     If Not event Or Not *Me : ProcedureReturn : EndIf
     If *Me\leaf
@@ -472,17 +382,11 @@ XIncludeFile "Types.pbi"
   
   EndProcedure
   
-  ;-----------------------------------------------------------------------------------
-  ; Set Content
-  ;-----------------------------------------------------------------------------------
   Procedure SetContent(*Me.View_t,*content.UI::UI_t)   
     *Me\content = *content
     *content\view = *Me
   EndProcedure
   
-  ;-----------------------------------------------------------------------------------
-  ; Get Window
-  ;-----------------------------------------------------------------------------------
   Procedure GetWindow(*Me.View_t)
     ProcedureReturn *Me\window
   EndProcedure
@@ -492,9 +396,6 @@ XIncludeFile "Types.pbi"
     ProcedureReturn *window\ID
   EndProcedure
   
-  ;-----------------------------------------------------------------------------------
-  ; Get Scroll Area
-  ;-----------------------------------------------------------------------------------
   Procedure GetScrollArea(*Me.View_t)
 ;     If *Me\scrollable
 ;       *Me\scrolling = #False
@@ -504,9 +405,6 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  ;-----------------------------------------------------------------------------------
-  ; Scroll
-  ;-----------------------------------------------------------------------------------
   Procedure Scroll(*Me.View_t,mode.b =#False)
 ;     If *Me\scrollable And (*Me\scrolling Or mode = #True)
 ;       If mode = #True
@@ -530,11 +428,46 @@ XIncludeFile "Types.pbi"
 ;     EndIf
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
+  Procedure Delete(*Me.View_t)
+    FreeStructure(*Me)
+  EndProcedure
+  
+  Procedure New(x.i,y.i,width.i,height.i,*top.View_t,axis.b = #False,name.s="View",lorr.b=#True,scroll.b=#True)
+    Protected *Me.View_t = AllocateStructure(View_t)
+    Object::INI(View)
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = width
+    *Me\sizY = height
+  
+    *Me\right = #Null
+    *Me\left = #Null
+    *Me\leaf = #True
+    *Me\active = #False
+    *Me\dirty = #True
+    *Me\name = name
+    *Me\lorr = lorr
+    *Me\content = #Null
+    
+    *Me\axis = axis
+    *Me\type = 0
+    
+    view_id_counter + 1
+    *Me\id = view_id_counter
+    
+    If *top = #Null
+      *Me\window = 0
+      *Me\parent = #Null
+    Else
+      *Me\parent = *top
+      *Me\window = *top\window
+    EndIf
+    ProcedureReturn *Me
+  EndProcedure
+  
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 479
-; FirstLine = 473
+; CursorPosition = 9
 ; Folding = ----
 ; EnableXP

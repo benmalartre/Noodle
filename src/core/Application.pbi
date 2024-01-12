@@ -97,7 +97,6 @@ XIncludeFile "../controls/Label.pbi"
 XIncludeFile "../controls/Group.pbi"
 XIncludeFile "../controls/Controls.pbi"
 XIncludeFile "../controls/Property.pbi"
-XIncludeFile "../controls/Menu.pbi"
 XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
 XIncludeFile "../controls/Popup.pbi"
@@ -173,28 +172,6 @@ CompilerEndIf
     dirty.b
     dummy.i
   EndStructure
-  
-;   Enumeration 
-;     #TOOL_SELECT = 0
-;     #TOOL_CAMERA
-;     #TOOL_PAN
-;     #TOOL_DOLLY
-;     #TOOL_ORBIT
-;     #TOOL_ROLL
-;     #TOOL_ZOOM
-;     #TOOL_DRAW
-;     #TOOL_PAINT
-;     
-;     #TOOL_SCALE
-;     #TOOL_ROTATE
-;     #TOOL_TRANSLATE
-;     #TOOL_TRANSFORM
-;     #TOOL_DIRECTED
-;     
-;     #TOOL_PREVIEW
-;     
-;     #TOOL_MAX
-;   EndEnumeration
   
   Declare New(name.s,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
   Declare Delete(*Me.Application_t)
@@ -775,8 +752,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 88
+; CursorPosition = 703
+; FirstLine = 676
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

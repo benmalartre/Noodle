@@ -5,113 +5,110 @@
 ;========================================================================================
 DeclareModule Globals
   Enumeration
-    #SHORTCUT_COPY = 240
-    #SHORTCUT_CUT
-    #SHORTCUT_PASTE
-    #SHORTCUT_UNDO
-    #SHORTCUT_REDO
-    #SHORTCUT_ENTER
-    #SHORTCUT_DELETE
-    #SHORTCUT_RESET
-    #SHORTCUT_QUIT
-    #SHORTCUT_TAB
-    #SHORTCUT_SCALE
-    #SHORTCUT_ROTATE
-    #SHORTCUT_TRANSLATE
-    #SHORTCUT_TRANSFORM
-    #SHORTCUT_CAMERA
-    #SHORTCUT_SELECT
-    #SHORTCUT_UP
-    #SHORTCUT_DOWN
-    #SHORTCUT_PREVIOUS
-    #SHORTCUT_NEXT
+    #Shortcut_Copy = 240
+    #Shortcut_Cut
+    #Shortcut_Paste
+    #Shortcut_Undo
+    #Shortcut_Redo
+    #Shortcut_Enter
+    #Shortcut_Delete
+    #Shortcut_Reset
+    #Shortcut_Quit
+    #Shortcut_Tab
+    #Shortcut_Scale
+    #Shortcut_Rotate
+    #Shortcut_Translate
+    #Shortcut_Transform
+    #Shortcut_Camera
+    #Shortcut_Select
+    #Shortcut_Up
+    #Shortcut_Down
+    #Shortcut_Previous
+    #Shortcut_Next
   EndEnumeration
   
   Enumeration #PB_Event_FirstCustomValue
-    #EVENT_PARAMETER_CHANGED
-    #EVENT_BUTTON_PRESSED
-    #EVENT_COMBO_PRESSED
-    #EVENT_ICON_PRESSED
-    #EVENT_TIME_CHANGED
-    #EVENT_SELECTION_CHANGED
-    #EVENT_HIERARCHY_CHANGED
-    #EVENT_TOOL_CHANGED
-    #EVENT_COMMAND_CALLED
-    #EVENT_GRAPH_CHANGED
-    #EVENT_TREE_CREATED
-    #EVENT_NEW_SCENE
-    #EVENT_REPAINT_WINDOW
+    #Event_Parameter_Changed
+    #Event_Time_Changed
+    #Event_Selection_Changed
+    #Event_Hierarchy_Changed
+    #Event_Tool_Changed
+    #Event_Command_Called
+    #Event_Graph_Changed
+    #Event_Tree_Created
+    #Event_New_Scene
+    #Event_Repaint_Window
   EndEnumeration
   
   Enumeration
-    #GUI_THEME_LIGHT
-    #GUI_THEME_DARK
-    #GUI_THEME_CUSTOM
+    #Gui_Theme_Light
+    #Gui_Theme_Dark
+    #Gui_Theme_Custom
   EndEnumeration
   
   Enumeration
-    #VIEW_EMPTY
-    #VIEW_EXPLORER
-    #VIEW_PROPERTY
-    #VIEW_TIMELINE
-    #VIEW_GRAPH
-    #VIEW_VIEWPORT
-    #VIEW_TOPMENU
-    #VIEW_EDITOR
+    #View_Empty
+    #View_Explorer
+    #View_Property
+    #View_Timeline
+    #View_Graph
+    #View_Viewport
+    #View_TopMenu
+    #View_Editor
   EndEnumeration
   
   ; ---------------------------------------------------------------------------
   ; Commands 
   ; ---------------------------------------------------------------------------
   Enumeration
-    #MENU_SAVE
-    #MENU_SAVEAS
-    #MENU_LOAD
-    #MENU_CREATEOBJECT3D
-    #MENU_CREATEPROPERTY
-    #MENU_CREATEATTRIBUTE
-    #MENU_IMPLODENODES
-    #MENU_EXPLODENODES
-    #MENU_ADDINPUTPORT
-    #MENU_REMOVEINPUTPORT
-    #MENU_ADDOUTPUTPORT
-    #MENU_REMOVEOUTPUTPORT
-    #MENU_EXPORTNODE
-    #MENU_IMPORTNODE
+    #Menu_Scene_Save
+    #Menu_Scene_SaveAs
+    #Menu_Scene_Load
+    #Menu_Create_Object3D
+    #Menu_Create_Property
+    #Menu_Create_Attribute
+    #Menu_Create_MenuItem
+    #Menu_Create_SubMenuItem
+    #Menu_Graph_ImplodeNodes
+    #Menu_Graph_ExplodeNodes
+    #Menu_Graph_AddInputPort
+    #Menu_Graph_RemoveInputPort
+    #Menu_Graph_AddOutputPort
+    #Menu_Graph_RemoveOutputPort
+    #Menu_Graph_ExportNode
+    #Menu_Graph_ImportNode
   EndEnumeration
   
   ; ----------------------------------------------------------------------------
   ; Tools
   ; ----------------------------------------------------------------------------
   Enumeration 
-    #TOOL_SELECT = 0
-    #TOOL_CAMERA
-    #TOOL_PAN
-    #TOOL_DOLLY
-    #TOOL_ORBIT
-    #TOOL_ROLL
-    #TOOL_ZOOM
-    #TOOL_DRAW
-    #TOOL_PAINT
-    #TOOL_SCALE
-    #TOOL_ROTATE
-    #TOOL_TRANSLATE
-    #TOOL_TRANSFORM
-    #TOOL_DIRECTED
-    
-    #TOOL_PREVIEW
-    
-    #TOOL_MAX
+    #Tool_Select = 0
+    #Tool_Camera
+    #Tool_Pan
+    #Tool_Dolly
+    #Tool_Orbit
+    #Tool_Roll
+    #Tool_Zoom
+    #Tool_Draw
+    #Tool_Paint
+    #Tool_Scale
+    #Tool_Rotate
+    #Tool_Translate
+    #Tool_Transform
+    #Tool_Directed
+    #Tool_Preview
+    #Tool_Max
   EndEnumeration
   
   #Color_ButtonSize = 24
   #Color_ButtonSpacing = 6
   #Corner_Rounding = 4
   
-  #MARGIN = 12
-  #COLORS_HEIGHT = 200
-  #OUTPUT_HEIGHT = 128
-  #SELECTION_BORDER = 2
+;   #MARGIN = 12
+;   #COLORS_HEIGHT = 200
+;   #OUTPUT_HEIGHT = 128
+  #SELECTION_BORDER = 0.2
   
   ; ----------------------------------------------------------------------------
   ; Vector Drawing
@@ -335,8 +332,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 199
+; CursorPosition = 78
+; FirstLine = 36
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
