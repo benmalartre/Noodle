@@ -145,7 +145,9 @@ EndProcedure
         
 ;           
       Case #PB_Event_SizeWindow
-        ResizeGadget(*Me\area,*Me\parent\posX,*Me\parent\posY,*Me\parent\sizX,*Me\parent\sizY)
+        Protected *view.View::View_t = *Me\view
+        ResizeGadget(*Me\area,*view\posX,*view\posY,*view\sizX,*view\sizY)
+        
       Case #PB_Event_Menu
         Select EventMenu()
           
@@ -180,9 +182,9 @@ EndProcedure
   
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 69
-; FirstLine = 41
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 149
+; FirstLine = 125
 ; Folding = --
 ; EnableXP
 ; EnableUnicode

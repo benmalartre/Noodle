@@ -168,7 +168,7 @@ Module ScreenUI
 ;     SetGadgetAttribute(*Me\gadgetID,#PB_OpenGL_FlipBuffers,#True)
 
     Protected width.i, height.i, i
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
     Protected *manager.ViewManager::ViewManager_t = *top\manager
     Protected ev_datas.Control::EventTypeDatas_t
     Select event
@@ -726,8 +726,8 @@ Module ScreenUI
   
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 75
-; FirstLine = 71
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 170
+; FirstLine = 167
 ; Folding = -----
 ; EnableXP

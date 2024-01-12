@@ -131,7 +131,10 @@ Module ControlEnum
     Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(*Me\window))
     StickyWindow(window,#True)
     
-    Debug "View : "+Control::GetView(*Me)
+    Define *ui.UI::UI_t = Control::GetUI(*Me)
+    Define *view.View::View_t = UI::GetView(*ui)
+    Debug "ui : "+Str(*ui)
+    Debug "View : "+Str(*view)
     *Me\popup_gadget = CanvasGadget(#PB_Any,0,0,WindowWidth(window, #PB_Window_InnerCoordinate), WindowHeight(window, #PB_Window_InnerCoordinate))
     Define done.b = #False
     Define event, eventType
@@ -207,7 +210,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 133
-; FirstLine = 111
+; CursorPosition = 134
+; FirstLine = 127
 ; Folding = --
 ; EnableXP

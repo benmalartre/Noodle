@@ -103,7 +103,7 @@ Module ExplorerUI
   ; Resize
   ;---------------------------------------------------------
   Procedure Resize(*Me.ExplorerUI_t)
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
     *Me\sizX = *top\sizX
     *Me\sizY = *top\sizY
     *Me\scrollMaxX = ImageWidth(*Me\explorer\imageID)
@@ -154,7 +154,7 @@ Module ExplorerUI
         ControlExplorer::Fill(*Me\explorer, GLContext::*SHARED_CTXT\scene) 
         
       Case #PB_EventType_Resize
-        If *Me\parent
+        If *Me\view
           Resize(*Me)
           
           ev_datas\width = *Me\sizX
@@ -163,7 +163,7 @@ Module ExplorerUI
         EndIf
         
       Case #PB_Event_SizeWindow
-        If *Me\parent
+        If *Me\view
           Resize(*Me)
           Define ev_datas.Control::EventTypeDatas_t
           ev_datas\width = *Me\sizX
@@ -222,7 +222,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 77
-; FirstLine = 50
+; CursorPosition = 167
+; FirstLine = 162
 ; Folding = ---
 ; EnableXP

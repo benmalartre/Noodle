@@ -15,7 +15,7 @@ Structure FibonacciDemo_t Extends DemoApplication_t
 EndStructure
   
 Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
-  Define N = *demo\N\value_n
+  Define N = 32;*demo\N\value_n
   Define mode = 1
   If N <> *demo\fibonacci\N
     *demo\fibonacci\N = N
@@ -51,9 +51,9 @@ Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
 EndProcedure
 Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
-Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#DEMO_WITH_ALL)
+Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#Demo_With_All)
   Protected *demo.FibonacciDemo_t = AllocateStructure(FibonacciDemo_t)
-  Init(*demo, name, width, height, options)
+  Init(*demo, name, width, height, #Demo_With_Explorer|#Demo_With_Property|#Demo_With_Timeline)
   *demo\fibonacci = Fibonacci::New(1)
   *demo\updateImpl = @UpdateFibonacciDemo()
   *demo\instancer = InstanceCloud::New("instancer", Shape::#SHAPE_NONE, 1)
@@ -67,27 +67,30 @@ Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#DEMO_WITH_
   Scene::Setup(*demo\scene)
   
   Window::OnEvent(*demo\window, Globals::#EVENT_NEW_SCENE)
-
-  Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*demo\property, "Controls ", "Controls",
-                                                                         0,128,*demo\property\sizX, *demo\property\sizY-128)
-  ControlProperty::AppendStart(*prop)
   
-  ControlProperty::AddGroup(*prop, "Group")
-  *demo\N = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
-  *demo\N\hard_min = 1
-  *demo\N\hard_max = 4096
-  *demo\N\soft_min = 1
-  *demo\N\soft_max = 1024
-  Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+  If *demo\property
+    Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*demo\property, "Controls ", "Controls",
+                                                                           0,128,*demo\property\sizX, *demo\property\sizY-128)
+    ControlProperty::AppendStart(*prop)
+    
+    ControlProperty::AddGroup(*prop, "Group")
+    *demo\N = ControlProperty::AddIntegerControl(*prop, "GSSteps", "Steps", 6, #Null)
+    *demo\N\hard_min = 1
+    *demo\N\hard_max = 4096
+    *demo\N\soft_min = 1
+    *demo\N\soft_max = 1024
+    Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+    
+  ;   *demo\mode = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
+  ;   *demo\mode\items
+    Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+    
+    ControlProperty::EndGroup(*prop)
+   
+    ControlProperty::AppendStop(*prop)
+    PropertyUI::AddProperty(*demo\property, *prop)
+  EndIf 
   
-;   *demo\mode = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
-;   *demo\mode\items
-  Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
-  
-  ControlProperty::EndGroup(*prop)
- 
-  ControlProperty::AppendStop(*prop)
-  PropertyUI::AddProperty(*demo\property, *prop)
   ProcedureReturn *demo
 EndProcedure
   
@@ -98,7 +101,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 41
+; CursorPosition = 55
+; FirstLine = 45
 ; Folding = -
 ; EnableXP

@@ -73,7 +73,6 @@ Module PropertyUI
     *Me\sizX = *parent\sizX
     *Me\sizY = *parent\sizY
     
-    *Me\parent = *parent
     *Me\active = #Null
     *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
    
@@ -114,10 +113,11 @@ Module PropertyUI
   ; Resize
   ; ----------------------------------------------------------------------------
   Procedure Resize(*Me.PropertyUI_t)
-    *Me\posX = *Me\parent\posX
-    *Me\posY = *Me\parent\posY
-    *Me\sizX = *Me\parent\sizX
-    *Me\sizY = *Me\parent\sizY
+    Protected *view.View::View_t = *Me\view
+    *Me\posX = *view\posX
+    *Me\posY = *view\posY
+    *Me\sizX = *view\sizX
+    *Me\sizY = *view\sizY
     
     ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     Protected ev_datas.Control::EventTypeDatas_t
@@ -149,7 +149,7 @@ Module PropertyUI
   ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
     If Not MapSize(*Me\props()) : ProcedureReturn : EndIf
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
     
     If Not *Me\active
       ResetMap(*Me\props())
@@ -521,8 +521,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 387
-; FirstLine = 376
+; CursorPosition = 119
+; FirstLine = 111
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -1,4 +1,57 @@
-﻿XIncludeFile "../ui/UI.pbi"
+﻿XIncludeFile "../core/Control.pbi"
+
+; ==============================================================================
+;  UI Module Declaration
+; ==============================================================================
+DeclareModule UI
+  Enumeration
+    #UI_DUMMY
+    #UI_GRAPH
+    #UI_3D
+    #UI_SHADER
+    #UI_COLOR
+    #UI_LOG
+    #UI_TIMELINE
+    #UI_ANIMATION_EDITOR
+  EndEnumeration
+  
+  Structure UI_t Extends Control::Control_t
+    lastX.i
+    lastY.i
+    offsetX.i
+    offsetY.i
+    
+    dirty.b
+    down.b
+    zoom.f
+    
+    imageID.i
+    iSizX.i
+    iSizY.i
+    
+    scrollable.b
+    scrolling.b
+    scrollX.i
+    scrollY.i
+    scrollMaxX.i
+    scrollMaxY.i
+    scrollLastX.i
+    scrollLastY.i
+    last_x.i
+    last_y.i
+    *view
+  EndStructure
+  
+  Interface IUI Extends Control::IControl
+  EndInterface
+  
+  Declare.s GetName(*Me.UI_t)
+  Declare GetScrollArea(*Me.UI_t)
+  Declare Scroll(*Me.UI_t,mode.b =#False)
+  Declare GetView(*Me.UI_t)
+  Declare GetWindow(*Me.UI_t)
+  
+EndDeclareModule
 
 ;============================================================
 ; View Module Declaration
@@ -37,7 +90,7 @@ DeclareModule View
     offsety.i
     zoom.i
     
-    splitter.i                    ; canvas splitter ID(if not leaf)
+    splitter.i                      ; canvas splitter ID(if not leaf)
 
     leaf.b
     active.b
@@ -53,7 +106,6 @@ DeclareModule View
   Declare New(x.i,y.i,width.i,height.i,*top,axis.b=#False,name.s="View",lorr.b=#True,scroll.b=#True)
   Declare Delete(*view.View_t)
   Declare Draw(*view.View_t)
-;   Declare DrawDebug(*view.View_t)
   Declare.b MouseInside(*view,x.i,y.i)
   Declare TouchBorder(*view,x.i,y.i,w.i)
   Declare TouchBorderEvent(*view)
@@ -67,9 +119,6 @@ DeclareModule View
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   Declare GetWindowID(*view)
 
-  ; ============================================================================
-  ;  VTABLE ( Object + Control + ControlButton )
-  ; ============================================================================
   DataSection
     ViewVT:
     Data.i @OnEvent()
@@ -110,7 +159,6 @@ DeclareModule Window
     OnEvent()
   EndInterface
   
-  ; opened windows are stored in a ma by their pb id
   Global *MAIN_WINDOW.Window_t
   Global NewList *ALL_WINDOWS.Window_t()
   
@@ -132,7 +180,6 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 68
+; CursorPosition = 34
 ; Folding = -
 ; EnableXP

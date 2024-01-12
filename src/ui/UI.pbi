@@ -1,56 +1,4 @@
-XIncludeFile "../core/Control.pbi"
-
-; ==============================================================================
-;  UI MODULE DECLARATION
-; ==============================================================================
-DeclareModule UI
-  Enumeration
-    #UI_DUMMY
-    #UI_GRAPH
-    #UI_3D
-    #UI_SHADER
-    #UI_COLOR
-    #UI_LOG
-    #UI_TIMELINE
-    #UI_ANIMATION_EDITOR
-  EndEnumeration
-  
-  Structure UI_t Extends Control::Control_t
-    lastX.i
-    lastY.i
-    offsetX.i
-    offsetY.i
-    
-    dirty.b
-    down.b
-    zoom.f
-    
-    imageID.i
-    iSizX.i
-    iSizY.i
-    
-    scrollable.b
-    scrolling.b
-    scrollX.i
-    scrollY.i
-    scrollMaxX.i
-    scrollMaxY.i
-    scrollLastX.i
-    scrollLastY.i
-    last_x.i
-    last_y.i
-  EndStructure
-  
-  Interface IUI Extends Control::IControl
-  EndInterface
-  
-  Declare.s GetName(*Me.UI_t)
-  Declare GetScrollArea(*Me.UI_t)
-  Declare Scroll(*Me.UI_t,mode.b =#False)
-  Declare GetView(*Me.UI_t)
-  Declare GetWindow(*Me.UI_t)
-  
-EndDeclareModule
+XIncludeFile "Types.pbi"
 
 ; ==============================================================================
 ;  UI MODULE IMPLEMENTATION
@@ -91,24 +39,25 @@ Module UI
     EndIf
   EndProcedure
   
+  
+  
   Procedure GetView(*Me.UI_t)
-    If *Me\parent\class\name = "View"
-      ProcedureReturn *Me\parent
-    ElseIf *Me\parent
-      ProcedureReturn GetView(*Me\parent)
-    Else
-      ProcedureReturn #Null
-    EndIf
+    ProcedureReturn *Me\view
   EndProcedure
   
   Procedure GetWindow(*Me.UI_t)
-    Protected *view = GetView(*Me)
-    ;       ProcedureReturn *view\window
+    Protected *view.View::View_t = *Me\view
     Debug "UI view :" + *Me\name +" : "+Str(*view)
+    If *view
+      ProcedureReturn *view\window
+    Else
+      ProcedureReturn #Null 
+    EndIf
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 28
+; CursorPosition = 51
+; FirstLine = 1
 ; Folding = --
 ; EnableXP

@@ -105,10 +105,8 @@ DeclareModule Control
   Declare SetCursor( *Me.Control_t, cursor_id.i )
   Declare SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
   Declare SetPercentage(*Me.Control_t, percX.i, percY.i)
-  
   Declare GetUI(*Me.Control_t)
-  Declare GetView(*Me.Control_t)
-  Declare GetWindow(*Me.Control_t)
+
   
   Global MARGING.i = 6
   Global PADDING.i = 4
@@ -268,28 +266,15 @@ Module Control
   EndProcedure
   
   Procedure GetUI(*Me.Control_t)
-    If *Me\parent\class\name = "PropertyUI"
-      ProcedureReturn *Me\parent
-    ElseIf *Me\parent
+    If *Me\parent
       ProcedureReturn GetUI(*Me\parent)
-    Else
-      ProcedureReturn #Null
     EndIf
+    ProcedureReturn *Me
   EndProcedure
-  
-  Procedure GetView(*Me.Control_t)
-    
-  EndProcedure
-  
-  Procedure GetWindow(*Me.Control_t)
-    
-  EndProcedure
-  
-
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 270
-; FirstLine = 231
+; CursorPosition = 271
+; FirstLine = 217
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

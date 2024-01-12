@@ -208,21 +208,21 @@ DeclareModule Globals
   Global font_title = LoadFont(#PB_Any,"Consolas",32)
   
   Enumeration 
-    #FONT_DEFAULT = 1
-    #FONT_BOLD
+    #Font_Default = 1
+    #Font_Bold
   EndEnumeration
   
   CompilerSelect #PB_Compiler_OS
     CompilerCase #PB_OS_MacOS
-      #FONT_SIZE_TEXT = 24
-      #FONT_SIZE_LABEL = 26
-      #FONT_SIZE_MENU = 28
-      #FONT_SIZE_TITLE = 30
+      #Font_Size_Text = 24
+      #Font_Size_Label = 26
+      #Font_Size_Menu = 28
+      #Font_Size_Title = 30
     CompilerDefault
-      #FONT_SIZE_TEXT = 12
-      #FONT_SIZE_LABEL = 13
-      #FONT_SIZE_MENU = 14
-      #FONT_SIZE_TITLE = 15
+      #Font_Size_Text = 12
+      #Font_Size_Label = 13
+      #Font_Size_Menu = 14
+      #Font_Size_Title = 15
   CompilerEndSelect
   
   ;---------------------------------------------------------
@@ -240,7 +240,7 @@ DeclareModule Globals
     If v<a : v=a : ElseIf v>b : v=b : EndIf
   EndMacro
   
-  #EMPTYSTRING = ""
+  #Empty_String = ""
   Macro QUOTE()
     "
   EndMacro
@@ -335,8 +335,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 216
-; FirstLine = 175
+; CursorPosition = 232
+; FirstLine = 199
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

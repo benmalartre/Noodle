@@ -14,25 +14,18 @@ XIncludeFile "View.pbi"
 ; GRAPHUI MODULE DECLARATION
 ; ============================================================================
 DeclareModule GraphUI
-  ;---------------------------------------------------------------------------
-  ;  INTERFACE
-  ;---------------------------------------------------------------------------
+
   Interface IGraphUI Extends UI::IUI
   EndInterface
 
-  ;---------------------------------------------------------------------------
-  ;  STRUCTURE
-  ;---------------------------------------------------------------------------
+
   Structure GraphUI_t Extends UI::UI_t
-    ; Expended
     l_expended.b
     r_expended.b
     
-    ; Mouse Handling
     mouseX.i           ; Current Mouse X
     mouseY.i           ; Current Mouse Y
     
-    ; Translate and Scale
     canvasX.i          ; canvas position X
     canvasY.i          ; canvas position Y
     realX.i
@@ -43,7 +36,6 @@ DeclareModule GraphUI
     rectX2.i           ; Selection Rectangle RightBottomCornerX
     rectY2.i           ; Selection Rectangle RightBottomCornerY
   
-    ; States
     pan.b              ; Panning
     drag.b             ; Dragging
     pick.b             ; Selecting
@@ -52,23 +44,17 @@ DeclareModule GraphUI
     depth.i            ; Current Depth inside the tree
     keydown.i          ; Previous Key Down
     
-    ; Objects
     focusID.i
     *focus.Node::Node_t
     *connecter.Connexion::Connexion_t
     
-    ; Tree
     *tree.Tree::Tree_t
     
-    ; Visible Nodes
     List *a_visible.Node::Node_t()
     *a_selected.CArray::CArrayPtr
     
   EndStructure
   
-  ;---------------------------------------------------------------------------
-  ;  FORWARD DECLARATION
-  ;---------------------------------------------------------------------------
   Declare New(*parent.View::View_t,name.s="GraphUI")
   Declare Delete(*Me.GraphUI_t)
   Declare Draw(*Me.GraphUI_t)
@@ -127,9 +113,7 @@ Module GraphUI
   UseModule OpenGL
   UseModule OpenGLExt
   UseModule Math
-  ;---------------------------------------------------------------------------
-  ; Constructor
-  ;---------------------------------------------------------------------------
+
   Procedure New(*parent.View::View_t,name.s="GraphUI")
     Protected *Me.GraphUI_t = AllocateStructure(GraphUI_t)
     Object::INI(GraphUI)
@@ -140,8 +124,6 @@ Module GraphUI
     
 
     *Me\name = name
-    *Me\parent = *parent
-
     *Me\gadgetID = CanvasGadget(#PB_Any,x,y,w,h,#PB_Canvas_Keyboard) 
     EnableGadgetDrop(*Me\gadgetID,#PB_Drop_Text,#PB_Drag_Copy)
     
@@ -165,29 +147,18 @@ Module GraphUI
     ProcedureReturn *Me
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Destructor
-  ;---------------------------------------------------------------------------
+
   Procedure Delete(*Me.GraphUI_t)
     If IsGadget(*Me\gadgetID) : FreeGadget(*Me\gadgetID):EndIf
     Object::TERM(GraphUI)
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Draw
-  ;---------------------------------------------------------------------------
   Procedure Draw(*Me.GraphUI_t)
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; DrawPickImage
-  ;---------------------------------------------------------------------------
   Procedure DrawPickImage(*Me.GraphUI_t)
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; OnEvent
-  ;---------------------------------------------------------------------------
   Procedure OnEvent(*Me.GraphUI_t,event.i)
     Protected Me.IGraphUI = *Me
     Select event
@@ -217,7 +188,6 @@ Module GraphUI
             NodeSearch::Update(*search)
             If *search\selected
 
-              ; Add Node
               Tree::AddNode(*Me\tree,*search\selected\name,*Me\mouseX - *Me\canvasX, *Me\mouseY - *Me\canvasY,100,50,RGB(120,120,140))
               NodeInfos(*Me)
               *Me\redraw = #True
@@ -231,7 +201,7 @@ Module GraphUI
         EndSelect
         
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *Me\parent
+        Protected *top.View::View_t = *Me\view
         Protected width.i = *top\sizX
         Protected height.i = *top\sizY
         
@@ -255,22 +225,17 @@ Module GraphUI
 
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Resize
-  ;---------------------------------------------------------------------------
   Procedure  Resize(*Me.GraphUI_t)
-    *Me\posX = *Me\parent\posX
-    *Me\posY = *Me\parent\posY
-    *Me\sizX = *Me\parent\sizX
-    *Me\sizY = *Me\parent\sizY
+    Protected *view.View::View_t = *Me\view
+    *Me\posX = *view\posX
+    *Me\posY = *view\posY
+    *Me\sizX = *view\sizX
+    *Me\sizY = *view\sizY
     ResizeGadget(*Me\gadgetID,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)    
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Inspect Node
-  ;---------------------------------------------------------------------------
   Procedure InspectNode(*Me.GraphUI_t,*node.Node::Node_t)
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
 
     Protected *window.Window::Window_t = *top\window
     If *node
@@ -300,10 +265,6 @@ Module GraphUI
   EndProcedure
   Callback::DECLARE_CALLBACK(OnDeleteTree, Types::#TYPE_PTR)
   
-  
-  ;---------------------------------------------------------------------------
-  ;  Set Content
-  ;---------------------------------------------------------------------------
   Procedure SetContent(*Me.GraphUI_t,*tree.Tree::Tree_t)
 
     If *tree
@@ -321,16 +282,10 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Get Mouse Position
-  ;---------------------------------------------------------------------------
   Procedure MousePosition(*Me.GraphUI_t,x.i,y.i)
   
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Is Node Visible
-  ;---------------------------------------------------------------------------
   Procedure.b IsNodeVisible(*Me.GraphUI_t,*n.Node::Node_t)
     If (*n\posx+*n\width)<0 Or *n\posx>*Me\sizX Or (*n\posy+*n\height)<0 Or *n\posy>*Me\sizY
       ProcedureReturn #False
@@ -339,9 +294,6 @@ Module GraphUI
     EndIf
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Get Node Infos
-  ;---------------------------------------------------------------------------
   Procedure NodeInfos(*Me.GraphUI_t)
     
     If Not *Me\tree : ProcedureReturn : EndIf
@@ -379,9 +331,6 @@ Module GraphUI
     StopVectorDrawing()
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Add Input Port
-  ;---------------------------------------------------------------------------
   Procedure AddInputPort(*args.Args::Args_t)
 
 ;     Protected *graph.GraphUI_t = *args\args()\ptr
@@ -398,9 +347,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; PopUp Menu
-  ;---------------------------------------------------------------------------
   Procedure PopUpMenu(*Me.GraphUI_t)
 ; ;     Protected *top.View::View_t = *Me\top
 ; ;     Protected *manager.ViewManager::ViewManager_t = *top\manager
@@ -511,11 +457,8 @@ Module GraphUI
   
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Change Port Name
-  ;---------------------------------------------------------------------------
   Procedure ChangePortName(*Me.GraphUI_t,x.i,y.i)
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
     If *Me\focus And *Me\focus\port
       Protected mx = x+*top\posX
       Protected my = y+*top\posY
@@ -544,9 +487,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Delete Selected
-  ;---------------------------------------------------------------------------
   Procedure DeleteSelected(*Me.GraphUI_t)
     Debug "DELETE SELECTED NODE..."
     If Not *Me\tree
@@ -572,9 +512,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Start Connecter
-  ;---------------------------------------------------------------------------
   Procedure StartConnecter(*Me.GraphUI_t,compound.b=#False)
     
     
@@ -613,9 +550,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Terminate Connecter
-  ;---------------------------------------------------------------------------
   Procedure TerminateConnecter(*Me.GraphUI_t)
     If *Me\focus
       StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
@@ -712,12 +646,9 @@ Module GraphUI
 
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ;Draw Background
-  ;---------------------------------------------------------------------------
   Procedure Background(*Me.GraphUI_t)
     Protected iz = *Me\zoom * 100
-    ; Use Pixels Drawing
+    
     CompilerIf Not Globals::#USE_VECTOR_DRAWING
       Protected mx =0
       If *Me\depth>0 : mx = Graph::#Graph_Compound_Border : EndIf
@@ -727,7 +658,6 @@ Module GraphUI
       Protected vw.i = Percentage(*Me\width,iz)
       Protected vh.i = Percentage(*Me\height,iz)
      
-      ;Vertical lines
       Protected i
       For i=0 To vw
         If i%iz = 0
@@ -735,21 +665,17 @@ Module GraphUI
         EndIf
       Next i
         
-      ;Horizontal lines
       For i=0 To vh
         If i%iz = 0
           Line(mx,i+*Me\canvasY%iz,*Me\width-2*mx,1,UIColor::COLOR_LINE_DIMMED)
         EndIf
       Next i
-      
-      ;CenterCircle
+
       Circle(*Me\canvasX,*Me\canvasY,7,RGBA(255,100,100,255))
       Circle(*Me\width*0.5,*Me\height*0.5,4,RGBA(255,100,255,255))
       
-      ; Mouse Circle
       Circle(*Me\mouseX,*Me\mouseY,5,RGBA(0,255,100,255))
       
-    ; Use Vector Drawing
     CompilerElse
       MovePathCursor(0,0)
       AddPathBox(0, 0, *Me\sizX, *Me\sizY)
@@ -785,7 +711,6 @@ Module GraphUI
 ;         EndIf
 ;       Next i
       
-      ;CenterCircle
       AddPathCircle(*Me\canvasX,*Me\canvasY,12 * *Me\zoom)
       VectorSourceColor(RGBA(255,100,100,255))
       FillPath()
@@ -795,9 +720,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ;Draw Navigation
-  ;---------------------------------------------------------------------------
   Procedure DrawCompound(*Me.GraphUI_t)
     If *Me\depth>0 And Not *Me\tree\current\isroot
       
@@ -815,9 +737,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Draw Empty Tree
-  ;---------------------------------------------------------------------------
   Procedure DrawEmpty(*Me.GraphUI_t)    
     CompilerIf Not Globals::#USE_VECTOR_DRAWING
       ; Default Drawing
@@ -845,12 +764,6 @@ Module GraphUI
     
   EndProcedure
   
-
-  
-  
-  ;---------------------------------------------------------------------------
-  ;Draw All Nodes
-  ;---------------------------------------------------------------------------
   Procedure DrawAllNodes(*Me.GraphUI_t)
    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
    ResetCoordinates()
@@ -863,21 +776,17 @@ Module GraphUI
       Protected *connexion.Connexion::Connexion_t
       ForEach *Me\tree\current\connexions()
         *connexion = *Me\tree\current\connexions()
-        ;Draw connexions
         Connexion::ViewPosition(*connexion)
         Connexion::Draw(*connexion,#False)
       Next
       
-      ;Draw visible nodes
       Protected v
       Protected *visible.Node::Node_t
       ForEach *Me\a_visible()
         *visible = *Me\a_visible()
-        ;Draw nodes
         Node::Draw(*visible)
       Next
     
-      ;Draw Connector
       If *Me\connect
         Connexion::ViewPosition(*Me\connecter)
         Connexion::Draw(*Me\connecter,#True)
@@ -915,10 +824,6 @@ Module GraphUI
     *Me\redraw = #False
   EndProcedure
   
-  
-  ;---------------------------------------------------------------------------
-  ; Get Node Under Mouse
-  ;---------------------------------------------------------------------------
   Procedure.i GetNodeUnderMouse(*Me.GraphUI_t,x.i,y.i)
     If Not *Me\tree : ProcedureReturn Graph::#Graph_Selection_None: EndIf
     
@@ -946,10 +851,6 @@ Module GraphUI
     ProcedureReturn Graph::#Graph_Selection_Rectangle
   EndProcedure
   
-  
-  ;---------------------------------------------------------------------------
-  ; Clear Selection
-  ;---------------------------------------------------------------------------
   Procedure.i ClearSelection(*Me.GraphUI_t)
     Protected i
     Protected *node.Node::Node_t
@@ -960,10 +861,7 @@ Module GraphUI
     
     CArray::SetCount(*Me\a_selected,0)  
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Select
-  ;---------------------------------------------------------------------------
+
   Procedure.i Selection(*Me.GraphUI_t,x.i,y.i,connect.b=#False)
     Protected *focus
     Protected *top
@@ -1002,10 +900,7 @@ Module GraphUI
   
     
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Select Branch
-  ;---------------------------------------------------------------------------
+
   Procedure SelectRecurse(*Me.GraphUI_t,*n.Node::Node_t)
   
     Protected *node.Node::Node_t
@@ -1023,10 +918,7 @@ Module GraphUI
       EndIf
     Next
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Select Branch
-  ;---------------------------------------------------------------------------
+
   Procedure.i SelectBranch(*Me.GraphUI_t,*n.Node::Node_t)
     CArray::SetCount(*Me\a_selected,0)
     CArray::AppendUnique(*Me\a_selected,*n)
@@ -1041,9 +933,6 @@ Module GraphUI
     
   EndProcedure
   
-  ;---------------------------------------------------------------------------
-  ; Rectangle Selection
-  ;---------------------------------------------------------------------------
   Procedure RectangleSelect(*Me.GraphUI_t)
     CArray::SetCount(*Me\a_selected,0)
   
@@ -1068,20 +957,14 @@ Module GraphUI
       EndWith  
     Next
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Reset
-  ;---------------------------------------------------------------------------
+
   Procedure Reset(*Me.GraphUI_t)
     *Me\canvasX = *Me\sizX * 0.5
     *Me\canvasY = *Me\sizY * 0.5
     *Me\zoom = 1.0
     *Me\redraw = #True
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Frame All
-  ;---------------------------------------------------------------------------
+
   Procedure FrameAll(*Me.GraphUI_t)
    
     If Not ListSize(*Me\tree\current\nodes()) : ProcedureReturn : EndIf
@@ -1120,10 +1003,7 @@ Module GraphUI
     *Me\redraw = #True
     
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Frame Selected
-  ;---------------------------------------------------------------------------
+
   Procedure FrameSelected(*Me.GraphUI_t)
     Protected minx,miny,maxx, maxy
     minx = #S32_MAX
@@ -1155,12 +1035,8 @@ Module GraphUI
     
     
   EndProcedure
-  
-  ;---------------------------------------------------------------------------
-  ; Activate Pan
-  ;---------------------------------------------------------------------------
+
   Procedure ActivatePan(*Me.GraphUI_t)
-    ; Pan
     SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
     *Me\pan = #True  
   EndProcedure
@@ -1173,11 +1049,7 @@ Module GraphUI
     PokeI(@*Me\realY, ConvertCoordinateY(*Me\mouseX, *Me\mouseY, #PB_Coordinate_Device, #PB_Coordinate_User))
     StopVectorDrawing()
   EndProcedure
-  
- 
-  ;---------------------------------------------------------------------------
-  ;Graph View Events
-  ;---------------------------------------------------------------------------
+
   Procedure.i CanvasEvent(*Me.GraphUI_t,eventID.i)
     
     Define x.d,y.d ,out_value
@@ -1185,43 +1057,32 @@ Module GraphUI
     *Me\mouseX = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseX)
     *Me\mouseY = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_MouseY)
     
-    ; Return value(push the command stack)
     out_value = -1
     
     If Not *Me\tree : DrawEmpty(*Me): ProcedureReturn : EndIf
     Select eventID
-      ;-----------------------------------------------------------------------  
-      ; Gadget Event
-      ;{
+
       Case #PB_Event_Gadget
         Select EventType()
-          ; DragStart Event
           Case #PB_EventType_DragStart
             Debug "Drag Start On View Graph!!!"
             
-          ; Right Button Down
           Case #PB_EventType_RightButtonDown
             Define *popup.ControlPopup::ControlPopup_t = ControlPopup::New(*Me, *Me\mouseX, *Me\mouseY-32, 240, 120)
            ControlPopup::StartLoop(*popup)
             
-            
-          ; Left Double Click Event
           Case #PB_EventType_LeftDoubleClick
             Pick(*Me)
             GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
             If *Me\focus
                Define mode = Node::Pick(*Me\focus,*Me\realX,*Me\realY,#False)
                If mode = Graph::#Graph_Selection_Node
-                 ;Inspect Current Node
                  InspectNode(*Me,*Me\focus)
                    *Me\down = #False
                ElseIf mode = Graph::#Graph_Selection_Port
-                ;ChangePortName(*Me,x,y)
                EndIf
-              
             EndIf
 
-          ;Wheel Event
           Case #PB_EventType_MouseWheel
             Protected wheel.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_WheelDelta)
             Define ox.d = (*Me\mouseX - *Me\canvasX) / *Me\zoom
@@ -1238,13 +1099,11 @@ Module GraphUI
 
             *Me\redraw = #True
 
-          ;Left Button Down Event
           Case #PB_EventType_LeftButtonDown     
             Pick(*Me)
             Protected modifiers.i = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)  
             If modifiers & #PB_Canvas_Alt
               If *me\pan :ProcedureReturn : EndIf
-              ; Pan
               SetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Cursor,#PB_Cursor_Hand)
               *Me\offsetx = *Me\mouseX - *Me\canvasX
               *Me\offsety = *Me\mouseY - *Me\canvasY
@@ -1293,18 +1152,15 @@ Module GraphUI
                   *Me\tree\current = *me\focus
                   *Me\dirty = #True
                   *Me\depth +1
-                 ; selection 
                 Case Graph::#Graph_Selection_Node
                   Selection(*Me,*Me\realX,*Me\realY,#False)
                   *Me\drag = #True               
-                ; Connexion 
                 Case Graph::#Graph_Selection_Port
                   
                   StartConnecter(*Me,#False)
                   
               EndSelect
             Else
-              ;Rectangle Selection  
               *Me\rectX1 = *Me\realX
               *Me\rectY1 = *Me\realY
               *Me\rectX2 = *Me\realX
@@ -1314,7 +1170,6 @@ Module GraphUI
             
             *Me\redraw = #True
 
-          ;Left Button Up Event
           Case #PB_EventType_LeftButtonUp
             Pick(*Me)
             If *Me\drag
@@ -1327,7 +1182,6 @@ Module GraphUI
               EndIf
               
             ElseIf *Me\pan
-              ;Do nothing as we are panning
               *Me\pan = #False
             ElseIf *Me\pick
               *Me\rectX2 = *Me\realX
@@ -1343,7 +1197,6 @@ Module GraphUI
               *Me\redraw = #False
             EndIf
             
-          ;Right Button Down Event
           Case #PB_EventType_RightButtonDown
             Pick(*Me)
             PopUpMenu(*Me)
@@ -1351,11 +1204,9 @@ Module GraphUI
                 
             EndIf
             
-          ; Right Button Up Event 
           Case #PB_EventType_RightButtonUp
            PopUpMenu(*Me)
             
-          ; Middle Button Button Event 
          Case #PB_EventType_MiddleButtonDown
            Pick(*Me)
             Define s.i = GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
@@ -1364,7 +1215,6 @@ Module GraphUI
               *Me\redraw = #True
             EndIf
             
-          ; Key Down Event
           Case #PB_EventType_KeyDown  
             If *Me\keydown : ProcedureReturn : EndIf
              Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
@@ -1393,8 +1243,6 @@ Module GraphUI
                  If *Me\focus : GraphUI::InspectNode(*Me,*Me\focus) : EndIf
              EndSelect
              
-        
-          ; Key Up Event
           Case #PB_EventType_KeyUp
             *Me\keydown = #False
              Select GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key)
@@ -1403,7 +1251,6 @@ Module GraphUI
                  *Me\pan = #False
              EndSelect
            
-          ; Mouse Move Event
           Case #PB_EventType_MouseMove
             If *Me\connect = #True
               Pick(*Me)
@@ -1411,10 +1258,8 @@ Module GraphUI
               GetNodeUnderMouse(*Me,*Me\realX,*Me\realY)
               
               If *me\focus
-                ; try to connect
                 mode = Node::Pick(*Me\focus,*Me\realX,*Me\realY,#True)
                 
-               ;Snap head of the connexion to the port
                Select mode
                  Case Graph::#Graph_Selection_Node
                    Connexion::SetHead(*Me\connecter,*Me\focus\port)
@@ -1449,7 +1294,6 @@ Module GraphUI
               *Me\redraw = #True
             EndIf
           
-          ; Lost Focus Event
           Case #PB_EventType_LostFocus
             Pick(*Me)
             If *Me\pick
@@ -1461,8 +1305,6 @@ Module GraphUI
             EndIf     
       EndSelect 
       
-      ;-----------------------------------------------------------------------  
-      ; GadgetDrop Event
       Case #PB_Event_GadgetDrop
         If *Me\tree
           Protected text.s = EventDropText()
@@ -1474,8 +1316,6 @@ Module GraphUI
           MessageRequester("Noodle", "[Graph View] There is no current graph tree.")
         EndIf
 
-      ;-----------------------------------------------------------------------  
-      ; SizeWindow Event
       Case #PB_Event_SizeWindow
         Resize(*Me)
         *Me\redraw = #True
@@ -1494,16 +1334,10 @@ Module GraphUI
     *Me\lastx = *Me\realX
     *Me\lasty = *Me\realY
     
-    ; Don't push command stack
     ProcedureReturn out_value
     
   EndProcedure
   
-  
-  
-  
-  ; Switch Context
-  ;---------------------------------------------------
   Procedure SwitchContext(*Me.GraphUI_t,*args.CArray::CArrayPtr)
 ;     Protected *mu.muval = *args\m[0]
 ;     Protected *mu2.muval = *args\m[1]
@@ -1567,7 +1401,7 @@ Module GraphUI
   Class::DEF(GraphUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 300
-; FirstLine = 296
-; Folding = --------
+; CursorPosition = 1334
+; FirstLine = 1301
+; Folding = -------
 ; EnableXP

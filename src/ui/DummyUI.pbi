@@ -113,7 +113,7 @@ Module DummyUI
    
     Select event
       Case #PB_Event_SizeWindow
-        Protected *top.View::View_t = *Me\parent
+        Protected *top.View::View_t = *Me\view
         Protected width.i = *top\sizX
         Protected height.i = *top\sizY
         
@@ -143,6 +143,7 @@ Module DummyUI
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 24
+; CursorPosition = 111
+; FirstLine = 87
 ; Folding = --
 ; EnableXP

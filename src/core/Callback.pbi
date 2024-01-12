@@ -82,7 +82,7 @@ DeclareModule Callback
                         _arg8=)
     
     
-    CompilerIf Globals::TOSTRING(_arg8) <> Globals::#EMPTYSTRING
+    CompilerIf Globals::TOSTRING(_arg8) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 8
       Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -95,7 +95,7 @@ DeclareModule Callback
         Args::DECL(_arg8, 7)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg7) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg7) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 7
        Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -107,7 +107,7 @@ DeclareModule Callback
         Args::DECL(_arg7, 6)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg6) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg6) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 6
        Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -118,7 +118,7 @@ DeclareModule Callback
         Args::DECL(_arg6, 5)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg5) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg5) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 5
        Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -128,7 +128,7 @@ DeclareModule Callback
         Args::DECL(_arg5, 4)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg4) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg4) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 4
       Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -137,7 +137,7 @@ DeclareModule Callback
         Args::DECL(_arg4, 3)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg3) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg3) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 3
       Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -145,14 +145,14 @@ DeclareModule Callback
         Args::DECL(_arg3, 2)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg2) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg2) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 2
       Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
         Args::DECL(_arg2, 1)
       EndStructure
       
-    CompilerElseIf Globals::TOSTRING(_arg1) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg1) <> Globals::#Empty_String
       #_funcname#NUM_ARGS = 1
       Structure _funcname#DATAS_t
         Args::DECL(_arg1, 0)
@@ -177,7 +177,7 @@ DeclareModule Callback
     
     *_slot#_slot\callback = @_slot#CALLBACK()
     
-    CompilerIf Globals::TOSTRING(_arg8) <> Globals::#EMPTYSTRING
+    CompilerIf Globals::TOSTRING(_arg8) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
@@ -187,7 +187,7 @@ DeclareModule Callback
       Args::PASS(*_datas#_slot\__arg__6, _arg7)
       Args::PASS(*_datas#_slot\__arg__7, _arg8)
       
-    CompilerElseIf Globals::TOSTRING(_arg7) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg7) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
@@ -196,7 +196,7 @@ DeclareModule Callback
       Args::PASS(*_datas#_slot\__arg__5, _arg6)
       Args::PASS(*_datas#_slot\__arg__6, _arg7)
       
-    CompilerElseIf Globals::TOSTRING(_arg6) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg6) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
@@ -204,29 +204,29 @@ DeclareModule Callback
       Args::PASS(*_datas#_slot\__arg__4, _arg5)
       Args::PASS(*_datas#_slot\__arg__5, _arg6)
       
-    CompilerElseIf Globals::TOSTRING(_arg5) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg5) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
       Args::PASS(*_datas#_slot\__arg__3, _arg4)
       Args::PASS(*_datas#_slot\__arg__4, _arg5)
       
-    CompilerElseIf Globals::TOSTRING(_arg4) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg4) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
       Args::PASS(*_datas#_slot\__arg__3, _arg4)
       
-    CompilerElseIf Globals::TOSTRING(_arg3) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg3) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       Args::PASS(*_datas#_slot\__arg__2, _arg3)
       
-    CompilerElseIf Globals::TOSTRING(_arg2) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg2) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
       Args::PASS(*_datas#_slot\__arg__1, _arg2)
       
-    CompilerElseIf Globals::TOSTRING(_arg1) <> Globals::#EMPTYSTRING
+    CompilerElseIf Globals::TOSTRING(_arg1) <> Globals::#Empty_String
       Args::PASS(*_datas#_slot\__arg__0, _arg1)
     CompilerEndIf
     
@@ -299,7 +299,7 @@ Module Callback
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 279
-; FirstLine = 233
+; CursorPosition = 228
+; FirstLine = 172
 ; Folding = ---
 ; EnableXP

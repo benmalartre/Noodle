@@ -15,23 +15,15 @@ DeclareModule MenuUI
   Interface IMenuUI Extends UI::IUI
   EndInterface
 
-  Declare New(*parent.View::View_t,name.s="MenuUI")
+  Declare New(*parent.View::View_t, name.s="MenuUI")
   Declare Delete(*ui.MenuUI_t)
   Declare Resize(*ui.MenuUI_t)
-  Declare Draw(*ui.MenuUI_t)
-  Declare DrawPickImage(*ui.MenuUI_t)
-  Declare Pick(*ui.MenuUI_t)
   Declare OnEvent(*Me.MenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-  Declare Draw(*ui.MenuUI_t)
-  
   
   DataSection 
     MenuUIVT: 
       Data.i @OnEvent()
       Data.i @Delete()
-      Data.i @Draw()
-      Data.i @DrawPickImage()
-      Data.i @Pick()
   EndDataSection 
     
   Global CLASS.Class::Class_t
@@ -42,58 +34,13 @@ EndDeclareModule
 ; MenuUI Module Implementation
 ; ============================================================================
 Module MenuUI
-  
-  ;  Setup
-  ; ----------------------------------------
-  Procedure Setup(*Me.MenuUI_t)
-    
-  EndProcedure
-  
-  
-  ; ----------------------------------------
-  ;  Pick
-  ; ----------------------------------------
-  Procedure Pick(*Me.MenuUI_t)
-  
-  EndProcedure
-  
-  ; ----------------------------------------
-  ;  Draw
-  ; ----------------------------------------
-  Procedure Draw(*Me.MenuUI_t)
-  
-  EndProcedure
-  
-  ; ----------------------------------------
-  ;  Draw Pick Image
-  ; ----------------------------------------
-  Procedure DrawPickImage(*Me.MenuUI_t)
-  
-  EndProcedure
-  
-  ; ----------------------------------------
-  ;  Resize
-  ; ----------------------------------------
   Procedure Resize(*Me.MenuUI_t)
   
   EndProcedure
-  
-  
-  ; ----------------------------------------
-  ;  Clear Explorer Data
-  ; ----------------------------------------
-  Procedure Clear(*Me.MenuUI_t)
-    
-  EndProcedure
 
-  
-  ;---------------------------------------------------
-  ; Send Events
-  ;---------------------------------------------------
   Procedure OnEvent(*Me.MenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
-     
     If event =  #PB_Event_SizeWindow
-      Protected *top.View::View_t = *Me\parent
+      Protected *top.View::View_t = *Me\view
       *Me\posX = *top\posX
       *Me\posY = *top\posY
       *Me\sizX = *top\sizX
@@ -107,64 +54,37 @@ Module MenuUI
         ControlMenu::OnEvent(*me\menu,EventType())
       EndIf
     EndIf
-   
-    ;Redraw Top Menu
-    Draw(*Me)
+  
    
   EndProcedure
-  
-  
-  ;---------------------------------------------------------------
-  ; Connect Signals\Slots 
-  ;---------------------------------------------------------------
+ 
   Procedure ConnectSignalSlot(*Me.MenuUI_t)
   
     ;Me\SignalConnect(*Me\menu\SignalOnChanged(),0)
     
   EndProcedure
- 
-  
-  
-  
-  ;------------------------------------------------------------------
-  ; Destuctor
-  ;------------------------------------------------------------------
+
   Procedure Delete(*Me.MenuUI_t)
     ControlMenu::Delete(*Me\menu)
     Object::TERM(MenuUI)
   EndProcedure
   
-;   Procedure OnCreatePolymesh(shape.i)
-;     Define args.Args::Args_t
-;     args\args[0]\type = Types::#TYPE_INT
-;     args\args[0]\i = shape
-;     CreatePolymeshCmd::Do(args)
-;   EndProcedure
-;   Callback::DECLARECALLBACK(OnCreatePolymesh, Types::#TYPE_INT
-  
-
-  ;---------------------------------------------
-  ;  Constructor
-  ;---------------------------------------------
-  ;{
   Procedure.i New(*parent.View::View_t,name.s="MenuUI")
     Protected *Me.MenuUI_t = AllocateStructure(MenuUI_t)
-    ;Initialize Structures
     Object::INI( MenuUI )
-    *Me\parent = *parent
     *Me\posX = *parent\posX
     *Me\posY = *parent\posY
     *Me\sizX = *parent\sizX
-    *Me\sizY = 25
+    *Me\sizY = *parent\sizY
     
     *Me\name = "Top Menu"
     *Me\type = Globals::#VIEW_TOPMENU
+    *Me\view = *parent
     *Me\gadgetID = CanvasGadget(#PB_Any,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY, #PB_Canvas_Keyboard)
-                                  
-
-    Protected *window.Window::Window_t = *parent\window
     
-    ; ---[ Menu ]------------------
+
+                                  
+    
     *Me\menu = ControlMenu::New(*Me,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
     
     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
@@ -200,11 +120,12 @@ Module MenuUI
 
     
     ControlMenu::Init(*Me\menu,"")
+    
+    View::SetContent(*parent,*Me)
         
     ConnectSignalSlot(*Me)
     
-    ; ---[ View Content ]-----------------------
-    View::SetContent(*parent,*Me)
+    
   
     ProcedureReturn *Me
   EndProcedure
@@ -212,7 +133,7 @@ Module MenuUI
    Class::DEF(MenuUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 138
-; Folding = ---
+; CursorPosition = 81
+; FirstLine = 56
+; Folding = --
 ; EnableXP

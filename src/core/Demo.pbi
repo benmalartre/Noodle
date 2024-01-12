@@ -12,13 +12,13 @@
 
 DeclareModule DemoApplication
   Enumeration
-    #DEMO_WITH_MENU     = 1 << 1
-    #DEMO_WITH_TIMELINE = 4 << 2
-    #DEMO_WITH_EXPLORER = 8 << 3
-    #DEMO_WITH_PROPERTY = 16 << 4
+    #Demo_With_Menu     = 1 << 1
+    #Demo_With_Timeline = 4 << 2
+    #Demo_With_Explorer = 8 << 3
+    #Demo_With_Property = 16 << 4
   EndEnumeration
   
-  #DEMO_WITH_ALL = #DEMO_WITH_MENU|#DEMO_WITH_EXPLORER|#DEMO_WITH_PROPERTY|#DEMO_WITH_TIMELINE
+  #Demo_With_All = #Demo_With_Menu|#Demo_With_Explorer|#Demo_With_Property|#Demo_With_Timeline
   
   Prototype UpdateFN(*ptr)
   
@@ -33,7 +33,7 @@ DeclareModule DemoApplication
     updateImpl.UpdateFN
   EndStructure
   
-  Declare Init (*Me.DemoApplication_t, name.s, width.i=1200, height.i=800, options=#DEMO_WITH_ALL)
+  Declare Init (*Me.DemoApplication_t, name.s, width.i=1200, height.i=800, options=#Demo_With_All)
   Declare Update(*Me.DemoApplication_t)
   Declare GetView(*Me.DemoApplication_t)
   
@@ -42,7 +42,7 @@ EndDeclareModule
 Module DemoApplication
   UseModule OpenGL
   UseModule OpenGLExt
-  Procedure Init(*Me.DemoApplication_t, name.s, width=1200, height=800, options=#DEMO_WITH_ALL)
+  Procedure Init(*Me.DemoApplication_t, name.s, width=1200, height=800, options=#Demo_With_All)
 
     Globals::Init()
     Time::Init()
@@ -68,20 +68,20 @@ Module DemoApplication
     Define.View::View_t *view, *top, *middle, *bottom, *left, *right
     
     *view = *Me\window\main
-    If options & #DEMO_WITH_MENU
+    If options & #Demo_With_Menu
       View::Split(*view,#PB_Splitter_FirstFixed,25)
       *top = *view\left
       *view = *view\right
       Protected *menu.MenuUI::MenuUI_t = MenuUI::New(*top,"Menu")
     EndIf
-    If options & #DEMO_WITH_TIMELINE
+    If options & #Demo_With_Timeline
       View::Split(*view,#PB_Splitter_SecondMinimumSize|#PB_Splitter_SecondFixed,60)
       *bottom = *view\right
       *view = *view\left
       Protected *timeline.TimelineUI::TimelineUI_t = TimelineUI::New(*bottom,"Timeline")
     EndIf
     
-    If options & #DEMO_WITH_EXPLORER
+    If options & #Demo_With_Explorer
       View::Split(*view,#PB_Splitter_Vertical,20)
       *left = *view\left
       *view = *view\right
@@ -89,7 +89,7 @@ Module DemoApplication
       ExplorerUI::Connect(*Me\explorer, *Me\scene)
     EndIf
     
-     If options & #DEMO_WITH_PROPERTY
+     If options & #Demo_With_Property
        View::Split(*view,#PB_Splitter_Vertical,75)
        *Me\property = PropertyUI::New(*view\right,"Property")
       *view = *view\left
@@ -132,7 +132,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 67
+; CursorPosition = 74
+; FirstLine = 52
 ; Folding = --
 ; EnableXP

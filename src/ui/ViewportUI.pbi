@@ -39,10 +39,7 @@ DeclareModule ViewportUI
   Declare New(*parent.View::View_t,name.s, *camera.Camera::Camera_t, *handle.Handle::Handle_t)
   Declare Delete(*Me.ViewportUI_t)
   Declare Resize(*Me.ViewportUi_t, x.i, y.i, width.i, height.i)
-  Declare DrawPickImage(*Me.ViewportUI_t)
-  Declare Pick(*Me.ViewportUI_t, mx.i, my.i)
   Declare OnEvent(*Me.ViewportUI_t,event.i)
-  Declare Draw(*Me.ViewportUI_t)
   Declare SetHandleTarget(*Me.ViewportUI_t, *target.Object3D::Object3D_t)
   Declare SetHandleTargets(*Me.ViewportUI_t, *targets)
   Declare SetHandleTool(*Me.ViewportUI_t, tool.i)
@@ -58,9 +55,6 @@ DeclareModule ViewportUI
     ViewportUIVT: 
       Data.i @OnEvent()
       Data.i @Delete()
-      Data.i @Draw()
-      Data.i @DrawPickImage()
-      Data.i @Pick()
   EndDataSection 
   
   Global CLASS.Class::Class_t
@@ -95,7 +89,6 @@ Module ViewportUI
     *Me\sizY = h
     *Me\handle = *handle
         
-    ; setup delegate gl context
     *Me\camera = *camera
     *Me\context = GLContext::New(*Me\sizX, *Me\sizY, GLContext::*SHARED_CTXT)
     
@@ -138,20 +131,6 @@ Module ViewportUI
     Control::Invalidate(*Me)
         
   EndProcedure
-  
-  ;------------------------------------------------------------------
-  ; Pick
-  ;------------------------------------------------------------------
-  Procedure Pick(*Me.ViewportUi_t, mx.i, my.i)
-    
-  EndProcedure
-  
-  ;------------------------------------------------------------------
-  ; Delete
-  ;------------------------------------------------------------------
-  Procedure DrawPickImage(*Me.ViewportUi_t)
-    
-  EndProcedure
     
   ;------------------------------------------------------------------
   ; Event
@@ -159,7 +138,7 @@ Module ViewportUI
   Procedure OnEvent(*Me.ViewportUI_t,event.i)
     
     Protected width.i, height.i, i
-    Protected *top.View::View_t = *Me\parent
+    Protected *top.View::View_t = *Me\view
     Protected *scene.Scene::Scene_t = *Me\context\scene
     Protected ev_datas.Control::EventTypeDatas_t
     Protected window = EventWindow()
@@ -332,41 +311,7 @@ Module ViewportUI
     EndSelect
     
   EndProcedure
-  
-  ;------------------------------------------------------------------
-  ; Draw
-  ;------------------------------------------------------------------
-  Procedure Draw(*Me.ViewportUI_t)
-
-    Dim shaderNames.s(3)
-    shaderNames(0) = "wireframe"
-    shaderNames(1) = "polymesh"
-    shaderNames(2) = "normal"
-    Define i
-    Define *pgm.Program::Program_t
-    For i=0 To 2
-      *pgm = *Me\context\shaders(shaderNames(i))
-      glUseProgram(*pgm\pgm)
-      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"model"),1,#GL_FALSE, Matrix4::IDENTITY())
-      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
-    Next
-    
-    Protected ilayer.Layer::ILayer = *Me\layer
-    ilayer\Draw(GLContext::*SHARED_CTXT\scene, *Me\context)
-    If *Me\tool
-      Protected *wireframe.Program::Program_t = *Me\context\shaders("wireframe")
-      glUseProgram(*wireframe\pgm)
-
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"model"),1,#GL_FALSE,Matrix4::IDENTITY())
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"view"),1,#GL_FALSE, *Me\camera\view)
-      glUniformMatrix4fv(glGetUniformLocation(*wireframe\pgm,"projection"),1,#GL_FALSE, *Me\camera\projection)
-      
-      Handle::Draw( *Me\handle) 
-    EndIf
-    
-  EndProcedure
-  
+ 
   ;------------------------------------------------------------------
   ; Set Handle Target
   ;------------------------------------------------------------------
@@ -663,7 +608,7 @@ Module ViewportUI
   Class::DEF( ViewportUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 162
-; FirstLine = 143
-; Folding = ----
+; CursorPosition = 39
+; FirstLine = 12
+; Folding = ---
 ; EnableXP

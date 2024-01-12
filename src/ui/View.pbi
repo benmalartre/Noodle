@@ -477,7 +477,7 @@ XIncludeFile "Types.pbi"
   ;-----------------------------------------------------------------------------------
   Procedure SetContent(*Me.View_t,*content.UI::UI_t)   
     *Me\content = *content
-    *content\parent = *Me
+    *content\view = *Me
   EndProcedure
   
   ;-----------------------------------------------------------------------------------
@@ -534,7 +534,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 105
-; FirstLine = 60
+; CursorPosition = 479
+; FirstLine = 473
 ; Folding = ----
 ; EnableXP
