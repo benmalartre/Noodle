@@ -104,7 +104,7 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
 
-  Define *model.Model::Model_t = Scene::CreateMeshGrid(12,6,12, Shape::#SHAPE_TORUS)
+  Define *model.Model::Model_t = Scene::CreateMeshGrid(12,6,12, Shape::#SHAPE_BUNNY)
  
   *ground = Polymesh::New("Ground",Shape::#SHAPE_GRID)
   Transform::SetScaleFromXYZValues(*ground\localT, 3, 3, 3)
@@ -132,7 +132,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 83
+; CursorPosition = 109
+; FirstLine = 67
 ; Folding = -
 ; EnableXP

@@ -241,7 +241,6 @@ Module Control
       *parent\OnEvent( #PB_EventType_ChildFocused, ev_data )
     EndIf
     Globals::BitMaskSet(*Me\state, Control::#State_Focused)
-    Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
   EndProcedure
   
   Procedure.i DeFocused( *Me.Control_t )
@@ -281,8 +280,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 253
-; FirstLine = 216
+; CursorPosition = 243
+; FirstLine = 202
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

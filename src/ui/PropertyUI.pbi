@@ -458,8 +458,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 393
+; CursorPosition = 130
+; FirstLine = 98
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

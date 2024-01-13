@@ -29,15 +29,12 @@ DeclareModule ControlProperty
     *object.Object::Object_t
     *head.ControlHead::ControlHead_t
     *group.ControlGroup::ControlGroup_t
-;     List *groups.ControlGroup::ControlGroup_t()
 
     decoration.i
     lock.Control::IControl
     refresh.Control::IControl
     dx.i
     dy.i
-    
-    slotID.i
   EndStructure
   
   Interface IControlProperty Extends Control::IControl
@@ -45,8 +42,6 @@ DeclareModule ControlProperty
   
   Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,decoration=#PROPERTY_LABELED)
   Declare Delete(*Me.ControlProperty_t)
-;   Declare OnEvent( *Me.ControlProperty_t,ev_code.i,*ev_data.Control::EventTypeDatas_t = #Null)  
-;   Declare Draw( *Me.ControlProperty_t)
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
   Declare AppendStop( *Me.ControlProperty_t )
@@ -1129,9 +1124,7 @@ Module ControlProperty
     If IsImage(*Me\imageID) : FreeImage(*Me\imageID) : EndIf
     
     Object::TERM(ControlProperty)
-
   EndProcedure
-
 
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -1177,7 +1170,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 726
-; FirstLine = 695
+; CursorPosition = 36
+; FirstLine = 35
 ; Folding = --------
 ; EnableXP

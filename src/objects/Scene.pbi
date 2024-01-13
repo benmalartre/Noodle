@@ -728,7 +728,7 @@ Module Scene
           Transform::SetTranslationFromXYZValues(*t,x-nx*0.5,y+2,z-nz*0.5)
           Quaternion::SetFromEulerAngles(rot,Random(360),Random(360),Random(360))
           Transform::SetRotationFromQuaternion(*t,rot)
-          Define s.f = RANDOM_0_1() * 0.2
+          Define s.f = RANDOM_0_1()
           Transform::SetScaleFromXYZValues(*t, s, s, s)
           Object3D::SetLocalTransform(*mesh,*t)
 
@@ -895,7 +895,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 861
-; FirstLine = 795
+; CursorPosition = 730
+; FirstLine = 702
 ; Folding = --------
 ; EnableXP

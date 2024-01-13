@@ -237,7 +237,6 @@ Module ControlGroup
   EndProcedure
 
   Procedure Draw( *Me.ControlGroup_t, init.b=#False)
-    Debug "Control Group Draw Called "+*Me\name+" : "+Str(init)
     If init
       StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
       ResetCoordinates()
@@ -478,10 +477,8 @@ Module ControlGroup
           If *Me\overchild
             *Me\overchild\OnEvent(#PB_EventType_MouseEnter, *ev_data)
           EndIf
-          ProcedureReturn #True
-          
-        ElseIf *Me\overchild
-          *overchild = *Me\overchild
+        ElseIf *overchild
+          *Me\overchild = *overchild
           *ev_data\x    = xm - *overchild\posX
           *ev_data\y    = ym - *overchild\posY
           *ev_data\yoff = 50
@@ -502,7 +499,6 @@ Module ControlGroup
       
       Case #PB_EventType_LeftButtonUp
         *Me\down = #False
-        If *Me\focuschild : Control::DeFocused(*Me\focuschild) : EndIf
         
       Case #PB_EventType_LeftDoubleClick
 
@@ -512,7 +508,17 @@ Module ControlGroup
         
       Case #PB_EventType_RightButtonUp
         *Me\down = #False
-        If *Me\focuschild : Control::DeFocused(*Me\focuschild) : EndIf
+        
+      Case #PB_EventType_Input
+        *ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Input))
+        
+      Case #PB_EventType_KeyDown
+        *ev_data\key = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Key)
+        *ev_data\modif = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
+        
+      Case #PB_EventType_KeyUp
+        *ev_data\key = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Key)
+        *ev_data\modif = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
         
     EndSelect
     
@@ -656,7 +662,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 514
-; FirstLine = 468
+; CursorPosition = 239
+; FirstLine = 221
 ; Folding = ----
 ; EnableXP

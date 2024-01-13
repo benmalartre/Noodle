@@ -446,12 +446,9 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
               EndIf
             EndIf
               *Me\lookup_dirty = #True
-          EndIf 
-
-          Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
-          
-          Control::Invalidate(*Me)
-
+            EndIf 
+            Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
+            Control::Invalidate(*Me)
         EndIf
         ProcedureReturn( #True )
       EndIf
@@ -472,6 +469,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
             EndIf
           EndIf
           *Me\lookup_dirty = #True
+          Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
+          Control::Invalidate(*Me)
         Else
           *Me\posG = hlpCharPosFromMousePos( *Me, *ev_data\x )
           *Me\posW = *Me\posG
@@ -484,8 +483,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
         Globals::BitMaskClear(*Me\state, Control::#State_Down)
-        Control::Invalidate(*Me)
         Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
+        Control::Invalidate(*Me)
         
         ProcedureReturn( #True )
       EndIf
@@ -841,7 +840,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 501
-; FirstLine = 473
+; CursorPosition = 434
+; FirstLine = 413
 ; Folding = ---
 ; EnableXP

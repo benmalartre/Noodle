@@ -13,7 +13,7 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global *drawer.Drawer::Drawer_t
 Global *root.Model::Model_t
-Global *selected.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+Global *selected.CArray::CArrayLong = CArray::New(Types::#Type_Long)
 Global rootIndex.i
 Global numTopos = 7
 
@@ -25,8 +25,8 @@ Procedure PolygonSoup(numTopos=9)
 ;   Define *topo = Topology::New()
 ;   Topology::Bunny(*topo)
   
-  Protected *matrices.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
-  Protected *positions.CArray::CArrayV3F32 = CARray::New(CArray::#ARRAY_V3F32)
+  Protected *matrices.CArray::CArrayM4F32 = CArray::New(Types::#Type_M4F32)
+  Protected *positions.CArray::CArrayV3F32 = CARray::New(Types::#Type_V3F32)
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
@@ -44,7 +44,7 @@ Procedure PolygonSoup(numTopos=9)
     *p = CArray::GetValue(*positions, i)
     Matrix4::SetTranslation(*m,   *p)
   Next
-  Protected *topos.CArray::CArrayPtr = CArray::New(CArray::#Array_PTR)
+  Protected *topos.CArray::CArrayPtr = CArray::New(Types::#Type_PTR)
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
   PolymeshGeometry::Set2(*geom, *topo)
@@ -68,7 +68,7 @@ Procedure DrawSelected(*geom.Geometry::PolymeshGeometry_t)
   Define *O = Drawer::AddPoint(*drawer, CArray::GetValue(*geom\a_positions, rootIndex))
   Drawer::SetSize(*O, 8)
   Drawer::SetColor(*O, Color::RED)
-  Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Define *positions.CArray::CArrayV3F32 = CArray::New(Types::#Type_V3F32)
   CArray::SetCount(*positions, CArray::GetCount(*selected))
   Define i
   For i = 0 To *selected\itemCount - 1
@@ -212,7 +212,7 @@ FTGL::Init()
 
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 205
-; FirstLine = 156
+; CursorPosition = 70
+; FirstLine = 147
 ; Folding = -
 ; EnableXP

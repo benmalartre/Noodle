@@ -98,17 +98,17 @@ Module ControlEnum
   Procedure Popup(*Me.ControlEnum_t)
     Define width = *Me\sizX
     Define height = ArraySize(*Me\items()) * #Enum_Item_Height
-    Define parent = EventWindow()
+    Define window = EventWindow()
     Define mx = GadgetX(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posX
     Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY
     
-    Define window = OpenWindow(#PB_Any,mx, my, width, height, "", #PB_Window_BorderLess)
-    StickyWindow(window,#True)
+    Define popup = OpenWindow(#PB_Any,mx, my, width, height, "", #PB_Window_BorderLess, WindowID(window))
+    StickyWindow(popup,#True)
     
     Define *ui.UI::UI_t = Control::GetUI(*Me)
     Define *view.View::View_t = UI::GetView(*ui)
 
-    Define canvas = CanvasGadget(#PB_Any,0,0,WindowWidth(window, #PB_Window_InnerCoordinate), WindowHeight(window, #PB_Window_InnerCoordinate))
+    Define canvas = CanvasGadget(#PB_Any,0,0,WindowWidth(popup, #PB_Window_InnerCoordinate), WindowHeight(popup, #PB_Window_InnerCoordinate))
     Define done.b = #False
     Define event, eventType
     Protected debounce.i = 60
@@ -116,9 +116,9 @@ Module ControlEnum
     Protected init.b = #False
     Repeat
       event = WaitWindowEvent()
-      If EventWindow() = window
-        mx = WindowMouseX(window)
-        my = WindowMouseY(window) 
+      If EventWindow() = popup
+        mx = WindowMouseX(popup)
+        my = WindowMouseY(popup) 
         pick = DrawPopup(*Me, canvas, mx, my)
         leftbutton = Bool(event = #PB_Event_Gadget And EventType()=#PB_EventType_LeftClick); Or EventType() = #PB_EventType_LostFocus )
     
@@ -138,8 +138,8 @@ Module ControlEnum
     Until done = #True
     
     FreeGadget(canvas)
-    CloseWindow(window)
-    SetActiveWindow(parent)
+    CloseWindow(popup)
+    SetActiveWindow(window)
     
   EndProcedure
   
@@ -150,7 +150,7 @@ Module ControlEnum
         If Not *ev_data : ProcedureReturn : EndIf
         
         Draw( *Me, *ev_data\xoff, *ev_data\yoff )
-        ProcedureReturn( #True )
+        ProcedureReturn #True
   
       Case #PB_EventType_Resize
         If Not *ev_data : ProcedureReturn : EndIf
@@ -159,33 +159,35 @@ Module ControlEnum
         If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
         If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
         If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
-        ProcedureReturn( #True )
+        ProcedureReturn #True
         
       Case #PB_EventType_LeftButtonDown
         Popup(*Me)
-        Globals::BitMaskClear(*Me\state, Control::#State_Down)
-        Control::Invalidate(*Me)
         Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
- 
+        Control::DeFocused(*Me)
+        Control::Invalidate(*Me)
+        ProcedureReturn #True 
+        
+        
       Case #PB_EventType_MouseEnter
         If *Me\visible And *Me\enable
           If *Me\state & Control::#State_Focused : Control::SetCursor( *Me,#PB_Cursor_IBeam ) : EndIf
           Control::Invalidate(*Me)
-          ProcedureReturn( #True )
+          ProcedureReturn #True 
         EndIf
       
       Case #PB_EventType_MouseLeave
         If *Me\visible And *Me\enable
           
           Control::Invalidate(*Me)
-          ProcedureReturn( #True )
+          ProcedureReturn #True
         EndIf
         
       Case #PB_EventType_MouseMove        
         If *Me\visible And *Me\enable
           
           Control::Invalidate(*Me)
-          ProcedureReturn( #True )
+          ProcedureReturn #True
         EndIf
 
     EndSelect
@@ -218,7 +220,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 135
+; CursorPosition = 188
+; FirstLine = 150
 ; Folding = --
 ; EnableXP

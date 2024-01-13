@@ -7,10 +7,7 @@ XIncludeFile "Number.pbi"
 XIncludeFile "Enum.pbi"
 
 DeclareModule ControlTimeline
-  ; ============================================================================
-  ;  GLOBALS
-  ; ============================================================================
-  ; ---[ Constants ]------------------------------------------------------------
+
   #NUMBER_WIDTH    = 45
   #BUTTON_SIZE    = 20
   #BUTTON_SPACING = 24
@@ -22,23 +19,15 @@ DeclareModule ControlTimeline
     #PLAY_CUSTOM_RATE
   EndEnumeration
 
-  ; ----------------------------------------------------------------------------
-  ;  Object ( ControlTimeline_t )
-  ; ----------------------------------------------------------------------------
-  ;{
   Structure ControlTimeline_t Extends Control::Control_t
-    ;datas
     imageID.i
     down.b
     
-    ; timer
     *timer.Time::Timeable_t
     window.i
     
-    ; Nb Controls
     controls.i
     
-    ; Control Icons
     c_firstframe.ControlIcon::IControlIcon
     c_previousframe.ControlIcon::IControlIcon
     c_playbackward.ControlIcon::IControlIcon
@@ -48,26 +37,20 @@ DeclareModule ControlTimeline
     c_lastframe.ControlIcon::IControlIcon
     c_playloop.ControlIcon::IControlIcon
     
-    ; Control Numbers
     c_startframe.ControlNumber::IControlNumber
     c_endframe.ControlNumber::IControlNumber
     c_startrange.ControlNumber::IControlNumber
     c_endrange.ControlNumber::IControlNumber
     c_currentframe.ControlNumber::IControlNumber
     
-    ; Control Combo
     c_playbackrate.ControlEnum::IControlEnum
     
-    ; Control Management
     overchild .Control::IControl
     focuschild.Control::IControl
     Array children.Control::IControl(14)
           
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;  Interface
-  ; ----------------------------------------------------------------------------
   Interface IControlTimeline Extends Control::IControl
     SetCurrentFrame(v.f)
     SetStartFrame(v.f)
@@ -76,9 +59,6 @@ DeclareModule ControlTimeline
     SetEndRange(v.f)
   EndInterface
   
-  ; ----------------------------------------------------------------------------
-  ;  Declares
-  ; ----------------------------------------------------------------------------
   Declare New( windowID.i, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
   Declare Delete(*Me.ControlTimeline_t)
   Declare OnEvent( *Me.ControlTimeline_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
@@ -116,26 +96,17 @@ DeclareModule ControlTimeline
 EndDeclareModule
 
 Module ControlTimeline  
-  ; ============================================================================
-  ;  IMPLEMENTATION ( Helpers )
-  ; ============================================================================
-  ;{
+
   Procedure.i hlpGetStep(r.i)
     Protected f.f = Round((r/10), #PB_Round_Nearest) 
     Protected m.i = Math::Max(Int(f),1)
     ProcedureReturn m
-        
   EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  hlpDrawFrames
-  ; ----------------------------------------------------------------------------
+
   Procedure hlpDrawFrames( *Me.ControlTimeline_t )
-    ;---[ Start Drawing ]-------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_TEXT)    
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected w.i = *Me\sizX 
     Protected l.i = 0
     Protected h.i = *Me\sizY-30
@@ -144,7 +115,6 @@ Module ControlTimeline
     Protected f.i
     Protected m.i = hlpGetStep(r)
     
-    ;---[ Draw Frames ]---------------------------------------------------------
     AddPathBox(l,0,w,h)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
@@ -155,11 +125,7 @@ Module ControlTimeline
     For f=Time::startframe To Time::endframe
       If f%m = 0
         MovePathCursor(l+(f-Time::startframe)*s,h/5)
-        AddPathLine(0,4*h/5, #PB_Path_Relative)
-;         If Not f = Time::endframe
-;           DrawText(l+(f-Time::startframe)*s+2,0,Str(f),UIColor::COLOR_LABEL)
-;         EndIf
-        
+        AddPathLine(0,4*h/5, #PB_Path_Relative) 
       ElseIf Mod(f, m/5) = 0
         MovePathCursor(l+(f-Time::startframe)*s,h-8)
         AddPathLine(0,8, #PB_Path_Relative)
@@ -169,12 +135,10 @@ Module ControlTimeline
     VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
     
-    ;---[ Draw Current Frame ]--------------------------------------------------
     AddPathBox(l+(Time::currentframe - Time::startframe)*s,0,3,h-1)
     VectorSourceColor(RGBA(255,100,50,128))
     FillPath()
     
-    ;---[ Draw Loop ]-----------------------------------------------------------
     If Time::loop
       AddPathBox(l+(Time::startloop - Time::startframe)*s-1,0,3,h-1)
       AddPathBox(l+(Time::endloop - Time::startframe)*s-1,0,3,h-1)
@@ -182,16 +146,9 @@ Module ControlTimeline
       FillPath()
     EndIf
     
-    ;---[ Stop Drawing ]-----------------------------------------------------------
     StopVectorDrawing()
-   
-  
   EndProcedure
-  ;}
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpDrawControls
-  ; ----------------------------------------------------------------------------
   Procedure hlpDrawControls( *Me.ControlTimeline_t )
     Protected w.i = *Me\sizX/2 -128
     Protected h.i = *Me\sizY/5*3
@@ -200,14 +157,11 @@ Module ControlTimeline
     Protected  son  .Control::IControl
     Protected *son  .Control::Control_t
     
-    
-    ;---[ Start Drawing ]-------------------------------------------------------
     StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
     AddPathBox(0,*Me\sizY-30,*Me\sizX,30)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
-    ; ---[ Redraw Children ]----------------------------------------------------
     Protected ev_data.Control::EventTypeDatas_t
     For i=0 To *Me\controls-1
        son = *Me\children(i)
@@ -219,20 +173,14 @@ Module ControlTimeline
        EndIf
      Next
      
-     ;---[ Stop Drawing ]-----------------------------------------------------------
     StopVectorDrawing()
     
   EndProcedure
-  ;}
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpDrawPickingTags
-  ; ----------------------------------------------------------------------------
   Procedure hlpDrawPickImage( *Me.ControlTimeline_t )
     Protected *son  .Control::Control_t
     Protected i
 
-    ; ...[ Tag Picking Surface ]................................................
     StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
     AddPathBox(0,0,*Me\sizX, *Me\sizY)
     VectorSourceColor(RGBA(0,0,0,255) )
@@ -247,9 +195,6 @@ Module ControlTimeline
     StopVectorDrawing()
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpDraw
-  ; ----------------------------------------------------------------------------
   Procedure hlpDraw( *Me.ControlTimeline_t )
     hlpDrawControls( *Me )
     hlpDrawFrames( *Me )
@@ -272,9 +217,6 @@ Module ControlTimeline
     ForEver
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpResize
-  ; ----------------------------------------------------------------------------
   Procedure.i hlpResize( *Me.ControlTimeline_t,x.i,y.i,width.i, height.i)
     
     *Me\posX = x
@@ -314,11 +256,6 @@ Module ControlTimeline
     
   EndProcedure
   
-  ;}
-  
-  ; ----------------------------------------------------------------------------
-  ;  Draw
-  ; ----------------------------------------------------------------------------
   Procedure Draw(*Me.ControlTimeline_t)
     hlpDraw(*Me)  
   EndProcedure
@@ -327,58 +264,34 @@ Module ControlTimeline
   ; ============================================================================
   ;  OVERRIDE ( CControl )
   ; ============================================================================
-  ;{
-  ; ---[ OnEvent ]--------------------------------------------------------------
   Procedure.i OnEvent( *Me.ControlTimeline_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected Me.IControlTimeline = *Me
     Protected  ev_data.Control::EventTypeDatas_t
     Protected *son.Control::Control_t
     Protected  son.Control::IControl
     Protected *overchild.Control::Control_t
     
-    ; ---[ Dispatch Event ]-----------------------------------------------------
     Select ev_code
-        
-      ; ------------------------------------------------------------------------
-      ;  Timer
-      ; ------------------------------------------------------------------------
       Case #PB_Event_Timer
-        ; ...[ Update & Check Dirty ]...........................................
         OnTimer(*Me)
-        ; ...[ Redraw Timeline ]...............................................
         hlpDrawFrames( *Me )
         
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
-                
-      ; ------------------------------------------------------------------------
-      ;  Resize
-      ; ------------------------------------------------------------------------
+
       Case #PB_Event_SizeWindow
-        ;CHECK_PTR1_BOO(*ev_data);
-        ; ...[ Update & Check Dirty ]...........................................
         If #True = hlpResize( *Me,*ev_data\x, *ev_data\y, *ev_data\width,*ev_data\height)
-          ; ...[ Redraw Timeline ]...............................................
           hlpDraw( *Me )
         EndIf
-        ; ...[ Processed ]......................................................
         ProcedureReturn( #True )
         
         Case #PB_EventType_Resize
-          ;CHECK_PTR1_BOO(*ev_data);
           w = GadgetWidth(*Me\gadgetID)
           h = GadgetHeight(*Me\gadgetID)
           If #True = hlpResize( *Me,*Me\posX,*Me\posY,w,h)
-            ; ...[ Redraw Timeline ]...............................................
             hlpDraw( *Me )
           EndIf
-          ; ...[ Processed ]......................................................
           ProcedureReturn( #True )
             
-        ; ------------------------------------------------------------------------
-        ;  DrawChild
-        ; ------------------------------------------------------------------------
         Case Control::#PB_EventType_DrawChild
           *son.Control::Control_t = *ev_data\datas
           son.Control::IControl    = *son
@@ -391,42 +304,23 @@ Module ControlTimeline
           son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
           StopVectorDrawing()
           
-        ; ------------------------------------------------------------------------
-        ;  Focus
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_Focus
           
-          
-        ; ------------------------------------------------------------------------
-        ;  ChildFocused
-        ; ------------------------------------------------------------------------
         Case Control::#PB_EventType_ChildFocused
           *Me\focuschild = *ev_data
           
-        ; ------------------------------------------------------------------------
-        ;  ChildDeFocused
-        ; ------------------------------------------------------------------------
         Case Control::#PB_EventType_ChildDeFocused
           *Me\focuschild = #Null
-          
-        ; ------------------------------------------------------------------------
-        ;  ChildCursor
-        ; ------------------------------------------------------------------------
+
         Case Control::#PB_EventType_ChildCursor
           SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
           
-        ; ------------------------------------------------------------------------
-        ;  LostFocus
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_LostFocus
           If *Me\focuschild
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
             *Me\focuschild = #Null
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  MouseMove
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_MouseMove
           Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX )
           Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY )
@@ -468,9 +362,6 @@ Module ControlTimeline
             *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  LeftButtonDown
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_LeftButtonDown
           *Me\down = #True
           If *Me\overchild
@@ -485,9 +376,6 @@ Module ControlTimeline
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  LeftButtonUp
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_LeftButtonUp
           If *Me\overchild
             *overchild = *Me\overchild
@@ -517,9 +405,6 @@ Module ControlTimeline
           EndIf
           *Me\down = #False
           
-        ; ------------------------------------------------------------------------
-        ;  LeftDoubleClick
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_LeftDoubleClick
           If *Me\overchild
             *overchild = *Me\overchild
@@ -528,9 +413,6 @@ Module ControlTimeline
             *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  RightButtonDown
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_RightButtonDown
           *Me\down = #True
           If *Me\overchild
@@ -540,130 +422,61 @@ Module ControlTimeline
             *overchild = *Me\overchild
             ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
             ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-            *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
+            *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,ev_data)
           ElseIf *Me\focuschild
             *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  RightButtonUp
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_RightButtonUp
           If *Me\overchild
             *overchild = *Me\overchild
             ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
             ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-            *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
+            *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,ev_data)
           EndIf
           *Me\down = #False
           
-        ; ------------------------------------------------------------------------
-        ;  Input
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_Input
-          ; ---[ Do We Have A Focused Child ? ]-----------------------------------
           If *Me\focuschild
-            ; ...[ Retrieve Character ]...........................................
             ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
-            ; ...[ Send Character To Focused Child ]..............................
-            *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
+            *Me\focuschild\OnEvent(#PB_EventType_Input,ev_data)
           EndIf
           
-        ; ------------------------------------------------------------------------
-        ;  KeyDown
-        ; ------------------------------------------------------------------------
         Case #PB_EventType_KeyDown
-          ; ---[ Do We Have A Focused Child ? ]-----------------------------------
           If *Me\focuschild
-            ; ...[ Retrieve Key ].................................................
             ev_data\key   = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key      )
             ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
             
-            ; ...[ Send Key To Focused Child ]....................................
-            *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
+            *Me\focuschild\OnEvent(#PB_EventType_KeyDown,ev_data)
           EndIf
         
-        
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_COPY
-      ; ------------------------------------------------------------------------
       Case Globals::#SHORTCUT_COPY
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
-          ; ...[ Send Key To Focused Child ]....................................
           *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
         EndIf
-        
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_CUT
-      ; ------------------------------------------------------------------------
+       
       Case Globals::#SHORTCUT_CUT
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
-          ; ...[ Send Key To Focused Child ]....................................
           *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_PASTE
-      ; ------------------------------------------------------------------------
       Case Globals::#SHORTCUT_PASTE
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
-          ; ...[ Send Key To Focused Child ]....................................
           *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
         EndIf
-        
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_UNDO
-      ; ------------------------------------------------------------------------
+
       Case Globals::#SHORTCUT_UNDO
-        ; ---[ Do We Have A Focused Child ? ]-----------------------------------
         If *Me\focuschild
-          ; ...[ Send Key To Focused Child ]....................................
           *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
         EndIf
         
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_NEXT
-      ; ------------------------------------------------------------------------
-  ;   Case Globals::#SHORTCUT_NEXT
-  ;     ; ---[ Do We Have A Focused Child ? ]-------------------------------------
-  ;     If *Me\focuschild
-  ;       ; ---[ Go To Next Item ]------------------------------------------------
-  ;       OControlGroup_hlpNextItem( *Me ) 
-  ;     EndIf
-        
-      ; ------------------------------------------------------------------------
-      ;  SHORTCUT_PREVIOUS
-      ; ------------------------------------------------------------------------
-  ;     Case Globals::#SHORTCUT_PREVIOUS
-  ;         Debug "Previous Item called"
-  ;         ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-  ;         If *Me\focuschild
-  ;           ; go to previous child
-  ;           Debug "previous child per favor..."
-  ;         EndIf
-               
-               
-        
-      ;Case #PB_EventType_KeyUp
-      ;Case #PB_EventType_MiddleButtonDown
-      ;Case #PB_EventType_MiddleButtonUp
-      ;Case #PB_EventType_MouseWheel
-      ;Case #PB_EventType_PopupMenu
-        ;Debug ">> PopupMenu"
-      ;Case #PB_EventType_PopupWindow
-        ;Debug ">> PopupWindow"
         
     EndSelect
     
-    ; ---[ Process Default ]----------------------------------------------------
     ProcedureReturn( #False )
     
   EndProcedure
-  ;}
-  
+
   ; ; ---[ Timer Callback]----------------------------------------------------
   ; Procedure CallbackProc(*t.CControlTimeline)
   ;   Time::currentframe + 1
@@ -673,37 +486,27 @@ Module ControlTimeline
   ; ============================================================================
   ;  IMPLEMENTATION ( CControlTimeline )
   ; ============================================================================
-  ;{
-  
-  ; ---[ Go to First Frame ]----------------------------------------------------
   Procedure FirstFrame( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     Protected *ico.ControlIcon::ControlIcon_t
-    ; ---[ Stop Playing ]-------------------------------------------------------
     StopPlayback(*Me)
     
-    ; ---[ Set Current Frame Value ]--------------------------------------------
     If Time::loop
       Time::currentframe = Time::startloop
     Else
       Time::currentframe  = Time::startframe
     EndIf
     
-    ; ---[ Update Current Frame Control ]---------------------------------------
     SetCurrentFrame(*Me,Time::currentframe)
     
-    ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
   Callback::DECLARE_CALLBACK(FirstFrame, Types::#TYPE_PTR)
   
-  ; ---[ Go to Last Frame ]-----------------------------------------------------
   Procedure LastFrame( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
-    ; ---[ Stop Playing ]-------------------------------------------------------
     StopPlayback(*Me)
   
-    ; ---[ Set Current Frame Value ]--------------------------------------------
     If Time::loop
       Time::currentframe = Time::endloop
     Else
@@ -711,75 +514,61 @@ Module ControlTimeline
     EndIf
     Time::play = #False
     
-    ; ---[ Update Current Frame Control ]---------------------------------------
     SetCurrentFrame(*Me,Time::currentframe)
   
-    ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
   Callback::DECLARE_CALLBACK(LastFrame, Types::#TYPE_PTR)
   
-  ; ---[ Go to Next Frame ]-----------------------------------------------------
   Procedure NextFrame( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     Time::currentframe + 1
     If Time::loop
-      ; ---[ Loop Playback ]----------------------------------------------------
       If Time::currentframe<Time::startloop Or Time::currentframe>Time::endloop
         Time::currentframe = Time::startloop
       EndIf
     Else 
-      ; ---[ Stop Playback if arrived to last frame ]---------------------------
       If Time::currentframe>Time::endframe
         Time::currentframe = Time::endframe
         StopPlayback(*Me)
       EndIf
     EndIf
     
-    ; ---[ Update Current Frame Control ]---------------------------------------
     If Not Time::play
       SetCurrentFrame(*Me,Time::currentframe)
     EndIf
     
-    ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
   Callback::DECLARE_CALLBACK(NextFrame, Types::#TYPE_PTR)
   
-  ; ---[ Go to Previous Frame ]-------------------------------------------------
   Procedure PreviousFrame( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     Time::currentframe - 1
     If Time::loop
-      ; ---[ Loop Playback ]----------------------------------------------------
       If Time::currentframe>Time::endloop Or Time::currentframe<Time::startloop
         Time::currentframe = Time::endloop
       EndIf
     Else 
-      ; ---[ Stop Playback if arrived to first frame ]--------------------------
       If Time::currentframe<Time::startframe
         Time::currentframe = Time::startframe
         StopPlayback(*Me)
       EndIf
     EndIf
     
-    ; ---[ Update Current Frame Control ]---------------------------------------
     If Not Time::play
       SetCurrentFrame(*Me,Time::currentframe)
     EndIf
     
-    ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
   Callback::DECLARE_CALLBACK(PreviousFrame, Types::#TYPE_PTR)
   
-  ; ---[ Play Forward ]---------------------------------------------------------
   Procedure PlayForward( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     If Time::play = #False
       StartPlayback(*Me,#True)
     Else
-      ;--- [ Stop Playback / Delete Timer Event ]-------------------------------
       If Not Time::forward
         StopPlayback(*Me)
         PlayForward(*Me)
@@ -790,15 +579,11 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(PlayForward, Types::#TYPE_PTR)
 
-  
-  ; ---[ Play Backward ]---------------------------------------------------------
   Procedure PlayBackward( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     If Time::play = #False
-      ;--- [ Start Playback / Create Timer Event ]------------------------------
       StartPlayback(*Me,#False)
     Else
-      ;--- [ Stop Playback / Delete Timer Event ]-------------------------------
       If Time::forward
         StopPlayback(*Me)
         PlayBackward(*Me)
@@ -809,11 +594,9 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(PlayBackward, Types::#TYPE_PTR)
   
-  ; ---[ Start Playback ]-------------------------------------------------------
   Procedure StartPlayback( *Me.ControlTimeline_t, forward.b)
     Protected Me.IControlTimeline = *Me
     If Time::play = #False
-      ;--- [ Start Playback / Create Timer Event ]------------------------------
       Time::play = #True
       Time::forward = forward
       Time::StartTimer(*Me\timer)
@@ -824,7 +607,6 @@ Module ControlTimeline
         PreviousFrame(*Me)
       EndIf
     Else
-      ;--- [ Stop Playback / Delete Timer Event ]-------------------------------
       StopPlayback(*Me)
     EndIf   
   EndProcedure
@@ -836,7 +618,6 @@ Module ControlTimeline
   Callback::DECLARE_CALLBACK(OnStartPlayback, Types::#TYPE_PTR)
   
   
-  ; ---[ Stop Playback ]--------------------------------------------------------
   Procedure StopPlayback( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     If Time::play
@@ -858,23 +639,17 @@ Module ControlTimeline
     EndIf
     SetCurrentFrame(*Me,Time::currentframe)
   EndProcedure
- 
   Callback::DECLARE_CALLBACK(StopPlayback, Types::#TYPE_PTR)
   
   
-  ; ---[ Play Loop ]--------------------------------------------------------
   Procedure PlayLoop( *Me.ControlTimeline_t)
     Protected Me.IControlTimeline = *Me
     Time::loop = 1 - Time::loop
-    ; ---[ Update Current Frame if necessary ]---------------------------------
     SetCurrentFrame(*Me,Time::currentframe)
-    ; ---[ Redraw Frames ]-----------------------------------------------------
     hlpDrawFrames( *Me )
   EndProcedure
   Callback::DECLARE_CALLBACK(PlayLoop, Types::#TYPE_PTR)
   
-  
-  ; ---[ Set Start Frame ]------------------------------------------------------
   Procedure SetStartFrame( *Me.ControlTimeline_t, frame.i)
     If frame > Time::endframe
       Time::startframe = Time::endframe-1
@@ -889,7 +664,6 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(OnSetStartFrame, Types::#TYPE_PTR)
   
-  ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndFrame( *Me.ControlTimeline_t,frame.i)
     If frame <= Time::startframe
       Time::endframe = Time::startframe+1
@@ -905,7 +679,6 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(OnSetEndFrame, Types::#TYPE_PTR)
   
-  ; ---[ Set Start Range ]------------------------------------------------------
   Procedure SetStartRange( *Me.ControlTimeline_t, frame.i)
     If frame > Time::endframe
       Time::startrange = Time::endframe-1
@@ -922,7 +695,6 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(OnSetStartRange, Types::#TYPE_PTR)
   
-  ; ---[ Set End Frame ]--------------------------------------------------------
   Procedure SetEndRange( *Me.ControlTimeline_t,frame.i)
     If frame <= Time::startframe
       Time::endrange = Time::startframe+1
@@ -938,7 +710,6 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(OnSetEndRange, Types::#TYPE_PTR)
   
-  ; ---[ Set Current Frame ]----------------------------------------------------
   Procedure SetCurrentFrame( *Me.ControlTimeline_t,frame)
     If Time::loop
       If frame < Time::startloop
@@ -969,39 +740,29 @@ Module ControlTimeline
   EndProcedure
   Callback::DECLARE_CALLBACK(OnSetCurrentFrame, Types::#TYPE_PTR)
   
-  ; ---[ Append Control ]---------------------------------------------------------------
   Procedure.i Append( *Me.ControlTimeline_t, *ctl.Control::Control_t )
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If Not( *ctl ) : ProcedureReturn : EndIf
   
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected ctl.Control::IControl = *ctl
     Protected parent.Control::IControl = *Me
     Protected cid.i = *Me\controls
     
-    ; ---[ Set Timeline As Control Parent ]-------------------------------------
     *ctl\parent = parent
     
-    ; ---[ Append Control ]-----------------------------------------------------
     *Me\children(cid) = ctl
     
-    ; ---[ One More Control ]---------------------------------------------------
     *Me\controls + 1
 
-    ; ---[ Return The Added Control ]-------------------------------------------
     ProcedureReturn( ctl )
   
   EndProcedure
 
   
-  ; ---[ Free ]-----------------------------------------------------------------
   Procedure Delete( *Me.ControlTimeline_t )
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected i     .i = 0
     Protected iBound.i = 4
     
-    ; ---[ Destroy Children Controls ]------------------------------------------
     Protected child.Control::IControl
     For i=0 To iBound
       child = *Me\children()
@@ -1010,43 +771,28 @@ Module ControlTimeline
       child\Delete()
     Next
     
-    ; ---[ Delete Timer ]-------------------------------------------------------
     Time::DeleteTimer(*Me\timer)
-    
-    ; ---[ Release Arrays ]-----------------------------------------------------
+  
     FreeArray( *Me\children() )
-    
-    ; ---[ Free Image ]---------------------------------------------------------
     FreeImage(*Me\imageID)
-    
-    ; ---[ Free Gadget ]--------------------------------------------------------
     FreeGadget(*Me\gadgetID)
     
-    ; ---[ Deallocate Memory ]--------------------------------------------------
     Object::TERM(ControlTimeline)
     
   EndProcedure
-  
-  
-  
-  
+
   ; ============================================================================
-  ;  CONSTRUCTORS
+  ;  CONSTRUCTOR
   ; ============================================================================
-  ;{
-  ; ---[ Stack ]----------------------------------------------------------------
   Procedure.i New(*parent.UI::UI_t, x.i = 0, y.i = 0, width.i = 240, height.i = 60)
     
-    ; ---[ Allocate Object Memory ]---------------------------------------------
     Protected *Me.ControlTimeline_t = AllocateStructure(ControlTimeline_t) 
     
     Object::INI(ControlTimeline)
     
     *Me\window = windowID
-    ; ---[ Minimum Width ]------------------------------------------------------
     If width < 50 : width = 50 : EndIf
     
-    ; ---[ Init Members ]-------------------------------------------------------
     *Me\type       = #PB_GadgetType_Canvas
     *Me\name       = "Timeline"
     *Me\parent     = *parent
@@ -1060,8 +806,6 @@ Module ControlTimeline
     *Me\controls = 0
     *Me\timer = Time::CreateTimer(*Me, @OnTimer(), 1000 / Time::FRAMERATE)
     
-    
-    ; ---[ Number Controls ]------------------------------------------------------
     *Me\c_startframe = ControlNumber::New(*Me,"StartFrame",Time::startframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,0,6,45,30)
     *Me\c_endframe   = ControlNumber::New(*Me,"EndFrame",Time::endframe,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,*Me\sizX-45,6,45,30)
     *Me\c_startrange = ControlNumber::New(*Me,"StartRange",Time::startrange,ControlNumber::#NUMBER_INTEGER|ControlNumber::#NUMBER_NOSLIDER,Math::#S32_MIN,Math::#S32_MAX,1,100,0,36,45,30)
@@ -1075,10 +819,8 @@ Module ControlTimeline
     Append(*Me,*Me\c_currentframe)
     
     
-    ; ---[ Combo Controls ]------------------------------------------------------
     Append(*Me,*Me\c_playbackrate)
     
-    ; ---[ Init Icon Buttons ]-------------------------------------------------
     Protected w = *Me\sizX/2-128
     Protected t = height/5*2+2
     
@@ -1112,16 +854,13 @@ Module ControlTimeline
     *ctrl.Control::Control_t = *Me\c_endrange
     Callback::CONNECT_CALLBACK(*ctrl\on_change, OnSetEndRange, *Me)
   
-    ; ---[ Draw ]---------------------------------------------------------------
     hlpDrawPickImage(*Me)
     hlpDraw( *Me )
     
-    ; ---[ Return Initialized Object ]------------------------------------------
     ProcedureReturn( *Me )
     
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlTimeline )
 EndModule
 
@@ -1130,6 +869,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2
-; Folding = -------
+; CursorPosition = 640
+; FirstLine = 628
+; Folding = ------
 ; EnableXP

@@ -148,7 +148,7 @@ Global *menu.MenuUI::MenuUI_t = MenuUI::New(*top\left,"Menu")
 *viewport = ViewportUI::New(*center\right,"Viewport3D", *app\camera, *app\handle)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
-*property = PropertyUI::New(*middle\right,"Property",#Null)
+*property = PropertyUI::New(*middle\right,"Property")
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"Graph")
 GraphUI::SetContent(*graph,*tree)
@@ -200,8 +200,8 @@ Define e.i
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 160
-; FirstLine = 144
+; CursorPosition = 150
+; FirstLine = 135
 ; Folding = --
 ; EnableXP
 ; Executable = glslsandbox.exe

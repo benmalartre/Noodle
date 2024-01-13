@@ -2,7 +2,7 @@
 
 
 XIncludeFile "../core/Application.pbi"
-XIncludeFile "../core/Delaunay.pbi"
+XIncludeFile "../objects/Delaunay.pbi"
 
 
 UseModule Math
@@ -117,7 +117,7 @@ Procedure Draw(*app.Application::Application_t)
   m\v[13] = 0.0
   m\v[14] = 0.0
   
-  Define *points.CArray::CArrayV3F32 = CARray::New(CARray::#ARRAY_V3F32)
+  Define *points.CArray::CArrayV3F32 = CARray::New(Types::#TYPE_V3F32)
   Define *p.v3f32
   Define i
   Define N = 10240
@@ -131,7 +131,7 @@ Procedure Draw(*app.Application::Application_t)
   Delaunay::Init(*delaunay, *mesh\geom\a_positions, m)
 ;   Delaunay::Init(*delaunay, *points, Matrix4::IDENTITY())
   
-  Define *points.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Define *points.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
   Define n = ArraySize(*delaunay\points()), i
   Define *p.v3f32
   CArray::SetCount(*points, n)
@@ -147,8 +147,8 @@ Procedure Draw(*app.Application::Application_t)
   Drawer::SetColor(*item, color)
   Drawer::SetSize(*item, 2.0)
   
-  Define *triangle.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+  Define *triangle.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+  Define *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
   CArray::SetCount(*triangle, 3 * ArraySize(*delaunay\triangles()))
   CArray::SetCount(*colors, 3 * ArraySize(*delaunay\triangles()))
   Define numTriangles = ArraySize(*delaunay\triangles())/3
@@ -232,7 +232,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 132
+; CursorPosition = 150
+; FirstLine = 115
 ; Folding = -
 ; EnableXP
