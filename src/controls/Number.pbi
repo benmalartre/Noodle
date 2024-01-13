@@ -8,10 +8,10 @@ XIncludeFile "../ui/View.pbi"
 ;  CONTROL NUMBER MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlNumber
-  #NUMBER_SCALAR    = %0001
-  #NUMBER_INTEGER   = %0010
-  #NUMBER_PERCENT   = %0100
-  #NUMBER_NOSLIDER  = %1000
+  #Number_Scalar    = %0001
+  #Number_Integer   = %0010
+  #Number_Percent   = %0100
+  #Number_NoSlider  = %1000
 
   Structure ControlNumber_t Extends Control::Control_t
     value       .s
@@ -24,10 +24,6 @@ DeclareModule ControlNumber
     undo_ctz_t  .s
     undo_ctz_g  .i
     undo_ctz_w  .i
-    over        .i
-    down        .i
-    focused     .i
-    selected    .i
     posG        .i ; Strong Cursor
     posW        .i ; Weak   Cursor
     posS        .i
@@ -217,7 +213,7 @@ Module ControlNumber
     If Not *Me\visible : ProcedureReturn : EndIf
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
-    VectorFont(FontID(Globals::#FONT_BOLD), Globals::#FONT_SIZE_LABEL)
+    VectorFont(FontID(Globals::#Font_Bold), Globals::#Font_Size_Label)
 
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
@@ -257,7 +253,7 @@ Module ControlNumber
       tw = *Me\lookup(i_end) - x_start
     EndIf
     
-    If *Me\focused
+    If *Me\state & Control::#State_Focused
       Protected posL.i, posR.i, posXL.i, posXR.i
       If *Me\posG > *Me\posW
         posL = *Me\posW : posR = *Me\posG
@@ -266,34 +262,34 @@ Module ControlNumber
       EndIf
       posXL = Math::Max( 0, *Me\lookup(posL) - *Me\lookup(*Me\posS) )
       If posL <> posR
-        *Me\selected = #True
+        Globals::BitMaskSet(*Me\state, Control::#State_Selected)
         posXR = Math::Min( tw, *Me\lookup(posR) - *Me\lookup(*Me\posS) )
       Else
-        *Me\selected = #False
+        Globals::BitMaskClear(*Me\state, Control::#State_Selected)
       EndIf
     Else
       Protected factor.d = ( *Me\value_n - *Me\soft_min )/( *Me\soft_max - *Me\soft_min )
       Protected slider_w.i = Math::Min( *Me\sizX - 4, Math::Max( 0, factor*( *Me\sizX - 4 ) ) )
-      If *Me\options & #NUMBER_NOSLIDER
+      If *Me\options & #Number_NoSlider
         slider_w = *Me\sizX - 4
       EndIf
       
     EndIf
     
-    If Not *Me\enable
+    If Not *Me\state & Control::#State_Enable
       Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
       tc = UIColor::COLOR_LABEL_DISABLED
-    ElseIf *Me\focused
+    ElseIf *Me\state & Control::#State_Focused
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
-    ElseIf *Me\over
+    ElseIf *Me\state & Control::#State_Over
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
-      If Not *Me\options & #NUMBER_NOSLIDER
+      If Not *Me\options & #Number_NoSlider
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
@@ -303,7 +299,7 @@ Module ControlNumber
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLOR_SHADOW)
       FillPath()
-      If Not *Me\options & #NUMBER_NOSLIDER
+      If Not *Me\options & #Number_NoSlider
         Vector::RoundBoxPath( xoff+slider_w, yoff, *Me\sizX-slider_w, *Me\sizY , 2)
         VectorSourceColor(UIColor::COLOR_TERNARY_BG)
         FillPath()
@@ -334,8 +330,8 @@ Module ControlNumber
     
     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
     
-    If *Me\focused
-      If *Me\selected
+    If *Me\state & Control::#State_Focused
+      If *Me\state & Control::#State_Selected
         AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
         VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
@@ -391,8 +387,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ProcedureReturn( #True )
       
     Case #PB_EventType_LostFocus
-      If *Me\focused
-        If *me\options & #NUMBER_INTEGER
+      If *Me\state & Control::#State_Focused
+        If *me\options & #Number_Integer
           *Me\value = Str(*Me\value_n)
         Else
           *Me\value = StrD(*Me\value_n,3)
@@ -401,15 +397,14 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       EndIf
     
       ;RemoveWindowTimer( #MainWindow, #TIMER_CARET )
-      *Me\focused = #False
-      *Me\down = #False
+      *Me\state = 0
       *Me\posG = 1 : *Me\posW = 1
       Control::Invalidate(*Me)
       
       ProcedureReturn( #True )
       
     Case #PB_EventType_Focus
-      *Me\focused = #True
+      Globals::BitMaskSet(*Me\state, Control::#State_Focused)
       *Me\posG = 1 : *Me\posW = 1
       Control::Invalidate(*Me)
     
@@ -417,15 +412,15 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         
     Case #PB_EventType_MouseEnter
       If *Me\visible And *Me\enable
-        *Me\over = #True
-        If *Me\focused : Control::SetCursor( *Me,#PB_Cursor_IBeam ) : EndIf
+        Globals::BitMaskSet(*Me\state, Control::#State_Over)
+        If *Me\state & Control::#State_Focused : Control::SetCursor( *Me,#PB_Cursor_IBeam ) : EndIf
         Control::Invalidate(*Me)
         ProcedureReturn( #True )
       EndIf
       
     Case #PB_EventType_MouseLeave
       If *Me\visible And *Me\enable
-        *Me\over = #False
+        Globals::BitMaskClear(*Me\state, Control::#State_Over)
         
         Control::Invalidate(*Me)
         ProcedureReturn( #True )
@@ -433,16 +428,16 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_MouseMove
       If *Me\visible And *Me\enable
-        If *Me\down
+        If *Me\state & Control::#State_Down
           If Not *ev_data : ProcedureReturn : EndIf
-          If *Me\focused
+          If *Me\state & Control::#State_Focused
             *Me\posW = hlpCharPosFromMousePos( *Me, *ev_data\x )
           Else
-            If Not *Me\options & ControlNumber::#NUMBER_NOSLIDER
+            If Not *Me\options & ControlNumber::#Number_NoSlider
               *Me\value_n = ( *ev_data\x - 2.0 )/( *Me\sizX - 4.0 )*( *Me\soft_max - *Me\soft_min ) + *Me\soft_min
               If *Me\value_n < *Me\soft_min : *Me\value_n = *Me\soft_min : EndIf
               If *Me\value_n > *Me\soft_max : *Me\value_n = *Me\soft_max : EndIf
-              If *Me\options & ControlNumber::#NUMBER_INTEGER
+              If *Me\options & ControlNumber::#Number_Integer
                 *Me\value = Str(*Me\value_n)
               Else
                 *Me\value   = StrD( *Me\value_n, 3 )
@@ -460,15 +455,15 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       EndIf
       
     Case #PB_EventType_LeftButtonDown
-      If *Me\visible And *Me\enable And *Me\over
+      If *Me\visible And *Me\enable And *Me\state & Control::#State_Over
         If Not *ev_data : ProcedureReturn :EndIf
-        *Me\down = #True
-        If *Me\focused
-          If Not *Me\options & ControlNumber::#NUMBER_NOSLIDER
+        Globals::BitMaskSet(*Me\state, Control::#State_Down)
+        If *Me\state & Control::#State_Focused
+          If Not *Me\options & ControlNumber::#Number_NoSlider
             *Me\value_n = ( *ev_data\x - 2.0 )/( *Me\sizX - 4.0 )*( *Me\soft_max - *Me\soft_min ) + *Me\soft_min
             If *Me\value_n < *Me\soft_min : *Me\value_n = *Me\soft_min : EndIf
             If *Me\value_n > *Me\soft_max : *Me\value_n = *Me\soft_max : EndIf
-            If *Me\options & ControlNumber::#NUMBER_INTEGER
+            If *Me\options & ControlNumber::#Number_Integer
               *Me\value = Str(*Me\value_n)
             Else
               *Me\value   = StrD( *Me\value_n, 3 )
@@ -486,7 +481,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
-        *Me\down = #False
+        Globals::BitMaskClear(*Me\state, Control::#State_Down)
         Control::Invalidate(*Me)
         Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
         
@@ -495,13 +490,13 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_LeftDoubleClick
       If *Me\visible And *Me\enable
-        If *Me\focused
+        If *Me\state & Control::#State_Focused
           If Not  *ev_data : ProcedureReturn : EndIf
           
           *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
           hlpSelectWord( *Me, hlpCharPosFromMousePos( *Me, *ev_data\x ) )
         Else
-          *Me\focused = #True
+          Globals::BitMaskSet(*Me\state, Control::#State_Focused)
           *Me\undo_esc = *Me\value
           Control::SetCursor(*Me, #PB_Cursor_IBeam )
           Control::Focused(*Me)
@@ -513,9 +508,9 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_RightButtonDown
       If *Me\visible And *Me\enable
-        *Me\down = #True
-        If Not *Me\focused
-          *Me\focused = #True
+        Globals::BitMaskSet(*Me\state, Control::#State_Down)
+        If Not *Me\state & Control::#State_Focused
+          Globals::BitMaskSet(*Me\state, Control::#State_Focused)
           *Me\undo_esc = *Me\value
           Control::Focused(*Me)
           Control::SetCursor( *Me,#PB_Cursor_IBeam )
@@ -527,7 +522,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_RightButtonUp
       If *Me\visible And *Me\enable
-        *Me\down = #False
+        Globals::BitMaskClear(*Me\state, Control::#State_Down)
         Control::Invalidate(*Me)
         ProcedureReturn( #True )
       EndIf
@@ -555,7 +550,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
             *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
           EndIf
           
-          If *me\options & ControlNumber::#NUMBER_INTEGER
+          If *me\options & ControlNumber::#Number_Integer
             *Me\value_n = Round(ValD(*Me\value),#PB_Round_Nearest);AEV\Eval( *Me\value )
             *Me\value = Str( *Me\value_n)
           Else
@@ -565,7 +560,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf
           
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            *Me\focused = #False : Control::DeFocused(*Me)
+            Control::DeFocused(*Me)
             Control::SetCursor( *Me,#PB_Cursor_Default )
           EndIf
           *Me\posG = 1 : *Me\posW = 1
@@ -577,7 +572,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           ProcedureReturn( #True )
 
         Case #PB_Shortcut_Escape
-          *Me\focused = #False : Control::DeFocused(*Me)
+          Control::DeFocused(*Me)
           *Me\value = *Me\undo_esc
           *Me\posG = 1 : *Me\posW = 1
           *Me\lookup_dirty = #True
@@ -668,7 +663,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           
       EndSelect 
       
-    Case Globals::#SHORTCUT_CUT
+    Case Globals::#Shortcut_Cut
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       If *Me\posG > *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posW, *Me\posG - *Me\posW ) )
@@ -683,7 +678,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    Case Globals::#SHORTCUT_COPY
+    Case Globals::#Shortcut_Copy
       If *Me\posG > *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posW, *Me\posG - *Me\posW ) )
       ElseIf *Me\posG <> *Me\posW
@@ -691,7 +686,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       EndIf
       ProcedureReturn( #True )
       
-    Case Globals::#SHORTCUT_PASTE
+    Case Globals::#Shortcut_Paste
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       Protected cliptxt.s = GetClipboardText()
       Protected cliplen.i = Len(cliptxt)
@@ -707,7 +702,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    Case Globals::#SHORTCUT_UNDO
+    Case Globals::#Shortcut_Undo
       *Me\value = *Me\undo_ctz_t
       *Me\posG  = *Me\undo_ctz_g
       *Me\posW  = *Me\undo_ctz_w
@@ -791,7 +786,7 @@ EndProcedure
     
     Object::INI(ControlNumber)
   
-    *Me\type         = Control::#NUMBER
+    *Me\type         = Control::#Number
     *Me\name         = name
     *Me\parent       = *parent
     *Me\gadgetID     = *parent\gadgetID
@@ -803,7 +798,7 @@ EndProcedure
     *Me\enable       = #True
     *Me\options      = options
     
-    If *Me\options & ControlNumber::#NUMBER_INTEGER
+    If *Me\options & ControlNumber::#Number_Integer
       *Me\value = Str(value)
     Else
       *Me\value        = StrD( value, 3 )
@@ -816,10 +811,7 @@ EndProcedure
     *Me\soft_max     = soft_max
     *Me\undo_esc     = ""
     *Me\undo_ctz_t   = ""
-    *Me\over         = #False
-    *Me\down         = #False
-    *Me\focused      = #False
-    *Me\selected     = #False
+    *Me\state        = 0
     *Me\posG         = 1
     *Me\posW         = 1
     *Me\posS         = 1
@@ -843,7 +835,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 609
-; FirstLine = 585
+; CursorPosition = 502
+; FirstLine = 480
 ; Folding = ---
 ; EnableXP

@@ -106,15 +106,6 @@ Module ControlProperty
   EndProcedure
   Callback::DECLARE_CALLBACK(OnCheckChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
   
-  Procedure OnLongChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)    
-    Define *array.CArray::CArrayLong = *attr\data
-    PokeB(*array\data + id * *array\itemSize + offset, *ctl\down)
-    *attr\dirty = #True
-    
-    PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
-  EndProcedure
-  Callback::DECLARE_CALLBACK(OnLongChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
-  
   Procedure OnIntegerChange(*ctl.ControlNumber::ControlNumber_t, *attr.Attribute::Attribute_t, id.i=0, offset.i=0)   
     Define *array.CArray::CArrayInt = *attr\data
     PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
@@ -1438,7 +1429,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 261
-; FirstLine = 234
-; Folding = ---------
+; CursorPosition = 102
+; FirstLine = 82
+; Folding = --------
 ; EnableXP

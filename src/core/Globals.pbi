@@ -76,7 +76,7 @@ DeclareModule Globals
     #Menu_Graph_AddOutputPort
     #Menu_Graph_RemoveOutputPort
     #Menu_Graph_ExportNode
-    #Menu_Graph_ImportNode
+    #Menu_ImportNode
   EndEnumeration
   
   ; ----------------------------------------------------------------------------
@@ -181,12 +181,12 @@ DeclareModule Globals
     _number & ~(1 << _bit)
   EndMacro
   
-  Macro BitWrite(_number,_bit,_value)
-    If (_value) 
-      Globals::BitSet(_number, _bit)
-    Else
-      Globals::BitClear(_number, _bit)
-    EndIf
+  Macro BitMaskSet(_number,_mask)
+    _number | _mask
+  EndMacro
+  
+  Macro BitMaskClear(_number,_mask)
+    _number & ~( _mask )
   EndMacro
   
    ; ---[ Color Conversion ]-----------------------------------------------------
@@ -332,8 +332,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 78
-; FirstLine = 36
+; CursorPosition = 181
+; FirstLine = 161
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

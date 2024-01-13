@@ -82,6 +82,9 @@ Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#Demo_With_
     Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
     
     *demo\mode = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
+    ControlEnum::AddItem(*demo\mode, "Sphere", 0)
+    ControlEnum::AddItem(*demo\mode, "Disc", 1)
+    
   ;   *demo\mode\items
     Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
     
@@ -101,7 +104,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 45
+; CursorPosition = 86
+; FirstLine = 47
 ; Folding = -
 ; EnableXP

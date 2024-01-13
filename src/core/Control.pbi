@@ -20,32 +20,35 @@ DeclareModule Control
   EndEnumeration
   
   Enumeration
-    #CHECK
-    #ICON
-    #BUTTON
-    #RADIO
-    #ENUM
-    #LABEL
-    #DIVOT
-    #EDIT
-    #POPUP
-    #TEXT
-    #INPUT
-    #NUMBER
-    #GROUP
-    #COLORWHEEL
-    #COLOR
-    #SHADERCODE
-    #EXPLORER
-    #HEAD
+    #State_Visible  = 1 << 1
+    #State_Enable   = 1 << 2
+    #State_Over     = 1 << 3
+    #State_Focused  = 1 << 4
+    #State_Down     = 1 << 5
+    #State_Selected = 1 << 6
   EndEnumeration
   
   Enumeration
-    #DEFAULT
-    #OVER
-    #PRESSED
+    #Check
+    #Icon
+    #Button
+    #Radio
+    #Enum
+    #Label
+    #Divot
+    #Edit
+    #Popup
+    #Text
+    #Input
+    #Number
+    #Group
+    #ColorWheel
+    #Color
+    #ShaderCode
+    #Explorer
+    #Head
   EndEnumeration
-  
+
   Structure EventTypeDatas_t
     x     .i
     y     .i
@@ -188,7 +191,6 @@ Module Control
       DisableGadget( *Me\gadgetID, 1 )
       *Me\enable = #False
     EndIf
-    
     ProcedureReturn( #Null )
   EndProcedure
   
@@ -240,7 +242,7 @@ Module Control
   EndProcedure
   
   Procedure.i DeFocused( *Me.Control_t )
-    
+    Globals::BitClear(*Me\state, Control::#State_Focused)
     If *Me\parent
       Protected *parent.IControl = *Me\parent
       *parent\OnEvent( #PB_EventType_ChildDeFocused, *Me )
@@ -273,8 +275,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 271
-; FirstLine = 217
+; CursorPosition = 192
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

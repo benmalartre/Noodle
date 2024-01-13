@@ -328,7 +328,6 @@ Module ControlExplorer
   ;  Set Binary Lines
   ; ----------------------------------------
   Procedure SetBinaryLine(*Me.ControlExplorer_t,id.i,value.b)
-    Globals::BitWrite(*Me\linebinary,id,value)
   EndProcedure
   
   
@@ -1149,7 +1148,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 898
-; FirstLine = 883
+; CursorPosition = 330
+; FirstLine = 326
 ; Folding = --4---
 ; EnableXP
