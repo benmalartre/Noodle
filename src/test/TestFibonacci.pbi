@@ -9,6 +9,7 @@ Structure FibonacciDemo_t Extends DemoApplication_t
   *fibonacci.Fibonacci::Fibonacci_t
   *N.ControlNumber::ControlNumber_t
   *mode.ControlEnum::ControlEnum_t
+  *text.ControlText::ControlText_t
   
   *instancer.InstanceCloud::InstanceCloud_t
   *prototype.Polymesh::Polymesh_t
@@ -17,7 +18,8 @@ EndStructure
 Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
   Define N = *demo\N\value_n
   Define mode = *demo\mode\current
-  If N <> *demo\fibonacci\N
+  Debug "CUrrent Mode : "+Str(mode)
+;   If *demo\dirty
     *demo\fibonacci\N = N
     Select mode
       Case 0
@@ -47,7 +49,8 @@ Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
     PointCloud::SetDirtyState(*demo\instancer, Object3D::#DIRTY_STATE_TOPOLOGY)
     *demo\scene\dirty = #True
     Scene::Update(*demo\scene)
-  EndIf
+;     *demo\dirty = #False
+;   EndIf
 EndProcedure
 Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
@@ -84,9 +87,10 @@ Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#Demo_With_
     *demo\mode = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
     ControlEnum::AddItem(*demo\mode, "Sphere", 0)
     ControlEnum::AddItem(*demo\mode, "Disc", 1)
+    Callback::CONNECT_CALLBACK(*demo\mode\on_change, Update, *demo)
     
-  ;   *demo\mode\items
-    Callback::CONNECT_CALLBACK(*demo\N\on_change, Update, *demo)
+    *demo\text = ControlProperty::AddStringControl(*prop, "Name", "", #Null)
+
     
     ControlProperty::EndGroup(*prop)
    
@@ -104,7 +108,6 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 18
-; FirstLine = 14
+; CursorPosition = 52
 ; Folding = -
 ; EnableXP

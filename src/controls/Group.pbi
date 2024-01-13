@@ -385,10 +385,7 @@ Module ControlGroup
     Protected  son.Control::IControl
     
     Select ev_code
-        
-
       Case #PB_EventType_Resize
-        Debug "RESIZE GROUP : " +*Me\name
         
         If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
         If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
@@ -420,15 +417,13 @@ Module ControlGroup
           EndIf
         Next
         
+        Resize( *Me, *ev_data)
         Draw( *Me, #True)
         
         ControlGroup::DrawPickImage(*Me)
         
         ProcedureReturn( #True )
-        
-;         Resize( *Me, *ev_data)
-;         ProcedureReturn #True
-        
+
       Case Control::#PB_EventType_DrawChild
         *son = *ev_data\datas
         son = *son
@@ -447,7 +442,7 @@ Module ControlGroup
         ProcedureReturn #True
         
       Case Control::#PB_EventType_ChildFocused
-        *Me\focuschild = *ev_data
+        *Me\focuschild = *ev_data\datas
         ProcedureReturn #True
         
       Case Control::#PB_EventType_ChildDeFocused
@@ -455,12 +450,12 @@ Module ControlGroup
         ProcedureReturn #True
         
       Case Control::#PB_EventType_ChildCursor
-        SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
+        SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data\datas )
         
       Case #PB_EventType_LostFocus
         If *Me\focuschild
           Define focuschild.Control::IControl = *Me\focuschild
-          focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
+          focuschild\OnEvent( #PB_EventType_LostFocus, *ev_data )
           *Me\focuschild = #Null
         EndIf
         
@@ -475,16 +470,13 @@ Module ControlGroup
         Protected pickID = Pick(*Me) 
         If pickID > -1 And pickID <*Me\chilcount
           *overchild = *Me\children(pickID)
-          Debug pickID
-          Debug *overchild
-          If *overchild : Debug *overchild\name : EndIf
         EndIf
         
         If *Me\overchild <> *overchild And  Not *Me\down
-          If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave) : EndIf
+          If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave, *ev_data) : EndIf
           *Me\overchild = *overchild
           If *Me\overchild
-            *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
+            *Me\overchild\OnEvent(#PB_EventType_MouseEnter, *ev_data)
           EndIf
           ProcedureReturn #True
           
@@ -510,6 +502,7 @@ Module ControlGroup
       
       Case #PB_EventType_LeftButtonUp
         *Me\down = #False
+        If *Me\focuschild : Control::DeFocused(*Me\focuschild) : EndIf
         
       Case #PB_EventType_LeftDoubleClick
 
@@ -519,9 +512,7 @@ Module ControlGroup
         
       Case #PB_EventType_RightButtonUp
         *Me\down = #False
-        
-      Default
-        ProcedureReturn
+        If *Me\focuschild : Control::DeFocused(*Me\focuschild) : EndIf
         
     EndSelect
     
@@ -530,12 +521,13 @@ Module ControlGroup
       *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *focuschild\posX
       *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *focuschild\posY
       *Me\focuschild\OnEvent(ev_code, *ev_data)
+      
     ElseIf *Me\overchild
       Define *overchild.Control::Control_t = *Me\overchild
-      Debug "event data : "+Str(*ev_data)
       *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
       *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
       *Me\overchild\OnEvent(ev_code, *ev_data)
+      
     EndIf
 
     ProcedureReturn( #False )
@@ -664,7 +656,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 422
-; FirstLine = 371
+; CursorPosition = 514
+; FirstLine = 468
 ; Folding = ----
 ; EnableXP

@@ -236,23 +236,30 @@ Module Control
   Procedure.i Focused( *Me.Control_t )
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      *parent\OnEvent( #PB_EventType_ChildFocused, *Me )
+      Protected ev_data.Control::EventTypeDatas_t
+      ev_data\datas = *Me
+      *parent\OnEvent( #PB_EventType_ChildFocused, ev_data )
     EndIf
-     Globals::BitSet(*Me\state, Control::#State_Focused)
+    Globals::BitMaskSet(*Me\state, Control::#State_Focused)
+    Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
   EndProcedure
   
   Procedure.i DeFocused( *Me.Control_t )
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      *parent\OnEvent( #PB_EventType_ChildDeFocused, *Me )
+      Protected ev_data.Control::EventTypeDatas_t
+      ev_data\datas = *Me
+      *parent\OnEvent( #PB_EventType_ChildDeFocused, ev_data )
     EndIf
-    Globals::BitClear(*Me\state, Control::#State_Focused)
+    Globals::BitMaskClear(*Me\state, Control::#State_Focused)
   EndProcedure
   
   Procedure.i SetCursor( *Me.Control_t, cursor_id.i )
     If *Me\parent
       Protected *parent.IControl = *Me\parent
-      *parent\OnEvent( #PB_EventType_ChildCursor, cursor_id )
+      Protected ev_data.Control::EventTypeDatas_t
+      ev_data\datas = cursor_id
+      *parent\OnEvent( #PB_EventType_ChildCursor, ev_data )
     EndIf
   EndProcedure
   
@@ -274,8 +281,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 111
-; FirstLine = 75
+; CursorPosition = 253
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -500,8 +500,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
           hlpSelectWord( *Me, hlpCharPosFromMousePos( *Me, *ev_data\x ) )
         Else
-          Globals::BitMaskSet(*Me\state, Control::#State_Focused)
-          Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
           *Me\undo_esc = *Me\value
           Control::SetCursor(*Me, #PB_Cursor_IBeam )
           Control::Focused(*Me)
@@ -843,7 +841,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 537
-; FirstLine = 526
+; CursorPosition = 501
+; FirstLine = 473
 ; Folding = ---
 ; EnableXP

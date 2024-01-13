@@ -163,9 +163,9 @@ Module ControlEnum
         
       Case #PB_EventType_LeftButtonDown
         Popup(*Me)
-        Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
-        Control::DeFocused(*Me)
+        Globals::BitMaskClear(*Me\state, Control::#State_Down)
         Control::Invalidate(*Me)
+        Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
  
       Case #PB_EventType_MouseEnter
         If *Me\visible And *Me\enable
@@ -218,6 +218,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 167
+; FirstLine = 135
 ; Folding = --
 ; EnableXP

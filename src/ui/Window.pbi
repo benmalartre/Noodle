@@ -251,18 +251,16 @@ Module Window
   EndProcedure
   
   Procedure Pick(*Me.Window_t, mx.i, my.i)
-    Protected picked.i
+    Protected picked.i = -1
     StartDrawing(ImageOutput(*Me\imageID))
     DrawingMode(#PB_2DDrawing_Default)
     If mx>=0 And mx<ImageWidth(*Me\imageID) And my>=0 And my<ImageHeight(*Me\imageID)
       picked = Point(mx, my)
-
-      If FindMapElement(*Me\uis(), Str(picked))
-        StopDrawing()
-        ProcedureReturn *Me\uis()\view
-      EndIf
     EndIf
     StopDrawing()
+    If FindMapElement(*Me\uis(), Str(picked))
+      ProcedureReturn *Me\uis()\view
+    EndIf
     ProcedureReturn #Null
   EndProcedure
   
@@ -318,7 +316,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 281
-; FirstLine = 254
+; CursorPosition = 262
+; FirstLine = 198
 ; Folding = ----
 ; EnableXP
