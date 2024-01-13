@@ -69,19 +69,20 @@ Module DemoApplication
     
     *view = *Me\window\main
     If options & #Demo_With_Menu
-      View::Split(*view,#PB_Splitter_Vertical,0)
+      View::Split(*view,#PB_Splitter_FirstFixed,0)
       *left = *view\left
       *view = *view\right
       *Me\window\menu = MenuUI::New(*left,"Menu")
-      Define *item.MenuUI::MenuItem_t = MenuUI::AddItem(*Me\window\menu, "zobi", 0)
-      MenuUI::AddSubItem(*Me\window\menu, *item, "one", 1)
-      MenuUI::AddSubItem(*Me\window\menu, *item, "two", 2)
-      Define *subitem = MenuUI::AddSubItem(*Me\window\menu, *item, "three", 3)
+      Define *item.MenuUI::MenuItem_t = MenuUI::AddItem(*Me\window\menu, "File", 0)
+      MenuUI::AddSubItem(*Me\window\menu, *item, "Load", Globals::#Menu_Scene_Load)
+      MenuUI::AddSubItem(*Me\window\menu, *item, "Save", Globals::#Menu_Scene_Save)
+      MenuUI::AddSubItem(*Me\window\menu, *item, "Save As", Globals::#Menu_Scene_SaveAs)
       
-      MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-one", 4)
-      MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-two", 5)
-      MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-three", 6)
-      Debug "ADDED MENU ITEMS..."
+;       Define *subitem = MenuUI::AddSubItem(*Me\window\menu, *item, "three", 3)
+;       
+;       MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-one", 4)
+;       MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-two", 5)
+;       MenuUI::AddSubItem(*Me\window\menu, *subitem, "sub-three", 6)
     EndIf
     If options & #Demo_With_Timeline
       View::Split(*view,#PB_Splitter_SecondMinimumSize|#PB_Splitter_SecondFixed,60)
@@ -141,7 +142,7 @@ Module DemoApplication
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 74
+; CursorPosition = 84
 ; FirstLine = 60
 ; Folding = --
 ; EnableXP

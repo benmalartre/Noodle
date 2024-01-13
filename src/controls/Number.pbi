@@ -8,21 +8,11 @@ XIncludeFile "../ui/View.pbi"
 ;  CONTROL NUMBER MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlNumber
-  ; ============================================================================
-  ;  CONSTANTS
-  ; ============================================================================
-  ; ----------------------------------------------------------------------------
-  ;  OPTIONS
-  ; ----------------------------------------------------------------------------
   #NUMBER_SCALAR    = %0001
   #NUMBER_INTEGER   = %0010
   #NUMBER_PERCENT   = %0100
   #NUMBER_NOSLIDER  = %1000
 
-
-  ; ----------------------------------------------------------------------------
-  ;  Object ( ControlNumber_t )
-  ; ----------------------------------------------------------------------------
   Structure ControlNumber_t Extends Control::Control_t
     value       .s
     value_n     .d
@@ -48,15 +38,8 @@ DeclareModule ControlNumber
     Array lookup.i(0)
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;  Interface
-  ; ----------------------------------------------------------------------------
   Interface IControlNumber Extends Control::IControl
   EndInterface
-  
-  ; ----------------------------------------------------------------------------
-  ;  Declares 
-  ; ----------------------------------------------------------------------------
   
   Declare New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlNumber_t)
@@ -68,9 +51,6 @@ DeclareModule ControlNumber
   Declare Init()
   Declare Term()
 
-  ; ----------------------------------------------------------------------------
-  ;  Datas 
-  ; ----------------------------------------------------------------------------
   DataSection 
     ControlNumberVT: 
     Data.i @OnEvent()
@@ -88,24 +68,17 @@ EndDeclareModule
 ;  CONTROL NUMBER IMPLEMENTATION ( Helpers )
 ; ============================================================================
 Module ControlNumber
-  ; ----------------------------------------------------------------------------
-  ;  hlpNextWordStart
-  ; ----------------------------------------------------------------------------
   Procedure.i hlpNextWordStart( text.s, cur_pos.i )
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected iEnd.i = Len(text) + 1
     Protected bFront = #False
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If cur_pos = iEnd : ProcedureReturn( iEnd ) : EndIf
     
-    ; ---[ Update Front ]-------------------------------------------------------
     If Mid( text, cur_pos, 1 ) = " "
       bFront = #True
     EndIf
     
-    ; ---[ Search For Next Word Start ]-----------------------------------------
     While cur_pos < iEnd
       If bFront
         If Mid( text, cur_pos, 1 ) <> " "
@@ -119,29 +92,21 @@ Module ControlNumber
       cur_pos + 1
     Wend
     
-    ; ---[ Not Found ]----------------------------------------------------------
     ProcedureReturn( iEnd )
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpPrevWordStart
-  ; ----------------------------------------------------------------------------
   Procedure.i hlpPrevWordStart( text.s, cur_pos.i )
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If cur_pos = 1 : ProcedureReturn(1) : EndIf
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected bFront = #False
     
-    ; ---[ Update Front ]-------------------------------------------------------
     cur_pos - 1
     If Mid( text, cur_pos, 1 ) <> " "
       bFront = #True
     EndIf
     
-    ; ---[ Search For Previous Word Start ]-------------------------------------
     While cur_pos > 1
       cur_pos - 1
       If bFront
@@ -155,29 +120,21 @@ Module ControlNumber
       EndIf
     Wend
     
-    ; ---[ Not Found ]----------------------------------------------------------
     ProcedureReturn( 1 )
     
   EndProcedure
     
-  ; ----------------------------------------------------------------------------
-  ;  hlpPrevWord
-  ; ----------------------------------------------------------------------------
   Procedure.i hlpPrevWord( text.s, cur_pos.i )
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If cur_pos = 1 : ProcedureReturn(1) : EndIf
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected bFront = #False
     
-    ; ---[ Update Front ]-------------------------------------------------------
     cur_pos - 1
     If Mid( text, cur_pos, 1 ) <> " "
       bFront = #True
     EndIf
     
-    ; ---[ Search For Previous Word Start ]-------------------------------------
     While cur_pos > 1
       cur_pos - 1
       If bFront
@@ -186,35 +143,26 @@ Module ControlNumber
         EndIf
       Else
         If Mid( text, cur_pos, 1 ) <> " "
-          ;bFront = #True
           ProcedureReturn( cur_pos + 1 )
         EndIf
       EndIf
     Wend
     
-    ; ---[ Not Found ]----------------------------------------------------------
     ProcedureReturn( 1 )
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  hlpNextWord
-  ; ----------------------------------------------------------------------------
   Procedure.i hlpNextWord( text.s, cur_pos.i )
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected iEnd.i = Len(text) + 1
     Protected bFront = #False
     
-    ; ---[ Sanity Check ]-------------------------------------------------------
     If cur_pos = iEnd : ProcedureReturn( iEnd ) : EndIf
     
-    ; ---[ Update Front ]-------------------------------------------------------
     If Mid( text, cur_pos, 1 ) = " "
       bFront = #True
     EndIf
     
-    ; ---[ Search For Next Word Start ]-----------------------------------------
     While cur_pos < iEnd
       If bFront
         If Mid( text, cur_pos, 1 ) <> " "
@@ -222,20 +170,16 @@ Module ControlNumber
         EndIf
       Else
         If Mid( text, cur_pos, 1 ) = " "
-          ;bFront = #True
           ProcedureReturn( cur_pos )
         EndIf
       EndIf
       cur_pos + 1
     Wend
     
-    ; ---[ Not Found ]----------------------------------------------------------
     ProcedureReturn( iEnd )
     
   EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  hlpSelectWord
-  ; ----------------------------------------------------------------------------
+
   Procedure hlpSelectWord( *Me.ControlNumber_t, cur_pos.i )
     
     If cur_pos > 1 And cur_pos < Len(*Me\value)
@@ -252,12 +196,9 @@ Module ControlNumber
     EndIf
     
   EndProcedure
-  ; ----------------------------------------------------------------------------
-  ;  hlpCharPosFromMousePos
-  ; ----------------------------------------------------------------------------
+
   Procedure.i hlpCharPosFromMousePos( *Me.ControlNumber_t, xpos.i )
     
-    ; ---[ Update Mouse Position To Client Border ]-----------------------------
     xpos - 7
     
     Protected x_start.i = *Me\lookup(*Me\posS)
@@ -272,9 +213,6 @@ Module ControlNumber
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Draw
-  ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlNumber_t, xoff.i = 0, yoff.i = 0 )
     If Not *Me\visible : ProcedureReturn : EndIf
     
@@ -284,39 +222,30 @@ Module ControlNumber
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
     
-    ; ---[ Check Positions Lookup Table ]---------------------------------------
     If *Me\lookup_dirty
-      ; ...[ Local Variables ]..................................................
       Protected i.i
-      ; ...[ Update Positions Count ]...........................................
       *Me\lookup_count = Len(*Me\value) + 1
       ReDim *Me\lookup(*Me\lookup_count)
-      ; ...[ Update Positions ].................................................
       *Me\lookup(0) = 0
       For i=1 To *Me\lookup_count
         *Me\lookup(i) = VectorTextWidth( Left(*Me\value,i-1) )
       Next
-      ; ...[ Now Clean ]........................................................
       *Me\lookup_dirty = #False
     EndIf
     
-    ; ---[ Handle Left Overflow ]-----------------------------------------------
     *Me\posS = Math::Min( *Me\posS, *Me\posW )
-    ; ---[ Handle Right Overflow ]----------------------------------------------
     Protected rof    .i = *Me\sizX - 12
     Protected x_start.i = *Me\lookup(*Me\posS)
     Protected x_end  .i = *Me\lookup(*Me\posW)
     Protected tw     .i = x_end - x_start  
     Protected tlen   .i = *Me\posW - *Me\posS
     
-    ; ---[ Right Overflow ]-----------------------------------------------------
     If tw > rof
       While tw > rof
         *Me\posS + 1
         tw = x_end - *Me\lookup(*Me\posS)
       Wend
       tlen = *Me\posW - *Me\posS
-    ; ---[ Left Overflow ]------------------------------------------------------
     Else
       Protected i_end.i = *Me\posW
       While ( tw <= rof ) And ( i_end < *Me\lookup_count )
@@ -328,30 +257,21 @@ Module ControlNumber
       tw = *Me\lookup(i_end) - x_start
     EndIf
     
-    ; ---[ Only If Focused ]----------------------------------------------------
     If *Me\focused
-      ; ...[ Retrieve Left/Right From Strong/Weak Cursor Positions ]............
       Protected posL.i, posR.i, posXL.i, posXR.i
       If *Me\posG > *Me\posW
         posL = *Me\posW : posR = *Me\posG
       Else
         posL = *Me\posG : posR = *Me\posW
       EndIf
-      ; ...[ Compute Left Cursor Coordinate ]...................................
       posXL = Math::Max( 0, *Me\lookup(posL) - *Me\lookup(*Me\posS) )
-      ; ...[ Check For Selection ]..............................................
       If posL <> posR
-        ; ...[ Has Selection ]..................................................
         *Me\selected = #True
-        ; ...[ Compute Right Cursor Coordinate ]................................
         posXR = Math::Min( tw, *Me\lookup(posR) - *Me\lookup(*Me\posS) )
       Else
-        ; ...[ Just The Caret ].................................................
         *Me\selected = #False
       EndIf
-    ; ---[ Only When NOT Focused ]----------------------------------------------  
     Else
-      ; ...[ Compute Slider Extends ]...........................................
       Protected factor.d = ( *Me\value_n - *Me\soft_min )/( *Me\soft_max - *Me\soft_min )
       Protected slider_w.i = Math::Min( *Me\sizX - 4, Math::Max( 0, factor*( *Me\sizX - 4 ) ) )
       If *Me\options & #NUMBER_NOSLIDER
@@ -360,19 +280,15 @@ Module ControlNumber
       
     EndIf
     
-    ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
       Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
-      ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLOR_LABEL_DISABLED
-    ; ---[ Check Focused ]------------------------------------------------------
     ElseIf *Me\focused
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
       FillPath()
-    ; ---[ Check Over ]---------------------------------------------------------
     ElseIf *Me\over
       Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
@@ -416,14 +332,10 @@ Module ControlNumber
       EndIf
     EndIf
     
-    ; ---[ Retrieve Displayed (Clipped) Text ]----------------------------------
     Protected dtext.s = Mid( *Me\value, *Me\posS, tlen )
     
-    ; ---[ Handle Caret & Selection ]-------------------------------------------
     If *Me\focused
-      ; ---[ Has Selection ]----------------------------------------------------
       If *Me\selected
-        ; ---[ Draw Regular Text + Selection ]----------------------------------
         AddPathBox(tx + xoff + posXL - 1, ty-1, (posXR - posXL) + 2, 14)
         VectorSourceColor(UIColor::COLOR_SELECTED_BG)
         FillPath()
@@ -431,14 +343,11 @@ Module ControlNumber
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText( dtext )
-      ; ---[ Just Caret ]-------------------------------------------------------
       Else
-        ; ---[ Draw Value ]-----------------------------------------------------
         MovePathCursor(tx + xoff, ty)
         VectorSourceColor(UIColor::COLOR_TEXT_ACTIVE)
         DrawVectorText(  dtext)
         
-        ; ...[ Draw Caret ].....................................................
         If *Me\caret_switch > 0 Or Not *Me\timer_on
           MovePathCursor(tx + posXL + xoff, ty)
           AddPathLine(1, 13, #PB_Path_Relative)
@@ -447,7 +356,6 @@ Module ControlNumber
         EndIf
       EndIf
     Else
-    ; ---[ Draw Value ]-------------------------------------------------------
       Vector::RoundBoxPath( -3 + tx + xoff, ty,   tw+5, 12, 4)
       VectorSourceColor( UIColor::COLOR_SHADOW )
       FillPath()
@@ -458,137 +366,79 @@ Module ControlNumber
     EndIf
     
   EndProcedure
-  ;}
 
 
 ; ============================================================================
 ;  OVERRIDE ( CControl )
 ; ============================================================================
-;{
-; ---[ OnEvent ]--------------------------------------------------------------
 Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
 
-  ; ---[ Dispatch Event ]-----------------------------------------------------
   Select ev_code
       
-    ; ------------------------------------------------------------------------
-    ;  Draw
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
-      ; ---[ Sanity Check ]---------------------------------------------------
       If Not *ev_data : ProcedureReturn : EndIf
       
-      ; ---[ Draw Control ]---------------------------------------------------
       Draw( *Me, *ev_data\xoff, *ev_data\yoff )
-      ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
-      
-    ; ------------------------------------------------------------------------
-    ;  Resize
-    ; ------------------------------------------------------------------------
+
     Case #PB_EventType_Resize
-      ; ---[ Sanity Check ]---------------------------------------------------
       If Not *ev_data : ProcedureReturn : EndIf
       
-      ; ---[ Cancel Height ]--------------------------------------------------
       *Me\sizY = 20
-      ; ---[ Update Topology ]------------------------------------------------
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
       If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
       If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
-      ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  LostFocus
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LostFocus
       If *Me\focused
-        ;restore old value
         If *me\options & #NUMBER_INTEGER
           *Me\value = Str(*Me\value_n)
         Else
           *Me\value = StrD(*Me\value_n,3)
         EndIf
-        ; ...[ Positions Lookup Table Is Now Dirty ]........................
           *Me\lookup_dirty = #True
       EndIf
     
-      ; ---[ Stop Caret Flashing ]--------------------------------------------
       ;RemoveWindowTimer( #MainWindow, #TIMER_CARET )
-      ; ---[ Not Focused Anymore }--------------------------------------------
       *Me\focused = #False
       *Me\down = #False
-      ; ---[ Show Text From Start ]-------------------------------------------
       *Me\posG = 1 : *Me\posW = 1
-      ; ---[ Redraw Me ]------------------------------------------------------
       Control::Invalidate(*Me)
       
-      ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  Focus
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_Focus
-      ; ---[ Not Focused Anymore }--------------------------------------------
       *Me\focused = #True
-      ; ---[ Show Text From Start ]-------------------------------------------
       *Me\posG = 1 : *Me\posW = 1
-      ; ---[ Redraw Me ]------------------------------------------------------
       Control::Invalidate(*Me)
     
-      ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
         
-    ; ------------------------------------------------------------------------
-    ;  MouseEnter
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseEnter
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Mouse Is Over Me ].............................................
         *Me\over = #True
-        ; ...[ Show IBeam Cursor ]............................................
         If *Me\focused : Control::SetCursor( *Me,#PB_Cursor_IBeam ) : EndIf
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseLeave
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseLeave
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Mouse Is Not Over Me Anymore ].................................
         *Me\over = #False
         
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseMove
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Check Down ]...................................................
         If *Me\down
-          ; ...[ Sanity Check ]...............................................
           If Not *ev_data : ProcedureReturn : EndIf
-          ; ...[ Check Mouse Selecting ]......................................
           If *Me\focused
-            ; ...[ Update Weak Cursor Position ]..............................
             *Me\posW = hlpCharPosFromMousePos( *Me, *ev_data\x )
           Else
             If Not *Me\options & ControlNumber::#NUMBER_NOSLIDER
-              ; ...[ Update Value ].............................................
               *Me\value_n = ( *ev_data\x - 2.0 )/( *Me\sizX - 4.0 )*( *Me\soft_max - *Me\soft_min ) + *Me\soft_min
               If *Me\value_n < *Me\soft_min : *Me\value_n = *Me\soft_min : EndIf
               If *Me\value_n > *Me\soft_max : *Me\value_n = *Me\soft_max : EndIf
@@ -598,35 +448,23 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
                 *Me\value   = StrD( *Me\value_n, 3 )
               EndIf
             EndIf
-            ; ...[ Positions Lookup Table Is Now Dirty ]......................
               *Me\lookup_dirty = #True
           EndIf 
 
-          ; ---[ Send 'OnChanged' Signal ]------------------------------------
           Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
           
-          ; ...[ Redraw Me ]..................................................
           Control::Invalidate(*Me)
 
         EndIf
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonDown
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonDown
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable And *Me\over
-        ; ...[ Sanity Check ].................................................
         If Not *ev_data : ProcedureReturn :EndIf
-        ; ...[ Mouse Is Now Down ]............................................
         *Me\down = #True
-        ; ...[ Check Not Yet Focused ]........................................
         If *Me\focused
           If Not *Me\options & ControlNumber::#NUMBER_NOSLIDER
-            ; ...[ Update Value ]...............................................
             *Me\value_n = ( *ev_data\x - 2.0 )/( *Me\sizX - 4.0 )*( *Me\soft_max - *Me\soft_min ) + *Me\soft_min
             If *Me\value_n < *Me\soft_min : *Me\value_n = *Me\soft_min : EndIf
             If *Me\value_n > *Me\soft_max : *Me\value_n = *Me\soft_max : EndIf
@@ -636,121 +474,68 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
               *Me\value   = StrD( *Me\value_n, 3 )
             EndIf
           EndIf
-          ; ...[ Positions Lookup Table Is Now Dirty ]........................
           *Me\lookup_dirty = #True
         Else
-          ; ...[ Update Strong Cursor Position ]..............................
           *Me\posG = hlpCharPosFromMousePos( *Me, *ev_data\x )
-          ; ...[ Reset Selection ]............................................
           *Me\posW = *Me\posG
         EndIf
      
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonUp
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonUp
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Mouse Is Now Up ]..............................................
         *Me\down = #False
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
         Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
         
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftDoubleClick
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftDoubleClick
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Check Focused ]................................................
         If *Me\focused
-          ; ...[ Sanity Check ]...............................................
           If Not  *ev_data : ProcedureReturn : EndIf
           
-          ; ...[ Set Undo ]...................................................
           *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ...[ Select Word Under Mouse ]....................................
           hlpSelectWord( *Me, hlpCharPosFromMousePos( *Me, *ev_data\x ) )
         Else
-          ; ...[ I've The Focus ].............................................
           *Me\focused = #True
-          ; ...[ Save Current Text For ESC Undo ].............................
           *Me\undo_esc = *Me\value
-          ; ...[ Show IBeam Cursor ]..........................................
           Control::SetCursor(*Me, #PB_Cursor_IBeam )
-          ; ...[ Tell Parent I'm The One Focused ]............................
           Control::Focused(*Me)
-          ; ...[ Select All Text On Focus For Convenience ]...................
           *Me\posG = 1 : *Me\posW = Len(*Me\value) + 1          
         EndIf
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  RightButtonDown
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_RightButtonDown
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Mouse Is Now Down ]............................................
         *Me\down = #True
-        ; ...[ Check NOT Focused ]............................................
         If Not *Me\focused
-          ; ...[ I've The Focus ].............................................
           *Me\focused = #True
-          ; ...[ Save Current Text For ESC Undo ].............................
           *Me\undo_esc = *Me\value
-          ; ...[ Tell Parent I'm The One Focused ]............................
           Control::Focused(*Me)
-          ; ...[ Show IBeam Cursor ]..........................................
           Control::SetCursor( *Me,#PB_Cursor_IBeam )
-          ; ...[ Select All Text On Focus For Convenience ]...................
           *Me\posG = 1 : *Me\posW = Len(*Me\value) + 1          
         EndIf
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  RightButtonUp
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_RightButtonUp
-      ; ---[ Check Status ]---------------------------------------------------
       If *Me\visible And *Me\enable
-        ; ...[ Mouse Is Now Up ]..............................................
         *Me\down = #False
-        ; ...[ Redraw Me ]....................................................
         Control::Invalidate(*Me)
-        ; ...[ Processed ]....................................................
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  Input
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_Input
-      ; ---[ Sanity Check ]---------------------------------------------------
       If Not *ev_data : ProcedureReturn : EndIf
       
-      ; ---[ Set Undo ]-------------------------------------------------------
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-      ; ---[ Check Strong/Weak Cursor Order ]---------------------------------
       If *Me\posW > *Me\posG
         *Me\value = Left(*Me\value,*Me\posG-1) + *ev_data\input + Right(*Me\value,Len(*Me\value)-*Me\posW+1)
         *Me\posG + 1
@@ -758,34 +543,18 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         *Me\value = Left(*Me\value,*Me\posW-1) + *ev_data\input + Right(*Me\value,Len(*Me\value)-*Me\posG+1)
         *Me\posG = *Me\posW + 1
       EndIf
-      ; ---[ No More Selection ]----------------------------------------------
       *Me\posW = *Me\posG
-      ; ---[ Positions Lookup Table Is Now Dirty ]----------------------------
       *Me\lookup_dirty = #True
-      ; ...[ Redraw Me ]....................................................
       Control::Invalidate(*Me)
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  KeyDown
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_KeyDown
-      ; ---[ Dispatch Key ]---------------------------------------------------
       Select *ev_data\key
-        ;_____________________________________________________________________
-        ;  Return
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
         Case #PB_Shortcut_Return
-          ; ---[ Check SHIFT Modifiers ]--------------------------------------
           If *ev_data\modif & #PB_Canvas_Shift
-            ; ...[ Set Undo ].................................................
             *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
           EndIf
-          ; ---[ Update Value ]-----------------------------------------------
           
-          
-          ; ---[ Update String Value ]----------------------------------------
           If *me\options & ControlNumber::#NUMBER_INTEGER
             *Me\value_n = Round(ValD(*Me\value),#PB_Round_Nearest);AEV\Eval( *Me\value )
             *Me\value = Str( *Me\value_n)
@@ -795,143 +564,79 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
             
           EndIf
           
-          ; ---[ Check SHIFT Modifiers ]--------------------------------------
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            ; ...[ Loose Focus ]..............................................
             *Me\focused = #False : Control::DeFocused(*Me)
-            ; ...[ Restore Default Cursor ]...................................
             Control::SetCursor( *Me,#PB_Cursor_Default )
           EndIf
-          ; ---[ Show Text From Start ]---------------------------------------
           *Me\posG = 1 : *Me\posW = 1
-          ; ---[ Positions Lookup Table Is Now Dirty ]------------------------
           *Me\lookup_dirty = #True
-          ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
           
           Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
           
-          ; ...[ Processed ]....................................................
-        ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Escape
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-        Case #PB_Shortcut_Escape
-          ; ---[ Loose Focus ]------------------------------------------------
-          *Me\focused = #False : Control::DeFocused(*Me)
-          ; ---[ Undo Previous Action ]---------------------------------------
-          *Me\value = *Me\undo_esc
-          ; ---[ Show Text From Start ]---------------------------------------
-          *Me\posG = 1 : *Me\posW = 1
-          ; ---[ Positions Lookup Table Is Now Dirty ]------------------------
-          *Me\lookup_dirty = #True
-          ; ---[ Restore Default Cursor ]-------------------------------------
-          Control::SetCursor( *Me,#PB_Cursor_Default )
-          ; ...[ Redraw Me ]....................................................
-          Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Tab
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+        Case #PB_Shortcut_Escape
+          *Me\focused = #False : Control::DeFocused(*Me)
+          *Me\value = *Me\undo_esc
+          *Me\posG = 1 : *Me\posW = 1
+          *Me\lookup_dirty = #True
+          Control::SetCursor( *Me,#PB_Cursor_Default )
+          Control::Invalidate(*Me)
+          ProcedureReturn( #True )
+
         Case #PB_Shortcut_Tab
-          ; TODO : Next Widget In Group
-        ;_____________________________________________________________________
-        ;  Home
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
         Case #PB_Shortcut_Home
-          ; ---[ Sanity Check ]-----------------------------------------------
           If Not *ev_data : ProcedureReturn : EndIf
           
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Weak Cursor To Start Of Text ]-------------------------------
           *Me\posW = 1
-          ; ...[ Check Modifiers ]............................................
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            ; ...[ Strong Cursor To Start Of Text ]...........................
             *Me\posG = *Me\posW
           EndIf
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  End
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
         Case #PB_Shortcut_End
-          ; ---[ Sanity Check ]-----------------------------------------------
           If Not *ev_data : ProcedureReturn : EndIf
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Weak Cursor To End Of Text ]---------------------------------
           *Me\posW = Len(*Me\value) + 1
-          ; ...[ Check Modifiers ]............................................
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            ; ...[ Strong Cursor To End Of Text ].............................
             *Me\posG = *Me\posW
           EndIf
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Left
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
         Case #PB_Shortcut_Left
-          ; ---[ Sanity Check ]-----------------------------------------------
           If Not *ev_data : ProcedureReturn : EndIf
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Check For CONTROL/COMMAND Modifier ]-------------------------
           If ( *ev_data\modif & #PB_Canvas_Control ) Or ( *ev_data\modif & #PB_Canvas_Command )
-            ; ...[ Weak Cursor To Previous Word Start ].......................
             *Me\posW = hlpPrevWordStart( *Me\value, *Me\posW )
           Else
-            ; ...[ Weak Cursor To Left ]......................................
             *Me\posW = Math::Max( 1, *Me\posW - 1 )
           EndIf
-          ; ---[ Check For SHIFT Modifiers ]----------------------------------
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            ; ...[ Strong Cursor To Left ]....................................
             *Me\posG = *Me\posW
           EndIf
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Right
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
         Case #PB_Shortcut_Right
-          ; ---[ Sanity Check ]-----------------------------------------------
           If Not *ev_data : ProcedureReturn : EndIf
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Check For CONTROL/COMMAND Modifier ]-------------------------
           If ( *ev_data\modif & #PB_Canvas_Control ) Or ( *ev_data\modif & #PB_Canvas_Command )
-            ; ...[ Weak Cursor To Next Word Start ]...........................
             *Me\posW = hlpNextWordStart( *Me\value, *Me\posW )
           Else
-            ; ...[ Weak Cursor To Right ].....................................
             *Me\posW = Math::Min( Len(*Me\value) + 1, *Me\posW + 1 )
           EndIf
-          ; ---[ Check For SHIFT Modifiers ]----------------------------------
           If Not ( *ev_data\modif & #PB_Canvas_Shift )
-            ; ...[ Strong Cursor To Right ]...................................
             *Me\posG = *Me\posW
           EndIf
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Back
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
         Case #PB_Shortcut_Back
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Check For Selection ]----------------------------------------
           If *Me\posG > *Me\posW
             *Me\value = Left(*Me\value,*Me\posW-1) + Right(*Me\value,Len(*Me\value)-*Me\posG+1)
             *Me\posG = *Me\posW
@@ -941,21 +646,13 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
             *Me\value = Left(*Me\value,*Me\posG-2) + Right(*Me\value,Len(*Me\value)-*Me\posW+1)
             *Me\posG = Math::Max( 1, *Me\posG - 1 )
           EndIf
-          ; ---[ No More Selection ]------------------------------------------
           *Me\posW = *Me\posG
-          ; ---[ Positions Lookup Table Is Now Dirty ]------------------------
           *Me\lookup_dirty = #True
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
-        ;_____________________________________________________________________
-        ;  Delete
-        ;¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
         Case #PB_Shortcut_Delete
-          ; ---[ Set Undo ]---------------------------------------------------
           *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-          ; ---[ Check For Selection ]----------------------------------------
           If *Me\posG > *Me\posW
             *Me\value = Left(*Me\value,*Me\posW-1) + Right(*Me\value,Len(*Me\value)-*Me\posG+1)
             *Me\posG = *Me\posW
@@ -964,24 +661,15 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           Else
             *Me\value = Left(*Me\value,*Me\posG-1) + Right(*Me\value,Len(*Me\value)-*Me\posW)
           EndIf
-          ; ---[ No More Selection ]------------------------------------------
           *Me\posW = *Me\posG
-          ; ---[ Positions Lookup Table Is Now Dirty ]------------------------
           *Me\lookup_dirty = #True
-           ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
-          ; ...[ Processed ]....................................................
           ProcedureReturn( #True )
           
-      EndSelect ; Select *ev_data\key ( Case #PB_EventType_KeyDown )
+      EndSelect 
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + X (SHORTCUT_CUT)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_CUT
-      ; ---[ Set Undo ]-------------------------------------------------------
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-      ; ---[ Check For Selection ]--------------------------------------------
       If *Me\posG > *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posW, *Me\posG - *Me\posW ) )
         *Me\value = Left(*Me\value,*Me\posW-1) + Right(*Me\value,Len(*Me\value)-*Me\posG+1)
@@ -990,88 +678,53 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
         SetClipboardText( Mid( *Me\value, *Me\posG, *Me\posW - *Me\posG ) )
         *Me\value = Left(*Me\value,*Me\posG-1) + Right(*Me\value,Len(*Me\value)-*Me\posW+1)
       EndIf
-      ; ---[ No More Selection ]----------------------------------------------
       *Me\posW = *Me\posG
-      ; ---[ Positions Lookup Table Is Now Dirty ]----------------------------
       *Me\lookup_dirty = #True
-      ; ...[ Redraw Me ]....................................................
       Control::Invalidate(*Me)
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + C (SHORTCUT_COPY)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_COPY
-      ; ---[ Check For Selection ]--------------------------------------------
       If *Me\posG > *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posW, *Me\posG - *Me\posW ) )
       ElseIf *Me\posG <> *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posG, *Me\posW - *Me\posG ) )
       EndIf
-      ; ---[ Processed ]------------------------------------------------------
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + V (SHORTCUT_PASTE)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_PASTE
-      ; ---[ Set Undo ]-------------------------------------------------------
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
-      ; ---[ Retrieve Clipboard Text ]----------------------------------------
       Protected cliptxt.s = GetClipboardText()
       Protected cliplen.i = Len(cliptxt)
-      ; ---[ Check For Selection ]--------------------------------------------
       If *Me\posG > *Me\posW
         *Me\value = Left(*Me\value,*Me\posW-1) + cliptxt + Right(*Me\value,Len(*Me\value)-*Me\posG+1)
         *Me\posG = *Me\posW
       Else
         *Me\value = Left(*Me\value,*Me\posG-1) + cliptxt + Right(*Me\value,Len(*Me\value)-*Me\posW+1)
       EndIf
-      ; ---[ Update Strong Cursor Position ]----------------------------------
       *Me\posG + cliplen
-      ; ---[ No More Selection ]----------------------------------------------
       *Me\posW = *Me\posG
-      ; ---[ Positions Lookup Table Is Now Dirty ]----------------------------
       *Me\lookup_dirty = #True
-      ; ...[ Redraw Me ]....................................................
       Control::Invalidate(*Me)
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + Z (SHORTCUT_UNDO)
-    ; ------------------------------------------------------------------------
-  Case Globals::#SHORTCUT_UNDO
-      ; ---[ Restore Value And Strong & Weak Cursor Positions ]---------------
+    Case Globals::#SHORTCUT_UNDO
       *Me\value = *Me\undo_ctz_t
       *Me\posG  = *Me\undo_ctz_g
       *Me\posW  = *Me\undo_ctz_w
-      ; ---[ Positions Lookup Table Is Now Dirty ]----------------------------
       *Me\lookup_dirty = #True
-      ; ...[ Redraw Me ]....................................................
       Control::Invalidate(*Me)
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  Enable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Enable
       If Not *Me\enable
         *Me\enable = #True
         If *Me\visible
-          ; ...[ Redraw Me ]....................................................
           Control::Invalidate(*Me)
       
         EndIf
       EndIf
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
 
-    ; ------------------------------------------------------------------------
-    ;  Disable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Disable
       If *Me\enable
         *Me\enable = #False
@@ -1079,129 +732,109 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           Control::Invalidate(*Me)
         EndIf
       EndIf
-      ; ...[ Processed ]....................................................
       ProcedureReturn( #True )
 
   EndSelect
   
-  ; ---[ Process Default ]----------------------------------------------------
   ProcedureReturn( #False )
   
 EndProcedure
-;}
 
 
-; ============================================================================
-;  IMPLEMENTATION ( CControlNumber )
-; ============================================================================
-;{
-; ---[ SetValue ]-------------------------------------------------------------
-Procedure SetValue( *Me.ControlNumber_t, value.s )
+  ; ============================================================================
+  ;  IMPLEMENTATION ( CControlNumber )
+  ; ============================================================================
+  Procedure SetValue( *Me.ControlNumber_t, value.s )
+    If value = *Me\value
+      ProcedureReturn
+    EndIf
+    
+    *Me\value = value
+    *Me\lookup_dirty = #True
+    
+    Control::Invalidate(*Me)
+    
+  EndProcedure
   
-  ; ---[ Sanity Check ]-------------------------------------------------------
-  If value = *Me\value
-    ; ...[ Abort ]............................................................
-    ProcedureReturn
-  EndIf
-  
-  
-  ; ---[ Set Value ]----------------------------------------------------------
-  *Me\value = value
-  *Me\lookup_dirty = #True
-  
-  ; ---[ Redraw Control ]-----------------------------------------------------
-  Control::Invalidate(*Me)
-  
-EndProcedure
-; ---[ GetValue ]-------------------------------------------------------------
-Procedure.s GetValue( *Me.ControlNumber_t )
-  
-  ; ---[ Return Value ]-------------------------------------------------------
-  ProcedureReturn( *Me\value )
-  
-EndProcedure
-; ---[ Free ]-----------------------------------------------------------------
-Procedure Delete( *Me.ControlNumber_t )
-  Object::TERM(ControlNumber)
-EndProcedure
-;}
+  Procedure.s GetValue( *Me.ControlNumber_t )
+    
+    ProcedureReturn( *Me\value )
+    
+  EndProcedure
 
-Procedure Init()
-  COLOR_BACK_ENABLE = RGB(128,128,128)
-  COLOR_BACK_OVER = RGB(164,164,164)
-  COLOR_BACK_FOCUSED = RGB(180,180,180)
-  COLOR_BACK_DISABLE = RGB(64,64,64)
-EndProcedure
+  Procedure Init()
+    COLOR_BACK_ENABLE = RGB(128,128,128)
+    COLOR_BACK_OVER = RGB(164,164,164)
+    COLOR_BACK_FOCUSED = RGB(180,180,180)
+    COLOR_BACK_DISABLE = RGB(64,64,64)
+  EndProcedure
+  
+  Procedure Term()
+  EndProcedure
+  
+  Procedure SetTheme(theme.i)
+  EndProcedure
+  
+  ; ============================================================================
+  ;  DESTRUCTOR
+  ; ============================================================================
+  Procedure Delete( *Me.ControlNumber_t )
+    Object::TERM(ControlNumber)
+  EndProcedure
+  
+  ; ============================================================================
+  ;  CONSTRUCTOR
+  ; ============================================================================
+  Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+    
+    Protected *Me.ControlNumber_t = AllocateStructure(ControlNumber_t)
+    
+    Object::INI(ControlNumber)
+  
+    *Me\type         = Control::#NUMBER
+    *Me\name         = name
+    *Me\parent       = *parent
+    *Me\gadgetID     = *parent\gadgetID
+    *Me\posX         = x
+    *Me\posY         = y
+    *Me\sizX         = width
+    *Me\sizY         = 20
+    *Me\visible      = #True
+    *Me\enable       = #True
+    *Me\options      = options
+    
+    If *Me\options & ControlNumber::#NUMBER_INTEGER
+      *Me\value = Str(value)
+    Else
+      *Me\value        = StrD( value, 3 )
+    EndIf
+    
+    *Me\value_n      = value
+    *Me\hard_min     = hard_min
+    *Me\hard_max     = hard_max
+    *Me\soft_min     = soft_min
+    *Me\soft_max     = soft_max
+    *Me\undo_esc     = ""
+    *Me\undo_ctz_t   = ""
+    *Me\over         = #False
+    *Me\down         = #False
+    *Me\focused      = #False
+    *Me\selected     = #False
+    *Me\posG         = 1
+    *Me\posW         = 1
+    *Me\posS         = 1
+    *Me\caret_switch = 1
+    *Me\timer_on     = #False
+    *Me\lookup_dirty = #True
+    *Me\lookup_count = 0
+   
+    
+    *Me\on_change = Object::NewCallback(*Me, "OnChange")
+    
+    ProcedureReturn( *Me )
+    
+  EndProcedure
 
-Procedure Term()
-EndProcedure
-
-Procedure SetTheme(theme.i)
-EndProcedure
-
-; ============================================================================
-;  CONSTRUCTORS
-; ============================================================================
-;{
-; ---[ Stack ]----------------------------------------------------------------
-Procedure.i New(*parent.Control::Control_t, name.s, value.d = 0.0, options.i = 0, hard_min = Math::#F32_MIN, hard_max = Math::#F32_MAX, soft_min = -1.0, soft_max = 1.0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
-  
-  ; ---[ Allocate Object Memory ]---------------------------------------------
-  Protected *Me.ControlNumber_t = AllocateStructure(ControlNumber_t)
-  
-  Object::INI(ControlNumber)
-
-  ; ---[ Init Members ]-------------------------------------------------------
-  *Me\type         = Control::#NUMBER
-  *Me\name         = name
-  *Me\parent       = *parent
-  *Me\gadgetID     = *parent\gadgetID
-  *Me\posX         = x
-  *Me\posY         = y
-  *Me\sizX         = width
-  *Me\sizY         = 20
-  *Me\visible      = #True
-  *Me\enable       = #True
-  *Me\options      = options
-  
-  If *Me\options & ControlNumber::#NUMBER_INTEGER
-    *Me\value = Str(value)
-  Else
-    *Me\value        = StrD( value, 3 )
-  EndIf
-  
-  *Me\value_n      = value
-  *Me\hard_min     = hard_min
-  *Me\hard_max     = hard_max
-  *Me\soft_min     = soft_min
-  *Me\soft_max     = soft_max
-  *Me\undo_esc     = ""
-  *Me\undo_ctz_t   = ""
-  *Me\over         = #False
-  *Me\down         = #False
-  *Me\focused      = #False
-  *Me\selected     = #False
-  *Me\posG         = 1
-  *Me\posW         = 1
-  *Me\posS         = 1
-  *Me\caret_switch = 1
-  *Me\timer_on     = #False
-  *Me\lookup_dirty = #True
-  *Me\lookup_count = 0
- 
-  
-  ; ---[ Signals ]------------------------------------------------------------
-  *Me\on_change = Object::NewCallback(*Me, "OnChange")
-  
-  ; ---[ Return Initialized Object ]------------------------------------------
-  ProcedureReturn( *Me )
-  
-EndProcedure
-
-;}
-
-  
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlNumber )
 EndModule
 
@@ -1210,7 +843,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 42
-; Folding = ----
+; CursorPosition = 609
+; FirstLine = 585
+; Folding = ---
 ; EnableXP

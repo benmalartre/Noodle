@@ -7,8 +7,8 @@ DeclareModule ControlEnum
   Global COLOR_OVER = RGBA(150,150,150,255)
   Global COLOR_DOWN = RGBA(255,140,120,255)
   
-  #ENUM_BORDER = 4
-  #ENUM_ITEM_HEIGHT = 24
+  #Enum_Border_Spacing = 4
+  #Enum_Item_Height = 24
   
   Structure ControlEnum_t Extends Control::Control_t
     label.s
@@ -25,9 +25,8 @@ DeclareModule ControlEnum
 
   Declare New(*parent.Control::Control_t,name.s,label.s,x.i,y.i,width.i,height.i)
   Declare Delete(*Me.ControlEnum_t)
-  Declare Draw(*Me.ControlEnum_t)
-  Declare DrawPickImage(*Me.ControlEnum_t, id.i)
-  Declare OnEvent(*Me.ControlEnum_t)
+  Declare Draw(*Me.ControlEnum_t, xoff.i = 0, yoff.i = 0 )
+  Declare OnEvent(*Me.ControlEnum_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null)
   Declare AddItem(*Me.ControlEnum_t, name.s, value.i)
   
   DataSection 
@@ -44,29 +43,29 @@ EndDeclareModule
 Module ControlEnum
   UseModule Globals
   
-  Procedure Draw(*Me.ControlEnum_t)
-    AddPathBox(*Me\posX+#ENUM_BORDER, *Me\posY+#ENUM_BORDER, *Me\sizX-2*#ENUM_BORDER, *Me\sizY-#ENUM_BORDER)
+  Procedure Draw(*Me.ControlEnum_t, xoff.i = 0, yoff.i = 0 )
+    AddPathBox(*Me\posX+#Enum_Border_Spacing, *Me\posY+#Enum_Border_Spacing, *Me\sizX-2*#Enum_Border_Spacing, *Me\sizY-#Enum_Border_Spacing)
     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     FillPath()
     
     VectorFont(FontID(font_label),12)
     Define offsety.i = *Me\sizY - VectorTextHeight(*Me\label)
-    MovePathCursor( *Me\posX + #ENUM_BORDER, *Me\posY + offsety + #ENUM_BORDER)
+    MovePathCursor( *Me\posX + #Enum_Border_Spacing, *Me\posY + offsety + #Enum_Border_Spacing)
     VectorSourceColor(UIColor::COLOR_LABEL)
     DrawVectorText(*Me\label)
     
     Define lwidth.i = VectorTextWidth(*Me\label) 
     Define hwidth.i = *Me\sizX * 0.5
     
-    MovePathCursor(lwidth + #ENUM_BORDER, *Me\sizY + #ENUM_BORDER + *Me\sizY - #ENUM_BORDER)
-    AddPathLine(hwidth-lwidth - 2 * #ENUM_BORDER, 0, #PB_Path_Relative)
+    MovePathCursor(lwidth + #Enum_Border_Spacing, *Me\sizY + #Enum_Border_Spacing + *Me\sizY - #Enum_Border_Spacing)
+    AddPathLine(hwidth-lwidth - 2 * #Enum_Border_Spacing, 0, #PB_Path_Relative)
     StrokePath(1)
     
-    AddPathBox(*Me\posX + hwidth + #ENUM_BORDER, *Me\posY + #ENUM_BORDER, hwidth - 2 * #ENUM_BORDER, *Me\sizY)
+    AddPathBox(*Me\posX + hwidth + #Enum_Border_Spacing, *Me\posY + #Enum_Border_Spacing, hwidth - 2 * #Enum_Border_Spacing, *Me\sizY)
     VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
     StrokePath(1)
 
-    MovePathCursor(*Me\posX + *Me\sizX - 16, *Me\posY + 2 * #ENUM_BORDER)
+    MovePathCursor(*Me\posX + *Me\sizX - 16, *Me\posY + 2 * #Enum_Border_Spacing)
     AddPathLine(8,0, #PB_Path_Relative)
     AddPathLine(-4,6, #PB_Path_Relative)
     AddPathLine(-4,-6, #PB_Path_Relative)
@@ -74,16 +73,10 @@ Module ControlEnum
     
     If *Me\items(*Me\current)
       VectorSourceColor(UIColor::COLOR_LABEL_MARKED)
-      MovePathCursor( *Me\posX + hwidth +#ENUM_BORDER, *Me\posY + offsety + #ENUM_BORDER)
+      MovePathCursor( *Me\posX + hwidth +#Enum_Border_Spacing, *Me\posY + offsety + #Enum_Border_Spacing)
       DrawVectorText(*Me\items(*Me\current)\key)
       FillPath()
     EndIf
-  EndProcedure
-  
-  Procedure DrawPickImage(*Me.ControlEnum_t, id.i)
-    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    VectorSourceColor(RGBA(id,0,0,255))
-    FillPath()
   EndProcedure
   
   Procedure AddItem(*Me.ControlEnum_t, name.s, value.i)
@@ -95,7 +88,7 @@ Module ControlEnum
   
   Procedure PopupSize(*Me.ControlEnum_t)
     *Me\popup_width = 64
-    *Me\popup_height = ArraySize(*Me\items()) * #ENUM_ITEM_HEIGHT
+    *Me\popup_height = ArraySize(*Me\items()) * #Enum_Item_Height
   EndProcedure
   
   Procedure DrawPopup(*Me.ControlEnum_t, mx.f, my.f)
@@ -103,7 +96,7 @@ Module ControlEnum
     Define i.i = 0
     Define current.i = -1
     For i=0 To ArraySize(*Me\items())-1
-      AddPathBox(0, i * #ENUM_ITEM_HEIGHT, *Me\popup_width, #ENUM_ITEM_HEIGHT)
+      AddPathBox(0, i * #Enum_Item_Height, *Me\popup_width, #Enum_Item_Height)
       If IsInsidePath(mx, my)
         VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
         current = i
@@ -113,7 +106,7 @@ Module ControlEnum
       
       FillPath()
       VectorFont(FontID(font_label), 16)
-      MovePathCursor(#ENUM_BORDER, i * #ENUM_ITEM_HEIGHT + #ENUM_BORDER)
+      MovePathCursor(#Enum_Border_Spacing, i * #Enum_Item_Height + #Enum_Border_Spacing)
       AddPathText(*Me\items(i)\key)
       
       VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
@@ -126,8 +119,8 @@ Module ControlEnum
   Procedure Popup(*Me.ControlEnum_t)
     PopupSize(*Me)
     Define parent = EventWindow()
-    Define mx = (GadgetX(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posX + *Me\sizX - #ENUM_BORDER) - *Me\popup_width
-    Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY + #ENUM_BORDER
+    Define mx = (GadgetX(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posX + *Me\sizX - #Enum_Border_Spacing) - *Me\popup_width
+    Define my = GadgetY(*Me\gadgetID, #PB_Gadget_ScreenCoordinate) + *Me\posY + #Enum_Border_Spacing
     Define window = OpenWindow(#PB_Any,mx, my, *Me\popup_width,*Me\popup_height, "", #PB_Window_BorderLess,WindowID(*Me\window))
     StickyWindow(window,#True)
     
@@ -173,18 +166,35 @@ Module ControlEnum
     
   EndProcedure
   
+  Procedure OnEvent(*Me.ControlEnum_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null)
+    
+    Select ev_code
+      
+      Case Control::#PB_EventType_Draw
+        If Not *ev_data : ProcedureReturn : EndIf
+        
+        Draw( *Me, *ev_data\xoff, *ev_data\yoff )
+        ProcedureReturn( #True )
   
-  Procedure OnEvent(*Me.ControlEnum_t)
-    Select EventType()
+      Case #PB_EventType_Resize
+        If Not *ev_data : ProcedureReturn : EndIf
+        
+        *Me\sizY = 20
+        If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
+        If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
+        If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
+        ProcedureReturn( #True )
+        
       Case #PB_EventType_LeftClick
         Debug "Popup Left Click Event"
         Popup(*Me)
         Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
         Control::Invalidate(*Me)
+
     EndSelect
   EndProcedure
   
-    Procedure Delete(*Me.ControlEnum_t)
+  Procedure Delete(*Me.ControlEnum_t)
     Object::TERM(ControlEnum)
   EndProcedure
   
@@ -209,7 +219,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 135
-; FirstLine = 127
+; CursorPosition = 191
+; FirstLine = 159
 ; Folding = --
 ; EnableXP
