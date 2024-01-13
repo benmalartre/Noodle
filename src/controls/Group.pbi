@@ -61,8 +61,6 @@ Module ControlGroup
 
   Procedure.i Resize( *Me.ControlGroup::ControlGroup_t, *ev_data.Control::EventTypeDatas_t )
 
-    If *Me\chilcount < 1 : ProcedureReturn : EndIf
-    
     Protected dirty   .i = #False
     Protected i       .i = 0
     Protected j       .i = 0
@@ -90,8 +88,7 @@ Module ControlGroup
       EndIf
       
     EndIf
-    
-    
+
     If *Me\options & #Autostack
       If lablen : curV = 20 : Else : curV = 14 : EndIf
       curH = 10
@@ -152,23 +149,15 @@ Module ControlGroup
     EndIf
   
     
-;     ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-;     ; 같�[ Vertical Size ]같같같같같같같같같같같같같같같같같같같같같같같같같같같
-;     ; 같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같
-;     
-;     ; ---[ Size Parent ]--------------------------------------------------------
-;     If *Me\options & #Autosize_V
-;       ; ...[ Reset Max Value ]..................................................
-;       maxV = 0
-;       ; ...[ Look For Children Max Height ].....................................
-;       For i=0 To iBound
-;         *Son  = *Me\children(i)
-;         curV = *Son\posY + *Son\sizY
-;         If curV > maxV : maxV = curV : EndIf
-;       Next
-;       ; ...[ Update Group Height ]..............................................
-;       If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
-;     EndIf
+    If *Me\options & #Autosize_V
+      maxV = 0
+      For i=0 To iBound
+        *Son  = *Me\children(i)
+        curV = *Son\posY + *Son\sizY
+        If curV > maxV : maxV = curV : EndIf
+      Next
+      If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
+    EndIf
     
     If #True = dirty
       ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
@@ -245,28 +234,6 @@ Module ControlGroup
       FillPath()
     EndIf
     
-;         
-;     Protected label.s = *Me\label
-;     Protected lalen.i = Len(label)
-;     Protected maxW .i = *Me\sizX - 21
-;     Protected curW .i
-;     If *Me\chilcount
-;       Protected i     .i = 0
-;       Protected iBound.i = *Me\chilcount - 1
-;       Protected  son  .Control::IControl
-;       Protected *son  .Control::Control_t
-;       Protected ev_data.Control::EventTypeDatas_t
-; 
-;       For i=0 To iBound
-;          son = *Me\children(i)
-;         *son = son
-;         ev_data\xoff = *son\posX + *Me\posX
-;         ev_data\yoff = *son\posY + *Me\posY
-;         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
-;       Next
-;     EndIf
-;     
-
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
@@ -286,13 +253,14 @@ Module ControlGroup
    
     If Not *Me\options & #NoFrame
       Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
+      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
+
+      FillPath(#PB_Path_Preserve)
       VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
-      StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)  
+      StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)
+      
     EndIf
     
-    AddPathBox( *Me\posX+12, *Me\posY, curW+6, 12)
-    VectorSourceColor(UIColor::COLOR_MAIN_BG )
-    FillPath()
     MovePathCursor(*Me\posX+15,  *Me\posY)
     VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
     DrawVectorText( label )
@@ -317,7 +285,6 @@ Module ControlGroup
     
     If init : StopVectorDrawing() : EndIf 
 
-   
   EndProcedure
 
   Procedure Pick(*Me.ControlGroup_t)
@@ -385,42 +352,9 @@ Module ControlGroup
     
     Select ev_code
       Case #PB_EventType_Resize
-        
-        If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
-        If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
-        If *ev_data\width <> #PB_Ignore : *Me\sizX = *ev_data\width : EndIf
-        If *ev_data\height <> #PB_Ignore : *Me\sizY = *ev_data\height : EndIf
-        
-        If *Me\percX > 0 : *Me\sizX = *Me\parent\sizX * (*Me\percX / 100) : EndIf
-        If *Me\percY > 0 : *Me\sizY = *Me\parent\sizY * (*Me\percY / 100) : EndIf
-        Define ev_data.Control::EventTypeDatas_t
-        ev_data\x = 0
-        ev_data\y = 0
-        ev_data\width = *ev_data\width
-        ev_data\height = *ev_data\height
-        
-        For c=0 To *Me\chilcount - 1
-          If *Me\rowflags(c) 
-            nbc_row = ControlGroup::GetNumControlInRow(*Me, c)
-            ev_data\y + ControlGroup::ResizeControlsInRow(*Me, c, nbc_row)
-            
-            c + nbc_row - 1
-          Else
-            son = *Me\children(c)
-            *son = son
-            If *son\type = Control::#ICON Or *son\type = Control::#TEXT: Continue : EndIf
-            ev_data\width = *ev_data\width
-            ev_data\height = #PB_Ignore
-            son\OnEvent(#PB_EventType_Resize, ev_data)
-            ev_data\y + *son\sizY
-          EndIf
-        Next
-        
         Resize( *Me, *ev_data)
         Draw( *Me, #True)
-        
         ControlGroup::DrawPickImage(*Me)
-        
         ProcedureReturn( #True )
 
       Case Control::#PB_EventType_DrawChild
@@ -662,7 +596,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 221
+; CursorPosition = 286
+; FirstLine = 287
 ; Folding = ----
 ; EnableXP

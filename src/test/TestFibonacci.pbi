@@ -89,7 +89,7 @@ Procedure NewFibonacciDemo(name.s, width.i=1200, height=800, options=#Demo_With_
     ControlEnum::AddItem(*demo\mode, "Disc", 1)
     Callback::CONNECT_CALLBACK(*demo\mode\on_change, Update, *demo)
     
-    *demo\text = ControlProperty::AddStringControl(*prop, "Name", "", #Null)
+;     *demo\text = ControlProperty::AddStringControl(*prop, "Name", "", #Null)
 
     
     ControlProperty::EndGroup(*prop)
@@ -108,6 +108,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 52
+; CursorPosition = 91
+; FirstLine = 43
 ; Folding = -
 ; EnableXP

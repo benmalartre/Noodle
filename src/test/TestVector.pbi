@@ -16,8 +16,6 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 
-; Draw
-;--------------------------------------------
 Procedure Draw(*demo.DemoApplication::DemoApplication_t)
   CanvasUI::OnEvent(*canvas, Event())
   
@@ -112,9 +110,11 @@ Procedure AddSomeMoreSTuff(*sheet.Sheet::Sheet_t)
  Sheet::AddItem(*sheet, *master)
 EndProcedure
 
- *demo = DemoApplication::New("Test Vector Library",width,height)
+*demo = AllocateStructure(DemoApplication::DemoApplication_t)
+DemoApplication::Init(*demo, "Test Vector Library",width,height, 0)
   
- *canvas = CanvasUI::New(DemoApplication::GetView(*demo))
+*canvas = *demo\canvas
+Debug "CANVAS : "+Str(*demo\canvas)
  Define *sheet1.Sheet::Sheet_t = Sheet::New(*canvas\sizX,*canvas\sizY,0, "Sheet")
  Define *sheet2.Sheet::Sheet_t = Sheet::New(*canvas\sizX,*canvas\sizY,1, "Sheet")
  
@@ -137,12 +137,11 @@ EndProcedure
  CanvasUI::AddSheet(*canvas, *sheet1)
  CanvasUI::AddSheet(*canvas, *sheet2)
  CanvasUI::SetActiveTool(*canvas, 0)
-
- Application::Loop(*demo, DemoApplication::@Draw())
+ 
+ Application::Loop(*demo, DemoApplication::@Update())
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 86
+; CursorPosition = 17
 ; Folding = -
 ; EnableXP

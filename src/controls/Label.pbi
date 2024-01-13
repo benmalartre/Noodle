@@ -56,35 +56,23 @@ Module ControlLabel
   ; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlLabel_t, xoff.i = 0, yoff.i = 0 )
 
-    ; ---[ Check Visible ]------------------------------------------------------
     If Not *Me\visible : ProcedureReturn( void ) : EndIf
-  
-    ; ---[ Label Color ]--------------------------------------------------------
+    
     Protected tc.i
     If *Me\value
       tc = UIColor::COLOR_LABEL_MARKED
     Else
       tc = UIColor::COLOR_LABEL
     EndIf
-    
-    ; ---[ Background ]---------------------------------------------------------
-    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    VectorSourceColor(UIColor::COLOR_MAIN_BG)
-    FillPath()
-    
-    ; ---[ Set Font ]-----------------------------------------------------------
+
     VectorFont( FontID(Globals::#FONT_DEFAULT ), Globals::#FONT_SIZE_LABEL)
     Protected ty = ( *Me\sizY - VectorTextHeight( *Me\label ) )/2 + yoff
     
-    ; ---[ Reset Clipping ]-----------------------------------------------------
     
-    ; ---[ Check Disabled ]-----------------------------------------------------
     If Not *Me\enable
-      ; ...[ Disabled Text ]....................................................
       tc = UIColor::COLOR_LABEL_DISABLED
     EndIf
     
-    ; ---[ Local Variables ]----------------------------------------------------
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX
@@ -99,23 +87,7 @@ Module ControlLabel
       lalen = Len(label)
       label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
     EndIf
-    
-;     AddPathBox( -6 + xoff, ty-3, 6, 20)
-;     If *Me\over
-;       VectorSourceColor(UIColor::COLOR_SECONDARY_BG )
-;     Else
-;       VectorSourceColor(UIColor::COLOR_MAIN_BG )
-;     EndIf
-;     
-;     FillPath()
-;     If *Me\value
-;       AddPathBox( -3 + xoff, ty-2, VectorTextWidth(label)+6, 18)
-;       VectorSourceColor( UIColor::COLOR_LABEL_MARKED )
-;       FillPath(#PB_Path_Preserve)
-;       VectorSourceColor(UIColor::COLOR_LABEL_DISABLED)
-;       StrokePath(2)
-;     EndIf
-    
+
     MovePathCursor(0 + xoff, ty)
     VectorSourceColor(tc)
     DrawVectorText(*Me\label)
@@ -356,8 +328,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 322
-; FirstLine = 300
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 89
+; FirstLine = 53
 ; Folding = --
 ; EnableXP

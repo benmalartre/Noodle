@@ -42,13 +42,12 @@ Module ControlEnum
   UseModule Math
   
   Procedure Draw(*Me.ControlEnum_t, xoff.i = 0, yoff.i = 0 )
-
-    AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    Vector::RoundBoxPath( xoff, yoff, *Me\sizX , *Me\sizY , 2)
     VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath()
 
     VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
-    MovePathCursor(*Me\posX + *Me\sizX - 16, *Me\posY + 2 * #Enum_Border_Spacing)
+    MovePathCursor(xoff + *Me\sizX - 16, yoff + 2 * #Enum_Border_Spacing)
     AddPathLine(8,0, #PB_Path_Relative)
     AddPathLine(-4,6, #PB_Path_Relative)
     AddPathLine(-4,-6, #PB_Path_Relative)
@@ -56,7 +55,7 @@ Module ControlEnum
     If *Me\items(*Me\current)
       VectorFont(FontID(Globals::#Font_Default), Globals::#Font_Size_Label)
       
-      MovePathCursor( *Me\posX +#Enum_Border_Spacing, *Me\posY + #Enum_Border_Spacing)
+      MovePathCursor( xoff +#Enum_Border_Spacing, yoff + #Enum_Border_Spacing)
       DrawVectorText(*Me\items(*Me\current)\key)
       FillPath()
     EndIf
@@ -220,7 +219,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 150
+; CursorPosition = 45
+; FirstLine = 20
 ; Folding = --
 ; EnableXP

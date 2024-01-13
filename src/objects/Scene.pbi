@@ -728,7 +728,7 @@ Module Scene
           Transform::SetTranslationFromXYZValues(*t,x-nx*0.5,y+2,z-nz*0.5)
           Quaternion::SetFromEulerAngles(rot,Random(360),Random(360),Random(360))
           Transform::SetRotationFromQuaternion(*t,rot)
-          Define s.f = RANDOM_0_1()
+          Define s.f = RANDOM_0_1() * 0.5
           Transform::SetScaleFromXYZValues(*t, s, s, s)
           Object3D::SetLocalTransform(*mesh,*t)
 
