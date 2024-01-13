@@ -387,13 +387,15 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ProcedureReturn( #True )
       
     Case #PB_EventType_LostFocus
+      
       If *Me\state & Control::#State_Focused
         If *me\options & #Number_Integer
           *Me\value = Str(*Me\value_n)
         Else
           *Me\value = StrD(*Me\value_n,3)
         EndIf
-          *Me\lookup_dirty = #True
+        *Me\lookup_dirty = #True
+        Globals::BitMaskClear(*Me\state, Control::#State_Focused)
       EndIf
     
       ;RemoveWindowTimer( #MainWindow, #TIMER_CARET )
@@ -489,7 +491,9 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       EndIf
       
     Case #PB_EventType_LeftDoubleClick
+      Debug "We have fiuckin double left clicl event"
       If *Me\visible And *Me\enable
+        Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
         If *Me\state & Control::#State_Focused
           If Not  *ev_data : ProcedureReturn : EndIf
           
@@ -497,6 +501,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           hlpSelectWord( *Me, hlpCharPosFromMousePos( *Me, *ev_data\x ) )
         Else
           Globals::BitMaskSet(*Me\state, Control::#State_Focused)
+          Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
           *Me\undo_esc = *Me\value
           Control::SetCursor(*Me, #PB_Cursor_IBeam )
           Control::Focused(*Me)
@@ -529,6 +534,8 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_Input
       If Not *ev_data : ProcedureReturn : EndIf
+      
+      Debug "input :"+*ev_data\input
       
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       If *Me\posW > *Me\posG
@@ -565,9 +572,10 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
           EndIf
           *Me\posG = 1 : *Me\posW = 1
           *Me\lookup_dirty = #True
-          Control::Invalidate(*Me)
-          
+
           Callback::Trigger(*Me\on_change,Callback::#SIGNAL_TYPE_PING)
+          Control::DeFocused(*Me)
+          Control::Invalidate(*Me)
           
           ProcedureReturn( #True )
 
@@ -835,7 +843,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 502
-; FirstLine = 480
+; CursorPosition = 537
+; FirstLine = 526
 ; Folding = ---
 ; EnableXP

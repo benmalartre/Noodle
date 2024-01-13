@@ -3,9 +3,9 @@ XIncludeFile "../core/Control.pbi"
 
 DeclareModule ControlEnum
   
-  Global COLOR_DEFAULT = RGBA(140,140,140,255)
-  Global COLOR_OVER = RGBA(150,150,150,255)
-  Global COLOR_DOWN = RGBA(255,140,120,255)
+  Global COLOR_DEFAULT  = RGBA(140,140,140,255)
+  Global COLOR_OVER     = RGBA(150,150,150,255)
+  Global COLOR_DOWN     = RGBA(255,140,120,255)
   
   #Enum_Border_Spacing = 4
   #Enum_Item_Height = 24
@@ -44,27 +44,23 @@ Module ControlEnum
   Procedure Draw(*Me.ControlEnum_t, xoff.i = 0, yoff.i = 0 )
 
     AddPathBox(*Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    ;     VectorSourceColor(UIColor::COLOR_MAIN_BG)
     VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath()
-    
-;     AddPathBox(*Me\posX + #Enum_Border_Spacing, *Me\posY + #Enum_Border_Spacing, *Me\sizX - 2 * #Enum_Border_Spacing, *Me\sizY)
-;     VectorSourceColor(UIColor::COLOR_LINE_DIMMED)
-;     StrokePath(1)
 
+    VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
     MovePathCursor(*Me\posX + *Me\sizX - 16, *Me\posY + 2 * #Enum_Border_Spacing)
     AddPathLine(8,0, #PB_Path_Relative)
     AddPathLine(-4,6, #PB_Path_Relative)
     AddPathLine(-4,-6, #PB_Path_Relative)
     FillPath()
-    
     If *Me\items(*Me\current)
       VectorFont(FontID(Globals::#Font_Default), Globals::#Font_Size_Label)
-      VectorSourceColor(UIColor::COLOR_LABEL_MARKED)
+      
       MovePathCursor( *Me\posX +#Enum_Border_Spacing, *Me\posY + #Enum_Border_Spacing)
       DrawVectorText(*Me\items(*Me\current)\key)
       FillPath()
     EndIf
+    
   EndProcedure
   
   Procedure AddItem(*Me.ControlEnum_t, name.s, value.i)
@@ -168,6 +164,7 @@ Module ControlEnum
       Case #PB_EventType_LeftButtonDown
         Popup(*Me)
         Callback::Trigger(*Me\on_change, Callback::#SIGNAL_TYPE_PING)
+        Control::DeFocused(*Me)
         Control::Invalidate(*Me)
  
       Case #PB_EventType_MouseEnter
@@ -184,8 +181,7 @@ Module ControlEnum
           ProcedureReturn( #True )
         EndIf
         
-      Case #PB_EventType_MouseMove
-        
+      Case #PB_EventType_MouseMove        
         If *Me\visible And *Me\enable
           
           Control::Invalidate(*Me)
@@ -222,7 +218,6 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 106
-; FirstLine = 69
+; CursorPosition = 5
 ; Folding = --
 ; EnableXP

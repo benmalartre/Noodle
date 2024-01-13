@@ -7,9 +7,7 @@ XIncludeFile "../core/UIColor.pbi"
 ;  CONTROL BUTTON MODULE DECLARATION
 ; ==============================================================================
 DeclareModule ControlButton
-  ; ----------------------------------------------------------------------------
-  ;  Object ( ControlButton_t )
-  ; ----------------------------------------------------------------------------
+
   Structure ControlButton_t Extends Control::Control_t
     value.i
     label.s
@@ -25,9 +23,6 @@ DeclareModule ControlButton
   Declare Delete(*Me.ControlButton_t)
   Declare OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
-  ; ============================================================================
-  ;  VTABLE ( Object + Control + ControlButton )
-  ; ============================================================================
   DataSection
     ControlButtonVT:
     Data.i @OnEvent()
@@ -46,19 +41,12 @@ EndDeclareModule
 ;  IMPLEMENTATION ( Helpers )
 ; ============================================================================
 Module ControlButton
-;{
-; ----------------------------------------------------------------------------
-;  hlpDraw
-; ----------------------------------------------------------------------------
   Procedure Draw( *Me.ControlButton_t, xoff.i = 0, yoff.i = 0 )
-  
-  ;---[ Check Visible ]-------------------------------------------------------
+
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
-  ; ---[ Label Color ]--------------------------------------------------------
   Protected tc.i = UIColor::COLOR_LABEL
   
-  ; ---[ Set Font ]-----------------------------------------------------------
   VectorFont(FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL)
   Protected tx = ( *Me\sizX - VectorTextWidth ( *Me\label ) )*0.5 + xoff
   Protected ty = (*Me\sizY - VectorTextHeight( *Me\label ) )*0.5+ yoff
@@ -69,7 +57,6 @@ Module ControlButton
   VectorSourceColor(UIColor::COLOR_MAIN_BG)
   FillPath()
   
-  ; ---[ Check Disabled ]-----------------------------------------------------
   If Not *Me\enable
     Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
     VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
@@ -81,9 +68,7 @@ Module ControlButton
       FillPath()
     EndIf
     tc = UIColor::COLOR_LABEL_DISABLED
-  Else
-    ; ---[ Check Over ]-------------------------------------------------------
-    
+  Else    
     If *Me\down Or  *Me\value < 0 
       Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
       VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
@@ -120,54 +105,32 @@ Module ControlButton
     
   EndIf  
   
-  ; ---[ Draw Label ]---------------------------------------------------------
   MovePathCursor(tx, ty )
   VectorSourceColor(UIColor::COLOR_TEXT_DEFAULT)
   DrawVectorText(*Me\label)
   
 EndProcedure
-;}
-
 
 ; ============================================================================
 ;  OVERRIDE ( CControl )
 ; ============================================================================
-;{
-; ---[ OnEvent ]--------------------------------------------------------------
 Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-  ; ---[ Retrieve Interface ]-------------------------------------------------
   Protected Me.Control::IControl = *Me
 
-  ; ---[ Dispatch Event ]-----------------------------------------------------
   Select ev_code
-      
-    ; ------------------------------------------------------------------------
-    ;  Draw
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
-      ; ...[ Draw Control ]...................................................
       Draw( *Me, *ev_data\xoff, *ev_data\yoff )
-      ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  Resize
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_Resize
-      ; ...[ Sanity Check ]...................................................
       If Not *ev_data : ProcedureReturn : EndIf
       
-      ; ...[ Update Topology ]................................................
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
       If #PB_Ignore <> *ev_data\y      : *Me\posY = *ev_data\y      : EndIf
       If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
       If #PB_Ignore <> *ev_data\height : *Me\sizY = *ev_data\height : EndIf
-      ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  MouseEnter
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseEnter
       
       If *Me\visible And *Me\enable
@@ -175,18 +138,12 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         Control::Invalidate(*Me)
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseLeave
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseLeave
       If *Me\visible And *Me\enable
         *Me\over = #False
         Control::Invalidate(*Me)
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseMove
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
       If *Me\visible And *Me\enable
         If *Me\down And *ev_data
@@ -197,19 +154,13 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
           EndIf
         EndIf
       EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonDown
-    ; ------------------------------------------------------------------------
+
     Case #PB_EventType_LeftButtonDown
       If *Me\visible And *Me\enable And *Me\over
         *Me\down = #True
         Control::Invalidate(*Me)
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonUp
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
         *Me\down = #False
@@ -221,76 +172,53 @@ Procedure.i OnEvent( *Me.ControlButton_t, ev_code.i, *ev_data.Control::EventType
         Control::Invalidate(*Me)
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  Enable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Enable
       If *Me\visible And Not *Me\enable
         *Me\enable = #True
         Control::Invalidate(*Me)
       EndIf
-      ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
 
-    ; ------------------------------------------------------------------------
-    ;  Disable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Disable
       If *Me\visible And *Me\enable
         *Me\enable = #False
         Control::Invalidate(*Me)
       EndIf
-      ; ...[ Processed ]......................................................
       ProcedureReturn( #True )
 
   EndSelect
   
-  ; ---[ Process Default ]----------------------------------------------------
   ProcedureReturn( #False )
   
 EndProcedure
-;}
-
 
 ; ============================================================================
 ;  IMPLEMENTATION ( ControlButton )
 ; ============================================================================
-;{
-; ---[ SetLabel ]-------------------------------------------------------------
 Procedure SetLabel( *Me.ControlButton_t, value.s )
-  
-  ; ---[ Set String Value ]---------------------------------------------------
   *Me\label = value
-  
 EndProcedure
-; ---[ GetLabel ]-------------------------------------------------------------
+
 Procedure.s GetLabel( *Me.ControlButton_t )
-  
-  ; ---[ Return String Value ]------------------------------------------------
   ProcedureReturn( *Me\label )
-  
 EndProcedure
 
 ; ============================================================================
 ;  DESTRUCTOR
 ; ============================================================================
 Procedure Delete( *Me.ControlButton_t )
-  ; ---[ Terminate Object (deallocate Callbacks) ]------------------------------
   Object::TERM(ControlButton)
 EndProcedure
-
 
 ; ============================================================================
 ;  CONSTRUCTOR
 ; ============================================================================
 Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #False, options.i = 0, x.i = 0, y.i = 0, width.i = 46, height.i = 21 , color.i=8421504)
   
-  ; ---[ Allocate Object Memory ]---------------------------------------------
   Protected *Me.ControlButton_t = AllocateStructure(ControlButton_t)
   
   Object::INI(ControlButton)
     
-  ; ---[ Init Members ]-------------------------------------------------------
   *Me\type       = Control::#BUTTON
   *Me\name       = name
   *Me\parent     = *parent
@@ -311,16 +239,13 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   If value          : *Me\value = -1    : Else : *Me\value = 1    : EndIf
   If Len(label) > 0 : *Me\label = label : Else : *Me\label = name : EndIf
   
-  ; ---[ Callbacks ]------------------------------------------------------------
   *Me\on_change = Object::NewCallback(*Me, "OnChange")
   *Me\on_click = Object::NewCallback(*Me, "OnClick")
   
-  ; ---[ Return Initialized Object ]------------------------------------------
   ProcedureReturn( *Me )
   
 EndProcedure
 
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlButton )
 EndModule
 
@@ -328,7 +253,6 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 235
-; FirstLine = 215
+; CursorPosition = 41
 ; Folding = --
 ; EnableXP

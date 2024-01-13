@@ -28,7 +28,8 @@ DeclareModule ControlProperty
     valid     .b
     *object.Object::Object_t
     *head.ControlHead::ControlHead_t
-    List *groups.ControlGroup::ControlGroup_t()
+    *group.ControlGroup::ControlGroup_t
+;     List *groups.ControlGroup::ControlGroup_t()
 
     decoration.i
     lock.Control::IControl
@@ -44,8 +45,8 @@ DeclareModule ControlProperty
   
   Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,decoration=#PROPERTY_LABELED)
   Declare Delete(*Me.ControlProperty_t)
-  Declare OnEvent( *Me.ControlProperty_t,ev_code.i,*ev_data.Control::EventTypeDatas_t = #Null)  
-  Declare Draw( *Me.ControlProperty_t)
+;   Declare OnEvent( *Me.ControlProperty_t,ev_code.i,*ev_data.Control::EventTypeDatas_t = #Null)  
+;   Declare Draw( *Me.ControlProperty_t)
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
   Declare AppendStop( *Me.ControlProperty_t )
@@ -80,9 +81,9 @@ DeclareModule ControlProperty
   
   DataSection 
     ControlPropertyVT: 
-    Data.i @OnEvent()
+    Data.i ControlGroup::@OnEvent()
     Data.i @Delete()
-    Data.i @Draw()
+    Data.i ControlGroup::@Draw()
     Data.i ControlGroup::@DrawPickImage()
     Data.i ControlGroup::@Pick()
   EndDataSection
@@ -221,7 +222,7 @@ Module ControlProperty
     
     Protected ev_data.Control::EventTypeDatas_t 
     *Me\focuschild = *Me\children(n)
-    *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
+    *Me\focuschild\OnEvent(#PB_EventType_Focus,ev_data)
   EndProcedure
 
   ; ----------------------------------------------------------------------------
@@ -372,14 +373,14 @@ Module ControlProperty
     *Me\dx =0
     Protected *Ctl.Control::Control_t
 
-    If  ListSize(*Me\groups()) And *Me\groups()
+    If *Me\group
       If toggable
         *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       Else
         *btn = ControlButton::New(*Me,name,name,#False, #PB_Button_Toggle,*Me\dx,*Me\dy+2,width,height, color )
       EndIf
-      ControlGroup::Append(*Me\groups(),*btn)
-      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
+      ControlGroup::Append(*Me\group,*btn)
+      If Not *Me\group\row Or Not *Me\group\chilcount > 1 : *Me\dy + height : EndIf
     Else
       If toggable
         *btn = ControlButton::New(*Me,name,name,#False, #PB_Button_Toggle,*Me\dx,*Me\dy+2,width,height, color )
@@ -403,10 +404,10 @@ Module ControlProperty
     Protected *icon.ControlIcon::ControlIcon_t
     Protected *ctl.Control::Control_t
     
-    If  ListSize(*Me\groups()) And *Me\groups()
+    If *Me\group
       *icon = ControlIcon::New( *Me ,name, type, #False, #False , *Me\dx, *Me\dy, width, height )
-      ControlGroup::Append(*Me\groups(),*icon)
-      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
+      ControlGroup::Append(*Me\group,*icon)
+      If Not *Me\group\row Or Not *Me\group\chilcount > 1 : *Me\dy + height : EndIf
     Else
       *icon = ControlIcon::New( *Me ,name, type, #False, #False , *Me\dx, *Me\dy, width, height )
       Append( *Me, *icon)
@@ -427,10 +428,10 @@ Module ControlProperty
     Protected *knob.ControlKnob::ControlKnob_t
     Protected *ctl.Control::Control_t
     
-    If  ListSize(*Me\groups()) And *Me\groups()
+    If *Me\group
       *knob = ControlKnob::New(*Me,name,0, 0,*Me\dx,*Me\dy,width,height, color )
-      ControlGroup::Append(*Me\groups(),*knob)
-      If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
+      ControlGroup::Append(*Me\group,*knob)
+      If Not *Me\group\row Or Not *Me\group\chilcount > 1 : *Me\dy + height : EndIf
     Else
       *knob = ControlKnob::New(*Me,name,0, 0,*Me\dx,*Me\dy,width,height, color )
       Append( *Me, *knob)
@@ -450,12 +451,12 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
     Protected *ctl.Control::Control_t
     
-    If  ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::RowStart(*Me\groups())
-      ControlGroup::Append(*Me\groups(),ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append(*Me\groups(),ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlGroup::Append(*Me\groups(),ControlCheck::New(*Me,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
-      ControlGroup::RowEnd(*Me\groups())
+    If *Me\group
+      ControlGroup::RowStart(*Me\group)
+      ControlGroup::Append(*Me\group,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append(*Me\group,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlGroup::Append(*Me\group,ControlCheck::New(*Me,name+"Check",name, value,0,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      ControlGroup::RowEnd(*Me\group)
     Else
       RowStart(*Me)
       Append( *Me,ControlDivot::New(*Me,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -483,13 +484,13 @@ Module ControlProperty
     *Me\dx = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    If ListSize(*Me\groups()) And *Me\groups()
-     ControlGroup::RowStart( *Me\groups())
-      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
+    If *Me\group
+     ControlGroup::RowStart( *Me\group)
+      ControlGroup::Append( *Me\group, ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\group, ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl = ControlNumber::New(*Me,name+"Number",value,ControlNumber::#NUMBER_INTEGER,-1000,1000,0,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
-      ControlGroup::Append( *Me\groups(), *ctl  )
-      ControlGroup::RowEnd( *Me\groups())
+      ControlGroup::Append( *Me\group, *ctl  )
+      ControlGroup::RowEnd( *Me\group)
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -518,13 +519,13 @@ Module ControlProperty
     *Me\dx = 0
     Protected width = GadgetWidth(*Me\gadgetID)-10
         
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::RowStart( *Me\groups())
-      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
+    If *Me\group
+      ControlGroup::RowStart( *Me\group)
+      ControlGroup::Append( *Me\group, ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\group, ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl =  ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
-      ControlGroup::Append(*Me\groups(), *ctl)
-      ControlGroup::RowEnd( *Me\groups())
+      ControlGroup::Append(*Me\group, *ctl)
+      ControlGroup::RowEnd( *Me\group)
     Else
       RowStart(*Me)
       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -575,8 +576,8 @@ Module ControlProperty
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
   
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::Append(*Me\groups(),*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
     Else
       Append(*Me,*group)
     EndIf
@@ -625,8 +626,8 @@ Module ControlProperty
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
   
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::Append(*Me\groups(),*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
     Else
       Append(*Me,*group)
     EndIf
@@ -676,8 +677,8 @@ Module ControlProperty
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
     
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::Append(*Me\groups(),*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
     Else
       Append(*Me,*group)
     EndIf
@@ -736,8 +737,8 @@ Module ControlProperty
     ControlGroup::RowEnd(*group)
     ControlGroup::AppendStop(*group)
   
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::Append(*Me\groups(),*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
   
     Else
       Append(*Me,*group)
@@ -796,9 +797,8 @@ Module ControlProperty
     Next
     ControlGroup::AppendStop(*group)
   
-    If ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::Append(*Me\groups(),*group)
-  
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
     Else
       Append(*Me,*group)
     EndIf
@@ -832,7 +832,11 @@ Module ControlProperty
       Callback::CONNECT_CALLBACK(*ctl\on_change, OnReferenceChange, *ctl, *attr, 0, 0)
     EndIf
     
-    Append(*Me,*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
+    Else
+      Append(*Me,*group)
+    EndIf
     
     *Me\dy +*group\sizY
     ProcedureReturn(#True)
@@ -864,7 +868,12 @@ Module ControlProperty
       Callback::CONNECT_CALLBACK(*ctl\on_change, OnFileChange, *ctl, *attr, 0, 0)
     EndIf
     
-    Append(*Me,*group)
+    If *Me\group
+      ControlGroup::Append(*Me\group,*group)
+    Else
+      Append(*Me,*group)
+    EndIf
+    
     *Me\dy +*group\sizY
     ProcedureReturn(#True)
   EndProcedure
@@ -880,12 +889,12 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
     Protected *ctl.Control::Control_t
     
-    If  ListSize(*Me\groups()) And *Me\groups()
-      ControlGroup::RowStart(*Me\groups())
-      ControlGroup::Append(*Me\groups(),ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
-      ControlGroup::Append(*Me\groups(),ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
-      *ctl = ControlGroup::Append(*Me\groups(),ControlEnum::New(*Me,name+"Check",name,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
-      ControlGroup::RowEnd(*Me\groups())
+    If *Me\group
+      ControlGroup::RowStart(*Me\group)
+      ControlGroup::Append(*Me\group,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append(*Me\group,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,(width-20)*0.25,21 ))
+      *ctl = ControlGroup::Append(*Me\group,ControlEnum::New(*Me,name+"Check",name,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
+      ControlGroup::RowEnd(*Me\group)
     Else
       RowStart(*Me)
       Append( *Me,ControlDivot::New(*Me,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
@@ -975,12 +984,11 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
-    AddElement(*Me\groups())
-    *Me\groups() = *group
-    Append(*Me,*group)
+    *Me\group = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+
+    Append(*Me,*Me\group)
     
-    ControlGroup::AppendStart(*group)
+    ControlGroup::AppendStart(*Me\group)
 
     *Me\dy + 20
     ProcedureReturn(*group)
@@ -992,13 +1000,13 @@ Module ControlProperty
   Procedure EndGroup( *Me.ControlProperty_t)
     If Not *Me : ProcedureReturn : EndIf
     
-    Protected *group.ControlGroup::ControlGroup_t = *Me\groups()
+    Protected *group.ControlGroup::ControlGroup_t = *Me\group
     If Not *group : ProcedureReturn : EndIf
     
     *Me\dy + *group\sizY-20
    
     ControlGroup::AppendStop(*group)
-    DeleteElement(*Me\groups())
+    *Me\group = #Null
    
     ProcedureReturn(#Null)
   EndProcedure
@@ -1103,266 +1111,6 @@ Module ControlProperty
       *son = *Me\children(i)
       *son\OnEvent(ev_type,#Null)
     Next i
-    
-;     ForEach *Me\groups()
-;     
-;       If filter = *Me\groups()\GetGadgetID() : *Me\groups()\Event( ev_type ) : EndIf
-;     Next
-  EndProcedure
-
-  ; ============================================================================
-  ;  OVERRIDE ( Control::IControl )
-  ; ============================================================================
-  Procedure.i OnEvent( *Me.ControlProperty_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )  
-    Protected  ev_data.Control::EventTypeDatas_t
-    Protected *son.Control::Control_t
-    Protected  son.Control::IControl
-    Protected idx,xm,ym
-    Protected *overchild.Control::Control_t
-    Protected nbc_row.i
-    
-    Protected pickID = ControlGroup::Pick(*Me)
-    If pickID > -1 And pickID < *Me\chilcount 
-      *overchild = *Me\children(pickID)
-    Else
-      *overchild = #Null
-    EndIf
-    
-    Select ev_code
-        
-      Case #PB_EventType_Resize
-        If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
-        If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
-        If *ev_data\width <> #PB_Ignore : *Me\sizX = *ev_data\width : EndIf
-        If *ev_data\height <> #PB_Ignore : *Me\sizY = *ev_data\height : EndIf
-        
-        If *Me\percX > 0 : *Me\sizX = *Me\parent\sizX * (*Me\percX / 100) : EndIf
-        If *Me\percY > 0 : *Me\sizY = *Me\parent\sizY * (*Me\percY / 100) : EndIf
-
-        ev_data\x = 0
-        ev_data\y = 0
-        ev_data\width = *ev_data\width
-        ev_data\height = *ev_data\height
-        
-        For c=0 To *Me\chilcount - 1
-          If *Me\rowflags(c) 
-            nbc_row = ControlGroup::GetNumControlInRow(*Me, c)
-            ev_data\y + ControlGroup::ResizeControlsInRow(*Me, c, nbc_row)
-            
-            c + nbc_row - 1
-          Else
-            son = *Me\children(c)
-            *son = son
-            If *son\type = Control::#ICON Or *son\type = Control::#TEXT: Continue : EndIf
-            ev_data\width = *ev_data\width
-            ev_data\height = #PB_Ignore
-            son\OnEvent(#PB_EventType_Resize, ev_data)
-            ev_data\y + *son\sizY
-          EndIf
-        Next
-        
-        ControlGroup::DrawPickImage(*Me)
-        Draw( *Me )
-        ProcedureReturn( #True )
-          
-      Case Control::#PB_EventType_DrawChild
-        *son.Control::Control_t = *ev_data\datas
-        son.Control::IControl    = *son
-        ev_data\xoff    = *son\posX
-        ev_data\yoff    = *son\posY
-        StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-        ResetCoordinates()
-        AddPathBox( *son\posX-Control::FRAME_THICKNESS, *son\posY-Control::FRAME_THICKNESS, *son\sizX+2*Control::FRAME_THICKNESS, *son\sizY+2*Control::FRAME_THICKNESS)
-        VectorSourceColor(UIColor::COLOR_MAIN_BG )
-        FillPath()
-        son\OnEvent( Control::#PB_EventType_Draw, ev_data )
-        StopVectorDrawing()
-  
-      Case #PB_EventType_Focus
-        If *Me\overchild
-          If *Me\overchild <> *overchild
-            *Me\overchild\OnEvent(#PB_EventType_LostFocus)
-            *Me\overchild = *overchild
-            If *Me\overchild
-              *Me\overchild\OnEvent(#PB_EventType_Focus)
-            EndIf
-          EndIf
-        Else
-          If *overchild
-            *Me\overchild = *overchild
-            *Me\overchild\OnEvent(#PB_EventType_Focus)
-          EndIf
-        EndIf
-
-      Case Control::#PB_EventType_ChildFocused
-        *Me\focuschild = *ev_data
-        
-      Case Control::#PB_EventType_ChildDeFocused
-        *Me\focuschild = #Null
-        
-      Case Control::#PB_EventType_ChildCursor
-        SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
-        
-      Case #PB_EventType_LostFocus
-        If *Me\focuschild
-          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          *Me\focuschild = #Null
-        EndIf
-        
-      Case #PB_EventType_MouseMove
-        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-        
-        xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-        ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-        
-        If *overchild
-          *Me\overchild = *overchild
-          ev_data\x    = xm - *overchild\posX + *Me\posX
-          ev_data\y    = ym - *overchild\posY + *Me\posY
-          *Me\overchild\OnEvent(#PB_EventType_MouseMove,@ev_data)
-        EndIf
-        
-    Case #PB_EventType_LeftButtonDown
-      *Me\down = #True
-      If *Me\overchild
-        *overchild = *Me\overchild
-        If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          Define *focuschild.Control::Control_t = *Me\focuschild
-        EndIf
-        ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ); - *overchild\posX
-        ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ); - *overchild\posY
-        ev_data\xoff = *Me\posX
-        ev_data\yoff = *Me\posY
-        *Me\overchild\OnEvent(#PB_EventType_LeftButtonDown,@ev_data)
-        *Me\focuschild = *Me\overchild
-      ElseIf *Me\focuschild
-        Define focuschild.Control::IControl = *Me\focuschild
-        *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-      EndIf
-      
-    Case #PB_EventType_LeftButtonUp
-        If *overchild
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild = *overchild
-          *Me\overchild\OnEvent(#PB_EventType_LeftButtonUp,@ev_data)
-        EndIf
-        *Me\down = #False
-
-      Case #PB_EventType_LeftDoubleClick
-        *overchild.Control::Control_t = *Me\overchild
-        If *Me\overchild
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_LeftDoubleClick,@ev_data)
-          *Me\focuschild = *Me\overchild
-        EndIf
-        
-      Case #PB_EventType_RightButtonDown
-        *Me\down = #True
-        *overchild.Control::Control_t = *Me\overchild
-        If *Me\overchild
-          If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          EndIf
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_RightButtonDown,@ev_data)
-        ElseIf *Me\focuschild
-          *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-        EndIf
-        
-      Case #PB_EventType_RightButtonUp
-        
-        If *Me\overchild
-          *overchild.Control::Control_t = *Me\overchild
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
-        EndIf
-        *Me\down = #False
-      
-      Case #PB_EventType_RightButtonUp
-        If *Me\overchild
-          *overchild.Control::Control_t = *Me\overchild
-          ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-          ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-          *Me\overchild\OnEvent(#PB_EventType_RightButtonUp,@ev_data)
-        EndIf
-        
-
-      Case #PB_EventType_Input
-        If *Me\focuschild
-          ev_data\input = Chr(GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Input))
-          *Me\focuschild\OnEvent(#PB_EventType_Input,@ev_data)
-        EndIf
-        
-      Case #PB_EventType_KeyDown
-        If *Me\focuschild
-          ev_data\key   = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Key      )
-          ev_data\modif = GetGadgetAttribute(*Me\gadgetID,#PB_Canvas_Modifiers)
-          *Me\focuschild\OnEvent(#PB_EventType_KeyDown,@ev_data)
-        EndIf
-        
-      Case Globals::#SHORTCUT_COPY
-        If *Me\focuschild
-          MessageRequester("COPY", "Copy")
-          *Me\focuschild\OnEvent(Globals::#SHORTCUT_COPY,#Null)
-        EndIf
-        
-      Case Globals::#SHORTCUT_CUT
-        If *Me\focuschild
-          *Me\focuschild\OnEvent(Globals::#SHORTCUT_CUT,#Null)
-        EndIf
-        
-      Case Globals::#SHORTCUT_PASTE
-        If *Me\focuschild
-          *Me\focuschild\OnEvent(Globals::#SHORTCUT_PASTE,#Null)
-        EndIf
-        
-      Case Globals::#SHORTCUT_UNDO
-        If *Me\focuschild
-          *Me\focuschild\OnEvent(Globals::#SHORTCUT_UNDO,#Null)
-        EndIf
-        
-  ;       ; ------------------------------------------------------------------------
-  ;       ;  SHORTCUT_NEXT
-  ;       ; ------------------------------------------------------------------------
-  ;       Case Globals::#SHORTCUT_NEXT
-  ;         ; ---[ Do We Have A Focused Child ? ]-------------------------------------
-  ;         If *Me\focuschild
-  ;           ; ---[ Go To Next Item ]------------------------------------------------
-  ;           OControlGroup_hlpNextItem( *Me ) 
-  ;         EndIf
-  ;         
-  ;       ;------------------------------------------------------------------------
-  ;       ; SHORTCUT_PREVIOUS
-  ;       ;------------------------------------------------------------------------
-  ;       Case Globals::#SHORTCUT_PREVIOUS
-  ;           Debug "Previous Item called"
-  ;           ; ---[ Do We Have A Focused Child ? ]-----------------------------------
-  ;           If *Me\focuschild
-  ;             ; go to previous child
-  ;             Debug "previous child per favor..."
-  ;           EndIf
-                 
-               
-        
-      ;Case #PB_EventType_KeyUp
-      ;Case #PB_EventType_MiddleButtonDown
-      ;Case #PB_EventType_MiddleButtonUp
-      ;Case #PB_EventType_MouseWheel
-      ;Case #PB_EventType_PopupMenu
-      ;Debug ">> PopupMenu"
-      ;Case #PB_EventType_PopupWindow
-      ;Debug ">> PopupWindow"
-        
-    EndSelect
-    
-    ProcedureReturn( #False )
-    
   EndProcedure
 
   ; ============================================================================
@@ -1429,7 +1177,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 102
-; FirstLine = 82
+; CursorPosition = 726
+; FirstLine = 695
 ; Folding = --------
 ; EnableXP

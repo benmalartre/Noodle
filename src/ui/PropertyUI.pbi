@@ -12,9 +12,7 @@ XIncludeFile "../graph/CompoundPort.pbi"
 ; PropertyUI Module Declaration
 ;========================================================================================
 DeclareModule PropertyUI
-  ; ----------------------------------------------------------------------------
-  ;  Structure
-  ; ----------------------------------------------------------------------------
+
   Structure PropertyUI_t Extends UI::UI_t
     Map *props.ControlProperty::ControlProperty_t()
     *active.ControlProperty::ControlProperty_t
@@ -60,58 +58,19 @@ EndDeclareModule
 ;========================================================================================
 Module PropertyUI
   UseModule Math
-  
-  ; ----------------------------------------------------------------------------
-  ;  Constructor
-  ; ----------------------------------------------------------------------------
-  Procedure New(*parent.View::View_t, name.s)
-    Protected *Me.PropertyUI_t = AllocateStructure(PropertyUI_t)
-    Object::INI(PropertyUI)
-    *Me\name = name
-    *Me\posX = *parent\posX
-    *Me\posY = *parent\posY
-    *Me\sizX = *parent\sizX
-    *Me\sizY = *parent\sizY
-    
-    *Me\active = #Null
-    *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
-   
-    View::SetContent(*parent,*Me)
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Destructor
-  ; ----------------------------------------------------------------------------
-  Procedure Delete(*Me.PropertyUI_t)
-    ForEach *Me\props()
-      ControlProperty::Delete(*Me\props())
-    Next
-    
-    Object::TERM(PropertyUI)
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Draw
-  ; ----------------------------------------------------------------------------
+ 
   Procedure Draw(*Me.PropertyUI_t)
     
   EndProcedure
-  
-  ; Draw Pick Image
-  ; ----------------------------------------------------------------------------
+
   Procedure DrawPickImage(*Me.PropertyUI_t)
     
   EndProcedure
   
-  ; Pick
-  ; ----------------------------------------------------------------------------
   Procedure Pick(*Me.PropertyUI_t)
     
   EndProcedure
   
-  ; Resize
-  ; ----------------------------------------------------------------------------
   Procedure Resize(*Me.PropertyUI_t)
     Protected *view.View::View_t = *Me\view
     *Me\posX = *view\posX
@@ -127,26 +86,17 @@ Module PropertyUI
     ev_datas\height = *Me\sizY
     
     ForEach *Me\props()
-      ControlProperty::OnEvent(*Me\props(), #PB_EventType_Resize,@ev_datas)
+      ControlGroup::OnEvent(*Me\props(), #PB_EventType_Resize,@ev_datas)
     Next
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Append Start
-  ; ----------------------------------------------------------------------------
   Procedure AppendStart(*Me.PropertyUI_t)
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Append End
-  ; ----------------------------------------------------------------------------
   Procedure AppendStop(*Me.PropertyUI_t)
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  OnEvent
-  ; ----------------------------------------------------------------------------
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
     If Not MapSize(*Me\props()) : ProcedureReturn : EndIf
     Protected *top.View::View_t = *Me\view
@@ -171,22 +121,19 @@ Module PropertyUI
         ElseIf EventType() = #PB_EventType_LeftButtonUp
           *Me\down = #False
         EndIf
-        
+                
         If *Me\active
-          ControlProperty::OnEvent(*Me\active, EventType(), @ev_datas)
+          ControlGroup::OnEvent(*Me\active, EventType(), ev_datas)
         EndIf
 
       Case #PB_Event_Menu
         If *Me\active
-          ControlProperty::OnEvent(*Me\active, EventMenu(), #Null)
+          ControlGroup::OnEvent(*Me\active, EventMenu(), ev_datas)
         EndIf 
         
     EndSelect
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;   CALLBACKS
-  ; ----------------------------------------------------------------------------
   Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
     PropertyUI::DeleteProperty(*Me, *prop)
   EndProcedure
@@ -206,9 +153,6 @@ Module PropertyUI
   EndProcedure
   Callback::DECLARE_CALLBACK(OnDeleteObject, Types::#TYPE_PTR, Types::#TYPE_PTR)
   
-  ; ----------------------------------------------------------------------------
-  ;  Clear
-  ; ----------------------------------------------------------------------------
   Procedure Clear(*Me.PropertyUI_t)
     ForEach *Me\props()
       ControlProperty::Delete(*Me\props())
@@ -216,16 +160,10 @@ Module PropertyUI
     ClearMap(*Me\props())
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Check 3D Object Exists
-  ; ----------------------------------------------------------------------------
   Procedure.b CheckObject3DExists(*Me.PropertyUI_t, *obj.Object3D::Object3D_t)
     ProcedureReturn #False
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Setup From Object 3D
-  ; ----------------------------------------------------------------------------
   Procedure SetupFromObject3D(*Me.PropertyUI_t,*object.Object3D::Object3D_t)
     If Not *object Or Not *Me: ProcedureReturn : EndIf
     Clear(*Me)
@@ -274,9 +212,6 @@ Module PropertyUI
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Check Node Exists
-  ; ----------------------------------------------------------------------------
   Procedure.b CheckNodeExists(*Me.PropertyUI_t, *node.Object::Object_t)
     Define index.i = 0
     
@@ -294,10 +229,7 @@ Module PropertyUI
 ;     Next
     ProcedureReturn #False
   EndProcedure
-  
-  ; ----------------------------------------------------------------------------
-  ;  Setup From Node
-  ; ----------------------------------------------------------------------------
+
   Procedure SetupFromNode(*Me.PropertyUI_t,*node.Node::Node_t)
     
     If Not *node Or Not *Me: ProcedureReturn : EndIf
@@ -375,9 +307,6 @@ Module PropertyUI
 
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Add Property
-  ; ----------------------------------------------------------------------------
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
    
     *Me\props(*prop\name) = *prop
@@ -389,9 +318,6 @@ Module PropertyUI
     Resize(*Me)
   EndProcedure
 
-  ; ----------------------------------------------------------------------------
-  ;  Setup
-  ; ----------------------------------------------------------------------------
   Procedure Setup(*Me.PropertyUI_t,*object.Object::Object_t)
     Protected cName.s = *object\class\name
     
@@ -406,9 +332,6 @@ Module PropertyUI
      Resize(*Me)
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Collapse Property
-  ; ----------------------------------------------------------------------------
   Procedure CollapseProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
 ;     Protected dirty.b  =#False
 ;     Protected offY = 0
@@ -435,9 +358,6 @@ Module PropertyUI
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Expand Property
-  ; ----------------------------------------------------------------------------
   Procedure ExpandProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
 ;     Protected dirty.b  =#False
 ;     Protected offY.i = 0
@@ -465,9 +385,6 @@ Module PropertyUI
     
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Delete Property
-  ; ----------------------------------------------------------------------------
   Procedure DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
 ;     Protected dirty.b  =#False
 ;     Protected offY.i = 0
@@ -504,9 +421,6 @@ Module PropertyUI
   
   EndProcedure
   
-  ; ----------------------------------------------------------------------------
-  ;  Structure
-  ; ----------------------------------------------------------------------------
   Procedure DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
 ;     SelectElement(*Me\props(), index)
 ;     Define offY = *Me\props()\sizY
@@ -517,12 +431,35 @@ Module PropertyUI
 ;     Wend
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
+  Procedure Delete(*Me.PropertyUI_t)
+    ForEach *Me\props()
+      ControlProperty::Delete(*Me\props())
+    Next
+    
+    Object::TERM(PropertyUI)
+  EndProcedure
+  
+  Procedure New(*parent.View::View_t, name.s)
+    Protected *Me.PropertyUI_t = AllocateStructure(PropertyUI_t)
+    Object::INI(PropertyUI)
+    *Me\name = name
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizX
+    *Me\sizY = *parent\sizY
+    
+    *Me\active = #Null
+    *Me\gadgetID = CanvasGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, #PB_Canvas_Keyboard)
+   
+    View::SetContent(*parent,*Me)
+    ProcedureReturn *Me
+  EndProcedure
+  
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 111
+; CursorPosition = 125
+; FirstLine = 393
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

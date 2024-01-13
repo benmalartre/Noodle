@@ -27,8 +27,8 @@ DeclareModule ControlGroup
   
   Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
   Declare Delete(*Me.ControlGroup_t)
-  Declare Draw( *Me.ControlGroup_t)
-  Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t=#Null)
+  Declare Draw( *Me.ControlGroup_t, init.b=#False)
+  Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t)
   Declare DrawPickImage(*Me.ControlGroup_t)
   Declare Pick(*Me.ControlGroup_t)
   Declare SetLabel( *Me.ControlGroup_t, value.s )
@@ -236,14 +236,44 @@ Module ControlGroup
     ProcedureReturn y + Control::MARGING
   EndProcedure
 
-  Procedure Draw( *Me.ControlGroup_t )
+  Procedure Draw( *Me.ControlGroup_t, init.b=#False)
+    Debug "Control Group Draw Called "+*Me\name+" : "+Str(init)
+    If init
+      StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
+      ResetCoordinates()
+      AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG)
+      FillPath()
+    EndIf
     
+;         
+;     Protected label.s = *Me\label
+;     Protected lalen.i = Len(label)
+;     Protected maxW .i = *Me\sizX - 21
+;     Protected curW .i
+;     If *Me\chilcount
+;       Protected i     .i = 0
+;       Protected iBound.i = *Me\chilcount - 1
+;       Protected  son  .Control::IControl
+;       Protected *son  .Control::Control_t
+;       Protected ev_data.Control::EventTypeDatas_t
+; 
+;       For i=0 To iBound
+;          son = *Me\children(i)
+;         *son = son
+;         ev_data\xoff = *son\posX + *Me\posX
+;         ev_data\yoff = *son\posY + *Me\posY
+;         son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+;       Next
+;     EndIf
+;     
+
     Protected label.s = *Me\label
     Protected lalen.i = Len(label)
     Protected maxW .i = *Me\sizX - 21
     Protected curW .i
     
-    VectorFont( FontID(Globals::#FONT_BOLD ),Globals::#FONT_SIZE_LABEL)
+    VectorFont( FontID(Globals::#Font_Bold ),Globals::#Font_Size_Label)
     
     curW = VectorTextWidth(label)
     While Len(label) And ( curW > maxW )
@@ -283,12 +313,11 @@ Module ControlGroup
       ev_data\xoff = *Me\posX+*son\posX
       ev_data\yoff = *Me\posY+*son\posY
       
-      son\OnEvent( Control::#PB_EventType_Draw, @ev_data )
+      son\OnEvent( Control::#PB_EventType_Draw, ev_data )
     Next
     
-    ResetCoordinates()
-    MovePathCursor(*Me\posX, *Me\posY)
-    DrawVectorImage(ImageID(*Me\imageID), 128)
+    If init : StopVectorDrawing() : EndIf 
+
    
   EndProcedure
 
@@ -341,18 +370,17 @@ Module ControlGroup
       Protected n.i = (idx+1)%iBound
       Protected ev_data.Control::EventTypeDatas_t 
       *Me\focuschild = *Me\children(n)
-      *Me\focuschild\OnEvent(#PB_EventType_Focus,@ev_data)
+      *Me\focuschild\OnEvent(#PB_EventType_Focus,ev_data)
     EndIf
   EndProcedure
 
   ; ============================================================================
   ;  OVERRIDE ( CControl )
   ; ============================================================================
-  Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
+  Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t )
     Protected i=0
     Protected *ctrl.Control::Control_t 
     
-    Protected  ev_data.Control::EventTypeDatas_t
     Protected *son.Control::Control_t
     Protected  son.Control::IControl
     
@@ -360,33 +388,71 @@ Module ControlGroup
         
 
       Case #PB_EventType_Resize
-        Resize( *Me, *ev_data.Control::EventTypeDatas_t )
-        ProcedureReturn #True
+        Debug "RESIZE GROUP : " +*Me\name
+        
+        If *ev_data\x <> #PB_Ignore And Not *Me\fixedX : *Me\posX = *ev_data\x : EndIf
+        If *ev_data\y <> #PB_Ignore And Not *Me\fixedY : *Me\posY = *ev_data\y : EndIf
+        If *ev_data\width <> #PB_Ignore : *Me\sizX = *ev_data\width : EndIf
+        If *ev_data\height <> #PB_Ignore : *Me\sizY = *ev_data\height : EndIf
+        
+        If *Me\percX > 0 : *Me\sizX = *Me\parent\sizX * (*Me\percX / 100) : EndIf
+        If *Me\percY > 0 : *Me\sizY = *Me\parent\sizY * (*Me\percY / 100) : EndIf
+        Define ev_data.Control::EventTypeDatas_t
+        ev_data\x = 0
+        ev_data\y = 0
+        ev_data\width = *ev_data\width
+        ev_data\height = *ev_data\height
+        
+        For c=0 To *Me\chilcount - 1
+          If *Me\rowflags(c) 
+            nbc_row = ControlGroup::GetNumControlInRow(*Me, c)
+            ev_data\y + ControlGroup::ResizeControlsInRow(*Me, c, nbc_row)
+            
+            c + nbc_row - 1
+          Else
+            son = *Me\children(c)
+            *son = son
+            If *son\type = Control::#ICON Or *son\type = Control::#TEXT: Continue : EndIf
+            ev_data\width = *ev_data\width
+            ev_data\height = #PB_Ignore
+            son\OnEvent(#PB_EventType_Resize, ev_data)
+            ev_data\y + *son\sizY
+          EndIf
+        Next
+        
+        Draw( *Me, #True)
+        
+        ControlGroup::DrawPickImage(*Me)
+        
+        ProcedureReturn( #True )
+        
+;         Resize( *Me, *ev_data)
+;         ProcedureReturn #True
         
       Case Control::#PB_EventType_DrawChild
         *son = *ev_data\datas
         son = *son
-        ev_data\xoff    = *son\posX+*Me\posX
-        ev_data\yoff    = *son\posY+*Me\posY
+        *ev_data\xoff    = *son\posX+*Me\posX
+        *ev_data\yoff    = *son\posY+*Me\posY
         StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
-        AddPathBox( ev_data\xoff, ev_data\yoff, *son\sizX, *son\sizY)
+        AddPathBox( *ev_data\xoff, *ev_data\yoff, *son\sizX, *son\sizY)
         VectorSourceColor(UIColor::COLOR_MAIN_BG )
         FillPath()
-        son\OnEvent( Control::#PB_EventType_Draw, ev_data )
+        son\OnEvent( Control::#PB_EventType_Draw, *ev_data )
         StopVectorDrawing()
         ProcedureReturn #True
           
       Case Control::#PB_EventType_Draw
         Draw( *Me )
         ProcedureReturn #True
-  
-      Case #PB_EventType_Focus
         
       Case Control::#PB_EventType_ChildFocused
         *Me\focuschild = *ev_data
+        ProcedureReturn #True
         
       Case Control::#PB_EventType_ChildDeFocused
         *Me\focuschild = #Null
+        ProcedureReturn #True
         
       Case Control::#PB_EventType_ChildCursor
         SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, *ev_data )
@@ -409,6 +475,9 @@ Module ControlGroup
         Protected pickID = Pick(*Me) 
         If pickID > -1 And pickID <*Me\chilcount
           *overchild = *Me\children(pickID)
+          Debug pickID
+          Debug *overchild
+          If *overchild : Debug *overchild\name : EndIf
         EndIf
         
         If *Me\overchild <> *overchild And  Not *Me\down
@@ -417,33 +486,28 @@ Module ControlGroup
           If *Me\overchild
             *Me\overchild\OnEvent(#PB_EventType_MouseEnter)
           EndIf
+          ProcedureReturn #True
+          
         ElseIf *Me\overchild
           *overchild = *Me\overchild
-          ev_data\x    = xm - *overchild\posX
-          ev_data\y    = ym - *overchild\posY
-          ev_data\yoff = 50
+          *ev_data\x    = xm - *overchild\posX
+          *ev_data\y    = ym - *overchild\posY
+          *ev_data\yoff = 50
          Else
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
         EndIf
         
       Case #PB_EventType_LeftButtonDown
-          *Me\down = #True
-          If *Me\overchild
-            If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
-              *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-            EndIf
-            xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-            ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-            xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-            ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-            Define *overchild.Control::Control_t = *Me\overchild
-            ev_data\x = xm - *overchild\posX
-            ev_data\y = ym - *overchild\posY
-          ElseIf *Me\focuschild
-            Define focuschild.Control::IControl = *Me\focuschild
-            *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
-          EndIf
+        *Me\down = #True
         
+         If *Me\focuschild And ( *overchild <> *Me\focuschild )
+           Control::DeFocused(*Me\focuschild)
+         EndIf
+         If *overchild
+           *Me\overchild = *overchild
+           Control::Focused(*Me\overchild)
+         EndIf
+      
       Case #PB_EventType_LeftButtonUp
         *Me\down = #False
         
@@ -456,18 +520,22 @@ Module ControlGroup
       Case #PB_EventType_RightButtonUp
         *Me\down = #False
         
+      Default
+        ProcedureReturn
+        
     EndSelect
     
     If *Me\focuschild
       Define *focuschild.Control::Control_t = *Me\focuschild
-      ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *focuschild\posX
-      ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *focuschild\posY
-      *Me\focuschild\OnEvent(ev_code, @ev_data)
+      *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *focuschild\posX
+      *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *focuschild\posY
+      *Me\focuschild\OnEvent(ev_code, *ev_data)
     ElseIf *Me\overchild
       Define *overchild.Control::Control_t = *Me\overchild
-      ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
-      ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
-      *Me\overchild\OnEvent(ev_code, @ev_data)
+      Debug "event data : "+Str(*ev_data)
+      *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
+      *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
+      *Me\overchild\OnEvent(ev_code, *ev_data)
     EndIf
 
     ProcedureReturn( #False )
@@ -477,7 +545,6 @@ Module ControlGroup
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlGroup_t )
   ; ============================================================================
-
   Procedure SetLabel( *Me.ControlGroup_t, value.s )
     *Me\label = value
     Control::Invalidate( *Me )
@@ -597,7 +664,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 471
-; FirstLine = 424
+; CursorPosition = 422
+; FirstLine = 371
 ; Folding = ----
 ; EnableXP

@@ -109,7 +109,6 @@ DeclareModule Control
   Declare SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
   Declare SetPercentage(*Me.Control_t, percX.i, percY.i)
   Declare GetUI(*Me.Control_t)
-
   
   Global MARGING.i = 6
   Global PADDING.i = 4
@@ -239,15 +238,15 @@ Module Control
       Protected *parent.IControl = *Me\parent
       *parent\OnEvent( #PB_EventType_ChildFocused, *Me )
     EndIf
+     Globals::BitSet(*Me\state, Control::#State_Focused)
   EndProcedure
   
   Procedure.i DeFocused( *Me.Control_t )
-    Globals::BitClear(*Me\state, Control::#State_Focused)
     If *Me\parent
       Protected *parent.IControl = *Me\parent
       *parent\OnEvent( #PB_EventType_ChildDeFocused, *Me )
     EndIf
-    
+    Globals::BitClear(*Me\state, Control::#State_Focused)
   EndProcedure
   
   Procedure.i SetCursor( *Me.Control_t, cursor_id.i )
@@ -275,8 +274,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 216
+; CursorPosition = 111
+; FirstLine = 75
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode
