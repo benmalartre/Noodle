@@ -1,5 +1,6 @@
 ﻿XIncludeFile "../ui/Types.pbi"
 XIncludeFile "../ui/View.pbi"
+XIncludeFile "../ui/MenuUI.pbi"
 XIncludeFile "../core/Commands.pbi"
 
 ;==========================================================================
@@ -166,7 +167,6 @@ Module Window
       Case #PB_Event_Menu
         Debug "WE HAVE EVENT MENU : "+Str(EventMenu())
         Select EventMenu()
-            
 ;           Case Globals::#SHORTCUT_COPY
 ;             Debug "View Manager : SHORTCUT COPY"
 ;             View::OnEvent(*Me\active,#PB_Event_Menu)
@@ -265,7 +265,25 @@ Module Window
     StopDrawing()
     ProcedureReturn #Null
   EndProcedure
-
+  
+  Procedure AddMenuItem(*Me.Window_t, name.s, event.i=-1)
+    Protected *ui.MenuUI::MenuUI_t = *Me\menu
+    If Not *ui : *Me\menu = MenuUI::New(*Me\main) : EndIf
+    AddElement(*ui\items())
+    *ui\items()\name = name
+    *ui\items()\event = event
+    *ui\dirty = #True
+    ProcedureReturn *ui\items()
+  EndProcedure
+  
+  Procedure AddSubMenuItem(*Me.Window_t, *menuItem.MenuUI::MenuItem_t, name.s, event.i=-1)
+    Protected *ui.MenuUI::MenuUI_t = *Me\menu
+    AddElement(*menuItem\items())
+    *menuItem\items()\name = name
+    *menuItem\items()\event = event
+    *ui\dirty = #True
+    ProcedureReturn *menuItem\items()
+  EndProcedure
 
   Procedure Delete(*Me.Window_t)
     ForEach *ALL_WINDOWS()
@@ -287,10 +305,10 @@ Module Window
     *Me\main\window = *Me
     *Me\active = *Me\main
     *Me\imageID = CreateImage(#PB_Any, width, height, 32)
+    *Me\menu = #Null
     
     If Not parentID : *MAIN_WINDOW = *Me : EndIf
       
-    ; add window to global map
     AddElement(*ALL_WINDOWS())
     *ALL_WINDOWS() = *Me
     
@@ -300,7 +318,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 166
-; FirstLine = 142
-; Folding = ---
+; CursorPosition = 281
+; FirstLine = 254
+; Folding = ----
 ; EnableXP

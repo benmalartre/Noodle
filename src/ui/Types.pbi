@@ -143,6 +143,7 @@ DeclareModule Window
   
   Structure Window_t Extends Object::Object_t
     name.s
+    *menu.UI::UI_t
     *main.View::View_t
     *active.View::View_t
     Map *uis.UI::UI_t()
@@ -171,6 +172,8 @@ DeclareModule Window
   Declare Draw(*Me.Window_t)
   Declare Pick(*Me.Window_t, mx.i, my.i)
   Declare TearOff(*Me.Window_t, x.i, y.i, width.i, height.i)
+  Declare AddMenuItem(*Me.Window_t, name.s, event.i=-1)
+  Declare AddSubMenuItem(*Me.Window_t, *menuItem, name.s, event.i=-1)
   DataSection 
     WindowVT: 
     Data.i @Delete()
@@ -180,6 +183,7 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 34
+; CursorPosition = 175
+; FirstLine = 129
 ; Folding = -
 ; EnableXP

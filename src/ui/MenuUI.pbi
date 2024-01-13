@@ -1,14 +1,18 @@
-
-
 XIncludeFile "UI.pbi"
-; XIncludeFile "Command.pbi"
 
 ; ============================================================================
 ; MenuUI Module Declaration
 ; ============================================================================
 DeclareModule MenuUI
   
+  Structure MenuItem_t
+    name.s
+    event.i
+    List items.MenuItem_t()
+  EndStructure
+  
   Structure MenuUI_t Extends UI::UI_t
+    List items.MenuItem_t()
   EndStructure
   
   Interface IMenuUI Extends UI::IUI
@@ -18,6 +22,9 @@ DeclareModule MenuUI
   Declare Delete(*ui.MenuUI_t)
   Declare Resize(*ui.MenuUI_t)
   Declare OnEvent(*Me.MenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
+  
+  Declare AddItem(*Me.MenuUI_t, name.s, event.i)
+  Declare AddSubItem(*Me.MenuUI_t, *item.MenuItem_t, name.s, event.i)
   
   DataSection 
     MenuUIVT: 
@@ -34,23 +41,56 @@ EndDeclareModule
 ; ============================================================================
 Module MenuUI
   Procedure Resize(*Me.MenuUI_t)
+    
+  EndProcedure
   
+  Procedure _AddSubMenuItem(*menu.MenuUI::MenuItem_t)
+    If ListSize(*menu\items())
+      OpenSubMenu(*menu\name)
+      ForEach *menu\items()
+        _AddSubMenuItem(*menu\items())
+      Next
+      CloseSubMenu()   
+    Else
+      MenuItem(*menu\event, *menu\name)
+    EndIf
   EndProcedure
 
+  Procedure _AddMenuItem(*menu.MenuUI::MenuItem_t)
+    MenuTitle(*menu\name)
+    ForEach *menu\items()
+      _AddSubMenuItem(*menu\items())
+    Next
+  EndProcedure
+  
   Procedure OnEvent(*Me.MenuUI_t,event.i,*ev_data.Control::EventTypeDatas_t)
     If *Me\dirty
       If *Me\gadgetID : FreeMenu(*Me\gadgetID) : EndIf
       *Me\gadgetID = CreateMenu(#PB_Any, WindowID(View::GetWindowID(*Me\view)))
       
-      MenuTitle("Projet")
-        MenuItem(Globals::#Menu_Create_MenuItem, "Create Menu Item")
-        MenuItem(Globals::#Menu_Create_SubMenuItem, "Create SubMenu Item")
-        MenuBar()
-        MenuItem(3, "Quitter"  +Chr(9)+"Ctrl+Q")
+      ForEach *Me\items()
+        _AddMenuItem(*Me\items())
+      Next
       *Me\dirty = #False
     EndIf
   EndProcedure
- 
+  
+  Procedure AddItem(*Me.MenuUI_t, name.s, event.i)
+    AddElement(*Me\items())
+    *Me\items()\name = name
+    *Me\items()\event = event
+    *Me\dirty = #True
+    ProcedureReturn *Me\items()
+  EndProcedure
+  
+  Procedure AddSubItem(*Me.MenuUI_t, *item.MenuItem_t, name.s, event.i)
+    AddElement(*item\items())
+    *item\items()\name = name
+    *item\items()\event = event
+    *Me\dirty = #True
+    ProcedureReturn *item\items()
+  EndProcedure
+
   Procedure Delete(*Me.MenuUI_t)
     Object::TERM(MenuUI)
   EndProcedure
@@ -63,61 +103,20 @@ Module MenuUI
     *Me\sizX = *parent\sizX
     *Me\sizY = *parent\sizY
     
-    *Me\name = "Top Menu"
+    *Me\name = "Menu"
     *Me\type = Globals::#VIEW_TOPMENU
     *Me\view = *parent
     *Me\gadgetID = 0
     *Me\dirty = #True
-
     
-;     ControlMenu::New(*Me,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY)
-;     
-;     Protected *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"File")
-;     Protected *args.Args::Args_t = Args::New(1)
-;     *args\args(0)\type = Types::#TYPE_PTR
-;     *args\args(0)\p = *scene
-; 
-;     ControlMenu::AddItem(*submenu,"Save Scene",SaveSceneCmd::@Do(),*args)
-;     ControlMenu::AddItem(*submenu,"Load Scene",LoadSceneCmd::@Do(),*args)
-;     ControlMenu::AddSeparator(*submenu)
-;     ControlMenu::AddItem(*submenu,"New Scene",NewSceneCmd::@Do(),*args)
-;     
-;     *submenu.ControlMenu::ControlSubMenu_t = ControlMenu::Add(*Me\menu,"Edit")
-;     *args\args(0)\type = Types::#TYPE_INT
-;     *args\args(0)\i = Shape::#SHAPE_CUBE
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Cube",CreatePolymeshCmd::@Do(),*args)
-;  
-;     *args\args(0)\i = Shape::#SHAPE_GRID
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Grid",CreatePolymeshCmd::@Do(),*args)
-;     
-;     *args\args(0)\i = Shape::#SHAPE_SPHERE
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Sphere",CreatePolymeshCmd::@Do(),*args)
-;     
-;     *args\args(0)\i = Shape::#SHAPE_BUNNY
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Bunny",CreatePolymeshCmd::@Do(),*args)
-;     
-;     *args\args(0)\i = Shape::#SHAPE_Torus
-;     ControlMenu::AddItem(*submenu,"Create Polymesh Torus",CreatePolymeshCmd::@Do(),*args)
-;     
-;     ControlMenu::AddSeparator(*submenu)
-; 
-;     ControlMenu::AddItem(*submenu,"Create Tree on Selected Object",CreateTreeCmd::@Do(),*args)
-;     
-;     Protected *submenu2.ControlMenu::ControlSubMenu_t = ControlMenu::AddSubMenu(*submenu, "Test")
-;     ControlMenu::AddItem(*submenu2,"Create Tree on Selected Object",CreateTreeCmd::@Do(),*args)
-; ;     ControlMenu::AddItem(*submenu2,"Create Tree on Selected Object",CreateTreeCmd::@Do(),*args)
-;     
-;     ControlMenu::Init(*Me\menu,"")
-    
-    View::SetContent(*parent,*Me)
-
+    View::SetContent(*parent, *Me)
     ProcedureReturn *Me
   EndProcedure
   
    Class::DEF(MenuUI)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 33
-; FirstLine = 12
+; CursorPosition = 54
+; FirstLine = 60
 ; Folding = --
 ; EnableXP
