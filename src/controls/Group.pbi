@@ -5,10 +5,13 @@ XIncludeFile "../core/Control.pbi"
 ; ============================================================================
 DeclareModule ControlGroup
 
-  #Autosize_H = 1 << 20
-  #Autosize_V = 1 << 21
-  #Autostack  = 1 << 22
-  #NoFrame    = 1 << 23
+  #Group_Autosize_H     = 1 << 20
+  #Group_Autosize_V     = 1 << 21
+  #Group_Autostack      = 1 << 22
+  #Group_NoFrame        = 1 << 23
+  #Group_Collapsable    = 1 << 24
+  #Group_Border_Margin  = 4
+  #Group_Frame_Height   = 16
   
   Structure ControlGroup_t Extends Control::Control_t
     imageID   .i
@@ -25,7 +28,7 @@ DeclareModule ControlGroup
     closed    .b
   EndStructure
   
-  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack )
   Declare Delete(*Me.ControlGroup_t)
   Declare Draw( *Me.ControlGroup_t, init.b=#False)
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t)
@@ -39,7 +42,11 @@ DeclareModule ControlGroup
   Declare RowStart( *Me.ControlGroup_t )
   Declare RowEnd( *Me.ControlGroup_t )
   Declare GetNumControlInRow(*Me.ControlGroup_t, base.i)
-  Declare ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i)
+  Declare ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i, start_y.i=0)
+  Declare.i GetWidth(*Me.ControlGroup_t)
+  Declare.i GetHeight(*Me.ControlGroup_t)
+  Declare GetControlByIndex(*Me.ControlGroup_t, index.i)
+  Declare GetControlByName(*Me.ControlGroup_t, name.s)
 
   DataSection 
     ControlGroupVT: 
@@ -60,7 +67,6 @@ EndDeclareModule
 Module ControlGroup
 
   Procedure.i Resize( *Me.ControlGroup::ControlGroup_t, *ev_data.Control::EventTypeDatas_t )
-
     Protected dirty   .i = #False
     Protected i       .i = 0
     Protected j       .i = 0
@@ -72,92 +78,43 @@ Module ControlGroup
     Protected *Son    .Control::Control_t
     Protected lablen.i = Len(*Me\label)
     
+    Protected px.i
+    Protected py.i
+    If *Me\parent And (*Me\parent\type = #PB_GadgetType_Container)
+      px = *Me\parent\posX
+      py = *Me\parent\posY
+    EndIf
+    
     If *ev_data
       If ( *ev_data\x <> #PB_Ignore ) And ( *ev_data\x <> *Me\posX )
         dirty = #True
-        *Me\posX = *ev_data\x
+        *Me\posX = *ev_data\x + px
       EndIf
       If ( *ev_data\y <> #PB_Ignore ) And ( *ev_data\y <> *Me\posY )
         dirty = #True
-        *Me\posY = *ev_data\y
+        *Me\posY = *ev_data\y + py
       EndIf
 
       If ( *ev_data\width <> #PB_Ignore ) And ( *ev_data\width <> *Me\sizX )
         dirty = #True
         *Me\sizX = *ev_data\width
-      EndIf
-      
+      EndIf    
     EndIf
-
-    If *Me\options & #Autostack
-      If lablen : curV = 20 : Else : curV = 14 : EndIf
-      curH = 10
-      maxV = 0
-      For i=0 To iBound
-        *Son  = *Me\children(i)
-        Control::Resize(*Son, curH, curV, #PB_Ignore, #PB_Ignore )
-        If *Me\rowflags(i)
-          curH + *Son\sizX + 5
-          If maxV < *Son\sizY : maxV = *Son\sizY : EndIf
-        Else
-          curH = 10
-          If maxV < *Son\sizY : maxV = *Son\sizY : EndIf
-          curV + maxV + 5
-          maxV = 0
-        EndIf
-      Next
-      *Me\sizY = curV
-    EndIf
-   
-    If *Me\options & #Autosize_H
-      maxV = 0 : curV = 0
-      For i=0 To iBound
-        Son = *Me\children(i)
-        curV = *Son\posX + *Son\sizX
-        If curV > maxV : maxV = curV : EndIf
-      Next
-      If maxV <> *Me\sizX : *Me\sizX = maxV + 10 : dirty = #True : EndIf
-    Else
-      curV = *Me\sizX - 20
-      curH = curV
-      maxV = 0
-      
-      For i=0 To iBound
-        *Son = *Me\children(i)
-        If *Me\rowflags(i) And Not inRow
-          curH = 0
-          For j=i To iBound
-            curH + 1
-            If Not *Me\rowflags(j) : Break : EndIf
-          Next
-          curH = ( curV - 5*(curH-1) )/curH
-          maxV + 1
-          inRow = #True
-          Control::Resize(*Me\children(i), #PB_Ignore, #PB_Ignore, curH, #PB_Ignore )
-        ElseIf inRow
-          Control::Resize( *Me\children(i),10 + maxV*( curH + 5 ), #PB_Ignore, curH, #PB_Ignore )
-          maxV + 1
-          If Not *Me\rowflags(i)
-            inRow = #False
-            curH  = curV
-            maxV = 0
-          EndIf
-        Else
-         Control::Resize( *Me\children(i), #PB_Ignore, #PB_Ignore, curH, #PB_Ignore )
-        EndIf
-      Next
-    EndIf
-  
     
-    If *Me\options & #Autosize_V
-      maxV = 0
-      For i=0 To iBound
-        *Son  = *Me\children(i)
-        curV = *Son\posY + *Son\sizY
-        If curV > maxV : maxV = curV : EndIf
-      Next
-      If maxV <> *Me\sizY + 9: *Me\sizY = maxV + 9 : dirty = #True : EndIf
-    EndIf
+    Define base.i = 0
+    Define num.i
+    Define y.i = #Group_Frame_Height
+    For i = 0 To iBound
+      If i < base : Continue : EndIf
+      num.i = GetNumControlInRow(*Me, base)
+      y + ResizeControlsInRow(*Me, base, num, y)
+      base + num
+    Next
+    
+    *Me\sizY = ControlGroup::GetHeight(*Me)
+    
+    Debug "Resize Group : "+*Me\name+" : "+Str(*Me\sizY)
+    
     
     If #True = dirty
       ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
@@ -177,10 +134,29 @@ Module ControlGroup
     ProcedureReturn index - base
   EndProcedure
   
-  Procedure ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i)
+  Procedure GetControlRowHeight(*Me.ControlGroup_t, start_index.i, num_controls.i)
+    Protected *son.Control::Control_t = *Me\children(start_index)
+    Protected maxY.i = *son\sizY
+    Protected sonY.i
+    For i = start_index To start_index + num_controls - 1
+      *son = *Me\children(i)
+      
+      If *son\type = Control::#Group
+        sonY = GetHeight(*son)
+      Else
+        sonY = *son\sizY
+      EndIf
 
+      If sonY > maxY
+        maxY = sonY
+      EndIf
+    Next
+    ProcedureReturn maxY
+  EndProcedure
+  
+  Procedure ResizeControlsInRow(*Me.ControlGroup_t, start_index.i, num_controls.i, start_y.i=0)
     Dim widths.i(num_controls)
-    Define fixed_width = Control::MARGING * 2
+    Define fixed_width = ControlGroup::#Group_Border_Margin * 2
     Define current_width, current_index, num_fixed
     Define *child.Control::Control_t
     Define e
@@ -189,21 +165,21 @@ Module ControlGroup
       *child = *Me\children(current_index)
       If *child\fixedX
         current_width = *child\sizX 
-        fixed_width + current_width + Control::PADDING
+        fixed_width + current_width + ControlGroup::#Group_Border_Margin
         widths(i) = current_width
         num_fixed + 1
       EndIf
     Next
-    Define remaining_width = *Me\sizX - (fixed_width + Control::MARGING)
-    Define x = Control::MARGING
+    Define remaining_width = *Me\sizX - (fixed_width + ControlGroup::#Group_Border_Margin)
+    Define x = ControlGroup::#Group_Border_Margin
     Define ev_data.Control::EventTypeDatas_t
-    ev_data\x = 0
-    ev_data\y = #PB_Ignore
+    ev_data\x = *Me\posX
+    ev_data\y = start_y
     ev_data\width = #PB_Ignore
     ev_data\height = #PB_Ignore
     
-    Define *son.Control::Control_t
-    Define y = 0
+    Define *son.Control::Control_t = *Me\children(start_index)
+    Define y.i = *son\sizY
     For i=0 To num_controls - 1
       current_index = start_index + i
       *son = *Me\children(current_index)
@@ -217,18 +193,17 @@ Module ControlGroup
         ev_data\width = remaining_width / (num_controls - num_fixed)
       EndIf
 
-      ev_data\x     = *Me\posX + x
-      ev_data\y     = #PB_Ignore
+      ev_data\x  = *Me\posX + x
+
       *Me\children(current_index)\OnEvent(#PB_EventType_Resize, ev_data)
-      x + ev_data\width + Control::PADDING
+      x + ev_data\width
     Next
-    ProcedureReturn y + Control::MARGING
+    ProcedureReturn y + #Group_Border_Margin
   EndProcedure
 
   Procedure Draw( *Me.ControlGroup_t, init.b=#False)
     If init
       StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-      ResetCoordinates()
       AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
@@ -251,7 +226,7 @@ Module ControlGroup
       label = Left( label, Math::Max( lalen - 2, 2 ) ) + ".."
     EndIf
    
-    If Not *Me\options & #NoFrame
+    If Not *Me\options & #Group_NoFrame
       Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
       VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
 
@@ -265,23 +240,43 @@ Module ControlGroup
     VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
     DrawVectorText( label )
     
-    If *Me\chilcount < 1 : ProcedureReturn : EndIf
+    Define collapsed.b = #False
+    If *Me\options & #Group_Collapsable
+      If *Me\state & Control::#State_Collapsed
+        MovePathCursor(*Me\posX + *Me\sizX - 6 * #Group_Border_Margin, *Me\posY + #Group_Border_Margin)
+        AddPathLine(0,8, #PB_Path_Relative)
+        AddPathLine(6,-4, #PB_Path_Relative)
+        AddPathLine(-6,-4, #PB_Path_Relative)
+        FillPath()
+        collapsed = #True
+      Else
+        MovePathCursor(*Me\posX + *Me\sizX - 6 * #Group_Border_Margin, *Me\posY + #Group_Border_Margin)
+        AddPathLine(8,0, #PB_Path_Relative)
+        AddPathLine(-4,6, #PB_Path_Relative)
+        AddPathLine(-4,-6, #PB_Path_Relative)
+        FillPath()
+      EndIf
+    EndIf
     
-    Protected i     .i = 0
-    Protected iBound.i = *Me\chilcount - 1
-    Protected  son  .Control::IControl
-    Protected *son  .Control::Control_t
+    If Not collapsed And *Me\chilcount
     
-    Protected ev_data.Control::EventTypeDatas_t  
-    For i=0 To iBound
-       *son = *Me\children(i)
-       son = *son
-       
-      ev_data\xoff = *Me\posX+*son\posX
-      ev_data\yoff = *Me\posY+*son\posY
+      Protected i     .i = 0
+      Protected iBound.i = *Me\chilcount - 1
+      Protected  son  .Control::IControl
+      Protected *son  .Control::Control_t
       
-      son\OnEvent( Control::#PB_EventType_Draw, ev_data )
-    Next
+      Protected ev_data.Control::EventTypeDatas_t  
+      For i=0 To iBound
+         *son = *Me\children(i)
+         son = *son
+         
+        ev_data\xoff = *Me\posX+*son\posX
+        ev_data\yoff = *Me\posY+*son\posY
+        
+        son\OnEvent( Control::#PB_EventType_Draw, ev_data )
+      Next
+    EndIf
+    
     
     If init : StopVectorDrawing() : EndIf 
 
@@ -396,13 +391,18 @@ Module ControlGroup
         Protected *overchild.Control::Control_t = #Null
         xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
         ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-        
-        xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-        ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-        
+                
+;         xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+;         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+                
         Protected pickID = Pick(*Me) 
+        Debug "pick ID : "+Str(pickID)
         If pickID > -1 And pickID <*Me\chilcount
           *overchild = *Me\children(pickID)
+          If *overchild
+            Debug *overchild\name
+          EndIf
+          
         EndIf
         
         If *Me\overchild <> *overchild And  Not *Me\down
@@ -473,7 +473,50 @@ Module ControlGroup
     ProcedureReturn( #False )
     
   EndProcedure
+  
+  Procedure GetWidth( *Me.ControlGroup_t)
+    If Not *Me : ProcedureReturn : EndIf
+    ProcedureReturn(*Me\sizX)
+  EndProcedure
 
+  Procedure GetHeight( *Me.ControlGroup_t)
+    If Not *Me : ProcedureReturn : EndIf
+    If *Me\percY > 0
+      ProcedureReturn *Me\parent\sizY * (*Me\percY / 100)
+    Else
+      Protected y = 2*#Group_Frame_Height
+      Protected base.i = 0, num.i
+      If *Me\state & Control::#State_Enable
+        
+        For i=0 To *Me\chilcount-1
+          If i < base : Continue : EndIf
+          num = GetNumControlInRow(*Me, base)
+          y + GetControlRowHeight(*Me, base, num)
+          base + num
+        Next
+      EndIf
+      ProcedureReturn y
+    EndIf
+    
+  EndProcedure
+  
+  Procedure GetControlByIndex( *Me.ControlGroup_t, index.i)
+    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn #Null : EndIf
+    ProcedureReturn *Me\children(index)
+  EndProcedure
+  
+  Procedure GetControlByName( *Me.ControlGroup_t, name.s)
+    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn : EndIf
+    Protected *son.Control::Control_t
+    For i=0 To *Me\chilcount-1
+      *son = *Me\children(i)
+      If *son\name = name
+        ProcedureReturn *son
+      EndIf
+    Next
+    ProcedureReturn #Null
+  EndProcedure
+  
   ; ============================================================================
   ;  IMPLEMENTATION ( ControlGroup_t )
   ; ============================================================================
@@ -535,7 +578,7 @@ Module ControlGroup
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Autosize_V|#Autostack )
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack )
     
     Protected *Me.ControlGroup_t = AllocateStructure(ControlGroup_t)
   
@@ -566,6 +609,7 @@ Module ControlGroup
     *Me\chilcount  = 0
     *Me\overchild  = #Null
     *Me\focuschild = #Null
+    *Me\state      = Control::#State_Enable
     
     ProcedureReturn( *Me )
     
@@ -596,7 +640,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 287
-; Folding = ----
+; CursorPosition = 398
+; FirstLine = 359
+; Folding = -----
 ; EnableXP

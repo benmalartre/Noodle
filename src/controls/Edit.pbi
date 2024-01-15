@@ -8,9 +8,6 @@ XIncludeFile "../ui/View.pbi"
 ; ==============================================================================
 DeclareModule ControlEdit 
 
-  ; ----------------------------------------------------------------------------
-  ;  Object ( ControlEdit_t )
-  ; ----------------------------------------------------------------------------
   Structure ControlEdit_t Extends Control::Control_t
     value       .s
     undo_esc    .s
@@ -31,15 +28,8 @@ DeclareModule ControlEdit
     Array lookup.i(0)
   EndStructure
   
-  ; ----------------------------------------------------------------------------
-  ;  Interface
-  ; ----------------------------------------------------------------------------
   Interface IControlEdit Extends Control::IControl
   EndInterface
-  
-  ; ----------------------------------------------------------------------------
-  ;  Declares 
-  ; ----------------------------------------------------------------------------
   
   Declare New(*parent.Control::Control_t ,name.s, value.s = "", options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlEdit_t)
@@ -48,9 +38,6 @@ DeclareModule ControlEdit
   Declare.s GetValue( *Me.ControlEdit_t )
   Declare SetValue( *Me.ControlEdit_t, value.s )
 
-  ; ============================================================================
-  ;  VTABLE & DATAS ( CObject + CControl + CControlEdit )
-  ; ============================================================================
   DataSection
     ControlEditVT:
     Data.i @OnEvent() ; mandatory override
@@ -71,24 +58,18 @@ EndDeclareModule
 ;  IMPLEMENTATION ( Helpers )
 ; ============================================================================
 Module ControlEdit
-; ----------------------------------------------------------------------------
-;  hlpNextWordStart
-; ----------------------------------------------------------------------------
+
 Procedure.i hlpNextWordStart( text.s, cur_pos.i )
   
-  ; ---[ Local Variables ]----------------------------------------------------
   Protected iEnd.i = Len(text) + 1
   Protected bFront = #False
   
-  ; ---[ Sanity Check ]-------------------------------------------------------
   If cur_pos = iEnd : ProcedureReturn( iEnd ) : EndIf
   
-  ; ---[ Update Front ]-------------------------------------------------------
   If Mid( text, cur_pos, 1 ) = " "
     bFront = #True
   EndIf
   
-  ; ---[ Search For Next Word Start ]-----------------------------------------
   While cur_pos < iEnd
     If bFront
       If Mid( text, cur_pos, 1 ) <> " "
@@ -102,29 +83,22 @@ Procedure.i hlpNextWordStart( text.s, cur_pos.i )
     cur_pos + 1
   Wend
   
-  ; ---[ Not Found ]----------------------------------------------------------
   ProcedureReturn( iEnd )
   
 EndProcedure
 
-; ----------------------------------------------------------------------------
-;  hlpPrevWordStart
-; ----------------------------------------------------------------------------
+
 Procedure.i hlpPrevWordStart( text.s, cur_pos.i )
   
-  ; ---[ Sanity Check ]-------------------------------------------------------
   If cur_pos = 1 : ProcedureReturn(1) : EndIf
   
-  ; ---[ Local Variables ]----------------------------------------------------
   Protected bFront = #False
   
-  ; ---[ Update Front ]-------------------------------------------------------
   cur_pos - 1
   If Mid( text, cur_pos, 1 ) <> " "
     bFront = #True
   EndIf
   
-  ; ---[ Search For Previous Word Start ]-------------------------------------
   While cur_pos > 1
     cur_pos - 1
     If bFront
@@ -138,29 +112,21 @@ Procedure.i hlpPrevWordStart( text.s, cur_pos.i )
     EndIf
   Wend
   
-  ; ---[ Not Found ]----------------------------------------------------------
   ProcedureReturn( 1 )
   
 EndProcedure
 
-; ----------------------------------------------------------------------------
-;  hlpPrevWord
-; ----------------------------------------------------------------------------
 Procedure.i hlpPrevWord( text.s, cur_pos.i )
   
-  ; ---[ Sanity Check ]-------------------------------------------------------
   If cur_pos = 1 : ProcedureReturn(1) : EndIf
   
-  ; ---[ Local Variables ]----------------------------------------------------
   Protected bFront = #False
   
-  ; ---[ Update Front ]-------------------------------------------------------
   cur_pos - 1
   If Mid( text, cur_pos, 1 ) <> " "
     bFront = #True
   EndIf
   
-  ; ---[ Search For Previous Word Start ]-------------------------------------
   While cur_pos > 1
     cur_pos - 1
     If bFront
@@ -174,28 +140,21 @@ Procedure.i hlpPrevWord( text.s, cur_pos.i )
     EndIf
   Wend
   
-  ; ---[ Not Found ]----------------------------------------------------------
   ProcedureReturn( 1 )
   
 EndProcedure
-; ----------------------------------------------------------------------------
-;  hlpNextWord
-; ----------------------------------------------------------------------------
+
 Procedure.i hlpNextWord( text.s, cur_pos.i )
   
-  ; ---[ Local Variables ]----------------------------------------------------
   Protected iEnd.i = Len(text) + 1
   Protected bFront = #False
   
-  ; ---[ Sanity Check ]-------------------------------------------------------
   If cur_pos = iEnd : ProcedureReturn( iEnd ) : EndIf
   
-  ; ---[ Update Front ]-------------------------------------------------------
   If Mid( text, cur_pos, 1 ) = " "
     bFront = #True
   EndIf
   
-  ; ---[ Search For Next Word Start ]-----------------------------------------
   While cur_pos < iEnd
     If bFront
       If Mid( text, cur_pos, 1 ) <> " "
@@ -203,20 +162,16 @@ Procedure.i hlpNextWord( text.s, cur_pos.i )
       EndIf
     Else
       If Mid( text, cur_pos, 1 ) = " "
-        ;bFront = #True
         ProcedureReturn( cur_pos )
       EndIf
     EndIf
     cur_pos + 1
   Wend
   
-  ; ---[ Not Found ]----------------------------------------------------------
   ProcedureReturn( iEnd )
   
 EndProcedure
-; ----------------------------------------------------------------------------
-;  hlpSelectWord
-; ----------------------------------------------------------------------------
+
 Procedure hlpSelectWord( *Me.ControlEdit_t, cur_pos.i )
   
   If cur_pos > 1 And cur_pos < Len(*Me\value)
@@ -234,9 +189,7 @@ Procedure hlpSelectWord( *Me.ControlEdit_t, cur_pos.i )
   EndIf
   
 EndProcedure
-; ----------------------------------------------------------------------------
-;  hlpCharPosFromMousePos
-; ----------------------------------------------------------------------------
+
 Procedure.i hlpCharPosFromMousePos( *Me.ControlEdit_t, xpos.i )
   xpos - 7
   Protected x_start.i = *Me\lookup(*Me\posS)
@@ -250,20 +203,17 @@ Procedure.i hlpCharPosFromMousePos( *Me.ControlEdit_t, xpos.i )
   ProcedureReturn( *Me\lookup_count)
 EndProcedure
 
-; ----------------------------------------------------------------------------
-;  Draw
-; ----------------------------------------------------------------------------
 Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
   If Not *Me\visible : ProcedureReturn( void ) : EndIf
   
   Protected tc.i = UIColor::COLOR_TEXT_DEFAULT
-  VectorFont( FontID(Globals::#FONT_DEFAULT), Globals::#FONT_SIZE_LABEL )
+  VectorFont( FontID(Globals::#Font_Default), Globals::#Font_Size_Label )
   Protected tx.i = 7
   Protected ty.i
   If Len(*Me\value)
     ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
   Else
-    ty.i = (*Me\sizY - Globals::#FONT_SIZE_LABEL)/2 + yoff
+    ty.i = (*Me\sizY - Globals::#Font_Size_Label)/2 + yoff
   EndIf
   
   Vector::RoundBoxPath(0+xoff, 0+yoff,*Me\sizX, *me\sizY, Control::CORNER_RADIUS)
@@ -333,13 +283,13 @@ Procedure Draw( *Me.ControlEdit_t, xoff.i = 0, yoff.i = 0 )
     tc = UIColor::COLOR_TEXT_ACTIVE
 
   ElseIf *Me\over
-    VectorSourceColor(UIColor::COLOR_TERNARY_BG)
+    VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath(#PB_Path_Preserve)
     VectorSourceColor(UIColor::COLOR_FRAME_OVERED)
     StrokePath(Control::FRAME_THICKNESS)
 
   Else
-    VectorSourceColor(UIColor::COLOR_TERNARY_BG)
+    VectorSourceColor(UIColor::COLOR_NUMBER_BG)
     FillPath(#PB_Path_Preserve)
     VectorSourceColor(UICOlor::COLOR_FRAME_DEFAULT)
     StrokePath(Control::FRAME_THICKNESS)
@@ -377,22 +327,15 @@ EndProcedure
 ; ============================================================================
 ;  OVERRIDE ( CControl )
 ; ============================================================================
-
 Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   Protected Me.Control::IControl = *Me
 
   Select ev_code
-    ; ------------------------------------------------------------------------
-    ;  Draw
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Draw
       If Not( *ev_data ):ProcedureReturn : EndIf
       Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  Resize
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_Resize
       If Not( *ev_data ):ProcedureReturn : EndIf
       If #PB_Ignore <> *ev_data\x      : *Me\posX = *ev_data\x      : EndIf
@@ -400,9 +343,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       If #PB_Ignore <> *ev_data\width  : *Me\sizX = *ev_data\width  : EndIf
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  LostFocus
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LostFocus
       ;RemoveWindowTimer( #MainWindow, #TIMER_CARET )
       *Me\focused = #False
@@ -410,9 +350,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  MouseEnter
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseEnter
       If *Me\visible And *Me\enable
         *Me\over = #True
@@ -421,9 +358,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseLeave
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseLeave
       If *Me\visible And *Me\enable
         *Me\over = #False
@@ -431,9 +365,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  MouseMove
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_MouseMove
       If *Me\visible And *Me\enable
         If *Me\focused And *Me\down
@@ -444,9 +375,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonDown
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonDown
       If *Me\visible And *Me\enable And *Me\over
         *Me\down = #True
@@ -465,19 +393,13 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  LeftButtonUp
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_LeftButtonUp
       If *Me\visible And *Me\enable
         *Me\down = #False
         Control::Invalidate(*Me)
         ProcedureReturn( #True )
       EndIf
-      
-    ; ------------------------------------------------------------------------
-    ;  LeftDoubleClick
-    ; ------------------------------------------------------------------------
+
     Case #PB_EventType_LeftDoubleClick
       If *Me\visible And *Me\enable
         If Not( *ev_data ):ProcedureReturn : EndIf
@@ -487,9 +409,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
         ProcedureReturn( #True )
       EndIf
       
-    ; ------------------------------------------------------------------------
-    ;  Input
-    ; ------------------------------------------------------------------------
     Case #PB_EventType_Input
       If Not( *ev_data ):ProcedureReturn : EndIf
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
@@ -504,10 +423,7 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       *Me\lookup_dirty = #True
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
-      
-    ; ------------------------------------------------------------------------
-    ;  KeyDown
-    ; ------------------------------------------------------------------------
+
     Case #PB_EventType_KeyDown
       Select *ev_data\key
           
@@ -610,9 +526,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
           
       EndSelect ; Select *ev_data\key ( Case #PB_EventType_KeyDown )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + X (SHORTCUT_CUT)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_CUT
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       If *Me\posG > *Me\posW
@@ -628,9 +541,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + C (SHORTCUT_COPY)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_COPY
       If *Me\posG > *Me\posW
         SetClipboardText( Mid( *Me\value, *Me\posW, *Me\posG - *Me\posW ) )
@@ -639,9 +549,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       EndIf
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + V (SHORTCUT_PASTE)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_PASTE
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       Protected cliptxt.s = GetClipboardText()
@@ -658,9 +565,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  CTRL/CMD + Z (SHORTCUT_UNDO)
-    ; ------------------------------------------------------------------------
     Case Globals::#SHORTCUT_UNDO
       *Me\value = *Me\undo_ctz_t
       *Me\posG  = *Me\undo_ctz_g
@@ -669,9 +573,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       Control::Invalidate(*Me)
       ProcedureReturn( #True )
       
-    ; ------------------------------------------------------------------------
-    ;  Enable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Enable
       If Not *Me\enable
         *Me\enable = #True
@@ -681,9 +582,6 @@ Procedure.i OnEvent( *Me.ControlEdit_t, ev_code.i, *ev_data.Control::EventTypeDa
       EndIf
       ProcedureReturn( #True )
 
-    ; ------------------------------------------------------------------------
-    ;  Disable
-    ; ------------------------------------------------------------------------
     Case Control::#PB_EventType_Disable
       If *Me\enable
         *Me\enable = #False
@@ -723,10 +621,6 @@ EndProcedure
     Object::TERM(ControlEdit)
     
   EndProcedure
-
-
-
-
 
   ; ============================================================================
   ;  CONSTRUCTORS
@@ -770,7 +664,6 @@ EndProcedure
     
   EndProcedure
   
-  ; ---[ Reflection ]-----------------------------------------------------------
   Class::DEF( ControlEdit )
   
 EndModule
@@ -782,7 +675,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 767
-; FirstLine = 721
+; CursorPosition = 278
+; FirstLine = 232
 ; Folding = ---
 ; EnableXP

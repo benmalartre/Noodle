@@ -35,22 +35,24 @@ Global controls.SSAOControls_t
 
 Procedure SetupSSAOCOntrols(*Me.SSAOControls_t)
   *Me\ui = PropertyUI::New(*app\window\main\right, "UI")
-  PropertyUI::AppendStart(*Me\ui)
+    PropertyUI::AppendStart(*Me\ui)
+  Define *prop.ControlProperty::ControlProperty_t = ControlProperty::New(*Me\ui, "SSAOControls", "SSAO Controls")
+
   
-  ControlProperty::Clear(*Me\ui\prop)
-  Control::SetPercentage(*Me\ui\prop, 100, 100)
-  ControlProperty::AppendStart(*Me\ui\prop)
-  ControlProperty::RowStart(*Me\ui\prop)
+  ControlProperty::Clear(*prop)
+  Control::SetPercentage(*prop, 100, 100)
+  ControlProperty::AppendStart(*prop)
+  ControlProperty::RowStart(*prop)
   
-  *Me\radiusLabel = ControlLabel::New(*Me\ui\prop, "RadiusLabel", "Radius")
-  ControlProperty::Append(*Me\ui\prop, *Me\radiusLabel)
-  *Me\radius = ControlNumber::New(*Me\ui\prop, "Radius", 1.0, 0, 0.0, 10, 0.0, 1.0)
-  ControlProperty::Append(*Me\ui\prop, *Me\radius)
+  *Me\radiusLabel = ControlLabel::New(*prop, "RadiusLabel", "Radius")
+  ControlProperty::Append(*prop, *radiusLabel)
+  *Me\radius = ControlNumber::New(*prop, "Radius", 1.0, 0, 0.0, 10, 0.0, 1.0)
+  ControlProperty::Append(*prop, *Me\radius)
   
-  *Me\blurLabel = ControlLabel::New(*Me\ui\prop, "BlurLabel", "Blur")
-  ControlProperty::Append(*Me\ui\prop, *Me\blurLabel)
-  *Me\blur = ControlCheck::New(*Me\ui\prop, "Blur", "Blur",#False)
-  ControlProperty::Append(*Me\ui\prop, *Me\blur)
+  *Me\blurLabel = ControlLabel::New(*prop, "BlurLabel", "Blur")
+  ControlProperty::Append(*prop, *Me\blurLabel)
+  *Me\blur = ControlCheck::New(*prop, "Blur", "Blur",#False)
+  ControlProperty::Append(*prop, *Me\blur)
   
   
 ;   *Me\folder_group = ControlGroup::New(*Me\ui\prop, "FolderGroup", "Folder :",0,10,300,#HEIGHT-20)
@@ -86,9 +88,9 @@ Procedure SetupSSAOCOntrols(*Me.SSAOControls_t)
 ;   Signal::CONNECTCALLBACK(*Me\button\on_click, OnRecord, *Me)
 ;   ControlProperty::Append(*Me\ui\prop, *Me\button)
   
-  ControlProperty::RowEnd(*Me\ui\prop)
-  ControlProperty::AppendStop(*Me\ui\prop)
-  Control::Invalidate(*Me\ui\prop)
+  ControlProperty::RowEnd(*prop)
+  ControlProperty::AppendStop(*prop)
+  Control::Invalidate(*prop)
   
   PropertyUI::AppendStop(*Me\ui)
 EndProcedure
@@ -196,7 +198,7 @@ EndProcedure
 
 Procedure SetupSSAOKernel(nbSamples)
   Protected i
-  *kernel = CArray::New(CArray::#ARRAY_V4F32)
+  *kernel = CArray::New(Types::#Type_V4F32)
   CArray::SetCount(*kernel,nbSamples)
   
   For i=0 To nbSamples-1
@@ -213,7 +215,7 @@ EndProcedure
 
 Procedure SetupSSAONoise()
   Protected i
-  *noise = CArray::New(CArray::#ARRAY_V4F32)
+  *noise = CArray::New(Types::#Type_V4F32)
   CArray::SetCount(*noise,noise_size)
   Define *n.v3f32 
   For i=0 To noise_size-1
@@ -622,8 +624,8 @@ EndIf
 ; glDeleteBuffers(1,@vbo)
 ; glDeleteVertexArrays(1,@vao)
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 454
-; FirstLine = 434
+; CursorPosition = 217
+; FirstLine = 196
 ; Folding = --
 ; EnableXP
 ; Executable = ssao.exe

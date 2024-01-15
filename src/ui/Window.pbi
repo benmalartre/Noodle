@@ -29,8 +29,6 @@ Module Window
     CompilerElse
       View::Resize(*Me\main,0,0,w,h)
     CompilerEndIf
-    
-    DrawPickImage(*Me)
   EndProcedure
 
   Procedure RecurseView(*Me.Window_t,*view.View::View_t)
@@ -213,55 +211,60 @@ Module Window
     EndIf  
   EndProcedure
   
-  Procedure RecurseDrawPickImage(*Me.Window_t,*view.View::View_t)
-    If *view\leaf And *view\content
-      Define uuid.i = GetUniqueID(*Me, *view)
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(*view\posX-View::#VIEW_BORDER_SENSIBILITY*0.5,
-          *view\posY-View::#VIEW_BORDER_SENSIBILITY*0.5,
-          *view\sizX+View::#VIEW_BORDER_SENSIBILITY,
-          *view\sizY+View::#VIEW_BORDER_SENSIBILITY, uuid)
-    Else
-      If *view\left : RecurseDrawPickImage(*Me,*view\left) : EndIf
-      If *view\right : RecurseDrawPickImage(*Me,*view\right) : EndIf
-    EndIf
-  EndProcedure
+;   Procedure RecurseDrawPickImage(*Me.Window_t,*view.View::View_t)
+;     If *view\leaf And *view\content
+;       Define uuid.i = GetUniqueID(*Me, *view)
+;       DrawingMode(#PB_2DDrawing_Default)
+;       Box(*view\posX-View::#VIEW_BORDER_SENSIBILITY*0.5,
+;           *view\posY-View::#VIEW_BORDER_SENSIBILITY*0.5,
+;           *view\sizX+View::#VIEW_BORDER_SENSIBILITY,
+;           *view\sizY+View::#VIEW_BORDER_SENSIBILITY, uuid)
+;     Else
+;       If *view\left : RecurseDrawPickImage(*Me,*view\left) : EndIf
+;       If *view\right : RecurseDrawPickImage(*Me,*view\right) : EndIf
+;     EndIf
+;   EndProcedure
+;   
+;   Procedure DrawPickImage(*Me.Window_t)
+;     ClearMap(*Me\uis())
+;     If Not *Me\main\sizX Or Not *Me\main\sizY 
+;       ProcedureReturn 
+;     EndIf
+; 
+;     ResizeImage(*Me\imageID, *Me\main\sizX, *Me\main\sizY)
+;     StartDrawing(ImageOutput(*Me\imageID))
+;     RecurseDrawPickImage(*Me,*Me\main)
+;     StopDrawing()
+;   EndProcedure
   
-  Procedure DrawPickImage(*Me.Window_t)
-    ClearMap(*Me\uis())
-    If Not *Me\main\sizX Or Not *Me\main\sizY 
-      ProcedureReturn 
-    EndIf
-
-    ResizeImage(*Me\imageID, *Me\main\sizX, *Me\main\sizY)
-    StartDrawing(ImageOutput(*Me\imageID))
-    RecurseDrawPickImage(*Me,*Me\main)
-    StopDrawing()
-  EndProcedure
+;   Procedure Draw(*Me.Window_t)
+;     StartDrawing(WindowOutput(*Me\ID))
+;     DrawingMode(#PB_2DDrawing_AlphaBlend)
+;     DrawImage(ImageID(*Me\imageID),0,0)
+;     If *Me\active
+;       DrawingMode(#PB_2DDrawing_Default)
+;       Box(*Me\active\posX, *Me\active\posY, *Me\active\sizX, *Me\active\sizY, RGBA(255,255,255,128))
+;     EndIf
+;     StopDrawing()
+;   EndProcedure
   
-  Procedure Draw(*Me.Window_t)
-    StartDrawing(WindowOutput(*Me\ID))
-    DrawingMode(#PB_2DDrawing_AlphaBlend)
-    DrawImage(ImageID(*Me\imageID),0,0)
-    If *Me\active
-      DrawingMode(#PB_2DDrawing_Default)
-      Box(*Me\active\posX, *Me\active\posY, *Me\active\sizX, *Me\active\sizY, RGBA(255,255,255,128))
-    EndIf
-    StopDrawing()
-  EndProcedure
-  
-  Procedure Pick(*Me.Window_t, mx.i, my.i)
-    Protected picked.i = -1
-    StartDrawing(ImageOutput(*Me\imageID))
-    DrawingMode(#PB_2DDrawing_Default)
-    If mx>=0 And mx<ImageWidth(*Me\imageID) And my>=0 And my<ImageHeight(*Me\imageID)
-      picked = Point(mx, my)
-    EndIf
-    StopDrawing()
-    If FindMapElement(*Me\uis(), Str(picked))
-      ProcedureReturn *Me\uis()\view
+  Procedure _RecursePick(*view.View::View_t, mx.i, my.i)
+    If View::PointInside(*view, mx, my)
+      If *view\leaf
+        ProcedureReturn *view
+      Else
+        If View::PointInside(*view\left, mx, my)
+          ProcedureReturn _RecursePick(*view\left, mx, my)
+        ElseIf View::PointInside(*view\right, mx, my)
+          ProcedureReturn _RecursePick(*view\right, mx, my)
+        EndIf
+      EndIf  
     EndIf
     ProcedureReturn #Null
+  EndProcedure
+  
+  Procedure Pick(*Me.Window_t, mx.i, my.i)  
+    ProcedureReturn _RecursePick(*Me\main, mx, my)
   EndProcedure
   
   Procedure AddMenuItem(*Me.Window_t, name.s, event.i=-1)
@@ -302,7 +305,7 @@ Module Window
     *Me\main = View::New(0,0,WindowWidth(*Me\ID),WindowHeight(*Me\ID),#Null,#False,name,#True)
     *Me\main\window = *Me
     *Me\active = *Me\main
-    *Me\imageID = CreateImage(#PB_Any, width, height, 32)
+;     *Me\imageID = CreateImage(#PB_Any, width, height, 32)
     *Me\menu = #Null
     
     If Not parentID : *MAIN_WINDOW = *Me : EndIf
@@ -316,7 +319,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 198
-; Folding = ----
+; CursorPosition = 34
+; FirstLine = 9
+; Folding = ---
 ; EnableXP

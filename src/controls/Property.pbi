@@ -8,7 +8,6 @@ XIncludeFile "Number.pbi"
 XIncludeFile "Enum.pbi"
 XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
-XIncludeFile "Head.pbi"
 XIncludeFile "Knob.pbi"
 XIncludeFile "Color.pbi"
 
@@ -17,17 +16,10 @@ XIncludeFile "Color.pbi"
 ;========================================================================================
 DeclareModule ControlProperty
   UseModule Math
-  #HEAD_HEIGHT = 24
-  
-  Enumeration 
-    #PROPERTY_FLAT
-    #PROPERTY_LABELED
-  EndEnumeration
   
   Structure ControlProperty_t Extends ControlGroup::ControlGroup_t
     valid     .b
     *object.Object::Object_t
-    *head.ControlHead::ControlHead_t
     List *groups.ControlGroup::ControlGroup_t()
 
     decoration.i
@@ -40,14 +32,13 @@ DeclareModule ControlProperty
   Interface IControlProperty Extends Control::IControl
   EndInterface
   
-  Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,decoration=#PROPERTY_LABELED)
+  Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,options=ControlGroup::#Group_Collapsable)
   Declare Delete(*Me.ControlProperty_t)
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
   Declare AppendStop( *Me.ControlProperty_t )
   Declare RowStart( *Me.ControlProperty_t )
   Declare RowEnd( *Me.ControlProperty_t )
-  Declare AddHead( *Me.ControlProperty_t)
   Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attr.Attribute::Attribute_t)
   Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
   Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*attr.Attribute::Attribute_t)
@@ -69,10 +60,6 @@ DeclareModule ControlProperty
   Declare Refresh( *Me.ControlProperty_t)
   Declare EventWithFilter(*Me.ControlProperty_t,filter.i,ev_type.i)
   Declare Clear( *Me.ControlProperty_t )
-  Declare.i GetWidth(*Me.ControlProperty_t)
-  Declare.i GetHeight(*Me.ControlProperty_t)
-  Declare GetControlByIndex(*Me.ControlProperty_t, index.i)
-  Declare GetControlByName(*Me.ControlProperty_t, name.s)
   
   DataSection 
     ControlPropertyVT: 
@@ -205,10 +192,7 @@ Module ControlProperty
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARE_CALLBACK(OnEnumChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
-  
-  ; ----------------------------------------------------------------------------
-  ;  hlpNextItem
-  ; ----------------------------------------------------------------------------
+
   Procedure hlpNextItem( *Me.ControlGroup::ControlGroup_t )
     *Me\focuschild\OnEvent( #PB_EventType_LostFocus, #Null )
     
@@ -220,9 +204,6 @@ Module ControlProperty
     *Me\focuschild\OnEvent(#PB_EventType_Focus,ev_data)
   EndProcedure
 
-  ; ----------------------------------------------------------------------------
-  ;  Clear
-  ; ----------------------------------------------------------------------------
   Procedure Clear( *Me.ControlProperty_t )
     Protected i
     Protected *ctl.Control::IControl
@@ -248,18 +229,13 @@ Module ControlProperty
     *Me\overchild = #Null
   EndProcedure
  
-  ;-----------------------------------------------------------------------------
-  ; AppendStart
-  ;-----------------------------------------------------------------------------
   Procedure AppendStart( *Me.ControlProperty_t )
     If *Me\append : ProcedureReturn : EndIf
     *Me\append = #True
+    *Me\dx + ControlGroup::#Group_Border_Margin
     *Me\dy + 20
   EndProcedure
 
-  ;-----------------------------------------------------------------------------
-  ; Append
-  ;-----------------------------------------------------------------------------
   Procedure.i Append( *Me.ControlProperty_t, *ctl.Control::Control_t)
     If Not *ctl
       ProcedureReturn
@@ -283,34 +259,25 @@ Module ControlProperty
     ProcedureReturn( *ctl )
   
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; AppendStop
-  ;-----------------------------------------------------------------------------
+
   Procedure AppendStop( *Me.ControlProperty_t )
     If Not *Me\append : ProcedureReturn( void ) : EndIf
     *Me\append = #False
-    *Me\sizY = GetHeight(*Me)
+    *Me\sizY = ControlGroup::GetHeight(*Me)
     ResizeGadget(*Me\gadgetID,*Me\parent\posX +*Me\posY,*Me\parent\posY + *Me\posY,*Me\sizX,*Me\sizY)
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; RowStart
-  ;-----------------------------------------------------------------------------
+
   Procedure RowStart( *Me.ControlProperty_t )
     If *Me\row : ProcedureReturn( void ) : EndIf
     *Me\row = #True
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
     Else
-      *Me\dx = 5
+      *Me\dx = ControlGroup::#Group_Border_Margin
     EndIf
     
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; RowEnd
-  ;-----------------------------------------------------------------------------
+
   Procedure RowEnd( *Me.ControlProperty_t )
     If *Me\chilcount>0 : *Me\rowflags( *Me\chilcount - 1) = #False : EndIf
     If Not *Me\row : ProcedureReturn( void ) : EndIf
@@ -318,10 +285,7 @@ Module ControlProperty
     *Me\dy + 32
     *Me\row = #False
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Button Control
-  ;-----------------------------------------------------------------------------
+
   Procedure AddButtonControl( *Me.ControlProperty_t, name.s,label.s, color.i,width=18, height=18, toggable.b=#False)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -330,7 +294,7 @@ Module ControlProperty
     Protected *Ctl.Control::Control_t
     
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
       If toggable
         *btn = ControlButton::New(*Me,name,name,#False, 0,*Me\dx,*Me\dy+2,width,height, color )
       Else
@@ -339,7 +303,7 @@ Module ControlProperty
       ControlGroup::Append(*Me\groups(),*btn)
       If Not *Me\groups()\row Or Not *Me\groups()\chilcount > 1 : *Me\dy + height : EndIf
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
       If toggable
         *btn = ControlButton::New(*Me,name,name,#False, #PB_Button_Toggle,*Me\dx,*Me\dy+2,width,height, color )
       Else
@@ -351,10 +315,7 @@ Module ControlProperty
     ProcedureReturn(*btn)
   
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Icon Control
-  ;-----------------------------------------------------------------------------
+
   Procedure AddIconControl( *Me.ControlProperty_t, name.s, color.i, type.i, width=64, height=64)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -375,10 +336,6 @@ Module ControlProperty
     ProcedureReturn(*icon)
   EndProcedure
   
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Knob Control
-  ;-----------------------------------------------------------------------------
   Procedure AddKnobControl( *Me.ControlProperty_t, name.s, color.i,width=64, height=100)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -387,9 +344,9 @@ Module ControlProperty
     Protected *ctl.Control::Control_t
     
      If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
     EndIf
      
     
@@ -405,9 +362,6 @@ Module ControlProperty
     ProcedureReturn(*knob)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Bool Control
-  ;-----------------------------------------------------------------------------
   Procedure AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -437,9 +391,6 @@ Module ControlProperty
     ProcedureReturn(*ctl)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Long Control
-  ;-----------------------------------------------------------------------------
   Procedure AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
     If Not*Me : ProcedureReturn : EndIf
     
@@ -448,7 +399,7 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
      ControlGroup::RowStart( *Me\groups())
 ;       ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx,*Me\dy,60,21 ))
@@ -456,7 +407,7 @@ Module ControlProperty
       ControlGroup::Append( *Me\groups(), *ctl  )
       ControlGroup::RowEnd( *Me\groups())
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
       RowStart(*Me)
 ;       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx,*Me\dy,60,21 ))
@@ -473,9 +424,6 @@ Module ControlProperty
     ProcedureReturn(*ctl)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Float Control 
-  ;-----------------------------------------------------------------------------
   Procedure AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f, *attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -484,17 +432,15 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-10
         
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups() + 10
       ControlGroup::RowStart( *Me\groups())
-;       ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      ControlGroup::Append( *Me\groups(), ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append( *Me\groups(), ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl =  ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18) 
       ControlGroup::Append(*Me\groups(), *ctl)
       ControlGroup::RowEnd( *Me\groups())
     Else
-      *Me\dx = 10
       RowStart(*Me)
-;       Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
+      Append(*Me,ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append(*Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx+20,*Me\dy,60,21 ))
       *ctl = ControlNumber::New(*Me, name+"Number", value, ControlNumber::#NUMBER_SCALAR, -1000, 1000,-10,10,*Me\dx+20+(width-20)*0.25,*Me\dy,(width-20)*0.75,18)
       Append(*Me, *ctl)
@@ -504,15 +450,10 @@ Module ControlProperty
     If *attr
       Callback::CONNECT_CALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
     EndIf
-    
-    *Me\dy + 22
-    
+        
     ProcedureReturn(*ctl)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Vector2 Control
-  ;-----------------------------------------------------------------------------
   Procedure AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -555,10 +496,7 @@ Module ControlProperty
     *Me\dy + *group\sizY
     ProcedureReturn(*group)
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Vector3 Control
-  ;-----------------------------------------------------------------------------
+
   Procedure AddVector3Control(*Me.ControlProperty_t, name.s, label.s, *value.v3f32,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -606,15 +544,12 @@ Module ControlProperty
     ProcedureReturn(*group)
   EndProcedure
 
-  ;--------------------------------------------------------------------
-  ;  Add Vector4 Control
-  ;--------------------------------------------------------------------
   Procedure AddVector4Control(*Me.ControlProperty_t,name.s,label.s,*value.v4f32,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Protected width = GadgetWidth(*Me\gadgetID)/3
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
     
@@ -658,9 +593,6 @@ Module ControlProperty
     ProcedureReturn(#True)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Quaternion Control
-  ;-----------------------------------------------------------------------------
   Procedure AddQuaternionControl(*Me.ControlProperty_t, name.s, label.s, *value.q4f32, *attr.Attribute::Attribute_t)
 
     If Not *Me : ProcedureReturn : EndIf
@@ -668,7 +600,7 @@ Module ControlProperty
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
     
-    Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Protected width = GadgetWidth(*Me\gadgetID)/4
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 50 ,options)
     
@@ -719,23 +651,20 @@ Module ControlProperty
   
   EndProcedure
 
-  ;-----------------------------------------------------------------------------
-  ; Add Matrix4 Control
-  ;-----------------------------------------------------------------------------
   Procedure AddMatrix4Control(*Me.ControlProperty_t, name.s, label.s, *value.m4f32, *attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
 
-    Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Protected width = GadgetWidth(*Me\gadgetID)/4
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 200 ,options)
     
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
     EndIf
     
     ControlGroup::AppendStart(*group)
@@ -776,9 +705,6 @@ Module ControlProperty
     ProcedureReturn(*group)
   EndProcedure
 
-  ;-----------------------------------------------------------------------------
-  ; Add Reference Control
-  ;-----------------------------------------------------------------------------
   Procedure AddReferenceControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -786,7 +712,7 @@ Module ControlProperty
     Protected *Ctl.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    Protected options.i = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width, 200 ,options)
 
     ControlGroup::AppendStart(*group)
@@ -811,9 +737,6 @@ Module ControlProperty
     ProcedureReturn(#True)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add File Control
-  ;-----------------------------------------------------------------------------
   Procedure AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -821,6 +744,12 @@ Module ControlProperty
     Protected *ctl.Control::Control_t
     Protected *btn.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-5
+    
+    If ListSize(*Me\groups())
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
+    Else
+      *Me\dx = ControlGroup::#Group_Border_Margin
+    EndIf
     
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 )
 
@@ -846,10 +775,7 @@ Module ControlProperty
     *Me\dy +*group\sizY
     ProcedureReturn(#True)
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Enum Control
-  ;-----------------------------------------------------------------------------
+
   Procedure AddEnumControl( *Me.ControlProperty_t,name.s,label.s,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -858,14 +784,14 @@ Module ControlProperty
     Protected *ctl.Control::Control_t
     
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
       ControlGroup::RowStart(*Me\groups())
 ;       ControlGroup::Append(*Me\groups(),ControlDivot::New(*Me,name+"Divot",ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       ControlGroup::Append(*Me\groups(),ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
       *ctl = ControlGroup::Append(*Me\groups(),ControlEnum::New(*Me,name+"Check",name,*Me\dx+(width-20)*0.25,*Me\dy,(width-20)*0.75,18))
       ControlGroup::RowEnd(*Me\groups())
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
       RowStart(*Me)
 ;       Append( *Me,ControlDivot::New(*Me,name+"Divot" ,ControlDivot::#ANIM_NONE,0,*Me\dx,*Me\dy+2,18,18 ))
       Append( *Me,ControlLabel::New(*Me,name+"Label",label,#False,0,*Me\dx,*Me\dy,(width-20)*0.25,21 ))
@@ -882,10 +808,6 @@ Module ControlProperty
     ProcedureReturn(*ctl)
   EndProcedure
   
-  
-  ;-----------------------------------------------------------------------------
-  ; Add String Control
-  ;-----------------------------------------------------------------------------
   Procedure AddStringControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -893,7 +815,7 @@ Module ControlProperty
     Protected *ctl.Control::Control_t
     Protected width = GadgetWidth(*Me\gadgetID)-10
     
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
    
     ControlGroup::AppendStart(*group)
@@ -919,9 +841,6 @@ Module ControlProperty
     ProcedureReturn *ctl
   EndProcedure
 
-  ;-----------------------------------------------------------------------------
-  ; Add Color Control
-  ;-----------------------------------------------------------------------------
   Procedure AddColorControl(*Me.ControlProperty_t,name.s,label.s,*value.c4f32,*attr.Attribute::Attribute_t)
     If Not *Me : ProcedureReturn : EndIf
     
@@ -930,12 +849,12 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID)-5
     
     If ListSize(*Me\groups())
-      *Me\dx = *Me\groups()\posX + 10
+      *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
     Else
-      *Me\dx = 10
+      *Me\dx = ControlGroup::#Group_Border_Margin
     EndIf
     
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected options = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
     Define *color.ControlColor::ControlColor_t = ControlColor::New(*Me, name+"_Color",name+"_Color",*value,*Me\dx,*Me\dy+2,(width-110),18)
     
@@ -958,17 +877,15 @@ Module ControlProperty
     ProcedureReturn(*color)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Add Group Control
-  ;-----------------------------------------------------------------------------
   Procedure AddGroup( *Me.ControlProperty_t,name.s)
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    Protected width = GadgetWidth(*Me\gadgetID)-5
-    *Me\dx + 10
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
+    Protected width = GadgetWidth(*Me\gadgetID) - 2 * ControlGroup::#Group_Border_Margin
+    *Me\dx + ControlGroup::#Group_Border_Margin
+        
+    Protected options = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     AddElement(*Me\groups())
     *Me\groups() = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
 
@@ -976,100 +893,23 @@ Module ControlProperty
     
     ControlGroup::AppendStart(*Me\groups())
     
-    *Me\dy + 20
+    *Me\dy + ControlGroup::#Group_Frame_Height
     ProcedureReturn(*group)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; End Group Control
-  ;-----------------------------------------------------------------------------
   Procedure EndGroup( *Me.ControlProperty_t)
     If Not *Me : ProcedureReturn : EndIf
     
     If Not ListSize(*Me\groups()) : ProcedureReturn : EndIf
-    *Me\dx - 10
-    *Me\dy + 20;*Me\groups()\sizY-20
+    *Me\dx - ControlGroup::#Group_Border_Margin
+;     *Me\dy + ControlGroup::#Group_Frame_Height
    
     ControlGroup::AppendStop(*Me\groups())
     DeleteElement(*Me\groups())
    
     ProcedureReturn(#Null)
   EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Add Head Control
-  ;-----------------------------------------------------------------------------
-  Procedure AddHead( *Me.ControlProperty_t)
-    If Not *Me : ProcedureReturn : EndIf
-    Protected Me.ControlProperty::IControlProperty = *Me
-    *Me\dy = 0
-    Protected width = GadgetWidth(*Me\gadgetID)-10
-    
-    Protected options = ControlGroup::#Autostack|ControlGroup::#Autosize_V
-    *Me\head = ControlHead::New(*Me,*Me\name+"_Head",options,*Me\dx,*Me\dy+2,width,18) 
-    Append(*Me,*Me\head)
-    
-    *Me\dy + *Me\head\sizY
 
-    ProcedureReturn(*head)
-  EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Get Width
-  ;-----------------------------------------------------------------------------
-  Procedure GetWidth( *Me.ControlProperty_t)
-    If Not *Me : ProcedureReturn : EndIf
-    ProcedureReturn(*Me\sizX)
-  EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Get Height
-  ;-----------------------------------------------------------------------------
-  Procedure GetHeight( *Me.ControlProperty_t)
-    If Not *Me : ProcedureReturn : EndIf
-    If *Me\percY > 0
-      *Me\sizY = *Me\parent\sizY * (*Me\percY / 100)
-    Else
-      Protected *son.Control::Control_t
-      *Me\sizY = 0
-      For i=0 To *Me\chilcount-1
-      
-        *son = *Me\children(i)
-        If (*son\posY+*son\sizY) > *Me\sizY
-          *Me\sizY = *son\posY+*son\sizY
-        EndIf
-      Next
-    EndIf
-    ProcedureReturn *Me\sizY
-  EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Get Control By Index
-  ;-----------------------------------------------------------------------------
-  Procedure GetControlByIndex( *Me.ControlProperty_t, index.i)
-    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn #Null : EndIf
-    ProcedureReturn *Me\children(index)
-  EndProcedure
-  
-  ;-----------------------------------------------------------------------------
-  ; Get COntrol By Name
-  ;-----------------------------------------------------------------------------
-  Procedure GetControlByName( *Me.ControlProperty_t, name.s)
-    If Not *Me  Or index <0 Or index >= *Me\chilcount : ProcedureReturn : EndIf
-    Protected *son.Control::Control_t
-    For i=0 To *Me\chilcount-1
-      *son = *Me\children(i)
-      If *son\name = name
-        ProcedureReturn *son
-      EndIf
-    Next
-    ProcedureReturn #Null
-  EndProcedure
-
-  
-  ;-----------------------------------------------------------------------------
-  ; Init
-  ;-----------------------------------------------------------------------------
   Procedure Init( *Me.ControlProperty_t)
     If Not *Me : ProcedureReturn : EndIf
     ControlGroup::DrawPickImage(*Me)
@@ -1078,17 +918,11 @@ Module ControlProperty
     ProcedureReturn(#True)
   EndProcedure
 
-  ;-----------------------------------------------------------------------------
-  ; Refresh
-  ;-----------------------------------------------------------------------------
   Procedure Refresh( *Me.ControlProperty_t)
     If Not *Me : ProcedureReturn : EndIf
     ProcedureReturn(#True)
   EndProcedure
   
-  ;-----------------------------------------------------------------------------
-  ; Event With Filter
-  ;-----------------------------------------------------------------------------
   Procedure EventWithFilter(*Me.ControlProperty_t,filter.i,ev_type.i)
     Protected *son.Control::IControl
     Protected i
@@ -1119,7 +953,7 @@ Module ControlProperty
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,decoration = #PROPERTY_LABELED)
+  Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,options=ControlGroup::#Group_Collapsable)
     Protected *Me.ControlProperty_t = AllocateStructure(ControlProperty_t)
     
     Object::INI(ControlProperty)
@@ -1127,7 +961,6 @@ Module ControlProperty
     *Me\object     = #Null
     *Me\parent     = *parent
     *Me\type       = #PB_GadgetType_Container
-    *Me\decoration = decoration
     *Me\name       = name
     *Me\gadgetID   = *parent\gadgetID
     *Me\imageID    = CreateImage(#PB_Any,width,height)
@@ -1139,9 +972,9 @@ Module ControlProperty
     *Me\sizY       = height
     *Me\label      = label
     *Me\visible    = #True
-    *Me\enable     = #True
-    *Me\head       = ControlHead::New(*Me, name+"Head", 0,0,0,width, 32)
- 
+    *Me\enable     = #True 
+    *Me\options    = options
+    *Me\state      = Control::#State_Enable
     
     View::SetContent(*parent,*Me)
    
@@ -1159,7 +992,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 462
-; FirstLine = 438
-; Folding = --------
+; CursorPosition = 904
+; FirstLine = 248
+; Folding = DAwJAM9
 ; EnableXP

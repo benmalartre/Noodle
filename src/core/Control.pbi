@@ -20,12 +20,13 @@ DeclareModule Control
   EndEnumeration
   
   Enumeration
-    #State_Visible  = 1 << 1
-    #State_Enable   = 1 << 2
-    #State_Over     = 1 << 3
-    #State_Focused  = 1 << 4
-    #State_Down     = 1 << 5
-    #State_Selected = 1 << 6
+    #State_Visible      = 1 << 1
+    #State_Enable       = 1 << 2
+    #State_Over         = 1 << 3
+    #State_Focused      = 1 << 4
+    #State_Down         = 1 << 5
+    #State_Selected     = 1 << 6
+    #State_Collapsed    = 1 << 7
   EndEnumeration
   
   Enumeration
@@ -280,8 +281,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 243
-; FirstLine = 202
+; CursorPosition = 28
+; FirstLine = 12
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

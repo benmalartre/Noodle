@@ -97,7 +97,6 @@ XIncludeFile "../controls/Label.pbi"
 XIncludeFile "../controls/Group.pbi"
 XIncludeFile "../controls/Controls.pbi"
 XIncludeFile "../controls/Property.pbi"
-XIncludeFile "../controls/Head.pbi"
 XIncludeFile "../controls/Knob.pbi"
 XIncludeFile "../controls/Popup.pbi"
 XIncludeFile "../controls/ColorWheel.pbi"
@@ -752,8 +751,8 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 703
-; FirstLine = 676
+; CursorPosition = 99
+; FirstLine = 95
 ; Folding = ------
 ; EnableXP
 ; SubSystem = OpenGL

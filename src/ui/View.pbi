@@ -288,7 +288,7 @@ XIncludeFile "Types.pbi"
     
   EndProcedure
   
-  Procedure.b MouseInside(*Me.View_t, x.i,y.i)
+  Procedure.b PointInside(*Me.View_t, x.i,y.i)
   
     If x>*Me\posX And x<*Me\posX+*Me\sizX And y>*Me\posY And y<*Me\posY+*Me\sizY
       ProcedureReturn #True
@@ -320,7 +320,7 @@ XIncludeFile "Types.pbi"
   Procedure GetActive(*Me.View_t,x.i,y.i)
     Protected active.b = *Me\active 
     If *Me\leaf
-      If MouseInside(*Me,x,y) = #True
+      If PointInside(*Me,x,y) = #True
         *Me\active = #True
         If active <>#True : *Me\dirty  = #True : EndIf
       Else
@@ -468,6 +468,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 9
+; CursorPosition = 322
+; FirstLine = 318
 ; Folding = ----
 ; EnableXP

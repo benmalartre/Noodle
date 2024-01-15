@@ -71,7 +71,7 @@ Module ControlButton
   Else    
     If *Me\down Or  *Me\value < 0 
       Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
-      VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
+      VectorSourceColor(UIColor::COLOR_ACTIVE_BG)
       If Control::FRAME_THICKNESS
         FillPath(#PB_Path_Preserve)
         VectorSourceColor(UIColor::COLOR_FRAME_ACTIVE)
@@ -93,7 +93,7 @@ Module ControlButton
       tc = UIColor::COLOR_LABEL_NEG
     Else
       Vector::RoundBoxPath(xoff, yoff, *Me\sizX, *Me\sizY, Control::CORNER_RADIUS)
-      VectorSourceColor(UIColor::COLOR_TERNARY_BG)
+      VectorSourceColor(UIColor::COLOR_MAIN_BG   )
       If Control::FRAME_THICKNESS
         FillPath(#PB_Path_Preserve)
         VectorSourceColor(UIColor::COLOR_FRAME_DEFAULT)
@@ -227,8 +227,8 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   *Me\posY       = y
   *Me\sizX       = width
   *Me\sizY       = height
-  *Me\fixedX     = #True
-  *Me\fixedY     = #True
+  *Me\fixedX     = #False
+  *Me\fixedY     = #False
   *Me\percX      = -1
   *Me\percY      = -1
   *Me\visible    = #True
@@ -253,6 +253,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 41
+; CursorPosition = 230
+; FirstLine = 188
 ; Folding = --
 ; EnableXP

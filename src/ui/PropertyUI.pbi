@@ -14,7 +14,7 @@ XIncludeFile "../graph/CompoundPort.pbi"
 DeclareModule PropertyUI
 
   Structure PropertyUI_t Extends UI::UI_t
-    Map *props.ControlProperty::ControlProperty_t()
+    List *props.ControlProperty::ControlProperty_t()
     *active.ControlProperty::ControlProperty_t
   EndStructure
   
@@ -38,8 +38,6 @@ DeclareModule PropertyUI
   Declare ExpandProperty(*Me.PropertyUI_t, index.i)
   Declare DeleteProperty(*Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
   Declare DeletePropertyByIndex(*Me.PropertyUI_t, index.i)
-  Declare OnDeleteProperty(*Me.PropertyUI_t, index.i)
-  Declare OnExpandProperty(*Me.PropertyUI_t, expand.b, index.i)
   
   DataSection 
     PropertyUIVT: 
@@ -87,6 +85,7 @@ Module PropertyUI
     
     ForEach *Me\props()
       ControlGroup::OnEvent(*Me\props(), #PB_EventType_Resize,@ev_datas)
+      ev_datas\y + *Me\props()\sizY
     Next
     
   EndProcedure
@@ -97,14 +96,28 @@ Module PropertyUI
   Procedure AppendStop(*Me.PropertyUI_t)
   EndProcedure
   
+  
+  Procedure _GetActiveProperty(*Me.PropertyUI_t)
+    Protected mx.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX)
+    Protected my.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseY)
+    
+    ForEach *Me\props()
+      If my > *Me\props()\posY And my < (*Me\props()\posY + *Me\props()\sizY)
+        ProcedureReturn *Me\props()
+      EndIf
+    Next
+    FirstElement(*Me\props())
+    ProcedureReturn *Me\props()
+    
+  EndProcedure
+  
+  
   Procedure OnEvent(*Me.PropertyUI_t,event.i)    
-    If Not MapSize(*Me\props()) : ProcedureReturn : EndIf
+    If Not ListSize(*Me\props()) : ProcedureReturn : EndIf
     Protected *top.View::View_t = *Me\view
     
-    If Not *Me\active
-      ResetMap(*Me\props())
-      If NextMapElement(*Me\props()) : *Me\active = *Me\props() : EndIf
-    EndIf
+    *Me\active = _GetActiveProperty(*Me)
+    Debug *Me\active\name
 
     Protected ev_datas.Control::EventTypeDatas_t
     ev_datas\x = 0
@@ -123,41 +136,24 @@ Module PropertyUI
         EndIf
                 
         If *Me\active
+          ev_datas\y = *Me\active\posY
           ControlGroup::OnEvent(*Me\active, EventType(), ev_datas)
         EndIf
 
       Case #PB_Event_Menu
         If *Me\active
+          ev_datas\y = *Me\active\posY
           ControlGroup::OnEvent(*Me\active, EventMenu(), ev_datas)
         EndIf 
         
     EndSelect
   EndProcedure
   
-  Procedure OnDeleteProperty( *Me.PropertyUI_t, *prop.ControlProperty::ControlProperty_t)
-    PropertyUI::DeleteProperty(*Me, *prop)
-  EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteProperty, Types::#TYPE_PTR, Types::#TYPE_PTR)
-  
-  Procedure OnExpandProperty( *Me.PropertyUI_t, expand.b, index.i)
-    ;PropertyUI::DeletePropertyByIndex(*Me, index)
-  EndProcedure
-  Callback::DECLARE_CALLBACK(OnExpandProperty, Types::#TYPE_PTR, Types::#TYPE_BOOL, Types::#TYPE_INT)
-  
-  Procedure OnDeleteObject(*Me.PropertyUI_t, *object.Object::Object_t)
-;     If *Me\prop = *object
-;       If *Me\prop\head
-;         Callback::Trigger(*Me\prop\head\on_delete, Callback::#SIGNAL_TYPE_PING)
-;       EndIf
-;     EndIf
-  EndProcedure
-  Callback::DECLARE_CALLBACK(OnDeleteObject, Types::#TYPE_PTR, Types::#TYPE_PTR)
-  
   Procedure Clear(*Me.PropertyUI_t)
     ForEach *Me\props()
       ControlProperty::Delete(*Me\props())
     Next
-    ClearMap(*Me\props())
+    ClearList(*Me\props())
   EndProcedure
   
   Procedure.b CheckObject3DExists(*Me.PropertyUI_t, *obj.Object3D::Object3D_t)
@@ -206,9 +202,9 @@ Module PropertyUI
     Next
     
     ControlProperty::AppendStop(*prop)
-    Callback::CONNECT_CALLBACK(*object\on_delete, OnDeleteObject, *Me, *object)
     
-    *Me\props(*object\name) = *prop
+    AddElement(*Me\props())
+    *Me\props() = *prop
     
   EndProcedure
   
@@ -302,19 +298,16 @@ Module PropertyUI
     ControlProperty::AppendStop(*p)
     Control::Invalidate(*p)
     
-    *Me\props(*node\name) = *p
+    AddElement(*Me\props())
+    *Me\props() = *p
     ProcedureReturn *p
 
   EndProcedure
   
   Procedure AddProperty(*Me.PropertyUI_t,*prop.ControlProperty::ControlProperty_t)
+   AddElement(*Me\props())
+   *Me\props() = *prop
    
-    *Me\props(*prop\name) = *prop
-    Debug *Me\props(*prop\name)
-    
-;     If *prop\head
-;       Callback::CONNECT_CALLBACK(*prop\head\on_delete, OnDeleteProperty, *Me, *prop)
-;     EndIf
     Resize(*Me)
   EndProcedure
 
@@ -458,8 +451,7 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 98
-; Folding = -----
+; CursorPosition = 39
+; Folding = ----
 ; EnableXP
 ; EnableUnicode

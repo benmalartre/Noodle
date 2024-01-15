@@ -106,7 +106,7 @@ DeclareModule View
   Declare New(x.i,y.i,width.i,height.i,*top,axis.b=#False,name.s="View",lorr.b=#True,scroll.b=#True)
   Declare Delete(*view.View_t)
   Declare Draw(*view.View_t)
-  Declare.b MouseInside(*view,x.i,y.i)
+  Declare.b PointInside(*view,x.i,y.i)
   Declare TouchBorder(*view,x.i,y.i,w.i)
   Declare TouchBorderEvent(*view)
   Declare ClearBorderEvent(*view)
@@ -147,7 +147,6 @@ DeclareModule Window
     *main.View::View_t
     *active.View::View_t
     Map *uis.UI::UI_t()
-    imageID.i
     lastx.i
     lasty.i
     ID.i
@@ -168,8 +167,6 @@ DeclareModule Window
   Declare New(name.s,x.i,y.i,width.i,height.i,options = #PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_MaximizeGadget|#PB_Window_SizeGadget, parentID.i=0)
   Declare Delete(*Me.Window_t)
   Declare OnEvent(*Me.Window_t,event.i)
-  Declare DrawPickImage(*Me.Window_t)
-  Declare Draw(*Me.Window_t)
   Declare Pick(*Me.Window_t, mx.i, my.i)
   Declare TearOff(*Me.Window_t, x.i, y.i, width.i, height.i)
   Declare AddMenuItem(*Me.Window_t, name.s, event.i=-1)
@@ -183,7 +180,7 @@ DeclareModule Window
   Global CLASS.Class::Class_t
 EndDeclareModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 175
-; FirstLine = 129
+; CursorPosition = 135
+; FirstLine = 115
 ; Folding = -
 ; EnableXP

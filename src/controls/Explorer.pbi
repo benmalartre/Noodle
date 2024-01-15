@@ -1070,7 +1070,7 @@ Module ControlExplorer
 ;     *Me\scrollable = #True
     
     ; ---[ Set Controls ]----------------------
-    Protected options.i = ControlGroup::#Autosize_V|ControlGroup::#Autosize_h
+    Protected options.i = ControlGroup::#Group_Autosize_V|ControlGroup::#Group_Autosize_h
       
     ; ---[ Set Images ]----------------------
     *Me\imageID = CreateImage(#PB_Any,*Me\sizX,*Me\sizY,32)
@@ -1148,7 +1148,7 @@ Module ControlExplorer
   Class::DEF(ControlExplorer)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 330
-; FirstLine = 326
+; CursorPosition = 1072
+; FirstLine = 1057
 ; Folding = --4---
 ; EnableXP
