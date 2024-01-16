@@ -187,8 +187,6 @@ Module ControlProperty
 ;     PokeI(*array\data + id * *array\itemSize + offset, Val(*ctl\value))
 ;     *attr\dirty = #True
     
-    Debug "on enum changed!!!"
-
     PostEvent(Globals::#EVENT_PARAMETER_CHANGED)
   EndProcedure
   Callback::DECLARE_CALLBACK(OnEnumChange, Types::#TYPE_PTR, Types::#TYPE_PTR, Types::#TYPE_INT, Types::#TYPE_INT)
@@ -994,7 +992,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 268
-; FirstLine = 104
-; Folding = DAyJAM9
+; CursorPosition = 188
+; FirstLine = 95
+; Folding = DEyJAM9
 ; EnableXP

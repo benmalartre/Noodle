@@ -181,12 +181,24 @@ DeclareModule Globals
     _number & ~(1 << _bit)
   EndMacro
   
+  Macro BitToggle(_number,_bit)
+    _number ^ (1 << _bit)
+  EndMacro
+  
+  Macro BitMaskRead(_number,_bit)
+    Bool(_number & _bit)
+  EndMacro
+  
   Macro BitMaskSet(_number,_mask)
     _number | _mask
   EndMacro
   
   Macro BitMaskClear(_number,_mask)
     _number & ~( _mask )
+  EndMacro
+  
+  Macro BitMaskToggle(_number,_mask)
+    _number ^ _mask
   EndMacro
   
    ; ---[ Color Conversion ]-----------------------------------------------------
@@ -332,8 +344,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 181
+; CursorPosition = 186
 ; FirstLine = 161
-; Folding = -----
+; Folding = ------
 ; EnableXP
 ; EnableUnicode

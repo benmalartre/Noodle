@@ -262,7 +262,6 @@ Module ControlColor
       ;  MouseMove
       ; ------------------------------------------------------------------------
       Case #PB_EventType_MouseMove
-        Debug "mOUSE MOVE"
         Protected item = hlpPick(*Me, *ev_data\x - *ev_data\xoff, *ev_data\y - *ev_data\yoff)
         If item <> *Me\item
           *Me\item = item
@@ -477,8 +476,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 159
-; FirstLine = 156
+; CursorPosition = 264
+; FirstLine = 260
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

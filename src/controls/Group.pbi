@@ -12,6 +12,7 @@ DeclareModule ControlGroup
   #Group_Collapsable    = 1 << 24
   #Group_Border_Margin  = 4
   #Group_Frame_Height   = 16
+  #Group_Collapse_Button = Math::#U16_MAX
   
   Structure ControlGroup_t Extends Control::Control_t
     imageID   .i
@@ -74,7 +75,6 @@ Module ControlGroup
       While *parent
         *offset\x + *parent\posX
         *offset\y + *parent\posY
-        Vector2::Echo(*offset, *parent\name +" offset : ")
         If *parent\type = #PB_GadgetType_Container : Break : EndIf
         *parent = *parent\parent
       Wend  
@@ -210,9 +210,7 @@ Module ControlGroup
     Protected offset.Math::v2f32
     
     _GetControlGroupOffset(*Me, offset)
-    
-    Vector2::Echo(offset, *Me\name + " offset :")
-    
+        
     If init
       StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
       AddPathBox( offset\x, offset\y, *Me\sizX, *Me\sizY)
@@ -288,28 +286,27 @@ Module ControlGroup
       Next
     EndIf
     
-    MovePathCursor(offset\x, offset\y)
-    DrawVectorImage(ImageID(*Me\imageID), Random(128) + 60)
-    
+    MovePathCursor(offset\x,  offset\y)
+    DrawVectorImage(ImageID(*Me\imageID), 100)
     
     If init : StopVectorDrawing() : EndIf 
 
   EndProcedure
 
   Procedure Pick(*Me.ControlGroup_t)
+    Protected offset.Math::v2f32
+    _GetControlGroupOffset(*Me, offset)
     Protected pickID
-    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
-    
+    Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - offset\x
+    Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - offset\y
+     
     xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
     ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
     
-    Debug "pick "+*Me\name + " ("+Str(xm)+", "+Str(ym)+")"
     StartDrawing( ImageOutput(*Me\imageID) )
     pickID = Point(xm,ym) - 1
-    Debug "pick id : "+Str(pickID)
     StopDrawing()
-    
+        
     ProcedureReturn pickID
   EndProcedure
   
@@ -325,17 +322,27 @@ Module ControlGroup
     AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
     VectorSourceColor(RGBA(0,0,0,0))
     FillPath()
-    For i=0 To iBound
-      *son = *Me\children(i)
-      If *son\type = Control::#Group
-        Debug "Draw pick for "+*son\name+" : "+Str(*son\posX)+", "+Str(*son\posY)
-      EndIf
-      
-      AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
-      VectorSourceColor(RGBA(i+1,0,0,255))
+    
+    Define collapsed.b = #False
+    If *Me\options & #Group_Collapsable
+      AddPathBox(*Me\sizX - 4 * #Group_Border_Margin, #Group_Border_Margin, 8, 8)
+      VectorSourceColor(RGBA(*Me\chilcount + 1,0,0,255))
       FillPath()
-     Next
-     StopVectorDrawing()
+      If *Me\state & Control::#State_Collapsed
+        collapsed = #True
+      EndIf
+    EndIf
+    
+    If Not collapsed
+      For i=0 To iBound
+        *son = *Me\children(i)
+        AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
+        VectorSourceColor(RGBA(i+1,0,0,255))
+        FillPath()
+      Next
+    EndIf
+   
+    StopVectorDrawing()
   EndProcedure
 
   Procedure NextItem( *Me.ControlGroup_t )
@@ -362,6 +369,8 @@ Module ControlGroup
     
     Protected *son.Control::Control_t
     Protected  son.Control::IControl
+    Protected offset.Math::v2f32
+    _GetControlGroupOffset(*Me, offset)
     
     Select ev_code
       Case #PB_EventType_Resize
@@ -372,8 +381,8 @@ Module ControlGroup
       Case Control::#PB_EventType_DrawChild
         *son = *ev_data\datas
         son = *son
-        *ev_data\xoff    = *son\posX+*Me\posX
-        *ev_data\yoff    = *son\posY+*Me\posY
+        *ev_data\xoff    = *son\posX+offset\x
+        *ev_data\yoff    = *son\posY+offset\y
         StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
         AddPathBox( *ev_data\xoff, *ev_data\yoff, *son\sizX, *son\sizY)
         VectorSourceColor(UIColor::COLOR_MAIN_BG )
@@ -406,8 +415,8 @@ Module ControlGroup
         
       Case #PB_EventType_MouseMove
         Protected *overchild.Control::Control_t = #Null
-        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
-        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
+        xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - offset\x
+        ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - offset\y
                 
         xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
@@ -415,19 +424,25 @@ Module ControlGroup
         Protected pickID = Pick(*Me) 
         If pickID > -1 And pickID <*Me\chilcount
           *overchild = *Me\children(pickID)
+        ElseIf pickID = *Me\chilcount
+          *overchild = #Group_Collapse_Button
         EndIf
         
         If *Me\overchild <> *overchild And  Not *Me\down
-          If *Me\overchild : *Me\overchild\OnEvent(#PB_EventType_MouseLeave, *ev_data) : EndIf
+          If *Me\overchild And *Me\overchild <> #Group_Collapse_Button
+            *Me\overchild\OnEvent(#PB_EventType_MouseLeave, *ev_data)
+          EndIf
           *Me\overchild = *overchild
-          If *Me\overchild
+          If *Me\overchild And *Me\overchild <> #Group_Collapse_Button
             *Me\overchild\OnEvent(#PB_EventType_MouseEnter, *ev_data)
           EndIf
         ElseIf *overchild
           *Me\overchild = *overchild
-          *ev_data\x    = xm - *overchild\posX
-          *ev_data\y    = ym - *overchild\posY
-          *ev_data\yoff = 50
+          If *Me\overchild <> #Group_Collapse_Button
+            *ev_data\x    = xm - *overchild\posX
+            *ev_data\y    = ym - *overchild\posY
+            *ev_data\yoff = 50
+          EndIf
          Else
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
         EndIf
@@ -435,16 +450,21 @@ Module ControlGroup
       Case #PB_EventType_LeftButtonDown
         *Me\down = #True
         
-         If *Me\focuschild And ( *overchild <> *Me\focuschild )
+         If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
            Control::DeFocused(*Me\focuschild)
          EndIf
-         If *overchild
-           *Me\overchild = *overchild
+         If *Me\overchild And *Me\overchild <> #Group_Collapse_Button
            Control::Focused(*Me\overchild)
          EndIf
-      
+         
       Case #PB_EventType_LeftButtonUp
         *Me\down = #False
+        If *Me\overchild = #Group_Collapse_Button
+          Globals::BitMaskToggle(*Me\state, Control::#State_Collapsed)
+          Define ev_data.Control::EventTypeDatas_t 
+          MessageRequester("UI", "COLLAPSE PROPERTY : "+*Me\name)
+          Resize(*Me, ev_data)
+        EndIf
         
       Case #PB_EventType_LeftDoubleClick
 
@@ -474,7 +494,7 @@ Module ControlGroup
       *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *focuschild\posY
       *Me\focuschild\OnEvent(ev_code, *ev_data)
       
-    ElseIf *Me\overchild
+    ElseIf *Me\overchild And *Me\overchild <> #Group_Collapse_Button
       Define *overchild.Control::Control_t = *Me\overchild
       *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *overchild\posX
       *ev_data\y = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *overchild\posY
@@ -651,7 +671,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 55
+; CursorPosition = 462
+; FirstLine = 433
 ; Folding = -----
 ; EnableXP

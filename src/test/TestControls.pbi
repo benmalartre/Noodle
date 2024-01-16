@@ -72,7 +72,7 @@ PropertyUI::AddProperty(*ui, *prop)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 42
-; FirstLine = 2
+; CursorPosition = 17
+; FirstLine = 14
 ; Folding = -
 ; EnableXP

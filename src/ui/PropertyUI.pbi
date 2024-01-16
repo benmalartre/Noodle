@@ -117,7 +117,6 @@ Module PropertyUI
     Protected *top.View::View_t = *Me\view
     
     *Me\active = _GetActiveProperty(*Me)
-    Debug *Me\active\name
 
     Protected ev_datas.Control::EventTypeDatas_t
     ev_datas\x = 0
@@ -451,8 +450,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 125
-; FirstLine = 113
+; CursorPosition = 119
+; FirstLine = 116
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
