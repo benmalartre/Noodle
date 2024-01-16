@@ -65,7 +65,24 @@ EndDeclareModule
 ;  IMPLEMENTATION Control Group
 ; ============================================================================
 Module ControlGroup
-
+  
+  Procedure _GetControlGroupOffset(*Me.ControlGroup_t, *offset.Math::v2F32)
+    
+    Vector2::Set(*offset, *Me\posX, *Me\posY)
+    Define *parent.Control::Control_t = *Me\parent
+    If Not *Me\type = #PB_GadgetType_Container
+      While *parent
+        *offset\x + *parent\posX
+        *offset\y + *parent\posY
+        Vector2::Echo(*offset, *parent\name +" offset : ")
+        If *parent\type = #PB_GadgetType_Container : Break : EndIf
+        *parent = *parent\parent
+      Wend  
+    EndIf
+    
+    
+  EndProcedure
+  
   Procedure.i Resize( *Me.ControlGroup::ControlGroup_t, *ev_data.Control::EventTypeDatas_t )
     Protected dirty   .i = #False
     Protected i       .i = 0
@@ -78,21 +95,14 @@ Module ControlGroup
     Protected *Son    .Control::Control_t
     Protected lablen.i = Len(*Me\label)
     
-    Protected px.i
-    Protected py.i
-    If *Me\parent And (*Me\parent\type = #PB_GadgetType_Container)
-      px = *Me\parent\posX
-      py = *Me\parent\posY
-    EndIf
-    
     If *ev_data
       If ( *ev_data\x <> #PB_Ignore ) And ( *ev_data\x <> *Me\posX )
         dirty = #True
-        *Me\posX = *ev_data\x + px
+        *Me\posX = *ev_data\x
       EndIf
       If ( *ev_data\y <> #PB_Ignore ) And ( *ev_data\y <> *Me\posY )
         dirty = #True
-        *Me\posY = *ev_data\y + py
+        *Me\posY = *ev_data\y
       EndIf
 
       If ( *ev_data\width <> #PB_Ignore ) And ( *ev_data\width <> *Me\sizX )
@@ -113,13 +123,8 @@ Module ControlGroup
     
     *Me\sizY = ControlGroup::GetHeight(*Me)
     
-    Debug "Resize Group : "+*Me\name+" : "+Str(*Me\sizY)
-    
-    
-    If #True = dirty
-      ResizeImage ( *Me\imageID, *Me\sizX, *Me\sizY )
-    EndIf
-  
+    DrawPickImage(*Me)
+
     ProcedureReturn( dirty )
     
   EndProcedure
@@ -201,10 +206,16 @@ Module ControlGroup
     ProcedureReturn y + #Group_Border_Margin
   EndProcedure
 
-  Procedure Draw( *Me.ControlGroup_t, init.b=#False)
+  Procedure Draw( *Me.ControlGroup_t, init.b=#False)    
+    Protected offset.Math::v2f32
+    
+    _GetControlGroupOffset(*Me, offset)
+    
+    Vector2::Echo(offset, *Me\name + " offset :")
+    
     If init
       StartVectorDrawing( CanvasVectorOutput(*Me\gadgetID) )
-      AddPathBox( *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+      AddPathBox( offset\x, offset\y, *Me\sizX, *Me\sizY)
       VectorSourceColor(UIColor::COLOR_MAIN_BG)
       FillPath()
     EndIf
@@ -227,7 +238,7 @@ Module ControlGroup
     EndIf
    
     If Not *Me\options & #Group_NoFrame
-      Vector::RoundBoxPath( *Me\posX+3.0, *Me\posY+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
+      Vector::RoundBoxPath( offset\x+3.0, offset\y+7.0, *Me\sizX-7, *Me\sizY-10.0, Control::CORNER_RADIUS)
       VectorSourceColor(UIColor::COLOR_SECONDARY_BG)
 
       FillPath(#PB_Path_Preserve)
@@ -236,21 +247,21 @@ Module ControlGroup
       
     EndIf
     
-    MovePathCursor(*Me\posX+15,  *Me\posY)
+    MovePathCursor(offset\x+15,  offset\y)
     VectorSourceColor(UIColor::COLOR_GROUP_LABEL )
     DrawVectorText( label )
     
     Define collapsed.b = #False
     If *Me\options & #Group_Collapsable
       If *Me\state & Control::#State_Collapsed
-        MovePathCursor(*Me\posX + *Me\sizX - 6 * #Group_Border_Margin, *Me\posY + #Group_Border_Margin)
+        MovePathCursor(offset\x + *Me\sizX - 4 * #Group_Border_Margin, offset\y + #Group_Border_Margin)
         AddPathLine(0,8, #PB_Path_Relative)
         AddPathLine(6,-4, #PB_Path_Relative)
         AddPathLine(-6,-4, #PB_Path_Relative)
         FillPath()
         collapsed = #True
       Else
-        MovePathCursor(*Me\posX + *Me\sizX - 6 * #Group_Border_Margin, *Me\posY + #Group_Border_Margin)
+        MovePathCursor(offset\x + *Me\sizX - 4 * #Group_Border_Margin, offset\y + #Group_Border_Margin)
         AddPathLine(8,0, #PB_Path_Relative)
         AddPathLine(-4,6, #PB_Path_Relative)
         AddPathLine(-4,-6, #PB_Path_Relative)
@@ -270,12 +281,15 @@ Module ControlGroup
          *son = *Me\children(i)
          son = *son
          
-        ev_data\xoff = *Me\posX+*son\posX
-        ev_data\yoff = *Me\posY+*son\posY
+        ev_data\xoff = offset\x + *son\posX
+        ev_data\yoff = offset\y + *son\posY
         
         son\OnEvent( Control::#PB_EventType_Draw, ev_data )
       Next
     EndIf
+    
+    MovePathCursor(offset\x, offset\y)
+    DrawVectorImage(ImageID(*Me\imageID), Random(128) + 60)
     
     
     If init : StopVectorDrawing() : EndIf 
@@ -289,23 +303,23 @@ Module ControlGroup
     
     xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
     ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
-      
+    
+    Debug "pick "+*Me\name + " ("+Str(xm)+", "+Str(ym)+")"
     StartDrawing( ImageOutput(*Me\imageID) )
     pickID = Point(xm,ym) - 1
+    Debug "pick id : "+Str(pickID)
     StopDrawing()
     
     ProcedureReturn pickID
   EndProcedure
-
+  
   Procedure DrawPickImage( *Me.ControlGroup_t )
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount-1
     Protected *son  .Control::Control_t
-    
-    If Not ImageWidth(*Me\imageID) = *Me\sizX Or Not ImageHeight(*Me\imageID) = *Me\sizY
-      ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
-    EndIf
-  
+        
+    ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
+   
     StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
     ResetCoordinates()
     AddPathBox( 0, 0, *Me\sizX, *Me\sizY)
@@ -313,6 +327,10 @@ Module ControlGroup
     FillPath()
     For i=0 To iBound
       *son = *Me\children(i)
+      If *son\type = Control::#Group
+        Debug "Draw pick for "+*son\name+" : "+Str(*son\posX)+", "+Str(*son\posY)
+      EndIf
+      
       AddPathBox(*son\posX, *son\posY, *son\sizX, *son\sizY)
       VectorSourceColor(RGBA(i+1,0,0,255))
       FillPath()
@@ -349,7 +367,6 @@ Module ControlGroup
       Case #PB_EventType_Resize
         Resize( *Me, *ev_data)
         Draw( *Me, #True)
-        ControlGroup::DrawPickImage(*Me)
         ProcedureReturn( #True )
 
       Case Control::#PB_EventType_DrawChild
@@ -392,17 +409,12 @@ Module ControlGroup
         xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *Me\posX
         ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - *Me\posY
                 
-;         xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-;         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
+        xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
+        ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
                 
         Protected pickID = Pick(*Me) 
-        Debug "pick ID : "+Str(pickID)
         If pickID > -1 And pickID <*Me\chilcount
           *overchild = *Me\children(pickID)
-          If *overchild
-            Debug *overchild\name
-          EndIf
-          
         EndIf
         
         If *Me\overchild <> *overchild And  Not *Me\down
@@ -561,7 +573,6 @@ Module ControlGroup
     If Not *Me\append : ProcedureReturn( void ) : EndIf
     *Me\append = #False
     Resize( *Me, #Null )
-    DrawPickImage(*Me)
   EndProcedure
   
   Procedure RowStart( *Me.ControlGroup_t )
@@ -640,7 +651,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 359
+; CursorPosition = 93
+; FirstLine = 55
 ; Folding = -----
 ; EnableXP

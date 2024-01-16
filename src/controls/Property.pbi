@@ -264,7 +264,9 @@ Module ControlProperty
     If Not *Me\append : ProcedureReturn( void ) : EndIf
     *Me\append = #False
     *Me\sizY = ControlGroup::GetHeight(*Me)
+    
     ResizeGadget(*Me\gadgetID,*Me\parent\posX +*Me\posY,*Me\parent\posY + *Me\posY,*Me\sizX,*Me\sizY)
+    ControlGroup::OnEvent(*Me, #PB_EventType_Resize, #Null)
   EndProcedure
 
   Procedure RowStart( *Me.ControlProperty_t )
@@ -992,7 +994,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 904
-; FirstLine = 248
-; Folding = DAwJAM9
+; CursorPosition = 268
+; FirstLine = 104
+; Folding = DAyJAM9
 ; EnableXP

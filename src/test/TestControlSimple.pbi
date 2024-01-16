@@ -5,7 +5,7 @@ UseModule OpenGL
 UseModule OpenGLExt
 
 Procedure OnButtonClick(*btn.ControlButton::COntrolButton_t)
-  Debug "Test Control >SImple CLICK - CLICK!!"
+  Debug "Button Click "+*btn\name
 EndProcedure
 Callback::DECLARE_CALLBACK(OnButtonClick, Types::#Type_PTR)
 
@@ -30,7 +30,7 @@ Procedure AddButtonControl(*ui.PropertyUI::PropertyUI_t, name.s)
 ;   
   *btn = ControlProperty::AddButtonControl(*prop, "fuck","fuck", UIColor::RANDOMIZED, 256,32)
   
-  Callback::CONNECT_CALLBACK(*btn\on_click, OnButtonClick, HELLO)
+  Callback::CONNECT_CALLBACK(*btn\on_click, OnButtonClick, *btn)
   
 
   ControlProperty::AddStringControl(*prop, "String", "Fuck Dat Shit", #Null)
@@ -69,7 +69,8 @@ Procedure AddInputControl(*ui.PropertyUI::PropertyUI_t, name.s)
   ControlProperty::EndGroup(*prop)
   Define color.c4f32
   ControlProperty::AddColorControl(*prop, "Color", "Color", color, #Null)
-  ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64)
+  Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64)
+  Callback::CONNECT_CALLBACK(*btn\on_click, OnButtonClick, *btn)
   ControlProperty::AddFileControl(*prop, "FILE", "Zob.scn", #Null)
   ControlProperty::AddBoolControl(*prop, "Bool", "Bool", #False, #Null)
 ;   Define slide.f
@@ -119,17 +120,16 @@ EndIf
 If *demo\property
   PropertyUI::Clear(*demo\property)
   PropertyUI::AppendStart(*demo\property)
-  AddButtonControl(*demo\property, "zobniktou1")
-  AddInputControl(*demo\property, "sucemasneck")
+  AddButtonControl(*demo\property, "group one")
+  AddInputControl(*demo\property, "group two")
   PropertyUI::AppendStop(*demo\property)
-  Debug *demo\property\sizX
-  Debug *demo\property\sizY
 EndIf 
 
 
 
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 29
+; CursorPosition = 71
+; FirstLine = 64
 ; Folding = -
 ; EnableXP

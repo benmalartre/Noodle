@@ -289,8 +289,8 @@ XIncludeFile "Types.pbi"
   EndProcedure
   
   Procedure.b PointInside(*Me.View_t, x.i,y.i)
-  
-    If x>*Me\posX And x<*Me\posX+*Me\sizX And y>*Me\posY And y<*Me\posY+*Me\sizY
+    Define sensibility.f = View::#VIEW_BORDER_SENSIBILITY*0.5
+    If x>*Me\posX - sensibility And x< *Me\posX+*Me\sizX + sensibility And y>*Me\posY - sensibility And y<*Me\posY+*Me\sizY+sensibility
       ProcedureReturn #True
     EndIf
      
@@ -300,7 +300,6 @@ XIncludeFile "Types.pbi"
   
   Procedure Draw(*Me.View_t)
 
-    
     If *Me\leaf And *Me\dirty
       ;OViewControl_OnEvent(*Me\control,#PB_Event_Repaint,#Null)
   ;     StartDrawing(CanvasOutput(*Me\canvasID))
@@ -468,7 +467,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 322
-; FirstLine = 318
+; CursorPosition = 280
+; FirstLine = 260
 ; Folding = ----
 ; EnableXP

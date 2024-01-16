@@ -94,8 +94,8 @@ Module PropertyUI
   EndProcedure
   
   Procedure AppendStop(*Me.PropertyUI_t)
+    Resize(*Me)
   EndProcedure
-  
   
   Procedure _GetActiveProperty(*Me.PropertyUI_t)
     Protected mx.i = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_MouseX)
@@ -451,7 +451,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 39
+; CursorPosition = 125
+; FirstLine = 113
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode
