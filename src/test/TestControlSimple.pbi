@@ -127,15 +127,11 @@ If *demo\property
 EndIf 
 
 Define *custom.View::View_t = DemoApplication::GetView(*demo)
-Debug *custom
-Debug "Custom view : "+*custom\name
-ScintillaGLSLUI::Init()
 Define *scintillaUI.ScintillaGLSLUI::ScintillaGLSLUI_t = ScintillaGLSLUI::New(*custom)
-
 
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 78
+; CursorPosition = 130
+; FirstLine = 75
 ; Folding = -
 ; EnableXP

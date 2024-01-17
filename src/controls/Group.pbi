@@ -289,8 +289,8 @@ Module ControlGroup
       Next
     EndIf
     
-    MovePathCursor(offset\x, offset\y)
-    DrawVectorImage(ImageID(*Me\imageID), 128)
+;     MovePathCursor(offset\x, offset\y)
+;     DrawVectorImage(ImageID(*Me\imageID), 128)
     
     If init : StopVectorDrawing() : EndIf 
 
@@ -302,21 +302,32 @@ Module ControlGroup
     Protected pickID
     Protected xm = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - offset\x
     Protected ym = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseY ) - offset\y
-     
-    xm = Math::Min( Math::Max( xm, 0 ), *Me\sizX - 1 )
-    ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
     
+    If xm < 0 Or xm >= ImageWidth(*Me\imageID) Or ym < 0 Or ym >= ImageHeight(*Me\imageID)
+      ProcedureReturn -1
+    EndIf
+
     StartDrawing( ImageOutput(*Me\imageID) )
     pickID = Point(xm,ym) - 1
     StopDrawing()
-    ProcedureReturn pickID
+    If Not (*Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed)
+      ProcedureReturn pickID
+    Else
+      If pickID = *Me\chilcount : ProcedureReturn pickID : EndIf
+    EndIf
+    ProcedureReturn -1
   EndProcedure
   
   Procedure DrawPickImage( *Me.ControlGroup_t )
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount-1
     Protected *son  .Control::Control_t
-        
+    
+    ; clear old image memory
+    StartDrawing(ImageOutput(*Me\imageID))
+    Box(0,0,ImageWidth(*Me\imageID), ImageHeight(*Me\imageID), RGBA(0,0,0,0))
+    StopDrawing()
+    
     ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
    
     StartVectorDrawing( ImageVectorOutput( *Me\imageID ) )
@@ -373,6 +384,7 @@ Module ControlGroup
     Protected *son.Control::Control_t
     Protected  son.Control::IControl
     Protected offset.Math::v2f32
+    Protected collapsed.b = Bool(*Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed)
     _GetControlGroupOffset(*Me, offset)
     
     Select ev_code
@@ -448,7 +460,8 @@ Module ControlGroup
           EndIf
          Else
             SetGadgetAttribute( *Me\gadgetID, #PB_Canvas_Cursor, #PB_Cursor_Default )
-        EndIf
+          EndIf
+          If collapsed : ProcedureReturn #True : EndIf
         
       Case #PB_EventType_LeftButtonDown
         *Me\down = #True
@@ -491,10 +504,6 @@ Module ControlGroup
         *ev_data\modif = GetGadgetAttribute(*Me\gadgetID, #PB_Canvas_Modifiers)
         
     EndSelect
-    
-    If *Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed
-       ProcedureReturn #True
-    EndIf
     
 
     If *Me\focuschild
@@ -680,7 +689,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 99
-; FirstLine = 87
+; CursorPosition = 315
+; FirstLine = 291
 ; Folding = -----
 ; EnableXP

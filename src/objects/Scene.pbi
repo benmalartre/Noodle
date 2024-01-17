@@ -877,7 +877,7 @@ Module Scene
     CArray::AppendPtr(*Me\lights,*light)
     Object3D::AddChild(*Me\root,*light)
     
-    ; ---[ Signals ] ---------------------------------------------------------
+    ; Callbacks
     *Me\on_new = Object::NewCallback(*Me, "OnNew")
     *Me\on_delete = Object::NewCallback(*Me, "OnDelete")
     *Me\on_change = Object::NewCallback(*Me, "OnChange")
@@ -895,7 +895,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 730
-; FirstLine = 702
+; CursorPosition = 213
+; FirstLine = 203
 ; Folding = --------
 ; EnableXP

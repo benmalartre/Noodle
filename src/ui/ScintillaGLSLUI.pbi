@@ -7,7 +7,9 @@ XIncludeFile "UI.pbi"
 DeclareModule ScintillaGLSLUI
   
   Prototype PFNSCINTILLACALLBACK(gadget, *scinotify.SCNotification)
-  Global SCINTILLACALLBACK.PFNSCINTILLACALLBACK
+  Global _SCINTILLACALLBACK.PFNSCINTILLACALLBACK
+  Global SCINTILLA_INITIALIZED.b = #False
+  Global SCINTILLA_GADGET_ID.i
   
   Global BG_COLOR         = RGB(32 , 32 , 32 )
   Global BG_COLOR_H       = RGB(64 , 64 , 64 )
@@ -50,15 +52,15 @@ DeclareModule ScintillaGLSLUI
   ; -------------------------------------------------------------------
   ;   DECLARE
   ; -------------------------------------------------------------------
-  Declare Init()
   Declare New(*parent.View::View_t)
   Declare OnEvent(*Me.ScintillaGLSLUI_t, event.i)
-  Declare Draw(*Me.ScintillaGLSLUI_t)
   Declare Delete(*Me.ScintillaGLSLUI_t)
+  Declare Resize(*Me.ScintillaGLSLUI_t, x.i, y.i, width.i, height.i)
   Declare GetLineEndPosition(gadget, line)
   Declare LineFromPosition(gadget, pos)
   Declare KeywordIs(key.s)
   Declare Highlight(sciptr.l, endpos.l)
+  Declare GetScintillaGadgetID()
   
   ; -------------------------------------------------------------------
   ;   VIRTUAL TABLE
@@ -67,13 +69,12 @@ DeclareModule ScintillaGLSLUI
     ScintillaGLSLUIVT:
       Data.i @OnEvent()
       Data.i @Delete()
-      Data.i @Draw()
   EndDataSection
   
 EndDeclareModule
 
 ; ==========================================================================================
-;   SCINTILLA GLSL CALLBACK
+;   GLOBAL SCINTILLA CALLBACK
 ; ==========================================================================================
 ProcedureDLL ScintillaCallBack(gadget, *scinotify.SCNotification)
   Select *scinotify\nmhdr\code
@@ -84,128 +85,27 @@ ProcedureDLL ScintillaCallBack(gadget, *scinotify.SCNotification)
       ScintillaSendMessage(gadget, #SCI_TOGGLEFOLD, ScintillaSendMessage(gadget, #SCI_LINEFROMPOSITION, *scinotify\Position))
   EndSelect
 EndProcedure
-ScintillaGLSLUI::SCINTILLACALLBACK = @ScintillaCallBack()
+ScintillaGLSLUI::_SCINTILLACALLBACK = @ScintillaCallBack()
 
 ; ==========================================================================================
 ;   SCINTILLA GLSL IMPLEMENTATION
 ; ==========================================================================================
 Module ScintillaGLSLUI
+  Procedure GetScintillaGadgetID()
+    SCINTILLA_GADGET_ID + 1
+    ProcedureReturn SCINTILLA_GADGET_ID
+  EndProcedure
+  
   ; ----------------------------------------------------------------------------------------
   ;   INIT
   ; ----------------------------------------------------------------------------------------
-  Procedure Init()
-    CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-      InitScintilla("Scintilla.dll")
-    CompilerEndIf
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------------------
-  ;   NEW
-  ; ----------------------------------------------------------------------------------------
-  Procedure New(*parent.View::View_t)
-
-    Define *Me.ScintillaGLSLUI_t = AllocateStructure(ScintillaGLSLUI_t)
-    Object::INI(ScintillaGLSLUI)
-    
-    *Me\parent = *parent
-    *Me\posX = *parent\posX
-    *Me\posY = *parent\posY
-    *Me\sizX = *parent\sizX
-    *Me\sizY = *parent\sizY
-    *Me\gadgetID = ScintillaGadget(#PB_Any, *Me\posX, *Me\posY, *Me\posY, *Me\posY, SCINTILLACALLBACK)
-    ; choose a lexer
-;     ScintillaSendMessage(*Me\gadgetID, #SCI_SETLEXER, #SCLEX_CONTAINER, 0)
-    
-    ; set default colors
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #STYLE_DEFAULT, FG_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBACK, #STYLE_DEFAULT, BG_COLOR)
-    
-    ; set default font
-    Define *font_ascii_name = Ascii(Font::*CURRENT_FONT\name)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFONT, #STYLE_DEFAULT, *font_ascii_name)
-    FreeMemory(*font_ascii_name)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETSIZE, #STYLE_DEFAULT, 10)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLECLEARALL)
-    
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #STYLE_DEFAULT, 32)
-    
-    ; affichage de la colone de numérotation des lignes
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINTYPEN, *Me\gadgetID, #SC_MARGIN_NUMBER) ;
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINWIDTHN, *Me\gadgetID, 40)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBACK, #STYLE_LINENUMBER, FG_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #STYLE_LINENUMBER, BG_COLOR)
-    
-    ; set caret line colour
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETLINEBACK, BG_COLOR_H)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETLINEVISIBLE, #True)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETFORE, FG_COLOR_H)
-    
-    ; set styles for custom lexer
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Comment, COMMENT_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETITALIC, #LexerState_Comment, 1)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_NonKeyword, FG_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Keyword, RGB(0, 102, 102))
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Constant, CONSTANT_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Constant, #True)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_String, STRING_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Op, OP_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Type, TYPE_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Type, #True)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Qualifier, QUALIFIER_COLOR)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Qualifier, #True)
-    
-    ; Margins
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINTYPEN, 0, #SC_MARGIN_NUMBER)
-;     ScintillaSendMessage(0, #SCI_SETMARGINMASKN, 2, #SC_MASK_FOLDERS)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINWIDTHN, 0, 24)
-;     ScintillaSendMessage(0, #SCI_SETMARGINWIDTHN, 2, 20)
-;     ScintillaSendMessage(0, #SCI_SETMARGINSENSITIVEN, 2, #True)
-;     
-;     ; Choose folding icons
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEROPEN, #SC_MARK_CIRCLEMINUS)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDER, #SC_MARK_CIRCLEPLUS)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERSUB, #SC_MARK_VLINE)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERTAIL, #SC_MARK_LCORNERCURVE)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEREND, #SC_MARK_CIRCLEPLUSCONNECTED)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEROPENMID, #SC_MARK_CIRCLEMINUSCONNECTED)
-;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERMIDTAIL, #SC_MARK_TCORNERCURVE)
-;     
-;     ; Choose folding icon colours
-;     ScintillaSendMessage(0, #SCI_MARKERSETFORE, #SC_MARKNUM_FOLDER, $FFFFFF)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDER, 0)
-;     ScintillaSendMessage(0, #SCI_MARKERSETFORE, #SC_MARKNUM_FOLDEROPEN, $FFFFFF)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDEROPEN, 0)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDEROPENMID, 0)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERSUB, 0)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERTAIL, 0)
-;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERMIDTAIL, 0)
-    
-    txt.s = "#version 330"+Chr(10)+Chr(10)
-
-    txt + "uniform mat4 model;"+Chr(10)
-    txt + "uniform mat4 view;"+Chr(10)
-    txt + "uniform mat4 projection;"+Chr(10)
-
-    txt + "layout (location = 0) in vec3 position;"+Chr(10)
-    txt + "//out float depth;"+Chr(10)+Chr(10)
-
-    txt + "void main(){"+Chr(10)
-    txt + "	gl_Position = projection * view * model * vec4(position,1.0);"+Chr(10)
-    txt + "}"+Chr(10)
-
-    Define *ascii = Ascii(txt)
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETTEXT, #Null, *ascii)
-    FreeMemory(*ascii)
-    View::SetContent(*parent, *Me)
-    ProcedureReturn *Me
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------------------
-  ;   DESTRUCTOR
-  ; ----------------------------------------------------------------------------------------
-  Procedure Delete(*Me.ScintillaGLSLUI_t)
-    FreeGadget(*Me\gadgetID)
-    Object::TERM(ScintillaGLSLUI)
+  Procedure _InitScintilla()
+    If Not SCINTILLA_INITIALIZED
+      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
+        InitScintilla()
+      CompilerEndIf
+      SCINTILLA_INITIALIZED = #True
+    EndIf
   EndProcedure
   
   ; ----------------------------------------------------------------------------------------
@@ -219,8 +119,6 @@ Module ScintillaGLSLUI
   ;   LINE FROM POSITION
   ; ----------------------------------------------------------------------------------------
   Procedure LineFromPosition(gadget, pos)
-    Debug "gadget : "+Str(gadget)
-    Debug "pos "+Str(pos)
     ProcedureReturn ScintillaSendMessage(gadget,#SCI_LINEFROMPOSITION,pos)
   EndProcedure
   
@@ -264,16 +162,7 @@ Module ScintillaGLSLUI
     Next n
     ProcedureReturn #False
   EndProcedure
-  
-  Procedure OnEvent(*Me.ScintillaGLSLUI_t, ev_code.i)
-    Debug "Scintilla GLSL UI on event : "+Str(ev_code)
-  EndProcedure
-  
-  Procedure Draw(*Me.ScintillaGLSLUI_t)
-    Debug "Scintilla Draw callback"  
-  EndProcedure
-  
-  
+
   ; ----------------------------------------------------------------------------------------
   ;   HIGHLIGHT
   ; ----------------------------------------------------------------------------------------
@@ -284,7 +173,6 @@ Module ScintillaGLSLUI
     Protected currentPos.l = 0, endlinepos.l, startkeyword
     Protected currentline.l = 0
     endpos = GetLineEndPosition(sciptr, LineFromPosition(sciptr, endpos))
-    Debug "end pos "+Str(endpos)
     ScintillaSendMessage(sciptr, #SCI_STARTSTYLING, CurrentPos, $1F | #INDICS_MASK)
     
     While CurrentPos <= endpos
@@ -422,13 +310,143 @@ Module ScintillaGLSLUI
     Wend
   EndProcedure
   
+  ; ----------------------------------------------------------------------------------------
+  ;   EVENT
+  ; ----------------------------------------------------------------------------------------
+  Procedure Resize(*Me.ScintillaGLSLUI_t, x.i, y.i, width.i, height.i)
+    ResizeGadget(*Me\gadgetID, x, y, width, height)
+  EndProcedure
+
+  Procedure OnEvent(*Me.ScintillaGLSLUI_t, event.i) 
+    Protected *top.View::View_t = *Me\view
+    Select event
+        
+      Case #PB_EventType_Resize, #PB_Event_SizeWindow
+        Resize(*Me, *top\posX, *top\posY, *top\sizX, *top\sizY)
+        
+    EndSelect
+
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------------------
+  ;   CONSTRUCTOR
+  ; ----------------------------------------------------------------------------------------
+  Procedure New(*parent.View::View_t)
+    
+    _InitScintilla()
+    
+    Define *Me.ScintillaGLSLUI_t = AllocateStructure(ScintillaGLSLUI_t)
+    Object::INI(ScintillaGLSLUI)
+    
+    *Me\parent = *parent
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizX
+    *Me\sizY = *parent\sizY
+    *Me\gadgetID = GetScintillaGadgetID()
+    ScintillaGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY, _SCINTILLACALLBACK)
+    ; choose a lexer
+;     ScintillaSendMessage(*Me\gadgetID, #SCI_SETLEXER, #SCLEX_CONTAINER, 0)
+    
+    ; set default colors
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #STYLE_DEFAULT, FG_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBACK, #STYLE_DEFAULT, BG_COLOR)
+    
+    ; set default font
+    Define *font_ascii_name = Ascii(Font::*CURRENT_FONT\name)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFONT, #STYLE_DEFAULT, *font_ascii_name)
+    FreeMemory(*font_ascii_name)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETSIZE, #STYLE_DEFAULT, 10)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLECLEARALL)
+    
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #STYLE_DEFAULT, 32)
+    
+    ; affichage de la colone de numérotation des lignes
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINTYPEN, *Me\gadgetID, #SC_MARGIN_NUMBER) ;
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINWIDTHN, *Me\gadgetID, 40)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBACK, #STYLE_LINENUMBER, FG_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #STYLE_LINENUMBER, BG_COLOR)
+    
+    ; set caret line colour
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETLINEBACK, BG_COLOR_H)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETLINEVISIBLE, #True)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETCARETFORE, FG_COLOR_H)
+    
+    ; set styles for custom lexer
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Comment, COMMENT_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETITALIC, #LexerState_Comment, 1)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_NonKeyword, FG_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Keyword, RGB(0, 102, 102))
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Constant, CONSTANT_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Constant, #True)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_String, STRING_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Op, OP_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Type, TYPE_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Type, #True)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #LexerState_Qualifier, QUALIFIER_COLOR)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETBOLD, #LexerState_Qualifier, #True)
+    
+    ; Margins
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINTYPEN, *Me\gadgetID, #SC_MARGIN_NUMBER)
+;     ScintillaSendMessage(0, #SCI_SETMARGINMASKN, 2, #SC_MASK_FOLDERS)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETMARGINWIDTHN, *Me\gadgetID, 24)
+;     ScintillaSendMessage(0, #SCI_SETMARGINWIDTHN, 2, 20)
+;     ScintillaSendMessage(0, #SCI_SETMARGINSENSITIVEN, 2, #True)
+;     
+;     ; Choose folding icons
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEROPEN, #SC_MARK_CIRCLEMINUS)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDER, #SC_MARK_CIRCLEPLUS)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERSUB, #SC_MARK_VLINE)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERTAIL, #SC_MARK_LCORNERCURVE)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEREND, #SC_MARK_CIRCLEPLUSCONNECTED)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDEROPENMID, #SC_MARK_CIRCLEMINUSCONNECTED)
+;     ScintillaSendMessage(0, #SCI_MARKERDEFINE, #SC_MARKNUM_FOLDERMIDTAIL, #SC_MARK_TCORNERCURVE)
+;     
+;     ; Choose folding icon colours
+;     ScintillaSendMessage(0, #SCI_MARKERSETFORE, #SC_MARKNUM_FOLDER, $FFFFFF)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDER, 0)
+;     ScintillaSendMessage(0, #SCI_MARKERSETFORE, #SC_MARKNUM_FOLDEROPEN, $FFFFFF)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDEROPEN, 0)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDEROPENMID, 0)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERSUB, 0)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERTAIL, 0)
+;     ScintillaSendMessage(0, #SCI_MARKERSETBACK, #SC_MARKNUM_FOLDERMIDTAIL, 0)
+    
+    txt.s = "#version 330"+Chr(10)+Chr(10)
+
+    txt + "uniform mat4 model;"+Chr(10)
+    txt + "uniform mat4 view;"+Chr(10)
+    txt + "uniform mat4 projection;"+Chr(10)
+
+    txt + "layout (location = 0) in vec3 position;"+Chr(10)
+    txt + "//out float depth;"+Chr(10)+Chr(10)
+
+    txt + "void main(){"+Chr(10)
+    txt + "	gl_Position = projection * view * model * vec4(position,1.0);"+Chr(10)
+    txt + "}"+Chr(10)
+
+    Define *ascii = Ascii(txt)
+    ScintillaSendMessage(*Me\gadgetID, #SCI_SETTEXT, #Null, *ascii)
+    FreeMemory(*ascii)
+    View::SetContent(*parent, *Me)
+    ProcedureReturn *Me
+  EndProcedure
+  
+  ; ----------------------------------------------------------------------------------------
+  ;   DESTRUCTOR
+  ; ----------------------------------------------------------------------------------------
+  Procedure Delete(*Me.ScintillaGLSLUI_t)
+    FreeGadget(*Me\gadgetID)
+    Object::TERM(ScintillaGLSLUI)
+  EndProcedure
+  
 EndModule
 
 ; =======================================================================================================
 ;   EOF
 ; =======================================================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 286
-; FirstLine = 267
+; CursorPosition = 324
+; FirstLine = 304
 ; Folding = ---
 ; EnableXP
