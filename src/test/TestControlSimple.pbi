@@ -102,9 +102,10 @@ PolymeshGeometry::ToShape(*prototype\geom,*instancer\shape)
 
 Define width = 1200
 Define height = 800
+Define options = DemoApplication::#Demo_With_Custom|DemoApplication::#Demo_With_Viewport|DemoApplication::#Demo_With_Property
 
 *demo = AllocateStructure(DemoApplication::DemoApplication_t)
-DemoApplication::Init(*demo, "Test Control Simple",width,height)
+DemoApplication::Init(*demo, "Test Control Simple",width,height, options)
 *model = Model::New("Model")
 Object3D::AddChild(*model, *instancer)
 
@@ -125,11 +126,16 @@ If *demo\property
   PropertyUI::AppendStop(*demo\property)
 EndIf 
 
+Define *custom.View::View_t = DemoApplication::GetView(*demo)
+Debug *custom
+Debug "Custom view : "+*custom\name
+ScintillaGLSLUI::Init()
+Define *scintillaUI.ScintillaGLSLUI::ScintillaGLSLUI_t = ScintillaGLSLUI::New(*custom)
 
 
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 71
-; FirstLine = 64
+; CursorPosition = 131
+; FirstLine = 78
 ; Folding = -
 ; EnableXP

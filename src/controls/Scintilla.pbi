@@ -48,14 +48,13 @@ Module ControlScintilla
     
     Box(*Me\posX,*Me\posY,*Me\sizX,*Me\sizY,UIColor::COLOR_MAIN_BG)
     
-    Protected *obj.Object::Object_t = *Me\object
     
     Protected *prop.Control::Control_t = *Me\parent
-    Protected *n.Node::Node_t = *prop\object
+    Protected name.s = "whadefack"
     
-    DrawingFont(FontID(Globals::#FONT_TEXT))
-    w = TextWidth(*n\name)
-    h = TextHeight(*n\name)
+    DrawingFont(FontID(Globals::#Font_Default))
+    w = TextWidth(name)
+    h = TextHeight(name)
     
     If *Me\over
       Box(*Me\posX+30,*Me\posY+*Me\sizY*0.5-3,*Me\sizX-(w+70),1,UIColor::COLOR_CARET)
@@ -76,7 +75,7 @@ Module ControlScintilla
     EndIf
     
     DrawingMode(#PB_2DDrawing_Transparent)
-    DrawText(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5,*n\name)
+    DrawText(*Me\posX+*Me\sizX-(w+30),*Me\posY+*Me\sizY*0.5-h*0.5,name)
     DrawText(*Me\posX+6,*Me\posY, "-")
     DrawText(*Me\posX+*Me\sizX-#HEAD_HEIGHT+6,*Me\posY, "x")
   EndProcedure
@@ -160,9 +159,9 @@ Module ControlScintilla
         If *Me\visible And *Me\enable
           *Me\down = #False
           If *Me\over And *Me\touch_l 
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#False)
+;             Callback::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#False)
           ElseIf *Me\over And *Me\touch_r
-            Slot::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#True)
+;             Callback::Trigger(*Me\slot,Signal::#SIGNAL_TYPE_PING,#True)
           EndIf
         EndIf
         
@@ -202,13 +201,11 @@ Module ControlScintilla
     Object::TERM(ControlScintilla)
   EndProcedure
 
-  Procedure.i New( *obj.Object::Object_t,name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     Protected *Me.ControlScintilla_t = AllocateStructure(ControlScintilla_t)
     
     Object::INI(ControlScintilla)
-    *Me\object = *obj
-    Protected *parent.Control::Control_t = *obj
     
     *Me\type     = Control::#CONTROL_HEAD
     *Me\name     = name
@@ -233,7 +230,7 @@ Module ControlScintilla
   Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 194
-; FirstLine = 176
+; CursorPosition = 196
+; FirstLine = 174
 ; Folding = --
 ; EnableXP

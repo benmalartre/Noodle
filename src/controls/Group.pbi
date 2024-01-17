@@ -114,13 +114,17 @@ Module ControlGroup
     Define base.i = 0
     Define num.i
     Define y.i = #Group_Frame_Height
-    For i = 0 To iBound
-      If i < base : Continue : EndIf
-      num.i = GetNumControlInRow(*Me, base)
-      y + ResizeControlsInRow(*Me, base, num, y)
-      base + num
-    Next
+    Define collapsed.b = Bool(*Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed)
     
+    If Not collapsed
+      For i = 0 To iBound
+        If i < base : Continue : EndIf
+        num.i = GetNumControlInRow(*Me, base)
+        y + ResizeControlsInRow(*Me, base, num, y)
+        base + num
+      Next
+    EndIf
+
     *Me\sizY = ControlGroup::GetHeight(*Me)
     
     DrawPickImage(*Me)
@@ -242,7 +246,6 @@ Module ControlGroup
       FillPath(#PB_Path_Preserve)
       VectorSourceColor(UIColor::COLOR_GROUP_FRAME )
       StrokePath(Control::FRAME_THICKNESS, #PB_Path_RoundCorner)
-      
     EndIf
     
     MovePathCursor(offset\x+15,  offset\y)
@@ -286,8 +289,8 @@ Module ControlGroup
       Next
     EndIf
     
-    MovePathCursor(offset\x,  offset\y)
-    DrawVectorImage(ImageID(*Me\imageID), 100)
+    MovePathCursor(offset\x, offset\y)
+    DrawVectorImage(ImageID(*Me\imageID), 128)
     
     If init : StopVectorDrawing() : EndIf 
 
@@ -306,7 +309,6 @@ Module ControlGroup
     StartDrawing( ImageOutput(*Me\imageID) )
     pickID = Point(xm,ym) - 1
     StopDrawing()
-        
     ProcedureReturn pickID
   EndProcedure
   
@@ -364,6 +366,7 @@ Module ControlGroup
   ;  OVERRIDE ( CControl )
   ; ============================================================================
   Procedure.i OnEvent( *Me.ControlGroup_t, ev_code.i, *ev_data.Control::EventTypeDatas_t )
+
     Protected i=0
     Protected *ctrl.Control::Control_t 
     
@@ -461,9 +464,10 @@ Module ControlGroup
         *Me\down = #False
         If *Me\overchild = #Group_Collapse_Button
           Globals::BitMaskToggle(*Me\state, Control::#State_Collapsed)
-          Define ev_data.Control::EventTypeDatas_t 
-          MessageRequester("UI", "COLLAPSE PROPERTY : "+*Me\name)
-          Resize(*Me, ev_data)
+          
+          Define *ui.UI::UI_t = Control::GetUI(*Me)
+          Define *view.View::View_t = UI::GetView(*ui)
+          View::Resize(*view, *view\posX, *view\posY, *view\sizX, *view\sizY)
         EndIf
         
       Case #PB_EventType_LeftDoubleClick
@@ -488,6 +492,11 @@ Module ControlGroup
         
     EndSelect
     
+    If *Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed
+       ProcedureReturn #True
+    EndIf
+    
+
     If *Me\focuschild
       Define *focuschild.Control::Control_t = *Me\focuschild
       *ev_data\x = GetGadgetAttribute( *Me\gadgetID, #PB_Canvas_MouseX ) - *focuschild\posX
@@ -516,10 +525,10 @@ Module ControlGroup
     If *Me\percY > 0
       ProcedureReturn *Me\parent\sizY * (*Me\percY / 100)
     Else
-      Protected y = 2*#Group_Frame_Height
+      Protected y = #Group_Frame_Height
       Protected base.i = 0, num.i
-      If *Me\state & Control::#State_Enable
-        
+      If *Me\state & Control::#State_Enable And Not *Me\state & Control::#State_Collapsed
+        y + #Group_Frame_Height 
         For i=0 To *Me\chilcount-1
           If i < base : Continue : EndIf
           num = GetNumControlInRow(*Me, base)
@@ -671,7 +680,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 462
-; FirstLine = 433
+; CursorPosition = 99
+; FirstLine = 87
 ; Folding = -----
 ; EnableXP

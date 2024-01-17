@@ -51,7 +51,9 @@ DeclareModule ScintillaGLSLUI
   ;   DECLARE
   ; -------------------------------------------------------------------
   Declare Init()
-  Declare New(x.i, y.i, width.i, height.i)
+  Declare New(*parent.View::View_t)
+  Declare OnEvent(*Me.ScintillaGLSLUI_t, event.i)
+  Declare Draw(*Me.ScintillaGLSLUI_t)
   Declare Delete(*Me.ScintillaGLSLUI_t)
   Declare GetLineEndPosition(gadget, line)
   Declare LineFromPosition(gadget, pos)
@@ -63,12 +65,9 @@ DeclareModule ScintillaGLSLUI
   ; -------------------------------------------------------------------
   DataSection
     ScintillaGLSLUIVT:
-    Data.i @Delete()
-    Data.i UI::@Resize()
-    Data.i UI::@Draw()
-    Data.i UI::@DrawPickImage()
-    Data.i UI::@Pick()
-    Data.i UI::@OnEvent()
+      Data.i @OnEvent()
+      Data.i @Delete()
+      Data.i @Draw()
   EndDataSection
   
 EndDeclareModule
@@ -103,13 +102,19 @@ Module ScintillaGLSLUI
   ; ----------------------------------------------------------------------------------------
   ;   NEW
   ; ----------------------------------------------------------------------------------------
-  Procedure New(x.i, y.i, width.i, height.i)
+  Procedure New(*parent.View::View_t)
+
     Define *Me.ScintillaGLSLUI_t = AllocateStructure(ScintillaGLSLUI_t)
     Object::INI(ScintillaGLSLUI)
     
-    *Me\gadgetID = ScintillaGadget(#PB_Any, x, y, width, height, SCINTILLACALLBACK)
+    *Me\parent = *parent
+    *Me\posX = *parent\posX
+    *Me\posY = *parent\posY
+    *Me\sizX = *parent\sizX
+    *Me\sizY = *parent\sizY
+    *Me\gadgetID = ScintillaGadget(#PB_Any, *Me\posX, *Me\posY, *Me\posY, *Me\posY, SCINTILLACALLBACK)
     ; choose a lexer
-    ScintillaSendMessage(*Me\gadgetID, #SCI_SETLEXER, #SCLEX_CONTAINER, 0)
+;     ScintillaSendMessage(*Me\gadgetID, #SCI_SETLEXER, #SCLEX_CONTAINER, 0)
     
     ; set default colors
     ScintillaSendMessage(*Me\gadgetID, #SCI_STYLESETFORE, #STYLE_DEFAULT, FG_COLOR)
@@ -191,7 +196,8 @@ Module ScintillaGLSLUI
     Define *ascii = Ascii(txt)
     ScintillaSendMessage(*Me\gadgetID, #SCI_SETTEXT, #Null, *ascii)
     FreeMemory(*ascii)
-    ProcedureReturn *Me\gadgetID
+    View::SetContent(*parent, *Me)
+    ProcedureReturn *Me
   EndProcedure
   
   ; ----------------------------------------------------------------------------------------
@@ -213,6 +219,8 @@ Module ScintillaGLSLUI
   ;   LINE FROM POSITION
   ; ----------------------------------------------------------------------------------------
   Procedure LineFromPosition(gadget, pos)
+    Debug "gadget : "+Str(gadget)
+    Debug "pos "+Str(pos)
     ProcedureReturn ScintillaSendMessage(gadget,#SCI_LINEFROMPOSITION,pos)
   EndProcedure
   
@@ -257,6 +265,14 @@ Module ScintillaGLSLUI
     ProcedureReturn #False
   EndProcedure
   
+  Procedure OnEvent(*Me.ScintillaGLSLUI_t, ev_code.i)
+    Debug "Scintilla GLSL UI on event : "+Str(ev_code)
+  EndProcedure
+  
+  Procedure Draw(*Me.ScintillaGLSLUI_t)
+    Debug "Scintilla Draw callback"  
+  EndProcedure
+  
   
   ; ----------------------------------------------------------------------------------------
   ;   HIGHLIGHT
@@ -268,6 +284,7 @@ Module ScintillaGLSLUI
     Protected currentPos.l = 0, endlinepos.l, startkeyword
     Protected currentline.l = 0
     endpos = GetLineEndPosition(sciptr, LineFromPosition(sciptr, endpos))
+    Debug "end pos "+Str(endpos)
     ScintillaSendMessage(sciptr, #SCI_STARTSTYLING, CurrentPos, $1F | #INDICS_MASK)
     
     While CurrentPos <= endpos
@@ -408,33 +425,10 @@ Module ScintillaGLSLUI
 EndModule
 
 ; =======================================================================================================
-;   TEST CODE
-; =======================================================================================================
-Procedure TestScintillaGLSLUI()
-  ScintillaGLSLUI::Init()
-  
-  If OpenWindow(0, 0, 0, 800, 600, "Scintilla GLSL", #PB_Window_SystemMenu | #PB_Window_MinimizeGadget | #PB_Window_MaximizeGadget)
-       
-    If UseGadgetList(WindowID(0))
-      *ui = ScintillaGLSLUI::New(0,0,WindowWidth(0, #PB_Window_InnerCoordinate), WindowHeight(0, #PB_Window_InnerCoordinate))
-    EndIf
-       
-    
-    Repeat
-      Event = WaitWindowEvent()
-      
-      If Event = #PB_Event_CloseWindow
-        Quit = 1
-      EndIf
-    Until Quit = 1
-       
-  EndIf
-EndProcedure
-; =======================================================================================================
 ;   EOF
 ; =======================================================================================================
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 201
-; FirstLine = 163
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 286
+; FirstLine = 267
 ; Folding = ---
 ; EnableXP

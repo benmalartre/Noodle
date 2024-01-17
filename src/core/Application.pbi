@@ -121,6 +121,7 @@ XIncludeFile "../ui/GraphUI.pbi"
 XIncludeFile "../ui/PropertyUI.pbi"
 XIncludeFile "../ui/ExplorerUI.pbi"
 XIncludeFile "../ui/MenuUI.pbi"
+XIncludeFile "../ui/ScintillaGLSLUI.pbi"
 
 CompilerIf #USE_BULLET
   XIncludeFile "../libs/Bullet.pbi"
@@ -751,7 +752,7 @@ CompilerEndIf
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 99
+; CursorPosition = 123
 ; FirstLine = 95
 ; Folding = ------
 ; EnableXP

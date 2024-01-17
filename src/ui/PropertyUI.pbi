@@ -77,6 +77,11 @@ Module PropertyUI
     *Me\sizY = *view\sizY
     
     ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
+    StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
+    AddPathBox(0,0,*Me\sizX, *Me\sizY)
+    VectorSourceColor(UIColor::COLOR_MAIN_BG)
+    FillPath()
+    StopVectorDrawing()
     Protected ev_datas.Control::EventTypeDatas_t
     ev_datas\x = 0
     ev_datas\y = 0
@@ -450,8 +455,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 119
-; FirstLine = 116
+; CursorPosition = 83
+; FirstLine = 67
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

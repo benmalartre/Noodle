@@ -17,6 +17,7 @@ DeclareModule DemoApplication
     #Demo_With_Explorer = 1 << 3
     #Demo_With_Property = 1 << 4
     #Demo_With_Viewport = 1 << 5
+    #Demo_With_Custom   = 1 << 6
   EndEnumeration
   
   #Demo_With_All = #Demo_With_Menu|#Demo_With_Explorer|#Demo_With_Property|#Demo_With_Timeline|#Demo_With_Viewport
@@ -107,6 +108,14 @@ Module DemoApplication
       *view = *view\left
     EndIf
     
+    If options & #Demo_With_Custom
+      View::Split(*view)
+      *Me\view = *view\right
+      *view = *view\left
+    Else
+      *Me\view = *view
+    EndIf
+    
     If options & #Demo_With_Viewport
       *Me\viewport = ViewportUI::New(*view,"Viewport", *Me\camera, *Me\handle)
       *Me\layer = LayerDefault::New(*Me\viewport\sizX, *Me\viewport\sizY, *Me\viewport\context, *Me\camera)
@@ -116,7 +125,6 @@ Module DemoApplication
     Else
       *Me\canvas = CanvasUI::New(*view, "Canvas")
     EndIf
-    *Me\view = *view
     
     ProcedureReturn *Me
   EndProcedure
@@ -147,12 +155,12 @@ Module DemoApplication
   EndProcedure
   
   Procedure GetView(*Me.DemoApplication_t)
-    ProcedureReturn   *Me\view
+    ProcedureReturn *Me\view
   EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 84
+; CursorPosition = 126
+; FirstLine = 80
 ; Folding = --
 ; EnableXP
