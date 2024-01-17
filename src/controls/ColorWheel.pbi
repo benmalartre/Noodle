@@ -804,7 +804,7 @@ Module ControlColorWheel
     Object::INI( ControlColorWheel )
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#COLORWHEEL
+    *Me\type     = Control::#Type_ColorWheel
     *Me\name     = "ColorWheel"
     *Me\posX     = x
     *Me\posY     = y
@@ -833,7 +833,7 @@ Module ControlColorWheel
 EndModule
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 690
-; FirstLine = 655
+; CursorPosition = 806
+; FirstLine = 777
 ; Folding = ----
 ; EnableXP

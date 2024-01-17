@@ -127,11 +127,11 @@ If *demo\property
 EndIf 
 
 Define *custom.View::View_t = DemoApplication::GetView(*demo)
-Define *scintillaUI.ScintillaGLSLUI::ScintillaGLSLUI_t = ScintillaGLSLUI::New(*custom)
+Define *scintillaUI.ScintillaUI::ScintillaUI_t = ScintillaUI::New(*custom)
 
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 130
+; CursorPosition = 129
 ; FirstLine = 75
 ; Folding = -
 ; EnableXP

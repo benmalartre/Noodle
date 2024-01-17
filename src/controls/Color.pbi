@@ -441,7 +441,7 @@ Module ControlColor
     Object::INI(ControlColor)
 
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type       = Control::#COLOR
+    *Me\type       = Control::#Type_Color
     *Me\name       = name
     *Me\parent     = *parent
     *Me\gadgetID   = *parent\gadgetID
@@ -476,8 +476,8 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 260
+; CursorPosition = 443
+; FirstLine = 420
 ; Folding = ---
 ; EnableXP
 ; EnableUnicode

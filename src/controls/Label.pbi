@@ -297,7 +297,7 @@ Module ControlLabel
     Object::INI(ControlLabel)
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#LABEL
+    *Me\type     = Control::#Type_Label
     *Me\name     = name
     *Me\parent   = *parent
     *Me\gadgetID = *parent\gadgetID
@@ -329,7 +329,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 53
+; CursorPosition = 299
+; FirstLine = 273
 ; Folding = --
 ; EnableXP

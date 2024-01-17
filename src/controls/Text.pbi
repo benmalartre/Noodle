@@ -165,7 +165,7 @@ EndProcedure
     
     Object::INI(ControlText)
     
-    *Me\type         = Control::#TEXT
+    *Me\type         = Control::#Type_Text
     *Me\name         = name
     *Me\parent       = *parent
     *Me\gadgetID     = *parent\gadgetID
@@ -198,7 +198,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 52
-; FirstLine = 27
+; CursorPosition = 167
+; FirstLine = 142
 ; Folding = --
 ; EnableXP

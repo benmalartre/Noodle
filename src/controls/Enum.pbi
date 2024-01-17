@@ -200,7 +200,7 @@ Module ControlEnum
     Protected *Me.ControlEnum_t = AllocateStructure(ControlEnum_t)
     Object::INI(ControlEnum)
     *Me\parent = *parent
-    *Me\type = Control::#ENUM
+    *Me\type = Control::#Type_Enum
     *Me\gadgetID = *parent\gadgetID
     *Me\visible = #True
     *Me\enable = #True
@@ -219,7 +219,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 20
+; CursorPosition = 202
+; FirstLine = 163
 ; Folding = --
 ; EnableXP

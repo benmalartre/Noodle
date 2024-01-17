@@ -30,24 +30,24 @@ DeclareModule Control
   EndEnumeration
   
   Enumeration
-    #Check
-    #Icon
-    #Button
-    #Radio
-    #Enum
-    #Label
-    #Divot
-    #Edit
-    #Popup
-    #Text
-    #Input
-    #Number
-    #Group
-    #ColorWheel
-    #Color
-    #ShaderCode
-    #Explorer
-    #Head
+    #Type_Check
+    #Type_Icon
+    #Type_Button
+    #Type_Radio
+    #Type_Enum
+    #Type_Label
+    #Type_Divot
+    #Type_Edit
+    #Type_Popup
+    #Type_Text
+    #Type_Input
+    #Type_Number
+    #Type_Group
+    #Type_ColorWheel
+    #Type_Color
+    #Type_ShaderCode
+    #Type_Explorer
+    #Type_Scintilla
   EndEnumeration
 
   Structure EventTypeDatas_t
@@ -281,8 +281,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 28
-; FirstLine = 12
+; CursorPosition = 49
+; FirstLine = 9
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

@@ -312,7 +312,7 @@ Module ControlPopup
     Object::INI( ControlPopup )
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type        = Control::#POPUP
+    *Me\type        = Control::#Type_Popup
     *Me\name        = "popup"
     *Me\parent      = *parent
     *Me\gadgetID    = *parent\gadgetID
@@ -335,9 +335,9 @@ Module ControlPopup
   ; ============================================================================
   Class::DEF( ControlPopup )
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 308
-; FirstLine = 292
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 314
+; FirstLine = 280
 ; Folding = ---
 ; EnableThread
 ; EnableXP

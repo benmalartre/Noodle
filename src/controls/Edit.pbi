@@ -631,7 +631,7 @@ EndProcedure
   
     Object::INI(ControlEdit)
     
-    *Me\type         = Control::#EDIT
+    *Me\type         = Control::#Type_Edit
     *Me\name         = name
     *Me\parent       = *parent
     *Me\gadgetID     = *parent\gadgetID
@@ -675,7 +675,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 278
-; FirstLine = 232
+; CursorPosition = 633
+; FirstLine = 619
 ; Folding = ---
 ; EnableXP

@@ -150,7 +150,7 @@ Module ControlGroup
     For i = start_index To start_index + num_controls - 1
       *son = *Me\children(i)
       
-      If *son\type = Control::#Group
+      If *son\type = Control::#Type_Group
         sonY = GetHeight(*son)
       Else
         sonY = *son\sizY
@@ -310,23 +310,14 @@ Module ControlGroup
     StartDrawing( ImageOutput(*Me\imageID) )
     pickID = Point(xm,ym) - 1
     StopDrawing()
-    If Not (*Me\options & #Group_Collapsable And *Me\state & Control::#State_Collapsed)
-      ProcedureReturn pickID
-    Else
-      If pickID = *Me\chilcount : ProcedureReturn pickID : EndIf
-    EndIf
-    ProcedureReturn -1
+    ProcedureReturn pickID
+    
   EndProcedure
   
   Procedure DrawPickImage( *Me.ControlGroup_t )
     Protected i     .i = 0
     Protected iBound.i = *Me\chilcount-1
     Protected *son  .Control::Control_t
-    
-    ; clear old image memory
-    StartDrawing(ImageOutput(*Me\imageID))
-    Box(0,0,ImageWidth(*Me\imageID), ImageHeight(*Me\imageID), RGBA(0,0,0,0))
-    StopDrawing()
     
     ResizeImage(*Me\imageID, *Me\sizX, *Me\sizY)
    
@@ -437,7 +428,7 @@ Module ControlGroup
         ym = Math::Min( Math::Max( ym, 0 ), *Me\sizY - 1 )
                 
         Protected pickID = Pick(*Me) 
-        If pickID > -1 And pickID <*Me\chilcount
+        If pickID > -1 And pickID <*Me\chilcount And Not collapsed
           *overchild = *Me\children(pickID)
         ElseIf pickID = *Me\chilcount
           *overchild = #Group_Collapse_Button
@@ -635,7 +626,7 @@ Module ControlGroup
     
     If width < 50 : width = 50 : EndIf
     
-    *Me\type       = Control::#GROUP
+    *Me\type       = Control::#Type_Group
     *Me\name       = name
     *Me\parent     = *parent
     If Not *Me\parent Or Not IsGadget(*Me\parent\gadgetID)
@@ -689,7 +680,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 315
-; FirstLine = 291
+; CursorPosition = 628
+; FirstLine = 624
 ; Folding = -----
 ; EnableXP

@@ -219,7 +219,7 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   
   Object::INI(ControlButton)
     
-  *Me\type       = Control::#BUTTON
+  *Me\type       = Control::#Type_Button
   *Me\name       = name
   *Me\parent     = *parent
   *Me\gadgetID   = *parent\gadgetID
@@ -253,7 +253,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 188
+; CursorPosition = 221
+; FirstLine = 197
 ; Folding = --
 ; EnableXP

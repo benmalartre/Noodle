@@ -362,7 +362,7 @@ Module ControlIcon
     
     ; ---[ Init Members ]-------------------------------------------------------
     *Me\draw       = GetDrawImplementation(icon)
-    *Me\type       = Control::#ICON
+    *Me\type       = Control::#Type_Icon
     *Me\name       = name
     *Me\parent     = *parent
     *Me\gadgetID   = *parent\gadgetID
@@ -402,7 +402,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 387
-; FirstLine = 326
+; CursorPosition = 364
+; FirstLine = 346
 ; Folding = --
 ; EnableXP

@@ -300,7 +300,7 @@ Module ControlCheck
     Object::INI(ControlCheck)
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#CHECK
+    *Me\type     = Control::#Type_Check
     *Me\name     = name
     *Me\parent   = *parent
     *Me\gadgetID = *parent\gadgetID
@@ -333,7 +333,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 319
-; FirstLine = 272
+; CursorPosition = 302
+; FirstLine = 277
 ; Folding = --
 ; EnableXP

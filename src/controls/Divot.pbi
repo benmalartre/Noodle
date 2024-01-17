@@ -246,7 +246,7 @@ Module ControlDivot
     Object::INI(ControlDivot)
     
     ; ---[ Init Members ]-------------------------------------------------------
-    *Me\type     = Control::#DIVOT
+    *Me\type     = Control::#Type_Divot
     *Me\name     = name
     *Me\parent   = *parent
     *Me\gadgetID = *parent\gadgetID
@@ -274,7 +274,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 173
-; FirstLine = 169
+; CursorPosition = 248
+; FirstLine = 218
 ; Folding = --
 ; EnableXP

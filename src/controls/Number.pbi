@@ -791,7 +791,7 @@ EndProcedure
     
     Object::INI(ControlNumber)
   
-    *Me\type         = Control::#Number
+    *Me\type         = Control::#Type_Number
     *Me\name         = name
     *Me\parent       = *parent
     *Me\gadgetID     = *parent\gadgetID
@@ -840,7 +840,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 208
+; CursorPosition = 793
+; FirstLine = 784
 ; Folding = ---
 ; EnableXP
