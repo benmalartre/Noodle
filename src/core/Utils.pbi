@@ -366,7 +366,7 @@ Module MathUtils
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 105
+; CursorPosition = 66
+; FirstLine = 47
 ; Folding = ----
 ; EnableXP

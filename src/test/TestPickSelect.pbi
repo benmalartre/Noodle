@@ -32,10 +32,10 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#Type_V3F32)
 
 
-Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
+Procedure RandomMeshes(numItems.i,y.f, *root.Object3D::Object3D_t, shape=Shape::#SHAPE_BUNNY)
   Define position.Math::v3f32
   Define color.Math::c4f32
   Protected *item.Polymesh::Polymesh_t
@@ -46,7 +46,7 @@ Procedure RandomBunnies(numItems.i,y.f, *root.Object3D::Object3D_t)
   For i=0 To numItems-1
     Vector3::Set(p,Mod(i,12), y+i/12, (Random(10)-5)/10)
     Quaternion::Randomize2(q)
-    *item = Polymesh::New("Bunny"+Str(i), Shape::#SHAPE_TEAPOT)
+    *item = Polymesh::New("Bunny"+Str(i), shape)
     *t = *item\localT
     Transform::SetTranslation(*t, p)
     Transform::SetRotationFromQuaternion(*t, q)
@@ -121,21 +121,20 @@ Matrix4::SetIdentity(model)
 GLContext::AddFramebuffer(*viewport\context, *layer\framebuffer)
 GLContext::AddFramebuffer(*viewport\context, *select\framebuffer)
 
-
 Global *root.Model::Model_t = Model::New("Model")
-RandomBunnies(128, -2, *root)
+RandomMeshes(128, -2, *root)
 
 Scene::AddModel(*app\scene,*root)
 Scene::Setup(*app\scene)
 Scene::Update(*app\scene)
 Application::Loop(*app, @Update())
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 110
-; FirstLine = 86
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 121
+; FirstLine = 73
 ; Folding = -
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0

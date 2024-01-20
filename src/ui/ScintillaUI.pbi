@@ -6,6 +6,7 @@ XIncludeFile "UI.pbi"
 ; ==========================================================================================
 DeclareModule ScintillaUI
   Structure ScintillaUI_t Extends UI::UI_t
+    Map *editors.ControlScintilla::ControlScintilla_t()
   EndStructure
   
   ; -------------------------------------------------------------------
@@ -34,12 +35,22 @@ EndDeclareModule
 Module ScintillaUI
 
   ; ----------------------------------------------------------------------------------------
-  ;   EVENT
+  ;   RESIZE 
   ; ----------------------------------------------------------------------------------------
   Procedure Resize(*Me.ScintillaUI_t, x.i, y.i, width.i, height.i)
+    *Me\posX = x
+    *Me\posY = y
+    *Me\sizX = width
+    *Me\sizY = height
     ResizeGadget(*Me\gadgetID, x, y, width, height)
+    ForEach *Me\editors()
+      ControlScintilla::OnEvent(*Me\editors(), #PB_EventType_Resize, #Null)
+    Next
   EndProcedure
-
+  
+  ; ----------------------------------------------------------------------------------------
+  ;   EVENT
+  ; ----------------------------------------------------------------------------------------
   Procedure OnEvent(*Me.ScintillaUI_t, event.i) 
     Protected *top.View::View_t = *Me\view
     Select event
@@ -55,11 +66,13 @@ Module ScintillaUI
   ;   ADD ITEM
   ; ----------------------------------------------------------------------------------------
   Procedure AddItem(*Me.ScintillaUI_t, name.s)
-    AddGadgetItem(*Me\gadgetID, -1, "New", 0, 0)
-    Protected *control.ControlScintilla::ControlScintilla_t = ControlScintilla::New(name, 0, 0, *Me\sizX, *Me\sizY)
+    OpenGadgetList(*Me\gadgetID)
+    AddGadgetItem(*Me\gadgetID, -1, name, 0, 0)
+    Protected *control.ControlScintilla::ControlScintilla_t = ControlScintilla::New(*Me, name, 0, 0, *Me\sizX, *Me\sizY)
+    *Me\editors(name) = *control
+    CloseGadgetList()
   EndProcedure
 
-  
   ; ----------------------------------------------------------------------------------------
   ;   CONSTRUCTOR
   ; ----------------------------------------------------------------------------------------
@@ -74,7 +87,10 @@ Module ScintillaUI
     *Me\sizX = *parent\sizX
     *Me\sizY = *parent\sizY
     *Me\gadgetID = PanelGadget(#PB_Any, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
-    AddItem(*Me, "New")
+    CloseGadgetList()
+    AddItem(*Me, "One")
+    AddItem(*Me, "Two")
+    AddItem(*Me, "Three")
   
     View::SetContent(*parent, *Me)
     ProcedureReturn *Me
@@ -94,5 +110,6 @@ EndModule
 ;   EOF
 ; =======================================================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 74
 ; Folding = --
 ; EnableXP

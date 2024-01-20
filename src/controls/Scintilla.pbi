@@ -54,7 +54,7 @@ DeclareModule ControlScintilla
   EndInterface
   
 
-  Declare New( name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Declare New( *parent.Control::Control_t, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
   Declare Delete(*Me.ControlScintilla_t)
   Declare OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
   
@@ -313,8 +313,17 @@ Module ControlScintilla
   
   
 
-  Procedure.i OnEvent( *Me.ControlScintilla_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-
+  Procedure.i OnEvent( *Me.ControlScintilla_t, event.i, *ev_data.Control::EventTypeDatas_t = #Null )
+    Protected *ui.UI::UI_t = *Me\parent
+    Select event
+        
+      Case #PB_EventType_Resize, #PB_Event_SizeWindow
+        ResizeGadget(*Me\gadgetID, 0, 0, *ui\sizX, *ui\sizY)
+        Debug "RESIZE FUCKIN SCINTILLA GADGET WTF??"
+        Debug *ui\sizX
+        Debug *ui\sizY
+        
+    EndSelect
   EndProcedure
 
   
@@ -322,7 +331,7 @@ Module ControlScintilla
     Object::TERM(ControlScintilla)
   EndProcedure
 
-  Procedure.i New( name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
+  Procedure.i New( *parent.Control::Control_t, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
     
     _InitScintilla()
     
@@ -433,6 +442,7 @@ Module ControlScintilla
   Class::DEF(ControlScintilla)
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2
+; CursorPosition = 323
+; FirstLine = 284
 ; Folding = ---
 ; EnableXP

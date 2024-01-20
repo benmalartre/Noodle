@@ -18,8 +18,7 @@ EndStructure
 Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
   Define N = *demo\N\value_n
   Define mode = *demo\mode\current
-  Debug "CUrrent Mode : "+Str(mode)
-;   If *demo\dirty
+  If *demo\dirty
     *demo\fibonacci\N = N
     Select mode
       Case 0
@@ -49,8 +48,8 @@ Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
     PointCloud::SetDirtyState(*demo\instancer, Object3D::#DIRTY_STATE_TOPOLOGY)
     *demo\scene\dirty = #True
     Scene::Update(*demo\scene)
-;     *demo\dirty = #False
-;   EndIf
+    *demo\dirty = #False
+  EndIf
 EndProcedure
 Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
@@ -108,7 +107,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 43
+; CursorPosition = 45
+; FirstLine = 17
 ; Folding = -
 ; EnableXP

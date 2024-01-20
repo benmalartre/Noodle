@@ -416,13 +416,13 @@ Module Topology
   ; ----------------------------------------------------------------------------
   ;   EXTRUSION
   ; ----------------------------------------------------------------------------
-  Procedure Extrusion(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,closed.b)
-    If CArray::GetCount(*points)<2 Or CArray::GetCount(*section)<2: ProcedureReturn : EndIf
+  Procedure Extrusion(*topo.Topology_t,*xfos.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,closed.b)
+    If CArray::GetCount(*xfos)<2 Or CArray::GetCount(*section)<2: ProcedureReturn : EndIf
 
     Protected p.v3f32
     Protected is,ip
-    Protected *oP.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
-    CArray::Copy(*oP,*section)
+    Protected *points.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+    CArray::Copy(*points,*section)
     Protected so.i = CArray::GetCount(*section)
     Protected *extrusion.Topology_t = Topology::New()
   
@@ -433,18 +433,17 @@ Module Topology
     CArray::SetCount(*extrusion\vertices,0)
     CArray::SetCount(*extrusion\faces,0)
     If Not closed
-      For ip=0 To CArray::GetCount(*points)-1
-        *m = CArray::GetValue(*points,ip)
-        ;Matrix4_TransposeInPlace(*m)
-        MathUtils::TransformPositionArray(*oP,*section,*m)
+      For ip=0 To CArray::GetCount(*xfos)-1
+        *m = CArray::GetValue(*xfos,ip)
+        MathUtils::TransformPositionArray(*points,*section,*m)
     
-        CArray::AppendArray(*extrusion\vertices,*oP)
+        CArray::AppendArray(*extrusion\vertices,*points)
         If ip>0
           For is=0 To CArray::GetCount(*section)-2
             CArray::AppendL(*extrusion\faces,cnt+is)
-            CArray::AppendL(*extrusion\faces,cnt+is+1)
-            CArray::AppendL(*extrusion\faces,cnt+is+1+so)
             CArray::AppendL(*extrusion\faces,cnt+is+so)
+            CArray::AppendL(*extrusion\faces,cnt+is+1+so)
+            CArray::AppendL(*extrusion\faces,cnt+is+1)
             CArray::AppendL(*extrusion\faces,-2)
           Next
           cnt+so
@@ -453,26 +452,25 @@ Module Topology
     Else
       ; Pop Last duplicated vertex
       CArray::SetCount(*section,CArray::GetCount(*section)-1)
-      For ip=0 To CArray::GetCount(*points)-1
-        *m = CArray::GetValue(*points,ip)
-        ;Matrix4_TransposeInPlace(*m)
-        MathUtils::TransformPositionArray(*oP,*section,*m)
+      For ip=0 To CArray::GetCount(*xfos)-1
+        *m = CArray::GetValue(*xfos,ip)
+        MathUtils::TransformPositionArray(*points,*section,*m)
     
-        CArray::AppendArray(*extrusion\vertices,*oP)
+        CArray::AppendArray(*extrusion\vertices,*points)
         Protected last = CArray::GetCount(*section)
         If ip>0
           For is=0 To CArray::GetCount(*section)-2
             CArray::AppendL(*extrusion\faces,cnt+is)
-            CArray::AppendL(*extrusion\faces,cnt+is+1)
-            CArray::AppendL(*extrusion\faces,cnt+is+1+so)
             CArray::AppendL(*extrusion\faces,cnt+is+so)
+            CArray::AppendL(*extrusion\faces,cnt+is+1+so)
+            CArray::AppendL(*extrusion\faces,cnt+is+1)
             CArray::AppendL(*extrusion\faces,-2)
           Next
           ;Append Last Face
           CArray::AppendL(*extrusion\faces,cnt+last)
-          CArray::AppendL(*extrusion\faces,cnt)
-          CArray::AppendL(*extrusion\faces,cnt+so)
           CArray::AppendL(*extrusion\faces,cnt+last+so)
+          CArray::AppendL(*extrusion\faces,cnt+so)
+          CArray::AppendL(*extrusion\faces,cnt)
           CArray::AppendL(*extrusion\faces,-2)
           cnt+so
         EndIf
@@ -481,39 +479,39 @@ Module Topology
 
     MergeInPlace(*topo,*extrusion)
     Delete(*extrusion)
-    CArray::Delete(*oP)
+    CArray::Delete(*points)
     
   EndProcedure
   
   ; ----------------------------------------------------------------------------
   ;   CAP
   ; ----------------------------------------------------------------------------
-  Procedure Cap(*topo.Topology_t,*points.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,ID.i=0,reusepoints.b=#True,flip.b=#False)
+  Procedure Cap(*topo.Topology_t,*xfos.CArray::CArrayM4F32,*section.CArray::CArrayV3F32,ID.i=0,reusepoints.b=#True,flip.b=#False)
     If reusepoints
-      Protected *m.m4f32 = CArray::GetValue(*points,ID)
+      Protected *m.m4f32 = CArray::GetValue(*xfos,ID)
       Protected p.v3f32
       
       Vector3::MulByMatrix4InPlace(p,*m)
       CArray::Append(*topo\vertices,@p)
       Protected pID = CArray::GetCount(*topo\vertices)-1
  
-      Protected u = CArray::GetCount(*points)
+      Protected u = CArray::GetCount(*xfos)
       Protected v = CArray::GetCount(*section)-1
       Protected base.i = ID * u * v
       
       Protected nbt = CArray::GetCount(*section)
       If Not flip
         For i=0 To nbt-1
+          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i)%v)
           CArray::AppendL(*topo\faces,pID)
           CArray::AppendL(*topo\faces,ID*(v+1) + (base+i+1)%v)
-          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i)%v)
           CArray::AppendL(*topo\faces,-2)
         Next
       Else
         For i=0 To nbt-1
-          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i)%v)
-          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i+1)%v)
           CArray::AppendL(*topo\faces,pID)
+          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i)%v)
+          CArray::AppendL(*topo\faces,ID*(v+1) + (base+i+1)%v)  
           CArray::AppendL(*topo\faces,-2)
         Next
         
@@ -921,7 +919,7 @@ Module Topology
   
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 423
-; FirstLine = 357
+; CursorPosition = 506
+; FirstLine = 470
 ; Folding = -----
 ; EnableXP

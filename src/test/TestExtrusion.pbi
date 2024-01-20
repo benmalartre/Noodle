@@ -6,13 +6,12 @@ Global *mesh.Polymesh::Polymesh_t
 Global *layer.LayerDefault::LayerDefault_t
 Global width, height
 Global model.Math::m4f32
+
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  
-  
   GLContext::SetContext(GLContext::*SHARED_CTXT)
-;   Scne::Update(Scene::*current_scene)
+  Scene::Update(*app\scene)
   
   LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
@@ -59,10 +58,10 @@ If Time::Init()
   Global *root.Model::Model_t = Model::New("Model")
   
  
-  Define *section.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Define *section.CArray::CArrayV3F32 = CArray::New(Types::#Type_V3F32)
   MathUtils::BuildCircleSection(*section, 12)
       
-  Define *points.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
+  Define *points.CArray::CArrayM4F32 = CArray::New(Types::#Type_M4F32)
   
   Define *m.Math::m4f32
   Define p.Math::v3f32
@@ -94,7 +93,6 @@ If Time::Init()
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 56
-; FirstLine = 38
+; CursorPosition = 15
 ; Folding = -
 ; EnableXP
