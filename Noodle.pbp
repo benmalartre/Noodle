@@ -7,12 +7,16 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2024-01-20 13:10" user="graph" host="frapcanim2244"/>
+    <lastopen date="2024-01-24 10:42" user="graph" host="frapcanim2244"/>
   </section>
   <section name="files">
     <file name="src\test\TestControlSimple.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="1" panelstate="+++"/>
       <fingerprint md5="635d910b1e1b0dbec2c7cc74ad0ce7bd"/>
+    </file>
+    <file name="src\test\TestDelaunay.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" sortindex="2" panelstate="+++"/>
+      <fingerprint md5="8dea7f8af3aa4478a801534ad28418df"/>
     </file>
     <file name="src\ui\ViewportUI.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="++-"/>
@@ -100,7 +104,7 @@
     </file>
     <file name="src\test\TestFibonacci.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
-      <fingerprint md5="5c74c5c02f2d37711f04a53ba6f4711b"/>
+      <fingerprint md5="57d43c5b4a08b3edb4745d6557285a94"/>
     </file>
     <file name="src\controls\Enum.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
@@ -1454,10 +1458,6 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="8d8407d06b7b232e60f24e0fcbd0e9bf"/>
     </file>
-    <file name="src\test\Server.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
-      <fingerprint md5="d18d28854a0a8adec8cc36f851c32ed6"/>
-    </file>
     <file name="src\test\SimpleQuadTree.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="8f810621929c9369a35363667cd01082"/>
@@ -1786,10 +1786,6 @@
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
       <fingerprint md5="19f576250ad973bf5626c352f5207236"/>
     </file>
-    <file name="src\test\TestDelaunay.pbi">
-      <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="+++"/>
-      <fingerprint md5="ed026d85e51a66b1583509ef21400fad"/>
-    </file>
     <file name="src\utils\CompareImages.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="0" sortindex="999" panelstate="++-"/>
       <fingerprint md5="fd22ae3dc42ea875c68f780500763eb4"/>
@@ -1801,7 +1797,7 @@
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">
-      <inputfile value="src\test\Instructions.pbi"/>
+      <inputfile value="src\test\TestDelaunay.pbi"/>
       <outputfile value=""/>
       <compiler version="PureBasic 6.10 beta 1 (Windows - x64)"/>
       <executable value="..\Tests\TestIconsLibrary\x64\Release\Icons.dll"/>
