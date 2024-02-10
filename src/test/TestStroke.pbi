@@ -42,7 +42,7 @@ Procedure Update()
         
     EndSelect
   EndIf  
-
+  
   LayerStroke::Update(*stroke)
   LayerStroke::Draw(*stroke, *viewport\context)
   ViewportUI::Blit(*viewport, *stroke\framebuffer)
@@ -94,7 +94,7 @@ Scene::Setup(*app\scene)
 Application::Loop(*app,@Update())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 19
+; CursorPosition = 44
 ; FirstLine = 13
 ; Folding = -
 ; EnableXP

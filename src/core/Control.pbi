@@ -204,7 +204,7 @@ Module Control
     ev_datas\width  = width
     ev_datas\height = height
     
-    If Not Me\OnEvent( #PB_EventType_Resize, @ev_datas )
+    If Not Me\OnEvent( #PB_EventType_Resize, ev_datas )
       If #PB_Ignore <> x      : *Me\posX = x      : EndIf
       If #PB_Ignore <> y      : *Me\posY = y      : EndIf
       If #PB_Ignore <> width  : *Me\sizX = width  : EndIf
@@ -281,8 +281,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 9
+; CursorPosition = 206
+; FirstLine = 193
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

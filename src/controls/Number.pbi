@@ -214,7 +214,7 @@ Module ControlNumber
     
     Protected tc.i = UIColor::COLOR_NUMBER_FG
     VectorFont(FontID(Globals::#Font_Bold), Globals::#Font_Size_Label)
-
+    
     Protected tx.i = 7
     Protected ty.i = ( *Me\sizY - VectorTextHeight( *Me\value ) )/2 + yoff
     
@@ -237,7 +237,7 @@ Module ControlNumber
     Protected tlen   .i = *Me\posW - *Me\posS
     
     If tw > rof
-      While tw > rof
+      While tw > rof And *Me\posS < *Me\lookup_count
         *Me\posS + 1
         tw = x_end - *Me\lookup(*Me\posS)
       Wend
@@ -252,7 +252,7 @@ Module ControlNumber
       tlen = i_end - *Me\posS
       tw = *Me\lookup(i_end) - x_start
     EndIf
-    
+        
     If *Me\state & Control::#State_Focused
       Protected posL.i, posR.i, posXL.i, posXR.i
       If *Me\posG > *Me\posW
@@ -275,7 +275,7 @@ Module ControlNumber
       EndIf
       
     EndIf
-    
+        
     If Not *Me\state & Control::#State_Enable
       Vector::RoundBoxPath(xoff, yoff,  *Me\sizX , *Me\sizY ,2)
       VectorSourceColor(UIColor::COLOR_NUMBER_BG)
@@ -360,7 +360,6 @@ Module ControlNumber
       VectorSourceColor(UIColor::COLOR_NUMBER_FG)
       DrawVectorText( dtext)
     EndIf
-    
   EndProcedure
 
 
@@ -368,12 +367,10 @@ Module ControlNumber
 ;  OVERRIDE ( CControl )
 ; ============================================================================
 Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventTypeDatas_t = #Null )
-
   Select ev_code
       
     Case Control::#PB_EventType_Draw
       If Not *ev_data : ProcedureReturn : EndIf
-      
       Draw( *Me, *ev_data\xoff, *ev_data\yoff )
       ProcedureReturn( #True )
 
@@ -387,7 +384,6 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ProcedureReturn( #True )
       
     Case #PB_EventType_LostFocus
-      
       If *Me\state & Control::#State_Focused
         If *me\options & #Number_Integer
           *Me\value = Str(*Me\value_n)
@@ -406,6 +402,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       ProcedureReturn( #True )
       
     Case #PB_EventType_Focus
+      Debug "Number Recieved event focus"
       Globals::BitMaskSet(*Me\state, Control::#State_Focused)
       *Me\posG = 1 : *Me\posW = 1
       Control::Invalidate(*Me)
@@ -432,6 +429,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       If *Me\visible And *Me\enable
         If *Me\state & Control::#State_Down
           If Not *ev_data : ProcedureReturn : EndIf
+          Debug "Mouse Move Focus : "+Str(Bool(*Me\state & Control::#State_Focused)) 
           If *Me\state & Control::#State_Focused
             *Me\posW = hlpCharPosFromMousePos( *Me, *ev_data\x )
           Else
@@ -490,9 +488,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       EndIf
       
     Case #PB_EventType_LeftDoubleClick
-      Debug "We have fiuckin double left clicl event"
       If *Me\visible And *Me\enable
-        Debug "Focused : "+Str(*Me\state & Control::#State_Focused)
         If *Me\state & Control::#State_Focused
           If Not  *ev_data : ProcedureReturn : EndIf
           
@@ -531,9 +527,7 @@ Procedure.i OnEvent( *Me.ControlNumber_t, ev_code.i, *ev_data.Control::EventType
       
     Case #PB_EventType_Input
       If Not *ev_data : ProcedureReturn : EndIf
-      
-      Debug "input :"+*ev_data\input
-      
+            
       *Me\undo_ctz_t = *Me\value : *Me\undo_ctz_g = *Me\posG : *Me\undo_ctz_w = *Me\posW
       If *Me\posW > *Me\posG
         *Me\value = Left(*Me\value,*Me\posG-1) + *ev_data\input + Right(*Me\value,Len(*Me\value)-*Me\posW+1)
@@ -840,7 +834,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 793
-; FirstLine = 784
+; CursorPosition = 404
+; FirstLine = 382
 ; Folding = ---
 ; EnableXP

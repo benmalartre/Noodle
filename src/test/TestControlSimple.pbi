@@ -73,6 +73,7 @@ Procedure AddInputControl(*ui.PropertyUI::PropertyUI_t, name.s)
   Callback::CONNECT_CALLBACK(*btn\on_click, OnButtonClick, *btn)
   ControlProperty::AddFileControl(*prop, "FILE", "Zob.scn", #Null)
   ControlProperty::AddBoolControl(*prop, "Bool", "Bool", #False, #Null)
+  
 ;   Define slide.f
 ;   ControlProperty::RowStart(*prop)
 ;   ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_HOME, 32, 32)
@@ -131,7 +132,7 @@ Define *scintillaUI.ScintillaUI::ScintillaUI_t = ScintillaUI::New(*custom)
 
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 129
-; FirstLine = 75
+; CursorPosition = 75
+; FirstLine = 54
 ; Folding = -
 ; EnableXP

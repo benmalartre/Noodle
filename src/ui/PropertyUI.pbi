@@ -75,6 +75,7 @@ Module PropertyUI
     *Me\posY = *view\posY
     *Me\sizX = *view\sizX
     *Me\sizY = *view\sizY
+    *Me\active = #Null
     
     ResizeGadget(*Me\gadgetID, *Me\posX, *Me\posY, *Me\sizX, *Me\sizY)
     StartVectorDrawing(CanvasVectorOutput(*Me\gadgetID))
@@ -89,7 +90,7 @@ Module PropertyUI
     ev_datas\height = *Me\sizY
     
     ForEach *Me\props()
-      ControlGroup::OnEvent(*Me\props(), #PB_EventType_Resize,@ev_datas)
+      ControlGroup::OnEvent(*Me\props(), #PB_EventType_Resize,ev_datas)
       ev_datas\y + *Me\props()\sizY
     Next
     
@@ -455,8 +456,8 @@ Module PropertyUI
   Class::DEF( PropertyUI )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 67
+; CursorPosition = 77
+; FirstLine = 48
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

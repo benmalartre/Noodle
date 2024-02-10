@@ -241,16 +241,16 @@ Module ControlProperty
 
     If #False = *Me\append
      ProcedureReturn #False
-    EndIf
+   EndIf
   
-    If *Me\chilcount > ArraySize( *Me\children() )
-      ReDim *Me\children( *Me\chilcount + 10 )
-      ReDim *Me\rowflags( *Me\chilcount + 10 )
+   If *Me\chilcount >= ArraySize( *Me\children() )
+     ReDim *Me\children( *Me\chilcount + 10 )
+     ReDim *Me\rowflags( *Me\chilcount + 10 )
     EndIf
     
     *ctl\parent = *Me
-  
     *Me\children( *Me\chilcount ) = *ctl
+
     *Me\rowflags( *Me\chilcount ) = *Me\row
     *Me\chilcount + 1
   
@@ -992,7 +992,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 188
-; FirstLine = 95
-; Folding = DEyJAM9
+; CursorPosition = 258
+; FirstLine = 108
+; Folding = DEzJCM9
 ; EnableXP

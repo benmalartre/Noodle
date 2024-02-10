@@ -43,36 +43,36 @@ ControlENum::AddItem(*enum, "two", 1)
 ControlEnum::AddItem(*enum, "three", 2)
 ControlProperty::EndGroup(*prop)
 
-Define color.c4f32
-ControlProperty::AddColorControl(*prop, "Color", "Color", color, #Null)
-Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64, #True)
-Callback::CONNECT_CALLBACK(*btn\on_click, KissThatButton, *btn)
-ControlProperty::AddFileControl(*prop, "FILE", "Zob.scn", #Null)
-ControlProperty::AddBoolControl(*prop, "Bool", "Bool", #False, #Null)
+; Define color.c4f32
+; ControlProperty::AddColorControl(*prop, "Color", "Color", color, #Null)
+; Define *btn.ControlButton::ControlButton_t = ControlProperty::AddButtonControl(*prop, "Button", "Button", RGBA(255,128,128,255), 200,64, #True)
+; Callback::CONNECT_CALLBACK(*btn\on_click, KissThatButton, *btn)
+; ControlProperty::AddFileControl(*prop, "FILE", "Zob.scn", #Null)
+; ControlProperty::AddBoolControl(*prop, "Bool", "Bool", #False, #Null)
+; 
+; ControlProperty::RowStart(*prop)
+; ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_HOME, 32, 32)
+; ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_ERROR, 32, 32)
+; ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_FOLDER, 32, 32)
+; ControlProperty::RowEnd(*prop)
 
-ControlProperty::RowStart(*prop)
-ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_HOME, 32, 32)
-ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_ERROR, 32, 32)
-ControlProperty::AddIconControl(*prop, "Icon", RGBA(0,255,128,255), Icon::#ICON_FOLDER, 32, 32)
-ControlProperty::RowEnd(*prop)
-
-ControlProperty::AddKnobControl(*prop, "Knob", RGBA(255,255,100,255),100,100)
+; ControlProperty::AddKnobControl(*prop, "Knob", RGBA(255,255,100,255),100,100)
 Define q.q4f32
 ControlProperty::AddQuaternionControl(*prop, "quaternion", "quaternion", q, #Null)
 Define m.m4f32
 ControlProperty::AddMatrix4Control(*prop, "Matrix", "Matrix", m, #Null)
 
-Define *enum.ControlEnum::ControlEnum_t = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
-ControlEnum::AddItem(*enum, "Wireframe", 0)
-ControlEnum::AddItem(*enum, "Shader", 1)
-ControlEnum::AddItem(*enum, "Flat", 2)
+; Define *enum.ControlEnum::ControlEnum_t = ControlProperty::AddEnumControl(*prop, "Mode", "Mode", #Null)
+; ControlEnum::AddItem(*enum, "Wireframe", 0)
+; ControlEnum::AddItem(*enum, "Shader", 1)
+; ControlEnum::AddItem(*enum, "Flat", 2)
 
 ControlProperty::AppendStop(*prop)
 PropertyUI::AddProperty(*ui, *prop)
 
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 17
-; FirstLine = 14
+; CursorPosition = 56
+; FirstLine = 16
 ; Folding = -
 ; EnableXP

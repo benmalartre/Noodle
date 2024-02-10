@@ -53,8 +53,7 @@ Topology::Delete(*topo)
 Topology::Delete(*topo1)
 Topology::Delete(*topo2)
 Topology::Delete(*topo3)
-Debug "ALL IS FINE..."
+
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 9
+; CursorPosition = 55
 ; EnableXP

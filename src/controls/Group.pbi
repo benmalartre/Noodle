@@ -460,9 +460,6 @@ Module ControlGroup
          If *Me\focuschild And ( *Me\overchild <> *Me\focuschild )
            Control::DeFocused(*Me\focuschild)
          EndIf
-         If *Me\overchild And *Me\overchild <> #Group_Collapse_Button
-           Control::Focused(*Me\overchild)
-         EndIf
          
       Case #PB_EventType_LeftButtonUp
         *Me\down = #False
@@ -680,7 +677,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 628
-; FirstLine = 624
+; CursorPosition = 461
+; FirstLine = 418
 ; Folding = -----
 ; EnableXP

@@ -23,14 +23,6 @@ Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
 Global NewList *lights.Light::Light_t()
 Global *ground.Polymesh::Polymesh_t
-Global NewList *bunnies.Polymesh::Polymesh_t()
-
-Global *s_wireframe.Program::Program_t
-Global *s_polymesh.Program::Program_t
-Global *s_gbuffer.Program::Program_t
-Global *s_defered.Program::Program_t
-Global *s_shadowdefered.Program::Program_t
-Global shader.l
 
 Global *default.LayerDefault::LayerDefault_t
 Global *gbuffer.LayerGBuffer::LayerGBuffer_t
@@ -61,8 +53,8 @@ Procedure Update()
   Scene::Update(*app\scene)  
   LayerDefault::Draw(*default, *app\scene, *viewport\context)
   LayerGBuffer::Draw(*gbuffer, *app\scene, *viewport\context)
-;   LayerShadowMap::Draw(*shadowmap, *app\scene, *viewport\context)
-;   LayerDefered::Draw(*defered, *app\scene,  *viewport\context)
+  LayerShadowMap::Draw(*shadowmap, *app\scene, *viewport\context)
+  LayerDefered::Draw(*defered, *app\scene,  *viewport\context)
 ;   LayerShadowDefered::Draw(*shadowdefered, *app\scene, *viewport\context)
   
   FTGL::BeginDraw(*viewport\context\writer)
@@ -160,8 +152,8 @@ Procedure Update()
   
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 48
+; CursorPosition = 25
+; FirstLine = 24
 ; Folding = -
 ; EnableXP
 ; Constant = #USE_GLFW=0

@@ -51,10 +51,8 @@ Debug Font::*CURRENT_FONT\name +" : "+Str(Font::*CURRENT_FONT\font)
 
 Font::Term()
 
-Debug "ALL IS FINE..."
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 41
-; FirstLine = 9
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 52
 ; Folding = -
 ; EnableXP
 ; EnablePurifier

@@ -18,7 +18,7 @@ EndStructure
 Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
   Define N = *demo\N\value_n
   Define mode = *demo\mode\current
-  If *demo\dirty
+;   If *demo\dirty
     *demo\fibonacci\N = N
     Select mode
       Case 0
@@ -49,7 +49,7 @@ Procedure UpdateFibonacciDemo(*demo.FibonacciDemo_t)
     *demo\scene\dirty = #True
     Scene::Update(*demo\scene)
     *demo\dirty = #False
-  EndIf
+;   EndIf
 EndProcedure
 Callback::DECLARE_CALLBACK(Update, Types::#TYPE_PTR)
 
@@ -107,7 +107,7 @@ Define height = 800
 Define *demo.FibonacciDemo_t = NewFibonacciDemo("Test Fibonacci",width,height)
  Application::Loop(*demo, DemoApplication::@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 45
-; FirstLine = 17
+; CursorPosition = 51
+; FirstLine = 8
 ; Folding = -
 ; EnableXP
