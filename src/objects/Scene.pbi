@@ -71,7 +71,7 @@ DeclareModule Scene
   Declare Update(*Me.Scene_t)
   
   ; twist a scene
-  Declare InitTwist(*Me.Scene_t)
+  Declare InitTwist(*Me.Scene_t, speed.f=0.06)
   Declare Twist(*Me.Scene_t)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -547,7 +547,16 @@ Module Scene
   EndProcedure
   
   Procedure Twist(*Me.Scene_t)
-    
+    Define *t.Transform::Transform_t
+    Define p.v3f32
+    ForEach *Me\m_uuids()
+      ;Matrix4::SetFromOther(t\m, *Me\m_uuids\globalT\m)
+      *t = *Me\m_uuids()\localT
+      Vector3::Set(p, *t\t\pos\x + Math::Random_0_1(), *t\t\pos\y + Math::Random_0_1(), *t\t\pos\z + Math::Random_0_1())
+      Vector3::SetFromOther(*t\t\pos, p)
+       *Me\m_uuids()\localT\srtdirty = #True
+       *Me\m_uuids()\dirty = Object3D::#DIRTY_STATE_TRANSFORM
+    Next
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -926,7 +935,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 554
-; FirstLine = 531
+; CursorPosition = 555
+; FirstLine = 540
 ; Folding = --------
 ; EnableXP

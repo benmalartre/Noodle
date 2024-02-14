@@ -50,21 +50,12 @@ Procedure RandomLine()
   
 EndProcedure
 
-
-; Resize
-;--------------------------------------------
-Procedure Resize(window,gadget)
-  width = WindowWidth(window,#PB_Window_InnerCoordinate)
-  height = WindowHeight(window,#PB_Window_InnerCoordinate)
-  ResizeGadget(gadget,0,0,width,height)
-  glViewport(0,0,width,height)
-EndProcedure
-
 ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
   GLEnable(#GL_DEPTH_TEST)
- GLContext::SetContext(*viewport\context)
+  GLContext::SetContext(*viewport\context)
+  Scene::Twist(*app\scene)
   Scene::Update(*app\scene)  
   LayerDefault::Draw(*default, *app\scene, *viewport\context)
   LayerGBuffer::Draw(*gbuffer, *app\scene, *viewport\context)
@@ -132,7 +123,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 109
-; FirstLine = 67
+; CursorPosition = 57
+; FirstLine = 45
 ; Folding = -
 ; EnableXP
