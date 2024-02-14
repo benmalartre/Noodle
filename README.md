@@ -27,5 +27,5 @@ Required:
 
 Optional:
  - [Alembic](https://github.com/alembic/alembic) framework for storing and sharing scene data
- - [Booze](https://github.com/benmalartre/Booze alembic interface for purebasic
+ - [Booze](https://github.com/benmalartre/Booze) alembic interface for purebasic
  - [STK](https://github.com/benmalartre/STK) sound synthesis library and interface for purebasic
