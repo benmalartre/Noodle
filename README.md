@@ -6,7 +6,7 @@ where i experiment algorithmic and explore computer theory
 
 Build Status
 ------------
-to build yourself you must have a PureBasic license as the code base exceed the maximum lines (800) allowed by the free demo version.
+to build this project yourself you must have a PureBasic license as the code base exceed the maximum lines (800) allowed by the free demo version.
 
 you can find already build demos on my [webpage](http://benmalartre.free.fr)
 
