@@ -92,7 +92,7 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 Global *viewport.ViewportUI::ViewportUI_t = ViewportUI::New(*center\right,"Viewport", *app\camera, *app\handle)
 ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
 
-Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
+Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property")
 
 Global *graph.UI::IUI = GraphUI::New(*bottom\left,"GraphUI")
 
@@ -105,7 +105,7 @@ PolymeshGeometry::ToShape(*mesh\geom, *obj\shape)
 Define ps.v3f32, pe.v3f32
   Vector3::Set(ps,-10,0,0)
   Vector3::Set(pe,10,0,0)
-  PointCloudGeometry::PointsOnSphere(*obj\geom, 12)
+  PointCloudGeometry::PointsOnSphere(*obj\geom, 256, 12)
   
   Global *tree.Tree::Tree_t = Tree::New(*obj,"Tree",Graph::#Graph_Context_Operator)
 AddPointsTree(*tree.Tree::Tree_t)
@@ -153,8 +153,8 @@ Define e.i
 UIColor::SetTheme(Globals::#GUI_THEME_DARK)
 Application::Loop(*app,@Update())
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 120
-; FirstLine = 80
+; CursorPosition = 107
+; FirstLine = 88
 ; Folding = -
 ; EnableXP
 ; Executable = glslsandbox.exe

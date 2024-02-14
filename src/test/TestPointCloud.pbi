@@ -184,7 +184,7 @@ Procedure Draw(*app.Application::Application_t)
   Vector3::Set(p_start,-1,0,0)
   Vector3::Set(p_end,1,0,0)
 ;   PointCloudGeometry::PointsOnLine(*cloud\geom,p_start,p_end)
-  PointCloudGeometry::PointsOnSphere(*cloud\geom,5)
+  PointCloudGeometry::PointsOnSphere(*cloud\geom,1024, 5)
   PointCloudGeometry::RandomizeColor(*cloud\geom)
   PointCloud::Setup(*cloud)
   Object3D::Freeze(*cloud)
@@ -197,8 +197,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 134
-; FirstLine = 130
+; CursorPosition = 186
+; FirstLine = 132
 ; Folding = -
 ; EnableXP
 ; Executable = Test

@@ -307,14 +307,6 @@ Module Transform2D
   ; -----------------------------------------------------------------------------
   Procedure Compute(*t.Transform_t, *p.Transform_t=#Null)
     If *t\dirty = #DIRTY_SRT
-;       Define.Matrix_t S, R, T, H
-;       SHEARING(H, *t\shear)
-;       SCALING(S, *t\scale\x, *t\scale\y)
-;       ROTATION(R, *t\rotate)
-;       TRANSLATION(T, *t\translate\x, *t\translate\y)
-;       Multiply(*t\localT, S, H)
-;       MultiplyInPlace(*t\localT, R)
-;       MultiplyInPlace(*t\localT, T)
       Define.Matrix_t S, R, T
       SCALING(S, *t\scale\x, *t\scale\y)
       ROTATION(R, *t\rotate)
@@ -2032,7 +2024,7 @@ Module Vector
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2014
-; FirstLine = 1971
+; CursorPosition = 308
+; FirstLine = 294
 ; Folding = -----------------
 ; EnableXP

@@ -72,12 +72,10 @@ Module MathUtils
     Next
   
   EndProcedure
-  ;}
   
   ; ----------------------------------------------------------------------------
   ;  Build Matrix Array
   ; ----------------------------------------------------------------------------
-  ;{
   Procedure BuildMatrixArray(*io.CArray::CArrayM4F32,*a.v3f32,*b.v3f32,*c.v3f32,*d.v3f32,*up.v3f32)
     Protected i
     Protected p.v3f32
@@ -129,7 +127,6 @@ Module MathUtils
     Next
 
   EndProcedure
-  ;}
   
   ;-------------------------------------------------------------------
   ; Rotate Vector
@@ -155,7 +152,6 @@ Module MathUtils
   ;-------------------------------------------------------------------
   ; Direction To Rotation
   ;-------------------------------------------------------------------
-  ;{
   Procedure DirectionToRotation(*io.m3f32,*dir.v3f32,*up.v3f32=#Null)
     If *up=#Null
       Define up.v3f32
@@ -184,7 +180,6 @@ Module MathUtils
     *io\v[8] = -zaxis\z
     
   EndProcedure
-  ;}
   
   
   ;-------------------------------------------------------------------
@@ -198,7 +193,6 @@ Module MathUtils
   ; The actual value returned by ORIENT2D(A, B, C) corresponds to twice the signed area of the triangle
   ; ABC (positive If ABC is counterclockwise, otherwise negative)
   ;-------------------------------------------------------------------
-  ;{
   Procedure.f Orient2D(*a.v2f32, *b.v2f32, *c.v2f32)
     Define.f acx, bcx, acy, bcy;
   
@@ -208,7 +202,6 @@ Module MathUtils
     bcy = *b\y - *c\y
     ProcedureReturn acx * bcy - acy * bcx
   EndProcedure
-  ;}
   
   ;-------------------------------------------------------------------
   ; Orient3D
@@ -220,7 +213,6 @@ Module MathUtils
   ; The value returned by ORIENT3D(A, B, C, D) corresponds to six times the signed volume
   ; of the tetrahedron formed by the four points
   ;-------------------------------------------------------------------
-  ;{
   Procedure.f Orient3D(*a.v3f32, *b.v3f32, *c.v3f32, *d.v3f32)
     Define.f adx, bdx, cdx
     Define.f ady, bdy, cdy
@@ -238,7 +230,6 @@ Module MathUtils
 
     ProcedureReturn adx * (bdy * cdz - bdz * cdy) + bdx * (cdy * adz - cdz * ady) + cdx * (ady * bdz - adz * bdy)
   EndProcedure
-  ;}
   
   ;-------------------------------------------------------------------
   ; In Circle Test
@@ -366,7 +357,6 @@ Module MathUtils
 
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 66
-; FirstLine = 47
-; Folding = ----
+; CursorPosition = 231
+; Folding = ---
 ; EnableXP

@@ -19,11 +19,18 @@ DeclareModule Scene
   UseModule OpenGLExt
   UseModule Math
   
+  Structure Twist_t
+    speed.f
+    ball.m4f32
+    seed.i
+  EndStructure
+  
   Structure Scene_t Extends Object::Object_t
     filename.s
     *root.Root::Root_t
     ;handle.Handle::Handle_t
     ;grid.Grid::Grid2D_t
+    
     *models.CArray::CArrayPtr
     *objects.CArray::CArrayPtr
     *helpers.CArray::CArrayPtr
@@ -43,6 +50,7 @@ DeclareModule Scene
     
     Map *m_objects.Object3D::Object3D_t()
     Map *m_uuids.Object3D::Object3D_t()
+    Map twists.Twist_t()
     
     *on_new.Callback::Callback_t
     *on_delete.Callback::Callback_t
@@ -61,6 +69,10 @@ DeclareModule Scene
   Declare Delete(*Me.Scene_t)
   Declare Setup(*Me.Scene_t)
   Declare Update(*Me.Scene_t)
+  
+  ; twist a scene
+  Declare InitTwist(*Me.Scene_t)
+  Declare Twist(*Me.Scene_t)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
   Declare AddObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -517,6 +529,25 @@ Module Scene
       
       *Me\dirty = #False
      ;EndIf
+    EndProcedure
+    
+  ;---------------------------------------------------------------------------
+  ; Twist a scene
+  ;---------------------------------------------------------------------------
+  Procedure InitTwist(*Me.Scene_t, speed.f=0.06)
+    ClearMap(*Me\twists())
+    Protected key.s
+    ForEach *Me\m_uuids()
+      key = MapKey(*Me\m_uuids())
+      AddMapElement(*Me\twists(), key)
+      *Me\twists(key)\ball = *Me\m_uuids()\globalT\m
+      *Me\twists(key)\seed = Random(Math::#U32_MAX)
+      *Me\twists(key)\speed = speed
+    Next
+  EndProcedure
+  
+  Procedure Twist(*Me.Scene_t)
+    
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -895,7 +926,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 213
-; FirstLine = 203
+; CursorPosition = 554
+; FirstLine = 531
 ; Folding = --------
 ; EnableXP

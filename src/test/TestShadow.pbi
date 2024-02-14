@@ -104,10 +104,10 @@ Procedure Draw(*app.Application::Application_t)
   Matrix4::SetIdentity(model)
   *app\scene = Scene::New()
 
-  Define *model.Model::Model_t = Scene::CreateMeshGrid(12,6,12, Shape::#SHAPE_BUNNY)
+  Define *model.Model::Model_t = Scene::CreateMeshGrid(6,4,6, Shape::#SHAPE_BUNNY)
  
   *ground = Polymesh::New("Ground",Shape::#SHAPE_GRID)
-  Transform::SetScaleFromXYZValues(*ground\localT, 3, 3, 3)
+  Transform::SetScaleFromXYZValues(*ground\localT, 10, 10, 10)
   Object3D::SetLocalTransform(*ground, *ground\localT)
 
   Object3D::AddChild(*model,*ground)
