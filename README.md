@@ -22,10 +22,10 @@ Dependencies
 
 Required:
  - [PureBasic](https://www.purebasic.com/)
- - C/C++ compiler
- - [CMake](https://cmake.org/documentation/)
 
 Optional:
+ - C/C++ compiler
+ - [CMake](https://cmake.org/documentation/)
  - [Alembic](https://github.com/alembic/alembic) framework for storing and sharing scene data
  - [Booze](https://github.com/benmalartre/Booze) alembic interface for purebasic
  - [STK](https://github.com/benmalartre/STK) sound synthesis library and interface for purebasic
