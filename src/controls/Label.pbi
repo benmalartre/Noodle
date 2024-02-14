@@ -305,8 +305,8 @@ Module ControlLabel
     *Me\posY     = y
     *Me\sizX     = width
     *Me\sizY     = height
-    *Me\fixedX   = #True
-    *Me\fixedY   = #True
+    *Me\fixedWidth = #True
+    *Me\fixedHeight= #True
     *Me\percX    = - 1
     *Me\percY    = - 1
     *Me\visible  = #True
@@ -329,7 +329,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 299
-; FirstLine = 273
+; CursorPosition = 307
+; FirstLine = 264
 ; Folding = --
 ; EnableXP

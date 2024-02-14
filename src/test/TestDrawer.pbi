@@ -33,8 +33,8 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-Global *texts.CArray::CArrayStr = CArray::New(CArray::#ARRAY_STR)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+Global *texts.CArray::CArrayStr = CArray::New(Types::#TYPE_STR)
 
 ; Resize
 ;--------------------------------------------
@@ -58,8 +58,8 @@ Procedure RandomSpheres(numItems.i,y.f=0)
     Matrix4::SetTranslation(m,p)
 
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
-    *item = Drawer::AddSphere(*drawer, @m)
-    Drawer::SetColor(*item,  @color)
+    *item = Drawer::AddSphere(*drawer, m)
+    Drawer::SetColor(*item,  color)
   Next
 EndProcedure
 
@@ -209,15 +209,15 @@ Procedure Draw(*app.Application::Application_t)
   RandomPoints(Random(256, 64))
   RandomCubes(Random(64,16), Random(10)-5)
   RandomStrips(32)
-  RandomTexts(32,"HELLO")
+;   RandomTexts(32,"HELLO")
 ;   
   Scene::Setup(*scene)
    
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 116
+; CursorPosition = 211
+; FirstLine = 160
 ; Folding = --
 ; EnableThread
 ; EnableXP

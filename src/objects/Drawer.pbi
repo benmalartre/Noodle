@@ -210,7 +210,7 @@ Module Drawer
     Protected *item.Item_t
     ForEach *Me\items()
       *item = *me\items()
-      ;Create Or ReUse Vertex Array Object
+      ; Create Or ReUse Vertex Array Object
       If Not *item\vao
         glGenVertexArrays(1,@*item\vao)
       EndIf
@@ -261,9 +261,9 @@ Module Drawer
   ;---------------------------------------------------------------------------- 
   Procedure Clean(*Me.Drawer_t)
     ForEach *me\items()
-      If *Me\items()\vao : glDeleteVertexArrays(1,@*Me\items()\vao) : EndIf
-      If *Me\items()\vbo : glDeleteBuffers(1,@*Me\items()\vbo) : EndIf
-      If *Me\items()\eab : glDeleteBuffers(1,@*Me\items()\eab) : EndIf
+      If *Me\items()\vao : glDeleteVertexArrays(1,@*Me\items()\vao)  : EndIf
+      If *Me\items()\vbo : glDeleteBuffers(1, @*Me\items()\vbo)      : EndIf
+      If *Me\items()\eab : glDeleteBuffers(1, @*Me\items()\eab)      : EndIf
     Next
   EndProcedure
   
@@ -279,7 +279,7 @@ Module Drawer
       *item = *me\items()
       If *item\dirty = #DIRTY_CLEAN : Continue : EndIf
       
-      ;Create Or ReUse Vertex Array Object
+      ; Create Or ReUse Vertex Array Object
       If Not *item\vao
         glGenVertexArrays(1,@*item\vao)
       EndIf
@@ -424,33 +424,31 @@ Module Drawer
     GLCheckError("polygon mode")
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
     GLCheckError("set offset matrix")
-    glLineWidth(Math::Max(Int(*Me\size),1))
+;     glLineWidth(Math::Max(Int(*Me\size),1))
     GLCheckError("line width")
     Protected *indices
     Protected offset.i = 8
     If *Me\wireframe
       *indices = Shape::GetEdges(Shape::#SHAPE_SPHERE)
-      glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
-      glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
+      glDrawElements(#GL_TRIANGLES, Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, *indices)
+      glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
       GLCheckError("draw wireframe")
     Else
-      *indices = Shape::GetFaces(Shape::#SHAPE_SPHERE)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("set polygon mode")
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
+      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, #Null)
       GLCheckError("draw filled elements")
     EndIf
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
     GLCheckError("reset offset matrix")
-    glLineWidth(1)
     GLCheckError("line width")
   EndProcedure
   
   ; ---[ Draw Matrix Item ]--------------------------------------------------
   Procedure DrawMatrix(*Me.Matrix_t, *pgm)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,*Me\m)
-    glLineWidth(Math::Max(Int(*Me\size),1))
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, *Me\m)
+    glLineWidth(Math::Max(Int(*Me\size), 1))
     Protected *indices = Shape::GetEdges(Shape::#SHAPE_AXIS)
     Protected offset.i = 8
     Protected u_color = glGetUniformLocation(*pgm,"color")
@@ -460,13 +458,13 @@ Module Drawer
     glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + offset)
     glUniform4f(u_color,0.0,0.0,1.0,1.0)
     glDrawElements(#GL_LINES,2,#GL_UNSIGNED_INT,*indices + 2 * offset)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
     glLineWidth(1)
   EndProcedure
   
   ; ---[ Draw Triangle Item ]--------------------------------------------------
   Procedure DrawTriangle(*Me.Triangle_t)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
     If *Me\wireframe
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
       glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
@@ -475,7 +473,7 @@ Module Drawer
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       glDrawArrays(#GL_TRIANGLES, 0, CArray::GetCount(*Me\positions))
     EndIf
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
   EndProcedure
   
   ; ---[ Draw Text Item ]--------------------------------------------------
@@ -484,11 +482,11 @@ Module Drawer
     Define offset.Math::m4f32
     Define *p.Math::v3f32 = CARray::GetValue(*Me\positions, 0)
     Matrix4::SetTranslation(offset, *p)
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,offset)
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, offset)
     Protected *indices = Shape::GetFaces(Shape::#SHAPE_PLATE)
     If *Me\wireframe
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_LINE)
-      glDrawElements(#GL_TRIANGLES,Shape::#PLATE_NUM_INDICES,#GL_UNSIGNED_INT, 0)
+      glDrawElements(#GL_TRIANGLES,Shape::#PLATE_NUM_INDICES,#GL_UNSIGNED_INT, #Null)
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("draw wireframe")
     Else
@@ -497,10 +495,8 @@ Module Drawer
       glDrawElements(#GL_TRIANGLES,Shape::#PLATE_NUM_INDICES,#GL_UNSIGNED_INT, *indices)
       GLCheckError("draw filled elements")
     EndIf
-    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"),1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
     GLCheckError("reset offset matrix")
-    
-    Debug "DARW TEXT "+*Me\text
   EndProcedure
   
   
@@ -521,8 +517,8 @@ Module Drawer
     Define u_view = glGetUniformLocation(*pgm\pgm,"view")
     Define u_offset = glGetUniformLocation(*pgm\pgm, "offset")
    
-    glUniformMatrix4fv(u_model,1,#GL_FALSE,*t\m)
-    glUniformMatrix4fv(u_offset,1,#GL_FALSE,Matrix4::IDENTITY())
+    glUniformMatrix4fv(u_model, 1, #GL_FALSE, *t\m)
+    glUniformMatrix4fv(u_offset, 1, #GL_FALSE, Matrix4::IDENTITY())
     
     glEnable(#GL_PROGRAM_POINT_SIZE)
         
@@ -578,7 +574,6 @@ Module Drawer
   ;----------------------------------------------------------------------------
   ;  Delete
   ;----------------------------------------------------------------------------
-  ; ---[ Delete GL Item ]------------------------------------------------------
   Procedure DeleteItem(*Me.Item_t)
     If *Me\vao : glDeleteVertexArrays(1, @*Me\vao) : EndIf
     If *Me\vbo : glDeleteBuffers(1,  @*Me\vbo) : EndIf
@@ -1044,7 +1039,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1012
-; FirstLine = 946
+; CursorPosition = 576
+; FirstLine = 584
 ; Folding = ---------
 ; EnableXP

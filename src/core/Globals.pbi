@@ -229,7 +229,7 @@ DeclareModule Globals
       #Font_Size_Title = 30
     CompilerDefault
       #Font_Size_Text = 12
-      #Font_Size_Label = 13
+      #Font_Size_Label = 11
       #Font_Size_Menu = 14
       #Font_Size_Title = 15
   CompilerEndSelect
@@ -344,8 +344,8 @@ EndModule
 
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 161
+; CursorPosition = 231
+; FirstLine = 191
 ; Folding = ------
 ; EnableXP
 ; EnableUnicode

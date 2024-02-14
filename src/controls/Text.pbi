@@ -173,8 +173,8 @@ EndProcedure
     *Me\posY         = y
     *Me\sizX         = width
     *Me\sizY         = height
-    *Me\fixedX       = #True
-    *Me\fixedY       = #True
+    *Me\fixedWidth   = #True
+    *Me\fixedHeight  = #True
     *Me\percX        = -1
     *Me\percY        = -1
     *Me\visible      = #True
@@ -198,7 +198,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 142
+; CursorPosition = 176
+; FirstLine = 133
 ; Folding = --
 ; EnableXP

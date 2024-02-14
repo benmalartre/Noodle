@@ -34,7 +34,7 @@ Topology::Teapot(*topo3)
 ;   Matrix4::SetTranslation(*m,   *p)
 ; Next
 ; 
-Define *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+Define *topos.CArray::CArrayPtr = CArray::New(Types::#Type_PTR)
 CArray::SetCount(*topos,3)
 CArray::SetValuePtr(*topos,0, *topo1)
 CArray::SetValuePtr(*topos,1, *topo2)
@@ -53,7 +53,7 @@ Topology::Delete(*topo)
 Topology::Delete(*topo1)
 Topology::Delete(*topo2)
 Topology::Delete(*topo3)
-
+Debug "ALL IS FINE..."
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 55
+; CursorPosition = 36
 ; EnableXP

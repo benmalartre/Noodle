@@ -74,8 +74,8 @@ DeclareModule Control
     sizY       .i
     percX      .i
     percY      .i
-    fixedX     .i
-    fixedY     .i
+    fixedWidth .i
+    fixedHeight.i
     visible    .i
     enable     .i
     options    .i
@@ -263,9 +263,9 @@ Module Control
     EndIf
   EndProcedure
   
-  Procedure SetFixed( *Me.Control_t, fixedX.b, fixedY.b)
-    If fixedX <> #PB_Ignore : *Me\fixedX = fixedX : EndIf
-    If fixedY <> #PB_Ignore : *Me\fixedY = fixedY : EndIf
+  Procedure SetFixed( *Me.Control_t, fixedWidth.b, fixedHeight.b)
+    If fixedX <> #PB_Ignore : *Me\fixedWidth = fixedWidth : EndIf
+    If fixedY <> #PB_Ignore : *Me\fixedHeight = fixedHeight : EndIf
   EndProcedure
   
   Procedure SetPercentage(*Me.Control_t, percX.i, percY.i)
@@ -281,8 +281,8 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 193
+; CursorPosition = 267
+; FirstLine = 216
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

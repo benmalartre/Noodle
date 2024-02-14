@@ -5,14 +5,15 @@ XIncludeFile "../core/Control.pbi"
 ; ============================================================================
 DeclareModule ControlGroup
 
-  #Group_Autosize_H     = 1 << 20
-  #Group_Autosize_V     = 1 << 21
-  #Group_Autostack      = 1 << 22
-  #Group_NoFrame        = 1 << 23
-  #Group_Collapsable    = 1 << 24
-  #Group_Border_Margin  = 4
-  #Group_Frame_Height   = 16
-  #Group_Collapse_Button = Math::#U16_MAX
+  #Group_Autosize_H       = 1 << 20
+  #Group_Autosize_V       = 1 << 21
+  #Group_Autostack        = 1 << 22
+  #Group_NoFrame          = 1 << 23
+  #Group_Collapsable      = 1 << 24
+  #Group_Label_FixedWidth = 1 << 25
+  #Group_Border_Margin    = 4
+  #Group_Frame_Height     = 16
+  #Group_Collapse_Button  = Math::#U16_MAX
   
   Structure ControlGroup_t Extends Control::Control_t
     imageID   .i
@@ -27,9 +28,10 @@ DeclareModule ControlGroup
     chilcount .i
     current   .i
     closed    .b
+    labelWidth.i
   EndStructure
   
-  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack )
+  Declare New( *parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack|#Group_Label_FixedWidth, labelWidth=120 )
   Declare Delete(*Me.ControlGroup_t)
   Declare Draw( *Me.ControlGroup_t, init.b=#False)
   Declare OnEvent(*Me.ControlGroup_t,event.i,*datas.Control::EventTypeDatas_t)
@@ -172,8 +174,17 @@ Module ControlGroup
     For i=0 To num_controls - 1
       current_index = start_index + i
       *child = *Me\children(current_index)
-      If *child\fixedX
-        current_width = *child\sizX 
+      If *child\type = Control::#Type_Label
+        If *Me\options & ControlGroup::#Group_Label_FixedWidth
+          current_width = *Me\labelWidth
+          fixed_width + current_width + ControlGroup::#Group_Border_Margin
+          widths(i) = current_width
+          num_fixed + 1
+        Else 
+          widths(i) = *child\sizX
+        EndIf
+      ElseIf *child\fixedWidth
+        current_width = *child\sizX
         fixed_width + current_width + ControlGroup::#Group_Border_Margin
         widths(i) = current_width
         num_fixed + 1
@@ -196,7 +207,13 @@ Module ControlGroup
         y = *son\sizY
       EndIf
 
-      If *son\fixedX
+      If *child\type = Control::#Type_Label 
+        If *Me\options & ControlGroup::#Group_Label_FixedWidth
+          ev_data\width = *Me\labelWidth
+        Else 
+          ev_data\width = widths(i)
+        EndIf
+      ElseIf *son\fixedWidth
         ev_data\width = widths(i)
       Else
         ev_data\width = remaining_width / (num_controls - num_fixed)
@@ -615,7 +632,7 @@ Module ControlGroup
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack )
+  Procedure.i New(*parent.Control::Control_t, name.s, label.s, x.i = 0, y.i = 0, width.i = 240, height.i = 120, options.i = #Group_Autosize_V|#Group_Autostack|#Group_Label_FixedWidth, labelWidth=120 )
     
     Protected *Me.ControlGroup_t = AllocateStructure(ControlGroup_t)
   
@@ -647,6 +664,7 @@ Module ControlGroup
     *Me\overchild  = #Null
     *Me\focuschild = #Null
     *Me\state      = Control::#State_Enable
+    *Me\labelWidth = labelWidth
     
     ProcedureReturn( *Me )
     
@@ -677,7 +695,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 461
-; FirstLine = 418
+; CursorPosition = 183
+; FirstLine = 163
 ; Folding = -----
 ; EnableXP

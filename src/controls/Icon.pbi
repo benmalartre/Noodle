@@ -370,8 +370,8 @@ Module ControlIcon
     *Me\posY       = y
     *Me\sizX       = width
     *Me\sizY       = height
-    *Me\fixedX     = #True
-    *Me\fixedY     = #True
+    *Me\fixedWidth = #True
+    *Me\fixedHeight= #True
     *Me\percX      = -1
     *Me\percY      = -1
     *Me\options    = options
@@ -402,7 +402,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 364
-; FirstLine = 346
+; CursorPosition = 372
+; FirstLine = 337
 ; Folding = --
 ; EnableXP

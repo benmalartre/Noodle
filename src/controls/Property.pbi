@@ -32,7 +32,7 @@ DeclareModule ControlProperty
   Interface IControlProperty Extends Control::IControl
   EndInterface
   
-  Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,options=ControlGroup::#Group_Collapsable)
+  Declare New(*parent.UI::UI_t,name.s,label.s,x.i=0,y.i=0,width.i=320,height.i=120,options=ControlGroup::#Group_Collapsable|ControlGroup::#Group_Label_FixedWidth, labelWidth=120)
   Declare Delete(*Me.ControlProperty_t)
   Declare AppendStart( *Me.ControlProperty_t )
   Declare Append( *Me.ControlProperty_t, ctl.Control::IControl )
@@ -54,7 +54,7 @@ DeclareModule ControlProperty
   Declare AddKnobControl(*Me.ControlProperty_t, name.s,color.i, width.i=64, height.i=100)
   Declare AddFileControl( *Me.ControlProperty_t,name.s,value.s,*attr.Attribute::Attribute_t)
   Declare AddEnumControl( *Me.ControlProperty_t,name.s,label.s,*attr.Attribute::Attribute_t)
-  Declare AddGroup( *Me.ControlProperty_t,name.s)
+  Declare AddGroup( *Me.ControlProperty_t,name.s, options.i=ControlGroup::#Group_Label_FixedWidth, labelWidth=64)
   Declare EndGroup( *Me.ControlProperty_t)
   Declare Init( *Me.ControlProperty_t)
   Declare Refresh( *Me.ControlProperty_t)
@@ -507,9 +507,9 @@ Module ControlProperty
     Protected *zCtl.Control::Control_t
     Protected w = *Me\sizX/4
     
-    Protected options.i = 0;ControlGroup::#Autostack|ControlGroup::#Autosize_V;
+    Protected options.i = ControlGroup::#Group_Label_FixedWidth;
     Protected width = GadgetWidth(*Me\gadgetID)/3
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options, 32)
     ControlGroup::AppendStart(*group)
     ControlGroup::RowStart(*group)
   
@@ -549,9 +549,9 @@ Module ControlProperty
     
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
-    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
+    Protected options.i = ControlGroup::#Group_Label_FixedWidth
     Protected width = GadgetWidth(*Me\gadgetID)/3
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, GadgetWidth(*Me\gadgetID), 40 ,options, 32)
     
     ControlGroup::AppendStart(*Me)
     ControlGroup::RowStart(*Me)
@@ -600,9 +600,9 @@ Module ControlProperty
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
     
-    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
+    Protected options.i = ControlGroup::#Group_Label_FixedWidth
     Protected width = GadgetWidth(*Me\gadgetID)/4
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 50 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 50 ,options, 32)
     
     Protected *xCtl.Control::Control_t
     Protected *yCtl.Control::Control_t
@@ -657,9 +657,9 @@ Module ControlProperty
     Protected Me.ControlProperty::IControlProperty = *Me
     Protected Ctl.Control::IControl
 
-    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
+    Protected options.i = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V|ControlGroup::#Group_Label_FixedWidth
     Protected width = GadgetWidth(*Me\gadgetID)/4
-    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 200 ,options)
+    Define *group.ControlGroup::ControlGroup_t = ControlGroup::New( *Me,name, name, *Me\dx, *Me\dy, width*4, 200 ,options, 24)
     
     If ListSize(*Me\groups())
       *Me\dx = *Me\groups()\posX + ControlGroup::#Group_Border_Margin
@@ -877,7 +877,7 @@ Module ControlProperty
     ProcedureReturn(*color)
   EndProcedure
   
-  Procedure AddGroup( *Me.ControlProperty_t,name.s)
+  Procedure AddGroup( *Me.ControlProperty_t,name.s, options=ControlGroup::#Group_Label_FixedWidth, labelWidth=64)
     If Not *Me : ProcedureReturn : EndIf
     
     Protected Me.ControlProperty::IControlProperty = *Me
@@ -885,9 +885,8 @@ Module ControlProperty
     Protected width = GadgetWidth(*Me\gadgetID) - 2 * ControlGroup::#Group_Border_Margin
     *Me\dx + ControlGroup::#Group_Border_Margin
         
-    Protected options = ControlGroup::#Group_Autostack|ControlGroup::#Group_Autosize_V
     AddElement(*Me\groups())
-    *Me\groups() = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options)
+    *Me\groups() = ControlGroup::New(*Me, name, name, *Me\dx, *Me\dy, width, 50 ,options, labelWidth)
 
     Append(*Me,*Me\groups())
     
@@ -953,7 +952,7 @@ Module ControlProperty
   ; ============================================================================
   ;  CONSTRUCTORS
   ; ============================================================================
-  Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,options=ControlGroup::#Group_Collapsable)
+  Procedure.i New( *parent.UI::UI_t, name.s, label.s,x.i=0,y.i=0,width.i=320,height.i=120 ,options=ControlGroup::#Group_Collapsable|ControlGroup::#Group_Label_FixedWidth, labelWidth=120)
     Protected *Me.ControlProperty_t = AllocateStructure(ControlProperty_t)
     
     Object::INI(ControlProperty)
@@ -975,6 +974,7 @@ Module ControlProperty
     *Me\enable     = #True 
     *Me\options    = options
     *Me\state      = Control::#State_Enable
+    *Me\labelWidth = labelWidth
     
     View::SetContent(*parent,*Me)
    
@@ -992,7 +992,7 @@ EndModule
       
     
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 258
-; FirstLine = 108
-; Folding = DEzJCM9
+; CursorPosition = 887
+; FirstLine = 512
+; Folding = DEz6HM9
 ; EnableXP

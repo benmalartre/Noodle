@@ -227,8 +227,8 @@ Procedure.i New( *parent.Control::Control_t,name.s, label.s = "", value.i = #Fal
   *Me\posY       = y
   *Me\sizX       = width
   *Me\sizY       = height
-  *Me\fixedX     = #False
-  *Me\fixedY     = #False
+  *Me\fixedWidth = #False
+  *Me\fixedHeight= #False
   *Me\percX      = -1
   *Me\percY      = -1
   *Me\visible    = #True
@@ -253,7 +253,7 @@ EndModule
 ;  EOF
 ; ============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 197
+; CursorPosition = 229
+; FirstLine = 188
 ; Folding = --
 ; EnableXP

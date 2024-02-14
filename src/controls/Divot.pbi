@@ -254,8 +254,8 @@ Module ControlDivot
     *Me\posY     = y
     *Me\sizX     = width
     *Me\sizY     = height
-    *Me\fixedX   = #True
-    *Me\fixedY   = #True
+    *Me\fixedWidth= #True
+    *Me\fixedHeight= #True
     *Me\percX    = -1
     *Me\percY    = -1
     *Me\visible  = #True
@@ -274,7 +274,7 @@ Module ControlDivot
   Class::DEF( ControlDivot )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 218
+; CursorPosition = 257
+; FirstLine = 209
 ; Folding = --
 ; EnableXP
