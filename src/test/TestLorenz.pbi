@@ -73,7 +73,7 @@ Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
 Global T.f
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#Type_V3F32)
 Global np.Math::v3f32
 Global lorenz.Lorenz_t
 
@@ -128,7 +128,7 @@ Procedure Draw(*app.Application::Application_t)
   *app\scene\dirty= #True
   
   Scene::Update(*app\scene)
-  LayerDefault::Draw(*layer, *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   FTGL::BeginDraw(*viewport\context\writer)
@@ -179,8 +179,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw(), 1/60)
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 111
+; CursorPosition = 35
+; FirstLine = 114
 ; Folding = --
 ; EnableThread
 ; EnableXP

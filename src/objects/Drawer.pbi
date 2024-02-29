@@ -116,6 +116,7 @@ DeclareModule Drawer
   Declare DeleteStrip(*Me.Strip_t)
   Declare DeleteLoop(*Me.Loop_t)
   Declare DeleteBox(*Me.Box_t)
+  Declare DeleteSphere(*Me.Sphere_t)
   Declare DeleteMatrix(*Me.Matrix_t)
   Declare DeleteTriangle(*Me.Triangle_t)
   Declare SetColor(*Me.Item_t, *color.Math::c4f32)
@@ -185,6 +186,19 @@ Module Drawer
   Procedure _SetupElementArrayBuffer(*item.Item_t, shape.i)
     ; Create or ReUse Vertex Buffer Object
     If Not *item\eab : glGenBuffers(1,@*item\eab) : EndIf
+    glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
+    If *item\wireframe
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER, Shape::GetNumEdgeIndices(shape) * 4, Shape::GetEdges(shape), #GL_STATIC_DRAW)
+    Else
+      glBufferData(#GL_ELEMENT_ARRAY_BUFFER, Shape::GetNumFaceIndices(shape) * 4, Shape::GetFaces(shape), #GL_STATIC_DRAW)
+    EndIf
+  EndProcedure
+  
+  Procedure _UpdateElementArrayBuffer(*item.Item_t, shape.i)
+    If Not *item\eab
+      glGenBuffers(1,@*item\eab)
+    EndIf
+          
     glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
     If *item\wireframe
       glBufferData(#GL_ELEMENT_ARRAY_BUFFER, Shape::GetNumEdgeIndices(shape) * 4, Shape::GetEdges(shape), #GL_STATIC_DRAW)
@@ -326,16 +340,11 @@ Module Drawer
         Case #ITEM_LINE
         Case #ITEM_STRIP
         Case #ITEM_BOX
-          If Not *item\eab
-            glGenBuffers(1,@*item\eab)
-          EndIf
+          _UpdateElementArrayBuffer(*item, Shape::#SHAPE_CUBE)
           
-          glBindBuffer(#GL_ELEMENT_ARRAY_BUFFER, *item\eab)
-          If *item\wireframe
-            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 24*4, Shape::GetEdges(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
-          Else
-            glBufferData(#GL_ELEMENT_ARRAY_BUFFER, 48*4, Shape::GetFaces(Shape::#SHAPE_CUBE), #GL_STATIC_DRAW)
-          EndIf
+        Case #ITEM_SPHERE
+          _UpdateElementArrayBuffer(*item, Shape::#SHAPE_SPHERE)
+       
       EndSelect
       
     Next
@@ -349,6 +358,8 @@ Module Drawer
       Select *Me\items()\type
         Case #ITEM_POINT
           DeletePoint(*Me\items())
+        Case #ITEM_SPHERE
+          DeleteSphere(*Me\items())
         Case #ITEM_STRIP
           DeleteStrip(*Me\items())
         Case #ITEM_LINE
@@ -429,7 +440,6 @@ Module Drawer
     Protected *indices
     Protected offset.i = 8
     If *Me\wireframe
-      *indices = Shape::GetEdges(Shape::#SHAPE_SPHERE)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
       glDrawElements(#GL_LINES, Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, #Null)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
@@ -437,7 +447,7 @@ Module Drawer
     Else
       glPolygonMode(#GL_FRONT_AND_BACK,#GL_FILL)
       GLCheckError("set polygon mode")
-      glDrawElements(#GL_TRIANGLES,Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, #Null)
+      glDrawElements(#GL_TRIANGLES, Shape::#SPHERE_NUM_TRIANGLES * 3, #GL_UNSIGNED_INT, #Null)
       GLCheckError("draw filled elements")
     EndIf
     glUniformMatrix4fv(glGetUniformLocation(*pgm,"offset"), 1, #GL_FALSE, Matrix4::IDENTITY())
@@ -690,7 +700,6 @@ Module Drawer
     Object3D::ResetGlobalKinematicState(*Me)
     Object3D::ResetLocalKinematicState(*Me)
     Object3D::ResetStaticKinematicState(*Me)
-    
     
     ; Return Initialized Object
     ProcedureReturn *Me 
@@ -1039,7 +1048,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 443
-; FirstLine = 418
-; Folding = ---------
+; CursorPosition = 208
+; FirstLine = 182
+; Folding = ----------
 ; EnableXP

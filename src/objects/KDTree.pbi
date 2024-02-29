@@ -303,10 +303,7 @@ Module KDTree
           
         ; recurse case
         Else
-          Debug "SPLIT AXIS : "+StrF(split_axis)
-          Debug "SPLIT VALUE : "+StrF(*node\split_value)
           dist = *query\v[split_axis] - *node\split_value
-          Debug "DISTANCE : "+StrF(dist)
           ; there are 3 possible scenarios
           ; the hypercircle only intersect the left region
           ; the hypercricle only intersect the right region
@@ -493,9 +490,6 @@ Module KDTree
     Wend  
     
     SortStructuredList(*tree\closests(),#PB_Sort_Ascending,OffsetOf(KDSort_t\v),TypeOf(KDSort_t\v))
-    ForEach *tree\closests()
-      Debug "Closest Point ID "+Str(*tree\closests()\ID)+" Distance ----> "+StrF(*tree\closests()\v)
-    Next
     
     If max_points >0
       While ListSize(*tree\closests())>max_points
@@ -577,7 +571,7 @@ Module KDTree
 EndModule
   
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 124
+; CursorPosition = 499
+; FirstLine = 490
 ; Folding = ----
 ; EnableXP

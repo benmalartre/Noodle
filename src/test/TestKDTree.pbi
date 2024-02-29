@@ -174,6 +174,7 @@ Procedure DrawKDQuery(*tree.KDTree::KDTree_t)
   Vector3::Set(p, query\v[0], query\v[1], query\v[2])
   Matrix4::SetScale(m, s)
   Matrix4::SetTranslation(m, p)
+  Matrix4::Echo(m, "matrix")
   *query_display = Drawer::AddSphere(*drawer, m)
   Drawer::SetColor(*query_display, Color::GREEN)
 EndProcedure
@@ -300,12 +301,12 @@ Procedure KDTreeUpdate()
 ;   KDTree::SearchN(*kdtree, @query,@max_distance,max_points)
   Drawer::Flush(*drawer)
   
-;   DrawKDTree(*kdtree)
-;   DrawKDPoints(*kdtree)
-;   DrawKDSearch(*kdtree)
-;   DrawKDQuery(*kdtree)
+  DrawKDTree(*kdtree)
+  DrawKDPoints(*kdtree)
+  DrawKDSearch(*kdtree)
+  DrawKDQuery(*kdtree)
 ;   
-  BruteClosest(*kdtree)
+;   BruteClosest(*kdtree)
 
   
   GLContext::SetContext(*viewport\context)
@@ -409,11 +410,11 @@ If Time::Init()
 ;   result + "Num Queries : "+Str(*tree\m_cmps)+"\n"
   Define.KDTree::KDPoint_t min,max
 ;   KDTree::GetBoundingBox(*tree,,@min,@max)
-;   DrawKDTree(*kdtree)
-;   DrawKDPoints(*kdtree)
-;   DrawKDQuery(*kdtree)
-;   DrawKDSearch(*kdtree)
-;   
+  DrawKDTree(*kdtree)
+  DrawKDPoints(*kdtree)
+  DrawKDQuery(*kdtree)
+  DrawKDSearch(*kdtree)
+  
   Scene::Setup(*app\scene)
   Application::Loop(*app, @KDTreeUpdate())
 
@@ -421,8 +422,8 @@ If Time::Init()
   
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 379
-; FirstLine = 355
+; CursorPosition = 178
+; FirstLine = 135
 ; Folding = ---
 ; EnableXP
 ; Executable = kdtree.exe
