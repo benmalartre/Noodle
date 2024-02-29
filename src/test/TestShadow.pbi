@@ -1,8 +1,4 @@
-﻿
-
-
-XIncludeFile "../core/Application.pbi"
-
+﻿XIncludeFile "../core/Application.pbi"
 
 UseModule Math
 UseModule Time
@@ -13,7 +9,6 @@ CompilerEndIf
 UseModule OpenGLExt
 
 EnableExplicit
-
 
 Global width.i
 Global height.i
@@ -44,7 +39,6 @@ Global view.m4f32
 Global proj.m4f32
 Global T.d
 
-
 Procedure RandomLine()
   Protected seed.v3f32
   
@@ -64,11 +58,11 @@ Procedure Draw(*app.Application::Application_t)
 ;   LayerShadowDefered::Draw(*defshadows, *app\scene, *viewport\context)
   
   FTGL::BeginDraw(*viewport\context\writer)
-  FTGL::SetColor(*viewport\context\writer,1,1,1,1)
+  FTGL::SetColor(*viewport\context\writer, 1, 1, 1, 1)
   Define ss.f = 0.85/*app\width
   Define ratio.f = *app\width / *app\height
-  FTGL::Draw(*viewport\context\writer,"Test Shadow Map",-0.9,0.9,ss,ss*ratio)
-  FTGL::Draw(*viewport\context\writer,"FPS : "+Str(Application::GetFPS(*app)),-0.9,0.8,ss,ss*ratio)
+  FTGL::Draw(*viewport\context\writer, "Test Shadow Map", -0.9, 0.9, ss, ss*ratio)
+  FTGL::Draw(*viewport\context\writer, "FPS : " + Str(Application::GetFPS(*app)), -0.9, 0.8, ss, ss*ratio)
   FTGL::EndDraw(*viewport\context\writer)
   
   GLContext::FlipBuffer(*viewport\context)
@@ -111,8 +105,7 @@ Procedure Draw(*app.Application::Application_t)
   Scene::AddModel(*app\scene,*model)
   
   Scene::Setup(*app\scene)
-  
-  Scene::Setup(*app\scene)
+  Scene::InitTwist(*app\scene)
   
   *default = LayerDefault::New(width,height,*viewport\context,*app\camera)
   *gbuffer = LayerGBuffer::New(width,height,*viewport\context,*app\camera)
@@ -120,10 +113,10 @@ Procedure Draw(*app.Application::Application_t)
   *defered = LayerDefered::New(width,height,*viewport\context,*gbuffer\framebuffer,*shadows\framebuffer,*app\camera)
   *defshadows = LayerShadowDefered::New(width,height,*viewport\context,*gbuffer\framebuffer,*shadows\framebuffer,*app\camera)
  
-  Application::Loop(*app, @Draw())
+  Application::Loop(*app, @Draw(), 0.06)
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 57
-; FirstLine = 45
+; CursorPosition = 40
+; FirstLine = 13
 ; Folding = -
 ; EnableXP

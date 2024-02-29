@@ -21,16 +21,13 @@ DeclareModule Scene
   
   Structure Twist_t
     speed.f
-    ball.m4f32
-    seed.i
+    phase.f
+    amplitude.f
   EndStructure
   
   Structure Scene_t Extends Object::Object_t
     filename.s
-    *root.Root::Root_t
-    ;handle.Handle::Handle_t
-    ;grid.Grid::Grid2D_t
-    
+    *root.Root::Root_t    
     *models.CArray::CArrayPtr
     *objects.CArray::CArrayPtr
     *helpers.CArray::CArrayPtr
@@ -62,16 +59,13 @@ DeclareModule Scene
 
   EndStructure
   
-;   Interface IScene Extends Object::IObject
-;   EndInterface
-  
   Declare New( name.s = "ActiveScene")
   Declare Delete(*Me.Scene_t)
   Declare Setup(*Me.Scene_t)
   Declare Update(*Me.Scene_t)
   
   ; twist a scene
-  Declare InitTwist(*Me.Scene_t, speed.f=0.06)
+  Declare InitTwist(*Me.Scene_t, speed.f=0.06, amplitude=1.0)
   Declare Twist(*Me.Scene_t)
   
   Declare SelectObject(*Me.Scene_t,*obj.Object3D::Object3D_t)
@@ -118,7 +112,6 @@ Module Scene
     If FindMapElement(*s\m_uuids(), Str(uuid))
       GetUniqueID(*s, *o)
     Else
-      
       AddMapElement(*s\m_uuids(), Str(uuid))
       *s\m_uuids() = *o
       Protected v.v3f32
@@ -161,7 +154,7 @@ Module Scene
         i+1
         name = *o\name+Str(i)
       Else
-        AddMapElement(*s\m_objects(), *o\fullname ,#PB_Map_ElementCheck)
+        AddMapElement(*s\m_objects(), *o\fullname , #PB_Map_ElementCheck)
         
         *s\m_objects() = *o
         *o\name = name
@@ -173,9 +166,9 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Delete Unique Name
   ;---------------------------------------------------------------------------
-  Procedure DeleteUniqueName(*s.Scene::Scene_t,*o.Object3D::Object3D_t)
-    If FindMapElement(*s\m_objects(),*o\fullname)
-      DeleteMapElement(*s\m_objects(),*o\fullname)
+  Procedure DeleteUniqueName(*s.Scene::Scene_t, *o.Object3D::Object3D_t)
+    If FindMapElement(*s\m_objects(), *o\fullname)
+      DeleteMapElement(*s\m_objects(), *o\fullname)
     EndIf
   EndProcedure
   
@@ -336,8 +329,7 @@ Module Scene
     Protected *child.Object3D::Object3D_t
     Protected id
     Protected nbc = ListSize(*obj\children())
-    If nbc >0
-      
+    If nbc > 0 
       ForEach *obj\children()
         *child = *obj\children()
         RemoveObject(*Me,*child)
@@ -534,28 +526,30 @@ Module Scene
   ;---------------------------------------------------------------------------
   ; Twist a scene
   ;---------------------------------------------------------------------------
-  Procedure InitTwist(*Me.Scene_t, speed.f=0.06)
+  Procedure InitTwist(*Me.Scene_t, speed.f=0.06, amplitude=1.0)
     ClearMap(*Me\twists())
     Protected key.s
     ForEach *Me\m_uuids()
       key = MapKey(*Me\m_uuids())
+      Transform::SetFromOther(*Me\m_uuids()\staticT, *Me\m_uuids()\localT)
       AddMapElement(*Me\twists(), key)
-      *Me\twists(key)\ball = *Me\m_uuids()\globalT\m
-      *Me\twists(key)\seed = Random(Math::#U32_MAX)
+      *Me\twists(key)\phase = Math::Random_0_1()
       *Me\twists(key)\speed = speed
+      *Me\twists(key)\amplitude = amplitude
     Next
   EndProcedure
   
   Procedure Twist(*Me.Scene_t)
-    Define *t.Transform::Transform_t
+    Define t.Transform::Transform_t
     Define p.v3f32
+    Define r.q4f32
+    Define key.s
     ForEach *Me\m_uuids()
-      ;Matrix4::SetFromOther(t\m, *Me\m_uuids\globalT\m)
-      *t = *Me\m_uuids()\localT
-      Vector3::Set(p, *t\t\pos\x + Math::Random_0_1(), *t\t\pos\y + Math::Random_0_1(), *t\t\pos\z + Math::Random_0_1())
-      Vector3::SetFromOther(*t\t\pos, p)
-       *Me\m_uuids()\localT\srtdirty = #True
-       *Me\m_uuids()\dirty = Object3D::#DIRTY_STATE_TRANSFORM
+      key = MapKey(*Me\m_uuids())
+      Transform::SetSRTFromMatrix(*Me\m_uuids()\staticT\m, t\t\scl, t\t\rot, t\t\pos)
+      Vector3::Set(p, t\t\pos\x + Math::Random_0_1() * 0.05, t\t\pos\y + Math::Random_0_1() * 0.05, t\t\pos\z + Math::Random_0_1() * 0.05)
+      Transform::SetTranslation(t, p)
+      Object3D::SetLocalTransform(*Me\m_uuids(), t)
     Next
   EndProcedure
   
@@ -567,7 +561,7 @@ Module Scene
   EndProcedure
   
   ;---------------------------------------------------------------------------
-  ; Get Object By Name
+  ; Get object by name
   ;---------------------------------------------------------------------------
   Procedure GetObjectByName(*Me.Scene_t,name.s)
     Protected i
@@ -576,14 +570,13 @@ Module Scene
       *o = CArray::GetValuePtr(*Me\objects,i)
       If *o\name = name
         ProcedureReturn *o
-      EndIf
-      
+      EndIf 
     Next
     ProcedureReturn #Null
   EndProcedure
   
   ;---------------------------------------------------------------------------
-  ; Get Num Polygons In Scene
+  ; Get num polygons in scene
   ;---------------------------------------------------------------------------
   Procedure GetNbPolygons(*Me.Scene_t)
     *Me\nbpolygons=0
@@ -604,7 +597,7 @@ Module Scene
   EndProcedure
   
   ;---------------------------------------------------------------------------
-  ; Get Num Triangles In Scene
+  ; Get num triangles in scene
   ;---------------------------------------------------------------------------
   Procedure GetNbTriangles(*Me.Scene_t)
     *Me\nbtriangles=0
@@ -616,7 +609,7 @@ Module Scene
       *o = CArray::GetValuePtr(*Me\objects,i)
       If *o\type = Object3D::#Polymesh
         *m = *o
-         *geom = *m\geom
+        *geom = *m\geom
         *Me\nbtriangles + *geom\nbtriangles
       EndIf
     Next
@@ -729,7 +722,7 @@ Module Scene
   
     PolymeshGeometry::GridTopology(*geom, size,32,32)
     
-      Protected *topo.Geometry::Topology_t = *geom\topo
+    Protected *topo.Geometry::Topology_t = *geom\topo
     Define i
     Define *p.v3f32
     For i=0 To CArray::GetCount(*topo\vertices)-1
@@ -935,7 +928,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 555
-; FirstLine = 540
+; CursorPosition = 357
+; FirstLine = 335
 ; Folding = --------
 ; EnableXP

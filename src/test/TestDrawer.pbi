@@ -60,6 +60,7 @@ Procedure RandomSpheres(numItems.i,y.f=0)
     Color::Set(color, Random(255)/255, Random(255)/255, Random(255)/255,1)
     *item = Drawer::AddSphere(*drawer, m)
     Drawer::SetColor(*item,  color)
+    *item\wireframe = #False
   Next
 EndProcedure
 
@@ -146,7 +147,7 @@ Procedure Draw(*app.Application::Application_t)
   *scene\dirty= #True
   
   Scene::Update(*scene)
-;   GLContext::SetContext(*viewport\context)
+  GLContext::SetContext(*viewport\context)
   LayerDefault::Draw(*layer, *scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
@@ -216,8 +217,8 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 211
-; FirstLine = 160
+; CursorPosition = 149
+; FirstLine = 134
 ; Folding = --
 ; EnableThread
 ; EnableXP

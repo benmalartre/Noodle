@@ -1,5 +1,4 @@
-﻿
-XIncludeFile "../core/Application.pbi"
+﻿XIncludeFile "../core/Application.pbi"
 
 
 UseModule Time
@@ -197,8 +196,7 @@ Procedure Draw(*app.Application::Application_t)
   Application::Loop(*app, @Draw())
 EndIf
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 132
+; CursorPosition = 16
 ; Folding = -
 ; EnableXP
 ; Executable = Test

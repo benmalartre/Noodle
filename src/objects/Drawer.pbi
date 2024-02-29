@@ -431,7 +431,7 @@ Module Drawer
     If *Me\wireframe
       *indices = Shape::GetEdges(Shape::#SHAPE_SPHERE)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_LINE)
-      glDrawElements(#GL_TRIANGLES, Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, *indices)
+      glDrawElements(#GL_LINES, Shape::#SPHERE_NUM_INDICES, #GL_UNSIGNED_INT, #Null)
       glPolygonMode(#GL_FRONT_AND_BACK, #GL_FILL)
       GLCheckError("draw wireframe")
     Else
@@ -1039,7 +1039,7 @@ EndModule
 ; EOF
 ;==============================================================================
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 576
-; FirstLine = 584
+; CursorPosition = 443
+; FirstLine = 418
 ; Folding = ---------
 ; EnableXP

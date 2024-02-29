@@ -109,8 +109,8 @@ Module Verlet
     Define i, j, k, a, b
  
     Define numVertices = *geom\nbpoints
-    Define *neighbors.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
-    Define *secondary.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *neighbors.CArray::CArrayLong = CArray::New(Types::#Type_LONG)
+    Define *secondary.CArray::CArrayLong = CArray::New(Types::#Type_LONG)
 
     ; clear old rig
     CArray::DeleteReferences(*Me\springs, Verlet::Spring_t, 0)
@@ -193,8 +193,8 @@ Module Verlet
   ; Draw
   ; ------------------------------------------------------------------------
   Procedure Draw(*Me.Verlet_t, *drawer.Drawer::Drawer_t)
-    Define *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-    Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+    Define *positions.CArray::CArrayV3F32 = CArray::New(Types::#Type_V3F32)
+    Define *colors.CArray::CArrayC4F32 = CArray::New(Types::#Type_C4F32)
     Define numSprings = CArray::GetCount(*Me\springs)
     If numSprings > 0
       Define color.Math::c4f32
@@ -338,10 +338,10 @@ Module Verlet
   	Vector3::Set(*Me\gravity, 0,-0.00981,0)
     *Me\mass = mass
     *Me\geom = *geom
-    *Me\X = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\X_last = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\F = CArray::New(CArray::#ARRAY_V3F32)
-    *Me\springs = CArray::New(CArray::#ARRAY_PTR)
+    *Me\X = CArray::New(Types::#Type_V3F32)
+    *Me\X_last = CArray::New(Types::#Type_V3F32)
+    *Me\F = CArray::New(Types::#Type_V3F32)
+    *Me\springs = CArray::New(Types::#Type_PTR)
     
     Define zeroForce.Math::v3f32
     Vector3::Set(zeroForce, 0, 0,0)
@@ -449,8 +449,8 @@ Module Verlet
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 363
-; FirstLine = 360
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 343
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

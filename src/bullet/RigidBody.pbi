@@ -321,16 +321,22 @@ Module BulletRigidBody
           Protected norm.Math::v3f32
           Vector3::Set(norm,0,1,0)
           *cshape = Bullet::BTNewGroundPlaneShape(@norm, 100)
+          
         Case Bullet::#BOX_SHAPE
           *cshape = Bullet::BTNewBoxShape(0.5,0.5,0.5)
+          
         Case Bullet::#SPHERE_SHAPE
           *cshape = Bullet::BTNewSphereShape(1)
+          
         Case Bullet::#CYLINDER_SHAPE
           *cshape = Bullet::BTNewCylinderShape(0.5,1)
+          
         Case Bullet::#CAPSULE_SHAPE
           *cshape = Bullet::BTNewCapsuleShape(0.5,1)
+          
         Case Bullet::#CONE_SHAPE
           *cshape = Bullet::BTNewConeShape(0.5,1)
+          
         Case Bullet::#CONVEXHULL_SHAPE      ; only works on Polymesh
           If Not *child\type = Object3D::#Polymesh : Return :EndIf
 
@@ -372,16 +378,21 @@ Module BulletRigidBody
     
       Case Bullet::#SPHERE_SHAPE
         *shape = Bullet::BTNewSphereShape(0.5)
+        
       Case Bullet::#CYLINDER_SHAPE
         *shape = Bullet::BTNewCylinderShape(0.5,1)
+        
       Case Bullet::#CAPSULE_SHAPE
         *shape = Bullet::BTNewCapsuleShape(0.5,1)
+        
       Case Bullet::#CONE_SHAPE
         *shape = Bullet::BTNewConeShape(0.5,1)
+        
      Case Bullet::#CONVEXHULL_SHAPE
         ; only works on Polymesh
         If Not *cloud\type = Object3D::#InstanceCloud : ProcedureReturn :EndIf
         *shape = BTConvexHullCollisionShape(*obj)
+        
        Case Bullet::#CONVEXDECOMPOSITION_SHAPE
         ; only works on Polymesh
         If Not *cloud\type = Object3D::#InstanceCloud  : ProcedureReturn :EndIf
@@ -469,8 +480,8 @@ Module BulletRigidBody
   
   
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 350
-; FirstLine = 346
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 394
+; FirstLine = 336
 ; Folding = ---
 ; EnableXP

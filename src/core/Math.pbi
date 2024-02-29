@@ -4079,7 +4079,7 @@ Module Matrix4
     Dim fSys.f(4,8)
     Protected fTemp.f
     
-    ;initialyze fSys Array
+    ; initialyze fSys Array
     For i=0 To 3
       For j=0 To 3
         fSys(i,j) = *o\v[i*4+j]
@@ -4176,6 +4176,7 @@ Module Transform
     
     UpdateSRTFromMatrix(*t)
   EndProcedure
+  
   ;------------------------------------------
   ; Set From SRT values
   ;------------------------------------------
@@ -4190,7 +4191,7 @@ Module Transform
   ; Set From Other Transform
   ;------------------------------------------
   Procedure SetFromOther(*t.Transform_t,*o.Transform_t)
-    Set(*t,*o\t\scl,*o\t\rot,*o\t\pos)
+    Set(*t, *o\t\scl, *o\t\rot, *o\t\pos)
     UpdateMatrixFromSRT(*t)
   EndProcedure
   
@@ -4209,9 +4210,9 @@ Module Transform
   ;------------------------------------------
   Procedure SetMatrixFromSRT(*m.m4f32,*s.v3f32,*r.q4f32,*t.v3f32)
     Protected x.v3f32, y.v3f32, z.v3f32
-    Vector3::Set(x,*s\x,0,0 )
-    Vector3::Set(y,0,*s\y,0 )
-    Vector3::Set(z,0,0,*s\z )
+    Vector3::Set(x,*s\x,0,0)
+    Vector3::Set(y,0,*s\y,0)
+    Vector3::Set(z,0,0,*s\z)
     
     Vector3::MulByQuaternionInPlace(x,*r)
     Vector3::MulByQuaternionInPlace(y,*r)
@@ -4241,12 +4242,12 @@ Module Transform
   ;------------------------------------------
   Procedure SetSRTFromMatrix(*m.m4f32,*s.v3f32,*r.q4f32,*t.v3f32)
     Protected x.v3f32, y.v3f32, z.v3f32
-    ;Extract the x,y,z axes
+    ; extract the x,y,z axes
     Vector3::Set(x,*m\v[0],*m\v[1],*m\v[2])
     Vector3::Set(y,*m\v[4],*m\v[5],*m\v[6])
     Vector3::Set(z,*m\v[8],*m\v[9],*m\v[10])
     
-    ; Set Scale
+    ; set scale
     Vector3::Set(*s,Vector3::Length(x),Vector3::Length(y),Vector3::Length(z))
   
     Define.f qx,qy,qz,qw,qw4
@@ -4278,10 +4279,10 @@ Module Transform
       qz = 0.25 * S
     EndIf
   
-    ; set the rotation!
+    ; set the rotation
     Quaternion::Set(*r,qx,qy,qz,qw)
   
-    ;finally set the position!
+    ; finally set the position
     Vector3::Set(*t,*m\v[12],*m\v[13],*m\v[14])
   
   EndProcedure
@@ -4357,8 +4358,8 @@ Module Transform
  
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 2396
-; FirstLine = 2372
+; CursorPosition = 4178
+; FirstLine = 1740
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

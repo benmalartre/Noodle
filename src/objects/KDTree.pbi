@@ -126,7 +126,7 @@ Module KDTree
   ;--------------------------------------------------------------------
   Procedure New()
     Protected *tree.KDTree_t = AllocateStructure(KDTree_t)
-    *tree\points = CArray::New(CArray::#ARRAY_V3F32)
+    *tree\points = CArray::New(Types::#Type_V3F32)
     *tree\root = #Null
     *tree\m_id = 0
     ProcedureReturn *tree

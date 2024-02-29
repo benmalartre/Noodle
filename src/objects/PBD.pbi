@@ -77,9 +77,7 @@ Module PDB
      Vector3::Cross(*nrm, e1, e2)
      Vector3::NormalizeInPlace(*nrm)
    EndProcedure
-   
-  
-  
+
   Procedure AddDistanceConstraint(*Me.PDB_t,a.i, b.i, k.f) 
     Define *c.DistanceConstraint_t = AllocateStructure(DistanceConstraint_t)
   	*c\p1=a
@@ -578,8 +576,8 @@ CompilerEndIf
   
 
 EndModule
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 129
-; FirstLine = 96
+; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; CursorPosition = 60
+; FirstLine = 48
 ; Folding = ----
 ; EnableXP
