@@ -703,7 +703,6 @@ Module Scene
     If id>0 And id <CArray::GetCount(*Me\lights)
       ProcedureReturn CArray::GetValuePtr(*Me\lights,id)
     EndIf
-    
   EndProcedure
   
   ;---------------------------------------------------------------------------
@@ -928,7 +927,7 @@ Module Scene
   Class::DEF( Scene )
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 357
-; FirstLine = 335
+; CursorPosition = 704
+; FirstLine = 699
 ; Folding = --------
 ; EnableXP

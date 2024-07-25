@@ -240,12 +240,9 @@ Module Poisson
     PolymeshGeometry::InitSampling(*mesh)
     PolymeshGeometry::Sample(*mesh, *t, numSamples, *Me\positions)  
   EndProcedure
-  
-  
-
 EndModule
 ; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 146
-; FirstLine = 80
+; CursorPosition = 241
+; FirstLine = 177
 ; Folding = ---
 ; EnableXP
