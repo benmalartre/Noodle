@@ -541,8 +541,8 @@ Module Polygonizer
     Define c.i
     Define numVertices.i = 0
     Define numFaces.i = 0
-    Define *vertices.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-    Define *faces.CArray::CArrayLong = CArray::New(CArray::#ARRAY_LONG)
+    Define *vertices.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+    Define *faces.CArray::CArrayLong = CArray::New(Types::#TYPE_LONG)
     Define *t.Polygonizer::Triangle_t
     Define i, j
     For c=0 To numCells - 1
@@ -705,7 +705,7 @@ EndModule
 ; 
 ;    Return(ntri);
 ; }
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
 ; CursorPosition = 544
 ; FirstLine = 539
 ; Folding = --

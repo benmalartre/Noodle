@@ -36,7 +36,7 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
 
 DeclareModule Hilbert
   UseModule Math
@@ -469,7 +469,7 @@ Procedure Draw(*app.Application::Application_t)
   *app\scene\dirty= #True
   
   Scene::Update(*app\scene)
-  LayerDefault::Draw(*layer, *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   FTGL::BeginDraw(*viewport\context\writer)
@@ -486,8 +486,8 @@ EndProcedure
 
 Procedure DrawCells(*grid.Hilbert::Grid_t)
   Protected p1.Morton::Point3D_t, p2.Morton::Point3D_t
-  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  Protected *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+  Protected *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
   CArray::SetCount(*positions, MapSize(*grid\cells())*2)
   CArray::SetCount(*colors, MapSize(*grid\cells())*2)
   Protected index = 0
@@ -574,12 +574,10 @@ FTGL::Init()
   
   *drawer.Drawer::Drawer_t = Drawer::New("Hilbert")
   
-  Define *mesh.Polymesh::Polymesh_t = Polymesh::New("Grid",Shape::#SHAPE_BUNNY)
-  Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
-  Object3D::AddChild(*root, *mesh)
+
   Object3D::AddChild(*root, *drawer)
   
-  Geometry::ComputeBoundingBox(*geom)
+
   Define box.Geometry::Box_t
   Vector3::Set(box\extend, 4, 4, 4)
   Define m.Math::m4f32
@@ -597,8 +595,8 @@ FTGL::Init()
   Scene::Setup(*app\scene)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 472
-; FirstLine = 440
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 579
+; FirstLine = 556
 ; Folding = ---
 ; EnableXP

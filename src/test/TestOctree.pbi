@@ -1,7 +1,6 @@
 ﻿XIncludeFile "../objects/Octree.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../core/Math.pbi"
-XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../core/Morton.pbi"
 XIncludeFile "../core/Application.pbi"
 
@@ -32,8 +31,8 @@ Procedure PolygonSoup(numTopos=9)
   ;   PolymeshGeometry::TeapotTopology(*topo)
   Topology::Sphere(*topo, 1,128 ,64)
   
-  Protected *matrices.CArray::CArrayM4F32 = CArray::New(CArray::#ARRAY_M4F32)
-  Protected *positions.CArray::CArrayV3F32 = CARray::New(CArray::#ARRAY_V3F32)
+  Protected *matrices.CArray::CArrayM4F32 = CArray::New(Types::#TYPE_M4F32)
+  Protected *positions.CArray::CArrayV3F32 = CARray::New(Types::#TYPE_V3F32)
   CArray::SetCount(*matrices, numTopos)
   Define i
   Define p.v3f32
@@ -52,7 +51,7 @@ Procedure PolygonSoup(numTopos=9)
     Matrix4::SetTranslation(*m,   *p)
   Next
   
-  Protected *topos.CArray::CArrayPtr = CArray::New(CArray::#ARRAY_PTR)
+  Protected *topos.CArray::CArrayPtr = CArray::New(Types::#TYPE_PTR)
   Topology::TransformArray(*topo, *matrices, *topos)
   Topology::MergeArray(*topo, *topos)
   
@@ -174,7 +173,7 @@ Procedure Update(*app.Application::Application_t)
   *app\scene\dirty = #True
   Scene::Update(*app\scene)
   
-  LayerDefault::Draw(*layer, *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   FTGL::BeginDraw(*viewport\context\writer)
@@ -248,8 +247,8 @@ FTGL::Init()
 EndIf
 
 
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 156
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 175
+; FirstLine = 171
 ; Folding = -
 ; EnableXP

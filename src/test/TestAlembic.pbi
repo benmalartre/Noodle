@@ -56,15 +56,16 @@ Global numVertices
 Procedure Draw(*app.Application::Application_t)
 ;   Time::currentframe + 1
 ;   If Time::currentframe>100 : Time::currentframe = 1:EndIf
-;   Scene::Update(Scene::*current_scene)
-  Scene::*current_scene\dirty = #True
-  Scene::Update(Scene::*current_scene)
-  GLContext::SetContext(*app\context)
-  Application::Draw(*app, *layer, *app\camera, *app\context)
-  ViewportUI::Blit(*viewport, *layer\datas\buffer)
+;   Scene::Update(*app\scene)
+  *app\scene\dirty = #True
+  Scene::Update(*app\scene)
+  
+  GLContext::SetContext(*viewport\context)
+  Application::Draw(*app, *layer, *app\camera)
+  ViewportUI::Blit(*viewport, *layer\framebuffer)
   GLContext::SetContext(*viewport2\context)
-  Application::Draw(*app, *layer, *viewport2\camera, *viewport2\context)
-  ViewportUI::Blit(*viewport2, *layer\datas\buffer)
+  Application::Draw(*app, *layer, *viewport2\camera)
+  ViewportUI::Blit(*viewport2, *layer\framebuffer)
 ;   GLContext::FlipBuffer(*viewport2\context)
 ;   GLContext::FlipBuffer(*viewport\context)
 ;   GLContext::SetContext(*viewport2\context)
@@ -94,18 +95,16 @@ If Time::Init()
   FTGL::Init()
   Define f.f
   
-  *app = Application::New("Test",#WIDTH,#HEIGHT)
+  *app = Application::New("Test Alembic",#WIDTH,#HEIGHT)
   
-  Scene::*current_scene = Scene::New()
+  *app\scene = Scene::New()
   If Not #USE_GLFW
     *viewport = ViewportUI::New(*app\window\main,"ViewportUI", *app\camera, *app\handle)     
-    *app\context\writer\background = #True
     View::SetContent(*app\window\main,*viewport)
     ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
   EndIf  
   
   *layer = LayerDefault::New(#WIDTH,#HEIGHT,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
   layer = *layer
 ;   *gbuffer = LayerGBuffer::New(800,600,*app\context,*app\camera)
 ;   *ssao = LayerSSAO::New(400,300,*app\context,*gbuffer\buffer,*app\camera)
@@ -114,7 +113,7 @@ If Time::Init()
   Matrix4::SetIdentity(model)
 
   ;   *pgm = *app\context\shaders("polymesh")
-  *pgm = *app\context\shaders("instances")
+  *pgm = *viewport\context\shaders("instances")
   GLCheckError("Before Creating Polymeshes")
   
   CompilerIf #PB_Compiler_OS = #PB_OS_MacOS
@@ -135,7 +134,7 @@ If Time::Init()
 ;       Transform::SetTranslation(*t, @p)
 ; ;       Transform::SetRotationFromQuaternion(*t, @q)
 ;       Object3D::SetlocalTransform(*model, *t)
-      Scene::AddModel(Scene::*current_scene,*model)
+      Scene::AddModel(*app\scene,*model)
       
     Next
   
@@ -150,7 +149,7 @@ If Time::Init()
 ;     *model = Alembic::LoadABCArchive("../../abc/MonkeySkeleton.abc")
 ;   CompilerEndIf
 ;   
-;   Scene::AddModel(Scene::*current_scene,*model)
+;   Scene::AddModel(*app\scene,*model)
   
   ;glGetIntegerv(#GL_MAX_ELEMENTS_VERTICES, @maxNumVertices)
   ;MessageRequester("MAXIMUM NUM VERTICES : ",Str(maxNumVertices))
@@ -174,14 +173,14 @@ If Time::Init()
   Define *monitor.Window::Window_t = Application::AddWindow(*app,0,0,200,200)
   *viewport2 = ViewportUI::New(*monitor\main,"Viewport_XXX", *app\camera, *app\handle)
   
-  GLContext::SetContext(*app\context)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  GLContext::SetContext(*viewport\context)
+  Scene::Setup(*app\scene)
   Application::Loop(*app,@Draw())
   Alembic::Terminate()
 EndIf
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 67
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 98
+; FirstLine = 98
 ; Folding = -
 ; EnableThread
 ; EnableXP

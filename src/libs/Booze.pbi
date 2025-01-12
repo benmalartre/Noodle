@@ -10,7 +10,6 @@
 XIncludeFile "../core/Math.pbi"
 XIncludeFile "../core/Time.pbi"
 XIncludeFile "../core/Array.pbi"
-XIncludeFile "../core/Slot.pbi"
 XIncludeFile "../objects/Model.pbi"
 XIncludeFile "../objects/Polymesh.pbi"
 XIncludeFile "../objects/InstanceCloud.pbi"
@@ -1101,11 +1100,10 @@ Module AlembicIObject
       
        PolymeshGeometry::ComputeTopology(*geom)
        PolymeshGeometry::ComputeTriangles(*geom)
-       PolymeshGeometry::ComputeVertexPolygons(*geom, *geom\topo)
+       PolymeshGeometry::ComputeVertexPolygons(*geom)
        
-       If Not *infos\hascolor : PolymeshGeometry::SetColors(*geom) : EndIf
        If Not *infos\hasnormal : PolymeshGeometry::ComputeNormals(*geom,1.0): EndIf
-       If Not *infos\hasuvs : PolymeshGeometry::GetUVWSFromPosition(*geom) : EndIf
+       If Not *infos\hasuvs : PolymeshGeometry::ComputeUVWSFromPosition(*geom) : EndIf
        If Not *infos\hastangent : PolymeshGeometry::ComputeTangents(*geom):EndIf
       
        PolymeshGeometry::ComputeTopology(*geom)
@@ -1217,37 +1215,37 @@ Module AlembicIObject
     
     Select *infos\traits
       Case Alembic::#ABC_DataTraits_Bool
-        *data = CArray::newCArrayBool()
+        *data = CArray::New(Types::#TYPE_BOOL)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_BOOL,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Int32
-        *data = CArray::newCArrayLong()
+        *data = CArray::New(Types::#TYPE_LONG)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_LONG,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Int64
-        *data = CArray::newCArrayInt()
+        *data = CArray::New(Types::#TYPE_INT)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_INTEGER,struct,context,*data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Float
-        *data = CArray::newCArrayFloat()
+        *data = CArray::New(Types::#TYPE_FLOAT)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_FLOAT,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V2f
-        *data = CArray::newCArrayV2F32()
+        *data = CArray::New(Types::#TYPE_V2F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_VECTOR2,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V3f
-        *data = CArray::newCArrayV3F32()
+        *data = CArray::New(Types::#TYPE_V3F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_VECTOR3,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_V4f
-        *data = CArray::newCArrayC4F32()
+        *data = CArray::New(Types::#TYPE_V4F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_VECTOR4,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_C4f
-        *data = CArray::newCArrayC4F32()
+        *data = CArray::New(Types::#TYPE_C4F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_COLOR,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_Quatf
-        *data = CArray::newCArrayQ4F32()
+        *data = CArray::New(Types::#TYPE_Q4F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_QUATERNION,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_M33f
-        *data = CArray::newCArrayM3F32()
+        *data = CArray::New(Types::#TYPE_M3F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_MATRIX3,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Case Alembic::#ABC_DataTraits_M44f
-        *data = CArray::newCArrayM4F32()
+        *data = CArray::New(Types::#TYPE_M4F32)
         *attribute = Attribute::New(*obj,name,Attribute::#ATTR_TYPE_MATRIX4,struct,context, *data,#False,#False,#False,Bool(struct=Attribute::#ATTR_STRUCT_SINGLE),#True)
       Default
         MessageRequester("[Alembic]","Create Attribute From Property Failed!"+Chr(10)+name+" Traits Unsupported!!")
@@ -1559,8 +1557,8 @@ Module AlembicIObject
   EndProcedure
 EndModule
 
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 1291
-; FirstLine = 1265
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 1247
+; FirstLine = 1240
 ; Folding = --------
 ; EnableXP

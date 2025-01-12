@@ -20,6 +20,6 @@ If PDF::
 ; EndIf
 
 RunProgram(source)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
 ; CursorPosition = 7
 ; EnableXP

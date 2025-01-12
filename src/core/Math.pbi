@@ -27,7 +27,7 @@ DeclareModule Math
   #S64_MIN    = (-9223372036854775807-1)
   #S64_MAX    =   9223372036854775807
   #U64_MIN    =                     0
-  #U64_MAX    =  18446744073709551615
+  #U64_MAX    =   9223372036854775807 * 2
   
   ; ----[ INTEGERS ]------------------------------------------------------------
   CompilerIf #PB_Compiler_Processor = #PB_Processor_x64
@@ -4357,9 +4357,9 @@ Module Transform
   EndProcedure
  
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 4178
-; FirstLine = 1740
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 29
+; FirstLine = 16
 ; Folding = ---------------------------------------------------------
 ; EnableXP
 ; EnableUnicode

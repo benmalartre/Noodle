@@ -98,18 +98,6 @@ Module ControlScintilla
   EndProcedure
   
   ; ----------------------------------------------------------------------------------------
-  ;   INIT
-  ; ----------------------------------------------------------------------------------------
-  Procedure _InitScintilla()
-    If Not SCINTILLA_INITIALIZED
-      CompilerIf #PB_Compiler_OS = #PB_OS_Windows
-        InitScintilla()
-      CompilerEndIf
-      SCINTILLA_INITIALIZED = #True
-    EndIf
-  EndProcedure
-  
-  ; ----------------------------------------------------------------------------------------
   ;   LINE END POSITION
   ; ----------------------------------------------------------------------------------------
   Procedure GetLineEndPosition(gadget, line)
@@ -332,9 +320,7 @@ Module ControlScintilla
   EndProcedure
 
   Procedure.i New( *parent.Control::Control_t, name.s, options.i = 0, x.i = 0, y.i = 0, width.i = 80, height.i = 18 )
-    
-    _InitScintilla()
-    
+        
     Protected *Me.ControlScintilla_t = AllocateStructure(ControlScintilla_t)
     
     Object::INI(ControlScintilla)
@@ -441,8 +427,8 @@ Module ControlScintilla
   
   Class::DEF(ControlScintilla)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 323
-; FirstLine = 284
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 333
+; FirstLine = 319
 ; Folding = ---
 ; EnableXP

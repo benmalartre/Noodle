@@ -117,7 +117,7 @@ Procedure Draw(*app.Application::Application_t)
 ;--------------------------------------------
  If Time::Init()
    Log::Init()
-   *app = Application::New("Test",width,height)
+   *app = Application::New("Test Point CLoud",width,height)
   
   
   If Not #USE_GLFW
@@ -195,8 +195,9 @@ Procedure Draw(*app.Application::Application_t)
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 16
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 119
+; FirstLine = 114
 ; Folding = -
 ; EnableXP
 ; Executable = Test

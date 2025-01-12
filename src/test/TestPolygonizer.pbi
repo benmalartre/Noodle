@@ -35,7 +35,7 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
 Global *polygonizer.Polygonizer::Grid_t
 Global *mesh.Polymesh::Polymesh_t 
 Global *geom.Geometry::PolymeshGeometry_t
@@ -81,7 +81,7 @@ Procedure Draw(*app.Application::Application_t)
 
 ;   Polygonizer::Polygonize(*polygonizer, *geom, isolevel)
   Scene::Update(*app\scene)
-  LayerDefault::Draw(*layer, *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
 ;   FTGL::BeginDraw(*viewport\context\writer)
@@ -117,7 +117,6 @@ Globals::Init()
  GLContext::SetContext(*viewport\context)
   *app\scene = Scene::New()
   *layer = LayerDefault::New(800,600,*viewport\context,*app\camera)
-  Application::AddLayer(*app, *layer)
 
   Global *root.Model::Model_t = Model::New("Model")
     
@@ -146,8 +145,8 @@ Globals::Init()
   Scene::Setup(*app\scene)
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 64
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 119
+; FirstLine = 106
 ; Folding = -
 ; EnableXP

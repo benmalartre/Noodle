@@ -2,12 +2,15 @@
 
 
 XIncludeFile "../core/Application.pbi"
+XIncludeFile "../core/Array.pbi"
 XIncludeFile "../libs/FTGL.pbi"
+XIncludeFile "../libs/Bullet.pbi"
 XIncludeFile "../opengl/Framebuffer.pbi"
 XIncludeFile"../objects/Polymesh.pbi"
 XIncludeFile"../objects/Scene.pbi"
 XIncludeFile "../ui/ViewportUI.pbi"
-
+XIncludeFile"../bullet/RigidBody.pbi"
+XIncludeFile"../bullet/World.pbi"
 
 UseModule Math
 UseModule Time
@@ -96,6 +99,7 @@ Global *s_wireframe.Program::Program_t
 Global *s_polymesh.Program::Program_t
 Global *app.Application::Application_t
 Global *viewport.ViewportUI::ViewportUI_t
+Global *scene.Scene::Scene_t
 Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
@@ -140,14 +144,14 @@ Procedure BTCreateCurvedGroundData()
   
   
   *ground\deformdirty = #True
-  PolymeshGeometry::SetColors(*mesh)
+;   PolymeshGeometry::SetColors(*mesh)
   PolymeshGeometry::ComputeNormals(*mesh,1.0)
   
   Topology::Update(*mesh\topo, *mesh\a_positions )
   
   Object3D::Freeze(*ground)
   
-  Scene::AddChild(Scene::*current_scene,*ground)
+  Scene::AddChild(*scene,*ground)
   
   Protected *t.Transform::Transform_t = *ground\localT
   Transform::SetTranslationFromXYZValues(*t,0,-10,0)
@@ -178,7 +182,7 @@ Procedure DeformGround()
   Next
   
   *ground\dirty = Object3D::#DIRTY_STATE_DEFORM
-  PolymeshGeometry::SetColors(*mesh)
+;   PolymeshGeometry::SetColors(*mesh)
   PolymeshGeometry::ComputeNormals(*mesh,1)
   
   Topology::Update(*mesh\base, *mesh\a_positions )
@@ -189,8 +193,7 @@ EndProcedure
 
 Procedure BulletScene()
 
-  Scene::*current_scene = Scene::New("Test Bullet")
-  Protected scene.Scene::IScene = Scene::*current_scene
+  *scene = Scene::New("Test Bullet")
   
   Global *root.Model::Model_t = Model::New("Model")
   
@@ -199,8 +202,8 @@ Procedure BulletScene()
   
   Protected x,y,z
   
-  Protected *pos.CArray::CArrayV3f32 = CArray::newCArrayV3F32()
-  Protected *id.CArray::CArrayChar = CArray::newCArrayChar()
+  Protected *pos.CArray::CArrayV3f32 = CArray::New(Types::#TYPE_V3F32)
+  Protected *id.CArray::CArrayChar = CArray::New(Types::#TYPE_CHAR)
   Protected v.v3f32
   Protected i
   Protected nb = 164
@@ -248,14 +251,14 @@ Color::Set(color,1.0,0.5,0.4,1.0)
     ;Ground
    BTCreateCurvedGroundData()
   
-  Scene::AddModel(Scene::*current_scene,*root)
-  ProcedureReturn Scene::*current_scene
+  Scene::AddModel(*scene,*root)
+  ProcedureReturn *scene
 EndProcedure
 
  ; Draw
 ;--------------------------------------------
 Procedure Draw(*app.Application::Application_t)
-  GLContext::SetContext(*app\context)
+  GLContext::SetContext(*viewport\context)
   If EventType() = #PB_EventType_KeyDown
     If GetGadgetAttribute(*viewport\gadgetID,#PB_OpenGL_Key) = #PB_Shortcut_Space
       BulletWorld::hlpReset(Bullet::*bullet_world)
@@ -265,12 +268,12 @@ Procedure Draw(*app.Application::Application_t)
   DeformGround()
   BulletWorld::hlpUpdate(Bullet::*bullet_world,1/25)
   
-  Scene::*current_scene\dirty = #True
-  Scene::Update(Scene::*current_scene)
+  *scene\dirty = #True
+  Scene::Update(*scene)
   
   
   GLCheckError("TEST BULLET BEGIN DRAW")
-  LayerDefault::Draw(*default, *viewport\context)
+  LayerDefault::Draw(*default, *scene, *viewport\context)
   
   FTGL::BeginDraw(*viewport\context\writer)
   FTGL::SetColor(*viewport\context\writer,1,1,1,1)
@@ -337,9 +340,9 @@ Procedure Draw(*app.Application::Application_t)
      ViewportUI::OnEvent(*viewport,#PB_Event_SizeWindow)
      *default.Layer::Layer_t = LayerDefault::New(width,height,*viewport\context,*app\camera)
   Else
-    GLContext::Setup(*app\context)
-    Define *shader.Program::Program_t = *app\context\shaders("polymesh")
-    *default.Layer::Layer_t = LayerDefault::New(width,height,*app\context,*app\camera)
+    GLContext::Setup(*viewport\context)
+    Define *shader.Program::Program_t = *viewport\context\shaders("polymesh")
+    *default.Layer::Layer_t = LayerDefault::New(width,height,*viewport\context,*app\camera)
   EndIf
   
   Camera::LookAt(*app\camera)
@@ -347,7 +350,7 @@ Procedure Draw(*app.Application::Application_t)
   
   BulletScene()
   
-  Global *light.Light::Light_t = CArray::GetValuePtr(Scene::*current_scene\lights,0)
+  Global *light.Light::Light_t = CArray::GetValuePtr(*scene\lights,0)
   
 
   
@@ -384,7 +387,7 @@ Procedure Draw(*app.Application::Application_t)
 ; ;   Polymesh::Setup(*teapot,*s_polymesh)
 ;   Polymesh::Setup(*ground,*s_polymesh)
 ;   Polymesh::Setup(*bunny,*s_polymesh)
-  Scene::Setup(Scene::*current_scene,*app\context)
+  Scene::Setup(*scene)
   
   Define nbb = Bullet::BTGetNumCollideObjects(Bullet::*bullet_world)
   
@@ -393,13 +396,12 @@ Procedure Draw(*app.Application::Application_t)
 EndIf
 Bullet::Term()
 Globals::Term()
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 257
-; FirstLine = 247
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 6
 ; Folding = --
 ; EnableThread
 ; EnableXP
-; Executable = D:/Volumes/STORE N GO/Polymesh.app
+; Executable = D:\Volumes\STORE N GO\Polymesh.app
 ; Debugger = Standalone
 ; Constant = #USE_GLFW=0
 ; Constant = #USE_GLFW=0
