@@ -4,9 +4,15 @@ Noodle unfinished 2D/3D framework
 This repository contains an abandoned 2d/3d programming framework
 where i experiment algorithmic and explore computer theory
 
- - alembic 
-![UI preview of alembic](images/alembic.png)
+Exemples samples you can find:
 
+![UI preview of curves](images/curves.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestCurve.pbi
+
+![UI preview of curves](images/delaunay.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestDelaunay.pbi
+
+![UI preview of alembic](images/alembic.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestAlembic.pbi
 
 Build Status
