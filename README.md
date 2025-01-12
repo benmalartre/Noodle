@@ -2,9 +2,10 @@ Noodle unfinished 2D/3D framework
 =================================
 
 This repository contains an abandoned 2d/3d programming framework
-where i was experimenting algorithmic and exploring computer theory.
+where i was experimenting algorithmic and learning software engineering.
+I know it's a mess and there are lots of mistakes and broken things, that's how we learn!
 
-Exemples samples you can find:
+Exemples samples you can find (hopefully working):
 
 ![UI preview of curves](images/shadows.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestShadow.pbi
@@ -55,7 +56,7 @@ Build Status
 ------------
 To build this project yourself you must have a PureBasic license as the code base exceed the maximum lines (800) allowed by the free demo version.
 Some demos will build some others will not.
-I know it's a mess and there are lots of mistake, that's how we learn!
+
 
 
 Supported Platforms
