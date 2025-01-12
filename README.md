@@ -7,57 +7,57 @@ I know it's a mess and there are lots of mistakes and broken things, that's how 
 
 Exemples samples you can find (hopefully working):
 
-![UI preview of curves](images/shadows.png)
+![UI preview of shadows](images/shadows.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestShadow.pbi
 
-![UI preview of curves](images/ssao.png)
+![UI preview of ssao](images/ssao.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestSSAO.pbi
 
-![UI preview of curves](images/teapots.png)
+![UI preview of half-edge mesh](images/teapots.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestHalfEdge.pbi
 
 ![UI preview of curves](images/curves.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestCurve.pbi
 
-![UI preview of curves](images/instances.png)
+![UI preview of openGL instances](images/instances.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestInstances.pbi
 
-![UI preview of curves](images/fibonacci.png)
+![UI preview of fibonacci](images/fibonacci.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestFibonacci.pbi
 
-![UI preview of curves](images/kdtree.png)
+![UI preview of kdtree](images/kdtree.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestKDTree.pbi
 
-![UI preview of curves](images/octree.png)
+![UI preview of octree](images/octree.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestOctree.pbi
 
-![UI preview of curves](images/delaunay.png)
+![UI preview of delaunay](images/delaunay.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestDelaunay.pbi
 
-![UI preview of curves](images/sdf.png)
+![UI preview of signed distance field polygonizer](images/sdf.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestPolygonizer.pbi
 
-![UI preview of curves](images/drawer.png)
+![UI preview of openGL drawer](images/drawer.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestDrawer.pbi
 
-![UI preview of curves](images/normals.png)
+![UI preview of mesh normals](images/normals.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestNormals.pbi
 
-![UI preview of curves](images/handle.png)
+![UI preview of manipulation handle](images/handle.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestHandle.pbi
 
-![UI preview of curves](images/nodes.png)
+![UI preview of nodes](images/nodes.png)
 
-![UI preview of curves](images/perlin.png)
+![UI preview of perlin noise](images/perlin.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestPerlin.pbi
 
-![UI preview of curves](images/extrusion.png)
+![UI preview of mesh extrusion](images/extrusion.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestExtrusion.pbi
 
-![UI preview of curves](images/lorenz.png)
+![UI preview of lorenz attractor](images/lorenz.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestLorenz.pbi
 
-![UI preview of alembic](images/alembic.png)
+![UI preview of alembic import](images/alembic.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestAlembic.pbi
 
 Build Status

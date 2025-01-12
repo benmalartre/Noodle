@@ -90,7 +90,7 @@ Procedure TestRay_Update(*tr.TestRay_t)
   Protected *geom.Geometry::PolymeshGeometry_t = *tr\mesh\geom
   Protected *t.Transform::Transform_t = *tr\mesh\globalT
   
-  Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Protected *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
 
   CArray::SetCount(*positions, 2)
   CArray::SetValue(*positions,0, *tr\start_pos)
@@ -120,7 +120,7 @@ Procedure TestRay_Update(*tr.TestRay_t)
   Color::Set(color, 1,0,0,1)
 
   Protected *pnt.Drawer::Item_t
-  Protected *tri.CArray::CarrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Protected *tri.CArray::CarrayV3F32 = CArray::New(Types::#TYPE_V3F32)
   CArray::SetCount(*tri, 3)
   Protected frontFacing.b
   
@@ -257,9 +257,9 @@ EndProcedure
   
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 248
-; FirstLine = 202
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 122
+; FirstLine = 118
 ; Folding = --
 ; EnableXP
 ; EnableUnicode
