@@ -25,8 +25,8 @@ Procedure UpdateNormals()
   Define *item.Drawer::Item_t 
   Define *geom.Geometry::PolymeshGeometry_t = *mesh\geom
   
-  Define *offsetedNormals.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
-  Define *colors.CArray::CArrayC4F32 = CArray::New(CArray::#ARRAY_C4F32)
+  Define *offsetedNormals.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
+  Define *colors.CArray::CArrayC4F32 = CArray::New(Types::#TYPE_C4F32)
   CArray::SetCount(*offsetedNormals, *mesh\geom\nbpoints)
   CArray::SetCount(*colors, *mesh\geom\nbpoints)
   For i=0 To *geom\nbpoints - 1
@@ -123,8 +123,9 @@ If Time::Init()
 
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 13
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 31
+; FirstLine = 23
 ; Folding = -
 ; EnableXP
 ; Executable = D:\Volumes\STORE N GO\Polymesh.app

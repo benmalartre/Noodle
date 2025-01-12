@@ -37,9 +37,11 @@ https://github.com/benmalartre/Noodle/blob/master/src/test/TestDelaunay.pbi
 ![UI preview of curves](images/sdf.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestPolygonizer.pbi
 
-
 ![UI preview of curves](images/drawer.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestDrawer.pbi
+
+![UI preview of curves](images/normals.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestNormals.pbi
 
 ![UI preview of curves](images/handle.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestHandle.pbi
