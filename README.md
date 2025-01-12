@@ -2,9 +2,12 @@ Noodle unfinished 2D/3D framework
 =================================
 
 This repository contains an abandoned 2d/3d programming framework
-where i experiment algorithmic and explore computer theory
+where i was experimenting algorithmic and exploring computer theory.
 
 Exemples samples you can find:
+
+![UI preview of curves](images/shadows.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestShadow.pbi
 
 ![UI preview of curves](images/curves.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestCurve.pbi
@@ -15,11 +18,18 @@ https://github.com/benmalartre/Noodle/blob/master/src/test/TestInstances.pbi
 ![UI preview of curves](images/fibonacci.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestFibonacci.pbi
 
+![UI preview of curves](images/kdtree.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestKDTree.pbi
+
+![UI preview of curves](images/octree.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestOctree.pbi
+
 ![UI preview of curves](images/delaunay.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestDelaunay.pbi
 
-![UI preview of curves](images/hilbert.png)
-https://github.com/benmalartre/Noodle/blob/master/src/test/TestHilbert.pbi
+![UI preview of curves](images/sdf.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestPolygonizer.pbi
+
 
 ![UI preview of curves](images/drawer.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestDrawer.pbi
@@ -27,8 +37,16 @@ https://github.com/benmalartre/Noodle/blob/master/src/test/TestDrawer.pbi
 ![UI preview of curves](images/handle.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestHandle.pbi
 
+![UI preview of curves](images/nodes.png)
+
+![UI preview of curves](images/perlin.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestPerlin.pbi
+
 ![UI preview of curves](images/extrusion.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestExtrusion.pbi
+
+![UI preview of curves](images/lorenz.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestLorenz.pbi
 
 ![UI preview of alembic](images/alembic.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestAlembic.pbi
