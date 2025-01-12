@@ -1,14 +1,18 @@
 Noodle unfinished 2D/3D framework 
 =================================
 
-This repository contains an unstable 2d/3d programming framework
+This repository contains an abandoned 2d/3d programming framework
 where i experiment algorithmic and explore computer theory
+
+ - alembic 
+![UI preview of alembic](images/alembic.png)
+
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestAlembic.pbi
 
 Build Status
 ------------
 to build this project yourself you must have a PureBasic license as the code base exceed the maximum lines (800) allowed by the free demo version.
 
-you can find already build demos on my [webpage](http://benmalartre.free.fr)
 
 
 Supported Platforms
