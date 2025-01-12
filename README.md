@@ -10,6 +10,12 @@ Exemples samples you can find (hopefully working):
 ![UI preview of curves](images/shadows.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestShadow.pbi
 
+![UI preview of curves](images/ssao.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestSSAO.pbi
+
+![UI preview of curves](images/teapots.png)
+https://github.com/benmalartre/Noodle/blob/master/src/test/TestHalfEdge.pbi
+
 ![UI preview of curves](images/curves.png)
 https://github.com/benmalartre/Noodle/blob/master/src/test/TestCurve.pbi
 
