@@ -222,8 +222,6 @@ Module LayerDefault
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"projection"),1,#GL_FALSE,proj)
     glUniformMatrix4fv(glGetUniformLocation(*pgm\pgm,"offset"),1,#GL_FALSE,model)
     Layer::DrawNulls(*layer,*scene\helpers,*pgm\pgm)
-  ;   Layer::CenterFrambuffer(*layer)
-  ;   MessageRequester("SIZE","Context : "+StrF(*ctx\width)+","+StrF(*ctx\height)+",Layer : "+StrF(*layer\width)+","+StrF(*layer\height))
 
   
   Framebuffer::Unbind(*layer\framebuffer)
@@ -231,7 +229,6 @@ Module LayerDefault
   glDisable(#GL_DEPTH_TEST)
   glDisable(#GL_BLEND)
 
-  
   glUseProgram(0)
 EndProcedure
   
@@ -268,7 +265,7 @@ EndProcedure
   
 EndModule
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 262
-; FirstLine = 206
+; CursorPosition = 213
+; FirstLine = 200
 ; Folding = --
 ; EnableXP
