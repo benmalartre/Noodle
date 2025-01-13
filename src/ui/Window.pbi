@@ -68,20 +68,22 @@ Module Window
     Protected mx = WindowMouseX(*Me\ID)
     Protected my = WindowMouseY(*Me\ID)
     
-    If *Me\active And *Me\active\drag
-      If EventType() = #PB_EventType_LeftButtonUp
-        *Me\active\drag=False
-      Else
-        View::DragSplitter(*Me\active)
-      EndIf
-      ProcedureReturn
-    EndIf
-    
     Protected *old.View::View_t = *Me\active
     Protected *over.View::View_t = Pick(*Me, mx, my)
       
     Select event
       Case #PB_Event_Gadget
+        
+        If *Me\active And *Me\active\drag
+          If EventType() = #PB_EventType_LeftButtonUp
+            *Me\active\drag=False
+            PostEvent(#PB_Event_SizeWindow)
+          Else
+            View::DragSplitter(*Me\active)
+          EndIf
+          ProcedureReturn
+        EndIf
+    
         If *over
           If View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
             View::TouchBorderEvent(*over)
@@ -269,7 +271,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 85
-; FirstLine = 58
+; CursorPosition = 79
+; FirstLine = 64
 ; Folding = ---
 ; EnableXP

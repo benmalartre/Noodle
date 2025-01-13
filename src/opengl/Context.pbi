@@ -269,12 +269,11 @@ Module GLContext
     *Me\width = width * backingScale
     *Me\height = height * backingScale
     glBindFramebuffer(#GL_FRAMEBUFFER, 0)
-    glViewport(0,0, *Me\width, *Me\height)
     CompilerIf #PB_Compiler_OS = #PB_OS_MacOS And Not #USE_LEGACY_OPENGL
       CocoaMessage(0,*Me\ID, "update")
     CompilerEndIf
     ForEach *me\framebuffers()
-      Framebuffer::Resize(*me\framebuffers(), width, height)
+      Framebuffer::Resize(*me\framebuffers(), *Me\width, *Me\height)
     Next  
   EndProcedure
   
@@ -298,9 +297,9 @@ EndModule
 ;--------------------------------------------------------------------------------------------
 ; EOF
 ;--------------------------------------------------------------------------------------------
-; IDE Options = PureBasic 6.00 Beta 7 - C Backend (MacOS X - arm64)
-; CursorPosition = 114
-; FirstLine = 77
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 265
+; FirstLine = 237
 ; Folding = ----
 ; EnableXP
 ; EnableUnicode

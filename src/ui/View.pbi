@@ -184,7 +184,6 @@ XIncludeFile "Types.pbi"
   EndProcedure
   
   Procedure DragSplitter(*Me.View_t)
-    
     If *Me And Not *Me\fixed
       Protected *affected.View_t
       Select *Me\border
@@ -200,16 +199,14 @@ XIncludeFile "Types.pbi"
       
       If *affected And *affected\splitter
         Protected sx,sy,sw, sh
-        Protected windowID = View::GetWindowID(*affected);EventWindow()
+        Protected windowID = View::GetWindowID(*affected)
         Protected mx = WindowMouseX(windowID)
         Protected my = WindowMouseY(windowID)
         
         GetPercentage(*affected, mx, my)
         View::Resize(*affected, *affected\posX, *affected\posY, *affected\sizX, *affected\sizY)
-        
       EndIf
     EndIf
-
   EndProcedure
   
   
@@ -472,7 +469,7 @@ XIncludeFile "Types.pbi"
   Class::DEF( View )
 EndModule
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 220
-; FirstLine = 196
+; CursorPosition = 206
+; FirstLine = 182
 ; Folding = ----
 ; EnableXP
