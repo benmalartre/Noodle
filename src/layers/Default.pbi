@@ -260,15 +260,15 @@ EndProcedure
     
     Framebuffer::AttachTexture(*Me\framebuffer,"Color", #GL_RGBA, #GL_NEAREST, #GL_REPEAT, #False)
     Framebuffer::AttachRender( *Me\framebuffer,"Depth",#GL_DEPTH_COMPONENT)
-    ;GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
+    GLContext::AddFramebuffer(*ctx, *Me\framebuffer)
     ProcedureReturn *Me
   EndProcedure
   
   Class::DEF( LayerDefault )
   
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 95
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 262
+; FirstLine = 206
 ; Folding = --
 ; EnableXP

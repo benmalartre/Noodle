@@ -45,12 +45,11 @@ EndProcedure
 Global *app.Application::Application_t = Application::New("Test Knob",512,512,#PB_Window_SizeGadget|#PB_Window_SystemMenu)
 Global *main.View::View_t = *app\window\main
 ; Global *splitted.View::View_t = View::Split(*m\main, 0,75)
-Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property", #Null)
+Global *ui.PropertyUI::PropertyUI_t = PropertyUI::New(*main, "Property")
 AddKnobs(*ui, "KNOB")
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 30
-; FirstLine = 12
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 47
 ; Folding = -
 ; EnableXP

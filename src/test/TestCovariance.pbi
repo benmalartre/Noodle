@@ -34,13 +34,13 @@ Global offset.m4f32
 Global model.m4f32
 Global view.m4f32
 Global proj.m4f32
-Global *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+Global *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
 
 ; -----------------------------------------------------------------------------------------
 ; Random Point Cloud
 ; -----------------------------------------------------------------------------------------
 Procedure RandomPointCloud(numPoints.i, *m.m4f32)
-  Protected *position.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+  Protected *position.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
   CArray::SetCount(*position, numPoints)
  
   Protected i
@@ -71,7 +71,7 @@ Procedure Draw(*app.Application::Application_t)
   *app\scene\dirty= #True
   
   Scene::Update(*app\scene)
-  LayerDefault::Draw(*layer, *app\scene)
+  LayerDefault::Draw(*layer, *app\scene, *viewport\context)
   ViewportUI::Blit(*viewport, *layer\framebuffer)
   
   
@@ -114,7 +114,7 @@ Procedure BestFittingPlane(*drawer.Drawer::Drawer_t, *cloud.PointCloud::PointClo
     Protected centroid.v3f32
     Vector3::Scale(centroid, sum, inp)
     
-    Protected *positions.CArray::CArrayV3F32 = CArray::New(CArray::#ARRAY_V3F32)
+    Protected *positions.CArray::CArrayV3F32 = CArray::New(Types::#TYPE_V3F32)
     CArray::SetCount(*positions, 1)
     CArray::SetValue(*positions, 0, centroid)
     Protected *point.Drawer::Point_t = Drawer::AddPoint(*drawer, *positions)
@@ -265,8 +265,8 @@ FTGL::Init()
    
   Application::Loop(*app, @Draw())
 EndIf
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 238
-; FirstLine = 209
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 116
+; FirstLine = 112
 ; Folding = -
 ; EnableXP
