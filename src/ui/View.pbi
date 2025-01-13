@@ -22,36 +22,37 @@ XIncludeFile "Types.pbi"
       If *Me\fixed
         If *Me\axis
           If *Me\fixed_side = #PB_Splitter_FirstFixed
+            ResizeGadget(*Me\splitter,*Me\posX+ *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\fixed_size-hs,*Me\sizY)
             Resize(*Me\right,*Me\posX+*Me\fixed_size+hs,*Me\posY,*Me\sizX-*Me\fixed_size-hs,*Me\sizY)
-            ResizeGadget(*Me\splitter,*Me\posX+ *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
           Else
+            ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX - *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX-*Me\fixed_size-hs,*Me\sizY)
             Resize(*Me\right,*Me\posX+*Me\sizX-*Me\fixed_size+hs,*Me\posY,*Me\fixed_size-hs,*Me\sizY)
-            ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX - *Me\fixed_size,*Me\posY,2*hs,*Me\sizY)
           EndIf
           
         Else
           If *Me\fixed_side = #PB_Splitter_FirstFixed
+            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\fixed_size-hs,*Me\sizX,2*hs)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\fixed_size-hs)
             Resize(*Me\right,*Me\posX,*Me\posY+*Me\fixed_size+hs,*Me\sizX,*Me\sizY-*Me\fixed_size-hs)
-            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\fixed_size-hs,*Me\sizX,2*hs)
+            
           Else
+            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY-*Me\fixed_size-hs,*Me\sizX,2*hs)
             Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY - *Me\fixed_size-hs)
             Resize(*Me\right,*Me\posX,*Me\posY+*Me\sizY -*Me\fixed_size+hs,*Me\sizX,*Me\fixed_size-hs)
-            ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY-*Me\fixed_size-hs,*Me\sizX,2*hs)
           EndIf
           
         EndIf
       Else
         If *Me\axis
+          ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX* *Me\perc/100-hs,*Me\posY,2*hs,*Me\sizY)
           Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX* *Me\perc/100-hs,*Me\sizY)
           Resize(*Me\right,*Me\posX+*Me\sizX* *Me\perc/100+hs,*Me\posY,*Me\sizX-*Me\sizX* *Me\perc/100-hs,*Me\sizY)
-          ResizeGadget(*Me\splitter,*Me\posX+*Me\sizX* *Me\perc/100-hs,*Me\posY,2*hs,*Me\sizY)
         Else
+          ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY * *Me\perc/100-hs,*Me\sizX,2*hs)
           Resize(*Me\left,*Me\posX,*Me\posY,*Me\sizX,*Me\sizY* *Me\perc/100-hs)
           Resize(*Me\right,*Me\posX,*Me\posY+*Me\sizY* *Me\perc/100+hs,*Me\sizX,*Me\sizY-*Me\sizY* *Me\perc/100-hs)
-          ResizeGadget(*Me\splitter,*Me\posX,*Me\posY + *Me\sizY * *Me\perc/100-hs,*Me\sizX,2*hs)
         EndIf
       EndIf
     EndIf
@@ -182,51 +183,57 @@ XIncludeFile "Types.pbi"
     EndIf
   EndProcedure
   
+  Procedure DragSplitter(*Me.View_t)
+    
+    If *Me And Not *Me\fixed
+      Protected *affected.View_t
+      Select *Me\border
+        Case #VIEW_TOP
+          *affected = *Me\tsplitter
+        Case #VIEW_LEFT
+          *affected = *Me\lsplitter
+        Case #VIEW_RIGHT
+          *affected = *Me\rsplitter
+        Case #VIEW_BOTTOM
+          *affected = *Me\bsplitter
+      EndSelect
+      
+      If *affected And *affected\splitter
+        Protected sx,sy,sw, sh
+        Protected windowID = View::GetWindowID(*affected);EventWindow()
+        Protected mx = WindowMouseX(windowID)
+        Protected my = WindowMouseY(windowID)
+        
+        GetPercentage(*affected, mx, my)
+        View::Resize(*affected, *affected\posX, *affected\posY, *affected\sizX, *affected\sizY)
+        
+      EndIf
+    EndIf
+
+  EndProcedure
+  
+  
   Procedure.i TouchBorderEvent(*Me.View_t)
     If Not *Me : ProcedureReturn : EndIf
     Protected btn.i
     If *Me\fixed : ProcedureReturn : EndIf
     If EventType() = #PB_EventType_LeftButtonDown
-      Protected drag.b = #True
-      
-      Protected sx,sy,sw, sh
-      Protected windowID = EventWindow()
-      Protected mx = WindowMouseX(windowID)
-      Protected my = WindowMouseY(windowID)
-       
-
-      Define e
-      Repeat 
-        e = WaitWindowEvent()
-        mx = WindowMouseX(windowID)
-        my = WindowMouseY(windowID)
-
-        If e = #PB_Event_Gadget And EventType() = #PB_EventType_LeftButtonUp
-          GetPercentage(*Me,mx,my)
-          drag = #False
-        EndIf
-      Until drag = #False
-      PostEvent(#PB_Event_SizeWindow)
+      *Me\drag = #True
     EndIf
-    
   EndProcedure
-  
-  Procedure ClearBorderEvent(*Me.View_t)
-    
-  EndProcedure
-
   
   Procedure.i TouchBorder(*Me.View_t,x.i,y.i,w.i)
-    If Not  *Me : ProcedureReturn : EndIf
+    If Not *Me : ProcedureReturn : EndIf
     ;Left border
-    If Abs(x - *Me\posX)<w                     : ProcedureReturn #VIEW_LEFT : EndIf
+    If Abs(x - *Me\posX)<w : *Me\border = #VIEW_LEFT : ProcedureReturn : EndIf
     ;Right border
-    If Abs((*Me\posX+*Me\sizX) - x)<w       : ProcedureReturn #VIEW_RIGHT : EndIf
+    If Abs((*Me\posX+*Me\sizX) - x)<w : *Me\border = #VIEW_RIGHT : ProcedureReturn : EndIf
     ;Top border
-    If Abs(y - *Me\posY)<w                     : ProcedureReturn #VIEW_TOP : EndIf
+    If Abs(y - *Me\posY)<w : *Me\border = #VIEW_TOP : ProcedureReturn : EndIf
     ;Bottom border
-     If Abs((*Me\posY+*Me\sizY) - y)<w     : ProcedureReturn #VIEW_BOTTOM : EndIf
-    ProcedureReturn #VIEW_NONE
+    If Abs((*Me\posY+*Me\sizY) - y)<w : *Me\border = #VIEW_BOTTOM : ProcedureReturn : EndIf
+    
+    *Me\border = #VIEW_NONE
     
   EndProcedure
   
@@ -357,6 +364,7 @@ XIncludeFile "Types.pbi"
   
   Procedure OnEvent(*Me.View_t,event.i)
     If Not event Or Not *Me : ProcedureReturn : EndIf
+    
     If *Me\leaf
       If *Me\content <> #Null
         Protected *content.UI::IUI = *Me\content
@@ -451,9 +459,6 @@ XIncludeFile "Types.pbi"
     *Me\axis = axis
     *Me\type = 0
     
-    view_id_counter + 1
-    *Me\id = view_id_counter
-    
     If *top = #Null
       *Me\window = 0
       *Me\parent = #Null
@@ -466,8 +471,8 @@ XIncludeFile "Types.pbi"
   
   Class::DEF( View )
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 280
-; FirstLine = 260
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 220
+; FirstLine = 196
 ; Folding = ----
 ; EnableXP

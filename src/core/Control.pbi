@@ -280,9 +280,9 @@ Module Control
     ProcedureReturn *Me
   EndProcedure
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 267
-; FirstLine = 216
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 231
+; FirstLine = 224
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

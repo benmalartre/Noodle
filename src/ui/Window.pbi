@@ -68,31 +68,45 @@ Module Window
     Protected mx = WindowMouseX(*Me\ID)
     Protected my = WindowMouseY(*Me\ID)
     
+    If *Me\active And *Me\active\drag
+      If EventType() = #PB_EventType_LeftButtonUp
+        *Me\active\drag=False
+      Else
+        View::DragSplitter(*Me\active)
+      EndIf
+      ProcedureReturn
+    EndIf
+    
     Protected *old.View::View_t = *Me\active
     Protected *over.View::View_t = Pick(*Me, mx, my)
       
     Select event
       Case #PB_Event_Gadget
         If *over
-          Protected touch = View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
-          
-          If EventType() = #PB_EventType_LostFocus
-            gadgetID = EventGadget()
-            If FindMapElement(*Me\uis(), Str(gadgetID))
-              View::OnEvent(*Me\uis()\view, event)
-            EndIf
+          If View::TouchBorder(*over,mx,my,View::#VIEW_BORDER_SENSIBILITY)
+            View::TouchBorderEvent(*over)
           Else
-            If touch
-              View::EventSplitter(*over,touch)
-              Protected *affected.View::View_t = View::EventSplitter(*over,touch)
-              If *affected
-                View::TouchBorderEvent(*affected)
-              EndIf
-            Else
-              View::ClearBorderEvent(*over)
-            EndIf
             View::OnEvent(*over,event)
           EndIf
+            
+          
+;           If EventType() = #PB_EventType_LostFocus
+;             gadgetID = EventGadget()
+;             If FindMapElement(*Me\uis(), Str(gadgetID))
+;               View::OnEvent(*Me\uis()\view, event)
+;             EndIf
+;           Else
+;             If touch
+;               View::EventSplitter(*over,touch)
+;               Protected *affected.View::View_t = View::EventSplitter(*over,touch)
+;               If *affected
+;                 View::TouchBorderEvent(*affected)
+;               EndIf
+;             Else
+;               View::ClearBorderEvent(*over)
+;             EndIf
+;             View::OnEvent(*over,event)
+;           EndIf
         EndIf
  
       Case #PB_Event_Timer
@@ -255,7 +269,7 @@ Module Window
  
 EndModule
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 196
-; FirstLine = 184
+; CursorPosition = 85
+; FirstLine = 58
 ; Folding = ---
 ; EnableXP

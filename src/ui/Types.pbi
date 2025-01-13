@@ -75,10 +75,11 @@ DeclareModule View
     *right.View_t
     *left.View_t
     
+    drag.b                          ; drag splitter
     lorr.b                          ; left or right view
-    id.i                            ; unique ID
     axis.b                          ; splitter axis
     perc.i                          ; splitter percentage
+    border.i                        ; splitter border
     
     fixed.b                         ; is view resizable
     fixed_size.i                    ; static size  (for fixed view)
@@ -109,12 +110,12 @@ DeclareModule View
   Declare.b PointInside(*view,x.i,y.i)
   Declare TouchBorder(*view,x.i,y.i,w.i)
   Declare TouchBorderEvent(*view)
-  Declare ClearBorderEvent(*view)
   Declare GetActive(*view,x.i,y.i)
   Declare Split(*view,options.i=0,perc.i=50)
   Declare Resize(*view,x.i,y.i,width.i,height.i)
   Declare OnEvent(*view,event.i)
   Declare InitSplitter(*view.View_t)
+  Declare DragSplitter(*Me.View_t)
   Declare EventSplitter(*view.View_t,border.i)
   Declare SetContent(*view.View_t,*content.UI::UI_t)
   Declare GetWindowID(*view)
@@ -179,8 +180,8 @@ DeclareModule Window
   
   Global CLASS.Class::Class_t
 EndDeclareModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 108
-; FirstLine = 104
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 60
 ; Folding = -
 ; EnableXP

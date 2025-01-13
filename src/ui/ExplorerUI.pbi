@@ -108,7 +108,7 @@ Module ExplorerUI
     *Me\sizY = *top\sizY
     *Me\scrollMaxX = ImageWidth(*Me\explorer\imageID)
     *Me\scrollMaxY = 200
-    COntrol::Invalidate(*Me)
+    Control::Invalidate(*Me)
     
   EndProcedure
   
@@ -221,8 +221,8 @@ EndModule
 ; ============================================================================
 ;  EOF
 ; ============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 167
-; FirstLine = 162
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 110
+; FirstLine = 99
 ; Folding = ---
 ; EnableXP
