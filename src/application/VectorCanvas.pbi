@@ -38,7 +38,7 @@ Global *explorer.ExplorerUI::ExplorerUI_t = ExplorerUI::New(*center\left,"Explor
 
 Global *canvas.CanvasUI::CanvasUI_t = CanvasUI::New(*center\right,"Canvas")
 
-Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property",#Null)
+Global *property.PropertyUI::PropertyUI_t = PropertyUI::New(*middle\right,"Property")
 
 Window::OnEvent(*app\window, #PB_Event_SizeWindow)
 
@@ -65,8 +65,8 @@ EndProcedure
 Define e.i
 
 Application::Loop(*app,@Update())
-; IDE Options = PureBasic 5.70 LTS (Windows - x64)
-; CursorPosition = 32
-; FirstLine = 6
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 40
+; FirstLine = 26
 ; Folding = -
 ; EnableXP

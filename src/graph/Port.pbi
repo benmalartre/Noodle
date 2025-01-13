@@ -74,16 +74,6 @@ Module NodePort
       Case Attribute::#ATTR_TYPE_UNDEFINED
         datatype = "[Undefined]"
     EndSelect
-    
-    Protected log.s = "Input Port "+*port\name+": "
-    If *port\io
-      log = "Output Port "+*port\name+": "
-    EndIf
-    
-    log + "Data Type "+datatype
-    
-    Debug log
-    
   EndProcedure
 
   ;-----------------------------------------------------------------------------
@@ -875,8 +865,8 @@ EndModule
 ; ============================================================================
 ;  End Of File
 ; ============================================================================
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 269
-; FirstLine = 203
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 73
+; FirstLine = 54
 ; Folding = -----
 ; EnableXP
