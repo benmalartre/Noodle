@@ -608,9 +608,7 @@ Module ControlExplorer
     ForEach *Me\visibles()
       DrawPickItem(*Me,*Me\visibles(),0)
     Next
-    StopDrawing()
-    Debug "PICK ITEMS MAP SIZE : "+Str(MapSize(*Me\m_items()))
-    
+    StopDrawing()    
   EndProcedure
   
   ; ----------------------------------------
@@ -1147,8 +1145,8 @@ Module ControlExplorer
   
   Class::DEF(ControlExplorer)
 EndModule
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 1072
-; FirstLine = 1057
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 610
+; FirstLine = 607
 ; Folding = --4---
 ; EnableXP
