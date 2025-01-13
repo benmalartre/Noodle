@@ -42,6 +42,7 @@ DeclareModule Control
     #Type_Text
     #Type_Input
     #Type_Number
+    #Type_Slider
     #Type_Group
     #Type_ColorWheel
     #Type_Color
@@ -281,8 +282,7 @@ Module Control
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 6.10 LTS (Windows - x64)
-; CursorPosition = 231
-; FirstLine = 224
+; CursorPosition = 44
 ; Folding = -----
 ; EnableXP
 ; EnableUnicode

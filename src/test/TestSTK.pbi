@@ -30,14 +30,14 @@ Procedure OnFrequencyChange(*control.ControlSlider::ControlSlider_t, *track.Sequ
   ;STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
   *track\offset = Notes::Closest(*control\value)
 EndProcedure
-Callback::DECLARECALLBACK(OnFrequencyChange, Args::#PTR, Args::#PTR)
+Callback::DECLARE_CALLBACK(OnFrequencyChange, Types::#TYPE_PTR, Types::#TYPE_PTR)
 
 ; Slider Frequency Callback
 ;-----------------------------------------------------
 Procedure OnLFOChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Generator)
   STK::SetGeneratorScalar(*wave, STK::#GEN_FREQUENCY, *control\value)
 EndProcedure
-Callback::DECLARECALLBACK(OnLFOChange, Args::#PTR, Args::#PTR)
+Callback::DECLARE_CALLBACK(OnLFOChange, Types::#TYPE_PTR, Types::#TYPE_PTR)
 
 ; Slider Octave Callback
 ;-----------------------------------------------------
@@ -45,7 +45,7 @@ Procedure OnOctaveChange(*control.ControlSlider::ControlSlider_t, *wave.STK::Gen
   Debug "SLIDE CHANGE : "+*control\name+" ---> "+Str(*control\value)+" : "+Str(*wave)
   baseOctave = *control\value
 EndProcedure
-Callback::DECLARECALLBACK(OnOctaveChange, Args::#PTR, Args::#INT)
+Callback::DECLARE_CALLBACK(OnOctaveChange, Types::#TYPE_PTR, Types::#TYPE_INT)
 
 ; Update Note On Tick
 ;-----------------------------------------------------
@@ -105,7 +105,7 @@ STK::Initialize()
 Debug "STREAM : "+Str(*stream)
 ;STK::SetNodeVolume(*stream, 0.5)
 
-*ui = PropertyUI::New(*app\window\main, "STK", #Null)
+*ui = PropertyUI::New(*app\window\main, "STK")
 PropertyUI::AppendStart(*ui)
 
 *p = ControlProperty::New(*ui,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
@@ -150,7 +150,7 @@ AddElement(*waves())
 
 Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), offset, -64, 128, #Null) 
 ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *slider, *track_bass)
+Callback::CONNECT_CALLBACK(*slider\on_change, OnFrequencyChange, *slider, *track_bass)
 base_frequency * 2
 
 ; ; DRUM
@@ -202,13 +202,14 @@ STK::SetArythmeticScalar(*arythmetic, 0.5)
 ; 
 Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), 66, 32, 1024, #Null) 
 ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-Signal::CONNECTCALLBACK(*slider\on_change, OnLFOChange, *slider, *carrier)
+Callback::CONNECT_CALLBACK(*slider\on_change, OnLFOChange, *slider, *carrier)
 
 
 Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i+1), "Slider"+Str(i+1), 16, 0, 128, #Null) 
 ;     Signal::CONNECTCALLBACK(*slider\on_change, OnOctaveChange, *slider, *waves())
-Signal::CONNECTCALLBACK(*slider\on_change, OnLFOChange, *slider, *lfo)
+Callback::CONNECT_CALLBACK(*slider\on_change, OnLFOChange, *slider, *lfo)
 
+Debug *stream
 MessageRequester("NUM ROOTS", Str(STK::StreamNumRoots(*stream)))
   
 ControlProperty::AppendStop(*p)
@@ -285,8 +286,8 @@ Sequencer::Stop(*sequencer)
 ; Global *adder1.STK::Arythmetic = STK::AddArythmetic(*stream, STK::#ARYTHMETIC_MULTIPLY, *wave1, *lfo1, #True)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 120)
 ; Global *stream.STK::GeneratorStream = STK::GeneratorStreamSetup(*DAC, STK::#BLITSAW_GENERATOR, 320)
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 32
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 103
+; FirstLine = 69
 ; Folding = -
 ; EnableXP

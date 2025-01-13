@@ -517,9 +517,7 @@ Module STK
 ;   EndProcedure
   
   Procedure Initialize()
-    Debug "STK INITIALIZE !!!"
     *DAC = STK::Init()
-    Debug "DAC : "+Str(*DAC)
     STK::InitRawWaves()
     ProcedureReturn *DAC
   EndProcedure
@@ -530,8 +528,8 @@ Module STK
   EndProcedure
   
 EndModule
-; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 439
-; FirstLine = 430
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 519
+; FirstLine = 470
 ; Folding = ----
 ; EnableXP

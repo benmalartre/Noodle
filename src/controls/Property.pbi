@@ -10,6 +10,7 @@ XIncludeFile "Button.pbi"
 XIncludeFile "Group.pbi"
 XIncludeFile "Knob.pbi"
 XIncludeFile "Color.pbi"
+XIncludeFile "Slider.pbi"
 
 ;========================================================================================
 ; Property Module Declaration
@@ -41,6 +42,7 @@ DeclareModule ControlProperty
   Declare RowEnd( *Me.ControlProperty_t )
   Declare AddBoolControl( *Me.ControlProperty_t, name.s,label.s,value.b,*attr.Attribute::Attribute_t)
   Declare AddIntegerControl( *Me.ControlProperty_t,name.s,label.s,value.i,*attr.Attribute::Attribute_t)
+  Declare AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
   Declare AddFloatControl( *Me.ControlProperty_t,name.s,label.s,value.f,*attr.Attribute::Attribute_t)
   Declare AddVector2Control(*Me.ControlProperty_t,name.s,label.s,*value.v2f32,*attr.Attribute::Attribute_t)
   Declare AddVector3Control(*Me.ControlProperty_t,name.s,label.s,*value.v3f32,*attr.Attribute::Attribute_t)
@@ -421,6 +423,42 @@ Module ControlProperty
     EndIf
     
     *Me\dy + 22
+    ProcedureReturn(*ctl)
+  EndProcedure
+  
+  ;-----------------------------------------------------------------------------
+  ; Add Slider Control 
+  ;-----------------------------------------------------------------------------
+  Procedure AddSliderControl( *Me.ControlProperty_t,name.s,label.s,value.f, min_value.f, max_value.f, *attr.Attribute::Attribute_t)
+    ; Sanity Check
+    If Not *Me : ProcedureReturn : EndIf
+    
+    Protected Me.ControlProperty::IControlProperty = *Me
+    Protected *Ctl.Control::Control_t
+    *Me\dx = 0
+    Protected width = GadgetWidth(*Me\gadgetID)-10
+        
+    ; Add Parameter
+    If ListSize(*Me\groups()) And *Me\groups()
+     ControlGroup::RowStart( *Me\groups())
+      *ctl =  ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value,min_value,max_value,*Me\dx,*Me\dy,width-20,32) 
+      ControlGroup::Append(*Me\groups(), *ctl)
+      ControlGroup::RowEnd( *Me\groups())
+    Else
+      RowStart(*Me)
+      *ctl = ControlSlider::New(*Me, name+"Slider", value, #Null, min_value, max_value, min_value, max_value,*Me\dx,*Me\dy,width,32)
+      Append(*Me, *ctl)
+      RowEnd(*Me)
+    EndIf
+    
+    ; Connect Signal
+    If *attr
+      Callback::CONNECT_CALLBACK(*ctl\on_change, OnFloatChange, *ctl, *attr, 0, 0)
+    EndIf
+    
+    ; Offset for Next Control
+    *Me\dy + 36
+    
     ProcedureReturn(*ctl)
   EndProcedure
   
@@ -991,8 +1029,8 @@ EndModule
       
       
     
-; IDE Options = PureBasic 6.10 beta 1 (Windows - x64)
-; CursorPosition = 887
-; FirstLine = 512
-; Folding = DEz6HM9
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 455
+; FirstLine = 276
+; Folding = DEz0PY5
 ; EnableXP

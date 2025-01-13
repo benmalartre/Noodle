@@ -23,7 +23,7 @@
   Procedure OnFrequencyChange(*gen.STK::Generator, *slider.ControlSlider::ControlSlider_t)
     STK::SetGeneratorScalar(*gen, STK::#GEN_FREQUENCY, *slider\value) 
   EndProcedure
-  Callback::DECLARECALLBACK(OnFrequencyChange, Arguments::#PTR, Arguments::#PTR)
+  Callback::DECLARE_CALLBACK(OnFrequencyChange, Types::#TYPE_PTR, Types::#TYPE_PTR)
   
   Global counter.i = 0
   Global running = #False
@@ -84,9 +84,13 @@
   
   Procedure BuildApp(numGenerators)
     *app = Application::New("Test Generator",1024,720,#PB_Window_SystemMenu|#PB_Window_ScreenCentered|#PB_Window_SizeGadget)
-    *ui = PropertyUI::New(*app\window\main, "STK", #Null)
-    OpenGadgetList(*ui\gadgetID)
-    *p = *ui\prop
+        
+    *ui = PropertyUI::New(*app\window\main, "STK")
+    PropertyUI::AppendStart(*ui)
+    
+    *p = ControlProperty::New(*ui,"STK","STK",0,0,WindowWidth(*app\window\ID, #PB_Window_InnerCoordinate), WindowHeight(*app\window\ID, #PB_Window_InnerCoordinate)) 
+    PropertyUI::AddProperty(*ui, *p)
+
 
     ControlProperty::AppendStart(*p)
       
@@ -101,13 +105,13 @@
       
       
       Define *slider.ControlSlider::ControlSlider_t = ControlProperty::AddSliderControl(*p, "Slider"+Str(i), "Slider"+Str(i), baseFrequency,64, 1024, #Null) 
-      Signal::CONNECTCALLBACK(*slider\on_change, OnFrequencyChange, *generator, *slider)
+      Callback::CONNECT_CALLBACK(*slider\on_change, OnFrequencyChange, *generator, *slider)
       AddElement(*sliders())
      *sliders = *slider
    Next
     
     ControlProperty::AppendStop(*p)
-    ;CloseGadgetList()
+    PropertyUI::AppendStop(*ui)
     
     STK::StreamStart(*stream)
     running = #True
@@ -143,8 +147,8 @@
   
   ;STK::StreamStop(*stream)
   STK::StreamClean(*stream)
-; IDE Options = PureBasic 5.71 LTS (MacOS X - x64)
-; CursorPosition = 56
-; FirstLine = 42
+; IDE Options = PureBasic 6.10 LTS (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 71
 ; Folding = -
 ; EnableXP
